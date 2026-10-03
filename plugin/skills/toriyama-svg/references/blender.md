@@ -19,8 +19,9 @@ Ce qui reste faisable sans Blender, et qu'on peut proposer à la place :
   tirée des mesures, qui rendra le travail 3D reproductible plus tard.
 
 L'installation courante s'appelle `blender-mcp` (serveur MCP qui pilote une
-instance Blender ouverte via un module complémentaire). C'est au demandeur de
-l'installer et de lancer Blender : ces outils agissent sur SA session.
+instance Blender ouverte via un module complémentaire). Une installation ou une activation dépend du périmètre autorisé ; les outils
+agissent sur la session Blender connectée. Ne pas installer un substitut
+pour compenser une capacité non exposée.
 
 ## Le pont naturel : le SVG est déjà le plan
 

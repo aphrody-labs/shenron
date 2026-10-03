@@ -1,16 +1,14 @@
 # MCP Shenron et GraphQL
 
-> **S'applique quand :** un client MCP est connecté à `aphrody-kernel mcp` (ou à `aphrody-mcp`) construit avec la fonctionnalité `dragonball`. **Sinon :** passe par l'API REST (`api.md`) ; la section GraphQL ne dépend pas du MCP.
+> **S'applique quand :** un client MCP est connecté à `aphrody-mcp server` construit avec la fonctionnalité `dragonball`. **Sinon :** passe par l'API REST (`api.md`) ; la section GraphQL ne dépend pas du MCP.
 
 ## MCP Dragon Ball via Aphrody
 
-Le plugin déclare le serveur `aphrody-kernel mcp` (stdio) ; le noyau héberge les
-outils du serveur `aphrody-mcp` (`aphrody-mcp server`, enregistrés dans
-`crates/ai/mcp/src/main.rs`). Les outils Shenron portent le préfixe
-`dragonball.*` côté serveur ; Claude Code les affiche `dragonball_*`
-(`mcp__plugin_aphrody_aphrody__dragonball_*`). L'ancien endpoint public
-`mcp.dragonballfr.com` et l'ancien serveur Bun séparé `shenron-mcp` sont retirés
-(le code source de ce dernier n'est plus dans le dépôt).
+Le manifeste installé déclare `aphrody-mcp server` (stdio), vérifié dans
+`.mcp.json` et l'aide live le 2026-10-04. Le noyau peut également héberger la
+capacité, mais il n'est pas la commande de ce plugin. Les noms serveur sont
+`dragonball.*` ; les préfixes exposés dépendent du client. L'ancien endpoint
+public `mcp.dragonballfr.com` et le serveur Bun séparé `shenron-mcp` sont retirés.
 
 Le serveur possède deux catalogues (37 outils `dragonball.*`, comptés dans les
 sources le 2026-10-01) :
@@ -29,7 +27,7 @@ prouve pas que les API éditoriales, le RAG vectoriel ou le LLM sont joignables.
 
 ### Connexion
 
-Configure le client MCP avec `aphrody-kernel mcp` (ou `aphrody-mcp`, stdio) et
+Configure le client MCP avec `aphrody-mcp server` (stdio) et
 vérifie son catalogue d'outils. Les outils publics ne requièrent pas de jeton Shenron.
 Les outils admin reçoivent leurs secrets API depuis l'environnement autorisé
 du processus ; ne mets jamais un secret dans une URL, `.mcp.json`, le dépôt,
@@ -119,3 +117,12 @@ Exemple, vérifié le 2026-10-01 mais à revérifier contre le schéma du serveu
 
 N'envoie pas de mutation GraphQL depuis ce plugin. Les écritures éditoriales
 passent par les flux d'administration Shenron autorisés et versionnés.
+
+## Modes de recherche
+
+`local: true` ou `SHENRON_LOCAL_RAG=1` force le corpus local Aphrody ;
+`APHRODY_AUTO_FALLBACK=1` y replie la recherche lorsque l'API bot échoue.
+Ces modes sont vérifiés dans `crates/ai/mcp/src/dragonball_tools.rs` le
+2026-10-04. Lire le mode retourné et ouvrir sa source : un index local peut
+ne pas contenir les pages du manga. RAG, compute et base éditoriale restent
+séparés ; un résultat généré ne modifie aucune fiche.

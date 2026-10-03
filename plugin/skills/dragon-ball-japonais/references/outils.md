@@ -1,9 +1,9 @@
 # Chaîne de traitement du japonais (dépôt shenron)
 
-> **S'applique quand :** le monorepo Aphrody est le répertoire de travail (code du site sous `apps/shenron/site`) et Bun est installé. **Sinon :** ne lance aucun script d'ici ; reste sur l'API publique décrite dans `SKILL.md`.
+> **S'applique quand :** le monorepo Aphrody est le répertoire de travail (code du site sous `apps/shenron/site`) et Bun est installé. **Sinon :** ne lance aucun script d'ici ; reste sur l'API publique décrite dans [SKILL.md](../SKILL.md).
 
 Pour qui travaille sur le code de dragonballfr.com. L'utilisation courante de la
-skill ne demande que l'API publique — cf. `SKILL.md`. Documentation de la chaîne :
+skill ne demande que l'API publique — cf. [SKILL.md](../SKILL.md). Documentation de la chaîne :
 `docs/guides/shenron/japonais.md` (ses chemins `apps/site/…` datent d'avant le
 déplacement sous `apps/shenron/site/…`).
 
@@ -62,7 +62,7 @@ Une graphie n'est signalée que si tous la laissent passer :
 4. la forme correcte existe dans le corpus **et y domine**.
 
 Le détecteur se trompe encore (faux positifs) : rien n'est appliqué
-automatiquement, la sortie alimente une relecture humaine. Les chiffres de
+sans vérification au scan ; la sortie alimente une relecture sourcée. Les chiffres de
 performance publiés dans les anciennes versions de cette page ne sont pas
 reproduits ici faute de mesure rejouée.
 
