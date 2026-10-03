@@ -111,11 +111,11 @@ Toujours **masquer du plus long au plus court** : sinon `サイヤ` mord sur
 
 Rien de tout cela ne se refait à la main : le dépôt porte les trois pièces.
 
-| Pièce | Où | Ce qu'elle fait |
-| --- | --- | --- |
-| Lexique hors ligne | `apps/shenron/site/messages/glossary.json` | 1 316 entrées le 2026-10-01 (compte du fichier), construites depuis nos tables par `apps/shenron/site/scripts/i18n-glossary-build.ts` |
-| Masquage / restitution | `apps/shenron/site/src/lib/i18n/glossary.ts` | `protect`, `restore`, `spell` ; un jeton perdu par le moteur revient dans `missing` et la phrase est refusée |
-| Moteur sans clé | `bxc google translate` (ou `aphrody translate`, qui protège le vocabulaire Shenron JP->FR) | une phrase en ligne de commande, ou un lot via `--serve` (émulateur de l'API Google Cloud Translation v2) |
+| Pièce                  | Où                                                                                         | Ce qu'elle fait                                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Lexique hors ligne     | `apps/shenron/site/messages/glossary.json`                                                 | 1 316 entrées le 2026-10-01 (compte du fichier), construites depuis nos tables par `apps/shenron/site/scripts/i18n-glossary-build.ts` |
+| Masquage / restitution | `apps/shenron/site/src/lib/i18n/glossary.ts`                                               | `protect`, `restore`, `spell` ; un jeton perdu par le moteur revient dans `missing` et la phrase est refusée                          |
+| Moteur sans clé        | `bxc google translate` (ou `aphrody translate`, qui protège le vocabulaire Shenron JP->FR) | une phrase en ligne de commande, ou un lot via `--serve` (émulateur de l'API Google Cloud Translation v2)                             |
 
 ```bash
 # Un lot de segments en un seul appel (adresse et port : ceux affichés par --serve)

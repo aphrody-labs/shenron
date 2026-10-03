@@ -62,9 +62,9 @@ Toujours terminer par :
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-	* {
-		animation: none !important;
-	}
+  * {
+    animation: none !important;
+  }
 }
 ```
 

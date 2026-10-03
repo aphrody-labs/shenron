@@ -20,11 +20,11 @@ machine : `GET /api/openapi.json` ; UI : `https://bot.dragonballfr.com/api/docs`
 
 ## RAG
 
-| Méthode & chemin                 | Paramètres                                                                                    | Renvoie                            |
-| -------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `GET /api/public/rag/search`     | `q` (requis, ≥2 car.), `limit` (1–25, déf. 8), `lang`, `entity`, `sourceId`, `kind`, `lexicalOnly` | `{ q, mode, results: RagHit[] }`   |
+| Méthode & chemin                 | Paramètres                                                                                                    | Renvoie                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `GET /api/public/rag/search`     | `q` (requis, ≥2 car.), `limit` (1–25, déf. 8), `lang`, `entity`, `sourceId`, `kind`, `lexicalOnly`            | `{ q, mode, results: RagHit[] }`                                                     |
 | `GET /api/public/rag/context`    | `q` (requis), `limit` (1–12, déf. 6), `maxChars` (500–16000, déf. 6000), `lang`, `entity`, `sourceId`, `kind` | `{ q, mode, context, sources[] }` — passages intégraux numérotés `[n]`, URL absolues |
-| `GET\|POST /api/public/rag/chat` | `q`, `persona` (déf. `whis`), `lang`, `entity`, `sourceId` — en query-string **ou** body JSON | `{ answer, hits: RagHit[], mode }` |
+| `GET\|POST /api/public/rag/chat` | `q`, `persona` (déf. `whis`), `lang`, `entity`, `sourceId` — en query-string **ou** body JSON                 | `{ answer, hits: RagHit[], mode }`                                                   |
 
 `mode` ∈ `hybrid+rerank | hybrid | lexical` (dégradation gracieuse si le sidecar
 sémantique est indisponible). `RagHit` = `{ kind, title, url, snippet }`.
@@ -95,11 +95,11 @@ curl -s "https://bot.dragonballfr.com/api/public/manga/search?q=kamehameha&limit
 
 Base : `https://dragonballfr.com` (API du site, pas du bot). Lecture seule, CORS ouvert.
 
-| Méthode & chemin                | Paramètres                                                   | Renvoie                                                                                  |
-| ------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `GET /api/canon`                | —                                                            | la doctrine : `tiers`, `doctrine`, `sourcesAdmises`, `sourcesInterdites`, `heuristics`, `entries`, `stats` |
-| `GET /api/canon?q=`             | `q` (≤ 400 car.)                                             | `{ question, verdict, references, planches, fiches, suggestions, mode }`                 |
-| `GET /api/canon/references`     | `q`, `provenance` (aphrody\|databooks\|manuel\|manga), `limit` ≤100, `offset` | `{ total, items: CanonReference[] }`                                          |
+| Méthode & chemin            | Paramètres                                                                    | Renvoie                                                                                                    |
+| --------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `GET /api/canon`            | —                                                                             | la doctrine : `tiers`, `doctrine`, `sourcesAdmises`, `sourcesInterdites`, `heuristics`, `entries`, `stats` |
+| `GET /api/canon?q=`         | `q` (≤ 400 car.)                                                              | `{ question, verdict, references, planches, fiches, suggestions, mode }`                                   |
+| `GET /api/canon/references` | `q`, `provenance` (aphrody\|databooks\|manuel\|manga), `limit` ≤100, `offset` | `{ total, items: CanonReference[] }`                                                                       |
 
 `verdict` = `{ tier, tierLabel, tierDefinition, score (0-100), verdict, explanation, sources, matchedKeywords, doctrine, origine, nature, color, toriyamaQuote, suggestions }` (clés relevées le 2026-10-01 ; `references` et `planches` peuvent être vides, ce qui ne prouve rien : cite alors seulement la doctrine).
 `origine` ∈ `entry:<id>` (sujet tranché) · `heuristic:<id>` (famille de formulations) · `fallback` (la doctrine ne sait pas — ne pas inventer).
@@ -129,16 +129,16 @@ Le corpus est alimenté en continu par l'ingestion canon (unité `shenron-canon-
 
 ## Divers
 
-| Chemin                                                  | Renvoie                                                   |
-| ------------------------------------------------------- | --------------------------------------------------------- |
-| `GET /api/public/news`                                  | actualités Dragon Ball (`?limit=`)                        |
-| `GET /api/public/sources`                               | sources/corpus indexés par le RAG                         |
+| Chemin                                                  | Renvoie                                                                              |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `GET /api/public/news`                                  | actualités Dragon Ball (`?limit=`)                                                   |
+| `GET /api/public/sources`                               | sources/corpus indexés par le RAG                                                    |
 | `GET /api/public/data/coverage`                         | couverture réelle par corpus et par rubrique wiki (outil `dragonball_data_coverage`) |
-| `GET /api/public/assets`                                | assets exposés                                            |
-| `GET /api/public/eval/{cache-stats,reports,lore-stats}` | diagnostics (qualité RAG/LLM, stats lore)                 |
-| `GET /graphql`                                          | endpoint GraphQL (GraphiQL activé) — cf. `mcp-graphql.md` |
-| `GET /api/openapi.json` · `GET /api/docs`               | spec OpenAPI 3.1 + UI Scalar                              |
-| `GET /health`                                           | sonde                                                     |
+| `GET /api/public/assets`                                | assets exposés                                                                       |
+| `GET /api/public/eval/{cache-stats,reports,lore-stats}` | diagnostics (qualité RAG/LLM, stats lore)                                            |
+| `GET /graphql`                                          | endpoint GraphQL (GraphiQL activé) — cf. `mcp-graphql.md`                            |
+| `GET /api/openapi.json` · `GET /api/docs`               | spec OpenAPI 3.1 + UI Scalar                                                         |
+| `GET /health`                                           | sonde                                                                                |
 
 ## Champs des entités
 

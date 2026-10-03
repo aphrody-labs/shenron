@@ -13,8 +13,8 @@
 export type Point = readonly [number, number];
 
 export const arrondi = (v: number, n = 1) => {
-	const f = 10 ** n;
-	return Math.round(v * f) / f;
+  const f = 10 ** n;
+  return Math.round(v * f) / f;
 };
 
 /**
@@ -26,19 +26,19 @@ export const arrondi = (v: number, n = 1) => {
  * Le rayon vient de la relation sagitta/corde : r = L²/(8h) + h/2.
  */
 export function arcs(pts: readonly Point[], fleches: readonly number[], ferme = true): string {
-	const n = pts.length;
-	const fin = ferme ? n : n - 1;
-	let d = `M${arrondi(pts[0][0])} ${arrondi(pts[0][1])}`;
-	for (let i = 0; i < fin; i++) {
-		const [x1, y1] = pts[i];
-		const [x2, y2] = pts[(i + 1) % n];
-		const corde = Math.hypot(x2 - x1, y2 - y1);
-		const h = fleches[i % fleches.length];
-		const a = Math.max(1, Math.abs(h));
-		const r = (corde * corde) / 4 / (2 * a) + a / 2;
-		d += `A${arrondi(r)} ${arrondi(r)} 0 ${a > corde / 2 ? 1 : 0} ${h < 0 ? 0 : 1} ${arrondi(x2)} ${arrondi(y2)}`;
-	}
-	return ferme ? `${d}Z` : d;
+  const n = pts.length;
+  const fin = ferme ? n : n - 1;
+  let d = `M${arrondi(pts[0][0])} ${arrondi(pts[0][1])}`;
+  for (let i = 0; i < fin; i++) {
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[(i + 1) % n];
+    const corde = Math.hypot(x2 - x1, y2 - y1);
+    const h = fleches[i % fleches.length];
+    const a = Math.max(1, Math.abs(h));
+    const r = (corde * corde) / 4 / (2 * a) + a / 2;
+    d += `A${arrondi(r)} ${arrondi(r)} 0 ${a > corde / 2 ? 1 : 0} ${h < 0 ? 0 : 1} ${arrondi(x2)} ${arrondi(y2)}`;
+  }
+  return ferme ? `${d}Z` : d;
 }
 
 /**
@@ -48,27 +48,27 @@ export function arcs(pts: readonly Point[], fleches: readonly number[], ferme = 
  * Tracée en segments courts : douze par tour suffisent à l'œil même en 1200 px.
  */
 export function volute(
-	depart: Point,
-	vers: Point,
-	r: number,
-	tours = 1.2,
-	sens: 1 | -1 = 1
+  depart: Point,
+  vers: Point,
+  r: number,
+  tours = 1.2,
+  sens: 1 | -1 = 1,
 ): string {
-	const dx = vers[0] - depart[0];
-	const dy = vers[1] - depart[1];
-	const l = Math.hypot(dx, dy) || 1;
-	const cx = depart[0] + (dx / l) * r;
-	const cy = depart[1] + (dy / l) * r;
-	const a0 = Math.atan2(depart[1] - cy, depart[0] - cx);
-	const pas = Math.ceil(tours * 12);
-	let d = `M${arrondi(depart[0])} ${arrondi(depart[1])}`;
-	for (let i = 1; i <= pas; i++) {
-		const t = i / pas;
-		const a = a0 + sens * t * Math.PI * 2 * tours;
-		const rr = r * (1 - 0.85 * t);
-		d += `L${arrondi(cx + rr * Math.cos(a))} ${arrondi(cy + rr * Math.sin(a))}`;
-	}
-	return d;
+  const dx = vers[0] - depart[0];
+  const dy = vers[1] - depart[1];
+  const l = Math.hypot(dx, dy) || 1;
+  const cx = depart[0] + (dx / l) * r;
+  const cy = depart[1] + (dy / l) * r;
+  const a0 = Math.atan2(depart[1] - cy, depart[0] - cx);
+  const pas = Math.ceil(tours * 12);
+  let d = `M${arrondi(depart[0])} ${arrondi(depart[1])}`;
+  for (let i = 1; i <= pas; i++) {
+    const t = i / pas;
+    const a = a0 + sens * t * Math.PI * 2 * tours;
+    const rr = r * (1 - 0.85 * t);
+    d += `L${arrondi(cx + rr * Math.cos(a))} ${arrondi(cy + rr * Math.sin(a))}`;
+  }
+  return d;
 }
 
 /**
@@ -78,17 +78,17 @@ export function volute(
  * dessinée d'une chevelure « vectorisée ».
  */
 export function meche(base: Point, pointe: Point, largeur: number, courbure = 0.25): string {
-	const [bx, by] = base;
-	const [px, py] = pointe;
-	const dx = px - bx;
-	const dy = py - by;
-	const l = Math.hypot(dx, dy) || 1;
-	const nx = -dy / l;
-	const ny = dx / l;
-	const a: Point = [bx + nx * largeur * 0.5, by + ny * largeur * 0.5];
-	const b: Point = [bx - nx * largeur * 0.5, by - ny * largeur * 0.5];
-	const f = l * courbure;
-	return `${arcs([a, pointe], [f], false)}${arcs([pointe, b], [f], false).replace(/^M[^A]*/, "")}Z`;
+  const [bx, by] = base;
+  const [px, py] = pointe;
+  const dx = px - bx;
+  const dy = py - by;
+  const l = Math.hypot(dx, dy) || 1;
+  const nx = -dy / l;
+  const ny = dx / l;
+  const a: Point = [bx + nx * largeur * 0.5, by + ny * largeur * 0.5];
+  const b: Point = [bx - nx * largeur * 0.5, by - ny * largeur * 0.5];
+  const f = l * courbure;
+  return `${arcs([a, pointe], [f], false)}${arcs([pointe, b], [f], false).replace(/^M[^A]*/, "")}Z`;
 }
 
 /**
@@ -108,18 +108,18 @@ export const trait = (largeurSujet: number, pct = 0.8) => arrondi((largeurSujet 
  * lumière (une queue, une pointe de mèche).
  */
 export function planDombre(
-	contour: readonly Point[],
-	decalage: readonly [number, number],
-	largeur: number,
-	attenuation = 0
+  contour: readonly Point[],
+  decalage: readonly [number, number],
+  largeur: number,
+  attenuation = 0,
 ): Point[] {
-	const [dx, dy] = decalage;
-	return contour.map(([x, y]) => [x + dx, y + dy + attenuation * (x / largeur)]);
+  const [dx, dy] = decalage;
+  return contour.map(([x, y]) => [x + dx, y + dy + attenuation * (x / largeur)]);
 }
 
 /** Symétrie horizontale autour de `axe` — un visage se dessine sur une moitié. */
 export const miroir = (pts: readonly Point[], axe: number): Point[] =>
-	pts.map(([x, y]) => [2 * axe - x, y]);
+  pts.map(([x, y]) => [2 * axe - x, y]);
 
 /**
  * Assemble un SVG complet. `titre` et `description` ne sont pas décoratifs :
@@ -127,21 +127,21 @@ export const miroir = (pts: readonly Point[], axe: number): Point[] =>
  * nom accessible est pire que rien.
  */
 export function svg({
-	largeur,
-	hauteur,
-	titre,
-	description,
-	corps,
-	id = "s",
+  largeur,
+  hauteur,
+  titre,
+  description,
+  corps,
+  id = "s",
 }: {
-	largeur: number;
-	hauteur: number;
-	titre: string;
-	description: string;
-	corps: string;
-	id?: string;
+  largeur: number;
+  hauteur: number;
+  titre: string;
+  description: string;
+  corps: string;
+  id?: string;
 }): string {
-	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largeur} ${hauteur}" role="img" aria-labelledby="${id}-t">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${largeur} ${hauteur}" role="img" aria-labelledby="${id}-t">
 <title id="${id}-t">${titre}</title>
 <desc>${description}</desc>
 ${corps}

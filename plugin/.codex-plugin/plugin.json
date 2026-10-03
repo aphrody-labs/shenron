@@ -1,0 +1,16 @@
+{
+  "name": "shenron",
+  "version": "1.0.0",
+  "description": "Dragon Ball universe plugin: databooks OCR, canonical analysis, Toriyama aesthetics, manga/wiki indexing, and Shenron bot administration.",
+  "author": {
+    "name": "aphrody-dev",
+    "email": "contact@aphrody.com"
+  },
+  "interface": {
+    "displayName": "shenron",
+    "shortDescription": "Dragon Ball universe plugin: databooks OCR, canonical analysis, Toriyama aesthetics, manga/wiki indexing, and Shenron bo",
+    "developerName": "Aphrody"
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

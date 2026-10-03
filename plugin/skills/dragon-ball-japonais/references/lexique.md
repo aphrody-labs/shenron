@@ -25,25 +25,25 @@ française, vérifie dans le wiki. Une même graphie peut avoir plusieurs fiches
 
 ## Personnages
 
-| Japonais         | Wiki `name` (2026-10-01)               | Corpus |
-| ---------------- | -------------------------------------- | ------ |
-| `孫悟空`         | Son Goku (aussi « Goku »)              | 1 507  |
-| `カカロット`     | non trouvé                             | 115    |
-| `ベジータ`       | Vegeta                                 | 2 686  |
-| `ピッコロ`       | Piccolo                                | 1 770  |
-| `フリーザ`       | Freezer                                | 2 400  |
-| `セル`           | Cell                                   | 2 214  |
-| `魔人ブウ`       | « Majin Boo » et « Majin Buu » (deux fiches) | 686 |
-| `トランクス`     | Trunks                                 | 1 202  |
-| `ブルマ`         | Bulma                                  | 1 086  |
-| `クリリン`       | Krilin                                 | 1 025  |
-| `孫悟飯`         | Gohan                                  | 420    |
-| `天津飯`         | Tenshinhan                             | 652    |
-| `ヤムチャ`       | Yamcha                                 | 543    |
-| `亀仙人`         | « Master Roshi » et « Kamé Sennin » (deux fiches) | 321 |
-| `武天老師`       | non trouvé                             | 29     |
-| `神龍`           | Shenron                                | 524    |
-| `ギニュー特戦隊` | non trouvé (le wiki a `ギニュー隊長` : « Ginyu ») | 78 |
+| Japonais         | Wiki `name` (2026-10-01)                          | Corpus |
+| ---------------- | ------------------------------------------------- | ------ |
+| `孫悟空`         | Son Goku (aussi « Goku »)                         | 1 507  |
+| `カカロット`     | non trouvé                                        | 115    |
+| `ベジータ`       | Vegeta                                            | 2 686  |
+| `ピッコロ`       | Piccolo                                           | 1 770  |
+| `フリーザ`       | Freezer                                           | 2 400  |
+| `セル`           | Cell                                              | 2 214  |
+| `魔人ブウ`       | « Majin Boo » et « Majin Buu » (deux fiches)      | 686    |
+| `トランクス`     | Trunks                                            | 1 202  |
+| `ブルマ`         | Bulma                                             | 1 086  |
+| `クリリン`       | Krilin                                            | 1 025  |
+| `孫悟飯`         | Gohan                                             | 420    |
+| `天津飯`         | Tenshinhan                                        | 652    |
+| `ヤムチャ`       | Yamcha                                            | 543    |
+| `亀仙人`         | « Master Roshi » et « Kamé Sennin » (deux fiches) | 321    |
+| `武天老師`       | non trouvé                                        | 29     |
+| `神龍`           | Shenron                                           | 524    |
+| `ギニュー特戦隊` | non trouvé (le wiki a `ギニュー隊長` : « Ginyu ») | 78     |
 
 Note : `亀仙人` (« l'ermite tortue ») et `武天老師` désignent le même personnage
 (le wiki n'a pas de fiche `武天老師` le 2026-10-01) ; le premier domine largement
@@ -51,14 +51,14 @@ dans le corpus.
 
 ## Peuples, lieux, états
 
-| Japonais         | Wiki `name` (2026-10-01) | Corpus |
-| ---------------- | ------------------------ | ------ |
-| `ドラゴンボール` | non trouvé               | 3 104  |
-| `サイヤ人`       | Saiyan                   | 3 009  |
-| `超サイヤ人`     | non trouvé               | 1 627  |
-| `ナメック星`     | non trouvé               | 896    |
-| `人造人間`       | fiches « Android 17 », « Android 16 » (`人造人間17号`, `人造人間16号`) | 780 |
-| `界王様`         | non trouvé               | 44     |
+| Japonais         | Wiki `name` (2026-10-01)                                               | Corpus |
+| ---------------- | ---------------------------------------------------------------------- | ------ |
+| `ドラゴンボール` | non trouvé                                                             | 3 104  |
+| `サイヤ人`       | Saiyan                                                                 | 3 009  |
+| `超サイヤ人`     | non trouvé                                                             | 1 627  |
+| `ナメック星`     | non trouvé                                                             | 896    |
+| `人造人間`       | fiches « Android 17 », « Android 16 » (`人造人間17号`, `人造人間16号`) | 780    |
+| `界王様`         | non trouvé                                                             | 44     |
 
 `人造人間` se traduit littéralement « humain artificiel ». Le français hésite
 entre « cyborg » et « androïde » selon les éditions — vérifie la forme retenue
@@ -109,14 +109,14 @@ comprendre, à ne pas présenter comme sourcée par le wiki.
 
 Les modèles généralistes translittèrent au son et se trompent :
 
-| Sortie fautive courante | Forme correcte                                |
-| ----------------------- | --------------------------------------------- |
-| Végitta, Vegita         | **Vegeta**                                    |
-| Frézza, Freeza          | **Freezer** (français officiel)               |
-| Son-gu, Songoku         | **Son Goku**                                  |
-| Saïya, Saïyas           | **Saiyan** / **Saiyans**                      |
+| Sortie fautive courante | Forme correcte                                                           |
+| ----------------------- | ------------------------------------------------------------------------ |
+| Végitta, Vegita         | **Vegeta**                                                               |
+| Frézza, Freeza          | **Freezer** (français officiel)                                          |
+| Son-gu, Songoku         | **Son Goku**                                                             |
+| Saïya, Saïyas           | **Saiyan** / **Saiyans**                                                 |
 | « le poing du roi »     | **Kaioken** (`界王拳`, forme du wiki ; traduit littéralement par erreur) |
-| « une vague de coups »  | **Kamehameha**                                |
+| « une vague de coups »  | **Kamehameha**                                                           |
 
 Les deux dernières lignes sont le motif à retenir : une technique dont le nom
 est composé de kanji se fait **traduire littéralement** au lieu d'être
