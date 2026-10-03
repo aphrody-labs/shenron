@@ -12,4 +12,3 @@ Revision: c4ca873709fe6d8d8cd3d7f24a5742930d11b3b5
 - [config/shenron/package.json](upstream/aphrody-shenron/config/shenron/package.json.source) — SHA-256 `9be2c57131c27da5302e92ce947d20bd7f285ef8b0f27fbb4c91ea2895ae2e6c`
 - [apps/shenron/bot/package.json](upstream/aphrody-shenron/apps/shenron/bot/package.json.source) — SHA-256 `2e58e07c405ff96f9fda499ee0fdf8fd7830b962f14a27b6a953a7ad21622523`
 - [packages/shenron/pipeline/package.json](upstream/aphrody-shenron/packages/shenron/pipeline/package.json.source) — SHA-256 `c3233e862dc350e5427c2d31383441d93788ad457d075334daea47f66dbc361b`
-
