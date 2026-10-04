@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "dragonball": {
-      "type": "stdio",
-      "command": "aphrody-mcp",
-      "args": ["server"]
-    }
-  }
-}
