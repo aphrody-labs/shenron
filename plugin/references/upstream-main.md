@@ -6,7 +6,7 @@ Existing guidance must be checked against these snapshots; synchronization does 
 ## aphrody-shenron
 
 Source: git@github-dev:aphrody-labs/aphrody.git
-Revision: c8544889072c66d58a2a7f7e0299a48d6f1777cf
+Revision: 05fd57a41161f6b9be72e9be887265b4fc85d8cc
 
 - [AGENTS.md](upstream/aphrody-shenron/AGENTS.md.source) — SHA-256 `d0ccad07f8b4e6b1a6324d523494ca69e73e024dfa87017cb20cbd7c6bae1315`
 - [config/shenron/package.json](upstream/aphrody-shenron/config/shenron/package.json.source) — SHA-256 `9be2c57131c27da5302e92ce947d20bd7f285ef8b0f27fbb4c91ea2895ae2e6c`

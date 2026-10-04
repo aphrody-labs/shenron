@@ -6,7 +6,7 @@
       "id": "aphrody-shenron",
       "url": "git@github-dev:aphrody-labs/aphrody.git",
       "branch": "main",
-      "revision": "c8544889072c66d58a2a7f7e0299a48d6f1777cf",
+      "revision": "05fd57a41161f6b9be72e9be887265b4fc85d8cc",
       "kind": "git",
       "artifacts": [
         {
@@ -30,7 +30,8 @@
           "snapshot": "references/upstream/aphrody-shenron/packages/shenron/pipeline/package.json.source"
         }
       ],
-      "missing": []
+      "missing": [],
+      "documentation": []
     }
   ]
 }
