@@ -6,9 +6,9 @@ Existing guidance must be checked against these snapshots; synchronization does 
 ## aphrody-shenron
 
 Source: git@github-dev:aphrody-labs/aphrody.git
-Revision: 05fd57a41161f6b9be72e9be887265b4fc85d8cc
+Revision: ce9af5216ed5d706fcf854209c4b4866a0ab8db8
 
-- [AGENTS.md](upstream/aphrody-shenron/AGENTS.md.source) — SHA-256 `d0ccad07f8b4e6b1a6324d523494ca69e73e024dfa87017cb20cbd7c6bae1315`
-- [config/shenron/package.json](upstream/aphrody-shenron/config/shenron/package.json.source) — SHA-256 `9be2c57131c27da5302e92ce947d20bd7f285ef8b0f27fbb4c91ea2895ae2e6c`
-- [apps/shenron/bot/package.json](upstream/aphrody-shenron/apps/shenron/bot/package.json.source) — SHA-256 `2e58e07c405ff96f9fda499ee0fdf8fd7830b962f14a27b6a953a7ad21622523`
-- [packages/shenron/pipeline/package.json](upstream/aphrody-shenron/packages/shenron/pipeline/package.json.source) — SHA-256 `c3233e862dc350e5427c2d31383441d93788ad457d075334daea47f66dbc361b`
+- [AGENTS.md](upstream/aphrody-shenron/AGENTS.md.source) — SHA-256 `d4e4a5395d6c05c4d01c2281d253ff3b119edcdb08c9d1f2fa912b8554681eb9`
+- [config/shenron/package.json](upstream/aphrody-shenron/config/shenron/package.json.source) — SHA-256 `67a7179990216c31827d973fbd21f9d689597cdee7ae1a1bde544e69adbccd80`
+- [apps/shenron/bot/package.json](upstream/aphrody-shenron/apps/shenron/bot/package.json.source) — SHA-256 `af51a5f2ba6570d5ac071835b67222581f44f7fc63932aec80b4dde8e5cdea7e`
+- [packages/shenron/pipeline/package.json](upstream/aphrody-shenron/packages/shenron/pipeline/package.json.source) — SHA-256 `d1f5eed440e2d20d6ff6a24eb88d9fea45e4be12acb243d7e0fbcec0a7dce5d7`
