@@ -1,21 +1,21 @@
-import { ContributeRail } from "@/components/kit";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 // SPDX-License-Identifier: Apache-2.0
-
+import { ContributeRail } from "@/components/kit";
+import { GatedLink } from "@/components/GatedLink";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { Shenron } from "@shenron/ui/icones";
+import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { WikiImg } from "@/components/wiki/WikiImg";
+import { CharacterGrid } from "@/components/wiki/CharacterGrid";
 import { countVariantCards, getShenronCharacterCards } from "@/lib/shenron";
 import { dbUniverse } from "@/lib/db-universe";
-import { PageHero } from "@/components/PageHero";
-import { pageHero } from "@/lib/banner-config";
-import { UniverseTabs } from "@/components/wiki/UniverseTabs";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
+import { PageBanner } from "@/components/media/PageBanner";
+import { pageHero } from "@/lib/banner-config";
 import type { Metadata } from "next";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { comparerRichesse, scoreRichesse, type SignauxRichesse } from "@/lib/character-richesse";
 
 import { ogMeta } from "@/lib/og";
-import { assetUrl } from "@/lib/assets";
-import { Shenron } from "@shenron/ui/icones";
 
 export const revalidate = 3600;
 
@@ -50,16 +50,14 @@ export default async function PersonnagesPage() {
   // et passé aux grilles client, qui ne peuvent pas le lire elles-mêmes. Sans lui,
   // chaque vignette liait une fiche fermée → 307 vers `/wiki-bientot`.
   let characters: Awaited<ReturnType<typeof getShenronCharacterCards>>;
-  let counts: Awaited<ReturnType<typeof dbUniverse.counts>>;
   let facets: Awaited<ReturnType<typeof dbUniverse.characterFacets>>;
   let access: Awaited<ReturnType<typeof getLaunchConfig>> | null;
   let variants: Awaited<ReturnType<typeof countVariantCards>>;
   let richesse: Awaited<ReturnType<typeof dbUniverse.characterRichesse>>;
   let dragons: Awaited<ReturnType<typeof dbUniverse.dragons>>;
   try {
-    [characters, counts, facets, access, variants, richesse, dragons] = await Promise.all([
+    [characters, facets, access, variants, richesse, dragons] = await Promise.all([
       getShenronCharacterCards(),
-      dbUniverse.counts(),
       dbUniverse.characterFacets(),
       getLaunchConfig().catch(() => null),
       countVariantCards(),
@@ -91,82 +89,73 @@ export default async function PersonnagesPage() {
     }))
     .toSorted(comparerRichesse);
   const dragonsShown = dragons ?? [];
+  const heroImage = await pageHero("personnages");
 
   return (
-    <>
-      <PageHero
-        eyebrow="Encyclopédie"
-        title="Personnages"
-        lead={`${characters.length} fiches, des héros du récit aux figures d'un seul chapitre.`}
-        image={await pageHero("personnages")}
-        imageAlt="Personnages Dragon Ball"
+    <WikiPageShell
+      crumbs={[{ label: "Wiki", href: "/wiki" }, { label: "Personnages" }]}
+      adminBar
+      category="personnages"
+      title="Personnages"
+      lead={`${characters.length} fiches, des héros du récit aux figures d'un seul chapitre.`}
+    >
+      <PageBanner src={heroImage} alt="Personnages Dragon Ball" position="top" />
+      <CharacterGrid
+        access={access}
+        characters={cartes}
+        nbVariants={variants}
+        facets={facets ?? undefined}
       />
-      <div className="wiki-container">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <Breadcrumbs items={[{ label: "Personnages" }]} />
-          <WikiDrawer />
-        </div>
-        <UniverseTabs
-          access={access}
-          characters={cartes}
-          nbVariants={variants}
-          counts={counts ?? {}}
-          facets={facets ?? undefined}
-        />
-        {dragonsShown.length > 0 && (
-          <section
-            aria-labelledby="dragons-personnages"
-            className="mt-12 border-t border-white/10 pt-8"
-          >
-            <div className="mb-5">
-              <h2
-                id="dragons-personnages"
-                className="font-saiyan text-2xl tracking-wide text-white"
+      {dragonsShown.length > 0 && (
+        <section aria-labelledby="dragons-personnages" className="space-y-6">
+          <SectionHeading
+            id="dragons-personnages"
+            title="Dragons sacrés"
+            standfirst="Ces personnages et leurs règles d'invocation font partie de l'encyclopédie des personnages."
+            actions={
+              <GatedLink
+                href="/wiki/dragons"
+                className="inline-flex min-h-11 items-center rounded-xl border border-white/[0.12] px-4 text-[13px] font-semibold text-white/80 transition-colors hover:border-dbz-orange/60 hover:text-white"
               >
-                Dragons sacrés
-              </h2>
-              <p className="mt-1 text-sm text-white/60">
-                Ces personnages et leurs règles d&apos;invocation font partie de l&apos;encyclopédie
-                des personnages.
-              </p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {dragonsShown.map((dragon) => (
-                <article
-                  key={dragon.id}
-                  className="flex gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-4"
-                >
-                  {/* `image` est un chemin d'asset brut de la base (`./assets/wiki/…`) :
-									    rendu tel quel, il se résolvait contre dragonballfr.com (404 Next)
-									    au lieu de l'hôte d'assets qui sert le fichier. */}
+                Dragons et vœux
+              </GatedLink>
+            }
+          />
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {dragonsShown.map((dragon) => (
+              <li
+                key={dragon.id}
+                className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-dbz-card/70 p-4"
+              >
+                {/* `image` est un chemin d'asset brut de la base (`./assets/wiki/…`) :
+                    `WikiImg` le résout vers l'hôte d'assets et retombe sur un repère
+                    neutre si le fichier manque. */}
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-dbz-orange/10">
                   {dragon.image ? (
-                    <img
-                      src={assetUrl(dragon.image)}
-                      alt=""
-                      className="h-16 w-16 shrink-0 rounded-lg object-cover"
-                      loading="lazy"
-                    />
+                    <WikiImg src={dragon.image} alt="" sizes="64px" className="object-cover" />
                   ) : (
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-300/80">
-                      <Shenron size={32} aria-hidden />
+                    <div className="flex h-full w-full items-center justify-center text-dbz-orange/80">
+                      <Shenron size={32} />
                     </div>
                   )}
-                  <div className="min-w-0">
-                    <h3 className="font-display font-semibold text-white">{dragon.name}</h3>
-                    {dragon.name_ja && (
-                      <p className="font-jp text-xs text-amber-300/80">{dragon.name_ja}</p>
-                    )}
-                    {dragon.creator && (
-                      <p className="mt-1 text-xs text-white/55">Créé par {dragon.creator}</p>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-        <ContributeRail className="mt-14" quoiKey="kit.contribute.what.character" />
-      </div>
-    </>
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-display font-semibold text-white">{dragon.name}</h3>
+                  {dragon.name_ja && (
+                    <p lang="ja" className="font-jp text-xs text-dbz-orange/90">
+                      {dragon.name_ja}
+                    </p>
+                  )}
+                  {dragon.creator && (
+                    <p className="mt-1 text-xs text-white/60">Créé par {dragon.creator}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      <ContributeRail quoiKey="kit.contribute.what.character" />
+    </WikiPageShell>
   );
 }

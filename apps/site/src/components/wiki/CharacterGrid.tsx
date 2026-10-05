@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Scouter } from "@shenron/ui/icones";
 import { Pagination } from "@/components/kit/Pagination";
-import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
-import { WikiImg } from "@/components/wiki/WikiImg";
-import { CharacterFilterModal, type FacetOption } from "@/components/wiki/CharacterFilterModal";
-import { ClientGatedWrap } from "@/components/GatedClientLink";
+import { CharacterCardGrid, CharacterPosterCard } from "@/components/wiki/CharacterPosterCard";
+import {
+  WikiFacet,
+  WikiListLayout,
+  WikiSearchField,
+  WikiSegmented,
+  normaliser as norm,
+  type FacetOption,
+} from "@/components/wiki/WikiListLayout";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
 import { comparerRichesse } from "@/lib/character-richesse";
 
@@ -63,15 +67,6 @@ export type CharacterFacets = {
   charTechniques: Record<string, string[]>;
   charArcs: Record<string, string[]>;
 };
-
-// Normalise pour comparer sans accents/casse (recherche tolérante).
-function norm(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .trim();
-}
 
 export function CharacterGrid({
   characters,
@@ -164,7 +159,6 @@ export function CharacterGrid({
   const [races, setRaces] = useState<string[]>([]);
   const [techniques, setTechniques] = useState<string[]>([]);
   const [arcs, setArcs] = useState<string[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
   /**
    * Ordre d'affichage. Par défaut « les mieux documentés », parce que c'est la
    * seule vue qui a du sens à l'atterrissage : l'alphabétique met Abo, Abra et
@@ -325,231 +319,125 @@ export function CharacterGrid({
     setTechniques([]);
     setArcs([]);
   };
+  const unite = vue === "versions" ? "versions" : "personnages";
 
   return (
-    <div className="space-y-8">
-      {/* Toolbar : recherche + bouton « Filtrer » (ouvre la modale Race /
-			    Techniques / Arcs, cumulatif) + compteur live. */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1 max-w-md">
-          <svg
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher un personnage…"
-            aria-label="Rechercher un personnage"
-            className="w-full h-11 pl-11 pr-4 rounded-full bg-white/[0.05] border border-white/[0.1] text-white text-sm placeholder:text-white/50 focus:outline-none focus:border-dbz-orange/60 focus:bg-white/[0.07] transition-colors"
+    <WikiListLayout
+      search={
+        <WikiSearchField
+          value={query}
+          onChange={setQuery}
+          label="Rechercher un personnage"
+          placeholder={vue === "versions" ? "Personnage ou saga…" : "Rechercher un personnage…"}
+        />
+      }
+      filters={
+        <>
+          <WikiFacet title="Race" options={raceOptions} selected={races} onChange={setRaces} />
+          <WikiFacet
+            title="Techniques"
+            options={techniqueOptions}
+            selected={techniques}
+            onChange={setTechniques}
           />
-        </div>
-        <button
-          type="button"
-          onClick={() => setModalOpen(true)}
-          aria-haspopup="dialog"
-          className={`inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-display font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange ${
-            activeCount > 0
-              ? "border-dbz-orange/60 bg-dbz-orange/10 text-dbz-orange"
-              : "border-white/[0.12] bg-white/[0.05] text-white/80 hover:border-dbz-orange/60 hover:text-white"
-          }`}
-        >
-          <Scouter className="h-4 w-4" />
-          Filtrer
-          {activeCount > 0 && (
-            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-dbz-orange px-1.5 text-[11px] font-bold text-black">
-              {activeCount}
-            </span>
-          )}
-        </button>
-        {activeCount > 0 && (
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="text-[11px] font-bold uppercase tracking-wider text-white/50 hover:text-dbz-orange transition-colors"
-          >
-            Réinitialiser
-          </button>
-        )}
-        {/* Ordre d'affichage. Deux options seulement : le tri par richesse
-				    répond à « montre-moi ce que le wiki connaît », l'alphabétique à
-				    « je cherche un nom précis ». En ajouter d'autres (par race, par
-				    ki) ferait doublon avec les filtres, qui répondent déjà mieux. */}
-        <div
-          role="group"
-          aria-label="Trier les personnages"
-          // Sur mobile la bascule prend toute la largeur et 52 px de haut : ses
-          // segments atteignent alors les 44 px de cible tactile (ils étaient à
-          // 36), et deux bascules côte à côte tiennent sur une seule rangée au
-          // lieu d'empiler deux blocs pleine largeur. Au-delà de 640 px, on
-          // revient à la pastille compacte d'origine.
-          className="inline-flex h-13 w-full items-center rounded-full border border-white/[0.12] bg-white/[0.04] p-1 sm:h-11 sm:w-auto"
-        >
-          {(
-            [
+          <WikiFacet title="Arcs" options={arcOptions} selected={arcs} onChange={setArcs} />
+        </>
+      }
+      activeCount={activeCount}
+      onReset={resetFilters}
+      tools={
+        <>
+          {/* Deux ordres seulement : « ce que le wiki connaît le mieux » et « je
+					    cherche un nom précis ». Trier par race ou par ki ferait doublon
+					    avec les filtres, qui répondent déjà mieux. */}
+          <WikiSegmented
+            label="Trier les personnages"
+            value={tri}
+            onChange={setTri}
+            options={[
               ["richesse", "Les mieux documentés"],
               ["alpha", "A → Z"],
-            ] as const
-          ).map(([valeur, libelle]) => (
-            <button
-              key={valeur}
-              type="button"
-              onClick={() => setTri(valeur)}
-              aria-pressed={tri === valeur}
-              className={`h-11 flex-1 rounded-full px-3.5 text-[13px] font-display font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange sm:h-9 sm:flex-none ${
-                tri === valeur ? "bg-dbz-orange text-black" : "text-white/70 hover:text-white"
-              }`}
-            >
-              {libelle}
-            </button>
-          ))}
-        </div>
-        {nbVariants > 0 && (
-          <div
-            role="group"
-            aria-label="Affichage"
-            // Sur mobile la bascule prend toute la largeur et 52 px de haut : ses
-            // segments atteignent alors les 44 px de cible tactile (ils étaient à
-            // 36), et deux bascules côte à côte tiennent sur une seule rangée au
-            // lieu d'empiler deux blocs pleine largeur. Au-delà de 640 px, on
-            // revient à la pastille compacte d'origine.
-            className="inline-flex h-13 w-full items-center rounded-full border border-white/[0.12] bg-white/[0.04] p-1 sm:h-11 sm:w-auto"
-          >
-            {(["fiches", "versions"] as const).map((v) => (
-              <button
-                key={v}
-                type="button"
-                onClick={() => setVue(v)}
-                aria-pressed={vue === v}
-                className={`h-11 flex-1 rounded-full px-3.5 text-[13px] font-display font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange sm:h-9 sm:flex-none ${
-                  vue === v ? "bg-dbz-orange text-black" : "text-white/65 hover:text-white"
-                }`}
-              >
-                {v === "fiches" ? "Fiches" : "Versions"}
-              </button>
-            ))}
-          </div>
-        )}
-        <p className="scouter-text text-[11px] text-dbz-orange whitespace-nowrap sm:ml-auto">
-          {vue === "versions"
-            ? `${versionsFiltrees.length} / ${nbVariants} versions`
-            : `${filtered.length} / ${characters.length} personnages`}
-        </p>
-      </div>
-
-      {/* Grille */}
+            ]}
+          />
+          {nbVariants > 0 && (
+            <WikiSegmented
+              label="Affichage"
+              value={vue}
+              onChange={setVue}
+              options={[
+                ["fiches", "Fiches"],
+                ["versions", "Versions"],
+              ]}
+            />
+          )}
+        </>
+      }
+      resultCount={vue === "versions" ? versionsFiltrees.length : filtered.length}
+      resultLabel={
+        vue === "versions"
+          ? `${versionsFiltrees.length} / ${nbVariants} versions`
+          : `${filtered.length} / ${characters.length} personnages`
+      }
+    >
       {vue === "versions" && (etatVersions === "vierge" || etatVersions === "chargement") ? (
-        <p className="py-20 text-center text-sm text-white/45">Chargement des versions…</p>
+        <p className="py-20 text-center text-sm text-white/55">Chargement des versions…</p>
       ) : vue === "versions" && etatVersions === "erreur" ? (
         // Un échec réseau ne doit pas se déguiser en « aucun résultat » : le
         // lecteur croirait la rubrique vide et n'aurait aucun moyen de réessayer.
         <div className="py-20 text-center">
-          <p className="text-sm text-white/55">Les versions n&apos;ont pas pu être chargées.</p>
+          <p className="text-sm text-white/60">Les versions n&apos;ont pas pu être chargées.</p>
           <button
             type="button"
             onClick={() => setEtatVersions("vierge")}
-            className="mt-3 inline-flex h-11 items-center rounded-full border border-dbz-orange/60 bg-dbz-orange/10 px-5 text-[13px] font-display font-semibold text-dbz-orange transition-colors hover:bg-dbz-orange hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange"
+            className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-dbz-orange/60 bg-dbz-orange/10 px-5 font-display text-[13px] font-semibold text-dbz-orange transition-colors hover:bg-dbz-orange hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
           >
             Réessayer
           </button>
         </div>
       ) : liste.length === 0 ? (
-        <p className="py-20 text-center text-white/50 font-sans">
+        <p className="py-20 text-center text-white/60">
           {vue === "versions" ? "Aucune version ne correspond" : "Aucun personnage ne correspond"}{" "}
           {query ? `à « ${query} »` : "à ces filtres"}.
         </p>
       ) : vue === "versions" ? (
-        <div className="reveal-grid grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4 lg:grid-cols-6">
+        <CharacterCardGrid dense>
           {versionsVisibles.map((v, index) => (
-            <ClientGatedWrap
-              access={access}
+            <CharacterPosterCard
               key={v.id}
-              // La version renvoie vers la fiche du personnage, à l'ancre de
-              // sa saga : c'est là que vivent son résumé, ses faits marquants
-              // et ses preuves. Une page par version dupliquerait la fiche
-              // pour n'en changer que quelques champs.
+              // La version renvoie vers la fiche du personnage, à l'ancre de sa
+              // saga : c'est là que vivent son résumé, ses faits marquants et
+              // ses preuves. Une page par version dupliquerait la fiche pour
+              // n'en changer que quelques champs.
               href={`/wiki/personnages/${v.characterId}#saga-${v.sagaId}`}
-              className="group dbz-panel ki-card overflow-hidden transition-all duration-300 hover:scale-105"
-            >
-              <div className="relative aspect-[3/4] overflow-hidden bg-dbz-bg">
-                <div className="absolute inset-0 halftone z-10 opacity-10" />
-                <WikiImg
-                  src={v.image ?? v.characterImage}
-                  alt={v.name}
-                  loading={index < 12 ? "eager" : "lazy"}
-                  sizes="(min-width: 1280px) 200px, (min-width: 768px) 20vw, 45vw"
-                  className="absolute inset-0 h-full w-full object-cover object-top transition-all duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                <span aria-hidden className="ki-card__glow" />
-                <div className="absolute inset-x-0 bottom-0 z-30 p-2">
-                  <p className="truncate font-display text-[11px] font-bold leading-tight text-white transition-colors group-hover:text-dbz-orange">
-                    {v.name}
-                  </p>
-                  {/* La saga entre parenthèses, sur sa propre ligne : accolée
-									    au nom elle serait tronquée avant d'être lue. */}
-                  <p className="truncate text-[10px] leading-tight text-white/55">({v.saga})</p>
-                  {v.form && (
-                    <p className="scouter-text truncate text-[8px] text-dbz-orange/80">{v.form}</p>
-                  )}
-                </div>
-              </div>
-            </ClientGatedWrap>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 md:gap-4 reveal-grid">
-          {visible.map((c, index) => (
-            <ClientGatedWrap
+              name={v.name}
+              subtitle={v.saga}
+              meta={v.form}
+              image={v.image ?? v.characterImage}
+              width="full"
+              loading={index < 12 ? "eager" : "lazy"}
               access={access}
+            />
+          ))}
+        </CharacterCardGrid>
+      ) : (
+        <CharacterCardGrid dense>
+          {visible.map((c, index) => (
+            <CharacterPosterCard
               key={c.id}
               href={`/wiki/personnages/${c.slug ?? c.id}`}
-              // `nav-forward` → slide directionnel à l'arrivée sur la fiche
-              // (View Transitions). La fiche tag son "retour" en nav-back.
-              transitionTypes={["nav-forward"]}
-              className="group dbz-panel overflow-hidden hover:scale-105 transition-all duration-300 ki-card"
-            >
-              <div className="relative aspect-[3/4] bg-dbz-bg overflow-hidden">
-                <div className="absolute inset-0 halftone opacity-10 z-10 pointer-events-none" />
-                {/* Morph d'élément partagé : ce thumbnail et l'image héro de la
-								    fiche partagent `character-img-${id}` → la grille « se déplie »
-								    en grande image au clic. WikiImg gère le repli (portrait XV2)
-								    puis un placeholder stylé si l'image 404 (pas de vignette cassée). */}
-                <ViewTransition name={`character-img-${c.id}`} share="morph">
-                  <WikiImg
-                    src={c.image}
-                    fallback={c.portraitXv2}
-                    loading={index < 16 ? "eager" : "lazy"}
-                    sizes="(min-width: 1280px) 160px, (min-width: 768px) 180px, (min-width: 640px) 160px, 33vw"
-                    alt={c.name}
-                    className="absolute inset-0 w-full h-full object-cover object-top opacity-100 group-hover:scale-110 transition-all duration-700"
-                  />
-                </ViewTransition>
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent z-20" />
-                {/* Liseré ki au survol (conic sweep piloté par @property) */}
-                <span aria-hidden className="ki-card__glow" />
-                <div className="absolute inset-x-0 bottom-0 p-2 z-30">
-                  {c.race && (
-                    <p className="scouter-text text-[8px] text-dbz-orange/90 mb-0.5 truncate">
-                      {c.race}
-                    </p>
-                  )}
-                  <p className="font-display font-bold text-[10px] text-white leading-tight group-hover:text-dbz-orange transition-colors truncate">
-                    {c.name}
-                  </p>
-                </div>
-              </div>
-            </ClientGatedWrap>
+              name={c.name}
+              race={c.race}
+              image={c.image}
+              fallback={c.portraitXv2}
+              width="full"
+              loading={index < 12 ? "eager" : "lazy"}
+              access={access}
+              // Morph d'élément partagé : la vignette et l'image de la fiche
+              // partagent `character-img-${id}`, la grille « se déplie » au clic.
+              morphId={c.id}
+            />
           ))}
-        </div>
+        </CharacterCardGrid>
       )}
 
       <Pagination
@@ -557,29 +445,9 @@ export function CharacterGrid({
         parPage={PAGE}
         total={liste.length}
         onPageChange={setPage}
-        unite={vue === "versions" ? "versions" : "personnages"}
-        className="pt-2"
+        unite={unite}
+        className="pt-6"
       />
-      <CharacterFilterModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        raceOptions={raceOptions}
-        techniqueOptions={techniqueOptions}
-        arcOptions={arcOptions}
-        races={races}
-        techniques={techniques}
-        arcs={arcs}
-        onRaces={setRaces}
-        onTechniques={setTechniques}
-        onArcs={setArcs}
-        onReset={resetFilters}
-        // Le pied de la modale compte ce que la vue affiche : en mode
-        // « Versions » il annonçait « 12 / 1 307 » alors que la grille
-        // derrière listait des versions, pas des fiches.
-        resultCount={vue === "versions" ? versionsFiltrees.length : filtered.length}
-        totalCount={vue === "versions" ? variants.length : characters.length}
-        unite={vue === "versions" ? "versions" : "guerriers"}
-      />
-    </div>
+    </WikiListLayout>
   );
 }

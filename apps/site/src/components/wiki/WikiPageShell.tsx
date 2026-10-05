@@ -1,32 +1,65 @@
+// SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from "react";
-import Image from "next/image";
+import { PageShell, Stack, type ShellWidth } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
+import { DomainBar } from "@/components/kit/DomainBar";
+import { WikiCategoryNav } from "@/components/wiki/WikiCategoryNav";
 
 /**
- * Coque commune des index encyclopédiques.
+ * Coque des pages du wiki — ce qui est propre au wiki, posé sur `PageShell`.
  *
- * Les pages wiki ont longtemps recopié `wiki-container` avec `py-6` ou `py-8`
- * dans un ordre différent. Cette primitive fixe une seule largeur, gouttière et
- * cadence : les grilles restent libres de leur composition, mais le parcours
- * ne change plus de rythme d'une rubrique à l'autre.
+ * La largeur, la gouttière et le rythme vertical appartiennent à `PageShell`
+ * (`@shenron/ui/layout`) ; l'en-tête global, la navigation, le fil d'Ariane
+ * visible et le pied de page appartiennent au shell du layout racine. Il ne
+ * reste ici que ce que le shell ne peut pas savoir :
+ *
+ *  - le chemin de la page (`Breadcrumbs` : confié à la barre du shell, décrit en
+ *    `BreadcrumbList` JSON-LD) — seule la page sait nommer l'entité courante ;
+ *  - la barre d'administration de la rubrique (`DomainBar`, réservée au staff) ;
+ *  - les onglets des rubriques sœurs de l'encyclopédie (`WikiCategoryNav`) ;
+ *  - l'en-tête de page (`PageHeader`) et la cadence des sections (`Stack`).
+ *
+ * Appelé sans `title`, il ne rend que la colonne : c'est l'usage historique des
+ * pages qui composent encore leur propre en-tête.
  */
 export function WikiPageShell({
-  children,
+  title,
+  lead,
+  actions,
+  crumbs,
+  adminBar = false,
+  category,
+  width = "default",
   className = "",
+  children,
 }: {
-  children: ReactNode;
+  /** Titre de page (`h1`). Omis : aucun en-tête n'est rendu. */
+  title?: ReactNode;
+  lead?: ReactNode;
+  /** Actions de page, posées sous l'en-tête (contribution, bascule de vue…). */
+  actions?: ReactNode;
+  /** Chemin de la page sous l'accueil (« Accueil » est implicite). */
+  crumbs?: Crumb[];
+  /** Barre d'administration de la rubrique wiki (invisible au public). */
+  adminBar?: boolean;
+  /**
+   * Rubrique de l'encyclopédie courante : affiche les onglets des rubriques
+   * sœurs (`WikiCategoryNav`), l'onglet courant marqué.
+   */
+  category?: string;
+  width?: ShellWidth;
   className?: string;
+  children: ReactNode;
 }) {
   return (
-    <div className={`wiki-container relative overflow-hidden py-8 space-y-8 ${className}`}>
-      <Image
-        src="/dbz/kinto-un.svg"
-        alt=""
-        aria-hidden
-        width={260}
-        height={146}
-        className="pointer-events-none absolute right-[-3rem] top-4 -z-0 hidden opacity-[0.07] md:block"
-      />
-      <div className="relative z-[1]">{children}</div>
-    </div>
+    <PageShell width={width} rhythm="tight" className={className}>
+      {crumbs && crumbs.length > 0 && <Breadcrumbs items={crumbs} className="mb-6" />}
+      {adminBar && <DomainBar domain="wiki" className="mb-6" />}
+      {title && <PageHeader title={title} subtitle={lead} className="mb-6" />}
+      {category !== undefined && <WikiCategoryNav active={category} className="mb-8" />}
+      {actions && <div className="mb-8 flex flex-wrap items-center gap-3">{actions}</div>}
+      <Stack>{children}</Stack>
+    </PageShell>
   );
 }

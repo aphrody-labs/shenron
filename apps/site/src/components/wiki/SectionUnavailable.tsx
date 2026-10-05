@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 
 /**
  * État dégradé d'une page index : la requête n'a rien rendu.
@@ -27,7 +28,7 @@ export function SectionUnavailable({
   links?: ReadonlyArray<{ href: string; label: ReactNode }>;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[720px] px-6 py-24 text-center">
+    <PageShell width="prose" rhythm="loose" className="text-center">
       <meta name="robots" content="noindex, follow" />
       <h1 className="font-display text-3xl font-bold text-white">{title}</h1>
       <p className="mt-4 text-white/60">{message}</p>
@@ -36,13 +37,13 @@ export function SectionUnavailable({
           <Link
             key={l.href}
             href={l.href}
-            className={i === 0 ? "dbz-button !text-xs" : "dbz-button-ghost !text-xs"}
+            className={`min-h-11 ${i === 0 ? "dbz-button !text-xs" : "dbz-button-ghost !text-xs"}`}
           >
             {l.label}
           </Link>
         ))}
       </div>
-    </div>
+    </PageShell>
   );
 }
 

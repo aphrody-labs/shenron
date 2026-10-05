@@ -1,77 +1,58 @@
+// SPDX-License-Identifier: Apache-2.0
 /**
- * Grille de personnages liés (cartes cliquables) — utilisée pour les catégories
- * « Versions & apparitions » (versions alternatives d'un perso) et « Personnages
- * affiliés » (même faction). RSC pur : reçoit des données déjà chargées côté
- * serveur (`RelatedCharacter[]`) et rend des `<Link>` internes vers chaque fiche.
- * `assetUrl` importé depuis `@/lib/assets` (client-safe) — jamais depuis
- * db-universe/shenron (fuite de `postgres` dans le bundle).
+ * Personnages liés à une fiche — « Versions & apparitions », « Personnages
+ * affiliés », représentants d'une race, personnages relevés dans une saga.
+ *
+ * Server component : reçoit des données déjà chargées et rend la carte unique
+ * du wiki (`CharacterPosterCard`), dans la grille unique des personnages. Le
+ * gating est résolu ici, une fois, plutôt que par carte.
  */
-import type { RelatedCharacter } from "@/lib/shenron";
-import {
-  normalizeSectionAccent,
-  sectionAccentStyle,
-  type SectionAccent,
-} from "@/lib/wiki-section-accents";
-import { WikiImg } from "@/components/wiki/WikiImg";
-import { GatedWrap } from "@/components/GatedLink";
+import type { ReactNode } from "react";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { CharacterCardGrid, CharacterPosterCard } from "@/components/wiki/CharacterPosterCard";
+import { wikiAccess } from "@/components/wiki/wiki-access";
 
-export function WikiRelatedCharacters({
+export type RelatedCharacterCard = {
+  id: number | string;
+  slug?: string | null;
+  name: string;
+  image: string | null;
+  race?: string | null;
+  /** Seconde ligne à la place de la race (mesure, rôle). */
+  subtitle?: ReactNode;
+};
+
+export async function WikiRelatedCharacters({
   heading,
   caption,
   items,
-  accent = "orange",
+  headingLevel = 2,
 }: {
-  heading: string;
-  caption?: string;
-  items: RelatedCharacter[];
-  accent?: SectionAccent;
+  heading: ReactNode;
+  caption?: ReactNode;
+  items: readonly RelatedCharacterCard[];
+  headingLevel?: 2 | 3;
 }) {
   if (!items.length) return null;
-  const style = sectionAccentStyle(normalizeSectionAccent(accent));
+  const access = await wikiAccess();
 
   return (
-    <section className="space-y-8">
-      <div className="flex items-center gap-6">
-        <h2
-          className={`${style.text} font-saiyan text-2xl sm:text-4xl md:text-5xl uppercase tracking-widest`}
-        >
-          {heading}
-        </h2>
-        <div className={`h-px flex-1 bg-gradient-to-r ${style.line} to-transparent`} />
-      </div>
-      {caption && <p className="max-w-3xl text-sm text-white/50">{caption}</p>}
-
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
+    <section className="space-y-6">
+      <SectionHeading title={heading} standfirst={caption} level={headingLevel} />
+      <CharacterCardGrid>
         {items.map((c) => (
-          <GatedWrap
+          <CharacterPosterCard
             key={c.id}
             href={`/wiki/personnages/${c.slug || c.id}`}
-            className="dbz-panel group flex flex-col items-center p-3 transition-transform duration-300 hover:scale-105"
-          >
-            <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg p-1">
-              <div className="halftone absolute inset-0 opacity-10" />
-              <WikiImg
-                src={c.image}
-                sizes="(min-width: 1280px) 160px, (min-width: 768px) 22vw, 45vw"
-                alt={c.name}
-                loading="lazy"
-                className="relative z-10 h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
-                placeholderClassName="relative z-10 flex h-full w-full items-center justify-center rounded"
-              />
-            </div>
-            <h3
-              className={`text-center text-xs font-bold uppercase leading-tight tracking-widest text-white transition-colors ${style.relatedHover}`}
-            >
-              {c.name}
-            </h3>
-            {c.race && (
-              <span className="mt-1 text-[9px] uppercase tracking-[0.2em] text-white/50">
-                {c.race}
-              </span>
-            )}
-          </GatedWrap>
+            name={c.name}
+            race={c.race}
+            subtitle={c.subtitle}
+            image={c.image}
+            width="full"
+            access={access}
+          />
         ))}
-      </div>
+      </CharacterCardGrid>
     </section>
   );
 }

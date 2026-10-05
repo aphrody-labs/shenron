@@ -84,7 +84,11 @@ function estProtege(src: string, index: number): boolean {
   // Remonte jusqu'à l'ouverture de balise qui porte cet attribut.
   const debut = src.lastIndexOf("<", index);
   if (debut === -1) return false;
-  return /^<(?:Gated(?:Link|Wrap)|ClientGatedWrap)\b/.test(src.slice(debut, debut + 18));
+  // `CharacterPosterCard` est la carte unique des personnages : elle pose son
+  // `href` sur un `ClientGatedWrap`, avec l'instantané d'accès qu'on lui passe.
+  return /^<(?:Gated(?:Link|Wrap)|ClientGatedWrap|CharacterPosterCard)\b/.test(
+    src.slice(debut, debut + 22),
+  );
 }
 
 describe("liens vers les rubriques gatables", () => {

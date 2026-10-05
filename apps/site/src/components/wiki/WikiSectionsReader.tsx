@@ -1,67 +1,83 @@
 "use client";
 
 /**
- * Sélecteur de catégories d'une fiche wiki — **2 niveaux** :
+ * Lecteur de rubriques d'une fiche wiki, avec son sommaire.
  *
- *   1. Barre du haut : « Tout » + catégories de 1er niveau (Histoire, PWS…).
- *      Les sections regroupées n'apparaissent **pas** ici — seul le nom du groupe
- *      parent est affiché (ex. « PWS »).
- *   2. Barre du bas (visible **uniquement** après clic sur un groupe parent) :
- *      sous-catégories de ce groupe (ex. Vitesse, Durabilité, Puissance d'attaque).
+ * Chaque rubrique (`node`) est rendue côté serveur ; le sommaire choisit ce qui
+ * est affiché (« Tout » ou une rubrique) sans recharger la page, et l'ancre de
+ * l'URL (`#histoire`) garde le choix partageable. Deux niveaux : les rubriques
+ * regroupées (ex. « PWS ») n'apparaissent qu'une fois, sous le nom du groupe, et
+ * leurs sous-rubriques s'ouvrent quand le groupe est choisi.
  *
- * Chaque `node` est rendu côté serveur (RSC) ; le filtre masque/affiche via `hidden`.
+ * Mobile d'abord : le sommaire est une rangée de pastilles qui défile
+ * horizontalement et reste collée sous la barre du shell. Sur grand écran, quand
+ * la fiche fournit une colonne latérale (`aside` : l'infobox), le sommaire passe
+ * dans cette colonne, en liste verticale collante — la rangée disparaît.
  */
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { normalizeSectionAccent, type SectionAccent } from "@/lib/wiki-section-accents";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import type { SectionAccent } from "@/lib/wiki-section-accents";
 import { normalizeWikiSectionGroups } from "@/lib/wiki-section-groups";
+import { useT } from "@/components/T";
+import { FICHE_ASIDE, FICHE_GRID, FICHE_MAIN, STICKY_TOP } from "@/components/wiki/fiche-layout";
 
 export interface ReaderPanel {
   key: string;
   label: string;
   accent?: SectionAccent | null;
-  /** Groupe parent (onglet de 1er niveau). Les enfants s'affichent en barre 2. */
+  /** Groupe parent (entrée de 1er niveau). Les enfants s'affichent au 2e niveau. */
   group?: string | null;
   node: ReactNode;
 }
 
-function Pill({
+function Pastille({
   active,
-  accent = "orange",
   onClick,
   children,
 }: {
   active: boolean;
-  accent?: SectionAccent | null;
   onClick: () => void;
   children: ReactNode;
 }) {
-  const currentAccent = normalizeSectionAccent(accent);
-  const base =
-    "inline-flex min-h-11 items-center px-4 py-2 text-xs font-sans font-extrabold uppercase tracking-wider border-2 border-black rounded-lg transition-all duration-150 whitespace-nowrap cursor-pointer select-none shadow-[2.5px_2.5px_0px_#000] active:translate-x-px active:translate-y-px";
-
-  const activeBg =
-    currentAccent === "blue"
-      ? "bg-blue-500 text-white"
-      : currentAccent === "red"
-        ? "bg-red-600 text-white"
-        : currentAccent === "green"
-          ? "bg-emerald-600 text-white"
-          : currentAccent === "purple"
-            ? "bg-purple-600 text-white"
-            : currentAccent === "gold"
-              ? "bg-amber-400 text-black"
-              : currentAccent === "cyan"
-                ? "bg-cyan-500 text-black"
-                : currentAccent === "pink"
-                  ? "bg-pink-500 text-white"
-                  : "bg-dbz-orange text-black hover:bg-dbz-yellow";
-
-  const cls = active
-    ? `${activeBg} border-black shadow-[3px_3px_0px_#000]`
-    : "bg-[#141418] text-white/80 border-black hover:border-dbz-orange/80 hover:text-white hover:translate-x-[-0.5px] hover:translate-y-[-0.5px]";
-
   return (
-    <button type="button" onClick={onClick} aria-pressed={active} className={`${base} ${cls}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-full border px-4 text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere ${
+        active
+          ? "border-dbz-orange bg-dbz-orange text-encre"
+          : "border-os/12 text-os/80 hover:border-dbz-orange/70 hover:text-os"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function EntreeSommaire({
+  active,
+  onClick,
+  children,
+  depth = 0,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  depth?: 0 | 1;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? "true" : undefined}
+      className={`flex min-h-11 w-full items-center rounded-r-lg border-l-2 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere ${
+        depth === 1 ? "pl-6 pr-3" : "px-3"
+      } ${
+        active
+          ? "border-dbz-orange font-semibold text-os"
+          : "border-transparent text-os/65 hover:border-os/30 hover:text-os"
+      }`}
+    >
       {children}
     </button>
   );
@@ -69,77 +85,84 @@ function Pill({
 
 export function WikiSectionsReader({
   panels,
-  allLabel = "Tout",
+  allLabel,
+  aside,
+  children,
 }: {
   panels: ReaderPanel[];
   allLabel?: string;
+  /**
+   * Colonne latérale de la fiche (infobox). Fournie, le lecteur compose la
+   * fiche entière : colonne collante à droite sur grand écran, empilée au-dessus
+   * du contenu sur mobile, avec le sommaire sous l'infobox.
+   */
+  aside?: ReactNode;
+  /** Contenu de pied de colonne principale (sources, notes). */
+  children?: ReactNode;
 }) {
+  const t = useT();
+  const tout = allLabel ?? (t("wikiCoeur.reader.all") || "Tout");
+  const titreSommaire = t("wikiCoeur.reader.toc") || "Sommaire";
   const [active, setActive] = useState<string>("all");
   const [subActive, setSubActive] = useState<string>("all");
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Normalise PWS et autres regroupements (corrige les inversions label/groupe).
-  const normalized = normalizeWikiSectionGroups(
-    panels.map((p) => ({ ...p, label: p.label.trim(), group: p.group?.trim() || null })),
-  );
-
-  const seen = new Set<string>();
-  const items = normalized.map((p) => {
-    let key = p.key;
-    let n = 2;
-    while (seen.has(key)) key = `${p.key}-${n++}`;
-    seen.add(key);
-    return key === p.key ? p : Object.assign(p, { key });
-  });
+  // Normalise PWS et autres regroupements (corrige les inversions libellé/groupe),
+  // puis rend les clés uniques : deux rubriques « Histoire » ne doivent pas
+  // partager une ancre.
+  const items = useMemo(() => {
+    const normalized = normalizeWikiSectionGroups(
+      panels.map((p) => ({ ...p, label: p.label.trim(), group: p.group?.trim() || null })),
+    );
+    const seen = new Set<string>();
+    return normalized.map((p) => {
+      let key = p.key;
+      let n = 2;
+      while (seen.has(key)) key = `${p.key}-${n++}`;
+      seen.add(key);
+      return key === p.key ? p : { ...p, key };
+    });
+  }, [panels]);
 
   useEffect(() => {
     if (items.length <= 1) return;
     const applyHash = () => {
       const hash = window.location.hash.replace(/^#/, "");
       if (!hash) return;
-      // Cas spécial des sagas : si hash #saga-XX ou #sagas, s'assurer que le panneau sagas est visible
+      // `#saga-12` vise une saga DANS la frise « Au fil des sagas » : on ouvre
+      // la rubrique qui la contient, la frise se charge de l'ancre.
       if (hash.startsWith("saga-") || hash === "sagas") {
-        const hasSagas = items.some((p) => p.key === "sagas");
-        if (hasSagas && active !== "all" && active !== "sagas") {
-          setActive("sagas");
+        if (items.some((p) => p.key === "sagas")) {
+          setActive((cur) => (cur === "all" || cur === "sagas" ? cur : "sagas"));
         }
         return;
       }
       const matched = items.find((p) => p.key === hash);
-      if (matched) {
-        if (matched.group) {
-          setActive(`g:${matched.group}`);
-          setSubActive(matched.key);
-        } else {
-          setActive(matched.key);
-          setSubActive("all");
-        }
+      if (!matched) return;
+      if (matched.group) {
+        setActive(`g:${matched.group}`);
+        setSubActive(matched.key);
+      } else {
+        setActive(matched.key);
+        setSubActive("all");
       }
     };
-
     applyHash();
     window.addEventListener("hashchange", applyHash);
     return () => window.removeEventListener("hashchange", applyHash);
-  }, [items, active]);
+  }, [items]);
 
-  if (panels.length === 0) return null;
-  if (items.length === 1) return <div className="space-y-12">{items[0].node}</div>;
+  if (panels.length === 0) return <Mise aside={aside}>{children}</Mise>;
 
   const groupOrder: string[] = [];
-  for (const p of items) {
-    const g = p.group;
-    if (g && !groupOrder.includes(g)) groupOrder.push(g);
-  }
+  for (const p of items) if (p.group && !groupOrder.includes(p.group)) groupOrder.push(p.group);
   const ungrouped = items.filter((p) => !p.group);
   const groupPanels = (g: string) => items.filter((p) => p.group === g);
   const activeGroup = active.startsWith("g:") ? active.slice(2) : null;
   const activeChildren = activeGroup ? groupPanels(activeGroup) : [];
+  const avecSommaire = items.length > 1;
 
   function scrollToContent() {
-    // Toujours le contenu, jamais la barre : depuis que les deux barres
-    // vivent dans un même conteneur `sticky`, viser la sous-barre revenait à
-    // viser un élément déjà collé en haut — le défilement ne bougeait plus.
-    // `scroll-mt-52` sur le contenu réserve la hauteur de l'ensemble.
     requestAnimationFrame(() =>
       contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
     );
@@ -148,9 +171,7 @@ export function WikiSectionsReader({
   function selectTop(key: string) {
     setActive(key);
     setSubActive("all");
-    if (typeof window !== "undefined" && window.history?.replaceState) {
-      window.history.replaceState(null, "", key === "all" ? window.location.pathname : `#${key}`);
-    }
+    window.history.replaceState(null, "", key === "all" ? window.location.pathname : `#${key}`);
     scrollToContent();
   }
 
@@ -168,83 +189,138 @@ export function WikiSectionsReader({
     return p.key === active;
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Les deux barres sont solidaires dans UN seul conteneur collant.
-			    Auparavant chacune était `sticky` avec son propre `top` codé en dur
-			    (`top-16` puis `top-[7.25rem]`), calculé pour une barre de niveau 1
-			    tenant sur UNE ligne. Dès qu'elle passait à deux ou trois lignes —
-			    c'est-à-dire sur presque toutes les fiches en écran étroit — la barre
-			    des sous-catégories venait se poser PAR-DESSUS les catégories
-			    principales, qui devenaient incliquables. */}
-      <div className="sticky top-16 z-30 -mx-6 lg:-mx-10">
-        {/* ── Niveau 1 : catégories principales ── */}
+  // Rangée de pastilles : mobile toujours, desktop seulement sans colonne latérale.
+  const rangee = avecSommaire && (
+    <div
+      className={`sticky ${STICKY_TOP} z-20 -mx-[var(--shell-pad,1.25rem)] border-b border-os/12 bg-dbz-bg ${
+        aside ? "lg:hidden" : ""
+      }`}
+    >
+      <nav
+        aria-label={titreSommaire}
+        className="flex snap-x gap-2 overflow-x-auto px-[var(--shell-pad,1.25rem)] py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <Pastille active={active === "all"} onClick={() => selectTop("all")}>
+          {tout}
+        </Pastille>
+        {ungrouped.map((p) => (
+          <Pastille key={p.key} active={active === p.key} onClick={() => selectTop(p.key)}>
+            {p.label}
+          </Pastille>
+        ))}
+        {groupOrder.map((g) => (
+          <Pastille key={`g:${g}`} active={activeGroup === g} onClick={() => selectTop(`g:${g}`)}>
+            {g}
+          </Pastille>
+        ))}
+      </nav>
+      {activeGroup && activeChildren.length > 0 && (
         <nav
-          aria-label="Catégories de la fiche"
-          // Fond translucide et non `bg-dbz-bg/90` : posé sur le dégradé de la
-          // page, un aplat à 90 % dessinait un rectangle plus clair derrière
-          // les onglets — une seconde surface qui doublait celle du contenu
-          // juste dessous. Le flou seul suffit à décoller la barre.
-          className="flex flex-wrap gap-2 border-b border-white/10 bg-black/40 px-6 py-3 backdrop-blur-xl lg:px-10"
+          aria-label={`${titreSommaire} — ${activeGroup}`}
+          className="flex snap-x gap-2 overflow-x-auto border-t border-os/[0.08] px-[var(--shell-pad,1.25rem)] py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          <Pill active={active === "all"} onClick={() => selectTop("all")}>
-            {allLabel}
-          </Pill>
-          {ungrouped.map((p) => (
-            <Pill
-              key={p.key}
-              active={active === p.key}
-              accent={p.accent}
-              onClick={() => selectTop(p.key)}
+          <Pastille active={subActive === "all"} onClick={() => selectSub("all")}>
+            {tout}
+          </Pastille>
+          {activeChildren.map((p) => (
+            <Pastille
+              key={`sub-${p.key}`}
+              active={subActive === p.key}
+              onClick={() => selectSub(p.key)}
             >
               {p.label}
-            </Pill>
-          ))}
-          {groupOrder.map((g) => (
-            <Pill
-              key={`g:${g}`}
-              active={activeGroup === g}
-              accent={groupPanels(g)[0]?.accent ?? "red"}
-              onClick={() => selectTop(`g:${g}`)}
-            >
-              {g}
-            </Pill>
+            </Pastille>
           ))}
         </nav>
+      )}
+    </div>
+  );
 
-        {/* ── Niveau 2 : sous-catégories (après clic sur un groupe parent) ── */}
-        {activeGroup && activeChildren.length > 0 && (
-          <nav
-            aria-label={`Sous-catégories de ${activeGroup}`}
-            className="flex flex-wrap items-center gap-2 border-b border-white/5 bg-black/30 px-6 py-2.5 backdrop-blur-xl lg:px-10"
-          >
-            <span className="mr-1 font-scouter text-[11px] uppercase tracking-[0.14em] text-white/50">
-              {activeGroup}
-            </span>
-            <Pill active={subActive === "all"} onClick={() => selectSub("all")}>
-              Tout
-            </Pill>
-            {activeChildren.map((p) => (
-              <Pill
-                key={`sub-${p.key}`}
-                active={subActive === p.key}
-                accent={p.accent}
-                onClick={() => selectSub(p.key)}
-              >
-                {p.label}
-              </Pill>
-            ))}
-          </nav>
-        )}
-      </div>
+  // Sommaire vertical, dans la colonne latérale (grand écran).
+  const liste = avecSommaire && aside && (
+    <nav
+      aria-label={titreSommaire}
+      className="hidden rounded-lg border border-os/12 py-2 pr-2 lg:block"
+    >
+      <h2 className="px-3 pb-1 pt-1 font-display text-sm font-semibold text-os">{titreSommaire}</h2>
+      <ul className="space-y-0.5">
+        <li>
+          <EntreeSommaire active={active === "all"} onClick={() => selectTop("all")}>
+            {tout}
+          </EntreeSommaire>
+        </li>
+        {ungrouped.map((p) => (
+          <li key={p.key}>
+            <EntreeSommaire active={active === p.key} onClick={() => selectTop(p.key)}>
+              {p.label}
+            </EntreeSommaire>
+          </li>
+        ))}
+        {groupOrder.map((g) => (
+          <li key={`g:${g}`}>
+            <EntreeSommaire active={activeGroup === g} onClick={() => selectTop(`g:${g}`)}>
+              {g}
+            </EntreeSommaire>
+            {activeGroup === g && (
+              <ul className="mt-0.5 space-y-0.5">
+                {groupPanels(g).map((p) => (
+                  <li key={`sub-${p.key}`}>
+                    <EntreeSommaire
+                      depth={1}
+                      active={subActive === p.key}
+                      onClick={() => selectSub(p.key)}
+                    >
+                      {p.label}
+                    </EntreeSommaire>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
 
-      <div ref={contentRef} className="space-y-12 scroll-mt-52">
+  return (
+    <Mise aside={aside} sommaire={liste}>
+      {rangee}
+      <div
+        ref={contentRef}
+        className="scroll-mt-[calc(var(--shell-header-h,4rem)+4.5rem)] space-y-10"
+      >
         {items.map((p) => (
-          <div key={p.key} hidden={!visible(p)}>
+          <div key={p.key} id={`rubrique-${p.key}`} hidden={!visible(p)}>
             {p.node}
           </div>
         ))}
       </div>
+      {children}
+    </Mise>
+  );
+}
+
+/**
+ * Mise en page de la fiche : une colonne sur mobile (colonne latérale en tête),
+ * deux colonnes sur grand écran, la latérale collante à droite.
+ */
+function Mise({
+  aside,
+  sommaire,
+  children,
+}: {
+  aside?: ReactNode;
+  sommaire?: ReactNode;
+  children: ReactNode;
+}) {
+  if (!aside) return <div className="space-y-8">{children}</div>;
+  return (
+    <div className={FICHE_GRID}>
+      <aside className={FICHE_ASIDE}>
+        {aside}
+        {sommaire}
+      </aside>
+      <div className={FICHE_MAIN}>{children}</div>
     </div>
   );
 }

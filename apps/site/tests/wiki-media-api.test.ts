@@ -82,7 +82,7 @@ describe("Sprint 1 — Media Works & Editions API Integration", () => {
       new URL("../src/app/wiki/manga/page.tsx", import.meta.url),
     ).text();
     expect(indexContent).toContain("mediaWorks");
-    expect(indexContent).toContain("Matrice Ontologique Média");
+    expect(indexContent).toContain("Éditions référencées");
     expect(indexContent).toContain("/api/wiki/media");
 
     const volumeContent = await Bun.file(

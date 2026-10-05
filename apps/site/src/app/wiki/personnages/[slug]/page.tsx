@@ -310,7 +310,6 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
           heading="Versions & apparitions"
           caption="Autres versions de ce personnage à travers les époques, les timelines et les jeux (GT, Xenoverse, Heroes…)."
           items={character.versions}
-          accent="blue"
         />
       ),
     });
@@ -329,7 +328,6 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
               : undefined
           }
           items={character.affiliates}
-          accent="cyan"
         />
       ),
     });
