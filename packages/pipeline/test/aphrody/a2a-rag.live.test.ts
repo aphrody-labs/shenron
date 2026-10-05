@@ -4,12 +4,13 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { defaultA2AProbes, ShenronA2AHub } from "../../src/aphrody/a2a";
-import { loadLiveRagEnv, requireLiveRag } from "../../src/testing/live-rag";
+import { LIVE, loadLiveRagEnv, requireLiveRag } from "../../src/testing/live-rag";
 
-loadLiveRagEnv();
+if (LIVE) loadLiveRagEnv();
 const previous = process.env.A2A_COORD_DIR;
 const coord = mkdtempSync(join(tmpdir(), "shenron-a2a-live-rag-"));
 beforeAll(async () => {
+  if (!LIVE) return;
   await requireLiveRag();
   process.env.A2A_COORD_DIR = coord;
   ShenronA2AHub.resetProbes();
@@ -21,7 +22,7 @@ afterAll(() => {
   rmSync(coord, { recursive: true, force: true });
 });
 
-describe("A2A with the real preloaded Shenron RAG", () => {
+describe.if(LIVE)("A2A with the real preloaded Shenron RAG", () => {
   test("the default probe uses the configured hybrid backend and bounded sourced context", async () => {
     const result = await defaultA2AProbes.ragContext("origine du Super Saiyan", { maxChars: 1800 });
     expect(result.ok).toBe(true);

@@ -6,11 +6,11 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { createResilientRedis } from "@shenron/db/redis";
 import { createSql } from "@shenron/db/sql";
-import { loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
+import { LIVE, loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
 
 import { PG_SOURCES } from "../scripts/_rag-sources-pg";
 
-loadLiveRagEnv();
+if (LIVE) loadLiveRagEnv();
 type Sql = ReturnType<typeof createSql>;
 let live: Awaited<ReturnType<typeof requireLiveRag>>;
 let reportSources: Array<{ source: string; rendered: number }>;
@@ -19,6 +19,7 @@ let editorial: Sql;
 let redis: ReturnType<typeof createResilientRedis>;
 
 beforeAll(async () => {
+  if (!LIVE) return;
   live = await requireLiveRag();
   const reportPath =
     process.env.SHENRON_RAG_REPORT ??
@@ -64,7 +65,7 @@ function parseInfo(reply: unknown): Map<string, string> {
   return out;
 }
 
-describe("real PostgreSQL index storage", () => {
+describe.if(LIVE)("real PostgreSQL index storage", () => {
   test("RAG tables are permanent, in the private namespace, with expected types", async () => {
     const rows = await index<
       { name: string; persistence: string; schema: string; kind: string }[]
@@ -173,7 +174,7 @@ describe("real PostgreSQL index storage", () => {
   });
 });
 
-describe("real editorial PostgreSQL", () => {
+describe.if(LIVE)("real editorial PostgreSQL", () => {
   test("every editorial source present in the report has rows in its table", async () => {
     // These exceptions mirror the canonical PostgreSQL renderers; all other
     // source IDs name their bot-schema table directly. Missing tables must fail.
@@ -199,7 +200,7 @@ describe("real editorial PostgreSQL", () => {
   });
 });
 
-describe("real Redis durability", () => {
+describe.if(LIVE)("real Redis durability", () => {
   test("answers PING and the isolated qualification key round-trips", async () => {
     expect(await redis.send("PING", [])).toBe("PONG");
     const key = `shenron:rag:qualification:${live.completedAt}`;

@@ -1,20 +1,23 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import { loadLiveRagEnv, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
+import { LIVE, loadLiveRagEnv, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
 import { prepareSource } from "./_rag-aphrody-sync";
 
-loadLiveRagEnv();
-const { CORPUS_DIR, corpusSourceId, isFandom, loadCorpusDocs, renderCorpusDocs } =
-  await import("./_rag-corpus-sources");
+let corpus: typeof import("./_rag-corpus-sources");
 let live: LiveRag;
-beforeAll(async () => {
-  live = await requireLiveRag();
-}, 120_000);
 
-describe("documentary RAG rendered from the actual private Shenron exports", () => {
+describe.if(LIVE)("documentary RAG rendered from the actual private Shenron exports", () => {
+  beforeAll(async () => {
+    // The corpus module reads the private environment when it loads: only in a live run.
+    loadLiveRagEnv();
+    corpus = await import("./_rag-corpus-sources");
+    live = await requireLiveRag();
+  }, 120_000);
+
   for (const file of ["corpus.json", "corpus-xv2.json", "corpus-aphrody.json"]) {
     test(`${file}: real exported passages resolve to the preloaded PostgreSQL corpus`, async () => {
+      const { CORPUS_DIR, isFandom, loadCorpusDocs, renderCorpusDocs } = corpus;
       const docs = loadCorpusDocs(join(CORPUS_DIR, file));
       expect(docs?.length).toBeGreaterThan(0);
       if (!docs) throw new Error("Real Shenron corpus export is missing");
@@ -44,6 +47,7 @@ describe("documentary RAG rendered from the actual private Shenron exports", () 
   }
 
   test("preserves Japanese metadata from a real exported documentary passage", async () => {
+    const { CORPUS_DIR, corpusSourceId, loadCorpusDocs, renderCorpusDocs } = corpus;
     const docs = loadCorpusDocs(join(CORPUS_DIR, "corpus.json"))!;
     const { passages } = renderCorpusDocs(docs);
     const passage = passages.find((item) => item.lang === "ja");

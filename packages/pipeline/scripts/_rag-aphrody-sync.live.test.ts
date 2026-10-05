@@ -1,29 +1,30 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, it } from "bun:test";
 import { createSql } from "@shenron/db/sql";
-import { loadLiveRagEnv, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
+import { LIVE, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
 import { prepareSource, syncSource } from "./_rag-aphrody-sync";
 import { requireAiHttpUrl } from "@shenron/pipeline/ai/config";
 import { AphrodyComputeClient } from "../src/aphrody/compute";
 import { PG_SOURCES, type SourceChunk } from "./_rag-sources-pg";
 
-loadLiveRagEnv();
 let live: LiveRag;
 let chunks: SourceChunk[];
 let techniques: SourceChunk[];
-beforeAll(async () => {
-  live = await requireLiveRag();
-  const sql = createSql({ applicationName: "shenron-rag-sync-live", max: 1 });
-  try {
-    chunks = await PG_SOURCES.db_battles!(sql);
-    techniques = await PG_SOURCES.db_techniques!(sql);
-  } finally {
-    await sql.end();
-  }
-  expect(chunks.length).toBeGreaterThan(0);
-}, 120_000);
 
-describe("editorial RAG sync using real Shenron passages", () => {
+describe.if(LIVE)("editorial RAG sync using real Shenron passages", () => {
+  beforeAll(async () => {
+    // requireLiveRag loads the private environment first; nothing runs outside a live run.
+    live = await requireLiveRag();
+    const sql = createSql({ applicationName: "shenron-rag-sync-live", max: 1 });
+    try {
+      chunks = await PG_SOURCES.db_battles!(sql);
+      techniques = await PG_SOURCES.db_techniques!(sql);
+    } finally {
+      await sql.end();
+    }
+    expect(chunks.length).toBeGreaterThan(0);
+  }, 120_000);
+
   it("keeps real passage IDs stable across an editorial revision", () => {
     const before = prepareSource("db_battles", chunks);
     const revised = chunks.map((chunk, index) =>

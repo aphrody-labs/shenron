@@ -3,11 +3,12 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { contextPublicRag, searchPublicRag } from "../../../apps/bot/src/api/public-rag";
 import { DbuiBridge } from "../src/bridge/ipc";
-import { loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
+import { LIVE, loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
 
-loadLiveRagEnv();
+if (LIVE) loadLiveRagEnv();
 let server: ReturnType<typeof Bun.serve> | undefined;
 beforeAll(async () => {
+  if (!LIVE) return;
   await requireLiveRag();
   // Same route owner as packages/api/test/rag-live.test.ts; retrieval stays real.
   server = Bun.serve({
@@ -29,7 +30,7 @@ beforeAll(async () => {
 }, 120_000);
 afterAll(() => server?.stop(true));
 
-describe("DbuiBridge.searchRag against the real Shenron public route", () => {
+describe.if(LIVE)("DbuiBridge.searchRag against the real Shenron public route", () => {
   test("returns genuine hybrid hits for a canonical query", async () => {
     const bridge = new DbuiBridge({
       forcedTransport: "http",

@@ -5,11 +5,12 @@ import { prepareSource } from "../../scripts/_rag-aphrody-sync";
 import { PG_SOURCES } from "../../scripts/_rag-sources-pg";
 import { requireAiHttpToken, requireAiHttpUrl } from "../../src/ai/config";
 import * as wire from "../../src/ai/wire";
-import { loadLiveRagEnv, requireLiveRag, type LiveRag } from "../../src/testing/live-rag";
+import { LIVE, loadLiveRagEnv, requireLiveRag, type LiveRag } from "../../src/testing/live-rag";
 
-loadLiveRagEnv();
+if (LIVE) loadLiveRagEnv();
 let live: LiveRag;
 beforeAll(async () => {
+  if (!LIVE) return;
   live = await requireLiveRag();
 }, 120_000);
 
@@ -33,7 +34,7 @@ async function request(
   return response.json();
 }
 
-describe("RAG wire contracts measured against preloaded Shenron services", () => {
+describe.if(LIVE)("RAG wire contracts measured against preloaded Shenron services", () => {
   test("search, document and statistics parse the real Rust responses", async () => {
     const query = { q: "Son Goku", limit: "3", sourceId: "db_characters", lang: "fr" };
     const response = await request("ragSearch", query);

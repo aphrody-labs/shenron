@@ -13,8 +13,11 @@ import {
 const oldToken = process.env.APHRODY_SHENRON_API_TOKEN;
 const oldUrl = process.env.APHRODY_SHENRON_API_URL;
 const oldAiUrl = process.env.APHRODY_AI_HTTP_URL;
+const oldAiToken = process.env.APHRODY_AI_HTTP_TOKEN;
 beforeEach(() => {
   process.env.APHRODY_AI_HTTP_URL = "http://127.0.0.1:8789";
+  // The canonical token wins over its alias: a real one in the environment must not leak in.
+  delete process.env.APHRODY_AI_HTTP_TOKEN;
   process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
 });
 afterEach(() => {
@@ -24,6 +27,8 @@ afterEach(() => {
   else process.env.APHRODY_SHENRON_API_URL = oldUrl;
   if (oldAiUrl === undefined) delete process.env.APHRODY_AI_HTTP_URL;
   else process.env.APHRODY_AI_HTTP_URL = oldAiUrl;
+  if (oldAiToken === undefined) delete process.env.APHRODY_AI_HTTP_TOKEN;
+  else process.env.APHRODY_AI_HTTP_TOKEN = oldAiToken;
 });
 
 const valid = {
