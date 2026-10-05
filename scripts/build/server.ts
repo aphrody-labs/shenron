@@ -4,7 +4,7 @@
  * Build the autonomous `shenron-server` binary (front app + local APIs) and its CDN tree.
  *
  *   bun scripts/build/server.ts [--target linux-x64|windows-x64] [--flavor desktop|production]
- *                               [--skip-site] [--no-embed]
+ *                               [--skip-site] [--no-embed] [--vfs FILE | --no-vfs]
  *
  * Flavors: `desktop` (default; the desktop app and the public release) loads every asset from
  * the binary, offline. `production` bakes NEXT_PUBLIC_CDN_URL = NEXT_PUBLIC_SHENRON_ASSETS_URL =
@@ -15,8 +15,13 @@
  *    (`--experimental-build-mode=compile`: every route renders on demand).
  * 2. Release tree dist/server/<target>/site: standalone server, public assets, static chunks.
  * 3. Native library (shenron-ffi) of the target, when built (local RAG API).
+ * 3b. Public VFS (default dist/vfs/shenron-vfs.public.sqlite, built by
+ *    `bun scripts/data/build-vfs.ts --profile public`): wiki, RAG and VFS routes offline. It must
+ *    pass the public guard (profile public, no private node or passage, no conversation, no
+ *    embedded node); without it the API reports its VFS groups unavailable. Plus the public
+ *    agent home template (agent-home/SOUL.md, IDENTITY.md) for the chat persona.
  * 4. One zstd payload embedded in a `bun build --compile` executable (unless --no-embed,
- *    which keeps site/ and the library beside the binary).
+ *    which keeps site/, the library, vfs/ and home/ beside the binary).
  * 5. dist/cdn/: what the nginx CDN adds (additively, never --delete) to /srv/shenron-cdn:
  *    _next/static/ and site/ (public/ of the site).
  *
@@ -35,7 +40,7 @@ import {
 } from "node:fs";
 import { join, resolve } from "node:path";
 
-import { pack } from "../../apps/server/src/payload";
+import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
 
 const ROOT = resolve(import.meta.dir, "../..");
@@ -206,13 +211,47 @@ if (libCandidates[0]) {
   cpSync(libCandidates[0], join(nativeOut, spec.lib));
 }
 
+// 3b. Public VFS and agent home template (both public by construction, the VFS checked).
+const vfsOut = join(OUT, "vfs");
+const vfsSource = resolve(option("--vfs", join(ROOT, "dist/vfs/shenron-vfs.public.sqlite")));
+let vfsShipped = false;
+if (!flag("--no-vfs")) {
+  if (existsSync(vfsSource)) {
+    const problems = publicVfsProblems(vfsSource);
+    if (problems.length)
+      throw new Error(`${vfsSource} cannot ship in a public payload: ${problems.join("; ")}`);
+    mkdirSync(vfsOut, { recursive: true });
+    cpSync(vfsSource, join(vfsOut, "shenron-vfs.sqlite"));
+    vfsShipped = true;
+  } else if (args.includes("--vfs")) {
+    throw new Error(`--vfs ${vfsSource} does not exist`);
+  } else {
+    console.error(
+      JSON.stringify({
+        label: "vfs",
+        missing: vfsSource,
+        hint: "bun scripts/data/build-vfs.ts --profile public (the API VFS groups stay disabled)",
+      }),
+    );
+  }
+}
+const homeOut = join(OUT, "home");
+mkdirSync(homeOut, { recursive: true });
+for (const name of ["SOUL.md", "IDENTITY.md"])
+  cpSync(join(ROOT, "agent-home", name), join(homeOut, name));
+
 // 4. Binary.
 const buildDir = join(ROOT, "apps/server/.build");
 mkdirSync(buildDir, { recursive: true });
 const embed = !flag("--no-embed");
 if (embed) {
   const started = performance.now();
-  const payload = pack({ site: siteOut, ...(libCandidates[0] ? { native: nativeOut } : {}) });
+  const payload = pack({
+    site: siteOut,
+    ...(libCandidates[0] ? { native: nativeOut } : {}),
+    ...(vfsShipped ? { vfs: vfsOut } : {}),
+    home: homeOut,
+  });
   writeFileSync(join(buildDir, "payload.pak.zst"), payload);
   writeFileSync(
     join(buildDir, "entry.ts"),
@@ -246,8 +285,8 @@ await measured(
   ROOT,
 );
 if (embed) {
-  rmSync(siteOut, { recursive: true, force: true });
-  rmSync(nativeOut, { recursive: true, force: true });
+  for (const dir of [siteOut, nativeOut, vfsOut, homeOut])
+    rmSync(dir, { recursive: true, force: true });
 }
 
 // 5. CDN tree for an external nginx (same paths as the binary serves).
@@ -266,6 +305,7 @@ console.log(
     binary: join(OUT, spec.exe),
     sizeMiB: Math.round(size / 1048576),
     embedded: embed,
+    vfs: vfsShipped,
     buildId,
     cdn,
   }),
