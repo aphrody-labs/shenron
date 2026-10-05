@@ -1,8 +1,8 @@
 "use client";
 
-// Desktop-only panel: when the admin runs inside the Aphrody app, `window.aphrodyNative`
-// (injected by crates/ui/app/src/studio.rs) gives direct IPC access to the local models and the
-// Shenron RAG. The answer is grounded on retrieved passages and cites them.
+// Desktop-only panel: when the admin runs in the native window that shenron-desktop opens,
+// `window.aphrodyNative` (injected by crates/shenron-studio/src/studio.rs) gives direct IPC access
+// to the local models and the Shenron RAG. The answer is grounded on retrieved passages and cites them.
 import { useEffect, useState } from "react";
 import { EMPTY_RETRIEVAL_NOTICE, formatRagContext } from "./ia-cockpit-view";
 

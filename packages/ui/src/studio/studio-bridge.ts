@@ -1,81 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
-// Studio bridge: typed calls to the in-process Koharu service (`koharu_rpc`, crates/ui/app/src/koharu.rs).
-// Shapes mirror crates/koharu-library/src/{service,project}.rs and koharu-pipeline request types.
+// Studio bridge: typed calls to the Studio commands that shenron-desktop registers
+// (crates/shenron-studio/src/studio.rs, logic owned by shenron-cli::shenron_cmd) and the
+// `studio://train` event. The Koharu editor speaks @shenron/koharu/protocol instead.
 import { invoke } from "@aphrody/api/core";
 import { listen } from "@aphrody/api/event";
 import { isTauri } from "./tauri-bridge";
 
-export type KoharuStage = "detection" | "ocr" | "translation" | "inpainting";
+const DESKTOP_ONLY = "Cette vue fonctionne dans l’application de bureau Shenron.";
 
-export type KoharuOperation =
-  | { operation: "full" }
-  | { operation: "through"; stage: KoharuStage }
-  | { operation: "only"; stage: KoharuStage }
-  | { operation: "stages"; stages: KoharuStage[] };
-
-export interface KoharuProjectSummary {
-  name: string;
-}
-
-export interface KoharuProjectInfo {
-  name: string;
-  revision: unknown;
-  active_page: string | null;
-  can_undo: boolean;
-  can_redo: boolean;
-}
-
-export interface KoharuPageSummary {
-  id: string;
-  label: string;
-  size: { width: number; height: number };
-  source_asset: string | null;
-  layer_count: number;
-}
-
-export interface KoharuPipelineReport {
-  status: string;
-  completed: number;
-  total: number;
-  elapsedMs: number;
-  project: KoharuProjectInfo;
-}
-
-export async function koharuRpc<T>(
-  method: string,
-  params: Record<string, unknown> = {},
-): Promise<T> {
-  if (!isTauri()) throw new Error("Koharu nécessite l’application Aphrody.");
-  // Native IPC rejects errors; JSON null is a valid successful result (e.g. project.close).
-  return invoke<T>("koharu_rpc", { method, params });
-}
-
-export const koharu = {
-  listProjects: () => koharuRpc<KoharuProjectSummary[]>("project.list"),
-  createProject: (name: string) => koharuRpc<KoharuProjectInfo>("project.create", { name }),
-  openProject: (name: string) => koharuRpc<KoharuProjectInfo>("project.open", { name }),
-  closeProject: () => koharuRpc<null>("project.close"),
-  pages: () => koharuRpc<KoharuPageSummary[]>("project.pages"),
-  importPaths: (paths: string[]) =>
-    koharuRpc<{ pages: unknown; project: KoharuProjectInfo }>("project.importPaths", { paths }),
-  runPipeline: (operation: KoharuOperation, pages?: string[], cpu = false) =>
-    koharuRpc<KoharuPipelineReport>("pipeline.run", {
-      operation,
-      scope: pages && pages.length > 0 ? { scope: "pages", value: pages } : { scope: "project" },
-      cpu,
-    }),
-  pipelineStatus: () => koharuRpc<{ running: number | null }>("pipeline.status"),
-  cancelPipeline: (job: number) => koharuRpc<{ cancelled: true }>("pipeline.cancel", { job }),
-  exportPng: (page: string, path: string) =>
-    koharuRpc<{ path: string; bytes: number }>("page.exportPng", { page, path }),
-  exportPsd: (page: string, path: string) =>
-    koharuRpc<{ path: string; bytes: number }>("page.exportPsd", { page, path }),
-  resources: () => koharuRpc<unknown>("resources.status"),
-};
-
-/** Structured Shenron reports from crates/ui/app/src/studio.rs (logic owned by aphrody-command). */
+/** Structured Shenron reports (JSON values) of the Studio commands. */
 async function studio<T>(command: string, args: Record<string, unknown> = {}): Promise<T> {
-  if (!isTauri()) throw new Error("Cette vue nécessite l’application Aphrody.");
+  if (!isTauri()) throw new Error(DESKTOP_ONLY);
   // Result<()> commands (admin window and training start) serialize successful acknowledgement as null.
   return invoke<T>(command, args);
 }
@@ -164,8 +99,7 @@ export const training = {
       baseModel: baseModel ?? null,
     }),
   async onEvent(handler: (event: TrainEvent) => void): Promise<() => void> {
-    if (!isTauri())
-      throw new Error("Les événements d’entraînement nécessitent l’application Aphrody.");
+    if (!isTauri()) throw new Error(DESKTOP_ONLY);
     return listen<TrainEvent>("studio://train", (event) => handler(event.payload));
   },
 };
@@ -182,7 +116,7 @@ export interface CorpusHit {
   entity?: string;
 }
 
-/** Offline Shenron corpus (aphrody-rag::dragonball::LocalCorpus) through the Studio commands. */
+/** Offline Shenron corpus (shenron_rag::dragonball::LocalCorpus) through the Studio commands. */
 export const corpus = {
   info: () => studio<{ documents: number }>("studio_corpus_info"),
   search: (query: string, options: { limit?: number; kind?: string; lang?: string } = {}) =>
@@ -197,13 +131,3 @@ export const corpus = {
     ),
   ask: (question: string) => studio<Record<string, unknown>>("studio_corpus_ask", { question }),
 };
-
-export interface GoogleDriveGrant {
-  access_token: string;
-  refresh_token: string;
-  client_id: string;
-  client_secret: string;
-}
-
-/** Google OAuth loopback consent with the Aphrody OAuth client; tokens kept in the private store. */
-export const authorizeGoogleDrive = () => studio<GoogleDriveGrant>("studio_google_drive_authorize");

@@ -124,7 +124,7 @@ fn main() {
                 shenron_studio::koharu::koharu_rpc_batch,
                 shenron_studio::shenron::shenron_chat,
             ]);
-        // Koharu editor commands keep their own names (packages/koharu-bridge/src/protocol.ts).
+        // Koharu editor commands keep their own names (packages/koharu/src/protocol.ts).
         let koharu_commands = koharu_app::bindings().invoke_handler();
         move |invoke: tauri::ipc::Invoke| {
             if koharu_app::COMMAND_NAMES.contains(&invoke.message.command()) {
