@@ -1,5 +1,36 @@
 {
   "$comment": "Pre-existing check:packages violations. `transitional` must be empty at the end of Phase 1 (--strict); `phase2` entries cite a docs/architecture/STACK.md §7.3 ticket. The baseline may only shrink after wave 1.",
   "transitional": [],
-  "phase2": []
+  "phase2": [
+    {
+      "id": "@shenron/pipeline | edges | packages/pipeline/src/testing/live-rag.ts imports @shenron/db/redis; only @shenron/db/sql, @shenron/db/bun-sql, @shenron/db/env, @shenron/db/guards is allowed",
+      "reason": "live-test support reaches Redis, outside the §4.2 subpaths of packages/pipeline",
+      "ticket": "SH-GRAPH"
+    },
+    {
+      "id": "@shenron/pipeline | edges | packages/pipeline/test/storage-rag.live.test.ts imports @shenron/db/redis; only @shenron/db/sql, @shenron/db/bun-sql, @shenron/db/env, @shenron/db/guards is allowed",
+      "reason": "live-test support reaches Redis, outside the §4.2 subpaths of packages/pipeline",
+      "ticket": "SH-GRAPH"
+    },
+    {
+      "id": "@shenron/pipeline | escape | scripts/manga-spin-offs.ts: escaping-import: import manifest from \"../../../apps/bot/data/manga-spin-offs-manifest.json\";",
+      "reason": "the pipeline imports apps/bot (forbidden package → apps/* edge, §4.2)",
+      "ticket": "SH-GRAPH"
+    },
+    {
+      "id": "@shenron/pipeline | escape | test/bridge-rag.live.test.ts: escaping-import: import { contextPublicRag, searchPublicRag } from \"../../../apps/bot/src/api/public-rag\";",
+      "reason": "the pipeline imports apps/bot (forbidden package → apps/* edge, §4.2)",
+      "ticket": "SH-GRAPH"
+    },
+    {
+      "id": "@shenron/pipeline | runtime-class | ./aphrody/a2a-transport has no shenron.runtime class",
+      "reason": "export without a declared runtime class (packages/pipeline/package.json)",
+      "ticket": "SH-GRAPH"
+    },
+    {
+      "id": "apps/site | boundary | apps/site/src/lib/bxc.ts imports bun-class @shenron/pipeline/bxc",
+      "reason": "the site server imports a bun-class subpath (§4.2)",
+      "ticket": "SH-GRAPH"
+    }
+  ]
 }

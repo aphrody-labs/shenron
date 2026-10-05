@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 //
-// check-workspace-packages.ts — conformance of the unified @shenron/* packages
+// check-workspace-packages.ts — conformance and dependency graph of the @shenron/* packages
 // (docs/architecture/STACK.md §4.3). Thin CLI over @shenron/config/guards.
 //
 // Usage:
@@ -13,7 +13,7 @@
 //
 // Baseline: scripts/audit/check-workspace-packages.baseline.json (beside this file), two sections:
 //   transitional  must be empty at the end of Phase 1 (--strict enforces it)
-//   phase2        each entry cites a ticket of docs/architecture/STACK.md §7.3
+//   phase2        each entry cites a ticket of docs/architecture/STACK.md §7.3; listed on every run
 // A baseline entry that no longer matches a violation is stale: warning only.
 // Checks reported as `warn` never fail (none since wave 5: the "use client" reach is an error).
 
@@ -33,7 +33,10 @@ import {
 const ROOT = resolve(import.meta.dir, "../..");
 const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.json");
 
-/** Modular framework packages checked against docs/architecture/STACK.md. */
+/**
+ * Workspace packages checked against docs/architecture/STACK.md: the framework packages
+ * (§3.1–3.7) and the consumer packages (§3.8). `@shenron/images` has no runtime class map yet.
+ */
 const PACKAGES: Readonly<Record<string, string>> = {
   "@shenron/config": "packages/config",
   "@shenron/db": "packages/db",
@@ -41,7 +44,25 @@ const PACKAGES: Readonly<Record<string, string>> = {
 
   "@shenron/api": "packages/api",
   "@shenron/ui": "packages/ui",
+
+  "@shenron/koharu": "packages/koharu",
+  "@shenron/media": "packages/media",
+  "@shenron/native": "packages/native",
+  "@shenron/pipeline": "packages/pipeline",
 };
+
+/**
+ * Framework packages, also held to the manifest, tsconfig and runtime-walker conformance
+ * (§4.3 checks 2, 3 and 5). Consumer packages are audited for their graph: export targets and
+ * classes, edges and their subpaths, imports into apps/ and cycles.
+ */
+const FRAMEWORK: ReadonlySet<string> = new Set([
+  "@shenron/config",
+  "@shenron/db",
+  "@shenron/auth",
+  "@shenron/api",
+  "@shenron/ui",
+]);
 
 /**
  * Allowed @shenron/* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
@@ -58,11 +79,27 @@ const ALLOWED_EDGES: Readonly<
     runtime: ["@shenron/config", "@shenron/db", "@shenron/auth", "@shenron/pipeline"],
     dev: [],
   },
-  // The UI layer hosts Koharu (protocol, canvas, settings), the admin studio (config/admin)
-  // and the Koharu engine bridge of the pipeline; none of them depends back on @shenron/ui.
+  // The UI layer hosts the Koharu editor (protocol, canvas), the studio (config/admin) and the
+  // Koharu export of the pipeline; none of them depends back on @shenron/ui.
   "@shenron/ui": {
     runtime: ["@shenron/config", "@shenron/koharu", "@shenron/pipeline"],
     dev: ["@shenron/config"],
+  },
+
+  // Leaves: the Koharu client, the media helpers and the shenron-ffi binding.
+  "@shenron/koharu": { runtime: [], dev: [] },
+  "@shenron/media": { runtime: [], dev: [] },
+  "@shenron/native": { runtime: [], dev: [] },
+  // Compute clients and the editorial pipeline; never @shenron/api, @shenron/auth or @shenron/ui.
+  "@shenron/pipeline": {
+    runtime: [
+      "@shenron/config",
+      "@shenron/db",
+      "@shenron/koharu",
+      "@shenron/media",
+      "@shenron/native",
+    ],
+    dev: [],
   },
 };
 
@@ -71,6 +108,24 @@ const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly st
   // Chat engine doctrine only (§4.1): personas and the agent home, never the pipeline runtime.
   "@shenron/api": {
     "@shenron/pipeline": ["@shenron/pipeline/ai/prompts", "@shenron/pipeline/agent-home"],
+  },
+  "@shenron/ui": {
+    // The editor speaks the generated protocol and draws on the wasm canvas; the koharu-sdk
+    // transport (`./native`, class bun) stays with the pipeline.
+    "@shenron/koharu": ["@shenron/koharu/protocol", "@shenron/koharu/canvas"],
+    // Koharu export panel only.
+    "@shenron/pipeline": ["@shenron/pipeline/koharu"],
+  },
+  "@shenron/pipeline": {
+    // §4.2: SQL clients, environment and guards.
+    "@shenron/db": [
+      "@shenron/db/sql",
+      "@shenron/db/bun-sql",
+      "@shenron/db/env",
+      "@shenron/db/guards",
+    ],
+    // The koharu-sdk JSON Lines transport.
+    "@shenron/koharu": ["@shenron/koharu/native"],
   },
 };
 
@@ -334,7 +389,32 @@ async function checkPackage(name: string, relDir: string): Promise<void> {
     }
   }
 
-  // 2. scripts, private, no build output.
+  // 2–3. Framework packages only: scripts, private, no build output; tsconfig.
+  const framework = FRAMEWORK.has(name);
+  if (framework) {
+    checkManifest(name, dir, manifest);
+    checkTsconfig(name, dir);
+  }
+
+  // 4. dependency edges (manifest) and import edges (code), every package.
+  checkEdges(name, dir, manifest);
+
+  // 5. no import into apps/ (every package); for the framework packages, runtime classes,
+  // empty-env imports and browser purity. Manifest-level offences of the walker duplicate
+  // check 1 above.
+  reportOffences(name, "escape", await checkNoEscapingImports(dir));
+  if (!framework) return;
+  const manifestRules = new Set(["missing-runtime-class", "missing-export-target"]);
+  reportOffences(
+    name,
+    "runtime",
+    (await checkPackageRuntimes(dir)).filter((offence) => !manifestRules.has(offence.rule)),
+  );
+  reportOffences(name, "empty-env", await checkEmptyEnvImports(dir));
+  reportOffences(name, "browser", await checkBrowserBundles(dir));
+}
+
+function checkManifest(name: string, dir: string, manifest: Manifest): void {
   for (const script of ["typecheck", "lint", "test"]) {
     if (!manifest.scripts?.[script]) report(name, "scripts", `missing script "${script}"`);
   }
@@ -355,8 +435,9 @@ async function checkPackage(name: string, relDir: string): Promise<void> {
     Boolean(manifest.devDependencies?.tsup || manifest.dependencies?.tsup) ||
     existsSync(join(dir, "tsup.config.ts"));
   if (usesTsup) report(name, "manifest", "tsup is used");
+}
 
-  // 3. tsconfig.
+function checkTsconfig(name: string, dir: string): void {
   const tsconfigFile = join(dir, "tsconfig.json");
   const tsconfig = existsSync(tsconfigFile)
     ? parseJsonc<{ extends?: string; compilerOptions?: Record<string, unknown> }>(
@@ -382,8 +463,9 @@ async function checkPackage(name: string, relDir: string): Promise<void> {
       report(name, "tsconfig", `moduleResolution ${resolution}`);
     }
   }
+}
 
-  // 4. dependency edges (manifest) and import edges (code).
+function checkEdges(name: string, dir: string, manifest: Manifest): void {
   const allowed = ALLOWED_EDGES[name] ?? { runtime: [], dev: [] };
   for (const [group, deps] of [
     ["dependencies", manifest.dependencies],
@@ -417,18 +499,6 @@ async function checkPackage(name: string, relDir: string): Promise<void> {
         );
     }
   }
-
-  // 5. runtime classes, escapes, empty-env imports, browser purity.
-  // Manifest-level offences of the walker duplicate check 1 above.
-  const manifestRules = new Set(["missing-runtime-class", "missing-export-target"]);
-  reportOffences(
-    name,
-    "runtime",
-    (await checkPackageRuntimes(dir)).filter((offence) => !manifestRules.has(offence.rule)),
-  );
-  reportOffences(name, "escape", await checkNoEscapingImports(dir));
-  reportOffences(name, "empty-env", await checkEmptyEnvImports(dir));
-  reportOffences(name, "browser", await checkBrowserBundles(dir));
 }
 
 /** Cycles over every @shenron/* manifest edge (dependencies + dev + peer). */
@@ -613,7 +683,8 @@ if (WRITE_BASELINE) {
     transitional,
     phase2: phase2.toSorted((a, b) => a.id.localeCompare(b.id)),
   };
-  await Bun.write(BASELINE_FILE, `${JSON.stringify(next, null, "\t")}\n`);
+  // Two-space indent: the layout oxfmt keeps (format:check covers scripts/).
+  await Bun.write(BASELINE_FILE, `${JSON.stringify(next, null, 2)}\n`);
   console.log(
     `baseline written: ${transitional.length} transitional, ${next.phase2.length} phase2`,
   );
@@ -646,6 +717,9 @@ if (JSON_OUT) {
   console.log(`check:packages — ${scopeLabel}`);
   for (const v of fresh) console.log(`  \x1b[31merror\x1b[0m  ${v.id}`);
   for (const v of warnings) console.log(`  \x1b[33mwarn\x1b[0m   ${v.id}`);
+  // Ticketed violations stay on screen: phase2 tolerates them, it does not hide them.
+  for (const entry of phase2InScope)
+    console.log(`  \x1b[36mphase2\x1b[0m ${entry.id} (${entry.ticket ?? "no ticket"})`);
   for (const entry of stale) console.log(`  \x1b[33mstale baseline entry\x1b[0m  ${entry.id}`);
   if (STRICT)
     for (const entry of transitionalInScope)

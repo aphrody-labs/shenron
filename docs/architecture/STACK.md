@@ -1044,7 +1044,7 @@ Dépendances : `@base-ui/react`, `@tanstack/react-query`,
 `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react` ; pairs
 `react`, `react-dom`. Interdit :
 `next/*`, next-intl, `@/…`, lecture d'environnement et tout paquet
-`@shenron/*` dans le runtime. Les illustrations livrées sont des SVG du paquet ;
+`@shenron/*` hors des arêtes du §4.1 (`config`, `koharu/{protocol,canvas}`, `pipeline/koharu`). Les illustrations livrées sont des SVG du paquet ;
 les chaînes de présentation historiques ne sont pas une source de données.
 Les wrappers
 passent en sous-chemins Base UI (`@base-ui/react/<partie>`) ; accordéon et
@@ -1059,6 +1059,11 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 - `@shenron/pipeline` regroupe les clients IA et Aphrody, le pont BXC et les
   scripts de workflows. Les modules restent séparés par sous-chemin public et
   sont livrés via le même workspace.
+- `@shenron/koharu` : client du moteur Koharu, `./protocol` (généré par Specta depuis
+  `koharu-app`), `./native` (transport `koharu-sdk` en JSON Lines, classe bun) et
+  `./canvas` (WASM de `koharu-canvas`).
+- `@shenron/media` : aides OCR, manga et traduction HTTP, sans arête `@shenron/*`.
+- `@shenron/native` : liaison `bun:ffi` de `shenron-ffi` (classe bun).
 - `@aphrody/*` vendorisés : `dist` commité, hors du périmètre.
 - Schéma SQLite du bot, `DatabaseService`.
 
@@ -1068,20 +1073,24 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 
 ### 4.1 Paquet vers paquet (acyclique)
 
-```
-                        @shenron/config (zod)
-            ┌──────────────┬──────┴───────┬──────────────┐
-            ▼              ▼              ▼              │
-       @shenron/db    @shenron/auth   @shenron/pipeline/ai        │
-        ▲   ▲   ▲     (⇢ db : dev)        ▲              │
-        │   │   └──────────────┐          │              │
-        │   │                  │          │              │
-        │   └── @shenron/api ──┼─► auth   │              │
-        │       (→ config, db, auth)      │              │
-        └────── @shenron/pipeline/aphrody ─────────┘──────────────┘
-                (→ config, ai, db/env)
+État au 2026-10-05 : neuf paquets audités, cinq paquets cadres (§3.1–3.7, `ai` et
+`aphrody` réunis depuis dans `@shenron/pipeline`) et quatre paquets consommateurs (§3.8).
+Les arêtes ci-dessous sont celles du code ; `scripts/audit/check-workspace-packages.ts`
+(`ALLOWED_EDGES`, `EDGE_SUBPATHS`) les impose, y compris les sous-chemins.
 
-  @shenron/ui : aucune arête @shenron/* (presets par chemin relatif)
+```
+@shenron/config     (feuille)
+@shenron/db       → config
+@shenron/auth     → config                                ⇢ db (dev)
+@shenron/api      → config, db, auth,
+                    pipeline (./ai/prompts, ./agent-home)
+@shenron/ui       → config, koharu (./protocol, ./canvas),  ⇢ config (dev)
+                    pipeline (./koharu)
+@shenron/pipeline → config, db (./sql, ./bun-sql, ./env, ./guards),
+                    koharu (./native), media, native
+@shenron/koharu   (feuille)
+@shenron/media    (feuille)
+@shenron/native   (feuille)
 ```
 
 | De → Vers | Autorisé | Motif |
@@ -1089,12 +1098,22 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 | `db → config` | oui | env, chemins |
 | `auth → config` | oui | env, net |
 | `auth ⇢ db` | dépendance de développement seulement | tests de conformance des ports |
-| `ai → config` | oui | garde loopback, env |
-| `aphrody → config, ai, db` | oui (`db` : `./env` seulement) | façades de calcul, sondes A2A |
 | `api → config, db, auth` | oui | constantes, types des dépôts, crypto de l'hôte |
-| `api → pipeline` | oui, depuis `./chat` et `./host` seulement, vers `./ai/prompts` et `./agent-home` | doctrine des personas du moteur de chat |
-| `ui → *` | non | UI pure |
-| `ai → aphrody/db/api`, `pipeline → api`, `api/{contract,client,http,server,next} → pipeline`, `db → auth/ai/api`, `auth → db` (exécution), `auth → api`, `config → *` | **interdit** | cycle ou inversion de couches |
+| `api → pipeline` | oui, vers `./ai/prompts` et `./agent-home` seulement | doctrine des personas du moteur de chat |
+| `ui → config` | oui (et dépendance de développement) | `./admin` du studio |
+| `ui → koharu` | oui, vers `./protocol` et `./canvas` seulement | éditeur Koharu ; le transport `./native` (classe bun) reste au pipeline |
+| `ui → pipeline` | oui, vers `./koharu` seulement | export Koharu vers la chaîne Shenron |
+| `pipeline → config` | oui | env, net, services, chemins, slugs |
+| `pipeline → db` | oui, vers `./sql`, `./bun-sql`, `./env`, `./guards` (§4.2) | clients SQL des scripts et sondes ; écarts `./redis` consignés (SH-GRAPH) |
+| `pipeline → koharu` | oui, vers `./native` seulement | transport `koharu-sdk` des candidats |
+| `pipeline → media, native` | oui | OCR, manga, liaison `shenron-ffi` |
+| `koharu`, `media`, `native` | feuilles : aucune arête `@shenron/*` | clients et liaisons sans état partagé |
+| `config → *`, `db → auth/api/pipeline`, `auth → db` (exécution), `auth → api`, `pipeline → api/auth/ui`, `koharu/media/native → *`, tout paquet → `apps/*` | **interdit** | cycle ou inversion de couches |
+
+Les paquets consommateurs sont audités pour leur graphe (cibles d'`exports`, classes,
+arêtes, sous-chemins, imports vers `apps/*`, cycles) ; la conformance de manifeste, de
+`tsconfig` et du parcoureur de classes (§4.3, contrôles 2, 3 et 5) reste celle des paquets
+cadres.
 
 ### 4.2 Applications vers paquets
 
@@ -1120,13 +1139,13 @@ depuis les manifestes et depuis les imports réels, puis vérifie :
 1. cibles `exports` existantes (un joker doit correspondre à au moins un
    fichier) et classe `shenron.runtime` pour chaque entrée ;
 2. scripts `typecheck`, `lint`, `test` présents, `private: true`, ni `dist`
-   ni `main`/`module`/`files`/tsup pour les sept paquets ;
+   ni `main`/`module`/`files`/tsup pour les paquets cadres ;
 3. tsconfig étendant `../config/tsconfig/*.json`, sans `baseUrl`, `paths`,
-   `ignoreDeprecations` ni `moduleResolution` node/node10/classic ;
-4. arêtes du §4.1 et absence de cycle (dépendances, développement et pairs
-   compris) ;
-5. règles d'import du §3.0 via le parcoureur, imports à environnement vide,
-   pureté navigateur ;
+   `ignoreDeprecations` ni `moduleResolution` node/node10/classic (paquets cadres) ;
+4. arêtes et sous-chemins du §4.1 et absence de cycle (dépendances, développement et
+   pairs compris), pour les neuf paquets ;
+5. aucun import vers `apps/*` (neuf paquets) ; règles d'import du §3.0 via le
+   parcoureur, imports à environnement vide, pureté navigateur (paquets cadres) ;
 6. frontières d'applications du §4.2 ;
 7. `transpilePackages` d'`apps/site/next.config.ts` couvrant chaque paquet
    de premier rang dont dépend le site.
@@ -1134,8 +1153,8 @@ depuis les manifestes et depuis les imports réels, puis vérifie :
 Les violations préexistantes vont dans
 `scripts/audit/check-workspace-packages.baseline.json`, en deux sections :
 `transitional` (doit être vide à la fin de la Phase 1) et `phase2` (chaque
-entrée cite un ticket). Une entrée devenue caduque produit un avertissement ;
-`--strict` échoue si `transitional` n'est pas vide.
+entrée cite un ticket et s'affiche à chaque exécution). Une entrée devenue caduque
+produit un avertissement ; `--strict` échoue si `transitional` n'est pas vide.
 
 ---
 
@@ -1375,6 +1394,7 @@ recherche est local et non versionné.
 | SH-SOFTDEL | Suppression logique pour `WikiCategory`/`WikiPage` et les posts | dépend de DB-P3 |
 | P2-BXC | `@shenron/pipeline/bxc` en source seule, chemins absolus retirés | — |
 | SH-TOOLING-P3 | Scripts racine `manga:ocr:*` repointés vers `@shenron/pipeline`, builds `@aphrody/*` hors Turbo (retiré depuis) | — |
+| SH-GRAPH | Écarts révélés le 2026-10-05 par l'audit des paquets consommateurs (entrées `phase2` de la ligne de base) : classe manquante de `@shenron/pipeline/aphrody/a2a-transport` ; `@shenron/db/redis` dans `packages/pipeline/src/testing/live-rag.ts` et `test/storage-rag.live.test.ts` (hors sous-chemins du §4.2) ; imports d'`apps/bot` par `packages/pipeline/scripts/manga-spin-offs.ts` et `test/bridge-rag.live.test.ts` ; `apps/site/src/lib/bxc.ts` qui importe `@shenron/pipeline/bxc` (classe bun) | P2-BXC pour le dernier point |
 
 **`aphrody`**
 
