@@ -8,7 +8,7 @@ authors.workspace = true
 homepage.workspace = true
 repository.workspace = true
 license.workspace = true
-description = "Koharu-backed manga page analysis, translation, cleanup and PSD export for Shenron."
+description = "Shenron adapter over the Koharu library: CDN catalog, page-result mapping and OCR projection."
 
 [lints]
 workspace = true

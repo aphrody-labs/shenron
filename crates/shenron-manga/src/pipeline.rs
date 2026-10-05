@@ -225,31 +225,24 @@ impl MangaPipeline {
         ))
     }
 
-    #[cfg(not(feature = "koharu"))]
-    async fn run_image_bytes(
-        _bytes: &[u8],
-        _options: &MangaPipelineOptions,
-        _full: bool,
-    ) -> Result<MangaPageOutput, MangaPipelineError> {
-        Err(MangaPipelineError::Unavailable)
-    }
-
     #[cfg(feature = "koharu")]
-    async fn run_image_bytes(
-        bytes: &[u8],
-        options: &MangaPipelineOptions,
-        full: bool,
-    ) -> Result<MangaPageOutput, MangaPipelineError> {
-        use koharu_library::{
-            Document, Library, Operation, PipelineConfig, ProvidersConfig, Request, Stage,
-        };
-
-        let mime = match image::guess_format(bytes)? {
+    fn mime_of(bytes: &[u8]) -> Result<&'static str, MangaPipelineError> {
+        Ok(match image::guess_format(bytes)? {
             ImageFormat::Png => "image/png",
             ImageFormat::Jpeg => "image/jpeg",
             ImageFormat::WebP => "image/webp",
             other => return Err(MangaPipelineError::ImageFormat(format!("{other:?}"))),
-        };
+        })
+    }
+
+    /// Initialize Koharu with the options' (or the persisted) configuration; also returns the
+    /// configured OCR model identifier.
+    #[cfg(feature = "koharu")]
+    async fn open_library(
+        options: &MangaPipelineOptions,
+    ) -> Result<(koharu_library::Library, String), MangaPipelineError> {
+        use koharu_library::{Library, PipelineConfig, ProvidersConfig};
+
         let mut config = if let Some(config) = options.pipeline_config.clone() {
             config
         } else {
@@ -278,9 +271,89 @@ impl MangaPipeline {
             .ok_or_else(|| {
                 MangaPipelineError::Koharu("OCR model identifier is unavailable".to_owned())
             })?;
+        install_shenron_glossary(&config.translation.target_language);
         let library = Library::initialize(config, providers, options.cpu).await.map_err(|_| {
             MangaPipelineError::Koharu("native runtime initialization failed".to_owned())
         })?;
+        Ok((library, ocr_model_id))
+    }
+
+    /// Inpaint the white pixels of `mask_png` (same dimensions as the page) through Koharu's
+    /// configured inpainting model and return the cleaned page as PNG.
+    #[cfg(feature = "koharu")]
+    pub async fn inpaint_with_mask(
+        bytes: &[u8],
+        mask_png: &[u8],
+        options: &MangaPipelineOptions,
+    ) -> Result<Vec<u8>, MangaPipelineError> {
+        use koharu_library::{Document, Operation, Request, Stage, pipeline::InpaintingMask};
+
+        Self::mime_of(bytes)?;
+        let (library, _) = Self::open_library(options).await?;
+        let mut document = Document::memory()
+            .await
+            .map_err(|_| MangaPipelineError::Koharu("scene creation failed".to_owned()))?;
+        let page = document
+            .import_raster("page", bytes.to_vec())
+            .await
+            .map_err(|_| MangaPipelineError::Koharu("image import failed".to_owned()))?;
+        let request = Request {
+            operation: Operation::Only { stage: Stage::Inpainting },
+            inpainting_mask: Some(InpaintingMask { page, png: mask_png.into() }),
+            ..Request::default()
+        };
+        library.process(&mut document, request).await.map_err(|error| {
+            MangaPipelineError::Koharu(format!("stage {:?} failed ({:?})", error.stage, error.kind))
+        })?;
+        let overlay = document
+            .page_result(page)
+            .await
+            .map_err(|_| MangaPipelineError::Koharu("page result extraction failed".to_owned()))?
+            .cleanup_layer_png
+            .ok_or_else(|| {
+                MangaPipelineError::Koharu("Koharu produced no cleanup layer".to_owned())
+            })?;
+        let mut cleaned = image::load_from_memory(bytes)?.to_rgba8();
+        image::imageops::overlay(
+            &mut cleaned,
+            &image::load_from_memory(&overlay)?.to_rgba8(),
+            0,
+            0,
+        );
+        let mut cursor = std::io::Cursor::new(Vec::new());
+        DynamicImage::ImageRgba8(cleaned).write_to(&mut cursor, ImageFormat::Png)?;
+        Ok(cursor.into_inner())
+    }
+
+    /// Unavailable without the `koharu` feature.
+    #[cfg(not(feature = "koharu"))]
+    pub async fn inpaint_with_mask(
+        _bytes: &[u8],
+        _mask_png: &[u8],
+        _options: &MangaPipelineOptions,
+    ) -> Result<Vec<u8>, MangaPipelineError> {
+        Err(MangaPipelineError::Unavailable)
+    }
+
+    #[cfg(not(feature = "koharu"))]
+    async fn run_image_bytes(
+        _bytes: &[u8],
+        _options: &MangaPipelineOptions,
+        _full: bool,
+    ) -> Result<MangaPageOutput, MangaPipelineError> {
+        Err(MangaPipelineError::Unavailable)
+    }
+
+    #[cfg(feature = "koharu")]
+    async fn run_image_bytes(
+        bytes: &[u8],
+        options: &MangaPipelineOptions,
+        full: bool,
+    ) -> Result<MangaPageOutput, MangaPipelineError> {
+        use koharu_library::{Document, Operation, Request, Stage};
+
+        let mime = Self::mime_of(bytes)?;
+        let (library, ocr_model_id) = Self::open_library(options).await?;
         let mut document = Document::memory()
             .await
             .map_err(|_| MangaPipelineError::Koharu("scene creation failed".to_owned()))?;
@@ -335,6 +408,42 @@ impl MangaPipeline {
             ocr_model_id,
             pipeline_elapsed_ms,
         })
+    }
+}
+
+/// File name of Shenron's canonical lexicon (the same file `lexique-canonique.ts` reads).
+pub const LEXIQUE_FILE: &str = "data/lexique-db-canonique.json";
+
+/// Where the canonical lexicon is looked up: `SHENRON_LEXIQUE`, then `SHENRON_HOME`, then the
+/// working directory.
+#[must_use]
+pub fn lexique_path() -> Option<std::path::PathBuf> {
+    let explicit = std::env::var_os("SHENRON_LEXIQUE").map(std::path::PathBuf::from);
+    let home =
+        std::env::var_os("SHENRON_HOME").map(|home| std::path::Path::new(&home).join(LEXIQUE_FILE));
+    let local = Some(std::path::PathBuf::from(LEXIQUE_FILE));
+    explicit.into_iter().chain(home).chain(local).find(|path| path.is_file())
+}
+
+/// Protect Shenron's canonical terms during French translation: the lexicon becomes the
+/// process-wide Koharu glossary. An explicit `KOHARU_GLOSSARY` wins; no lexicon file means no
+/// glossary, as for any other Koharu build.
+#[cfg(feature = "koharu")]
+fn install_shenron_glossary(target: &koharu_library::Language) {
+    use koharu_library::translator::{GLOSSARY_ENV, Glossary, set_default_glossary};
+
+    if *target != koharu_library::Language::French || std::env::var_os(GLOSSARY_ENV).is_some() {
+        return;
+    }
+    let Some(path) = lexique_path() else { return };
+    match Glossary::from_path(&path) {
+        Ok(glossary) => {
+            tracing::info!(path = %path.display(), terms = glossary.len(), "Shenron glossary installed");
+            set_default_glossary(Some(std::sync::Arc::new(
+                glossary.for_target(koharu_library::Language::French),
+            )));
+        },
+        Err(error) => tracing::warn!(path = %path.display(), %error, "Shenron glossary ignored"),
     }
 }
 

@@ -36,7 +36,6 @@ aphrody-ocr = { workspace = true, optional = true, features = ["sqlite"] }
 aphrody-toolchains = { workspace = true }
 clap = { workspace = true }
 dirs = { workspace = true }
-image = { workspace = true }
 miette = { workspace = true }
 reqwest = { workspace = true }
 rustls = { workspace = true }

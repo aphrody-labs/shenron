@@ -1,5 +1,15 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-# Aphrody manga
+# Shenron manga
+
+Adapter only: Koharu (`koharu-library`) owns detection, OCR, translation, inpainting,
+typesetting and PSD export; this crate keeps the Shenron-specific parts (CDN catalog, page-result
+mapping, OCR v2 projection, bubble reading order). `MangaPipeline::inpaint_with_mask` runs
+Koharu's inpainting stage on a caller-supplied mask. With the `koharu` feature, French
+translation protects Shenron's canonical lexicon (`SHENRON_LEXIQUE`, then
+`$SHENRON_HOME/data/lexique-db-canonique.json`, then `./data/lexique-db-canonique.json`)
+through Koharu's glossary hook; an explicit `KOHARU_GLOSSARY` wins.
+
+## Native pipeline (inherited notes)
 
 The aphrody-manga crate owns Aphrody's manga page API, CDN transport, and
 versioned review result. With its optional koharu feature, page stages run

@@ -5,10 +5,7 @@
 
 use clap::{Subcommand, ValueEnum};
 use miette::{IntoDiagnostic, Result};
-use shenron_manga::{
-    MangaCdnClient, MangaPageResult, MangaPipeline, MangaPipelineOptions, image,
-    inpaint::{InpaintOptions, MangaInpainter, TextMask},
-};
+use shenron_manga::{MangaCdnClient, MangaPageResult, MangaPipeline, MangaPipelineOptions};
 use std::{
     io::Write,
     path::{Path, PathBuf},
@@ -52,7 +49,7 @@ pub(crate) enum MangaAction {
         #[arg(long, value_enum, default_value_t = MangaDevice::Cpu)]
         device: MangaDevice,
     },
-    /// Export Koharu's cleanup overlay, or apply a supplied mask with the local CPU inpainter.
+    /// Export Koharu's cleanup overlay, or inpaint a supplied mask through Koharu's inpainting stage.
     Inpaint {
         /// Input manga image path.
         image: PathBuf,
@@ -328,14 +325,17 @@ pub(crate) async fn run(action: MangaAction) -> Result<()> {
         },
         MangaAction::Inpaint { image, output, mask } => {
             if let Some(mask_path) = mask {
-                let img = image::open(&image).into_diagnostic()?.to_rgba8();
-                let m = image::open(mask_path).into_diagnostic()?.to_luma8();
-                let cleaned = MangaInpainter::inpaint(
-                    &img,
-                    &TextMask { mask: m },
-                    &InpaintOptions::default(),
-                );
-                cleaned.save(&output).into_diagnostic()?;
+                require_extension(&output, "png")?;
+                let bytes = std::fs::read(&image).into_diagnostic()?;
+                let mask_bytes = std::fs::read(&mask_path).into_diagnostic()?;
+                let cleaned = MangaPipeline::inpaint_with_mask(
+                    &bytes,
+                    &mask_bytes,
+                    &MangaPipelineOptions::default(),
+                )
+                .await
+                .map_err(|e| miette::miette!("Inpaint failed: {e}"))?;
+                std::fs::write(&output, cleaned).into_diagnostic()?;
             } else {
                 require_extension(&output, "png")?;
                 let bytes = std::fs::read(&image).into_diagnostic()?;
