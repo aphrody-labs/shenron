@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * @shenron/pipeline/aphrody/cli — thin wrappers over the `aphrody` binary (runtime class `bun`,
- * scripts only). Every call is a `Bun.spawn` with a timeout; the outcome is always a
- * classified {@link CliResult}, never a throw and never a fabricated success.
+ * @shenron/pipeline/aphrody/cli — thin wrappers over the `aphrody` binary (runtime class
+ * `server`: `node:child_process` through ../process). Every call has a timeout; the outcome is
+ * always a classified {@link CliResult}, never a throw and never a fabricated success.
  *
  * Commands with JSON output are wrapped (`doctor --json`, `git inspect`, and
  * the consumer clients for translation and Web); `notify` prints free text.
  */
+
+import { runProcess, which } from "../process";
 
 export const DEFAULT_APHRODY_CLI_TIMEOUT_MS = 30_000;
 
@@ -51,7 +53,7 @@ function resolveBin(bin: string | undefined): string | null {
   if (wanted.includes("/") || wanted.includes("\\")) {
     return wanted;
   }
-  return Bun.which(wanted);
+  return which(wanted);
 }
 
 /** Runs `aphrody <args>` and classifies the outcome. */
@@ -66,52 +68,18 @@ export async function runAphrodyCli<T = unknown>(
   }
   const timeoutMs = options.timeoutMs ?? DEFAULT_APHRODY_CLI_TIMEOUT_MS;
   const started = performance.now();
-  let proc: ReturnType<typeof Bun.spawn>;
-  try {
-    proc = Bun.spawn([bin, ...args], {
-      cwd: options.cwd,
-      stdin: "ignore",
-      stdout: "pipe",
-      stderr: "pipe",
-    });
-  } catch (error) {
-    return {
-      kind: "not_found",
-      bin,
-      message: error instanceof Error ? error.message : String(error),
-    };
+  const outcome = await runProcess([bin, ...args], { cwd: options.cwd, timeoutMs });
+  if (outcome.kind === "spawn-error") {
+    return { kind: "not_found", bin, message: outcome.error.message };
   }
-
-  const stdoutChunks: string[] = [];
-  const stderrChunks: string[] = [];
-  const drain = async (stream: ReadableStream<Uint8Array>, sink: string[]) => {
-    const decoder = new TextDecoder();
-    for await (const chunk of stream) sink.push(decoder.decode(chunk, { stream: true }));
-    sink.push(decoder.decode());
-  };
-  const completed = Promise.all([
-    drain(proc.stdout as ReadableStream<Uint8Array>, stdoutChunks),
-    drain(proc.stderr as ReadableStream<Uint8Array>, stderrChunks),
-    proc.exited,
-  ]).then(([, , code]) => code);
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const expired = new Promise<"timeout">((resolve) => {
-    timer = setTimeout(() => resolve("timeout"), timeoutMs);
-  });
-  const outcome = await Promise.race([completed, expired]).finally(() => clearTimeout(timer));
-  const out = (): CliOutput => ({
-    stdout: stdoutChunks.join(""),
-    stderr: stderrChunks.join(""),
+  const output: CliOutput = {
+    stdout: outcome.stdout,
+    stderr: outcome.stderr,
     durationMs: Math.round(performance.now() - started),
-  });
-  if (outcome === "timeout") {
-    killTree(proc);
-    completed.catch(() => undefined);
-    return { kind: "timeout", timeoutMs, ...out() };
-  }
-  const code = outcome;
-  if (code !== 0) return { kind: "exit", ok: false, code, ...out() };
-  const output = out();
+  };
+  if (outcome.kind === "timeout") return { kind: "timeout", timeoutMs, ...output };
+  const code = outcome.code ?? 1;
+  if (code !== 0) return { kind: "exit", ok: false, code, ...output };
   if (!options.json) return { kind: "exit", ok: true, code: 0, data: undefined, ...output };
   try {
     return { kind: "exit", ok: true, code: 0, data: JSON.parse(output.stdout) as T, ...output };
@@ -122,25 +90,6 @@ export async function runAphrodyCli<T = unknown>(
       error: error instanceof Error ? error.message : String(error),
       ...output,
     };
-  }
-}
-
-/** Kills the child and, on Windows, its descendants (a `.cmd` shim spawns a grandchild). */
-function killTree(proc: { pid: number; kill(): void }): void {
-  if (process.platform === "win32") {
-    try {
-      Bun.spawnSync(["taskkill", "/PID", String(proc.pid), "/T", "/F"], {
-        stdout: "ignore",
-        stderr: "ignore",
-      });
-    } catch {
-      // taskkill unavailable: fall back to killing the direct child.
-    }
-  }
-  try {
-    proc.kill();
-  } catch {
-    // Already exited.
   }
 }
 

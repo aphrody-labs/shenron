@@ -18,7 +18,7 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { sql } from "drizzle-orm";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
 import { hasAiHttpToken } from "@shenron/pipeline/ai/config";
 import { createShenronApiClient, type ApiResult } from "@shenron/api/client";
 import type {

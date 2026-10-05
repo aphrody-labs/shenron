@@ -3,7 +3,7 @@
  * @shenron/pipeline/aphrody — clients for the Aphrody Rust services.
  *
  * Network clients use compute, Shenron E5 embeddings and the web crawler.
- * Script adapters execute the Aphrody CLI and require Bun when invoked.
+ * Script adapters execute the Aphrody CLI through `node:child_process` (../process).
  * Importing this entry point does not load `bun:ffi`, `bun:sqlite` or `sharp`.
  * The A2A hub lives at `@shenron/pipeline/aphrody/a2a`.
  */

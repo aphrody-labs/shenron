@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
+import { runProcess, sleep, which } from "../process";
 
 export class BxcExecutionError extends Error {
   constructor(
@@ -57,7 +58,7 @@ export function resolveBxcPath(): string {
     }
   }
 
-  const aphrodyWeb = Bun.which("aphrody-web") || Bun.which("aphrody");
+  const aphrodyWeb = which("aphrody-web") || which("aphrody");
   if (aphrodyWeb) {
     return aphrodyWeb;
   }
@@ -70,15 +71,15 @@ export function resolveBxcCommand(bxcPath?: string): string[] {
   const root =
     process.env.BXC_ROOT?.trim() ||
     process.env.BXC_DIR?.trim() ||
-    resolve(import.meta.dir, "..", "..", "..", "..", "aphrody-web", "apps", "bxc");
+    resolve(import.meta.dirname, "..", "..", "..", "..", "aphrody-web", "apps", "bxc");
   const sourceEntry = join(root, "src", "cli", "index.ts");
   if (!bxcPath && existsSync(sourceEntry)) return [process.execPath, sourceEntry];
 
   const binary = bxcPath || resolveBxcPath();
   if (binary.endsWith("aphrody") || binary.endsWith("aphrody.exe")) return [binary, "web"];
   if (binary.endsWith(".mjs")) return [process.execPath, "run", binary];
-  if (binary === "bxc" && !Bun.which(binary)) {
-    const aphrodyWeb = Bun.which("aphrody-web") || Bun.which("aphrody");
+  if (binary === "bxc" && !which(binary)) {
+    const aphrodyWeb = which("aphrody-web") || which("aphrody");
     if (aphrodyWeb) {
       return aphrodyWeb.endsWith("aphrody") ? [aphrodyWeb, "web"] : [aphrodyWeb];
     }
@@ -95,7 +96,8 @@ export interface ExecBxcOptions {
 }
 
 /**
- * Exécute le CLI bxc avec Bun.spawn natif, gestion stricte des timeouts, retries et buffering stdout/stderr.
+ * Exécute le CLI bxc (`node:child_process` par ../process, classe `server`), avec timeout strict,
+ * retries et capture de stdout/stderr.
  */
 export async function execBxc(args: string[], options: ExecBxcOptions = {}): Promise<string> {
   const timeoutMs = options.timeoutMs ?? 25000;
@@ -109,7 +111,7 @@ export async function execBxc(args: string[], options: ExecBxcOptions = {}): Pro
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (attempt > 0) {
-      await Bun.sleep(retryDelayMs * Math.pow(2, attempt - 1));
+      await sleep(retryDelayMs * Math.pow(2, attempt - 1));
     }
 
     try {
@@ -134,51 +136,23 @@ export async function execBxc(args: string[], options: ExecBxcOptions = {}): Pro
         }
       }
 
-      const proc = Bun.spawn(command, {
-        stdout: "pipe",
-        stderr: "pipe",
-        env: cleanEnv,
-      });
-
-      let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        timeoutHandle = setTimeout(() => {
-          try {
-            proc.kill(9);
-          } catch {}
-          reject(
-            new BxcTimeoutError(
-              `bxc execution timed out after ${timeoutMs}ms: ${command.join(" ")}`,
-              command,
-            ),
-          );
-        }, timeoutMs);
-      });
-
-      const stdoutPromise = new Response(proc.stdout).text();
-      const stderrPromise = new Response(proc.stderr).text();
-
-      try {
-        const [exitCode, stdout, stderr] = await Promise.race([
-          Promise.all([proc.exited, stdoutPromise, stderrPromise]),
-          timeoutPromise,
-        ]);
-
-        if (timeoutHandle) clearTimeout(timeoutHandle);
-
-        if (exitCode !== 0) {
-          throw new BxcExecutionError(
-            `bxc exited with code ${exitCode}: ${stderr.trim() || stdout.trim()}`,
-            exitCode,
-            stderr,
-            command,
-          );
-        }
-
-        return stdout.trim();
-      } finally {
-        if (timeoutHandle) clearTimeout(timeoutHandle);
+      const outcome = await runProcess(command, { env: cleanEnv, timeoutMs });
+      if (outcome.kind === "spawn-error") throw outcome.error;
+      if (outcome.kind === "timeout") {
+        throw new BxcTimeoutError(
+          `bxc execution timed out after ${timeoutMs}ms: ${command.join(" ")}`,
+          command,
+        );
       }
+      if (outcome.code !== 0) {
+        throw new BxcExecutionError(
+          `bxc exited with code ${outcome.code}: ${outcome.stderr.trim() || outcome.stdout.trim()}`,
+          outcome.code,
+          outcome.stderr,
+          command,
+        );
+      }
+      return outcome.stdout.trim();
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
       // Si c'est un timeout ou une erreur 429 explicite, retenter si possible

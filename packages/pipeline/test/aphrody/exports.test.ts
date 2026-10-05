@@ -62,7 +62,8 @@ describe("@shenron/pipeline/aphrody exports", () => {
     expect(pkg.exports["./aphrody/compute"]).toBe("./src/aphrody/compute.ts");
     expect(pkg.exports["./aphrody/cli"]).toBe("./src/aphrody/cli.ts");
     expect(pkg.shenron.runtime["./aphrody"]).toBe("server");
-    expect(pkg.shenron.runtime["./aphrody/cli"]).toBe("bun");
+    // node:child_process (../process): the site's Next server reaches the CLI through bxc.
+    expect(pkg.shenron.runtime["./aphrody/cli"]).toBe("server");
   });
 
   it("a2a subpath keeps the hub API", async () => {

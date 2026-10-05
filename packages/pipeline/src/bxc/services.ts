@@ -40,6 +40,7 @@ import {
   type BxcSpawnOptions,
 } from "./types";
 import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 export class AnimesamaService {
@@ -323,9 +324,11 @@ async function readSnapshot(): Promise<{
   catalogue: CatalogueSnapshot;
   pages: Record<string, SnapshotPage[]>;
 }> {
+  const readJson = async (path: string): Promise<unknown> =>
+    JSON.parse(await readFile(snapshotPath(path), "utf8"));
   const [catalogue, pages] = await Promise.all([
-    Bun.file(snapshotPath("assets/dragonballcn/index.json")).json() as Promise<CatalogueSnapshot>,
-    Bun.file(snapshotPath("data/catalogues/dragonballcn-inventaire.json")).json() as Promise<
+    readJson("assets/dragonballcn/index.json") as Promise<CatalogueSnapshot>,
+    readJson("data/catalogues/dragonballcn-inventaire.json") as Promise<
       Record<string, SnapshotPage[]>
     >,
   ]);

@@ -1,6 +1,9 @@
 import "server-only";
-import { AphrodyComputeClient, type AphrodyRagHit } from "@shenron/pipeline/aphrody";
-import { aphrodyComputeFromChat } from "@shenron/pipeline/aphrody/compute";
+import {
+  AphrodyComputeClient,
+  aphrodyComputeFromChat,
+  type AphrodyRagHit,
+} from "@shenron/pipeline/aphrody/compute";
 import { resolveChatModel } from "@shenron/pipeline/ai/config";
 import { buildGroundingInstructions } from "@shenron/pipeline/ai/prompts";
 import { createShenronProvider } from "@shenron/pipeline/ai/provider";
