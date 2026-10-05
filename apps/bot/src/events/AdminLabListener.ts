@@ -1,5 +1,6 @@
 import { inject, injectable } from "tsyringe";
-import { Bot, Discord, On, type ArgsOf } from "discordx";
+import { NotBot } from "@aphrody/discord-kit";
+import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { DatabaseService } from "~/db/index";
 import { TrainingService } from "~/services/TrainingService";
 import { AdminReportGoalService } from "~/services/AdminReportGoalService";
@@ -29,9 +30,9 @@ export class AdminLabListener {
   ) {}
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
     if (message.channelId !== ADMIN_LAB_CHANNEL_ID) return;
-    if (message.author.bot) return;
 
     // 1. Archivage local immédiat du message
     try {

@@ -1,5 +1,6 @@
 import { injectable } from "tsyringe";
-import { Bot, Discord, On, type ArgsOf } from "discordx";
+import { createMonoGuildGuard, NotBot } from "@aphrody/discord-kit";
+import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 import { recordDiscordProfile } from "~/lib/discord-profiles";
@@ -34,11 +35,12 @@ export class DiscordProfileSyncEvent {
     }
   }
 
+  // Serveur de production seulement, membres humains seulement.
   @On({ event: "guildMemberUpdate" })
+  @Guard(createMonoGuildGuard(env.GUILD_ID), NotBot)
   onGuildMemberUpdate([, newMember]: ArgsOf<"guildMemberUpdate">) {
-    if (newMember.guild.id !== env.GUILD_ID) return;
     const user = newMember.user;
-    if (user.partial || user.bot) return;
+    if (user.partial) return;
     try {
       // Writes only when the stored username/avatar differ.
       recordDiscordProfile(user);

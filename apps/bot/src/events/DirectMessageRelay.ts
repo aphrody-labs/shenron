@@ -1,6 +1,7 @@
 import { resolveSiteUrl } from "@shenron/config/public-urls";
 import { injectable, inject } from "tsyringe";
-import { Bot, Discord, On, type ArgsOf } from "discordx";
+import { NotBot } from "@aphrody/discord-kit";
+import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
 import { dmContacts, dmMessages } from "~/db/schema";
@@ -243,8 +244,9 @@ export class DirectMessageRelay {
   }
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot)
   async onDirectMessage([message]: ArgsOf<"messageCreate">) {
-    if (message.inGuild() || message.author.bot) return;
+    if (message.inGuild()) return;
 
     const contenu = (message.content ?? "").trim();
     const texte = contenu || (message.attachments.size > 0 ? "(pièce jointe sans texte)" : "");

@@ -1,6 +1,7 @@
 import { injectable, inject } from "tsyringe";
 import { AttachmentBuilder } from "discord.js";
-import { Bot, Discord, On, type ArgsOf } from "discordx";
+import { NotBot } from "@aphrody/discord-kit";
+import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { LogService } from "~/services/LogService";
 import { logger } from "~/lib/logger";
 
@@ -13,9 +14,11 @@ const REUPLOAD_MAX_BYTES = 8 * 1024 * 1024;
 export class MessageLogEvent {
   constructor(@inject(LogService) private logs: LogService) {}
 
+  // Un message supprimé partiel n'a plus d'auteur : NotBot le laisse passer, comme avant.
   @On({ event: "messageDelete" })
+  @Guard(NotBot)
   async onDelete([message]: ArgsOf<"messageDelete">) {
-    if (!message.guild || message.author?.bot) return;
+    if (!message.guild) return;
     const embed = this.logs.makeEmbed("Message supprimé", 0xef4444).addFields(
       {
         name: "Auteur",

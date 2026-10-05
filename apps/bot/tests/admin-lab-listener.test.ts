@@ -1,5 +1,7 @@
 import "./setup-training";
 import { afterAll, describe, expect, test } from "bun:test";
+import { NotBot } from "@aphrody/discord-kit";
+import { MetadataStorage } from "discordx";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -80,13 +82,26 @@ describe("AdminLabListener — Écoute et Automatisation du Salon Lab IA", () =>
     expect(msg.getReply()).toBeNull();
   });
 
-  test("ignore les messages envoyés par des bots", async () => {
-    const msg = createMockMessage({
-      content: "!status",
-      isBot: true,
-    });
+  test("ignore les messages envoyés par des bots (garde NotBot du kit)", async () => {
+    // discordx exécute les gardes avant la méthode : l'écoute porte NotBot…
+    await MetadataStorage.instance.build();
+    const on = MetadataStorage.instance.events.find(
+      (event) => event.classRef === AdminLabListener && event.key === "onMessage",
+    );
+    expect(on?.guards.map((guard) => guard.fn)).toContain(NotBot);
 
-    await listener.onMessage([msg as any]);
+    // …qui arrête la chaîne sur un message de bot, sans réponse ni archivage.
+    const msg = createMockMessage({ content: "!status", isBot: true });
+    let reached = false;
+    await NotBot(
+      [msg],
+      null as never,
+      async () => {
+        reached = true;
+      },
+      {},
+    );
+    expect(reached).toBe(false);
     expect(msg.getReply()).toBeNull();
   });
 

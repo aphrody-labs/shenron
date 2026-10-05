@@ -1,5 +1,6 @@
 import { injectable, inject } from "tsyringe";
-import { Bot, Discord, On, type ArgsOf } from "discordx";
+import { NotBot } from "@aphrody/discord-kit";
+import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { eq } from "drizzle-orm";
 import { LevelService } from "~/services/LevelService";
 import { EconomyService } from "~/services/EconomyService";
@@ -39,8 +40,9 @@ export class MessageXPEvent {
   ) {}
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
-    if (!message.inGuild() || message.author.bot) return;
+    if (!message.inGuild()) return;
     const userId = message.author.id;
 
     // Anti-lien Discord externe — configurable via anti_invite.* (enabled / action / whitelist_url).

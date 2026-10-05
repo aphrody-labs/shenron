@@ -12,7 +12,8 @@
  */
 import { container, inject, injectable } from "tsyringe";
 import { ChannelType } from "discord.js";
-import { Bot, Discord, On, type ArgsOf } from "discordx";
+import { NotBot } from "@aphrody/discord-kit";
+import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { DatabaseService } from "~/db/index";
 import { RedisIndexerService } from "~/lib/redis-indexer";
 import { hybridSearch } from "~/lib/rag";
@@ -89,8 +90,9 @@ class BaseAutonomousChat {
     return false;
   }
 
+  /** Message humain : la garde NotBot est posée sur chaque écoute `messageCreate` ci-dessous. */
   async handleMessage(message: ArgsOf<"messageCreate">[0]) {
-    if (!message.inGuild() || message.author.bot) return;
+    if (!message.inGuild()) return;
 
     // 1. Indexation temps réel — un seul persona (celui qui a MessageContent) pour éviter les doublons.
     if (this.personaId === INDEXER_PERSONA) {
@@ -196,6 +198,7 @@ export class GrandPretreAutonomousChat extends BaseAutonomousChat {
   }
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
     await this.handleMessage(message);
   }
@@ -213,6 +216,7 @@ export class WhisAutonomousChat extends BaseAutonomousChat {
   }
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
     await this.handleMessage(message);
   }
@@ -230,6 +234,7 @@ export class BeerusAutonomousChat extends BaseAutonomousChat {
   }
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
     await this.handleMessage(message);
   }
@@ -247,6 +252,7 @@ export class ShenronAutonomousChat extends BaseAutonomousChat {
   }
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
     await this.handleMessage(message);
   }
