@@ -182,13 +182,13 @@ export function pickTools(
   ];
   if (/\b(databook|daizenshu+|chōzensh|chozensh|guide|artbook|interview|v-?jump)\b/.test(q))
     tools.push({
-      name: "dragonball.databooks_planches",
+      name: "dragonball.databooks_plates",
       args: { q: question, limit: 5 },
       kind: "databook",
     });
   if (/\b(manga|tome|chapitre|planche|case|bulle)\b/.test(q))
     tools.push({
-      name: "dragonball.manga_recherche",
+      name: "dragonball.manga_search_pages",
       args: { query: question, limit: 5 },
       kind: "manga_page",
     });

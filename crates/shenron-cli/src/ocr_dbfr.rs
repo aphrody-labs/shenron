@@ -82,8 +82,9 @@ pub(crate) enum DbfrAction {
     },
     /// Read the stored text of specific plates.
     ///
-    /// Example: shenron dbfr textes 42 --pages 12,13,14
-    Textes {
+    /// Example: shenron dbfr texts 42 --pages 12,13,14
+    #[command(alias = "textes")]
+    Texts {
         /// Databook identifier.
         id: u64,
         /// Comma-separated plate numbers. The API serves at most 40.
@@ -246,7 +247,7 @@ pub(crate) async fn run(action: DbfrAction) -> miette::Result<()> {
         DbfrAction::FetchAll { dir, include_hidden, records, output } => {
             fetch_all(&dir, include_hidden, records, &output).await
         },
-        DbfrAction::Textes { id, pages, output } => textes(id, &pages, &output).await,
+        DbfrAction::Texts { id, pages, output } => texts(id, &pages, &output).await,
         DbfrAction::Push { id, lot, apply, replace, limit, db, output } => {
             push(id, lot.as_deref(), apply, replace, limit, db.as_deref(), &output).await
         },
@@ -471,9 +472,9 @@ async fn pages(id: u64, missing: bool, output: &crate::output::OutputOpts) -> mi
     output.emit_report(&table, &json)
 }
 
-async fn textes(id: u64, pages: &str, output: &crate::output::OutputOpts) -> miette::Result<()> {
+async fn texts(id: u64, pages: &str, output: &crate::output::OutputOpts) -> miette::Result<()> {
     let json =
-        get_json(&format!("/api/databooks/{id}/textes?pages={}", urlencode(pages)), false).await?;
+        get_json(&format!("/api/databooks/{id}/texts?pages={}", urlencode(pages)), false).await?;
     let items =
         json.get("pages").and_then(serde_json::Value::as_array).cloned().unwrap_or_default();
     let mut table =

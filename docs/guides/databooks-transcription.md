@@ -169,5 +169,5 @@ bun apps/site/scripts/index-databooks-redis.ts --purge
 
 `shenron-mcp` expose `dragonball.databooks_search` (fiches sans planches),
 `dragonball.databooks_get` (fiche, planches et transcriptions, plafond
-`maxPages`) et `dragonball.databooks_planches`. Les schémas actifs se lisent par
+`maxPages`) et `dragonball.databooks_plates`. Les schémas actifs se lisent par
 `tools/list`.

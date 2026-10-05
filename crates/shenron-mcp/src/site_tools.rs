@@ -442,16 +442,17 @@ pub(crate) async fn databook_anomalies(r: IdRequest) -> CallToolResult {
     .await
 }
 
-/// Input of `dragonball.databook_relecture_ocr`.
+/// Input of `dragonball.databook_ocr_review` (and its deprecated alias
+/// `dragonball.databook_relecture_ocr`).
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
-pub(crate) struct RelectureRequest {
+pub(crate) struct OcrReviewRequest {
     #[schemars(description = "Databook id")]
     pub id: u32,
     #[schemars(description = "Plate number to re-read")]
     pub plate: u32,
 }
 
-pub(crate) async fn databook_relecture_ocr(r: RelectureRequest) -> CallToolResult {
+pub(crate) async fn databook_ocr_review(r: OcrReviewRequest) -> CallToolResult {
     if r.id == 0 || r.plate == 0 {
         return err("id and plate must be >= 1");
     }
@@ -472,8 +473,8 @@ pub(crate) async fn databook_relecture_ocr(r: RelectureRequest) -> CallToolResul
 /// The editable site configuration documents.
 #[derive(Debug, Clone, Copy, Deserialize, JsonSchema)]
 pub(crate) enum ConfigName {
-    #[serde(rename = "chronologie")]
-    Chronologie,
+    #[serde(rename = "timeline", alias = "chronologie")]
+    Timeline,
     #[serde(rename = "home")]
     Home,
     #[serde(rename = "canon")]
@@ -489,7 +490,7 @@ pub(crate) enum ConfigName {
 impl ConfigName {
     const fn path(self) -> &'static str {
         match self {
-            Self::Chronologie => "/api/timeline-config",
+            Self::Timeline => "/api/timeline-config",
             Self::Home => "/api/home-config",
             Self::Canon => "/api/canon-config",
             Self::Banner => "/api/banner-config",
@@ -503,7 +504,7 @@ impl ConfigName {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct ConfigGetRequest {
     #[schemars(
-        description = "Configuration: chronologie, home, canon, banner, theme or wiki-launch"
+        description = "Configuration: timeline (formerly chronologie, still accepted), home, canon, banner, theme or wiki-launch"
     )]
     pub name: ConfigName,
 }
@@ -516,7 +517,7 @@ pub(crate) async fn site_config_get(r: ConfigGetRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct ConfigPutRequest {
     #[schemars(
-        description = "Configuration: chronologie, home, canon, banner, theme or wiki-launch"
+        description = "Configuration: timeline (formerly chronologie, still accepted), home, canon, banner, theme or wiki-launch"
     )]
     pub name: ConfigName,
     #[schemars(description = "Patch document, in the shape returned by site_config_get")]
@@ -866,7 +867,9 @@ mod tests {
 
     #[test]
     fn config_names_map_to_real_routes() {
-        assert_eq!(ConfigName::Chronologie.path(), "/api/timeline-config");
+        assert_eq!(ConfigName::Timeline.path(), "/api/timeline-config");
+        let old: ConfigName = serde_json::from_str("\"chronologie\"").expect("old name");
+        assert_eq!(old.path(), "/api/timeline-config");
         assert_eq!(ConfigName::WikiLaunch.path(), "/api/wiki-launch");
         let parsed: ConfigName = serde_json::from_str("\"wiki-launch\"").expect("name");
         assert_eq!(parsed.path(), "/api/wiki-launch");

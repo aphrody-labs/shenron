@@ -36,7 +36,7 @@ section graphies_japonaises_prouvees` ; techniques avec lecture et premier chapi
 ## 2. Vérification vivante (facultative)
 
 Si les sources répondent : occurrences dans les databooks avec
-`dragonball_databooks_planches` ou `GET https://dragonballfr.com/api/databooks/search?q=…&limit=3`
+`dragonball_databooks_plates` ou `GET https://dragonballfr.com/api/databooks/search?q=…&limit=3`
 (l'index trigramme devient bruité sous trois signes ; un OCR isolé peut être faux),
 forme française retenue avec `dragonball_wiki_search` ou
 `https://bot.dragonballfr.com/api/public/wiki/search?q=…&limit=5` (`name`, `name_ja`).

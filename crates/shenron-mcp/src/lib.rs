@@ -35,8 +35,9 @@ const SCANLATION_TOOLS: [&str; 2] = ["dragonball.manga_scanlate", "dragonball.da
 
 /// Read tools that use a server-side credential or expose non-public data: elevated only, even
 /// though they do not write.
-const ELEVATED_READS: [&str; 4] = [
+const ELEVATED_READS: [&str; 5] = [
     "dragonball.databook_anomalies",
+    "dragonball.databook_ocr_review",
     "dragonball.databook_relecture_ocr",
     "dragonball.site_config_get",
     "dragonball.reports_list",
@@ -54,7 +55,7 @@ fn is_public(tool: &rmcp::model::Tool) -> bool {
     {
         return false;
     }
-    matches!(name, "dbfr_databooks" | "dbfr_pages" | "dbfr_textes")
+    matches!(name, "dbfr_databooks" | "dbfr_pages" | "dbfr_texts" | "dbfr_textes")
         || tool.annotations.as_ref().and_then(|annotations| annotations.read_only_hint)
             == Some(true)
 }
@@ -217,11 +218,21 @@ impl ShenronMcp {
     #[tool(
         description = "Read the stored transcription of specific plates of one databook (at most 40 per call)."
     )]
+    async fn dbfr_texts(
+        &self,
+        Parameters(req): Parameters<dbfr_tools::DatabookTextsRequest>,
+    ) -> String {
+        dbfr_tools::texts(req, !self.public).await
+    }
+
+    #[tool(
+        description = "Deprecated alias of dbfr_texts, kept for agents already configured with the old name. Read the stored transcription of specific plates of one databook (at most 40 per call)."
+    )]
     async fn dbfr_textes(
         &self,
-        Parameters(req): Parameters<dbfr_tools::DatabookTextesRequest>,
+        Parameters(req): Parameters<dbfr_tools::DatabookTextsRequest>,
     ) -> String {
-        dbfr_tools::textes(req, !self.public).await
+        dbfr_tools::texts(req, !self.public).await
     }
 
     #[tool(
@@ -409,8 +420,8 @@ impl ShenronMcp {
     }
 
     #[tool(
-        name = "dragonball.manga_tomes",
-        description = "Lists the manga volumes, or one volume's detail (with its pages) when series and tome are given. API: bot /api/public/manga/tomes.",
+        name = "dragonball.manga_volumes",
+        description = "Lists the manga volumes, or one volume's detail (with its pages) when series and volume are given. API: bot /api/public/manga/tomes.",
         annotations(
             title = "Manga volumes",
             read_only_hint = true,
@@ -419,16 +430,34 @@ impl ShenronMcp {
             open_world_hint = true
         )
     )]
+    async fn dragonball_manga_volumes(
+        &self,
+        Parameters(r): Parameters<dragonball_tools::MangaVolumesRequest>,
+    ) -> rmcp::model::CallToolResult {
+        dragonball_tools::manga_volumes(r).await
+    }
+
+    #[tool(
+        name = "dragonball.manga_tomes",
+        description = "Deprecated alias of dragonball.manga_volumes, kept for agents already configured with the old name (the tome argument is still accepted for volume).",
+        annotations(
+            title = "Manga volumes (deprecated name)",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
     async fn dragonball_manga_tomes(
         &self,
-        Parameters(r): Parameters<dragonball_tools::MangaTomesRequest>,
+        Parameters(r): Parameters<dragonball_tools::MangaVolumesRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::manga_tomes(r).await
+        dragonball_tools::manga_volumes(r).await
     }
 
     #[tool(
         name = "dragonball.manga_page",
-        description = "Metadata and image URL of one page (OCR coordinates series/tome/page). API: bot /api/public/manga/page.",
+        description = "Metadata and image URL of one page (OCR coordinates series/volume/page). API: bot /api/public/manga/page.",
         annotations(
             title = "Manga page",
             read_only_hint = true,
@@ -445,8 +474,8 @@ impl ShenronMcp {
     }
 
     #[tool(
-        name = "dragonball.manga_chapitre",
-        description = "One chapter page by page: transcription and reading URL; texteSeul (default true) omits image URLs. API: site /api/manga/chapter/{id}.",
+        name = "dragonball.manga_chapter",
+        description = "One chapter page by page: transcription and reading URL; textOnly (default true) omits image URLs. API: site /api/manga/chapter/{id}.",
         annotations(
             title = "Read a manga chapter",
             read_only_hint = true,
@@ -455,18 +484,54 @@ impl ShenronMcp {
             open_world_hint = true
         )
     )]
+    async fn dragonball_manga_chapter(
+        &self,
+        Parameters(r): Parameters<dragonball_tools::MangaChapterRequest>,
+    ) -> rmcp::model::CallToolResult {
+        dragonball_tools::manga_chapter(r, false).await
+    }
+
+    #[tool(
+        name = "dragonball.manga_chapitre",
+        description = "Deprecated alias of dragonball.manga_chapter, kept for agents already configured with the old name (textOnly is still accepted as texteSeul; the page list is also returned as planches).",
+        annotations(
+            title = "Read a manga chapter (deprecated name)",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
     async fn dragonball_manga_chapitre(
         &self,
-        Parameters(r): Parameters<dragonball_tools::MangaChapitreRequest>,
+        Parameters(r): Parameters<dragonball_tools::MangaChapterRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::manga_chapitre(r).await
+        dragonball_tools::manga_chapter(r, true).await
+    }
+
+    #[tool(
+        name = "dragonball.manga_chapter_page",
+        description = "One page of a chapter: image, OCR transcription, speech bubbles, neighbours and reading URL. API: site /api/manga/chapter/{id}/pages/{n}.",
+        annotations(
+            title = "Manga chapter page (site)",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
+    async fn dragonball_manga_chapter_page(
+        &self,
+        Parameters(r): Parameters<dragonball_tools::MangaChapterPageRequest>,
+    ) -> rmcp::model::CallToolResult {
+        dragonball_tools::manga_chapter_page(r).await
     }
 
     #[tool(
         name = "dragonball.manga_planche",
-        description = "One page of a chapter: image, OCR transcription, speech bubbles, neighbours and reading URL. API: site /api/manga/chapter/{id}/pages/{n}.",
+        description = "Deprecated alias of dragonball.manga_chapter_page, kept for agents already configured with the old name (the planche argument is still accepted for page).",
         annotations(
-            title = "Manga page (site)",
+            title = "Manga chapter page (deprecated name)",
             read_only_hint = true,
             destructive_hint = false,
             idempotent_hint = true,
@@ -475,16 +540,34 @@ impl ShenronMcp {
     )]
     async fn dragonball_manga_planche(
         &self,
-        Parameters(r): Parameters<dragonball_tools::MangaPlancheRequest>,
+        Parameters(r): Parameters<dragonball_tools::MangaChapterPageRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::manga_planche(r).await
+        dragonball_tools::manga_chapter_page(r).await
+    }
+
+    #[tool(
+        name = "dragonball.manga_search_pages",
+        description = "Searches the transcriptions and returns citable pages with their reading URL (limit <= 100). API: site /api/manga/search.",
+        annotations(
+            title = "Citable page search",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
+    async fn dragonball_manga_search_pages(
+        &self,
+        Parameters(r): Parameters<dragonball_tools::QueryLimitRequest>,
+    ) -> rmcp::model::CallToolResult {
+        dragonball_tools::manga_search_pages(r).await
     }
 
     #[tool(
         name = "dragonball.manga_recherche",
-        description = "Searches the transcriptions and returns citable pages with their reading URL (limit <= 100). API: site /api/manga/search.",
+        description = "Deprecated alias of dragonball.manga_search_pages, kept for agents already configured with the old name.",
         annotations(
-            title = "Citable page search",
+            title = "Citable page search (deprecated name)",
             read_only_hint = true,
             destructive_hint = false,
             idempotent_hint = true,
@@ -495,7 +578,7 @@ impl ShenronMcp {
         &self,
         Parameters(r): Parameters<dragonball_tools::QueryLimitRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::manga_recherche(r).await
+        dragonball_tools::manga_search_pages(r).await
     }
 
     #[tool(
@@ -517,7 +600,7 @@ impl ShenronMcp {
     }
 
     #[tool(
-        name = "dragonball.chronologie",
+        name = "dragonball.timeline",
         description = "Use this for any Dragon Ball timeline or order question: the official timeline in its editorial order (episodes, films, volumes); never rebuild it from broadcast dates. Filters era and kind. API: site /api/timeline.",
         annotations(
             title = "Official timeline",
@@ -527,11 +610,29 @@ impl ShenronMcp {
             open_world_hint = true
         )
     )]
+    async fn dragonball_timeline(
+        &self,
+        Parameters(r): Parameters<dragonball_tools::TimelineRequest>,
+    ) -> rmcp::model::CallToolResult {
+        dragonball_tools::timeline(r).await
+    }
+
+    #[tool(
+        name = "dragonball.chronologie",
+        description = "Deprecated alias of dragonball.timeline, kept for agents already configured with the old name. Use this for any Dragon Ball timeline or order question: the official timeline in its editorial order; filters era and kind.",
+        annotations(
+            title = "Official timeline (deprecated name)",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
     async fn dragonball_chronologie(
         &self,
-        Parameters(r): Parameters<dragonball_tools::ChronologieRequest>,
+        Parameters(r): Parameters<dragonball_tools::TimelineRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::chronologie(r).await
+        dragonball_tools::timeline(r).await
     }
 
     #[tool(
@@ -620,7 +721,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.databooks_search",
-        description = "Searches the work records (title, author, description) with cover and plate count; does not read plate text (see databooks_planches). Official guides, artbooks and interviews are the primary sources. API: site /api/databooks.",
+        description = "Searches the work records (title, author, description) with cover and plate count; does not read plate text (see databooks_plates). Official guides, artbooks and interviews are the primary sources. API: site /api/databooks.",
         annotations(
             title = "Databooks search",
             read_only_hint = true,
@@ -637,7 +738,7 @@ impl ShenronMcp {
     }
 
     #[tool(
-        name = "dragonball.databooks_planches",
+        name = "dragonball.databooks_plates",
         description = "Searches a phrase in the plate transcriptions and returns work, plate and an excerpt around the term. API: site /api/databooks/search.",
         annotations(
             title = "Plate text search",
@@ -647,11 +748,29 @@ impl ShenronMcp {
             open_world_hint = true
         )
     )]
+    async fn dragonball_databooks_plates(
+        &self,
+        Parameters(r): Parameters<dragonball_tools::DatabooksPlatesRequest>,
+    ) -> rmcp::model::CallToolResult {
+        dragonball_tools::databooks_plates(r).await
+    }
+
+    #[tool(
+        name = "dragonball.databooks_planches",
+        description = "Deprecated alias of dragonball.databooks_plates, kept for agents already configured with the old name (the excerpt is also returned as extrait).",
+        annotations(
+            title = "Plate text search (deprecated name)",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
     async fn dragonball_databooks_planches(
         &self,
-        Parameters(r): Parameters<dragonball_tools::DatabooksPlanchesRequest>,
+        Parameters(r): Parameters<dragonball_tools::DatabooksPlatesRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::databooks_planches(r).await
+        dragonball_tools::databooks_plates(r).await
     }
 
     #[tool(
@@ -1146,7 +1265,7 @@ impl ShenronMcp {
     }
 
     #[tool(
-        name = "dragonball.databook_relecture_ocr",
+        name = "dragonball.databook_ocr_review",
         description = "Elevated only. A second OCR reading of one plate by an engine of another family (a second opinion, never a replacement of the transcription). API: site /api/databooks/{id}/ocr-review.",
         annotations(
             title = "Second OCR reading of a plate",
@@ -1156,16 +1275,34 @@ impl ShenronMcp {
             open_world_hint = true
         )
     )]
+    async fn dragonball_databook_ocr_review(
+        &self,
+        Parameters(r): Parameters<site_tools::OcrReviewRequest>,
+    ) -> rmcp::model::CallToolResult {
+        site_tools::databook_ocr_review(r).await
+    }
+
+    #[tool(
+        name = "dragonball.databook_relecture_ocr",
+        description = "Elevated only. Deprecated alias of dragonball.databook_ocr_review, kept for agents already configured with the old name.",
+        annotations(
+            title = "Second OCR reading of a plate (deprecated name)",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
     async fn dragonball_databook_relecture_ocr(
         &self,
-        Parameters(r): Parameters<site_tools::RelectureRequest>,
+        Parameters(r): Parameters<site_tools::OcrReviewRequest>,
     ) -> rmcp::model::CallToolResult {
-        site_tools::databook_relecture_ocr(r).await
+        site_tools::databook_ocr_review(r).await
     }
 
     #[tool(
         name = "dragonball.site_config_get",
-        description = "Elevated only. Reads one site configuration document: chronologie, home, canon, banner, theme or wiki-launch. API: site /api/{name}-config (/api/wiki-launch).",
+        description = "Elevated only. Reads one site configuration document: timeline, home, canon, banner, theme or wiki-launch (chronologie is still accepted for timeline). API: site /api/{name}-config (/api/wiki-launch).",
         annotations(
             title = "Read a site configuration",
             read_only_hint = true,
@@ -1183,7 +1320,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.site_config_put",
-        description = "Elevated only. Saves a patch of one site configuration document (chronologie, home, canon, banner, theme or wiki-launch) and purges the affected pages. Read it first with site_config_get. API: site PUT /api/{name}-config (/api/wiki-launch).",
+        description = "Elevated only. Saves a patch of one site configuration document (timeline, home, canon, banner, theme or wiki-launch; chronologie is still accepted for timeline) and purges the affected pages. Read it first with site_config_get. API: site PUT /api/{name}-config (/api/wiki-launch).",
         annotations(
             title = "Write a site configuration",
             read_only_hint = false,
@@ -1450,12 +1587,13 @@ mod tests {
     ];
 
     /// Site tools reserved for elevated callers (writes, admin, credential-backed reads).
-    const SITE_ELEVATED_TOOLS: [&str; 21] = [
+    const SITE_ELEVATED_TOOLS: [&str; 22] = [
         "dragonball.databook_create",
         "dragonball.databook_update",
         "dragonball.databook_delete",
         "dragonball.databook_page_edit",
         "dragonball.databook_anomalies",
+        "dragonball.databook_ocr_review",
         "dragonball.databook_relecture_ocr",
         "dragonball.site_config_get",
         "dragonball.site_config_put",
@@ -1473,6 +1611,67 @@ mod tests {
         "dragonball.agent_wiki_contributions",
         "dragonball.agent_wiki_contribute",
     ];
+
+    /// Former French tool names, kept registered as deprecated aliases of their English
+    /// successors so agents already configured with them keep working.
+    const DEPRECATED_ALIASES: [(&str, &str); 8] = [
+        ("dbfr_textes", "dbfr_texts"),
+        ("dragonball.chronologie", "dragonball.timeline"),
+        ("dragonball.manga_tomes", "dragonball.manga_volumes"),
+        ("dragonball.manga_chapitre", "dragonball.manga_chapter"),
+        ("dragonball.manga_planche", "dragonball.manga_chapter_page"),
+        ("dragonball.manga_recherche", "dragonball.manga_search_pages"),
+        ("dragonball.databooks_planches", "dragonball.databooks_plates"),
+        ("dragonball.databook_relecture_ocr", "dragonball.databook_ocr_review"),
+    ];
+
+    #[test]
+    fn deprecated_french_tool_names_stay_registered_as_aliases() {
+        let full = ShenronMcp::all_tools();
+        let public = ShenronMcp::public_tools();
+        for (old, new) in DEPRECATED_ALIASES {
+            let old_tool = full.get(old).unwrap_or_else(|| panic!("alias missing: {old}"));
+            let new_tool = full.get(new).unwrap_or_else(|| panic!("successor missing: {new}"));
+            let description = old_tool.description.as_deref().unwrap_or_default();
+            assert!(description.contains("Deprecated alias of"), "alias not marked: {old}");
+            assert!(
+                description.contains(new.trim_start_matches("dragonball.")),
+                "alias does not name its successor: {old}"
+            );
+            let read_only =
+                |tool: &rmcp::model::Tool| tool.annotations.as_ref().and_then(|a| a.read_only_hint);
+            assert_eq!(read_only(old_tool), read_only(new_tool), "annotations differ: {old}");
+            assert_eq!(public.get(old).is_some(), public.get(new).is_some(), "tier differs: {old}");
+        }
+    }
+
+    #[test]
+    fn renamed_tool_inputs_still_accept_their_old_names() {
+        use crate::dragonball_tools::{
+            MangaChapterPageRequest, MangaChapterRequest, MangaPageRequest, MangaVolumesRequest,
+        };
+        let page: MangaChapterPageRequest =
+            serde_json::from_str(r#"{"chapterId":4,"planche":3}"#).expect("old page name");
+        assert_eq!(page.page, 3);
+        let page: MangaChapterPageRequest =
+            serde_json::from_str(r#"{"chapterId":4,"page":5}"#).expect("page");
+        assert_eq!(page.page, 5);
+        let chapter: MangaChapterRequest =
+            serde_json::from_str(r#"{"chapterId":4,"texteSeul":false}"#).expect("old flag name");
+        assert_eq!(chapter.text_only, Some(false));
+        let chapter: MangaChapterRequest =
+            serde_json::from_str(r#"{"chapterId":4,"textOnly":true}"#).expect("flag");
+        assert_eq!(chapter.text_only, Some(true));
+        let volumes: MangaVolumesRequest =
+            serde_json::from_str(r#"{"series":"DB","tome":13}"#).expect("old volume name");
+        assert!(volumes.volume.is_some());
+        let volumes: MangaVolumesRequest =
+            serde_json::from_str(r#"{"series":"DB","volume":"vol13"}"#).expect("volume");
+        assert!(volumes.volume.is_some());
+        let ocr: MangaPageRequest =
+            serde_json::from_str(r#"{"series":"DB","tome":13,"planche":7}"#).expect("old page");
+        assert_eq!(ocr.page, 7);
+    }
 
     #[test]
     fn site_tools_are_split_between_the_public_and_the_elevated_tier() {
@@ -1511,6 +1710,7 @@ mod tests {
             "dragonball.search",
             "dragonball.canon_check",
             "dragonball.canon_references",
+            "dragonball.timeline",
             "dragonball.chronologie",
         ] {
             let description =
@@ -1563,10 +1763,11 @@ mod tests {
     #[test]
     fn advertises_every_dbfr_and_dragonball_tool() {
         let router = ShenronMcp::all_tools();
-        for name in ["dbfr_databooks", "dbfr_pages", "dbfr_textes", "dbfr_deposit"] {
+        for name in ["dbfr_databooks", "dbfr_pages", "dbfr_texts", "dbfr_textes", "dbfr_deposit"] {
             assert!(router.get(name).is_some(), "dbfr tool missing: {name}");
         }
-        // The 37 tools ported from the retired Bun apps/shenron-mcp.
+        // The tools ported from the retired Bun apps/shenron-mcp, with the deprecated French
+        // names kept as aliases of their English successors.
         {
             let names = [
                 "dragonball.rag_search",
@@ -1579,11 +1780,16 @@ mod tests {
                 "dragonball.wiki_get",
                 "dragonball.wiki_categories",
                 "dragonball.manga_search",
+                "dragonball.manga_volumes",
                 "dragonball.manga_tomes",
                 "dragonball.manga_page",
+                "dragonball.manga_chapter",
                 "dragonball.manga_chapitre",
+                "dragonball.manga_chapter_page",
                 "dragonball.manga_planche",
+                "dragonball.manga_search_pages",
                 "dragonball.manga_recherche",
+                "dragonball.timeline",
                 "dragonball.chronologie",
                 "dragonball.bot_stats",
                 "dragonball.bot_personas",
@@ -1591,6 +1797,7 @@ mod tests {
                 "dragonball.bot_commands",
                 "dragonball.news",
                 "dragonball.databooks_search",
+                "dragonball.databooks_plates",
                 "dragonball.databooks_planches",
                 "dragonball.databooks_get",
                 "dragonball.canon_check",

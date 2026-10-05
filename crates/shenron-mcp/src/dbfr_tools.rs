@@ -192,9 +192,9 @@ pub(crate) async fn pages(req: DatabookPagesRequest, elevated: bool) -> String {
     .to_string()
 }
 
-/// Input schema for `dbfr_textes`.
+/// Input schema for `dbfr_texts` (and its deprecated alias `dbfr_textes`).
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
-pub(crate) struct DatabookTextesRequest {
+pub(crate) struct DatabookTextsRequest {
     /// Databook identifier.
     #[schemars(description = "Databook identifier.")]
     pub id: u64,
@@ -206,7 +206,7 @@ pub(crate) struct DatabookTextesRequest {
 }
 
 /// Read the stored text of specific plates.
-pub(crate) async fn textes(req: DatabookTextesRequest, elevated: bool) -> String {
+pub(crate) async fn texts(req: DatabookTextsRequest, elevated: bool) -> String {
     if req.pages.is_empty() {
         return error("pages must name at least one plate");
     }

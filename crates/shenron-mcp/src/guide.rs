@@ -23,7 +23,7 @@ your own memory.
 - dragonball.search and dragonball.wiki_search: find a character, place, technique, saga, film.
 - dragonball.wiki_get: the full record once you have its category and id or slug.
 - dragonball.canon_check and dragonball.canon_references: canon verdicts and evidence.
-- dragonball.chronologie: the official timeline order (never rebuild it from dates).
+- dragonball.timeline: the official timeline order (never rebuild it from dates).
 - dragonball.manga_* and dragonball.databooks_*: primary sources (manga pages, official guides).
 
 ## Writing (elevated: bearer token or allow-listed IP)

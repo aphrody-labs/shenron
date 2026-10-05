@@ -42,7 +42,7 @@ Avec le dépôt Shenron (mainteneurs), le corpus auto-hébergé est sous
 `apps/bot/assets/manga/DB/fullcolor/<arc>/t<N>/<planche>.webp` (couleur) et
 `apps/site/public/databooks/<uuid>.jpg` (databooks). Si les sources vivantes
 répondent, `dragonball_manga_search`, `dragonball_manga_page`,
-`dragonball_databooks_search` et `dragonball_databooks_planches` (ou le RAG)
+`dragonball_databooks_search` et `dragonball_databooks_plates` (ou le RAG)
 retrouvent une planche par une réplique, puisqu'ils indexent le texte des planches.
 
 ## Récupérer une image extérieure (si le réseau est disponible)

@@ -46,21 +46,26 @@ corriger l'environnement approuvé par l'opérateur.
 
 ### Outils publics
 
-Les 32 noms de base, vérifiés dans les sources le 2026-10-01 :
+Les noms de base, vérifiés dans les sources le 2026-10-05 :
 
 ```text
 dragonball.rag_search dragonball.rag_context dragonball.rag_ask
 dragonball.sources dragonball.data_coverage
 dragonball.wiki_search dragonball.wiki_list dragonball.wiki_get dragonball.wiki_categories
-dragonball.manga_search dragonball.manga_tomes dragonball.manga_page
-dragonball.manga_chapitre dragonball.manga_planche dragonball.manga_recherche
-dragonball.manga_scanlate dragonball.chronologie dragonball.databooks_search dragonball.databooks_planches
+dragonball.manga_search dragonball.manga_volumes dragonball.manga_page
+dragonball.manga_chapter dragonball.manga_chapter_page dragonball.manga_search_pages
+dragonball.manga_scanlate dragonball.timeline dragonball.databooks_search dragonball.databooks_plates
 dragonball.databooks_get dragonball.databooks_scanlate
 dragonball.canon_check dragonball.canon_references
 dragonball.bot_stats dragonball.bot_personas dragonball.bot_leaderboard
 dragonball.bot_commands dragonball.news dragonball.a2a_send
 dragonball.a2a_task_status dragonball.a2a_task_list dragonball.a2a_agent_card
 ```
+
+Anciens noms français, encore enregistrés comme alias dépréciés (même
+comportement, à ne plus utiliser) : `manga_tomes`, `manga_chapitre`,
+`manga_planche`, `manga_recherche`, `chronologie`, `databooks_planches`,
+`databook_relecture_ocr` et `dbfr_textes`.
 
 Les champs et paramètres sont définis par les schémas MCP reçus du serveur.
 Inspecte ces schémas plutôt que de supposer qu'une ancienne fiche API est à

@@ -14,7 +14,7 @@
 //! | Variable | Default | Used by |
 //! | --- | --- | --- |
 //! | `SHENRON_API_URL` | `https://bot.dragonballfr.com` | `rag_*`, `sources`, `data_coverage`, `wiki_*`, `manga_search/tomes/page`, `bot_*`, `news`, `admin_bot_*`, `admin_service*` |
-//! | `SHENRON_SITE_API_URL` | `SHENRON_SITE_URL` | `manga_chapitre/planche/recherche`, `chronologie`, `databooks_*`, `canon_*`, `a2a_*`, `admin_databooks_deposit` |
+//! | `SHENRON_SITE_API_URL` | `SHENRON_SITE_URL` | `manga_chapter/chapter_page/search_pages`, `timeline`, `databooks_*`, `canon_*`, `a2a_*`, `admin_databooks_deposit` |
 //! | `SHENRON_SITE_URL` | `https://dragonballfr.com` | absolute links in results |
 //!
 //! `SHENRON_LOCAL_RAG=1` (or `local: true`) serves `rag_*` from the local
@@ -639,23 +639,23 @@ pub(crate) async fn manga_search(r: QueryLimitRequest) -> CallToolResult {
     )
 }
 
-/// Input of `dragonball.manga_tomes`.
+/// Input of `dragonball.manga_volumes` (and its deprecated alias `dragonball.manga_tomes`).
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
-pub(crate) struct MangaTomesRequest {
+pub(crate) struct MangaVolumesRequest {
     #[schemars(
-        description = "OCR series code (e.g. 'DB') as returned by manga_tomes; omit to list everything"
+        description = "OCR series code (e.g. 'DB') as returned by manga_volumes; omit to list everything"
     )]
     #[serde(default)]
     pub series: Option<String>,
     #[schemars(description = "Volume: number (13 -> vol13) or OCR id (vol13, ch1407, t901)")]
-    #[serde(default)]
-    pub tome: Option<Tome>,
+    #[serde(default, alias = "tome")]
+    pub volume: Option<Tome>,
 }
 
-pub(crate) async fn manga_tomes(r: MangaTomesRequest) -> CallToolResult {
-    let path = match (r.series, r.tome) {
-        (Some(series), Some(tome)) => {
-            format!("/api/public/manga/tomes/{}/{}", enc(&series), enc(&manga_tome_id(&tome)))
+pub(crate) async fn manga_volumes(r: MangaVolumesRequest) -> CallToolResult {
+    let path = match (r.series, r.volume) {
+        (Some(series), Some(volume)) => {
+            format!("/api/public/manga/tomes/{}/{}", enc(&series), enc(&manga_tome_id(&volume)))
         },
         _ => "/api/public/manga/tomes".to_owned(),
     };
@@ -665,75 +665,88 @@ pub(crate) async fn manga_tomes(r: MangaTomesRequest) -> CallToolResult {
 /// Input of `dragonball.manga_page`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct MangaPageRequest {
-    #[schemars(description = "OCR series code (e.g. 'DB') as returned by manga_tomes")]
+    #[schemars(description = "OCR series code (e.g. 'DB') as returned by manga_volumes")]
     pub series: String,
     #[schemars(description = "Volume: number (13 -> vol13) or OCR id (vol13, ch1407, t901)")]
-    pub tome: Tome,
-    #[schemars(description = "Page (plate) number")]
-    pub planche: u32,
+    #[serde(alias = "tome")]
+    pub volume: Tome,
+    #[schemars(description = "Page number")]
+    #[serde(alias = "planche")]
+    pub page: u32,
 }
 
 pub(crate) async fn manga_page(r: MangaPageRequest) -> CallToolResult {
     let path = format!(
         "/api/public/manga/page/{}/{}/{}",
         enc(&r.series),
-        enc(&manga_tome_id(&r.tome)),
-        r.planche
+        enc(&manga_tome_id(&r.volume)),
+        r.page
     );
     done(api_get(&path, vec![]).await)
 }
 
-/// Input of `dragonball.manga_chapitre`.
+/// Input of `dragonball.manga_chapter` (and its deprecated alias `dragonball.manga_chapitre`).
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct MangaChapitreRequest {
+pub(crate) struct MangaChapterRequest {
     #[schemars(description = "Chapter id on the site")]
     pub chapter_id: u32,
     #[schemars(description = "Return transcriptions only (default: true)")]
-    #[serde(default)]
-    pub texte_seul: Option<bool>,
+    #[serde(default, alias = "texteSeul")]
+    pub text_only: Option<bool>,
 }
 
-pub(crate) async fn manga_chapitre(r: MangaChapitreRequest) -> CallToolResult {
+/// `legacy`: the deprecated alias also returns the page list under its old name `planches`.
+pub(crate) async fn manga_chapter(r: MangaChapterRequest, legacy: bool) -> CallToolResult {
     let chapter = match site_get(&format!("/api/manga/chapter/{}", r.chapter_id), vec![]).await {
         Ok(v) => v,
         Err(e) => return err(e),
     };
-    if r.texte_seul == Some(false) {
+    if r.text_only == Some(false) {
         return ok(chapter);
     }
     let mut chapter = chapter;
     if let Some(obj) = chapter.as_object_mut() {
-        let planches: Vec<Value> = obj
-            .get("planches")
+        // `pageList` since the English API; `planches` from a site that predates it.
+        let list = obj.get("pageList").or_else(|| obj.get("planches"));
+        let pages: Vec<Value> = list
             .and_then(Value::as_array)
             .into_iter()
             .flatten()
-            .map(|p| json!({ "index": p.get("index"), "planche": p.get("planche"), "text": p.get("text"), "api": p.get("api") }))
+            .map(|p| {
+                let page = p.get("page").or_else(|| p.get("planche"));
+                json!({ "index": p.get("index"), "page": page, "text": p.get("text"), "api": p.get("api") })
+            })
             .collect();
-        obj.insert("planches".into(), Value::Array(planches));
+        obj.remove("planches");
+        if legacy {
+            let old: Vec<Value> = pages
+                .iter()
+                .map(|p| json!({ "index": p["index"], "planche": p["page"], "text": p["text"], "api": p["api"] }))
+                .collect();
+            obj.insert("planches".into(), Value::Array(old));
+        }
+        obj.insert("pageList".into(), Value::Array(pages));
     }
     ok(chapter)
 }
 
-/// Input of `dragonball.manga_planche`.
+/// Input of `dragonball.manga_chapter_page` (and its deprecated alias `dragonball.manga_planche`).
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct MangaPlancheRequest {
-    #[schemars(description = "Chapter id sur le site")]
+pub(crate) struct MangaChapterPageRequest {
+    #[schemars(description = "Chapter id on the site")]
     pub chapter_id: u32,
     #[schemars(description = "Rank of the page within the chapter (1 = first)")]
-    pub planche: u32,
+    #[serde(alias = "planche")]
+    pub page: u32,
 }
 
-pub(crate) async fn manga_planche(r: MangaPlancheRequest) -> CallToolResult {
-    done(
-        site_get(&format!("/api/manga/chapter/{}/planche/{}", r.chapter_id, r.planche), vec![])
-            .await,
-    )
+pub(crate) async fn manga_chapter_page(r: MangaChapterPageRequest) -> CallToolResult {
+    done(site_get(&format!("/api/manga/chapter/{}/pages/{}", r.chapter_id, r.page), vec![]).await)
 }
 
-pub(crate) async fn manga_recherche(r: QueryLimitRequest) -> CallToolResult {
+pub(crate) async fn manga_search_pages(r: QueryLimitRequest) -> CallToolResult {
     done(
         site_get(
             "/api/manga/search",
@@ -750,7 +763,8 @@ pub(crate) struct MangaScanlateRequest {
     #[schemars(description = "Identifiant du chapitre")]
     pub chapter_id: u32,
     #[schemars(description = "Rank of the page within the chapter (1 = first)")]
-    pub planche: u32,
+    #[serde(alias = "planche")]
+    pub page: u32,
     #[schemars(description = "Target language for the scanlation (default: 'fr')")]
     #[serde(default)]
     pub target_lang: Option<String>,
@@ -762,11 +776,13 @@ pub(crate) async fn manga_scanlate(r: MangaScanlateRequest) -> CallToolResult {
     if let Some(target) = r.target_lang {
         options.target_language = target;
     }
-    match client.scanlate_manga_plate(r.chapter_id as u64, r.planche, &options).await {
+    match client.scanlate_manga_plate(r.chapter_id as u64, r.page, &options).await {
         Ok((res, psd_bytes, record)) => ok(json!({
             "status": "success",
             "chapterId": r.chapter_id,
-            "planche": r.planche,
+            "page": r.page,
+            // Deprecated name of `page`.
+            "planche": r.page,
             "cdnUrl": record.cdn_url,
             "existingText": record.existing_text,
             "bubblesCount": res.bubbles.len(),
@@ -779,9 +795,9 @@ pub(crate) async fn manga_scanlate(r: MangaScanlateRequest) -> CallToolResult {
     }
 }
 
-/// Input of `dragonball.chronologie`.
+/// Input of `dragonball.timeline` (and its deprecated alias `dragonball.chronologie`).
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
-pub(crate) struct ChronologieRequest {
+pub(crate) struct TimelineRequest {
     #[schemars(description = "Era to isolate (DB, DBZ, GT, Super, Daima, Manga)")]
     #[serde(default)]
     pub era: Option<String>,
@@ -790,8 +806,8 @@ pub(crate) struct ChronologieRequest {
     pub kind: Option<String>,
 }
 
-pub(crate) async fn chronologie(r: ChronologieRequest) -> CallToolResult {
-    done(site_get("/api/chronologie", vec![("era", r.era), ("kind", r.kind)]).await)
+pub(crate) async fn timeline(r: TimelineRequest) -> CallToolResult {
+    done(site_get("/api/timeline", vec![("era", r.era), ("kind", r.kind)]).await)
 }
 
 // ---------------------------------------------------------------------------
@@ -942,9 +958,9 @@ pub(crate) fn extrait_autour(texte: &str, terme: &str) -> String {
     )
 }
 
-/// Input of `dragonball.databooks_planches`.
+/// Input of `dragonball.databooks_plates` (and its deprecated alias `dragonball.databooks_planches`).
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
-pub(crate) struct DatabooksPlanchesRequest {
+pub(crate) struct DatabooksPlatesRequest {
     #[schemars(description = "Phrase to search for in the plate text")]
     pub q: String,
     #[schemars(description = "Restrict the search to a single work")]
@@ -955,7 +971,7 @@ pub(crate) struct DatabooksPlanchesRequest {
     pub limit: Option<u32>,
 }
 
-pub(crate) async fn databooks_planches(r: DatabooksPlanchesRequest) -> CallToolResult {
+pub(crate) async fn databooks_plates(r: DatabooksPlatesRequest) -> CallToolResult {
     let query = vec![
         ("q", Some(r.q.clone())),
         ("databook", s(r.databook)),
@@ -972,16 +988,18 @@ pub(crate) async fn databooks_planches(r: DatabooksPlanchesRequest) -> CallToolR
         .flatten()
         .map(|item| {
             let mut item: Map<String, Value> = item.as_object().cloned().unwrap_or_default();
-            let texte = item.remove("texte");
+            // `text` once the site speaks English; `texte` before.
+            let texte = item.remove("text").or_else(|| item.remove("texte"));
             let id = item
                 .get("databookId")
                 .map(|v| v.as_str().map_or_else(|| v.to_string(), str::to_owned))
                 .unwrap_or_default();
             item.insert("url".into(), json!(format!("/wiki/databooks/{id}")));
-            item.insert(
-                "extrait".into(),
-                json!(extrait_autour(texte.as_ref().and_then(Value::as_str).unwrap_or(""), &r.q)),
-            );
+            let excerpt =
+                extrait_autour(texte.as_ref().and_then(Value::as_str).unwrap_or(""), &r.q);
+            item.insert("excerpt".into(), json!(excerpt));
+            // Deprecated name of `excerpt`.
+            item.insert("extrait".into(), json!(excerpt));
             Value::Object(item)
         })
         .collect();

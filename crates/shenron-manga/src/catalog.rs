@@ -243,7 +243,7 @@ impl MangaCdnClient {
         #[cfg(not(target_arch = "wasm32"))]
         {
             let endpoint = format!(
-                "{}/api/manga/chapter/{}/planche/{}",
+                "{}/api/manga/chapter/{}/pages/{}",
                 self.base_url.trim_end_matches('/'),
                 chapter_id,
                 plate_number

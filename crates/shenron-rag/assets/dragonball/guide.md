@@ -26,13 +26,13 @@ faits ; la mémoire du modèle seule ne suffit pas.
 3. **Canon** : appelle `canon_check`, puis `canon_references`. Si le verdict
    indique `origine: fallback`, la doctrine n'a pas tranché. Rapporte ce statut
    et les preuves disponibles sans inventer de rang.
-4. **Manga** : utilise `manga_search`, `manga_tomes`, `manga_page`,
-   `manga_chapitre` ou `manga_planche` selon la question. Donne le tome,
+4. **Manga** : utilise `manga_search`, `manga_volumes`, `manga_page`,
+   `manga_chapter`, `manga_chapter_page` ou `manga_search_pages` selon la question. Donne le tome,
    chapitre ou numéro de planche quand l'outil le fournit.
-5. **Databook** : `databooks_search`, `databooks_planches` et `databooks_get`.
+5. **Databook** : `databooks_search`, `databooks_plates` et `databooks_get`.
    Indique le titre et le numéro de planche. Une transcription doit être
    distinguée de la vérification de l'image originale.
-6. **Ordre des événements** : `chronologie`. N'infère pas l'ordre du manga à
+6. **Ordre des événements** : `timeline`. N'infère pas l'ordre du manga à
    partir d'une chronologie d'anime ou de jeu.
 7. **État du bot et actualités** : `bot_stats`, `bot_personas`,
    `bot_leaderboard`, `bot_commands` ou `news`. Ces résultats sont datés par
