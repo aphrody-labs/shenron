@@ -2,7 +2,9 @@
 /**
  * Local APIs of the Shenron server, answered by Bun before the front app:
  *
- *   GET /api/local/health                 liveness, profile, version, capabilities
+ *   GET /api/local/health                 liveness, profile, version, capabilities and the
+ *                                         availability of each API group (`LocalHealthResponse`
+ *                                         of `@shenron/api/contract`)
  *   GET /api/local/rag/search?q=&limit=&kind=
  *                                         offline Shenron corpus (embedded canon and guide, the
  *                                         configured corpus and the local RAG store) through
@@ -13,9 +15,10 @@
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import type { LocalApiGroups, LocalHealthResponse } from "@shenron/api/contract";
 import { SHENRON_FFI_FILE, shenronLoad, shenronLocalSearch } from "@shenron/native/shenron";
 
-import type { ServerPaths } from "./config";
+import { profileOf, type ServerPaths } from "./config";
 
 const VERSION = "1.0.0";
 
@@ -45,9 +48,16 @@ const withoutNul = (text: string) => text.replaceAll("\0", "");
 
 export type LocalApi = (request: Request, url: URL, ready: boolean) => Promise<Response | null>;
 
+/** Facts of the running server added to the health answer. */
+export interface LocalFacts {
+  site?: boolean;
+  buildId?: string;
+  groups: LocalApiGroups;
+}
+
 export function localApi(
   paths: ServerPaths,
-  facts: () => Record<string, unknown>,
+  facts: () => LocalFacts,
   env: NodeJS.ProcessEnv = process.env,
   native: LocalNative = NATIVE,
 ): LocalApi {
@@ -77,19 +87,17 @@ export function localApi(
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (url.pathname === "/api/local/health") {
       const localRag = load();
-      return Response.json(
-        {
-          ok: ready,
-          service: "shenron-server",
-          version: VERSION,
-          profile: env.SHENRON_PROFILE ?? "public",
-          home: paths.home,
-          localRag,
-          localRagError: localRag ? undefined : nativeError,
-          ...facts(),
-        },
-        { status: ready ? 200 : 503, headers },
-      );
+      const body: LocalHealthResponse = {
+        ok: ready,
+        service: "shenron-server",
+        version: VERSION,
+        profile: profileOf(env),
+        home: paths.home,
+        localRag,
+        ...(localRag || nativeError === null ? {} : { localRagError: nativeError }),
+        ...facts(),
+      };
+      return Response.json(body, { status: ready ? 200 : 503, headers });
     }
     if (url.pathname === "/api/local/rag/search") {
       const query = url.searchParams.get("q")?.trim() ?? "";

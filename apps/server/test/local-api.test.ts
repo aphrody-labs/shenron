@@ -3,10 +3,12 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { LocalHealthResponse } from "@shenron/api/contract";
 import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
 
+import { unavailableGroups } from "../src/backend";
 import type { ServerPaths } from "../src/config";
-import { localApi, type LocalNative } from "../src/local-api";
+import { type LocalFacts, localApi, type LocalNative } from "../src/local-api";
 
 const root = mkdtempSync(join(tmpdir(), "shenron-local-api-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
@@ -66,17 +68,20 @@ async function read(response: Response | null): Promise<Record<string, unknown>>
   return (await response!.json()) as Record<string, unknown>;
 }
 
+const GROUPS = unavailableGroups("API locale indisponible");
+const NO_FACTS = (): LocalFacts => ({ groups: GROUPS });
+
 const NOT_INSTALLED = "shenron-ffi native library not installed beside the server";
 
 describe("local API routing", () => {
   test("paths outside /api/local/ are left to the front app", async () => {
-    const api = localApi(serverPaths(), () => ({}), {}, fakeNative());
+    const api = localApi(serverPaths(), NO_FACTS, {}, fakeNative());
     expect(await call(api, "/api/public/wiki/categories")).toBeNull();
     expect(await call(api, "/api/local")).toBeNull();
   });
 
   test("OPTIONS → 204 with CORS and no-store; unknown → 404", async () => {
-    const api = localApi(serverPaths(), () => ({}), {}, fakeNative());
+    const api = localApi(serverPaths(), NO_FACTS, {}, fakeNative());
     const options = (await call(api, "/api/local/rag/search", { method: "OPTIONS" }))!;
     expect(options.status).toBe(204);
     expect(options.headers.get("access-control-allow-origin")).toBe("*");
@@ -91,7 +96,7 @@ describe("/api/local/health", () => {
   test("without a library: localRag false with the reason; 503 until the site is ready", async () => {
     const paths = serverPaths();
     const native = fakeNative();
-    const api = localApi(paths, () => ({ site: true, buildId: "b1" }), {}, native);
+    const api = localApi(paths, () => ({ site: true, buildId: "b1", groups: GROUPS }), {}, native);
     const starting = (await call(api, "/api/local/health", undefined, false))!;
     expect(starting.status).toBe(503);
     const body = await read(starting);
@@ -105,7 +110,9 @@ describe("/api/local/health", () => {
       localRagError: NOT_INSTALLED,
       site: true,
       buildId: "b1",
+      groups: GROUPS,
     });
+    expect(LocalHealthResponse.parse(body)).toEqual(body as LocalHealthResponse);
     const ready = (await call(api, "/api/local/health"))!;
     expect(ready.status).toBe(200);
     expect((await read(ready)).ok).toBe(true);
@@ -116,7 +123,7 @@ describe("/api/local/health", () => {
     const paths = serverPaths();
     const lib = libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));
     const native = fakeNative();
-    const api = localApi(paths, () => ({}), { SHENRON_PROFILE: "desktop" }, native);
+    const api = localApi(paths, NO_FACTS, { SHENRON_PROFILE: "desktop" }, native);
     for (let i = 0; i < 3; i++) {
       const body = await read(await call(api, "/api/local/health"));
       expect(body.localRag).toBe(true);
@@ -134,7 +141,7 @@ describe("/api/local/health", () => {
         throw new Error("Shenron ABI mismatch at x: expected 1, found 2");
       },
     });
-    const api = localApi(paths, () => ({}), {}, native);
+    const api = localApi(paths, NO_FACTS, {}, native);
     const body = await read(await call(api, "/api/local/health"));
     expect(body.localRag).toBe(false);
     expect(body.localRagError).toBe("Error: Shenron ABI mismatch at x: expected 1, found 2");
@@ -153,7 +160,7 @@ describe("library location", () => {
     libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));
     const override = libraryAt(join(root, "payload", "native", SHENRON_FFI_FILE));
     const native = fakeNative();
-    const api = localApi(paths, () => ({}), { SHENRON_FFI_LIB: `  ${override} ` }, native);
+    const api = localApi(paths, NO_FACTS, { SHENRON_FFI_LIB: `  ${override} ` }, native);
     await call(api, "/api/local/health");
     expect(native.loads).toEqual([override]);
   });
@@ -163,16 +170,10 @@ describe("library location", () => {
     const nested = libraryAt(join(paths.exeDir, "native", SHENRON_FFI_FILE));
     const native = fakeNative();
     const env = { SHENRON_FFI_LIB: join(root, "absent", SHENRON_FFI_FILE) };
-    await call(
-      localApi(paths, () => ({}), env, native),
-      "/api/local/health",
-    );
+    await call(localApi(paths, NO_FACTS, env, native), "/api/local/health");
     expect(native.loads).toEqual([nested]);
     const beside = libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));
-    await call(
-      localApi(paths, () => ({}), env, native),
-      "/api/local/health",
-    );
+    await call(localApi(paths, NO_FACTS, env, native), "/api/local/health");
     expect(native.loads).toEqual([nested, beside]);
   });
 });
@@ -180,7 +181,7 @@ describe("library location", () => {
 describe("/api/local/rag/search", () => {
   test("q must hold 1 to 600 characters", async () => {
     const native = fakeNative();
-    const api = localApi(serverPaths(), () => ({}), {}, native);
+    const api = localApi(serverPaths(), NO_FACTS, {}, native);
     for (const query of ["", "?q=", "?q=%20%20", `?q=${"a".repeat(601)}`]) {
       const res = (await call(api, `/api/local/rag/search${query}`))!;
       expect(res.status).toBe(400);
@@ -190,7 +191,7 @@ describe("/api/local/rag/search", () => {
   });
 
   test("without a library → 503 with the reason", async () => {
-    const api = localApi(serverPaths(), () => ({}), {}, fakeNative());
+    const api = localApi(serverPaths(), NO_FACTS, {}, fakeNative());
     const res = (await call(api, "/api/local/rag/search?q=Goku"))!;
     expect(res.status).toBe(503);
     expect(await res.json()).toEqual({ error: NOT_INSTALLED });
@@ -202,7 +203,7 @@ describe("/api/local/rag/search", () => {
     const native = fakeNative({
       search: (query) => ({ q: query, mode: "aphrody_local_naive", results: [{ title: "Goku" }] }),
     });
-    const api = localApi(paths, () => ({}), {}, native);
+    const api = localApi(paths, NO_FACTS, {}, native);
     const res = (await call(api, "/api/local/rag/search?q=%20Go%00ku%20&kind=wi%00ki"))!;
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
@@ -237,7 +238,7 @@ describe("/api/local/rag/search", () => {
       },
     });
     const res = (await call(
-      localApi(paths, () => ({}), {}, native),
+      localApi(paths, NO_FACTS, {}, native),
       "/api/local/rag/search?q=Goku",
     ))!;
     expect(res.status).toBe(500);
@@ -249,7 +250,7 @@ describe("default binding: @shenron/native", () => {
   test("an invalid library file is reported by the shared loader", async () => {
     const paths = serverPaths();
     const junk = libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));
-    const api = localApi(paths, () => ({}), {});
+    const api = localApi(paths, NO_FACTS, {});
     const body = await read(await call(api, "/api/local/health"));
     expect(body.localRag).toBe(false);
     expect(body.localRagError).toContain(`Unable to load shenron-ffi at ${junk}`);
@@ -260,7 +261,7 @@ describe("default binding: @shenron/native", () => {
     .map((profile) => join(import.meta.dir, "../../../target", profile, SHENRON_FFI_FILE))
     .find((path) => existsSync(path));
   test.if(built !== undefined)("the built library answers the local search", async () => {
-    const api = localApi(serverPaths(), () => ({}), { SHENRON_FFI_LIB: built });
+    const api = localApi(serverPaths(), NO_FACTS, { SHENRON_FFI_LIB: built });
     const health = await read(await call(api, "/api/local/health"));
     expect(health.localRag).toBe(true);
     const res = (await call(api, "/api/local/rag/search?q=Goku&limit=2"))!;

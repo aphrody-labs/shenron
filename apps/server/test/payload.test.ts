@@ -12,7 +12,8 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { extract, pack } from "../src/payload";
+import { extract, pack, publicVfsProblems } from "../src/payload";
+import { writeTestVfs } from "./support";
 
 const root = mkdtempSync(join(tmpdir(), "shenron-payload-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
@@ -82,5 +83,33 @@ describe("payload", () => {
     const cache = join(root, "cache-unsafe");
     await expect(extract(file, cache)).rejects.toThrow("unsafe payload path");
     expect(existsSync(join(root, "evil"))).toBe(false);
+  });
+});
+
+describe("public VFS guard", () => {
+  test("a public build passes", () => {
+    expect(publicVfsProblems(writeTestVfs(join(root, "vfs", "public.sqlite")))).toEqual([]);
+  });
+
+  test("a complet build, private rows, conversations and embedded nodes are refused", () => {
+    const file = writeTestVfs(join(root, "vfs", "complet.sqlite"), {
+      profile: "complet",
+      private: true,
+      conversations: true,
+      embedded: true,
+    });
+    expect(publicVfsProblems(file)).toEqual([
+      "VFS profile is complet, not public",
+      "1 private VFS nodes",
+      "1 private RAG documents",
+      "1 conversation documents",
+      "1 embedded nodes (rebuild the VFS without --embed-assets)",
+    ]);
+  });
+
+  test("a file that is not a VFS is refused", () => {
+    const file = join(root, "vfs", "junk.sqlite");
+    writeFileSync(file, "junk");
+    expect(publicVfsProblems(file)[0]).toStartWith("not a Shenron VFS");
   });
 });

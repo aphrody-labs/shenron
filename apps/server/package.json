@@ -2,7 +2,7 @@
   "name": "@shenron/server",
   "version": "1.0.0",
   "private": true,
-  "description": "shenron-server: the Shenron front app (Next 16 standalone) and local APIs in one autonomous Bun binary.",
+  "description": "shenron-server: the Shenron front app (Next 16 standalone), the Shenron API and the local APIs in one autonomous Bun binary.",
   "license": "Apache-2.0",
   "bin": {
     "shenron-server": "./src/cli.ts"
@@ -16,9 +16,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@shenron/api": "workspace:*",
     "@shenron/native": "workspace:*"
   },
   "devDependencies": {
+    "@shenron/db": "workspace:*",
     "@types/bun": "catalog:",
     "typescript": "catalog:",
     "undici-types": "~8.9.0"

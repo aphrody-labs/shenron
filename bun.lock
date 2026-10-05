@@ -59,9 +59,11 @@
         "shenron-server": "./src/cli.ts",
       },
       "dependencies": {
+        "@shenron/api": "workspace:*",
         "@shenron/native": "workspace:*",
       },
       "devDependencies": {
+        "@shenron/db": "workspace:*",
         "@types/bun": "catalog:",
         "typescript": "catalog:",
         "undici-types": "~8.9.0",

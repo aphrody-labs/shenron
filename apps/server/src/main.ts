@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `shenron-server`: the Shenron front app (site, Koharu editor, studio, administration) and
- * the local APIs in one autonomous binary.
+ * `shenron-server`: the Shenron front app (site, Koharu editor, studio, administration), the
+ * Shenron API (wiki, RAG, chat, conversations, VFS, OCR, MCP) and the local APIs in one
+ * autonomous binary.
  *
  *   shenron-server [serve] [--port N] [--host H]   serve the front app (default)
  *   shenron-server serve all                       front app + the sibling shenron-bot binary
@@ -34,8 +35,10 @@ Usage:
   shenron-server version
 
 Environnement : SHENRON_HOME, SHENRON_PROFILE (production|desktop|public), SHENRON_ENV_FILE,
-PORT, HOSTNAME, SHENRON_SITE_DIR. Le processus l'emporte sur config/shenron.env, puis sur les
-valeurs publiques par défaut (dragonballfr.com).`;
+PORT, HOSTNAME, SHENRON_SITE_DIR ; API : SHENRON_VFS_DB, SHENRON_CHAT_BACKENDS et
+APHRODY_AI_CHAT_BASE_URL (modèle local), SHENRON_MCP_URL ou SHENRON_MCP_BIN, APHRODY_BIN (OCR).
+Le processus l'emporte sur config/shenron.env, puis sur les valeurs publiques par défaut
+(dragonballfr.com). GET /api/local/health dit quels groupes de l'API répondent.`;
 
 function option(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -89,8 +92,10 @@ export async function main(
     process.exit(64);
   }
   ensureDirectories(paths);
+  let payloadDir: string | undefined;
   if (options.embeddedPayload && !process.env.SHENRON_SITE_DIR) {
     const payload = await extract(options.embeddedPayload, paths.cache);
+    payloadDir = payload.dir;
     process.env.SHENRON_SITE_DIR = join(payload.dir, "site");
     if (!process.env.SHENRON_FFI_LIB) {
       const lib = join(payload.dir, "native", SHENRON_FFI_FILE);
@@ -107,7 +112,7 @@ export async function main(
   }
   const port = Number(option(rest, "--port") ?? process.env.PORT ?? 3000);
   const hostname = option(rest, "--host") ?? process.env.HOSTNAME ?? "127.0.0.1";
-  const site = await serveSite(paths, { hostname, port, startedAt });
+  const site = await serveSite(paths, { hostname, port, startedAt, payloadDir });
   let bot: ReturnType<typeof Bun.spawn> | undefined;
   if (rest[0] === "all") {
     const name = process.platform === "win32" ? "shenron-bot.exe" : "shenron-bot";

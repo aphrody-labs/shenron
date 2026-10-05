@@ -2,15 +2,19 @@
 /**
  * The Shenron front app (Next 16 standalone output) behind a Bun front server.
  *
- * Bun serves the immutable assets (`/_next/static`, `public/`) straight from disk, answers the
- * local APIs (`/api/local/*`), and proxies every other request to the Next server it starts
- * in-process on a loopback port. In production an external nginx CDN may serve the same
- * asset tree (see scripts/build/server.ts --cdn); the binary works with or without it.
+ * Bun answers the local APIs (`/api/local/*`) and the Shenron API (`/api/v1/*`, VFS-backed
+ * `/api/public/*`, chat WebSocket, MCP proxy: ./backend.ts), serves the immutable assets
+ * (`/_next/static`, `public/`) straight from disk, and proxies every other request to the Next
+ * server it starts on a loopback port (routing order: ./front.ts). In production an external
+ * nginx CDN may serve the same asset tree (see scripts/build/server.ts); the binary works with
+ * or without it.
  */
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, normalize, resolve, sep } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 
+import { startBackend } from "./backend";
 import type { ServerPaths } from "./config";
+import { freePort, serveFront } from "./front";
 import { localApi } from "./local-api";
 
 export interface SiteLayout {
@@ -53,33 +57,6 @@ export function locateSite(paths: ServerPaths, env: NodeJS.ProcessEnv = process.
   );
 }
 
-/** Resolve `pathname` under `base`, refusing traversal. */
-function inside(base: string, pathname: string): string | null {
-  const decoded = decodeURIComponent(pathname);
-  if (decoded.includes("\0")) return null;
-  const target = normalize(join(base, decoded));
-  return target === base || target.startsWith(base + sep) ? target : null;
-}
-
-async function staticAsset(layout: SiteLayout, pathname: string): Promise<Response | null> {
-  if (pathname.startsWith("/_next/static/")) {
-    const file = inside(join(layout.dist, "static"), pathname.slice("/_next/static".length));
-    if (file && existsSync(file) && statSync(file).isFile()) {
-      return new Response(Bun.file(file), {
-        headers: { "cache-control": "public, max-age=31536000, immutable" },
-      });
-    }
-    return null;
-  }
-  if (pathname === "/" || pathname.startsWith("/api/") || pathname.startsWith("/_next/"))
-    return null;
-  const file = inside(layout.publicDir, pathname);
-  if (file && existsSync(file) && statSync(file).isFile()) {
-    return new Response(Bun.file(file), { headers: { "cache-control": "public, max-age=86400" } });
-  }
-  return null;
-}
-
 /** Whether this process is a `bun build --compile` executable (virtual module root). */
 const COMPILED =
   import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/.test(import.meta.path);
@@ -89,11 +66,16 @@ const COMPILED =
  * executable with BUN_BE_BUN=1 when compiled (a compiled binary does not resolve the payload's
  * node_modules for modules it imports), else the current `bun`.
  */
-async function startNext(layout: SiteLayout, port: number): Promise<ReturnType<typeof Bun.spawn>> {
+async function startNext(
+  layout: SiteLayout,
+  port: number,
+  extraEnv: Record<string, string>,
+): Promise<ReturnType<typeof Bun.spawn>> {
   const child = Bun.spawn([process.execPath, join(layout.app, "server.js")], {
     cwd: layout.app,
     env: {
       ...process.env,
+      ...extraEnv,
       ...(COMPILED ? { BUN_BE_BUN: "1" } : {}),
       PORT: String(port),
       HOSTNAME: "127.0.0.1",
@@ -117,22 +99,6 @@ async function startNext(layout: SiteLayout, port: number): Promise<ReturnType<t
   throw new Error("Next standalone server did not start within 120 s");
 }
 
-function freePort(): number {
-  const probe = Bun.serve({ port: 0, hostname: "127.0.0.1", fetch: () => new Response(null) });
-  const port = probe.port ?? 0;
-  void probe.stop(true);
-  if (!port) throw new Error("no free loopback port");
-  return port;
-}
-
-const HOP_BY_HOP = new Set([
-  "connection",
-  "keep-alive",
-  "transfer-encoding",
-  "upgrade",
-  "proxy-connection",
-]);
-
 export interface RunningSite {
   url: string;
   port: number;
@@ -143,55 +109,43 @@ export interface RunningSite {
 /** Serve the front app on `hostname:port` (port 0 picks a free one). */
 export async function serveSite(
   paths: ServerPaths,
-  options: { hostname: string; port: number; startedAt: number },
+  options: { hostname: string; port: number; startedAt: number; payloadDir?: string },
 ): Promise<RunningSite> {
   const layout = locateSite(paths);
   const nextPort = freePort();
-  const api = localApi(paths, () => ({ site: true, buildId: layout.buildId }));
+  const backend = await startBackend(paths, process.env, { payloadDir: options.payloadDir });
+  const api = localApi(paths, () => ({
+    site: true,
+    buildId: layout.buildId,
+    groups: backend.groups(),
+  }));
   let ready = false;
-  const front = Bun.serve({
+  const front = serveFront({
     hostname: options.hostname,
     port: options.port,
-    // Explicit: Bun derives the default from NODE_ENV, which only the Next child sets.
-    development: false,
-    idleTimeout: 120,
-    async fetch(request) {
-      const url = new URL(request.url);
-      const local = await api(request, url, ready);
-      if (local) return local;
-      const asset = await staticAsset(layout, url.pathname);
-      if (asset) return asset;
-      if (!ready)
-        return new Response("Shenron démarre…", { status: 503, headers: { "retry-after": "1" } });
-      const headers = new Headers(request.headers);
-      for (const name of HOP_BY_HOP) headers.delete(name);
-      headers.set("x-forwarded-host", url.host);
-      headers.set("x-forwarded-proto", url.protocol.replace(":", ""));
-      const upstream = await fetch(`http://127.0.0.1:${nextPort}${url.pathname}${url.search}`, {
-        method: request.method,
-        headers,
-        body: request.method === "GET" || request.method === "HEAD" ? undefined : request.body,
-        redirect: "manual",
-        // Forward the encoded bytes untouched: the content-encoding header stays truthful.
-        decompress: false,
-      });
-      const responseHeaders = new Headers(upstream.headers);
-      for (const name of HOP_BY_HOP) responseHeaders.delete(name);
-      return new Response(upstream.body, {
-        status: upstream.status,
-        statusText: upstream.statusText,
-        headers: responseHeaders,
-      });
-    },
+    layout,
+    local: api,
+    host: backend.host,
+    nextPort,
+    ready: () => ready,
   });
-  const next = await startNext(layout, nextPort);
+  let next: ReturnType<typeof Bun.spawn>;
+  try {
+    next = await startNext(layout, nextPort, backend.nextEnv);
+  } catch (error) {
+    void front.stop(true);
+    await backend.stop();
+    throw error;
+  }
   ready = true;
   const url = `http://${options.hostname === "0.0.0.0" ? "127.0.0.1" : options.hostname}:${front.port}`;
+  const groups = backend.groups();
   console.error(
     JSON.stringify({
       event: "shenron.site.ready",
       url,
       buildId: layout.buildId,
+      groups: Object.keys(groups).filter((name) => groups[name as keyof typeof groups].available),
       startupMs: Math.round(performance.now() - options.startedAt),
     }),
   );
@@ -202,6 +156,7 @@ export async function serveSite(
     stop: () => {
       next.kill();
       void front.stop(true);
+      void backend.stop();
     },
   };
 }

@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Self-contained payload of the server binary: the front app build, its public assets and
- * the native library, packed into one zstd archive embedded in the executable and extracted
- * once per version into the cache directory.
+ * Self-contained payload of the server binary: the front app build, its public assets, the
+ * native library, the public VFS (`vfs/shenron-vfs.sqlite`) and the public agent home template
+ * (`home/`), packed into one zstd archive embedded in the executable and extracted once per
+ * version into the cache directory.
  *
  * Format (before zstd): "SHENRONPAK1\n", u32 LE manifest length, manifest JSON
  * `{ entries: [{ path, size, mode }] }`, then the file bytes in manifest order.
  */
+import { Database } from "bun:sqlite";
 import {
   chmodSync,
   existsSync,
@@ -105,4 +107,44 @@ export async function extract(
   rmSync(dir, { recursive: true, force: true });
   renameSync(temporary, dir);
   return { dir, extracted: true, ms: Math.round(performance.now() - started) };
+}
+
+/**
+ * Why a VFS database may not ship in a public payload (empty when it may): only a `public`
+ * build (scripts/data/build-vfs.ts --profile public), without private nodes or passages, without
+ * the conversations corpus, and without nodes whose bytes live outside the database.
+ */
+export function publicVfsProblems(path: string): string[] {
+  const problems: string[] = [];
+  let db: Database;
+  try {
+    db = new Database(path, { readonly: true });
+  } catch (error) {
+    return [`unreadable VFS: ${String(error)}`];
+  }
+  try {
+    const count = (sql: string) => (db.query(sql).get() as { n: number }).n;
+    const profile = (
+      db.query("SELECT value FROM vfs_meta WHERE key = 'profile'").get() as { value: string } | null
+    )?.value;
+    if (profile !== "public") problems.push(`VFS profile is ${profile ?? "unset"}, not public`);
+    const privateNodes = count("SELECT COUNT(*) AS n FROM vfs_nodes WHERE visibility <> 'public'");
+    if (privateNodes) problems.push(`${privateNodes} private VFS nodes`);
+    const privateDocs = count(
+      "SELECT COUNT(*) AS n FROM rag_doc_attrs WHERE visibility <> 'public'",
+    );
+    if (privateDocs) problems.push(`${privateDocs} private RAG documents`);
+    const conversations = count(
+      "SELECT COUNT(*) AS n FROM rag_doc_attrs WHERE corpus = 'conversations'",
+    );
+    if (conversations) problems.push(`${conversations} conversation documents`);
+    const embedded = count("SELECT COUNT(*) AS n FROM vfs_nodes WHERE storage = 'embedded'");
+    if (embedded)
+      problems.push(`${embedded} embedded nodes (rebuild the VFS without --embed-assets)`);
+  } catch (error) {
+    problems.push(`not a Shenron VFS: ${String(error)}`);
+  } finally {
+    db.close();
+  }
+  return problems;
 }
