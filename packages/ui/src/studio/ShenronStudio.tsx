@@ -4,10 +4,10 @@
 // service health and RAG corpus, the offline databooks corpus, training, administration.
 import { useCallback, useEffect, useState } from "react";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "../components/tabs";
+import { PageHeader } from "../layout/PageHeader";
 import { SectionHeading } from "../layout/SectionHeading";
 import { AdminStudio } from "./AdminStudio";
 import { DatabooksStudio } from "./DatabooksStudio";
-import { StudioHeader } from "./StudioHeader";
 import {
   DesktopOnly,
   ErrorNote,
@@ -217,8 +217,9 @@ export function ShenronStudio() {
 
   return (
     <div className="flex flex-col gap-6">
-      <StudioHeader
-        level={1}
+      <PageHeader
+        className=""
+        size="md"
         eyebrow="Shenron"
         title="Studio"
         subtitle={

@@ -1,13 +1,35 @@
 // SPDX-License-Identifier: Apache-2.0
 // Databooks & corpus: offline search of the Shenron corpus (shenron_rag::dragonball::LocalCorpus,
 // `studio_corpus_*` in crates/shenron-studio/src/studio.rs) and grounded answers from the
-// desktop's local chat model when one is ready.
+// desktop's local chat model when one is ready, or from the public Shenron chat of
+// dragonballfr.com (`shenron_chat`, crates/shenron-studio/src/shenron.rs).
 import { useEffect, useState } from "react";
 import { SectionHeading } from "../layout/SectionHeading";
 import { StudioHeader } from "./StudioHeader";
 import { DesktopOnly, ErrorNote, fieldClass, panelClass, primaryButtonClass } from "./StudioKit";
-import { isTauri } from "./tauri-bridge";
+import { askShenron, isTauri, type ShenronChatResponse } from "./tauri-bridge";
 import { corpus, type CorpusHit } from "./studio-bridge";
+
+/** Where a sourced answer comes from. */
+const SOURCES = [
+  ["local", "Corpus local"],
+  ["site", "dragonballfr.com (en ligne)"],
+] as const;
+type AnswerSource = (typeof SOURCES)[number][0];
+
+/** The public chat cites site pages; they read as corpus hits. */
+function siteHits(hits: ShenronChatResponse["hits"]): CorpusHit[] {
+  return hits.map((hit) => ({
+    rowid: hit.source_id ?? hit.url,
+    kind: hit.kind,
+    title: hit.title,
+    url: hit.url,
+    snippet: hit.snippet,
+    score: hit.score,
+    lang: "fr",
+    originSourceId: hit.source_id ?? "",
+  }));
+}
 
 const KINDS: Array<[string, string]> = [
   ["", "Tout"],
@@ -40,6 +62,7 @@ export function DatabooksStudio() {
   const [kind, setKind] = useState("databook");
   const [hits, setHits] = useState<CorpusHit[]>([]);
   const [question, setQuestion] = useState("");
+  const [source, setSource] = useState<AnswerSource>("local");
   const [answer, setAnswer] = useState<{ text: string; model?: string; hits: CorpusHit[] } | null>(
     null,
   );
@@ -80,6 +103,15 @@ export function DatabooksStudio() {
 
   const ask = () =>
     guard(async () => {
+      if (source === "site") {
+        const response = await askShenron(question.trim());
+        setAnswer({
+          text: response.answer || "(réponse vide)",
+          model: `dragonballfr.com · ${response.mode}`,
+          hits: siteHits(response.hits),
+        });
+        return;
+      }
       const response = await corpus.ask(question.trim());
       setAnswer({
         text: typeof response.answer === "string" ? response.answer : "(réponse vide)",
@@ -140,7 +172,7 @@ export function DatabooksStudio() {
         <SectionHeading
           level={3}
           title="Question sourcée"
-          standfirst="Réponse du modèle local à partir des passages du corpus"
+          standfirst="Réponse du modèle local à partir des passages du corpus, ou de Shenron en ligne"
         />
         <form
           className="flex flex-col gap-3 sm:flex-row"
@@ -149,10 +181,23 @@ export function DatabooksStudio() {
             if (question.trim().length >= 2) void ask();
           }}
         >
+          <select
+            aria-label="Source de la réponse"
+            className={`${fieldClass} sm:w-auto`}
+            value={source}
+            onChange={(event) => setSource(event.target.value as AnswerSource)}
+          >
+            {SOURCES.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
           <input
             aria-label="Question"
             className={`${fieldClass} flex-1`}
             placeholder="ex. Quelle est la puissance de Freezer selon le Daizenshuu ?"
+            maxLength={600}
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
           />
@@ -168,7 +213,7 @@ export function DatabooksStudio() {
           <div className={panelClass}>
             <p className="max-w-[72ch] whitespace-pre-wrap">{answer.text}</p>
             {answer.model ? (
-              <p className="text-[14px] text-os/60">Modèle : {answer.model}</p>
+              <p className="text-[14px] text-os/60">Source : {answer.model}</p>
             ) : null}
             <HitList hits={answer.hits} />
           </div>

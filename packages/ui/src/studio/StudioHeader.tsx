@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from "react";
 
-/** Title block of a studio screen: `level` 1 for the page, 2 for a screen mounted in a tab. */
+/** Title block of a studio screen mounted in a tab of the studio page (h2 under its h1). */
 export function StudioHeader({
   eyebrow,
   title,
   subtitle,
-  level = 2,
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
   subtitle?: ReactNode;
-  level?: 1 | 2;
 }) {
-  const Heading = level === 1 ? "h1" : "h2";
   return (
     <header className="flex flex-col gap-2 border-b border-os/12 pb-4">
       {eyebrow && (
@@ -21,11 +18,9 @@ export function StudioHeader({
           {eyebrow}
         </p>
       )}
-      <Heading
-        className={`${level === 1 ? "text-[clamp(1.75rem,1.3rem+2vw,2.5rem)]" : "text-[clamp(1.375rem,1.15rem+1vw,1.75rem)]"} font-[850] leading-[1.1] tracking-[-0.02em] text-os`}
-      >
+      <h2 className="font-title text-[clamp(1.375rem,1.15rem+1vw,1.75rem)] leading-[1.1] text-os">
         {title}
-      </Heading>
+      </h2>
       {subtitle && <p className="max-w-[72ch] text-[16px] leading-[1.55] text-os/75">{subtitle}</p>}
     </header>
   );
