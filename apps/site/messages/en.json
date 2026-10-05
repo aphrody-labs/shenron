@@ -962,7 +962,11 @@
       "title": "News",
       "standfirst": "Anime releases, manga chapters, films, events and analysis from the community.",
       "viewFeed": "The feed",
-      "rss": "RSS feed"
+      "rss": "RSS feed",
+      "toc": "Contents"
+    },
+    "sources": {
+      "newTab": "(opens in a new tab)"
     }
   },
   "shell": {

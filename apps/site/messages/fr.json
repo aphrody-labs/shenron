@@ -962,7 +962,11 @@
       "title": "Actualités",
       "standfirst": "Sorties anime, chapitres du manga, films, événements et analyses de la communauté.",
       "viewFeed": "Le fil",
-      "rss": "Flux RSS"
+      "rss": "Flux RSS",
+      "toc": "Sommaire"
+    },
+    "sources": {
+      "newTab": "(s’ouvre dans un nouvel onglet)"
     }
   },
   "shell": {
