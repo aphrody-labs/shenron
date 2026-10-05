@@ -14,6 +14,10 @@
  *   MCP            SHENRON_MCP_URL, else the `shenron-mcp` sidecar shipped beside the
  *                  executable (SHENRON_MCP_BIN, `./`, `./binaries/`, as `shenron-desktop`
  *                  finds `shenron-server`), started on `--http 127.0.0.1:<free port> --public`
+ *   editor engine  SHENRON_KOHARU_SDK_BIN, else the `koharu-sdk` sidecar beside the executable,
+ *                  started on first use by `/api/local/koharu` (./koharu.ts); never in production
+ *   lexicon        SHENRON_LEXIQUE, else the payload's `data/lexique-db-canonique.json` (the
+ *                  canonical glossary of French translation and of the editor's agent)
  *   chat           SHENRON_CHAT_BACKENDS (default `local` outside production): the
  *                  OpenAI-compatible server declared by APHRODY_AI_CHAT_BASE_URL,
  *                  APHRODY_SHENRON_LLM_BASE_URL or APHRODY_LOCAL_MODEL_URL (llama-server,
@@ -30,8 +34,11 @@ import type { LocalApiGroups } from "@shenron/api/contract";
 
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
+import { koharuBridge, type KoharuBridge } from "./koharu";
 
 export const VFS_FILE = "shenron-vfs.sqlite";
+/** Canonical lexicon shipped in the payload (`data/`, scripts/build/server-data.ts). */
+export const LEXIQUE_FILE = "lexique-db-canonique.json";
 
 const exe = (name: string) => (process.platform === "win32" ? `${name}.exe` : name);
 const isFile = (path: string | undefined | null): path is string =>
@@ -58,6 +65,8 @@ export interface BackendPlan {
   mcpSidecar: string | null;
   /** The site's wiki stays on the site (production, PostgreSQL). */
   wiki: boolean;
+  /** `koharu-sdk` behind `/api/local/koharu`; `null` when absent or in production. */
+  koharuSdk: string | null;
 }
 
 /** Resolve what the API host runs on (no process started, nothing written). */
@@ -93,6 +102,9 @@ export function planBackend(
   // The chat's own MCP tools (stdio) use the same shipped binary.
   if (mcp) out.SHENRON_MCP_BIN = mcp;
   if (profile !== "production") out.SHENRON_CHAT_BACKENDS ??= "local";
+  const lexique = o.payloadDir ? join(o.payloadDir, "data", LEXIQUE_FILE) : undefined;
+  if (!env.SHENRON_LEXIQUE?.trim() && isFile(lexique)) out.SHENRON_LEXIQUE = lexique;
+  const koharuSdk = siblingBinary(paths, "koharu-sdk", env.SHENRON_KOHARU_SDK_BIN);
   if (profile === "production") {
     out.SHENRON_VFS_PUBLIC_ONLY ??= "1";
     out.SHENRON_LOCAL_OWNER ??= "";
@@ -101,6 +113,7 @@ export function planBackend(
     env: out,
     mcpSidecar: env.SHENRON_MCP_URL?.trim() ? null : mcp,
     wiki: profile !== "production",
+    koharuSdk: profile === "production" ? null : koharuSdk,
   };
 }
 
@@ -169,6 +182,8 @@ export function unavailableGroups(reason: string): LocalApiGroups {
 
 export interface Backend {
   host: HostApi | null;
+  /** The editor engine bridge of `/api/local/koharu`. */
+  koharu: KoharuBridge;
   /** Variables the Next child adds to the process environment (the sidecar MCP URL). */
   nextEnv: Record<string, string>;
   /** Availability of each API group, the MCP sidecar's liveness included. */
@@ -179,9 +194,20 @@ export interface Backend {
 export async function startBackend(
   paths: ServerPaths,
   env: Readonly<Record<string, string | undefined>> = process.env,
-  o: { payloadDir?: string; createHost?: typeof createLocalApi } = {},
+  o: {
+    payloadDir?: string;
+    createHost?: typeof createLocalApi;
+    spawnEngine?: Parameters<typeof koharuBridge>[0]["spawn"];
+  } = {},
 ): Promise<Backend> {
   const plan = planBackend(paths, env, o);
+  const profile = profileOf(env);
+  const koharu = koharuBridge({
+    binary: plan.koharuSdk,
+    disabled: profile === "production" ? "désactivé en production" : undefined,
+    env: plan.env,
+    spawn: o.spawnEngine,
+  });
   let sidecar: McpSidecar | null = null;
   let sidecarFailed = false;
   if (plan.mcpSidecar) {
@@ -193,7 +219,6 @@ export async function startBackend(
       console.error(JSON.stringify({ event: "shenron.mcp.sidecar_failed", error: String(error) }));
     }
   }
-  const profile = profileOf(env);
   let host: HostApi | null = null;
   try {
     host = (o.createHost ?? createLocalApi)(plan.env, {
@@ -205,6 +230,7 @@ export async function startBackend(
   }
   return {
     host,
+    koharu,
     nextEnv: sidecar ? { SHENRON_MCP_URL: sidecar.url } : {},
     groups() {
       if (!host) return unavailableGroups(API_DOWN);
@@ -215,6 +241,7 @@ export async function startBackend(
       return groups;
     },
     async stop() {
+      koharu.stop();
       sidecar?.stop();
       await host?.close();
     },

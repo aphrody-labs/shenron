@@ -3,7 +3,8 @@
  * The front `Bun.serve` of `shenron-server`: one origin for the local APIs, the Shenron API,
  * the immutable assets and the Next front app. Priority, first match wins:
  *
- *   1. `/api/local/*`            local APIs (health with the API groups, native search)
+ *   1. `/api/local/*`            local APIs (health with the API groups, native search, the
+ *                                editor engine bridge `/api/local/koharu`)
  *   2. `/api/v1/*`               the Shenron API host, authoritative: a disabled group answers
  *                                its JSON 404, never a Next page (Next has no `/api/v1`)
  *      `/api/public/*`, `/mcp`   the host when it serves that path (wiki and RAG from the VFS,
@@ -63,6 +64,13 @@ function inside(base: string, pathname: string): string | null {
   return target === base || target.startsWith(base + sep) ? target : null;
 }
 
+/** WebAssembly (the editor canvas) must be `application/wasm` for streaming compilation. */
+function assetHeaders(file: string, cacheControl: string): Record<string, string> {
+  return file.endsWith(".wasm")
+    ? { "cache-control": cacheControl, "content-type": "application/wasm" }
+    : { "cache-control": cacheControl };
+}
+
 export async function staticAsset(
   layout: FrontOptions["layout"],
   pathname: string,
@@ -71,7 +79,7 @@ export async function staticAsset(
     const file = inside(join(layout.dist, "static"), pathname.slice("/_next/static".length));
     if (file && existsSync(file) && statSync(file).isFile()) {
       return new Response(Bun.file(file), {
-        headers: { "cache-control": "public, max-age=31536000, immutable" },
+        headers: assetHeaders(file, "public, max-age=31536000, immutable"),
       });
     }
     return null;
@@ -80,7 +88,9 @@ export async function staticAsset(
     return null;
   const file = inside(layout.publicDir, pathname);
   if (file && existsSync(file) && statSync(file).isFile()) {
-    return new Response(Bun.file(file), { headers: { "cache-control": "public, max-age=86400" } });
+    return new Response(Bun.file(file), {
+      headers: assetHeaders(file, "public, max-age=86400"),
+    });
   }
   return null;
 }
@@ -151,7 +161,7 @@ export function serveFront(o: FrontOptions): Bun.Server<ChatSocketData> {
     websocket: host?.websocket ?? NO_WEBSOCKET,
     async fetch(request, server) {
       const url = new URL(request.url);
-      const local = await o.local(request, url, o.ready());
+      const local = await o.local(request, url, o.ready(), server.requestIP(request)?.address);
       if (local) return local;
       // The host returns no response once it has upgraded the chat WebSocket.
       if (host && hostClaims(host, url.pathname)) return host.fetch(request, server);

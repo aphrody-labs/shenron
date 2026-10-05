@@ -114,11 +114,13 @@ export async function serveSite(
   const layout = locateSite(paths);
   const nextPort = freePort();
   const backend = await startBackend(paths, process.env, { payloadDir: options.payloadDir });
-  const api = localApi(paths, () => ({
-    site: true,
-    buildId: layout.buildId,
-    groups: backend.groups(),
-  }));
+  const api = localApi(
+    paths,
+    () => ({ site: true, buildId: layout.buildId, groups: backend.groups() }),
+    process.env,
+    undefined,
+    backend.koharu,
+  );
   let ready = false;
   const front = serveFront({
     hostname: options.hostname,
@@ -129,6 +131,8 @@ export async function serveSite(
     nextPort,
     ready: () => ready,
   });
+  // The editor engine's agent searches the local corpus of this server.
+  backend.koharu.setServerUrl(`http://127.0.0.1:${front.port}`);
   let next: ReturnType<typeof Bun.spawn>;
   try {
     next = await startNext(layout, nextPort, backend.nextEnv);

@@ -119,6 +119,27 @@ describe("/api/local/health", () => {
     expect(native.loads).toEqual([]);
   });
 
+  test("reports the editor engine group and routes /api/local/koharu to it", async () => {
+    const seen: string[] = [];
+    const koharu = {
+      status: () => ({ available: true }),
+      setServerUrl() {},
+      async handle(_request: Request, url: URL, peer: string | null) {
+        if (!url.pathname.startsWith("/api/local/koharu")) return null;
+        seen.push(`${url.pathname} ${peer}`);
+        return Response.json({ result: null });
+      },
+      stop() {},
+    };
+    const api = localApi(serverPaths(), NO_FACTS, {}, fakeNative(), koharu);
+    const body = await read((await call(api, "/api/local/health"))!);
+    expect(LocalHealthResponse.parse(body).groups.koharu).toEqual({ available: true });
+    const url = new URL("http://127.0.0.1/api/local/koharu/invoke");
+    const routed = await api(new Request(url.href, { method: "POST" }), url, true, "127.0.0.1");
+    expect(routed!.status).toBe(200);
+    expect(seen).toEqual(["/api/local/koharu/invoke 127.0.0.1"]);
+  });
+
   test("library found: localRag true, profile from the environment, opened once", async () => {
     const paths = serverPaths();
     const lib = libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));

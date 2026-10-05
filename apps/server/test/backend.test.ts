@@ -4,7 +4,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { planBackend, siblingBinary, VFS_FILE } from "../src/backend";
+import { LEXIQUE_FILE, planBackend, siblingBinary, VFS_FILE } from "../src/backend";
 import { testPaths } from "./support";
 
 const root = mkdtempSync(join(tmpdir(), "shenron-backend-"));
@@ -42,6 +42,23 @@ describe("planBackend", () => {
       planBackend(paths, { SHENRON_VFS_DB: join(dir, "absent.sqlite") }, { payloadDir }).env
         .SHENRON_VFS_DB,
     ).toBe(home);
+  });
+
+  test("editor engine beside the executable, never in production; lexicon of the payload", () => {
+    const { dir, paths, payloadDir } = setup();
+    expect(planBackend(paths, {}).koharuSdk).toBe(null);
+    const sdk = touch(join(paths.exeDir, "binaries", exe("koharu-sdk")));
+    expect(planBackend(paths, {}).koharuSdk).toBe(sdk);
+    const explicit = touch(join(dir, "sdk"));
+    expect(planBackend(paths, { SHENRON_KOHARU_SDK_BIN: explicit }).koharuSdk).toBe(explicit);
+    expect(planBackend(paths, { SHENRON_PROFILE: "production" }).koharuSdk).toBe(null);
+
+    expect("SHENRON_LEXIQUE" in planBackend(paths, {}, { payloadDir }).env).toBe(false);
+    const lexique = touch(join(payloadDir, "data", LEXIQUE_FILE), "[]");
+    expect(planBackend(paths, {}, { payloadDir }).env.SHENRON_LEXIQUE).toBe(lexique);
+    expect(
+      planBackend(paths, { SHENRON_LEXIQUE: "/own.json" }, { payloadDir }).env.SHENRON_LEXIQUE,
+    ).toBe("/own.json");
   });
 
   test("no VFS anywhere: the variable is dropped", () => {

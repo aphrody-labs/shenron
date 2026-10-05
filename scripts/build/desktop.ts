@@ -1,14 +1,19 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Build the Shenron desktop installer (Tauri 3): the native app, the shenron-server sidecar
- * (front app, Shenron API and local APIs, one file), the shenron-mcp sidecar (MCP tools of the
- * chat and the `/mcp` endpoint; shenron-server starts it from beside itself) and the platform
- * bundle.
+ * Build the installer of Shenron Studio, the one desktop app (Tauri 3, `shenron-desktop`, the
+ * editor engine in process): the native app, the shenron-server sidecar (front app, Shenron API
+ * and local APIs, one file), the shenron-mcp sidecar (MCP tools of the chat and the `/mcp`
+ * endpoint), the koharu-sdk sidecar (the editor engine over JSON Lines, for a browser on the
+ * local server through `/api/local/koharu` and for `@shenron/pipeline`; the app window itself
+ * never uses it) and the platform bundle. shenron-server starts both sidecars from beside itself.
  *
  *   bun scripts/build/desktop.ts [--target windows-x64|linux-x64] [--skip-server] [--skip-mcp]
+ *                                [--skip-koharu-sdk]
  *
  * --skip-mcp ships no MCP sidecar: the desktop then reports its MCP group unavailable.
+ * --skip-koharu-sdk ships no engine sidecar: the local server then reports its koharu group
+ * unavailable (the editor still runs in the app window).
  * windows-x64 from Linux/WSL: the app is cross-compiled with cargo-xwin and the NSIS
  * installer is produced by the Windows NSIS toolset through scripts/build/makensis-wsl.ts.
  * Outputs land in dist/desktop/<target>/ with their SHA-256 in SHA256SUMS.
@@ -84,10 +89,43 @@ if (withMcp) {
   copyFileSync(join(ROOT, "target", SPEC.triple, "release", `shenron-mcp${SPEC.exe}`), mcpSidecar);
 }
 
+// 1c. Editor engine sidecar (koharu-sdk, with native file pickers) of the same target.
+const withKoharuSdk = !args.includes("--skip-koharu-sdk");
+const koharuSidecar = join(binaries, `koharu-sdk-${SPEC.triple}${SPEC.exe}`);
+rmSync(koharuSidecar, { force: true });
+if (withKoharuSdk) {
+  await run(
+    [
+      process.execPath,
+      runner,
+      "build",
+      "--release",
+      "-p",
+      "koharu-library",
+      "--bin",
+      "koharu-sdk",
+      "--features",
+      "desktop",
+      "--target",
+      SPEC.triple,
+    ],
+    ROOT,
+    env,
+  );
+  copyFileSync(
+    join(ROOT, "target", SPEC.triple, "release", `koharu-sdk${SPEC.exe}`),
+    koharuSidecar,
+  );
+}
+
 // 2. Bundle configuration: the sidecars are declared only for bundling builds. Tauri installs
-// them beside the app, where shenron-server finds shenron-mcp.
+// them beside the app, where shenron-server finds shenron-mcp and koharu-sdk.
 const bundleConfig = join(CRATE, "tauri.bundle.json");
-const externalBin = ["binaries/shenron-server", ...(withMcp ? ["binaries/shenron-mcp"] : [])];
+const externalBin = [
+  "binaries/shenron-server",
+  ...(withMcp ? ["binaries/shenron-mcp"] : []),
+  ...(withKoharuSdk ? ["binaries/koharu-sdk"] : []),
+];
 writeFileSync(bundleConfig, `${JSON.stringify({ bundle: { externalBin } }, null, 2)}\n`);
 
 // 3. NSIS from WSL: a `makensis` on PATH that drives the Windows toolset.

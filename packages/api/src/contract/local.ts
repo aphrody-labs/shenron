@@ -40,6 +40,20 @@ export type LocalApiGroupStatus = z.infer<typeof LocalApiGroupStatus>;
 export const LocalApiGroups = z.record(LocalApiGroupName, LocalApiGroupStatus);
 export type LocalApiGroups = z.infer<typeof LocalApiGroups>;
 
+const apiGroupShape = Object.fromEntries(
+  LOCAL_API_GROUPS.map((name) => [name, LocalApiGroupStatus]),
+) as Record<LocalApiGroupName, typeof LocalApiGroupStatus>;
+
+/**
+ * The API groups, plus the groups the server answers itself: `koharu`, the manga translation
+ * editor engine of `/api/local/koharu` (a `koharu-sdk` child; absent from servers without it).
+ */
+export const LocalHealthGroups = z.object({
+  ...apiGroupShape,
+  koharu: LocalApiGroupStatus.optional(),
+});
+export type LocalHealthGroups = z.infer<typeof LocalHealthGroups>;
+
 export const LocalHealthResponse = z.object({
   /** The front app (Next) answers; the API groups may answer before it. */
   ok: z.boolean(),
@@ -52,6 +66,6 @@ export const LocalHealthResponse = z.object({
   localRagError: z.string().optional(),
   site: z.boolean().optional(),
   buildId: z.string().optional(),
-  groups: LocalApiGroups,
+  groups: LocalHealthGroups,
 });
 export type LocalHealthResponse = z.infer<typeof LocalHealthResponse>;

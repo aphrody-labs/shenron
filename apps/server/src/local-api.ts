@@ -5,6 +5,8 @@
  *   GET /api/local/health                 liveness, profile, version, capabilities and the
  *                                         availability of each API group (`LocalHealthResponse`
  *                                         of `@shenron/api/contract`)
+ *   /api/local/koharu/*                   the editor engine of a browser on this machine
+ *                                         (./koharu.ts), when the server has one
  *   GET /api/local/rag/search?q=&limit=&kind=
  *                                         offline Shenron corpus (embedded canon and guide, the
  *                                         configured corpus and the local RAG store) through
@@ -16,6 +18,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { LocalApiGroups, LocalHealthResponse } from "@shenron/api/contract";
+import type { KoharuBridge } from "./koharu";
 import { SHENRON_FFI_FILE, shenronLoad, shenronLocalSearch } from "@shenron/native/shenron";
 
 import { profileOf, type ServerPaths } from "./config";
@@ -45,7 +48,13 @@ function libraryPath(paths: ServerPaths, env: NodeJS.ProcessEnv): string | null 
 
 const withoutNul = (text: string) => text.replaceAll("\0", "");
 
-export type LocalApi = (request: Request, url: URL, ready: boolean) => Promise<Response | null>;
+/** `peer`: address of the client (`server.requestIP`), for the loopback-only routes. */
+export type LocalApi = (
+  request: Request,
+  url: URL,
+  ready: boolean,
+  peer?: string | null,
+) => Promise<Response | null>;
 
 /** Facts of the running server added to the health answer. */
 export interface LocalFacts {
@@ -59,6 +68,7 @@ export function localApi(
   facts: () => LocalFacts,
   env: NodeJS.ProcessEnv = process.env,
   native: LocalNative = NATIVE,
+  koharu: KoharuBridge | null = null,
 ): LocalApi {
   let loaded: boolean | undefined;
   let nativeError: string | null = null;
@@ -80,8 +90,10 @@ export function localApi(
     return loaded;
   };
 
-  return async (request, url, ready) => {
+  return async (request, url, ready, peer = null) => {
     if (!url.pathname.startsWith("/api/local/")) return null;
+    const engine = await koharu?.handle(request, url, peer);
+    if (engine) return engine;
     const headers = { "cache-control": "no-store", "access-control-allow-origin": "*" };
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (url.pathname === "/api/local/health") {
@@ -96,6 +108,7 @@ export function localApi(
         ...(localRag || nativeError === null ? {} : { localRagError: nativeError }),
         ...facts(),
       };
+      if (koharu) body.groups = { ...body.groups, koharu: koharu.status() };
       return Response.json(body, { status: ready ? 200 : 503, headers });
     }
     if (url.pathname === "/api/local/rag/search") {

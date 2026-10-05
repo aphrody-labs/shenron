@@ -37,7 +37,8 @@ Usage:
 
 Environnement : SHENRON_HOME, SHENRON_PROFILE (production|desktop|public), SHENRON_ENV_FILE,
 PORT, HOSTNAME, SHENRON_SITE_DIR ; API : SHENRON_VFS_DB, SHENRON_CHAT_BACKENDS et
-APHRODY_AI_CHAT_BASE_URL (modèle local), SHENRON_MCP_URL ou SHENRON_MCP_BIN, APHRODY_BIN (OCR).
+APHRODY_AI_CHAT_BASE_URL (modèle local), SHENRON_MCP_URL ou SHENRON_MCP_BIN, APHRODY_BIN (OCR),
+SHENRON_KOHARU_SDK_BIN (moteur de l'éditeur, /api/local/koharu), SHENRON_LEXIQUE.
 Le processus l'emporte sur config/shenron.env, puis sur les valeurs publiques par défaut
 (dragonballfr.com). GET /api/local/health dit quels groupes de l'API répondent.`;
 
