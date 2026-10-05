@@ -3,118 +3,28 @@
 Statut : proposition implémentable, révision 6 — 2026-09-19
 Périmètre : PostgreSQL `shenron_site` (schéma `bot`), API/site Next, index RAG et SEO.
 
-Depuis la consolidation du 2026-09-23, l'exploitation (releases, unités,
-Nginx, probes et rétention) est détenue par `aphrody-infra`. Ce document et son
-registre daté ci-dessous conservent des preuves historiques; leurs anciennes
-commandes de déploiement local ne sont plus exécutables. La frontière actuelle
-est décrite dans `docs/operations/shenron/INFRA-DELEGATION.md`.
+L'exploitation (releases, unités, Nginx, sondes, rétention) est détenue par
+`aphrody-infra` ([`INFRA-DELEGATION.md`](../operations/INFRA-DELEGATION.md)).
 
 Ce document est un contrat d’architecture. Il ne constitue pas une migration exécutable :
 toute écriture de contenu doit passer par une migration idempotente, un snapshot et une
 validation sur copie. Les lignes existantes restent la source de vérité jusqu’à la fin du
 backfill. Une suppression est toujours logique (`visible = false`).
 
-## État observé de l’implémentation
+## État de l’implémentation
 
-La boucle s’appuie sur des artefacts réellement présents dans le dépôt, vérifiés à chaque tour :
+Les migrations 0017 à 0019 (`apps/site/src/db/migrations`, miroirs dans
+`apps/bot/src/db/migrations`), les API `/api/wiki/{media,timelines,contributors,events}`,
+le lecteur unifié (`apps/site/src/components/manga/UnifiedVolumeReader.tsx`) et les
+sources RAG PostgreSQL (`packages/pipeline/scripts/_rag-sources-pg.ts`) sont livrés.
+Une présence de fichier ne vaut pas validation : les critères restent ceux des
+Sprints 2 à 6 ci-dessous.
 
-| Artefact | Rôle | Contrôle |
-|---|---|---|
-| `apps/shenron/site/src/db/migrations/0017_wiki_media_publications.sql` | migration PG des publications et redirections | existence + clauses idempotence/visibilité/redirection |
-| `apps/shenron/bot/src/db/migrations/0017_refonte_media_publications.sql` | miroir de migration côté bot, appliqué par le journal Drizzle | existence + alignement de schéma + journal |
-| `apps/shenron/site/src/db/migrations/0018_media_works_and_editions.sql` | tables PG des œuvres, éditions, volumes et assets | idempotence, FK et déduplication SHA-256 |
-| `apps/shenron/bot/src/db/migrations/0018_refonte_media_works_editions.sql` | miroir SQLite de l’ontologie média | présence et alignement des tables miroir |
-| `apps/shenron/site/src/db/migrations/0019_narrative_graph_and_contributors.sql` | graphe narratif, timelines et contributeurs | idempotence, visibilité et relations référentielles |
-| `apps/shenron/bot/src/db/migrations/0019_refonte_narrative_contributors.sql` | miroir SQLite du graphe et des crédits | présence et alignement des tables miroir |
-| `apps/shenron/site/src/components/manga/UnifiedVolumeReader.tsx` | lecteur N&B/Full Color et tiroir des chapitres | type-check + parcours UI |
-| `apps/shenron/site/tests/databook-features.test.ts` | régression des fonctions databooks/publications | 24 tests ciblés |
-| `apps/shenron/site/src/app/wiki/staff/page.tsx` | hub « Autour de Dragon Ball » et spotlight | type-check du site |
-| `apps/shenron/site/tests/page-banners-wiring.test.ts` | contrat des héros configurables, dont le hub staff | 3 tests ciblés |
-| `apps/shenron/site/src/app/api/wiki/events/route.ts` | API publique des événements narratifs | recherche, facettes et canonicité |
-| `apps/shenron/site/tests/wiki-events-api.test.ts` | contrat de l’API événements | filtres, pagination et timeline |
-| `packages/shenron/pipeline/scripts/_rag-sources-pg.ts` | sources PG des œuvres, timelines, événements et contributeurs | filtres `visible`, entité et rendu de chunks |
-| `apps/shenron/site/tests/rag-refonte-sources.test.ts` | contrat des quatre sources RAG de la refonte | 4 renderers et schéma de chunks vérifiés |
-| `apps/shenron/site/tests/refonte-migrations.test.ts` | invariants des migrations média et narratif | tables/index idempotents, aucune suppression physique |
-| `scripts/build/shenron/scripts/ops/build-site-external.ts` + `scripts/build/shenron/scripts/ops/package-site-artifact.ts` | build et scellement hors VPS | manifeste de commit/build, SHA-256 et fichiers Next requis |
-| `.github/shenron/workflows/site-artifact.yml` | production de l'artefact site | build et upload sans accès SSH ni bascule de service |
-| `scripts/tools/shenron/scripts/ops/observability-snapshot.ts` | sonde read-only du miroir public, services A2A et dépendance RAG | snapshot `shenron-observability/v1`, `siteHealth` requis et `optionalServices.ragSidecar` informatif |
-| `scripts/audit/shenron/scripts/ops/audit-live-site-assets.ts` | audit read-only du sitemap et des assets first-party | échantillon borné ou exhaustif, rapport des 404/5xx |
-| `scripts/audit/shenron/scripts/ops/audit-refonte-api-latency.ts` | sonde read-only des endpoints publics de la refonte | statuts déterministes et p50/p95 par route |
-| `apps/bot/scripts/rag-resync-entites.ts --reparer` | contrôle chunks ↔ vecteurs sans écriture par défaut | 0 vecteur orphelin et 0 chunk sans vecteur |
-| `docs/architecture/shenron/architecture-refonte-runtime-report.schema.json` | contrat machine-readable du rapport runtime | validation des champs A2A/CI |
-| `scripts/audit/shenron/scripts/ops/audit-refonte-architecture.ts` | garde-fou structurel de cette spécification | `bun run audit:architecture` |
-
-Cette table ne transforme pas une présence de fichier en validation fonctionnelle : les critères
-de migration, d’accessibilité, de données et de production restent ceux des Sprints 2 à 6.
-
-La migration actuellement observée est une étape transitoire : `bot.db_media_publications`
-sort les anciens « Jump Anime Comics » et « Light Novel » du catalogue databooks avant leur
-normalisation future dans `bot.media_works`. Les anciennes URL sont stockées dans
-`public.url_redirects(source_path, target_path, status_code, visible)`. La cible `public.redirects`
-mentionnée plus bas est donc un nom conceptuel ; l’implémentation doit conserver le nom réel
-`url_redirects` et son schéma jusqu’à la prochaine migration explicite.
-
-### Registre historique de validation — relevés datés du 2026-09-19
-
-Ces résultats ne décrivent ni l'état actuel des services ni les procédures
-d'exploitation après la délégation à `aphrody-infra`.
-
-| Commande | Résultat | Portée |
-|---|---:|---|
-| `bun --filter @shenron/site type-check` | OK (2026-09-19) | types site + tests TypeScript |
-| `bun apps/site/scripts/audit-wiki-contract.ts --json` | FAIT : contrat SQL/TypeScript valide (`ok=true`) sur les tables éditoriales observées | vérifie clés primaires et colonnes mutables contre `information_schema` |
-| `bun apps/site/scripts/audit-wiki-couverture.ts --json=.coord/wiki-coverage-latest.json` | FAIT : 12 familles, 3 334 entrées visibles auditées (2026-09-19T12:36:12Z) ; champs structurants des épisodes/films/tomes/chapitres couverts, ISBN et métadonnées secondaires restent partiels | audit read-only champ par champ ; ne transforme pas les lacunes éditoriales en données inventées |
-| `bun apps/site/scripts/canon-ingest.ts --simuler` | FAIT : corpus lu sans écriture — aphrody 84, databooks 3 870, manga 870 références ; 0 ajout, 0 modification, 0 masquage (2026-09-19T12:37:30Z) | simulation idempotente des sources canoniques ; l’ingestion réelle reste séparée et auditable |
-| `bun apps/site/scripts/reancre-canon-references.ts --report=.coord/architecture-refonte-canon-reanchor-latest.json` (simulation) | **INCOMPLET** : 18 fiches article sans source scannées, 1 ancrage canonique exact (Bardock), 17 résiduels listés par table/id/nom ; 0 écriture | rapport JSON natif `--report` conservé pour revue ; les variantes/œuvres dérivées restent à arbitrer, aucune référence n’est ajoutée automatiquement |
-| `bun test apps/site/tests/databook-features.test.ts` | 24 pass / 0 fail | données et fonctions databooks, PostgreSQL inclus |
-| `bun test apps/site/tests/manga-integration.test.ts` | 7 pass / 0 fail | catalogue DB/DBFC/DBS, variantes et planches du lecteur |
-| `bun test apps/site/tests/page-banners-wiring.test.ts` | 3 pass / 0 fail | wiring des héros, hub staff et routes publiques |
-| `bun test apps/site/tests/admin-dashboard-live.test.ts` | 3 pass / 0 fail | sonde A2A/DB/Redis après reprise du heartbeat |
-| tests ciblés auth et invariants de déploiement local (exécutés le 2026-09-19 avant délégation) | 14 puis 11 pass / 0 fail | preuve historique ; le test de déploiement local a été retiré avec son propriétaire de déploiement |
-| `bun test apps/site/tests/wiki-media-api.test.ts apps/site/tests/wiki-timelines-api.test.ts apps/site/tests/wiki-contributors-api.test.ts apps/site/tests/wiki-events-api.test.ts` | 20 pass / 0 fail / 173 assertions | handlers média, timelines, contributeurs et événements validés localement |
-| `bun test apps/site/tests/refonte-migrations.test.ts` | 5 pass / 0 fail / 17 assertions | migrations 0017–0019 : idempotence, masquage logique, redirections 301 et absence de `DELETE FROM` |
-| `bun test apps/bot/tests/rag-eval.test.ts apps/bot/tests/rag-filter.test.ts --parallel=1` | 33 pass / 0 fail / 78 assertions | matcher, métriques, routage canon, filtres et déduplication RAG validés localement |
-| copie PostgreSQL temporaire `shenron_refonte_copy_*` + `pg_dump | pg_restore` + `psql -f` deux fois sur 0017/0018/0019 | FAIT : 11 tables restaurées, second passage sans erreur, deux bases supprimées via `trap` | validation snapshot/restauration et idempotence sur copies isolées ; aucune base de production touchée |
-| `bun test apps/site/tests/no-404.test.ts apps/site/tests/og.test.ts apps/site/tests/wiki-launch.test.ts apps/site/tests/databook-features.test.ts` | 43 pass / 2 skip / 0 fail | contrats redirections/canoniques, gating et lecteur ; la sonde no-404 reste ignorée sans `SITE_AUDIT_ORIGIN` |
-| `SITE_TEST_LIVE=1 NO_404_CONCURRENCY=12 NO_404_TIMEOUT_MS=8000 bun test apps/site/tests/no-404.test.ts` | **INCOMPLET** : 916 URLs testées, 4 404 (`/api/wiki/media`, `/api/wiki/timelines`, `/api/wiki/contributors`, `/api/wiki/events`) | preuve miroir production ; les routes existent et sont testées localement mais ne sont pas encore déployées |
-| `git rev-list --count origin/main..HEAD` + comparaison des commits | **FAIT** : 0 commit local non publié après push (`origin/main=9f261538`, `HEAD=9f261538`) | le dépôt est synchronisé ; les 404 live persistent jusqu’au déploiement bleu/vert |
-| `bun run audit:architecture` | 105/105 au 2026-09-19 | ancien ensemble de contrôles ; le script courant vérifie seulement les artefacts applicatifs encore possédés ici |
-| `REFONTE_AUDIT_ONCE=1 REFONTE_AUDIT_RUNTIME=1 REFONTE_AUDIT_API=1 bun run audit:architecture:watch` | FAIT : verdict runtime `FAIT`, `runtimeExitCode=0`, `apiExitCode=0`, `failureStreak=0` (tour du 2026-09-19) | boucle officielle exercée en un tour ; les 404 API restent observés mais acceptés comme état déterministe jusqu’au déploiement |
-| `git diff --check` | OK | intégrité syntaxique des changements |
-| `bun scripts/ops/observability-snapshot.ts --out .coord/architecture-refonte-observability-latest.json` | site, siteHealth, bot et MCP HTTP 200 (2026-09-19T12:31Z) ; `optionalServices.ragSidecar` error/absent ; 0 ligne JSONL invalide ; 5 relectures d’événement identiques ; heartbeat AGY stale | la métrique ignore désormais les transitions normales submitted/working/completed et ne compte que les relectures identiques ; aucune purge A2A destructive |
-| `SITE_AUDIT_MAX_PAGES=100 SITE_AUDIT_MAX_ASSETS=500 bun scripts/ops/audit-live-site-assets.ts` | 100 pages + 500 assets, 0 échec (47 732 pages / 2 044 assets découverts) | échantillon public borné ; le rapport expose `pagesDiscovered`, `assetsDiscovered`, audités et échecs |
-| `bun run audit:refonte-api --out .coord/architecture-refonte-api-latency-latest.json` | 4 routes, 3/3 réponses déterministes chacune, aucun 5xx ; p95 observé 48–105 ms (2026-09-19T12:38:21Z) | miroir public ; les 404 actuels sont toujours déterministes jusqu’au prochain déploiement des routes |
-| `sudo -n nginx -t` + état `shenron-site-b` + manifeste `.next/server/app-paths-manifest.json` | **FAIT** : Nginx actif/activé et configuration valide ; upstream actif `127.0.0.1:3010` (slot B), release `20260918165109-87a65b32` ; le dépôt observé lors de cette mesure était `5c3620b6`, mais les quatre routes refonte étaient absentes du manifeste | cause des 404 isolée : release live antérieure au code poussé ; aucune modification ni redémarrage effectué |
-| `bun run clean:vps` + arrêt du processus autonome `python3 -m http.server :8999` | **FAIT** : processus hors systemd arrêté après vérification ; nettoyage borné terminé, espace récupéré `+536M` (7,0 Gio libres, disque à 93 %) | aucun MainPID systemd critique touché ; services Nginx, PostgreSQL, Redis, bot, MCP et slot B restés actifs |
-| `bun run bot:build` + `bun --filter @shenron/mcp type-check` + `bun --filter @shenron/site type-check` | **FAIT** : build bot et vérifications TypeScript terminés sans erreur | validation monorepo partielle réussie ; aucun changement de service actif |
-| `next build --webpack` borné (`BUILD_CPUS=1`, `BUILD_STATIC_CONCURRENCY=1`) + packaging | **FAIT** : build complet, TypeScript, 1 857 pages statiques et artefact scellé `build-TfctsWXpff2fKS` | fallback webpack validé sur ce VPS ; avertissements i18n préexistants consignés, aucune erreur de build |
-| `SHENRON_BUILD_WEBPACK=1 bun scripts/ops/deploy-site.ts --artifact=artifacts/site-build.tar.gz --no-build` | **FAIT** : release `20260919143019-5e0db582`, slot A `:3000`, bascule Nginx sans coupure ; toutes les sondes, dont les quatre APIs refonte, répondent dans les codes attendus | snapshot de dépendances compatible réutilisé (lockfile/Bun/ABI identiques) pour éviter une recopie de 3,8 Gio ; release B précédente conservée pour rollback |
-| `systemctl is-active/is-enabled shenron-embed.service` + `curl 127.0.0.1:5007/health` | `inactive`, `disabled`, HTTP 000 | sidecar volontairement hors ligne sur ce VPS ; métrique dense reportée au VPS RAG dédié |
-| `bun test apps/site/tests --parallel=1` | 1 153 pass / 2 skip / 0 fail sur 1 155 tests (2026-09-19) | suite complète séquentielle, référence anti-interférence |
-| `bun apps/bot/scripts/rag-eval.ts --validate --ci --json=.coord/architecture-refonte-rag-eval-hybrid.json` | 172/172 sources présentes ; sidecar absent, repli lexical Recall@5 **80,2 %**, CI validée | gold set servi avec dégradation contrôlée ; rapport poussé dans Redis, métrique dense toujours à mesurer quand le sidecar revient |
-| `bun apps/bot/scripts/rag-resync-entites.ts --reparer` | 59 995 chunks / 59 995 vecteurs ; 0 / 0 orphelin | simulation read-only ; aucune écriture appliquée |
-| `bun apps/bot/scripts/rag-resync-entites.ts --toutes --report=.coord/architecture-refonte-rag-resync-latest.json` | **INCOMPLET** : 155 734 ajouts candidats, 3 993 retraits, 56 002 inchangés ; 0 vecteur orphelin / 0 passage sans vecteur | scan exhaustif read-only, rapport `shenron-rag-resync/v1` ; `--appliquer` reste bloqué jusqu’à revue des sources et du périmètre |
-
-Ce registre est une photographie vérifiée, pas une garantie permanente : chaque modification
-relance les commandes adaptées et remplace la ligne par un résultat daté dans le journal de
-la boucle.
-
-### Suite complète — limites constatées
-
-Le dernier passage parallèle historique (`bun test apps/site/tests`) avait produit 1 068 pass,
-2 skip, 6 échecs et 2 erreurs, dus aux mocks partagés entre fichiers. Le passage de référence
-séquentiel actuel (`bun test apps/site/tests --parallel=1`) exécute **1 155 tests : 1 153 pass,
-2 skip, 0 fail**. Les tests ciblés de la refonte, du déploiement/auth et du RAG restent donc
-verts au moment de cette photographie ; le test local de déploiement a depuis été retiré car
-les unités et bascules relèvent d'`aphrody-infra` ; le mode parallèle
-est conservé uniquement comme détecteur d’interactions.
-
-Une mesure avec `REFONTE_AUDIT_SERIAL=1` (Bun `--parallel=1`) a exécuté **1 153 pass**,
-2 skip et **0 fail** sur 1 155 tests ; son rapport runtime est `FAIT` avec
-`fullSuiteExitCode=0`, `serialValidation=true` et `failureStreak=0`. La divergence est donc limitée au chargement
-parallèle de modules/mocks entre fichiers ; le mode séquentiel constitue la référence fiable
-pour la validation de la refonte, tandis que le mode parallèle reste conservé comme détecteur
-d’interactions.
+La migration observée est transitoire : `bot.db_media_publications` sort les anciens
+« Jump Anime Comics » et « Light Novel » du catalogue databooks avant leur normalisation
+dans `bot.media_works`. Les anciennes URL sont stockées dans
+`public.url_redirects(source_path, target_path, status_code, visible)` ; le nom
+`public.redirects` employé plus bas est conceptuel.
 
 ## 1. Principes non négociables
 
@@ -529,10 +439,7 @@ ne charge jamais les participants complets dans la requête de comptage.
 - Critères : combinaisons de facettes stables, latence p95 mesurée sur volumétrie réelle,
   aucune catégorie masquée dans l’index, citations traçables et zéro chunk orphelin. Le dernier
   gold run est `FAIT` : 172/172 sources présentes et Recall@5 80,2 % ≥ seuil 80 %. Le
-  contrôle d’alignement est également `FAIT` (59 995 / 59 995, aucun orphelin) ; le sidecar
-  d’embeddings étant volontairement désactivé ici par `deploy/install.sh` (migration vers un
-  VPS RAG dédié), la métrique dense servie hybride reste à mesurer sur cette infrastructure
-  dédiée ; le repli BM25 est la preuve de référence locale.
+  contrôle d’alignement est également `FAIT` (59 995 / 59 995, aucun orphelin) ; la métrique dense hybride reste à mesurer ; le repli BM25 est la preuve de référence locale.
 
 ### Sprint 5 — lecteur et navigation
 
@@ -545,8 +452,8 @@ ne charge jamais les participants complets dans la requête de comptage.
 
 - Activer les 301, publier les landing pages autorisées, masquer les catégories obsolètes,
   revalider sitemap et liens entrants.
-- Faire produire par `bun run site:artifact` un artefact vérifié, puis laisser
-  le pipeline `aphrody-infra` publier la release, sonder les API/cache/RAG et
+- Produire l'artefact par `bun run build:server`, puis laisser
+  `aphrody-infra` publier la release, sonder les API/cache/RAG et
   conserver le rollback. Le dépôt Shenron ne bascule pas directement les services.
 - Critères de sortie : 0 FK orpheline, 0 lien interne cassé dans l’audit, 100 % des anciennes
   URLs importantes redirigées, rollback documenté et bilan admin publié.
@@ -559,67 +466,3 @@ ne charge jamais les participants complets dans la requête de comptage.
 - [x] `bun` uniquement ; tests ciblés exécutés, et `gen:entries` non requis (aucune commande/event modifié).
 - [ ] Index RAG reconstruit hors premier plan et chunks orphelins contrôlés.
 - [ ] API, lecteur, navigation, sitemap, alternates et 301 vérifiés en production miroir.
-- [x] Handoff opérateur : push synchronisé, déploiement bleu/vert et re-sonde live terminés ; slot A `20260919143019-5e0db582` actif, quatre APIs refonte HTTP 200 avec `X-Forwarded-Proto: https`.
-- [x] Bilan bimodal publié dans `.coord` (rapports JSON) et notification envoyée au salon admin.
-- [x] `bun run audit:architecture` passe avec le total de contrôles courant (105/105 au dernier
-  tour, augmenté lorsqu’un nouveau contrat est ajouté).
-
-## Boucle de travail continue (itération contrôlée)
-
-La « boucle infinie » du chantier est une boucle d’observation et de correction, pas un
-processus qui monopolise un worker ou une connexion. Elle est relancée par CI, un opérateur ou
-un agent A2A après chaque changement et s’arrête uniquement lorsqu’un critère de sortie est
-prouvé.
-
-Pour une surveillance locale continue, lancer `REFONTE_AUDIT_INTERVAL_MS=60000 bun run
-audit:architecture:watch`. Le watcher relance l’audit Bun à chaque tour, conserve le code de
-sortie de chaque contrôle et s’arrête proprement sur `SIGINT`/`SIGTERM`. Il ne modifie ni la
-base ni le contenu du document ; les corrections restent des changements examinés séparément.
-Pour exécuter un seul tour (CI, diagnostic ou reprise après incident), ajouter
-`REFONTE_AUDIT_ONCE=1` ; le rapport est écrit puis le processus se termine sans attendre
-l’intervalle suivant.
-Pour neutraliser les interactions de mocks entre fichiers pendant la suite exhaustive,
-ajouter `REFONTE_AUDIT_SERIAL=1` avec `REFONTE_AUDIT_FULL=1` ; le watcher transmet alors
-`--parallel=1` à Bun et conserve ce mode dans le journal de démarrage.
-Chaque tour écrit aussi le dernier verdict dans `.coord/architecture-refonte-last.json` (not in repo) (chemin
-modifiable avec `REFONTE_AUDIT_REPORT`) pour permettre une reprise après interruption.
-Il append également le verdict runtime dans `.coord/architecture-refonte-history.jsonl` (not in repo), borné
-aux 200 derniers tours ; le chemin est modifiable avec `REFONTE_AUDIT_HISTORY`. Ce journal JSONL
-conserve la tendance `failureStreak` après chaque relance, sans remplacer le dernier
-rapport consommé par les outils.
-Pour inclure la validation comportementale à chaque tour, ajouter `REFONTE_AUDIT_RUNTIME=1` ;
-le watcher exécutera alors `bun test apps/site/tests/databook-features.test.ts` après l’audit
-structurel et affichera les deux codes de sortie dans le journal du tour. Il persistera aussi
-le verdict combiné dans `${REFONTE_AUDIT_REPORT}.runtime.json` avec `FAIT` uniquement si les
-contrôles activés valent zéro. Le fichier est écrit même en mode structurel seul, maintient `failureStreak` et pose `escalation: "ADMIN_REQUIRED"`
-au troisième tour non passant consécutif ; l’agent ou l’opérateur doit alors publier le bilan
-dans le canal admin avant de poursuivre les corrections.
-Pour sonder aussi les endpoints publics de la refonte à chaque tour, ajouter
-`REFONTE_AUDIT_API=1` ; le watcher lance alors `bun run audit:refonte-api`, conserve son rapport
-`.api.json` et inclut `apiExitCode` dans le verdict runtime. Cette option reste désactivée par
-défaut afin de ne pas générer de trafic réseau lors d’un audit structurel local.
-Pour un tour de maintenance exhaustif, ajouter aussi `REFONTE_AUDIT_FULL=1` : le watcher lance
-`bun test apps/site/tests` et persiste `fullSuiteExitCode`. Les échecs connus de la suite globale
-restent alors visibles dans le rapport au lieu d’être confondus avec les tests ciblés.
-
-```text
-OBSERVE → MESURE → PRIORISE → MODIFIE → VALIDE → PUBLIE LE BILAN
-   ↑                                                        │
-   └────────────── nouvel écart ou nouvelle preuve ─────────┘
-```
-
-À chaque tour, le journal doit contenir : commit/artefact, snapshot ou endpoint inspecté,
-constat chiffré, changement appliqué, commande de validation, résultat et prochaine action.
-Les actions destructrices sont interdites si le snapshot ou le rollback associé n’est pas
-présent. Un état inchangé est un résultat de mesure valide, mais ne justifie pas de redémarrer
-un service.
-
-Ordre de priorité permanent : (1) intégrité et canon, (2) FK/slug/redirects, (3) sources et
-RAG, (4) performances API, (5) lecteur et ergonomie, (6) enrichissements éditoriaux. Une
-anomalie répétée trois tours de suite est escaladée dans `docs/operations/shenron/ADMIN-REPORTS.md` et via le
-canal admin ; elle ne doit pas être masquée par une modification de présentation.
-
-Critères d’arrêt global : toutes les cases de livraison sont prouvées sur un miroir de
-production, deux releases successives n’introduisent ni 404 ni chunk orphelin, les métriques
-p95 restent sous les seuils du Sprint 4, et le rollback est démontré. Tant qu’un critère manque,
-la boucle reste ouverte et reprend au premier contrôle qui a échoué.

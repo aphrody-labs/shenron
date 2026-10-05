@@ -7,7 +7,7 @@ n'est copié dans le dépôt. Les variables sont décrites dans [ENV.md](ENV.md)
 
 ## Résolution du domaine
 
-`packages/shenron/pipeline/src/agent-home.ts` résout le domaine déclaré par
+`packages/pipeline/src/agent-home.ts` résout le domaine déclaré par
 `APHRODY_AGENT_DOMAIN`, puis celui d'`APHRODY_WORKSPACE`, puis
 `APHRODY_PROFILE` (`shenron` est l'alias historique de `dbfr`). Le défaut de
 ce consommateur Shenron est `dbfr`. Un domaine étranger conserve la persona
@@ -49,10 +49,9 @@ Les tests du profil utilisent des dossiers temporaires ; les suites de
 récupération utilisent le vrai corpus préchargé et `requireLiveRag`.
 
 ```bash
-cd packages/shenron/pipeline
-bun test test/workflows.test.ts test/workflows-ia.test.ts test/ai/prompts.test.ts test/ai/generate.test.ts test/ai/portability.test.ts
-bun run type-check
-bun run rag:test
+(cd packages/pipeline && bun test test/workflows.test.ts test/workflows-ia.test.ts test/ai/prompts.test.ts test/ai/generate.test.ts test/ai/portability.test.ts)
+bun run --filter @shenron/pipeline typecheck
+bun run --filter @shenron/pipeline rag:test
 ```
 
 Les cinq suites ciblées passent : 61 tests, 249 assertions, deux tests ignorés

@@ -342,14 +342,14 @@ la ligne de base pour ne pas hacher les jambages.
 
 | Élément                        | Fichier                                           |
 | :----------------------------- | :------------------------------------------------ |
-| Tokens de palette et de police | `apps/shenron/site/src/app/globals.css` (`@theme inline`) |
-| Chargement des polices         | `apps/shenron/site/src/app/layout.tsx` (`next/font`)      |
-| Primitives de page partagées   | `apps/shenron/site/src/components/kit/`                   |
+| Tokens de palette et de police | `apps/site/src/app/globals.css` (`@theme inline`) |
+| Chargement des polices         | `apps/site/src/app/layout.tsx` (`next/font`)      |
+| Primitives de page partagées   | `apps/site/src/components/kit/`                   |
 | Corps du wiki                  | `.wiki-content` dans `globals.css`                |
-| Lecture des actualités         | `apps/site/src/styles/editorial.css` (not in repo)              |
+| Lecture des actualités         | `packages/ui/src/editorial.css`              |
 | Surcharge de thème au runtime  | `/admin/design` → `lib/site-theme.ts`             |
-| Module d'édition               | `apps/shenron/site/src/components/editor/`                |
-| Accents de rubrique            | `apps/shenron/site/src/lib/wiki-section-accents.ts`       |
+| Module d'édition               | `apps/site/src/components/editor/`                |
+| Accents de rubrique            | `apps/site/src/lib/wiki-section-accents.ts`       |
 
 ### Écart connu entre ce document et le code (2026-09-12)
 
@@ -374,7 +374,7 @@ ici pour qu'on sache ce qui est une dette et ce qui est une décision.
 
 Ce fichier suit la spécification [DESIGN.md](https://github.com/google-labs-code/design.md)
 (front matter de tokens + prose de justification). Il se vérifie par
-`@google/design.md lint DESIGN.md` — le linter contrôle les références de
+`@google/design.md lint docs/reference/DESIGN.md` — le linter contrôle les références de
 tokens et le contraste WCAG de chaque composant, et l'état attendu est **0
 erreur, 0 avertissement**. C'est ce contrôle qui a signalé les pastilles de
 rubrique en texte blanc sur vert, violet, rose et rouge (3,3 à 4,0:1, sous le

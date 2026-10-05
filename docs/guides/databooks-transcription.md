@@ -10,8 +10,7 @@ donner à un modèle de vision dans
 ## 1. Exporter des lots
 
 ```bash
-cd apps/site
-bun scripts/export-databooks-ocr.ts --sortie <dossier-lots> --taille 400
+bun apps/site/scripts/export-databooks-ocr.ts --sortie <dossier-lots> --taille 400
 ```
 
 `DATABASE_URL` vient de l'environnement (dernière ligne `^DATABASE_URL=` du

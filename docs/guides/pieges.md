@@ -122,7 +122,7 @@ tenus ici.
   remplace `server-only` par un module vide (`bun --preload stub.ts essai.ts`).
 - **`next dev` réécrit `apps/site/tsconfig.json`** : restaurer le fichier avant
   de committer.
-- **Le type-check des tests du site couvre `apps/site/scripts/`** : un brouillon
+- **La vérification de types des tests du site couvre `apps/site/scripts/`** : un brouillon
   `_tmp-*.ts` oublié casse la porte ; écrire les brouillons hors du dépôt.
 - **Un `next build` qui meurt au prérendu n'accuse pas le code** :
   `ENOENT … page.js` après « Error occurred prerendering » signale un worker

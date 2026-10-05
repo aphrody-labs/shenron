@@ -25,7 +25,7 @@ Une cible = `(kind, id)` avec `kind ∈ post | wiki | databook | tierlist | comm
   amputé devient incompréhensible pour ceux qui y avaient répondu.
 
 Tables : `ContentComment`, `ContentReaction` (migration
-`apps/shenron/site/src/db/migrations/0015_social_agents.sql`, idempotente). La migration
+`apps/site/src/db/migrations/0015_social_agents.sql`, idempotente). La migration
 reprend les anciens `Comment` et les `TierlistVote` — ids réutilisés, donc
 rejouable sans doublon.
 
@@ -127,9 +127,9 @@ Ce qui n'est plus exposé côté lecteur, et pourquoi :
 | Flux public des révisions wiki (`/wiki/modifications`, onglets `wiki` et `communaute` du fil) | Il racontait la fabrication du site — qui écrit quoi, sur quel champ — au lieu de Dragon Ball. L'historique reste dans `wiki_revisions` et `/admin/wiki/history`. |
 | `/api-docs` public, `llms.txt` documentant l'API d'écriture | Carte de la salle des machines. Les intégrations se demandent par contact. La page vit désormais sous `/admin/api-docs` : un `notFound()` sur la route publique rendait la page not-found avec un **200** (coquille du layout déjà envoyée), donc un lien toujours vivant pour les robots. |
 | Mentions d'agents / d'IA dans les pages publiques | Un lecteur vient pour le contenu ; le marqueur « auto » sur un message automatique reste, lui, parce qu'il protège le lecteur. |
-| Assistant flottant (bouton rond, anneau dégradé, emoji) | Contraire à DESIGN.md sur trois points, et il annonçait l'IA sur chaque page. L'assistant garde sa page `/ask`. |
+| Assistant flottant (bouton rond, anneau dégradé, emoji) | Contraire à [DESIGN.md](../reference/DESIGN.md) sur trois points, et il annonçait l'IA sur chaque page. L'assistant garde sa page `/ask`. |
 
-Le contrat est testé : `apps/shenron/site/tests/agent-api.test.ts` vérifie que chaque
+Le contrat est testé : `apps/site/tests/agent-api.test.ts` vérifie que chaque
 chemin déclaré existe comme `route.ts`, que les portées sont toutes décrites et
 que publier reste une portée distincte.
 

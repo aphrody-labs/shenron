@@ -8,11 +8,10 @@ Règles :
 
 - **Aucune valeur de production n'est écrite dans ce dépôt.** Les adresses, ports et secrets
   de production viennent de l'environnement fourni par `aphrody-infra`
-  (`config/service-catalog.json`, `EnvironmentFile` opérateur).
+  (catalogue de services et fichiers d'environnement de l'opérateur).
 - Les défauts codés dans `@shenron/config` ne servent qu'à garder un processus utilisable sans
   environnement (poste de dev, tests). C'est le seul endroit autorisé à les écrire.
-- Les `.env` ne sont jamais affichés ni commités. En local, `bun scripts/dev/local-env.ts env`
-  dérive un `.env.local` par app (voir [`DEV-LOCAL.md`](DEV-LOCAL.md)).
+- Les `.env` ne sont jamais affichés ni commités. Poste de développement : [`DEV-LOCAL.md`](DEV-LOCAL.md).
 - Nom canonique d'abord ; les noms historiques restent acceptés en lecture. Quand plusieurs
   noms sont posés, la première valeur non vide dans l'ordre de lecture l'emporte.
 
@@ -46,7 +45,7 @@ sont des adresses de boucle locale pour le dev ; en production, l'environnement 
 | LibreTranslate | `LIBRETRANSLATE_URL` (clé : `LIBRETRANSLATE_API_KEY`) |
 | Sidecar de relecture OCR | `RELECTURE_OCR_URL` |
 
-Le rate limit d'authentification du site (`apps/shenron/site/src/lib/auth-rate-limit.ts`) utilise
+Le rate limit d'authentification du site (`apps/site/src/lib/auth-rate-limit.ts`) utilise
 `REDIS_URL` s'il est posé et se replie sur un stockage en mémoire sinon ; il n'a pas d'URL par
 défaut.
 
@@ -71,7 +70,7 @@ un chemin encore issu du défaut est signalé une fois par processus.
 | Variable | Rôle |
 | --- | --- |
 | `DATABASE_URL` | PostgreSQL `shenron_site`, schéma `postgres://` ou `postgresql://` obligatoire (`resolveDatabaseUrl`). |
-| `SITE_BUILD_DATABASE_URL` | Base de lecture du build d'artefact du site (`bun run site:artifact`). |
+| `SITE_BUILD_DATABASE_URL` | Base de lecture d'un build du site qui en a besoin ; le build public de `shenron-server` compile le site sans base. |
 | `DATABASE_PATH` | Fichier SQLite du bot (runtime + réplica wiki). |
 
 ## Authentification — `@shenron/auth`
@@ -85,10 +84,16 @@ un chemin encore issu du défaut est signalé une fois par processus.
 | `AgentKey` (table PG) | Jetons d'agents autonomes (`dbfr_agent_...`) avec portées explicites (`moderate`, `write:articles`, etc.) acceptés par le proxy et `getCurrentUser()`. |
 
 
+## Serveur MCP public — `apps/site/src/lib/ai-access.ts`
+
+| Variable | Rôle |
+| --- | --- |
+| `SHENRON_MCP_URL` | Origine HTTP(S) du serveur `shenron-mcp --http <adresse> --public` (lecture seule), lue côté serveur seulement (validée par `apps/site/src/lib/env.ts`). Le site relaie `/mcp` vers `<origine>/mcp`. **Aucun défaut** : sans valeur (ou avec une URL invalide), `/mcp` répond 503 et ni `llms.txt` ni `/.well-known/mcp.json` n'annoncent le serveur. |
+
 ## IA Aphrody — `@shenron/pipeline/ai/config` (contrat `aphrody-infra`)
 
 Les noms suivent le contrat IA local v1 d'`aphrody-infra` :
-[`config/local-ai.json`](../../../config/local-ai.json)
+fichier `local-ai.json` de la configuration d'`aphrody-infra`
 (noms canoniques, alias hérités, forme d'URL de chaque alias, index `shenron-rag` et valeurs
 de la cible `vps`). Le résolveur unique est `@shenron/pipeline/ai/config` (table `AI_ENV`) : bot,
 site, façades `@shenron/pipeline/aphrody`, pipeline et scripts passent tous par lui. Il lit le nom
@@ -97,7 +102,7 @@ reçoit `/v1`, un alias de forme `endpoint` perd son chemin d'opération. **Aucu
 défaut** : sans valeur, la capacité est désactivée, et un appel explicite (client de calcul,
 scripts) échoue avec une erreur qui nomme les variables, jamais leurs valeurs. Toutes les URL
 doivent être en HTTP sur une adresse de boucle locale. Le test
-`packages/shenron/pipeline/test/ai/config.test.ts` vérifie la parité avec le contrat quand le dépôt voisin
+`packages/pipeline/test/ai/config.test.ts` vérifie la parité avec le contrat quand le dépôt voisin
 `aphrody-infra` est présent.
 
 | Rôle | Canonique | Alias lus ensuite (forme) | Défaut |
@@ -131,10 +136,10 @@ Autres variables Aphrody :
 | `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN` | API web/crawl d'Aphrody. |
 | `APHRODY_BIN` | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`. |
 
-## Bot Discord — `apps/shenron/bot/src/lib/env.ts`
+## Bot Discord — `apps/bot/src/lib/env.ts`
 
 Validées par zod ; un identifiant absent désactive la fonctionnalité concernée. Modèle commenté :
-`apps/shenron/bot/.env.example`.
+`apps/bot/.env.example`.
 
 - Discord : `DISCORD_TOKEN_SHENRON` (repli `DISCORD_TOKEN`), `APPLICATION_ID_SHENRON`
   (repli `APPLICATION_ID`), `DISCORD_PUBLIC_KEY`, `GUILD_ID`, `OWNER_ID` / `OWNER_IDS`,
@@ -145,28 +150,3 @@ Validées par zod ; un identifiant absent désactive la fonctionnalité concern�
 - API : `API_ENABLED`, `API_HOST`, `API_PORT`, `API_ADMIN_TOKEN`, `API_USER_SECRET`.
 - Traduction : `LIBRETRANSLATE_URL`, `LIBRETRANSLATE_API_KEY`, `LINGVA_INSTANCE`.
 - Divers : `LOG_LEVEL`, `NODE_ENV`.
-
-## Développement local
-
-`scripts/dev/shenron/scripts/dev/local-env.ts` réécrit les URL de service (`DATABASE_URL`, `REDIS_URL`,
-`APHRODY_AI_HTTP_URL`, `APHRODY_AI_EMBED_BASE_URL`, `SHENRON_API_URL`) vers les tunnels
-locaux, recopie le jeton sous `APHRODY_AI_HTTP_TOKEN`, retire les alias IA hérités qu'il
-remplace et `NODE_ENV`. Détail : [`DEV-LOCAL.md`](DEV-LOCAL.md).
-
-## Profils dev / prod
-
-Le switch de bout en bout est généré sans modifier le `.env` racine :
-
-- `bun run env:dev` cible PostgreSQL `shenron_site` local (`127.0.0.1:5432`), le clone Redis
-  Shenron (`127.0.0.1:16379`), les ports locaux du bot/site et les callbacks OAuth locaux.
-  Les tokens Discord sont supprimés par défaut ; `DISCORD_TOKEN_DEV` est requis pour lancer
-  volontairement un bot de développement.
-- `bun run env:prod` conserve les endpoints publics, l'URL PostgreSQL et Redis de production,
-  les callbacks OAuth publics et utilise `DISCORD_TOKEN_PROD` (repli contrôlé sur
-  `DISCORD_TOKEN`).
-
-Les deux commandes écrivent uniquement les fichiers ignorés `apps/site/.env.local` (not in repo) et
-`apps/bot/.env.local` (not in repo). `NODE_ENV` reste fixé par la commande (`next dev`, `next build` ou
-`bun test`). Nginx garde une seule route par profil : le vhost local loopback est fourni par
-la configuration locale, tandis que les routes de production restent gérées par
-`aphrody-infra`.

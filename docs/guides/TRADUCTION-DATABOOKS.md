@@ -5,7 +5,7 @@
 La chaîne traduit les planches japonaises déjà transcrites dans
 `bot.db_databooks`, dépose uniquement les sorties validées dans PostgreSQL,
 puis reconstruit le corpus RAG des databooks. PostgreSQL reste la source de
-vérité ; `apps/bot/data/rag/corpus-databooks.json` (not in repo) est un artefact dérivé.
+vérité ; `apps/bot/data/rag/corpus-databooks.json` est un artefact dérivé.
 
 Le pipeline ne traduit jamais une transcription que le juge source classe
 comme bruitée. Une page refusée par l'OCR doit d'abord repasser par une
@@ -63,7 +63,7 @@ Toutes les commandes s'exécutent avec Bun, jamais avec Node :
 
 ```powershell
 # Vérification sans écriture
-bun run pipeline translate --dry-run
+bun run --filter @shenron/pipeline pipeline translate --dry-run
 
 # Session complète : 4 shards, lots de 8, dépôt et RAG
 bun scripts/ops/translate-databooks-session.ts --workers 4 --batch 8
@@ -114,7 +114,7 @@ Run : `databook-translation-20260924235829`
 - PostgreSQL après reprise : 470 ouvrages, 17 369 pages, 16 402 JA, 11 318 FR.
   Restent 2 556 pages éligibles et 2 528 refusées par le juge source/OCR.
 - RAG : 24 775 documents, 10 286 traductions ; artefact
-  `apps/bot/data/rag/corpus-databooks.json` (not in repo).
+  `apps/bot/data/rag/corpus-databooks.json`.
 
 La session complète précédente reste conservée ci-dessous comme preuve
 historique ; elle ne doit pas être utilisée pour déduire les compteurs actuels.
@@ -124,12 +124,12 @@ Run historique : `databook-translation-20260924233856`
 - 4 lanes, batch 8 ; lanes 1 à 4 : code 0.
 - Durée observée : environ 10 minutes.
 - Ingestion RAG : `completed`.
-- Artefact : `apps/bot/data/rag/corpus-databooks.json` (not in repo).
+- Artefact : `apps/bot/data/rag/corpus-databooks.json`.
 - Dernier journal d'ingestion : 24 659 documents, 14 063/15 086 planches
   retenues, 1 023 écartées par le juge, 10 170 traductions indexées.
 
 Les compteurs PostgreSQL globaux doivent être relus avec
-`translate-databooks-corpus.ts --statut` lorsque le tunnel `15433` est sain.
+`translate-databooks-corpus.ts --statut` lorsque l'accès PostgreSQL est sain.
 Ils ne doivent pas être déduits du seul nombre de documents RAG : les ouvrages
 masqués, les pages rejetées et les fiches d'ouvrages ont des périmètres
 différents.

@@ -29,7 +29,7 @@ que les nombres.
 
 ### Trait d'encre
 
-Mesuré par `scripts/mesurer.py --sombre` sur l'illustration seule (654 px de
+Mesuré par `plugin/skills/toriyama-svg/scripts/mesurer.py --sombre` sur l'illustration seule (654 px de
 large) : **4,0 px de médiane, soit 0,61 % de la largeur du sujet**.
 
 C'est la mesure qui confirme le `border: 2px` des cases du site : sur une carte

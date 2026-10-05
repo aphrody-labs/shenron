@@ -21,12 +21,10 @@ Bun 1.4.2 (`packageManager`), linker isolé ; règles de dépendances dans
 - Le site lit son environnement par `apps/site/src/lib/env.ts` (t3-env) ; le bot
   par `apps/bot/src/lib/env.ts`. Les défauts codés ne vivent que dans
   `@shenron/config`. Référence des noms : [`ENV.md`](ENV.md).
-- `bun scripts/dev/local-env.ts env --profile=dev|prod` dérive un `.env.local`
-  par application depuis le `.env` racine (doublons résolus, `NODE_ENV` retiré,
-  URL de service réécrites vers les tunnels locaux). `tunnels` ouvre les tunnels
-  SSH et `status` les sonde ; les ports viennent du catalogue `aphrody-infra`,
-  jamais de ce dépôt. Ces tunnels mènent aux services de production : écritures
-  éditoriales par les procédures du dépôt seulement, jamais de `rag:build`.
+- L'accès aux services distants (PostgreSQL, calcul Aphrody) passe par les
+  tunnels et fichiers d'environnement fournis par `aphrody-infra` ; ils mènent
+  aux services de production : écritures éditoriales par les procédures du dépôt
+  seulement, jamais de `rag:build`.
 
 ## Lancer
 
@@ -57,8 +55,6 @@ bun run clippy:rust && bun run test:rust
 - **Windows** : Turbopack lance un processus `node` pour PostCSS/Tailwind, absent
   d'un poste Bun seul. Le dev et le build du site se font dans WSL ; typecheck,
   lint et tests restent utilisables sous Windows.
-- **WSL** : des tunnels lancés depuis une session `wsl.exe` se ferment avec elle ;
-  les détacher (`setsid nohup …`).
 - **`next dev` réécrit `apps/site/tsconfig.json`** : restaurer le fichier avant
   de committer.
 - Autres faits mesurés : [`pieges.md`](../guides/pieges.md).
