@@ -26,7 +26,6 @@
     "./redis": "./src/redis.ts"
   },
   "scripts": {
-    "type-check": "tsc --noEmit",
     "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test",
     "audit:migrations": "bun scripts/migration-audit.ts --check",

@@ -3,32 +3,36 @@
  * Provides safe detection and invocation of Rust commands via Tauri 2.0 IPC.
  */
 
-declare global {
-  interface Window {
-    __TAURI_INTERNALS__?: {
+/** Tauri globals injected into the webview (absent in Bun, Node and plain browsers). */
+interface TauriGlobals {
+  __TAURI_INTERNALS__?: {
+    invoke: <T = unknown>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
+  };
+  __TAURI__?: {
+    core?: {
       invoke: <T = unknown>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
     };
-    __TAURI__?: {
-      core?: {
-        invoke: <T = unknown>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
-      };
-      event?: {
-        listen: <T = unknown>(
-          event: string,
-          handler: (event: { payload: T }) => void,
-        ) => Promise<() => void>;
-        emit: (event: string, payload?: unknown) => Promise<void>;
-      };
+    event?: {
+      listen: <T = unknown>(
+        event: string,
+        handler: (event: { payload: T }) => void,
+      ) => Promise<() => void>;
+      emit: (event: string, payload?: unknown) => Promise<void>;
     };
-  }
+  };
+}
+
+/** The Tauri globals through `globalThis`: no DOM `window` typing needed. */
+function tauriGlobals(): TauriGlobals {
+  return globalThis as TauriGlobals;
 }
 
 /**
  * Checks if the current environment is running inside a Tauri container.
  */
 export function isTauri(): boolean {
-  if (typeof window === "undefined") return false;
-  return Boolean(window.__TAURI_INTERNALS__ || window.__TAURI__);
+  const g = tauriGlobals();
+  return Boolean(g.__TAURI_INTERNALS__ || g.__TAURI__);
 }
 
 /**
@@ -36,18 +40,13 @@ export function isTauri(): boolean {
  * Throws an error if not in a Tauri environment.
  */
 export async function tauriInvoke<T>(command: string, args?: Record<string, unknown>): Promise<T> {
-  if (typeof window === "undefined") {
-    throw new Error(
-      `[PIPELINE-IPC] Cannot invoke Tauri command '${command}' in non-browser environment.`,
-    );
+  const g = tauriGlobals();
+  if (g.__TAURI_INTERNALS__?.invoke) {
+    return g.__TAURI_INTERNALS__.invoke<T>(command, args);
   }
 
-  if (window.__TAURI_INTERNALS__?.invoke) {
-    return window.__TAURI_INTERNALS__.invoke<T>(command, args);
-  }
-
-  if (window.__TAURI__?.core?.invoke) {
-    return window.__TAURI__.core.invoke<T>(command, args);
+  if (g.__TAURI__?.core?.invoke) {
+    return g.__TAURI__.core.invoke<T>(command, args);
   }
 
   // Try dynamic import of @aphrody/api/core if available in bundle
@@ -73,10 +72,9 @@ export async function tauriListen<T>(
   event: string,
   callback: (payload: T) => void,
 ): Promise<() => void> {
-  if (typeof window === "undefined") return () => {};
-
-  if (window.__TAURI__?.event?.listen) {
-    return window.__TAURI__.event.listen<T>(event, (e) => callback(e.payload));
+  const g = tauriGlobals();
+  if (g.__TAURI__?.event?.listen) {
+    return g.__TAURI__.event.listen<T>(event, (e) => callback(e.payload));
   }
 
   try {

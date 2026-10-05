@@ -11,7 +11,7 @@
     "./engine": "./src/engine.ts"
   },
   "scripts": {
-    "type-check": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
     "@shenron/media": "workspace:*"
