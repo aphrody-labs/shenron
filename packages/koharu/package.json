@@ -2,15 +2,11 @@
   "name": "@shenron/koharu",
   "version": "0.2.0",
   "private": true,
-  "description": "Koharu manga translation engine client for Shenron: typed IPC protocol (generated from koharu-app), Tauri and native transports, settings, media and the wasm canvas.",
+  "description": "Koharu manga translation engine client for Shenron: typed IPC protocol generated from koharu-app (Tauri Specta), the koharu-sdk JSON Lines transport and the wasm canvas.",
   "license": "MIT OR Apache-2.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./tauri": "./src/tauri.ts",
     "./native": "./src/native.ts",
-    "./settings": "./src/settings.ts",
-    "./media": "./src/media.ts",
     "./canvas": "./src/canvas.ts",
     "./protocol": "./src/protocol.ts"
   },
@@ -22,8 +18,7 @@
     "protocol": "cargo run -p koharu-app --bin generate"
   },
   "dependencies": {
-    "@aphrody/api": "3.0.0-alpha.2",
-    "@shenron/media": "workspace:*"
+    "@aphrody/api": "3.0.0-alpha.2"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
@@ -34,12 +29,8 @@
   },
   "shenron": {
     "runtime": {
-      ".": "pure",
-      "./tauri": "pure",
-      "./native": "pure",
-      "./settings": "pure",
-      "./media": "pure",
-      "./canvas": "pure",
+      "./native": "bun",
+      "./canvas": "react",
       "./protocol": "pure"
     }
   }

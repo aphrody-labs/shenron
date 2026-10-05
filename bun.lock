@@ -231,7 +231,6 @@
       "version": "0.2.0",
       "dependencies": {
         "@aphrody/api": "3.0.0-alpha.2",
-        "@shenron/media": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
