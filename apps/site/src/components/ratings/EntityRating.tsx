@@ -11,7 +11,7 @@
 import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { useCallback, useEffect, useId, useState } from "react";
-import { Bulle, Chargement, ChevronBas, Corbeille, Etoile } from "@/components/icones";
+import { Bulle, Chargement, ChevronBas, Corbeille, Etoile } from "@shenron/ui/icones";
 import { useMe } from "@/lib/use-me";
 import { RatingBadge, Stars } from "./Stars";
 import { onTablistKeyDown } from "@/lib/tablist-keys";

@@ -6,7 +6,7 @@
  */
 import { useId, useMemo, useState } from "react";
 import Link from "next/link";
-import { Couronne, Etoile, Recompense, Trophee } from "@/components/icones";
+import { Couronne, Etoile, Recompense, Trophee } from "@shenron/ui/icones";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import type { CommunityTopBoard, CommunityTopsPayload } from "@/lib/community-tops";
 import { onTablistKeyDown } from "@/lib/tablist-keys";

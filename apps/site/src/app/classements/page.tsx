@@ -10,7 +10,7 @@ import { getShenronLeaderboard, type LeaderboardEntry } from "@/lib/shenron";
 import { getTopRaters, type ContributorRow } from "@/lib/contributors";
 import { TopRatersBoard, TopZeniBoard } from "@/components/contest/ContestBoards";
 import { ogMeta } from "@/lib/og";
-import { Couronne, Trophee } from "@/components/icones";
+import { Couronne, Trophee } from "@shenron/ui/icones";
 import { Avatar } from "@/components/Avatar";
 import { formatZeni } from "@/lib/zeni";
 

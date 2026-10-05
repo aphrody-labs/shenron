@@ -17,7 +17,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useMe } from "@/lib/use-me";
-import { Coeur } from "@/components/icones";
+import { Coeur } from "@shenron/ui/icones";
 import { socialErrorMessage } from "@/lib/social-shared";
 
 export function LikeButton({

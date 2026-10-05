@@ -1,7 +1,7 @@
 "use client";
 
 import { type MouseEvent, useCallback, useEffect, useState } from "react";
-import { Chargement, Coche, Crayon, Croix, Etincelle, Sac } from "@/components/icones";
+import { Chargement, Coche, Crayon, Croix, Etincelle, Sac } from "@shenron/ui/icones";
 import Link from "next/link";
 import { formatZeni } from "@/lib/zeni";
 

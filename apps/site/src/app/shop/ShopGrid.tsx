@@ -19,7 +19,7 @@
  * portée, aucun emoji.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Cadenas, Chargement, Coche, Piece, Sac } from "@/components/icones";
+import { Cadenas, Chargement, Coche, Piece, Sac } from "@shenron/ui/icones";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import type { CanonPrice, ShopEconomy } from "@/lib/shenron";
 import { formatZeni } from "@/lib/zeni";
