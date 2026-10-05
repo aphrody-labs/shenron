@@ -1040,7 +1040,7 @@
     },
     "table": {
       "empty": "表示する行はありません。",
-      "noMatch": "「{query}」に一致する行はありません。",
+      "noMatch": "「{query}」に一致する行はありません。絞り込みを解除するとすべて表示されます。",
       "search": "表を絞り込む",
       "searchPlaceholder": "絞り込み…",
       "clearSearch": "絞り込みを解除",
@@ -1057,7 +1057,16 @@
       "selectRow": "{row} を選択",
       "selected": "{count} 件選択中",
       "clearSelection": "選択を解除",
-      "shortcuts": "j / k：次・前の行 · x：選択 · /：絞り込み · [ ]：ページ"
+      "detailTitle": "詳細",
+      "detailEmpty": "行を選ぶと詳細が表示されます。",
+      "showDetail": "詳細を表示",
+      "closeDetail": "詳細を閉じる",
+      "shortcutsTitle": "キーボードショートカット",
+      "shortcutMove": "次・前の行",
+      "shortcutOpen": "行を開く",
+      "shortcutSelect": "行にチェック",
+      "shortcutFilter": "絞り込み",
+      "shortcutPage": "前・次のページ"
     },
     "confirm": {
       "confirm": "確定",
@@ -1331,7 +1340,7 @@
       },
       "leaderboards": {
         "title": "ランキング",
-        "description": "サーバーの上位 50 人（指標別）。"
+        "description": "サーバーの上位メンバー（指標別）。"
       },
       "ursaf": {
         "title": "URSAF とインフレ",

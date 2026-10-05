@@ -1040,7 +1040,7 @@
     },
     "table": {
       "empty": "Aucune ligne à afficher.",
-      "noMatch": "Aucune ligne ne correspond à « {query} ».",
+      "noMatch": "Aucune ligne ne correspond à « {query} ». Effacez le filtre pour tout revoir.",
       "search": "Filtrer le tableau",
       "searchPlaceholder": "Filtrer…",
       "clearSearch": "Effacer le filtre",
@@ -1057,7 +1057,16 @@
       "selectRow": "Sélectionner {row}",
       "selected": "{count} sélectionnée(s)",
       "clearSelection": "Tout désélectionner",
-      "shortcuts": "j / k : ligne suivante ou précédente · x : sélectionner · / : filtrer · [ ] : page"
+      "detailTitle": "Détail",
+      "detailEmpty": "Choisissez une ligne pour afficher son détail.",
+      "showDetail": "Voir le détail",
+      "closeDetail": "Fermer le détail",
+      "shortcutsTitle": "Raccourcis clavier",
+      "shortcutMove": "ligne suivante ou précédente",
+      "shortcutOpen": "ouvrir la ligne",
+      "shortcutSelect": "cocher la ligne",
+      "shortcutFilter": "filtrer",
+      "shortcutPage": "page précédente ou suivante"
     },
     "confirm": {
       "confirm": "Confirmer",
@@ -1331,7 +1340,7 @@
       },
       "leaderboards": {
         "title": "Classements",
-        "description": "Les 50 premiers membres du serveur, par métrique."
+        "description": "Les membres en tête du serveur, par métrique."
       },
       "ursaf": {
         "title": "URSAF et inflation",
