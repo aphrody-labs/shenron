@@ -1,14 +1,16 @@
 #!/usr/bin/env bun
-import { tempPath } from "@aphrody/paths";
 /**
- * Rastérise un SVG à plusieurs tailles et monte une planche de contrôle sur
- * fond clair et sur fond sombre — l'image qu'on ouvre ensuite pour REGARDER
- * le dessin.
+ * Planche de contrôle d'un SVG à plusieurs tailles, sur fond clair et sombre :
+ * l'image qu'on ouvre ensuite pour REGARDER le dessin.
  *
- * Regarder est la moitié du travail : un SVG qui semble juste dans le code peut
- * s'effondrer à 32 px, avoir un trait qui disparaît, ou révéler une ombre qui
- * flotte. Les petites tailles sont zoomées au plus proche voisin pour rendre
- * visible ce que le navigateur affichera vraiment.
+ * Un SVG qui semble juste dans le code peut s'effondrer à 32 px, perdre son
+ * trait ou révéler une ombre qui flotte. Chaque taille est rendue nativement
+ * puis agrandie au plus proche voisin : on voit les pixels réels.
+ *
+ * Rastérisation optionnelle (`raster.ts`) : resvg, rsvg-convert, ImageMagick
+ * ou Inkscape s'il en existe un. Sans aucun de ces outils, le script écrit une
+ * planche SVG pure (`planche.svg`, rendu vectoriel à chaque taille) et signale
+ * que le contrôle des pixels n'a pas été fait.
  *
  * Usage :
  *   bun rendu.ts dessin.svg                       # 512, 128, 64, 32, 16
@@ -16,115 +18,126 @@ import { tempPath } from "@aphrody/paths";
  *   bun rendu.ts dessin.svg --compare reference.png
  *   bun rendu.ts dessin.svg --sortie /tmp/controle
  */
-import sharp from "sharp";
+import { mkdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { agrandir, aHauteur, encoderPng, imageUnie, poser, type ImageRGBA } from "./png";
+import { dimensionsSvg, imbriquable, lireImage, outilSvg, svgVersPng } from "./raster";
 
-const args = Bun.argv.slice(2);
-const source = args.find((a) => !a.startsWith("--"));
-if (!source) {
-  console.error(
-    "usage : bun rendu.ts <fichier.svg> [--tailles …] [--compare ref.png] [--sortie DIR]",
-  );
-  process.exit(1);
-}
-const lire = (nom: string, defaut: string) => {
-  const i = args.indexOf(nom);
-  return i >= 0 && args[i + 1] ? args[i + 1] : defaut;
-};
-const sortie = lire("--sortie", tempPath("rendu"));
-const iT = args.indexOf("--tailles");
-const tailles =
-  iT >= 0
-    ? args
-        .slice(iT + 1)
-        .filter((a) => /^\d+$/.test(a))
-        .map(Number)
-    : [512, 128, 64, 32, 16];
-const comparaison = args.indexOf("--compare") >= 0 ? args[args.indexOf("--compare") + 1] : null;
-
-const svg = await Bun.file(source).bytes();
-const meta = await sharp(svg).metadata();
-const ratio = (meta.width ?? 1) / (meta.height ?? 1);
-
-await Bun.$`mkdir -p ${sortie}`.quiet();
-
-/** Chaque taille est rendue nativement puis agrandie au plus proche voisin :
- *  on voit les pixels réels, pas une interpolation qui flatte le dessin. */
 const CIBLE = 220;
-const vignettes: { taille: number; buf: Buffer }[] = [];
-for (const t of tailles) {
-  const h = Math.max(1, Math.round(t / ratio));
-  const rendu = await sharp(svg, { density: Math.max(72, (72 * t) / (meta.width ?? t)) })
-    .resize(t, h, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png()
-    .toBuffer();
-  await Bun.write(`${sortie}/rendu-${t}.png`, rendu);
-  const facteur = Math.max(1, Math.floor(CIBLE / t));
-  vignettes.push({
-    taille: t,
-    buf: await sharp(rendu)
-      .resize(t * facteur, h * facteur, { kernel: facteur > 1 ? "nearest" : "lanczos3" })
-      .png()
-      .toBuffer(),
+const MARGE = 12;
+
+/** Planche SVG pure : le dessin imbriqué à chaque taille, sur les deux fonds. */
+export function plancheSvg(svg: string, tailles: number[]): string {
+  const { largeur, hauteur } = dimensionsSvg(svg);
+  const ratio = largeur / hauteur;
+  const { viewBox, interieur } = imbriquable(svg);
+  const cases = tailles.map((t) => {
+    const facteur = Math.max(1, Math.floor(CIBLE / t));
+    return { t, l: t * facteur, h: Math.max(1, Math.round(t / ratio)) * facteur };
   });
+  const H = Math.max(...cases.map((c) => c.h)) + MARGE * 2;
+  const W = cases.reduce((s, c) => s + c.l + MARGE, MARGE);
+  const rangee = (fond: string, y: number) => {
+    let x = MARGE;
+    const items = cases.map((c) => {
+      const s = `<svg x="${x}" y="${y + Math.round((H - c.h) / 2)}" width="${c.l}" height="${c.h}" viewBox="${viewBox}">${interieur}</svg>`;
+      x += c.l + MARGE;
+      return s;
+    });
+    return `<rect x="0" y="${y}" width="${W}" height="${H}" fill="${fond}"/>\n${items.join("\n")}`;
+  };
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H * 2}" width="${W}" height="${H * 2}">
+${rangee("#ffffff", 0)}
+${rangee("#0a0a0a", H)}
+</svg>
+`;
 }
 
-async function planche(fond: string, nom: string) {
-  const marge = 12;
-  const hauteurs = await Promise.all(
-    vignettes.map(async (v) => (await sharp(v.buf).metadata()).height ?? 0),
+function planche(vignettes: ImageRGBA[], fond: string): ImageRGBA {
+  const H = Math.max(...vignettes.map((v) => v.hauteur)) + MARGE * 2;
+  const W = vignettes.reduce((s, v) => s + v.largeur + MARGE, MARGE);
+  const image = imageUnie(W, H, fond);
+  let x = MARGE;
+  for (const v of vignettes) {
+    poser(image, v, x, Math.round((H - v.hauteur) / 2));
+    x += v.largeur + MARGE;
+  }
+  return image;
+}
+
+if (import.meta.main) {
+  const args = Bun.argv.slice(2);
+  const source = args.find(
+    (a, i) =>
+      !a.startsWith("--") &&
+      !/^\d+$/.test(a) &&
+      args[i - 1] !== "--compare" &&
+      args[i - 1] !== "--sortie",
   );
-  const largeurs = await Promise.all(
-    vignettes.map(async (v) => (await sharp(v.buf).metadata()).width ?? 0),
+  if (!source) {
+    console.error(
+      "usage : bun rendu.ts <fichier.svg> [--tailles …] [--compare ref.png] [--sortie DIR]",
+    );
+    process.exit(1);
+  }
+  const option = (nom: string) => {
+    const i = args.indexOf(nom);
+    return i >= 0 ? args[i + 1] : undefined;
+  };
+  const sortie = option("--sortie") ?? join(tmpdir(), "rendu");
+  const iT = args.indexOf("--tailles");
+  const tailles =
+    iT >= 0
+      ? args
+          .slice(iT + 1)
+          .filter((a) => /^\d+$/.test(a))
+          .map(Number)
+      : [512, 128, 64, 32, 16];
+  const comparaison = option("--compare");
+  const svg = await Bun.file(source).text();
+  const { largeur, hauteur } = dimensionsSvg(svg);
+  const ratio = largeur / hauteur;
+  await mkdir(sortie, { recursive: true });
+
+  await Bun.write(join(sortie, "planche.svg"), plancheSvg(svg, tailles));
+  const outil = await outilSvg();
+  console.log(`viewBox ${largeur}×${hauteur} — ratio ${ratio.toFixed(3)}`);
+  console.log(`tailles : ${tailles.join(", ")}`);
+  console.log(`${sortie}/planche.svg (vectorielle, clair puis sombre)`);
+  if (!outil) {
+    console.log(
+      "⚠ aucun rastériseur (resvg, rsvg-convert, magick/convert, inkscape) : contrôle des pixels NON effectué.\n" +
+        "  Ouvrir planche.svg dans un navigateur, ou installer resvg puis relancer.",
+    );
+    process.exit(0);
+  }
+
+  const vignettes: ImageRGBA[] = [];
+  for (const t of tailles) {
+    const h = Math.max(1, Math.round(t / ratio));
+    const rendu = await svgVersPng(svg, t, h, outil);
+    await Bun.write(join(sortie, `rendu-${t}.png`), encoderPng(rendu));
+    vignettes.push(agrandir(rendu, Math.max(1, Math.floor(CIBLE / t))));
+  }
+  await Bun.write(join(sortie, "planche-clair.png"), encoderPng(planche(vignettes, "#ffffff")));
+  await Bun.write(join(sortie, "planche-sombre.png"), encoderPng(planche(vignettes, "#0a0a0a")));
+  console.log(`rastériseur : ${outil}`);
+  console.log(`${sortie}/planche-clair.png`);
+  console.log(`${sortie}/planche-sombre.png`);
+
+  if (comparaison) {
+    // Côte à côte à hauteur égale : l'œil ne corrige pas une différence d'échelle.
+    const h = 420;
+    const a = await svgVersPng(svg, Math.round(h * ratio), h, outil);
+    const b = aHauteur(await lireImage(comparaison), h);
+    const image = imageUnie(a.largeur + b.largeur + 24, h + 16, "#ffffff");
+    poser(image, a, 8, 8);
+    poser(image, b, a.largeur + 16, 8);
+    await Bun.write(join(sortie, "comparaison.png"), encoderPng(image));
+    console.log(`${sortie}/comparaison.png`);
+  }
+  console.log(
+    "→ ouvrir ces planches avec l'outil de lecture d'image AVANT de conclure quoi que ce soit.",
   );
-  const H = Math.max(...hauteurs) + marge * 2;
-  const W = largeurs.reduce((s, l) => s + l + marge, marge);
-  let x = marge;
-  const calques = vignettes.map((v, i) => {
-    const left = x;
-    x += largeurs[i] + marge;
-    return { input: v.buf, left, top: Math.round((H - hauteurs[i]) / 2) };
-  });
-  await sharp({ create: { width: W, height: H, channels: 4, background: fond } })
-    .composite(calques)
-    .png()
-    .toFile(`${sortie}/${nom}`);
 }
-
-await planche("#ffffff", "planche-clair.png");
-await planche("#0a0a0a", "planche-sombre.png");
-
-if (comparaison) {
-  // Côte à côte à hauteur égale : c'est la seule comparaison honnête, l'œil
-  // ne sait pas corriger une différence d'échelle.
-  const h = 420;
-  const a = await sharp(svg)
-    .resize({ height: h })
-    .flatten({ background: "#ffffff" })
-    .png()
-    .toBuffer();
-  const b = await sharp(comparaison)
-    .resize({ height: h })
-    .flatten({ background: "#ffffff" })
-    .png()
-    .toBuffer();
-  const la = (await sharp(a).metadata()).width ?? 0;
-  const lb = (await sharp(b).metadata()).width ?? 0;
-  await sharp({
-    create: { width: la + lb + 24, height: h + 16, channels: 4, background: "#ffffff" },
-  })
-    .composite([
-      { input: a, left: 8, top: 8 },
-      { input: b, left: la + 16, top: 8 },
-    ])
-    .png()
-    .toFile(`${sortie}/comparaison.png`);
-}
-
-console.log(`viewBox ${meta.width}×${meta.height} — ratio ${ratio.toFixed(3)}`);
-console.log(`tailles : ${tailles.join(", ")}`);
-console.log(`${sortie}/planche-clair.png`);
-console.log(`${sortie}/planche-sombre.png`);
-if (comparaison) console.log(`${sortie}/comparaison.png`);
-console.log(
-  "→ ouvrir ces planches avec l'outil de lecture d'image AVANT de conclure quoi que ce soit.",
-);

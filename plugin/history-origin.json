@@ -1,7 +1,0 @@
-{
-  "root": "/home/aphro/aphrody",
-  "prefix": "plugins/shenron",
-  "revision": "41635ebe5e322f62aa53208538884fd8a85c5482^",
-  "extractedCommit": "95958508fb4f078393596a196b993c10b88b0043",
-  "method": "git subtree split; current canonical files preserved"
-}

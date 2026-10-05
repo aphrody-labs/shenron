@@ -1,8 +1,10 @@
 # Maintenance OCR — invariants
 
-Lire le code propriétaire `apps/site/src/lib/databooks-ocr/` et ses
-runners `scripts/corrige-*.ts` depuis Aphrody. Cette référence conserve les
-contre-exemples techniques ; leurs anciens volumes ne sont pas un état actuel.
+Cette référence conserve les invariants et contre-exemples de correction ; elle
+se lit hors ligne. Leurs anciens volumes ne sont pas un état actuel. Les commandes
+qui citent `apps/site/…` ou `scripts/…` exigent le dépôt Shenron (mainteneurs) ; le
+code propriétaire est `apps/site/src/lib/databooks-ocr/` et ses runners
+`apps/site/scripts/corrige-*.ts`.
 Ne jamais corriger un caractère sans preuve dans le scan ou règle déterministe
 qualifiée. Un nom absent du lexique n'est pas nécessairement fautif.
 
@@ -62,8 +64,8 @@ isolés. Une suite uniforme (`ーーーー`, `……`, `おおおお`) n'est pas
 
 ## Lecture et dépôt
 
-Recadrer les zones petites avec `scripts/decoupe-planche.ts` avant une seconde
-lecture. Ne pas déduire la lisibilité de la résolution : un artbook peut être
+Recadrer les zones petites avant une seconde lecture (dans le dépôt :
+`apps/site/scripts/decoupe-planche.ts`). Ne pas déduire la lisibilité de la résolution : un artbook peut être
 sans texte. Les onomatopées dessinées peuvent rester illisibles. Plusieurs
 lectures divergentes exigent comparaison au scan et audit, pas un choix fondé
 sur la longueur seule. Confusions fréquentes à vérifier, jamais substitutions

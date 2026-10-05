@@ -1,15 +1,19 @@
 # MCP Shenron et GraphQL
 
-> **S'applique quand :** un client MCP est connecté à `aphrody-mcp server` construit avec la fonctionnalité `dragonball`. **Sinon :** passe par l'API REST (`api.md`) ; la section GraphQL ne dépend pas du MCP.
+> **Facultatif.** Le MCP enrichit l'instantané embarqué quand il est connecté **et** que l'API derrière lui répond. Sans lui, les skills restent utilisables hors ligne ; la section GraphQL ne dépend pas du MCP.
 
-## MCP Dragon Ball via Aphrody
+## Serveur MCP Dragon Ball
 
-Le serveur unique `aphrody-mcp server` (stdio) est déclaré par le plugin
-`aphrody` (serveur `aphrody`) depuis le 2026-10-05 ; ce plugin n'en déclare
-pas de second pour éviter un catalogue dupliqué. Le noyau peut également
-héberger la capacité. Les noms serveur sont
-`dragonball.*` ; les préfixes exposés dépendent du client. L'ancien endpoint
-public `mcp.dragonballfr.com` et le serveur Bun séparé `shenron-mcp` sont retirés.
+Ce plugin déclare dans `.mcp.json` le serveur stdio `shenron-mcp` (crate
+`crates/shenron-mcp` du dépôt Shenron, binaire à placer dans le `PATH` :
+`cargo build --release -p shenron-mcp`). S'il n'est pas installé, le client
+signale un serveur qui ne démarre pas : c'est sans effet sur les skills, qui
+restent hors ligne. Le même catalogue peut aussi être exposé par un autre client
+(serveur `aphrody-mcp` du plugin `aphrody`) ; les préfixes affichés varient
+(`dragonball_*`, `mcp__…__dragonball_*`) : utiliser le nom et le schéma reçus.
+Le serveur interroge `SHENRON_API_URL` (défaut `https://bot.dragonballfr.com`) et
+`SHENRON_SITE_API_URL` (défaut `https://dragonballfr.com`) : sans réseau, ses
+outils publics échouent et renvoient une erreur à lire comme « source injoignable ».
 
 Le serveur possède deux catalogues (37 outils `dragonball.*`, comptés dans les
 sources le 2026-10-01) :
@@ -28,8 +32,8 @@ prouve pas que les API éditoriales, le RAG vectoriel ou le LLM sont joignables.
 
 ### Connexion
 
-Configure le client MCP avec `aphrody-mcp server` (stdio) et
-vérifie son catalogue d'outils. Les outils publics ne requièrent pas de jeton Shenron.
+Le client lance `shenron-mcp` (déclaré par le plugin) ou `aphrody-mcp server` ;
+vérifier son catalogue d'outils. Les outils publics ne requièrent pas de jeton Shenron.
 Les outils admin reçoivent leurs secrets API depuis l'environnement autorisé
 du processus ; ne mets jamais un secret dans une URL, `.mcp.json`, le dépôt,
 un script ou une conversation.
@@ -65,7 +69,7 @@ terminée. Vérifie son état avec `a2a_task_status` ou `a2a_task_list`.
 
 ### Outils admin
 
-Le serveur Aphrody enregistre ces cinq outils admin (secrets : `SHENRON_API_ADMIN_TOKEN` pour le bot, `SHENRON_DATABOOKS_API_TOKEN` pour le dépôt databooks ; voir `shenron-admin`) :
+Le serveur enregistre ces cinq outils admin (secrets : `SHENRON_API_ADMIN_TOKEN` pour le bot, `SHENRON_DATABOOKS_API_TOKEN` pour le dépôt databooks ; voir `shenron-admin`) :
 
 ```text
 dragonball.admin_databooks_deposit
@@ -85,10 +89,10 @@ passent par son CLI.
 ### Vérifier le catalogue public
 
 ```bash
-aphrody-mcp --help
+shenron-mcp --help    # ou : aphrody-mcp --help
 ```
 
-`aphrody-mcp --help` décrit le serveur et rappelle que l'ensemble d'outils
+`--help` décrit le serveur et rappelle que l'ensemble d'outils
 dépend des fonctionnalités Cargo de la construction. Pour l'appel `tools/list`,
 utilise le client MCP afin qu'il négocie correctement
 le transport et les versions du protocole. Évite de recopier un exemple JSON-RPC

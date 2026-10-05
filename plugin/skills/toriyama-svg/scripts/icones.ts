@@ -1,83 +1,43 @@
 #!/usr/bin/env bun
 /**
- * Décline un SVG carré en jeu complet de favicons, pour tous les formats et
- * toutes les plateformes, avec `sharp` seul.
+ * Décline un SVG carré en jeu complet de favicons, sans dépendance npm.
  *
- * Pourquoi pas de bibliothèque : mesuré sur le registre npm, `favicons` exige
- * son propre `sharp` (donc un second libvips), `to-ico` est abandonné depuis
- * 2017, `sharp-ico` dépend d'un `sharp: "*"` non épinglé, et `cli-real-favicon`
- * téléverse l'asset chez un tiers au moment du build. L'ICO n'est qu'un
- * conteneur de PNG : quinze lignes suffisent, et zéro dépendance ajoutée ne
- * casse jamais un déploiement.
+ * Les variantes (fond opaque, zone sûre « maskable » à 80 %) sont composées en
+ * SVG pur ; la rastérisation passe par l'outil local disponible (`raster.ts` :
+ * resvg, rsvg-convert, ImageMagick, Inkscape). L'ICO n'est qu'un conteneur de
+ * PNG, écrit ici octet par octet. Sans rastériseur, le script écrit les
+ * variantes SVG et signale que les PNG et l'ICO n'ont pas été produits.
  *
  * Usage :
  *   bun icones.ts icone.svg --sortie public/
- *   bun icones.ts icone.svg --sortie apps/site/public --sortie apps/bot/public
- *   bun icones.ts icone.svg --sortie public --fond "#0a0a0a" --logo assets/logo.webp
+ *   bun icones.ts icone.svg --sortie public --sortie autre/public --fond "#0a0a0a"
  *
  * Le SVG d'entrée doit être CARRÉ et déjà pensé pour les petites tailles
- * (silhouette simplifiée, trait épais, pastille de fond). Un downscale d'une
- * illustration large donne une lentille illisible à 16 px : dessiner la
- * variante carrée à part, ce n'est pas du zèle, c'est la seule chose qui marche.
+ * (silhouette simplifiée, trait épais, pastille de fond) : un downscale
+ * d'illustration large donne une lentille illisible à 16 px.
  */
-import sharp from "sharp";
+import { mkdir } from "node:fs/promises";
+import { join } from "node:path";
+import { dimensionsSvg, imbriquable, outilSvg, svgVersPng } from "./raster";
+import { encoderPng } from "./png";
 
-const args = Bun.argv.slice(2);
-const source = args.find((a) => !a.startsWith("--") && a.endsWith(".svg"));
-if (!source) {
-  console.error(
-    "usage : bun icones.ts <icone.svg> --sortie DIR [--sortie DIR2] [--fond #0a0a0a] [--logo chemin.webp]",
-  );
-  process.exit(1);
+/** Variante carrée : fond optionnel, dessin mis à l'échelle autour du centre. */
+export function variante(
+  svg: string,
+  cote: number,
+  { fond = null as string | null, echelle = 1 } = {},
+): string {
+  const { viewBox, interieur } = imbriquable(svg);
+  const interne = cote * echelle;
+  const marge = (cote - interne) / 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cote} ${cote}" width="${cote}" height="${cote}">
+${fond ? `<rect width="${cote}" height="${cote}" fill="${fond}"/>\n` : ""}<svg x="${marge}" y="${marge}" width="${interne}" height="${interne}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet">${interieur}</svg>
+</svg>
+`;
 }
-const dossiers = args.flatMap((a, i) =>
-  a === "--sortie" && args[i + 1] ? [args[i + 1].replace(/\/?$/, "/")] : [],
-);
-if (!dossiers.length) {
-  console.error("--sortie manquant");
-  process.exit(1);
-}
-const opt = (nom: string, defaut: string | null = null) => {
-  const i = args.indexOf(nom);
-  return i >= 0 && args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : defaut;
-};
-const fond = opt("--fond", "#0a0a0a") as string;
-const logo = opt("--logo");
-
-const svg = Buffer.from(await Bun.file(source).bytes());
-const meta = await sharp(svg).metadata();
-if (meta.width !== meta.height) {
-  console.warn(
-    `⚠ ${source} n'est pas carré (${meta.width}×${meta.height}) : les icônes seront rognées ou marginées.`,
-  );
-}
-
-const png = async (cote: number, { opaque = false, echelle = 1 } = {}) => {
-  const interne = Math.round(cote * echelle);
-  let s = sharp(svg, { density: Math.max(72, (72 * interne) / (meta.width ?? 512)) }).resize(
-    interne,
-    interne,
-    {
-      fit: "contain",
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    },
-  );
-  if (echelle !== 1) {
-    const marge = Math.round((cote - interne) / 2);
-    s = sharp(await s.png().toBuffer()).extend({
-      top: marge,
-      bottom: cote - interne - marge,
-      left: marge,
-      right: cote - interne - marge,
-      background: opaque ? fond : { r: 0, g: 0, b: 0, alpha: 0 },
-    });
-  }
-  if (opaque) s = s.flatten({ background: fond });
-  return s.png({ compressionLevel: 9 }).toBuffer();
-};
 
 /** ICO = en-tête (6 o) + une entrée de 16 o par image + les PNG bout à bout. */
-function ico(images: { cote: number; png: Uint8Array }[]): Uint8Array {
+export function ico(images: { cote: number; png: Uint8Array }[]): Uint8Array {
   const entetes = 6 + 16 * images.length;
   const sortie = new Uint8Array(entetes + images.reduce((n, i) => n + i.png.length, 0));
   const vue = new DataView(sortie.buffer);
@@ -89,8 +49,8 @@ function ico(images: { cote: number; png: Uint8Array }[]): Uint8Array {
     const e = 6 + 16 * rang;
     vue.setUint8(e, cote >= 256 ? 0 : cote);
     vue.setUint8(e + 1, cote >= 256 ? 0 : cote);
-    vue.setUint16(e + 4, 1, true); // plans
-    vue.setUint16(e + 6, 32, true); // bits par pixel
+    vue.setUint16(e + 4, 1, true);
+    vue.setUint16(e + 6, 32, true);
     vue.setUint32(e + 8, png.length, true);
     vue.setUint32(e + 12, decalage, true);
     sortie.set(png, decalage);
@@ -99,44 +59,95 @@ function ico(images: { cote: number; png: Uint8Array }[]): Uint8Array {
   return sortie;
 }
 
-const fichiers: Record<string, Uint8Array> = {};
-for (const cote of [16, 32, 48, 96]) fichiers[`favicon-${cote}.png`] = await png(cote);
-fichiers["favicon.ico"] = ico(
-  [16, 32, 48].map((cote) => ({ cote, png: fichiers[`favicon-${cote}.png`] })),
-);
-// iOS compose l'icône Apple sur du noir : transparente, elle sort sale.
-fichiers["apple-touch-icon.png"] = await png(180, { opaque: true });
-fichiers["icon-192.png"] = await png(192);
-fichiers["icon-512.png"] = await png(512);
-// Android rogne l'icône maskable en cercle : le dessin doit tenir dans 80 %.
-fichiers["icon-maskable-512.png"] = await png(512, { opaque: true, echelle: 0.8 });
-fichiers["mstile-150.png"] = await png(150, { opaque: true });
+/** Le jeu de fichiers : nom → { cote, fond?, echelle? }. */
+export const JEU: Record<string, { cote: number; opaque?: boolean; echelle?: number }> = {
+  "favicon-16.png": { cote: 16 },
+  "favicon-32.png": { cote: 32 },
+  "favicon-48.png": { cote: 48 },
+  "favicon-96.png": { cote: 96 },
+  // iOS compose l'icône Apple sur du noir : transparente, elle sort sale.
+  "apple-touch-icon.png": { cote: 180, opaque: true },
+  "icon-192.png": { cote: 192 },
+  "icon-512.png": { cote: 512 },
+  // Android rogne l'icône maskable en cercle : le dessin doit tenir dans 80 %.
+  "icon-maskable-512.png": { cote: 512, opaque: true, echelle: 0.8 },
+  "mstile-150.png": { cote: 150, opaque: true },
+};
 
-for (const dossier of dossiers) {
-  await Bun.$`mkdir -p ${dossier}`.quiet();
-  for (const [nom, contenu] of Object.entries(fichiers)) await Bun.write(dossier + nom, contenu);
-  console.log(`${dossier} — ${Object.keys(fichiers).length} fichiers`);
-}
-for (const [nom, contenu] of Object.entries(fichiers))
-  console.log(`  ${nom.padEnd(24)} ${contenu.length} o`);
+if (import.meta.main) {
+  const args = Bun.argv.slice(2);
+  const source = args.find((a) => !a.startsWith("--") && a.endsWith(".svg"));
+  const dossiers = args.flatMap((a, i) => (a === "--sortie" && args[i + 1] ? [args[i + 1]!] : []));
+  if (!source || !dossiers.length) {
+    console.error(
+      "usage : bun icones.ts <icone.svg> --sortie DIR [--sortie DIR2] [--fond #0a0a0a]",
+    );
+    process.exit(1);
+  }
+  const iF = args.indexOf("--fond");
+  const fond = iF >= 0 && args[iF + 1] ? args[iF + 1]! : "#0a0a0a";
+  const svg = await Bun.file(source).text();
+  const { largeur, hauteur } = dimensionsSvg(svg);
+  if (largeur !== hauteur) {
+    console.warn(
+      `⚠ ${source} n'est pas carré (${largeur}×${hauteur}) : les icônes seront marginées.`,
+    );
+  }
 
-if (logo) {
-  const buf = await sharp(svg, { density: 144 })
-    .resize(1024, 1024, { fit: "contain" })
-    .webp({ quality: 92 })
-    .toBuffer();
-  await Bun.write(logo, buf);
-  console.log(`${logo} — ${buf.length} o`);
-}
+  const variantes: Record<string, string> = {};
+  for (const [nom, v] of Object.entries(JEU)) {
+    variantes[nom.replace(/\.png$/, ".svg")] = variante(svg, v.cote, {
+      fond: v.opaque ? fond : null,
+      echelle: v.echelle ?? 1,
+    });
+  }
+  const outil = await outilSvg();
+  const fichiers: Record<string, Uint8Array> = {};
+  if (outil) {
+    for (const [nom, v] of Object.entries(JEU)) {
+      const png = await svgVersPng(
+        variantes[nom.replace(/\.png$/, ".svg")]!,
+        v.cote,
+        v.cote,
+        outil,
+      );
+      fichiers[nom] = encoderPng(png);
+    }
+    fichiers["favicon.ico"] = ico(
+      [16, 32, 48].map((cote) => ({ cote, png: fichiers[`favicon-${cote}.png`]! })),
+    );
+  }
+  fichiers["favicon.svg"] = new TextEncoder().encode(svg);
 
-console.log(`
+  for (const dossier of dossiers) {
+    await mkdir(dossier, { recursive: true });
+    for (const [nom, contenu] of Object.entries(fichiers))
+      await Bun.write(join(dossier, nom), contenu);
+    if (!outil) {
+      for (const [nom, contenu] of Object.entries(variantes))
+        await Bun.write(join(dossier, nom), contenu);
+    }
+    console.log(
+      `${dossier} — ${Object.keys(fichiers).length + (outil ? 0 : Object.keys(variantes).length)} fichiers`,
+    );
+  }
+  for (const [nom, contenu] of Object.entries(fichiers))
+    console.log(`  ${nom.padEnd(24)} ${contenu.length} o`);
+  if (!outil) {
+    console.log(
+      "⚠ aucun rastériseur (resvg, rsvg-convert, magick/convert, inkscape) : PNG et ICO NON produits.\n" +
+        "  Les variantes SVG (opaque, maskable 80 %) sont écrites ; les rastériser ailleurs avant livraison.",
+    );
+  } else console.log(`rastériseur : ${outil}`);
+
+  console.log(`
 À câbler côté page (Next : \`metadata.icons\`) :
-  icon      /favicon.ico (sizes any) + favicon-16/32/48/96.png
+  icon      /favicon.ico (sizes any) + favicon-16/32/48/96.png (+ /favicon.svg)
   apple     /apple-touch-icon.png (180×180)
-  other     mask-icon /safari-pinned-tab.svg (silhouette noire, à générer à part)
   meta      msapplication-TileColor ${fond} · msapplication-TileImage /mstile-150.png
 Dans le manifest, séparer icon-512 (purpose "any") de icon-maskable-512 (purpose
-"maskable") : un même fichier ne peut pas être les deux, et le déclarer "any
-maskable" fait rogner le dessin par Android.
+"maskable") : un même fichier ne peut pas être les deux.
 
-Vérifier ensuite :  file <sortie>/favicon.ico   → "MS Windows icon resource - 3 icons"`);
+Vérifier ensuite favicon.ico : octets 0-3 = 00 00 01 00 (icône), octets 4-5 = 03 00
+(trois images 16, 32, 48).`);
+}

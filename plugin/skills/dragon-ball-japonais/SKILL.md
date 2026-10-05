@@ -1,33 +1,54 @@
 ---
 name: dragon-ball-japonais
-description: "Vérifie les graphies et traduit le japonais Dragon Ball en français avec le lexique attesté du wiki et des databooks."
+description: "Vérifie les graphies et traduit le japonais Dragon Ball en français avec le lexique attesté embarqué (hors ligne), enrichi par le wiki et les databooks quand ils répondent."
 ---
 
 # Japonais Dragon Ball
 
 Appliquer le [contrat partagé](../../references/execution.md).
 
-Une graphie de fiction ne se déduit ni du rōmaji ni de la prononciation.
-Vérifier dans le scan ou les occurrences du corpus ; sans preuve, signaler
-l'incertitude et laisser la graphie vide. L'absence de JMdict/IPADIC n'est
-pas une preuve de faute.
+Une graphie de fiction ne se déduit ni du rōmaji ni de la prononciation. Sans
+preuve, signaler l'incertitude et laisser la graphie vide. L'absence de JMdict ou
+d'IPADIC n'est pas une preuve de faute, l'absence du lexique non plus.
 
-1. Chercher le japonais avec `dragonball_databooks_planches` ou
-   `GET https://dragonballfr.com/api/databooks/search?q=…&limit=3`.
-   L'index trigramme devient bruité sous trois signes ; un OCR isolé peut être faux.
-2. Trouver la forme française retenue avec `dragonball_wiki_search` ou
-   `https://bot.dragonballfr.com/api/public/wiki/search?q=…&limit=5` :
-   `name` et `name_ja`. Une valeur absente reste vide. Les routes
-   `/api/bot-user/…` exigent une session et ne sont pas ce flux public.
-3. Traduire avec protection du lexique, du terme le plus long au plus court,
-   puis vérifier tous les termes et nombres. Ne pas traduire une source
-   illisible ni combler ses lacunes. Conserver le ton factuel et les ellipses.
-4. Normaliser les points médians pour comparer ; séparer les cellules mixtes
-   `name_ja` sur les virgules et ne garder que les segments japonais. Le
-   contexte et la date de l'ouvrage priment sur la ressemblance d'un mot.
+## 1. Lexique embarqué (toujours)
 
-Charger seulement ce qui sert : [lexique](references/lexique.md) pour les noms ;
-[traduction et contrôle](references/traduction.md) pour JA→FR ;
-[outils du dépôt](references/outils.md) pour analyse ou maintenance.
-Les noms du domaine sont souvent absents des dictionnaires ; un taux de
-couverture ou une fréquence doit être remesuré avant d'être cité.
+Depuis le dossier de cette skill :
+
+```bash
+bun scripts/lexique.js cherche ベジータ          # graphie → forme française du wiki
+bun scripts/lexique.js cherche "Kaiô-ken"       # forme française → graphie
+bun scripts/lexique.js termes "孫悟空は界王拳を使った"
+bun scripts/lexique.js masque "孫悟空は界王拳を使った" > masque.json
+bun scripts/lexique.js restaure "Zeta001 a utilisé le Zeta002." --table masque.json
+```
+
+Le lexique (`references/lexique-canonique.json`, lisible dans
+[lexique-canonique.md](references/lexique-canonique.md)) est l'instantané des
+couples `name_ja` → `name` des fiches du wiki ; `lexique.js` applique les règles de
+masquage du site (le plus long d'abord, frontières de mot katakana, jetons `Zeta001`).
+Graphies prouvées par une planche de databook : `bun ../dragon-ball/scripts/faits.ts
+section graphies_japonaises_prouvees` ; techniques avec lecture et premier chapitre :
+`section techniques`. Pièges de graphie et de translittération : [lexique](references/lexique.md).
+
+## 2. Vérification vivante (facultative)
+
+Si les sources répondent : occurrences dans les databooks avec
+`dragonball_databooks_planches` ou `GET https://dragonballfr.com/api/databooks/search?q=…&limit=3`
+(l'index trigramme devient bruité sous trois signes ; un OCR isolé peut être faux),
+forme française retenue avec `dragonball_wiki_search` ou
+`https://bot.dragonballfr.com/api/public/wiki/search?q=…&limit=5` (`name`, `name_ja`).
+Les routes `/api/bot-user/…` exigent une session et ne sont pas ce flux public.
+
+## 3. Traduire
+
+Protéger le lexique, traduire les segments masqués, restaurer, puis vérifier tous
+les termes et nombres ([méthode et contrôle](references/traduction.md)). Ne pas
+traduire une source illisible ni combler ses lacunes ; conserver le ton factuel et
+les ellipses. Normaliser les points médians pour comparer ; séparer les cellules
+mixtes `name_ja` sur les virgules. Le contexte et la date de l'ouvrage priment sur
+la ressemblance d'un mot. Citer pour chaque nom la source : lexique (instantané,
+révision, date), planche prouvée, ou source vivante.
+
+[Outils du dépôt](references/outils.md) : seulement pour un mainteneur qui a le
+code Shenron, jamais nécessaires à cette skill.

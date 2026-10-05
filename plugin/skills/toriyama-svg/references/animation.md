@@ -50,7 +50,7 @@ paraît instable au lieu de battre la mesure.
 
 **Aura** — un contour flou (`filter: blur`) qui monte, avec des mèches
 d'énergie tracées comme des mèches de cheveux (voir `meche()` dans
-[scripts/geometrie.ts](../scripts/geometrie.ts)). L'aura de Toriyama est faite de pointes, pas d'un halo
+[scripts/toriyama.js](../scripts/toriyama.js)). L'aura de Toriyama est faite de pointes, pas d'un halo
 radial lisse.
 
 **Particules aspirées** — `<animateMotion>` sur un chemin qui converge vers la
@@ -75,10 +75,10 @@ un personnage les mains vides.
 
 ## Contrôler une animation sans navigateur
 
-Rendre trois ou quatre instants du cycle en PNG et les monter côte à côte : on
-voit immédiatement si la phase de détente existe, si le faisceau part bien de la
-paume, si l'aura déborde. Avec `sharp`, il suffit de générer une variante du SVG
-par instant (les animations remplacées par les valeurs figées correspondantes).
+Rendre trois ou quatre instants du cycle et les monter côte à côte : on voit
+immédiatement si la phase de détente existe, si le faisceau part bien de la paume,
+si l'aura déborde. Générer une variante du SVG par instant (animations remplacées
+par les valeurs figées correspondantes), puis `bun scripts/rendu.ts instant-N.svg`.
 C'est moins élégant qu'un navigateur, mais c'est reproductible et ça tient dans
 un script.
 

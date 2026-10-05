@@ -1,37 +1,45 @@
 ---
 name: toriyama-svg
-description: "Crée des assets vectoriels Dragon Ball depuis des références mesurées et vérifie leurs rendus ; icônes et animations incluses."
+description: "Crée des assets vectoriels Dragon Ball depuis des références mesurées et vérifie leurs rendus, avec la géométrie et les mesures embarquées (Bun seul, sans dépôt ni réseau) ; icônes et animations incluses."
 ---
 
 # Vectoriel Toriyama mesuré
 
 Appliquer le [contrat partagé](../../references/execution.md). Une référence
-mesurable est nécessaire ; sans elle, signaler ce qui manque sans inventer
-forme ou palette. Utiliser Python/Pillow/numpy et Bun/sharp déjà disponibles ;
-sinon consigner les mesures manuelles et le contrôle non effectué.
+mesurable est nécessaire ; sans elle, signaler ce qui manque sans inventer forme
+ni palette. Tout tient dans cette skill : Bun suffit, sans `sharp`, Python ni dépôt.
 
-1. Sourcer : [hiérarchie et corpus](references/sources.md). Le manga au trait
+1. **Sourcer** : [hiérarchie des sources](references/sources.md). Le manga au trait
    fonde la forme, l'édition couleur la palette ; signaler toute contradiction.
-2. Mesurer avec `scripts/mesurer.py` depuis cette skill ; regarder segmentation
-   et découpe. Créer `mesures.json` avant de dessiner, recouper une couleur
-   incohérente sur une seconde source.
-3. Consigner sources, proportions, palette et décision → mesure dans
-   `docs/reference/<sujet>-analyse-visuelle.md` depuis Aphrody.
-4. Réutiliser la géométrie propriétaire ; une seule source génère illustration,
-   composant et icônes. Construire les arcs entre creux et découper l'ombre par
-   la silhouette, sans décalquer ni vectoriser automatiquement une planche.
-5. Rendre avec `scripts/rendu.ts` à 512/128/64/32/16 px et `--compare`, puis
-   ouvrir les images sur fonds clair/sombre. Comparer ratio d'encre, contraste,
-   détails et ressemblance ; le code seul ne qualifie aucun rendu.
-6. Dessiner une variante carrée pour l'icône ; contrôler ICO réel, Apple opaque
-   et fichiers distincts `any`/`maskable` avec `scripts/icones.ts`.
+   Mesures déjà faites (embarquées) : [Kinto-Un](references/mesures/kinto-un-analyse-visuelle.md),
+   [couverture de tankōbon et Dragon Ball](references/mesures/couverture-analyse-visuelle.md).
+2. **Mesurer** une image fournie : `bun scripts/mesurer.ts image.png --teinte 40 70 --sat 0.3`
+   ou `--sombre` pour l'encre (PNG lu directement ; JPEG/WebP via ImageMagick ou
+   ffmpeg s'ils sont installés, sinon convertir en PNG). Regarder `masque.png` et
+   `decoupe.png` avant d'accepter les nombres. Sans outil ni image exploitable,
+   consigner les mesures faites à la main et le contrôle non effectué.
+3. **Consigner** sources, proportions, palette et décision → mesure dans un document
+   de mesures livré avec l'asset (modèle : les deux analyses ci-dessus).
+4. **Dessiner** avec la géométrie unique embarquée, `scripts/toriyama.js` (arcs,
+   volutes, mèches, plan d'ombre, sphère, Kinto-Un, motifs de couverture) :
+   [mesures, primitives et exports](references/geometrie.md). Construire les arcs
+   entre creux, découper l'ombre par la silhouette, ne rien décalquer ni vectoriser
+   automatiquement.
+5. **Rendre** avec `bun scripts/rendu.ts dessin.svg --compare reference.png` (512, 128,
+   64, 32, 16 px, fonds clair et sombre), puis **ouvrir** les planches. Rastérisation
+   par `resvg`, `rsvg-convert`, ImageMagick ou Inkscape s'il en existe un ; sinon
+   `planche.svg` vectorielle seulement, et le contrôle des pixels est déclaré non
+   effectué. Le code seul ne qualifie aucun rendu.
+6. **Icônes** : variante carrée dédiée, puis `bun scripts/icones.ts icone.svg --sortie DIR`
+   (ICO réel 16/32/48, Apple opaque, `any` et `maskable` séparés, tuile Windows).
 
-[Mesures, primitives et exports locaux](references/geometrie.md) pour réaliser
-l'asset ; [animation](references/animation.md) seulement pour du mouvement ;
-[Blender](references/blender.md) seulement pour la 3D. Charger la référence
-sélectionnée, pas toute la bibliothèque.
+[Animation](references/animation.md) seulement pour du mouvement ;
+[Blender](references/blender.md) seulement pour la 3D. Charger la référence utile,
+pas toute la bibliothèque.
 
-Livrer SVG, générateur reproductible et document de mesures ; références,
-masques et rendus de travail restent temporaires. Exécuter les gates du package
-propriétaire. Un déploiement n'est effectué que dans son périmètre autorisé,
-puis contrôlé par lecture du fichier servi et de son type de contenu.
+Livrer SVG, générateur reproductible et document de mesures ; références, masques et
+rendus de travail restent dans un dossier temporaire. Dans le dépôt Shenron
+(mainteneurs), la géométrie maintenue vit dans `packages/ui/src/toriyama-svg/` :
+l'utiliser plutôt qu'en copier une autre, puis régénérer `toriyama.js` par
+`bun scripts/plugin/build-references.ts`. Un déploiement n'est effectué que dans son
+périmètre autorisé, puis contrôlé par lecture du fichier servi et de son type.

@@ -2,20 +2,9 @@
   "version": 1,
   "sources": [
     {
-      "root": "/home/aphro/aphrody/plugins/shenron",
+      "root": ".",
       "evidence": [
-        "references/upstream-main.json",
-        "references/upstream/aphrody-shenron/AGENTS.md.source",
-        "references/upstream/aphrody-shenron/apps/shenron/bot/package.json.source",
-        "references/upstream/aphrody-shenron/packages/shenron/pipeline/package.json.source"
-      ]
-    },
-    {
-      "root": "/home/aphro/aphrody",
-      "evidence": [
-        "AGENTS.md",
-        "apps/shenron/bot/package.json",
-        "packages/shenron/pipeline/package.json"
+        "references/instantane.json"
       ]
     }
   ],
@@ -28,13 +17,15 @@
     "skills/databooks-ocr/references/corrections.md",
     "skills/databooks-ocr/references/lots.md",
     "skills/dragon-ball-canon/SKILL.md",
+    "skills/dragon-ball-canon/references/doctrine.md",
     "skills/dragon-ball-japonais/SKILL.md",
+    "skills/dragon-ball-japonais/references/lexique-canonique.md",
     "skills/dragon-ball-japonais/references/lexique.md",
     "skills/dragon-ball-japonais/references/outils.md",
     "skills/dragon-ball-japonais/references/traduction.md",
     "skills/dragon-ball/SKILL.md",
     "skills/dragon-ball/references/api.md",
-    "skills/dragon-ball/references/lore.md",
+    "skills/dragon-ball/references/faits.md",
     "skills/dragon-ball/references/mcp-graphql.md",
     "skills/shenron-admin/SKILL.md",
     "skills/source-of-truth/SKILL.md",
@@ -42,6 +33,8 @@
     "skills/toriyama-svg/references/animation.md",
     "skills/toriyama-svg/references/blender.md",
     "skills/toriyama-svg/references/geometrie.md",
+    "skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md",
+    "skills/toriyama-svg/references/mesures/kinto-un-analyse-visuelle.md",
     "skills/toriyama-svg/references/sources.md"
   ]
 }

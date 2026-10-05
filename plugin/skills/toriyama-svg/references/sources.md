@@ -30,24 +30,22 @@ juste », ce qui est pire qu'un dessin franchement différent.
 dépôt. Les images y sont recompressées, recadrées et souvent redessinées par
 des tiers.
 
-## Le corpus local
+## Où chercher
 
-Avant d'aller sur le web, regarder ce qui est déjà hébergé :
+Hors ligne, les seules références sont les images fournies par la demande et les
+mesures déjà embarquées ([Kinto-Un](mesures/kinto-un-analyse-visuelle.md),
+[couverture et Dragon Ball](mesures/couverture-analyse-visuelle.md)). Ne pas
+dessiner sans l'une ou l'autre : le dire.
 
-| Quoi                       | Où                                                                     |
-| -------------------------- | ---------------------------------------------------------------------- |
-| Manga au trait, par volume | `apps/bot/assets/manga/DB/regular/vol<N>/<planche>.webp`       |
-| Manga en couleur           | `apps/bot/assets/manga/DB/fullcolor/<arc>/t<N>/<planche>.webp` |
-| Planches de databooks      | `apps/site/public/databooks/<uuid>.jpg`                        |
-| Assets de fiches wiki      | `apps/site/public/`                                            |
-| Chapitres par identifiant  | `apps/bot/assets/manga/DB/regular/ch<N>/`                      |
+Avec le dépôt Shenron (mainteneurs), le corpus auto-hébergé est sous
+`apps/bot/assets/manga/DB/regular/vol<N>/<planche>.webp` (trait),
+`apps/bot/assets/manga/DB/fullcolor/<arc>/t<N>/<planche>.webp` (couleur) et
+`apps/site/public/databooks/<uuid>.jpg` (databooks). Si les sources vivantes
+répondent, `dragonball_manga_search`, `dragonball_manga_page`,
+`dragonball_databooks_search` et `dragonball_databooks_planches` (ou le RAG)
+retrouvent une planche par une réplique, puisqu'ils indexent le texte des planches.
 
-Pour retrouver la bonne planche sans ouvrir cinquante fichiers, passer par le
-MCP `aphrody` du plugin `aphrody` (`manga_search`, `manga_page`, `databooks_search`,
-`databooks_planches`) ou par le RAG (`rag_search`) — ils indexent le texte des
-planches, donc une réplique suffit à localiser la case.
-
-## Récupérer une image extérieure
+## Récupérer une image extérieure (si le réseau est disponible)
 
 Beaucoup de sites renvoient un 403 aux outils de récupération de page mais
 laissent passer `curl` avec un en-tête de navigateur :

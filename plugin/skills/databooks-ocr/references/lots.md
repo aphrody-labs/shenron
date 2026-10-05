@@ -1,6 +1,11 @@
-# Lots OCR — commandes propriétaires
+# Lots OCR — commandes du dépôt (mainteneurs, facultatif)
 
-Depuis la racine Aphrody, après vérification de l'aide et du périmètre :
+> **Ne s'applique que si** le dépôt Shenron est le répertoire de travail. La skill
+> n'en a pas besoin : elle lit l'image fournie et livre le JSONL. Sans dépôt, ne
+> lancer aucune commande d'ici ; le dépôt d'un lot passe par
+> [l'administration](../../shenron-admin/SKILL.md).
+
+Depuis la racine Shenron, après vérification de l'aide et du périmètre :
 
 ```bash
 bun apps/site/scripts/export-databooks-ocr.ts --sortie /chemin/lots --taille 4
