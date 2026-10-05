@@ -29,7 +29,17 @@ export function useMacOS() {
   return macOS;
 }
 
+/** True inside the Tauri desktop app, the only host with native window controls. */
+export function useTauriWindow(): boolean {
+  return Boolean((globalThis as { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__);
+}
+
+/** The native window controls exist only in the Tauri desktop app; a browser tab has its own. */
 export function WindowControls() {
+  return useTauriWindow() ? <NativeWindowControls /> : null;
+}
+
+function NativeWindowControls() {
   const { t } = useTranslation();
   const [maximized, setMaximized] = useState(false);
 

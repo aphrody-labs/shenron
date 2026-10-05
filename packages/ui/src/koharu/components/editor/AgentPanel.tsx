@@ -1,6 +1,5 @@
 "use client";
 
-import { Channel } from "@aphrody/api/core";
 import { Bot, CircleStop, LogOut, Send, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { call } from "../../lib/backend";
 import { pageKey, pagesKey, projectKey, refresh } from "../../lib/queries";
 import {
+  Channel,
   commands,
   type AgentStatus,
   type Config,

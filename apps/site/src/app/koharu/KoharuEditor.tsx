@@ -50,6 +50,15 @@ export function KoharuEditor({ fallback }: { fallback: ReactNode }) {
     return () => controller.abort();
   }, [desktop]);
 
+  const active = desktop || bridge;
+  useEffect(() => {
+    // The editor is about to open: stream and compile its canvas module meanwhile.
+    if (!active) return;
+    void import("@shenron/ui/koharu")
+      .then((editor) => editor.preloadCanvasModule())
+      .catch(() => undefined);
+  }, [active]);
+
   if (desktop) return <KoharuDesktop />;
   return bridge ? <KoharuDesktop embedded /> : fallback;
 }

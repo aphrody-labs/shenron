@@ -2,18 +2,12 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { invoke, isTauri } from "@aphrody/api/core";
 
 import { AgentPanel } from "./AgentPanel";
 import { ShenronExportPanel } from "../ShenronExportPanel";
 import { Inspector } from "./Inspector";
 import { rightSidebarPanels, type RightSidebarPanel } from "../../navigation";
 import { Button } from "../../../components/button";
-
-const shenronHost = {
-  isTauri,
-  invoke: <T,>(command: string, args: Record<string, unknown>) => invoke<T>(command, args),
-};
 
 export function RightSidebar() {
   const { t } = useTranslation();
@@ -42,7 +36,7 @@ export function RightSidebar() {
       </div>
       {panel === "shenron" && (
         <div className="flex min-h-0 flex-1 flex-col">
-          <ShenronExportPanel host={shenronHost} />
+          <ShenronExportPanel />
         </div>
       )}
     </aside>

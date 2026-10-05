@@ -61,3 +61,6 @@ export * from "./lib/store";
 export * from "./lib/queries";
 export * from "./lib/geometry";
 export * as backend from "./lib/backend";
+
+// Starts compiling the WebAssembly canvas early, before the editor opens
+export { preloadCanvasModule } from "@shenron/koharu/canvas";
