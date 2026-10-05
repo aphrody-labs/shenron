@@ -21,7 +21,7 @@ jobs:
   check:
     name: Check (Bun)
     # Cible de prod = Linux. Les crates Rust (dépendances git épinglées sur Aphrody, socle ML)
-    # sont vérifiées hors CI : `bun run clippy:rust` et `bun run test:rust`.
+    # ont leur workflow, rust.yml, actif quand le secret APHRODY_GIT_TOKEN est défini.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

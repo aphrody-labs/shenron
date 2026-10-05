@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+# rust-analyzer settings shared by every editor (VS Code, Helix, Zed…) opening this workspace.
+# Personal settings stay in the editor; see docs/development/rust.md.
+
+[cargo]
+# Analyse the Shenron adapters over the Koharu engine (`#[cfg(feature = "koharu")]`), which the
+# default features leave out.
+features = ["shenron-manga/koharu", "shenron-cli/koharu", "shenron-mcp/koharu"]
+# Own target directory (target/rust-analyzer): the editor never holds the build lock that
+# `cargo`, `just` and `bun run *:rust` wait for.
+targetDir = true
+
+[check]
+# Clippy on save, like the CI gate (`cargo lint`).
+command = "clippy"
+
+[files]
+# Bun, Next and build outputs: nothing for rust-analyzer to index or watch.
+exclude = [
+    "target",
+    "node_modules",
+    "dist",
+    "var",
+    "apps/site/.next",
+    "apps/site/.next-build",
+    "apps/site/.next-check",
+    "apps/site/.next-dev",
+    "apps/site/.next-standalone",
+    "apps/server/.build",
+]

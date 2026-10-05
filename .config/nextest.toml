@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: Apache-2.0
+# cargo-nextest configuration of the Shenron workspace: `cargo t` (default profile) and
+# `cargo t --profile ci` (GitHub Actions, .github/workflows/rust.yml).
+# Reference: https://nexte.st/docs/configuration/
+
+[store]
+dir = "target/nextest"
+
+[profile.default]
+# Left out of every profile (run them on an equipped machine with `--ignore-default-filter`):
+# - the wgpu integration tests of koharu-rasterizer and koharu-renderer, which need a working
+#   GPU adapter (SIGSEGV under WSL, none on CI runners);
+# - the koharu-ml font-detector processor tests, which download the LibTorch/CUDA runtime
+#   (more than 1 GiB) before running.
+default-filter = """
+not (
+    binary_id(koharu-rasterizer::compositor)
+    | binary_id(koharu-renderer::rendering)
+    | (package(koharu-ml) & test(/^font_detector::processor::tests::/))
+)
+"""
+# WSL shares its CPUs with Windows and the other builds: stay at the cargo-serial job bound
+# instead of one test process per logical CPU. `-j <n>` or NEXTEST_TEST_THREADS overrides it.
+test-threads = 6
+# A flaky test stays visible locally.
+retries = 0
+# Flag a test after 30 s, kill it after 4 periods (2 min): unit tests never need more.
+slow-timeout = { period = "30s", terminate-after = 4 }
+failure-output = "immediate-final"
+status-level = "fail"
+final-status-level = "slow"
+
+[profile.ci]
+# GitHub runners: one test process per CPU, every failure reported, retried flakes listed.
+test-threads = "num-cpus"
+retries = { backoff = "exponential", count = 2, delay = "1s" }
+slow-timeout = { period = "60s", terminate-after = 5 }
+fail-fast = false
+failure-output = "immediate-final"
+status-level = "retry"
+final-status-level = "flaky"
+
+[profile.ci.junit]
+# target/nextest/ci/junit.xml, uploaded by the workflow.
+path = "junit.xml"

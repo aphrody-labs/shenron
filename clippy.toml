@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Clippy settings of the workspace. Lint levels live in `[workspace.lints]` of Cargo.toml; the
+# MSRV comes from `rust-version`. Reference: https://doc.rust-lang.org/clippy/lint_configuration.html
+
+# Tests may print, unwrap, expect, panic and use dbg! (denied in code by [workspace.lints]).
+allow-dbg-in-tests = true
+allow-expect-in-tests = true
+allow-panic-in-tests = true
+allow-print-in-tests = true
+allow-unwrap-in-tests = true

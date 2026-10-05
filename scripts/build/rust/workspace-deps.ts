@@ -13,9 +13,13 @@
  *   block (Shenron-owned section) and are left untouched.
  *
  * Usage: bun scripts/build/rust/workspace-deps.ts [--aphrody <checkout>] [--rev <sha>] [--check]
- * The Aphrody checkout is only read through `git show <rev>:Cargo.toml`.
+ * The Aphrody repository is only read through `git show <rev>:Cargo.toml`: `--aphrody`, else
+ * ~/aphrody, else the git database Cargo keeps after fetching the pinned revision
+ * ($CARGO_HOME/git/db/aphrody-*; enough in CI, where no checkout exists).
  */
 import { $ } from "bun";
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
 import { join } from "node:path";
 
 const ROOT = `${join(import.meta.dir, "../../..")}/`;
@@ -24,7 +28,6 @@ const flag = (name: string) => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 };
-const APHRODY = flag("--aphrody") ?? `${process.env.HOME}/aphrody`;
 const manifestPath = `${ROOT}Cargo.toml`;
 const manifest = await Bun.file(manifestPath).text();
 const currentRev = manifest.match(/^# aphrody-rev: ([0-9a-f]{40})$/m)?.[1];
@@ -32,8 +35,31 @@ const REV = flag("--rev") ?? currentRev;
 if (!REV || !/^[0-9a-f]{40}$/.test(REV)) throw new Error("--rev <40-hex sha> is required");
 const GIT = "https://github.com/aphrody-labs/aphrody";
 
+/** Repositories that may hold `REV`, in order of preference. */
+function aphrodyRepositories(): string[] {
+  const explicit = flag("--aphrody");
+  if (explicit) return [explicit];
+  const db = join(process.env.CARGO_HOME ?? join(homedir(), ".cargo"), "git/db");
+  const fetched = existsSync(db)
+    ? [...new Bun.Glob("aphrody-*").scanSync({ cwd: db, onlyFiles: false })].sort()
+    : [];
+  return [join(homedir(), "aphrody"), ...fetched.map((name) => join(db, name))];
+}
+
+async function upstreamManifest(): Promise<string> {
+  const tried: string[] = [];
+  for (const repo of aphrodyRepositories()) {
+    const show = await $`git -C ${repo} show ${REV}:Cargo.toml`.quiet().nothrow();
+    if (show.exitCode === 0) return show.text();
+    tried.push(repo);
+  }
+  throw new Error(
+    `Aphrody ${REV} not found in ${tried.join(", ") || "any repository"}: pass --aphrody <checkout> or run \`cargo fetch\``,
+  );
+}
+
 type Spec = string | Record<string, unknown>;
-const upstream = Bun.TOML.parse(await $`git -C ${APHRODY} show ${REV}:Cargo.toml`.text()) as {
+const upstream = Bun.TOML.parse(await upstreamManifest()) as {
   workspace: { dependencies: Record<string, Spec> };
 };
 const deps = upstream.workspace.dependencies;

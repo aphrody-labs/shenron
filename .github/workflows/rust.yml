@@ -1,0 +1,170 @@
+# SPDX-License-Identifier: Apache-2.0
+# Rust gates of the Cargo workspace (crates/*): rustfmt, clippy with warnings denied, nextest,
+# koharu-canvas on wasm32, the generated [workspace.dependencies] block and cargo-deny.
+#
+# aphrody-labs/aphrody, source of the git dependencies pinned in Cargo.toml, is private. Every job
+# that resolves the dependency graph needs the APHRODY_GIT_TOKEN repository secret (fine-grained
+# token, read access to the contents of aphrody-labs/aphrody); without it (forks, repositories
+# that have not set it) only rustfmt runs. See docs/development/rust.md.
+name: Rust
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "crates/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "rust-toolchain.toml"
+      - "rustfmt.toml"
+      - "clippy.toml"
+      - "deny.toml"
+      - ".cargo/config.toml"
+      - ".config/nextest.toml"
+      - "scripts/build/rust/**"
+      - ".github/workflows/rust.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "crates/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "rust-toolchain.toml"
+      - "rustfmt.toml"
+      - "clippy.toml"
+      - "deny.toml"
+      - ".cargo/config.toml"
+      - ".config/nextest.toml"
+      - "scripts/build/rust/**"
+      - ".github/workflows/rust.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  # No debug info on the runner: smaller target/ and caches.
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  fmt:
+    name: rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # rust-toolchain.toml: channel, rustfmt and clippy, the three targets.
+      - name: Toolchain
+        run: rustup toolchain install
+      # rustfmt reads the workspace members only: no dependency, no token.
+      - name: cargo fmt --check
+        run: cargo fmt --all --check
+
+  access:
+    name: Aphrody access
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.token.outputs.enabled }}
+    steps:
+      - id: token
+        env:
+          APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
+        run: |
+          if [ -n "$APHRODY_GIT_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Rust::APHRODY_GIT_TOKEN is not set: clippy, nextest, wasm32 and cargo-deny are skipped (aphrody-labs/aphrody is private)."
+          fi
+
+  check:
+    name: Clippy, nextest, wasm32, deny
+    needs: access
+    if: needs.access.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      RUSTC_WRAPPER: sccache
+      SCCACHE_GHA_ENABLED: "true"
+    steps:
+      - uses: actions/checkout@v7
+
+      # Tauri, wgpu and the ML stack need room: drop the preinstalled SDKs this job never uses.
+      - name: Free runner disk
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      # WebKitGTK and GTK (Tauri 3), libclang (bindgen in the koharu *-sys crates), fontconfig,
+      # D-Bus (keyring).
+      - name: System libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential clang cmake libayatana-appindicator3-dev libclang-dev libdbus-1-dev \
+            libfontconfig1-dev libgtk-3-dev librsvg2-dev libssl-dev libwebkit2gtk-4.1-dev \
+            libxdo-dev pkg-config
+
+      - name: Toolchain
+        run: rustup toolchain install
+
+      # .cargo/config.toml fetches git dependencies with the git CLI, so this rewrite applies.
+      - name: Access to aphrody-labs
+        env:
+          APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
+        run: >-
+          git config --global
+          url."https://x-access-token:${APHRODY_GIT_TOKEN}@github.com/aphrody-labs/".insteadOf
+          "https://github.com/aphrody-labs/"
+
+      # ~/.cargo (registry, git database of the pinned Aphrody revision); sccache keeps the
+      # compiled crates.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "false"
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest,cargo-deny
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Fetch (Cargo.lock)
+        run: cargo fetch --locked
+
+      # Reads Aphrody's workspace manifest from the git database Cargo just filled.
+      - name: Generated [workspace.dependencies] is up to date
+        run: bun scripts/build/rust/workspace-deps.ts --check
+
+      - name: Clippy (cargo lint)
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Clippy, koharu feature (cargo koharu)
+        run: >-
+          cargo clippy -p shenron-manga -p shenron-cli -p shenron-mcp --all-targets --locked
+          --features shenron-manga/koharu,shenron-cli/koharu,shenron-mcp/koharu -- -D warnings
+
+      - name: koharu-canvas on wasm32 (cargo wasm)
+        run: cargo wasm --locked
+
+      - name: Tests (nextest, ci profile)
+        run: cargo nextest run --workspace --locked --profile ci
+
+      - name: cargo-deny
+        run: cargo deny --locked check
+
+      - name: JUnit report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: nextest-junit
+          path: target/nextest/ci/junit.xml
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: sccache statistics
+        if: always()
+        run: sccache --show-stats

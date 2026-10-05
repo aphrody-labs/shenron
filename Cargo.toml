@@ -159,17 +159,47 @@ zip = { version = "8.6.0", features = ["deflate"] }
 [patch.crates-io]
 hf-hub = { git = "https://github.com/huggingface/hf-hub", rev = "473de9430b0fbc544fb1d91102180eb713f8dc87" }
 
+# Inherited by every crate through `[lints] workspace = true` (scripts/build/rust/align-crates.ts);
+# CI denies warnings (`cargo lint`). Thresholds and test allowances live in clippy.toml.
 [workspace.lints.rust]
 unsafe_op_in_unsafe_fn = "deny"
 unused_must_use = "deny"
 non_ascii_idents = "deny"
+explicit_outlives_requirements = "warn"
+macro_use_extern_crate = "warn"
+meta_variable_misuse = "warn"
+redundant_lifetimes = "warn"
+trivial_numeric_casts = "warn"
+unit_bindings = "warn"
+unused_import_braces = "warn"
+unused_lifetimes = "warn"
+unused_macro_rules = "warn"
 
 [workspace.lints.clippy]
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "warn", priority = -1 }
+perf = { level = "warn", priority = -1 }
 todo = "deny"
 unimplemented = "deny"
 dbg_macro = "deny"
-correctness = { level = "warn", priority = -1 }
-perf = { level = "warn", priority = -1 }
+# Restriction and pedantic lints the whole workspace already satisfies.
+cloned_instead_of_copied = "warn"
+empty_drop = "warn"
+fn_to_numeric_cast_any = "warn"
+get_unwrap = "warn"
+implicit_clone = "warn"
+inefficient_to_string = "warn"
+infinite_loop = "warn"
+large_futures = "warn"
+large_stack_arrays = "warn"
+lossy_float_literal = "warn"
+mem_forget = "warn"
+redundant_type_annotations = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+try_err = "warn"
+unnecessary_safety_comment = "warn"
+unnecessary_safety_doc = "warn"
+verbose_file_reads = "warn"
 
 # Line tables keep file:line backtraces for workspace code; dependencies carry no debuginfo.
 [profile.dev]

@@ -62,6 +62,8 @@ Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`ca
 `~/aphrody/scripts/build/rust/cargo-serial.sh` sur les machines Aphrody). Recherche : `rg`,
 `fd`. Pas de node/npm/npx/bunx ni d'utilitaires GNU pour le travail d'agent ; oxlint/oxfmt via
 `bun $(which oxlint)`. Le `tsc` local (TypeScript 7.0.2) fait seul foi.
+Rust : `just` (tâches Bun et Rust, `just --list`), alias Cargo de `.cargo/config.toml`
+(`cargo ck|lint|t|koharu|wasm`), cargo-nextest, cargo-deny ; référence `docs/development/rust.md`.
 
 `bunfig.toml` : `linker = "isolated"`, seuls `react` et `react-dom` sont hissés
 (`hoistPattern`) ; chaque paquet déclare ses dépendances, scripts racine compris (le
@@ -89,7 +91,7 @@ régénère `packages/api/openapi/public.json`, à commiter), `bun packages/ui/s
 `bun run --filter @shenron/db audit:migrations`.
 
 Rust : `bun run check:rust`, `bun run clippy:rust` (`-D warnings`), `bun run test:rust`
-(liste `-p` des crates Shenron), `cargo test -p shenron-rag <filtre>`. Le bloc généré de
+(nextest sur les crates de `cargo metadata`), `cargo nextest run -p shenron-rag <filtre>`. Le bloc généré de
 `[workspace.dependencies]` se régénère par `bun scripts/build/rust/workspace-deps.ts [--check]`
 (Aphrody en `git` à une `rev`) ; pour compiler contre un checkout local :
 `bun scripts/build/rust/local-aphrody-patch.ts ~/aphrody --fetch`.
@@ -171,8 +173,8 @@ Lancer et construire :
 ## Portes et invariants
 
 - `bun install --frozen-lockfile`, `bun run typecheck`, `bun run test`, `bun run lint` ; Rust :
-  `bun run clippy:rust`, `bun run test:rust`. La CI GitHub (`.github/workflows/ci.yml`) ne
-  couvre que Bun.
+  `bun run clippy:rust`, `bun run test:rust`. La CI GitHub : `ci.yml` pour Bun, `rust.yml` pour
+  Rust (actif avec le secret `APHRODY_GIT_TOKEN`).
 - Les suites `*.live.test.ts` (et `describe.if(isLive())` de `@shenron/pipeline/testing/live-rag`) exigent les services réels.
 - Manga, scans et déclarations d'Akira Toriyama priment ; Fandom est interdit comme source.
   Aucune écriture OCR/traduction pendant un gel des databooks ; `rag:build` jamais au premier

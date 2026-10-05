@@ -14,6 +14,7 @@ puis `AGENTS.md` à la racine.
 | Chaîne SVG | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md) |
 | Variables d'environnement | [`operations/ENV.md`](operations/ENV.md) |
 | Poste de développement | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md) |
+| Développement Rust (crates, commandes, CI) | [`development/rust.md`](development/rust.md) |
 | Dépendances Bun | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md) |
 | Exploitation (déléguée à `aphrody-infra`) | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md) |
 | Session d'enrichissement de contenu | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md) |

@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+# cargo-deny policy of the Shenron workspace: `bun run deny:rust` (= `cargo deny check`), also run
+# by .github/workflows/rust.yml. Install: `cargo install --locked cargo-deny`.
+# Reference: https://embarkstudios.github.io/cargo-deny/checks/cfg.html
+
+[graph]
+# The targets of rust-toolchain.toml: Linux, Windows (desktop, cross-built) and wasm32
+# (koharu-canvas). Dependencies of other platforms are left out.
+targets = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc", "wasm32-unknown-unknown"]
+
+[advisories]
+# RustSec database. An accepted advisory goes in `ignore` with its id and the reason.
+yanked = "deny"
+unmaintained = "workspace"
+ignore = []
+
+[licenses]
+# Shenron is Apache-2.0, the upstream Koharu crates are MIT OR Apache-2.0: only permissive
+# licences (and file-level MPL-2.0) that both can redistribute.
+allow = [
+    "0BSD",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BSL-1.0",
+    "bzip2-1.0.6",
+    "CC0-1.0",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "MIT-0",
+    "MPL-2.0",
+    "Unicode-3.0",
+    "Unlicense",
+    "Zlib",
+]
+confidence-threshold = 0.9
+
+[licenses.private]
+# Unpublished workspace crates (publish = false) are not licence-checked as dependencies.
+ignore = true
+
+[bans]
+# Versions come from Aphrody's workspace (scripts/build/rust/workspace-deps.ts): duplicates in the
+# Tauri, wgpu and ML trees are deduplicated there, not here.
+multiple-versions = "allow"
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# Aphrody (pinned by `rev` in [workspace.dependencies]) and the two upstream revisions Aphrody's
+# workspace pins: hf-hub ([patch.crates-io] of Cargo.toml) and oxc.
+allow-git = ["https://github.com/huggingface/hf-hub", "https://github.com/oxc-project/oxc.git"]
+
+[sources.allow-org]
+github = ["aphrody-labs"]

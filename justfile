@@ -1,0 +1,207 @@
+# SPDX-License-Identifier: Apache-2.0
+# One entry point for the common Bun and Rust tasks of Shenron: `just` lists them.
+# Recipes call the existing scripts (package.json, scripts/, the cargo aliases of
+# .cargo/config.toml) and never duplicate their logic. Names follow package.json
+# (`format:check` -> `format-check`); Rust-only tasks start with `rust-`, and `check`, `lint`,
+# `test` and `format-check` run the Bun side then the Rust side. See docs/development/rust.md.
+
+# Bun Shell runs every recipe line, on Linux, WSL and Windows alike.
+set shell := ["bun", "exec"]
+set windows-shell := ["bun", "exec"]
+
+# Cargo, serialized through APHRODY_CARGO_SERIAL when it is set.
+cargo := "bun scripts/build/rust/cargo.ts"
+
+alias check-rust := rust-check
+alias clippy-rust := rust-lint
+alias test-rust := rust-test
+alias deny-rust := rust-deny
+alias fmt-rust := rust-fmt-check
+
+[private]
+default:
+    @just --list --unsorted
+
+# Type-check everything: tsc 7 (packages and scripts), then cargo check (all crates and targets)
+[group('all')]
+check: typecheck rust-check
+
+# Lint everything: oxlint, then clippy with warnings denied
+[group('all')]
+lint: bun-lint rust-lint
+
+# Test everything: Bun packages, root scripts, then the Rust crates (nextest)
+[group('all')]
+test: bun-test test-scripts rust-test
+
+# Check formatting: oxfmt, then rustfmt
+[group('all')]
+format-check: bun-format-check rust-fmt-check
+
+# Generated files are up to date (OpenAPI, UI tokens, AI contracts, Cargo workspace dependencies)
+[group('all')]
+drift: deps-check
+    bun packages/api/scripts/openapi.ts --check
+    bun packages/ui/scripts/generate-tokens.ts --check
+    bun packages/pipeline/scripts/ai/check-contracts.ts
+
+# What the CI runs (ci.yml and rust.yml), in one go
+[group('all')]
+ci: drift typecheck bun-lint bun-test test-scripts rust-fmt-check rust-lint koharu wasm rust-deny
+    bun scripts/build/rust/test.ts --profile ci
+
+# Install the Bun dependencies from the lockfile
+[group('bun')]
+install:
+    bun install --frozen-lockfile
+
+# tsc 7 on the 13 packages, then scripts/
+[group('bun')]
+typecheck:
+    bun run typecheck
+
+# oxlint on apps, packages and scripts
+[group('bun')]
+bun-lint:
+    bun run lint
+
+# bun test of every package (live suites excluded)
+[group('bun')]
+bun-test:
+    bun run test
+
+# Tests of the root scripts (scripts/)
+[group('bun')]
+test-scripts:
+    bun run test:scripts
+
+# Live suites against real services (SHENRON_LIVE=1)
+[group('bun')]
+test-live:
+    bun run test:live
+
+# oxfmt --check on apps, packages and scripts
+[group('bun')]
+bun-format-check:
+    bun run format:check
+
+# Next dev server of the site
+[group('bun')]
+dev-site:
+    bun --filter @shenron/site dev
+
+# Discord bot in watch mode
+[group('bun')]
+dev-bot:
+    bun --filter @shenron/bot dev
+
+# shenron-server binary (--target linux-x64|windows-x64, --flavor desktop|production, --skip-site)
+[group('bun')]
+build-server *args:
+    bun scripts/build/server.ts {{ args }}
+
+# shenron-bot binary
+[group('bun')]
+build-bot *args:
+    bun scripts/build/bot.ts {{ args }}
+
+# Regenerate the discordx barrel apps/bot/src/_entries.ts
+[group('bun')]
+entries:
+    bun --filter @shenron/bot gen:entries
+
+# Regenerate packages/koharu/src/protocol.ts from koharu-app (Specta)
+[group('rust')]
+protocol:
+    bun --filter @shenron/koharu protocol
+
+# cargo check of every crate and target (`cargo ck`)
+[group('rust')]
+rust-check:
+    {{ cargo }} ck
+
+# clippy of the workspace, warnings denied (`cargo lint`)
+[group('rust')]
+rust-lint:
+    {{ cargo }} lint
+
+# Tests of every workspace crate through nextest; arguments go to the runner (--profile ci, -E …)
+[group('rust')]
+rust-test *args:
+    bun scripts/build/rust/test.ts {{ args }}
+
+# rustfmt over the workspace
+[group('rust')]
+rust-fmt:
+    cargo fmt --all
+
+# rustfmt --check over the workspace
+[group('rust')]
+rust-fmt-check:
+    cargo fmt --all --check
+
+# cargo deny check: advisories, licences, bans, sources (deny.toml)
+[group('rust')]
+rust-deny:
+    cargo deny check
+
+# Clippy and tests of the `koharu` feature (Shenron adapters over the Koharu engine)
+[group('rust')]
+koharu:
+    {{ cargo }} koharu
+    {{ cargo }} koharu-test
+
+# cargo check of koharu-canvas on wasm32-unknown-unknown (`cargo wasm`)
+[group('rust')]
+wasm:
+    {{ cargo }} wasm
+
+# Build the koharu-canvas WASM into packages/koharu/src/wasm
+[group('rust')]
+wasm-build:
+    bun --filter @shenron/koharu build:wasm
+
+# Rustdoc of the workspace crates (`cargo docs`)
+[group('rust')]
+rust-doc:
+    {{ cargo }} docs
+
+# Run the MCP server (stdio by default; --http, --public …)
+[group('rust')]
+mcp *args:
+    {{ cargo }} run -p shenron-mcp -- {{ args }}
+
+# Run the shenron command
+[group('rust')]
+cli *args:
+    {{ cargo }} run -p shenron-cli --bin shenron -- {{ args }}
+
+# Build the desktop installer (--target windows-x64|linux-x64, --skip-server, --skip-mcp)
+[group('rust')]
+desktop *args:
+    bun scripts/build/desktop.ts {{ args }}
+
+# Regenerate [workspace.dependencies] from the pinned Aphrody revision (--rev <sha> to move it)
+[group('rust')]
+deps *args:
+    bun scripts/build/rust/workspace-deps.ts {{ args }}
+
+# The generated [workspace.dependencies] block is up to date
+[group('rust')]
+deps-check:
+    bun scripts/build/rust/workspace-deps.ts --check
+
+# Crate manifests inherit version, edition, rust-version and lints from the workspace
+[group('rust')]
+align-check:
+    bun scripts/build/rust/align-crates.ts --check
+
+# Build against a local Aphrody checkout, ~/aphrody by default (.cargo/local.toml, untracked)
+[group('rust')]
+aphrody-local *checkout:
+    bun scripts/build/rust/local-aphrody-patch.ts {{ checkout }} --fetch
+
+# Back to the pinned Aphrody revision (removes .cargo/local.toml)
+[group('rust')]
+aphrody-pinned:
+    bun scripts/build/rust/local-aphrody-patch.ts --remove

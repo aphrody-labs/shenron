@@ -1,10 +1,11 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Writes the untracked `.cargo/config.toml` that patches every Aphrody git
+ * Writes the untracked `.cargo/local.toml` that patches every Aphrody git
  * dependency of the workspace to a local Aphrody checkout, so the workspace
  * builds against the checkout (and its uncommitted work) without fetching
- * aphrody-labs/aphrody. `.cargo/config.toml` is ignored by git.
+ * aphrody-labs/aphrody. The tracked `.cargo/config.toml` includes it when it
+ * exists; `.cargo/local.toml` is ignored by git.
  *
  * Cargo still loads the pinned git source once to lock a patched dependency;
  * `--fetch` performs that resolution from the local checkout's object store
@@ -18,7 +19,7 @@ import { mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = `${join(import.meta.dir, "../../..")}/`;
-const target = `${ROOT}.cargo/config.toml`;
+const target = `${ROOT}.cargo/local.toml`;
 if (process.argv.includes("--remove")) {
   rmSync(target, { force: true });
   console.log(`removed ${target}`);

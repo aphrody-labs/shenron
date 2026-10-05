@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: Apache-2.0
+# Shared Cargo configuration of the Shenron workspace (tracked). Nothing here is specific to a
+# machine: the compiler cache (RUSTC_WRAPPER=sccache), the job count and the WSL build lock stay
+# in the developer's environment or in ~/.cargo/config.toml. See docs/development/rust.md.
+
+# Untracked local overrides, merged over this file: the Aphrody patch written by
+# `bun scripts/build/rust/local-aphrody-patch.ts`, or any personal setting.
+include = [{ path = "local.toml", optional = true }]
+
+[alias]
+# Type-check every crate and target (lib, bins, tests, benches, examples).
+ck = "check --workspace --all-targets"
+# The CI lint gate: clippy over the workspace, warnings denied.
+lint = "clippy --workspace --all-targets -- -D warnings"
+# Tests through cargo-nextest (.config/nextest.toml); `cargo t --profile ci` mirrors the CI.
+t = "nextest run --workspace"
+# Shenron adapters over the in-process Koharu engine (`koharu` feature, off by default).
+koharu = "clippy -p shenron-manga -p shenron-cli -p shenron-mcp --all-targets --features shenron-manga/koharu,shenron-cli/koharu,shenron-mcp/koharu -- -D warnings"
+koharu-test = "nextest run -p shenron-manga -p shenron-cli -p shenron-mcp --features shenron-manga/koharu,shenron-cli/koharu,shenron-mcp/koharu"
+# The WebGPU viewport of Shenron Studio on its browser target (built by
+# `bun --filter @shenron/koharu build:wasm`).
+wasm = "check -p koharu-canvas --lib --target wasm32-unknown-unknown"
+# Rustdoc of the workspace crates, without their dependencies.
+docs = "doc --workspace --no-deps"
+
+[env]
+# Repository root for tests and build scripts reading fixtures shared with the Bun packages
+# (`data/`, `packages/*/test/fixtures`). An exported variable of the same name wins.
+CARGO_WORKSPACE_DIR = { value = "", relative = true }
+
+[net]
+# aphrody-labs/aphrody is private: fetch it with the git CLI so its credential helpers and
+# `url.<base>.insteadOf` rewrites (SSH locally, a token in CI) apply.
+git-fetch-with-cli = true
