@@ -19,7 +19,7 @@
  * Response: `{ id, total, pages, analysisPossible }`, where `pages` maps a plate
  * number to its findings `{ read, expected, fr, kind, distance }`. The former
  * French fields (`planches`, `analysePossible`, and `lu`/`attendu` on each finding)
- * stay as deprecated duplicates for one version.
+ * stay as deprecated duplicates until 1.4.0.
  */
 import { NextResponse } from "next/server";
 import { isAdminUserOrToken } from "@/lib/admin-guard";
@@ -65,7 +65,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     total,
     pages,
     analysisPossible,
-    // Former names, deprecated for one version.
+    // Former names, deprecated until 1.4.0.
     planches: parPlanche,
     analysePossible: analysisPossible,
   });

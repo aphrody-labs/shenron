@@ -181,7 +181,7 @@ export async function GET() {
       transcribedPages: transcribed,
       routes: {
         ...routes,
-        // Former names, kept as deprecated duplicates for one version.
+        // Former names, kept as deprecated duplicates until 1.4.0.
         tome: routes.volume,
         chapitre: routes.chapter,
         planche: routes.page,

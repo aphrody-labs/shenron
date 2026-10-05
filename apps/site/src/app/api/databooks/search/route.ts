@@ -20,7 +20,7 @@
  * Response: `{ q, items: [{ databookId, title, category, cover, number, image,
  * text }], total, databookCount }`. The former French fields (`titre`,
  * `categorie`, `numero`, `texte` on each item, `fiches` at the top level) stay as
- * deprecated duplicates for one version.
+ * deprecated duplicates until 1.4.0.
  */
 import { NextResponse } from "next/server";
 import { hasValidApiToken, isAdminOrToken } from "@/lib/admin-guard";

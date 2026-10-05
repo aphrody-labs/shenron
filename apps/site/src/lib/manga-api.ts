@@ -40,7 +40,7 @@ export type PlancheApi = {
   index: number;
   /** Numéro imprimé/numérisé (nom de fichier), quand il diffère du rang. */
   page: number;
-  /** @deprecated Former name of `page`, kept as a duplicate for one version. */
+  /** @deprecated Former name of `page`, kept as a duplicate until 1.4.0. */
   planche: number;
   image: string;
   /** Texte OCR de la planche (`null` quand la transcription n'existe pas). */
@@ -408,7 +408,7 @@ export async function totalPlanchesPourRequete(
  *
  * The English fields (`volume`, `page`, `excerpt`, `index`) are the current form;
  * the former ones (`tome`, `planche`, `extrait`, `rang`) stay as deprecated
- * duplicates for one version.
+ * duplicates until 1.4.0.
  */
 export async function chercherPlanches(
   q: string,

@@ -7,8 +7,7 @@ import { isCurrentUserAdmin } from "@/lib/session";
  *
  * GET /api/admin/entities?type=character&q=goku → { entities: [{ id, name }] }
  *
- * The former fields (`entites`, `nom`) stay as deprecated duplicates for one
- * version.
+ * The former fields (`entites`, `nom`) stay as deprecated duplicates until 1.4.0.
  */
 export const dynamic = "force-dynamic";
 

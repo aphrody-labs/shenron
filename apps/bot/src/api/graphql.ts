@@ -460,7 +460,7 @@ const MangaVolume = builder.objectRef<MangaVolumeRow>("MangaVolume").implement({
   }),
 });
 
-/** @deprecated Former name of {@link MangaVolume}, kept for one version. */
+/** @deprecated Former name of {@link MangaVolume}, kept until 1.4.0. */
 const MangaTome = builder.objectRef<MangaVolumeRow>("MangaTome").implement({
   description: "Deprecated: use MangaVolume. Tome/chapitre manga transcrit + compteurs.",
   fields: (t) => ({

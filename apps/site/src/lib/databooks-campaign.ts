@@ -15,7 +15,7 @@ const LEGACY_QUALITY: Record<SourceQuality, "saine" | "moyenne" | "a-retranscrir
 
 /**
  * Translation queue status of one work. The French fields at the bottom are the
- * former names, served as deprecated duplicates for one version.
+ * former names, served as deprecated duplicates until 1.4.0.
  */
 interface CampaignWorkStatus {
   id: number;
@@ -49,7 +49,7 @@ interface CampaignWorkStatus {
 
 /**
  * Translation queue status of all the databooks. The French fields at the
- * bottom are the former names, served as deprecated duplicates for one version.
+ * bottom are the former names, served as deprecated duplicates until 1.4.0.
  */
 export interface CampaignStats {
   totalWorks: number;

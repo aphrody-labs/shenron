@@ -5,7 +5,7 @@
  * The former French fields (`totalOuvrages`, `ouvragesEnAttente`, `totalPlanches`,
  * `planchesTranscrites`, `planchesTraduites`, `resteATraduire`, `signesJaRestants`,
  * `topOuvrages[]` with `titre`, `transcrites`, `traduites`, `fautives`, `qualiteSource`…)
- * stay as deprecated duplicates for one version.
+ * stay as deprecated duplicates until 1.4.0.
  *
  * POST `{ action: "reindex-redis" }` rebuilds the Redis index.
  */

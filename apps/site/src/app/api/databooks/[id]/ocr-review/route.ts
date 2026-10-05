@@ -7,7 +7,7 @@
  * Response: `page`, `noScan`, `unavailable`, `regions[].{text,score,box}`, `text`,
  * `seconds`, `cache`. The former French fields (`planche`, `sansScan`,
  * `indisponible`, `texte`, `secondes`, `regions[].{texte,boite}`) stay as
- * deprecated duplicates for one version.
+ * deprecated duplicates until 1.4.0.
  *
  * Le corpus est transcrit par dots.ocr, un modèle de vision autorégressif.
  * Cette route en fournit une **seconde lecture par un moteur d'une autre
@@ -56,7 +56,7 @@ interface RegionLue {
 
 /**
  * A region in the route response: `text` and `box`, with `texte` and `boite`
- * as deprecated duplicates for one version.
+ * as deprecated duplicates until 1.4.0.
  */
 function renderRegion(r: RegionLue) {
   return { text: r.texte, score: r.score, box: r.boite, texte: r.texte, boite: r.boite };

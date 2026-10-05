@@ -486,7 +486,7 @@ async function rythmeRecent(): Promise<{ jour: string; revisions: number }[]> {
 /** Une planche qui répond à une recherche. */
 /**
  * A plate whose transcription contains the searched text. The French fields at
- * the bottom are the former names, served as deprecated duplicates for one version.
+ * the bottom are the former names, served as deprecated duplicates until 1.4.0.
  */
 interface PlateHit {
   databookId: number;
