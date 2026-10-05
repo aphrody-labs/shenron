@@ -170,7 +170,7 @@ Lancer et construire :
 - `bun install --frozen-lockfile`, `bun run typecheck`, `bun run test`, `bun run lint` ; Rust :
   `bun run clippy:rust`, `bun run test:rust`. La CI GitHub (`.github/workflows/ci.yml`) ne
   couvre que Bun.
-- Les suites `*.live.test.ts` (et `describe.if(LIVE)`) exigent les services réels.
+- Les suites `*.live.test.ts` (et `describe.if(isLive())` de `@shenron/pipeline/testing/live-rag`) exigent les services réels.
 - Manga, scans et déclarations d'Akira Toriyama priment ; Fandom est interdit comme source.
   Aucune écriture OCR/traduction pendant un gel des databooks ; `rag:build` jamais au premier
   plan ni sur le bot de production.
