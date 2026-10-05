@@ -9,6 +9,7 @@ import { Partials } from "discord.js";
 import {
   createProductionCacheOptions,
   initApplicationCommandsSafe,
+  registerGracefulShutdown,
   resolveGrantedIntents,
   safeExecuteInteraction,
 } from "@aphrody/discord-kit";
@@ -166,48 +167,53 @@ client.on("interactionCreate", async (interaction) => {
   });
 });
 
-export async function shutdown(
-  signal: string,
-  options: { timeoutMs?: number; exit?: boolean } = {},
-) {
-  const timeoutMs = options.timeoutMs ?? 10_000;
-  logger.info(`Received ${signal}, shutting down (timeout: ${timeoutMs}ms)…`);
-  try {
-    // 1. Drain cron registry (clear timers, wait for active jobs to finish)
-    const cron = container.resolve(CronRegistry);
-    const cronDrain = await cron.drain(timeoutMs);
-    if (!cronDrain.drained) {
-      logger.warn({ pending: cronDrain.pending }, "Cron drain timed out during shutdown");
-    }
+// Arrêt propre (SIGINT/SIGTERM) par le cycle de vie du kit : les étapes s'exécutent dans
+// l'ordre, une étape en échec n'empêche pas les suivantes, et une échéance globale force la
+// sortie (code 1 si une étape a échoué). Chaque vidange garde son propre délai.
+const DRAIN_TIMEOUT_MS = 10_000;
+registerGracefulShutdown({
+  // Deux vidanges de 10 s, puis Gateway, modèle natif et bases : marge comprise.
+  timeoutMs: 2 * DRAIN_TIMEOUT_MS + 5_000,
+  logger: {
+    info: (msg) => logger.info(msg),
+    warn: (msg, ...args) => logger.warn({ args }, msg),
+    error: (msg, ...args) => logger.error({ args }, msg),
+  },
+  steps: [
+    {
+      // Minuteries effacées, tâches actives attendues.
+      name: "cron registry",
+      action: async () => {
+        const drain = await container.resolve(CronRegistry).drain(DRAIN_TIMEOUT_MS);
+        if (!drain.drained) {
+          logger.warn({ pending: drain.pending }, "Cron drain timed out during shutdown");
+        }
+      },
+    },
+    {
+      // Plus d'écoute, requêtes en vol attendues.
+      name: "API server",
+      action: async () => {
+        const drain = await container.resolve(ApiServer).drain(DRAIN_TIMEOUT_MS);
+        if (!drain.drained) {
+          logger.warn(
+            { pendingRequests: drain.pendingRequests },
+            "API server drain timed out during shutdown",
+          );
+        }
+      },
+    },
+    // Gateway fermée avant le modèle natif et les bases : plus aucun événement ne les atteint.
+    { name: "Discord Gateway", action: () => client.destroy() },
+    {
+      name: "native inference",
+      action: async () =>
+        (await import("@shenron/pipeline/ai/native")).closeNativeShenronInference(),
+    },
+    { name: "databases", action: () => dbService.close() },
+  ],
+});
 
-    // 2. Drain and stop API server (stop listening, wait for in-flight requests)
-    const api = container.resolve(ApiServer);
-    const apiDrain = await api.drain(timeoutMs);
-    if (!apiDrain.drained) {
-      logger.warn(
-        { pendingRequests: apiDrain.pendingRequests },
-        "API server drain timed out during shutdown",
-      );
-    }
-
-    // 3. Destroy Discord client connection
-    await client.destroy();
-    // Release the resident native model after the API and Gateway have stopped.
-    await (await import("@shenron/pipeline/ai/native")).closeNativeShenronInference();
-
-    // 4. Close database connections
-    dbService.close();
-    logger.info("✓ Shutdown complete");
-  } catch (err) {
-    logger.error({ err }, "Error during shutdown");
-  }
-  if (options.exit !== false) {
-    process.exit(0);
-  }
-}
-
-process.on("SIGINT", () => void shutdown("SIGINT"));
-process.on("SIGTERM", () => void shutdown("SIGTERM"));
 process.on("unhandledRejection", (reason) => {
   logger.error({ err: reason }, "Unhandled rejection");
 });
