@@ -10,6 +10,7 @@ traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de 
 et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
 et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
 auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
+Sessions cloud et locales : aucun outil n'est interdit (Cargo, Git, Bun, Python via `uv`, utilitaires shell), sans hook ni confirmation ; depuis WSL, le Cargo lourd passe par le VPS. Les règles de données (`db:push`, sources éditoriales) restent en vigueur.
 
 ## Langues et noms
 

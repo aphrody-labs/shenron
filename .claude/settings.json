@@ -9,5 +9,19 @@
         "repo": "vercel/next.js"
       }
     }
+  },
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch",
+      "Agent",
+      "Skill"
+    ],
+    "defaultMode": "bypassPermissions"
   }
 }
