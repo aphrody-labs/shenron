@@ -1,7 +1,7 @@
 /**
  * Mapping between paths stored in the database and files on disk.
  *
- * Measured facts (see docs/pieges.md): a DB path is never a disk path.
+ * Measured facts (see docs/guides/pieges.md): a DB path is never a disk path.
  *  - `./assets/wiki/<x>` and `assets/wiki/<x>` → `apps/site/public/wiki/<x>`
  *  - `./assets/<other>`                       → `apps/bot/assets/<other>`
  *  - `/db/<x>` (mirror)                        → `apps/bot/public/db/<x>`

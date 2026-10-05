@@ -25,7 +25,7 @@ const CORS_HEADERS = {
 };
 
 /**
- * S5 (docs/STACK.md D14) : écritures (POST) et lecture de la boîte aux lettres
+ * S5 (docs/architecture/STACK.md D14) : écritures (POST) et lecture de la boîte aux lettres
  * (`?envelopes=1`, `?view=mailbox`) exigent `Bearer SHENRON_A2A_TOKEN` quand
  * `SHENRON_A2A_ENFORCE` est actif. Drapeau inactif : comportement inchangé et
  * un avertissement par processus. L'AgentCard et OPTIONS restent publics.

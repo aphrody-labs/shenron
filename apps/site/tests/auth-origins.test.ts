@@ -1,5 +1,5 @@
 /**
- * S2 (docs/STACK.md §2.2) : politique d'hôtes et d'origines du site.
+ * S2 (docs/architecture/STACK.md §2.2) : politique d'hôtes et d'origines du site.
  *
  * - `src/lib/auth.ts` n'est pas importable (Postgres + secrets) : on relit sa
  *   source pour vérifier qu'elle consomme `@shenron/auth/origins`.

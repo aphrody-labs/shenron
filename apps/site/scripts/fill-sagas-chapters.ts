@@ -82,7 +82,7 @@ try {
 		from bot.db_manga_chapters c join bot.db_manga_volumes v on v.id = c.volume_id
 		where c.series in ('DBFC', 'DBS')
 	`) as unknown as { series: string; chapter_number: number | string; volume_number: number | string }[];
-	// postgres-js returns bigint as strings: Number() everything (docs/wiki-editorial.md).
+	// postgres-js returns bigint as strings: Number() everything (docs/products/wiki-editorial.md).
 	const volumeOf = new Map(chapterVolumes.map((c) => [`${c.series}:${Number(c.chapter_number)}`, Number(c.volume_number)]));
 
 	const changes: FieldChange[] = [];

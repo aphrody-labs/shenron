@@ -55,7 +55,7 @@
 	--color-dbz-bg: var(--dbz-bg, #0a0a0a); /* noir profond DB officiel */
 	--color-dbz-card: var(--dbz-card, #141410); /* surface élevée chaude */
 	--color-dbz-border: var(--dbz-border, #2a2a26); /* hairline subtil */
-	/* Recalibrés sur la couverture de tankōbon (cf. docs/couverture-analyse-visuelle.md) :
+	/* Recalibrés sur la couverture de tankōbon (cf. docs/reference/couverture-analyse-visuelle.md) :
 	   l'accent est l'ORANGE DU GI DE GOKU, #e78220, mesuré à 27,4 % de sa zone —
 	   pas le doré du site marchand officiel. Contraste 7,18:1 sur le fond noir,
 	   contre 10,96:1 pour l'ancien : on perd de la marge, on reste au-dessus de

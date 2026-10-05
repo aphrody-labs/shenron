@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Pureté du bundle client (W5-TOOL-01, docs/STACK.md §4.2) : depuis chaque
+ * Pureté du bundle client (W5-TOOL-01, docs/architecture/STACK.md §4.2) : depuis chaque
  * module `"use client"` d'`apps/site/src`, le graphe d'imports statiques
  * (relatifs, alias `@/`, et entrées source des paquets `@shenron/*`) ne doit
  * jamais atteindre `@shenron/pipeline/ai`, `@shenron/db/{postgres-js,sql,bun-sql,redis}`,
@@ -199,7 +199,7 @@ function clientEntries(srcDir: string): string[] {
 const describeChain = (chain: string[]) =>
 	chain.map((step) => (step.startsWith("@") ? step : toPosix(relative(ROOT, step)))).join(" -> ");
 
-describe("client bundle purity (docs/STACK.md §4.2)", () => {
+describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
 	it("finds the site's client modules", () => {
 		expect(clientEntries(SRC).length).toBeGreaterThan(50);
 	});

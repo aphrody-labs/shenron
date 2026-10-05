@@ -5,7 +5,7 @@ import { tempPath } from "@aphrody/paths";
  *   public/dbz/marque/banc-nuage.svg   tuile de volutes, répétable en x
  *
  * Rien n'est décalqué ni vectorisé : seules les MESURES relevées sur la
- * couverture du tome sont reprises (cf. docs/couverture-analyse-visuelle.md,
+ * couverture du tome sont reprises (cf. docs/reference/couverture-analyse-visuelle.md,
  * « Les quatre éléments de décor »). Le fichier statique porte les aplats
  * mesurés parce qu'un `background-image` n'hérite d'aucune variable CSS ; dans
  * l'interface, `<BancNuages>` prend les jetons du thème.

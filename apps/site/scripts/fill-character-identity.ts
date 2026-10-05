@@ -9,7 +9,7 @@
  *
  * WHAT IS WRITTEN: `name_ja`, and nothing else.
  *
- * Editorial doctrine (docs/wiki-editorial.md): the wiki is written on the manga
+ * Editorial doctrine (docs/products/wiki-editorial.md): the wiki is written on the manga
  * and the databooks only. Kanzenshuu and Wikipedia are NOT sources. They are used
  * here the way `ja-appariement.ts` uses the Xenoverse 2 files: as a BRIDGE that
  * proposes "this Latin name ↔ this Japanese spelling". A spelling enters the wiki

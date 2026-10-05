@@ -30,7 +30,7 @@ interface World {
 	legacy?: { source: "token" | "discord"; userId?: string };
 }
 
-/** The bot `checkAdmin` expressed as strategies (docs/STACK.md §3.3). */
+/** The bot `checkAdmin` expressed as strategies (docs/architecture/STACK.md §3.3). */
 function botAdmin(world: World): Strategy[] {
 	return [
 		staticBearerStrategy({

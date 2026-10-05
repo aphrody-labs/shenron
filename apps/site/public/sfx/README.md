@@ -5,13 +5,12 @@ Pack chargé par `lib/sfx.ts` (Howler).
 ## Ingest autonome
 
 ```bash
-cd apps/shenron/site
+cd apps/site
 bun scripts/ingest-official-assets.ts          # SFX + images
 bun scripts/ingest-official-assets.ts --sfx-only
-bun run ingest:assets
 ```
 
-Catalogue : `scripts/asset-catalog.ts` · inventaire : `public/assets-inventory.json`
+Catalogue : `scripts/asset-catalog.ts` · inventaire : `scripts/inventaires/assets-inventory.json`
 
 ## Sources actuelles
 
@@ -40,7 +39,7 @@ Dépose les MP3 sous les **mêmes noms** (via filebrowser `files.dragonballfr.co
 
 ```bash
 # depuis le repo
-cp /chemin/vers/ton-pack/*.mp3 apps/shenron/site/public/sfx/
+cp /chemin/vers/ton-pack/*.mp3 apps/site/public/sfx/
 ```
 
 Aucun rebuild Next requis pour les MP3 (servis en statique) — seulement si tu changes le code `sfx.ts`.

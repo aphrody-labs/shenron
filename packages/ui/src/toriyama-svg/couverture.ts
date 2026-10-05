@@ -4,7 +4,7 @@
  * Tout ce qui suit est RELEVÉ sur la couverture désignée comme source de
  * vérité (`bot.dragonballfr.com/assets/ext/db_manga_volumes/124.jpg`, 764 ×
  * 1200), jamais décalqué et jamais dessiné de mémoire : les nombres bruts sont
- * dans `docs/couverture-analyse-visuelle.md`, section « Les quatre éléments de
+ * dans `docs/reference/couverture-analyse-visuelle.md`, section « Les quatre éléments de
  * décor ». Quatre motifs, un par élément :
  *
  *  1. `CADRE_CASE`  — l'encadrement de l'illustration : encre / liseré jaune /

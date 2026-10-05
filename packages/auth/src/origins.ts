@@ -1,5 +1,5 @@
 /**
- * Host and origin policy of each application (S2, docs/STACK.md §2.2).
+ * Host and origin policy of each application (S2, docs/architecture/STACK.md §2.2).
  *
  * Runtime class `pure`: no platform import, no environment read. The caller
  * says whether it runs in production; nothing is inferred here.

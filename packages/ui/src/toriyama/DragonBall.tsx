@@ -48,7 +48,7 @@
  *
  * Le dégradé est conservé COMME dégradé : c'est, avec la pastille de numéro de
  * tome, le seul endroit du support qui n'est pas un aplat franc
- * (cf. `docs/couverture-analyse-visuelle.md`).
+ * (cf. `docs/reference/couverture-analyse-visuelle.md`).
  */
 
 export type DragonBallStars = 1 | 2 | 3 | 4 | 5 | 6 | 7;

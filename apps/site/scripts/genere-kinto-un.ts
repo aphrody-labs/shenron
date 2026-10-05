@@ -1,12 +1,14 @@
 #!/usr/bin/env bun
 /**
- * Écrit les SVG du Kinto-un depuis la géométrie de `src/lib/kinto-un.ts` :
- *   public/dbz/kinto-un.svg          illustration 1200 × 648
- *   public/dbz/kinto-un-icone.svg    icône carrée 512, pastille sombre
- *   public/safari-pinned-tab.svg     silhouette monochrome (mask-icon)
+ * Écrit les SVG du Kinto-un depuis la géométrie de `src/lib/kinto-un.ts`,
+ * dans `packages/ui/assets/`, source unique copiée vers `apps/site/public/` par
+ * `bun run predev|prebuild` (`packages/ui/scripts/sync-assets.ts`) :
+ *   dbz/kinto-un.svg          illustration 1200 × 648
+ *   dbz/kinto-un-icone.svg    icône carrée 512, pastille sombre
+ *   safari-pinned-tab.svg     silhouette monochrome (mask-icon)
  *
  * Rien n'est décalqué : seules les MESURES relevées sur les cels Toei sont
- * reprises (cf. docs/kinto-un-analyse-visuelle.md). Les favicons raster se
+ * reprises (cf. docs/reference/kinto-un-analyse-visuelle.md). Les favicons raster se
  * font ensuite avec `bun scripts/genere-icones.ts`.
  *
  * Usage :
@@ -15,7 +17,7 @@
  */
 import { svgIcone, svgIllustration, svgMonochrome } from "../src/lib/kinto-un";
 
-const racine = new URL("../public/", import.meta.url).pathname;
+const racine = new URL("../../../packages/ui/assets/", import.meta.url).pathname;
 const sorties: [string, string][] = [
 	["dbz/kinto-un.svg", svgIllustration()],
 	["dbz/kinto-un-icone.svg", svgIcone()],
@@ -23,7 +25,7 @@ const sorties: [string, string][] = [
 ];
 for (const [nom, svg] of sorties) {
 	await Bun.write(racine + nom, svg);
-	console.log(`public/${nom} — ${svg.length} octets`);
+	console.log(`packages/ui/assets/${nom} — ${svg.length} octets`);
 }
 
 if (Bun.argv.includes("--rendu")) {

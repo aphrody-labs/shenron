@@ -9,7 +9,7 @@
  * 16 px est à redessiner : c'est là que se prennent les décisions de dessin
  * (nombre de fentes de la corbeille, taille de la pupille, écart des pointes).
  *
- * `sharp` vit dans le `node_modules` RACINE (cf. docs/pieges.md) — ne jamais
+ * `sharp` vit dans le `node_modules` RACINE (cf. docs/guides/pieges.md) — ne jamais
  * l'installer depuis `apps/site`, cela dé-hoiste `next` et casse le déploiement.
  *
  *   bun apps/site/scripts/rend-icones.ts [dossier]     (défaut : /tmp/icones)

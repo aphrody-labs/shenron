@@ -1,6 +1,6 @@
 /**
  * i18n audit — counts user-facing strings written in the source instead of
- * `messages/*.json`, per file, and writes the backlog to docs/i18n-backlog.md.
+ * `messages/*.json`, per file, and writes the backlog to docs/plans/i18n-backlog.md.
  *
  *   bun apps/site/scripts/i18n-audit.ts            # report
  *   bun apps/site/scripts/i18n-audit.ts --json     # machine-readable
@@ -45,6 +45,6 @@ if (json) {
 		...rows.map((r) => `| \`${r.file}\` | ${r.count} | ${r.samples.map((s) => s.replace(/\|/g, "\\|")).join(" · ")} |`),
 		"",
 	];
-	await Bun.write(path.join(ROOT, "../../docs/i18n-backlog.md"), lines.join("\n"));
-	console.log(`${total} chaînes dans ${rows.length} fichiers → docs/i18n-backlog.md`);
+	await Bun.write(path.join(ROOT, "../../docs/plans/i18n-backlog.md"), lines.join("\n"));
+	console.log(`${total} chaînes dans ${rows.length} fichiers → docs/plans/i18n-backlog.md`);
 }

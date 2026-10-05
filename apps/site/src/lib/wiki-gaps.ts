@@ -79,7 +79,7 @@ export const JA_GAP_EXEMPT: Readonly<Record<string, string>> = {
  * témoin est renseignée. Épisodes : sans date de diffusion japonaise, pas de
  * titre japonais à trouver — ce sont les épisodes internationaux de Kai Final
  * Chapters jamais diffusés au Japon, dont les faux `title_ja` ont été vidés
- * volontairement (rapport admin #15, `docs/ADMIN-REPORTS.md`). Mesuré le
+ * volontairement (rapport admin #15, `docs/operations/ADMIN-REPORTS.md`). Mesuré le
  * 2026-09-23 : les 8 épisodes publics sans `air_date` sont exactement les 8
  * sans `title_ja`, et aucun épisode daté n'en manque.
  */

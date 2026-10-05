@@ -560,7 +560,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
 		verdict: "Canon absolu. Révélé par Akira Toriyama dans le Super Exciting Guide (2009).",
 		explanation:
 			"Mr. Satan est son pseudonyme de ring de combat. Son véritable prénom est Mark (anagramme de Akuma, diable en japonais). Dans son secteur culturel, il n'existe pas de noms de famille.",
-		sources: ["Super Exciting Guide : Character Volume (2009)", "docs/toriyama-databook-seg.md"],
+		sources: ["Super Exciting Guide : Character Volume (2009)", "docs/reference/toriyama-databook-seg.md"],
 	},
 	{
 		id: "db-gt",
@@ -698,7 +698,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
 			source: "Daizenshuu 6 : Movies & TV Specials",
 			year: 1995,
 		},
-		sources: ["Daizenshuu 6", "docs/toriyama-interviews.md"],
+		sources: ["Daizenshuu 6", "docs/products/toriyama-interviews.md"],
 	},
 	{
 		id: "tarble",
@@ -748,7 +748,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
 			source: "Daizenshuu 2 : Story Guide (1995) & Interview Super Hero (2022)",
 			year: 1995,
 		},
-		sources: ["Daizenshuu 2", "Interview DBS Super Hero (2022)", "docs/toriyama-interviews.md"],
+		sources: ["Daizenshuu 2", "Interview DBS Super Hero (2022)", "docs/products/toriyama-interviews.md"],
 	},
 	{
 		id: "super-saiyan-5-af",
@@ -802,7 +802,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
 		verdict: "Canon absolu. Révélé par Akira Toriyama dans le Super Exciting Guide (2009).",
 		explanation:
 			"Les Kaïo et Kaïoshin naissent de fruits sur l'Arbre du Monde de la Planète Kaishin-sei. Ils sont asexués, vivent 75 000 ans et seuls les fruits dorés rarissimes donnent naissance aux Kaïoshin.",
-		sources: ["Super Exciting Guide : Character Volume (2009)", "docs/toriyama-databook-seg.md"],
+		sources: ["Super Exciting Guide : Character Volume (2009)", "docs/reference/toriyama-databook-seg.md"],
 	},
 	{
 		id: "s-cells",

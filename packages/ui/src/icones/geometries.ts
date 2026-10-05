@@ -5,7 +5,7 @@
  * `lucide-react` distincts, dont la forme (bouts arrondis, angles arrondis,
  * grille molle) est celle de n'importe quel tableau de bord. Ce jeu-ci reprend
  * la façon dont le support est encré, mesurée dans
- * `docs/couverture-analyse-visuelle.md` :
+ * `docs/reference/couverture-analyse-visuelle.md` :
  *
  * 1. **Trait d'épaisseur constante.** Le trait d'encre du support fait 4,0 px
  *    de médiane sur une illustration de 654 px, soit **0,61 % de la largeur du

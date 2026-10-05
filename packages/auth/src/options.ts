@@ -1,7 +1,7 @@
 /**
  * Better Auth option presets shared by the site and the bot (runtime class `server`).
  *
- * Invariants (docs/STACK.md §3.3): `prompt: "consent"` on Discord (without it
+ * Invariants (docs/architecture/STACK.md §3.3): `prompt: "consent"` on Discord (without it
  * Better Auth emits `prompt=none` and every first login fails with
  * `consent_required`), `identify`/`email` never repeated in the extra scopes
  * (Better Auth adds them itself), byte-stable placeholder e-mail for

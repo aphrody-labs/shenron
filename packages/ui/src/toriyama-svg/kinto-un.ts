@@ -4,7 +4,7 @@
  * Une seule source pour tout ce qui dessine le nuage : le générateur des SVG
  * de `public/dbz/`, le composant React `<KintoUn>`, les favicons. Les mesures
  * d'origine viennent du manga (tome 1 ch. 4, édition couleur t901 pl. 81) et
- * des cels Toei, relevées dans `docs/kinto-un-analyse-visuelle.md` :
+ * des cels Toei, relevées dans `docs/reference/kinto-un-analyse-visuelle.md` :
  *
  *  - la silhouette est une chaîne de lobes bombés (arcs de cercle entre les
  *    « creux » du contour), ratio d'encre ≈ 1,75 comme dans le manga ;

@@ -1,5 +1,5 @@
 /**
- * S5 (docs/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `aphrody a2a serve`.
+ * S5 (docs/architecture/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `aphrody a2a serve`.
  * L'amont Rust est simulé par un serveur Bun local (APHRODY_A2A_URL).
  */
 import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";

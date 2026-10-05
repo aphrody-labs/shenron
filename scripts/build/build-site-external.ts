@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * build-site-external.ts — `bun run site:artifact` : construit le site Shenron
+ * build-site-external.ts — `bun scripts/build/build-site-external.ts` : construit le site Shenron
  * hors VPS de production (Next `--turbopack`, `NEXT_DIST_DIR=.next-build`) puis
  * scelle l'artefact via `package-site-artifact.ts` (tar.gz + manifeste + SHA-256).
  * L'étape release du pipeline `aphrody-infra` consomme cet artefact ; la bascule,
@@ -11,7 +11,6 @@ import { mkdir, realpath, rm } from "node:fs/promises";
 import { connect } from "node:net";
 import { join, relative } from "node:path";
 import { createRequire } from "node:module";
-import { buildDependencies } from "../../../../../packages/infra/workspace/src/bun-dependency-builds.ts";
 
 import { artifactStore, artifactPath } from "./site-artifact-paths.ts";
 
@@ -95,11 +94,6 @@ const output = await artifactPath(store, outputArg);
 if (releaseArgs.length) await artifactPath(store, releaseArgs[1]!);
 console.log(`▶ Démarrage du build Next.js Turbopack pour commit ${sha}...`);
 
-// A frozen install links workspace owners but does not produce their dist exports.
-// Use the same serialized dependency graph as the Workspace qualification gates.
-const dependenciesExitCode = await buildDependencies(repo, ["@shenron/site"]);
-if (dependenciesExitCode !== 0) process.exit(dependenciesExitCode);
-
 // Nettoyage à froid
 await rm(buildDir, { recursive: true, force: true });
 
@@ -121,7 +115,9 @@ delete buildEnv.ALL_PROXY;
 
 // Match the existing immutable RG compiler boundary: Node 22 compiles Next;
 // Bun owns installs, package preparation, packaging and the final site runtime.
-const factory = await Bun.file(join(repo, "config/build-factory.json")).json();
+// Usine de build déclarée par l'Infra (config/build-factory.json, absente hors usine) : défauts sinon.
+const factoryPath = join(repo, "config/build-factory.json");
+const factory = existsSync(factoryPath) ? await Bun.file(factoryPath).json() : {};
 const nodeImage = factory.next?.image ?? "node:22-bookworm-slim";
 const memoryMiB = factory.next?.maxOldSpaceSizeMiB ?? 8192;
 const containerMemoryMiB = factory.next?.memoryMiB ?? 16384;

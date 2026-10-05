@@ -3,7 +3,7 @@
  *
  * Expose les œuvres média (mangas, anime comics, romans) et leurs éditions
  * reliées (Tankōbon, Kanzenban, Full Color) avec déduplication d'assets SHA-256
- * conformément au Sprint 1 de docs/architecture-refonte-wiki-dragon-ball.md.
+ * conformément au Sprint 1 de docs/architecture/architecture-refonte-wiki-dragon-ball.md.
  *
  * Query params supportés :
  *   - kind : manga | databook | guide | light_novel | anime_comic | spin_off

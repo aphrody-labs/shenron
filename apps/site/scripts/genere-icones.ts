@@ -5,7 +5,8 @@
  * `sharp` seul — l'ICO multi-tailles est un simple conteneur de PNG, écrit ici
  * en quinze lignes plutôt qu'avec une dépendance.
  *
- * Sorties (site `apps/site/public/`) :
+ * Sorties (`packages/ui/assets/`, source unique copiée vers `apps/site/public/` par
+ * `bun run predev|prebuild`) :
  *   favicon.ico                16 + 32 + 48 (vrai ICO, plus un PNG déguisé)
  *   favicon-16/32/48/96.png    transparents
  *   apple-touch-icon.png       180, OPAQUE (iOS compose sur noir sinon)
@@ -19,7 +20,7 @@
 import sharp from "sharp";
 import { KINTO_UN_COULEURS, svgIcone, svgIllustration } from "../src/lib/kinto-un";
 
-const site = new URL("../public/", import.meta.url).pathname;
+const site = new URL("../../../packages/ui/assets/", import.meta.url).pathname;
 const logoBot = new URL("../../bot/assets/logo.webp", import.meta.url).pathname;
 
 /**
@@ -98,9 +99,9 @@ console.log(`${logoBot} — ${logo.length} o`);
 
 /**
  * PNG de marque, à téléverser ailleurs (Discord, réseaux, presse), publiés sous
- * `apps/site/public/dbz/marque/`.
+ * `packages/ui/assets/dbz/marque/` (servis par le site sous `/dbz/marque/`).
  */
-const marque = new URL("../public/dbz/marque/", import.meta.url).pathname;
+const marque = new URL("../../../packages/ui/assets/dbz/marque/", import.meta.url).pathname;
 const ill = Buffer.from(svgIllustration());
 const carreNu = Buffer.from(svgIcone({ pastille: null, echelle: 1.12 }));
 const carrePlein = Buffer.from(svgIcone({ coins: 0.18 }));

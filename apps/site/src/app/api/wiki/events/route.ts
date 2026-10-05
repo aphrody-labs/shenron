@@ -3,7 +3,7 @@
  *
  * Unifie les combats (db_battles), tournois (db_tournaments) et événements
  * chronologiques (db_timeline_events) sous un contrat d'architecture conforme à
- * la Phase 3 de docs/architecture-refonte-wiki-dragon-ball.md.
+ * la Phase 3 de docs/architecture/architecture-refonte-wiki-dragon-ball.md.
  *
  * Query params supportés :
  *   - q : terme de recherche (titre, titre japonais, participants, techniques)

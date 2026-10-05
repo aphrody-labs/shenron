@@ -424,7 +424,7 @@ try {
 							WHERE w.id = v.id
 						`;
 						await tx`INSERT INTO public.wiki_revisions ${tx(revisions)}`;
-						// jsonb must hold objects, never string scalars (docs/pieges.md).
+						// jsonb must hold objects, never string scalars (docs/guides/pieges.md).
 						const [check] = await tx<{ objects: number }[]>`
 							SELECT count(*)::int AS objects FROM public.wiki_revisions
 							WHERE id IN ${tx(revisions.map((revision) => revision.id))}

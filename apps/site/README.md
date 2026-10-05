@@ -12,15 +12,15 @@ bun --filter @shenron/site dev
 ```
 
 Next's dev server prints the local URL. This command does not generate `.env.local`.
-The previously documented `bun scripts/dev/local-env.ts env` path and `site:dev`
-root script are not present in the current manifests. See
-[`docs/DEV-LOCAL.md`](../../docs/DEV-LOCAL.md) for the status of the old procedure;
-the variable inventory remains in [`docs/ENV.md`](../../docs/ENV.md). Database and
-site-specific commands are defined in this package's `package.json`.
+The variable inventory lives in [`docs/operations/ENV.md`](../../docs/operations/ENV.md);
+[`docs/operations/DEV-LOCAL.md`](../../docs/operations/DEV-LOCAL.md) is historical. Database
+and site-specific commands are defined in this package's `package.json`.
 
 ## Build and release
 
-`bun run site:artifact` builds and packages the site outside production. The
-`site-artifact` workflow can produce the same attested artifact. Release
-promotion, service units, Nginx routes, health probes, and rollback are owned
-by `aphrody-infra`; this repository does not deploy directly.
+`bun run build:server` (root) compiles the site into the autonomous `shenron-server`
+binary. `bun scripts/build/build-site-external.ts` builds and seals the `.next-build`
+artifact consumed by the `aphrody-infra` release pipeline; the `site-artifact` workflow
+can produce the same artifact. Release promotion, service units, Nginx routes, health
+probes, and rollback are owned by `aphrody-infra`; this repository does not deploy
+directly.

@@ -8,8 +8,8 @@
  * later, with the exact source evidence and a reversible create plan.
  *
  * Usage:
- *   DATABASE_URL=... bun scripts/ops/wiki-page-builder.ts --since 2026-09-16T00:00:00Z
- *   DATABASE_URL=... bun scripts/ops/wiki-page-builder.ts --since ... --limit 50 > candidates.json
+ *   DATABASE_URL=... bun scripts/build/wiki-page-builder.ts --since 2026-09-16T00:00:00Z
+ *   DATABASE_URL=... bun scripts/build/wiki-page-builder.ts --since ... --limit 50 > candidates.json
  */
 import { createHash } from "node:crypto";
 import postgres from "postgres";

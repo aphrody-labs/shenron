@@ -13,7 +13,7 @@ import { signActingUser } from "@shenron/auth/acting-user";
  *   - applique un **quota par utilisateur** (anti-DoS disque) ;
  *   - relaie vers l'API bot `/api/assets/upload` **au nom du membre** : en-têtes
  *     `x-acting-*` signés par `signActingUser` (`SHENRON_USER_SECRET`,
- *     server-only), jamais le jeton maître admin (S7, docs/STACK.md §2.2 : le
+ *     server-only), jamais le jeton maître admin (S7, docs/architecture/STACK.md §2.2 : le
  *     bot borne une signature acting-user au seul périmètre `tierlists/`), dans
  *     un **namespace dédié** pour ne pas polluer les assets wiki curés.
  * Le bot renvoie un chemin `./assets/wiki/tierlists/<uuid>.<ext>` que

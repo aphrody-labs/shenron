@@ -3,7 +3,7 @@
 // ses voisins qui touchent la base portent cette garde ; ici elle manquait, si
 // bien que rien n'empêchait un import depuis un Client Component — ce qui aurait
 // tiré `postgres`/`drizzle` dans le bundle et fait fuiter la forme même de
-// l'export. Cf. `docs/pieges.md` (« shenron.ts / db-universe.ts sont server-only »).
+// l'export. Cf. `docs/guides/pieges.md` (« shenron.ts / db-universe.ts sont server-only »).
 import "server-only";
 import { and, count, desc, eq, or } from "drizzle-orm";
 import {

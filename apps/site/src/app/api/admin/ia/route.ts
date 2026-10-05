@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ ok: true, id: res.id });
 		}
 
-		// ── Session goals (bot admin_goals → docs/GOALS.md) ──────────────────
+		// ── Session goals (bot admin_goals → docs/products/GOALS.md) ──────────────────
 		if (action === "create_goal") {
 			const title = String(body.title ?? "").trim();
 			const description = String(body.description ?? "").trim();

@@ -3,7 +3,7 @@
  * which of those searches our site answers with a page.
  *
  *   bun apps/site/scripts/seo-demand.ts                 # small run, report to stdout
- *   bun apps/site/scripts/seo-demand.ts --apply         # also write docs/seo-demande.md
+ *   bun apps/site/scripts/seo-demand.ts --apply         # also write docs/products/seo-demande.md
  *   bun apps/site/scripts/seo-demand.ts --seeds 60      # widen the seed list
  *
  * Source: `bxc google suggest`, the keyless autocomplete endpoint. It returns
@@ -267,7 +267,7 @@ console.log(
 for (const g of gaps.slice(0, 25)) console.log(`  ✗ ${g.query}`);
 
 if (!apply) {
-	console.log("(lecture seule — relancer avec --apply pour écrire docs/seo-demande.md)");
+	console.log("(lecture seule — relancer avec --apply pour écrire docs/products/seo-demande.md)");
 	process.exit(0);
 }
 
@@ -306,7 +306,7 @@ const lines = [
 	"",
 ];
 
-const target = path.resolve(import.meta.dir, "../../../docs/seo-demande.md");
+const target = path.resolve(import.meta.dir, "../../../docs/products/seo-demande.md");
 await Bun.write(target, `${lines.join("\n")}\n`);
 console.log(`→ ${path.relative(process.cwd(), target)}`);
 process.exit(0);

@@ -658,7 +658,7 @@ export async function getShenronCharacterCards(query?: string): Promise<DBCharac
  * `getShenronCharacterCards()`, qui ramène douze colonnes des 1 323 fiches
  * visibles, pour n'en garder que cent identifiants : douze mille valeurs
  * transférées et désérialisées à chaque build, au moment précis où la machine
- * manque de mémoire (cf. `docs/pieges.md`).
+ * manque de mémoire (cf. `docs/guides/pieges.md`).
  *
  * Le tri par identifiant n'est pas cosmétique : sans `order by`, PostgreSQL ne
  * garantit AUCUN ordre, donc le lot prérendu changeait d'un build à l'autre et

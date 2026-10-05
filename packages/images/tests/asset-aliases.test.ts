@@ -5,6 +5,18 @@ import { ASSET_ALIASES, dbPathToDisk, resolveAppFile, sitePublicRedirects } from
 
 const APPS = join(import.meta.dir, "..", "..", "..", "apps");
 const ROOTS = { bot: join(APPS, "bot"), site: join(APPS, "site") };
+/**
+ * `apps/site/public/` brand art and favicons are not tracked: `bun run predev|prebuild` copies
+ * them from `packages/ui/assets` (`packages/ui/scripts/sync-assets.ts`), their single source.
+ * On a clean checkout a `site/public/<path>` canonical exists through that source.
+ */
+const UI_ASSETS = join(APPS, "..", "packages", "ui", "assets");
+
+function canonicalExists(appRelative: string): boolean {
+	if (existsSync(join(APPS, appRelative))) return true;
+	const synced = appRelative.startsWith("site/public/") ? appRelative.slice("site/public/".length) : null;
+	return synced !== null && existsSync(join(UI_ASSETS, synced));
+}
 /** Directories served by URL or read by the bot canvas; the dedup scope. */
 const SCANNED = ["bot/assets", "bot/public", "site/public"];
 /**
@@ -28,7 +40,7 @@ describe("asset dedup manifest", () => {
 	test("every alias points to an existing canonical file and its copy is gone", () => {
 		const problems: string[] = [];
 		for (const [from, to] of Object.entries(ASSET_ALIASES)) {
-			if (!existsSync(join(APPS, to))) problems.push(`missing canonical ${to}`);
+			if (!canonicalExists(to)) problems.push(`missing canonical ${to}`);
 			if (existsSync(join(APPS, from))) problems.push(`duplicate still on disk ${from}`);
 			if (ASSET_ALIASES[to]) problems.push(`chained alias ${from} -> ${to}`);
 		}

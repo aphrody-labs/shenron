@@ -1,7 +1,7 @@
 /**
  * wiki-nav-manifest — Registre typé de la navigation encyclopédique Dragon Ball.
  *
- * Conforme à la Phase 2.2 de docs/architecture-refonte-wiki-dragon-ball.md.
+ * Conforme à la Phase 2.2 de docs/architecture/architecture-refonte-wiki-dragon-ball.md.
  * Centralise l'arborescence, les icônes, les badges de statut et les ancres canoniques
  * pour éviter les conditions dispersées dans les composants UI (drawer, sidebar, fil d'Ariane).
  */

@@ -1,5 +1,5 @@
 /**
- * Staff policy (runtime class `pure`, decision D6 of docs/STACK.md).
+ * Staff policy (runtime class `pure`, decision D6 of docs/architecture/STACK.md).
  *
  * - bot scope  = OWNER_ID ∪ OWNER_IDS ∪ BOT_DEV_ID ∪ OAUTH_ALLOWED_USERS
  *   (`isBotOwner` + `isUserAllowed` of `apps/bot/src/api/oauth.ts`);

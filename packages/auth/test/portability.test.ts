@@ -13,7 +13,7 @@ import {
 
 const pkgDir = fileURLToPath(new URL("..", import.meta.url));
 
-/** docs/STACK.md §3.3. */
+/** docs/architecture/STACK.md §3.3. */
 const EXPECTED: Record<string, string> = {
 	".": "server",
 	"./origins": "pure",

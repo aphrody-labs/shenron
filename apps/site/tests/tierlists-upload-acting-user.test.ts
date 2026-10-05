@@ -1,5 +1,5 @@
 /**
- * S7 côté site (docs/STACK.md §2.2) : le téléversement de tierlist part signé au
+ * S7 côté site (docs/architecture/STACK.md §2.2) : le téléversement de tierlist part signé au
  * nom du membre (`x-acting-*`), jamais avec le jeton maître admin ; le proxy
  * `/api/bot-user/*` émet, à horloge fixée, des en-têtes octet pour octet
  * identiques à l'ancien signataire local.

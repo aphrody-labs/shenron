@@ -72,7 +72,7 @@ export async function proxy(request: NextRequest) {
 	const host = request.headers.get("host") || "";
 
 	// Rediriger vers le domaine unique canonique si la requête provient d'un autre hôte,
-	// tout en autorisant localhost en local. S2 (docs/STACK.md §2.2) : les hôtes de
+	// tout en autorisant localhost en local. S2 (docs/architecture/STACK.md §2.2) : les hôtes de
 	// preview Vercel (`*.vercel.app`) ne passent plus — ils sont redirigés comme
 	// l'alias de prod dbfr.vercel.app.
 	if (

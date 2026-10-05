@@ -5,7 +5,7 @@
  * Les Server Components / Route Handlers consomment directement `botRequest(path)`.
  * Pour le browser, passer par le proxy `/api/bot-admin/[...path]` (forwarde + auth).
  *
- * B11 (docs/STACK.md §2.2) : `stats`, `services`, `tables`, `table`, `wikiStats`
+ * B11 (docs/architecture/STACK.md §2.2) : `stats`, `services`, `tables`, `table`, `wikiStats`
  * et `economyStats` passent par le client typé `@shenron/api/client` et sont
  * VALIDÉS par les schémas du contrat (forme réelle du bot). Une réponse non
  * conforme lève `BotAdminError` au lieu d'être castée silencieusement.

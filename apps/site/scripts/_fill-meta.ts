@@ -149,7 +149,7 @@ export async function applyChanges(
 			const count = Object.keys(after).length;
 			if (count === 0) return 0;
 			// `sql.json` and not `JSON.stringify(...)::jsonb`: the latter stores a string scalar
-			// and silently breaks the revert of /admin/wiki/history (docs/pieges.md).
+			// and silently breaks the revert of /admin/wiki/history (docs/guides/pieges.md).
 			await tx`INSERT INTO public.wiki_revisions ${tx({
 				id: revisionId(),
 				tableName: change.table,

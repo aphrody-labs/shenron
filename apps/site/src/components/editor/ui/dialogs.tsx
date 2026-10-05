@@ -531,7 +531,7 @@ export function ButtonDialog({
 /* -------------------------------------------------------------------------- */
 
 /* Or, orange, rouge et vert sont relevés sur la couverture de tankōbon
-   (docs/couverture-analyse-visuelle.md) : ce sont les encres du support, pas
+   (docs/reference/couverture-analyse-visuelle.md) : ce sont les encres du support, pas
    des nuances choisies. Le rouge est la version éclaircie du rouge du titre —
    l'aplat exact (#de0b36) tombe à 3,97:1 sur le fond du site, et ceci colore
    du TEXTE. Le bleu de case n'entre pas dans cette liste pour la même raison :
