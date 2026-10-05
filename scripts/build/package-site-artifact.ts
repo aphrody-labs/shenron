@@ -1,29 +1,98 @@
 #!/usr/bin/env bun
-/** Emballe un `.next-build` produit hors VPS pour import bleu/vert vérifié. */
+// SPDX-License-Identifier: Apache-2.0
+/**
+ * Scelle le `.next-build` du site et, sur demande, la release Shenron consommée par
+ * l'adaptateur Infra `aphrody-infra-deploy-shenron assemble` (Aphrody
+ * `scripts/release/atomic-deploy-shenron.sh`).
+ *
+ *   bun scripts/build/package-site-artifact.ts [SORTIE] [--release-dir DOSSIER] [--target vps|dbfr]
+ *
+ * SORTIE (défaut `artifacts/site-build.tar.gz`) : `artifact-manifest.json` + `build/`.
+ * `--release-dir` écrit, depuis le commit propre courant, le répertoire `shenron/` d'un bundle :
+ * `source.tar.gz` (git archive + bot compilé en `apps/bot/dist/shenron`), `site-build.tar.gz`,
+ * `systemd/shenron-{site,bot}.service` (rendus par le CLI hôte d'Aphrody), `nginx/shenron.conf`,
+ * `release.json` (`repository: "shenron"`, `sourceLayout: "legacy"`) et `SHA256SUMS`.
+ * Préalables : `bun scripts/build/bot.ts` et le build Next (`NEXT_DIST_DIR=.next-build`).
+ * Aucun processus d'exécution, aucune migration ni base : l'emballage ne fait que copier.
+ */
 import { existsSync } from "node:fs";
-import { mkdir, rm, readdir, lstat, readlink, unlink, cp } from "node:fs/promises";
+import { mkdir, rename, rm } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join, relative as relativePath } from "node:path";
+import { join } from "node:path";
 
-import { artifactStore, artifactPath } from "./site-artifact-paths.ts";
+import { artifactPath, artifactStore } from "./site-artifact-paths.ts";
+
+const USAGE =
+  "usage: package-site-artifact.ts [SORTIE] [--release-dir DOSSIER] [--target vps|dbfr]";
+const TARGETS = ["vps", "dbfr"] as const;
+// Ordre du roster du catalogue Infra (services shenron sous /srv/shenron/current).
+const SERVICES = ["shenron-site", "shenron-bot"] as const;
+// Vhosts installés par l'Infra depuis `config/host/nginx/shenron` (conf.d séparés).
+const PUBLIC_HOSTS = [
+  "dragonballfr.com",
+  "www.dragonballfr.com",
+  "bot.dragonballfr.com",
+  "cdn.dragonballfr.com",
+];
 
 const repo = join(import.meta.dir, "..", "..");
 const build = join(repo, "apps", "site", ".next-build");
-// Units and nginx fragments live in yolo (config/host); compose shared drop-ins/snippets inline.
-const yolo = process.env.YOLO_ROOT || join(homedir(), "yolo");
-const hostConfig = join(yolo, "config", "host");
-const hostCli = join(yolo, "packages", "core", "src", "host", "cli.ts");
-const compose = (...args: string[]) => {
-  const out = Bun.spawnSync(["bun", hostCli, ...args], {
-    env: { ...process.env, YOLO_ROOT: yolo },
+const botBinary = join(repo, "dist", "bot", "linux-x64", "shenron-bot");
+
+const args = process.argv.slice(2);
+function option(name: string): string | undefined {
+  const index = args.indexOf(name);
+  if (index < 0) return undefined;
+  const value = args[index + 1];
+  if (!value || value.startsWith("--")) throw new Error(`${name} attend une valeur\n${USAGE}`);
+  args.splice(index, 2);
+  return value;
+}
+const releaseArg = option("--release-dir");
+const target = option("--target") ?? "vps";
+if (!(TARGETS as readonly string[]).includes(target))
+  throw new Error(`--target vps|dbfr\n${USAGE}`);
+if (args.length > 1 || args.some((arg) => arg.startsWith("--"))) throw new Error(USAGE);
+const outputArg = args[0] ?? "artifacts/site-build.tar.gz";
+
+function run(cmd: string[], cwd = repo): string {
+  const result = Bun.spawnSync(cmd, { cwd, stdout: "pipe", stderr: "pipe" });
+  if (result.exitCode !== 0) throw new Error(`${cmd[0]} : ${result.stderr.toString().trim()}`);
+  return result.stdout.toString();
+}
+
+/** CLI hôte qui compose unités et fragments : Aphrody (`APHRODY_ROOT`, `~/aphrody`), sinon yolo. */
+function hostCli(): { root: string; cli: string } {
+  const explicit = process.env.APHRODY_ROOT?.trim();
+  const candidates = explicit
+    ? [{ root: explicit, cli: join(explicit, "packages/engine/core/src/host/cli.ts") }]
+    : [
+        { root: join(homedir(), "aphrody"), cli: "packages/engine/core/src/host/cli.ts" },
+        {
+          root: process.env.YOLO_ROOT?.trim() || join(homedir(), "yolo"),
+          cli: "packages/core/src/host/cli.ts",
+        },
+      ].map(({ root, cli }) => ({ root, cli: join(root, cli) }));
+  const found = candidates.find(({ cli }) => existsSync(cli));
+  if (!found)
+    throw new Error(`CLI hôte introuvable (${candidates.map(({ cli }) => cli).join(", ")})`);
+  return found;
+}
+
+function composeUnit(unit: string): string {
+  const { root, cli } = hostCli();
+  const result = Bun.spawnSync([process.execPath, cli, "compose-unit", unit], {
+    cwd: repo,
+    env: { ...process.env, YOLO_ROOT: root },
     stdout: "pipe",
     stderr: "pipe",
   });
-  if (out.exitCode) throw new Error(`${args.join(" ")}: ${out.stderr.toString()}`);
-  return out.stdout.toString();
-};
-const outputArg = process.argv[2] ?? "artifacts/site-build.tar.gz";
-const run = (cmd: string[]) => Bun.spawnSync(cmd, { cwd: repo, stdout: "pipe", stderr: "pipe" });
+  if (result.exitCode !== 0) throw new Error(`compose-unit ${unit} : ${result.stderr.toString()}`);
+  const content = result.stdout.toString();
+  if (!/^WorkingDirectory=\/srv\/shenron\/current(?:\/\S*)?$/m.test(content))
+    throw new Error(`${unit} n'est pas une unité de release /srv/shenron/current`);
+  return content;
+}
 
 for (const name of [
   "BUILD_ID",
@@ -33,9 +102,7 @@ for (const name of [
 ]) {
   if (!existsSync(join(build, name))) throw new Error(`build incomplet : ${name} absent`);
 }
-const shaResult = run(["git", "rev-parse", "HEAD"]);
-if (shaResult.exitCode !== 0) throw new Error(shaResult.stderr.toString());
-const commit = shaResult.stdout.toString().trim();
+const commit = run(["git", "rev-parse", "HEAD"]).trim();
 const store = await artifactStore(repo, process.env, commit);
 const output = await artifactPath(store, outputArg);
 const outputChecksum = await artifactPath(store, `${outputArg}.sha256`);
@@ -45,26 +112,14 @@ const buildId = (await Bun.file(join(build, "BUILD_ID")).text()).trim();
 await rm(stage, { recursive: true, force: true });
 await mkdir(join(stage, "build"), { recursive: true });
 try {
-  const copy = run([
-    "rsync",
-    "-a",
-    "-L",
-    "--exclude",
-    "cache/",
-    `${build}/`,
-    `${join(stage, "build")}/`,
-  ]);
-  if (copy.exitCode !== 0) throw new Error(copy.stderr.toString());
+  run(["rsync", "-a", "-L", "--exclude", "cache/", `${build}/`, `${join(stage, "build")}/`]);
   await Bun.write(
     join(stage, "artifact-manifest.json"),
     `${JSON.stringify({ schema: "shenron-site-artifact/v1", commit, buildId }, null, 2)}\n`,
   );
   await mkdir(join(output, ".."), { recursive: true });
-  const archive = run(["tar", "-czf", output, "-C", stage, "artifact-manifest.json", "build"]);
-  if (archive.exitCode !== 0) throw new Error(archive.stderr.toString());
-  const digest = run(["sha256sum", output]);
-  if (digest.exitCode !== 0) throw new Error(digest.stderr.toString());
-  const hash = digest.stdout.toString().trim().split(/\s+/)[0];
+  run(["tar", "-czf", output, "-C", stage, "artifact-manifest.json", "build"]);
+  const hash = run(["sha256sum", output]).trim().split(/\s+/)[0];
   await Bun.write(outputChecksum, `${hash}  ${outputArg}\n`);
   console.log(
     JSON.stringify({ status: "FAIT", artifact: outputArg, commit, buildId, sha256: hash }),
@@ -73,146 +128,61 @@ try {
   await rm(stage, { recursive: true, force: true });
 }
 
-// Optional immutable Infra payload from the same committed monorepo source.
-// Owner build/compile happens before this step; packaging does not run runtime
-// processes, migrations, or databases.
-if (process.argv[3] === "--release-dir") {
-  const releaseArg = process.argv[4];
-  if (!releaseArg || releaseArg.startsWith("/") || releaseArg.split("/").includes("..")) {
-    throw new Error("release directory must be relative to the owner checkout");
-  }
-  if (!releaseArg) throw new Error("release directory argument required");
+if (releaseArg !== undefined) {
   const releaseDir = await artifactPath(store, releaseArg);
-  if (existsSync(releaseDir)) throw new Error("release directory already exists");
-  const dirty = run(["git", "status", "--porcelain", "--untracked-files=no"]);
-  if (dirty.exitCode || dirty.stdout.toString().trim())
-    throw new Error("release source must be committed and clean");
-  const botBinary = join(repo, "apps/bot/dist/shenron");
-  if (!existsSync(botBinary)) throw new Error("compile the Shenron bot owner before packaging");
-  const payloadStage = await artifactPath(store, `${releaseArg}.staging`);
-  if (existsSync(payloadStage)) throw new Error("release staging directory already exists");
-  await mkdir(join(payloadStage, "systemd"), { recursive: true });
-  await mkdir(join(payloadStage, "nginx"), { recursive: true });
-  const sourceStage = join(payloadStage, ".source");
-  await mkdir(sourceStage);
+  if (existsSync(releaseDir)) throw new Error("le répertoire de release existe déjà");
+  if (run(["git", "status", "--porcelain", "--untracked-files=no"]).trim())
+    throw new Error("la source de release doit être commitée et propre");
+  if (!existsSync(botBinary))
+    throw new Error("bot compilé absent : lancer `bun scripts/build/bot.ts` avant l'emballage");
+  const payload = await artifactPath(store, `${releaseArg}.staging`);
+  if (existsSync(payload)) throw new Error("le répertoire de préparation de release existe déjà");
+  // Le répertoire de release est le `shenron/` d'un bundle : `assemble DOSSIER`.
+  const shenron = payload;
+  const source = join(payload, ".source");
+  await mkdir(join(shenron, "systemd"), { recursive: true });
+  await mkdir(join(shenron, "nginx"), { recursive: true });
+  await mkdir(join(source, "apps", "bot", "dist"), { recursive: true });
   try {
-    const sourceArchive = join(payloadStage, ".source.tar");
-    for (const cmd of [
-      ["git", "archive", "--format=tar", "--output", sourceArchive, commit],
-      [
-        "tar",
-        "-xf",
-        sourceArchive,
-        "--exclude=node_modules",
-        "--exclude=*/node_modules",
-        "--exclude=*/node_modules/*",
-        "-C",
-        sourceStage,
-      ],
-    ]) {
-      const result = run(cmd);
-      if (result.exitCode) throw new Error(result.stderr.toString());
+    const archive = join(payload, ".source.tar");
+    run(["git", "archive", "--format=tar", "--output", archive, commit]);
+    run(["tar", "-xf", archive, "-C", source]);
+    await rm(archive);
+    // Chemin attendu par `ExecStart` de shenron-bot.service.
+    const bot = join(source, "apps", "bot", "dist", "shenron");
+    await Bun.write(bot, Bun.file(botBinary));
+    run(["chmod", "0755", bot]);
+    run(["tar", "-czf", join(shenron, "source.tar.gz"), "-C", source, "."]);
+    await rm(source, { recursive: true });
+    await Bun.write(join(shenron, "site-build.tar.gz"), Bun.file(output));
+    for (const service of SERVICES) {
+      await Bun.write(
+        join(shenron, "systemd", `${service}.service`),
+        composeUnit(`${service}.service`),
+      );
     }
-    // Host-only Python dispatchers belong to the sibling Python workspace;
-    // this is the same precise exclusion used by the RG release owner.
-    await Promise.all(
-      (await readdir(sourceStage, { recursive: true })).map(async (relative) => {
-        const path = join(sourceStage, relative);
-        if (
-          (await lstat(path)).isSymbolicLink() &&
-          (await readlink(path)).endsWith(
-            "/aphrody-py/tools/infra/scripts/python-workspace-dispatch.py",
-          )
-        ) {
-          await unlink(path);
-        }
-      }),
-    );
-    const { dependencyBuildPlan } = await import(
-      join(repo, "packages/infra/workspace/src/bun-dependency-builds.ts")
-    );
-    const firstPartyArtifacts = await Promise.all(
-      (await dependencyBuildPlan(repo, ["@shenron/site", "@shenron/bot"])).map(async (owner) => {
-        const manifest = await Bun.file(join(owner.path, "package.json")).json();
-        const roots = new Set<string>();
-        const collect = (value: unknown) => {
-          if (typeof value === "string") {
-            const match = /^(?:\.\/)?(dist|build)\//.exec(value);
-            if (match) roots.add(match[1]!);
-          } else if (value !== null && typeof value === "object") {
-            for (const nested of Object.values(value)) collect(nested);
-          }
-        };
-        collect([manifest.exports, manifest.main, manifest.module, manifest.types, manifest.bin]);
-        const ownerRelative = relativePath(repo, owner.path);
-        if (ownerRelative.startsWith(".."))
-          throw new Error("compiled artifact owner outside monorepo");
-        await Promise.all(
-          [...roots].map(async (root) => {
-            const source = join(owner.path, root);
-            const destination = join(sourceStage, ownerRelative, root);
-            if (!existsSync(source) || !(await lstat(source)).isDirectory())
-              throw new Error(`missing owner-built artifact: ${owner.name}/${root}`);
-            if (existsSync(destination))
-              throw new Error(
-                `compiled artifact collides with tracked source: ${owner.name}/${root}`,
-              );
-            await cp(source, destination, {
-              recursive: true,
-              dereference: false,
-              errorOnExist: true,
-              force: false,
-            });
-          }),
-        );
-        return { name: owner.name, path: ownerRelative, roots: [...roots].toSorted() };
-      }),
-    );
-    await mkdir(join(sourceStage, "apps/bot/dist"), { recursive: true });
-    await Bun.write(join(sourceStage, "apps/bot/dist/shenron"), Bun.file(botBinary));
-    const mode = run(["chmod", "0755", join(sourceStage, "apps/bot/dist/shenron")]);
-    if (mode.exitCode) throw new Error(mode.stderr.toString());
-    const tar = run(["tar", "-czf", join(payloadStage, "source.tar.gz"), "-C", sourceStage, "."]);
-    if (tar.exitCode) throw new Error(tar.stderr.toString());
-    await rm(sourceStage, { recursive: true });
-    await rm(sourceArchive);
-    await Bun.write(join(payloadStage, "site-build.tar.gz"), Bun.file(output));
-    await Promise.all(
-      ["shenron-site", "shenron-bot"].map((unit) =>
-        Bun.write(
-          join(payloadStage, "systemd", `${unit}.service`),
-          compose("compose-unit", `${unit}.service`),
-        ),
-      ),
-    );
-    const fragments = [
-      "00-shenron-cache",
-      "dragonballfr.com",
-      "bot.dragonballfr.com",
-      "cdn.dragonballfr.com",
-    ];
-    const nginx =
-      "# Infra-owned Shenron immutable release\n" +
-      (
-        await Promise.all(
-          fragments.map((fragment) =>
-            compose("compose-nginx", join(hostConfig, "nginx/shenron", `${fragment}.conf.example`)),
-          ),
-        )
-      ).join("\n");
-    await Bun.write(join(payloadStage, "nginx/shenron.conf"), nginx);
+    // Les vhosts Shenron sont des fichiers conf.d installés par l'Infra (00-shenron.conf,
+    // dragonballfr.com.conf, …) : la release n'ajoute aucune directive, sinon nginx -t
+    // échoue sur des zones dupliquées. La ligne `server_name` en commentaire nomme les
+    // hôtes que l'adaptateur vérifie contre nginx-routes.json.
     await Bun.write(
-      join(payloadStage, "release.json"),
+      join(shenron, "nginx", "shenron.conf"),
+      `# Release Shenron ${commit} : aucune directive nginx propre.\n` +
+        "# Vhosts installés par l'Infra depuis config/host/nginx/shenron (conf.d séparés),\n" +
+        "# vers 127.0.0.1:5011 (site) et 127.0.0.1:5006 (bot).\n" +
+        `# Hôtes couverts : server_name ${PUBLIC_HOSTS.join(" ")};\n`,
+    );
+    await Bun.write(
+      join(shenron, "release.json"),
       `${JSON.stringify(
         {
           schemaVersion: 1,
-          repository: "aphrody-labs/aphrody",
+          repository: "shenron",
           commit,
-          sourceLayout: "monorepo",
-          target: "dbfr",
+          sourceLayout: "legacy",
+          target,
           builtAt: new Date().toISOString(),
-          services: ["shenron-site", "shenron-bot"],
-          firstPartyArtifacts,
+          services: SERVICES,
           siteArtifact: { buildId },
         },
         null,
@@ -223,23 +193,15 @@ if (process.argv[3] === "--release-dir") {
       "source.tar.gz",
       "site-build.tar.gz",
       "release.json",
-      "systemd/shenron-site.service",
-      "systemd/shenron-bot.service",
+      ...SERVICES.map((service) => `systemd/${service}.service`),
       "nginx/shenron.conf",
     ];
-    // Native streaming hashes keep archive-sized buffers off the JS heap.
-    const checksumResult = Bun.spawnSync(["sha256sum", ...files], {
-      cwd: payloadStage,
-      stdout: "pipe",
-      stderr: "pipe",
-    });
-    if (checksumResult.exitCode) throw new Error(checksumResult.stderr.toString());
-    await Bun.write(join(payloadStage, "SHA256SUMS"), checksumResult.stdout);
-    const { rename } = await import("node:fs/promises");
-    await rename(payloadStage, releaseDir);
-    console.log(JSON.stringify({ release: releaseArg, commit, target: "dbfr" }));
+    // sha256sum natif : les archives ne transitent pas par le tas JS.
+    await Bun.write(join(shenron, "SHA256SUMS"), run(["sha256sum", ...files], shenron));
+    await rename(payload, releaseDir);
+    console.log(JSON.stringify({ release: releaseArg, commit, target, buildId }));
   } catch (error) {
-    await rm(payloadStage, { recursive: true, force: true });
+    await rm(payload, { recursive: true, force: true });
     throw error;
   }
 }
