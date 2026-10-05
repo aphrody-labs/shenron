@@ -8,7 +8,9 @@
  *   bun release-host.ts cdn     # publie la release active sur le CDN
  *
  * `build` : avance rapide de `~/shenron` sur origin/main (arbre propre exigé), install figée,
- * `shenron-mcp` (cargo), bot compilé, site (`build-site-external.ts`, base lue dans
+ * `shenron-mcp` (cargo), bot compilé, WASM du viewport Koharu (`packages/koharu/scripts/
+ * build-wasm.ts` : cible wasm32 et CLI wasm-bindgen verrouillé installés au premier passage,
+ * rien à refaire si son tampon est à jour), site (`build-site-external.ts`, base lue dans
  * l'environnement du site, jamais affichée), emballage puis `aphrody-infra-deploy-shenron
  * assemble`. Dernière ligne : `{"commit": …, "release": …}`.
  *
@@ -17,6 +19,8 @@
  * (`/srv/shenron-cdn-src`) et, pour ce qui n'y est pas encore, directement dans l'arbre servi
  * (`/srv/shenron-cdn`) : disponibles tout de suite, ré-encodés ensuite par
  * `aphrody-cdn-optimize`. Jamais de suppression : une page en cache garde ses anciens fichiers.
+ * Le WASM de Koharu y part avec les médias (`static/media/koharu_canvas_bg.<hash>.wasm`) ; nginx
+ * le sert en `application/wasm`, immuable (sonde de `release.ts`).
  */
 import { join } from "node:path";
 
@@ -54,6 +58,7 @@ function build(): void {
   step("bun install", ["bun", "install", "--frozen-lockfile"]);
   step("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
   step("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
+  step("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
   const database = /^DATABASE_URL=["']?([^"'\n]+)["']?$/m.exec(envFile.stdout.toString())?.[1];
   if (!database) throw new Error("DATABASE_URL introuvable dans l'environnement du site");

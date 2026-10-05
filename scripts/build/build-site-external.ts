@@ -12,7 +12,7 @@ import { connect } from "node:net";
 import { join, relative } from "node:path";
 import { createRequire } from "node:module";
 
-import { ensureKoharuWasm } from "./koharu-wasm.ts";
+import { emittedKoharuWasm, ensureKoharuWasm } from "./koharu-wasm.ts";
 import { artifactStore, artifactPath } from "./site-artifact-paths.ts";
 
 const releaseArgs = process.argv.slice(2);
@@ -98,6 +98,7 @@ console.log(`▶ Démarrage du build Next.js Turbopack pour commit ${sha}...`);
 // Nettoyage à froid
 await rm(buildDir, { recursive: true, force: true });
 
+// Côté hôte, avant le conteneur de Next : celui-ci ne voit que le dépôt monté, sans Rust.
 ensureKoharuWasm();
 
 const prebuild = Bun.spawnSync([process.execPath, "run", "prebuild"], {
@@ -256,6 +257,13 @@ for (const req of ["BUILD_ID", "prerender-manifest.json", "routes-manifest.json"
     process.exit(1);
   }
 }
+// Viewport de l'éditeur Koharu : Turbopack doit émettre le WASM (CDN : _next/static/media).
+const koharuWasm = emittedKoharuWasm(buildDir);
+if (koharuWasm.length === 0) {
+  console.error("✗ Aucun koharu_canvas_bg.*.wasm émis sous .next-build/static/media");
+  process.exit(1);
+}
+for (const file of koharuWasm) console.log(`✓ WASM émis : ${relative(siteDir, file)}`);
 
 // Emballage de l'artefact
 console.log("▶ Emballage de l'artefact via package-site-artifact.ts...");

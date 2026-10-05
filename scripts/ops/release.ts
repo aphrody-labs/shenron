@@ -12,7 +12,8 @@
  * 2. `aphrody-infra deploy --target vps --stack shenron --release … --apply` : sondes de santé
  *    et retour arrière automatique côté adaptateur.
  * 3. `release-host.ts cdn` : `public/` et `.next-build/static` sur cdn.dragonballfr.com.
- * 4. Sondes publiques (pages, API, plugin, MCP) ; code de sortie non nul au premier échec.
+ * 4. Sondes publiques (pages, API, plugin, MCP, WASM de l'éditeur Koharu) ; code de sortie non
+ *    nul au premier échec.
  *
  * Le dépôt ne touche aucun hôte autrement que par `aphrody-infra` (ssh exec, deploy).
  */
@@ -23,6 +24,7 @@ const HOST_SCRIPT = join(import.meta.dir, "release-host.ts");
 const REMOTE = "$HOME/.shenron-release-host.ts";
 const LOG = "$HOME/shenron-release.log";
 const SITE = "https://dragonballfr.com";
+const CDN = "https://cdn.dragonballfr.com";
 const args = new Set(process.argv.slice(2));
 
 function ssh(command: string, timeoutSecs = 300): { code: number; out: string } {
@@ -127,7 +129,49 @@ async function probes(): Promise<void> {
     console.log(`${res.status} police préchargée ${font}`);
     if (res.status !== 200) failures.push(font);
   }
+  failures.push(...(await koharuWasmProbe()));
   if (failures.length) throw new Error(`sondes en échec : ${failures.join(", ")}`);
+}
+
+/**
+ * Le viewport de l'éditeur (`/koharu`) compile son WASM en streaming : le fichier référencé par
+ * les chunks de la page doit sortir en `application/wasm`, immuable, valide, depuis le site
+ * (URL résolue par le navigateur) et depuis le CDN (miroir de `_next/static`, CORS ouvert).
+ */
+async function koharuWasmProbe(): Promise<string[]> {
+  const html = await fetch(`${SITE}/koharu`)
+    .then((r) => (r.ok ? r.text() : ""))
+    .catch(() => "");
+  const chunk = /["']((?:https?:\/\/[^"'/]+)?\/_next\/static\/chunks\/[\w.-]+\.js)/g;
+  const queue = [...new Set([...html.matchAll(chunk)].map((m) => m[1]!))];
+  const seen = new Set<string>();
+  let wasm: string | undefined;
+  while (!wasm && queue.length && seen.size < 200) {
+    const url = queue.shift()!;
+    if (seen.has(url)) continue;
+    seen.add(url);
+    const js = await fetch(url.startsWith("http") ? url : SITE + url)
+      .then((r) => (r.ok ? r.text() : ""))
+      .catch(() => "");
+    wasm = /\/_next\/static\/media\/koharu_canvas_bg\.[\w.-]+\.wasm/.exec(js)?.[0];
+    for (const m of js.matchAll(/static\/chunks\/[\w.-]+\.js/g)) queue.push(`/_next/${m[0]}`);
+  }
+  if (!wasm) {
+    console.log(`ERR WASM koharu : aucun chunk de /koharu ne le référence (${seen.size} lus)`);
+    return ["/koharu (wasm)"];
+  }
+  const failures: string[] = [];
+  for (const url of [SITE + wasm, CDN + wasm]) {
+    const res = await fetch(url, { headers: { origin: SITE } }).catch(() => null);
+    const type = res?.headers.get("content-type")?.split(";")[0]?.trim();
+    const cache = res?.headers.get("cache-control") ?? "";
+    const cors = url.startsWith(SITE) || res?.headers.get("access-control-allow-origin") != null;
+    const valid = res?.ok ? WebAssembly.validate(await res.bytes()) : false;
+    console.log(`${res?.status ?? "ERR"} ${type ?? "-"} ${cache || "-"} ${url}`);
+    if (type !== "application/wasm" || !/immutable/.test(cache) || !cors || !valid)
+      failures.push(url);
+  }
+  return failures;
 }
 
 if (args.has("--cdn-only")) {
