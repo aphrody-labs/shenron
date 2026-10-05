@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
-    "compile": "bun build src/entry-standalone.ts --compile --minify --sourcemap --outfile=dist/shenron",
+    "compile": "bun ../../scripts/build/bot.ts",
     "lint": "oxlint -c ../../.oxlintrc.json src scripts tests drizzle.config.ts",
     "lint:fix": "oxlint -c ../../.oxlintrc.json --fix src scripts tests drizzle.config.ts",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
