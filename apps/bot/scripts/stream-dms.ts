@@ -13,6 +13,8 @@
  * Env   : DM_POLL_MS (défaut 15000)
  */
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
+import { ChannelError, DiscordChannel } from "@aphrody/messaging";
+import { clientDiscord } from "./lib/discord-rest";
 
 const TOKEN = process.env.DISCORD_TOKEN;
 if (!TOKEN) {
@@ -26,25 +28,26 @@ const POLL_MS = Number(process.env.DM_POLL_MS ?? 15000);
 const FEEDBACK = new URL("../data/dm-feedback.jsonl", import.meta.url).pathname;
 const STATE = new URL("../data/.dm-stream-state.json", import.meta.url).pathname;
 
-const api = (path: string, init?: RequestInit) =>
-  fetch(`https://discord.com/api/v10${path}`, {
-    ...init,
-    headers: { Authorization: `Bot ${TOKEN}`, ...init?.headers },
-  });
+// REST du bot : transport `@aphrody/discord-kit` (429 et 5xx rejoués) ; ouverture des DM par
+// le canal de messagerie d'Aphrody (`@aphrody/messaging`).
+const api = clientDiscord(TOKEN);
+const messagerie = new DiscordChannel(TOKEN);
 
-const me = (await (await api("/users/@me")).json()) as { id: string; username: string };
+const me = await api<{ id: string; username: string }>("/users/@me");
 const BOT_ID = me.id;
 
 // Résout les canaux DM (open ou existant) par utilisateur.
 const dms: Record<string, string> = {};
 for (const u of USERS) {
-  const r = await api("/users/@me/channels", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ recipient_id: u }),
-  });
-  if (r.ok) dms[u] = ((await r.json()) as { id: string }).id;
-  else console.error(`! DM ${u} indisponible: ${r.status}`);
+  try {
+    dms[u] = await messagerie.openDm(u);
+  } catch (err) {
+    const statut =
+      err instanceof ChannelError
+        ? ((err.cause as { status?: number } | undefined)?.status ?? err.code)
+        : String(err);
+    console.error(`! DM ${u} indisponible: ${statut}`);
+  }
 }
 
 let state: Record<string, string> = {};
@@ -68,9 +71,10 @@ async function poll(): Promise<void> {
   for (const [u, ch] of Object.entries(dms)) {
     const after = state[ch];
     try {
-      const r = await api(`/channels/${ch}/messages?limit=50${after ? `&after=${after}` : ""}`);
-      if (!r.ok) continue;
-      const msgs = ((await r.json()) as DiscordMsg[]).toReversed(); // chronologique
+      const page = await api<DiscordMsg[]>(
+        `/channels/${ch}/messages?limit=50${after ? `&after=${after}` : ""}`,
+      );
+      const msgs = page.toReversed(); // chronologique
       for (const m of msgs) {
         state[ch] = m.id;
         if (!after) continue; // 1er passage : ligne de base seulement

@@ -37,6 +37,7 @@ import {
   MAX_EPISODES_PAR_MESSAGE,
   type MenuEpisodes,
 } from "../src/lib/episode-menus";
+import { DiscordChannel } from "@aphrody/messaging";
 import { clientDiscord, enParallele, jetonDiscord } from "./lib/discord-rest";
 
 // ── Constantes de publication ───────────────────────────────────────────────
@@ -1025,14 +1026,13 @@ async function annoncer(): Promise<void> {
     console.log("[annonce] aucun --salon donné : rien n'a été publié.");
     return;
   }
-  const api = clientDiscord(await jetonDiscord("GRAND_PRETRE"));
+  // Texte seul : canal de messagerie d'Aphrody (les fils, eux, portent des embeds).
+  const messagerie = new DiscordChannel(await jetonDiscord("GRAND_PRETRE"));
   const lignes = aPublier.map((u) => `• ${u}`).join("\n");
-  await api(`/channels/${salonAnnonces}/messages`, {
-    methode: "POST",
-    corps: {
-      content: `**Nouveautés du catalogue** — ${nouveaux.length} entrée(s)${omis > 0 ? ` (${omis} non listées)` : ""}\n${lignes}`,
-    },
-  });
+  await messagerie.sendText(
+    salonAnnonces,
+    `**Nouveautés du catalogue** — ${nouveaux.length} entrée(s)${omis > 0 ? ` (${omis} non listées)` : ""}\n${lignes}`,
+  );
   console.log(`[annonce] publié dans ${salonAnnonces}.`);
 }
 
