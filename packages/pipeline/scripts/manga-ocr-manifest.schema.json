@@ -21,7 +21,7 @@
     "lot": { "type": "integer", "minimum": 1 },
     "lots": { "type": "integer", "minimum": 1 },
     "generatedAt": { "type": "string", "format": "date-time" },
-    "generator": { "const": "apps/shenron/bot/scripts/export-manga-ocr.ts" },
+    "generator": { "const": "apps/bot/scripts/export-manga-ocr.ts" },
     "selection": { "enum": ["missing", "all", "ids"] },
     "series": {
       "type": "array",

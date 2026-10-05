@@ -45,7 +45,7 @@ l'autorité pour l'identité de page et le SHA-256 du scan original.
 Pour faire entrer ces candidats manga dans la revue visuelle hors ligne :
 
 ```bash
-bun packages/shenron/pipeline/scripts/manga-revue-agents.ts prepare <racine-run> --lot <n> --sortie <revues> --candidates <candidates.jsonl>
+bun packages/pipeline/scripts/manga-revue-agents.ts prepare <racine-run> --lot <n> --sortie <revues> --candidates <candidates.jsonl>
 ```
 
 `prepare` revérifie le schéma, l'identité, les deux SHA-256 du manifeste et les
@@ -62,7 +62,7 @@ Pour les règles de bascule et les preuves de production, voir
 `docs/APHRODY-OFFLOAD.md` à la racine du dépôt.
 
 La commande `pipeline translation` délègue la traduction à
-`apps/shenron/site/scripts/traduction-boucle.ts`, qui consomme le propriétaire
+`apps/site/scripts/traduction-boucle.ts`, qui consomme le propriétaire
 Rust `aphrody-translate` pour le moteur et conserve les règles de validation et
 de dépôt propres aux databooks. L'ancien démon Google/BXC du processus Shenron
 n'est plus utilisé par ce flux. Voir

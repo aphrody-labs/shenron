@@ -2,7 +2,7 @@
 //! `shenron ocr …` — native bridge to the sibling `shenron` checkout.
 //!
 //! `shenron` already expects exactly this shape: `depose-transcriptions.ts`
-//! (`~/aphrody/apps/shenron/site/scripts/depose-transcriptions.ts`) opens with "Entrée
+//! (`apps/site/scripts/depose-transcriptions.ts` of the shenron checkout) opens with "Entrée
 //! : le JSONL qu'écrit `aphrody ocr batch`" and reads `<databookId>-<page>.ext`
 //! file names. The two repos were designed to meet here; this module is what
 //! actually walks aphrody across that meeting point instead of leaving it as a
