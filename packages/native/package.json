@@ -1,6 +1,6 @@
 {
   "name": "@shenron/native",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers, and a worker pool for the long calls (promises, AbortSignal).",
   "license": "Apache-2.0",

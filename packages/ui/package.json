@@ -1,6 +1,6 @@
 {
   "name": "@shenron/ui",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio.",
   "type": "module",
