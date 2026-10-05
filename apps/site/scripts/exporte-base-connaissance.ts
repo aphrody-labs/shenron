@@ -28,7 +28,7 @@ import { mkdir, writeFile, cp } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
-import { classerDefaut, noteQualite, type Defaut } from "../src/lib/databooks-defauts";
+import { classerDefaut, noteQualite, type Defaut } from "@shenron/config/databooks-defauts";
 import { contientJaponais } from "../src/lib/ja/normalisation";
 import { graphiesJmdict } from "../src/lib/ja/dictionnaire";
 import { distanceBornee } from "../src/lib/ja/anomalies";

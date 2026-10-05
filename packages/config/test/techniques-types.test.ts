@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { LIBELLES_TYPE, NOTE_PROVENANCE, estTypeDeJeu, libelleType } from "@/lib/techniques-types";
+import { LIBELLES_TYPE, NOTE_PROVENANCE, estTypeDeJeu, libelleType } from "../src/techniques-types";
 
 describe("libelleType", () => {
   test("traduit les quatre slots de compétence Xenoverse 2", () => {

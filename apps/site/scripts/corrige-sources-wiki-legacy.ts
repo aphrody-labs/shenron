@@ -3,7 +3,7 @@ import {
   CHARACTER_CANONICAL_SLUGS,
   PLANET_CANONICAL_SLUGS,
   TRANSFORMATION_CANONICAL_SLUGS,
-} from "../src/lib/wiki-slugs";
+} from "@shenron/config/wiki-slugs";
 
 async function databaseUrl() {
   if (process.env.DATABASE_URL?.trim()) return process.env.DATABASE_URL.trim();

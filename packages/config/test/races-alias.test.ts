@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { AMBIGUËS, graphiesDeRace, normaliserRace, slugDeRace } from "../src/lib/races-alias";
+import { AMBIGUËS, graphiesDeRace, normaliserRace, slugDeRace } from "../src/races-alias";
 
 describe("slugDeRace", () => {
   test("rattache les graphies d'import aux races canoniques", () => {

@@ -44,7 +44,7 @@
  * `--retraduire` lève ce filtre, pour reprendre une planche dont le contrôle a
  * montré qu'elle avait été mal rendue.
  */
-import { classerDefaut } from "../src/lib/databooks-defauts";
+import { classerDefaut } from "@shenron/config/databooks-defauts";
 import { intraduisible, noyaux, replier } from "../src/lib/databooks-traduction";
 import { trierLexique, type TermeLexique } from "../src/lib/ja/anomalies";
 import { contientJaponais } from "../src/lib/ja/normalisation";

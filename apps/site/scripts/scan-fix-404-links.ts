@@ -6,7 +6,7 @@ import {
   PLANET_SLUG_ALIASES,
   TRANSFORMATION_CANONICAL_SLUGS,
   TRANSFORMATION_SLUG_ALIASES,
-} from "../src/lib/wiki-slugs";
+} from "@shenron/config/wiki-slugs";
 
 const connectionString = process.env.DATABASE_URL?.trim();
 if (!connectionString) throw new Error("DATABASE_URL is required.");

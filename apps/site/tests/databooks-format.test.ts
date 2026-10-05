@@ -12,7 +12,7 @@
  * machine a réinterprété une seconde fois.
  */
 import { describe, expect, test } from "bun:test";
-import { classerDefaut } from "@/lib/databooks-defauts";
+import { classerDefaut } from "@shenron/config/databooks-defauts";
 import {
   aBesoinDeNettoyage,
   diagnostiquerPlanche,

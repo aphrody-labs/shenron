@@ -24,7 +24,7 @@
  */
 import { existsSync } from "node:fs";
 import postgres from "postgres";
-import { defautDePlanche } from "../src/lib/databooks-defauts";
+import { defautDePlanche } from "@shenron/config/databooks-defauts";
 import { cheminPlanche, urlBase } from "./_databooks-base";
 import {
   BOOK_LABELS,

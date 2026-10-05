@@ -30,7 +30,7 @@
  */
 import { join } from "node:path";
 import postgres from "postgres";
-import { defautDePlanche, gravite, type Defaut } from "../src/lib/databooks-defauts";
+import { defautDePlanche, gravite, type Defaut } from "@shenron/config/databooks-defauts";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {

@@ -11,7 +11,7 @@ import {
   texteDePlanche,
   urlBase,
 } from "./_databooks-base";
-import { defautDePlanche } from "../src/lib/databooks-defauts";
+import { defautDePlanche } from "@shenron/config/databooks-defauts";
 
 const apply = process.argv.includes("--appliquer");
 arretSiGel("retire-traductions-fautives");

@@ -23,7 +23,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { posts, POST_STATUSES, type PostContentDoc, type PostStatus } from "@/db/schema";
 import { autoExcerpt, computeReadingStats, renderPostDoc } from "@/lib/posts";
-import { isValidSlug, slugify, uniqueSlug } from "@/lib/slug";
+import { isValidSlug, slugify, uniqueSlug } from "@shenron/config/slug";
 
 const TAG_MAX = 8;
 

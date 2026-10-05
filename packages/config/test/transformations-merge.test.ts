@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { TRANSFORMATION_CANONICAL_SLUGS, resolveTransformationParam } from "../src/lib/wiki-slugs";
+import { TRANSFORMATION_CANONICAL_SLUGS, resolveTransformationParam } from "../src/wiki-slugs";
 
 describe("Fusion et cohérence des transformations canoniques", () => {
   it("résout tous les slugs canoniques majeurs sans redirection inutile", () => {

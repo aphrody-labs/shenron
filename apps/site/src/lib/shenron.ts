@@ -40,7 +40,7 @@ interface WithArticle {
 // Base de l'API bot résolue par `@/lib/config` (source unique des URL). PAS
 // dragonballfr.com (le site lui-même) → sinon les appels runtime boucleraient.
 import { API_URL as SHENRON_API_URL } from "@/lib/config";
-import { graphiesDeRace, slugDeRace } from "@/lib/races-alias";
+import { graphiesDeRace, slugDeRace } from "@shenron/config/races-alias";
 import {
   CHARACTER_DUPLICATE_REDIRECTS,
   formatCharacterSlug,
@@ -49,7 +49,7 @@ import {
   resolveCharacterParam,
   resolvePlanetParam,
   resolveTransformationParam,
-} from "@/lib/wiki-slugs";
+} from "@shenron/config/wiki-slugs";
 
 interface ShenronUser {
   discordId: string;

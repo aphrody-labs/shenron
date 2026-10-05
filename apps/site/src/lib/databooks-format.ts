@@ -24,7 +24,7 @@ import {
   contientBoucle,
   estHanSansKana,
   SEUIL_COURT,
-} from "./databooks-defauts";
+} from "@shenron/config/databooks-defauts";
 
 /** Caractère de remplacement U+FFFD : l'OCR a rendu un glyphe qu'il n'a pas su lire. */
 const REMPLACEMENT = "�";

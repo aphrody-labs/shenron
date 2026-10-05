@@ -7,7 +7,7 @@
  * aurait produit un index reconstruit différent de l'index tenu à jour, sans
  * que rien ne le signale. Une seule définition, donc, et elle est testable.
  */
-import { defautDePlanche } from "./databooks-defauts";
+import { defautDePlanche } from "@shenron/config/databooks-defauts";
 
 /**
  * Le corpus porte DEUX formes de transcription, héritées de deux passes de

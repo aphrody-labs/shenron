@@ -14,7 +14,11 @@
  *     qu'on paie sa lecture ?
  *   - `refus()` — en sortie : la traduction produite est-elle fidèle à sa source ?
  */
-import { compteRemplacements, contientAlphabetEtranger, contientBoucle } from "./databooks-defauts";
+import {
+  compteRemplacements,
+  contientAlphabetEtranger,
+  contientBoucle,
+} from "@shenron/config/databooks-defauts";
 import { proportionJaponais } from "./ja/normalisation";
 
 /**

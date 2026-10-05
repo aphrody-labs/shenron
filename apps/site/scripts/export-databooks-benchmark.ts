@@ -13,7 +13,7 @@ import { copyFile, mkdir } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
 import { createHash } from "node:crypto";
 import { cheminPlanche, chargeOuvrages, connecte, texteDePlanche } from "./_databooks-base";
-import { defautDePlanche } from "../src/lib/databooks-defauts";
+import { defautDePlanche } from "@shenron/config/databooks-defauts";
 
 const args = Bun.argv.slice(2);
 const valeur = (nom: string): string | undefined => {

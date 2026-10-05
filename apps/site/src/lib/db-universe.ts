@@ -66,9 +66,9 @@ import type {
 } from "@/db/bot-schema";
 import { eraOf, type TimelineItem } from "@/lib/chronology";
 import { orderPlayers } from "@/lib/players";
-import { CLE_VERIFIEE } from "@/lib/databooks-defauts";
+import { CLE_VERIFIEE } from "@shenron/config/databooks-defauts";
 import type { SignauxRichesse } from "@/lib/character-richesse";
-import { formatCharacterSlug } from "@/lib/wiki-slugs";
+import { formatCharacterSlug } from "@shenron/config/wiki-slugs";
 import { mangaCoverPath, publishedMangaPageCount, publishedMangaPages } from "@/lib/manga-assets";
 import { mangaBibliographicSourceUrl, mangaSourceLabel } from "@/lib/manga-source-registry";
 

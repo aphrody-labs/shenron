@@ -3,7 +3,7 @@ import "server-only";
 import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
 import { and, eq, isNotNull, lte, type SQL } from "drizzle-orm";
 import { buildExtensions } from "@/components/editor/schema";
-import { slugify } from "@/lib/slug";
+import { slugify } from "@shenron/config/slug";
 import { posts, type PostContentDoc } from "@/db/schema";
 
 /**

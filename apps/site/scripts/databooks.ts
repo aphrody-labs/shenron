@@ -36,7 +36,7 @@ import {
   texteDePlanche,
   traductionDePlanche,
 } from "./_databooks-base";
-import { classerDefaut, defautDePlanche, type Defaut } from "../src/lib/databooks-defauts";
+import { classerDefaut, defautDePlanche, type Defaut } from "@shenron/config/databooks-defauts";
 
 const args = process.argv.slice(2);
 const commande = args[0] ?? "";

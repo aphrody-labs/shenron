@@ -6,7 +6,7 @@ import {
   resolveCharacterParam,
   resolvePlanetParam,
   resolveTransformationParam,
-} from "@/lib/wiki-slugs";
+} from "../src/wiki-slugs";
 
 describe("wiki-slugs", () => {
   it("génère des slugs canoniques et mondiaux pour les personnages majeurs", () => {

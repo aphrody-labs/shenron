@@ -6,7 +6,7 @@ import {
   estPlancheVerifiee,
   gravite,
   noteQualite,
-} from "@/lib/databooks-defauts";
+} from "../src/databooks-defauts";
 
 /**
  * Le classement des défauts décide de deux choses visibles : ce que la file de

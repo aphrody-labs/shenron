@@ -24,7 +24,7 @@ import { wikiRevisions } from "@/db/schema";
 import { forgetDatabook, indexDatabook } from "@/lib/databooks-redis";
 import { toSeconds } from "@/lib/epoch";
 import { normalizePages, type DatabookPageInput } from "@/lib/databooks-rules";
-import { CLE_VERIFIEE } from "@/lib/databooks-defauts";
+import { CLE_VERIFIEE } from "@shenron/config/databooks-defauts";
 
 /** Fiche telle que servie par l'API. */
 export interface DatabookRecord {

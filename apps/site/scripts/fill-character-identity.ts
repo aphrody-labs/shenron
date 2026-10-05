@@ -50,7 +50,7 @@ import { mkdirSync } from "node:fs";
 import { homedir, loadavg } from "node:os";
 import { join } from "node:path";
 import postgres from "postgres";
-import { defautDePlanche } from "../src/lib/databooks-defauts";
+import { defautDePlanche } from "@shenron/config/databooks-defauts";
 import { graphieSuspecte } from "../src/lib/ja/appariement";
 import { graphiesJmdict } from "../src/lib/ja/dictionnaire";
 import { normaliserJa } from "../src/lib/ja/normalisation";

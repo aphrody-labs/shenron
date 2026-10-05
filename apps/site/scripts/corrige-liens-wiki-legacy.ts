@@ -5,7 +5,7 @@ import {
   CHARACTER_CANONICAL_SLUGS,
   PLANET_CANONICAL_SLUGS,
   TRANSFORMATION_CANONICAL_SLUGS,
-} from "../src/lib/wiki-slugs";
+} from "@shenron/config/wiki-slugs";
 
 const apply = process.argv.includes("--appliquer");
 const tables = [
