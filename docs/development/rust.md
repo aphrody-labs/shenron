@@ -56,7 +56,6 @@ d'Aphrody : on les consomme, on ne les copie pas.
 | `koharu-desktop` | Préparation native des pages, partagée par la présentation et l'export | — | natif |
 | `koharu-agent` | Agent Codex en processus (OAuth) | — | natif |
 | `koharu-secrets` | Secrets dans le trousseau du système | — | natif |
-| `koharu-metrics` | Télémétrie amont (en cours de retrait) | — | natif |
 
 `bun scripts/build/rust/test.ts --list` donne la liste réelle des membres (`cargo metadata`).
 Les cibles natives sont Linux x64 et Windows x64 ; les binaires livrés (`shenron`,
