@@ -34,7 +34,7 @@ l'API, qui servent le même arbre `/assets/**`.
 ## Services internes — `@shenron/config/services`
 
 Résolveurs `resolveRedisUrl`, `resolveSiteInternalUrl`, `resolveBotApiInternalUrl`,
-`resolveBotApiServerUrl`, `resolveLibreTranslateUrl`, `resolveRelectureOcrUrl`, table
+`resolveBotApiServerUrl`, `resolveRelectureOcrUrl`, table
 `INTERNAL_SERVICE_ENV`. Les défauts sont des adresses de boucle locale pour le dev ; en
 production, l'environnement les fournit.
 
@@ -44,7 +44,6 @@ production, l'environnement les fournit.
 | Site interne (appels bot → site) | `SITE_INTERNAL_URL` |
 | API du bot (bind et appels internes) | `API_HOST` + `API_PORT` |
 | API du bot (appels serveur du site) | `BOT_INTERNAL_URL`, sinon l'origine publique de l'API |
-| LibreTranslate | `LIBRETRANSLATE_URL` (clé : `LIBRETRANSLATE_API_KEY`) |
 | Sidecar de relecture OCR | `RELECTURE_OCR_URL` |
 
 Le rate limit d'authentification du site (`apps/site/src/lib/auth-rate-limit.ts`) utilise
@@ -171,5 +170,4 @@ Validées par zod ; un identifiant absent désactive la fonctionnalité concern�
 - Salons et rôles : `*_CHANNEL_ID`, `JAIL_ROLE_ID`, `URL_IN_BIO_ROLE_ID`,
   `TICKET_CATEGORY_ID`, `VOCAL_TEMPO_HUB_ID`, `SERVER_INVITE_URL`.
 - API : `API_ENABLED`, `API_HOST`, `API_PORT`, `API_ADMIN_TOKEN`, `API_USER_SECRET`.
-- Traduction : `LIBRETRANSLATE_URL`, `LIBRETRANSLATE_API_KEY`, `LINGVA_INSTANCE`.
 - Divers : `LOG_LEVEL`, `NODE_ENV`.

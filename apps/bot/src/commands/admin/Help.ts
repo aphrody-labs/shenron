@@ -68,7 +68,7 @@ const CATEGORIES: CategoryDef[] = [
     icon: "🎮",
     description: "Défis ludiques, duels martiaux, pendu et mini-jeux de détente",
     color: SHENRON_THEME.beerusPurple,
-    cmds: new Set(["gay", "raciste", "translate", "pendu", "morpion", "bingo", "pfc"]),
+    cmds: new Set(["gay", "raciste", "pendu", "morpion", "bingo", "pfc"]),
   },
   {
     key: "tickets",

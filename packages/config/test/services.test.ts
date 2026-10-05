@@ -3,7 +3,6 @@ import { describe, expect, test } from "bun:test";
 import {
   resolveBotApiInternalUrl,
   resolveBotApiServerUrl,
-  resolveLibreTranslateUrl,
   resolveRedisUrl,
   resolveRelectureOcrUrl,
   resolveShenronApiBind,
@@ -15,7 +14,6 @@ describe("internal service resolvers", () => {
     expect(resolveRedisUrl({})).toBe("redis://127.0.0.1:6379");
     expect(resolveSiteInternalUrl({})).toBe("http://127.0.0.1:5011");
     expect(resolveBotApiInternalUrl({})).toBe("http://127.0.0.1:5006");
-    expect(resolveLibreTranslateUrl({})).toBe("http://127.0.0.1:5000");
     expect(resolveRelectureOcrUrl({})).toBe("http://127.0.0.1:8791");
   });
   test("historical names and order", () => {

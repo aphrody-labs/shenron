@@ -14,8 +14,8 @@
  * Après run, propager au replica SQLite :
  *   sudo systemctl start shenron-neon-pull.service
  *
- * TRADUCTION : cascade Google gtx (sans clé) → Lingva (repli), identique
- * au TranslateService du bot. Détecte la langue source et saute les synopsis
+ * TRADUCTION : cascade Google gtx (sans clé) → Lingva (repli), comme
+ * translate-wiki-fr.ts. Détecte la langue source et saute les synopsis
  * déjà rédigés en français.
  *
  * IDEMPOTENT / REPRENABLE : rows avec synopsis_fr non nul sont sautées.

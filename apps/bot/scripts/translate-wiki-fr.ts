@@ -15,9 +15,8 @@
  * puis (si on veut que le RAG reflète les nouveaux textes) rebuild RAG hors
  * heures de pointe (cf. pièges CLAUDE.md).
  *
- * TRADUCTION : même cascade que le runtime `TranslateService` (Google `gtx`
- * sans clé en primaire, Lingva en repli) mais INLINE ici pour rester un script
- * ops autonome (pas de couplage DI/env du bot). Aucun champ `article` n'est
+ * TRADUCTION : cascade Google `gtx` sans clé en primaire, Lingva en repli,
+ * INLINE ici pour rester un script ops autonome (pas de couplage DI/env du bot). Aucun champ `article` n'est
  * touché (markdown + liens [[..]] + régénéré FR par le workflow manga).
  *
  * IDEMPOTENT / REPRENABLE : on saute les lignes déjà françaises (heuristique
@@ -82,7 +81,7 @@ function looksFrench(text: string): boolean {
   return fr > en && fr > 0;
 }
 
-// ── traduction (Google gtx primaire, Lingva repli) — cf. TranslateService ─────
+// ── traduction (Google gtx primaire, Lingva repli) ─────────────────────────────
 const GTX = "https://translate.googleapis.com/translate_a/single";
 const LINGVA = [
   "https://translate.plausibility.cloud",

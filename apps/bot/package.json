@@ -53,7 +53,6 @@
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
     "@shenron/images": "workspace:*",
-    "@shenron/media": "workspace:*",
     "@shenron/pipeline": "workspace:*",
     "better-auth": "catalog:",
     "discord.js": "catalog:",

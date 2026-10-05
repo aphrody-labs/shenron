@@ -5,8 +5,6 @@ import { DatabaseService } from "~/db/index";
 import { levelRewards } from "~/db/schema";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
-import { TranslateService } from "~/services/TranslateService";
-import { resolveLibreTranslateUrl } from "@shenron/config/services";
 
 interface ExpectedChannel {
   key: string;
@@ -109,26 +107,6 @@ export async function runBootAudit(client: Client) {
         `level_rewards L${r.level} (${role.name}) position=${role.position} ≥ bot=${myHighest} — attribution impossible`,
       );
     }
-  }
-
-  // Probe stack /translate — non bloquant
-  const translator = container.resolve(TranslateService);
-  const tProbe = await translator.probe();
-  if (!tProbe.ocr) {
-    problems.push(
-      "OCR Aphrody indisponible — /translate désactivé. Vérifier l'API privée Aphrody et son modèle OCR",
-    );
-  }
-  if (!tProbe.translate) {
-    const reasons: string[] = [];
-    if (tProbe.lingva === false) reasons.push("aucune instance Lingva atteignable");
-    if (tProbe.google === false) reasons.push("Google gtx injoignable");
-    if (tProbe.libretranslate === false)
-      reasons.push(
-        `LibreTranslate injoignable (${resolveLibreTranslateUrl({ LIBRETRANSLATE_URL: env.LIBRETRANSLATE_URL })})`,
-      );
-    const detail = reasons.length > 0 ? reasons.join(", ") : "aucun provider disponible";
-    problems.push(`${detail} — /translate désactivé.`);
   }
 
   if (problems.length === 0) {

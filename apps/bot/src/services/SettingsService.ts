@@ -48,7 +48,6 @@ export interface SettingDef {
     | "roles"
     | "moderation"
     | "features"
-    | "translate"
     | "anti_invite"
     | "tickets"
     | "gifs"
@@ -878,16 +877,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
     max: 100,
   },
 
-  // ── Translate / OCR ──────────────────────────────────────────
-  {
-    key: "translate.lingva_instances",
-    type: "string",
-    category: "advanced",
-    description: "Instances Lingva (CSV ou JSON array)",
-    default:
-      "https://lingva.ml,https://lingva.lunar.icu,https://translate.plausibility.cloud,https://lingva.thedaviddelta.com",
-  },
-
   // ── API session ────────────────────────────────────────────────
   {
     key: "api.session_ttl_days",
@@ -1007,13 +996,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
     type: "bool",
     category: "features",
     description: "Auto-rôle sur bio contenant un lien",
-    default: true,
-  },
-  {
-    key: "features.translate",
-    type: "bool",
-    category: "features",
-    description: "Commande /translate (OCR + cascade providers)",
     default: true,
   },
   {

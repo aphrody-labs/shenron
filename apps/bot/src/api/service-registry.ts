@@ -3,7 +3,6 @@ import { AchievementService } from "~/services/AchievementService";
 import { EconomyService } from "~/services/EconomyService";
 import { LevelService } from "~/services/LevelService";
 import { SettingsService } from "~/services/SettingsService";
-import { TranslateService } from "~/services/TranslateService";
 import { ModerationService } from "~/services/ModerationService";
 import { WikiService } from "~/services/WikiService";
 
@@ -143,17 +142,6 @@ export const SERVICE_ACTIONS: ServiceAction[] = [
       const svc = container.resolve(SettingsService);
       await svc.unset(key);
       return { ok: true };
-    },
-  },
-
-  // ── TranslateService ──────────────────────────────────────────────────
-  {
-    service: "translate",
-    action: "probe",
-    description: "Re-probe Aphrody OCR + services de traduction",
-    handler: async () => {
-      const svc = container.resolve(TranslateService);
-      return await svc.probe();
     },
   },
 

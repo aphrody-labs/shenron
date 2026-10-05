@@ -12,7 +12,6 @@ import {
   ShieldAlert,
   Trash2,
   Trophy,
-  Languages,
   Wrench,
   Ticket,
   Film,
@@ -78,11 +77,6 @@ const CATEGORY_META: Record<string, { label: string; icon: React.ElementType; de
     icon: MessageSquare,
     desc: "Détection de liens d'invitation Discord.",
   },
-  translate: {
-    label: "Traduction",
-    icon: Languages,
-    desc: "Endpoints traducteurs (Lingva, LibreTranslate).",
-  },
   tickets: {
     label: "Tickets",
     icon: Ticket,
@@ -117,7 +111,6 @@ const CATEGORY_ORDER = [
   "economy",
   "moderation",
   "anti_invite",
-  "translate",
   "tickets",
   "gifs",
   "advanced",

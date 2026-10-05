@@ -90,16 +90,6 @@ const schema = z.object({
   ACHIEVEMENT_CHANNEL_ID: z.string().optional(),
   LEVEL_CHANNEL_ID: z.string().optional(),
 
-  // /translate (OCR Aphrody + cascade providers sans clé)
-  // - Lingva Translate (proxy Google, instances publiques rotatives)
-  // - Google translate.googleapis.com `gtx` (endpoint Chrome, sans clé)
-  // - LibreTranslate (self-host, fallback)
-  LIBRETRANSLATE_URL: z.string().url().optional(), // défaut : @shenron/config/services
-  LIBRETRANSLATE_API_KEY: z.string().optional(),
-  // Override l'instance Lingva primaire (ex: https://lingva.ml). Si absent,
-  // on essaie en cascade les instances publiques connues.
-  LINGVA_INSTANCE: z.string().url().optional(),
-
   // API REST (Bun.serve) — surface tscord-compatible pour dashboard
   API_PORT: z.coerce.number().int().min(1).max(65535).default(5006),
   API_HOST: z.string().default("127.0.0.1"),

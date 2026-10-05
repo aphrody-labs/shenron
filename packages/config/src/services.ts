@@ -12,7 +12,6 @@
  * | site internal  | `SITE_INTERNAL_URL`             | `http://127.0.0.1:5011`   |
  * | bot API        | `API_HOST` + `API_PORT`         | `http://127.0.0.1:5006`   |
  * | bot API (site) | `BOT_INTERNAL_URL`              | public API URL            |
- * | LibreTranslate | `LIBRETRANSLATE_URL`            | `http://127.0.0.1:5000`   |
  * | relecture OCR  | `RELECTURE_OCR_URL`             | `http://127.0.0.1:8791`   |
  * | Shenron API    | `SHENRON_API_HOST` + `_PORT`    | `127.0.0.1:8797` (bind)   |
  *
@@ -25,7 +24,6 @@ export const INTERNAL_SERVICE_ENV = {
   redis: ["REDIS_URL", "VALKEY_URL"],
   siteInternal: ["SITE_INTERNAL_URL"],
   botServer: ["BOT_INTERNAL_URL"],
-  libreTranslate: ["LIBRETRANSLATE_URL"],
   relectureOcr: ["RELECTURE_OCR_URL"],
 } as const satisfies Record<string, readonly string[]>;
 
@@ -34,7 +32,6 @@ export const DEFAULT_INTERNAL_SERVICES = {
   siteInternal: "http://127.0.0.1:5011",
   botApiHost: "127.0.0.1",
   botApiPort: 5006,
-  libreTranslate: "http://127.0.0.1:5000",
   relectureOcr: "http://127.0.0.1:8791",
   shenronApiHost: "127.0.0.1",
   shenronApiPort: 8797,
@@ -82,14 +79,6 @@ export function resolveShenronApiBind(env: EnvSource): { hostname: string; port:
         ? port
         : DEFAULT_INTERNAL_SERVICES.shenronApiPort,
   };
-}
-
-/** LibreTranslate origin, without trailing slash. */
-export function resolveLibreTranslateUrl(env: EnvSource): string {
-  return trimSlash(
-    envFirst(env, INTERNAL_SERVICE_ENV.libreTranslate)?.value ??
-      DEFAULT_INTERNAL_SERVICES.libreTranslate,
-  );
 }
 
 /** Relecture OCR sidecar origin, without trailing slash. */

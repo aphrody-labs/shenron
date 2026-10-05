@@ -1389,7 +1389,7 @@ recherche est local et non versionné.
 | SH-SESSION | S10 : la clé HMAC héritée ne se replie plus sur `API_ADMIN_TOKEN` | dépend d'INFRA-2 |
 | SH-UI-2 | Primitives toriyama, sort des 14 wrappers inutilisés, extraction optionnelle du cœur du kit derrière une prop de lien, cliquet de la règle 10, retrait de `shadcn/tailwind.css` | dépend d'OWN-7 |
 | SH-SITE-REDIS | Façades Redis du site (`memory-rate-limit.ts`, `databooks-redis.ts`) sur `createResilientRedis` | — |
-| SH-AI-2 | Retrait de `RERANK_URL`, l'ancien `embeddings.ts` du bot (transformers.js), NLLB, LibreTranslate, service Python `relecture-ocr` ; OCR du bot sur ppocr ; lexique unique | dépend d'APH-2, APH-5, APH-9 |
+| SH-AI-2 | Retrait de `RERANK_URL`, l'ancien `embeddings.ts` du bot (transformers.js), NLLB, service Python `relecture-ocr` (LibreTranslate et la sonde de traduction du bot retirés le 2026-10-05) ; OCR du bot sur ppocr ; lexique unique | dépend d'APH-2, APH-5, APH-9 |
 | SH-ID | Unification d'identité : purge d'un compte dans tous les magasins, avenir du silo du bot | dépend de DB-P3 et d'INFRA-2 |
 | SH-SOFTDEL | Suppression logique pour `WikiCategory`/`WikiPage` et les posts | dépend de DB-P3 |
 | P2-BXC | `@shenron/pipeline/bxc` en source seule, chemins absolus retirés | — |
