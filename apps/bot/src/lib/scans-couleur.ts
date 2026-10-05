@@ -31,10 +31,8 @@
  *     Rafraîchir plus souvent que la fenêtre ne sert donc à rien : on met en
  *     cache jusqu'à l'échéance réelle, lue dans `ex`.
  */
-import { env } from "~/lib/env";
+import { discordFetch, DiscordRESTError } from "~/lib/discord-rest";
 import { logger } from "~/lib/logger";
-
-const API_DISCORD = "https://discord.com/api/v10";
 
 /** Racine du CDN Discord. Toute URL résolue ici doit en descendre. */
 const RACINE_CDN = "https://cdn.discordapp.com/attachments/";
@@ -105,24 +103,27 @@ function echeance(url: string): number {
   return secondes * 1000;
 }
 
+interface RefreshUrls {
+  refreshed_urls?: Array<{ original?: string; refreshed?: string }>;
+}
+
 /** Un appel de rafraîchissement pour un lot d'au plus 50 URL nues. */
 async function rafraichitLot(urls: readonly string[]): Promise<Map<string, Signature>> {
   const sorti = new Map<string, Signature>();
-  const res = await fetch(`${API_DISCORD}/attachments/refresh-urls`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bot ${env.DISCORD_TOKEN_GRAND_PRETRE}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ attachment_urls: urls }),
-  });
-  if (!res.ok) {
-    logger.warn(`[scans-couleur] refresh-urls → HTTP ${res.status} (${urls.length} URL)`);
+  let corps: RefreshUrls;
+  try {
+    // Client REST du kit (jeton bot, délai, 429 attendu une fois).
+    const reponse = await discordFetch<RefreshUrls>("/attachments/refresh-urls", {
+      mode: "Bot",
+      method: "POST",
+      body: { attachment_urls: urls },
+    });
+    corps = reponse.data;
+  } catch (err) {
+    if (!(err instanceof DiscordRESTError)) throw err;
+    logger.warn(`[scans-couleur] refresh-urls → HTTP ${err.status} (${urls.length} URL)`);
     return sorti;
   }
-  const corps = (await res.json()) as {
-    refreshed_urls?: Array<{ original?: string; refreshed?: string }>;
-  };
   for (const item of corps.refreshed_urls ?? []) {
     if (!item.original || !item.refreshed) continue;
     sorti.set(item.original, { url: item.refreshed, expireA: echeance(item.refreshed) });

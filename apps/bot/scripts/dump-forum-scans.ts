@@ -22,8 +22,8 @@
 
 import { mkdir, readdir, stat } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { clientDiscord, enParallele, jetonDiscord } from "./lib/discord-rest";
 
-const API = "https://discord.com/api/v10";
 const FORUM_DEFAUT = "1094723131970703390"; // 📖・scan-db
 const RACINE_DEFAUT = new URL("../data/scans-forum", import.meta.url).pathname;
 
@@ -110,71 +110,8 @@ function nombre(nom: string, defaut: number): number {
 const RACINE = option("sortie") ?? RACINE_DEFAUT;
 const CHEMIN_MANIFESTE = join(RACINE, "manifeste.json");
 
-async function jeton(): Promise<string> {
-  const direct = process.env.DISCORD_TOKEN_GRAND_PRETRE?.trim();
-  if (direct) return direct;
-  const chemin = new URL("../.env", import.meta.url).pathname;
-  const texte = await Bun.file(chemin)
-    .text()
-    .catch(() => "");
-  const ligne = texte.split("\n").find((l) => l.trim().startsWith("DISCORD_TOKEN_GRAND_PRETRE="));
-  const valeur = ligne
-    ?.split("=")
-    .slice(1)
-    .join("=")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-  if (!valeur) throw new Error("DISCORD_TOKEN_GRAND_PRETRE introuvable (env ou apps/bot/.env)");
-  return valeur;
-}
-
-const TOKEN = await jeton();
-
-/**
- * Un appel REST qui respecte le 429 plutôt que de le subir : Discord annonce
- * lui-même la durée d'attente, la deviner ne sert à rien.
- */
-async function api<T>(chemin: string, essais = 5): Promise<T> {
-  for (let essai = 1; ; essai++) {
-    const reponse = await fetch(`${API}${chemin}`, {
-      headers: { Authorization: `Bot ${TOKEN}` },
-    });
-    if (reponse.status === 429) {
-      const corps = (await reponse.json().catch(() => ({}))) as { retry_after?: number };
-      await Bun.sleep(Math.ceil((corps.retry_after ?? 1) * 1000) + 250);
-      continue;
-    }
-    if (!reponse.ok) {
-      if (essai >= essais)
-        throw new Error(`${chemin} → HTTP ${reponse.status} ${await reponse.text()}`);
-      await Bun.sleep(500 * essai);
-      continue;
-    }
-    return (await reponse.json()) as T;
-  }
-}
-
-/** Parallélisme borné, sur un itérable typé, en préservant l'ordre des résultats. */
-async function enParallele<E, S>(
-  elements: readonly E[],
-  concurrence: number,
-  travail: (element: E, index: number) => Promise<S>,
-): Promise<S[]> {
-  const resultats: S[] = Array.from({ length: elements.length }) as S[];
-  let curseur = 0;
-  const ouvriers = Array.from(
-    { length: Math.max(1, Math.min(concurrence, elements.length)) },
-    async () => {
-      for (;;) {
-        const i = curseur++;
-        if (i >= elements.length) return;
-        resultats[i] = await travail(elements[i] as E, i);
-      }
-    },
-  );
-  await Promise.all(ouvriers);
-  return resultats;
-}
+/** Client REST du bot (transport `@aphrody/discord-kit`, 429 et 5xx rejoués). */
+const api = clientDiscord(await jetonDiscord("GRAND_PRETRE"));
 
 function slug(nom: string): string {
   return (

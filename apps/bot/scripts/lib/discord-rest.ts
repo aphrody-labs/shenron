@@ -2,13 +2,16 @@
  * discord-rest.ts — Le minimum vital pour parler à l'API Discord depuis un script.
  *
  * Pas de gateway, pas de discord.js : un script d'ops n'a pas à ouvrir une
- * seconde connexion temps réel à côté du bot en production. Ce module porte les
- * deux seules choses qui ne s'improvisent pas — l'attente annoncée par Discord
- * sur un 429 (la deviner ne sert à rien, elle est dans le corps de la réponse)
- * et un parallélisme borné qui préserve l'ordre des résultats.
+ * seconde connexion temps réel à côté du bot en production. Le transport est
+ * celui d'Aphrody (`discordFetch` de `@aphrody/discord-kit/rest` : jeton,
+ * délai, erreurs typées `DiscordRESTError`) ; ce module n'ajoute que ce qu'un
+ * script long exige en plus — attendre sur chaque 429 la durée annoncée par
+ * Discord (le kit ne rejoue qu'une fois), rejouer les 5xx, et un parallélisme
+ * borné qui préserve l'ordre des résultats.
  */
+import { discordFetch, DiscordRESTError } from "@aphrody/discord-kit/rest";
 
-const API = "https://discord.com/api/v10";
+export { DiscordRESTError };
 
 /** Le jeton vient du `.env` du bot, jamais d'un argument (historique du shell). */
 export async function jetonDiscord(persona = "GRAND_PRETRE"): Promise<string> {
@@ -38,34 +41,37 @@ export interface OptionsAppel {
 
 export type ClientDiscord = <T>(chemin: string, options?: OptionsAppel) => Promise<T>;
 
-/** Construit un client lié à un jeton, qui respecte `retry_after` plutôt que de le subir. */
-export function clientDiscord(token: string): ClientDiscord {
+/**
+ * Construit un client lié à un jeton, qui respecte `retry_after` plutôt que de le subir.
+ * Une erreur HTTP sort en `DiscordRESTError` (statut, code Discord) ; `transport`
+ * remplace `fetch` (tests).
+ */
+export function clientDiscord(token: string, transport?: typeof fetch): ClientDiscord {
   return async function appel<T>(chemin: string, options: OptionsAppel = {}): Promise<T> {
     const { methode = "GET", corps, essais = 5 } = options;
     for (let essai = 1; ; essai++) {
-      const reponse = await fetch(`${API}${chemin}`, {
-        method: methode,
-        headers: {
-          Authorization: `Bot ${token}`,
-          ...(corps === undefined ? {} : { "Content-Type": "application/json" }),
-        },
-        body: corps === undefined ? undefined : JSON.stringify(corps),
-      });
-      if (reponse.status === 429) {
-        const detail = (await reponse.json().catch(() => ({}))) as { retry_after?: number };
-        await Bun.sleep(Math.ceil((detail.retry_after ?? 1) * 1000) + 250);
-        continue;
-      }
-      if (!reponse.ok) {
-        const texte = await reponse.text();
+      try {
+        const { data } = await discordFetch<T>(chemin, {
+          mode: "Bot",
+          token,
+          method: methode,
+          body: corps,
+          fetch: transport,
+        });
+        return data;
+      } catch (err) {
+        if (!(err instanceof DiscordRESTError)) throw err;
+        if (err.status === 429) {
+          await Bun.sleep(Math.ceil((err.retryAfter ?? 1) * 1000) + 250);
+          continue;
+        }
         // 4xx hors 429 : la requête est fautive, la rejouer ne la corrigera pas.
-        if (reponse.status < 500 || essai >= essais)
-          throw new Error(`${methode} ${chemin} → HTTP ${reponse.status} ${texte}`);
+        if (err.status < 500 || essai >= essais) {
+          err.message = `${methode} ${chemin} → HTTP ${err.status} ${err.message}`;
+          throw err;
+        }
         await Bun.sleep(500 * essai);
-        continue;
       }
-      if (reponse.status === 204) return undefined as T;
-      return (await reponse.json()) as T;
     }
   };
 }

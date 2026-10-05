@@ -11,9 +11,9 @@
 import { redis } from "bun";
 import { env } from "../src/lib/env";
 import { readFileSync, existsSync } from "node:fs";
+import { clientDiscord, DiscordRESTError } from "./lib/discord-rest";
 
 const TOKEN = env.DISCORD_TOKEN_GRAND_PRETRE;
-const API = "https://discord.com/api/v10";
 const args = process.argv.slice(2);
 const maxArg = args.indexOf("--max");
 const MAX_PER_CHANNEL = maxArg !== -1 ? Number(args[maxArg + 1]) : Infinity;
@@ -146,25 +146,20 @@ function normalizeKey(str: string): string {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** GET REST avec gestion du rate-limit (429 -> retry-after). */
+/** Client REST du bot (transport `@aphrody/discord-kit`, 429 et 5xx rejoués). */
+const discord = clientDiscord(TOKEN);
+
+/** GET REST ; `null` si le salon est inaccessible (403/404) ou reste en échec. */
 async function api<T>(path: string): Promise<T | null> {
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const res = await fetch(`${API}${path}`, { headers: { Authorization: `Bot ${TOKEN}` } });
-    if (res.status === 429) {
-      const body = (await res.json().catch(() => ({}))) as { retry_after?: number };
-      await sleep(Math.ceil((body.retry_after ?? 1) * 1000) + 250);
-      continue;
-    }
-    if (res.status === 403 || res.status === 404) return null; // pas d'accès à ce salon
-    if (!res.ok) {
-      await sleep(500);
-      continue;
-    }
+  try {
+    const data = await discord<T>(path, { essais: 6 });
     // marge anti-rate-limit globale
     await sleep(60);
-    return (await res.json()) as T;
+    return data;
+  } catch (err) {
+    if (err instanceof DiscordRESTError) return null;
+    throw err;
   }
-  return null;
 }
 
 let totalMsg = 0;

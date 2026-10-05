@@ -11,6 +11,7 @@
  */
 
 import { parseArgs } from "node:util";
+import { clientDiscord } from "./lib/discord-rest";
 
 const { values: opts } = parseArgs({
   args: Bun.argv.slice(2),
@@ -51,15 +52,8 @@ if (!TOKEN || !GUILD_ID || TOKEN === "ton-token-ici") {
   process.exit(1);
 }
 
-// ── REST helpers ────────────────────────────────────────────────────────────
-const API = "https://discord.com/api/v10";
-async function api<T>(path: string): Promise<T> {
-  const res = await fetch(`${API}${path}`, {
-    headers: { Authorization: `Bot ${TOKEN}` },
-  });
-  if (!res.ok) throw new Error(`${path} → HTTP ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
+// ── REST : client du bot (transport `@aphrody/discord-kit`, 429 et 5xx rejoués) ──
+const api = clientDiscord(TOKEN);
 
 interface Role {
   id: string;
