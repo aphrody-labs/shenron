@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-lexicon"
+description = "The one Dragon Ball translation lexicon of Shenron (ja/fr/en): embedded data, lookup, search and term protection around a translation engine."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+# Embeds data/lexicon/terms.json from the repository root (outside the crate directory).
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }

@@ -411,40 +411,54 @@ impl MangaPipeline {
     }
 }
 
-/// File name of Shenron's canonical lexicon (the same file `lexique-canonique.ts` reads).
-pub const LEXIQUE_FILE: &str = "data/lexique-db-canonique.json";
+/// Environment variable naming another lexicon file for the Shenron glossary: a lexicon document
+/// (`data/lexicon/terms.json` format, French or English target) or the legacy
+/// `[{ "ja", "fr" }]` array (`data/lexique-db-canonique.json`, French target only). Unset, the
+/// lexicon embedded by `shenron-lexicon` is used.
+pub const LEXICON_ENV: &str = "SHENRON_LEXIQUE";
 
-/// Where the canonical lexicon is looked up: `SHENRON_LEXIQUE`, then `SHENRON_HOME`, then the
-/// working directory.
+/// Explicit lexicon file named by [`LEXICON_ENV`], when it is set and readable.
 #[must_use]
-pub fn lexique_path() -> Option<std::path::PathBuf> {
-    let explicit = std::env::var_os("SHENRON_LEXIQUE").map(std::path::PathBuf::from);
-    let home =
-        std::env::var_os("SHENRON_HOME").map(|home| std::path::Path::new(&home).join(LEXIQUE_FILE));
-    let local = Some(std::path::PathBuf::from(LEXIQUE_FILE));
-    explicit.into_iter().chain(home).chain(local).find(|path| path.is_file())
+pub fn lexicon_override() -> Option<std::path::PathBuf> {
+    std::env::var_os(LEXICON_ENV)
+        .filter(|path| !path.is_empty())
+        .map(std::path::PathBuf::from)
+        .filter(|path| path.is_file())
 }
 
-/// Protect Shenron's canonical terms during French translation: the lexicon becomes the
-/// process-wide Koharu glossary. An explicit `KOHARU_GLOSSARY` wins; no lexicon file means no
-/// glossary, as for any other Koharu build.
+/// Protect Shenron's canonical terms during French or English translation: the lexicon becomes
+/// the process-wide Koharu glossary for that target. A non-empty `KOHARU_GLOSSARY` wins; then
+/// [`LEXICON_ENV`] (a legacy array only for French); otherwise the embedded lexicon.
 #[cfg(feature = "koharu")]
 fn install_shenron_glossary(target: &koharu_library::Language) {
     use koharu_library::translator::{GLOSSARY_ENV, Glossary, set_default_glossary};
 
-    if *target != koharu_library::Language::French || std::env::var_os(GLOSSARY_ENV).is_some() {
+    // A set but blank `KOHARU_GLOSSARY` is no glossary (Koharu ignores it too): Shenron's stays.
+    if std::env::var_os(GLOSSARY_ENV).is_some_and(|value| !value.is_empty()) {
         return;
     }
-    let Some(path) = lexique_path() else { return };
-    match Glossary::from_path(&path) {
-        Ok(glossary) => {
-            tracing::info!(path = %path.display(), terms = glossary.len(), "Shenron glossary installed");
-            set_default_glossary(Some(std::sync::Arc::new(
-                glossary.for_target(koharu_library::Language::French),
-            )));
-        },
-        Err(error) => tracing::warn!(path = %path.display(), %error, "Shenron glossary ignored"),
-    }
+    let target = *target;
+    let explicit = lexicon_override().and_then(|path| {
+        let json = std::fs::read_to_string(&path).ok()?;
+        let document = json.trim_start().starts_with('{');
+        if !document && target != koharu_library::Language::French {
+            return None;
+        }
+        match Glossary::from_json_for(&json, Some(target)) {
+            Ok(glossary) => Some((glossary.for_target(target), path.display().to_string())),
+            Err(error) => {
+                tracing::warn!(path = %path.display(), %error, "Shenron glossary file ignored");
+                None
+            },
+        }
+    });
+    let Some((glossary, origin)) = explicit
+        .or_else(|| Glossary::shenron(target).map(|glossary| (glossary, "embedded".to_owned())))
+    else {
+        return;
+    };
+    tracing::info!(%origin, terms = glossary.len(), %target, "Shenron glossary installed");
+    set_default_glossary(Some(std::sync::Arc::new(glossary)));
 }
 
 #[must_use]

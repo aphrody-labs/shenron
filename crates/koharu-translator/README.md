@@ -25,10 +25,16 @@ A `Glossary` protects domain terms from the engine. Matched source terms (longes
 no overlap, on word edges for katakana and Latin terms) become numbered tokens such as
 `Zeta001`; after translation each token, however the engine spelled it (`Zêta001`,
 `ZETA 001`), is replaced by the official target form. A token the table does not know makes
-the request fail with `GlossaryTokens` rather than reach the page.
+the request fail with `GlossaryTokens` rather than reach the page. The masking and restoration
+rules belong to Shenron's `shenron-lexicon` crate (the same rules as `@shenron/lexicon`,
+checked by the shared fixtures of `data/lexicon/fixtures/`); this module only wires them to
+the translator.
 
-Entries are `{ "source", "target" }` objects; `ja` and `fr` are accepted as aliases so
-Shenron's `data/lexique-db-canonique.json` loads as is. A glossary is chosen, in this order, by
+`Glossary::shenron(language)` protects Shenron's canonical lexicon (embedded
+`data/lexicon/terms.json`) for a French or English target. A glossary file is either a lexicon
+document (`terms.json` format, read for `KOHARU_GLOSSARY_TARGET`, French by default) or a JSON
+array of `{ "source", "target" }` objects; `ja` and `fr` are accepted as aliases so the legacy
+`data/lexique-db-canonique.json` loads as is. A glossary is chosen, in this order, by
 `TranslationRequest::with_glossary`, `Translator::with_glossary`, then the process default
 (`set_default_glossary`). `Translator::from_config` also reads `KOHARU_GLOSSARY` (path of a
 JSON file; a set but unreadable file is an error) and `KOHARU_GLOSSARY_TARGET` (language the

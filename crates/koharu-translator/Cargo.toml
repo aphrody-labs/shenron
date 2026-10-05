@@ -25,6 +25,7 @@ indoc = { workspace = true }
 reqwest = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+shenron-lexicon = { workspace = true }
 specta = { workspace = true }
 strum = { workspace = true }
 thiserror = { workspace = true }

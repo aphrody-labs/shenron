@@ -5622,6 +5622,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "shenron-lexicon",
  "specta",
  "strum",
  "thiserror 2.0.21",
@@ -9212,6 +9213,15 @@ dependencies = [
  "shenron-rag",
  "tempfile",
  "tokio",
+]
+
+[[package]]
+name = "shenron-lexicon"
+version = "1.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]

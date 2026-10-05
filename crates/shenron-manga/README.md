@@ -5,9 +5,10 @@ Adapter only: Koharu (`koharu-library`) owns detection, OCR, translation, inpain
 typesetting and PSD export; this crate keeps the Shenron-specific parts (CDN catalog, page-result
 mapping, OCR v2 projection, bubble reading order). `MangaPipeline::inpaint_with_mask` runs
 Koharu's inpainting stage on a caller-supplied mask. With the `koharu` feature, French
-translation protects Shenron's canonical lexicon (`SHENRON_LEXIQUE`, then
-`$SHENRON_HOME/data/lexique-db-canonique.json`, then `./data/lexique-db-canonique.json`)
-through Koharu's glossary hook; an explicit `KOHARU_GLOSSARY` wins.
+and English translation protect Shenron's canonical lexicon (`shenron-lexicon`, embedded
+`data/lexicon/terms.json`) through Koharu's glossary hook. `SHENRON_LEXIQUE` names another
+lexicon file (a `terms.json` document, or the legacy `[{ ja, fr }]` array for French only); an
+explicit `KOHARU_GLOSSARY` wins over both.
 
 ## Native pipeline (inherited notes)
 
