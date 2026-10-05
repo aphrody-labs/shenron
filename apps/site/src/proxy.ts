@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 import { ADMIN_COOKIE } from "@shenron/auth/tokens";
 import { resolveVisitor, type Visitor } from "@/lib/proxy-admin";
+import { isAdminIp } from "@/lib/admin-ip";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { findEntry, resolveAccess } from "@/lib/wiki-launch";
 import { getMemberRoleIds } from "@/lib/member-roles";
@@ -42,6 +43,7 @@ function hasAuthCredentials(request: NextRequest): boolean {
 }
 
 const ANONYMOUS: Visitor = { isAdmin: false, authenticated: false, discordId: null };
+const ADMIN_BY_IP: Visitor = { isAdmin: true, authenticated: true, discordId: null };
 
 /**
  * Identité du visiteur, résolue **en process** (Node.js runtime du proxy) via
@@ -52,11 +54,14 @@ const ANONYMOUS: Visitor = { isAdmin: false, authenticated: false, discordId: nu
  * Fail-closed : toute erreur → anonyme (jamais d'exposition par défaut).
  */
 async function visitorOf(request: NextRequest): Promise<Visitor> {
-  if (!hasAuthCredentials(request)) return ANONYMOUS;
+  // Poste d'administration (`SHENRON_ADMIN_IPS`) : staff, avec ou sans session.
+  const byIp = isAdminIp(request.headers);
+  if (!hasAuthCredentials(request)) return byIp ? ADMIN_BY_IP : ANONYMOUS;
   try {
-    return await resolveVisitor(request);
+    const visitor = await resolveVisitor(request);
+    return byIp && !visitor.isAdmin ? { ...visitor, isAdmin: true, authenticated: true } : visitor;
   } catch {
-    return ANONYMOUS;
+    return byIp ? ADMIN_BY_IP : ANONYMOUS;
   }
 }
 

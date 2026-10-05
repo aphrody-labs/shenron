@@ -1,4 +1,5 @@
 import "server-only";
+import { isAdminIp } from "@/lib/admin-ip";
 import { acceptedStaticTokens, verifyStaticBearer } from "@shenron/auth/tokens";
 import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 
@@ -31,7 +32,12 @@ export function expectedApiToken(): string | null {
   return acceptedStaticTokens([configuredApiToken()])[0] ?? null;
 }
 
-/** La requête porte-t-elle un jeton porteur valide ? */
+/**
+ * Jeton porteur valide, ou requête d'un poste d'administration (`SHENRON_ADMIN_IPS`) :
+ * le desktop, le CLI et les scripts de l'opérateur n'ont pas à porter le jeton depuis ses IP.
+ */
 export function hasValidApiToken(req: Request): boolean {
-  return verifyStaticBearer(req.headers, [configuredApiToken()]) === "valid";
+  return (
+    verifyStaticBearer(req.headers, [configuredApiToken()]) === "valid" || isAdminIp(req.headers)
+  );
 }

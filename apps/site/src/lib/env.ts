@@ -23,6 +23,8 @@ export const env = createEnv({
     // Read-only Shenron MCP server behind /mcp (shenron-mcp --http <addr> --public).
     SHENRON_MCP_URL: z.string().trim().url().optional(),
     SHENRON_ADMIN_TOKEN: z.string().trim().min(16).optional(),
+    // Adresses ou CIDR d'administration (`@/lib/admin-ip`) : staff sans session ni jeton.
+    SHENRON_ADMIN_IPS: z.string().trim().optional(),
     SHENRON_USER_SECRET: z.string().trim().min(32).optional(),
     OWNER_ID: z
       .string()

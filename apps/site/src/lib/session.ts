@@ -15,6 +15,7 @@ import {
   verifyAdminCookie,
   verifyAdminTokenOrBearer,
 } from "@/lib/admin-token";
+import { isAdminIp } from "@/lib/admin-ip";
 import { authenticateAgent } from "@/lib/agent-keys";
 import {
   cacheCurrentUser,
@@ -79,6 +80,12 @@ export const API_TOKEN_ACTOR: AutomationActor = Object.freeze({
 export const ADMIN_COOKIE_ACTOR: AutomationActor = Object.freeze({
   id: "admin-token-cookie",
   name: "Jeton admin (session navigateur)",
+});
+
+/** Requête venue d'une adresse de `SHENRON_ADMIN_IPS`, sans session ni jeton. */
+export const ADMIN_IP_ACTOR: AutomationActor = Object.freeze({
+  id: "admin-ip",
+  name: "Poste d'administration (adresse IP)",
 });
 
 /** Clé d'agent `dbfr_agent_…` : chaque clé garde sa propre identité. */
@@ -209,7 +216,11 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   }
 
   const session = await auth.api.getSession({ headers: reqHeaders });
-  if (!session?.user) return null;
+  if (!session?.user) {
+    // Poste d'administration (`SHENRON_ADMIN_IPS`) sans session : l'admin par jeton,
+    // tracé sous sa propre identité d'automatisation.
+    return isAdminIp(reqHeaders) ? withAutomation(await resolveTokenAdmin(), ADMIN_IP_ACTOR) : null;
+  }
 
   const cached = readCachedCurrentUser(session.user.id);
   if (cached) return cached;

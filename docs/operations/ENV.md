@@ -82,6 +82,7 @@ un chemin encore issu du défaut est signalé une fois par processus.
 | `BETTER_AUTH_SECRET` | Secret Better Auth, lu par `resolveBetterAuthSecret` ; repli `SESSION_SECRET`. Obligatoire en production, une valeur trop courte est refusée. |
 | `BETTER_AUTH_URL` | Base URL Better Auth de l'app (aussi dernier repli de l'origine du site). |
 | `SHENRON_ADMIN_TOKEN` | Jeton d'administration maître. Utilisable via le formulaire `/admin-access` (POST, jamais dans une URL), `Authorization: Bearer <token>`, `x-admin-token` ou le cookie HMAC signé `dbfr_admin` (30 jours après connexion durable). `aphrody shenron auth url` n'affiche que l'URL du formulaire. |
+| `SHENRON_ADMIN_IPS` | Postes d'administration (adresses ou CIDR, séparés par virgules) : staff sans session ni jeton pour `/admin`, la session (`ADMIN_IP_ACTOR`) et les routes « admin ou jeton » (desktop, CLI, scripts). Adresse lue dans `X-Real-IP` posé par nginx (`@/lib/admin-ip`). Tenue à jour par `scripts/ops/admin-access.ts`, avec `SHENRON_MCP_ALLOWED_IPS` du MCP. Vide : aucun accès par IP. |
 | `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `OAUTH_REDIRECT_URI`, `OAUTH_ALLOWED_USERS` | OAuth Discord. |
 | `AgentKey` (table PG) | Jetons d'agents autonomes (`dbfr_agent_...`) avec portées explicites (`moderate`, `write:articles`, etc.) acceptés par le proxy et `getCurrentUser()`. |
 
