@@ -21,7 +21,7 @@
  *   PATCH  /:table/:id           → { ok: true, row }
  *   DELETE /:table/:id           → { ok: true }
  */
-import { getCurrentUser, isCurrentUserAdmin } from "@/lib/session";
+import { getCurrentUser, isCurrentUserAdmin, revisionActorOf } from "@/lib/session";
 import {
   deleteWiki,
   getWikiRow,
@@ -51,12 +51,16 @@ export const dynamic = "force-dynamic";
 
 type Ctx = { params: Promise<{ path: string[] }> };
 
-/** Auteur figé de la révision (best-effort ; null si non résolu). */
+/**
+ * Auteur figé de la révision (best-effort ; null si non résolu).
+ *
+ * Une écriture par jeton est rattachée au compte `OWNER_ID` pour les droits,
+ * mais signée de son identité d'automatisation (« Jeton API (automatisation) »,
+ * clé d'agent…) : le journal distingue ainsi un script du propriétaire.
+ */
 async function currentActor(): Promise<RevisionActor> {
   try {
-    const me = await getCurrentUser();
-    if (!me?.user) return null;
-    return { id: me.user.id ?? null, name: me.user.username ?? null };
+    return revisionActorOf(await getCurrentUser());
   } catch {
     return null;
   }

@@ -21,6 +21,12 @@
  * (`visible=false`), jamais supprimée. Chaque passage laisse une ligne dans
  * `canon_ingest_runs`.
  *
+ * Visibilité : l'ingestion ne la fixe qu'à la création d'une citation. Une
+ * citation connue garde la sienne ; seule une citation que l'ingestion a
+ * elle-même masquée (disparue de sa source, mise en quarantaine) revient quand
+ * elle réapparaît. Un retrait fait dans l'éditeur — tracé dans `wiki_revisions`
+ * (`tableName = 'canon_references'`) — tient : aucune passe ne le défait.
+ *
  * Usage :
  *   bun scripts/canon-ingest.ts                  # une passe, toutes sources
  *   bun scripts/canon-ingest.ts --source databooks
@@ -57,8 +63,7 @@ async function urlBase(): Promise<string> {
   // La DERNIÈRE : `.env` porte l'ancienne URL Neon en commentaire AVANT la locale.
   const valeur = texte
     .split("\n")
-    .filter((l) => l.startsWith("DATABASE_URL="))
-    .at(-1)
+    .findLast((l) => l.startsWith("DATABASE_URL="))
     ?.slice("DATABASE_URL=".length)
     .trim()
     .replace(/^["']|["']$/g, "");
@@ -78,7 +83,10 @@ async function corpusDir(): Promise<string | null> {
   return null;
 }
 
-const sql = postgres(await urlBase(), { max: 2, prepare: false });
+type Sql = ReturnType<typeof postgres>;
+
+/** Connexion de la passe (ouverte par le point d'entrée, jamais à l'import). */
+let sql: Sql;
 
 /** Le lexique d'appariement : les entités que le wiki connaît réellement. */
 async function lexiqueWiki(): Promise<string[]> {
@@ -419,62 +427,149 @@ async function collecteManga(lexique: string[]): Promise<CanonReference[]> {
 
 // ── Écriture ────────────────────────────────────────────────────────────────
 
-interface Bilan {
+/** Retrait éditorial : la dernière révision de visibilité de la citation dit « masquée ». */
+const RETRAIT_EDITORIAL = `coalesce((
+	select (w.after->>'visible')::boolean = false
+	from public.wiki_revisions w
+	where w."tableName" = 'canon_references' and w."rowId" = c.id and w.after ? 'visible'
+	order by w."createdAt" desc
+	limit 1
+), false)`;
+
+export interface Bilan {
   inserted: number;
   updated: number;
   unchanged: number;
   hidden: number;
+  /** Citations masquées par l'ingestion elle-même, réapparues dans leur source. */
+  restored: number;
+  /** Citations retirées dans l'éditeur et toujours présentes dans leur source. */
+  kept: number;
 }
 
-async function ecrire(provenance: Provenance, refs: CanonReference[]): Promise<Bilan> {
-  const bilan: Bilan = { inserted: 0, updated: 0, unchanged: 0, hidden: 0 };
-  const existants = new Map(
-    (
-      (await sql`
-				select id, hash, visible from public.canon_references where provenance = ${provenance}
-			`) as unknown as { id: string; hash: string; visible: boolean }[]
-    ).map((r) => [r.id, r]),
-  );
+/** Une ligne déjà connue de `canon_references`. */
+export interface Existant {
+  id: string;
+  hash: string;
+  visible: boolean;
+  /** La dernière révision de visibilité (`wiki_revisions`) est un retrait. */
+  retraitEditorial: boolean;
+}
+
+export interface PlanIngestion {
+  /** Absentes de la table : insérées visibles. */
+  nouvelles: string[];
+  /** Contenu changé : réécrites SANS toucher à `visible`. */
+  modifiees: string[];
+  inchangees: string[];
+  /** Masquées sans retrait éditorial (disparition, quarantaine) et revenues. */
+  aRetablir: string[];
+  /** Retirées dans l'éditeur : la passe les laisse masquées. */
+  retraitsRespectes: string[];
+  /** Visibles en table mais absentes de la source : masquées par la passe. */
+  disparues: string[];
+}
+
+/**
+ * Ce que la passe doit faire de chaque citation, sans toucher à la base.
+ *
+ * La visibilité n'est fixée qu'à la création. Avant ce plan, l'upsert remettait
+ * `visible = true` à chaque passage : un retrait fait dans `/admin/canon` était
+ * annulé au plus tard quinze minutes après.
+ */
+export function planifierIngestion(
+  existants: ReadonlyMap<string, Existant>,
+  refs: readonly { id: string; hash: string }[],
+): PlanIngestion {
+  const plan: PlanIngestion = {
+    nouvelles: [],
+    modifiees: [],
+    inchangees: [],
+    aRetablir: [],
+    retraitsRespectes: [],
+    disparues: [],
+  };
   const ids = new Set<string>();
   for (const r of refs) {
+    if (ids.has(r.id)) continue;
     ids.add(r.id);
-    const hash = hashDe(r);
     const avant = existants.get(r.id);
-    if (avant && avant.hash === hash && avant.visible) {
-      bilan.unchanged++;
+    if (!avant) {
+      plan.nouvelles.push(r.id);
       continue;
     }
-    if (SIMULER) {
-      if (avant) bilan.updated++;
-      else bilan.inserted++;
-      continue;
+    (avant.hash === r.hash ? plan.inchangees : plan.modifiees).push(r.id);
+    if (!avant.visible) {
+      (avant.retraitEditorial ? plan.retraitsRespectes : plan.aRetablir).push(r.id);
     }
+  }
+  for (const e of existants.values()) {
+    if (e.visible && !ids.has(e.id)) plan.disparues.push(e.id);
+  }
+  return plan;
+}
+
+export async function ecrire(
+  db: Sql,
+  provenance: Provenance,
+  refs: CanonReference[],
+  simuler = SIMULER,
+): Promise<Bilan> {
+  const existants = new Map(
+    (
+      (await db`
+				select c.id, c.hash, c.visible, ${db.unsafe(RETRAIT_EDITORIAL)} as "retraitEditorial"
+				from public.canon_references c where c.provenance = ${provenance}
+			`) as unknown as Existant[]
+    ).map((r) => [r.id, r]),
+  );
+  const parId = new Map(refs.map((r) => [r.id, { ref: r, hash: hashDe(r) }]));
+  const plan = planifierIngestion(
+    existants,
+    [...parId.values()].map(({ ref, hash }) => ({ id: ref.id, hash })),
+  );
+  const bilan: Bilan = {
+    inserted: plan.nouvelles.length,
+    updated: plan.modifiees.length,
+    unchanged: plan.inchangees.length,
+    hidden: plan.disparues.length,
+    restored: plan.aRetablir.length,
+    kept: plan.retraitsRespectes.length,
+  };
+  if (simuler) return bilan;
+
+  for (const id of [...plan.nouvelles, ...plan.modifiees]) {
+    const { ref: r, hash } = parId.get(id)!;
+    // `visible` n'est écrit qu'à l'insertion : le conflit ne le touche pas.
     // Une traduction posée à la main sur une citation aphrody survit tant que
     // le texte source n'a pas bougé (même hash) ; sinon elle est abandonnée.
-    await sql`
+    await db`
 			insert into public.canon_references
 				(id, subject, keywords, text, text_fr, source, year, document, lang, provenance, href, hash, visible, seen_at, updated_at)
-			values (${r.id}, ${r.subject}, ${sql.json(r.keywords)}, ${r.text}, ${r.textFr ?? null}, ${r.source},
+			values (${r.id}, ${r.subject}, ${db.json(r.keywords)}, ${r.text}, ${r.textFr ?? null}, ${r.source},
 			        ${r.year ?? null}, ${r.document}, ${r.lang}, ${provenance}, ${r.href ?? null}, ${hash}, true, now(), now())
 			on conflict (id) do update set
 				subject = excluded.subject, keywords = excluded.keywords, text = excluded.text,
 				text_fr = coalesce(excluded.text_fr,
 					case when public.canon_references.text = excluded.text then public.canon_references.text_fr else null end),
 				source = excluded.source, year = excluded.year, document = excluded.document, lang = excluded.lang,
-				href = excluded.href, hash = excluded.hash, visible = true, seen_at = now(), updated_at = now()
+				href = excluded.href, hash = excluded.hash, seen_at = now(), updated_at = now()
 		`;
-    if (avant) bilan.updated++;
-    else bilan.inserted++;
   }
-  const disparus = [...existants.values()]
-    .filter((e) => e.visible && !ids.has(e.id))
-    .map((e) => e.id);
-  bilan.hidden = disparus.length;
-  if (!SIMULER && disparus.length > 0) {
-    await sql`update public.canon_references set visible = false, updated_at = now() where id = any(${disparus})`;
+  if (plan.aRetablir.length > 0) {
+    // La garde est rejouée dans l'instruction : un retrait fait dans l'éditeur
+    // entre la lecture et cette écriture n'est pas défait.
+    const res = await db`
+			update public.canon_references c set visible = true, updated_at = now()
+			where c.id = any(${plan.aRetablir}) and not c.visible and not ${db.unsafe(RETRAIT_EDITORIAL)}
+		`;
+    bilan.restored = res.count;
   }
-  if (!SIMULER && bilan.unchanged > 0) {
-    await sql`update public.canon_references set seen_at = now() where provenance = ${provenance} and id = any(${[...ids]})`;
+  if (plan.disparues.length > 0) {
+    await db`update public.canon_references set visible = false, updated_at = now() where id = any(${plan.disparues}) and visible`;
+  }
+  if (plan.inchangees.length > 0) {
+    await db`update public.canon_references set seen_at = now() where provenance = ${provenance} and id = any(${plan.inchangees})`;
   }
   return bilan;
 }
@@ -533,9 +628,9 @@ async function passe(): Promise<void> {
           : source === "databooks"
             ? await collecteDatabooks(lexique)
             : await collecteManga(lexique);
-      const b = await ecrire(source, refs);
+      const b = await ecrire(sql, source, refs);
       console.log(
-        `[${new Date().toISOString()}] ${source}: ${refs.length} lues, +${b.inserted} ~${b.updated} =${b.unchanged} masquées ${b.hidden}${SIMULER ? " (simulation)" : ""}`,
+        `[${new Date().toISOString()}] ${source}: ${refs.length} lues, +${b.inserted} ~${b.updated} =${b.unchanged} masquées ${b.hidden} rétablies ${b.restored} retraits éditoriaux respectés ${b.kept}${SIMULER ? " (simulation)" : ""}`,
       );
       if (!SIMULER)
         await sql`
@@ -553,20 +648,23 @@ async function passe(): Promise<void> {
   await migrerBlob();
 }
 
-await passe();
-if (BOUCLE) {
-  console.log(`boucle active, intervalle ${INTERVALLE}s`);
-  let stop = false;
-  process.on("SIGTERM", () => {
-    stop = true;
-  });
-  process.on("SIGINT", () => {
-    stop = true;
-  });
-  while (!stop) {
-    await Bun.sleep(INTERVALLE * 1000);
-    if (stop) break;
-    await passe();
+if (import.meta.main) {
+  sql = postgres(await urlBase(), { max: 2, prepare: false });
+  await passe();
+  if (BOUCLE) {
+    console.log(`boucle active, intervalle ${INTERVALLE}s`);
+    let stop = false;
+    process.on("SIGTERM", () => {
+      stop = true;
+    });
+    process.on("SIGINT", () => {
+      stop = true;
+    });
+    while (!stop) {
+      await Bun.sleep(INTERVALLE * 1000);
+      if (stop) break;
+      await passe();
+    }
   }
+  await sql.end();
 }
-await sql.end();

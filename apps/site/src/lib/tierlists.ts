@@ -1,6 +1,7 @@
 import "server-only";
 import { createId } from "@paralleldrive/cuid2";
 import { and, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import { slugify } from "@shenron/config/slug";
 import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { tierlists, tierlistVotes, type TierlistItem, type TierlistTier } from "@/db/schema";
@@ -140,16 +141,6 @@ export async function getTierlistPool(templateKey: string): Promise<TierlistItem
   }
 }
 
-function slugify(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
-}
-
 export interface CreateTierlistInput {
   title: string;
   description?: string | null;
@@ -165,7 +156,7 @@ export interface CreateTierlistInput {
 }
 
 export async function createTierlist(input: CreateTierlistInput): Promise<{ slug: string }> {
-  const base = slugify(input.title) || "tierlist";
+  const base = slugify(input.title, 48) || "tierlist";
   const slug = `${base}-${createId().slice(0, 6)}`;
   await db.insert(tierlists).values({
     slug,

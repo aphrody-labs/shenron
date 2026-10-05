@@ -259,3 +259,44 @@ describe("citations du corpus", () => {
     expect(analyzeCanon("Broly est-il canonique ?").references).toHaveLength(0);
   });
 });
+
+/** Mot-clé replié : casse et diacritiques ignorées. */
+const pli = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().trim();
+
+describe("identifiants et mots-clés", () => {
+  test("l'identifiant d'une citation existante est conservé tel quel", () => {
+    const ids = [
+      "manga-vol-dbz_anime_comics-3",
+      "manga-vol-sdbh_big_bang_mission-1",
+      "seg-noms-familles-freeza-cold-chilled-et-la-lignee-des-demons-du-froid-selon-toriyama",
+    ];
+    const c = resolveCanonConfig({
+      references: ids.map((id) => ({ ...CORPUS[0], id, updatedAt: "2026-10-01T08:00:00.000Z" })),
+    });
+    expect(c.references.map((r) => r.id)).toEqual(ids);
+    expect(c.references[0]?.updatedAt).toBe("2026-10-01T08:00:00.000Z");
+  });
+
+  test("une saisie libre sans identifiant de clé reste slugifiée", () => {
+    const c = resolveCanonConfig({ references: [{ ...CORPUS[0], id: "Broly ?" }] });
+    expect(c.references[0]?.id).toBe("broly");
+  });
+
+  test("une citation retirée par l'éditeur ne sort plus comme preuve", () => {
+    const config = resolveCanonConfig({
+      ...DEFAULT_CANON_CONFIG,
+      references: CORPUS.map((r) => ({ ...r, visible: false })),
+    });
+    expect(referencesPour("pourquoi piccolo ?", config)).toHaveLength(0);
+  });
+
+  test("aucun sujet ni règle ne répète un mot-clé", () => {
+    for (const e of [...DEFAULT_CANON_CONFIG.entries, ...DEFAULT_CANON_CONFIG.heuristics]) {
+      const vus = e.keywords.map(pli);
+      expect({ id: e.id, doublons: vus.filter((k, i) => vus.indexOf(k) !== i) }).toEqual({
+        id: e.id,
+        doublons: [],
+      });
+    }
+  });
+});

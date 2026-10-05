@@ -54,6 +54,61 @@ function resolveRoleAdmin(discordId: string): boolean {
   return siteStaffPolicy().isStaff(discordId);
 }
 
+/** `sessionUserId` d'une requête authentifiée par jeton plutôt que par Discord. */
+export const TOKEN_ADMIN_SESSION_ID = "token-admin";
+
+/**
+ * Identité d'écriture d'une requête authentifiée par jeton, telle que
+ * `wiki_revisions` la fige (`editorId`, `editorName`, texte libre sans clé
+ * étrangère). Ce n'est pas un humain : la requête est rattachée au compte
+ * `OWNER_ID` pour les écritures qui exigent une ligne `users`, mais le journal
+ * doit pouvoir distinguer une automatisation du propriétaire.
+ */
+export interface AutomationActor {
+  readonly id: string;
+  readonly name: string;
+}
+
+/** `Authorization: Bearer` ou `x-admin-token` avec le jeton d'administration. */
+export const API_TOKEN_ACTOR: AutomationActor = Object.freeze({
+  id: "api-token",
+  name: "Jeton API (automatisation)",
+});
+
+/** Cookie signé `dbfr_admin` posé par `/admin-access` : le jeton saisi dans un navigateur. */
+export const ADMIN_COOKIE_ACTOR: AutomationActor = Object.freeze({
+  id: "admin-token-cookie",
+  name: "Jeton admin (session navigateur)",
+});
+
+/** Clé d'agent `dbfr_agent_…` : chaque clé garde sa propre identité. */
+export function agentKeyActor(agent: { keyId: string; name: string }): AutomationActor {
+  return { id: `agent-key:${agent.keyId}`, name: `${agent.name.trim() || "Agent"} (clé d'agent)` };
+}
+
+/** Utilisateur courant, avec l'identité d'automatisation quand la requête vient d'un jeton. */
+export type SessionUser = CurrentUser & { automation?: AutomationActor };
+
+/** Auteur d'une révision (`wiki_revisions.editorId` / `editorName`). */
+export type RevisionAuthor = { id: string | null; name: string | null } | null;
+
+/**
+ * Auteur à figer dans `wiki_revisions` pour l'utilisateur courant : l'identité
+ * d'automatisation pour une requête par jeton, jamais le compte `OWNER_ID` sur
+ * lequel elle est rattachée ; sinon le user métier.
+ */
+export function revisionActorOf(me: SessionUser | null | undefined): RevisionAuthor {
+  if (!me) return null;
+  if (me.automation) return { id: me.automation.id, name: me.automation.name };
+  if (me.sessionUserId === TOKEN_ADMIN_SESSION_ID) return { ...API_TOKEN_ACTOR };
+  if (!me.user) return null;
+  return { id: me.user.id ?? null, name: me.user.username ?? null };
+}
+
+function withAutomation(value: CurrentUser, automation: AutomationActor): SessionUser {
+  return { ...value, automation };
+}
+
 // Mémoïsation in-process de la jointure ba_account→users, par sessionUserId.
 // Évite un aller-retour Neon (us-east-1) sur chaque requête depuis cdg1 : sur une
 // instance chaude (Fluid Compute), la 2e+ résolution est servie depuis la RAM.
@@ -93,7 +148,7 @@ async function resolveTokenAdmin(): Promise<CurrentUser> {
         .returning();
       row = inserted[0] ?? row;
     }
-    value = { sessionUserId: "token-admin", discordId: ownerId, user: row ?? null };
+    value = { sessionUserId: TOKEN_ADMIN_SESSION_ID, discordId: ownerId, user: row ?? null };
   } else {
     // Mode dégradé : sans OWNER_ID, pas de ligne `users` → les écritures
     // user-keyed (createTierlist/posts) échoueraient en FK. On garde l'accès
@@ -103,40 +158,40 @@ async function resolveTokenAdmin(): Promise<CurrentUser> {
       warnedNoOwner = true;
     }
     const synthetic: SiteUser = {
-      id: "token-admin",
+      id: TOKEN_ADMIN_SESSION_ID,
       discordId: "",
       username: "Admin (token)",
       avatar: null,
       roleAdmin: true,
       createdAt: new Date(),
     };
-    value = { sessionUserId: "token-admin", discordId: "", user: synthetic };
+    value = { sessionUserId: TOKEN_ADMIN_SESSION_ID, discordId: "", user: synthetic };
   }
   tokenAdminCache = { at: Date.now(), value };
   return value;
 }
 
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+export async function getCurrentUser(): Promise<SessionUser | null> {
   // Admin par token / cookie signé / Bearer (sans Discord). Prioritaire et
   // no-op si la fonctionnalité est désactivée (SHENRON_ADMIN_TOKEN absent).
   const reqHeaders = await requestHeaders();
   if (adminTokenEnabled()) {
     // 1. Cookie signé httpOnly
     if (verifyAdminCookie(readCookie(reqHeaders, ADMIN_COOKIE))) {
-      return resolveTokenAdmin();
+      return withAutomation(await resolveTokenAdmin(), ADMIN_COOKIE_ACTOR);
     }
 
     // 2. En-tête explicite x-admin-token
     const xAdminToken = reqHeaders.get("x-admin-token");
     if (xAdminToken && verifyAdminTokenOrBearer(xAdminToken)) {
-      return resolveTokenAdmin();
+      return withAutomation(await resolveTokenAdmin(), API_TOKEN_ACTOR);
     }
 
     // 3. En-tête Authorization: Bearer
     const bearer = parseBearer(reqHeaders);
     if (bearer) {
       if (verifyAdminTokenOrBearer(bearer)) {
-        return resolveTokenAdmin();
+        return withAutomation(await resolveTokenAdmin(), API_TOKEN_ACTOR);
       }
       if (bearer.startsWith("dbfr_agent_")) {
         const req = new Request("https://dragonballfr.com", { headers: reqHeaders });
@@ -147,7 +202,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
             agent.scopes.includes("publish:articles") ||
             agent.scopes.includes("write:articles"))
         ) {
-          return resolveTokenAdmin();
+          return withAutomation(await resolveTokenAdmin(), agentKeyActor(agent));
         }
       }
     }

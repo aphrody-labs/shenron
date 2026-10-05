@@ -15,8 +15,21 @@ export type CharacterMerge = {
 };
 
 /**
- * Allow-list reviewed against the live wiki.  Deliberately absent are timeline,
- * adaptation and form homonyms (for example Broly DBZ/DBS or future Trunks).
+ * Allow-list reviewed against the live wiki.
+ *
+ * Merge criterion: the two rows are the SAME character, proven by an identical
+ * Japanese name (`name_ja`, checked by `validateCharacterMerge` on both rows) and
+ * a French name that is only a spelling or localisation variant. A shared
+ * `name_ja` alone is not enough: timeline, adaptation and form homonyms stay
+ * separate (Broly DBZ/DBS, future Trunks, Cell 331 « Cell (futur) » and 333
+ * « Cell (présent) », which share セル with Cell 9).
+ *
+ * `winnerName` and `duplicateName` are the exact current names: the script
+ * refuses a merge as soon as one drifted (`names drifted`). Winners renamed in
+ * production after the French edition of the manga (2026-10): 6 Zabon, 9 Cell,
+ * 11 Krilin, 17 Tortue Géniale, 19 Lunch, 32 Majin Boo, 63 Kaio du Nord,
+ * 72 Dai Kaio. A duplicate whose current name is unknown keeps its reviewed
+ * name and is refused until checked.
  */
 export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
@@ -54,7 +67,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 9,
     duplicateId: 323,
-    winnerName: "Celula",
+    winnerName: "Cell",
     duplicateName: "Cell",
     nameJa: "セル",
     reason: "same Japanese identity; localized names",
@@ -62,7 +75,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 17,
     duplicateId: 682,
-    winnerName: "Master Roshi",
+    winnerName: "Tortue Géniale",
     duplicateName: "Kamé Sennin",
     nameJa: "亀仙人",
     reason: "same Japanese identity; localized names",
@@ -70,7 +83,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 63,
     duplicateId: 658,
-    winnerName: "Kaio du Nord (Kaito)",
+    winnerName: "Kaio du Nord",
     duplicateName: "Kaio du Nord",
     nameJa: "北の界王",
     reason: "same title and Japanese identity",
@@ -78,7 +91,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 72,
     duplicateId: 399,
-    winnerName: "Grand Kaïo",
+    winnerName: "Dai Kaio",
     duplicateName: "Dai Kaiô",
     nameJa: "大界王",
     reason: "same title and Japanese identity",
@@ -86,7 +99,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 32,
     duplicateId: 756,
-    winnerName: "Majin Buu",
+    winnerName: "Majin Boo",
     duplicateName: "Majin Boo",
     nameJa: "魔人ブウ",
     reason: "same Japanese identity; alternate romanization",
@@ -102,7 +115,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 11,
     duplicateId: 706,
-    winnerName: "Krillin",
+    winnerName: "Krilin",
     duplicateName: "Krilin",
     nameJa: "クリリン",
     reason: "same Japanese identity and canonical variant slugs",
@@ -110,7 +123,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 19,
     duplicateId: 758,
-    winnerName: "Launch",
+    winnerName: "Lunch",
     duplicateName: "Lunch",
     nameJa: "ランチ",
     reason: "same Japanese identity and canonical variant slugs",
@@ -118,7 +131,7 @@ export const CHARACTER_MERGES: readonly CharacterMerge[] = [
   {
     winnerId: 6,
     duplicateId: 1300,
-    winnerName: "Zarbon",
+    winnerName: "Zabon",
     duplicateName: "Zabon",
     nameJa: "ザーボン",
     reason: "same Japanese identity and canonical variant slug",

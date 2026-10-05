@@ -18,6 +18,41 @@ describe("character consolidation", () => {
       ),
     ).toBeNull();
   });
+  test("names follow the French manga edition used in production (2026-10)", () => {
+    // Fiches renommées en production d'après l'édition française du manga.
+    const PROD: Record<number, string> = {
+      1: "Son Goku",
+      6: "Zabon",
+      9: "Cell",
+      10: "Son Gohan",
+      11: "Krilin",
+      17: "Tortue Géniale",
+      19: "Lunch",
+      32: "Majin Boo",
+      63: "Kaio du Nord",
+      70: "Kaio",
+      71: "Kaio",
+      72: "Dai Kaio",
+      73: "Kaio Shin",
+      74: "Kaio Shin",
+      75: "Kaio Shin",
+      76: "Kaio Shin",
+      77: "Dai Kaio Shin",
+      107: "Vieux Kaio Shin",
+    };
+    for (const m of CHARACTER_MERGES) {
+      if (PROD[m.winnerId])
+        expect([m.winnerId, m.winnerName]).toEqual([m.winnerId, PROD[m.winnerId]!]);
+      if (PROD[m.duplicateId])
+        expect([m.duplicateId, m.duplicateName]).toEqual([m.duplicateId, PROD[m.duplicateId]!]);
+    }
+  });
+  test("timeline homonyms sharing a Japanese name are never merged", () => {
+    // Cell (futur) 331 et Cell (présent) 333 portent セル comme Cell 9.
+    const ids = new Set(CHARACTER_MERGES.flatMap((m) => [m.winnerId, m.duplicateId]));
+    expect(ids.has(331)).toBe(false);
+    expect(ids.has(333)).toBe(false);
+  });
   test("rejects drift and distinct Japanese identities", () => {
     const m = CHARACTER_MERGES[0]!;
     expect(

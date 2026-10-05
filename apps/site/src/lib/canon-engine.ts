@@ -130,6 +130,18 @@ export interface CanonReference {
   provenance: "aphrody" | "databooks" | "manuel" | "manga";
   /** Lien vers la pièce elle-même (planche de databook, scan manga) quand elle existe. */
   href?: string;
+  /**
+   * Geste explicite de l'éditeur sur une citation ingérée : `false` la retire
+   * (masquage tracé dans `wiki_revisions`), `true` la rétablit. Absent, la
+   * citation garde sa visibilité ; ne pas renvoyer une citation ne la retire pas.
+   */
+  visible?: boolean;
+  /**
+   * `updated_at` de la ligne `canon_references` au moment de la lecture (ISO).
+   * Jeton de concurrence optimiste : un geste n'est appliqué que si la ligne
+   * n'a pas changé depuis.
+   */
+  updatedAt?: string;
 }
 
 export interface CanonAnalysisResult {
@@ -1125,7 +1137,6 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "puissance namek",
       "goku namek",
       "goku ssj namek",
-      "freezer 100%",
       "freezer 100%",
       "goku contre freeza",
       "goku super saiyan namek",
@@ -2159,6 +2170,7 @@ export function referencesPour(
   const notes: { reference: CanonReference; poids: number }[] = [];
 
   for (const reference of config.references) {
+    if (reference.visible === false) continue;
     let poids = 0;
     let motSolide = false;
     for (const kw of reference.keywords) {
@@ -2577,6 +2589,16 @@ function citation(v: unknown): CanonQuote | undefined {
   return { text, source, ...(annee ? { year: annee } : {}) };
 }
 
+/** Forme d'un identifiant de citation déjà attribué (clé de `canon_references`). */
+const ID_REFERENCE = /^[a-z0-9][a-z0-9_.:-]{0,199}$/i;
+
+/** L'identifiant reçu s'il a déjà la forme d'une clé, sinon `null` (à slugifier). */
+function idDeReference(v: unknown): string | null {
+  if (typeof v !== "string") return null;
+  const id = v.trim();
+  return ID_REFERENCE.test(id) ? id : null;
+}
+
 /** `Broly ?` → `broly`. Un identifiant stable, lisible, sans accent. */
 export function slugCanon(source: string, secours: string): string {
   const slug = normaliser(source)
@@ -2697,12 +2719,23 @@ export function resolveCanonConfig(patch: unknown): CanonConfig {
       // Sans texte ni mot-clé, une référence ne prouve rien et ne sort jamais.
       if (!text || keywords.length === 0) continue;
       const subject = texteCourt(r.subject, 300, "");
-      let id = slugCanon(texteCourt(r.id, 80, "") || subject, `reference-${references.length + 1}`);
+      // L'identifiant d'une citation existante est sa clé en table : il se garde
+      // tel quel. Le re-slugifier (`_` → `-`, coupure à 60) détachait la citation
+      // de sa ligne, que l'enregistrement masquait ensuite sans trace.
+      let id =
+        idDeReference(r.id) ??
+        slugCanon(texteCourt(r.id, 80, "") || subject, `reference-${references.length + 1}`);
       while (vus.has(id)) id = `${id}-2`;
       vus.add(id);
       const annee =
         typeof r.year === "number" && Number.isFinite(r.year) ? Math.round(r.year) : undefined;
       const textFr = texteCourt(r.textFr, 4000, "");
+      const updatedAt =
+        typeof r.updatedAt === "string" &&
+        r.updatedAt.length <= 40 &&
+        !Number.isNaN(Date.parse(r.updatedAt))
+          ? r.updatedAt
+          : undefined;
       references.push({
         id,
         subject,
@@ -2721,6 +2754,8 @@ export function resolveCanonConfig(patch: unknown): CanonConfig {
         ...(typeof r.href === "string" && /^\/[\w/#?=&.-]*$/.test(r.href)
           ? { href: r.href.slice(0, 300) }
           : {}),
+        ...(typeof r.visible === "boolean" ? { visible: r.visible } : {}),
+        ...(updatedAt ? { updatedAt } : {}),
       });
     }
   }
