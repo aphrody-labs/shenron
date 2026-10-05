@@ -1,15 +1,21 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Shenron result adapters over the one @aphrody/bun native library owner. */
+/**
+ * Shenron result adapters over shenron-ffi (`@shenron/native`). The calls that can last
+ * (commands, serving RAG search and statistics: network) run on the `@shenron/native/worker`
+ * pool, off the event loop and cancellable by `AbortSignal`; the instant ones stay synchronous.
+ */
 import {
   EXPECTED_SHENRON_ABI_VERSION,
   shenronAbiVersion,
   shenronVersion,
   shenronRunCaptured,
-  shenronRagSearch,
-  shenronRagStats,
   shenronAuthStatus,
   shenronPersonaPrompt,
+  type RagSearchResponse,
+  type RagStats,
+  type ShenronAuthStatusPayload,
 } from "@shenron/native/shenron";
+import { shenronWorkerPool } from "@shenron/native/worker";
 import type { AphrodyDoctorResult, CliResult } from "./cli";
 import { AphrodyComputeClient, type AphrodyRagHit, type AphrodyRagStats } from "./compute";
 
@@ -22,6 +28,18 @@ function nativeValue<T>(operation: () => T): T | null {
   try {
     return operation();
   } catch {
+    return null;
+  }
+}
+/** As `nativeValue`, for a worker call; an abort is the caller's and propagates. */
+async function nativeAsync<T>(
+  operation: () => Promise<T>,
+  signal?: AbortSignal,
+): Promise<T | null> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (signal?.aborted) throw error;
     return null;
   }
 }
@@ -49,10 +67,16 @@ export class AphrodyNativeClient {
     return isNativeAvailable();
   }
 
-  /** Run a command and return classified CliResult. */
-  async run<T = unknown>(args: readonly string[]): Promise<CliResult<T>> {
+  /** Run a command on a native worker and return classified CliResult. */
+  async run<T = unknown>(
+    args: readonly string[],
+    options: { signal?: AbortSignal } = {},
+  ): Promise<CliResult<T>> {
     const t0 = performance.now();
-    const captured = runCapturedNative(args);
+    const captured = await nativeAsync(
+      () => shenronWorkerPool().runCaptured(args, options),
+      options.signal,
+    );
     const durationMs = Math.round(performance.now() - t0);
 
     if (!captured) {
@@ -104,10 +128,10 @@ export class AphrodyNativeClient {
     return res.kind === "exit" && res.ok ? (res.data ?? null) : null;
   }
 
-  /** Query the canonical Shenron RAG bridge. */
+  /** Query the serving Shenron RAG (normalised by the library), scores rescaled to [0.4, 1]. */
   async ragSearch(
     query: string,
-    options: { limit?: number; kind?: string } = {},
+    options: { limit?: number; kind?: string; signal?: AbortSignal } = {},
   ): Promise<AphrodyRagHit[]> {
     // The selected PostgreSQL backend must also govern calls through this facade.
     if (process.env.RAG_BACKEND === "aphrody") {
@@ -115,64 +139,54 @@ export class AphrodyNativeClient {
         kind: options.kind,
       });
     }
-    const envelope = nativeValue(() =>
-      shenronRagSearch(
-        query,
-        Math.trunc(Math.max(1, Math.min(options.limit ?? 5, 100))),
-        options.kind || undefined,
-      ),
-    );
-    if (!envelope) return [];
-    try {
-      if (envelope.code !== 0 || typeof envelope.stdout !== "string") return [];
-      const rows = JSON.parse(envelope.stdout.trim());
-      if (!Array.isArray(rows)) return [];
-      const ranked = rows.map((row: any) => ({
-        title: row.title || "Sans titre",
-        url: row.url || "",
-        snippet: row.snippet || "",
-        score: typeof row.score === "number" ? row.score : 0,
-        kind: row.kind || "document",
-        sourceId: row.sourceId || undefined,
-        lang: row.lang || undefined,
-        content: row.content || row.snippet || "",
-      }));
-      const scores = ranked.map((row: AphrodyRagHit) => row.score);
-      const min = Math.min(...scores);
-      const max = Math.max(...scores);
-      return ranked.map((row: AphrodyRagHit) =>
-        Object.assign({}, row, {
-          score: max > min ? 0.4 + (0.6 * (row.score - min)) / (max - min) : 1,
+    const answer: RagSearchResponse | null = await nativeAsync(
+      () =>
+        shenronWorkerPool().ragSearch(query, {
+          limit: Math.trunc(Math.max(1, Math.min(options.limit ?? 5, 100))),
+          kind: options.kind || undefined,
+          signal: options.signal,
         }),
-      );
-    } catch {
-      return [];
-    }
+      options.signal,
+    );
+    if (!answer) return [];
+    const ranked: AphrodyRagHit[] = answer.results.map((row) => ({
+      title: row.title || "Sans titre",
+      url: row.url,
+      snippet: row.snippet,
+      score: row.score ?? 0,
+      kind: row.kind,
+      sourceId: row.sourceId ?? undefined,
+      lang: row.lang ?? undefined,
+      content: row.content || row.snippet,
+    }));
+    const scores = ranked.map((row) => row.score);
+    const min = Math.min(...scores);
+    const max = Math.max(...scores);
+    return ranked.map((row) => ({
+      ...row,
+      score: max > min ? 0.4 + (0.6 * (row.score - min)) / (max - min) : 1,
+    }));
   }
 
-  /** Fetch RAG index corpus statistics in-process. */
-  async ragStats(): Promise<AphrodyRagStats | null> {
+  /** Fetch RAG index corpus statistics (normalised by the library). */
+  async ragStats(options: { signal?: AbortSignal } = {}): Promise<AphrodyRagStats | null> {
     if (process.env.RAG_BACKEND === "aphrody") return new AphrodyComputeClient().ragStats();
-    const envelope = nativeValue(shenronRagStats);
-    if (!envelope) return null;
-    try {
-      if (envelope.code !== 0 || typeof envelope.stdout !== "string") return null;
-      const data = JSON.parse(envelope.stdout.trim());
-      const count = data.total_chunks || 0;
-      return {
-        chunks: count,
-        vectors: 0,
-        sources: Array.isArray(data.kinds)
-          ? data.kinds.map((k: any) => ({
-              sourceId: k.kind || "databook",
-              kind: k.kind || "databook",
-              count: k.c || 0,
-            }))
-          : [],
-      };
-    } catch {
-      return null;
-    }
+    const stats: RagStats | null = await nativeAsync(
+      () => shenronWorkerPool().ragStats(options),
+      options.signal,
+    );
+    if (!stats) return null;
+    return {
+      chunks: stats.chunks,
+      vectors: stats.vectors,
+      ...(stats.vectorsStored === null ? {} : { vectorsStored: stats.vectorsStored }),
+      sources: stats.sources.map((source) => ({
+        sourceId: source.sourceId,
+        kind: source.kind,
+        count: source.count,
+        ...(source.vectors === null ? {} : { vectors: source.vectors }),
+      })),
+    };
   }
 
   /** Return only the sanitized authentication presence flags. */
@@ -181,7 +195,7 @@ export class AphrodyNativeClient {
     if (!envelope) return null;
     try {
       if (envelope.code !== 0 || typeof envelope.stdout !== "string") return null;
-      const status = JSON.parse(envelope.stdout.trim());
+      const status = JSON.parse(envelope.stdout.trim()) as Partial<ShenronAuthStatusPayload>;
       if (
         typeof status.configured !== "boolean" ||
         typeof status.admin_credentials_present !== "boolean"

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, it } from "bun:test";
 import {
+  EXPECTED_ABI_VERSION,
   aphrodyNative,
   isNativeAvailable,
   nativeAbiVersion,
@@ -17,7 +18,7 @@ describe("@shenron/pipeline/aphrody/native FFI bridge", () => {
   });
 
   it.skipIf(!nativeAvailable)("returns valid ABI version and version string when loaded", () => {
-    expect(nativeAbiVersion()).toBe(1);
+    expect(nativeAbiVersion()).toBe(EXPECTED_ABI_VERSION);
     const ver = nativeVersion();
     expect(ver).not.toBeNull();
     expect(ver?.length).toBeGreaterThan(0);
