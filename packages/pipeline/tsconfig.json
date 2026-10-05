@@ -1,24 +1,12 @@
 {
+  "extends": "../config/tsconfig/bun.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "moduleDetection": "force",
     "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": false,
     // DOM stays: bun-types 1.4.2 declares `onmessage`, which turns @types/node 26 fetch globals
     // (Response, Headers) into empty types; Bun then types fetch through lib.dom only
     // (measured 2026-10-05, tsc 7.0.2: 82 errors without DOM). No browser global is used.
-    "lib": ["ESNext", "DOM"],
-    "types": ["bun"],
-    "paths": {
-      "~/*": ["./src/*"]
-    }
+    "lib": ["ESNext", "DOM"]
   },
   "include": ["src/**/*"]
 }
