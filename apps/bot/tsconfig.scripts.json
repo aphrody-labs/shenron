@@ -1,7 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["scripts/**/*.ts"],
-  // Importé par les tests, api-harness.ts est déjà vérifié par tsconfig.json, où
-  // graphql-yoga apporte la lib.dom que @shenron/api/server suppose encore.
-  "exclude": ["scripts/api-harness.ts"]
+  "include": ["scripts/**/*.ts"]
 }

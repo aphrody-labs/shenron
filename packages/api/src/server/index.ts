@@ -632,24 +632,23 @@ export function createShenronApi(
     const headers = new Headers(request.headers);
     headers.delete("host");
     try {
-      const upstream = await fetch(target, {
+      // Bun streams request bodies with `duplex: "half"`, which RequestInit does not declare.
+      const init: RequestInit & { duplex: "half" } = {
         method: request.method,
         headers,
         body: request.method === "GET" || request.method === "HEAD" ? undefined : request.body,
         redirect: "manual",
         signal: request.signal,
-        // @ts-expect-error -- Bun streams request bodies with `duplex: "half"`.
         duplex: "half",
-      });
+      };
+      const upstream = await fetch(target, init);
       const out = new Headers(upstream.headers);
       for (const [key, value] of Object.entries(cors)) out.set(key, value);
       return new Response(upstream.body, { status: upstream.status, headers: out });
     } catch (error) {
-      return json(
-        { error: "MCP server unreachable", code: "upstream_unavailable", message: String(error) },
-        502,
-        cors,
-      );
+      // The cause (internal address, socket error) stays in the server log, never in the reply.
+      console.error("[shenron-api] MCP upstream unreachable:", error);
+      return json({ error: "MCP server unreachable", code: "upstream_unavailable" }, 502, cors);
     }
   }
 
@@ -943,7 +942,7 @@ export function createShenronApi(
     routes,
     websocket,
     fetch: (request, server) => dispatch(request, server),
-    request: (path, init) => dispatch(new Request(new URL(path, "http://localhost"), init)),
+    request: (path, init) => dispatch(new Request(new URL(path, "http://localhost").href, init)),
     handles,
     openApiDocument,
     streams,
