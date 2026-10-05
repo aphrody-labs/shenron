@@ -78,20 +78,75 @@ interface CanvasHandle {
   free(): void;
 }
 
-interface CanvasModule {
-  default(): Promise<unknown>;
+/**
+ * Surface de la glue `wasm-bindgen --target web` de `crates/koharu-canvas` utilisée ici
+ * (`src/wasm/koharu_canvas.js`, générée par `scripts/build-wasm.ts`). Le test
+ * `test/canvas-wasm.test.ts` vérifie sur la sortie construite que les exports et les méthodes de
+ * `WebCanvas` correspondent à ce contrat.
+ */
+export interface CanvasGlue {
+  default(init: { module_or_path: WebAssembly.Module }): Promise<unknown>;
   createCanvas(element: HTMLCanvasElement): Promise<CanvasHandle>;
 }
 
-let modulePromise: Promise<CanvasModule> | null = null;
+/** Méthodes de `WebCanvas` (glue wasm-bindgen) appelées par l'adaptateur. */
+export const CANVAS_HANDLE_METHODS = [
+  "resize",
+  "setView",
+  "stageManifest",
+  "installResource",
+  "activateFrame",
+  "activatePage",
+  "cacheFrame",
+  "clear",
+  "previewOpacity",
+  "beginTransform",
+  "updateTransform",
+  "finishTransform",
+  "cancelTransform",
+  "beginStroke",
+  "extendStroke",
+  "finishStroke",
+  "cancelStroke",
+  "sampleColor",
+  "setDeviceLostCallback",
+  "dispose",
+  "free",
+] as const satisfies readonly (keyof CanvasHandle)[];
+
+export type CanvasUnavailableReason = "webgpu" | "adapter" | "module";
+
+/** Le viewport ne peut pas démarrer : WebGPU absent, aucun adaptateur, ou module WASM illisible. */
+export class CanvasUnavailableError extends Error {
+  override readonly name = "CanvasUnavailableError";
+  readonly reason: CanvasUnavailableReason;
+
+  constructor(reason: CanvasUnavailableReason, message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.reason = reason;
+  }
+}
+
+let modulePromise: Promise<CanvasGlue> | null = null;
 let activeCanvas: Canvas | null = null;
 let prefetchGeneration = 0;
+
+/**
+ * Lance le téléchargement et la compilation du module WASM avant l'ouverture de l'éditeur.
+ * Ne rejette jamais : un échec est relevé (et retenté) par `createCanvas`.
+ */
+export function preloadCanvasModule(): Promise<boolean> {
+  return loadCanvasModule().then(
+    () => true,
+    () => false,
+  );
+}
 
 export async function createCanvas(
   element: HTMLCanvasElement,
   onDeviceLost: (reason: string) => void,
 ): Promise<Canvas> {
-  const module = await loadCanvasModule();
+  const [module] = await Promise.all([loadCanvasModule(), assertWebGpu()]);
   const canvas = await module.createCanvas(element);
   let transformSequence = 0;
   let disposed = false;
@@ -180,19 +235,82 @@ export async function createCanvas(
   };
 }
 
-function loadCanvasModule(): Promise<CanvasModule> {
-  // @ts-ignore -- wasm-pack output is created by bridge build tasks and absent in clean checkouts.
-  modulePromise ??= import("./wasm/koharu_canvas.js")
-    .then(async (module) => {
-      const canvas = module as CanvasModule;
-      await canvas.default();
-      return canvas;
+function loadCanvasModule(): Promise<CanvasGlue> {
+  modulePromise ??= Promise.all([importCanvasGlue(), compileCanvasModule()])
+    .then(async ([glue, module]) => {
+      await glue.default({ module_or_path: module });
+      return glue;
     })
     .catch((error: unknown) => {
       modulePromise = null;
-      throw error;
+      throw error instanceof CanvasUnavailableError
+        ? error
+        : new CanvasUnavailableError(
+            "module",
+            `Module WASM du canevas indisponible : ${errorMessage(error)}`,
+            { cause: error },
+          );
     });
   return modulePromise;
+}
+
+function importCanvasGlue(): Promise<CanvasGlue> {
+  // Quand la sortie existe, tsc vérifie ici que la glue générée est assignable à `CanvasGlue`.
+  const glue: Promise<CanvasGlue> =
+    // @ts-ignore -- src/wasm/ est la sortie de `bun run build:wasm` (scripts/build-wasm.ts),
+    // ignorée par Git : absente d'un dépôt propre, construite avant tout build du site. Le
+    // spécifier reste littéral pour que le bundler inclue la glue dans son graphe.
+    import("./wasm/koharu_canvas.js");
+  return glue;
+}
+
+/**
+ * Compile `koharu_canvas_bg.wasm` en streaming pendant son téléchargement. Le bundler émet le
+ * fichier comme asset (`new URL(…, import.meta.url)`, `_next/static/media/` sous Next) ; un
+ * serveur qui ne l'annonce pas en `application/wasm` passe par la compilation en mémoire.
+ */
+async function compileCanvasModule(): Promise<WebAssembly.Module> {
+  const url = new URL("./wasm/koharu_canvas_bg.wasm", import.meta.url);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`HTTP ${response.status} pour ${url.pathname}`);
+  const type = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
+  if (type === "application/wasm" && typeof WebAssembly.compileStreaming === "function") {
+    return WebAssembly.compileStreaming(response);
+  }
+  return WebAssembly.compile(await response.arrayBuffer());
+}
+
+/** Lève une erreur typée et lisible au lieu de l'échec opaque de wgpu sans WebGPU. */
+async function assertWebGpu(): Promise<void> {
+  const gpu = typeof navigator === "undefined" ? undefined : (navigator as Partial<Navigator>).gpu;
+  if (!gpu) {
+    throw new CanvasUnavailableError(
+      "webgpu",
+      globalThis.isSecureContext === false
+        ? "WebGPU indisponible : la page n'est pas servie dans un contexte sécurisé (HTTPS ou localhost)."
+        : "WebGPU indisponible : ce navigateur n'expose pas navigator.gpu (WebGPU absent ou désactivé).",
+    );
+  }
+  let adapter: GPUAdapter | null;
+  try {
+    adapter = await gpu.requestAdapter({ powerPreference: "high-performance" });
+  } catch (cause) {
+    throw new CanvasUnavailableError(
+      "adapter",
+      `WebGPU indisponible : la demande d'adaptateur a échoué (${errorMessage(cause)}).`,
+      { cause },
+    );
+  }
+  if (!adapter) {
+    throw new CanvasUnavailableError(
+      "adapter",
+      "WebGPU indisponible : aucun adaptateur GPU (matériel ou pilote non pris en charge, ou WebGPU bloqué par le navigateur).",
+    );
+  }
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 export async function fetchCanvasManifest(generation: number): Promise<Uint8Array> {

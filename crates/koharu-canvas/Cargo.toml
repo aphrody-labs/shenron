@@ -16,7 +16,8 @@ crate-type = ["cdylib", "rlib"]
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 futures-channel = { workspace = true }
 js-sys = { workspace = true }
-koharu-rasterizer = { workspace = true }
+# The viewport prepares nothing: skip the rasterizer `native` feature (image, rayon, pollster).
+koharu-rasterizer = { path = "../koharu-rasterizer", default-features = false }
 serde = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
 vello = { workspace = true }

@@ -12,7 +12,12 @@ page explique où le trouver.
   depuis `koharu-app` (`bun --filter @shenron/koharu protocol`, ne pas éditer à la main).
   `shenron-desktop` (fonctionnalité `koharu`) enregistre ces commandes sous leurs noms
   d'origine et exécute le moteur `koharu-library` dans son propre processus.
-- Le canevas passe par `@shenron/koharu/canvas` (WASM de `crates/koharu-canvas`).
+- Le canevas passe par `@shenron/koharu/canvas` (WASM WebGPU de `crates/koharu-canvas`,
+  construit par `bun --filter @shenron/koharu build:wasm` avant tout build du site et émis par
+  Next sous `_next/static/media/`). Le module se compile en streaming ;
+  `preloadCanvasModule()` en lance le téléchargement avant l'ouverture de l'éditeur. Sans
+  WebGPU, `createCanvas` rejette une `CanvasUnavailableError` (« WebGPU indisponible : … »)
+  que `useCanvas` affiche telle quelle ; la perte du device reste remontée par son rappel.
 - Hors Tauri, `@shenron/koharu/native` parle au même moteur par `koharu-sdk` en JSON Lines sur
   stdio ; c'est la voie de la chaîne éditoriale (`@shenron/pipeline`), pas celle de l'éditeur.
 - `components/ShenronExportPanel.tsx` exporte vers la chaîne Shenron par

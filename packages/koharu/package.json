@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "lint": "oxlint -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
-    "build:wasm": "RUSTFLAGS=\"--remap-path-prefix=$HOME=~\" wasm-pack build ../../crates/koharu-canvas --release --target web --out-dir ../../packages/koharu/src/wasm --out-name koharu_canvas --no-pack && bun scripts/prepare-wasm.ts",
+    "build:wasm": "bun scripts/build-wasm.ts",
     "protocol": "cargo run -p koharu-app --bin generate"
   },
   "dependencies": {
