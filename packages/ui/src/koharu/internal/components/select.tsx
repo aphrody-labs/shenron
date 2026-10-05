@@ -1,56 +1,39 @@
 "use client";
 
+// Editor adapter over the shared select: Root, Portal, Trigger and Value come from the shared
+// kit; the trigger gains the editor sizes and data-slot hooks. The shared SelectPopup has no
+// scroll arrows and paints a fixed palette, so the editor keeps its own list surface and items
+// on the host M3 roles.
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
 import * as React from "react";
 
+import {
+  Select,
+  SelectPortal,
+  SelectTrigger as SharedSelectTrigger,
+  SelectValue as SharedSelectValue,
+} from "../../../components/select";
 import { cn } from "../../../lib/utils";
 
-const Select = SelectPrimitive.Root;
-
-function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
-  return (
-    <SelectPrimitive.Group
-      data-slot="select-group"
-      className={cn("scroll-my-1 p-1", className)}
-      {...props}
-    />
-  );
-}
-
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
-  return (
-    <SelectPrimitive.Value
-      data-slot="select-value"
-      className={cn("flex flex-1 text-left", className)}
-      {...props}
-    />
-  );
+function SelectValue(props: SelectPrimitive.Value.Props) {
+  return <SharedSelectValue data-slot="select-value" {...props} />;
 }
 
 function SelectTrigger({
   className,
   size = "default",
-  children,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   size?: "sm" | "default";
 }) {
   return (
-    <SelectPrimitive.Trigger
+    <SharedSelectTrigger
       data-slot="select-trigger"
       data-size={size}
-      className={cn(
-        "flex w-fit items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-6 data-[size=sm]:gap-1 data-[size=sm]:rounded-md data-[size=sm]:px-1.5 data-[size=sm]:py-0 data-[size=sm]:text-[11px] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
-        className,
-      )}
+      className={cn(size === "sm" && "h-6 gap-1 px-1.5 py-0 text-[11px]", className)}
       {...props}
-    >
-      {children}
-      <SelectPrimitive.Icon
-        render={<ChevronDownIcon className="pointer-events-none size-3.5 text-muted-foreground" />}
-      />
-    </SelectPrimitive.Trigger>
+    />
   );
 }
 
@@ -69,7 +52,7 @@ function SelectContent({
     "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
   >) {
   return (
-    <SelectPrimitive.Portal>
+    <SelectPortal>
       <SelectPrimitive.Positioner
         side={side}
         sideOffset={sideOffset}
@@ -93,17 +76,7 @@ function SelectContent({
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
-    </SelectPrimitive.Portal>
-  );
-}
-
-function SelectLabel({ className, ...props }: SelectPrimitive.GroupLabel.Props) {
-  return (
-    <SelectPrimitive.GroupLabel
-      data-slot="select-label"
-      className={cn("px-1.5 py-1 text-[10px] text-muted-foreground", className)}
-      {...props}
-    />
+    </SelectPortal>
   );
 }
 
@@ -128,16 +101,6 @@ function SelectItem({ className, children, ...props }: SelectPrimitive.Item.Prop
         <CheckIcon className="pointer-events-none" />
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
-  );
-}
-
-function SelectSeparator({ className, ...props }: SelectPrimitive.Separator.Props) {
-  return (
-    <SelectPrimitive.Separator
-      data-slot="select-separator"
-      className={cn("pointer-events-none -mx-1 my-1 h-px bg-border", className)}
-      {...props}
-    />
   );
 }
 
@@ -177,15 +140,4 @@ function SelectScrollDownButton({
   );
 }
 
-export {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-};
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue };

@@ -1,19 +1,19 @@
 "use client";
 
+// Editor adapter over the shared tooltip: Root, Trigger and Portal come from the shared kit.
+// The shared TooltipPopup hides its positioner (no side or align), so the editor keeps its own
+// positioned Content on the host M3 roles.
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 
+import {
+  Tooltip,
+  TooltipPortal,
+  TooltipTrigger as SharedTooltipTrigger,
+} from "../../../components/tooltip";
 import { cn } from "../../../lib/utils";
 
-function TooltipProvider({ delay = 0, ...props }: TooltipPrimitive.Provider.Props) {
-  return <TooltipPrimitive.Provider data-slot="tooltip-provider" delay={delay} {...props} />;
-}
-
-function Tooltip({ ...props }: TooltipPrimitive.Root.Props) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
-}
-
-function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
+function TooltipTrigger(props: TooltipPrimitive.Trigger.Props) {
+  return <SharedTooltipTrigger data-slot="tooltip-trigger" {...props} />;
 }
 
 function TooltipContent({
@@ -27,7 +27,7 @@ function TooltipContent({
 }: TooltipPrimitive.Popup.Props &
   Pick<TooltipPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">) {
   return (
-    <TooltipPrimitive.Portal>
+    <TooltipPortal>
       <TooltipPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -48,8 +48,8 @@ function TooltipContent({
           <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
-    </TooltipPrimitive.Portal>
+    </TooltipPortal>
   );
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+export { Tooltip, TooltipContent, TooltipTrigger };

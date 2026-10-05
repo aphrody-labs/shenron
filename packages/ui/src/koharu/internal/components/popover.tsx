@@ -1,16 +1,20 @@
 "use client";
 
+// Editor adapter over the shared popover: Root, Trigger and Portal come from the shared kit.
+// The shared PopoverPopup hides its positioner (no side or align) and paints a fixed palette,
+// so the editor keeps its own positioned Content on the host M3 roles, with its parts.
 import * as React from "react";
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 
+import {
+  Popover,
+  PopoverPortal,
+  PopoverTrigger as SharedPopoverTrigger,
+} from "../../../components/popover";
 import { cn } from "../../../lib/utils";
 
-function Popover({ ...props }: PopoverPrimitive.Root.Props) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />;
-}
-
-function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
+function PopoverTrigger(props: PopoverPrimitive.Trigger.Props) {
+  return <SharedPopoverTrigger data-slot="popover-trigger" {...props} />;
 }
 
 function PopoverContent({
@@ -23,7 +27,7 @@ function PopoverContent({
 }: PopoverPrimitive.Popup.Props &
   Pick<PopoverPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">) {
   return (
-    <PopoverPrimitive.Portal>
+    <PopoverPortal>
       <PopoverPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -41,7 +45,7 @@ function PopoverContent({
           {...props}
         />
       </PopoverPrimitive.Positioner>
-    </PopoverPrimitive.Portal>
+    </PopoverPortal>
   );
 }
 
@@ -65,14 +69,4 @@ function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
   );
 }
 
-function PopoverDescription({ className, ...props }: PopoverPrimitive.Description.Props) {
-  return (
-    <PopoverPrimitive.Description
-      data-slot="popover-description"
-      className={cn("text-muted-foreground", className)}
-      {...props}
-    />
-  );
-}
-
-export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger };
+export { Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger };
