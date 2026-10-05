@@ -6,9 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 <!-- CLAUDE.md est un lien symbolique vers AGENTS.md : un seul fichier pour tous les agents. -->
 
 Shenron est le produit de dragonballfr.com : site, bot Discord, API, chaîne éditoriale (OCR et
-traduction des databooks), moteur de traduction manga Koharu, RAG et serveur MCP. Répondre et
-documenter en français. Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
+traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de code Koharu), RAG
+et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
+et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
 auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
+
+## Langues et noms
+
+- Code (identifiants, commentaires nouveaux), slugs, segments de routes, chemins et champs d'API,
+  schémas, clés de configuration, noms d'outils MCP, bot et backend : en anglais. Un ancien
+  segment français reste servi par un 308 vers son équivalent anglais.
+- Aucun texte visible codé en dur, ni en français ni ailleurs : toute chaîne d'interface passe
+  par les dictionnaires (`apps/site/messages/{fr,en,ja}.json`, locales des paquets). Le français
+  est la langue de référence ; l'anglais et le japonais sont complets. Les API acceptent la
+  langue (`lang` ou `Accept-Language`, `fr | en | ja`) et renvoient les libellés localisés.
+- Un seul lexique de traduction (personnages, techniques, lieux… en ja/fr/en) sert le site,
+  l'API, le bot, le plugin, le pipeline et le traducteur de Shenron Studio.
+- Koharu est un nom de code interne (crates `koharu-*`, `@shenron/koharu`) : le produit public
+  est **Shenron Studio**, et aucun texte visible ne dit « Koharu ».
+- La documentation (`docs/`) reste en français.
 
 ## Sources de vérité
 
@@ -118,6 +134,9 @@ Lancer et construire :
 - **Site** : Next 16 App Router, Turbopack ; `src/proxy.ts` remplace le middleware (host
   canonique, garde admin) ; next-intl par cookie `NEXT_LOCALE`, sans segment `[locale]`
   (`messages/{fr,en,ja}.json`). `/koharu`, `/studio`, `/bureau` montent `@shenron/ui`.
+  Espace Bibliothèque (`src/lib/bibliotheque.ts`) : `/wiki/manga`, `/wiki/databooks`, `/atelier`
+  (avancement public ; outils staff `/atelier/{transcription,traduction,databooks/[id]}`, gardés
+  par `proxy.ts` comme `/admin`) et `/koharu` partagent leurs onglets.
   `/mcp` relaie vers `shenron-mcp --http --public`.
 - **Bot** : discordx + tsyringe ; `entry-standalone.ts` (`--smoke`, `--dry-run`) puis
   `index.ts` (migrations, base, `ApiServer`, Discord). Le socle Discord vient d'Aphrody :
