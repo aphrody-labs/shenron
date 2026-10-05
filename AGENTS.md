@@ -45,8 +45,9 @@ Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`ca
 `fd`. Pas de node/npm/npx/bunx ni d'utilitaires GNU pour le travail d'agent ; oxlint/oxfmt via
 `bun $(which oxlint)`. Le `tsc` local (TypeScript 7.0.2) fait seul foi.
 
-`bunfig.toml` : `linker = "isolated"`, `hoist = false` (chaque paquet déclare ses
-dépendances) ; versions tierces centralisées dans `workspaces.catalog` du `package.json` racine
+`bunfig.toml` : `linker = "isolated"`, seuls `react` et `react-dom` sont hissés
+(`hoistPattern`) ; chaque paquet déclare ses dépendances, scripts racine compris (le
+`package.json` racine déclare ce qu'importe `scripts/`) ; versions tierces centralisées dans `workspaces.catalog` du `package.json` racine
 (`"catalog:"`), `@aphrody/*` épinglés exactement ; `minimumReleaseAge` de 3 jours.
 
 ## Commandes
@@ -60,6 +61,7 @@ bun run format:check                   # oxfmt
 bun run --filter @shenron/db test      # un seul paquet
 cd packages/db && bun test test/vfs-data.test.ts -t "motif"   # un fichier, un test
 cd apps/site && bun test --isolate tests/<fichier>.test.ts    # apps site et bot : --isolate
+bun run test:scripts                   # tests de scripts/ (bun test ./scripts)
 bun run test:live                      # suites live (SHENRON_LIVE=1, services réels)
 ```
 
@@ -90,8 +92,8 @@ Lancer et construire :
 
 ## Architecture
 
-- **Graphe** : acyclique, `config ← db/auth ← api` ; `@shenron/ui` sans arête `@shenron/*` ;
-  aucun paquet n'importe une app. Chaque export déclare une classe `"shenron.runtime"`
+- **Graphe** : acyclique, `config ← db/auth ← api` ; `@shenron/ui` ne dépend que de `config`,
+  `koharu` et `pipeline` ; aucun paquet n'importe une app. Chaque export déclare une classe `"shenron.runtime"`
   (`pure | server | bun | json`) auditée par `scripts/audit/check-workspace-packages.ts` :
   un module `"use client"` n'importe ni `@shenron/db/postgres-js`, ni `api/server`, ni rien
   de classe `bun`. `next.config.ts` liste chaque `@shenron/*` et `@aphrody/*` dans

@@ -1,6 +1,9 @@
 [install]
 linker = "isolated"
-hoist = false
+hoist = true
+# Only react and react-dom are reachable from the store fallback: swiper (and other packages
+# importing react without declaring the peer) resolve them; everything else stays strict.
+hoistPattern = ["react", "react-dom"]
 saveTextLockfile = true
 minimumReleaseAge = 259200
 # Owner-published Aphrody packages are pinned exactly and released in step with this repository;
