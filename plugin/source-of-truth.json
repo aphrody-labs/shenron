@@ -2,7 +2,7 @@
   "version": 1,
   "sources": [
     {
-      "root": "/home/aphro/yolo/plugins/shenron",
+      "root": "/home/aphro/aphrody/plugins/shenron",
       "evidence": [
         "references/upstream-main.json",
         "references/upstream/aphrody-shenron/AGENTS.md.source",
