@@ -9,6 +9,7 @@
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
 
 import {
   ensureDirectories,
@@ -92,10 +93,8 @@ export async function main(
     const payload = await extract(options.embeddedPayload, paths.cache);
     process.env.SHENRON_SITE_DIR = join(payload.dir, "site");
     if (!process.env.SHENRON_FFI_LIB) {
-      const lib = ["libshenron_ffi.so", "shenron_ffi.dll", "libshenron_ffi.dylib"]
-        .map((name) => join(payload.dir, "native", name))
-        .find((path) => existsSync(path));
-      if (lib) process.env.SHENRON_FFI_LIB = lib;
+      const lib = join(payload.dir, "native", SHENRON_FFI_FILE);
+      if (existsSync(lib)) process.env.SHENRON_FFI_LIB = lib;
     }
     console.error(
       JSON.stringify({

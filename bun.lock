@@ -57,6 +57,9 @@
       "bin": {
         "shenron-server": "./src/cli.ts",
       },
+      "dependencies": {
+        "@shenron/native": "workspace:*",
+      },
       "devDependencies": {
         "@types/bun": "catalog:",
         "typescript": "catalog:",

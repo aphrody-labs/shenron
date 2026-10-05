@@ -4,7 +4,8 @@
 // command surface, Shenron RAG/persona helpers and the Koharu manga pipeline, in process.
 //
 // Set SHENRON_FFI_LIB to the library path; otherwise it is resolved from `native/` beside this
-// package, then (with SHENRON_FFI_DEV=1) from the repository Cargo target directory.
+// package, then (with SHENRON_FFI_DEV=1) from the repository Cargo target directory. A host that
+// ships the library elsewhere (shenron-server) opens it first with `shenronLoad(path)`.
 
 import { CString, dlopen, FFIType, suffix, type Pointer } from "bun:ffi";
 import { existsSync } from "node:fs";
@@ -22,6 +23,10 @@ const SYMBOLS = {
   shenron_run: { args: [FFIType.i32, FFIType.ptr], returns: FFIType.i32 },
   shenron_run_captured: { args: [FFIType.cstring], returns: FFIType.ptr },
   shenron_rag_search: {
+    args: [FFIType.cstring, FFIType.i32, FFIType.cstring],
+    returns: FFIType.ptr,
+  },
+  shenron_local_search: {
     args: [FFIType.cstring, FFIType.i32, FFIType.cstring],
     returns: FFIType.ptr,
   },
@@ -51,8 +56,12 @@ const SYMBOLS = {
 
 type NativeLibrary = ReturnType<typeof dlopen<typeof SYMBOLS>>;
 let library: NativeLibrary | undefined;
+let libraryPath: string | undefined;
 
 const ENCODER = new TextEncoder();
+
+/** File name of the native library on this host (`libshenron_ffi.so`, `shenron_ffi.dll`, …). */
+export const SHENRON_FFI_FILE = `${process.platform === "win32" ? "" : "lib"}shenron_ffi.${suffix}`;
 
 /** @internal NUL-terminated UTF-8 marshaling shared by the sub-bindings. */
 export function cstr(text: string): Uint8Array {
@@ -68,7 +77,7 @@ export function resolveNativeLibraryPath(): string | undefined {
       throw new Error(`SHENRON_FFI_LIB points to a missing file: ${override}`);
     return resolve(override);
   }
-  const file = `${process.platform === "win32" ? "" : "lib"}shenron_ffi.${suffix}`;
+  const file = SHENRON_FFI_FILE;
   const packageRoot = join(import.meta.dir, "..");
   const candidates = [
     join(packageRoot, "native", `${process.platform}-${process.arch}`, file),
@@ -87,10 +96,14 @@ export function resolveNativeLibraryPath(): string | undefined {
   return candidates.find(existsSync);
 }
 
-/** @internal One lazy handle for every @shenron/native subpath. Importing a binding never opens it. */
-export function loadLib(): NativeLibrary {
+/**
+ * @internal One lazy handle for every @shenron/native subpath. Importing a binding never opens it.
+ * `explicitPath` opens that file instead of the default resolution (a host that ships the library
+ * beside its executable); once a library is open, every caller shares it whatever the path.
+ */
+export function loadLib(explicitPath?: string): NativeLibrary {
   if (library) return library;
-  const path = resolveNativeLibraryPath();
+  const path = explicitPath ?? resolveNativeLibraryPath();
   if (!path)
     throw new Error(
       "shenron-ffi native library not found; set SHENRON_FFI_LIB or SHENRON_FFI_DEV=1 for a local build",
@@ -111,13 +124,25 @@ export function loadLib(): NativeLibrary {
     }
   }
   library = loaded;
+  libraryPath = path;
   return loaded;
+}
+
+/**
+ * Open the native library now and check its ABI revisions; returns the path of the open library.
+ * `path` replaces the default resolution (SHENRON_FFI_LIB, then `native/` beside this package).
+ * The process keeps a single library: once one is open, its path is returned whatever `path`.
+ */
+export function shenronLoad(path?: string): string {
+  loadLib(path);
+  return libraryPath as string;
 }
 
 /** Close the native handle (optional; process exit also frees it). */
 export function close(): void {
   library?.close();
   library = undefined;
+  libraryPath = undefined;
 }
 
 function readOwnedString(ptr: bigint | Pointer | null): string {
@@ -201,6 +226,34 @@ export function shenronRagSearch(query: string, limit = 10, kind?: string): Capt
     kind === undefined ? null : cstr(kind),
   );
   return parseCapturedResult(readOwnedString(pointer), "Shenron RAG search");
+}
+
+/**
+ * Search the offline Shenron corpus in process (embedded canon and guide, the configured corpus
+ * and the local RAG store). Returns the decoded JSON object (`mode`, `q`, `results`, …); an
+ * empty or absent `kind` searches every kind.
+ */
+export function shenronLocalSearch(
+  query: string,
+  limit = 8,
+  kind?: string,
+): Record<string, unknown> {
+  if (!Number.isInteger(limit) || limit < 1)
+    throw new RangeError("local search limit must be a positive integer");
+  const queryArg = cstr(query);
+  const kindArg = kind ? cstr(kind) : null;
+  const pointer = loadLib().symbols.shenron_local_search(queryArg, limit, kindArg);
+  if (!pointer) throw new Error("shenron_local_search returned null");
+  let text: string;
+  try {
+    text = new CString(pointer as Pointer).toString();
+  } finally {
+    loadLib().symbols.shenron_string_free(pointer as Pointer);
+  }
+  const value: unknown = JSON.parse(text);
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    throw new Error("shenron_local_search returned an invalid payload");
+  return value as Record<string, unknown>;
 }
 
 /** Read Shenron RAG statistics; the returned JSON carries code/stdout/stderr. */

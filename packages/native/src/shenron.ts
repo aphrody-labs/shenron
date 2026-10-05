@@ -2,11 +2,14 @@
 
 export {
   EXPECTED_SHENRON_ABI_VERSION,
+  SHENRON_FFI_FILE,
+  shenronLoad,
   shenronAbiVersion,
   shenronVersion,
   lastError as shenronLastError,
   shenronRun,
   shenronRunCaptured,
+  shenronLocalSearch,
   shenronRagSearch,
   shenronRagStats,
   shenronRagChunk,

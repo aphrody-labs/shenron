@@ -15,6 +15,9 @@
     "lint": "oxlint -c ../../.oxlintrc.json src",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@shenron/native": "workspace:*"
+  },
   "devDependencies": {
     "@types/bun": "catalog:",
     "typescript": "catalog:",
