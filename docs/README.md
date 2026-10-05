@@ -31,7 +31,7 @@ puis `AGENTS.md` à la racine.
 | Japonais | [`guides/japonais.md`](guides/japonais.md) |
 | Ingestion des données wiki | [`guides/wiki-data-ingestion.md`](guides/wiki-data-ingestion.md) |
 | Pièges mesurés | [`guides/pieges.md`](guides/pieges.md) |
-| Sécurité | [`SECURITY.md`](SECURITY.md) |
+| Sécurité | [Politique de sécurité](SECURITY.md) |
 | Licences des composants intégrés | [`licenses/`](licenses/) |
 
 Aucune adresse, aucun hôte, port ni secret de production n'est écrit dans ces
