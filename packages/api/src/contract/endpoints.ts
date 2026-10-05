@@ -471,6 +471,7 @@ export const LEGACY_PUBLIC_PATHS: readonly string[] = [
   "/api/public/sources",
   "/api/public/stats",
   "/api/public/user/{discordId}",
+  "/api/public/wiki/arcs",
   "/api/public/wiki/arcs/{slug}",
   "/api/public/wiki/characters",
   "/api/public/wiki/characters/{id}",
@@ -495,6 +496,7 @@ export const LEGACY_PUBLIC_PATHS: readonly string[] = [
   "/api/public/wiki/tools",
   "/api/public/wiki/tools/{slug}",
   "/api/public/wiki/transformations",
+  "/api/public/wiki/transformations/{id}",
 ];
 
 type ParamsOf<E> = E extends { params: infer P extends z.ZodType }

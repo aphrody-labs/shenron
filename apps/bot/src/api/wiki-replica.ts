@@ -10,6 +10,29 @@ import { WIKI_VISIBILITY_TABLES } from "~/db/wiki-visibility";
 
 type Row = Record<string, unknown>;
 
+/**
+ * `limit`/`offset` d'une liste publique, toujours bornés : une valeur absente
+ * ou non numérique prend le défaut, une valeur < 1 vaut 1 (jamais le `LIMIT -1`
+ * illimité de SQLite), une valeur > `max` vaut `max` ; l'offset est un entier ≥ 0.
+ */
+export function pageParams(
+  params: URLSearchParams,
+  o: { defaultLimit: number; maxLimit: number },
+): { limit: number; offset: number } {
+  const rawLimit = Number.parseInt(params.get("limit") ?? "", 10);
+  const limit = Number.isNaN(rawLimit)
+    ? o.defaultLimit
+    : Math.min(Math.max(rawLimit, 1), o.maxLimit);
+  const rawOffset = Number.parseInt(params.get("offset") ?? "", 10);
+  const offset = Number.isNaN(rawOffset) ? 0 : Math.max(rawOffset, 0);
+  return { limit, offset };
+}
+
+/** Identifiant numérique d'une fiche, `null` pour tout autre texte (slug, nom…). */
+export function numericId(raw: string): number | null {
+  return /^\d{1,15}$/.test(raw) ? Number(raw) : null;
+}
+
 /** Retire le drapeau éditorial d'une ligne `SELECT *` déjà filtrée. */
 function withoutVisible(row: Row): Row {
   const { visible: _visible, ...rest } = row;

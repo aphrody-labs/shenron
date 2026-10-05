@@ -1,5 +1,6 @@
 import { singleton, inject } from "tsyringe";
-import { and, asc, desc, eq, like, sql } from "drizzle-orm";
+import { and, asc, desc, eq, like, sql, type SQL } from "drizzle-orm";
+import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
 import { DatabaseService } from "~/db/index";
 import {
   dbCharacters,
@@ -49,6 +50,14 @@ export type TechniqueWithCreator = DBTechnique & {
   creatorImage: string | null;
 };
 
+/**
+ * Clé d'une fiche : des chiffres désignent l'id (celui que donnent les listes),
+ * tout autre texte le slug.
+ */
+function byIdOrSlug(id: SQLiteColumn, slug: SQLiteColumn, key: string): SQL {
+  return /^\d+$/.test(key) ? eq(id, Number(key)) : eq(slug, key);
+}
+
 /** Retire `visible` d'une ligne déjà filtrée. */
 function publicRow<T extends { visible: boolean }>(row: T): Public<T> {
   const { visible: _visible, ...rest } = row;
@@ -89,13 +98,13 @@ export class WikiService {
   }
 
   /**
-   * Récupère un outil visible par son slug, avec son jeu cible s'il est visible.
+   * Récupère un outil visible par son id ou son slug, avec son jeu cible s'il est visible.
    */
-  async getTool(slug: string): Promise<(DBTool & { targetGame: DBGame | null }) | null> {
+  async getTool(idOrSlug: string): Promise<(DBTool & { targetGame: DBGame | null }) | null> {
     const [tool] = await this.db
       .select()
       .from(dbTools)
-      .where(and(eq(dbTools.slug, slug), eq(dbTools.visible, true)))
+      .where(and(byIdOrSlug(dbTools.id, dbTools.slug, idOrSlug), eq(dbTools.visible, true)))
       .limit(1);
     if (!tool) return null;
     const [game] =
@@ -120,9 +129,10 @@ export class WikiService {
   }
 
   /**
-   * Recherche fuzzy par nom (partial, case-insensitive) parmi les personnages visibles.
+   * Recherche fuzzy par nom (partial, case-insensitive) parmi les personnages
+   * visibles ; sans `limit`, toutes les correspondances.
    */
-  async search(query: string, limit = 25): Promise<DBCharacter[]> {
+  async search(query: string, limit?: number): Promise<DBCharacter[]> {
     const q = query.trim();
     const rows = await this.db
       .select()
@@ -135,7 +145,7 @@ export class WikiService {
             )
           : eq(dbCharacters.visible, true),
       )
-      .limit(limit);
+      .limit(limit ?? -1);
     return rows.map(publicRow);
   }
 
@@ -200,6 +210,18 @@ export class WikiService {
     return rows.map(publicRow);
   }
 
+  /**
+   * Récupère une transformation visible par son id.
+   */
+  async getTransformation(id: number): Promise<DBTransformation | null> {
+    const [row] = await this.db
+      .select()
+      .from(dbTransformations)
+      .where(and(eq(dbTransformations.id, id), eq(dbTransformations.visible, true)))
+      .limit(1);
+    return row ? publicRow(row) : null;
+  }
+
   // --- Planets ---
 
   /**
@@ -238,13 +260,13 @@ export class WikiService {
   }
 
   /**
-   * Récupère une race visible par son slug avec ses personnages visibles.
+   * Récupère une race visible par son id ou son slug avec ses personnages visibles.
    */
-  async getRace(slug: string): Promise<(DBRace & { characters: DBCharacter[] }) | null> {
+  async getRace(idOrSlug: string): Promise<(DBRace & { characters: DBCharacter[] }) | null> {
     const [race] = await this.db
       .select()
       .from(dbRaces)
-      .where(and(eq(dbRaces.slug, slug), eq(dbRaces.visible, true)))
+      .where(and(byIdOrSlug(dbRaces.id, dbRaces.slug, idOrSlug), eq(dbRaces.visible, true)))
       .limit(1);
     if (!race) return null;
     return { ...publicRow(race), characters: await this.listByRace(race.name) };
@@ -294,11 +316,16 @@ export class WikiService {
   }
 
   /**
-   * Récupère une technique visible par son slug.
+   * Récupère une technique visible par son id ou son slug.
    */
-  async getTechnique(slug: string): Promise<TechniqueWithCreator | null> {
+  async getTechnique(idOrSlug: string): Promise<TechniqueWithCreator | null> {
     const [row] = await this.techniquesWithCreator()
-      .where(and(eq(dbTechniques.slug, slug), eq(dbTechniques.visible, true)))
+      .where(
+        and(
+          byIdOrSlug(dbTechniques.id, dbTechniques.slug, idOrSlug),
+          eq(dbTechniques.visible, true),
+        ),
+      )
       .limit(1);
     if (!row) return null;
     return {
@@ -323,13 +350,13 @@ export class WikiService {
   }
 
   /**
-   * Récupère une saga visible avec ses arcs visibles.
+   * Récupère une saga visible (id ou slug) avec ses arcs visibles.
    */
-  async getSaga(slug: string): Promise<(DBSaga & { arcs: DBArc[] }) | null> {
+  async getSaga(idOrSlug: string): Promise<(DBSaga & { arcs: DBArc[] }) | null> {
     const [saga] = await this.db
       .select()
       .from(dbSagas)
-      .where(and(eq(dbSagas.slug, slug), eq(dbSagas.visible, true)))
+      .where(and(byIdOrSlug(dbSagas.id, dbSagas.slug, idOrSlug), eq(dbSagas.visible, true)))
       .limit(1);
     if (!saga) return null;
     const arcs = await this.db
@@ -341,13 +368,25 @@ export class WikiService {
   }
 
   /**
-   * Récupère un arc visible avec ses épisodes visibles.
+   * Liste les arcs visibles, dans l'ordre des sagas puis de la saga.
    */
-  async getArc(slug: string): Promise<(DBArc & { episodes: DBEpisode[] }) | null> {
+  async listArcs(): Promise<DBArc[]> {
+    const rows = await this.db
+      .select()
+      .from(dbArcs)
+      .where(eq(dbArcs.visible, true))
+      .orderBy(asc(dbArcs.sagaId), asc(dbArcs.orderIdx));
+    return rows.map(publicRow);
+  }
+
+  /**
+   * Récupère un arc visible (id ou slug) avec ses épisodes visibles.
+   */
+  async getArc(idOrSlug: string): Promise<(DBArc & { episodes: DBEpisode[] }) | null> {
     const [arc] = await this.db
       .select()
       .from(dbArcs)
-      .where(and(eq(dbArcs.slug, slug), eq(dbArcs.visible, true)))
+      .where(and(byIdOrSlug(dbArcs.id, dbArcs.slug, idOrSlug), eq(dbArcs.visible, true)))
       .limit(1);
     if (!arc) return null;
     const episodes = await this.db
@@ -436,16 +475,10 @@ export class WikiService {
    * Récupère un film visible par son id ou son slug.
    */
   async getMovie(idOrSlug: string): Promise<DBMovie | null> {
-    const isId = /^\d+$/.test(idOrSlug);
     const [movie] = await this.db
       .select()
       .from(dbMovies)
-      .where(
-        and(
-          isId ? eq(dbMovies.id, Number(idOrSlug)) : eq(dbMovies.slug, idOrSlug),
-          eq(dbMovies.visible, true),
-        ),
-      )
+      .where(and(byIdOrSlug(dbMovies.id, dbMovies.slug, idOrSlug), eq(dbMovies.visible, true)))
       .limit(1);
     return movie ? publicRow(movie) : null;
   }
@@ -459,13 +492,13 @@ export class WikiService {
   }
 
   /**
-   * Récupère un jeu visible par son slug.
+   * Récupère un jeu visible par son id ou son slug.
    */
-  async getGame(slug: string): Promise<DBGame | null> {
+  async getGame(idOrSlug: string): Promise<DBGame | null> {
     const [game] = await this.db
       .select()
       .from(dbGames)
-      .where(and(eq(dbGames.slug, slug), eq(dbGames.visible, true)))
+      .where(and(byIdOrSlug(dbGames.id, dbGames.slug, idOrSlug), eq(dbGames.visible, true)))
       .limit(1);
     return game ? publicRow(game) : null;
   }

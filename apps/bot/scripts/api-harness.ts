@@ -26,6 +26,7 @@ import {
 export const LEGACY_WIKI_ROUTES = [
   "/api/public/wiki/characters",
   "/api/public/wiki/characters/:id",
+  "/api/public/wiki/arcs",
   "/api/public/wiki/arcs/:slug",
   "/api/public/wiki/episodes",
   "/api/public/wiki/episodes/:id",
@@ -36,6 +37,7 @@ export const LEGACY_WIKI_ROUTES = [
   "/api/public/wiki/techniques",
   "/api/public/wiki/techniques/:slug",
   "/api/public/wiki/transformations",
+  "/api/public/wiki/transformations/:id",
   "/api/public/wiki/planets",
   "/api/public/wiki/planets/:id",
   "/api/public/wiki/movies",

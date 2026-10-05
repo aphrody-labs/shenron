@@ -149,7 +149,13 @@ import { contextPublicRag, searchPublicRag } from "./public-rag";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import { generateLlmAnswer, isFallbackAnswer } from "~/lib/llm";
 import { graphqlHandler } from "~/api/graphql";
-import { countVisibleWiki, listVisibleEpisodes, searchVisibleWiki } from "~/api/wiki-replica";
+import {
+  countVisibleWiki,
+  listVisibleEpisodes,
+  numericId,
+  pageParams,
+  searchVisibleWiki,
+} from "~/api/wiki-replica";
 import { openapiSpec, scalarHtml } from "~/api/openapi";
 import { ADMIN_ROUTES, dashboardRedirect } from "@shenron/config/admin";
 import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth";
@@ -2263,22 +2269,24 @@ export class ApiServer {
             const query = url.searchParams.get("q");
             const wiki = container.resolve(WikiService);
             const all = query ? await wiki.search(query) : await wiki.listAll();
-            // `limit`/`offset` are in the OpenAPI contract; without them the full
-            // list stays the default (existing consumers read every character).
-            const rawLimit = url.searchParams.get("limit");
-            const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
-            const limit = rawLimit ? Math.min(Math.max(Number(rawLimit) || 50, 1), 200) : undefined;
-            const characters =
-              limit !== undefined || offset > 0
-                ? all.slice(offset, limit !== undefined ? offset + limit : undefined)
-                : all;
-            return { characters };
+            // Paginated like the OpenAPI contract says (default 50, max 200):
+            // the whole table is never returned in one response.
+            const { limit, offset } = pageParams(url.searchParams, {
+              defaultLimit: 50,
+              maxLimit: 200,
+            });
+            return {
+              characters: all.slice(offset, offset + limit),
+              total: all.length,
+              limit,
+              offset,
+            };
           }),
 
         "/api/public/wiki/characters/:id": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
-            const id = parseInt(req.params.id, 10);
-            if (!Number.isFinite(id)) throw new HttpError(400, "ID invalide");
+            const id = numericId(req.params.id);
+            if (id === null) throw new HttpError(404, "Personnage inconnu");
             const wiki = container.resolve(WikiService);
             const character = await wiki.getCharacter(id);
             if (!character) throw new HttpError(404, "Personnage inconnu");
@@ -2297,10 +2305,22 @@ export class ApiServer {
             return { transformations: await wiki.listTransformations() };
           }),
 
+        // Même réplica et même filtre que la liste (le repli PostgreSQL servait
+        // sinon la fiche d'une autre source que la liste).
+        "/api/public/wiki/transformations/:id": (req) =>
+          publicCachedJson(req, 60 * 60_000, async () => {
+            const id = numericId(req.params.id);
+            if (id === null) throw new HttpError(404, "Transformation inconnue");
+            const wiki = container.resolve(WikiService);
+            const transformation = await wiki.getTransformation(id);
+            if (!transformation) throw new HttpError(404, "Transformation inconnue");
+            return transformation;
+          }),
+
         "/api/public/wiki/planets/:id": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
-            const id = parseInt(req.params.id, 10);
-            if (!Number.isFinite(id)) throw new HttpError(400, "ID invalide");
+            const id = numericId(req.params.id);
+            if (id === null) throw new HttpError(404, "Planète inconnue");
             const wiki = container.resolve(WikiService);
             const planet = await wiki.getPlanet(id);
             if (!planet) throw new HttpError(404, "Planète inconnue");
@@ -2349,6 +2369,13 @@ export class ApiServer {
             return s;
           }),
 
+        // Liste servie par le même réplica que la fiche `arcs/:slug` (id ou slug).
+        "/api/public/wiki/arcs": (req) =>
+          publicCachedJson(req, 60 * 60_000, async () => {
+            const wiki = container.resolve(WikiService);
+            return { arcs: await wiki.listArcs() };
+          }),
+
         "/api/public/wiki/arcs/:slug": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
             const wiki = container.resolve(WikiService);
@@ -2361,8 +2388,10 @@ export class ApiServer {
           publicCachedJson(req, 30 * 60_000, async () => {
             const url = new URL(req.url);
             const series = url.searchParams.get("series");
-            const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "100", 10), 500);
-            const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
+            const { limit, offset } = pageParams(url.searchParams, {
+              defaultLimit: 100,
+              maxLimit: 500,
+            });
             return listVisibleEpisodes(container.resolve(DatabaseService).sqlite, {
               series,
               limit,
@@ -2372,8 +2401,8 @@ export class ApiServer {
 
         "/api/public/wiki/episodes/:id": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
-            const id = parseInt(req.params.id, 10);
-            if (!Number.isFinite(id)) throw new HttpError(400, "ID invalide");
+            const id = numericId(req.params.id);
+            if (id === null) throw new HttpError(404, "Épisode inconnu");
             const wiki = container.resolve(WikiService);
             const ep = await wiki.getEpisodeById(id);
             if (!ep) throw new HttpError(404, "Épisode inconnu");
@@ -2438,8 +2467,8 @@ export class ApiServer {
 
         "/api/public/wiki/manga/volumes/:id": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
-            const id = parseInt(req.params.id, 10);
-            if (!Number.isFinite(id)) throw new HttpError(400, "ID invalide");
+            const id = numericId(req.params.id);
+            if (id === null) throw new HttpError(404, "Volume inconnu");
             const wiki = container.resolve(WikiService);
             const v = await wiki.getMangaVolume(id);
             if (!v) throw new HttpError(404, "Volume inconnu");
@@ -2449,7 +2478,7 @@ export class ApiServer {
         "/api/public/wiki/news": (req) =>
           publicCachedJson(req, 5 * 60_000, async () => {
             const url = new URL(req.url);
-            const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "10", 10), 100);
+            const { limit } = pageParams(url.searchParams, { defaultLimit: 10, maxLimit: 100 });
             const wiki = container.resolve(WikiService);
             return { news: await wiki.listNews(limit) };
           }),

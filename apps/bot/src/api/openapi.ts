@@ -642,7 +642,12 @@ export const openapiSpec = {
       get: {
         tags: ["Wiki"],
         summary: "Liste des personnages",
-        parameters: [limitParam(50, 200), offsetParam],
+        description: "Page de personnages (`characters`) avec `total`, `limit` et `offset`.",
+        parameters: [
+          { name: "q", in: "query", required: false, schema: { type: "string" } },
+          limitParam(50, 200),
+          offsetParam,
+        ],
         responses: listResp("Character", "characters"),
       },
     },
@@ -686,6 +691,21 @@ export const openapiSpec = {
         responses: listResp("Transformation", "transformations"),
       },
     },
+    "/api/public/wiki/transformations/{id}": {
+      get: {
+        tags: ["Wiki"],
+        summary: "Fiche transformation",
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        responses: itemResp("Transformation"),
+      },
+    },
+    "/api/public/wiki/arcs": {
+      get: {
+        tags: ["Wiki"],
+        summary: "Liste des arcs narratifs",
+        responses: { "200": { description: "OK" } },
+      },
+    },
     "/api/public/wiki/sagas": {
       get: { tags: ["Wiki"], summary: "Liste des sagas", responses: listResp("Saga", "sagas") },
     },
@@ -695,7 +715,7 @@ export const openapiSpec = {
         summary: "Liste des épisodes",
         parameters: [
           { name: "series", in: "query", required: false, schema: { type: "string" } },
-          limitParam(30, 100),
+          limitParam(100, 500),
           offsetParam,
         ],
         responses: listResp("Episode", "episodes"),

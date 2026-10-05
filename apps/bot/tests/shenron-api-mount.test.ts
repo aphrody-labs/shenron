@@ -49,8 +49,15 @@ describe("montage @shenron/api dans le Bun.serve du bot", () => {
     expect(await characters.json()).toEqual({ legacy: "/api/public/wiki/characters" });
     const arc = await get(withPg, "/api/public/wiki/arcs/namek");
     expect(await arc.json()).toEqual({ legacy: "/api/public/wiki/arcs/:slug" });
+    // Liste des arcs et fiche transformation : même réplica que leur fiche/liste.
+    const arcs = await get(withPg, "/api/public/wiki/arcs");
+    expect(await arcs.json()).toEqual({ legacy: "/api/public/wiki/arcs" });
+    const transformation = await get(withPg, "/api/public/wiki/transformations/3");
+    expect(await transformation.json()).toEqual({ legacy: "/api/public/wiki/transformations/:id" });
     expect(calls.some((c) => c.startsWith("list:characters"))).toBe(false);
+    expect(calls.some((c) => c.startsWith("list:arcs"))).toBe(false);
     expect(calls.some((c) => c.startsWith("get:arcs"))).toBe(false);
+    expect(calls.some((c) => c.startsWith("get:transformations"))).toBe(false);
   });
 
   it("/api/public/wiki/battles/12 atteint @shenron/api", async () => {
