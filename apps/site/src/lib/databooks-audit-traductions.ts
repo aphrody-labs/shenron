@@ -405,7 +405,7 @@ export interface IndexEntites {
   longues: EntreeLexique[];
 }
 
-const KINDS_ENTITES = new Set(["personnage", "technique", "planete", "race"]);
+const KINDS_ENTITES = new Set(["personnage", "technique", "transformation", "planete", "race"]);
 /** Formes françaises trop communes pour témoigner d'une entité. */
 const FR_COMMUNS = new Set(
   [

@@ -32,7 +32,7 @@
   {
     "ja": "超サイヤ人ゴッド超サイヤ人",
     "fr": "Super Saiyan Blue",
-    "kind": "race",
+    "kind": "transformation",
     "length": 13
   },
   {
@@ -223,8 +223,8 @@
   },
   {
     "ja": "ドラゴンボール超",
-    "fr": "Saga Broly",
-    "kind": "saga",
+    "fr": "Dragon Ball Super",
+    "kind": "autre",
     "length": 8
   },
   {
@@ -338,13 +338,13 @@
   {
     "ja": "超サイヤ人ゴッド",
     "fr": "Super Saiyan God",
-    "kind": "race",
+    "kind": "transformation",
     "length": 8
   },
   {
     "ja": "超サイヤ人ブルー",
     "fr": "Super Saiyan Blue",
-    "kind": "race",
+    "kind": "transformation",
     "length": 8
   },
   {
@@ -445,7 +445,7 @@
   },
   {
     "ja": "ドクター・ゲロ",
-    "fr": "Dr Gero (futur)",
+    "fr": "Dr Gero",
     "kind": "personnage",
     "length": 7
   },
@@ -613,7 +613,7 @@
   },
   {
     "ja": "未来の人造人間",
-    "fr": "C-16 (futur)",
+    "fr": "cyborgs du futur",
     "kind": "personnage",
     "length": 7
   },
@@ -781,7 +781,7 @@
   },
   {
     "ja": "ナメック星人",
-    "fr": "Namek",
+    "fr": "Namékien",
     "kind": "race",
     "length": 6
   },
@@ -1279,7 +1279,7 @@
   },
   {
     "ja": "ゴテンクス",
-    "fr": "EX Gotenks",
+    "fr": "Gotenks",
     "kind": "personnage",
     "length": 5
   },
@@ -1549,7 +1549,7 @@
   },
   {
     "ja": "ベジータ星",
-    "fr": "Vegeta",
+    "fr": "Planète Vegeta",
     "kind": "planete",
     "length": 5
   },
@@ -1820,7 +1820,7 @@
   {
     "ja": "超サイヤ人",
     "fr": "Super Saiyan",
-    "kind": "race",
+    "kind": "transformation",
     "length": 5
   },
   {
@@ -2317,7 +2317,7 @@
   },
   {
     "ja": "ダーブラ",
-    "fr": "Dâbra (Xeno)",
+    "fr": "Dâbra",
     "kind": "personnage",
     "length": 4
   },
@@ -2443,8 +2443,8 @@
   },
   {
     "ja": "ナメック",
-    "fr": "Combattant Namek Vêtu de Noir",
-    "kind": "personnage",
+    "fr": "Namek",
+    "kind": "autre",
     "length": 4
   },
   {
@@ -2935,7 +2935,7 @@
   },
   {
     "ja": "北の界王",
-    "fr": "Kaio du Nord (Kaito)",
+    "fr": "Kaio du Nord",
     "kind": "personnage",
     "length": 4
   },
@@ -3199,8 +3199,8 @@
   },
   {
     "ja": "オッス",
-    "fr": "Saga Post-Buu",
-    "kind": "saga",
+    "fr": "Salut",
+    "kind": "autre",
     "length": 3
   },
   {
@@ -4417,8 +4417,8 @@
   },
   {
     "ja": "ゼノ",
-    "fr": "Super Ī Shinron (Xeno)",
-    "kind": "personnage",
+    "fr": "Xeno",
+    "kind": "autre",
     "length": 2
   },
   {
@@ -4489,7 +4489,7 @@
   },
   {
     "ja": "パン",
-    "fr": "Pan (Xeno)",
+    "fr": "Pan",
     "kind": "personnage",
     "length": 2
   },
@@ -4615,8 +4615,8 @@
   },
   {
     "ja": "吟遊",
-    "fr": "Bulma (Ginyu)",
-    "kind": "personnage",
+    "fr": "ménestrel",
+    "kind": "autre",
     "length": 2
   },
   {
@@ -4633,8 +4633,8 @@
   },
   {
     "ja": "復活",
-    "fr": "Saga Résurrection F",
-    "kind": "saga",
+    "fr": "résurrection",
+    "kind": "autre",
     "length": 2
   },
   {
@@ -4675,8 +4675,8 @@
   },
   {
     "ja": "聖地",
-    "fr": "Planète sacrée",
-    "kind": "planete",
+    "fr": "terre sainte",
+    "kind": "autre",
     "length": 2
   },
   {

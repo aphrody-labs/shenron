@@ -720,7 +720,16 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
               />
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
-              {["all", "personnage", "technique", "race", "planete", "saga", "autre"].map((k) => (
+              {[
+                "all",
+                "personnage",
+                "technique",
+                "transformation",
+                "race",
+                "planete",
+                "saga",
+                "autre",
+              ].map((k) => (
                 <button
                   key={k}
                   type="button"

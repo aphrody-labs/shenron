@@ -18,7 +18,15 @@ import { masquerTermes, PREFIXE_JETON, restaurerJetons } from "./traduction";
 export interface LexiqueEntry {
   ja: string;
   fr: string;
-  kind: "personnage" | "technique" | "planete" | "race" | "saga" | "arc" | "autre";
+  kind:
+    | "personnage"
+    | "technique"
+    | "transformation"
+    | "planete"
+    | "race"
+    | "saga"
+    | "arc"
+    | "autre";
   length: number;
 }
 
@@ -71,10 +79,15 @@ export function chargerLexiqueCanonique(): LexiqueEntry[] {
   // Repli de sécurité minimal si le fichier n'est pas encore généré
   const fallback: LexiqueEntry[] = (
     [
-      { ja: "超サイヤ人ゴッド超サイヤ人", fr: "Super Saiyan Blue", kind: "race", length: 13 },
+      {
+        ja: "超サイヤ人ゴッド超サイヤ人",
+        fr: "Super Saiyan Blue",
+        kind: "transformation",
+        length: 13,
+      },
       { ja: "超かめはめ波", fr: "Super Kamehameha", kind: "technique", length: 6 },
       { ja: "ドラゴンボール", fr: "Dragon Ball", kind: "autre", length: 7 },
-      { ja: "超サイヤ人", fr: "Super Saiyan", kind: "race", length: 5 },
+      { ja: "超サイヤ人", fr: "Super Saiyan", kind: "transformation", length: 5 },
       { ja: "かめはめ波", fr: "Kamehameha", kind: "technique", length: 5 },
       { ja: "サイヤ人", fr: "Saiyan", kind: "race", length: 4 },
       { ja: "ベジータ", fr: "Vegeta", kind: "personnage", length: 4 },
