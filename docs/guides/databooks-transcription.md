@@ -114,15 +114,19 @@ Réponse :
 {
 	"id": 1,
 	"mode": "merge",
-	"deposees": 2,
-	"ignorees": 0,
-	"pagesInconnues": 0,
-	"pagesTotal": 40,
-	"pagesTranscrites": 2
+	"deposited": 2,
+	"ignored": 0,
+	"duplicates": 0,
+	"unknownPages": 0,
+	"totalPages": 40,
+	"transcribedPages": 2
 }
 ```
 
-`pagesInconnues` > 0 signale un décalage entre le lot exporté et la base :
+Les anciens noms (`deposees`, `ignorees`, `doublons`, `pagesInconnues`, `pagesTotal`,
+`pagesTranscrites`) restent servis en doublon déprécié jusqu'à la version 1.4.0.
+
+`unknownPages` > 0 signale un décalage entre le lot exporté et la base :
 réexporter le lot. Chaque dépôt écrit une révision dans `public.wiki_revisions`,
 réversible depuis `/admin/wiki/history`. Limites : 40 000 caractères par
 planche, 2 000 pages par appel.

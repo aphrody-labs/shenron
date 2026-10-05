@@ -23,6 +23,7 @@ import {
   type DatabookQuery,
   type DatabookWrite,
 } from "@/lib/databooks";
+import { databookView } from "@/lib/databooks-rules";
 
 /** Écriture + `includeHidden` dépendent d'un en-tête : jamais mis en cache. */
 export const dynamic = "force-dynamic";
@@ -62,7 +63,7 @@ export async function GET(req: Request) {
   try {
     const r = await listDatabooks(q);
     return NextResponse.json(
-      { ...r, limitMax: DATABOOK_LIMIT_MAX },
+      { ...r, items: r.items.map(databookView), limitMax: DATABOOK_LIMIT_MAX },
       {
         headers: {
           ...CORS,
@@ -97,7 +98,7 @@ export async function POST(req: Request) {
   }
   try {
     const rec = await createDatabook(corps);
-    return NextResponse.json(rec, { status: 201, headers: CORS });
+    return NextResponse.json(databookView(rec), { status: 201, headers: CORS });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Création impossible.";
     // Un message d'erreur de contrainte Postgres nomme la table et la colonne :

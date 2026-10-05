@@ -475,16 +475,25 @@ async fn pages(id: u64, missing: bool, output: &crate::output::OutputOpts) -> mi
 async fn texts(id: u64, pages: &str, output: &crate::output::OutputOpts) -> miette::Result<()> {
     let json =
         get_json(&format!("/api/databooks/{id}/texts?pages={}", urlencode(pages)), false).await?;
-    let items =
-        json.get("pages").and_then(serde_json::Value::as_array).cloned().unwrap_or_default();
+    // `texts` maps a plate number to its text; `textes` is the former name of that map.
+    let mut plates: Vec<(u64, String)> = json
+        .get("texts")
+        .or_else(|| json.get("textes"))
+        .and_then(serde_json::Value::as_object)
+        .map(|map| {
+            map.iter()
+                .filter_map(|(number, text)| {
+                    Some((number.parse().ok()?, text.as_str().unwrap_or("").to_owned()))
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    plates.sort_by_key(|(number, _)| *number);
     let mut table =
         aphrody_models::Report::new(format!("Databook {id} — plates"), &["PLATE", "TEXT"])
-            .with_summary(format!("{} plate(s)", items.len()));
-    for item in &items {
-        table.push(vec![
-            item.get("number").map_or_else(|| "-".to_owned(), ToString::to_string),
-            item.get("text").and_then(serde_json::Value::as_str).unwrap_or("").to_owned(),
-        ]);
+            .with_summary(format!("{} plate(s)", plates.len()));
+    for (number, text) in plates {
+        table.push(vec![number.to_string(), text]);
     }
     output.emit_report(&table, &json)
 }

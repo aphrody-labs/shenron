@@ -1,7 +1,9 @@
 /**
  * API Databooks — transcriptions d'un lot de planches, à la demande.
  *
- *   GET /api/databooks/:id/texts?pages=12,13,14
+ *   GET /api/databooks/:id/texts?pages=12,13,14   → { texts: { "12": "…" } }
+ *
+ * L'ancien nom `textes` reste servi en doublon déprécié jusqu'à la version 1.4.0.
  *
  * Pourquoi cette route existe : la fiche publique envoyait au navigateur la
  * transcription des planches de l'ouvrage ENTIER, alors qu'on en lit une à la
@@ -64,7 +66,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
         .filter((v) => Number.isSafeInteger(v) && v > 0),
     ),
   ].slice(0, MAX_PAGES);
-  if (demandees.length === 0) return NextResponse.json({ textes: {} });
+  if (demandees.length === 0) return NextResponse.json({ texts: {}, textes: {} });
 
   // L'index Redis d'abord : il porte les mêmes transcriptions, tenues à jour à
   // chaque dépôt. Il rend `null` — jamais un lot partiel — dès qu'une planche
@@ -106,7 +108,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
 
 function reponse(textes: Record<string, string>) {
   return NextResponse.json(
-    { textes },
+    // `textes`: former name of `texts`, deprecated until 1.4.0.
+    { texts: textes, textes },
     {
       headers: {
         // Le corpus ne bouge qu'au rythme des dépôts de transcription ;

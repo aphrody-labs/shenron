@@ -63,9 +63,10 @@ Body: { "mode": "merge", "pages": [ { "number": 1, "text": "..." } ] }
 Dépose par paquets de 20 à 50 pages, ouvrage par ouvrage.
 
 VÉRIFICATION
-La réponse renvoie { deposees, ignorees, pagesInconnues, pagesTranscrites }.
-- ignorees > 0 : numéro invalide ou texte vide.
-- pagesInconnues > 0 : numéro de page absent de la fiche ; relis la fiche avant
+La réponse renvoie { deposited, ignored, unknownPages, transcribedPages } (anciens noms :
+deposees, ignorees, pagesInconnues, pagesTranscrites, servis jusqu'à la version 1.4.0).
+- ignored > 0 : numéro invalide ou texte vide.
+- unknownPages > 0 : numéro de page absent de la fiche ; relis la fiche avant
   de continuer, ne réessaie pas à l'identique.
 
 RYTHME

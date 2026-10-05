@@ -273,23 +273,23 @@ export function TranscriptionRelecteur({
    * Le bouton est donc désactivé tant que la saisie n'est pas enregistrée.
    */
   const acquitter = useMutation({
-    mutationFn: async (verifiee: boolean) => {
+    mutationFn: async (verified: boolean) => {
       const r = await fetch(`/api/databooks/${databookId}/pages`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ number: numeroCourant, verifiee }),
+        body: JSON.stringify({ number: numeroCourant, verified }),
       });
       if (!r.ok) {
         throw new Error((await r.json().catch(() => null))?.error ?? "Écriture impossible.");
       }
-      return (await r.json()) as { number: number; verifiee: boolean };
+      return (await r.json()) as { number: number; verified: boolean };
     },
     onSuccess: (rep) => {
       setPlanches((arr) =>
-        arr.map((p) => (p.numero === rep.number ? { ...p, verifiee: rep.verifiee } : p)),
+        arr.map((p) => (p.numero === rep.number ? { ...p, verifiee: rep.verified } : p)),
       );
       setToast(
-        rep.verifiee
+        rep.verified
           ? `Planche n°${rep.number} marquée vérifiée — plus d'avertissement au lecteur.`
           : `Acquittement retiré sur la planche n°${rep.number}.`,
       );

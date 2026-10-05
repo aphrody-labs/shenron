@@ -19,6 +19,11 @@
  * traitement par lots qu'on peut relancer — il est idempotent.
  * `replace` remplace tout le tableau de pages : à réserver à une reprise complète.
  *
+ * Réponse : `{ id, mode, deposited, ignored, duplicates, unknownPages, totalPages,
+ * transcribedPages }`. Les anciens noms (`deposees`, `ignorees`, `doublons`,
+ * `pagesInconnues`, `pagesTotal`, `pagesTranscrites`) restent servis en doublon
+ * déprécié jusqu'à la version 1.4.0.
+ *
  * Chaque dépôt enregistre une révision (`public.wiki_revisions`), donc reste
  * consultable et réversible depuis /admin/wiki/history — une transcription
  * automatique est une proposition, pas une vérité.
@@ -270,21 +275,28 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     console.error("[api/databooks/transcription] indexation Redis échouée:", e),
   );
 
-  const transcrites = apres.pages.filter((p) => (p.text ?? "").length > 0).length;
+  const transcribed = apres.pages.filter((p) => (p.text ?? "").length > 0).length;
   return NextResponse.json(
     {
       id,
       mode,
-      deposees: textes.size,
-      ignorees,
+      deposited: textes.size,
+      ignored: ignorees,
       // Numéros fournis deux fois dans le même lot (`replace`) : la dernière
       // occurrence gagne, mais le silence masquerait un export incohérent.
-      doublons,
+      duplicates: doublons,
       // En `merge`, un numéro absent de la fiche est signalé plutôt qu'inventé :
       // c'est le symptôme d'un décalage entre le lot exporté et la base.
+      unknownPages: inconnues,
+      totalPages: apres.pages.length,
+      transcribedPages: transcribed,
+      // Former names, deprecated: removed in 1.4.0.
+      deposees: textes.size,
+      ignorees,
+      doublons,
       pagesInconnues: inconnues,
       pagesTotal: apres.pages.length,
-      pagesTranscrites: transcrites,
+      pagesTranscrites: transcribed,
     },
     { headers: CORS },
   );

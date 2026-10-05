@@ -12,7 +12,7 @@
 import { NextResponse } from "next/server";
 import { hasValidApiToken } from "@/lib/admin-guard";
 import { deleteDatabook, getDatabook, updateDatabook, type DatabookWrite } from "@/lib/databooks";
-import { parseDatabookId } from "@/lib/databooks-rules";
+import { databookView, parseDatabookId } from "@/lib/databooks-rules";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +43,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     const rec = await getDatabook(id);
     // Une fiche masquée n'existe pas pour un appel non authentifié.
     if (!rec || (!rec.visible && !hasValidApiToken(req))) return introuvable();
-    return NextResponse.json(rec, {
+    return NextResponse.json(databookView(rec), {
       headers: {
         ...CORS,
         // Une fiche masquée n'est servie qu'au porteur du jeton : elle ne doit
@@ -71,7 +71,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   }
   try {
     const rec = await updateDatabook(id, corps);
-    return rec ? NextResponse.json(rec, { headers: CORS }) : introuvable();
+    return rec ? NextResponse.json(databookView(rec), { headers: CORS }) : introuvable();
   } catch (e) {
     console.error("[api/databooks/:id] PATCH a échoué:", e);
     return NextResponse.json({ error: "Mise à jour impossible." }, { status: 500, headers: CORS });

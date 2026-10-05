@@ -22,8 +22,10 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
         signal,
       });
       if (!response.ok) return {};
-      const body: { textes?: Record<string, string> } = await response.json();
-      return body.textes ?? {};
+      // `texts`; the former `textes` is read from a server that predates the rename.
+      const body: { texts?: Record<string, string>; textes?: Record<string, string> } =
+        await response.json();
+      return body.texts ?? body.textes ?? {};
     },
     [bookId],
   );

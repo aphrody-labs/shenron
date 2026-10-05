@@ -1,7 +1,11 @@
 /**
  * API Databooks — édition d'UNE planche.
  *
- *   PATCH /api/databooks/:id/pages   { number, text?, verifiee? }   (admin connecté ou jeton)
+ *   PATCH /api/databooks/:id/pages   { number, text?, verified? }   (admin connecté ou jeton)
+ *
+ * Réponse : `{ id, number, text, verified, totalPages, transcribedPages }`. Les anciens
+ * noms (`verifiee` en entrée comme en sortie, `pagesTotal`, `pagesTranscrites`) restent
+ * servis en doublon déprécié jusqu'à la version 1.4.0.
  *
  * Le studio sait déjà écrire les pages, mais seulement en bloc : il renvoie le
  * tableau `pages` entier. Pour corriger une ligne dans un ouvrage de 362
@@ -13,12 +17,12 @@
  * dans un seul `UPDATE`, sur la seule planche visée. Les autres planches ne sont
  * jamais réécrites, donc jamais perdues.
  *
- * `verifiee` acquitte la planche : les signatures mécaniques de défaut se
+ * `verified` (ancien nom `verifiee`) acquitte la planche : les signatures mécaniques de défaut se
  * taisent pour elle. C'est le pendant indispensable d'un juge automatique — une
  * couverture qui ne porte que « 3月号 » et « COVER » est jugée « trop courte »
  * et « idéogrammes sans kana » alors que sa transcription est exacte, et rien
  * ne permettait de le dire. Le drapeau ne change pas le texte, seulement le
- * verdict, et il se retire par le même appel (`verifiee: false`).
+ * verdict, et il se retire par le même appel (`verified: false`).
  *
  * `text: null` efface la transcription de la planche (l'image reste). Une chaîne
  * vide fait la même chose — ici, contrairement au dépôt de masse, l'intention
@@ -57,7 +61,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   const id = parseDatabookId((await ctx.params).id);
   if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
 
-  let corps: { number?: unknown; text?: unknown; verifiee?: unknown };
+  let corps: { number?: unknown; text?: unknown; verified?: unknown; verifiee?: unknown };
   try {
     corps = (await req.json()) as typeof corps;
   } catch {
@@ -81,14 +85,16 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
       ? null
       : (corps.text as string).trim().slice(0, TEXTE_MAX) || null;
 
-  const changeVerifiee = corps.verifiee !== undefined;
-  if (changeVerifiee && typeof corps.verifiee !== "boolean") {
-    return NextResponse.json({ error: "`verifiee` doit être un booléen." }, { status: 400 });
+  // `verified`; the former `verifiee` is still read.
+  const verifiedInput = corps.verified !== undefined ? corps.verified : corps.verifiee;
+  const changeVerifiee = verifiedInput !== undefined;
+  if (changeVerifiee && typeof verifiedInput !== "boolean") {
+    return NextResponse.json({ error: "`verified` doit être un booléen." }, { status: 400 });
   }
-  const verifiee = corps.verifiee === true;
+  const verifiee = verifiedInput === true;
   if (!changeTexte && !changeVerifiee) {
     return NextResponse.json(
-      { error: "Rien à écrire : fournir `text` et/ou `verifiee`." },
+      { error: "Rien à écrire : fournir `text` et/ou `verified`." },
       { status: 400 },
     );
   }
@@ -171,13 +177,19 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   }
   revalidateWikiEntity("db_databooks", { id });
 
-  const transcrites = apres.pages.filter((p) => (p.text ?? "").length > 0).length;
+  const transcribed = apres.pages.filter((p) => (p.text ?? "").length > 0).length;
+  const plate = apres.pages.find((p) => p.number === numero);
+  const verified = plate?.verifiee === true;
   return NextResponse.json({
     id,
     number: numero,
-    text: apres.pages.find((p) => p.number === numero)?.text ?? null,
-    verifiee: apres.pages.find((p) => p.number === numero)?.verifiee === true,
+    text: plate?.text ?? null,
+    verified,
+    totalPages: apres.pages.length,
+    transcribedPages: transcribed,
+    // Former names, deprecated: removed in 1.4.0.
+    verifiee: verified,
     pagesTotal: apres.pages.length,
-    pagesTranscrites: transcrites,
+    pagesTranscrites: transcribed,
   });
 }

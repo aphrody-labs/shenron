@@ -23,6 +23,24 @@ export interface DatabookPageInput {
   verifiee: boolean;
 }
 
+/** A page as the API serves it: `verified` next to the stored (and deprecated) `verifiee`. */
+export type DatabookPageView = DatabookPageInput & { verified: boolean };
+
+/**
+ * A databook record as the API serves it: each page also carries `verified`, the English
+ * name of the stored flag `verifiee` (kept as a deprecated duplicate until 1.4.0).
+ */
+export function databookView<T extends { pages: DatabookPageInput[] }>(
+  record: T,
+): Omit<T, "pages"> & { pages: DatabookPageView[] } {
+  // A record without its pages (never a stored one) is served as it is.
+  if (!Array.isArray(record.pages)) return record as never;
+  return {
+    ...record,
+    pages: record.pages.map((page) => ({ ...page, verified: page.verifiee })),
+  };
+}
+
 /**
  * Normalise `bot.db_databooks.pages`.
  *
@@ -42,7 +60,8 @@ export function normalizePages(raw: unknown): DatabookPageInput[] {
       number: Number.isFinite(n) && n > 0 ? Math.trunc(n) : i + 1,
       image: typeof o.image === "string" && o.image.trim() ? o.image.trim() : null,
       text: typeof o.text === "string" && o.text.trim() ? o.text.trim() : null,
-      verifiee: o[CLE_VERIFIEE] === true,
+      // Stored as `verifiee`; an API caller may also send the English `verified`.
+      verifiee: o[CLE_VERIFIEE] === true || o.verified === true,
     });
   }
   return out;

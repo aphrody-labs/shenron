@@ -399,25 +399,36 @@ pub(crate) struct DatabookPageEditRequest {
     pub verified: Option<bool>,
 }
 
-pub(crate) async fn databook_page_edit(r: DatabookPageEditRequest) -> CallToolResult {
+/// The body of the plate edit, or why it is refused.
+fn page_edit_body(r: &DatabookPageEditRequest) -> Result<Value, &'static str> {
     if r.id == 0 || r.number == 0 {
-        return err("id and number must be >= 1");
+        return Err("id and number must be >= 1");
     }
     let mut body = json!({ "number": r.number });
     if r.clear_text {
         body["text"] = Value::Null;
     } else if let Some(text) = &r.text {
         if text.trim().is_empty() {
-            return err("text is blank: pass clear_text=true to erase a transcription on purpose");
+            return Err("text is blank: pass clear_text=true to erase a transcription on purpose");
         }
         body["text"] = json!(text);
     }
+    if body.as_object().is_some_and(|map| map.len() == 1) && r.verified.is_none() {
+        return Err("nothing to write: pass text, clear_text or verified");
+    }
     if let Some(verified) = r.verified {
+        body["verified"] = json!(verified);
+        // Deprecated name of `verified`, still sent for a site that predates the rename.
         body["verifiee"] = json!(verified);
     }
-    if body.as_object().is_some_and(|map| map.len() == 1) {
-        return err("nothing to write: pass text, clear_text or verified");
-    }
+    Ok(body)
+}
+
+pub(crate) async fn databook_page_edit(r: DatabookPageEditRequest) -> CallToolResult {
+    let body = match page_edit_body(&r) {
+        Ok(body) => body,
+        Err(message) => return err(message),
+    };
     send(
         reqwest::Method::PATCH,
         &format!("/api/databooks/{}/pages", r.id),
@@ -863,6 +874,26 @@ mod tests {
 
     fn text(result: &CallToolResult) -> String {
         serde_json::to_string(result).unwrap_or_default()
+    }
+
+    #[test]
+    fn a_plate_edit_sends_verified_with_its_former_name() {
+        let request = |text: Option<&str>, clear_text, verified| DatabookPageEditRequest {
+            id: 4,
+            number: 12,
+            text: text.map(str::to_owned),
+            clear_text,
+            verified,
+        };
+        let body = page_edit_body(&request(None, false, Some(true))).expect("body");
+        assert_eq!(body["verified"], true);
+        assert_eq!(body["verifiee"], true);
+        let body = page_edit_body(&request(Some("悟空"), false, None)).expect("body");
+        assert_eq!(body["text"], "悟空");
+        assert!(body.get("verified").is_none() && body.get("verifiee").is_none());
+        assert!(page_edit_body(&request(None, false, None)).is_err());
+        assert!(page_edit_body(&request(Some("  "), false, None)).is_err());
+        assert!(page_edit_body(&request(None, true, None)).is_ok());
     }
 
     #[test]
