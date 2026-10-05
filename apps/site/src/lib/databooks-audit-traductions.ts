@@ -20,6 +20,7 @@
  * par le script `scripts/audit-traductions-databooks.ts` ; `suspect` reste un
  * signalement à relire.
  */
+import { foldKey } from "@shenron/config/slug";
 import { proportionJaponais, katakanaVersHiragana } from "./ja/normalisation";
 
 export interface Signal {
@@ -53,12 +54,7 @@ export const SEUIL_SUSPECT = 3;
 
 /** Minuscules, sans accents, ponctuation réduite à des espaces simples. */
 function plier(s: string): string {
-  return ` ${s
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()} `;
+  return ` ${foldKey(s)} `;
 }
 
 /** Forme d'appariement japonaise : sans espaces, points médians, allongements ; kana unifiés. */

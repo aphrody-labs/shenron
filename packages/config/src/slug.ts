@@ -11,6 +11,45 @@
 const SLUG_MAX_LENGTH = 80;
 
 /**
+ * Retire les diacritiques latins (bloc « Combining Diacritical Marks ») :
+ * é→e, ç→c, ñ→n. Le texte est recomposé (NFC) ensuite, si bien que les
+ * marques sonores japonaises (が, ぱ) restent intactes.
+ */
+export function stripDiacritics(input: string): string {
+  return input
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFC");
+}
+
+/**
+ * Forme de comparaison d'un texte libre : sans diacritiques, en minuscules,
+ * espaces (y compris l'espace idéographique) compactés et rognés. La
+ * ponctuation et les écritures non latines sont conservées.
+ */
+export function foldText(input: string): string {
+  return stripDiacritics(input).toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Clé d'appariement ASCII : sans diacritiques, en minuscules, chaque suite de
+ * caractères hors `[a-z0-9]` remplacée par `separator` (espace par défaut),
+ * séparateurs de bord retirés. `foldKey("Kaméhaméha !", "")` → `"kamehameha"`.
+ * Un texte sans lettre latine ni chiffre donne `""`.
+ */
+export function foldKey(input: string, separator = " "): string {
+  const key = stripDiacritics(input)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, separator);
+  if (!separator) return key;
+  // Les suites sont déjà compactées : au plus un séparateur à chaque bord.
+  const start = key.startsWith(separator) ? separator.length : 0;
+  const end =
+    key.length > start && key.endsWith(separator) ? key.length - separator.length : key.length;
+  return key.slice(start, end);
+}
+
+/**
  * Normalise un texte libre en slug URL : minuscules, accents dépliés, tout ce
  * qui n'est pas `[a-z0-9]` remplacé par un tiret, tirets de bord supprimés.
  *
@@ -18,15 +57,8 @@ const SLUG_MAX_LENGTH = 80;
  * tronquer un mot au milieu (`.../transformation-du-super-saiy` → `.../transformation-du-super`).
  */
 export function slugify(input: string, maxLength: number = SLUG_MAX_LENGTH): string {
-  const base = input
-    .normalize("NFD")
-    // Bloc Unicode « Combining Diacritical Marks » — déplie é→e, ç→c, etc.
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    // Les apostrophes ne deviennent PAS un tiret : « l'aube » → « laube », pas « l-aube ».
-    .replace(/['’]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  // Les apostrophes ne deviennent PAS un tiret : « l'aube » → « laube », pas « l-aube ».
+  const base = foldKey(input.replace(/['’]/g, ""), "-");
 
   if (base.length <= maxLength) return base;
   const cut = base.slice(0, maxLength);

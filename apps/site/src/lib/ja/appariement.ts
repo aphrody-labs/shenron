@@ -35,6 +35,8 @@
  * ouvrages officiels n'écrivent nulle part n'entre pas au wiki.
  */
 
+import { foldKey } from "@shenron/config/slug";
+
 /** Un candidat de graphie, tel que le jeu l'indexe. */
 export interface CandidatXv2 {
   /** Identifiant de la compétence dans les fichiers du jeu (`spe_skill_0000`). */
@@ -66,11 +68,7 @@ export interface EntreeIndex {
  * la mauvaise technique, ce qui est pire qu'un champ vide.
  */
 export function cleNom(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+  return foldKey(s, "");
 }
 
 /**

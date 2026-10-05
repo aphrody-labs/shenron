@@ -1,5 +1,6 @@
 import "server-only";
 import { and, asc, eq, like, ne, sql, inArray, count } from "drizzle-orm";
+import { foldText } from "@shenron/config/slug";
 import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import {
@@ -291,14 +292,7 @@ function stripVersionSuffix(name: string): string {
 }
 
 /** Normalise (accents retirés, casse/espaces) pour comparer des noms racine. */
-function foldName(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
+const foldName = foldText;
 
 /**
  * Affiliations « poubelle » (statut / fourre-tout) à ne jamais présenter comme

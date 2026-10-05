@@ -14,6 +14,7 @@
 export type { SectionAccent } from "@/lib/wiki-section-accents";
 export { sectionAccent } from "@/lib/wiki-section-accents";
 
+import { foldKey } from "@shenron/config/slug";
 import { sectionAccent, type SectionAccent } from "@/lib/wiki-section-accents";
 
 export interface ArticleSection {
@@ -28,15 +29,7 @@ export interface ArticleSection {
 
 /** Slug ASCII stable depuis un libellé (accents retirés, non-alphanum → tiret). */
 export function sectionSlug(label: string): string {
-  return (
-    label
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 48) || "section"
-  );
+  return foldKey(label, "-").slice(0, 48) || "section";
 }
 
 /**

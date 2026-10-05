@@ -14,6 +14,7 @@ import "server-only";
 import { cache } from "react";
 import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
+import { foldText } from "@shenron/config/slug";
 import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { API_URL } from "@/lib/config";
@@ -2551,11 +2552,7 @@ export const dbUniverse = {
             character_id: number;
           } => {
             if (t.character_id == null) return false;
-            const k = t.name
-              .normalize("NFD")
-              .replace(/[̀-ͯ]/g, "")
-              .toLowerCase()
-              .trim();
+            const k = foldText(t.name);
             if (transfoSeen.has(k)) return false;
             transfoSeen.add(k);
             return true;

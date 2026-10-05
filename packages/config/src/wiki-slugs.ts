@@ -9,7 +9,7 @@
  *  5. Rétrocompatibilité totale : résolution des anciens ID numériques pour redirection 301.
  */
 
-import { slugify } from "./slug";
+import { slugify, stripDiacritics } from "./slug";
 
 /**
  * Table des noms mondiaux / canoniques des personnages majeurs (ID -> Slug canonique).
@@ -535,12 +535,12 @@ export function resolveTransformationParam(param: string): {
 export function resolveCharacterSlugByName(name: string | null | undefined): string | null {
   if (!name) return null;
   const clean = name.trim().toLowerCase();
-  const normalized = clean
-    .replace(/\s*\(.*?\)/g, "")
-    .replace(/[\u2019']/g, "-")
-    .replace(/\s+/g, "-")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+  const normalized = stripDiacritics(
+    clean
+      .replace(/\s*\(.*?\)/g, "")
+      .replace(/[\u2019']/g, "-")
+      .replace(/\s+/g, "-"),
+  );
 
   if (CHARACTER_SLUG_ALIASES[normalized]) {
     return CHARACTER_SLUG_ALIASES[normalized]!;
@@ -613,7 +613,7 @@ export function resolveCharacterSlugByName(name: string | null | undefined): str
 export function resolveLocationSlugByName(name: string | null | undefined): string | null {
   if (!name) return null;
   const clean = name.trim().toLowerCase();
-  const normalized = clean.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const normalized = stripDiacritics(clean);
 
   if (normalized.includes("kame house")) return "kame-house";
   if (normalized.includes("tour karin")) return "tour-karin";
@@ -650,7 +650,7 @@ export function resolveLocationSlugByName(name: string | null | undefined): stri
 export function resolveTechniqueSlugByName(name: string | null | undefined): string | null {
   if (!name) return null;
   const clean = name.trim().toLowerCase();
-  const normalized = clean.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const normalized = stripDiacritics(clean);
 
   if (normalized.includes("kamehameha")) return "kamehameha";
   if (normalized.includes("genkidama")) return "genkidama";

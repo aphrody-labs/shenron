@@ -6,6 +6,7 @@
  * Aucune dépendance server-only — importé par l'éditeur DB, le studio wiki et la
  * vignette de grille (tous Client Components).
  */
+import { foldKey } from "@shenron/config/slug";
 import { DATABOOK_CATEGORIES } from "@/lib/databook-categories";
 import type { SectionAccent } from "@/lib/wiki-section-accents";
 import { PWS_GROUP_NAME } from "@/lib/wiki-section-groups";
@@ -263,15 +264,7 @@ export const PWS_LEGACY_KEY_ALIASES: Record<string, string> = {
 
 /** Slug de section depuis un libellé libre (accents retirés, espaces → tirets). */
 export function sectionKeyFromLabel(label: string): string {
-  return (
-    label
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 40) || "section"
-  );
+  return foldKey(label, "-").slice(0, 40) || "section";
 }
 
 /**

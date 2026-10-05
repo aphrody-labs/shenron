@@ -24,6 +24,7 @@ import { loadDatabaseUrl } from "@shenron/db/env";
 import { createSql } from "@shenron/db/sql";
 import { chunkDocument } from "./_rag-chunk";
 import { defautDePlanche } from "@shenron/config/databooks-defauts";
+import { foldKey } from "@shenron/config/slug";
 import {
   CHARACTER_DUPLICATE_REDIRECTS,
   formatCharacterSlug,
@@ -75,13 +76,7 @@ const aliasPatterns = Object.keys(aliasMap)
   }));
 
 export function normalizeKey(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return foldKey(str);
 }
 
 export function resolveEntity(text: string): string {

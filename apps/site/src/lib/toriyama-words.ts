@@ -22,6 +22,7 @@
  * Server-only.
  */
 import "server-only";
+import { foldKey, foldText } from "@shenron/config/slug";
 import { getCanonReferences } from "@/lib/canon-config";
 import { listDatabooks, type DatabookRecord } from "@/lib/databooks";
 import {
@@ -134,14 +135,13 @@ export function isAuthorVoice(ref: { source: string; document: string; subject: 
   return AUTHOR_VOICE_MARKERS.some((m) => sourceAndSubject.includes(m));
 }
 
-/** Normalise un titre d'ouvrage pour l'apparier au catalogue des databooks. */
+/**
+ * Normalise un titre d'ouvrage pour l'apparier au catalogue des databooks. Un titre
+ * entièrement japonais n'a pas de clé ASCII : il garde sa forme pliée plutôt que
+ * de tomber sur la clé vide, que tous les titres japonais se disputaient.
+ */
 function normalizeTitle(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
+  return foldKey(value) || foldText(value);
 }
 
 /**
@@ -191,8 +191,10 @@ export async function listToriyamaWords(scope: ToriyamaCorpusScope = "all"): Pro
   const byTitle = new Map<string, DatabookRecord>();
   for (const book of catalogue) {
     if (!book.visible) continue;
-    byTitle.set(normalizeTitle(book.title), book);
-    if (book.title_ja) byTitle.set(normalizeTitle(book.title_ja), book);
+    for (const title of [book.title, book.title_ja]) {
+      const key = title ? normalizeTitle(title) : "";
+      if (key) byTitle.set(key, book);
+    }
   }
 
   const words: ToriyamaWord[] = [];

@@ -13,16 +13,10 @@
  * mots présents et rapprochés, puis la fréquence.
  */
 
+import { foldText } from "@shenron/config/slug";
+
 /** Minuscules, sans diacritiques latins, espaces compactés. Préserve les marques sonores japonaises. */
-export function normaliser(texte: string): string {
-  return texte
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]+/g, "")
-    .normalize("NFC")
-    .toLowerCase()
-    .replace(/[\s　]+/g, " ")
-    .trim();
-}
+export const normaliser: (texte: string) => string = foldText;
 
 /** Kana, kanji ou pleine chasse : les trigrammes Postgres n'y voient rien. */
 export function estCjk(texte: string): boolean {
