@@ -2,6 +2,7 @@
 
 mod backend;
 mod error;
+mod glossary;
 mod language;
 mod local;
 mod model;
@@ -17,6 +18,10 @@ use error::{Error, Result};
 use local::LocalTranslator;
 
 pub use backend::{TranslationContext, TranslationRequest};
+pub use glossary::{
+    GLOSSARY_ENV, GLOSSARY_TARGET_ENV, Glossary, GlossaryEntry, Masked, Restored, default_glossary,
+    set_default_glossary,
+};
 pub use language::Language;
 pub use model::{GenerationConfig, Model, ModelSelection, Quantization};
 pub(crate) use model::{ModelGeneration, QuantizationDefinition, display_name};
@@ -28,6 +33,7 @@ pub struct Translator {
     local: Arc<tokio::sync::Mutex<Option<LoadedLocal>>>,
     client: reqwest::Client,
     device: Device,
+    glossary: Option<Arc<Glossary>>,
 }
 
 struct LoadedLocal {
@@ -52,7 +58,16 @@ impl Translator {
             local: Arc::new(tokio::sync::Mutex::new(None)),
             client: koharu_runtime::http_client()?,
             device,
+            glossary: Glossary::from_env()?.map(Arc::new),
         })
+    }
+
+    /// Protect the terms of `glossary` in every request that carries no glossary of its own
+    /// (overrides `KOHARU_GLOSSARY` and the process default).
+    #[must_use]
+    pub fn with_glossary(mut self, glossary: Arc<Glossary>) -> Self {
+        self.glossary = Some(glossary);
+        self
     }
 
     #[must_use]
@@ -137,6 +152,19 @@ impl Translator {
         }
 
         let expected = request.segments.len();
+        let glossary = request
+            .glossary
+            .clone()
+            .or_else(|| self.glossary.clone())
+            .or_else(default_glossary)
+            .filter(|glossary| glossary.applies_to(request.target_language));
+        let masked: Vec<Masked> = glossary
+            .as_deref()
+            .map(|glossary| request.segments.iter().map(|s| glossary.mask(s)).collect())
+            .unwrap_or_default();
+        if !masked.is_empty() {
+            request.segments = masked.iter().map(|masked| masked.text.clone()).collect();
+        }
         let translated = if provider == Provider::Local {
             self.local(selection)
                 .await?
@@ -154,6 +182,24 @@ impl Translator {
             }
             .into());
         }
+        let translated = match glossary.as_deref() {
+            Some(glossary) if !masked.is_empty() => {
+                let mut restored = Vec::with_capacity(translated.len());
+                for (index, (text, masked)) in translated.iter().zip(&masked).enumerate() {
+                    let outcome = glossary.restore(text, masked);
+                    if !outcome.unresolved.is_empty() {
+                        return Err(Error::GlossaryTokens {
+                            segment: index,
+                            tokens: outcome.unresolved.join(", "),
+                        }
+                        .into());
+                    }
+                    restored.push(outcome.text);
+                }
+                restored
+            }
+            _ => translated,
+        };
         tracing::Span::current().record("outcome", "completed");
         Ok((provider_id, translated))
     }

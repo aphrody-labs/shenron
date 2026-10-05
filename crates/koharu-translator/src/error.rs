@@ -30,6 +30,8 @@ pub enum Error {
         status: u16,
         message: String,
     },
+    #[error("segment {segment} kept glossary tokens the engine invented: {tokens}")]
+    GlossaryTokens { segment: usize, tokens: String },
     #[error(transparent)]
     Other(#[from] anyhow::Error),
 }

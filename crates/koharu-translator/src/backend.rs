@@ -5,7 +5,7 @@ use base64::{Engine as _, engine::general_purpose::STANDARD};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, ImageEncoder, RgbImage, codecs::jpeg::JpegEncoder};
 
-use crate::Language;
+use crate::{Glossary, Language};
 
 const MAX_IMAGE_DIMENSION: u32 = 2048;
 const JPEG_QUALITY: u8 = 88;
@@ -18,6 +18,8 @@ pub struct TranslationRequest {
     pub instructions: Option<String>,
     pub context: Vec<TranslationContext>,
     pub image: Option<Arc<DynamicImage>>,
+    /// Domain terms protected from the engine for this request (see [`Glossary`]).
+    pub glossary: Option<Arc<Glossary>>,
 }
 
 impl TranslationRequest {
@@ -33,6 +35,7 @@ impl TranslationRequest {
             instructions: None,
             context: Vec::new(),
             image: None,
+            glossary: None,
         }
     }
 
@@ -46,6 +49,12 @@ impl TranslationRequest {
     #[must_use]
     pub fn with_instructions(mut self, instructions: impl Into<String>) -> Self {
         self.instructions = Some(instructions.into());
+        self
+    }
+
+    #[must_use]
+    pub fn with_glossary(mut self, glossary: Arc<Glossary>) -> Self {
+        self.glossary = Some(glossary);
         self
     }
 
