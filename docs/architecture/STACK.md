@@ -1003,8 +1003,7 @@ conformance), `@shenron/auth` (`./acting-user`, `./crypto` pour `./host`) et
 n'atteignent jamais le pipeline (test `packages/api/test/portability.test.ts`). Le
 serveur reçoit l'IA par des ports (`ChatEnginePort`, `RagPort`, `OcrPort`) ; le
 pipeline n'importe jamais `@shenron/api`, ce qui garde le graphe acyclique.
-`hono` et `@hono/zod-openapi` restent déclarés jusqu'à la prochaine
-régénération de `bun.lock`, sans import. Interdit :
+Interdit :
 `tsyringe`, `@discordx/di`, `container.resolve`, `server-only`, `next/*`,
 `discord.js`, messages français codés dans les codes d'erreur.
 
