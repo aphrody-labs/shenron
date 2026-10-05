@@ -1025,25 +1025,37 @@ pub(crate) struct DatabooksGetRequest {
 }
 
 pub(crate) async fn databooks_get(r: DatabooksGetRequest) -> CallToolResult {
-    let fiche = match site_get(&format!("/api/databooks/{}", r.id), vec![]).await {
+    let record = match site_get(&format!("/api/databooks/{}", r.id), vec![]).await {
         Ok(v) => v,
         Err(e) => return err(e),
     };
-    let mut fiche = fiche.as_object().cloned().unwrap_or_default();
-    let pages = fiche.remove("pages").and_then(|p| p.as_array().cloned()).unwrap_or_default();
-    let plafond = r.max_pages.unwrap_or(50).clamp(1, 300) as usize;
-    let transcrites = pages
+    let cap = r.max_pages.unwrap_or(50).clamp(1, 300) as usize;
+    ok(databook_detail(&record, r.id, r.include_pages != Some(false), cap))
+}
+
+/// The databook record of `databooks_get`: its plates capped at `cap`, with `pageCount`,
+/// `transcribedPages` and (when the plates are returned) `truncatedPages`. The former names
+/// `pagesTranscrites` and `pagesTronquees` stay as deprecated duplicates.
+fn databook_detail(record: &Value, id: u32, include_pages: bool, cap: usize) -> Value {
+    let mut record: Map<String, Value> = record.as_object().cloned().unwrap_or_default();
+    let pages = record.remove("pages").and_then(|p| p.as_array().cloned()).unwrap_or_default();
+    let transcribed = pages
         .iter()
         .filter(|p| p.get("text").and_then(Value::as_str).is_some_and(|t| !t.is_empty()))
         .count();
-    fiche.insert("url".into(), json!(format!("/wiki/databooks/{}", r.id)));
-    fiche.insert("pageCount".into(), json!(pages.len()));
-    fiche.insert("pagesTranscrites".into(), json!(transcrites));
-    if r.include_pages != Some(false) {
-        fiche.insert("pagesTronquees".into(), json!(pages.len() > plafond));
-        fiche.insert("pages".into(), Value::Array(pages.into_iter().take(plafond).collect()));
+    record.insert("url".into(), json!(format!("/wiki/databooks/{id}")));
+    record.insert("pageCount".into(), json!(pages.len()));
+    record.insert("transcribedPages".into(), json!(transcribed));
+    // Deprecated name of `transcribedPages`.
+    record.insert("pagesTranscrites".into(), json!(transcribed));
+    if include_pages {
+        let truncated = pages.len() > cap;
+        record.insert("truncatedPages".into(), json!(truncated));
+        // Deprecated name of `truncatedPages`.
+        record.insert("pagesTronquees".into(), json!(truncated));
+        record.insert("pages".into(), Value::Array(pages.into_iter().take(cap).collect()));
     }
-    ok(Value::Object(fiche))
+    Value::Object(record)
 }
 
 /// Input of `dragonball.databooks_scanlate`.
@@ -1474,6 +1486,39 @@ mod tests {
         assert!(hit.get("texte").is_none());
         assert_eq!(hit["excerpt"], "Kamehameha");
         assert_eq!(hit["url"], "/wiki/databooks/9");
+    }
+
+    #[test]
+    fn databook_detail_serves_english_counters_with_the_french_ones_as_duplicates() {
+        let record = json!({
+            "id": 4, "title": "Daizenshuu 1",
+            "pages": [
+                { "number": 1, "text": "悟空" },
+                { "number": 2, "text": "" },
+                { "number": 3, "text": "ベジータ" }
+            ]
+        });
+        let detail = databook_detail(&record, 4, true, 2);
+        assert_eq!(detail["url"], "/wiki/databooks/4");
+        assert_eq!(detail["pageCount"], 3);
+        assert_eq!(detail["transcribedPages"], 2);
+        assert_eq!(detail["pagesTranscrites"], detail["transcribedPages"]);
+        assert_eq!(detail["truncatedPages"], true);
+        assert_eq!(detail["pagesTronquees"], detail["truncatedPages"]);
+        assert_eq!(detail["pages"].as_array().map(Vec::len), Some(2));
+        assert_eq!(detail["title"], "Daizenshuu 1");
+
+        // Within the cap nothing is truncated.
+        let detail = databook_detail(&record, 4, true, 50);
+        assert_eq!(detail["truncatedPages"], false);
+        assert_eq!(detail["pagesTronquees"], false);
+        assert_eq!(detail["pages"].as_array().map(Vec::len), Some(3));
+
+        // Without the plates: the counters only, no truncation flag, no `pages`.
+        let detail = databook_detail(&record, 4, false, 2);
+        assert_eq!(detail["transcribedPages"], 2);
+        assert!(detail.get("pages").is_none());
+        assert!(detail.get("truncatedPages").is_none() && detail.get("pagesTronquees").is_none());
     }
 
     #[test]

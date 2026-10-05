@@ -775,7 +775,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.databooks_get",
-        description = "Detail of a guide, artbook or interview: metadata, cover, transcribed plates (maxPages default 50). API: site /api/databooks/{id}.",
+        description = "Detail of a guide, artbook or interview: metadata, cover, transcribed plates (maxPages default 50) with pageCount, transcribedPages and truncatedPages (the former pagesTranscrites and pagesTronquees are kept as deprecated duplicates). API: site /api/databooks/{id}.",
         annotations(
             title = "Databook record",
             read_only_hint = true,
