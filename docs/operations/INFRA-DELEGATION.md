@@ -47,3 +47,10 @@ Sans ces services, le bot et le site démarrent et dégradent explicitement.
   commande qui modifie un hôte.
 - Une documentation ou un commit ne prouve pas un déploiement : seule la
   release active, sondée par `aphrody-infra`, fait foi.
+- Exception voulue par le propriétaire : `scripts/ops/admin-access.ts` tient la liste
+  des postes d'administration (IP publique du poste, VPS, WireGuard, comptes désignés)
+  sur `vps` et `dbfr` par `aphrody-infra ssh exec` — ufw, fail2ban, PostgreSQL
+  (`listen_addresses`, bloc `pg_hba` en SCRAM), `SHENRON_ADMIN_IPS` et
+  `SHENRON_MCP_ALLOWED_IPS`. Plan sans `--apply`, idempotent, minuteur utilisateur WSL
+  toutes les 15 minutes (`--install-timer`). Redis reste en boucle locale :
+  `aphrody-infra ssh tunnel` (port local 16379).
