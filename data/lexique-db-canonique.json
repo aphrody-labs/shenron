@@ -25,8 +25,8 @@
   },
   {
     "ja": "帰ってきた孫悟空と仲間たち",
-    "fr": "Saga Post-Buu",
-    "kind": "saga",
+    "fr": "Salut ! Son Goku et ses amis sont de retour !!",
+    "kind": "autre",
     "length": 13
   },
   {
@@ -559,7 +559,7 @@
   },
   {
     "ja": "仮面のサイヤ人",
-    "fr": "Bardack (Xeno)",
+    "fr": "Saiyan masqué",
     "kind": "personnage",
     "length": 7
   },
@@ -1297,7 +1297,7 @@
   },
   {
     "ja": "ゴハンクス",
-    "fr": "EX Gohanks",
+    "fr": "Gohanks",
     "kind": "personnage",
     "length": 5
   },
@@ -1735,19 +1735,19 @@
   },
   {
     "ja": "北の界王星",
-    "fr": "Planète de Kaïo du Nord",
+    "fr": "Planète de Kaio du Nord",
     "kind": "planete",
     "length": 5
   },
   {
     "ja": "北の界王神",
-    "fr": "Kaiô Shin du Nord",
+    "fr": "Kaio Shin du Nord",
     "kind": "personnage",
     "length": 5
   },
   {
     "ja": "南の界王神",
-    "fr": "Kaiô Shin du Sud",
+    "fr": "Kaio Shin du Sud",
     "kind": "personnage",
     "length": 5
   },
@@ -1789,7 +1789,7 @@
   },
   {
     "ja": "東の界王神",
-    "fr": "Kaïo Shin de l'Est",
+    "fr": "Kaio Shin de l'Est",
     "kind": "personnage",
     "length": 5
   },
@@ -1813,7 +1813,7 @@
   },
   {
     "ja": "西の界王神",
-    "fr": "Kaiô Shin de l'Ouest",
+    "fr": "Kaio Shin de l'Ouest",
     "kind": "personnage",
     "length": 5
   },
@@ -2365,7 +2365,7 @@
   },
   {
     "ja": "ツフル星",
-    "fr": "Tsufur (Univers 6)",
+    "fr": "Planète Tsufur",
     "kind": "planete",
     "length": 4
   },
@@ -2611,7 +2611,7 @@
   },
   {
     "ja": "ピリリン",
-    "fr": "EX Piririn",
+    "fr": "Piririn",
     "kind": "personnage",
     "length": 4
   },
@@ -2833,7 +2833,7 @@
   },
   {
     "ja": "ヤムハン",
-    "fr": "EX Yamhan",
+    "fr": "Yamhan",
     "kind": "personnage",
     "length": 4
   },
@@ -2995,7 +2995,7 @@
   },
   {
     "ja": "東の界王",
-    "fr": "Kaiô de l'Est",
+    "fr": "Kaio de l'Est",
     "kind": "personnage",
     "length": 4
   },
@@ -3049,7 +3049,7 @@
   },
   {
     "ja": "西の界王",
-    "fr": "Kaiô de l'Ouest",
+    "fr": "Kaio de l'Ouest",
     "kind": "personnage",
     "length": 4
   },
@@ -4141,7 +4141,7 @@
   },
   {
     "ja": "大界王",
-    "fr": "Grand Kaïo",
+    "fr": "Dai Kaio",
     "kind": "personnage",
     "length": 3
   },
@@ -4243,19 +4243,19 @@
   },
   {
     "ja": "界王拳",
-    "fr": "Kaiô-ken",
+    "fr": "Kaioken",
     "kind": "technique",
     "length": 3
   },
   {
     "ja": "界王様",
-    "fr": "Maître Kaïo",
+    "fr": "Maître Kaio",
     "kind": "personnage",
     "length": 3
   },
   {
     "ja": "界王神",
-    "fr": "Kaïo Shin",
+    "fr": "Kaio Shin",
     "kind": "personnage",
     "length": 3
   },

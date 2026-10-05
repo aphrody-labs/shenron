@@ -67,12 +67,12 @@ export function PowerLevelsTable({
         <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 flex flex-col justify-between">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-wider text-red-400">
-              Technique Kaiô-ken
+              Technique Kaioken
             </div>
             <div className="text-lg font-extrabold text-white mt-1">Multiplicateur ×2 à ×20</div>
           </div>
           <p className="text-[11px] text-white/50 mt-2 leading-relaxed">
-            Multiplie directement le ki de base. Poussé jusqu&apos;au Kaiô-ken ×20 sur Namek (Goku
+            Multiplie directement le ki de base. Poussé jusqu&apos;au Kaioken ×20 sur Namek (Goku
             3M → 60M face à Freeza).
           </p>
         </div>

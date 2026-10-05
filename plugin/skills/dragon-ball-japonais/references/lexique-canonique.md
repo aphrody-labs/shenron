@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : data/lexique-db-canonique.json. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`data/lexique-db-canonique.json`),
-> révision `bf5d376+modifications` du 2026-10-05. Citer cette révision et cette date avec toute
+> révision `5536b05+modifications` du 2026-10-05. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 786 termes : graphie japonaise (`name_ja`) et forme française (`name`) des fiches du
@@ -23,7 +23,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | ブロリー編 | Super Broly |
 | 破壊神シャンパ編 | Tournoi Univers 6 vs Univers 7 |
 
-## autre (17)
+## autre (18)
 
 | Japonais | Forme française |
 | --- | --- |
@@ -39,6 +39,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | 復活 | résurrection |
 | 精神と時の部屋 | Salle de l'Esprit et du Temps |
 | オッス | Salut |
+| 帰ってきた孫悟空と仲間たち | Salut ! Son Goku et ses amis sont de retour !! |
 | スカウター | Scouter |
 | 仙豆 | Senzu |
 | 天下一武道会 | Tenkaichi Budokai |
@@ -90,7 +91,6 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | バクテリアン | Bacterian |
 | バア | Bah |
 | バナン | Banan |
-| 仮面のサイヤ人 | Bardack (Xeno) |
 | バーダック | Bardock |
 | バーテンダー | Barman |
 | バーロット | Barotto |
@@ -200,6 +200,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | カンバー | Cumber |
 | クス | Cus |
 | 未来の人造人間 | cyborgs du futur |
+| 大界王 | Dai Kaio |
 | 大界王神 | Dai Kaio Shin |
 | ダーミラ | Damira |
 | ダモン | Damom |
@@ -237,9 +238,6 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | イレーザ | Erasa |
 | エリト | Erito |
 | エスカ | Esca |
-| ゴハンクス | EX Gohanks |
-| ピリリン | EX Piririn |
-| ヤムハン | EX Yamhan |
 | 整列指示オバケ | Fantôme chargé de l'accueil |
 | ファイラ | Fila |
 | フィン | Fin |
@@ -275,6 +273,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | グロリオ | Glorio |
 | ゴジータ | Gogeta |
 | ゴハンブラック | Gohan Black |
+| ゴハンクス | Gohanks |
 | ゴクウブラック | Goku Black |
 | ゴクア | Gokua |
 | ゴクーハン | Gokuhan |
@@ -286,7 +285,6 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | ゴテンクス | Gotenks |
 | ゴワス | Gowasu |
 | ゴズ | Gozu |
-| 大界王 | Grand Kaïo |
 | 大神官 | Grand Prêtre |
 | コルド大王 | Grand roi Cold |
 | 未来コルド大王 | Grand roi Cold (futur) |
@@ -345,13 +343,15 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | カダン | Kadan |
 | ケフラ | Kafla |
 | カギュー | Kagyu |
+| 東の界王 | Kaio de l'Est |
+| 西の界王 | Kaio de l'Ouest |
 | 北の界王 | Kaio du Nord |
 | 南の界王 | Kaio du Sud |
-| 東の界王 | Kaiô de l'Est |
-| 西の界王 | Kaiô de l'Ouest |
-| 西の界王神 | Kaiô Shin de l'Ouest |
-| 北の界王神 | Kaiô Shin du Nord |
-| 南の界王神 | Kaiô Shin du Sud |
+| 界王神 | Kaio Shin |
+| 東の界王神 | Kaio Shin de l'Est |
+| 西の界王神 | Kaio Shin de l'Ouest |
+| 北の界王神 | Kaio Shin du Nord |
+| 南の界王神 | Kaio Shin du Sud |
 | カカロット | Kakarot |
 | ケール | Kale |
 | カミン | Kamin |
@@ -361,8 +361,6 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | カロリー | Karoly |
 | カロリーブラック | Karoly Black |
 | カタッツ | Katatts |
-| 界王神 | Kaïo Shin |
-| 東の界王神 | Kaïo Shin de l'Est |
 | ケーサー | Kesar |
 | ケトール | Kettle |
 | キビト | Kibito |
@@ -428,8 +426,8 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | マーロン | Marron |
 | マティーヌ | Martine |
 | 魔法使いのクソババア | Maudite vieille sorcière |
+| 界王様 | Maître Kaio |
 | カリン様 | Maître Karin |
-| 界王様 | Maître Kaïo |
 | 武天老師 | Maître Roshi |
 | マイ | Maï |
 | メチカブラ | Mechikabra |
@@ -528,6 +526,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | ピラフ | Pilaf |
 | ピリナ | Pilina |
 | ピニッジ | Pinich |
+| ピリリン | Piririn |
 | ピロシキ | Piroshki |
 | ピーザ | Pizza |
 | ポコー | Pokô |
@@ -567,6 +566,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | サイケ鬼 | Saike |
 | あかかめんじん | Saiyan au Masque Écarlate |
 | 紅き仮面 | Saiyan au Masque Écarlate |
+| 仮面のサイヤ人 | Saiyan masqué |
 | サラガ | Salaga |
 | サルサ | Salsa |
 | 三星龍 | San Shinron |
@@ -678,6 +678,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | ヤコン | Yakon |
 | ヤムー | Yam |
 | ヤムチャ | Yamcha |
+| ヤムハン | Yamhan |
 | ヤム飯 | Yamhan |
 | ヤモシ | Yamoshi |
 | ヤムズ | Yamzu |
@@ -725,7 +726,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | ババリ星 | Planète Babari |
 | 惑星ダルドン | Planète Daldon |
 | ビルスの星 | Planète de Beerus |
-| 北の界王星 | Planète de Kaïo du Nord |
+| 北の界王星 | Planète de Kaio du Nord |
 | 大界王星 | Planète du Grand Kaio |
 | 惑星フリーザ | Planète Freezer 79 |
 | 木星 | Planète Jupiter |
@@ -737,11 +738,11 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | 惑星サダラ | Planète Sadala |
 | 名前のない星 | Planète Sans Nom |
 | 惑星シャーツ | Planète Shartsu |
+| ツフル星 | Planète Tsufur |
 | 小惑星バンパ | Planète Vampa |
 | ベジータ星 | Planète Vegeta |
 | 魔界 | Royaume des Démons |
 | 全王の宮殿 | Temple mobile du Roi de Tout |
-| ツフル星 | Tsufur (Univers 6) |
 | ヤードラット星 | Yardrat |
 
 ## race (14)
@@ -763,7 +764,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | サイヤ人 | Saiyan |
 | ヤードラット星人 | Yardratien |
 
-## saga (22)
+## saga (21)
 
 | Japonais | Forme française |
 | --- | --- |
@@ -784,7 +785,6 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | モロ編 | Saga Moro |
 | ナメック星・フリーザ編 | Saga Namek |
 | ピッコロ大魔王編 | Saga Piccolo Daimaô |
-| 帰ってきた孫悟空と仲間たち | Saga Post-Buu |
 | サイヤ人編 | Saga Saiyan |
 | 力の大会編 | Saga Survie de l'Univers |
 | 未来トランクス編 | Saga Trunks du Futur (Black Goku) |
@@ -802,7 +802,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | ファイナルフラッシュ | Final flash |
 | 元気玉 | Genkidama |
 | 残像拳 | Image rémanente |
-| 界王拳 | Kaiô-ken |
+| 界王拳 | Kaioken |
 | かめはめ波 | Kamehameha |
 | 10倍かめはめ波 | Kamehameha x10 |
 | 倍かめはめ波 | Kamehameha x10 |

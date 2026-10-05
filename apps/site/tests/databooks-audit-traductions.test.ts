@@ -87,7 +87,7 @@ describe("défauts certains", () => {
   });
 
   test("une traduction saine n'a aucun défaut certain", () => {
-    expect(defautCertain("Son Goku utilise le Kaiô-ken.", "孫悟空は界王拳を使った。")).toBeNull();
+    expect(defautCertain("Son Goku utilise le Kaioken.", "孫悟空は界王拳を使った。")).toBeNull();
   });
 });
 

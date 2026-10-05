@@ -96,7 +96,7 @@ export function chargerLexiqueCanonique(): LexiqueEntry[] {
       { ja: "魔人ブウ", fr: "Majin Boo", kind: "personnage", length: 4 },
       { ja: "クリリン", fr: "Krilin", kind: "personnage", length: 4 },
       { ja: "元気玉", fr: "Genkidama", kind: "technique", length: 3 },
-      { ja: "界王拳", fr: "Kaiô-ken", kind: "technique", length: 3 },
+      { ja: "界王拳", fr: "Kaioken", kind: "technique", length: 3 },
       { ja: "孫悟空", fr: "Son Goku", kind: "personnage", length: 3 },
       { ja: "セル", fr: "Cell", kind: "personnage", length: 2 },
     ] as const as LexiqueEntry[]

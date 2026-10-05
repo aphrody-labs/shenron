@@ -50,7 +50,7 @@ describe("Lexique Canonique & Masquage Dragon Ball", () => {
     expect(texteFr).toContain("Super Saiyan");
     expect(texteFr).toContain("Saiyan");
     expect(texteFr).toContain("Son Goku");
-    expect(texteFr).toContain("Kaiô-ken");
+    expect(texteFr).toContain("Kaioken");
     expect(texteFr).toContain("Genkidama");
   });
 
@@ -83,7 +83,7 @@ describe("Lexique Canonique & Masquage Dragon Ball", () => {
 
   test("vérifie la conformité de la traduction française", () => {
     const ja = "孫悟空は界王拳を使った。";
-    const frValide = "Son Goku a utilisé le Kaiô-ken (界王拳).";
+    const frValide = "Son Goku a utilisé le Kaioken (界王拳).";
     expect(verifierConformiteTraduction(frValide, ja).valide).toBe(true);
 
     // Sortie non traduite (100% japonais)

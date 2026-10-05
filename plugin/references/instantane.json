@@ -22,33 +22,33 @@
       "paquet": true
     },
     "plugin/skills/dragon-ball-japonais/references/lexique-canonique.json": {
-      "revision": "bf5d376+modifications",
+      "revision": "5536b05+modifications",
       "date": "2026-10-05",
       "sources": {
-        "data/lexique-db-canonique.json": "e674da637c85b2416a3df284b090c1aecd4ffa239679bba6b26c2ddaf5f918a5",
+        "data/lexique-db-canonique.json": "6eda566d1ea58692265674ae1ad05147102ca583dc9213932b043dec5c0e1045",
         "scripts/plugin/build-references.ts": "3228267903efcc464843f10e85330562e21e1a86f984c1788a86e43b5f44fdf2"
       },
-      "sha256": "edd59159f20bdd11f0e576ab59e9f91885ea8f4a60f73843d1ba4195eab992ef"
+      "sha256": "103b65e65acf16c6dd5cbc93eda0b275d201e6d008311ea894e94a1e43a9d43b"
     },
     "plugin/skills/dragon-ball-japonais/references/lexique-canonique.md": {
-      "revision": "bf5d376+modifications",
+      "revision": "5536b05+modifications",
       "date": "2026-10-05",
       "sources": {
-        "data/lexique-db-canonique.json": "e674da637c85b2416a3df284b090c1aecd4ffa239679bba6b26c2ddaf5f918a5",
+        "data/lexique-db-canonique.json": "6eda566d1ea58692265674ae1ad05147102ca583dc9213932b043dec5c0e1045",
         "scripts/plugin/build-references.ts": "3228267903efcc464843f10e85330562e21e1a86f984c1788a86e43b5f44fdf2"
       },
-      "sha256": "96230ee52012e7e87ae8b46dd94dd6ed1042b212635327931269ca23bc2f0493"
+      "sha256": "b8a531e4aaba7c3fa8b5d9911e910f60bbf60297a374fadb6348ff944ad1b8ef"
     },
     "plugin/skills/dragon-ball-japonais/scripts/lexique.js": {
-      "revision": "bf5d376+modifications",
+      "revision": "5536b05+modifications",
       "date": "2026-10-05",
       "sources": {
         "apps/site/src/lib/ja/normalisation.ts": "fd65e7181136993f7071b082bc2585590b88d863b19f132ecac6d37964a8b81c",
         "apps/site/src/lib/ja/traduction.ts": "913a5501fb7d1144b7c125ac8a5bec30a15ef92603ea18ac2cd9ea3a2465e4b0",
-        "data/lexique-db-canonique.json": "e674da637c85b2416a3df284b090c1aecd4ffa239679bba6b26c2ddaf5f918a5",
+        "data/lexique-db-canonique.json": "6eda566d1ea58692265674ae1ad05147102ca583dc9213932b043dec5c0e1045",
         "scripts/plugin/src/lexique.ts": "236a8885dc865a6636d721b31ed03fa0192943535e8b6590e0ca35122cd8b40b"
       },
-      "sha256": "ecf17d785d793e2f069863f98a86386b53f275bac9047011de10e97b38010ce1",
+      "sha256": "b53d106ca1b7e62871524b17984624405fe1fc4ea9c523c9b9205280f26b7a43",
       "paquet": true
     },
     "plugin/skills/dragon-ball/references/faits.json": {
