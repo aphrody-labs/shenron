@@ -25,14 +25,14 @@
     "cancel": "Отмена",
     "cancelled": "Отменено.",
     "deviceCode": "Код устройства",
-    "deviceCodeHint": "Браузер открыт. Введите этот код, чтобы авторизовать Koharu.",
+    "deviceCodeHint": "Браузер открыт. Введите этот код, чтобы авторизовать Shenron Studio.",
     "emptyDescription": "Попросите агента проверить, перевести, изменить или обработать проект. Он будет просматривать изображения страниц только при необходимости.",
-    "emptyTitle": "Что должен сделать Koharu?",
+    "emptyTitle": "Что должен сделать Shenron Studio?",
     "failed": "Запрос агента завершился ошибкой.",
     "loading": "Загрузка Codex…",
-    "message": "Сообщение агенту Koharu",
+    "message": "Сообщение агенту Shenron Studio",
     "model": "Модель Codex",
-    "placeholder": "Попросите Koharu поработать над проектом…",
+    "placeholder": "Попросите Shenron Studio поработать над проектом…",
     "properties": "Свойства",
     "reasoning": "Рассуждение",
     "reasoningLevels": {
@@ -45,7 +45,7 @@
     },
     "send": "Отправить",
     "signIn": "Войти через Codex",
-    "signInDescription": "Войдите с подпиской ChatGPT. Koharu использует авторизацию по коду устройства и никогда не запрашивает ключ API.",
+    "signInDescription": "Войдите с подпиской ChatGPT. Shenron Studio использует авторизацию по коду устройства и никогда не запрашивает ключ API.",
     "signInTitle": "Подключить Codex",
     "signOut": "Выйти",
     "signingIn": "Ожидание входа…",
@@ -53,10 +53,13 @@
     "title": "Агент",
     "working": "Работа…"
   },
+  "app": {
+    "name": "Shenron Studio"
+  },
   "canvas": {
     "empty": "Выберите страницу, чтобы начать.",
     "fit": "Вписать в окно",
-    "surface": "Холст Koharu",
+    "surface": "Холст Shenron Studio",
     "unavailable": "Холст WebGPU недоступен"
   },
   "colorPicker": {
@@ -73,7 +76,7 @@
     "reset": "Сбросить"
   },
   "errors": {
-    "fatalTitle": "Koharu не может продолжить работу",
+    "fatalTitle": "Shenron Studio не может продолжить работу",
     "tryAgain": "Повторить"
   },
   "fontPicker": {
@@ -204,6 +207,7 @@
   "languages": {
     "en-US": "English",
     "es-ES": "Español",
+    "fr-FR": "Français",
     "ja-JP": "日本語",
     "ko-KR": "한국어",
     "pt-BR": "Português brasileiro",
@@ -453,10 +457,10 @@
       "addFamily": "Добавить семейство шрифтов",
       "defaultFamilies": "Семейства шрифтов по умолчанию",
       "description": "Задайте упорядоченный стек шрифтов для текстового слоя без назначенного семейства.",
-      "empty": "Нет семейств по умолчанию. Koharu будет использовать системный запасной шрифт.",
+      "empty": "Нет семейств по умолчанию. Shenron Studio будет использовать системный запасной шрифт.",
       "familyLabel": "Семейство шрифтов по умолчанию {{index}}",
       "fontFallback": "Запасные шрифты",
-      "fontFallbackDescription": "Koharu использует первое доступное семейство, поддерживающее текст.",
+      "fontFallbackDescription": "Shenron Studio использует первое доступное семейство, поддерживающее текст.",
       "loadError": "Не удалось загрузить шрифты. Существующие семейства всё ещё можно удалить.",
       "loadingFonts": "Загрузка шрифтов…",
       "removeFamily": "Удалить {{family}}",
@@ -476,7 +480,7 @@
     "loadingProjects": "Загрузка проектов…",
     "newDescription": "Создайте чистое рабочее пространство для страниц, переводов и экспорта.",
     "newProject": "Новый проект",
-    "projectKind": "Проект Koharu",
+    "projectKind": "Проект Shenron Studio",
     "projectList": "Проекты",
     "projectName": "Имя проекта",
     "projectNamePlaceholder": "Мой новый проект",
@@ -486,9 +490,9 @@
   },
   "startup": {
     "description": "Загрузка локальных сред выполнения ИИ и подготовка рабочего пространства. Первый запуск может занять некоторое время.",
-    "opening": "Запуск Koharu…",
+    "opening": "Запуск Shenron Studio…",
     "status": "Инициализация локальных сред выполнения",
-    "title": "Подготовка Koharu"
+    "title": "Подготовка Shenron Studio"
   },
   "status": {
     "zoom": "Масштаб"

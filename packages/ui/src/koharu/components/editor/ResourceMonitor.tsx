@@ -13,7 +13,7 @@ import {
 } from "../../../components/popover";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../../../components/tooltip";
 
-/** Native telemetry for the Koharu process and the accelerator used by models. */
+/** Native telemetry for the engine process and the accelerator used by models. */
 export function ResourceMonitor() {
   const { t } = useTranslation();
   const resources = useKoharuStore((state) => state.resources);

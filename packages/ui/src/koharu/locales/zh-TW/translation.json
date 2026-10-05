@@ -25,14 +25,14 @@
     "cancel": "取消",
     "cancelled": "已取消。",
     "deviceCode": "裝置代碼",
-    "deviceCodeHint": "瀏覽器已開啟。輸入此代碼以授權 Koharu。",
+    "deviceCodeHint": "瀏覽器已開啟。輸入此代碼以授權 Shenron Studio。",
     "emptyDescription": "讓代理檢查、翻譯、編輯或處理此專案。它只會在需要時查看頁面影像。",
-    "emptyTitle": "要讓 Koharu 做什麼？",
+    "emptyTitle": "要讓 Shenron Studio 做什麼？",
     "failed": "代理要求失敗。",
     "loading": "正在載入 Codex…",
-    "message": "傳送訊息給 Koharu 代理",
+    "message": "傳送訊息給 Shenron Studio 代理",
     "model": "Codex 模型",
-    "placeholder": "讓 Koharu 處理此專案…",
+    "placeholder": "讓 Shenron Studio 處理此專案…",
     "properties": "屬性",
     "reasoning": "推理",
     "reasoningLevels": {
@@ -45,7 +45,7 @@
     },
     "send": "傳送",
     "signIn": "使用 Codex 登入",
-    "signInDescription": "使用你的 ChatGPT 訂閱登入。Koharu 使用裝置代碼驗證，絕不會要求提供 API 金鑰。",
+    "signInDescription": "使用你的 ChatGPT 訂閱登入。Shenron Studio 使用裝置代碼驗證，絕不會要求提供 API 金鑰。",
     "signInTitle": "連線 Codex",
     "signOut": "登出",
     "signingIn": "正在等待登入…",
@@ -53,10 +53,13 @@
     "title": "代理",
     "working": "正在工作…"
   },
+  "app": {
+    "name": "Shenron Studio"
+  },
   "canvas": {
     "empty": "請選擇頁面以開始。",
     "fit": "適應視窗",
-    "surface": "Koharu 畫布",
+    "surface": "Shenron Studio 畫布",
     "unavailable": "WebGPU 畫布無法使用"
   },
   "colorPicker": {
@@ -73,7 +76,7 @@
     "reset": "重設"
   },
   "errors": {
-    "fatalTitle": "Koharu 無法繼續執行",
+    "fatalTitle": "Shenron Studio 無法繼續執行",
     "tryAgain": "再試一次"
   },
   "fontPicker": {
@@ -204,6 +207,7 @@
   "languages": {
     "en-US": "English",
     "es-ES": "Español",
+    "fr-FR": "Français",
     "ja-JP": "日本語",
     "ko-KR": "한국어",
     "pt-BR": "Português brasileiro",
@@ -453,10 +457,10 @@
       "addFamily": "新增字型家族",
       "defaultFamilies": "預設字型家族",
       "description": "設定文字圖層未指定字型家族時使用的有序字型堆疊。",
-      "empty": "沒有預設字型家族。Koharu 將使用系統後備字型。",
+      "empty": "沒有預設字型家族。Shenron Studio 將使用系統後備字型。",
       "familyLabel": "預設字型家族 {{index}}",
       "fontFallback": "後備字型",
-      "fontFallbackDescription": "Koharu 使用第一個支援該文字的可用字型家族。",
+      "fontFallbackDescription": "Shenron Studio 使用第一個支援該文字的可用字型家族。",
       "loadError": "無法載入字型。仍可移除現有字型家族。",
       "loadingFonts": "正在載入字型…",
       "removeFamily": "移除 {{family}}",
@@ -476,7 +480,7 @@
     "loadingProjects": "正在載入專案…",
     "newDescription": "為頁面、翻譯和匯出建立乾淨的工作區。",
     "newProject": "新建專案",
-    "projectKind": "Koharu 專案",
+    "projectKind": "Shenron Studio 專案",
     "projectList": "專案",
     "projectName": "專案名稱",
     "projectNamePlaceholder": "我的新專案",
@@ -486,9 +490,9 @@
   },
   "startup": {
     "description": "正在載入本機 AI 執行環境並準備工作區。首次啟動可能需要一些時間。",
-    "opening": "正在開啟 Koharu…",
+    "opening": "正在開啟 Shenron Studio…",
     "status": "正在初始化本機執行環境",
-    "title": "正在準備 Koharu"
+    "title": "正在準備 Shenron Studio"
   },
   "status": {
     "zoom": "縮放"

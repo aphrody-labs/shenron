@@ -25,14 +25,14 @@
     "cancel": "Cancelar",
     "cancelled": "Cancelado.",
     "deviceCode": "Código do dispositivo",
-    "deviceCodeHint": "Seu navegador foi aberto. Digite este código para autorizar o Koharu.",
+    "deviceCodeHint": "Seu navegador foi aberto. Digite este código para autorizar o Shenron Studio.",
     "emptyDescription": "Peça ao agente para inspecionar, traduzir, editar ou processar este projeto. Ele verá as imagens das páginas somente quando necessário.",
-    "emptyTitle": "O que o Koharu deve fazer?",
+    "emptyTitle": "O que o Shenron Studio deve fazer?",
     "failed": "A solicitação do agente falhou.",
     "loading": "Carregando o Codex…",
-    "message": "Enviar mensagem ao agente do Koharu",
+    "message": "Enviar mensagem ao agente do Shenron Studio",
     "model": "Modelo do Codex",
-    "placeholder": "Peça ao Koharu para trabalhar neste projeto…",
+    "placeholder": "Peça ao Shenron Studio para trabalhar neste projeto…",
     "properties": "Propriedades",
     "reasoning": "Raciocínio",
     "reasoningLevels": {
@@ -45,7 +45,7 @@
     },
     "send": "Enviar",
     "signIn": "Entrar com o Codex",
-    "signInDescription": "Entre com sua assinatura do ChatGPT. O Koharu usa autenticação por código de dispositivo e nunca solicita uma chave de API.",
+    "signInDescription": "Entre com sua assinatura do ChatGPT. O Shenron Studio usa autenticação por código de dispositivo e nunca solicita uma chave de API.",
     "signInTitle": "Conectar ao Codex",
     "signOut": "Sair",
     "signingIn": "Aguardando o login…",
@@ -53,10 +53,13 @@
     "title": "Agente",
     "working": "Trabalhando…"
   },
+  "app": {
+    "name": "Shenron Studio"
+  },
   "canvas": {
     "empty": "Selecione uma página para começar.",
     "fit": "Ajustar à janela",
-    "surface": "Tela do Koharu",
+    "surface": "Tela do Shenron Studio",
     "unavailable": "A tela WebGPU não está disponível"
   },
   "colorPicker": {
@@ -73,7 +76,7 @@
     "reset": "Redefinir"
   },
   "errors": {
-    "fatalTitle": "O Koharu não pôde continuar",
+    "fatalTitle": "O Shenron Studio não pôde continuar",
     "tryAgain": "Tentar novamente"
   },
   "fontPicker": {
@@ -204,6 +207,7 @@
   "languages": {
     "en-US": "English",
     "es-ES": "Español",
+    "fr-FR": "Français",
     "ja-JP": "日本語",
     "ko-KR": "한국어",
     "pt-BR": "Português brasileiro",
@@ -453,10 +457,10 @@
       "addFamily": "Adicionar família de fontes",
       "defaultFamilies": "Famílias de fontes padrão",
       "description": "Defina a pilha ordenada de fontes usada quando uma camada de texto não tem família atribuída.",
-      "empty": "Nenhuma família padrão. O Koharu usará a alternativa do sistema.",
+      "empty": "Nenhuma família padrão. O Shenron Studio usará a alternativa do sistema.",
       "familyLabel": "Família de fontes padrão {{index}}",
       "fontFallback": "Fontes alternativas",
-      "fontFallbackDescription": "O Koharu usa a primeira família disponível compatível com o texto.",
+      "fontFallbackDescription": "O Shenron Studio usa a primeira família disponível compatível com o texto.",
       "loadError": "Não foi possível carregar as fontes. As famílias existentes ainda podem ser removidas.",
       "loadingFonts": "Carregando fontes…",
       "removeFamily": "Remover {{family}}",
@@ -476,7 +480,7 @@
     "loadingProjects": "Carregando projetos…",
     "newDescription": "Crie um espaço de trabalho limpo para suas páginas, traduções e exportações.",
     "newProject": "Novo projeto",
-    "projectKind": "Projeto do Koharu",
+    "projectKind": "Projeto do Shenron Studio",
     "projectList": "Projetos",
     "projectName": "Nome do projeto",
     "projectNamePlaceholder": "Meu novo projeto",
@@ -486,9 +490,9 @@
   },
   "startup": {
     "description": "Carregando os runtimes locais de IA e preparando o espaço de trabalho. A primeira inicialização pode levar alguns instantes.",
-    "opening": "Abrindo o Koharu…",
+    "opening": "Abrindo o Shenron Studio…",
     "status": "Inicializando runtimes locais",
-    "title": "Preparando o Koharu"
+    "title": "Preparando o Shenron Studio"
   },
   "status": {
     "zoom": "Zoom"

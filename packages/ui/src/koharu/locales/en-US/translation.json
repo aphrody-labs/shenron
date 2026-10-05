@@ -25,14 +25,14 @@
     "cancel": "Cancel",
     "cancelled": "Cancelled.",
     "deviceCode": "Device code",
-    "deviceCodeHint": "Your browser has opened. Enter this code to authorize Koharu.",
+    "deviceCodeHint": "Your browser has opened. Enter this code to authorize Shenron Studio.",
     "emptyDescription": "Ask the agent to inspect, translate, edit, or process this project. It will view page images only when needed.",
-    "emptyTitle": "What should Koharu do?",
+    "emptyTitle": "What should Shenron Studio do?",
     "failed": "The agent request failed.",
     "loading": "Loading Codex...",
-    "message": "Message Koharu Agent",
+    "message": "Message Shenron Studio Agent",
     "model": "Codex model",
-    "placeholder": "Ask Koharu to work on this project...",
+    "placeholder": "Ask Shenron Studio to work on this project...",
     "properties": "Properties",
     "reasoning": "Reasoning",
     "reasoningLevels": {
@@ -45,7 +45,7 @@
     },
     "send": "Send",
     "signIn": "Sign in with Codex",
-    "signInDescription": "Sign in with your ChatGPT subscription. Koharu uses device-code authentication and never asks for an API key.",
+    "signInDescription": "Sign in with your ChatGPT subscription. Shenron Studio uses device-code authentication and never asks for an API key.",
     "signInTitle": "Connect Codex",
     "signOut": "Sign out",
     "signingIn": "Waiting for sign-in...",
@@ -53,10 +53,13 @@
     "title": "Agent",
     "working": "Working..."
   },
+  "app": {
+    "name": "Shenron Studio"
+  },
   "canvas": {
     "empty": "Select a page to begin.",
     "fit": "Fit Window",
-    "surface": "Koharu canvas",
+    "surface": "Shenron Studio canvas",
     "unavailable": "WebGPU canvas unavailable"
   },
   "colorPicker": {
@@ -73,7 +76,7 @@
     "reset": "Reset"
   },
   "errors": {
-    "fatalTitle": "Koharu could not continue",
+    "fatalTitle": "Shenron Studio could not continue",
     "tryAgain": "Try again"
   },
   "fontPicker": {
@@ -204,6 +207,7 @@
   "languages": {
     "en-US": "English",
     "es-ES": "Español",
+    "fr-FR": "Français",
     "ja-JP": "日本語",
     "ko-KR": "한국어",
     "pt-BR": "Português brasileiro",
@@ -453,10 +457,10 @@
       "addFamily": "Add font family",
       "defaultFamilies": "Default font families",
       "description": "Set the ordered font stack used when a text layer has no assigned family.",
-      "empty": "No default families. Koharu will use the system fallback.",
+      "empty": "No default families. Shenron Studio will use the system fallback.",
       "familyLabel": "Default font family {{index}}",
       "fontFallback": "Font fallback",
-      "fontFallbackDescription": "Koharu uses the first available family that supports the text.",
+      "fontFallbackDescription": "Shenron Studio uses the first available family that supports the text.",
       "loadError": "Fonts could not be loaded. Existing families can still be removed.",
       "loadingFonts": "Loading fonts…",
       "removeFamily": "Remove {{family}}",
@@ -476,19 +480,19 @@
     "loadingProjects": "Loading projects…",
     "newDescription": "Create a clean workspace for your pages, translations, and exports.",
     "newProject": "New project",
-    "projectKind": "Koharu project",
+    "projectKind": "Shenron Studio project",
     "projectList": "Projects",
     "projectName": "Project name",
     "projectNamePlaceholder": "My new project",
-    "storageHint": "Projects are stored locally in your Documents folder.",
+    "storageHint": "Projects are stored locally on this device.",
     "title": "Projects",
     "yourProjects": "Your projects"
   },
   "startup": {
     "description": "Loading local AI runtimes and preparing the workspace. First launch can take a moment.",
-    "opening": "Opening Koharu…",
+    "opening": "Opening Shenron Studio…",
     "status": "Initializing local runtimes",
-    "title": "Preparing Koharu"
+    "title": "Preparing Shenron Studio"
   },
   "status": {
     "zoom": "Zoom"

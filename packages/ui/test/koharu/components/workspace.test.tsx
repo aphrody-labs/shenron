@@ -129,7 +129,7 @@ function renderWorkspace() {
       </TooltipProvider>
     </QueryClientProvider>,
   );
-  const surface = screen.getByLabelText("Koharu canvas");
+  const surface = screen.getByLabelText("Shenron Studio canvas");
   Object.defineProperty(surface, "getBoundingClientRect", {
     value: () => ({ x: 10, y: 20, width: 800, height: 600 }),
   });
@@ -338,7 +338,7 @@ describe("canvas interaction adapter", () => {
     );
   });
 
-  it("resizes a selected layer through Koharu selection controls", async () => {
+  it("resizes a selected layer through the selection controls", async () => {
     installProject();
     useKoharuStore.setState({ selectedLayers: ["element"] });
     const commit = vi.spyOn(commands, "commitTransform").mockResolvedValue(2);

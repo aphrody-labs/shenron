@@ -25,14 +25,14 @@
     "cancel": "キャンセル",
     "cancelled": "キャンセルしました。",
     "deviceCode": "デバイスコード",
-    "deviceCodeHint": "ブラウザーが開きました。このコードを入力してKoharuを認証してください。",
+    "deviceCodeHint": "ブラウザーが開きました。このコードを入力してShenron Studioを認証してください。",
     "emptyDescription": "エージェントにこのプロジェクトの確認、翻訳、編集、処理を依頼できます。ページ画像は必要な場合にのみ表示されます。",
-    "emptyTitle": "Koharuに何をさせますか？",
+    "emptyTitle": "Shenron Studioに何をさせますか？",
     "failed": "エージェントのリクエストに失敗しました。",
     "loading": "Codexを読み込み中…",
-    "message": "Koharuエージェントにメッセージを送信",
+    "message": "Shenron Studioエージェントにメッセージを送信",
     "model": "Codexモデル",
-    "placeholder": "Koharuにこのプロジェクトの作業を依頼…",
+    "placeholder": "Shenron Studioにこのプロジェクトの作業を依頼…",
     "properties": "プロパティ",
     "reasoning": "推論",
     "reasoningLevels": {
@@ -45,7 +45,7 @@
     },
     "send": "送信",
     "signIn": "Codexでサインイン",
-    "signInDescription": "ChatGPTサブスクリプションでサインインします。Koharuはデバイスコード認証を使用し、APIキーを求めることはありません。",
+    "signInDescription": "ChatGPTサブスクリプションでサインインします。Shenron Studioはデバイスコード認証を使用し、APIキーを求めることはありません。",
     "signInTitle": "Codexに接続",
     "signOut": "サインアウト",
     "signingIn": "サインインを待機中…",
@@ -53,10 +53,13 @@
     "title": "エージェント",
     "working": "作業中…"
   },
+  "app": {
+    "name": "Shenron Studio"
+  },
   "canvas": {
     "empty": "ページを選択して開始します。",
     "fit": "ウィンドウに合わせる",
-    "surface": "Koharu キャンバス",
+    "surface": "Shenron Studio キャンバス",
     "unavailable": "WebGPU キャンバスを利用できません"
   },
   "colorPicker": {
@@ -73,7 +76,7 @@
     "reset": "リセット"
   },
   "errors": {
-    "fatalTitle": "Koharuを続行できませんでした",
+    "fatalTitle": "Shenron Studioを続行できませんでした",
     "tryAgain": "再試行"
   },
   "fontPicker": {
@@ -204,6 +207,7 @@
   "languages": {
     "en-US": "English",
     "es-ES": "Español",
+    "fr-FR": "Français",
     "ja-JP": "日本語",
     "ko-KR": "한국어",
     "pt-BR": "Português brasileiro",
@@ -241,7 +245,7 @@
     "translationLabel": "{{name}}の翻訳"
   },
   "menu": {
-    "about": "Koharuについて",
+    "about": "Shenron Studioについて",
     "closeProject": "プロジェクトを閉じる",
     "delete": "選択項目を削除",
     "discord": "Discord",
@@ -453,10 +457,10 @@
       "addFamily": "フォントファミリーを追加",
       "defaultFamilies": "既定のフォントファミリー",
       "description": "テキストレイヤーにファミリーが指定されていない場合に使う、順序付きフォントスタックを設定します。",
-      "empty": "既定のファミリーがありません。Koharuはシステムの代替フォントを使用します。",
+      "empty": "既定のファミリーがありません。Shenron Studioはシステムの代替フォントを使用します。",
       "familyLabel": "既定のフォントファミリー {{index}}",
       "fontFallback": "代替フォント",
-      "fontFallbackDescription": "Koharuは文字に対応する最初の利用可能なファミリーを使用します。",
+      "fontFallbackDescription": "Shenron Studioは文字に対応する最初の利用可能なファミリーを使用します。",
       "loadError": "フォントを読み込めませんでした。既存のファミリーは削除できます。",
       "loadingFonts": "フォントを読み込み中…",
       "removeFamily": "{{family}}を削除",
@@ -476,19 +480,19 @@
     "loadingProjects": "プロジェクトを読み込み中…",
     "newDescription": "ページ、翻訳、書き出し用の新しいワークスペースを作成します。",
     "newProject": "新規プロジェクト",
-    "projectKind": "Koharuプロジェクト",
+    "projectKind": "Shenron Studioプロジェクト",
     "projectList": "プロジェクト",
     "projectName": "プロジェクト名",
     "projectNamePlaceholder": "新しいプロジェクト",
-    "storageHint": "プロジェクトは「ドキュメント」フォルダーにローカル保存されます。",
+    "storageHint": "プロジェクトはこのデバイスのローカルに保存されます。",
     "title": "プロジェクト",
     "yourProjects": "プロジェクト一覧"
   },
   "startup": {
     "description": "ローカル AI ランタイムを読み込み、ワークスペースを準備しています。初回起動には少し時間がかかる場合があります。",
-    "opening": "Koharuを起動中…",
+    "opening": "Shenron Studioを起動中…",
     "status": "ローカルランタイムを初期化しています",
-    "title": "Koharu を準備しています"
+    "title": "Shenron Studio を準備しています"
   },
   "status": {
     "zoom": "ズーム"

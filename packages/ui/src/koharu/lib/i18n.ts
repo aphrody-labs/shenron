@@ -7,6 +7,7 @@ import { initReactI18next } from "react-i18next";
 
 import enUS from "../locales/en-US/translation.json";
 import esES from "../locales/es-ES/translation.json";
+import frFR from "../locales/fr-FR/translation.json";
 import jaJP from "../locales/ja-JP/translation.json";
 import koKR from "../locales/ko-KR/translation.json";
 import ptBR from "../locales/pt-BR/translation.json";
@@ -16,6 +17,7 @@ import zhCN from "../locales/zh-CN/translation.json";
 import zhTW from "../locales/zh-TW/translation.json";
 
 export const resources = {
+  "fr-FR": { translation: frFR },
   "en-US": { translation: enUS },
   "zh-CN": { translation: zhCN },
   "zh-TW": { translation: zhTW },
@@ -31,6 +33,22 @@ export type SupportedLanguage = keyof typeof resources;
 
 export const supportedLanguages = Object.keys(resources) as SupportedLanguage[];
 
+/** The locales of the site (`fr | en | ja`); the editor speaks exactly these three at launch. */
+export type SiteLocale = "fr" | "en" | "ja";
+
+const siteLanguages: Record<SiteLocale, SupportedLanguage> = {
+  fr: "fr-FR",
+  en: "en-US",
+  ja: "ja-JP",
+};
+
+/** The editor language of a site locale, or `undefined` when the site locale is unknown. */
+export function editorLanguage(locale: string | undefined): SupportedLanguage | undefined {
+  return locale && Object.hasOwn(siteLanguages, locale)
+    ? siteLanguages[locale as SiteLocale]
+    : undefined;
+}
+
 i18n
   .use(LocalStorageBackend)
   .use(LanguageDetector)
@@ -38,7 +56,8 @@ i18n
   .init({
     resources,
     supportedLngs: supportedLanguages,
-    fallbackLng: "en-US",
+    // French is the reference language: every locale defines the same keys.
+    fallbackLng: "fr-FR",
     detection: {
       order: ["localStorage", "navigator"],
       caches: ["localStorage"],

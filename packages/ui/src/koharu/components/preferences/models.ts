@@ -17,7 +17,7 @@ export const modelOptions = {
 } satisfies Record<ModelStage, ModelName[]>;
 
 export const modelNames: Record<ModelName, string> = {
-  "koharu-layout-rfdetr-seg-2xl": "Koharu Layout RF-DETR Seg 2XL",
+  "koharu-layout-rfdetr-seg-2xl": "Layout RF-DETR Seg 2XL",
   "paddleocr-vl-1.6": "PaddleOCR-VL 1.6",
   "manga-ocr": "Manga OCR",
   "baberu-ocr": "Baberu OCR",

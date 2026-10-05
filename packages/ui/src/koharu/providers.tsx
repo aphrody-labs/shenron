@@ -8,6 +8,7 @@ import { StartupView } from "./components/app/StartupView";
 import ClientOnly from "./components/ClientOnly";
 import { refreshTranslationModels } from "./lib/backend";
 import i18n from "./lib/i18n";
+import { useSiteLocale } from "./lib/site-locale";
 import { pageKey, pagesKey, projectKey, queryClient, refresh } from "./lib/queries";
 import {
   receiveCanvas,
@@ -29,7 +30,9 @@ import {
 import { Toaster } from "@aphrody/m3-primitives";
 import { TooltipProvider } from "@aphrody/m3-primitives";
 
-export function Providers({ children }: { children: ReactNode }) {
+/** `locale`: the site locale (`fr | en | ja`) the editor speaks; unset, it keeps its detected language. */
+export function Providers({ children, locale }: { children: ReactNode; locale?: string }) {
+  useSiteLocale(locale);
   const runtime = useRef({ active: false, bound: false });
 
   useEffect(() => {

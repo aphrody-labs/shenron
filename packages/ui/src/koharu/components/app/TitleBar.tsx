@@ -76,7 +76,7 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
             <img
               className="pointer-events-none"
               src="/icon.png"
-              alt="Koharu"
+              alt={t("app.name")}
               width={17}
               height={17}
               draggable={false}
@@ -274,7 +274,7 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
               )}
             </span>
           ) : (
-            <span>Koharu</span>
+            <span>{t("app.name")}</span>
           )}
         </div>
 
