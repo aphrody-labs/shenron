@@ -287,7 +287,7 @@ describe("createShenronApi (wiki group)", () => {
 });
 
 describe("handles()", () => {
-  test("claims the wiki group paths when the wiki port is present, plus the always-on meta routes", () => {
+  test("claims the wiki group paths and the meta routes when the wiki port is present", () => {
     const api = createShenronApi(ports(), { service: "shenron-bot" });
     for (const path of [...PATHS, "/health", "/api/health"]) expect(api.handles(path)).toBe(true);
     for (const path of [
@@ -301,16 +301,20 @@ describe("handles()", () => {
     }
   });
 
-  test("wiki paths are not claimed when the wiki port is absent; requests → 404", async () => {
-    const full = Object.keys((createShenronApi(ports(), { service: "shenron-bot" }).openApiDocument() as { paths: object }).paths);
+  test("without any port nothing is claimed, meta routes included; requests → historical 404", async () => {
+    const full = Object.keys(
+      (createShenronApi(ports(), { service: "shenron-bot" }).openApiDocument() as { paths: object }).paths,
+    );
     for (const wiki of [undefined, null]) {
       const api = createShenronApi(ports({ wiki }), { service: "shenron-bot" });
-      for (const path of [...PATHS.filter((p) => p.includes("/wiki/")), "/api/public/stats"]) {
+      for (const path of [...PATHS, "/health", "/api/health", "/api/public/stats"]) {
         expect(api.handles(path)).toBe(false);
       }
-      const res = await api.request("/api/public/wiki/categories");
-      expect(res.status).toBe(404);
-      expect(await res.json()).toEqual({ error: "Not found" });
+      for (const path of ["/api/public/wiki/categories", "/api/public/openapi.json", "/health"]) {
+        const res = await api.request(path);
+        expect(res.status).toBe(404);
+        expect(await res.json()).toEqual({ error: "Not found" });
+      }
       // The document does not depend on the enabled groups.
       expect(Object.keys((api.openApiDocument() as { paths: object }).paths)).toEqual(full);
     }

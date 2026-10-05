@@ -112,7 +112,7 @@ export class ChatStreams {
   /** Events after `after` (0 = from the start), then the live tail until the stream ends. */
   async *follow(id: string, ownerId: string, after = 0, signal?: AbortSignal): AsyncGenerator<NumberedEvent> {
     const stream = this.#streams.get(id);
-    if (!stream || stream.ownerId !== ownerId) return;
+    if (!stream || stream.ownerId !== ownerId || signal?.aborted) return;
     const queue: (NumberedEvent | null)[] = [];
     let wake: (() => void) | null = null;
     const listener = (event: NumberedEvent | null) => {
@@ -129,7 +129,11 @@ export class ChatStreams {
         last = numbered.id;
         yield numbered;
       }
-      if (stream.done) return;
+      if (stream.done) {
+        // Completed while the replay was suspended: deliver what came after the snapshot.
+        for (const numbered of stream.events.slice(last)) yield numbered;
+        return;
+      }
       while (true) {
         while (queue.length === 0) await new Promise<void>((resolve) => (wake = resolve));
         wake = null;

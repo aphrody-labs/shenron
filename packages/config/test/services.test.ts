@@ -5,6 +5,7 @@ import {
   resolveLibreTranslateUrl,
   resolveRedisUrl,
   resolveRelectureOcrUrl,
+  resolveShenronApiBind,
   resolveSiteInternalUrl,
 } from "../src/services";
 
@@ -27,5 +28,14 @@ describe("internal service resolvers", () => {
       "http://0.0.0.0:7000",
     );
     expect(resolveBotApiInternalUrl({ API_HOST: "::1" })).toBe("http://[::1]:5006");
+  });
+  test("Shenron API bind: loopback default, invalid port ignored", () => {
+    expect(resolveShenronApiBind({})).toEqual({ hostname: "127.0.0.1", port: 8797 });
+    expect(resolveShenronApiBind({ SHENRON_API_HOST: "0.0.0.0", SHENRON_API_PORT: "9000" })).toEqual({
+      hostname: "0.0.0.0",
+      port: 9000,
+    });
+    expect(resolveShenronApiBind({ SHENRON_API_PORT: "http" }).port).toBe(8797);
+    expect(resolveShenronApiBind({ SHENRON_API_PORT: "70000" }).port).toBe(8797);
   });
 });

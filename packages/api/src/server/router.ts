@@ -67,7 +67,7 @@ export class Router<H> {
           literals: route.path.split("/").filter((s) => s && !s.startsWith("{")).length,
         };
       })
-      .sort((a, b) => a.keys.length - b.keys.length || b.literals - a.literals);
+      .toSorted((a, b) => a.keys.length - b.keys.length || b.literals - a.literals);
     return this.#matchers;
   }
 

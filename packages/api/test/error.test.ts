@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
-import { ApiErrorCode, ErrorEnvelope } from "./index";
+import { ApiErrorCode, ErrorEnvelope } from "../src/contract";
 
 describe("ErrorEnvelope", () => {
   test('parses the legacy body {"error":"Not found"}', () => {

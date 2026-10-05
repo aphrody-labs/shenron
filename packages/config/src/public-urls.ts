@@ -49,6 +49,9 @@ export const DEFAULT_PUBLIC_ORIGINS = {
   cdn: "https://cdn.dragonballfr.com",
 } as const;
 
+/** Origin of the local Next dev server, allowed by CORS outside production only. */
+export const DEV_SITE_ORIGIN = "http://localhost:3000";
+
 const trimSlash = (u: string): string => u.replace(/\/+$/, "");
 
 function firstSet(env: PublicUrlEnv, names: readonly string[]): string | undefined {

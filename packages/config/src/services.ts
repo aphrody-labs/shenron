@@ -13,6 +13,7 @@
  * | bot API        | `API_HOST` + `API_PORT`         | `http://127.0.0.1:5006`   |
  * | LibreTranslate | `LIBRETRANSLATE_URL`            | `http://127.0.0.1:5000`   |
  * | relecture OCR  | `RELECTURE_OCR_URL`             | `http://127.0.0.1:8791`   |
+ * | Shenron API    | `SHENRON_API_HOST` + `_PORT`    | `127.0.0.1:8797` (bind)   |
  *
  * Runtime class: `pure` (takes an explicit env record).
  */
@@ -32,6 +33,8 @@ export const DEFAULT_INTERNAL_SERVICES = {
   botApiPort: 5006,
   libreTranslate: "http://127.0.0.1:5000",
   relectureOcr: "http://127.0.0.1:8791",
+  shenronApiHost: "127.0.0.1",
+  shenronApiPort: 8797,
 } as const;
 
 const trimSlash = (u: string): string => u.replace(/\/+$/, "");
@@ -54,6 +57,15 @@ export function resolveBotApiInternalUrl(env: EnvSource): string {
   const host = envString(env, "API_HOST") ?? DEFAULT_INTERNAL_SERVICES.botApiHost;
   const port = envString(env, "API_PORT") ?? String(DEFAULT_INTERNAL_SERVICES.botApiPort);
   return `http://${host.includes(":") && !host.startsWith("[") ? `[${host}]` : host}:${port}`;
+}
+
+/** Bind address of the standalone Shenron API (`@shenron/api/host`); an invalid port keeps the default. */
+export function resolveShenronApiBind(env: EnvSource): { hostname: string; port: number } {
+  const port = Number(envString(env, "SHENRON_API_PORT"));
+  return {
+    hostname: envString(env, "SHENRON_API_HOST") ?? DEFAULT_INTERNAL_SERVICES.shenronApiHost,
+    port: Number.isInteger(port) && port > 0 && port < 65_536 ? port : DEFAULT_INTERNAL_SERVICES.shenronApiPort,
+  };
 }
 
 /** LibreTranslate origin, without trailing slash. */

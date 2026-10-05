@@ -10,9 +10,9 @@
     "./http": "./src/http.ts",
     "./server": "./src/server/index.ts",
     "./next": "./src/next.ts",
-    "./openapi.json": "./openapi/public.json",
     "./chat": "./src/chat/index.ts",
-    "./host": "./src/host/index.ts"
+    "./host": "./src/host/index.ts",
+    "./openapi.json": "./openapi/public.json"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -23,13 +23,11 @@
   },
   "dependencies": {
     "@aphrody/http": "0.1.0",
-    "@hono/zod-openapi": "catalog:",
+    "@shenron/auth": "workspace:*",
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
-    "hono": "catalog:",
-    "zod": "catalog:",
     "@shenron/pipeline": "workspace:*",
-    "@shenron/auth": "workspace:*"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "drizzle-orm": "catalog:"
@@ -42,11 +40,11 @@
       "./contract": "pure",
       "./client": "pure",
       "./http": "pure",
-      "./server": "bun",
+      "./server": "server",
       "./next": "server",
-      "./openapi.json": "json",
       "./chat": "bun",
-      "./host": "bun"
+      "./host": "bun",
+      "./openapi.json": "json"
     }
   }
 }

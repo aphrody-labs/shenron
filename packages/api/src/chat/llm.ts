@@ -145,7 +145,7 @@ export function createOpenAiBackend(o: {
 /** Cookie stores of the Gemini web client, in the crate's resolution order. */
 export function geminiCookieCandidates(env: Record<string, string | undefined>, home = homedir()): string[] {
   const explicit = env.APHRODY_GOOGLE_COOKIES_JSON?.trim();
-  const dir = join(env.APHRODY_HOME?.trim() || join(home, ".aphrody"));
+  const dir = env.APHRODY_HOME?.trim() || join(home, ".aphrody");
   return [
     ...(explicit ? [explicit] : []),
     join(dir, "cookies", "gemini-web.json"),
@@ -234,7 +234,7 @@ export function createExtractiveBackend(): LlmBackend {
     },
     async *stream(messages) {
       // The engine passes the numbered sources in the last user message.
-      const user = messages.filter((m) => m.role === "user").at(-1)?.content ?? "";
+      const user = messages.findLast((m) => m.role === "user")?.content ?? "";
       const blocks = [...user.matchAll(/^\[(\d+)\] ([^\n]+)\n([\s\S]*?)(?=\n\[\d+\] |\n\nQuestion|$)/gm)].slice(0, 3);
       if (blocks.length === 0) {
         yield "Aucune source de la base Shenron ne répond à cette question.";

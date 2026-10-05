@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderPublicDocument } from "../scripts/openapi";
+import { ENDPOINTS } from "../src/contract";
 
 const PKG = join(import.meta.dir, "..");
 const COMMITTED = join(PKG, "openapi", "public.json");
@@ -26,16 +27,14 @@ describe("openapi/public.json", () => {
     expect(JSON.parse(readFileSync(COMMITTED, "utf8"))).toEqual(JSON.parse(renderPublicDocument()));
   });
 
-  test("OpenAPI 3.1, absolute paths (honojs/middleware#952), components from .meta ids", () => {
+  test("OpenAPI 3.1, one absolute path per native endpoint, components from .meta ids", () => {
     const doc = JSON.parse(renderPublicDocument()) as Doc;
     expect(doc.openapi).toBe("3.1.0");
-    expect(Object.keys(doc.paths)).toEqual([
-      "/api/public/openapi.json",
-      "/api/public/wiki/categories",
-      "/api/public/wiki/{category}",
-      "/api/public/wiki/{category}/{idOrSlug}",
-    ]);
-    for (const path of Object.keys(doc.paths)) expect(path.startsWith("/api/public/")).toBe(true);
+    const native = ENDPOINTS.filter((spec) => spec.native);
+    expect(Object.keys(doc.paths).toSorted()).toEqual([...new Set(native.map((spec) => spec.path))].toSorted());
+    for (const spec of native) expect(doc.paths[spec.path]).toHaveProperty(spec.method);
+    // Bot-owned historical routes stay out of the document.
+    for (const spec of ENDPOINTS.filter((e) => !e.native)) expect(doc.paths).not.toHaveProperty(spec.path);
     for (const id of [
       "ErrorEnvelope",
       "ApiErrorCode",
@@ -44,6 +43,11 @@ describe("openapi/public.json", () => {
       "WikiCategoryName",
       "WikiListResponse",
       "WikiEntity",
+      "ChatRequest",
+      "ChatResponse",
+      "SyncPushBody",
+      "SyncPullResponse",
+      "VfsStatResponse",
     ]) {
       expect(Object.keys(doc.components.schemas)).toContain(id);
     }

@@ -53,7 +53,7 @@ describe("montage @shenron/api dans le Bun.serve du bot", () => {
 		expect(calls.some((c) => c.startsWith("get:arcs"))).toBe(false);
 	});
 
-	it("/api/public/wiki/battles/12 atteint Hono", async () => {
+	it("/api/public/wiki/battles/12 atteint @shenron/api", async () => {
 		const res = await get(withPg, "/api/public/wiki/battles/12");
 		expect(res.status).toBe(200);
 		expect(await res.json()).toEqual({ id: 12, name: "Goku vs Freezer" });
@@ -79,7 +79,7 @@ describe("montage @shenron/api dans le Bun.serve du bot", () => {
 		}
 	});
 
-	it("un seul budget public : Hono et routes historiques partagent les seaux", async () => {
+	it("un seul budget public : @shenron/api et routes historiques partagent les seaux", async () => {
 		const buckets = new Map<string, { count: number; resetAt: number }>();
 		const limiter = bucketRateLimiter(buckets, () => 1_000);
 		for (let i = 0; i < 59; i++) hitPublicBucket(buckets, "203.0.113.9", undefined, 1_000);

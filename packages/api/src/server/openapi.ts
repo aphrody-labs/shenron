@@ -14,9 +14,14 @@ const DOCUMENT_INFO = {
   title: "Shenron API",
   version: "2.0.0",
   description:
-    "Single native Bun API of Shenron (site, bot, desktop, MCP): public wiki and RAG, unified chat " +
-    "(SSE, WebSocket, resumable streams), conversation sync, VFS and OCR (docs/contracts/backend.md).",
+    "Single API of Shenron (site, bot, desktop, MCP): public wiki and RAG, unified chat " +
+    "(SSE, WebSocket, resumable streams), conversation sync, VFS and OCR (docs/architecture/STACK.md §3.6).",
 } as const;
+
+/** Tag of an operation: the group segment of `/api/public/<group>` and `/api/v1/<group>`, else `meta`. */
+function tagOf(path: string): string {
+  return /^\/api\/(?:public|v1)\/([a-z]+)(?:\/|$)/.exec(path)?.[1] ?? "meta";
+}
 
 function convert(schema: z.ZodType, io: "input" | "output", components: Json): Json {
   const out = z.toJSONSchema(schema, { target: "draft-2020-12", unrepresentable: "any", io }) as Json;
@@ -81,11 +86,7 @@ export function buildOpenApiDocument(): Json {
       }
     }
     responses[spec.websocket ? 101 : 200] = ok;
-    const operation: Json = {
-      operationId: spec.id,
-      tags: [spec.path.split("/")[3] ?? spec.path.split("/")[1] ?? "meta"],
-      responses,
-    };
+    const operation: Json = { operationId: spec.id, tags: [tagOf(spec.path)], responses };
     const params = parameters(spec, components);
     if (params.length) operation.parameters = params;
     if (spec.body) {
@@ -95,8 +96,7 @@ export function buildOpenApiDocument(): Json {
       };
     }
     if (spec.auth !== "public") operation.security = [{ bearer: [] }];
-    const key = spec.path;
-    paths[key] = { ...(paths[key] ?? {}), [spec.method]: operation };
+    paths[spec.path] = { ...paths[spec.path], [spec.method]: operation };
   }
   return {
     openapi: "3.1.0",

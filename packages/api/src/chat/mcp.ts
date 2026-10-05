@@ -196,7 +196,7 @@ export function toolItems(value: unknown): { title: string; url: string | null; 
       out.push({ title, url: url ?? null, snippet: (snippet ?? "").replace(/\s+/g, " ").slice(0, 400) });
       return;
     }
-    for (const value of Object.values(r)) visit(value, depth + 1);
+    for (const child of Object.values(r)) visit(child, depth + 1);
   };
   visit(value, 0);
   return out;

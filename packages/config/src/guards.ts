@@ -241,6 +241,17 @@ function extractImports(source: string, code: string): ImportRef[] {
   return refs.toSorted((a, b) => a.index - b.index);
 }
 
+/**
+ * Import, export, dynamic import and `require` specifiers of a source file, in order; mentions
+ * in comments and string literals never count. `typeOnly` marks `import type` / `export type`.
+ */
+export function importSpecifiers(source: string): { specifier: string; typeOnly: boolean }[] {
+  return extractImports(source, stripNonCode(source)).map(({ specifier, typeOnly }) => ({
+    specifier,
+    typeOnly,
+  }));
+}
+
 function lineAt(source: string, index: number): string {
   const start = source.lastIndexOf("\n", index - 1) + 1;
   const endRaw = source.indexOf("\n", index);

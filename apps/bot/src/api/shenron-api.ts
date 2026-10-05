@@ -4,8 +4,8 @@
  * - Les routes historiques gardent la priorité : Bun résout la table `routes`
  *   avant `fetch`, et le repli n'est consulté qu'après tous les préfixes
  *   historiques du `fetch`, juste avant le 404 JSON.
- * - Budget public unique : le limiteur Hono est un adaptateur sur les MÊMES
- *   seaux (`publicRateBuckets`) que `publicRateLimit` de `server.ts`.
+ * - Budget public unique : le limiteur de `@shenron/api` est un adaptateur sur
+ *   les MÊMES seaux (`publicRateBuckets`) que `publicRateLimit` de `server.ts`.
  * - `/graphql` (S9) passe par ce même limiteur (60/min/IP, 429 + `Retry-After: 60`).
  *
  * Aucune dépendance au conteneur DI ni à l'environnement : tout est injecté,
@@ -15,7 +15,12 @@ import {
 	clientIpFromHeaders,
 	isDirectLoopback as isDirectLoopbackHeaders,
 } from "@shenron/config/net";
-import { originOf, type PublicUrlEnv, resolveSiteUrl } from "@shenron/config/public-urls";
+import {
+	DEV_SITE_ORIGIN,
+	originOf,
+	type PublicUrlEnv,
+	resolveSiteUrl,
+} from "@shenron/config/public-urls";
 import { VERCEL_PRODUCTION_ALIAS } from "@shenron/auth/origins";
 import { createWikiReadRepository } from "@shenron/db/repos/wiki";
 import {
@@ -41,9 +46,6 @@ import { approveAndPublishMangaCandidate, rejectMangaCandidate } from "~/lib/man
 /** Seaux à fenêtre fixe partagés par toutes les routes publiques du bot. */
 export type PublicRateBuckets = Map<string, { count: number; resetAt: number }>;
 
-/** Origine du site Next en développement local (hors production uniquement). */
-const SITE_DEV_ORIGIN = "http://localhost:3000";
-
 /**
  * Origines CORS publiques du bot : l'origine du site résolue par
  * `@shenron/config/public-urls`, sa variante `www`, l'alias Vercel nommé
@@ -58,7 +60,7 @@ export function buildPublicCorsOrigins(env: PublicUrlEnv): string[] {
 		origins.push(u.origin);
 	} catch {}
 	origins.push(`https://${VERCEL_PRODUCTION_ALIAS}`);
-	if (env.NODE_ENV?.trim() !== "production") origins.push(SITE_DEV_ORIGIN);
+	if (env.NODE_ENV?.trim() !== "production") origins.push(DEV_SITE_ORIGIN);
 	return [...new Set(origins)];
 }
 
@@ -181,15 +183,10 @@ function publicCorsHeaders(
 	};
 }
 
-/** `/graphql` et `/graphql/*`. */
-function isGraphqlPath(pathname: string): boolean {
-	return pathname === "/graphql" || pathname.startsWith("/graphql/");
-}
-
 /**
  * Repli du `fetch` du bot pour les chemins servis par ce module :
  * - `/graphql` : limiteur public (S9 ; préflight OPTIONS non compté) puis handler inchangé ;
- * - chemins `@shenron/api` (B14) : délégués à Hono ;
+ * - chemins `@shenron/api` (B14) : délégués à l'application `@shenron/api` ;
  * - sinon `null` (l'appelant continue sa chaîne historique).
  */
 export function createPublicFallback(o: PublicFallbackOptions) {
@@ -230,9 +227,7 @@ export function createPublicFallback(o: PublicFallbackOptions) {
 	};
 }
 
-type PublicFallback = ReturnType<typeof createPublicFallback>;
-
-/** Suivi des adresses de socket par requête, lu par `isDirectLoopback` du port Hono. */
+/** Suivi des adresses de socket par requête, lu par `isDirectLoopback` du port `@shenron/api`. */
 export function createRemoteAddressRegistry() {
 	const addresses = new WeakMap<Request, string | null>();
 	return {
