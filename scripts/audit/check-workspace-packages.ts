@@ -54,12 +54,25 @@ const ALLOWED_EDGES: Readonly<
 	"@shenron/db": { runtime: ["@shenron/config"], dev: [] },
 	"@shenron/auth": { runtime: ["@shenron/config"], dev: ["@shenron/db"] },
 
-	"@shenron/api": { runtime: ["@shenron/config", "@shenron/db", "@shenron/auth"], dev: [] },
-	"@shenron/ui": { runtime: [], dev: [] },
+	"@shenron/api": {
+		runtime: ["@shenron/config", "@shenron/db", "@shenron/auth", "@shenron/pipeline"],
+		dev: [],
+	},
+	// The UI layer hosts Koharu (protocol, canvas, settings), the admin studio (config/admin)
+	// and the Koharu engine bridge of the pipeline; none of them depends back on @shenron/ui.
+	"@shenron/ui": {
+		runtime: ["@shenron/config", "@shenron/koharu", "@shenron/pipeline"],
+		dev: ["@shenron/config"],
+	},
 };
 
 /** Subpath restrictions on allowed package edges. */
-const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>> = {};
+const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>> = {
+	// Chat engine doctrine only (§4.1): personas and the agent home, never the pipeline runtime.
+	"@shenron/api": {
+		"@shenron/pipeline": ["@shenron/pipeline/ai/prompts", "@shenron/pipeline/agent-home"],
+	},
+};
 
 /** Imports forbidden in a `"use client"` module (docs/architecture/STACK.md §4.2). */
 const CLIENT_FORBIDDEN = [
@@ -274,15 +287,25 @@ function exportTargets(value: unknown): string[] {
 	return [];
 }
 
+/** Files a `*` export target can reach; like Node, `*` spans nested directories. */
 function wildcardMatches(packageDir: string, target: string): number {
 	const [prefix = "", suffix = ""] = target.replace(/^\.\//, "").split("*");
 	const base = join(packageDir, prefix);
 	const dir = prefix.endsWith("/") ? base : dirname(base);
 	if (!existsSync(dir)) return 0;
-	return readdirSync(dir).filter((name) => {
-		const rel = toPosix(relative(packageDir, join(dir, name)));
-		return rel.startsWith(prefix) && rel.endsWith(suffix) && statSync(join(dir, name)).isFile();
-	}).length;
+	let count = 0;
+	const walk = (current: string) => {
+		for (const name of readdirSync(current)) {
+			const full = join(current, name);
+			if (statSync(full).isDirectory()) walk(full);
+			else {
+				const rel = toPosix(relative(packageDir, full));
+				if (rel.startsWith(prefix) && rel.endsWith(suffix)) count++;
+			}
+		}
+	};
+	walk(dir);
+	return count;
 }
 
 async function checkPackage(name: string, relDir: string): Promise<void> {
