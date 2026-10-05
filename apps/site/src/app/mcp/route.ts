@@ -29,7 +29,7 @@ async function forward(request: Request): Promise<Response> {
   const upstream = mcpUpstream();
   if (!upstream) {
     return Response.json(
-      { error: "Le serveur MCP public de Shenron n'est pas déployé sur cette instance." },
+      { error: "The public Shenron MCP server is not deployed on this instance." },
       { status: 503, headers: CORS },
     );
   }
@@ -51,7 +51,7 @@ async function forward(request: Request): Promise<Response> {
       cache: "no-store",
     });
   } catch {
-    return Response.json({ error: "Serveur MCP injoignable." }, { status: 502, headers: CORS });
+    return Response.json({ error: "MCP server unreachable." }, { status: 502, headers: CORS });
   }
   const out = new Headers(CORS);
   for (const name of RESPONSE_HEADERS) {

@@ -463,6 +463,13 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
+          // Découverte par les robots et agents IA, invisible au lecteur : la carte du
+          // site pour les LLM, le serveur MCP et la carte d'agent A2A (RFC 8288).
+          {
+            key: "Link",
+            value:
+              '</llms.txt>; rel="describedby"; type="text/plain", </.well-known/mcp.json>; rel="service-desc"; type="application/json", </.well-known/agent-card.json>; rel="service-meta"; type="application/json"',
+          },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

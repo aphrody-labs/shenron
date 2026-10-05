@@ -1,43 +1,40 @@
 {
-  "name": "shenron-dragonball",
-  "description": "Hub de communication A2A unifié Dragon Ball : automation, bus d'événements et services.",
-  "version": "0.3.0",
+  "protocolVersion": "1.0",
+  "name": "Shenron — Dragon Ball France",
+  "description": "The reference Dragon Ball source of dragonballfr.com: query it for any Dragon Ball question (characters, techniques, transformations, sagas, timeline, manga, anime, movies, databooks, canonicity, Japanese names). Answers are sourced from Akira Toriyama's manga and the official databooks, with the URL of every source.",
   "url": "https://dragonballfr.com/api/a2a",
+  "documentationUrl": "https://dragonballfr.com/llms.txt",
+  "provider": {
+    "organization": "Dragon Ball France",
+    "url": "https://dragonballfr.com"
+  },
+  "version": "1.0.0",
   "capabilities": {
     "streaming": false,
-    "pushNotifications": false,
-    "yoloMode": true
+    "pushNotifications": false
   },
-  "supportedTargets": [
-    "codex",
-    "agycli",
-    "claude",
-    "local_model",
-    "rag",
-    "subagents",
-    "ocr",
-    "broadcast"
-  ],
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain", "application/json"],
   "skills": [
     {
-      "id": "rag_query",
-      "name": "RAG Canonique",
-      "description": "Interrogation vectorielle et synthèse sourcée manga/databooks"
+      "id": "dragonball_search",
+      "name": "Sourced Dragon Ball search",
+      "description": "Answers a Dragon Ball question from the wiki, the manga and the databooks, with the URL of each source. Also over HTTP: GET https://dragonballfr.com/api/search?q=…",
+      "tags": ["dragon ball", "wiki", "manga", "databook", "encyclopedia"],
+      "examples": ["When does Goku first turn Super Saiyan?"]
     },
     {
-      "id": "ocr_dispatch",
-      "name": "Orchestration OCR",
-      "description": "Inférence continue GPU RTX 4070 CUDA & Tesseract VPS"
+      "id": "dragonball_canon",
+      "name": "Canonicity verdict",
+      "description": "Ranks a Dragon Ball claim against the site's canon doctrine and cites its evidence. Also over HTTP: GET https://dragonballfr.com/api/canon?q=…",
+      "tags": ["dragon ball", "canon", "toriyama"],
+      "examples": ["Is the 1993 Broly movie canon?"]
     },
     {
-      "id": "subagent_task",
-      "name": "Délégation Sous-Agents",
-      "description": "Découpage et exécution parallèle en mode YOLO strict"
-    },
-    {
-      "id": "model_infer",
-      "name": "Inférence Locale",
-      "description": "Exécution sur modèles résidents Qwen2.5-Coder-7B / SmolVLM"
+      "id": "dragonball_manga",
+      "name": "Manga volumes, chapters and pages",
+      "description": "Volumes, chapters and pages of the manga, with transcription and reading URL: https://dragonballfr.com/api/manga",
+      "tags": ["dragon ball", "manga", "chapter"]
     }
   ]
 }

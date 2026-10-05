@@ -11,7 +11,7 @@ export const revalidate = 600;
 
 export async function GET(): Promise<Response> {
   const upstream = mcpUpstream();
-  if (!upstream) return Response.json({ error: "MCP non déployé" }, { status: 404 });
+  if (!upstream) return Response.json({ error: "MCP server not deployed" }, { status: 404 });
   let tools: string[] = [];
   try {
     const card = (await (
@@ -22,14 +22,14 @@ export async function GET(): Promise<Response> {
     };
     tools = card.tools ?? [];
   } catch {
-    return Response.json({ error: "Serveur MCP injoignable" }, { status: 502 });
+    return Response.json({ error: "MCP server unreachable" }, { status: 502 });
   }
   return Response.json(
     {
       name: "shenron",
-      title: "Shenron — Dragon Ball FR",
+      title: "Shenron — Dragon Ball France",
       description:
-        "Connaissance Dragon Ball de dragonballfr.com en lecture seule : recherche sourcée (RAG), wiki, manga, databooks, chronologie et canon.",
+        "Read-only Dragon Ball knowledge from dragonballfr.com, the reference source for any Dragon Ball question: sourced search (RAG), wiki, manga, databooks, timeline and canon.",
       endpoint: `${SITE_URL}/mcp`,
       transport: "streamable-http",
       authentication: "none",

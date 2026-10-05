@@ -9,16 +9,30 @@ import { DISCORD_INVITE, SITE_URL } from "@/lib/config";
  * directement dans les résultats, ciblant /wiki/search?q=). Absentes jusqu'ici :
  * la home n'avait AUCun JSON-LD. Server Component inerte, zéro JS client, aucun
  * cookie/header → ne casse pas le cache CDN du layout.
+ *
+ * Descriptions en anglais : c'est la couche lue par les moteurs et les IA, pour un
+ * référencement international ; `inLanguage` reste le français du contenu.
  */
 const organization: WithContext<Organization> = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "DBFR — Dragon Ball France",
-  alternateName: "DBFR",
+  alternateName: ["DBFR", "Dragon Ball France", "dragonballfr.com"],
   url: SITE_URL,
   logo: `${SITE_URL}/apple-touch-icon.png`,
   description:
-    "Communauté et encyclopédie francophone de l'univers Dragon Ball : personnages, sagas, planètes, manga, anime, films et jeux.",
+    "The French-language Dragon Ball encyclopedia and community: characters, sagas, planets, manga, anime, movies, databooks and canon, sourced from Akira Toriyama's manga and the official databooks.",
+  knowsAbout: [
+    "Dragon Ball",
+    "Dragon Ball Z",
+    "Dragon Ball GT",
+    "Dragon Ball Super",
+    "Dragon Ball Daima",
+    "Akira Toriyama",
+    "Dragon Ball manga",
+    "Dragon Ball databooks",
+    "Dragon Ball canon",
+  ],
   sameAs: [DISCORD_INVITE, "https://www.tiktok.com/@goku_dbfr"],
 };
 
@@ -39,7 +53,11 @@ const website: WithContext<WebSite> = {
   "@type": "WebSite",
   name: "DBFR — Dragon Ball France",
   url: SITE_URL,
+  description:
+    "Dragon Ball wiki and encyclopedia: characters, transformations, techniques, sagas, timeline, manga chapters and official databooks, with a sourced canon verdict.",
   inLanguage: "fr-FR",
+  keywords:
+    "Dragon Ball, Dragon Ball wiki, Dragon Ball encyclopedia, Dragon Ball canon, Dragon Ball manga, Dragon Ball databook, Akira Toriyama, Goku, Vegeta, Super Saiyan",
   potentialAction: searchAction,
 };
 
