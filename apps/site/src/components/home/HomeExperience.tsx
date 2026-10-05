@@ -24,13 +24,13 @@
 // home est strictement identique à la version historique en dur.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "@/components/Avatar";
-import { DragonBall } from "@/components/DragonBall";
+import { DragonBall } from "@shenron/ui/toriyama";
 import {
   MotManga,
   LETTRES_DRAGON_AVANT_BOULE,
   LETTRES_DRAGON_APRES_BOULE,
   LETTRES_BALL,
-} from "@/components/MotManga";
+} from "@shenron/ui/toriyama";
 import { KintoUnVolant } from "@/components/home/KintoUnVolant";
 import Link from "next/link";
 import Image from "next/image";

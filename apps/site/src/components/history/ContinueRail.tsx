@@ -10,7 +10,7 @@
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Croix } from "@/components/icones";
+import { Croix } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { forgetHistory, readHistory, HISTORY_EVENT, type HistoryEntry } from "@/lib/history";
 import { useT } from "@/components/T";

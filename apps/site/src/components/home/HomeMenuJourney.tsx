@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FlecheCoin } from "@/components/icones";
+import { FlecheCoin } from "@shenron/ui/icones";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { assetUrl } from "@/lib/assets";
 import type { HomeJourneyConfig } from "@/lib/home-scenes";

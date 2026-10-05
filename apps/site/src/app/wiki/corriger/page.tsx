@@ -14,7 +14,7 @@
  */
 import { PageHeader } from "@/components/PageHeader";
 import Link from "next/link";
-import { FlecheGauche } from "@/components/icones";
+import { FlecheGauche } from "@shenron/ui/icones";
 import type { Metadata } from "next";
 import { WikiContribute } from "@/components/wiki/WikiContribute";
 import { CONTRIBUTABLE_COLUMNS } from "@/lib/contributions-shared";
