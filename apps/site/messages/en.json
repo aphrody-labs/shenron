@@ -267,7 +267,7 @@
       "blurb": "Progress on the manga and databook pages"
     },
     "koharu": {
-      "label": "Koharu",
+      "label": "Shenron Studio",
       "blurb": "Shenron's manga translation editor"
     }
   },
@@ -1418,13 +1418,13 @@
       "manga": "Manga",
       "databooks": "Databooks",
       "workshop": "Transcription & translation",
-      "koharu": "Koharu"
+      "koharu": "Shenron Studio"
     },
     "workshop": {
       "label": "Page workshop",
       "breadcrumb": "Transcription & translation",
       "title": "Transcribing and translating the pages",
-      "lead": "Every manga and databook page follows the same chain: official scan, proofread Japanese transcription, French translation backed by the canonical lexicon, then lettering in Koharu. Here is where the work stands, measured and never rounded up.",
+      "lead": "Every manga and databook page follows the same chain: official scan, proofread Japanese transcription, French translation backed by the canonical lexicon, then lettering in Shenron Studio. Here is where the work stands, measured and never rounded up.",
       "databooksTitle": "Databooks and official guides",
       "readDatabooks": "Read the databooks",
       "mangaTitle": "Manga",
@@ -1449,8 +1449,8 @@
           "text": "The French text, backed by DBFR's canonical lexicon for names and techniques."
         },
         "koharu": {
-          "label": "Koharu",
-          "text": "Balloons cleaned, text lettered and the page exported in the Koharu editor."
+          "label": "Shenron Studio",
+          "text": "Balloons cleaned, text lettered and the page exported in the Shenron Studio editor."
         }
       },
       "tabs": {
@@ -1472,9 +1472,9 @@
       }
     },
     "koharu": {
-      "title": "Koharu, the manga translation editor",
-      "lead": "Koharu detects balloons, transcribes the Japanese, translates with Shenron's canonical lexicon, cleans the page and letters it again, all the way to a PSD export. The engine runs locally, in the Shenron desktop app.",
-      "featuresTitle": "What Koharu does",
+      "title": "Shenron Studio, the manga translation editor",
+      "lead": "Shenron Studio detects balloons, transcribes the Japanese, translates with Shenron's canonical lexicon, cleans the page and letters it again, all the way to a PSD export. The engine runs locally, in the Shenron desktop app.",
+      "featuresTitle": "What Shenron Studio does",
       "features": {
         "detect": {
           "label": "Detection",

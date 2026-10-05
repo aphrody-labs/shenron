@@ -267,7 +267,7 @@
       "blurb": "漫画と資料集の原稿の進捗"
     },
     "koharu": {
-      "label": "Koharu（翻訳エディタ）",
+      "label": "Shenron Studio（翻訳エディタ）",
       "blurb": "Shenron の漫画翻訳エディタ"
     }
   },
@@ -1418,13 +1418,13 @@
       "manga": "漫画",
       "databooks": "資料集",
       "workshop": "文字起こしと翻訳",
-      "koharu": "Koharu（翻訳エディタ）"
+      "koharu": "Shenron Studio（翻訳エディタ）"
     },
     "workshop": {
       "label": "原稿工房",
       "breadcrumb": "文字起こしと翻訳",
       "title": "原稿の文字起こしと翻訳",
-      "lead": "漫画と資料集のすべての原稿は同じ工程をたどります。公式スキャン、校正済みの日本語の文字起こし、正典用語集に基づくフランス語訳、そして Koharu での写植。作業の進捗を、切り上げずに実測で示します。",
+      "lead": "漫画と資料集のすべての原稿は同じ工程をたどります。公式スキャン、校正済みの日本語の文字起こし、正典用語集に基づくフランス語訳、そして Shenron Studio での写植。作業の進捗を、切り上げずに実測で示します。",
       "databooksTitle": "資料集と公式ガイド",
       "readDatabooks": "資料集を読む",
       "mangaTitle": "漫画",
@@ -1449,8 +1449,8 @@
           "text": "人名や技名は DBFR の正典用語集に沿ったフランス語訳。"
         },
         "koharu": {
-          "label": "Koharu",
-          "text": "Koharu エディタで吹き出しを消し、写植し、原稿を書き出します。"
+          "label": "Shenron Studio",
+          "text": "Shenron Studio エディタで吹き出しを消し、写植し、原稿を書き出します。"
         }
       },
       "tabs": {
@@ -1472,9 +1472,9 @@
       }
     },
     "koharu": {
-      "title": "Koharu：漫画翻訳エディタ",
-      "lead": "Koharu は吹き出しを検出し、日本語を文字起こしし、Shenron の正典用語集で翻訳し、原稿を修復して写植し、PSD まで書き出します。エンジンは Shenron デスクトップアプリ内でローカルに動作します。",
-      "featuresTitle": "Koharu の機能",
+      "title": "Shenron Studio：漫画翻訳エディタ",
+      "lead": "Shenron Studio は吹き出しを検出し、日本語を文字起こしし、Shenron の正典用語集で翻訳し、原稿を修復して写植し、PSD まで書き出します。エンジンは Shenron デスクトップアプリ内でローカルに動作します。",
+      "featuresTitle": "Shenron Studio の機能",
       "features": {
         "detect": {
           "label": "検出",

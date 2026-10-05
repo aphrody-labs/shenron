@@ -267,7 +267,7 @@
       "blurb": "Où en sont les planches du manga et des databooks"
     },
     "koharu": {
-      "label": "Koharu",
+      "label": "Shenron Studio",
       "blurb": "L'éditeur de traduction manga de Shenron"
     }
   },
@@ -1418,13 +1418,13 @@
       "manga": "Manga",
       "databooks": "Databooks",
       "workshop": "Transcription et traduction",
-      "koharu": "Koharu"
+      "koharu": "Shenron Studio"
     },
     "workshop": {
       "label": "Atelier des planches",
       "breadcrumb": "Transcription et traduction",
       "title": "Transcription et traduction des planches",
-      "lead": "Chaque planche du manga et des databooks suit la même chaîne : scan officiel, transcription du japonais relue, traduction française appuyée sur le lexique canonique, puis lettrage dans Koharu. Voici où en est le travail, mesuré et jamais arrondi à la hausse.",
+      "lead": "Chaque planche du manga et des databooks suit la même chaîne : scan officiel, transcription du japonais relue, traduction française appuyée sur le lexique canonique, puis lettrage dans Shenron Studio. Voici où en est le travail, mesuré et jamais arrondi à la hausse.",
       "databooksTitle": "Databooks et guides officiels",
       "readDatabooks": "Lire les databooks",
       "mangaTitle": "Manga",
@@ -1449,8 +1449,8 @@
           "text": "Le français, appuyé sur le lexique canonique de DBFR pour les noms et les techniques."
         },
         "koharu": {
-          "label": "Koharu",
-          "text": "Bulles nettoyées, texte lettré et planche exportée dans l'éditeur Koharu."
+          "label": "Shenron Studio",
+          "text": "Bulles nettoyées, texte lettré et planche exportée dans l'éditeur Shenron Studio."
         }
       },
       "tabs": {
@@ -1472,9 +1472,9 @@
       }
     },
     "koharu": {
-      "title": "Koharu, l'éditeur de traduction manga",
-      "lead": "Koharu détecte les bulles, transcrit le japonais, traduit avec le lexique canonique de Shenron, nettoie la planche et la relettre, jusqu'à l'export PSD. Le moteur tourne en local, dans l'application de bureau Shenron.",
-      "featuresTitle": "Ce que fait Koharu",
+      "title": "Shenron Studio, l'éditeur de traduction manga",
+      "lead": "Shenron Studio détecte les bulles, transcrit le japonais, traduit avec le lexique canonique de Shenron, nettoie la planche et la relettre, jusqu'à l'export PSD. Le moteur tourne en local, dans l'application de bureau Shenron.",
+      "featuresTitle": "Ce que fait Shenron Studio",
       "features": {
         "detect": {
           "label": "Détection",

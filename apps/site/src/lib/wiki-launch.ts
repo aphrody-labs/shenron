@@ -184,7 +184,7 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
   },
   {
     key: "koharu",
-    label: "Koharu",
+    label: "Shenron Studio",
     href: "/koharu",
     prefixes: ["/koharu"],
     alwaysOpen: true,

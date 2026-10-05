@@ -10,9 +10,9 @@ import { T } from "@/components/T";
 import { ogMeta } from "@/lib/og";
 import { KoharuEditor } from "./KoharuEditor";
 
-const title = "Koharu, l'éditeur de traduction manga";
+const title = "Shenron Studio, l'éditeur de traduction manga";
 const description =
-  "Koharu détecte les bulles, transcrit le japonais, traduit avec le lexique canonique Dragon Ball de DBFR, nettoie et relettre la planche jusqu'à l'export PSD.";
+  "Shenron Studio détecte les bulles, transcrit le japonais, traduit avec le lexique canonique Dragon Ball de DBFR, nettoie et relettre la planche jusqu'à l'export PSD.";
 
 export const metadata: Metadata = {
   title,
@@ -28,7 +28,7 @@ function KoharuPresentation() {
     <PageShell rhythm="tight">
       <Breadcrumbs
         className="mb-4"
-        items={[{ label: "Koharu", display: <T k="library.tabs.koharu" /> }]}
+        items={[{ label: "Shenron Studio", display: <T k="library.tabs.koharu" /> }]}
       />
       <PageHeader
         className="mb-6"

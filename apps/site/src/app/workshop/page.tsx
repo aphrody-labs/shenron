@@ -24,7 +24,7 @@ export const revalidate = 3600;
 
 const title = "Transcription et traduction des planches Dragon Ball";
 const description =
-  "Où en est la transcription japonaise et la traduction française des planches du manga et des databooks Dragon Ball, et comment Koharu les prépare.";
+  "Où en est la transcription japonaise et la traduction française des planches du manga et des databooks Dragon Ball, et comment Shenron Studio les prépare.";
 
 export const metadata: Metadata = {
   title,
