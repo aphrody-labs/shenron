@@ -49,6 +49,13 @@ export const DEFAULT_PUBLIC_ORIGINS = {
   cdn: "https://cdn.dragonballfr.com",
 } as const;
 
+/**
+ * Default invitation of the « Dragon Ball FR » Discord server (vanity
+ * `dragonballfr`, guild 934894610545770506). Never `dbfr`: that code was
+ * reassigned to another server and would send visitors elsewhere.
+ */
+export const DEFAULT_DISCORD_INVITE = "https://discord.gg/dragonballfr";
+
 /** Origin of the local Next dev server, allowed by CORS outside production only. */
 export const DEV_SITE_ORIGIN = "http://localhost:3000";
 

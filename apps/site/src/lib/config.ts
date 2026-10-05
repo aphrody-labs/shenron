@@ -20,6 +20,7 @@
  */
 
 import {
+  DEFAULT_DISCORD_INVITE,
   DEFAULT_PUBLIC_ORIGINS,
   joinUrl,
   originOf,
@@ -27,13 +28,12 @@ import {
   resolveAssetsUrl,
   resolveSiteUrl,
 } from "@shenron/config/public-urls";
+import { resolveBotApiServerUrl } from "@shenron/config/services";
 
 /**
  * Accès littéraux (Next n'inline `NEXT_PUBLIC_*` que sous cette forme) ; la
  * précédence et les noms historiques vivent dans `@shenron/config/public-urls`.
  */
-const trimSlash = (u: string): string => u.replace(/\/+$/, "");
-
 const PUBLIC_ENV = {
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   NEXT_PUBLIC_SHENRON_API_URL: process.env.NEXT_PUBLIC_SHENRON_API_URL,
@@ -49,12 +49,6 @@ const PUBLIC_ENV = {
 export const BOT_HOST: string = DEFAULT_PUBLIC_ORIGINS.api;
 /** Domaine canonique du site (Vercel). */
 export const SITE_HOST: string = DEFAULT_PUBLIC_ORIGINS.site;
-/**
- * Invitation Discord par défaut. Vanity `dragonballfr` = serveur « Dragon Ball FR »
- * (guild 934894610545770506). NE PAS remettre `dbfr` : ce code a été réattribué à
- * un autre serveur (« Goldbase Collection ») → il enverrait les visiteurs ailleurs.
- */
-const DISCORD_DEFAULT = "https://discord.gg/dragonballfr";
 
 /**
  * Base de l'API du bot Shenron (runtime, RAG, proxies admin/user, uploads).
@@ -86,7 +80,7 @@ export const CDN_ORIGIN: string = DEFAULT_PUBLIC_ORIGINS.cdn;
 export const SITE_URL = resolveSiteUrl(PUBLIC_ENV);
 
 /** Invitation Discord du serveur DBFR. */
-export const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL ?? DISCORD_DEFAULT;
+export const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL ?? DEFAULT_DISCORD_INVITE;
 
 /** Construit une URL absolue sur l'API bot : `apiUrl("api/public/stats")`. */
 export function apiUrl(path = ""): string {
@@ -96,18 +90,9 @@ export function apiUrl(path = ""): string {
 /**
  * Base de l'API du bot pour les appels **serveur** (client admin
  * `@/lib/bot-admin`, cockpit IA `@/lib/ia-cockpit-server`). Sans slash final.
- *
- * Précédence (première valeur non vide) :
- *  1. `BOT_INTERNAL_URL` — URL interne (boucle locale / réseau privé) du bot,
- *     serveur uniquement : évite de repasser par le domaine public ;
- *  2. sinon {@link API_URL} : `NEXT_PUBLIC_SHENRON_API_URL`, puis
- *     `SHENRON_API_URL`, puis {@link BOT_HOST}.
- *
- * `db-universe.ts` garde sa propre résolution jusqu'à SH-API-4.
+ * `BOT_INTERNAL_URL` d'abord, sinon la même résolution que {@link API_URL} :
+ * `resolveBotApiServerUrl` de `@shenron/config/services`.
  */
 export function botApiBaseUrl(env: Record<string, string | undefined> = process.env): string {
-  const internal = env.BOT_INTERNAL_URL?.trim();
-  if (internal) return trimSlash(internal);
-  const configured = (env.NEXT_PUBLIC_SHENRON_API_URL ?? env.SHENRON_API_URL)?.trim();
-  return trimSlash(configured || BOT_HOST);
+  return resolveBotApiServerUrl(env);
 }

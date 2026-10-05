@@ -34,14 +34,16 @@ l'API, qui servent le même arbre `/assets/**`.
 ## Services internes — `@shenron/config/services`
 
 Résolveurs `resolveRedisUrl`, `resolveSiteInternalUrl`, `resolveBotApiInternalUrl`,
-`resolveLibreTranslateUrl`, `resolveRelectureOcrUrl`, table `INTERNAL_SERVICE_ENV`. Les défauts
-sont des adresses de boucle locale pour le dev ; en production, l'environnement les fournit.
+`resolveBotApiServerUrl`, `resolveLibreTranslateUrl`, `resolveRelectureOcrUrl`, table
+`INTERNAL_SERVICE_ENV`. Les défauts sont des adresses de boucle locale pour le dev ; en
+production, l'environnement les fournit.
 
 | Service | Ordre de lecture |
 | --- | --- |
 | Redis / Valkey | `REDIS_URL`, `VALKEY_URL` |
 | Site interne (appels bot → site) | `SITE_INTERNAL_URL` |
 | API du bot (bind et appels internes) | `API_HOST` + `API_PORT` |
+| API du bot (appels serveur du site) | `BOT_INTERNAL_URL`, sinon l'origine publique de l'API |
 | LibreTranslate | `LIBRETRANSLATE_URL` (clé : `LIBRETRANSLATE_API_KEY`) |
 | Sidecar de relecture OCR | `RELECTURE_OCR_URL` |
 

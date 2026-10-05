@@ -2,6 +2,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   resolveBotApiInternalUrl,
+  resolveBotApiServerUrl,
   resolveLibreTranslateUrl,
   resolveRedisUrl,
   resolveRelectureOcrUrl,
@@ -28,6 +29,18 @@ describe("internal service resolvers", () => {
       "http://0.0.0.0:7000",
     );
     expect(resolveBotApiInternalUrl({ API_HOST: "::1" })).toBe("http://[::1]:5006");
+  });
+  test("bot API for site server calls: BOT_INTERNAL_URL, then the public API URL", () => {
+    expect(resolveBotApiServerUrl({})).toBe("https://bot.dragonballfr.com");
+    expect(resolveBotApiServerUrl({ BOT_INTERNAL_URL: "http://127.0.0.1:5006/" })).toBe(
+      "http://127.0.0.1:5006",
+    );
+    expect(
+      resolveBotApiServerUrl({ BOT_INTERNAL_URL: " ", NEXT_PUBLIC_SHENRON_API_URL: "https://a/" }),
+    ).toBe("https://a");
+    expect(
+      resolveBotApiServerUrl({ NEXT_PUBLIC_SHENRON_API_URL: "", SHENRON_API_URL: "https://b" }),
+    ).toBe("https://b");
   });
   test("Shenron API bind: loopback default, invalid port ignored", () => {
     expect(resolveShenronApiBind({})).toEqual({ hostname: "127.0.0.1", port: 8797 });

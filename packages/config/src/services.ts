@@ -11,6 +11,7 @@
  * | redis/valkey   | `REDIS_URL`, `VALKEY_URL`       | `redis://127.0.0.1:6379`  |
  * | site internal  | `SITE_INTERNAL_URL`             | `http://127.0.0.1:5011`   |
  * | bot API        | `API_HOST` + `API_PORT`         | `http://127.0.0.1:5006`   |
+ * | bot API (site) | `BOT_INTERNAL_URL`              | public API URL            |
  * | LibreTranslate | `LIBRETRANSLATE_URL`            | `http://127.0.0.1:5000`   |
  * | relecture OCR  | `RELECTURE_OCR_URL`             | `http://127.0.0.1:8791`   |
  * | Shenron API    | `SHENRON_API_HOST` + `_PORT`    | `127.0.0.1:8797` (bind)   |
@@ -18,10 +19,12 @@
  * Runtime class: `pure` (takes an explicit env record).
  */
 import { type EnvSource, envFirst, envString } from "./env";
+import { resolveApiUrl } from "./public-urls";
 
 export const INTERNAL_SERVICE_ENV = {
   redis: ["REDIS_URL", "VALKEY_URL"],
   siteInternal: ["SITE_INTERNAL_URL"],
+  botServer: ["BOT_INTERNAL_URL"],
   libreTranslate: ["LIBRETRANSLATE_URL"],
   relectureOcr: ["RELECTURE_OCR_URL"],
 } as const satisfies Record<string, readonly string[]>;
@@ -57,6 +60,16 @@ export function resolveBotApiInternalUrl(env: EnvSource): string {
   const host = envString(env, "API_HOST") ?? DEFAULT_INTERNAL_SERVICES.botApiHost;
   const port = envString(env, "API_PORT") ?? String(DEFAULT_INTERNAL_SERVICES.botApiPort);
   return `http://${host.includes(":") && !host.startsWith("[") ? `[${host}]` : host}:${port}`;
+}
+
+/**
+ * Bot API base for server-side calls made by the site (admin client, IA
+ * cockpit): `BOT_INTERNAL_URL` (loopback or private network, never public),
+ * otherwise the public API URL ({@link resolveApiUrl}). Without trailing slash.
+ */
+export function resolveBotApiServerUrl(env: EnvSource): string {
+  const internal = envFirst(env, INTERNAL_SERVICE_ENV.botServer)?.value;
+  return internal ? trimSlash(internal) : resolveApiUrl(env);
 }
 
 /** Bind address of the standalone Shenron API (`@shenron/api/host`); an invalid port keeps the default. */
