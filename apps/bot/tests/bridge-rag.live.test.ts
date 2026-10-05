@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Bridge HTTP fallback against the real public RAG route bodies (native RAG + PG, no stub). */
+/**
+ * Bridge HTTP fallback of @shenron/pipeline against the real public RAG route bodies of the bot
+ * (native RAG + PG, no stub). Lives with the route owner: a package never imports apps/.
+ */
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { contextPublicRag, searchPublicRag } from "../../../apps/bot/src/api/public-rag";
-import { DbuiBridge } from "../src/bridge/ipc";
-import { LIVE, loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
+import { DbuiBridge } from "@shenron/pipeline";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { contextPublicRag, searchPublicRag } from "../src/api/public-rag";
 
-if (LIVE) loadLiveRagEnv();
+if (isLive()) loadLiveRagEnv();
 let server: ReturnType<typeof Bun.serve> | undefined;
 beforeAll(async () => {
-  if (!LIVE) return;
+  if (!isLive()) return;
   await requireLiveRag();
   // Same route owner as packages/api/test/rag-live.test.ts; retrieval stays real.
   server = Bun.serve({
@@ -30,7 +33,7 @@ beforeAll(async () => {
 }, 120_000);
 afterAll(() => server?.stop(true));
 
-describe.if(LIVE)("DbuiBridge.searchRag against the real Shenron public route", () => {
+describe.if(isLive())("DbuiBridge.searchRag against the real Shenron public route", () => {
   test("returns genuine hybrid hits for a canonical query", async () => {
     const bridge = new DbuiBridge({
       forcedTransport: "http",
