@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createServiceHealth, probeHttp } from "../src/lib/service-health";
+import { createServiceHealth, probeDatabase, probeHttp } from "../src/lib/service-health";
 
 describe("service health contract", () => {
   test("uses a common, timestamped shape for site, bot and MCP", () => {
@@ -25,6 +25,13 @@ describe("service health contract", () => {
       }),
     ).toBe("unreachable");
     expect(createServiceHealth("site", "1", { api: "unreachable" }).status).toBe("degraded");
+  });
+
+  test("reports a missing or corrupted DATABASE_URL as disabled, not unreachable", async () => {
+    expect(await probeDatabase({})).toBe("disabled");
+    expect(await probeDatabase({ DATABASE_URL: "  " })).toBe("disabled");
+    expect(await probeDatabase({ DATABASE_URL: "undefined" })).toBe("disabled");
+    expect(await probeDatabase({ DATABASE_URL: "mysql://db/shenron" })).toBe("disabled");
   });
 });
 

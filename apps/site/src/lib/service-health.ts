@@ -1,4 +1,4 @@
-import type { EnvSource } from "@shenron/db/config";
+import { isDatabaseConfigured, type EnvSource } from "@shenron/db/config";
 
 export interface ServiceHealth {
   status: "ok" | "degraded";
@@ -27,12 +27,13 @@ export async function probeHttp(
   }
 }
 
-export async function probeDatabase(): Promise<"ok" | "unreachable" | "disabled"> {
+/** `disabled` when no usable DATABASE_URL is set, otherwise a live `SELECT 1`. */
+export async function probeDatabase(
+  env: EnvSource = process.env,
+): Promise<"ok" | "unreachable" | "disabled"> {
+  if (!isDatabaseConfigured(env)) return "disabled";
   try {
-    const { resolveDatabaseUrl, db } = await import("@/lib/db");
-    if (!resolveDatabaseUrl(process.env.DATABASE_URL)) {
-      return "disabled";
-    }
+    const { db } = await import("@/lib/db");
     const { sql } = await import("drizzle-orm");
     await db.execute(sql`SELECT 1`);
     return "ok";
