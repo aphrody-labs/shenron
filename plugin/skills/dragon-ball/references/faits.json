@@ -10,7 +10,7 @@
   "packages/config/src/aphrody-corpus.ts",
   "packages/config/src/economy-canon.ts"
  ],
- "revision": "4241d5e",
+ "revision": "4241d5e+modifications",
  "date": "2026-10-05",
  "statut": "Chaque enregistrement est établi par la source qu'il cite (instantané) ; un thème de non_embarque est non établi hors ligne.",
  "donnees": {

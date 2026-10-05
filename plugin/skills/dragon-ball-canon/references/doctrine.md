@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : apps/site/src/lib/canon-engine.ts. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`apps/site/src/lib/canon-engine.ts`),
-> révision `4241d5e` du 2026-10-05. Citer cette révision et cette date avec toute
+> révision `4241d5e+modifications` du 2026-10-05. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 Doctrine **livrée avec le dépôt** (défauts de `canon-engine.ts`). La doctrine de
@@ -555,7 +555,7 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
 - Sources :
   - Daizenshuu 7 : Dictionnaire de Dragon Ball (p. 82-83)
   - Manga DB Tomes 26-27
-- Mots-clés : 150 millions, 150 000 000, 150m, goku 150 000 000, puissance goku namek, puissance de goku, puissance goku, puissance namek, goku namek, goku ssj namek, freezer 100%, freezer 100%, goku contre freeza, goku super saiyan namek, freeza 120 000 000, sentoryoku goku freeza, battle power namek
+- Mots-clés : 150 millions, 150 000 000, 150m, goku 150 000 000, puissance goku namek, puissance de goku, puissance goku, puissance namek, goku namek, goku ssj namek, freezer 100%, goku contre freeza, goku super saiyan namek, freeza 120 000 000, sentoryoku goku freeza, battle power namek
 - Page du site : https://dragonballfr.com/wiki/canon?q=Puissance%20de%20Goku%20SSJ1%20sur%20Namek%20(150%20000%20000%20BP)
 
 ### Abandon des niveaux de puissance chiffrés (Scouters) après Namek
