@@ -65,6 +65,20 @@ fn shenron_doctor_json_output() {
     assert!(!stdout.contains("private-scope"));
 }
 
+/// Copies `from` into `to` recursively (`agent-home/` carries `.agents/plugins.json`).
+fn copy_tree(from: &std::path::Path, to: &std::path::Path) {
+    for entry in std::fs::read_dir(from).expect("agent-home fixture") {
+        let entry = entry.expect("agent-home entry");
+        let target = to.join(entry.file_name());
+        if entry.file_type().expect("agent-home entry type").is_dir() {
+            std::fs::create_dir_all(&target).expect("agent-home directory");
+            copy_tree(&entry.path(), &target);
+        } else {
+            std::fs::copy(entry.path(), &target).expect("copy agent home");
+        }
+    }
+}
+
 /// Runs on the repository's public agent home (`agent-home/`), copied into a temporary
 /// `APHRODY_HOME`, instead of whatever `~/.aphrody/workspace-dbfr` the host happens to hold.
 #[test]
@@ -73,10 +87,7 @@ fn shenron_persona_prompt_output() {
     let workspace = state.path().join("workspace-dbfr");
     std::fs::create_dir_all(&workspace).expect("workspace-dbfr");
     let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../agent-home");
-    for entry in std::fs::read_dir(&fixture).expect("agent-home fixture") {
-        let entry = entry.expect("agent-home entry");
-        std::fs::copy(entry.path(), workspace.join(entry.file_name())).expect("copy agent home");
-    }
+    copy_tree(&fixture, &workspace);
     shenron()
         .env("APHRODY_HOME", state.path())
         .args(["persona", "prompt"])
