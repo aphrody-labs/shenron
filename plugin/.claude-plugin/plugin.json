@@ -1,0 +1,10 @@
+{
+  "name": "shenron",
+  "version": "1.0.0",
+  "description": "Dragon Ball universe plugin: databooks OCR, canonical analysis, Toriyama aesthetics, manga/wiki indexing, and Shenron bot administration.",
+  "author": {
+    "name": "aphrody-dev",
+    "email": "contact@aphrody.com"
+  },
+  "skills": "./skills/"
+}
