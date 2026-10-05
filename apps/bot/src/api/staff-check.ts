@@ -1,6 +1,5 @@
 import { and, eq } from "drizzle-orm";
 import { container } from "tsyringe";
-import type { DiscordAccountLookup } from "@shenron/auth/ports";
 import { DatabaseService, type DB } from "~/db/index";
 import { baAccount } from "~/db/schema";
 import { botStaffPolicy } from "~/lib/env";
@@ -35,8 +34,3 @@ export async function discordIdForBaUser(
 		.limit(1);
 	return rows[0]?.accountId ?? null;
 }
-
-/** SQLite implementation of the `DiscordAccountLookup` port of `@shenron/auth`. */
-const sqliteDiscordAccounts: DiscordAccountLookup = {
-	discordIdForUser: (baUserId) => discordIdForBaUser(baUserId),
-};

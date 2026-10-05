@@ -11,7 +11,6 @@ import {
 } from "~/lib/constants";
 import { RACE_IDS, RACES, REGEN_XP, REGEN_ZENI, setRaceTuning } from "~/lib/races";
 import { DEFAULT_XP_BOOST_CONFIG as XP_BOOST } from "~/lib/xp-boosts";
-import { DEFAULT_INTERNAL_SERVICES } from "@shenron/config/services";
 
 /**
  * Settings runtime — table key/value persistée en SQLite.
@@ -647,13 +646,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
 		description: "Logs audit serveur (bans manuels, rôles, salons, etc.)",
 	},
 	{
-		key: "channel.ticket_category",
-		type: "snowflake",
-		category: "channels",
-		channelType: "category",
-		description: "Catégorie où les tickets sont créés",
-	},
-	{
 		key: "channel.log_games",
 		type: "snowflake",
 		category: "channels",
@@ -775,24 +767,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
 		description: "Rôle attribué aux membres fusionnés",
 	},
 	{
-		key: "role.jail",
-		type: "snowflake",
-		category: "roles",
-		description: "Rôle prison (mute total)",
-	},
-	{
-		key: "role.url_in_bio",
-		type: "snowflake",
-		category: "roles",
-		description: "Rôle bio + URL (auto-attribué si /bio contient URL)",
-	},
-	{
-		key: "role.muted",
-		type: "snowflake",
-		category: "roles",
-		description: "Rôle mute (silenced channel access)",
-	},
-	{
 		key: "role.auto_join",
 		type: "snowflake",
 		category: "roles",
@@ -823,24 +797,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
 		description: "Durée max d'un bingo (ms)",
 		default: 60_000,
 		min: 10_000,
-	},
-	{
-		key: "game.bingo.min",
-		type: "int",
-		category: "advanced",
-		description: "Valeur min du bingo",
-		default: 1,
-		min: 1,
-		max: 1000,
-	},
-	{
-		key: "game.bingo.max",
-		type: "int",
-		category: "advanced",
-		description: "Valeur max du bingo",
-		default: 100,
-		min: 10,
-		max: 10000,
 	},
 	{
 		key: "game.morpion.ttl_ms",
@@ -918,60 +874,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
 
 	// ── Translate / OCR ──────────────────────────────────────────
 	{
-		key: "translate.tesseract_timeout_ms",
-		type: "int",
-		category: "advanced",
-		description: "Ancien délai Tesseract (conservé pour compatibilité, OCR délégué à Aphrody)",
-		default: 30_000,
-		min: 5_000,
-		max: 120_000,
-	},
-	{
-		key: "translate.libretranslate_timeout_ms",
-		type: "int",
-		category: "advanced",
-		description: "Timeout LibreTranslate (ms)",
-		default: 8_000,
-		min: 1_000,
-		max: 60_000,
-	},
-	{
-		key: "translate.google_timeout_ms",
-		type: "int",
-		category: "advanced",
-		description: "Timeout Google Translate (ms)",
-		default: 8_000,
-		min: 1_000,
-		max: 60_000,
-	},
-	{
-		key: "translate.fetch_image_timeout_ms",
-		type: "int",
-		category: "advanced",
-		description: "Timeout fetch image (ms)",
-		default: 10_000,
-		min: 1_000,
-		max: 60_000,
-	},
-	{
-		key: "translate.max_image_bytes",
-		type: "int",
-		category: "advanced",
-		description: "Taille max image OCR (octets)",
-		default: 10_485_760,
-		min: 100_000,
-		max: 104_857_600,
-	},
-	{
-		key: "translate.max_chars",
-		type: "int",
-		category: "advanced",
-		description: "Caractères max texte traduit",
-		default: 5_000,
-		min: 100,
-		max: 50_000,
-	},
-	{
 		key: "translate.lingva_instances",
 		type: "string",
 		category: "advanced",
@@ -1016,41 +918,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
 	},
 
 	// ── Modération ─────────────────────────────────────────────────
-	{
-		key: "moderation.warn_threshold_mute",
-		type: "int",
-		category: "moderation",
-		description: "Nb warns avant mute auto",
-		default: 3,
-		min: 1,
-		max: 20,
-	},
-	{
-		key: "moderation.warn_threshold_kick",
-		type: "int",
-		category: "moderation",
-		description: "Nb warns avant kick auto",
-		default: 5,
-		min: 1,
-		max: 20,
-	},
-	{
-		key: "moderation.warn_threshold_ban",
-		type: "int",
-		category: "moderation",
-		description: "Nb warns avant ban auto",
-		default: 7,
-		min: 1,
-		max: 50,
-	},
-	{
-		key: "moderation.jail_default_duration_min",
-		type: "int",
-		category: "moderation",
-		description: "Durée jail par défaut (minutes)",
-		default: 60,
-		min: 1,
-	},
 	{
 		key: "moderation.hierarchy",
 		type: "string",
@@ -1156,27 +1023,6 @@ export const SETTINGS_KEYS: SettingDef[] = [
 		category: "features",
 		description: "Commande /wiki",
 		default: true,
-	},
-
-	// ── Translate ──────────────────────────────────────────────────
-	{
-		key: "translate.libretranslate_url",
-		type: "string",
-		category: "translate",
-		description: "URL LibreTranslate (fallback)",
-		default: DEFAULT_INTERNAL_SERVICES.libreTranslate,
-	},
-	{
-		key: "translate.libretranslate_key",
-		type: "string",
-		category: "translate",
-		description: "Clé API LibreTranslate (optionnel)",
-	},
-	{
-		key: "translate.lingva_instance",
-		type: "string",
-		category: "translate",
-		description: "Instance Lingva (override la rotation)",
 	},
 
 	// ── Préfixe : multiplier XP par rôle ────────────────────────────

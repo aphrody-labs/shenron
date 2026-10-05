@@ -1,22 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * B2 : PgService paresseux et nullable, un seul pool `shenron-bot` partagé par
- * EpisodesService et BxcBridgeService. Aucune connexion n'est ouverte : Bun.SQL
- * ne se connecte qu'à la première requête.
+ * Drizzle et le SQL brut (EpisodesService). Aucune connexion n'est ouverte :
+ * Bun.SQL ne se connecte qu'à la première requête.
  */
 import "./setup";
 import { afterAll, describe, expect, it } from "bun:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { DatabaseService } from "../src/db";
 import {
 	BOT_PG_APPLICATION_NAME,
 	BOT_PG_POOL_MAX,
 	PgService,
 	resolveBotDatabaseUrl,
 } from "../src/db/pg";
-import { BxcBridgeService } from "../src/services/BxcBridgeService";
 import { EpisodesService } from "../src/services/EpisodesService";
 
 const dir = mkdtempSync(join(tmpdir(), "shenron-bot-pg-"));
@@ -32,15 +30,11 @@ describe("PgService", () => {
 		expect(pg.get()).toBeNull();
 	});
 
-	it("EpisodesService et BxcBridgeService dégradent comme avant sans base", async () => {
+	it("EpisodesService dégrade comme avant sans base", async () => {
 		const pg = PgService.withEnv({ SHENRON_PG_ENV: ABSENT });
 		const episodes = new EpisodesService(pg);
 		expect(await episodes.parId(1)).toBeNull();
 		expect(await episodes.parId(1)).toBeNull();
-		const bxc = new BxcBridgeService({} as DatabaseService, pg);
-		await expect(bxc.syncChapterPagesToPg("0-10-1", "dragon-ball", 1)).rejects.toThrow(
-			"Connexion PostgreSQL indisponible pour synchroniser les pages"
-		);
 	});
 
 	it("une erreur à la création du pool dégrade à null sans retenter", () => {

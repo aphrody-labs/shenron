@@ -4,7 +4,6 @@ import {
 	ApplicationCommandOptionType,
 	type CommandInteraction,
 	EmbedBuilder,
-	MessageFlags,
 } from "discord.js";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
@@ -308,7 +307,6 @@ export class GoalCommands {
 		}
 
 		const lines = goals.slice(0, 8).map((g) => {
-			const date = new Date(g.created_at).toLocaleDateString();
 			return `**#${g.id} [${g.priority.toUpperCase()}]** ${g.title} (\`${g.target_session}\` · assigné à \`${g.assigned_to}\`)\n> ${g.description.slice(0, 110)}... *(statut: ${g.status})*`;
 		});
 

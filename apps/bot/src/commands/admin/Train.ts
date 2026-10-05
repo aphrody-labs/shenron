@@ -1,10 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
 import {
-	ActionRowBuilder,
 	ApplicationCommandOptionType,
-	ButtonBuilder,
-	ButtonStyle,
 	type CommandInteraction,
 	EmbedBuilder,
 	MessageFlags,

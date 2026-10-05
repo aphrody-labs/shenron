@@ -2,15 +2,7 @@ import { container } from "tsyringe";
 import type { EmbedBuilder, User } from "discord.js";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
 
-// parseDuration + formatDuration wrappent le crate Rust natif (cf. `lib/native.ts`).
-// Si tu modifies les unités acceptées, synchronise `native/src/lib.rs`.
-import {
-	parseDuration as nativeParseDuration,
-	formatDuration as nativeFormatDuration,
-} from "./native";
-
-export const parseDuration = nativeParseDuration;
-export const formatDuration = nativeFormatDuration;
+export { formatDuration, parseDuration } from "./duration";
 
 /**
  * DM le membre sanctionné en best-effort. Silence les erreurs (DM fermés,

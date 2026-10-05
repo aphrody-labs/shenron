@@ -5,7 +5,7 @@
  *
  * Fusionne deux signaux :
  *   1. Lexical  — FTS5 BM25 sur `rag_chunks` (exact-match, noms propres, rapide).
- *   2. Sémantique — cosinus exact (brute-force) sur `rag_vectors` (paraphrases,
+ *   2. Sémantique — KNN sqlite-vec sur la table virtuelle `vec_chunks` (paraphrases,
  *      questions naturelles), via embeddings denses servis par Aphrody
  *      (`POST /api/v1/shenron/embed`).
  *
@@ -72,11 +72,6 @@ export function queryEmbeddingModel(): QueryEmbedding {
 	return state;
 }
 
-/** Test hook : oublie le modèle construit (relit l'environnement au prochain usage). */
-export function resetQueryEmbeddingModel(): void {
-	queryEmbeddingState = undefined;
-}
-
 /** Embedding d'une requête (`maxRetries: 0`), `null` si indisponible. Ne jette jamais. */
 export async function embedQueryVector(text: string, timeoutMs?: number): Promise<number[] | null> {
 	const { model, timeoutMs: hot } = queryEmbeddingModel();
@@ -116,7 +111,6 @@ const RRF_K = 60;
 // appliqué aux chunks source_id="manga", + quota garanti dans le top final. Le manga
 // pertinent remonte au-dessus des autres corpus ; le bruit OCR (score bas) reste en bas.
 const MANGA_SOURCE = process.env.RAG_MANGA_SOURCE ?? "manga";
-const MANGA_WEIGHT = Number(process.env.RAG_MANGA_WEIGHT ?? 2.2);
 const MANGA_QUOTA = Number(process.env.RAG_MANGA_QUOTA ?? 2);
 /** Probabilité de pertinence (cross-encoder) minimale d'une planche promue par le quota. */
 const MANGA_QUOTA_MIN_SCORE = Number(process.env.RAG_MANGA_QUOTA_MIN_SCORE ?? 0.3);
@@ -1031,7 +1025,7 @@ export async function hybridSearch(
 		);
 		const exactIndex = out.findIndex((hit) => exactKeys.has(diversityKey(hit)));
 		if (exactIndex > 2) out.splice(2, 0, out.splice(exactIndex, 1)[0]!);
-		const sliced = out.slice(0, limit).map(({ sortScore, ...rest }) => rest);
+		const sliced = out.slice(0, limit).map(({ sortScore: _sortScore, ...rest }) => rest);
 		return { results: normalizeScores(sliced, "lexical"), mode: "lexical" };
 	}
 

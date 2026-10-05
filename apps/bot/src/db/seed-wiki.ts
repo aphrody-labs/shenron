@@ -3,7 +3,6 @@ import "./wiki-write-guard";
 import { container } from "tsyringe";
 import { botFile } from "~/lib/asset-files";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { eq } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
 import { dbCharacters, dbPlanets, dbTransformations } from "~/db/schema";

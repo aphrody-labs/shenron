@@ -57,21 +57,3 @@ export async function resolveLevelChannel(
 
 	return resolveAnnounceChannel(client, guild);
 }
-
-/**
- * Salon des messages "🏆 succès débloqué". Cascade :
- *   channel.achievement > env.ACHIEVEMENT_CHANNEL_ID > channel.announce > env.ANNOUNCE_CHANNEL_ID
- */
-async function resolveAchievementChannel(
-	client: Client,
-	guild?: Guild
-): Promise<SendableChannels | null> {
-	const dedicated = await resolveSettingChannel(
-		client,
-		"channel.achievement",
-		env.ACHIEVEMENT_CHANNEL_ID,
-		guild
-	);
-	if (dedicated) return dedicated;
-	return resolveAnnounceChannel(client, guild);
-}

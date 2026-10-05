@@ -408,15 +408,6 @@ describe("bingo — difficulté", () => {
 
 // ─── Morpion : failles de farm corrigées ────────────────────────────────────
 
-function playAll(game: MorpionGame, userId: string, cells: number[]) {
-	let last: ReturnType<typeof playMorpionTurn> | null = null;
-	for (const c of cells) {
-		last = playMorpionTurn(game, userId, c);
-		if (!last.ok || last.outcome.kind !== "playing") break;
-	}
-	return last;
-}
-
 describe("morpion — anti-farm", () => {
 	test("faille 1 : la séquence farmée 6,2,8,5 ne bat plus le robot", () => {
 		// Relevée 161 fois sur 170 parties solo en production (ouverture coins opposés).

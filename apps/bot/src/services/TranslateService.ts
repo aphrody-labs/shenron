@@ -9,13 +9,6 @@ import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import { resolveLibreTranslateUrl } from "@shenron/config/services";
 
 // Helpers settings-aware : lit la setting, fallback const default
-async function getInt(key: string, def: number): Promise<number> {
-	try {
-		return await container.resolve(SettingsService).getInt(key, def);
-	} catch {
-		return def;
-	}
-}
 async function getString(key: string, def: string): Promise<string> {
 	try {
 		return await container.resolve(SettingsService).getString(key, def);

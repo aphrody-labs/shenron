@@ -1,6 +1,6 @@
 import { injectable, inject } from "tsyringe";
 import { Bot, Discord, On, type ArgsOf } from "discordx";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { LevelService } from "~/services/LevelService";
 import { EconomyService } from "~/services/EconomyService";
 import { AchievementService } from "~/services/AchievementService";

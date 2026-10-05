@@ -6,7 +6,7 @@
  *   • description : 1-100
  *   • choices.name: 1-100
  *
- * Échec → exit code 1 (deploy-shenron.sh refuse de redémarrer).
+ * Échec → exit code 1 ; `tests/slash-lengths.test.ts` le rejoue à chaque `bun run test`.
  *
  * Évite le crash boot vu le 2026-04-30 sur `/bingo` (description 138 chars).
  *
@@ -128,7 +128,7 @@ function checkObjectFields(file: string, src: string, decoratorName: string) {
 	}
 }
 
-const root = `${process.cwd()}/src`;
+const root = `${import.meta.dir}/../src`;
 const glob = new Glob("commands/**/*.ts");
 
 let scanned = 0;

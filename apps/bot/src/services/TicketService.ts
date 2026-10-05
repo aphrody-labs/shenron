@@ -1,5 +1,5 @@
 import { singleton, inject, container } from "tsyringe";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import {
 	ChannelType,
 	PermissionFlagsBits,

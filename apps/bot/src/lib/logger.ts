@@ -13,5 +13,3 @@ export const logger = pino({
 				}
 			: undefined,
 });
-
-type Logger = typeof logger;

@@ -163,16 +163,6 @@ export function penduReward(baseWin: number, level: GameDifficulty): number {
 	return difficultyReward(baseWin, level);
 }
 
-const PENDU_HANGMAN_FRAMES = [
-	"        \n        \n        \n        \n        \n========",
-	"  +---+\n  |   |\n      |\n      |\n      |\n========",
-	"  +---+\n  |   |\n  O   |\n      |\n      |\n========",
-	"  +---+\n  |   |\n  O   |\n  |   |\n      |\n========",
-	"  +---+\n  |   |\n  O   |\n /|   |\n      |\n========",
-	"  +---+\n  |   |\n  O   |\n /|\\  |\n      |\n========",
-	"  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n========",
-] as const;
-
 export type PenduState = {
 	word: string;
 	found: Set<string>;
@@ -288,10 +278,4 @@ export function maskPenduWord(state: PenduState, hidden = "_"): string {
 	return [...state.word]
 		.map((c) => (!isPenduLetter(c) ? c : state.found.has(c) ? c : hidden))
 		.join(" ");
-}
-
-/** ASCII frame courant (API historique). */
-function penduFrame(state: PenduState): string {
-	const idx = Math.min(penduErrors(state), PENDU_HANGMAN_FRAMES.length - 1);
-	return PENDU_HANGMAN_FRAMES[idx]!;
 }

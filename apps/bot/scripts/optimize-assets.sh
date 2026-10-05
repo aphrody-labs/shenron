@@ -21,7 +21,7 @@
 set -uo pipefail
 shopt -s nullglob globstar
 
-ROOT="${1:-apps/shenron/bot/public/db}"
+ROOT="${1:-apps/bot/public/db}"
 [ -d "$ROOT" ] || { echo "FATAL: $ROOT introuvable" >&2; exit 1; }
 
 REPORT="reports/optimize-$(date +%Y%m%d-%H%M%S).log"

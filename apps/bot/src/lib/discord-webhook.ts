@@ -137,27 +137,3 @@ export async function executeWebhook(
 	if (res.status === 204) return null;
 	return (await res.json()) as { id: string; channel_id: string };
 }
-
-async function editWebhookMessage(
-	url: string,
-	messageId: string,
-	payload: ExecuteWebhookPayload
-): Promise<void> {
-	const parsed = parseWebhookUrl(url);
-	if (!parsed) throw new Error("URL webhook invalide");
-	const target = `${buildWebhookUrl(parsed.id, parsed.token)}/messages/${messageId}`;
-	const res = await fetch(target, {
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(payload),
-	});
-	if (!res.ok) throw new Error(`webhook edit ${res.status}`);
-}
-
-async function deleteWebhookMessage(url: string, messageId: string): Promise<void> {
-	const parsed = parseWebhookUrl(url);
-	if (!parsed) throw new Error("URL webhook invalide");
-	const target = `${buildWebhookUrl(parsed.id, parsed.token)}/messages/${messageId}`;
-	const res = await fetch(target, { method: "DELETE" });
-	if (!res.ok && res.status !== 204) throw new Error(`webhook delete ${res.status}`);
-}

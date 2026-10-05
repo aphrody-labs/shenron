@@ -33,7 +33,6 @@ import { AdminOnly } from "~/guards/AdminOnly";
 import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { TicketService } from "~/services/TicketService";
 import { LogService } from "~/services/LogService";
-import { env } from "~/lib/env";
 
 const KIND_LABELS = {
 	report: "Signaler",

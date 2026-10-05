@@ -7,7 +7,7 @@ data/streams.json
 assets/ext/
 assets/wiki/
 # Scans manga téléchargés (couleur Full Color + N&B self-hostés) — VPS only,
-# régénérés par scripts/ingest-fullcolor-manga.ts & scripts/selfhost-manga-pages.ts
+# régénérés par packages/pipeline/scripts/{ingest-fullcolor-manga,selfhost-manga-pages}.ts
 assets/manga/
 data/cache/
 
@@ -17,5 +17,5 @@ assets/subtitles/db_episodes/
 assets/subtitles/db_movies/
 data/dbz-frames/
 
-# Police de caractères émojis déployée depuis crates/web/obscura-render (canonique)
+# Police émojis facultative (non versionnée) : chargée par src/lib/canvas-kit.ts si présente
 assets/fonts/NotoColorEmoji.ttf

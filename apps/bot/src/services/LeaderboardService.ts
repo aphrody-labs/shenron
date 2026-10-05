@@ -129,7 +129,7 @@ export class LeaderboardService {
 		this.drawScouterGrid(ctx, W, H);
 
 		// Particules de Ki flottantes (étincelles dorées et cyans)
-		this.drawKiSparkles(ctx, W, H);
+		this.drawKiSparkles(ctx);
 
 		// Dragon Balls décoratives aux angles supérieurs
 		ctx.save();
@@ -633,7 +633,7 @@ export class LeaderboardService {
 	}
 
 	/** Particules d'étincelles de Ki */
-	private drawKiSparkles(ctx: SKRSContext2D, w: number, h: number): void {
+	private drawKiSparkles(ctx: SKRSContext2D): void {
 		ctx.save();
 		const sparkles = [
 			{ x: 140, y: 150, r: 2, c: "#facc15" },

@@ -55,14 +55,6 @@ const ASK_MORE: Record<string, string> = {
 	kaio: "Hé hé, sois plus précis, jeune combattant !",
 	enma: "Précise ta demande. Suivant !",
 };
-const NO_RESULT: Record<string, string> = {
-	whis: "Oh oh, mes archives de l'Univers 7 restent bien silencieuses à ce sujet.",
-	beerus: "Cette question est insignifiante. Même mes archives n'en parlent pas.",
-	shenron: "Je ne peux accomplir ce souhait, cette information m'est inconnue.",
-	grandpretre: "Même l'omniscience ne trouve rien à ce sujet dans nos archives.",
-	kaio: "Ah ! Là tu me poses une colle, mes notes sont muettes là-dessus.",
-	enma: "Dossier introuvable. Au suivant !",
-};
 
 class BaseAutonomousChat {
 	constructor(

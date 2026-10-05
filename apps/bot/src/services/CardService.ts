@@ -10,9 +10,6 @@ import { container } from "tsyringe";
 import {
 	drawDragonBall,
 	drawImageCover,
-	drawStar,
-	fillRadialGlow,
-	hexToRgb,
 	kiScouterLabel,
 	rgba,
 	roundRectPath,

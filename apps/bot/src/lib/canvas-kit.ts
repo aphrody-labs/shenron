@@ -44,14 +44,7 @@ function registerFonts(): void {
 	for (const [file, family] of fonts) {
 		try {
 			const primaryPath = botFile(`assets/fonts/${file}`, BOT_ROOT);
-			if (existsSync(primaryPath)) {
-				GlobalFonts.registerFromPath(primaryPath, family);
-			} else if (file === "NotoColorEmoji.ttf") {
-				const canonical = `${BOT_ROOT}/../../../crates/web/obscura-render/assets/noto-color-emoji.ttf`;
-				if (existsSync(canonical)) {
-					GlobalFonts.registerFromPath(canonical, family);
-				}
-			}
+			if (existsSync(primaryPath)) GlobalFonts.registerFromPath(primaryPath, family);
 		} catch (err) {
 			logger.debug({ err, file, family }, "Font non chargée (fallback sans-serif)");
 		}
@@ -88,20 +81,6 @@ export function hexToRgb(hex: string): Rgb {
 export function rgba(hex: string, alpha: number): string {
 	const { r, g, b } = hexToRgb(hex);
 	return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-/** Éclaircit une couleur hex de `amount` (0-1). */
-function lighten(hex: string, amount: number): string {
-	const { r, g, b } = hexToRgb(hex);
-	const mix = (c: number) => Math.min(255, Math.round(c + (255 - c) * amount));
-	return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
-}
-
-/** Assombrit une couleur hex de `amount` (0-1). */
-function darken(hex: string, amount: number): string {
-	const { r, g, b } = hexToRgb(hex);
-	const mix = (c: number) => Math.max(0, Math.round(c * (1 - amount)));
-	return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
 }
 
 // ─── Paths ─────────────────────────────────────────────────────────────────
@@ -268,56 +247,6 @@ export function textStroked(
 	ctx.miterLimit = 2;
 	ctx.strokeText(text, x, y);
 	ctx.fillStyle = options.color;
-	ctx.fillText(text, x, y);
-	ctx.restore();
-}
-
-/**
- * Texte "double-police" : superpose deux polices différentes pour créer un
- * effet relief / bichromie typique des affiches DBZ. Usage :
- *
- *   - une font "back" en plus large + glow / décalage subtil (Saiyan Sans)
- *   - une font "front" plus rectiligne par-dessus (Inter Display Black)
- *
- * Les deux polices doivent partager le même tracé de baseline (mêmes `align`)
- * pour que la superposition reste lisible.
- */
-interface TextDoubleFontOptions {
-	back: {
-		font: string;
-		color: string;
-		offsetX?: number;
-		offsetY?: number;
-		blur?: number;
-	};
-	front: { font: string; color: string };
-	align?: CanvasTextAlign;
-}
-
-function textDoubleFont(
-	ctx: SKRSContext2D,
-	text: string,
-	x: number,
-	y: number,
-	opts: TextDoubleFontOptions
-): void {
-	ctx.save();
-	if (opts.align) ctx.textAlign = opts.align;
-
-	// Couche arrière : décalée + flou
-	ctx.save();
-	ctx.font = opts.back.font;
-	ctx.fillStyle = opts.back.color;
-	if (opts.back.blur) {
-		ctx.shadowColor = opts.back.color;
-		ctx.shadowBlur = opts.back.blur;
-	}
-	ctx.fillText(text, x + (opts.back.offsetX ?? 2), y + (opts.back.offsetY ?? 2));
-	ctx.restore();
-
-	// Couche avant : nette
-	ctx.font = opts.front.font;
-	ctx.fillStyle = opts.front.color;
 	ctx.fillText(text, x, y);
 	ctx.restore();
 }

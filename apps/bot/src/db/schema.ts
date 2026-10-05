@@ -1168,7 +1168,7 @@ export const dbPlanetsRelations = relations(dbPlanets, ({ many }) => ({
 	races: many(dbRaces),
 }));
 
-export const dbRacesRelations = relations(dbRaces, ({ one, many }) => ({
+export const dbRacesRelations = relations(dbRaces, ({ one }) => ({
 	homePlanet: one(dbPlanets, {
 		fields: [dbRaces.homePlanetId],
 		references: [dbPlanets.id],

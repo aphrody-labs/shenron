@@ -11,7 +11,7 @@ import { XP_PER_VOICE_TICK, XP_VOICE_TICK_MS, VOCAL_TEMPO_EMPTY_DELAY_MS } from 
 import { env } from "~/lib/env";
 import { resolveLevelChannel } from "~/lib/announce";
 import { boosterXpMultiplier } from "~/lib/booster";
-import { formatDuration } from "~/lib/native";
+import { formatDuration } from "~/lib/duration";
 import {
 	bestRoleMultiplier,
 	formatMultiplier,

@@ -1,6 +1,6 @@
 import { injectable, inject } from "tsyringe";
 import { Bot, Discord, On, Once, type ArgsOf } from "discordx";
-import type { Client, Guild, GuildMember, Presence } from "discord.js";
+import type { Client, GuildMember } from "discord.js";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 import { CronRegistry } from "~/api/cron-registry";
@@ -21,14 +21,14 @@ export class BioRoleEvent {
 		@inject(SettingsService) private settings: SettingsService
 	) {}
 
-	private key(guildId: string) {
+	private key() {
 		return env.SERVER_INVITE_URL.replace(/^https?:\/\//, "")
 			.replace(/\/$/, "")
 			.toLowerCase();
 	}
 
 	private hasInvite(member: GuildMember): boolean {
-		const invitePattern = this.key(member.guild.id);
+		const invitePattern = this.key();
 		if (!invitePattern) return false;
 		for (const activity of member.presence?.activities ?? []) {
 			const text =

@@ -110,9 +110,6 @@ import {
 	achievements,
 	achievementTriggers,
 	inventory,
-	dbCharacters,
-	dbTransformations,
-	dbPlanets,
 	dmContacts,
 	dmMessages,
 	ragTrainingFeedback,
@@ -1255,7 +1252,7 @@ export class ApiServer {
 						: { source: session.source };
 					return Response.json({ authenticated: true, user });
 				},
-				"/auth/discord": (req) => {
+				"/auth/discord": () => {
 					const config = getOAuthConfig();
 					if (!config) {
 						return new Response(
@@ -2838,7 +2835,7 @@ export class ApiServer {
 						const total = hits + misses;
 						const hitRate = total > 0 ? (hits / total) * 100 : 0;
 						return Response.json({ hits, misses, total, hitRate });
-					} catch (err) {
+					} catch {
 						return Response.json({ error: "redis_error" }, { status: 500 });
 					}
 				},
@@ -2854,7 +2851,7 @@ export class ApiServer {
 						const llm = llmReportRaw ? JSON.parse(llmReportRaw) : null;
 
 						return Response.json({ rag, llm });
-					} catch (err) {
+					} catch {
 						return Response.json({ error: "redis_error" }, { status: 500 });
 					}
 				},
@@ -6431,27 +6428,6 @@ function publicRateLimit(ip: string): boolean {
 	return hitPublicBucket(publicRateBuckets, ip);
 }
 
-async function publicRoute(
-	req: Request & { params: any },
-	handler: () => Response | Promise<Response>
-): Promise<Response> {
-	const cors = publicCorsHeaders(req);
-	if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
-	if (req.method !== "GET") {
-		return new Response("Method Not Allowed", { status: 405, headers: cors });
-	}
-	if (!publicRateLimit(clientIp(req))) {
-		return new Response(JSON.stringify({ error: "Rate limit (60/min)" }), {
-			status: 429,
-			headers: { ...cors, "Content-Type": "application/json", "Retry-After": "60" },
-		});
-	}
-	const res = await handler();
-	const headers = new Headers(res.headers);
-	for (const [k, v] of Object.entries(cors)) headers.set(k, v);
-	return new Response(res.body, { status: res.status, headers });
-}
-
 // ── publicCachedJson : 2 niveaux de cache (mémoire + HTTP) ──────────────
 // Le site Vercel (`dragonballfr.com`) fetch ces routes avec `next: { revalidate: 60 }` —
 // le Cache-Control `public, s-maxage=…, stale-while-revalidate=…` permet à
@@ -6560,18 +6536,6 @@ export async function publicCachedJson(
 	}
 	const body = req.method === "HEAD" ? null : (entry.body as unknown as BodyInit);
 	return new Response(body, { status: 200, headers });
-}
-
-/** Invalide les entrées du cache public dont la clé commence par `prefix`. */
-function invalidatePublicCache(prefix: string): number {
-	let n = 0;
-	for (const k of Array.from(publicCache.keys())) {
-		if (k.startsWith(prefix)) {
-			publicCache.delete(k);
-			n++;
-		}
-	}
-	return n;
 }
 
 // ── Profils Discord (username + avatar hash) ─────────────────────────

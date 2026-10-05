@@ -25,7 +25,7 @@
  *
  * Lancer sur le VPS (PG local) :
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/bot bun scripts/add-character-variants.ts
+ *     --working-directory=apps/bot bun scripts/add-character-variants.ts
  * ou simplement `DATABASE_URL=... bun scripts/add-character-variants.ts`.
  */
 import postgres from "postgres";

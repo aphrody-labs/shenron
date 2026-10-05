@@ -3,7 +3,7 @@
  * Steam (images + trailers YouTube) sous la description de la fiche jeu.
  *
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/bot bun scripts/add-games-media.ts
+ *     --working-directory=apps/bot bun scripts/add-games-media.ts
  */
 import postgres from "postgres";
 

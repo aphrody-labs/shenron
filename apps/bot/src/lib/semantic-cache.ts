@@ -178,7 +178,7 @@ export async function getSemanticCache(
 					bestHash = hashes[i]!;
 					bestQuery = cachedQuery;
 				}
-			} catch (e) {
+			} catch {
 				// Ignorer les vecteurs corrompus
 			}
 		}

@@ -67,10 +67,6 @@ export function warningEmbed(message: string, description?: string): EmbedBuilde
 	return brandedEmbed({ title: `⚠️ ${message}`, description, kind: "warning" });
 }
 
-function infoEmbed(message: string, description?: string): EmbedBuilder {
-	return brandedEmbed({ title: `ℹ️ ${message}`, description, kind: "info" });
-}
-
 // ─── Helpers safety (limites Discord) ────────────────────────────────────
 // Limites strict de l'API Discord — au-delà l'embed est rejeté :
 //   title 256 · description 4096 · field name 256 · field value 1024 ·
@@ -126,98 +122,6 @@ export function levelUpEmbed(opts: {
 		embed.addFields({
 			name: "Récompense",
 			value: `**+${formatZeni(zeniBonus)}**`,
-			inline: true,
-		});
-	}
-	return embed;
-}
-
-/** Succès débloqué (achievement) : violet, mention user, description du succès. */
-function achievementEmbed(opts: {
-	user: User;
-	code: string;
-	description: string;
-	zeniBonus?: number;
-}): EmbedBuilder {
-	const { user, code, description, zeniBonus } = opts;
-	const embed = new EmbedBuilder()
-		.setColor(DBZ_COLORS.achievement)
-		.setAuthor({
-			name: user.username,
-			iconURL: user.displayAvatarURL({ size: 128 }),
-		})
-		.setTitle("🏆 Succès débloqué !")
-		.setDescription(trim(`<@${user.id}> a débloqué **${code}**`, 4096))
-		.addFields({ name: "Description", value: trim(description, 1024) })
-		.setTimestamp()
-		.setFooter(FOOTER_DBZ);
-	if (zeniBonus && zeniBonus > 0) {
-		embed.addFields({
-			name: "Récompense",
-			value: `**+${formatZeni(zeniBonus)}**`,
-			inline: true,
-		});
-	}
-	return embed;
-}
-
-/** Transaction économique (gain / perte zénis). */
-function economyEmbed(opts: {
-	user: User;
-	delta: number;
-	reason: string;
-	newBalance?: number;
-}): EmbedBuilder {
-	const { user, delta, reason, newBalance } = opts;
-	const positive = delta >= 0;
-	const embed = new EmbedBuilder()
-		.setColor(DBZ_COLORS.zeni)
-		.setAuthor({
-			name: user.username,
-			iconURL: user.displayAvatarURL({ size: 128 }),
-		})
-		.setTitle(positive ? "💰 Gain de zénis" : "💸 Perte de zénis")
-		.setDescription(reason)
-		.addFields({
-			name: positive ? "Gain" : "Perte",
-			value: `**${positive ? "+" : ""}${formatZeni(delta)}**`,
-			inline: true,
-		})
-		.setTimestamp()
-		.setFooter(FOOTER_DBZ);
-	if (typeof newBalance === "number") {
-		embed.addFields({
-			name: "Nouveau solde",
-			value: formatZeni(newBalance),
-			inline: true,
-		});
-	}
-	return embed;
-}
-
-/** Bienvenue / Au revoir. */
-function joinLeaveEmbed(opts: {
-	user: User;
-	kind: "join" | "leave";
-	memberCount?: number;
-	message?: string;
-}): EmbedBuilder {
-	const { user, kind, memberCount, message } = opts;
-	const embed = new EmbedBuilder()
-		.setColor(kind === "join" ? COLORS.success : COLORS.warning)
-		.setAuthor({
-			name: user.username,
-			iconURL: user.displayAvatarURL({ size: 128 }),
-		})
-		.setTitle(kind === "join" ? "🌟 Nouveau combattant !" : "👋 Au revoir guerrier")
-		.setDescription(message ?? `<@${user.id}>`)
-		.setThumbnail(user.displayAvatarURL({ size: 256 }))
-		.setTimestamp()
-		.setFooter(FOOTER_DBZ);
-	if (memberCount) {
-		embed.addFields({
-			name: "Membres",
-			value: `**${memberCount}** combattants`,
 			inline: true,
 		});
 	}

@@ -6,7 +6,7 @@ import {
 	type CommandInteraction,
 	type User,
 } from "discord.js";
-import { sql, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { userTransformer } from "~/lib/slash-user";
 import { DatabaseService } from "~/db/index";

@@ -212,18 +212,6 @@ async function remoteManga(query: string, limit: number): Promise<Hit[]> {
 	}));
 }
 
-/** Recherche FTS5 read-only, FR d'abord, repli toutes langues. */
-function ftsSearch(db: Database, match: string, limit: number, frOnly: boolean): Hit[] {
-	const sql = `SELECT rowid, kind, title, url, content, lang, source_id
-		FROM rag_chunks WHERE rag_chunks MATCH ?${frOnly ? " AND lang = 'fr'" : ""}
-		ORDER BY rank LIMIT ?`;
-	try {
-		return db.query(sql).all(match, limit) as unknown as Hit[];
-	} catch {
-		return [];
-	}
-}
-
 /**
  * Recherche FTS5 restreinte au corpus MANGA (`source_id='manga'`) — la
  * transcription OCR des planches (2412 chunks). SOURCE UNIQUE du grounding

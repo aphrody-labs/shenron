@@ -39,12 +39,6 @@ const sqlite = new Database(dbPath);
 sqlite.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
 const db = drizzle(sqlite);
 
-// BXC 0.9.13 no longer ships the retired DragonBallCN CLI. Tests use the
-// bridge's metadata-only fixture, never an ignored runtime crawl snapshot.
-Bun.env.DRAGONBALLCN_SNAPSHOT_DIR = resolve(
-	import.meta.dir,
-	"../../../packages/pipeline/test/bxc/fixtures/dragonballcn"
-);
 // The bot unit tier must not depend on an installed BXC binary (absent on CI
 // runners). Route the bridge to the deterministic CLI fixture; the real binary
 // is exercised by the @shenron/pipeline/bxc live tier (`test-all --live`).

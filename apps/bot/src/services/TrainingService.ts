@@ -9,9 +9,8 @@ import {
 	type CaseResult,
 	type GoldCase,
 } from "~/lib/rag-eval";
-import { CanonService, type CanonVerdict } from "~/services/CanonService";
+import { CanonService } from "~/services/CanonService";
 import { ragTrainingFeedback } from "~/db/schema";
-import { desc, eq } from "drizzle-orm";
 import { fileURLToPath } from "node:url";
 import { sendAdminLabMessage } from "~/lib/admin-lab";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";

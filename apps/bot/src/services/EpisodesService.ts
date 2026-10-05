@@ -1,6 +1,6 @@
 import type { SQL } from "bun";
 import { inject, singleton } from "tsyringe";
-import { PgService, resolveBotDatabaseUrl } from "~/db/pg";
+import { PgService } from "~/db/pg";
 import { logger } from "~/lib/logger";
 
 /**
@@ -76,11 +76,6 @@ function nombre(v: string | number | null | undefined): number | null {
 	if (v === null || v === undefined) return null;
 	const n = typeof v === "number" ? v : Number.parseInt(v, 10);
 	return Number.isFinite(n) ? n : null;
-}
-
-/** L'URL de la base du site, ou `null` si la machine n'en a pas. */
-function urlBaseSite(): string | null {
-	return resolveBotDatabaseUrl();
 }
 
 @singleton()

@@ -44,7 +44,7 @@
  *
  * Usage :
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/bot \
+ *     --working-directory=apps/bot \
  *     bun scripts/ingest-scans-couleur.ts [--appliquer]
  *
  * Simulation par défaut. `--appliquer` écrit.

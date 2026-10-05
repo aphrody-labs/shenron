@@ -199,8 +199,3 @@ export async function urlNueDe(cible: CiblePlanche): Promise<string | null> {
 	if (!(await salonsAutorises()).has(cible.salonId)) return null;
 	return `${RACINE_CDN}${cible.salonId}/${cible.pieceJointeId}/${cible.fichier}`;
 }
-
-/** Nombre de signatures actuellement en cache (sonde). */
-function tailleCacheCouleur(): number {
-	return cache.size;
-}

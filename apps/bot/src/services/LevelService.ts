@@ -1,11 +1,10 @@
 import { container, singleton, inject } from "tsyringe";
-import { and, desc, eq, sql, lte } from "drizzle-orm";
+import { desc, eq, lte, or, sql } from "drizzle-orm";
 import type { Guild, GuildMember, TextBasedChannel } from "discord.js";
 import { DatabaseService } from "~/db/index";
 import { users, levelRewards, actionLogs, fusions } from "~/db/schema";
-import { or } from "drizzle-orm";
-import { LEVEL_THRESHOLDS, ZENI_PER_LEVEL, FUSION_XP_BONUS_RATIO } from "~/lib/constants";
-import { levelForXP, formatXP } from "~/lib/xp";
+import { ZENI_PER_LEVEL, FUSION_XP_BONUS_RATIO } from "~/lib/constants";
+import { levelForXP } from "~/lib/xp";
 import { applyZeniRace, hasZenkai } from "~/lib/races";
 import { DEFAULT_XP_BOOST_CONFIG } from "~/lib/xp-boosts";
 import {

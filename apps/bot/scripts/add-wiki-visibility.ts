@@ -10,7 +10,7 @@
  *
  * Lancer sur le VPS (PG local) :
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/bot bun scripts/add-wiki-visibility.ts
+ *     --working-directory=apps/bot bun scripts/add-wiki-visibility.ts
  * ou simplement `DATABASE_URL=... bun scripts/add-wiki-visibility.ts`.
  */
 import postgres from "postgres";
