@@ -1,22 +1,22 @@
-<!-- Merci pour la PR ! Décris ce qu'elle change et comment la tester. -->
+<!-- Décris ce que la PR change et comment la tester. -->
 
 ## Modifications
 
-<!-- Décris ici les changements apportés et la raison de cette PR. -->
+<!-- Changements apportés et raison de cette PR. -->
 
 ## Type
 
-- [ ] 🐛 Fix (correction de bug)
-- [ ] ✨ Feature (nouvelle fonctionnalité)
-- [ ] ♻️ Refactor (pas de changement de comportement)
-- [ ] 📝 Docs / chore / test
-- [ ] 💥 Breaking change
+- [ ] Fix (correction de bug)
+- [ ] Feature (nouvelle fonctionnalité)
+- [ ] Refactor (pas de changement de comportement)
+- [ ] Docs / chore / test
+- [ ] Breaking change
 
 ## Checklist
 
-- [ ] `bun run typecheck` passe
-- [ ] `bun run lint` passe
-- [ ] `bun run test` passe
-- [ ] `bun run gen:entries` lancé si nouvelle commande/event
-- [ ] `bun run db:generate` lancé si changement de `src/db/schema.ts`
-- [ ] `.env.example` et README à jour si nouvelle variable / commande
+- [ ] `bun run typecheck`, `bun run lint` et `bun run test` passent
+- [ ] `bun --filter @shenron/bot gen:entries` lancé si commande ou événement discordx ajouté ou retiré
+- [ ] `bun --filter @shenron/site db:generate` (ou `@shenron/bot`) lancé si `src/db/schema.ts` change
+- [ ] `bun packages/api/scripts/openapi.ts` lancé si le contrat d'API change (`--check` en CI)
+- [ ] Crates touchées : `bun run clippy:rust` et `bun run test:rust` passent
+- [ ] `.env.example` et `docs/operations/ENV.md` à jour si nouvelle variable

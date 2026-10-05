@@ -6,7 +6,7 @@ body:
     id: description
     attributes:
       label: Description
-      description: Que devrait faire le bot ? Que fait-il à la place ?
+      description: Que devrait faire Shenron (site, bot, serveur, bureau) ? Que fait-il à la place ?
     validations:
       required: true
   - type: textarea
@@ -23,13 +23,13 @@ body:
     id: logs
     attributes:
       label: Logs pertinents
-      description: Extrait de `bun run dev` ou des logs systemd. Masque les tokens.
+      description: Extrait de `bun --filter @shenron/bot dev`, de `shenron-server` ou des journaux du service. Masque les tokens.
       render: text
   - type: input
     id: bun-version
     attributes:
       label: Version Bun
-      placeholder: "bun --version → 1.2.x"
+      placeholder: "bun --version → 1.4.x"
     validations:
       required: true
   - type: input

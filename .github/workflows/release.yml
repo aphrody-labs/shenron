@@ -15,58 +15,81 @@ permissions:
 jobs:
   build:
     name: Compile (${{ matrix.target }})
-    runs-on: ${{ matrix.runner }}
+    # Bun compile en croisé : les deux cibles se construisent sur Linux.
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { target: bun-linux-x64, runner: ubuntu-latest, ext: "" }
-          - { target: bun-linux-arm64, runner: ubuntu-latest, ext: "" }
-          - { target: bun-darwin-x64, runner: macos-latest, ext: "" }
-          - { target: bun-darwin-arm64, runner: macos-latest, ext: "" }
-          - { target: bun-windows-x64, runner: ubuntu-latest, ext: ".exe" }
+          - { target: linux-x64, ext: "" }
+          - { target: windows-x64, ext: ".exe" }
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
       - uses: oven-sh/setup-bun@v2
-      # @aphrody/canvas is on public npm and @aphrody/* are in-repo workspaces,
-      # so no GitHub Packages auth is needed.
-      - run: bun ci
-      - run: bun --filter @shenron/bot gen:entries
+      - name: Cache ~/.bun
+        uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
 
-      - name: Compile
-        working-directory: apps/bot
+      - name: Install
+        run: bun ci
+
+      # Application frontale (Next standalone, sans base) + API locales, un seul fichier.
+      - name: shenron-server
+        run: bun scripts/build/server.ts --target ${{ matrix.target }} --flavor desktop
+
+      # Bot Discord + API publique ; les migrations SQL voyagent à côté du binaire.
+      - name: shenron-bot
+        run: bun scripts/build/bot.ts --target ${{ matrix.target }}
+
+      - name: Smoke test (bot, sans Discord ni base)
+        if: matrix.target == 'linux-x64'
+        run: dist/bot/linux-x64/shenron-bot --smoke
+
+      - name: Package
         run: |
-          bun build src/index.ts \
-            --compile \
-            --minify \
-            --sourcemap \
-            --target=${{ matrix.target }} \
-            --outfile=dist/shenron-${{ matrix.target }}${{ matrix.ext }}
+          mkdir -p release
+          cp "dist/server/${{ matrix.target }}/shenron-server${{ matrix.ext }}" "release/shenron-server-${{ matrix.target }}${{ matrix.ext }}"
+          if [ "${{ matrix.target }}" = "windows-x64" ]; then
+            (cd dist/bot/windows-x64 && zip -qr "$GITHUB_WORKSPACE/release/shenron-bot-windows-x64.zip" .)
+          else
+            tar -C dist/bot/linux-x64 -czf release/shenron-bot-linux-x64.tar.gz .
+          fi
 
-      - name: Upload binary
+      - name: Upload binaries
         uses: actions/upload-artifact@v5
         with:
           name: shenron-${{ matrix.target }}
-          path: apps/bot/dist/shenron-${{ matrix.target }}${{ matrix.ext }}
+          path: release/*
+          if-no-files-found: error
           retention-days: 30
 
   release:
-    name: Create GitHub Release
+    name: Create GitHub Release (draft)
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0
       - name: Download all artifacts
         uses: actions/download-artifact@v8
         with:
           path: artifacts
           merge-multiple: true
 
+      # Nom attendu par install.ps1 : SHA256SUMS.
       - name: Generate SHA256 sums
         run: |
           cd artifacts
-          sha256sum shenron-* > SHA256SUMS.txt
-          cat SHA256SUMS.txt
+          sha256sum shenron-* > SHA256SUMS
+          cat SHA256SUMS
 
       - name: Extract changelog
         id: changelog
@@ -86,7 +109,9 @@ jobs:
             echo "__EOF__"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Create release
+      # Brouillon : install.ps1 lit releases/latest et exige l'installeur Windows, construit
+      # hors CI (Rust, Tauri, NSIS). La release n'est publiée qu'une fois l'installeur joint.
+      - name: Create draft release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.changelog.outputs.tag }}
@@ -94,30 +119,33 @@ jobs:
           body: |
             ${{ steps.changelog.outputs.changelog }}
 
-            ## Binaires standalone
+            ## Binaires autonomes
 
-            Télécharge le binaire pour ta plateforme, rends-le exécutable, lance-le avec un `.env` rempli à côté.
+            | Binaire | Linux x64 | Windows x64 |
+            |---|---|---|
+            | `shenron-server` : application frontale + API locales | `shenron-server-linux-x64` | `shenron-server-windows-x64.exe` |
+            | `shenron-bot` : bot Discord + API publique (migrations incluses) | `shenron-bot-linux-x64.tar.gz` | `shenron-bot-windows-x64.zip` |
 
-            | Plateforme | Fichier |
-            |---|---|
-            | Linux x64 | `shenron-bun-linux-x64` |
-            | Linux ARM64 | `shenron-bun-linux-arm64` |
-            | macOS Intel | `shenron-bun-darwin-x64` |
-            | macOS Apple Silicon | `shenron-bun-darwin-arm64` |
-            | Windows x64 | `shenron-bun-windows-x64.exe` |
+            `shenron-server doctor` affiche le profil et la présence des secrets ; `shenron-bot --smoke`
+            vérifie le binaire sans Discord ni base. Intégrité : `SHA256SUMS`.
 
-            Vérifie l'intégrité via `SHA256SUMS.txt`.
+            ## Application de bureau (Windows)
 
-            ## Installation depuis les sources
+            Installeur `*_x64-setup.exe` (Tauri) installé par `install.ps1`. Construit hors CI :
+            `bun scripts/build/desktop.ts --target windows-x64`, puis joindre
+            `dist/desktop/windows-x64/*_x64-setup.exe` et ajouter sa ligne de
+            `dist/desktop/windows-x64/SHA256SUMS` au `SHA256SUMS` de cette release avant publication.
+
+            ## Depuis les sources
 
             ```bash
-            git clone https://github.com/aphrody-labs/aphrody.git
-            cd aphrody && bun run install:workspace
-            cp apps/bot/.env.example apps/bot/.env   # remplis DISCORD_TOKEN / GUILD_ID / OWNER_ID
+            git clone https://github.com/aphrody-labs/shenron.git
+            cd shenron && bun install --frozen-lockfile
+            cp apps/bot/.env.example apps/bot/.env   # DISCORD_TOKEN / GUILD_ID / OWNER_ID
             bun --filter @shenron/bot dev
             ```
           files: |
             artifacts/shenron-*
-            artifacts/SHA256SUMS.txt
-          draft: false
+            artifacts/SHA256SUMS
+          draft: true
           prerelease: ${{ contains(steps.changelog.outputs.tag, '-') }}

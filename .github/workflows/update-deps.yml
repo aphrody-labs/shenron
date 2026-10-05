@@ -22,20 +22,21 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
-      # @aphrody/canvas is on public npm and @aphrody/* are in-repo workspaces,
-      # so no GitHub Packages auth is needed.
+      # Versions tierces : catalogue du package.json racine ; @aphrody/* épinglés exactement
+      # (inchangés par bun update) ; minimumReleaseAge de bunfig.toml respecté.
       - name: Capture état avant
-        id: before
-        run: |
-          cp bun.lock /tmp/bun.lock.before
-          bun outdated --json > /tmp/outdated.json 2>/dev/null || echo "[]" > /tmp/outdated.json
+        run: cp bun.lock "$RUNNER_TEMP/bun.lock.before"
 
       - name: Update deps (semver-respecting)
         run: bun update
 
-      - name: Régénère entries + verify
+      # Mêmes portes que ci.yml.
+      - name: Verify
         run: |
           bun --filter @shenron/bot gen:entries
+          bun packages/api/scripts/openapi.ts --check
+          bun packages/ui/scripts/generate-tokens.ts --check
+          bun packages/pipeline/scripts/ai/check-contracts.ts
           bun run typecheck
           bun run lint
           bun run test
@@ -43,7 +44,7 @@ jobs:
       - name: Diff
         id: diff
         run: |
-          if cmp -s /tmp/bun.lock.before bun.lock; then
+          if cmp -s "$RUNNER_TEMP/bun.lock.before" bun.lock; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -51,7 +52,9 @@ jobs:
               echo "summary<<__EOF__"
               echo "## Mises à jour appliquées"
               echo ""
-              diff -u /tmp/bun.lock.before bun.lock | grep -E '^\+.*"version"' | head -30 || true
+              echo '```diff'
+              diff -u "$RUNNER_TEMP/bun.lock.before" bun.lock | grep -E '^[-+] +"[^"]+": \["' | head -60 || true
+              echo '```'
               echo ""
               echo "__EOF__"
             } >> "$GITHUB_OUTPUT"
@@ -70,7 +73,7 @@ jobs:
 
             ${{ steps.diff.outputs.summary }}
 
-            ✅ Type-check, lint et tests passent localement dans le job CI.
+            Type-check, lint, tests et contrôles de dérive passent dans ce job.
 
-            _Si un merge-conflit apparaît plus tard, ferme cette PR — elle sera recréée lundi prochain._
+            _Si un conflit apparaît plus tard, fermer cette PR : elle est recréée lundi suivant._
           labels: dependencies,automated

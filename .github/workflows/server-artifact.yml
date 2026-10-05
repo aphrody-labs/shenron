@@ -1,0 +1,60 @@
+name: Production server artifact (no deploy)
+
+# Construit `shenron-server` (saveur production : assets servis par cdn.dragonballfr.com,
+# repli embarqué) et l'arbre CDN, sans base ni déploiement. La promotion, les unités et
+# Nginx appartiennent à aphrody-infra.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: server-artifact-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build shenron-server (linux-x64, production)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # setup-bun lit la version exacte depuis package.json#packageManager.
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun downloads only
+        uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: server-artifact-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install exact dependencies
+        run: bun ci
+
+      - name: Build shenron-server and the CDN tree
+        run: bun scripts/build/server.ts --target linux-x64 --flavor production
+
+      - name: Package with checksums
+        run: |
+          mkdir -p artifacts
+          cp dist/server/linux-x64/shenron-server artifacts/shenron-server-linux-x64
+          tar -C dist -czf artifacts/shenron-cdn.tar.gz cdn
+          cd artifacts
+          sha256sum shenron-server-linux-x64 shenron-cdn.tar.gz > SHA256SUMS
+          sha256sum --check SHA256SUMS
+
+      - name: Upload artifact only (never deploy)
+        uses: actions/upload-artifact@v5
+        with:
+          name: shenron-server-${{ github.sha }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0

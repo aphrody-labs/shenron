@@ -57,3 +57,6 @@ jobs:
       # Les suites *.live.test.ts (services réels) restent hors CI : `bun run test:live`.
       - name: Tests
         run: bun run test
+
+      - name: Tests des scripts racine
+        run: bun run test:scripts
