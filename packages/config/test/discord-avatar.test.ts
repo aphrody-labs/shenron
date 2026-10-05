@@ -7,7 +7,7 @@ import {
   discordDefaultAvatarIndex,
   discordDefaultAvatarUrl,
   discordUserIdFromAvatarUrl,
-} from "../src/lib/discord-avatar";
+} from "../src/public-urls";
 
 describe("discordDefaultAvatarIndex", () => {
   test("uses (id >> 22) % 6 computed in BigInt", () => {

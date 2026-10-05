@@ -119,19 +119,64 @@ export function assetMirrorUrl(
 /** Discord's public media CDN (fixed by Discord, not deployment-specific). */
 export const DISCORD_CDN = "https://cdn.discordapp.com";
 
-/** Default Discord avatar (`embed/avatars/<0..5>.png`) for a snowflake user id. */
+/** A Discord snowflake: 64-bit integer written in base 10 (17 to 20 digits today). */
+const DISCORD_SNOWFLAKE_RE = /^\d{15,21}$/;
+
+/**
+ * Index (0-5) of the default avatar Discord assigns to a user, or `null` when
+ * the id is not a snowflake.
+ *
+ * Since the 2023 username migration the index is `(id >> 22) % 6` — the
+ * timestamp part of the snowflake. The legacy `discriminator % 5` rule only
+ * applies to accounts that still have a discriminator, which Shenron never
+ * receives. `BigInt` is required: ids exceed `Number.MAX_SAFE_INTEGER`.
+ */
+export function discordDefaultAvatarIndex(userId: string | null | undefined): number | null {
+  const id = userId?.trim();
+  if (!id || !DISCORD_SNOWFLAKE_RE.test(id)) return null;
+  return Number((BigInt(id) >> 22n) % 6n);
+}
+
+/**
+ * URL of the member's default Discord avatar, or `null` when the id is not a
+ * snowflake. A custom avatar URL embeds a hash that Discord invalidates as soon
+ * as the member changes picture; the default avatar only depends on the id, so
+ * it is the natural fallback.
+ */
+export function discordDefaultAvatarUrl(userId: string | null | undefined): string | null {
+  const index = discordDefaultAvatarIndex(userId);
+  return index === null ? null : discordEmbedAvatar(index);
+}
+
+/** Default Discord avatar (`embed/avatars/<0..5>.png`) for a user id; avatar 0 when it is not a snowflake. */
 export function discordDefaultAvatar(userId: string): string {
-  let idx = 0;
-  try {
-    idx = Number((BigInt(userId) >> 22n) % 6n);
-  } catch {
-    idx = 0;
-  }
-  return `${DISCORD_CDN}/embed/avatars/${idx}.png`;
+  return discordDefaultAvatarUrl(userId) ?? discordEmbedAvatar(0);
 }
 
 /** Discord media hosts serving avatars, banners and signed attachments. */
 export const DISCORD_MEDIA_HOSTS = ["cdn.discordapp.com", "media.discordapp.net"] as const;
+
+/**
+ * User id embedded in a Discord CDN avatar URL, or `null`.
+ *
+ * Handles user avatars (`/avatars/<user>/<hash>`) and per-guild avatars
+ * (`/guilds/<guild>/users/<user>/avatars/<hash>`), on both CDN hosts.
+ */
+export function discordUserIdFromAvatarUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (!(DISCORD_MEDIA_HOSTS as readonly string[]).includes(parsed.hostname)) return null;
+  const match =
+    /^\/avatars\/(\d+)\//.exec(parsed.pathname) ??
+    /^\/guilds\/\d+\/users\/(\d+)\/avatars\//.exec(parsed.pathname);
+  const id = match?.[1];
+  return id && DISCORD_SNOWFLAKE_RE.test(id) ? id : null;
+}
 
 /** Structural subset of Next's `images.remotePatterns` entry (no `next` import here). */
 export interface RemoteImagePattern {
