@@ -38,7 +38,7 @@ curl -s -X POST "https://bot.dragonballfr.com/api/public/rag/chat" \
 > `rag/chat` renvoie aussi un champ `answer`, rédigé par le LLM à partir des
 > `hits` (backend choisi par `RAG_BACKEND` côté bot). Si le LLM est
 > indisponible, la route répond avec `error: "llm_unavailable"` (code dans
-> `apps/shenron/bot/src/api/server.ts`) : un texte de repli n'est jamais servi
+> `apps/bot/src/api/server.ts`) : un texte de repli n'est jamais servi
 > en 200. Le 2026-10-01, `GET /api/public/rag/search` répondait
 > `{"results":[],"error":"index_unavailable"}` et `GET .../rag/chat` un 500 :
 > lis toujours `error` avant de conclure à une absence de résultat. Dans tous les cas, `hits` et leurs URLs
@@ -111,7 +111,7 @@ curl -s "https://dragonballfr.com/api/canon?q=Broly+est-il+canon" | jq '.verdict
 curl -s "https://dragonballfr.com/api/canon/references?q=Kaioken&provenance=databooks" | jq '.total'
 ```
 
-Le corpus est alimenté en continu par l'ingestion canon (unité `shenron-canon-ingest` ; script `apps/shenron/site/scripts/canon-ingest.ts`) ; la doctrine s'édite dans `/admin/canon` du site (redirection vers la connexion si non authentifié).
+Le corpus est alimenté en continu par l'ingestion canon (unité `shenron-canon-ingest` ; script `apps/site/scripts/canon-ingest.ts`) ; la doctrine s'édite dans `/admin/canon` du site (redirection vers la connexion si non authentifié).
 
 ## Bot & communauté
 

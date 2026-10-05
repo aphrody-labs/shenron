@@ -1,6 +1,6 @@
 # Maintenance OCR — invariants
 
-Lire le code propriétaire `apps/shenron/site/src/lib/databooks-ocr/` et ses
+Lire le code propriétaire `apps/site/src/lib/databooks-ocr/` et ses
 runners `scripts/corrige-*.ts` depuis Aphrody. Cette référence conserve les
 contre-exemples techniques ; leurs anciens volumes ne sont pas un état actuel.
 Ne jamais corriger un caractère sans preuve dans le scan ou règle déterministe
@@ -29,8 +29,8 @@ trophées entièrement katakana peuvent être légitimes malgré leur score.
 ## Gardes de correction
 
 ```bash
-bun apps/shenron/site/scripts/detecte-hallucinations.ts --json /tmp/rapport.json
-bun apps/shenron/site/scripts/detecte-hallucinations.ts --famille boucle-motif-long
+bun apps/site/scripts/detecte-hallucinations.ts --json /tmp/rapport.json
+bun apps/site/scripts/detecte-hallucinations.ts --famille boucle-motif-long
 ```
 
 Le détecteur distingue **bloquant**, **signalé** et **témoin** ; une baisse des

@@ -26,15 +26,14 @@ l'ombre dans la référence choisie.
 
 ## Réutiliser le propriétaire
 
-Le checkout Aphrody du 2026-10-04 expose réellement `@shenron/ui` dans
-`design/aphrody-m3/packages/shenron-ui`, dont les exports `./toriyama-svg`, `./svg`, `./toriyama`
-et `./*` sont déclarés par son `package.json`. C'est une bibliothèque métier
-Shenron ; l'UI applicative commune reste canonique dans `design/aphrody-m3/packages/app-ui`
-et `crates/ui/*`. Ne pas restaurer un checkout UI séparé.
+`@shenron/ui` vit dans `packages/ui` (couche UI unique du dépôt Shenron), dont les exports
+`./toriyama-svg`, `./svg` et `./toriyama` sont déclarés par son `package.json`. Les primitives
+M3 communes viennent des paquets publiés `@aphrody/m3-*`. Ne pas restaurer un checkout UI
+séparé.
 
 Lire seulement le fichier pertinent avant usage :
 
-| Source sous `design/aphrody-m3/packages/shenron-ui/src/` | Décisions utiles |
+| Source sous `packages/ui/src/` | Décisions utiles |
 | --- | --- |
 | `toriyama-svg/geometry.ts` | `arcs`, `volute`, `meche`, `planDombre`, `inkStroke`, `mirrorX` ; creux, flèches, ombre découpée |
 | `toriyama-svg/palette.ts` | Palette propriétaire ; vérifier ses mesures pour le sujet |

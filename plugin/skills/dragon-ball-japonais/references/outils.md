@@ -1,16 +1,16 @@
 # Chaîne de traitement du japonais (dépôt shenron)
 
-> **S'applique quand :** le monorepo Aphrody est le répertoire de travail (code du site sous `apps/shenron/site`) et Bun est installé. **Sinon :** ne lance aucun script d'ici ; reste sur l'API publique décrite dans [SKILL.md](../SKILL.md).
+> **S'applique quand :** le dépôt Shenron est le répertoire de travail (code du site sous `apps/site`) et Bun est installé. **Sinon :** ne lance aucun script d'ici ; reste sur l'API publique décrite dans [SKILL.md](../SKILL.md).
 
 Pour qui travaille sur le code de dragonballfr.com. L'utilisation courante de la
 skill ne demande que l'API publique — cf. [SKILL.md](../SKILL.md). Documentation de la chaîne :
 `docs/guides/shenron/japonais.md` (ses chemins `apps/site/…` datent d'avant le
-déplacement sous `apps/shenron/site/…`).
+déplacement sous `apps/site/…`).
 
 ## Installation
 
 ```bash
-bun apps/shenron/site/scripts/ja-preparer.ts [--force]   # ressources hors dépôt, dans apps/shenron/site/.ja-data/
+bun apps/site/scripts/ja-preparer.ts [--force]   # ressources hors dépôt, dans apps/site/.ja-data/
 ```
 
 | Ressource                              | Rôle                              | Poids  |
@@ -23,7 +23,7 @@ JMdict est la base de jisho.org (récupérée depuis les publications
 d'origine pèse 113 Mo, d'après `ja-preparer.ts`, pour une question qui tient
 dans un ensemble.
 
-## Modules — `apps/shenron/site/src/lib/ja/`
+## Modules — `apps/site/src/lib/ja/`
 
 | Fichier            | Contenu                                                  | Pur ?         |
 | ------------------ | -------------------------------------------------------- | ------------- |
@@ -39,9 +39,9 @@ Autres modules présents dans ce dossier : `appariement.ts`, `coherence.ts`,
 ## Scripts
 
 ```bash
-bun apps/shenron/site/scripts/ja-analyser.ts    --json rapport.json   # fautes de lecture
-bun apps/shenron/site/scripts/ja-vocabulaire.ts --json vocab.json     # vocabulaire manquant
-bun apps/shenron/site/scripts/ja-techniques.ts  [--apply]             # noms japonais des techniques (simulation par défaut)
+bun apps/site/scripts/ja-analyser.ts    --json rapport.json   # fautes de lecture
+bun apps/site/scripts/ja-vocabulaire.ts --json vocab.json     # vocabulaire manquant
+bun apps/site/scripts/ja-techniques.ts  [--apply]             # noms japonais des techniques (simulation par défaut)
 ```
 
 Les deux premiers lisent **le même signal en sens inverse** : une graphie
@@ -71,7 +71,7 @@ reproduits ici faute de mesure rejouée.
 - **`import.meta.dir` est une API Bun** : `undefined` sous Turbopack. Le dossier
   des ressources se résout **à l'appel**, par essais, jamais à l'évaluation du
   module — un build a échoué là-dessus.
-- Les ressources (dossier local `.ja-data` sous `apps/shenron/site`) sont gitignorées, donc absentes
+- Les ressources (dossier local `.ja-data` sous `apps/site`) sont gitignorées, donc absentes
   d'une version déployée tant que `ja-preparer.ts` n'y a pas été exécuté : sans
   elles l'analyse peut répondre « 0 anomalie » alors qu'elle en trouve en local.
   Un résultat rassurant et faux est pire qu'une erreur. (Le mécanisme de

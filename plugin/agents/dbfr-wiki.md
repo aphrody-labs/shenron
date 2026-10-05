@@ -9,7 +9,7 @@ Rédiger ou vérifier les fiches de dragonballfr.com depuis le manga et les
 databooks hébergés, jamais depuis la mémoire, Fandom ou une prose RAG.
 Appliquer le [contrat partagé](../references/execution.md).
 
-Depuis la racine Aphrody, utiliser `bun apps/shenron/site/scripts/sources-wiki.ts` :
+Depuis la racine Shenron, utiliser `bun apps/site/scripts/sources-wiki.ts` :
 `manga <q> --limite 20 --json`, `databook <q> --limite 20 --json`, puis `page` ou
 `planche` pour le passage primaire et son identifiant. Sans ce robinet local,
 préparer seulement ce que les preuves accessibles établissent et signaler la

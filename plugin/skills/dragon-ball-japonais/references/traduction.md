@@ -1,9 +1,9 @@
 # Traduction JA→FR — lexique et contrôle
 
-Depuis Aphrody, réutiliser `apps/shenron/site/src/lib/ja/traduction.ts`
+Depuis la racine Shenron, réutiliser `apps/site/src/lib/ja/traduction.ts`
 (`protegerTermes`, `restaurerTermes`, `segmentsTraduisibles`) ou
 `src/lib/i18n/glossary.ts` (`protect`, `restore`, `spell`) et
-`apps/shenron/site/messages/glossary.json`. Le nombre d'entrées se mesure dans
+`apps/site/messages/glossary.json`. Le nombre d'entrées se mesure dans
 le fichier courant ; ne pas recopier un ancien compteur.
 
 Protéger du plus long au plus court, traduire les segments masqués, restaurer
@@ -19,7 +19,7 @@ ou installer un moteur hors du périmètre de la demande.
 
 Consulter l'aide courante de `aphrody translate` ou `bxc google translate`.
 Un serveur local `--serve` annonce son adresse : ne pas figer le port. La boucle
-`bun apps/shenron/site/scripts/traduction-boucle.ts --lots 1 --moteur google`
+`bun apps/site/scripts/traduction-boucle.ts --lots 1 --moteur google`
 est en simulation ; `--appliquer` exige l'autorité d'écriture et ses contrôles.
 Le CLI/moteur disponible ne prouve ni la qualité du résultat ni son dépôt.
 

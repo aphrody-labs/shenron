@@ -30,7 +30,7 @@ puis vérifier l'état par une lecture indépendante. Les redémarrages touchent
 la production. Le catalogue ne fournit pas de chat admin ni de CLI générique.
 
 Pour ré-ancrer une fiche sans bibliographie, depuis Aphrody :
-`bun apps/shenron/site/scripts/reancre-sources-wiki.ts db_characters --ids <id> --sans-sources --limite 1`.
+`bun apps/site/scripts/reancre-sources-wiki.ts db_characters --ids <id> --sans-sources --limite 1`.
 La simulation précède la lecture du passage primaire ; le score RAG ne fonde
 pas la citation. Ajouter `--ecris` seulement pour les identifiants revus et
 l'écriture autorisée, puis relire `article_sources` et la révision. Ce flux

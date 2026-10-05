@@ -3,10 +3,10 @@
 Depuis la racine Aphrody, après vérification de l'aide et du périmètre :
 
 ```bash
-bun apps/shenron/site/scripts/export-databooks-ocr.ts --sortie /chemin/lots --taille 4
-bun apps/shenron/site/scripts/planches-a-relire.ts --classe remplacement --limite 4 --json
-bun apps/shenron/site/scripts/databooks.ts verifie /chemin/resultats.jsonl
-bun apps/shenron/site/scripts/databooks.ts depose /chemin/lot --simulation
+bun apps/site/scripts/export-databooks-ocr.ts --sortie /chemin/lots --taille 4
+bun apps/site/scripts/planches-a-relire.ts --classe remplacement --limite 4 --json
+bun apps/site/scripts/databooks.ts verifie /chemin/resultats.jsonl
+bun apps/site/scripts/databooks.ts depose /chemin/lot --simulation
 ```
 
 Fournir l'image locale ou jointe au lecteur, pas seulement une URL ou le nom du
@@ -18,8 +18,8 @@ Shenron crée les révisions réversibles et conserve ses gardes qualité.
 Étalonner un lecteur contre des références relues :
 
 ```bash
-bun apps/shenron/site/scripts/export-databooks-benchmark.ts --sortie /tmp/dbfr-benchmark --taille 64
-bun apps/shenron/site/scripts/score-databooks-ocr.ts /tmp/dbfr-benchmark/benchmark.jsonl /chemin/resultats.jsonl
+bun apps/site/scripts/export-databooks-benchmark.ts --sortie /tmp/dbfr-benchmark --taille 64
+bun apps/site/scripts/score-databooks-ocr.ts /tmp/dbfr-benchmark/benchmark.jsonl /chemin/resultats.jsonl
 ```
 
 Les compteurs évoluent : `databooks.ts etat` mesure l'état courant ;
