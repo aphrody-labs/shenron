@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Coche, Livre, Palette } from "@/components/icones";
+import { Coche, Livre, Palette } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { editionDe, LIBELLE_EDITION, type Edition } from "@/lib/manga-editions";
-import { Etoile } from "@/components/MotifsCouverture";
+import { Etoile } from "@shenron/ui/toriyama/MotifsCouverture";
 
 interface Chapter {
   id: number;

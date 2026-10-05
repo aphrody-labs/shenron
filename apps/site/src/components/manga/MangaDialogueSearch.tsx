@@ -1,8 +1,8 @@
 "use client";
 
 import { apiUrl } from "@/lib/config";
-import { DragonBallLoader } from "@/components/DragonBall";
-import { DragonRadar } from "@/components/icones";
+import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { DragonRadar } from "@shenron/ui/icones";
 import { useCallback, useId, useState } from "react";
 
 /**

@@ -12,11 +12,11 @@ import type { Book as BookSchema, WithContext } from "schema-dts";
 import { JsonLd } from "@/components/JsonLd";
 import { VolumeChaptersList } from "@/components/manga/VolumeChaptersList";
 import { UnifiedVolumeReader } from "@/components/manga/UnifiedVolumeReader";
-import { BancNuages, CadreCase, Etoile, PastilleTome } from "@/components/MotifsCouverture";
+import { BancNuages, CadreCase, Etoile, PastilleTome } from "@shenron/ui/toriyama/MotifsCouverture";
 import { idDeFiche } from "../../../_id-fiche";
 import { AccesApi } from "@/components/manga/AccesApi";
 import { SITE_URL } from "@/lib/config";
-import { LienExterne } from "@/components/icones";
+import { LienExterne } from "@shenron/ui/icones";
 
 import { langueDe, LIBELLE_SERIE } from "@/lib/manga-editions";
 

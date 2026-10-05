@@ -8,7 +8,7 @@ import { TrackHistory } from "@/components/history/TrackHistory";
 import { ShareButton } from "@/components/ShareButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import Link from "next/link";
-import { Livre, Palette } from "@/components/icones";
+import { Livre, Palette } from "@shenron/ui/icones";
 import { estChapitreCouleur, langueDe, SERIE_COULEUR } from "@/lib/manga-editions";
 import { idDeFiche } from "../../_id-fiche";
 import { JsonLd } from "@/components/JsonLd";

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Lecture, Livre } from "@/components/icones";
+import { Lecture, Livre } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { isEditableAsset } from "@/lib/images";
 

@@ -1,4 +1,4 @@
-import { BouclierCoche, CapsuleCorp, Livre, LienExterne } from "@/components/icones";
+import { BouclierCoche, CapsuleCorp, Livre, LienExterne } from "@shenron/ui/icones";
 import Link from "next/link";
 
 export function MangaInfoSection() {

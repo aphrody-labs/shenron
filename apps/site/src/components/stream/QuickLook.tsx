@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FlecheCoin, Lecture } from "@/components/icones";
+import { FlecheCoin, Lecture } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { isEditableAsset } from "@/lib/images";
 

@@ -13,12 +13,12 @@ import {
   Livre,
   Palette,
   Trophee,
-} from "@/components/icones";
+} from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { estChapitreCouleur, libelleSerie } from "@/lib/manga-editions";
 import { VignetteTome } from "@/components/manga/VignetteTome";
-import { Etoile } from "@/components/MotifsCouverture";
+import { Etoile } from "@shenron/ui/toriyama/MotifsCouverture";
 
 export interface Volume {
   id: number;

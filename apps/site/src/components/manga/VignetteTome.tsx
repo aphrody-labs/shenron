@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { assetUrl } from "@/lib/assets";
-import { CadreCase, PastilleTome } from "@/components/MotifsCouverture";
+import { CadreCase, PastilleTome } from "@shenron/ui/toriyama/MotifsCouverture";
 
 export interface VignetteVolume {
   id: number;

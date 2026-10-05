@@ -10,9 +10,9 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Pagination } from "@/components/ui/Pagination";
-import { Bibliotheque, DragonRadar, Livre, Micro, Palette, Tendance } from "@/components/icones";
-import { ViewTransition } from "@/components/ViewTransition";
+import { Pagination } from "@/components/kit/Pagination";
+import { Bibliotheque, DragonRadar, Livre, Micro, Palette, Tendance } from "@shenron/ui/icones";
+import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import {
   DATABOOK_CATEGORIES,

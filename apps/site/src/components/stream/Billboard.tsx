@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Info, Lecture } from "@/components/icones";
+import { Info, Lecture } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { isEditableAsset } from "@/lib/images";
 import { BackgroundImage } from "@/components/media/BackgroundImage";
