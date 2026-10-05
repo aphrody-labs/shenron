@@ -162,10 +162,18 @@ Lancer et construire :
   `DATABASE_URL` est posé, sinon URLs publiques de dragonballfr.com. Le build compile le site
   sans base, aplatit `node_modules/.bun`, échoue sur toute donnée privée, emballe un payload
   zstd (site, bibliothèque native, VFS public gardé, modèle de l'agent home) dans
-  `bun build --compile`. `shenron-desktop` (Tauri 3) lance ce serveur en sidecar, livre
-  `shenron-mcp` à côté et ouvre `/bureau`.
+  `bun build --compile`. `/api/local/koharu` relaie l'éditeur d'un navigateur local vers un
+  enfant `koharu-sdk` (groupe `koharu` de `health`, jamais en production).
+- **Application de bureau** : **Shenron Studio** (`crates/shenron-desktop`, Tauri 3) est le
+  seul binaire graphique, un identifiant, un dossier de données (`SHENRON_HOME`), un installeur
+  (`scripts/build/desktop.ts`). Elle lance `shenron-server` en sidecar (avec `shenron-mcp` et
+  `koharu-sdk` à côté) et ouvre `/bureau` ; le moteur de l'éditeur (`koharu-library`,
+  propriétaire unique de l'état) tourne dans son processus derrière `koharu-app`, simple
+  bibliothèque de commandes Specta (`docs/products/koharu/README.md`).
 - **Natif** : `@shenron/native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;
-  `@shenron/koharu` parle au moteur par Tauri ou par `koharu-sdk` en JSON Lines sur stdio.
+  `@shenron/koharu/protocol` parle au moteur par son transport (`src/transport.ts`) : Tauri
+  IPC dans Shenron Studio, le pont `/api/local/koharu` ailleurs ; `./native` pilote
+  `koharu-sdk` (JSON Lines sur stdio) pour `@shenron/pipeline`.
   Les globals Tauri se lisent par `globalThis.__TAURI_INTERNALS__`.
 - **Chaîne éditoriale** : `bun run --filter @shenron/pipeline pipeline <ocr|rag|ia|translation|crawl|unify>`
   délègue le calcul à Aphrody.
