@@ -66,7 +66,10 @@ function pickBuildHost(): "vps" | "dbfr" {
   const busy = !Number.isFinite(vps) || vps > VPS_BUSY_LOAD;
   const dbfr = load("dbfr");
   console.log(`charge vps ${vps}, dbfr ${dbfr}`);
-  return busy && dbfr < 3 ? "dbfr" : "vps";
+  // Next se compile dans l'image Node de l'usine (build-site-external.ts) : sans Docker ni image
+  // en cache, dbfr ne peut pas construire le site.
+  const factory = ssh("docker image inspect node:22-bookworm-slim > /dev/null 2>&1", 60, "dbfr");
+  return busy && dbfr < 3 && factory.code === 0 ? "dbfr" : "vps";
 }
 
 /** Flux binaire d'un hôte à l'autre, par WSL : aucun calcul ici, seulement le relais. */
