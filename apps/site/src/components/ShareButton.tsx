@@ -12,7 +12,7 @@
  * au rendu serveur, qui n'a pas l'objet) pour ne pas diverger à l'hydratation.
  */
 import { useEffect, useRef, useState } from "react";
-import { Coche, Envoyer, Lien } from "@/components/icones";
+import { Coche, Envoyer, Lien } from "@shenron/ui/icones";
 import { toast } from "@/lib/toast";
 
 export function ShareButton({

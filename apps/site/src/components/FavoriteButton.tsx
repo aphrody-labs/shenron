@@ -11,7 +11,7 @@
  * pendant le rendu produirait une divergence d'hydratation.
  */
 import { useEffect, useState } from "react";
-import { Coeur } from "@/components/icones";
+import { Coeur } from "@shenron/ui/icones";
 import { toast } from "@/lib/toast";
 import { useMe } from "@/lib/use-me";
 import {

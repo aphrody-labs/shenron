@@ -14,7 +14,7 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Croix } from "@/components/icones";
+import { Croix } from "@shenron/ui/icones";
 
 import { useFocusTrap } from "@/lib/use-focus-trap";
 import { cn } from "@/lib/utils";

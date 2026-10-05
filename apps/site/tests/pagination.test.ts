@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { pagesVisibles } from "@/components/ui/Pagination";
+import { pagesVisibles } from "@/components/kit/Pagination";
 
 describe("pagesVisibles", () => {
   test("liste tout tant que ça tient (≤ 7 pages)", () => {

@@ -9,7 +9,7 @@
  *
  * Masqué sur le back-office (/admin) : l'équipe n'a pas à se signaler à elle-même.
  */
-import { Chargement, CocheCercle, Croix, Drapeau } from "@/components/icones";
+import { Chargement, CocheCercle, Croix, Drapeau } from "@shenron/ui/icones";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { SignInDiscord } from "@/components/SignInDiscord";

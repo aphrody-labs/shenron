@@ -16,8 +16,8 @@
  * vignettes ; `SearchResults` est recopié localement pour la même raison.
  */
 import { assetUrl } from "@/lib/assets";
-import { DragonBallLoader } from "@/components/DragonBall";
-import { DragonRadar } from "@/components/icones";
+import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { DragonRadar } from "@shenron/ui/icones";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { track } from "@/lib/telemetry";

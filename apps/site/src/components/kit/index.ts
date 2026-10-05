@@ -6,13 +6,18 @@
  * son nom et sa raison) plutôt que de recopier des classes dans un coin — c'est
  * ce qui a produit cinq cartes différentes et quatre largeurs de page.
  *
+ * Les composants vivent dans `@shenron/ui` ; ce dossier ne garde que les
+ * adaptateurs du site (`next/link`, `next/image`, dictionnaire, session).
+ *
  * Tout est server-safe sauf `DomainBar`/`PublicViewLink`, qui dépendent de la
- * session côté client (marqués `"use client"` dans leur fichier).
+ * session côté client, et `Pagination` (URL et focus) : marqués `"use client"`
+ * dans leur fichier.
  */
 export { PageShell, Stack } from "@/components/kit/PageShell";
-export { SectionHeading } from "@/components/kit/SectionHeading";
+export { SectionHeading } from "@shenron/ui/layout/SectionHeading";
 export { TabNav } from "@/components/kit/TabNav";
 export { LinkPager } from "@/components/kit/LinkPager";
+export { Pagination, pagesVisibles } from "@/components/kit/Pagination";
 export { MangaCard, CardGrid, SocialCounts } from "@/components/kit/MangaCard";
 export { EmptyState } from "@/components/kit/EmptyState";
 export { StatTiles } from "@/components/kit/StatTiles";
