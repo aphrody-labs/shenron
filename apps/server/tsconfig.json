@@ -6,20 +6,11 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": [
-      "bun"
-    ],
-    "lib": [
-      "ESNext"
-    ],
+    "types": ["bun"],
+    "lib": ["ESNext"],
     "paths": {
-      "undici-types": [
-        "./node_modules/undici-types"
-      ]
+      "undici-types": ["./node_modules/undici-types"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
-  ]
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }

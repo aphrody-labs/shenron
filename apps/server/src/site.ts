@@ -36,7 +36,9 @@ export function locateSite(paths: ServerPaths, env: NodeJS.ProcessEnv = process.
     const root = resolve(candidate);
     const app = join(root, "apps", "site");
     if (!existsSync(join(app, "server.js"))) continue;
-    const dist = [".next-standalone", ".next"].map((d) => join(app, d)).find((d) => existsSync(join(d, "BUILD_ID")));
+    const dist = [".next-standalone", ".next"]
+      .map((d) => join(app, d))
+      .find((d) => existsSync(join(d, "BUILD_ID")));
     if (!dist) continue;
     return {
       root,
@@ -69,7 +71,8 @@ async function staticAsset(layout: SiteLayout, pathname: string): Promise<Respon
     }
     return null;
   }
-  if (pathname === "/" || pathname.startsWith("/api/") || pathname.startsWith("/_next/")) return null;
+  if (pathname === "/" || pathname.startsWith("/api/") || pathname.startsWith("/_next/"))
+    return null;
   const file = inside(layout.publicDir, pathname);
   if (file && existsSync(file) && statSync(file).isFile()) {
     return new Response(Bun.file(file), { headers: { "cache-control": "public, max-age=86400" } });
@@ -78,7 +81,8 @@ async function staticAsset(layout: SiteLayout, pathname: string): Promise<Respon
 }
 
 /** Whether this process is a `bun build --compile` executable (virtual module root). */
-const COMPILED = import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/.test(import.meta.path);
+const COMPILED =
+  import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/.test(import.meta.path);
 
 /**
  * Start the Next standalone server on a loopback port, in a child Bun runtime: the same
@@ -99,7 +103,8 @@ async function startNext(layout: SiteLayout, port: number): Promise<ReturnType<t
   });
   const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
-    if (child.exitCode !== null) throw new Error(`Next standalone server exited with ${child.exitCode}`);
+    if (child.exitCode !== null)
+      throw new Error(`Next standalone server exited with ${child.exitCode}`);
     try {
       const response = await fetch(`http://127.0.0.1:${port}/robots.txt`, { redirect: "manual" });
       if (response.status < 500) return child;
@@ -120,7 +125,13 @@ function freePort(): number {
   return port;
 }
 
-const HOP_BY_HOP = new Set(["connection", "keep-alive", "transfer-encoding", "upgrade", "proxy-connection"]);
+const HOP_BY_HOP = new Set([
+  "connection",
+  "keep-alive",
+  "transfer-encoding",
+  "upgrade",
+  "proxy-connection",
+]);
 
 export interface RunningSite {
   url: string;
@@ -148,7 +159,8 @@ export async function serveSite(
       if (local) return local;
       const asset = await staticAsset(layout, url.pathname);
       if (asset) return asset;
-      if (!ready) return new Response("Shenron démarre…", { status: 503, headers: { "retry-after": "1" } });
+      if (!ready)
+        return new Response("Shenron démarre…", { status: 503, headers: { "retry-after": "1" } });
       const headers = new Headers(request.headers);
       for (const name of HOP_BY_HOP) headers.delete(name);
       headers.set("x-forwarded-host", url.host);
@@ -163,7 +175,11 @@ export async function serveSite(
       });
       const responseHeaders = new Headers(upstream.headers);
       for (const name of HOP_BY_HOP) responseHeaders.delete(name);
-      return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: responseHeaders });
+      return new Response(upstream.body, {
+        status: upstream.status,
+        statusText: upstream.statusText,
+        headers: responseHeaders,
+      });
     },
   });
   const next = await startNext(layout, nextPort);

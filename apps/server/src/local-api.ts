@@ -19,15 +19,26 @@ import type { ServerPaths } from "./config";
 const VERSION = "1.0.0";
 const SYMBOLS = {
   shenron_abi_version: { args: [], returns: FFIType.u32 },
-  shenron_local_search: { args: [FFIType.cstring, FFIType.i32, FFIType.cstring], returns: FFIType.ptr },
+  shenron_local_search: {
+    args: [FFIType.cstring, FFIType.i32, FFIType.cstring],
+    returns: FFIType.ptr,
+  },
   shenron_string_free: { args: [FFIType.ptr], returns: FFIType.void },
 } as const;
 type Native = ReturnType<typeof dlopen<typeof SYMBOLS>>;
 
 function libraryPath(paths: ServerPaths, env: NodeJS.ProcessEnv): string | null {
   const name = `${process.platform === "win32" ? "" : "lib"}shenron_ffi.${suffix}`;
-  const candidates = [env.SHENRON_FFI_LIB?.trim(), join(paths.exeDir, name), join(paths.exeDir, "native", name)];
-  return candidates.find((candidate): candidate is string => Boolean(candidate && existsSync(candidate))) ?? null;
+  const candidates = [
+    env.SHENRON_FFI_LIB?.trim(),
+    join(paths.exeDir, name),
+    join(paths.exeDir, "native", name),
+  ];
+  return (
+    candidates.find((candidate): candidate is string =>
+      Boolean(candidate && existsSync(candidate)),
+    ) ?? null
+  );
 }
 
 const encoder = new TextEncoder();
@@ -87,7 +98,10 @@ export function localApi(
     if (url.pathname === "/api/local/rag/search") {
       const query = url.searchParams.get("q")?.trim() ?? "";
       if (!query || query.length > 600) {
-        return Response.json({ error: "q must contain between 1 and 600 characters" }, { status: 400, headers });
+        return Response.json(
+          { error: "q must contain between 1 and 600 characters" },
+          { status: 400, headers },
+        );
       }
       const limit = Math.min(Math.max(Number(url.searchParams.get("limit") ?? 8) || 8, 1), 50);
       const kind = url.searchParams.get("kind")?.trim() ?? "";
@@ -95,7 +109,11 @@ export function localApi(
       if (!lib) return Response.json({ error: nativeError }, { status: 503, headers });
       const started = performance.now();
       const pointer = lib.symbols.shenron_local_search(cstr(query), limit, cstr(kind));
-      if (!pointer) return Response.json({ error: "shenron_local_search returned null" }, { status: 500, headers });
+      if (!pointer)
+        return Response.json(
+          { error: "shenron_local_search returned null" },
+          { status: 500, headers },
+        );
       let text: string;
       try {
         text = new CString(pointer as Pointer).toString();
@@ -103,7 +121,10 @@ export function localApi(
         lib.symbols.shenron_string_free(pointer as Pointer);
       }
       const value = JSON.parse(text) as Record<string, unknown>;
-      return Response.json({ ...value, tookMs: Math.round((performance.now() - started) * 10) / 10 }, { headers });
+      return Response.json(
+        { ...value, tookMs: Math.round((performance.now() - started) * 10) / 10 },
+        { headers },
+      );
     }
     return Response.json({ error: "unknown local API" }, { status: 404, headers });
   };

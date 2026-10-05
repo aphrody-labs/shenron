@@ -53,14 +53,16 @@ export const SECRET_NAMES = [
 
 function platformHome(): string {
   const os = platform();
-  if (os === "win32") return join(process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "Shenron");
+  if (os === "win32")
+    return join(process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local"), "Shenron");
   if (os === "darwin") return join(homedir(), "Library", "Application Support", "Shenron");
   return join(process.env.XDG_DATA_HOME ?? join(homedir(), ".local", "share"), "shenron");
 }
 
 export function executableDir(): string {
   // A compiled Bun binary runs from a virtual root; its real location is process.execPath.
-  const compiled = import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/.test(import.meta.path);
+  const compiled =
+    import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/.test(import.meta.path);
   return compiled ? dirname(process.execPath) : resolve(import.meta.dir, "..");
 }
 
@@ -70,7 +72,9 @@ export function resolvePaths(env: NodeJS.ProcessEnv = process.env): ServerPaths 
   return {
     home,
     config,
-    envFile: env.SHENRON_ENV_FILE?.trim() ? resolve(env.SHENRON_ENV_FILE.trim()) : join(config, "shenron.env"),
+    envFile: env.SHENRON_ENV_FILE?.trim()
+      ? resolve(env.SHENRON_ENV_FILE.trim())
+      : join(config, "shenron.env"),
     data: join(home, "data"),
     cache: join(home, "cache"),
     logs: join(home, "logs"),
@@ -79,7 +83,8 @@ export function resolvePaths(env: NodeJS.ProcessEnv = process.env): ServerPaths 
 }
 
 export function ensureDirectories(paths: ServerPaths): void {
-  for (const dir of [paths.config, paths.data, paths.cache, paths.logs]) mkdirSync(dir, { recursive: true });
+  for (const dir of [paths.config, paths.data, paths.cache, paths.logs])
+    mkdirSync(dir, { recursive: true });
 }
 
 /** `NAME=value` lines; the last active assignment wins; quotes and `export ` are accepted. */
@@ -91,7 +96,10 @@ export function parseDotenv(text: string): Record<string, string> {
     const match = /^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/.exec(line);
     if (!match) continue;
     let value = match[2]!.trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1);
     } else {
       value = value.replace(/\s+#.*$/, "");
@@ -123,7 +131,10 @@ export function profileOf(env: NodeJS.ProcessEnv): Profile {
  * Resolve the effective environment (mutates and returns `process.env`, which Next and the
  * bot read): process values win, then the secrets file, then the profile defaults.
  */
-export function loadEnvironment(paths: ServerPaths, env: NodeJS.ProcessEnv = process.env): {
+export function loadEnvironment(
+  paths: ServerPaths,
+  env: NodeJS.ProcessEnv = process.env,
+): {
   profile: Profile;
   fromFile: string[];
 } {

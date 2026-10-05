@@ -7,7 +7,17 @@
  * Format (before zstd): "SHENRONPAK1\n", u32 LE manifest length, manifest JSON
  * `{ entries: [{ path, size, mode }] }`, then the file bytes in manifest order.
  */
-import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 
 const MAGIC = "SHENRONPAK1\n";
@@ -45,7 +55,8 @@ export function pack(sources: Record<string, string>, level = 12): Uint8Array {
   const header = new Uint8Array(MAGIC.length + 4);
   header.set(new TextEncoder().encode(MAGIC));
   new DataView(header.buffer).setUint32(MAGIC.length, manifest.byteLength, true);
-  const total = header.byteLength + manifest.byteLength + chunks.reduce((n, c) => n + c.byteLength, 0);
+  const total =
+    header.byteLength + manifest.byteLength + chunks.reduce((n, c) => n + c.byteLength, 0);
   const raw = new Uint8Array(total);
   let offset = 0;
   for (const part of [header, manifest, ...chunks]) {
@@ -59,18 +70,24 @@ export function pack(sources: Record<string, string>, level = 12): Uint8Array {
  * Extract `payload` into `<cacheDir>/<id>` unless already complete; returns the directory.
  * Extraction goes to a temporary sibling first, so an interrupted run never looks complete.
  */
-export async function extract(payloadFile: string, cacheDir: string): Promise<{ dir: string; extracted: boolean; ms: number }> {
+export async function extract(
+  payloadFile: string,
+  cacheDir: string,
+): Promise<{ dir: string; extracted: boolean; ms: number }> {
   const started = performance.now();
   const compressed = new Uint8Array(await Bun.file(payloadFile).arrayBuffer());
   const id = new Bun.CryptoHasher("sha256").update(compressed).digest("hex").slice(0, 16);
   const dir = join(cacheDir, `payload-${id}`);
-  if (existsSync(join(dir, ".complete"))) return { dir, extracted: false, ms: Math.round(performance.now() - started) };
+  if (existsSync(join(dir, ".complete")))
+    return { dir, extracted: false, ms: Math.round(performance.now() - started) };
   const raw = Bun.zstdDecompressSync(compressed);
   const magic = new TextDecoder().decode(raw.subarray(0, MAGIC.length));
   if (magic !== MAGIC) throw new Error("corrupted Shenron payload (bad magic)");
   const length = new DataView(raw.buffer, raw.byteOffset).getUint32(MAGIC.length, true);
   let offset = MAGIC.length + 4;
-  const { entries } = JSON.parse(new TextDecoder().decode(raw.subarray(offset, offset + length))) as {
+  const { entries } = JSON.parse(
+    new TextDecoder().decode(raw.subarray(offset, offset + length)),
+  ) as {
     entries: PackEntry[];
   };
   offset += length;

@@ -4,10 +4,10 @@
   "private": true,
   "description": "shenron-server: the Shenron front app (Next 16 standalone) and local APIs in one autonomous Bun binary.",
   "license": "Apache-2.0",
-  "type": "module",
   "bin": {
     "shenron-server": "./src/cli.ts"
   },
+  "type": "module",
   "scripts": {
     "dev": "bun src/cli.ts serve",
     "test": "bun test",

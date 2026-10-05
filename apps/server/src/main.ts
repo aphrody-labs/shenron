@@ -10,7 +10,13 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-import { ensureDirectories, initEnvFile, loadEnvironment, resolvePaths, secretPresence } from "./config";
+import {
+  ensureDirectories,
+  initEnvFile,
+  loadEnvironment,
+  resolvePaths,
+  secretPresence,
+} from "./config";
 import { extract } from "./payload";
 import { serveSite } from "./site";
 
@@ -35,7 +41,10 @@ function option(args: string[], name: string): string | undefined {
   return index >= 0 ? args[index + 1] : undefined;
 }
 
-export async function main(argv: string[], options: { embeddedPayload?: string } = {}): Promise<void> {
+export async function main(
+  argv: string[],
+  options: { embeddedPayload?: string } = {},
+): Promise<void> {
   const startedAt = performance.now();
   const [command = "serve", ...rest] = argv;
   if (command === "help" || command === "--help" || command === "-h") {
@@ -60,7 +69,14 @@ export async function main(argv: string[], options: { embeddedPayload?: string }
   if (command === "doctor") {
     console.log(
       JSON.stringify(
-        { version: VERSION, profile, home: paths.home, envFile: paths.envFile, fromFile, secrets: secretPresence() },
+        {
+          version: VERSION,
+          profile,
+          home: paths.home,
+          envFile: paths.envFile,
+          fromFile,
+          secrets: secretPresence(),
+        },
         null,
         2,
       ),
@@ -81,7 +97,14 @@ export async function main(argv: string[], options: { embeddedPayload?: string }
         .find((path) => existsSync(path));
       if (lib) process.env.SHENRON_FFI_LIB = lib;
     }
-    console.error(JSON.stringify({ event: "shenron.payload", dir: payload.dir, extracted: payload.extracted, ms: payload.ms }));
+    console.error(
+      JSON.stringify({
+        event: "shenron.payload",
+        dir: payload.dir,
+        extracted: payload.extracted,
+        ms: payload.ms,
+      }),
+    );
   }
   const port = Number(option(rest, "--port") ?? process.env.PORT ?? 3000);
   const hostname = option(rest, "--host") ?? process.env.HOSTNAME ?? "127.0.0.1";
