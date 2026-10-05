@@ -16,6 +16,6 @@ describe("SHENRON_E5", () => {
   test("is frozen and re-exported from the package root", () => {
     expect(Object.isFrozen(SHENRON_E5)).toBe(true);
     expect(fromRoot).toBe(SHENRON_E5);
-    expect(PROMPT_VERSION).toBe("1");
+    expect(PROMPT_VERSION).toBe("2");
   });
 });

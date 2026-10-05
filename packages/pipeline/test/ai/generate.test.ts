@@ -79,10 +79,11 @@ describe("generateGroundedAnswer", () => {
       hits: HITS,
       chunks,
     });
-    expect(out).toEqual({
+    expect(out).toMatchObject({
       answer: "Oh oh, Goku est un Saiyan.",
       fallback: false,
       cached: false,
+      refusal: false,
       promptVersion: PROMPT_VERSION,
     });
     const prompt = model.doGenerateCalls[0]?.prompt ?? [];
@@ -93,7 +94,7 @@ describe("generateGroundedAnswer", () => {
       content: [
         {
           type: "text",
-          text: "Contexte (faits Dragon Ball, à reformuler) :\n- Son Goku: Héros de Dragon Ball.\n- Vegeta: Prince des Saiyans.\n\nMessage de l'utilisateur : Qui est Goku ?",
+          text: "Contexte (faits Dragon Ball, à reformuler) :\n[1] Son Goku : Héros de Dragon Ball.\n[2] Vegeta : Prince des Saiyans.\n\nMessage de l'utilisateur : Qui est Goku ?",
         },
       ],
     });
@@ -181,7 +182,7 @@ describe("generateGroundedAnswer", () => {
     const a = await semanticCacheScope("gemini-web/flash", "ctx");
     expect(a).toMatch(/^[0-9a-f]{24}$/);
     expect(await semanticCacheScope("gemini-web/flash", "ctx")).toBe(a);
-    expect(await semanticCacheScope("gemini-web/flash", "ctx", "2")).not.toBe(a);
+    expect(await semanticCacheScope("gemini-web/flash", "ctx", "3")).not.toBe(a);
     expect(await semanticCacheScope("gemini-web/pro", "ctx")).not.toBe(a);
     expect(await semanticCacheScope("gemini-web/flash", "ctx2")).not.toBe(a);
   });

@@ -146,7 +146,7 @@ test("B7: the cache scope binds the model, PROMPT_VERSION and the evidence", asy
       "whis",
       { cache },
     );
-    const context = "- Namek: Ils vivent sur Namek.";
+    const context = "[1] Namek : Ils vivent sur Namek.";
     expect(scopes).toEqual([await semanticCacheScope("gemini-web/flash", context, PROMPT_VERSION)]);
     expect(scopes[0]).not.toBe(
       await semanticCacheScope("gemini-web/flash", context, `${PROMPT_VERSION}-next`),

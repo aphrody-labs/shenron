@@ -16,7 +16,16 @@ import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import { createAphrodyChatModel } from "@shenron/pipeline/ai/chat";
 import { resolveChatModel } from "@shenron/pipeline/ai/config";
 import { createNativeShenronChatModel, SHENRON_NATIVE_MODEL } from "@shenron/pipeline/ai/native";
-import { generateGroundedAnswer, type GroundedHit } from "@shenron/pipeline/ai/generate";
+import {
+  generateGroundedAnswer,
+  type GroundedAnswer,
+  type GroundedHit,
+} from "@shenron/pipeline/ai/generate";
+import {
+  rankHitsForContext,
+  resolveAnswerLang,
+  stripCitationMarkers,
+} from "@shenron/pipeline/ai/grounding";
 import type {
   ChunkContentPort,
   ConcurrencyPort,
@@ -26,6 +35,7 @@ import type {
 } from "@shenron/pipeline/ai/ports";
 import {
   isChitchat as sharedIsChitchat,
+  PROMPT_VERSION,
   isFallbackAnswer as sharedIsFallbackAnswer,
   PERSONAS,
   resolvePersona,
@@ -174,17 +184,47 @@ function aphrodyModel(): string {
   return resolveChatModel(process.env);
 }
 
+/** Hits dans l'ordre vu par le modèle : les fiches « document collecté » passent après le canon. */
+export function rankRagHits<T extends RagHit>(hits: readonly T[]): T[] {
+  const byId = new Map(hits.map((h, i) => [`${i}`, h]));
+  const ranked = rankHitsForContext(
+    hits.map((h, i) => ({
+      id: `${i}`,
+      title: h.title,
+      url: h.url,
+      ...(h.content ? { content: h.content } : {}),
+      snippet: h.snippet,
+      ...(h.sourceId ? { sourceId: h.sourceId } : {}),
+      kind: h.kind,
+    })),
+  );
+  return ranked.map((h) => byId.get(h.id)!);
+}
+
 /**
  * Génère une réponse conversationnelle. `hits` = faits RAG (peuvent être vides pour du bavardage).
- * `opts.sessionId` active la mémoire (historique par salon/utilisateur).
+ * `opts.sessionId` active la mémoire (historique par salon/utilisateur). Les marqueurs de
+ * citation `[n]` sont retirés : un client qui veut les sources appelle {@link generateLlmGrounded}.
  */
 export async function generateLlmAnswer(
   db: Database,
   query: string,
   hits: RagHit[],
   personaId = "shenron",
-  opts: { sessionId?: string; cache?: SemanticCachePort } = {},
+  opts: { sessionId?: string; cache?: SemanticCachePort; lang?: string } = {},
 ): Promise<string> {
+  const result = await generateLlmGrounded(db, query, hits, personaId, opts);
+  return stripCitationMarkers(result.answer);
+}
+
+/** Réponse ancrée complète : texte cité `[n]`, sources citées (toutes issues de `hits`), refus. */
+export async function generateLlmGrounded(
+  db: Database,
+  query: string,
+  hits: RagHit[],
+  personaId = "shenron",
+  opts: { sessionId?: string; cache?: SemanticCachePort; lang?: string } = {},
+): Promise<GroundedAnswer> {
   const pid = resolvePersona(personaId);
   // Gemma réside dans le processus Bun et utilise le SOUL dbfr. Le transport HTTP
   // reste sélectionnable explicitement pour les installations distantes.
@@ -215,6 +255,8 @@ export async function generateLlmAnswer(
     url: h.url,
     ...(h.content ? { content: h.content } : {}),
     snippet: h.snippet,
+    ...(h.sourceId ? { sourceId: h.sourceId } : {}),
+    kind: h.kind,
   }));
   if (!model) {
     // Aphrody non configuré : même repli persona (et même mémoire) qu'une génération en échec.
@@ -224,11 +266,21 @@ export async function generateLlmAnswer(
         .append(opts.sessionId, { q: query, a: fallback })
         .catch(() => undefined);
     }
-    return fallback;
+    return {
+      answer: fallback,
+      fallback: true,
+      cached: false,
+      promptVersion: PROMPT_VERSION,
+      citations: [],
+      refusal: false,
+      lang: resolveAnswerLang(query, opts.lang),
+      uncovered: [],
+    };
   }
   const result = await generateGroundedAnswer({
     model,
     persona: pid,
+    strict: true,
     question: query,
     hits: groundedHits,
     chunks: createSqliteChunkPort(db),
@@ -242,6 +294,7 @@ export async function generateLlmAnswer(
     ...(opts.sessionId ? { sessionId: opts.sessionId } : {}),
     contextLimits: { perHit: CONTEXT_CHARS_PER_HIT, total: CONTEXT_CHARS_TOTAL },
     historyTurns: HISTORY_TURNS,
+    ...(opts.lang ? { lang: opts.lang } : {}),
     onError: (stage, err) => {
       const message = err instanceof Error ? err.message : String(err);
       if (stage === "generate") console.error("[LLM] Échec génération Aphrody:", message);
@@ -249,5 +302,5 @@ export async function generateLlmAnswer(
       // chunks / history : best-effort, comme avant.
     },
   });
-  return result.answer;
+  return result;
 }

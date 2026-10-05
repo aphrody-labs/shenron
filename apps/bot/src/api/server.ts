@@ -2781,7 +2781,9 @@ export class ApiServer {
 
           const dbs = container.resolve(DatabaseService);
           try {
-            const { results, mode } = await hybridSearch(dbs.sqlite, q, 5, {
+            // Pool de 12 : les fiches « document collecté » passent derrière le canon, qui peut
+            // se trouver au-delà du rang 5 (ex. la fiche canon d'une technique au rang 11).
+            const { results, mode } = await hybridSearch(dbs.sqlite, q, 12, {
               lang,
               entity,
               sourceId,
@@ -2802,7 +2804,7 @@ export class ApiServer {
             }
 
             // Fiches « document collecté » derrière le canon : ordre vu par le modèle et rendu.
-            const ranked = rankRagHits(results);
+            const ranked = rankRagHits(results).slice(0, 8);
             const grounded = await generateLlmGrounded(dbs.sqlite, q, rankRagHits(hits), persona, {
               ...(session ? { sessionId: `site:${session}` } : {}),
               ...(lang ? { lang } : {}),

@@ -8,6 +8,7 @@
  * missing chunk content or a failing port never throws.
  */
 import type { LanguageModelV4 } from "@ai-sdk/provider";
+import { lexicon } from "@shenron/lexicon/data";
 import { generateText, type ModelMessage } from "ai";
 import type {
   ChunkContentPort,
@@ -18,8 +19,25 @@ import type {
 } from "./ports";
 import { semanticCacheScope } from "./ports";
 import {
+  citationsOf,
+  dominantLang,
+  type EntityAliases,
+  extractEntities,
+  type FidelityReport,
+  hitTier,
+  type GroundedCitation,
+  type PassageText,
+  resolveAnswerLang,
+  selectContextHits,
+  uncoveredEntities,
+  verifyAnswer,
+} from "./grounding";
+import {
+  type AnswerLang,
   buildGroundingInstructions,
   isChitchat,
+  isNotEstablishedAnswer,
+  notEstablished,
   PERSONAS,
   type PersonaId,
   PROMPT_VERSION,
@@ -33,6 +51,9 @@ export interface GroundedHit {
   content?: string;
   /** Last-resort text when neither `content` nor the port has the chunk. */
   snippet?: string;
+  /** Corpus of origin (`db_characters`, `wiki_pages`…): collected documents rank last. */
+  sourceId?: string;
+  kind?: string;
 }
 
 export interface ContextLimits {
@@ -66,25 +87,47 @@ export interface GroundedAnswerInput {
   abortSignal?: AbortSignal;
   contextLimits?: Partial<ContextLimits>;
   historyTurns?: number;
+  /**
+   * Doctrine canon: cite `[n]`, verify the citations, refuse when the passages establish nothing.
+   * Off by default (a task with no retrieval, `runIaTask`): the answer is the model's, unchecked.
+   */
+  strict?: boolean;
+  /** Answer language (`fr`, `en`, `ja`); detected from the question when absent. */
+  lang?: string;
+  /** Other names of an entity of the question; defaults to the embedded ja/fr/en lexicon. */
+  aliases?: EntityAliases;
   /** Diagnostics sink for swallowed port errors (never receives secrets). */
   onError?: (stage: "chunks" | "history" | "cache" | "generate", error: unknown) => void;
 }
 
 export interface GroundedAnswer {
+  /** Answer text; factual sentences end with `[n]`, an identifier of `citations`. */
   answer: string;
   fallback: boolean;
   cached: boolean;
   promptVersion: string;
+  /** Passages the answer cites, all taken from the hits provided. */
+  citations: GroundedCitation[];
+  /** `true` when the answer is the localised "not established in the sources". */
+  refusal: boolean;
+  lang: AnswerLang;
+  /** Entities of the question that no passage mentions. */
+  uncovered: string[];
+  /** Counters of the citation check (absent for chit-chat, refusals and cache hits). */
+  fidelity?: FidelityReport;
 }
 
-/** Compact fact context (llm.ts `buildContext`), without dumping it to the user. */
-export async function buildGroundedContext(
+/**
+ * Numbered passages of the context: `[n] title (source): text`. The identifier `n` is what the
+ * model must cite and what `verifyAnswer` reads back.
+ */
+export async function buildGroundedPassages(
   hits: readonly GroundedHit[],
   chunks: ChunkContentPort,
   limits: ContextLimits,
   onError?: GroundedAnswerInput["onError"],
-): Promise<string> {
-  const selected = hits.slice(0, limits.hits);
+): Promise<PassageText[]> {
+  const selected = selectContextHits(hits, limits.hits);
   let contents: ReadonlyMap<string, string> = new Map();
   const missing = selected.filter((hit) => !hit.content).map((hit) => hit.id);
   if (missing.length > 0) {
@@ -94,23 +137,66 @@ export async function buildGroundedContext(
       onError?.("chunks", error);
     }
   }
-  let ctx = "";
+  const passages: PassageText[] = [];
+  let length = 0;
   for (const hit of selected) {
     const text = (hit.content || contents.get(hit.id) || hit.snippet || "")
       .replace(/\s+/g, " ")
-      .trim();
-    if (text) ctx += `- ${hit.title}: ${text.slice(0, limits.perHit)}\n`;
-    if (ctx.length > limits.total) break;
+      .trim()
+      .slice(0, limits.perHit);
+    if (!text) continue;
+    passages.push({ n: passages.length + 1, hit, text });
+    length += text.length;
+    if (length > limits.total) break;
   }
-  return ctx.trim();
+  return passages;
 }
+
+/** Context text of the numbered passages (one per line). */
+export function renderGroundedContext(passages: readonly PassageText[]): string {
+  return passages
+    .map(
+      (p) => `[${p.n}] ${p.hit.title}${p.hit.sourceId ? ` (${p.hit.sourceId})` : ""} : ${p.text}`,
+    )
+    .join("\n");
+}
+
+/** Compact fact context (llm.ts `buildContext`), without dumping it to the user. */
+export async function buildGroundedContext(
+  hits: readonly GroundedHit[],
+  chunks: ChunkContentPort,
+  limits: ContextLimits,
+  onError?: GroundedAnswerInput["onError"],
+): Promise<string> {
+  return renderGroundedContext(await buildGroundedPassages(hits, chunks, limits, onError));
+}
+
+/** Every form of the lexicon term an entity designates (ja, fr, en, romaji, aliases). */
+export const lexiconAliases: EntityAliases = (entity) => {
+  const term = lexicon().resolve(entity);
+  if (!term) return [];
+  const { ja, fr, en } = term.aliases ?? {};
+  return [term.ja, term.fr, term.en, term.romaji ?? "", ...(ja ?? []), ...(fr ?? []), ...(en ?? [])]
+    .map((form) => form.trim())
+    .filter(Boolean);
+};
+
+/** Reminder of the answer language, last line of the user message (a persona is written in French). */
+const LANG_REMINDER: Readonly<Record<AnswerLang, string>> = {
+  fr: "",
+  en: "\n\n(Answer in English.)",
+  ja: "\n\n（日本語で答えてください。）",
+};
 
 export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<GroundedAnswer> {
   const persona = i.persona;
   const fallbackText = PERSONAS[persona].fallback;
   const limits: ContextLimits = { ...DEFAULT_CONTEXT_LIMITS, ...i.contextLimits };
   const chit = isChitchat(i.question);
-  const context = chit ? "" : await buildGroundedContext(i.hits, i.chunks, limits, i.onError);
+  const strict = i.strict === true && !chit;
+  const lang = resolveAnswerLang(i.question, i.lang);
+  const passages = chit ? [] : await buildGroundedPassages(i.hits, i.chunks, limits, i.onError);
+  const context = renderGroundedContext(passages);
 
   const appendHistory = async (answer: string): Promise<void> => {
     if (!i.sessionId || !i.history) return;
@@ -121,17 +207,48 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
     }
   };
 
+  const base = { promptVersion: PROMPT_VERSION, lang, cached: false, fallback: false };
+
+  // No passage, or none that mentions any entity of the question: the canon doctrine forbids
+  // answering from the model's own memory. The refusal costs no generation.
+  // Collected documents only describe what was collected: with no other passage there is nothing
+  // established to answer from.
+  const onlyCollected = passages.length > 0 && passages.every((p) => hitTier(p.hit) === 2);
+  const entities = strict ? extractEntities(i.question) : [];
+  const uncovered = strict
+    ? uncoveredEntities(entities, passages, i.aliases ?? lexiconAliases)
+    : [];
+  if (
+    strict &&
+    (passages.length === 0 ||
+      onlyCollected ||
+      (entities.length > 0 && uncovered.length === entities.length))
+  ) {
+    const answer = notEstablished(lang, passages.length === 0 ? [] : uncovered);
+    await appendHistory(answer);
+    return { ...base, answer, citations: [], refusal: true, uncovered };
+  }
+
   // A cached answer is valid only for the exact evidence, model, prompt version
   // and persona. Session history changes the prompt on every turn: never cached.
   const scope =
     context && !i.sessionId && i.cache
-      ? `${persona}:${await semanticCacheScope(i.model.modelId, context)}`
+      ? `${persona}:${await semanticCacheScope(i.model.modelId, lang === "fr" ? context : `${lang}\u0000${context}`)}`
       : null;
 
   if (scope && i.cache) {
     try {
       const hit = await i.cache.lookup(scope, i.question);
-      if (hit) return { answer: hit, fallback: false, cached: true, promptVersion: PROMPT_VERSION };
+      if (hit) {
+        return {
+          ...base,
+          answer: hit,
+          cached: true,
+          citations: citationsOf(hit, passages),
+          refusal: isNotEstablishedAnswer(hit),
+          uncovered,
+        };
+      }
     } catch (error) {
       i.onError?.("cache", error);
     }
@@ -146,8 +263,12 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
     }
   }
 
+  const absent =
+    uncovered.length > 0
+      ? `\n\nAucun passage ne mentionne : ${uncovered.join(", ")}. Pour ces éléments, écris « Non établi dans les sources », sans rien inventer.`
+      : "";
   const userContent = context
-    ? `Contexte (faits Dragon Ball, à reformuler) :\n${context}\n\nMessage de l'utilisateur : ${i.question}`
+    ? `Contexte (faits Dragon Ball, à reformuler${strict ? " ; cite les identifiants [n]" : ""}) :\n${context}${absent}\n\nMessage de l'utilisateur : ${i.question}${LANG_REMINDER[lang]}`
     : i.question;
   const messages: ModelMessage[] = [
     ...history
@@ -155,7 +276,11 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
       .map((turn) => ({ role: turn.role, content: turn.content })),
     { role: "user", content: userContent },
   ];
-  const instructions = buildGroundingInstructions(persona, undefined, { chitchat: chit });
+  const instructions = buildGroundingInstructions(persona, undefined, {
+    chitchat: chit,
+    cite: strict,
+    lang,
+  });
 
   const run = async (): Promise<string> => {
     try {
@@ -173,18 +298,50 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
     }
   };
 
-  let answer = "";
+  let raw = "";
   if (i.concurrency) {
     const outcome = await i.concurrency.run(run);
-    answer = outcome === "busy" ? "" : outcome;
+    raw = outcome === "busy" ? "" : outcome;
   } else {
-    answer = await run();
+    raw = await run();
   }
 
-  const fallback = !answer;
-  if (fallback) answer = fallbackText;
+  if (!raw) {
+    await appendHistory(fallbackText);
+    return {
+      ...base,
+      answer: fallbackText,
+      fallback: true,
+      citations: [],
+      refusal: false,
+      uncovered,
+    };
+  }
 
-  if (scope && i.cache && !fallback) {
+  // The model's citations are checked against the passages it was given; the ones it got wrong
+  // are replaced by the closest passage, and a sentence inventing a name is dropped.
+  let answer = raw;
+  let citations: GroundedCitation[] = [];
+  let fidelity: FidelityReport | undefined;
+  let refusal = false;
+  if (strict) {
+    const answerLang = dominantLang(raw);
+    const sameLanguage = answerLang === dominantLang(passages.map((p) => p.text).join(" "));
+    const verified = verifyAnswer(raw, i.question, passages, { lang: answerLang });
+    fidelity = verified.report;
+    citations = verified.citations;
+    answer = verified.answer;
+    // Every claim unsupported by the passages (and none of them cited): the model did not answer
+    // from the sources. An answer in another language than the passages cannot be compared with them word for word.
+    const ungrounded = sameLanguage && verified.report.claims > 0 && verified.report.cited === 0;
+    if (!answer || ungrounded) {
+      answer = notEstablished(lang, uncovered);
+      citations = [];
+    }
+    refusal = isNotEstablishedAnswer(answer);
+  }
+
+  if (scope && i.cache) {
     try {
       await i.cache.store(scope, i.question, answer);
     } catch (error) {
@@ -193,5 +350,12 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
   }
 
   await appendHistory(answer);
-  return { answer, fallback, cached: false, promptVersion: PROMPT_VERSION };
+  return {
+    ...base,
+    answer,
+    citations,
+    refusal,
+    uncovered,
+    ...(fidelity ? { fidelity } : {}),
+  };
 }

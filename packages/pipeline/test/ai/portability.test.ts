@@ -23,6 +23,7 @@ const SUBPATHS = [
     "provider",
     "prompts",
     "generate",
+    "grounding",
     "eval",
     "ports",
   ].map((name) => `./ai/${name}`),

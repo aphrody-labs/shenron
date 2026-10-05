@@ -24,7 +24,7 @@ describe("personas", () => {
     expect([...PERSONA_IDS]).toEqual(["whis", "beerus", "shenron", "grandpretre", "kaio", "enma"]);
     expect(Object.keys(PERSONAS)).toEqual([...PERSONA_IDS]);
     expect(DEFAULT_PERSONA).toBe("whis");
-    expect(PROMPT_VERSION).toBe("1");
+    expect(PROMPT_VERSION).toBe("2");
   });
 
   test("resolvePersona normalises like persona() in llm.ts", () => {
