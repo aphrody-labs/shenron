@@ -295,7 +295,7 @@ describe("Cockpit Admin IA — route /api/admin/ia", () => {
         await post({
           action: "add_gold_case",
           q: "Qui est Goku ?",
-          expect: ["/wiki/personnages/son-goku"],
+          expect: ["/wiki/characters/son-goku"],
         })
       ).status,
     ).toBe(200);
@@ -306,7 +306,7 @@ describe("Cockpit Admin IA — route /api/admin/ia", () => {
     expect(botCalls[0]?.body).toEqual({ status: "rejected" });
     expect(botCalls[1]?.body).toEqual({
       q: "Qui est Goku ?",
-      expect: ["/wiki/personnages/son-goku"],
+      expect: ["/wiki/characters/son-goku"],
       userId: "1527405876695142620",
       userTag: "AdminTest",
     });

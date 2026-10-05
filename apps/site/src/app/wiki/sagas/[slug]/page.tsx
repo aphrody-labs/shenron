@@ -221,7 +221,7 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
             {personnages.map((p) => (
               <GatedWrap
                 key={p.characterId}
-                href={`/wiki/personnages/${p.slug || p.characterId}`}
+                href={`/wiki/characters/${p.slug || p.characterId}`}
                 className="dbz-panel group flex flex-col items-center p-3 transition-transform duration-300 hover:scale-105"
               >
                 <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg border border-dbz-border bg-dbz-bg p-1">
@@ -295,10 +295,10 @@ export default async function SagaPage({ params }: { params: Promise<{ slug: str
       <section className="dbz-panel p-10 border-t-4 border-t-dbz-orange bg-dbz-card/30">
         <h2 className="font-saiyan text-3xl text-white mb-6 tracking-widest">EXPLORATION</h2>
         <div className="flex flex-wrap gap-4">
-          <Link href={`/wiki/episodes/serie/${saga.series}`} className="dbz-button">
+          <Link href={`/wiki/episodes/series/${saga.series}`} className="dbz-button">
             VOIR LES ÉPISODES
           </Link>
-          <GatedLink href="/wiki/personnages" className="dbz-button-ghost">
+          <GatedLink href="/wiki/characters" className="dbz-button-ghost">
             PERSONNAGES
           </GatedLink>
         </div>

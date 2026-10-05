@@ -355,7 +355,7 @@
       "readLicence": "Lire la licence"
     }
   },
-  "licence": {
+  "license": {
     "title": "Licence & usage",
     "subtitle": "DBFR (« le site ») est un site de fans communautaire à but non lucratif, dédié à la promotion francophone de l'œuvre Dragon Ball d'Akira Toriyama.",
     "s1": "1. Statut du site",
@@ -378,7 +378,7 @@
     "askAfter": "sur Discord répond sous 24h.",
     "seeCredits": "Voir les crédits"
   },
-  "confidentialite": {
+  "privacy": {
     "title": "Confidentialité",
     "subtitle": "DBFR est un site de fans francophone. On collecte le strict nécessaire pour faire tourner le site, mesurer son audience et financer son hébergement par la publicité. Cette page dit exactement quoi, pourquoi, et comment refuser.",
     "s1": "1. Qui est responsable du traitement",
@@ -1411,16 +1411,16 @@
       }
     }
   },
-  "bibliotheque": {
+  "library": {
     "label": "Bibliothèque Dragon Ball",
     "eyebrow": "Bibliothèque",
     "tabs": {
       "manga": "Manga",
       "databooks": "Databooks",
-      "atelier": "Transcription et traduction",
+      "workshop": "Transcription et traduction",
       "koharu": "Koharu"
     },
-    "atelier": {
+    "workshop": {
       "label": "Atelier des planches",
       "breadcrumb": "Transcription et traduction",
       "title": "Transcription et traduction des planches",
@@ -1444,7 +1444,7 @@
           "label": "Transcription",
           "text": "Le japonais relevé par OCR, puis relu et arbitré planche par planche."
         },
-        "traduction": {
+        "translation": {
           "label": "Traduction",
           "text": "Le français, appuyé sur le lexique canonique de DBFR pour les noms et les techniques."
         },
@@ -1456,14 +1456,14 @@
       "tabs": {
         "overview": "Vue d'ensemble",
         "transcription": "Transcription",
-        "traduction": "Traduction"
+        "translation": "Traduction"
       },
       "staff": {
         "transcription": {
           "title": "Transcription et arbitrage",
           "description": "Corpus manga et databooks : arbitrage des défauts OCR et relecture multi-agents."
         },
-        "traduction": {
+        "translation": {
           "title": "Traduction et campagnes",
           "description": "Catalogue des ouvrages officiels, campagnes de traduction française et qualité OCR."
         },
@@ -1503,7 +1503,7 @@
       },
       "desktopTitle": "Ouvrir l'éditeur",
       "desktopText": "L'éditeur s'ouvre dans l'application de bureau Shenron, qui embarque les modèles et fonctionne hors ligne. Les planches traduites rejoignent ensuite l'atelier.",
-      "atelierLink": "Voir l'avancement de la traduction"
+      "workshopLink": "Voir l'avancement de la traduction"
     }
   }
 }

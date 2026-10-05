@@ -15,6 +15,11 @@ import {
   Trophee,
 } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
+import {
+  readAvailability,
+  writeAvailability,
+  type AvailabilityFilter,
+} from "@/lib/availability-query";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { estChapitreCouleur, libelleSerie } from "@/lib/manga-editions";
 import { VignetteTome } from "@/components/manga/VignetteTome";
@@ -67,8 +72,6 @@ interface MangaVolumeGridProps {
   colorVolumeIds?: number[];
   colorChapterCount?: number;
 }
-
-type AvailabilityFilter = "all" | "disponibles" | "a-completer";
 
 const ACHIEVEMENTS: Achievement[] = [
   {
@@ -246,8 +249,7 @@ export function MangaVolumeGrid({
 
   useEffect(() => {
     try {
-      const value = new URLSearchParams(window.location.search).get("etat");
-      if (value === "disponibles" || value === "a-completer") setAvailabilityFilter(value);
+      setAvailabilityFilter(readAvailability(window.location.search));
     } catch {
       // URL indisponible : l'état par défaut reste « Tous ».
     }
@@ -257,8 +259,7 @@ export function MangaVolumeGrid({
     setAvailabilityFilter(value);
     try {
       const url = new URL(window.location.href);
-      if (value === "all") url.searchParams.delete("etat");
-      else url.searchParams.set("etat", value);
+      writeAvailability(url, value);
       window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
     } catch {
       // L'état local reste utilisable dans un environnement sans historique.
@@ -289,7 +290,7 @@ export function MangaVolumeGrid({
   const includeVolume = (volume: Volume) => {
     if (availabilityFilter === "all") return true;
     const available = volumeIsAvailable(volume);
-    return availabilityFilter === "disponibles" ? available : !available;
+    return availabilityFilter === "available" ? available : !available;
   };
 
   // Filtrage par état du catalogue et barre de recherche.
@@ -342,7 +343,7 @@ export function MangaVolumeGrid({
   );
 
   const filteredChapters = readableChapters.filter((ch) => {
-    if (availabilityFilter === "a-completer") return false;
+    if (availabilityFilter === "incomplete") return false;
     if (!q) return true;
     return ch.title?.toLowerCase().includes(q) || ch.chapter_number.toString().includes(q);
   });
@@ -373,7 +374,7 @@ export function MangaVolumeGrid({
 
   return (
     <div className="space-y-10">
-      {/* Catalogue complet et filtre de lecture, partageables via `?etat=`. */}
+      {/* Catalogue complet et filtre de lecture, partageables via `?state=`. */}
       <div className="flex flex-col gap-3 rounded-xl border border-white/12 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[10px] text-dbz-yellow font-extrabold">Catalogue complet</p>
@@ -390,8 +391,8 @@ export function MangaVolumeGrid({
           {(
             [
               ["all", "Tous les tomes"],
-              ["disponibles", "Lecture ici"],
-              ["a-completer", "Catalogue seul"],
+              ["available", "Lecture ici"],
+              ["incomplete", "Catalogue seul"],
             ] as const
           ).map(([value, label]) => (
             <button

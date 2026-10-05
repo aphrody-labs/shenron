@@ -8,21 +8,22 @@ import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { findEntry, resolveAccess } from "@/lib/wiki-launch";
 import { getMemberRoleIds } from "@/lib/member-roles";
 import { SITE_URL } from "@/lib/config";
-import { atelierRedirect, isAtelierStaffPath } from "@/lib/bibliotheque";
+import { isWorkshopStaffPath } from "@/lib/library";
+import { publicLegacyRedirect, staffLegacyRedirect } from "@/lib/legacy-routes";
 
 /** Hôte canonique dérivé de {@link SITE_URL} (source unique des URL publiques). */
 const CANONICAL_HOST = new URL(SITE_URL).host;
 
 // proxy.ts = « middleware » de Next 16 (renommé middleware.ts → proxy.ts).
 // Trois rôles : (1) canonicalisation du host vers dragonballfr.com ; (2) gating
-// de l'espace /admin et des outils staff de l'atelier, qu'un `redirect()` de layout ne peut PAS protéger sous
+// de l'espace /admin et des outils staff de l'atelier (`/workshop`), qu'un `redirect()` de layout ne peut PAS protéger sous
 // streaming (cf. le bloc dédié plus bas) ; (3) gating bêta des sections non
 // publiques (wiki hors catégories ouvertes, + tierlists), avec exception
 // admin/owner. Cf. https://nextjs.org/docs/messages/middleware-to-proxy
 //
 // Les catégories publiques ne sont PLUS codées en dur : elles viennent de la DB
 // (`wiki-launch-config`, singleton WikiLaunch, cache TTL) → bascule live depuis
-// /admin/lancement. Repli défaut = catégories bêta (episodes/films/manga/chrono).
+// /admin/launch. Repli défaut = catégories bêta (episodes/films/manga/chrono).
 
 /**
  * Présence d'identifiants d'authentification (session Better Auth, token admin ou en-tête API).
@@ -36,11 +37,19 @@ function hasAuthCredentials(request: NextRequest): boolean {
   if (request.nextUrl.searchParams.has("admin_token")) return true;
   if (
     request.nextUrl.searchParams.has("token") &&
-    (request.nextUrl.pathname.startsWith("/admin") || isAtelierStaffPath(request.nextUrl.pathname))
+    (request.nextUrl.pathname.startsWith("/admin") || isStaffPath(request.nextUrl.pathname))
   ) {
     return true;
   }
   return getSessionCookie(request, { cookiePrefix: SESSION_COOKIE_PREFIX }) !== null;
+}
+
+/**
+ * Outils staff hors `/admin` : l'atelier (`/workshop/…`) et toute ancienne adresse
+ * staff (`/atelier/traduction`…), gardée AVANT son 308 pour qu'un anonyme n'apprenne rien.
+ */
+function isStaffPath(pathname: string): boolean {
+  return isWorkshopStaffPath(pathname) || staffLegacyRedirect(pathname) !== null;
 }
 
 const ANONYMOUS: Visitor = { isAdmin: false, authenticated: false, discordId: null };
@@ -68,11 +77,18 @@ async function visitorOf(request: NextRequest): Promise<Visitor> {
 
 /** Rubriques retirées → leur hub (redirections permanentes sans donnée). */
 const LEGACY_WIKI_REDIRECTS: Readonly<Record<string, string>> = {
-  "/wiki/cosmologie": "/wiki/lieux",
   "/wiki/manga/interviews": "/wiki/interviews",
-  "/wiki/autour-de-dragon-ball": "/wiki/staff",
-  "/wiki/contributeurs": "/wiki/staff",
+  "/wiki/contributors": "/wiki/staff",
 };
+
+/** 308 vers `target`, la requête d'origine conservée (sans écraser celle de la cible). */
+function permanentTo(request: NextRequest, target: string) {
+  const url = new URL(target, request.url);
+  for (const [key, value] of request.nextUrl.searchParams) {
+    if (!url.searchParams.has(key)) url.searchParams.append(key, value);
+  }
+  return NextResponse.redirect(url, 308);
+}
 
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host") || "";
@@ -101,12 +117,17 @@ export async function proxy(request: NextRequest) {
   // /wiki/cosmologie, /wiki/planetes (308 vers cosmologie puis 200) et
   // /wiki/manga/interviews : une page vide, sans `<h1>`, indexable. Le 308 est
   // donc rendu ICI, avant tout rendu ; les composants restent en défense.
-  const legacyTarget =
-    LEGACY_WIKI_REDIRECTS[pathname] ??
-    (pathname.startsWith("/wiki/cosmologie/") ? "/wiki/lieux" : null);
+  const legacyTarget = LEGACY_WIKI_REDIRECTS[pathname];
   if (legacyTarget) {
     return NextResponse.redirect(new URL(legacyTarget, request.url), 308);
   }
+
+  // Anciennes adresses publiques en français (`/wiki/personnages`, `/jeux`…) : leur 308
+  // part de `redirects()` dans `next.config.ts`, qui passe AVANT le proxy. Cette table
+  // est la même (`lib/legacy-routes.ts`) ; elle sert ici de défense si la requête arrive
+  // jusqu'au proxy (serveur sans la config de redirection).
+  const publicTarget = publicLegacyRedirect(pathname);
+  if (publicTarget) return permanentTo(request, publicTarget);
 
   // Journal / News : l'ancienne pagination `?page=N` est morte. Lire `searchParams`
   // dans une page la rend dynamique sous Next 16 (`no-store`), donc l'index le
@@ -132,7 +153,7 @@ export async function proxy(request: NextRequest) {
   // que leur charge utile est déjà émise. Un anonyme recevait donc un 200 avec
   // les données — mesuré le 2026-08-22 sur la prod : 851 Kio de titres sur
   // /admin/db-universe/databooks, et 470 Kio contenant 7 032 segments de
-  // japonais transcrit sur /admin/databooks/19 (aujourd'hui /atelier/databooks/19).
+  // japonais transcrit sur /admin/databooks/19 (aujourd'hui /workshop/databooks/19).
   //
   // C'est la même mécanique que le 308 de `/wiki/dragon-ball`, qui a dû quitter
   // le composant pour `next.config` : sous streaming, une redirection de layout
@@ -143,25 +164,22 @@ export async function proxy(request: NextRequest) {
   // il couvre les chemins qui n'entrent pas dans le matcher du proxy.
   //
   // Les outils staff de l'atelier (transcription, traduction, relecture) ont quitté
-  // `/admin` pour l'espace Bibliothèque : ils passent par la même garde. Les anciennes
-  // adresses répondent un 308, après la garde (un anonyme ne découvre rien).
-  if (pathname === "/admin" || pathname.startsWith("/admin/") || isAtelierStaffPath(pathname)) {
+  // `/admin` pour l'espace Bibliothèque (`/workshop`) : ils passent par la même garde.
+  // Les anciennes adresses (`/admin/databooks`, `/atelier/traduction`, `/admin/ia`…)
+  // répondent un 308, APRÈS la garde (un anonyme ne découvre rien).
+  if (pathname === "/admin" || pathname.startsWith("/admin/") || isStaffPath(pathname)) {
     const visitor = await visitorOf(request);
     if (!visitor.isAdmin) {
       return NextResponse.redirect(new URL("/", request.url));
     }
-    const moved = atelierRedirect(pathname);
-    if (moved) {
-      const target = new URL(moved, request.url);
-      target.search = request.nextUrl.search;
-      return NextResponse.redirect(target, 308);
-    }
+    const moved = staffLegacyRedirect(pathname);
+    if (moved) return permanentTo(request, moved);
     return NextResponse.next();
   }
 
   // Contrôle d'accès par rubrique : chaque catégorie wiki et chaque section du
   // site porte un mode (public / connectés / rôles Discord / staff) piloté depuis
-  // /admin/lancement. Le code des pages reste intact — seul l'accès est arbitré
+  // /admin/launch. Le code des pages reste intact — seul l'accès est arbitré
   // ici. Le staff traverse tout.
   const entry = findEntry(pathname);
   // `/wiki` EXACTEMENT — le sommaire de l'encyclopédie — est public. Il n'a pas
@@ -181,7 +199,7 @@ export async function proxy(request: NextRequest) {
   //
   // L'extension est le bon discriminant : aucune rubrique du registre n'en
   // porte, et le dernier segment d'une page wiki est un slug (`/wiki/manga`,
-  // `/wiki/personnages/son-goku`). Les points d'un slug — il n'y en a pas —
+  // `/wiki/characters/son-goku`). Les points d'un slug — il n'y en a pas —
   // seraient de toute façon rattrapés par le registre, qui passe avant.
   if (/\.[a-z0-9]{2,5}$/i.test(pathname)) return NextResponse.next();
   const isWiki = pathname.startsWith("/wiki/");
@@ -217,7 +235,7 @@ export async function proxy(request: NextRequest) {
     // non `nextUrl.clone()` (host interne localhost:3000 → tentative de proxy
     // externe ECONNREFUSED). Le contenu gated n'est jamais rendu.
     return NextResponse.redirect(
-      new URL(`/wiki-bientot?from=${encodeURIComponent(pathname)}`, request.url),
+      new URL(`/coming-soon?from=${encodeURIComponent(pathname)}`, request.url),
     );
   }
 

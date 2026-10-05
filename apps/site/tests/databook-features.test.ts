@@ -146,7 +146,7 @@ describe("source features shipped", () => {
 
   test("fiche jeu : galerie + barre d'édition", async () => {
     const src = await Bun.file(
-      new URL("../src/app/wiki/jeux/[slug]/page.tsx", import.meta.url),
+      new URL("../src/app/wiki/games/[slug]/page.tsx", import.meta.url),
     ).text();
     expect(src).toContain("GameMediaGallery");
     expect(src).toMatch(/Wiki(Edit|Admin)Bar/);

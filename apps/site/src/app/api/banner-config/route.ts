@@ -18,23 +18,23 @@ const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 
 /** Paths publics impactés par une bannière (ISR). */
 const REVALIDATE_PATHS = [
   "/wiki/episodes",
-  "/wiki/episodes/serie/[series]",
-  "/wiki/films",
-  "/wiki/chronologie",
-  "/wiki/personnages",
+  "/wiki/episodes/series/[series]",
+  "/wiki/movies",
+  "/wiki/timeline",
+  "/wiki/characters",
   "/wiki/sagas",
   "/wiki/arcs",
   "/wiki/races",
   "/wiki/transformations",
   "/wiki/techniques",
-  "/wiki/jeux",
+  "/wiki/games",
   "/wiki/manga",
   "/wiki/databooks",
   "/wiki/tools",
   "/actualites",
   "/news",
   "/news/page/[n]",
-  "/jeux/2048",
+  "/games/2048",
 ];
 
 export async function GET(req: NextRequest) {

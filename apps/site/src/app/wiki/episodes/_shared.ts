@@ -4,7 +4,7 @@ import { unstable_cache } from "next/cache";
 
 /**
  * Helpers partagés entre la landing `/wiki/episodes` (statique) et la vue série
- * `/wiki/episodes/serie/[series]` (statique). Ces deux routes vivent sous le
+ * `/wiki/episodes/series/[series]` (statique). Ces deux routes vivent sous le
  * layout `episodes/` (slot `@modal`) → cliquer une vignette ouvre l'aperçu en
  * modale (interception). Rendre la landing STATIQUE (plus de `searchParams`) est
  * ce qui débloque l'interception ET le cache CDN.

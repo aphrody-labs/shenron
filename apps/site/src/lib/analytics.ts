@@ -320,7 +320,7 @@ export async function getPublicActivitySafe(): Promise<PublicActivity> {
 // --- Utilitaire d'affichage --------------------------------------------------
 
 /**
- * Libellé lisible d'un chemin (`/wiki/personnages` → « Personnages »).
+ * Libellé lisible d'un chemin (`/wiki/characters` → « Personnages »).
  *
  * Le chemin vient de `site_events.path`, donc du corps POST de `/api/telemetry` :
  * il est écrit par le visiteur. Un pourcentage isolé ou une paire d'octets

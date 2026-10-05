@@ -387,7 +387,11 @@ describe("proxy : outils staff de l'atelier", () => {
     });
   const staff = "better-auth.session_token=abc.def";
 
-  for (const path of ["/atelier/transcription", "/atelier/traduction", "/atelier/databooks/19"]) {
+  for (const path of [
+    "/workshop/transcription",
+    "/workshop/translation",
+    "/workshop/databooks/19",
+  ]) {
     test(`${path} : un anonyme repart à l'accueil sans rendu`, async () => {
       const res = await proxy(request(path));
       expect(res.status).toBe(307);
@@ -409,10 +413,10 @@ describe("proxy : outils staff de l'atelier", () => {
       const location = new URL(res.headers.get("location") ?? "");
       return `${location.pathname}${location.search}`;
     };
-    expect(await moved("/admin/transcriptions")).toBe("/atelier/transcription");
-    expect(await moved("/admin/databooks")).toBe("/atelier/traduction");
+    expect(await moved("/admin/transcriptions")).toBe("/workshop/transcription");
+    expect(await moved("/admin/databooks")).toBe("/workshop/translation");
     expect(await moved("/admin/databooks/19?planche=12&filtre=suspectes")).toBe(
-      "/atelier/databooks/19?planche=12&filtre=suspectes",
+      "/workshop/databooks/19?planche=12&filtre=suspectes",
     );
   });
 

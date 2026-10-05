@@ -5,7 +5,7 @@
  * l'absence d'image, en croyant laisser la page hériter de la carte de marque
  * (`app/opengraph-image.tsx`). Elle n'en héritait pas — déclarer `openGraph`
  * REMPLACE l'objet hérité. Toutes les pages appelant `ogMeta` sans visuel
- * propre (`/shop`, `/leaderboard`, `/classements`, `/stats`, `/jeux`, et chaque
+ * propre (`/shop`, `/leaderboard`, `/rankings`, `/stats`, `/games`, et chaque
  * fiche sans image) se partageaient donc sans vignette sur Discord et Twitter.
  * Le défaut était invisible depuis le code : chaque page semblait correcte.
  */
@@ -32,9 +32,9 @@ describe("ogMeta", () => {
   });
 
   test("la canonique alimente à la fois `alternates` et `og:url`", () => {
-    const m = ogMeta({ title: "x", canonical: "/wiki/films" });
-    expect(m.alternates?.canonical).toBe("/wiki/films");
-    expect(m.openGraph && "url" in m.openGraph ? m.openGraph.url : null).toBe("/wiki/films");
+    const m = ogMeta({ title: "x", canonical: "/wiki/movies" });
+    expect(m.alternates?.canonical).toBe("/wiki/movies");
+    expect(m.openGraph && "url" in m.openGraph ? m.openGraph.url : null).toBe("/wiki/movies");
   });
 
   test("sans canonique, aucune `alternates` n'est imposée", () => {

@@ -148,7 +148,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const n = parseDatabookId(id);
-  if (n !== null && MIGRATED_LIGHT_NOVELS.has(n)) permanentRedirect(`/wiki/romans/${n}`);
+  if (n !== null && MIGRATED_LIGHT_NOVELS.has(n)) permanentRedirect(`/wiki/novels/${n}`);
   if (n !== null && MIGRATED_BOOKS_TO_MANGA[n])
     permanentRedirect(`/wiki/manga/volume/${MIGRATED_BOOKS_TO_MANGA[n]}`);
   const book = n === null ? null : await dbUniverse.databook(n);
@@ -174,7 +174,7 @@ export async function generateMetadata({
 export default async function DatabookDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const n = parseDatabookId(id);
-  if (n !== null && MIGRATED_LIGHT_NOVELS.has(n)) permanentRedirect(`/wiki/romans/${n}`);
+  if (n !== null && MIGRATED_LIGHT_NOVELS.has(n)) permanentRedirect(`/wiki/novels/${n}`);
   if (n !== null && MIGRATED_BOOKS_TO_MANGA[n])
     permanentRedirect(`/wiki/manga/volume/${MIGRATED_BOOKS_TO_MANGA[n]}`);
   const book = n === null ? null : await dbUniverse.databook(n);

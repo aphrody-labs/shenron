@@ -52,7 +52,7 @@ export default async function StaffHubPage({
   else if (initialTierParam === "editorial") initialTier = "editorial";
   else if (initialTierParam === "production") initialTier = "production";
 
-  // Chaque contributeur du hub staff relie vers sa fiche dédiée `/wiki/contributeurs/${c.slug}`
+  // Chaque contributeur du hub staff relie vers sa fiche dédiée `/wiki/contributors/${c.slug}`
   const unifiedCatalog = buildUnifiedStaffCatalog(dbContribs, dbVAs);
 
   return (
@@ -205,7 +205,7 @@ export default async function StaffHubPage({
         {/* Rails d'interconnexion wiki */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
           <GatedLink
-            href="/wiki/voix"
+            href="/wiki/voice-actors"
             className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 transition-colors hover:border-purple-500/40 hover:bg-purple-950/20"
           >
             <span className="text-2xl">🎙️</span>
@@ -216,7 +216,7 @@ export default async function StaffHubPage({
           </GatedLink>
 
           <GatedLink
-            href="/wiki/musiques"
+            href="/wiki/music"
             className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 transition-colors hover:border-rose-500/40 hover:bg-rose-950/20"
           >
             <span className="text-2xl">🎵</span>

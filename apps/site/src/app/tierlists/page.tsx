@@ -38,13 +38,13 @@ export default async function TierlistsPage() {
 
       <div className="mb-10 flex flex-wrap justify-center gap-4">
         <Link
-          href="/tierlists/creer"
+          href="/tierlists/new"
           className="rounded-lg bg-dbz-orange px-6 py-3 text-sm font-bold uppercase tracking-wide text-black transition-opacity hover:opacity-90"
         >
           Créer ma tierlist
         </Link>
         <Link
-          href="/tierlists/mes"
+          href="/tierlists/mine"
           className="rounded-lg border border-white/15 px-6 py-3 text-sm font-bold uppercase tracking-wide text-white/80 transition-colors hover:border-white/40"
         >
           Mes tierlists

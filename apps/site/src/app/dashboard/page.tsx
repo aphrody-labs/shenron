@@ -102,7 +102,7 @@ export default async function DashboardPage() {
                 <T k="dashboard.level" values={{ level: profile?.level ?? 0 }} />
               </p>
               <Link
-                href="/profil/me"
+                href="/profile/me"
                 className="hidden min-h-11 items-center gap-2 rounded-full border border-white/15 px-4 text-sm font-semibold text-white/70 hover:border-dbz-orange hover:text-white sm:inline-flex"
               >
                 <T k="dashboard.profile" /> <ArrowUpRight className="h-4 w-4" />
@@ -148,7 +148,7 @@ export default async function DashboardPage() {
             <Metric label={<T k="dashboard.metricFavorites" />} value={fmt(favorites)} />
           </dl>
           <Link
-            href="/profil/me"
+            href="/profile/me"
             className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-dbz-orange hover:text-yellow-200 sm:hidden"
           >
             <T k="dashboard.seeProfile" /> <ArrowUpRight className="h-4 w-4" />
@@ -205,7 +205,7 @@ export default async function DashboardPage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <Action
-              href="/favoris"
+              href="/favorites"
               icon={Heart}
               title={<T k="dashboard.actionFavorites" />}
               text={<T k="dashboard.actionFavoritesText" />}
@@ -217,13 +217,13 @@ export default async function DashboardPage() {
               text={<T k="dashboard.actionShopText" />}
             />
             <Action
-              href="/tierlists/mes"
+              href="/tierlists/mine"
               icon={ListOrdered}
               title={<T k="dashboard.actionTierlists" />}
               text={<T k="dashboard.actionTierlistsText" />}
             />
             <Action
-              href="/wiki/contribuer"
+              href="/wiki/contribute"
               icon={PenLine}
               title={<T k="dashboard.actionContribute" />}
               text={<T k="dashboard.actionContributeText" />}
@@ -235,7 +235,7 @@ export default async function DashboardPage() {
               text={<T k="dashboard.actionLeaderboardText" />}
             />
             <Action
-              href="/jeux"
+              href="/games"
               icon={Sparkles}
               title={<T k="dashboard.actionGames" />}
               text={<T k="dashboard.actionGamesText" />}
@@ -314,7 +314,7 @@ function MemberHero({ username, catalog }: { username: string; catalog: MediaCat
             <T k={canWatch ? "dashboard.watch" : "dashboard.discover"} />
           </Link>
           <Link
-            href="/favoris"
+            href="/favorites"
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/20 bg-black/30 px-6 text-sm font-semibold text-white hover:border-white/45 hover:bg-black/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             <Heart className="h-4 w-4" aria-hidden /> <T k="dashboard.myList" />
@@ -437,7 +437,7 @@ function targetKey(type: string): string {
 
 function targetHref(type: string, id: string): string | null {
   if (type === "episode") return `/wiki/episodes/${encodeURIComponent(id)}`;
-  return { game: "/wiki/jeux", movie: "/wiki/films", arc: "/wiki/arcs" }[type] ?? null;
+  return { game: "/wiki/games", movie: "/wiki/movies", arc: "/wiki/arcs" }[type] ?? null;
 }
 
 function Metric({ label, value }: { label: ReactNode; value: string }) {

@@ -63,7 +63,7 @@ export function WikiEditBar({
         <WikiContribute table={table} rowId={id} columns={colonnes} entityLabel={label} />
       ) : null}
       <Link
-        href="/wiki/contribuer"
+        href="/wiki/contribute"
         className="text-[11px] text-white/35 underline-offset-2 transition-colors hover:text-white/60 hover:underline"
       >
         Comment contribuer&nbsp;?

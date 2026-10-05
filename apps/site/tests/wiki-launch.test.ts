@@ -21,7 +21,7 @@ const EMPTY: AccessSnapshot = { openKeys: [], access: {} };
 describe("findEntry — préfixe le plus long", () => {
   test("une route détail est rattachée à sa rubrique", () => {
     expect(findEntry("/wiki/episodes/421")?.key).toBe("episodes");
-    expect(findEntry("/wiki/films/battle-of-gods")?.key).toBe("films");
+    expect(findEntry("/wiki/movies/battle-of-gods")?.key).toBe("movies");
   });
 
   test("le préfixe le plus long gagne", () => {
@@ -48,16 +48,16 @@ describe("resolveAccess", () => {
 
   test("une règle enregistrée prime sur le défaut", () => {
     expect(
-      resolveAccess("personnages", {
-        openKeys: ["personnages"],
-        access: { personnages: { mode: "members", roleIds: [] } },
+      resolveAccess("characters", {
+        openKeys: ["characters"],
+        access: { characters: { mode: "members", roleIds: [] } },
       }).mode,
     ).toBe("members");
   });
 
   test("sans règle, une catégorie wiki suit openKeys", () => {
-    expect(resolveAccess("personnages", { openKeys: ["personnages"] }).mode).toBe("public");
-    expect(resolveAccess("personnages", { openKeys: [] }).mode).toBe("admin");
+    expect(resolveAccess("characters", { openKeys: ["characters"] }).mode).toBe("public");
+    expect(resolveAccess("characters", { openKeys: [] }).mode).toBe("admin");
   });
 });
 
@@ -75,22 +75,22 @@ describe("isPathPublic", () => {
 
   test("les rubriques bêta restent ouvertes même sans configuration", () => {
     expect(isPathPublic("/wiki/episodes/1", EMPTY)).toBe(true);
-    expect(isPathPublic("/wiki/films/x", EMPTY)).toBe(true);
+    expect(isPathPublic("/wiki/movies/x", EMPTY)).toBe(true);
     expect(isPathPublic("/wiki/manga/1", EMPTY)).toBe(true);
-    expect(isPathPublic("/wiki/chronologie", EMPTY)).toBe(true);
+    expect(isPathPublic("/wiki/timeline", EMPTY)).toBe(true);
   });
 
   test("`members` et `roles` ne valent pas public", () => {
     // Un lien ou une URL de sitemap ne doit être émis que pour du VRAI public :
     // une rubrique réservée aux connectés redirigerait un anonyme.
     const cfg: AccessSnapshot = {
-      openKeys: ["personnages"],
+      openKeys: ["characters"],
       access: {
-        personnages: { mode: "members", roleIds: [] },
+        characters: { mode: "members", roleIds: [] },
         databooks: { mode: "roles", roleIds: ["1"] },
       },
     };
-    expect(isPathPublic("/wiki/personnages", cfg)).toBe(false);
+    expect(isPathPublic("/wiki/characters", cfg)).toBe(false);
     expect(isPathPublic("/wiki/databooks/3", cfg)).toBe(false);
   });
 });
@@ -99,7 +99,7 @@ describe("publicEntries", () => {
   test("ne renvoie que des rubriques réellement publiques", () => {
     const keys = publicEntries(EMPTY).map((e) => e.key);
     for (const k of ALWAYS_OPEN_KEYS) expect(keys).toContain(k);
-    expect(keys).not.toContain("personnages");
+    expect(keys).not.toContain("characters");
   });
 });
 
@@ -115,7 +115,7 @@ describe("sommaire /wiki", () => {
   test("mais il n'ouvre PAS ses enfants", () => {
     // Le piège d'une entrée de registre avec le préfixe `/wiki` : elle
     // capterait `/wiki/n-importe-quoi` par `startsWith`.
-    expect(isPathPublic("/wiki/personnages", ferme)).toBe(false);
+    expect(isPathPublic("/wiki/characters", ferme)).toBe(false);
     expect(isPathPublic("/wiki/segment-inconnu", ferme)).toBe(false);
   });
 

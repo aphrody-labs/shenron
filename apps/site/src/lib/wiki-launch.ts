@@ -5,7 +5,7 @@
  *
  * Chaque catégorie mappe vers ses **préfixes d'URL** (index + routes détail) qui
  * doivent être ouverts ENSEMBLE quand on la publie. Le gating (`proxy.ts`), la nav
- * (`SiteNav`) et le teaser (`/wiki-bientot`) résolvent tous « catégorie ouverte ? »
+ * (`SiteNav`) et le teaser (`/coming-soon`) résolvent tous « catégorie ouverte ? »
  * via ce registre + l'ensemble des clés ouvertes (DB, `wiki-launch-config.ts`).
  *
  * `alwaysOpen` = catégories déjà publiques en bêta (episodes/films/manga/chrono) :
@@ -68,19 +68,19 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     blurb: "826 épisodes, de Dragon Ball à Daima",
   },
   {
-    key: "films",
+    key: "movies",
     label: "Films",
-    href: "/wiki/films",
-    prefixes: ["/wiki/films"],
+    href: "/wiki/movies",
+    prefixes: ["/wiki/movies"],
     alwaysOpen: true,
     group: "oeuvres",
     blurb: "Longs métrages et OAV",
   },
   {
-    key: "chronologie",
+    key: "timeline",
     label: "Chronologie",
-    href: "/wiki/chronologie",
-    prefixes: ["/wiki/chronologie"],
+    href: "/wiki/timeline",
+    prefixes: ["/wiki/timeline"],
     alwaysOpen: true,
     group: "oeuvres",
     blurb: "La frise complète de l'univers",
@@ -94,28 +94,30 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     group: "archives",
     blurb: "Les planches, tome par tome",
   },
-  // ── Fermées par défaut, ouvrables une par une depuis /admin/lancement ─────
+  // ── Fermées par défaut, ouvrables une par une depuis /admin/launch ─────────
   //
   // Chaque rubrique garde son ANCIEN préfixe `/wiki/dragon-ball/…` en second :
-  // les fiches ont été rapatriées sous le segment de leur index (`/wiki/personnages/12`
+  // les fiches ont été rapatriées sous le segment de leur index (`/wiki/characters/12`
   // et non `/wiki/dragon-ball/character/12`), et le 308 de `next.config` récupère
-  // les URL déjà indexées — mais le proxy passe AVANT ce 308. Sans le préfixe
-  // historique ici, une vieille URL d'une rubrique fermée traverserait le gating.
+  // les URL déjà indexées. Sans le préfixe historique ici, une vieille URL d'une
+  // rubrique fermée qui atteindrait le proxy traverserait le gating. Les anciens
+  // segments français (`/wiki/personnages`…) n'ont pas besoin d'y figurer : le proxy
+  // les renvoie en 308 (`lib/legacy-routes.ts`) avant de consulter ce registre.
   {
     // Compatibilité uniquement : la rubrique n'est plus proposée dans la
     // navigation, mais ses anciennes URLs doivent atteindre la redirection
-    // `/wiki/lieux` au lieu d'être bloquées par le proxy.
-    key: "planetes",
+    // `/wiki/locations` au lieu d'être bloquées par le proxy.
+    key: "planets",
     label: "Cosmologie (archive)",
     href: null,
     prefixes: ["/wiki/cosmologie", "/wiki/planetes", "/wiki/dragon-ball/planet"],
     alwaysOpen: true,
   },
   {
-    key: "personnages",
+    key: "characters",
     label: "Personnages",
-    href: "/wiki/personnages",
-    prefixes: ["/wiki/personnages", "/wiki/dragon-ball/character"],
+    href: "/wiki/characters",
+    prefixes: ["/wiki/characters", "/wiki/dragon-ball/character"],
     group: "wiki",
     blurb: "1 300 fiches, du Saiyan au Kaïō",
   },
@@ -152,10 +154,10 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     blurb: "Les grands arcs du récit",
   },
   {
-    key: "jeux",
+    key: "games",
     label: "Jeux",
-    href: "/wiki/jeux",
-    prefixes: ["/wiki/jeux", "/wiki/dragon-ball/games"],
+    href: "/wiki/games",
+    prefixes: ["/wiki/games", "/wiki/dragon-ball/games"],
     group: "oeuvres",
     blurb: "Adaptations vidéoludiques",
   },
@@ -167,13 +169,13 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     group: "archives",
     blurb: "Daizenshuu, Chōzenshū et artbooks officiels",
   },
-  // L'espace Bibliothèque (`lib/bibliotheque.ts`) : manga et databooks ci-dessus, puis
+  // L'espace Bibliothèque (`lib/library.ts`) : manga et databooks ci-dessus, puis
   // l'atelier (avancement public, outils staff gardés par le proxy) et l'éditeur Koharu.
   {
-    key: "atelier",
+    key: "workshop",
     label: "Transcription et traduction",
-    href: "/atelier",
-    prefixes: ["/atelier"],
+    href: "/workshop",
+    prefixes: ["/workshop"],
     alwaysOpen: true,
     scope: "site",
     defaultMode: "public",
@@ -192,43 +194,43 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     blurb: "L'éditeur de traduction manga de Shenron",
   },
   {
-    key: "puissances",
+    key: "power-levels",
     label: "Puissances & Scouter",
-    href: "/wiki/puissances",
-    prefixes: ["/wiki/puissances"],
+    href: "/wiki/power-levels",
+    prefixes: ["/wiki/power-levels"],
     group: "wiki",
     blurb: "Niveaux de combat officiels et multiplicateurs",
   },
   {
-    key: "objets",
+    key: "items",
     label: "Objets & Technologies",
-    href: "/wiki/objets",
-    prefixes: ["/wiki/objets"],
+    href: "/wiki/items",
+    prefixes: ["/wiki/items"],
     group: "wiki",
     blurb: "Capsules, reliques, armes et véhicules",
   },
   {
-    key: "lieux",
+    key: "locations",
     label: "Lieux & Sanctuaires",
-    href: "/wiki/lieux",
-    prefixes: ["/wiki/lieux"],
+    href: "/wiki/locations",
+    prefixes: ["/wiki/locations"],
     group: "wiki",
     blurb: "Géographie mythique, sanctuaires et planètes",
   },
   {
-    key: "evenements",
+    key: "events",
     label: "Événements",
-    href: "/wiki/evenements",
-    prefixes: ["/wiki/evenements"],
+    href: "/wiki/events",
+    prefixes: ["/wiki/events"],
     alwaysOpen: true,
     group: "oeuvres",
     blurb: "Combats, tournois et jalons du récit dans une même chronologie",
   },
   {
-    key: "musiques",
+    key: "music",
     label: "Musiques & OST",
-    href: "/wiki/musiques",
-    prefixes: ["/wiki/musiques"],
+    href: "/wiki/music",
+    prefixes: ["/wiki/music"],
     group: "oeuvres",
     blurb: "Génériques, OST orchestrales et insert songs cultes",
   },
@@ -243,10 +245,10 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     blurb: "Modding, shaders, émulateurs et API communautaires",
   },
   {
-    key: "corriger",
+    key: "corrections",
     label: "Corriger",
     href: null,
-    prefixes: ["/wiki/corriger"],
+    prefixes: ["/wiki/corrections"],
     alwaysOpen: true,
     defaultMode: "public",
   },
@@ -254,20 +256,20 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     // Le flux public des révisions du wiki a été retiré le 2026-09-12 : il
     // racontait la fabrication du site. L'entrée du registre reste, sans `href`
     // ni `group` — donc absente de la nav, du pied de page et du plan du site —
-    // uniquement pour que `/wiki/modifications` (qui redirige) et `/news/fil`
+    // uniquement pour que `/wiki/modifications` (qui redirige) et `/news/feed`
     // (le fil public) continuent d'être traités comme publics par le gating.
-    key: "modifications",
+    key: "feed",
     label: "Fil d'actualité",
     href: null,
-    prefixes: ["/wiki/modifications", "/news/fil"],
+    prefixes: ["/wiki/modifications", "/news/feed"],
     alwaysOpen: true,
     defaultMode: "public",
   },
   {
-    key: "contribuer",
+    key: "contribute",
     label: "Contribuer",
-    href: "/wiki/contribuer",
-    prefixes: ["/wiki/contribuer"],
+    href: "/wiki/contribute",
+    prefixes: ["/wiki/contribute"],
     alwaysOpen: true,
     defaultMode: "public",
     group: "communaute",
@@ -310,7 +312,7 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     // du catalogue, introductions de tomes) et aucune page à elles. Elles en ont
     // une seule désormais, déclarée ici pour apparaître d'un coup dans la nav, le
     // pied de page, le menu mobile, le plan du site et le sitemap.
-    key: "toriyama-paroles",
+    key: "toriyama-words",
     label: "Les mots de Toriyama",
     href: "/wiki/toriyama",
     prefixes: ["/wiki/toriyama"],
@@ -323,7 +325,7 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     key: "staff",
     label: "Staff & Contributeurs",
     href: "/wiki/staff",
-    prefixes: ["/wiki/staff", "/wiki/contributeurs"],
+    prefixes: ["/wiki/staff", "/wiki/contributors"],
     alwaysOpen: true,
     defaultMode: "public",
     group: "archives",
@@ -348,17 +350,17 @@ export const SITE_SECTIONS: LaunchCategory[] = [
     blurb: "Créer, voter et partager ses classements",
   },
   {
-    key: "classements",
+    key: "rankings",
     label: "Classements",
-    href: "/classements",
-    prefixes: ["/classements", "/leaderboard"],
+    href: "/rankings",
+    prefixes: ["/rankings", "/leaderboard"],
     scope: "site",
     defaultMode: "public",
     group: "communaute",
     blurb: "Les tops de score et records de la communauté",
   },
   {
-    key: "boutique",
+    key: "shop",
     label: "Boutique",
     href: "/shop",
     prefixes: ["/shop"],
@@ -368,10 +370,10 @@ export const SITE_SECTIONS: LaunchCategory[] = [
     blurb: "Cosmétiques, titres et récompenses en zénis",
   },
   {
-    key: "jeux-hub",
+    key: "games-hub",
     label: "Mini-jeux",
-    href: "/jeux",
-    prefixes: ["/jeux"],
+    href: "/games",
+    prefixes: ["/games"],
     scope: "site",
     defaultMode: "public",
     group: "communaute",
@@ -408,25 +410,25 @@ export const SITE_SECTIONS: LaunchCategory[] = [
     defaultMode: "public",
   },
   {
-    // Sans entrée ici, `/wiki/hasard` retomberait sur le défaut « sous /wiki,
-    // fermé » du proxy et redirigerait vers /wiki-bientot. La route ne fait
+    // Sans entrée ici, `/wiki/random` retomberait sur le défaut « sous /wiki,
+    // fermé » du proxy et redirigerait vers /coming-soon. La route ne fait
     // elle-même que rediriger vers une rubrique OUVERTE (elle relit ce même
     // registre) : l'ouvrir n'expose donc rien de fermé.
-    key: "hasard",
+    key: "random",
     label: "Au hasard",
-    href: "/wiki/hasard",
-    prefixes: ["/wiki/hasard"],
+    href: "/wiki/random",
+    prefixes: ["/wiki/random"],
     scope: "site",
     defaultMode: "public",
   },
   {
     // La recherche n'avait AUCUNE entrée au registre : `/wiki/search` retombait
     // donc sur le défaut « sous /wiki, fermé » et redirigeait tout anonyme vers
-    // /wiki-bientot — alors que `SiteJsonLd` annonce à Google une sitelinks
+    // /coming-soon — alors que `SiteJsonLd` annonce à Google une sitelinks
     // searchbox pointant précisément cette URL, et que la palette ⌘K s'appuie
     // dessus. La page est `noindex, follow` : elle n'ajoute pas de contenu
     // mince à l'index, elle sert la découverte.
-    key: "recherche",
+    key: "search",
     label: "Recherche",
     href: "/wiki/search",
     prefixes: ["/wiki/search"],
@@ -450,7 +452,7 @@ export const SITE_SECTIONS: LaunchCategory[] = [
     defaultMode: "public",
   },
   {
-    key: "commandes",
+    key: "commands",
     label: "Commandes du bot",
     href: "/commands",
     prefixes: ["/commands"],
@@ -458,10 +460,10 @@ export const SITE_SECTIONS: LaunchCategory[] = [
     defaultMode: "public",
   },
   {
-    key: "profil",
+    key: "profile",
     label: "Profil joueur",
-    href: "/profil",
-    prefixes: ["/profil"],
+    href: "/profile",
+    prefixes: ["/profile"],
     scope: "site",
     defaultMode: "public",
   },
@@ -472,9 +474,46 @@ export const ALL_ENTRIES: LaunchCategory[] = [...LAUNCH_CATEGORIES, ...SITE_SECT
 
 const BY_KEY = new Map(ALL_ENTRIES.map((e) => [e.key, e]));
 
-/** Entrée du registre pour une clé (undefined si la clé est obsolète). */
+/**
+ * Anciennes clés (françaises) du registre → clé actuelle. La configuration d'accès
+ * enregistrée en base (`WikiLaunch.data` : `openKeys`, `order`, `access`) est indexée
+ * par ces clés : `wiki-launch-config.ts` les lit en repli, pour qu'aucune rubrique ne
+ * change d'état d'ouverture au passage à l'anglais. La prochaine sauvegarde depuis
+ * /admin/launch réécrit la configuration avec les clés actuelles.
+ */
+export const LEGACY_ENTRY_KEYS: Readonly<Record<string, string>> = {
+  films: "movies",
+  chronologie: "timeline",
+  planetes: "planets",
+  personnages: "characters",
+  jeux: "games",
+  atelier: "workshop",
+  puissances: "power-levels",
+  objets: "items",
+  lieux: "locations",
+  evenements: "events",
+  musiques: "music",
+  corriger: "corrections",
+  modifications: "feed",
+  contribuer: "contribute",
+  "toriyama-paroles": "toriyama-words",
+  classements: "rankings",
+  boutique: "shop",
+  "jeux-hub": "games-hub",
+  hasard: "random",
+  recherche: "search",
+  commandes: "commands",
+  profil: "profile",
+};
+
+/** Clé actuelle d'une clé lue en base (ancienne clé française comprise). */
+export function currentEntryKey(key: string): string {
+  return BY_KEY.has(key) ? key : (LEGACY_ENTRY_KEYS[key] ?? key);
+}
+
+/** Entrée du registre pour une clé (ancienne clé française comprise ; undefined si obsolète). */
 export function entryByKey(key: string): LaunchCategory | undefined {
-  return BY_KEY.get(key);
+  return BY_KEY.get(key) ?? BY_KEY.get(LEGACY_ENTRY_KEYS[key] ?? "");
 }
 
 /**
@@ -561,7 +600,7 @@ export type AccessSnapshot = {
  * Cette URL est-elle accessible à un visiteur **anonyme** ?
  *
  * `isPathOpen` ne regarde que l'héritage `openKeys` et ignore donc les modes
- * `members` / `roles` / `admin` posés depuis /admin/lancement. C'est cette
+ * `members` / `roles` / `admin` posés depuis /admin/launch. C'est cette
  * fonction-ci qui fait autorité partout où l'on décide d'émettre un lien ou une
  * URL de sitemap : le proxy applique la même règle (`findEntry` + `resolveAccess`),
  * donc ce qu'on annonce ici est exactement ce que le visiteur obtiendra.

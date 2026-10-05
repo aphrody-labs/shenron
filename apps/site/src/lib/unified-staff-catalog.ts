@@ -123,7 +123,7 @@ export function buildUnifiedStaffCatalog(
       keyWorks: [c.name],
       bioSummary: c.biography_fr || "",
       anecdote: ANECDOTES_MAP[c.slug],
-      wikiLink: `/wiki/contributeurs/${c.slug}`,
+      wikiLink: `/wiki/contributors/${c.slug}`,
     });
   }
 

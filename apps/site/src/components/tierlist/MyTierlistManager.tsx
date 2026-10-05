@@ -48,7 +48,7 @@ export function MyTierlistManager({ initial }: { initial: MyTierlistItem[] }) {
     return (
       <p className="text-center text-white/55">
         Tu n'as pas encore de tierlist.{" "}
-        <Link href="/tierlists/creer" className="font-bold text-dbz-orange hover:underline">
+        <Link href="/tierlists/new" className="font-bold text-dbz-orange hover:underline">
           Créer la première
         </Link>
         .

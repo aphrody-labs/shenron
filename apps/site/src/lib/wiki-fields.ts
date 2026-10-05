@@ -374,14 +374,14 @@ export function publicEntityUrl(table: string, row: Record<string, unknown>): st
   const hasId = id != null && id !== "";
   switch (table) {
     case "db_characters":
-      return hasId ? `/wiki/personnages/${id}` : null;
+      return hasId ? `/wiki/characters/${id}` : null;
     case "db_planets":
-      return hasId ? "/wiki/lieux" : null;
+      return hasId ? "/wiki/locations" : null;
     case "db_techniques":
       return slug ? `/wiki/techniques/${slug}` : null;
     case "db_games":
-      // Public : /wiki/jeux/[slug] (route canonique actuelle).
-      return slug ? `/wiki/jeux/${slug}` : null;
+      // Public : /wiki/games/[slug] (route canonique actuelle).
+      return slug ? `/wiki/games/${slug}` : null;
     case "db_sagas":
       return slug ? `/wiki/sagas/${slug}` : null;
     case "db_arcs":
@@ -389,7 +389,7 @@ export function publicEntityUrl(table: string, row: Record<string, unknown>): st
     case "db_races":
       return slug ? `/wiki/races/${slug}` : null;
     case "db_movies":
-      return slug ? `/wiki/films/${slug}` : null;
+      return slug ? `/wiki/movies/${slug}` : null;
     case "db_manga_volumes":
       return hasId ? `/wiki/manga/volume/${id}` : null;
     case "db_databooks":

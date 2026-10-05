@@ -145,16 +145,16 @@ export default async function WikiIndex() {
         <ContentCoverage
           databooks={{
             label: "Databooks & interviews",
-            availableHref: "/wiki/databooks?etat=disponibles",
-            missingHref: "/wiki/databooks?etat=a-completer",
+            availableHref: "/wiki/databooks?state=available",
+            missingHref: "/wiki/databooks?state=incomplete",
             available: databooksWithContent,
             total: databooks.length,
             unit: "ouvrages",
           }}
           manga={{
             label: "Manga",
-            availableHref: "/wiki/manga?etat=disponibles",
-            missingHref: "/wiki/manga?etat=a-completer",
+            availableHref: "/wiki/manga?state=available",
+            missingHref: "/wiki/manga?state=incomplete",
             available: readableVolumeIds.size,
             total: volumes.length,
             unit: "tomes",
@@ -165,12 +165,12 @@ export default async function WikiIndex() {
           <StreamRow
             title="Personnages"
             count={c.characters}
-            seeAllHref={ouvert("/wiki/personnages") ? "/wiki/personnages" : undefined}
+            seeAllHref={ouvert("/wiki/characters") ? "/wiki/characters" : undefined}
           >
             {vedettes.map((ch) => (
               <CharacterPosterCard
                 key={ch.id}
-                href={`/wiki/personnages/${ch.id}`}
+                href={`/wiki/characters/${ch.id}`}
                 name={ch.name}
                 race={ch.race}
                 image={ch.image}
@@ -183,12 +183,12 @@ export default async function WikiIndex() {
           <StreamRow
             title="Combats Légendaires"
             count={c.battles}
-            seeAllHref={ouvert("/wiki/evenements") ? "/wiki/evenements" : undefined}
+            seeAllHref={ouvert("/wiki/events") ? "/wiki/events" : undefined}
           >
             {battlesList.slice(0, 10).map((b) => (
               <Link
                 key={b.slug}
-                href="/wiki/evenements"
+                href="/wiki/events"
                 className="group/card relative block w-[240px] sm:w-[280px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-red-500/50 hover:shadow-lg hover:shadow-red-950/20"
               >
                 <div className="flex items-center justify-between gap-2 text-[10px] uppercase font-bold tracking-wider text-red-400">
@@ -224,12 +224,12 @@ export default async function WikiIndex() {
           <StreamRow
             title="Lieux & Sanctuaires"
             count={c.locations}
-            seeAllHref={ouvert("/wiki/lieux") ? "/wiki/lieux" : undefined}
+            seeAllHref={ouvert("/wiki/locations") ? "/wiki/locations" : undefined}
           >
             {locationsList.slice(0, 10).map((loc) => (
               <Link
                 key={loc.slug}
-                href={`/wiki/lieux/${loc.slug}`}
+                href={`/wiki/locations/${loc.slug}`}
                 className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-emerald-400">
@@ -260,12 +260,12 @@ export default async function WikiIndex() {
           <StreamRow
             title="Tournois d'Arts Martiaux"
             count={c.tournaments}
-            seeAllHref={ouvert("/wiki/evenements") ? "/wiki/evenements" : undefined}
+            seeAllHref={ouvert("/wiki/events") ? "/wiki/events" : undefined}
           >
             {tournamentsList.slice(0, 6).map((t) => (
               <Link
                 key={t.slug}
-                href="/wiki/evenements"
+                href="/wiki/events"
                 className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
@@ -297,13 +297,13 @@ export default async function WikiIndex() {
             title="Dragons Sacrés & Vœux"
             count={c.dragons}
             seeAllHref={
-              ouvert("/wiki/personnages") ? "/wiki/personnages#dragons-personnages" : undefined
+              ouvert("/wiki/characters") ? "/wiki/characters#dragons-personnages" : undefined
             }
           >
             {dragonsList.map((d) => (
               <Link
                 key={d.slug}
-                href="/wiki/personnages#dragons-personnages"
+                href="/wiki/characters#dragons-personnages"
                 className="group/card relative block w-[200px] sm:w-[240px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-orange-400">
@@ -334,12 +334,12 @@ export default async function WikiIndex() {
           <StreamRow
             title="Objets & Technologies"
             count={c.items}
-            seeAllHref={ouvert("/wiki/objets") ? "/wiki/objets" : undefined}
+            seeAllHref={ouvert("/wiki/items") ? "/wiki/items" : undefined}
           >
             {itemsList.slice(0, 8).map((it) => (
               <Link
                 key={it.slug}
-                href={`/wiki/objets/${it.slug}`}
+                href={`/wiki/items/${it.slug}`}
                 className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-amber-400">
@@ -372,12 +372,12 @@ export default async function WikiIndex() {
           <StreamRow
             title="Musiques & Bandes Originales"
             count={c.soundtracks}
-            seeAllHref={ouvert("/wiki/musiques") ? "/wiki/musiques" : undefined}
+            seeAllHref={ouvert("/wiki/music") ? "/wiki/music" : undefined}
           >
             {soundtracksList.slice(0, 8).map((ost) => (
               <Link
                 key={ost.slug}
-                href={`/wiki/musiques`}
+                href={`/wiki/music`}
                 className="group/card relative block w-[220px] sm:w-[260px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-950/20"
               >
                 <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-blue-400">
@@ -404,12 +404,12 @@ export default async function WikiIndex() {
           <StreamRow
             title="Films"
             count={c.movies}
-            seeAllHref={ouvert("/wiki/films") ? "/wiki/films" : undefined}
+            seeAllHref={ouvert("/wiki/movies") ? "/wiki/movies" : undefined}
           >
             {films.map((m) => (
               <PosterCard
                 key={m.id}
-                href={`/wiki/films/${m.slug}`}
+                href={`/wiki/movies/${m.slug}`}
                 title={m.title}
                 poster={m.poster}
                 badge="Film"
@@ -447,7 +447,7 @@ export default async function WikiIndex() {
             d'ailleurs. Chaque fiche porte un bouton «&nbsp;Proposer une correction&nbsp;».
           </p>
           <Link
-            href="/wiki/contribuer"
+            href="/wiki/contribute"
             className="mt-6 inline-flex h-11 items-center rounded-full border border-white/15 px-6 font-display text-[14px] font-semibold text-white transition-colors hover:border-dbz-orange/60 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
           >
             Contribuer au wiki

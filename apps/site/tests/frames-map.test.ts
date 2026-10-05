@@ -113,7 +113,7 @@ const resolved = new Map<string, SiteEpisodeRef>([
       series: "DBZ_MOVIE",
       numberInSeries: null,
       title: "Battle of Gods",
-      href: "/wiki/films/dragon-ball-z-movie-14-kami-to-kami",
+      href: "/wiki/movies/dragon-ball-z-movie-14-kami-to-kami",
       image: assetUrl("./assets/ext/db_movies/13.webp"),
     },
   ],
@@ -124,7 +124,7 @@ const resolved = new Map<string, SiteEpisodeRef>([
       series: "DBS_MOVIE",
       numberInSeries: null,
       title: "Broly",
-      href: "/wiki/films/dragon-ball-super-broly",
+      href: "/wiki/movies/dragon-ball-super-broly",
       image: assetUrl("./assets/ext/db_movies/12.webp"),
     },
   ],
@@ -230,13 +230,13 @@ describe("frames-map — mapping des séries et des films", () => {
     expect(refBog?.id).toBe(13);
     expect(refBog?.series).toBe("DBZ_MOVIE");
     expect(refBog?.numberInSeries).toBeNull();
-    expect(refBog?.href).toBe("/wiki/films/dragon-ball-z-movie-14-kami-to-kami?t=600");
+    expect(refBog?.href).toBe("/wiki/movies/dragon-ball-z-movie-14-kami-to-kami?t=600");
     expect(refBog?.image).toContain("assets/ext/db_movies/13.webp");
 
     const refBroly = siteRefFor({ title: "movie:12", atMs: 1_200_000 }, resolved);
     expect(refBroly?.id).toBe(12);
     expect(refBroly?.series).toBe("DBS_MOVIE");
-    expect(refBroly?.href).toBe("/wiki/films/dragon-ball-super-broly?t=1200");
+    expect(refBroly?.href).toBe("/wiki/movies/dragon-ball-super-broly?t=1200");
   });
 });
 

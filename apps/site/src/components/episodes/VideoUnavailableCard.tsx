@@ -19,7 +19,7 @@ export function VideoUnavailableCard({ title, kind }: { title: string; kind: "ep
           </p>
         </div>
         <Link
-          href={`/wiki/contribuer?type=${kind}`}
+          href={`/wiki/contribute?type=${kind}`}
           className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg border border-dbz-orange/40 bg-dbz-orange/10 px-4 text-xs font-bold text-dbz-orange transition hover:bg-dbz-orange hover:text-black"
         >
           Proposer une source

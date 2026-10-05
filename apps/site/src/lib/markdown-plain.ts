@@ -7,7 +7,7 @@
  * `db_arcs.description`, `db_databooks.description`, RAG chunks, crawled
  * source excerpts). Rendered as `{value}`, their syntax reached the reader
  * verbatim: `**tomes 20 à 24**` and `*Dragon Ball Z*` on /wiki/sagas and
- * /wiki/chronologie, `[Login](/login)` in the excerpts of /sources/dragon-ball,
+ * /wiki/timeline, `[Login](/login)` in the excerpts of /sources/dragon-ball,
  * `Pok&eacute;mon` in crawled titles. Detail pages keep rendering the
  * markdown itself (`WikiMarkdown`); this module is only for text slots.
  *

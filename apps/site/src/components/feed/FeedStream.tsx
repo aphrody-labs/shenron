@@ -11,7 +11,7 @@
  * une vignette et un chapô.
  *
  * Trois usages, un seul composant :
- *  - `FeedStream` — le fil du journal (`/news`, `/news/fil`) ;
+ *  - `FeedStream` — le fil du journal (`/news`, `/news/feed`) ;
  *  - `FeedStream compact` — la colonne « nouveautés » de l'accueil : une ligne
  *    par événement, toute la ligne cliquable (cible tactile pleine largeur) ;
  *  - `FeedLead` — l'article mis en avant en tête de l'accueil.

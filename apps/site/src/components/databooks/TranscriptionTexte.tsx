@@ -90,7 +90,7 @@ export function TranscriptionTexte({
   // centaines) et l'accès est arbitré à l'arrivée, pas ici.
   const lienCorrection =
     bookId != null && page != null
-      ? `/wiki/corriger?table=db_databooks&row=${encodeURIComponent(String(bookId))}&col=${encodeURIComponent(`pages#${page}`)}`
+      ? `/wiki/corrections?table=db_databooks&row=${encodeURIComponent(String(bookId))}&col=${encodeURIComponent(`pages#${page}`)}`
       : null;
   return (
     <div>

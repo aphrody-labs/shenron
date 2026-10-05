@@ -4,7 +4,7 @@
  *   GET → { config, items }   config résolue + dataset brut (épisodes + films)
  *                             pour alimenter l'éditeur `/admin/chronologie`
  *   PUT → { ok, config }      enregistre le patch (upsert singleton) + revalide
- *                             `/wiki/chronologie`
+ *                             `/wiki/timeline`
  *
  * Le gate admin réutilise `isCurrentUserAdmin` / `getCurrentUser` (Better Auth +
  * users.roleAdmin, cf. /api/home-config). Le dataset brut vient de
@@ -40,7 +40,7 @@ export async function PUT(req: NextRequest) {
   try {
     const config = await saveChronologyConfig(body, me?.discordId || me?.user?.id || "token-admin");
     // La frise publique est en ISR (revalidate 3600) → purge immédiate.
-    revalidatePath("/wiki/chronologie");
+    revalidatePath("/wiki/timeline");
     return NextResponse.json({ ok: true, config });
   } catch (err) {
     return badRequest(err instanceof Error ? err.message : "erreur");

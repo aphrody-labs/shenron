@@ -21,7 +21,7 @@ import {
 
 function revalidateTops() {
   revalidatePath("/");
-  revalidatePath("/classements");
+  revalidatePath("/rankings");
   revalidateTag("community-tops", "max");
 }
 

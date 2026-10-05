@@ -130,7 +130,7 @@ describe("API de configuration du dashboard — Better Auth + persistance", () =
     expect(await response.json()).toEqual({ ok: true, banners: patch });
     expect(writes).toEqual([{ kind: "banners", patch, by: "user-2" }]);
     expect(revalidated).toContainEqual(["/wiki/episodes", undefined]);
-    expect(revalidated).toContainEqual(["/wiki/episodes/serie/[series]", "page"]);
+    expect(revalidated).toContainEqual(["/wiki/episodes/series/[series]", "page"]);
     expect(revalidated).toContainEqual(["/actualites", undefined]);
     expect(revalidated).toContainEqual(["/", "layout"]);
   });
@@ -163,7 +163,7 @@ describe("API de configuration du dashboard — Better Auth + persistance", () =
         url: "chronologie-config",
         patch: { overrides: {} },
         kind: "chronology",
-        path: "/wiki/chronologie",
+        path: "/wiki/timeline",
       },
       {
         route: canon,

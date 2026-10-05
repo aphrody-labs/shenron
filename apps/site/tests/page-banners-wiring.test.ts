@@ -9,28 +9,28 @@ import { PAGE_HERO_KEYS } from "../src/lib/page-banners";
 
 const routes: Record<(typeof PAGE_HERO_KEYS)[number], string> = {
   episodes: "../src/app/wiki/episodes/page.tsx",
-  films: "../src/app/wiki/films/page.tsx",
-  chronologie: "../src/app/wiki/chronologie/page.tsx",
-  personnages: "../src/app/wiki/personnages/page.tsx",
+  films: "../src/app/wiki/movies/page.tsx",
+  chronologie: "../src/app/wiki/timeline/page.tsx",
+  personnages: "../src/app/wiki/characters/page.tsx",
   sagas: "../src/app/wiki/sagas/page.tsx",
   arcs: "../src/app/wiki/arcs/page.tsx",
   races: "../src/app/wiki/races/page.tsx",
   transformations: "../src/app/wiki/transformations/page.tsx",
   techniques: "../src/app/wiki/techniques/page.tsx",
-  jeux: "../src/app/wiki/jeux/page.tsx",
+  jeux: "../src/app/wiki/games/page.tsx",
   manga: "../src/app/wiki/manga/page.tsx",
   databooks: "../src/app/wiki/databooks/page.tsx",
-  combats: "../src/app/wiki/combats/page.tsx",
+  combats: "../src/app/wiki/battles/page.tsx",
   dragons: "../src/app/wiki/dragons/page.tsx",
-  lieux: "../src/app/wiki/lieux/page.tsx",
-  musiques: "../src/app/wiki/musiques/page.tsx",
-  objets: "../src/app/wiki/objets/page.tsx",
-  puissances: "../src/app/wiki/puissances/page.tsx",
-  tournois: "../src/app/wiki/tournois/page.tsx",
-  voix: "../src/app/wiki/voix/page.tsx",
+  lieux: "../src/app/wiki/locations/page.tsx",
+  musiques: "../src/app/wiki/music/page.tsx",
+  objets: "../src/app/wiki/items/page.tsx",
+  puissances: "../src/app/wiki/power-levels/page.tsx",
+  tournois: "../src/app/wiki/tournaments/page.tsx",
+  voix: "../src/app/wiki/voice-actors/page.tsx",
   news: "../src/app/news/page.tsx",
   tools: "../src/app/wiki/tools/page.tsx",
-  romans: "../src/app/wiki/romans/page.tsx",
+  romans: "../src/app/wiki/novels/page.tsx",
   staff: "../src/app/wiki/staff/page.tsx",
 };
 
@@ -45,9 +45,9 @@ describe("bannières configurées dans l'administration", () => {
 
   test("les aperçus série utilisent aussi la configuration PostgreSQL", async () => {
     const routes = [
-      "../src/app/wiki/episodes/serie/[series]/page.tsx",
+      "../src/app/wiki/episodes/series/[series]/page.tsx",
       "../src/app/wiki/episodes/@modal/(.)[id]/page.tsx",
-      "../src/app/wiki/films/@modal/(.)[slug]/page.tsx",
+      "../src/app/wiki/movies/@modal/(.)[slug]/page.tsx",
     ];
     for (const route of routes) {
       const source = await Bun.file(new URL(route, import.meta.url)).text();
@@ -62,7 +62,7 @@ describe("bannières configurées dans l'administration", () => {
     expect(manga).not.toContain("heroCover ?");
 
     for (const route of [
-      "../src/app/wiki/episodes/serie/[series]/page.tsx",
+      "../src/app/wiki/episodes/series/[series]/page.tsx",
       "../src/app/wiki/episodes/@modal/(.)[id]/page.tsx",
     ]) {
       const source = await Bun.file(new URL(route, import.meta.url)).text();

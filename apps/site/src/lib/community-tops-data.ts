@@ -152,7 +152,7 @@ async function buildMovieBoard(
       title: m.title,
       subtitle: m.series?.replace(/_/g, " ") ?? "Film",
       image: m.poster,
-      href: `/wiki/films/${m.slug}`,
+      href: `/wiki/movies/${m.slug}`,
       average: agg.average,
       count: agg.count,
       bayes: agg.bayes,
@@ -198,7 +198,7 @@ async function buildGameBoard(
       title: g.title,
       subtitle: g.platforms?.trim() || "Jeu vidéo",
       image: g.cover,
-      href: `/wiki/jeux/${g.slug}`,
+      href: `/wiki/games/${g.slug}`,
       average: agg.average,
       count: agg.count,
       bayes: agg.bayes,
@@ -350,7 +350,7 @@ export async function getCommunityRankFor(
       boardTitle: board.def.title,
       average: entry.average,
       count: entry.count,
-      href: `/classements#${board.def.id}`,
+      href: `/rankings#${board.def.id}`,
     };
     if (!best || info.rank < best.rank) best = info;
   }

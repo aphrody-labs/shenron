@@ -124,7 +124,7 @@ export function LocationsGrid({ locations }: { locations: Location[] }) {
         {filtered.map((loc) => (
           <Link
             key={loc.slug}
-            href={`/wiki/lieux/${loc.slug}`}
+            href={`/wiki/locations/${loc.slug}`}
             className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-5 transition-all hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-950/20"
           >
             {/* Aperçu visuel du sanctuaire / lieu */}

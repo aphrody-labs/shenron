@@ -35,7 +35,7 @@ export function buildOpenApiDocument(origin: string): Record<string, unknown> {
         "de modération et un humain tranche. Les articles déposés par un agent sont des " +
         "brouillons, sauf portée `publish:articles`.",
       contact: { url: `${origin}/credits` },
-      license: { name: "Contenu sous licence du site", url: `${origin}/licence` },
+      license: { name: "Contenu sous licence du site", url: `${origin}/license` },
     },
     servers: [{ url: `${origin}/api/agent/v1` }],
     security: bearer,

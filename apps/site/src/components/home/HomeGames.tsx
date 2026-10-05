@@ -14,12 +14,12 @@ import { T } from "@/components/T";
 import { HomeSection } from "./HomeSection";
 import { primaryButton, surfaceLink } from "./ui";
 
-/** Jeux jouables sur le site, dans l'ordre de la page `/jeux`. */
+/** Jeux jouables sur le site, dans l'ordre de la page `/games`. */
 export const HOME_GAMES = [
-  { key: "2048", name: "2048 : Ki Merge", href: "/jeux/2048", glyph: "2048" },
-  { key: "pfc", name: "Pierre-Feuille-Ciseaux", href: "/jeux/pfc", glyph: "✊" },
-  { key: "morpion", name: "Morpion", href: "/jeux/morpion", glyph: "✕" },
-  { key: "bingo", name: "Bingo", href: "/jeux/bingo", glyph: "1–100" },
+  { key: "2048", name: "2048 : Ki Merge", href: "/games/2048", glyph: "2048" },
+  { key: "pfc", name: "Pierre-Feuille-Ciseaux", href: "/games/rock-paper-scissors", glyph: "✊" },
+  { key: "morpion", name: "Morpion", href: "/games/tic-tac-toe", glyph: "✕" },
+  { key: "bingo", name: "Bingo", href: "/games/bingo", glyph: "1–100" },
 ] as const;
 
 export function HomeGames({
@@ -37,7 +37,7 @@ export function HomeGames({
       id="jeux"
       title={title?.trim() ? title : <T k="accueil.games.title" />}
       subtitle={subtitle?.trim() ? subtitle : <T k="accueil.games.subtitle" />}
-      moreHref="/jeux"
+      moreHref="/games"
       moreLabel={<T k="accueil.games.all" />}
       className={className}
     >

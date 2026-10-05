@@ -65,11 +65,11 @@ export default async function LeaderboardPage({
       </div>
       <p className="mb-4 text-sm text-white/55">
         Tu cherches les membres qui font vivre le wiki ?{" "}
-        <Link href="/classements#noteurs" className="font-semibold text-dbz-orange hover:underline">
+        <Link href="/rankings#noteurs" className="font-semibold text-dbz-orange hover:underline">
           Top noteurs du site
         </Link>{" "}
         ·{" "}
-        <Link href="/classements#zeni" className="font-semibold text-amber-300 hover:underline">
+        <Link href="/rankings#zeni" className="font-semibold text-amber-300 hover:underline">
           Top fortunes en Zénis
         </Link>
       </p>
@@ -129,7 +129,7 @@ export default async function LeaderboardPage({
                     </span>
                   </td>
                   <td className="p-4">
-                    <a href={`/profil/${e.discordId}`} className="flex items-center gap-3 group">
+                    <a href={`/profile/${e.discordId}`} className="flex items-center gap-3 group">
                       {e.avatarUrl && (
                         <Avatar
                           src={e.avatarUrl}

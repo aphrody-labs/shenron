@@ -157,7 +157,7 @@ export async function GET(): Promise<Response> {
   lines.push(
     "## Full map",
     "",
-    `- [Site map](${SITE_URL}/plan-du-site)`,
+    `- [Site map](${SITE_URL}/site-map)`,
     `- [XML sitemap](${SITE_URL}/sitemap.xml)`,
     "",
   );

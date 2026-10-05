@@ -49,7 +49,7 @@ function declaresPageContainer(source: string): boolean {
  * larges, souvent pleine page, et aucun visiteur ne navigue entre l'un d'eux et
  * une page publique dans la même session de lecture.
  */
-const LEGACY_CONTAINERS = new Set(["wiki/episodes/[id]/page.tsx", "wiki-bientot/page.tsx"]);
+const LEGACY_CONTAINERS = new Set(["wiki/episodes/[id]/page.tsx", "coming-soon/page.tsx"]);
 describe("système de design — un seul vocabulaire", () => {
   test("aucune NOUVELLE page ne déclare son propre conteneur", () => {
     const offenders: string[] = [];
@@ -137,14 +137,14 @@ describe("système de design — un seul vocabulaire", () => {
 
   test("les index encyclopédiques d'expansion partagent leur coque wiki", () => {
     for (const page of [
-      "combats",
+      "battles",
       "dragons",
-      "lieux",
-      "musiques",
-      "objets",
-      "puissances",
-      "tournois",
-      "voix",
+      "locations",
+      "music",
+      "items",
+      "power-levels",
+      "tournaments",
+      "voice-actors",
     ]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "page.tsx"), "utf8");
       expect(src, `wiki/${page}`).toContain("WikiPageShell");
@@ -152,7 +152,7 @@ describe("système de design — un seul vocabulaire", () => {
   });
 
   test("les fiches d'expansion partagent la coque de leur index", () => {
-    for (const page of ["combats", "lieux", "objets", "tournois", "voix"]) {
+    for (const page of ["battles", "locations", "items", "tournaments", "voice-actors"]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "[slug]", "page.tsx"), "utf8");
       expect(src, `wiki/${page}/[slug]`).toContain("WikiPageShell");
     }
@@ -160,11 +160,11 @@ describe("système de design — un seul vocabulaire", () => {
 
   test("les fiches d'expansion exposent le même point d'entrée de correction", () => {
     for (const [page, table] of [
-      ["combats", "db_battles"],
-      ["lieux", "db_locations"],
-      ["objets", "db_items"],
-      ["tournois", "db_tournaments"],
-      ["voix", "db_voice_actors"],
+      ["battles", "db_battles"],
+      ["locations", "db_locations"],
+      ["items", "db_items"],
+      ["tournaments", "db_tournaments"],
+      ["voice-actors", "db_voice_actors"],
     ]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "[slug]", "page.tsx"), "utf8");
       expect(src, `wiki/${page}/[slug]`).toMatch(new RegExp(`<WikiEditBar\\s+table="${table}"`));
@@ -173,14 +173,14 @@ describe("système de design — un seul vocabulaire", () => {
 
   test("les index d'expansion exposent une invitation contributive", () => {
     for (const page of [
-      "combats",
+      "battles",
       "dragons",
-      "lieux",
-      "musiques",
-      "objets",
-      "puissances",
-      "tournois",
-      "voix",
+      "locations",
+      "music",
+      "items",
+      "power-levels",
+      "tournaments",
+      "voice-actors",
     ]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "page.tsx"), "utf8");
       expect(src, `wiki/${page}`).toContain("ContributeRail");

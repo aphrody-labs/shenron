@@ -1,7 +1,7 @@
 /**
  * Tableaux du concours communautaire : « plus grand nombre de notes » et
  * « plus grand nombre de Zénis ». Composant de présentation pur — les deux
- * jeux de données sont chargés par la page (`/classements`) pour qu'un échec
+ * jeux de données sont chargés par la page (`/rankings`) pour qu'un échec
  * de l'API du bot ne prive pas le site du classement des noteurs.
  *
  * Les deux tableaux écrivaient chacun leur ligne de rang ; ils passent
@@ -83,7 +83,7 @@ export function TopRatersBoard({ rows }: { rows: ContributorRow[] }) {
           rows={rows.map((r) => ({
             id: r.userId,
             rank: r.rank,
-            href: `/profil/${r.discordId}`,
+            href: `/profile/${r.discordId}`,
             name: r.username,
             avatar: r.avatar,
             discordId: r.discordId,
@@ -121,7 +121,7 @@ export function TopZeniBoard({ rows }: { rows: LeaderboardEntry[] }) {
           rows={rows.map((e, i) => ({
             id: e.discordId,
             rank: e.rank || i + 1,
-            href: `/profil/${e.discordId}`,
+            href: `/profile/${e.discordId}`,
             name: e.username ?? `Guerrier #${e.discordId.slice(-4)}`,
             avatar: e.avatarUrl,
             discordId: e.discordId,

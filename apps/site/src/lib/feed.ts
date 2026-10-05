@@ -112,7 +112,7 @@ export interface FeedPage {
 
 /** URL canonique d'une page du fil (page 1 = la racine de l'onglet). */
 export function feedHref(filter: FeedFilter, page = 1): string {
-  const base = filter === "tout" ? "/news/fil" : `/news/fil/${filter}`;
+  const base = filter === "tout" ? "/news/feed" : `/news/feed/${filter}`;
   return page <= 1 ? base : `${base}/page/${page}`;
 }
 

@@ -100,7 +100,7 @@ export default async function TransformationPage({
           <p className="text-base sm:text-lg text-white/80 font-medium">
             Forme de{" "}
             <GatedWrap
-              href={`/wiki/personnages/${t.character.slug}`}
+              href={`/wiki/characters/${t.character.slug}`}
               className="text-dbz-orange font-semibold underline-offset-4 hover:underline hover:text-dbz-yellow transition-colors"
             >
               {t.character.name}
@@ -137,7 +137,7 @@ export default async function TransformationPage({
                     <th className="wiki-infobox-label">Personnage</th>
                     <td className="wiki-infobox-value">
                       <GatedWrap
-                        href={`/wiki/personnages/${t.character.slug}`}
+                        href={`/wiki/characters/${t.character.slug}`}
                         className="text-dbz-orange hover:underline font-medium"
                       >
                         {t.character.name}

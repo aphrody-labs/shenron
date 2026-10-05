@@ -90,7 +90,7 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
             {dico.common.dashboard}
           </Link>
         )}
-        <Link href="/parametres" className={row}>
+        <Link href="/settings" className={row}>
           <Curseurs size={18} />
           {dico.mobileNav.accountSettings}
         </Link>
@@ -136,7 +136,7 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
         </Link>
       )}
       <Link
-        href="/parametres"
+        href="/settings"
         aria-label={dico.common.settings}
         title={dico.common.settings}
         className={`${ICON} ${FOCUS}`}

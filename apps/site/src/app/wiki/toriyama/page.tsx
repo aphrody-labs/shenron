@@ -139,7 +139,7 @@ const OEUVRES: ReadonlyArray<OeuvreItem> = [
     fallbackRole: "Scénario et design des films.",
     coverUrl: "./assets/wiki/databooks/2c152758-a95f-4b6a-89c4-493f58f57ae6.jpg",
     badge: "Films",
-    href: "/wiki/films",
+    href: "/wiki/movies",
   },
   {
     key: "dragonBallSuper",
@@ -587,7 +587,7 @@ export default async function ToriyamaPage() {
           )}
         </section>
 
-        <ContributeRail quoiKey="kit.contribute.what.interview" contributeHref="/wiki/contribuer" />
+        <ContributeRail quoiKey="kit.contribute.what.interview" contributeHref="/wiki/contribute" />
       </Stack>
     </PageShell>
   );

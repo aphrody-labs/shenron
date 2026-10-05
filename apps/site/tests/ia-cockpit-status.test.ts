@@ -92,7 +92,7 @@ function syntheticFetchers(): IaCockpitFetchers {
     evalHistory: ok("Historique", [mapEvalRow(EVAL_ROW)]),
     goldSet: ok("Jeu doré", {
       cases: 172,
-      sample: [{ q: "Qui est Goku ?", expected: ["/wiki/personnages/son-goku"] }],
+      sample: [{ q: "Qui est Goku ?", expected: ["/wiki/characters/son-goku"] }],
     }),
     feedbacks: ok("Retours", { total: 48, pending: 3, rows: [] }),
     goals: ok("Objectifs", { active: 2, rows: [] }),
@@ -457,7 +457,7 @@ describe("fetchAphrodyWebCrawlStats — contrat du client Aphrody Web", () => {
 describe("jeu doré et arithmétique des métriques (classements synthétiques, aucune récupération ; définitions de apps/bot/src/lib/rag-eval.ts)", () => {
   const gold = parseGoldSet(
     [
-      '{"q":"Qui est Freezer ?","expectUrl":["/wiki/personnages/freezer"]}',
+      '{"q":"Qui est Freezer ?","expectUrl":["/wiki/characters/freezer"]}',
       "// commentaire",
       '{"q":"Kamehameha","expect":["kamehameha"]}',
       "ligne invalide",
@@ -475,11 +475,11 @@ describe("jeu doré et arithmétique des métriques (classements synthétiques, 
         {
           case: gold[0]!,
           hits: [
-            { title: "Freezer du futur", snippet: "", url: "/wiki/personnages/freezer-futur" },
+            { title: "Freezer du futur", snippet: "", url: "/wiki/characters/freezer-futur" },
             {
               title: "Freezer",
               snippet: "",
-              url: "https://dragonballfr.com/wiki/personnages/freezer/",
+              url: "https://dragonballfr.com/wiki/characters/freezer/",
             },
           ],
         },

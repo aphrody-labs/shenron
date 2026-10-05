@@ -200,7 +200,7 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
             périmètre de la saga{" "}
             {/* `GatedLink` et non `Link` : si la rubrique Sagas est refermée
 						    depuis /admin/lancement, ce lien enverrait le visiteur sur une
-						    page qui le renvoie aussitôt vers /wiki-bientot. */}
+						    page qui le renvoie aussitôt vers /coming-soon. */}
             <GatedLink
               href={`/wiki/sagas/${saga.slug}`}
               className="font-semibold text-dbz-orange hover:text-white transition-colors"

@@ -11,16 +11,16 @@ import { TabNav } from "@shenron/ui/navigation/TabNav";
 
 const ITEMS = [
   { href: "/dashboard", label: "Vue d’ensemble" },
-  { href: "/profil/me", label: "Profil public" },
-  { href: "/favoris", label: "Favoris" },
-  { href: "/tierlists/mes", label: "Mes tier lists" },
-  { href: "/parametres", label: "Paramètres" },
+  { href: "/profile/me", label: "Profil public" },
+  { href: "/favorites", label: "Favoris" },
+  { href: "/tierlists/mine", label: "Mes tier lists" },
+  { href: "/settings", label: "Paramètres" },
 ] as const;
 
 export function UserNav() {
   const pathname = usePathname() ?? "/";
-  const active = pathname.startsWith("/profil/")
-    ? "/profil/me"
+  const active = pathname.startsWith("/profile/")
+    ? "/profile/me"
     : (ITEMS.find((item) => item.href === pathname)?.href ?? "");
   return (
     <TabNav

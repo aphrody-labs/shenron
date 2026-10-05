@@ -36,7 +36,7 @@ export const revalidate = 86400; // Cache le sitemap pendant 24 heures
  *
  * L'ancienne version figeait la liste bêta (episodes/films/manga/chronologie) en
  * constante. Le gating ayant migré en base, les deux ont divergé : au 2026-08-21,
- * `/wiki/sagas` (33 sagas) et `/wiki/jeux` (58 jeux) répondaient 200 en
+ * `/wiki/sagas` (33 sagas) et `/wiki/games` (58 jeux) répondaient 200 en
  * production sans qu'aucune de leurs URL ne figure au sitemap — une centaine de
  * pages publiques invisibles de Google, et une régression garantie à chaque
  * ouverture de rubrique. Ici, ouvrir une rubrique depuis /admin/lancement la fait
@@ -66,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── Pages fixes ───────────────────────────────────────────────────────────
   // Dérivées de `lib/site-map.ts` (lui-même dérivé du registre d'accès), et non
   // plus de deux tableaux écrits à la main. Ces tableaux avaient divergé : ni
-  // `/tierlists`, ni `/wiki/modifications`, ni `/wiki/contribuer`, ni
+  // `/tierlists`, ni `/wiki/modifications`, ni `/wiki/contribute`, ni
   // `/wiki/tools` n'y figuraient, alors que ces pages répondaient 200. Une
   // rubrique qui s'ouvre depuis /admin/lancement entre désormais au sitemap à la
   // revalidation suivante, sans toucher à ce fichier.
@@ -77,11 +77,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     push(dest.href === "/" ? "" : dest.href, dest.priority, dest.changeFrequency ?? "weekly");
   }
   // Les mini-jeux sont des pages filles d'une rubrique déjà portée par le
-  // registre (`/jeux`) : elles n'ont pas d'entrée propre, mais chacune est une
+  // registre (`/games`) : elles n'ont pas d'entrée propre, mais chacune est une
   // page réelle et indexable.
-  for (const p of ["/jeux/2048", "/jeux/bingo", "/jeux/morpion", "/jeux/pfc"]) push(p, 0.4);
+  for (const p of [
+    "/games/2048",
+    "/games/bingo",
+    "/games/tic-tac-toe",
+    "/games/rock-paper-scissors",
+  ])
+    push(p, 0.4);
   // Onglets du fil d'actualité — une URL par nature d'événement.
-  for (const p of ["/news/fil/articles", "/news/fil/discussions"]) {
+  for (const p of ["/news/feed/articles", "/news/feed/discussions"]) {
     push(p, 0.5, "daily");
   }
 
@@ -103,7 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         out.push([`/wiki/episodes/${r.id}`, 0.6, sec(r.airDate)]);
         if (r.series) series.add(r.series);
       }
-      for (const s of series) out.push([`/wiki/episodes/serie/${s}`, 0.7, new Date()]);
+      for (const s of series) out.push([`/wiki/episodes/series/${s}`, 0.7, new Date()]);
       return out;
     }),
     block(entries, isPublic, async () => {
@@ -111,7 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .select({ slug: botMovies.slug, releaseDate: botMovies.releaseDate })
         .from(botMovies)
         .where(eq(botMovies.visible, true));
-      return rows.map((m) => [`/wiki/films/${m.slug}`, 0.7, sec(m.releaseDate)] as const);
+      return rows.map((m) => [`/wiki/movies/${m.slug}`, 0.7, sec(m.releaseDate)] as const);
     }),
     block(entries, isPublic, async () => {
       const vols = await db
@@ -146,7 +152,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .select({ slug: botGames.slug })
         .from(botGames)
         .where(eq(botGames.visible, true));
-      return rows.map((r) => [`/wiki/jeux/${r.slug}`, 0.6, new Date()] as const);
+      return rows.map((r) => [`/wiki/games/${r.slug}`, 0.6, new Date()] as const);
     }),
     block(entries, isPublic, async () => {
       const rows = await db
@@ -159,7 +165,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .from(botCharacters)
         .where(eq(botCharacters.visible, true));
       return rows.map(
-        (r) => [`/wiki/personnages/${formatCharacterSlug(r)}`, 0.6, new Date()] as const,
+        (r) => [`/wiki/characters/${formatCharacterSlug(r)}`, 0.6, new Date()] as const,
       );
     }),
     block(entries, isPublic, async () => {

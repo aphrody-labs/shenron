@@ -286,7 +286,7 @@ function LienCorriger({ cible }: { cible: { table?: string; rowId: number; colum
   });
   return (
     <Link
-      href={`/wiki/corriger?${params}`}
+      href={`/wiki/corrections?${params}`}
       className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-white/30 transition-colors hover:text-dbz-orange"
     >
       <Crayon className="h-3 w-3" /> Corriger cette partie
@@ -309,7 +309,7 @@ function SectionAEcrire({
       </p>
       {cible.table ? (
         <Link
-          href={`/wiki/corriger?${new URLSearchParams({ table: cible.table, row: String(cible.rowId), col: cible.column })}`}
+          href={`/wiki/corrections?${new URLSearchParams({ table: cible.table, row: String(cible.rowId), col: cible.column })}`}
           className="inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/[0.03] px-3.5 py-2 text-xs font-semibold text-white/65 transition-colors hover:border-dbz-orange/50 hover:text-white"
         >
           <Crayon className="h-3.5 w-3.5" /> Écrire «&nbsp;{label}&nbsp;»

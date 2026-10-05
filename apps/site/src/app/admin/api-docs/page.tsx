@@ -215,9 +215,9 @@ export default function ApiDocsPage() {
             ))}
           </ul>
           <ChipRow className="mt-5">
-            <Chip href="/plan-du-site">Plan du site</Chip>
-            <Chip href="/news/fil">Fil d&apos;actualité</Chip>
-            <Chip href="/wiki/contribuer">Contribuer (humain)</Chip>
+            <Chip href="/site-map">Plan du site</Chip>
+            <Chip href="/news/feed">Fil d&apos;actualité</Chip>
+            <Chip href="/wiki/contribute">Contribuer (humain)</Chip>
           </ChipRow>
         </section>
 

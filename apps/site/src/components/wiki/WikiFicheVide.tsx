@@ -49,7 +49,7 @@ export function WikiFicheVide({
             labelBouton="Écrire le premier article"
           />
           <Link
-            href="/wiki/contribuer"
+            href="/wiki/contribute"
             className="text-[11px] text-white/35 underline-offset-2 transition-colors hover:text-white/60 hover:underline"
           >
             Comment ça marche&nbsp;?

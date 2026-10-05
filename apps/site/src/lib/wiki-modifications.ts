@@ -27,14 +27,14 @@ import { CONTRIBUTABLE_COLUMNS } from "@/lib/contributions-shared";
 
 /** Tables ayant une page publique, avec de quoi en construire l'URL. */
 const RUBRIQUES: Record<string, { rubrique: string; prefixe: string; cle: "id" | "slug" }> = {
-  db_characters: { rubrique: "Personnage", prefixe: "/wiki/personnages", cle: "id" },
-  db_planets: { rubrique: "Lieu", prefixe: "/wiki/cosmologie", cle: "id" },
+  db_characters: { rubrique: "Personnage", prefixe: "/wiki/characters", cle: "id" },
+  db_planets: { rubrique: "Lieu", prefixe: "/wiki/locations", cle: "id" },
   db_techniques: { rubrique: "Technique", prefixe: "/wiki/techniques", cle: "slug" },
   db_races: { rubrique: "Race", prefixe: "/wiki/races", cle: "slug" },
   db_sagas: { rubrique: "Saga", prefixe: "/wiki/sagas", cle: "slug" },
   db_arcs: { rubrique: "Arc", prefixe: "/wiki/arcs", cle: "slug" },
-  db_movies: { rubrique: "Film", prefixe: "/wiki/films", cle: "slug" },
-  db_games: { rubrique: "Jeu", prefixe: "/wiki/jeux", cle: "slug" },
+  db_movies: { rubrique: "Film", prefixe: "/wiki/movies", cle: "slug" },
+  db_games: { rubrique: "Jeu", prefixe: "/wiki/games", cle: "slug" },
   db_databooks: { rubrique: "Databook", prefixe: "/wiki/databooks", cle: "id" },
   db_episodes: { rubrique: "Épisode", prefixe: "/wiki/episodes", cle: "id" },
 };

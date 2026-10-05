@@ -163,7 +163,7 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
         {readableChapters.length === 0 && (
           <p className="text-white/60">
             Les chapitres de ce tome ne sont pas encore lisibles ici. Signale une source depuis{" "}
-            <Link href="/wiki/contribuer" className="text-dbz-orange hover:text-white">
+            <Link href="/wiki/contribute" className="text-dbz-orange hover:text-white">
               la page Contribuer
             </Link>
             .

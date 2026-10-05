@@ -151,7 +151,7 @@ async function resoudrePlanches(
  *
  *  - **L'indexeur écrit des routes historiques.** `/wiki/dragon-ball/character/264`
  *    et `/wiki/dragon-ball/planet/34` répondent encore, mais par une 308 vers
- *    `/wiki/personnages/264` et `/wiki/cosmologie/34`. Citer la forme ancienne
+ *    `/wiki/characters/264` et `/wiki/locations/34`. Citer la forme ancienne
  *    coûte un aller-retour à chaque clic ; on la réécrit ici.
  *  - **Beaucoup de hits ne pointent qu'un index.** `/wiki/sagas` pour un arc,
  *    `/wiki/dragon-ball` pour une transformation : renvoyer le lecteur sur une
@@ -175,8 +175,8 @@ function routeInterne(url: string): string | null {
     url = interne[1]!;
   }
   url = url
-    .replace(/^\/wiki\/dragon-ball\/character\//, "/wiki/personnages/")
-    .replace(/^\/wiki\/dragon-ball\/planet\//, "/wiki/cosmologie/");
+    .replace(/^\/wiki\/dragon-ball\/character\//, "/wiki/characters/")
+    .replace(/^\/wiki\/dragon-ball\/planet\//, "/wiki/locations/");
   // Une route qui ne descend pas sous sa rubrique ne désigne aucune fiche.
   const segments = url.split("#")[0]!.split("/").filter(Boolean);
   if (segments[0] !== "wiki" || segments.length < 3) return null;

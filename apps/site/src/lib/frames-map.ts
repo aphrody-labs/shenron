@@ -73,7 +73,7 @@ export async function resolveSiteEpisodes(
         series: f.series ?? "MOVIE",
         numberInSeries: null,
         title: f.title,
-        href: `/wiki/films/${f.slug}`,
+        href: `/wiki/movies/${f.slug}`,
         image: f.poster ? assetUrl(f.poster) : null,
       });
     }

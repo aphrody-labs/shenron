@@ -5,7 +5,7 @@
  * Encourage les notes : place libre + lien vers les grilles d'épisodes/films/jeux.
  *
  * La marche (ordre `PODIUM_ORDER`, médailles, badge de rang) vient de `Podium` :
- * le Panthéon des guerriers de `/classements` pose exactement la même.
+ * le Panthéon des guerriers de `/rankings` pose exactement la même.
  */
 import { useId, useMemo, useState } from "react";
 import Link from "next/link";
@@ -16,7 +16,7 @@ import type { CommunityTopBoard, CommunityTopsPayload } from "@/lib/community-to
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { Podium, PodiumCard, PodiumEmpty, type PodiumRank } from "./Podium";
 
-/** Ordre de la marche (2e, 1er, 3e), partagé avec le Panthéon de `/classements`. */
+/** Ordre de la marche (2e, 1er, 3e), partagé avec le Panthéon de `/rankings`. */
 export { PODIUM_ORDER } from "./Podium";
 
 const FOCUS =
@@ -170,7 +170,7 @@ export function CommunityTops({
             </p>
           </div>
           <Link
-            href="/classements"
+            href="/rankings"
             className={`inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange underline-offset-4 hover:underline ${FOCUS}`}
           >
             Tous les classements

@@ -7,7 +7,7 @@
  *
  * En revanche la feuille « Plus » est **dérivée de la carte du site**
  * (`lib/site-map.ts`) : c'était une liste écrite à la main, et elle avait
- * divergé — ni `/wiki/personnages`, ni `/wiki/contribuer`, ni le fil d'actualité
+ * divergé — ni `/wiki/characters`, ni `/wiki/contribute`, ni le fil d'actualité
  * n'y figuraient, alors que des rubriques refermées y restaient. Désormais, une
  * rubrique ouverte depuis `/admin/lancement` apparaît dans le menu sans toucher
  * à ce fichier.
@@ -22,7 +22,7 @@ export const MOBILE_PRIMARY_DESTINATIONS = [
   { href: "/", label: "Accueil" },
   { href: "/wiki", label: "Wiki" },
   { href: "/wiki/episodes", label: "Épisodes" },
-  { href: "/wiki/films", label: "Films" },
+  { href: "/wiki/movies", label: "Films" },
 ] as const;
 
 /** Parcours présentés dans la feuille « Plus », dans cet ordre. */

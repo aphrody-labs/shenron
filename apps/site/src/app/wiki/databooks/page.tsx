@@ -15,7 +15,7 @@ import { progressionTranscription } from "@/lib/databooks-transcription";
 import { DomainBar, StatTiles, ContributeRail } from "@/components/kit";
 
 import { ogMeta } from "@/lib/og";
-import { BibliothequeNav } from "@/components/bibliotheque/BibliothequeNav";
+import { LibraryNav } from "@/components/library/LibraryNav";
 import { publicDatabookImage } from "@/lib/databook-media";
 import { isToriyamaInterviewBook } from "@/lib/toriyama-words";
 
@@ -103,7 +103,7 @@ export default async function DatabooksIndexPage() {
           )
         }
       />
-      <BibliothequeNav className="mb-3" />
+      <LibraryNav className="mb-3" />
       <EditorialTabs active="/wiki/databooks" className="mb-6" />
       <PageBanner src={heroImage} alt="Databooks Dragon Ball" />
 
@@ -113,8 +113,8 @@ export default async function DatabooksIndexPage() {
         domain="databooks"
         className="mb-6"
         actions={[
-          { href: "/atelier/transcription", label: "Transcription & arbitrage" },
-          { href: "/atelier/traduction", label: "Traduction & campagnes" },
+          { href: "/workshop/transcription", label: "Transcription & arbitrage" },
+          { href: "/workshop/translation", label: "Traduction & campagnes" },
         ]}
       />
 

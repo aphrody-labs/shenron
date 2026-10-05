@@ -25,7 +25,7 @@ mock.module("@/lib/db-universe", () => ({
         {
           kind: "movie",
           id: 7,
-          href: "/wiki/films/broly",
+          href: "/wiki/movies/broly",
           title: "Broly",
           series: "DBS",
           era: "Super",

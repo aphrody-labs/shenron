@@ -76,15 +76,15 @@ export function MediaCatalogRails({
           </StreamRow>
         )}
       {visible.movies !== false &&
-        (!access || isPathPublic("/wiki/films", access)) &&
+        (!access || isPathPublic("/wiki/movies", access)) &&
         catalog.movies.length > 0 && (
-          <StreamRow title="Films à voir" seeAllHref="/wiki/films" headingLevel={headingLevel}>
+          <StreamRow title="Films à voir" seeAllHref="/wiki/movies" headingLevel={headingLevel}>
             {catalog.movies.map((movie) => {
               const languages = languageBadges(movie.players);
               return (
                 <PosterCard
                   key={movie.id}
-                  href={`/wiki/films/${movie.slug}`}
+                  href={`/wiki/movies/${movie.slug}`}
                   title={movie.title}
                   titleJa={movie.titleJa}
                   poster={movie.poster}

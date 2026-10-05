@@ -2,7 +2,7 @@
  * Chronologie universelle — résolution de la curation et tri.
  *
  * `applyChronology` traduit la curation admin (ordre, ère, date, masquage,
- * notes) en la liste que le public voit sur `/wiki/chronologie`. Elle n'avait
+ * notes) en la liste que le public voit sur `/wiki/timeline`. Elle n'avait
  * aucun test alors que toute la page dépend de sa sortie. Module client-safe
  * (aucun import serveur), donc testable directement.
  */

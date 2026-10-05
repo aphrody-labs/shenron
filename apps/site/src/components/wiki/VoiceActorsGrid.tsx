@@ -238,7 +238,7 @@ export function VoiceActorsGrid({
             return (
               <Link
                 key={actor.slug}
-                href={`/wiki/voix/${actor.slug}`}
+                href={`/wiki/voice-actors/${actor.slug}`}
                 className="group flex min-h-[300px] flex-col rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.025] p-5 transition hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-950/20"
               >
                 {(actor.image || fallbackImage) && (

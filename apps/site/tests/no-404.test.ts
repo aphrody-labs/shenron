@@ -53,13 +53,13 @@ const DYNAMIC_SAMPLES: Record<string, string> = {
   "/wiki/manga/[id]": "1",
   "/wiki/manga/volume/[id]": "1",
   "/wiki/sagas/[slug]": "saiyan",
-  "/wiki/films/[slug]": "bio-broly",
-  "/wiki/jeux/[slug]": "budokai",
+  "/wiki/movies/[slug]": "bio-broly",
+  "/wiki/games/[slug]": "budokai",
   "/wiki/dragon-ball/games/[slug]": "budokai",
   "/wiki/dragon-ball/techniques/[slug]": "afterimage-technique",
   "/wiki/races/[slug]": "human",
   "/wiki/arcs/[slug]": "saiyan",
-  "/profil/[id]": "1026509993295491112",
+  "/profile/[id]": "1026509993295491112",
   // /wiki/[...slug] : page éditoriale catch-all (table wikiPages, séparée des
   // db_*). Aucun slug garanti en prod → on ne l'échantillonne pas en static ;
   // si une page éditoriale existe, le crawl la trouvera.
@@ -78,8 +78,8 @@ const CRAWL_SEEDS = [
   "/wiki/episodes",
   "/wiki/manga",
   "/wiki/sagas",
-  "/wiki/films",
-  "/wiki/jeux",
+  "/wiki/movies",
+  "/wiki/games",
   "/wiki/races",
   "/wiki/news",
   "/actualites",
@@ -141,7 +141,7 @@ async function check(path: string): Promise<Check> {
     const isProd = url.includes("dragonballfr.com");
     // Routes locales pas encore en prod (ou sonde synthétique _probe sur
     // endpoints dynamiques type /download qui 404 si l'id n'existe pas).
-    const isNewLocalRoute = path === "/ask" || path === "/classements";
+    const isNewLocalRoute = path === "/ask" || path === "/rankings";
     const isSyntheticEntityProbe =
       path.includes("/_probe/") && (path.endsWith("/download") || path.includes("/download?"));
     // `/api/databooks/:id` VALIDE son segment avant de toucher la base : un

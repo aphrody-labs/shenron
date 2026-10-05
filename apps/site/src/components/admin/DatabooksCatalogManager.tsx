@@ -319,7 +319,7 @@ export function DatabooksCatalogManager({
                           )}
                           <div>
                             <Link
-                              href={`/atelier/databooks/${fiche.id}`}
+                              href={`/workshop/databooks/${fiche.id}`}
                               className="font-bold text-white hover:text-dbz-orange transition"
                             >
                               {fiche.titre}
@@ -415,7 +415,7 @@ export function DatabooksCatalogManager({
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <Link
-                            href={`/atelier/databooks/${fiche.id}`}
+                            href={`/workshop/databooks/${fiche.id}`}
                             className="btn btn-ghost btn-xs text-dbz-orange hover:bg-dbz-orange/10"
                             title="Ouvrir le relecteur planche par planche"
                           >

@@ -11,19 +11,19 @@ export default function robots(): MetadataRoute.Robots {
         // désormais une clé ou une session d'administration (cf. la route), donc
         // il n'a rien à faire dans un index — `Disallow: /api/` le couvre.
         allow: "/",
-        // /admin + /api : privés. /profil : pages de compte, sans intérêt
+        // /admin + /api : privés. /profile : pages de compte, sans intérêt
         // d'index et parfois nominatives.
         //
         // NE PAS blanket-disallow /wiki : tout le wiki est public depuis le
         // 2026-08-27, et une directive robots.txt le retirerait entièrement de
         // l'index. Les pages à ne pas indexer le disent elles-mêmes en meta
-        // robots (`/wiki/search`, `/wiki/corriger`) — une meta laisse Google
+        // robots (`/wiki/search`, `/wiki/corrections`) — une meta laisse Google
         // LIRE la page pour en suivre les liens, un `Disallow` l'en empêche.
         //
         // `/tierlists/` a été retiré de cette liste : la page répond 200 en
         // public depuis la fin de la bêta, la garder ici l'excluait de l'index
         // sans raison.
-        disallow: ["/admin/", "/api/", "/profil/"],
+        disallow: ["/admin/", "/api/", "/profile/"],
       },
       // Robots et agents d'IA : bienvenus sur tout le contenu public, y compris les API
       // publiques en lecture annoncées par /llms.txt et le serveur MCP. Une règle nommée
@@ -32,7 +32,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: [...AI_CRAWLERS],
         allow: ["/", ...PUBLIC_API_PREFIXES, "/mcp", "/.well-known/"],
-        disallow: ["/admin/", "/api/", "/profil/"],
+        disallow: ["/admin/", "/api/", "/profile/"],
       },
       // Robots publicitaires Google. Ils n'indexent RIEN : ils explorent la page
       // pour en déduire le ciblage contextuel (Mediapartners-Google = AdSense) ou

@@ -213,7 +213,7 @@ export default function CreditsPage() {
             <T k="legal.credits.contactDiscord" />
           </a>
           <Link
-            href="/licence"
+            href="/license"
             className="inline-flex items-center h-10 px-5 rounded-full border border-white/20 hover:border-white text-white font-display font-semibold text-[13px] tracking-[0.10em] uppercase transition-colors"
           >
             <T k="legal.credits.readLicence" />

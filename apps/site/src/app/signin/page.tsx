@@ -36,7 +36,7 @@ const ERROR_LABELS: Record<string, string> = {
 export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [callbackURL, setCallbackURL] = useState("/profil/me");
+  const [callbackURL, setCallbackURL] = useState("/profile/me");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -163,7 +163,7 @@ export default function SignInPage() {
           Aucun mot de passe stocké. L'authentification passe par Discord OAuth. En te connectant tu
           acceptes nos{" "}
           <Link
-            href="/licence"
+            href="/license"
             className="underline decoration-white/30 hover:text-white hover:decoration-dbz-orange"
           >
             conditions

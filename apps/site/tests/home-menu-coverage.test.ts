@@ -28,7 +28,7 @@ describe("accueil et menu complet", () => {
    *
    * Ce qui compte : chaque destination est atteignable par un chemin réel. Soit
    * elle a sa section sur l'accueil, soit elle figure dans la carte du site —
-   * qui alimente à la fois `/plan-du-site` et les colonnes du pied de page,
+   * qui alimente à la fois `/site-map` et les colonnes du pied de page,
    * présentes sur toutes les pages.
    */
   test("chaque destination du menu est atteignable (accueil ou carte du site)", async () => {
@@ -58,9 +58,9 @@ describe("accueil et menu complet", () => {
   });
 
   test("la carte du site expose bien le plan et le pied de page le relaie", async () => {
-    // `/plan-du-site` est le filet de sécurité de tout le reste : s'il sort de la
+    // `/site-map` est le filet de sécurité de tout le reste : s'il sort de la
     // carte, plusieurs rubriques perdent leur seul lien entrant global.
-    expect(SITE_DESTINATIONS.some((d) => d.href === "/plan-du-site")).toBe(true);
+    expect(SITE_DESTINATIONS.some((d) => d.href === "/site-map")).toBe(true);
 
     // Le pied de page consomme la carte (et non plus trois colonnes figées) :
     // une rubrique ajoutée au registre y apparaît sans toucher au composant.

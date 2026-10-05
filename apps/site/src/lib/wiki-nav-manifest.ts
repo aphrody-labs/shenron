@@ -29,9 +29,9 @@ export interface WikiNavGroup {
 
 export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
   {
-    // Un seul groupe pour l'espace Bibliothèque (`lib/bibliotheque.ts`) : le manga et les
+    // Un seul groupe pour l'espace Bibliothèque (`lib/library.ts`) : le manga et les
     // databooks se lisent côte à côte ; l'atelier et Koharu sont dans la nav principale.
-    id: "bibliotheque",
+    id: "library",
     title: "Bibliothèque : manga & databooks",
     titleJa: "書庫：原作漫画・資料集",
     icon: "📚",
@@ -87,7 +87,7 @@ export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
         id: "films",
         label: "Films & Longs-Métrages Cinéma",
         labelJa: "劇場版映画",
-        href: "/wiki/films",
+        href: "/wiki/movies",
         icon: "🎞️",
         description: "De La Légende de Shenron à DBS: Super Hero, synopses et statuts canoniques.",
       },
@@ -104,7 +104,7 @@ export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
         id: "narrative-events",
         label: "Événements, combats & tournois",
         labelJa: "出来事・戦い・武道会",
-        href: "/wiki/evenements",
+        href: "/wiki/events",
         icon: "⚔️",
         badge: "Chronologie",
         description: "Affrontements, championnats et tournants du récit, reliés à leurs sagas.",
@@ -113,7 +113,7 @@ export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
         id: "chronology",
         label: "Chronologie & Âges Universels",
         labelJa: "世界年表",
-        href: "/wiki/chronologie",
+        href: "/wiki/timeline",
         icon: "⏳",
         description: "Frise temporelle diégétique des Âges -5M à 784 d'après le Daizenshuu 7.",
       },
@@ -130,7 +130,7 @@ export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
         id: "characters",
         label: "Personnages & Guerriers",
         labelJa: "登場人物",
-        href: "/wiki/personnages",
+        href: "/wiki/characters",
         icon: "👥",
         description:
           "Fiches biographiques vérifiées, fusions, affiliations et niveaux de puissance.",
@@ -182,7 +182,7 @@ export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
         id: "music",
         label: "Musiques & Bandes Originales",
         labelJa: "音楽・サントラ",
-        href: "/wiki/musiques",
+        href: "/wiki/music",
         icon: "🎵",
         gated: true,
         description: "Discographie Shunsuke Kikuchi, Hironobu Kageyama et thèmes cultes.",

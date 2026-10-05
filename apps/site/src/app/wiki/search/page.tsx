@@ -97,7 +97,7 @@ export default async function SearchPage({
   // On retire les catégories dont la rubrique n'est pas ouverte, plutôt que de
   // désactiver les liens un à un : un résultat qu'on ne peut pas ouvrir n'est
   // pas un résultat. C'est déjà ce que fait la palette ⌘K — la page de
-  // recherche, elle, les affichait tous et renvoyait vers /wiki-bientot.
+  // recherche, elle, les affichait tous et renvoyait vers /coming-soon.
   const results = raw ? filterGated(raw, cfg) : null;
 
   // Même règle pour le rail RAG, qui y échappait : ses réponses portent leur
@@ -322,7 +322,7 @@ export default async function SearchPage({
                 {results.characters.map((c, idx) => (
                   <Link
                     key={c.id}
-                    href={`/wiki/personnages/${c.id}`}
+                    href={`/wiki/characters/${c.id}`}
                     className="group dbz-panel overflow-hidden hover:scale-105 transition-all duration-300"
                     style={{ animationDelay: `${0.2 + idx * 0.03}s` }}
                   >
@@ -371,7 +371,7 @@ export default async function SearchPage({
                 {results.planets.map((p) => (
                   <Link
                     key={p.id}
-                    href="/wiki/lieux"
+                    href="/wiki/locations"
                     className="group dbz-panel overflow-hidden hover:scale-[1.02] transition-all duration-300"
                   >
                     <div className="relative aspect-video bg-dbz-bg overflow-hidden p-3">
@@ -461,7 +461,7 @@ export default async function SearchPage({
                   {results.movies.map((m) => (
                     <Link
                       key={m.id}
-                      href={`/wiki/films/${m.slug}`}
+                      href={`/wiki/movies/${m.slug}`}
                       className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                     >
                       <div className="flex justify-between items-center">
@@ -500,7 +500,7 @@ export default async function SearchPage({
                 {results.games.map((g) => (
                   <Link
                     key={g.id}
-                    href={`/wiki/jeux/${g.slug}`}
+                    href={`/wiki/games/${g.slug}`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="font-display font-bold text-white group-hover:text-dbz-blue-light transition-colors">
@@ -632,7 +632,7 @@ export default async function SearchPage({
                 {results.transformations.map((t) => (
                   <Link
                     key={t.id}
-                    href={`/wiki/personnages/${t.character_id}`}
+                    href={`/wiki/characters/${t.character_id}`}
                     className="group dbz-panel overflow-hidden hover:scale-105 transition-all duration-300"
                   >
                     <div className="relative aspect-[4/3] bg-dbz-bg overflow-hidden">
@@ -775,7 +775,7 @@ export default async function SearchPage({
                 {results.battles.map((b) => (
                   <Link
                     key={b.id}
-                    href={`/wiki/combats/${b.slug}`}
+                    href={`/wiki/battles/${b.slug}`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-dbz-red mb-1">{b.saga}</p>
@@ -803,7 +803,7 @@ export default async function SearchPage({
                 {results.locations.map((l) => (
                   <Link
                     key={l.id}
-                    href={`/wiki/lieux/${l.slug}`}
+                    href={`/wiki/locations/${l.slug}`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-emerald-400 mb-1">{l.realm_type}</p>
@@ -831,7 +831,7 @@ export default async function SearchPage({
                 {results.tournaments.map((t) => (
                   <Link
                     key={t.id}
-                    href={`/wiki/tournois/${t.slug}`}
+                    href={`/wiki/tournaments/${t.slug}`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-dbz-orange mb-1">{t.saga}</p>
@@ -859,7 +859,7 @@ export default async function SearchPage({
                 {results.voiceActors.map((va) => (
                   <Link
                     key={va.id}
-                    href={`/wiki/voix/${va.slug}`}
+                    href={`/wiki/voice-actors/${va.slug}`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-purple-400 mb-1">
@@ -889,7 +889,7 @@ export default async function SearchPage({
                 {results.soundtracks.map((s) => (
                   <Link
                     key={s.id}
-                    href={`/wiki/musiques`}
+                    href={`/wiki/music`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-dbz-blue-light mb-1">
@@ -919,7 +919,7 @@ export default async function SearchPage({
                 {results.powerLevels.map((p) => (
                   <Link
                     key={p.id}
-                    href={`/wiki/puissances`}
+                    href={`/wiki/power-levels`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-dbz-red mb-1">
@@ -947,7 +947,7 @@ export default async function SearchPage({
                 {results.items.map((i) => (
                   <Link
                     key={i.id}
-                    href={`/wiki/objets/${i.slug}`}
+                    href={`/wiki/items/${i.slug}`}
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-emerald-400 mb-1">{i.category}</p>
@@ -1051,7 +1051,7 @@ export default async function SearchPage({
                 {results.novels.map((n) => (
                   <Link
                     key={n.id}
-                    href={`/wiki/romans/${n.id}`}
+                    href={`/wiki/novels/${n.id}`}
                     className="group dbz-panel overflow-hidden hover:scale-105 transition-all duration-300 flex flex-col"
                   >
                     <div className="relative aspect-[3/4] bg-zinc-950 overflow-hidden">
@@ -1100,7 +1100,7 @@ export default async function SearchPage({
                     href={
                       c.slug === "akira-toriyama"
                         ? "/wiki/toriyama"
-                        : `/wiki/contributeurs/${c.slug}`
+                        : `/wiki/contributors/${c.slug}`
                     }
                     className="group dbz-panel p-4 rounded-xl border border-white/10 hover:border-orange-500/50 transition-all flex flex-col justify-between"
                   >
@@ -1161,7 +1161,7 @@ export default async function SearchPage({
  * Vide les familles de résultats dont la route de destination est fermée.
  *
  * Le chemin témoin de chaque famille suffit : le gating est par rubrique, donc
- * si `/wiki/personnages/1` est fermé, tous les personnages le sont.
+ * si `/wiki/characters/1` est fermé, tous les personnages le sont.
  * Sans config lisible on ne filtre rien — dégrader vers « aucun résultat » sur
  * un hoquet de la base serait pire que quelques liens qui redirigent.
  */
@@ -1171,28 +1171,28 @@ function filterGated(r: SearchResults, cfg: AccessSnapshot | null): SearchResult
   const keep = <T,>(list: T[], probe: string): T[] => (open(probe) ? list : []);
   return {
     ...r,
-    characters: keep(r.characters, "/wiki/personnages/1"),
-    planets: keep(r.planets, "/wiki/lieux"),
+    characters: keep(r.characters, "/wiki/characters/1"),
+    planets: keep(r.planets, "/wiki/locations"),
     races: keep(r.races, "/wiki/races/x"),
     transformations: keep(r.transformations, "/wiki/transformations"),
     techniques: keep(r.techniques, "/wiki/techniques/x"),
     sagas: keep(r.sagas, "/wiki/sagas/x"),
     arcs: keep(r.arcs, "/wiki/arcs/x"),
-    movies: keep(r.movies, "/wiki/films/x"),
+    movies: keep(r.movies, "/wiki/movies/x"),
     episodes: keep(r.episodes, "/wiki/episodes/1"),
-    games: keep(r.games, "/wiki/jeux/x"),
+    games: keep(r.games, "/wiki/games/x"),
     mangaVolumes: keep(r.mangaVolumes, "/wiki/manga/volume/1"),
     mangaChapters: keep(r.mangaChapters, "/wiki/manga/1"),
-    battles: keep(r.battles, "/wiki/combats"),
-    locations: keep(r.locations, "/wiki/lieux"),
-    tournaments: keep(r.tournaments, "/wiki/tournois"),
-    voiceActors: keep(r.voiceActors, "/wiki/voix"),
-    soundtracks: keep(r.soundtracks, "/wiki/musiques"),
-    powerLevels: keep(r.powerLevels, "/wiki/puissances"),
-    items: keep(r.items, "/wiki/objets"),
+    battles: keep(r.battles, "/wiki/battles"),
+    locations: keep(r.locations, "/wiki/locations"),
+    tournaments: keep(r.tournaments, "/wiki/tournaments"),
+    voiceActors: keep(r.voiceActors, "/wiki/voice-actors"),
+    soundtracks: keep(r.soundtracks, "/wiki/music"),
+    powerLevels: keep(r.powerLevels, "/wiki/power-levels"),
+    items: keep(r.items, "/wiki/items"),
     dragons: keep(r.dragons, "/wiki/dragons"),
     databooks: keep(r.databooks, "/wiki/databooks"),
-    novels: keep(r.novels, "/wiki/romans"),
+    novels: keep(r.novels, "/wiki/novels"),
     contributors: keep(r.contributors, "/wiki/staff"),
   };
 }

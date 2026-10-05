@@ -231,7 +231,7 @@ function MemberDetail({
           <p className="mt-2 break-all font-mono text-xs text-white/30">{member.id}</p>
         </div>
         <Link
-          href={`/profil/${member.id}`}
+          href={`/profile/${member.id}`}
           target="_blank"
           className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-white/15 px-4 text-sm font-semibold text-white/70 hover:border-dbz-orange hover:text-white"
         >

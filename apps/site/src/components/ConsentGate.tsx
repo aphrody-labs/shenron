@@ -154,7 +154,7 @@ export function ConsentGate() {
   // est ponctuel. (2) Surtout : le bandeau *flottait* à `bottom-24`, au-dessus
   // du contenu, et interceptait les clics de tout ce qui passait dessous —
   // mesuré sur `/wiki/databooks` (recherche + les 5 filtres injoignables), sur
-  // le fil d'Ariane et sur la frise de `/wiki/chronologie`. Rien ne signalait
+  // le fil d'Ariane et sur la frise de `/wiki/timeline`. Rien ne signalait
   // au visiteur que c'était le bandeau qui mangeait ses clics : il voyait un
   // site cassé. On l'ancre donc en bas (plus de contenu « sous » lui) et on
   // réserve sa hauteur en bas du document, si bien que le contenu remonte au
@@ -209,7 +209,7 @@ export function ConsentGate() {
       {/* Deux mises en forme, un seul contenu. Sur téléphone, la carte
 			    détaillée mesurait près de 200 px : un quart de l'écran hors service
 			    tant que le visiteur n'avait pas tranché (mesuré sur
-			    /wiki/chronologie, huit contrôles injoignables). La version courte
+			    /wiki/timeline, huit contrôles injoignables). La version courte
 			    tient sur deux lignes et renvoie au détail pour qui le veut. */}
       <div className="dbz-panel border-2 border-dbz-orange/40 bg-dbz-card/95 p-3 shadow-2xl backdrop-blur-sm md:p-5">
         <p className="mb-1 font-display text-sm font-bold uppercase tracking-widest text-white md:mb-2">
@@ -218,7 +218,7 @@ export function ConsentGate() {
         <p className="mb-3 font-sans text-xs leading-relaxed text-white/70 md:mb-4">
           <span className="md:hidden">
             Mesure anonymisée, aucune adresse IP conservée.{" "}
-            <Link href="/confidentialite" className="underline underline-offset-2 hover:text-white">
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-white">
               En savoir plus
             </Link>
           </span>

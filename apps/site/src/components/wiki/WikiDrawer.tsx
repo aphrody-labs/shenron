@@ -10,7 +10,7 @@ export function WikiDrawer({ className = "" }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     // Ouvrir la Bibliothèque (manga et databooks) et les Événements par défaut
-    return { bibliotheque: true, events: true };
+    return { library: true, events: true };
   });
   const pathname = usePathname();
 

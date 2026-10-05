@@ -87,11 +87,11 @@ export function CharacterGrid({
   access?: AccessSnapshot | null;
 }) {
   // « fiches » = une carte par personnage (défaut) ; « versions » = une carte
-  // par couple personnage × saga. Le choix est dans l'URL (`?vue=versions`)
+  // par couple personnage × saga. Le choix est dans l'URL (`?view=versions`, ancien `?vue=` encore lu)
   // pour qu'une liste de versions se partage.
   const [vue, setVue] = useState<"fiches" | "versions">("fiches");
   /**
-   * État repris de l'URL (`?vue=versions&p=3`), lu au PREMIER RENDU.
+   * État repris de l'URL (`?view=versions&p=3`), lu au PREMIER RENDU.
    *
    * Et non dans un effet, comme c'était le cas pour `?p` : React vide les
    * effets des ENFANTS avant ceux du parent, et `Pagination` synchronise l'URL
@@ -108,7 +108,7 @@ export function CharacterGrid({
       typeof window === "undefined" ? null : new URLSearchParams(window.location.search);
     const p = Number(params?.get("p"));
     initial.current = {
-      vue: params?.get("vue") === "versions" ? "versions" : "fiches",
+      vue: (params?.get("view") ?? params?.get("vue")) === "versions" ? "versions" : "fiches",
       page: Number.isFinite(p) && p > 1 ? Math.floor(p) : 1,
     };
   }
@@ -150,8 +150,9 @@ export function CharacterGrid({
   }, []);
   useEffect(() => {
     const url = new URL(window.location.href);
-    if (vue === "versions") url.searchParams.set("vue", "versions");
-    else url.searchParams.delete("vue");
+    url.searchParams.delete("vue");
+    if (vue === "versions") url.searchParams.set("view", "versions");
+    else url.searchParams.delete("view");
     window.history.replaceState(null, "", url.toString());
   }, [vue]);
 
@@ -287,7 +288,7 @@ export function CharacterGrid({
    *    qui s'exécute aussi au montage (et deux fois en mode strict) ;
    *  - tant que `vue` n'a pas rejoint la valeur lue dans l'URL, on est encore
    *    dans la mise en place de l'état initial, pas devant un choix du lecteur
-   *    — sans quoi `?vue=versions&p=3` perdait sa page au montage.
+   *    — sans quoi `?view=versions&p=3` perdait sa page au montage.
    */
   const filtresPrecedents = useRef<string | null>(null);
   const restauration = useRef((initial.current?.page ?? 1) > 1);
@@ -408,7 +409,7 @@ export function CharacterGrid({
               // saga : c'est là que vivent son résumé, ses faits marquants et
               // ses preuves. Une page par version dupliquerait la fiche pour
               // n'en changer que quelques champs.
-              href={`/wiki/personnages/${v.characterId}#saga-${v.sagaId}`}
+              href={`/wiki/characters/${v.characterId}#saga-${v.sagaId}`}
               name={v.name}
               subtitle={v.saga}
               meta={v.form}
@@ -424,7 +425,7 @@ export function CharacterGrid({
           {visible.map((c, index) => (
             <CharacterPosterCard
               key={c.id}
-              href={`/wiki/personnages/${c.slug ?? c.id}`}
+              href={`/wiki/characters/${c.slug ?? c.id}`}
               name={c.name}
               race={c.race}
               image={c.image}

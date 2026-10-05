@@ -68,7 +68,7 @@ describe("source features", () => {
     expect(ui).toContain("CommunityTopsFull");
     expect(ui).toContain("PODIUM_ORDER");
 
-    const page = await Bun.file(new URL("../src/app/classements/page.tsx", import.meta.url)).text();
+    const page = await Bun.file(new URL("../src/app/rankings/page.tsx", import.meta.url)).text();
     expect(page).toContain("getCommunityTops");
     expect(page).toContain("CommunityTopsFull");
   });

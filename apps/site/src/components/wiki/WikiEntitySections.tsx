@@ -57,7 +57,7 @@ export async function WikiEntitySections({
 				    build (mort en OOM à la compilation). */}
         <div className="pt-2">
           <Link
-            href={`/wiki/corriger?table=db_wiki_sections&row=${s.id}&col=body`}
+            href={`/wiki/corrections?table=db_wiki_sections&row=${s.id}&col=body`}
             className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-white/30 transition-colors hover:text-dbz-orange"
           >
             <Crayon className="h-3 w-3" /> Corriger cette partie

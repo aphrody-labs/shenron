@@ -3,7 +3,7 @@
  *
  * C'est le test qui manquait : au 2026-08-21, `/wiki/sagas` — page publique —
  * émettait **65 liens vers `/wiki/arcs/*`**, rubrique alors fermée, tous soldés
- * par une redirection 307 vers `/wiki-bientot`. Un mur d'impasses pour le
+ * par une redirection 307 vers `/coming-soon`. Un mur d'impasses pour le
  * visiteur comme pour le crawler, invisible depuis le code puisque chaque lien
  * pris isolément semblait légitime.
  *
@@ -51,7 +51,7 @@ const ALLOWED = [
   "components/GatedLink.tsx",
   "components/GatedClientLink.tsx",
   // La page « bientôt » et la recherche parlent des rubriques par nature.
-  "app/wiki-bientot",
+  "app/coming-soon",
   "app/wiki/search",
   // Le plan du site filtre lui-même par `isPathPublic`.
   "app/sitemap.ts",
@@ -65,12 +65,12 @@ const ALLOWED = [
  * la règle générale.
  */
 const OWN_SECTION_COMPONENTS: Record<string, string> = {
-  "components/wiki/BattlesGrid.tsx": "combats",
-  "components/wiki/GamesExplorer.tsx": "jeux",
-  "components/wiki/ItemsGrid.tsx": "objets",
-  "components/wiki/LocationsGrid.tsx": "lieux",
-  "components/wiki/TournamentsGrid.tsx": "tournois",
-  "components/wiki/VoiceActorsGrid.tsx": "voix",
+  "components/wiki/BattlesGrid.tsx": "battles",
+  "components/wiki/GamesExplorer.tsx": "games",
+  "components/wiki/ItemsGrid.tsx": "items",
+  "components/wiki/LocationsGrid.tsx": "locations",
+  "components/wiki/TournamentsGrid.tsx": "tournaments",
+  "components/wiki/VoiceActorsGrid.tsx": "voice-actors",
 };
 
 /**

@@ -2,7 +2,7 @@
  * Podium — la marche 2 · 1 · 3, une seule fois pour tout le site.
  *
  * Le podium était écrit trois fois : les trois blocs recopiés à la main du
- * Panthéon des guerriers (`/classements`), et le `PodiumCard` des Top 3 des
+ * Panthéon des guerriers (`/rankings`), et le `PodiumCard` des Top 3 des
  * œuvres (`CommunityTops`), chacun avec ses couleurs de médaille, ses kanji et
  * ses décalages de marche. Ici, une table de rangs (`RANK_META`) et trois
  * primitives :

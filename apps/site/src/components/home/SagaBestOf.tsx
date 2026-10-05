@@ -226,7 +226,7 @@ export function SagaBestOf({
                 {saga.watchLabel}
               </Link>
               <Link
-                href="/wiki/chronologie"
+                href="/wiki/timeline"
                 className={`inline-flex min-h-11 items-center rounded-lg border border-white/15 px-5 font-display text-sm font-bold text-white transition-colors hover:border-dbz-gold hover:text-dbz-gold ${focus}`}
               >
                 {t("home.bestof.fullTimeline")}
@@ -265,11 +265,11 @@ export function SagaBestOf({
         </StreamRow>
       )}
 
-      {open("/wiki/films") && (sagaMovies.length > 0 || catalogMovies.length > 0) && (
+      {open("/wiki/movies") && (sagaMovies.length > 0 || catalogMovies.length > 0) && (
         <StreamRow
           headingLevel={3}
           title={t("home.bestof.movies.title")}
-          seeAllHref="/wiki/films"
+          seeAllHref="/wiki/movies"
           seeAllLabel={t("home.bestof.movies.all")}
         >
           {sagaMovies.map((m) => (
@@ -286,7 +286,7 @@ export function SagaBestOf({
             return (
               <PosterCard
                 key={`cat-mov-${mov.id}`}
-                href={`/wiki/films/${mov.slug}`}
+                href={`/wiki/movies/${mov.slug}`}
                 title={mov.title}
                 titleJa={mov.titleJa}
                 poster={mov.poster}

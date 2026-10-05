@@ -27,7 +27,7 @@ const memoire = new Map<string, string>();
 } as unknown as Storage;
 
 const fiche = (n: number) => ({
-  href: `/wiki/personnages/${n}`,
+  href: `/wiki/characters/${n}`,
   titre: `Perso ${n}`,
   rubrique: "Personnage",
   image: null,

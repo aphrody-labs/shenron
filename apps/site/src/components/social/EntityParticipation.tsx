@@ -41,7 +41,7 @@ export async function EntityParticipation({
    * ~2 000 fiches prérendues (1 300 personnages, 800 épisodes, films, sagas…).
    * Deux requêtes de plus par fiche, c'est quatre mille requêtes ajoutées à
    * CHAQUE build — sur une machine dont le build du site a déjà été tué en OOM
-   * une fois (cf. l'en-tête de `/wiki/corriger`). Les discussions d'une fiche
+   * une fois (cf. l'en-tête de `/wiki/corrections`). Les discussions d'une fiche
    * n'ont par ailleurs aucune valeur d'indexation : l'îlot les charge au montage.
    *
    * `true` se justifie là où le volume est faible et le contenu éditorial : la
@@ -74,15 +74,15 @@ export async function EntityParticipation({
     : [null, null];
 
   // Le lien de correction est construit ici plutôt que dans chaque fiche : seize
-  // gabarits construisaient (ou oubliaient) la même URL à la main. `retour`
+  // gabarits construisaient (ou oubliaient) la même URL à la main. `returnTo`
   // ramène le contributeur exactement là où il lisait.
   const contributeHref =
     table && contributeColumn && isContributableColumn(contributeColumn)
-      ? `/wiki/corriger?${new URLSearchParams({
+      ? `/wiki/corrections?${new URLSearchParams({
           table,
           row: String(id),
           col: contributeColumn,
-          retour: path,
+          returnTo: path,
         }).toString()}`
       : null;
 

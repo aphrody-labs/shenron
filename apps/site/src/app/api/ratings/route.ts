@@ -21,7 +21,7 @@ import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 /** Home + page classements + badges podium (cache tag). */
 function revalidateTops() {
   revalidatePath("/");
-  revalidatePath("/classements");
+  revalidatePath("/rankings");
   revalidateTag("community-tops", "max");
 }
 

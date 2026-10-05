@@ -573,7 +573,7 @@ export function EntityRating({
                             disabled={deletingId === c.id}
                             // 28 px au dessin : `.cible-44` porte la zone tactile à
                             // 44 px sans grossir la corbeille ni décaler l'en-tête de
-                            // l'avis. Même traitement que la croix de `/parametres`.
+                            // l'avis. Même traitement que la croix de `/settings`.
                             className="cible-44 rounded-md p-1.5 text-white/50 transition-colors hover:bg-white/5 hover:text-red-400 disabled:opacity-40"
                           >
                             {deletingId === c.id ? (

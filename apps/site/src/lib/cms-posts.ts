@@ -237,7 +237,7 @@ export async function isSlugAvailable(
 export function revalidateArticleRoutes(slug?: string | null): void {
   revalidatePath("/admin/posts");
   revalidatePath("/news");
-  revalidatePath("/news/fil");
+  revalidatePath("/news/feed");
   revalidatePath("/actualites");
   revalidatePath("/"); // la home affiche les derniers articles
   revalidatePath("/sitemap.xml");

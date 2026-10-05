@@ -3,7 +3,7 @@
 /**
  * character-richesse — classer les personnages par ce que le wiki sait d'eux.
  *
- * La grille de `/wiki/personnages` servait les 1 307 fiches dans l'ordre où
+ * La grille de `/wiki/characters` servait les 1 307 fiches dans l'ordre où
  * Postgres les rendait, c'est-à-dire l'ordre d'insertion de l'ingest. Le
  * visiteur qui arrive sur la rubrique tombait donc d'abord sur ce que le wiki
  * connaît le moins : des entrées d'un seul chapitre, ou des figures de jeu vidéo

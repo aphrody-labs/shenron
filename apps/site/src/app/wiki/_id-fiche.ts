@@ -1,7 +1,7 @@
 /**
  * Identifiant de fiche accepté par les routes `/wiki/<rubrique>/[id]`.
  *
- * Le garde a été écrit pour `/wiki/personnages/[id]` puis laissé là, alors que
+ * Le garde a été écrit pour `/wiki/characters/[id]` puis laissé là, alors que
  * six autres routes numériques du wiki avaient exactement le même défaut. Il
  * vit donc ici, partagé, plutôt qu'en copie locale.
  *

@@ -21,6 +21,11 @@ import {
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
 import { toMillis } from "@/lib/epoch";
+import {
+  readAvailability,
+  writeAvailability,
+  type AvailabilityFilter,
+} from "@/lib/availability-query";
 
 export interface DatabookItem {
   id: number;
@@ -39,7 +44,7 @@ export interface DatabookItem {
   hasDescription: boolean;
 }
 
-type ContentFilter = "all" | "disponibles" | "a-completer";
+type ContentFilter = AvailabilityFilter;
 
 type FilterTab =
   | { key: "all"; label: string; mode: "all"; icon: null }
@@ -126,8 +131,7 @@ export function DatabookGrid({
 
   useEffect(() => {
     try {
-      const value = new URLSearchParams(window.location.search).get("etat");
-      if (value === "disponibles" || value === "a-completer") setContentFilter(value);
+      setContentFilter(readAvailability(window.location.search));
     } catch {
       // URL indisponible : l'état par défaut reste « Tout ».
     }
@@ -137,8 +141,7 @@ export function DatabookGrid({
     setContentFilter(value);
     try {
       const url = new URL(window.location.href);
-      if (value === "all") url.searchParams.delete("etat");
-      else url.searchParams.set("etat", value);
+      writeAvailability(url, value);
       window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
     } catch {
       // L'état local reste utilisable dans un environnement sans historique.
@@ -152,8 +155,8 @@ export function DatabookGrid({
     return items
       .filter((d) => {
         const hasContent = d.pageCount > 0 || d.hasDescription;
-        if (contentFilter === "disponibles" && !hasContent) return false;
-        if (contentFilter === "a-completer" && hasContent) return false;
+        if (contentFilter === "available" && !hasContent) return false;
+        if (contentFilter === "incomplete" && hasContent) return false;
         if (activeTab.mode === "all") return true;
         return matchesCategory(d, activeTab.key as DatabookCategory);
       })
@@ -228,8 +231,8 @@ export function DatabookGrid({
           {(
             [
               ["all", "Tout"],
-              ["disponibles", "Présent"],
-              ["a-completer", "À compléter"],
+              ["available", "Présent"],
+              ["incomplete", "À compléter"],
             ] as const
           ).map(([value, label]) => (
             <button

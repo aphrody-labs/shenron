@@ -1085,7 +1085,7 @@ export const dbUniverse = {
     }),
 
   /**
-   * Facettes de filtrage des personnages (page /wiki/personnages) : options
+   * Facettes de filtrage des personnages (page /wiki/characters) : options
    * Techniques (uniquement celles liées à ≥1 perso → jamais d'option morte) et
    * Arcs (tous, comptés), + les mappings perso→techniques / perso→arcs (sparse,
    * seulement les persos ayant des liens) consommés côté client pour un filtrage
@@ -1641,7 +1641,7 @@ export const dbUniverse = {
   /**
    * Film précédent / suivant + la liste complète des films de la même série,
    * ordonnés par date de sortie (tie-break id) — cohérent avec l'ordre de
-   * l'index /wiki/films. Les films n'ont PAS de numéro (contrairement aux
+   * l'index /wiki/movies. Les films n'ont PAS de numéro (contrairement aux
    * épisodes) → l'adjacence se fait sur `release_date` (null → fin de liste).
    */
   movieNav: (series: string, id: number) =>
@@ -1777,7 +1777,7 @@ export const dbUniverse = {
           return {
             kind: "movie" as const,
             id: m.id,
-            href: `/wiki/films/${m.slug ?? m.id}`,
+            href: `/wiki/movies/${m.slug ?? m.id}`,
             title: m.title ?? "",
             titleJa: m.titleJa,
             series: m.series ?? "",

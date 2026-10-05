@@ -6,7 +6,7 @@
  *
  *  1. **Une seule page d'actualité.** Les parutions de la rédaction tiennent la
  *     tête de page — ce sont elles qui se lisent — et les dernières discussions
- *     suivent, avec le chemin vers le fil complet (`/news/fil`). Le flux des
+ *     suivent, avec le chemin vers le fil complet (`/news/feed`). Le flux des
  *     révisions du wiki, un temps présenté ici, a été retiré du public le
  *     2026-09-12 : il racontait la fabrication du site.
  *

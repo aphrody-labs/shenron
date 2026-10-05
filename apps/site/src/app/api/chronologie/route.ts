@@ -70,7 +70,7 @@ export async function GET(req: Request) {
 
   return NextResponse.json(
     {
-      source: `${SITE_URL}/wiki/chronologie`,
+      source: `${SITE_URL}/wiki/timeline`,
       note: "Ordre éditorial officiel de dragonballfr.com (curation humaine appliquée). Ne pas le recalculer à partir des dates.",
       total: entrees.length,
       totalFrise: ordonnee.length,

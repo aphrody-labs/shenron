@@ -217,7 +217,7 @@ export function SoundtracksGrid({
                       ♫ Spotify
                     </a>
                     <Link
-                      href={`/wiki/episodes/serie/${track.series.toLowerCase()}`}
+                      href={`/wiki/episodes/series/${track.series.toLowerCase()}`}
                       className="ml-auto text-xs font-medium text-white/45 hover:text-orange-300"
                     >
                       {track.series} ↗

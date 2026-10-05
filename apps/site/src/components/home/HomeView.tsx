@@ -95,7 +95,7 @@ export function coveredDestinations(config: HomeConfig, shown: ReadonlySet<strin
   const covered = new Set<string>(QUICK_ACCESS.map((tile) => tile.href));
   covered.add("/wiki/search");
   // Bloc fixe des mini-jeux.
-  covered.add("/jeux");
+  covered.add("/games");
   for (const game of HOME_GAMES) covered.add(game.href);
   for (const section of config.sections) {
     if (!section.enabled || !shown.has(section.id)) continue;
@@ -270,7 +270,7 @@ function EditorialBlock({
           id="tops"
           title={title}
           subtitle={subtitle}
-          moreHref="/classements"
+          moreHref="/rankings"
           moreLabel={<T k="accueil.more" />}
           className={className}
         >
@@ -283,7 +283,7 @@ function EditorialBlock({
           id="personnages"
           title={title}
           subtitle={subtitle}
-          moreHref="/wiki/personnages"
+          moreHref="/wiki/characters"
           moreLabel={<T k="home.characters.all" />}
           className={className}
         >
@@ -292,7 +292,7 @@ function EditorialBlock({
               <li key={c.id}>
                 <ClientGatedWrap
                   access={access}
-                  href={`/wiki/personnages/${c.id}`}
+                  href={`/wiki/characters/${c.id}`}
                   className={`group relative block aspect-[3/4] overflow-hidden ${card}`}
                 >
                   <WikiImg
@@ -357,7 +357,7 @@ function EditorialBlock({
         <HomeSection id="play" title={title} subtitle={subtitle} className={className}>
           <ul className="grid gap-2 sm:grid-cols-2">
             {(section.cards ?? DEFAULT_PLAY_CARDS)
-              .filter((c) => c.href !== "/jeux")
+              .filter((c) => c.href !== "/games")
               .map((c) => (
                 <li key={c.href + c.title}>
                   <Link

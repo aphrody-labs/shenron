@@ -1,11 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { WIKI_NAVIGATION_MANIFEST } from "../src/lib/wiki-nav-manifest";
 import { GATEABLE_CATEGORIES } from "../src/lib/wiki-launch";
+import { publicLegacyRedirect } from "../src/lib/legacy-routes";
 
 describe("wiki-nav-manifest — Manifeste de navigation encyclopédique", () => {
   test("contient toutes les sections fondamentales de l'architecture", () => {
     const groupIds = WIKI_NAVIGATION_MANIFEST.map((g) => g.id);
-    expect(groupIds).toContain("bibliotheque");
+    expect(groupIds).toContain("library");
     expect(groupIds).not.toContain("manga");
     expect(groupIds).not.toContain("databooks");
     expect(groupIds).toContain("animation");
@@ -45,11 +46,11 @@ describe("wiki-nav-manifest — Manifeste de navigation encyclopédique", () => 
     expect(allHrefs).toContain("/wiki/manga");
     expect(allHrefs).toContain("/wiki/manga/volume/82");
     expect(allHrefs).toContain("/wiki/databooks");
-    expect(allHrefs).toContain("/wiki/evenements");
-    expect(allHrefs).not.toContain("/wiki/romans");
-    expect(allHrefs).not.toContain("/wiki/combats");
-    expect(allHrefs).not.toContain("/wiki/tournois");
-    expect(allHrefs).not.toContain("/wiki/voix");
+    expect(allHrefs).toContain("/wiki/events");
+    expect(allHrefs).not.toContain("/wiki/novels");
+    expect(allHrefs).not.toContain("/wiki/battles");
+    expect(allHrefs).not.toContain("/wiki/tournaments");
+    expect(allHrefs).not.toContain("/wiki/voice-actors");
     expect(allHrefs).toContain("/wiki/staff");
     expect(allHrefs).toContain("/wiki/toriyama");
   });
@@ -59,12 +60,11 @@ describe("wiki-nav-manifest — Manifeste de navigation encyclopédique", () => 
     expect(nextConfig).toContain(
       'source: "/wiki/arcs/:path*", destination: "/wiki/sagas", permanent: true',
     );
-    expect(nextConfig).toContain(
-      'source: "/wiki/romans/:path*", destination: "/wiki/manga", permanent: true',
-    );
-    expect(nextConfig).toContain(
-      'source: "/wiki/combats/:path*", destination: "/wiki/evenements", permanent: true',
-    );
+    expect(nextConfig).toContain("...nextRedirectsOf(PUBLIC_ROUTE_RENAMES)");
+    for (const legacy of ["/wiki/romans", "/wiki/novels", "/wiki/novels/3"])
+      expect(publicLegacyRedirect(legacy)).toBe("/wiki/manga");
+    for (const legacy of ["/wiki/combats", "/wiki/battles/x", "/wiki/tournois/y"])
+      expect(publicLegacyRedirect(legacy)).toBe("/wiki/events");
   });
 
   test("la recherche générale ne déclenche pas le verdict canonique lexical", async () => {

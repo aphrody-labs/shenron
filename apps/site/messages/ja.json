@@ -355,7 +355,7 @@
       "readLicence": "Lire la licence"
     }
   },
-  "licence": {
+  "license": {
     "title": "Licence & usage",
     "subtitle": "DBFR (« le site ») est un site de fans communautaire à but non lucratif, dédié à la promotion francophone de l'œuvre Dragon Ball d'Akira Toriyama.",
     "s1": "1. Statut du site",
@@ -378,7 +378,7 @@
     "askAfter": "sur Discord répond sous 24h.",
     "seeCredits": "Voir les crédits"
   },
-  "confidentialite": {
+  "privacy": {
     "title": "Confidentialité",
     "subtitle": "DBFR est un site de fans francophone. On collecte le strict nécessaire pour faire tourner le site, mesurer son audience et financer son hébergement par la publicité. Cette page dit exactement quoi, pourquoi, et comment refuser.",
     "s1": "1. Qui est responsable du traitement",
@@ -1411,16 +1411,16 @@
       }
     }
   },
-  "bibliotheque": {
+  "library": {
     "label": "ドラゴンボール書庫",
     "eyebrow": "書庫",
     "tabs": {
       "manga": "漫画",
       "databooks": "資料集",
-      "atelier": "文字起こしと翻訳",
+      "workshop": "文字起こしと翻訳",
       "koharu": "Koharu（翻訳エディタ）"
     },
-    "atelier": {
+    "workshop": {
       "label": "原稿工房",
       "breadcrumb": "文字起こしと翻訳",
       "title": "原稿の文字起こしと翻訳",
@@ -1444,7 +1444,7 @@
           "label": "文字起こし",
           "text": "OCR で読み取った日本語を、ページごとに校正し判定します。"
         },
-        "traduction": {
+        "translation": {
           "label": "翻訳",
           "text": "人名や技名は DBFR の正典用語集に沿ったフランス語訳。"
         },
@@ -1456,14 +1456,14 @@
       "tabs": {
         "overview": "概要",
         "transcription": "文字起こし",
-        "traduction": "翻訳"
+        "translation": "翻訳"
       },
       "staff": {
         "transcription": {
           "title": "文字起こしと判定",
           "description": "漫画と資料集のコーパス：OCR の不具合判定と複数エージェントによる校正。"
         },
-        "traduction": {
+        "translation": {
           "title": "翻訳とキャンペーン",
           "description": "公式書籍の目録、フランス語翻訳キャンペーン、OCR の品質。"
         },
@@ -1503,7 +1503,7 @@
       },
       "desktopTitle": "エディタを開く",
       "desktopText": "エディタは、モデルを同梱しオフラインで動く Shenron デスクトップアプリで開きます。翻訳した原稿はその後、工房に加わります。",
-      "atelierLink": "翻訳の進捗を見る"
+      "workshopLink": "翻訳の進捗を見る"
     }
   }
 }

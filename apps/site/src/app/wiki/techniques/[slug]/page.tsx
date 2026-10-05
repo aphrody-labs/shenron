@@ -111,7 +111,7 @@ export default async function TechniqueDetailPage({
             {tech.battles.map((b) => (
               <GatedWrap
                 key={b.slug}
-                href={`/wiki/combats/${b.slug}`}
+                href={`/wiki/battles/${b.slug}`}
                 className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-orange-500/40 hover:bg-orange-500/[0.04] space-y-2"
               >
                 <div className="flex items-center justify-between text-xs">
@@ -185,9 +185,9 @@ export default async function TechniqueDetailPage({
             <Link
               href={
                 tech.creatorSlug
-                  ? `/wiki/personnages/${tech.creatorSlug}`
+                  ? `/wiki/characters/${tech.creatorSlug}`
                   : tech.creatorId
-                    ? `/wiki/personnages/${tech.creatorId}`
+                    ? `/wiki/characters/${tech.creatorId}`
                     : "#"
               }
               className="text-dbz-orange font-semibold underline-offset-4 hover:underline hover:text-dbz-yellow transition-colors"
@@ -235,9 +235,9 @@ export default async function TechniqueDetailPage({
                       <Link
                         href={
                           tech.creatorSlug
-                            ? `/wiki/personnages/${tech.creatorSlug}`
+                            ? `/wiki/characters/${tech.creatorSlug}`
                             : tech.creatorId
-                              ? `/wiki/personnages/${tech.creatorId}`
+                              ? `/wiki/characters/${tech.creatorId}`
                               : "#"
                         }
                         className="text-dbz-orange hover:underline font-medium"

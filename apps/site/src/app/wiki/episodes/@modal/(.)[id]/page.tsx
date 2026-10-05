@@ -1,7 +1,7 @@
 /**
  * Route d'INTERCEPTION `@modal/(.)[id]` — aperçu rapide d'un épisode en modale
  * quand on navigue depuis la landing/vue-série (statiques). Accès direct/refresh
- * de `/wiki/episodes/[id]` = fiche pleine page. Cf. `wiki/films/@modal/(.)[slug]`.
+ * de `/wiki/episodes/[id]` = fiche pleine page. Cf. `wiki/movies/@modal/(.)[slug]`.
  */
 import { dbUniverse } from "@/lib/db-universe";
 import { bannerForSeries } from "@/lib/banner-config";

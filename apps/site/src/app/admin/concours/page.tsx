@@ -69,7 +69,7 @@ export default async function AdminConcoursPage({
             </div>
             <div className="flex gap-2">
               <Link
-                href={`/profil/${dossier.member.discordId}`}
+                href={`/profile/${dossier.member.discordId}`}
                 className="rounded border border-dbz-border px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white/70 hover:border-dbz-orange hover:text-dbz-orange"
               >
                 Profil public

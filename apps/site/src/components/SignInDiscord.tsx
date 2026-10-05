@@ -28,7 +28,7 @@ export function SignInDiscord({
           // vers /signin (message lisible) en cas d'erreur silencieuse.
           const res = await authClient.signIn.social({
             provider: "discord",
-            callbackURL: callbackURL ?? "/profil/me",
+            callbackURL: callbackURL ?? "/profile/me",
             errorCallbackURL: "/signin?error=oauth_failed",
           });
           if (res?.error) {

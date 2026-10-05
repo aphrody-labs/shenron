@@ -28,7 +28,7 @@ export const BESTOF_SERIES_YEARS: Record<string, string> = {
 };
 
 /** Une carte du rail média (épisode, film ou tome) — liens 100 % routes
- *  publiques bêta (/wiki/episodes, /wiki/films, /wiki/manga). */
+ *  publiques bêta (/wiki/episodes, /wiki/movies, /wiki/manga). */
 export interface BestOfMediaItem {
   kind: "episode" | "film" | "tome";
   href: string;

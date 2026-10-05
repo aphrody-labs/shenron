@@ -34,7 +34,7 @@ export function LikeButton({
    * Compteur rendu côté serveur. **Omis**, le bouton va le chercher lui-même au
    * montage : c'est ce qui permet aux ~2 000 fiches statiques du wiki de ne pas
    * payer une requête de plus À LA COMPILATION (le build du site est déjà mort
-   * en OOM une fois, cf. `/wiki/corriger`).
+   * en OOM une fois, cf. `/wiki/corrections`).
    */
   initialLikes?: number;
   /** Où revenir après connexion, si un visiteur anonyme clique. */

@@ -28,7 +28,7 @@ export function WikiBattleCards({ battles }: { battles: readonly WikiBattleCard[
       {battles.map((b) => (
         <li key={b.slug}>
           <GatedWrap
-            href={`/wiki/combats/${b.slug}`}
+            href={`/wiki/battles/${b.slug}`}
             className="group flex h-full flex-col gap-2 rounded-xl border border-white/[0.08] bg-dbz-card/70 p-4 transition-colors hover:border-dbz-orange/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange sm:p-5"
           >
             {(b.series || b.location) && (

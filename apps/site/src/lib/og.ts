@@ -36,7 +36,7 @@ export function ogMeta({
   // 2026-08-21. Déclarer `openGraph` dans les métadonnées d'une page REMPLACE
   // l'objet hérité — l'image dérivée de `app/opengraph-image.tsx` comprise. Ni
   // `images: undefined`, ni l'omission de la clé n'y changent rien. Résultat :
-  // `/shop`, `/leaderboard`, `/classements`, `/stats`, `/jeux` et toutes les
+  // `/shop`, `/leaderboard`, `/rankings`, `/stats`, `/games` et toutes les
   // fiches sans visuel n'émettaient AUCUN `og:image` — un partage Discord ou
   // Twitter sans vignette, sur un site adossé à Discord — alors que les pages
   // n'appelant PAS ce helper, elles, l'avaient.

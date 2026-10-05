@@ -333,7 +333,7 @@ export default function CommandPalette({
               <Item
                 key={`char-${c.id}`}
                 value={`char-${c.id}-${c.name}`}
-                onSelect={() => go(`/wiki/personnages/${c.id}`)}
+                onSelect={() => go(`/wiki/characters/${c.id}`)}
                 image={c.image}
                 title={c.name}
                 subtitle={c.name_ja ?? c.race ?? undefined}
@@ -350,7 +350,7 @@ export default function CommandPalette({
               <Item
                 key={`planet-${p.id}`}
                 value={`planet-${p.id}-${p.name}`}
-                onSelect={() => go("/wiki/lieux")}
+                onSelect={() => go("/wiki/locations")}
                 image={p.image}
                 title={p.name}
                 subtitle={p.name_ja ?? undefined}
@@ -383,7 +383,7 @@ export default function CommandPalette({
               <Item
                 key={`movie-${m.id}`}
                 value={`movie-${m.id}-${m.title}`}
-                onSelect={() => go(`/wiki/films/${m.slug}`)}
+                onSelect={() => go(`/wiki/movies/${m.slug}`)}
                 title={m.title}
                 subtitle={m.title_ja ?? m.series ?? undefined}
                 kind="Film"
@@ -399,7 +399,7 @@ export default function CommandPalette({
               <Item
                 key={`game-${g.id}`}
                 value={`game-${g.id}-${g.title}`}
-                onSelect={() => go(`/wiki/jeux/${g.slug}`)}
+                onSelect={() => go(`/wiki/games/${g.slug}`)}
                 title={g.title}
                 subtitle={g.title_ja ?? undefined}
                 kind="Jeu"
@@ -464,7 +464,7 @@ export default function CommandPalette({
               <Item
                 key={`transfo-${t.id}`}
                 value={`transfo-${t.id}-${t.name}`}
-                onSelect={() => go(`/wiki/personnages/${t.character_id}`)}
+                onSelect={() => go(`/wiki/characters/${t.character_id}`)}
                 image={t.image}
                 title={t.name}
                 kind="Transfo"
@@ -533,7 +533,7 @@ export default function CommandPalette({
               <Item
                 key={`battle-${b.id}`}
                 value={`battle-${b.id}-${b.name}`}
-                onSelect={() => go(`/wiki/combats/${b.slug}`)}
+                onSelect={() => go(`/wiki/battles/${b.slug}`)}
                 title={b.name}
                 subtitle={b.name_ja ?? b.saga ?? undefined}
                 kind="Combat"
@@ -549,7 +549,7 @@ export default function CommandPalette({
               <Item
                 key={`loc-${l.id}`}
                 value={`loc-${l.id}-${l.name}`}
-                onSelect={() => go(`/wiki/lieux/${l.slug}`)}
+                onSelect={() => go(`/wiki/locations/${l.slug}`)}
                 image={l.image}
                 title={l.name}
                 subtitle={l.name_ja ?? l.realm_type ?? undefined}
@@ -566,7 +566,7 @@ export default function CommandPalette({
               <Item
                 key={`tourn-${t.id}`}
                 value={`tourn-${t.id}-${t.name}`}
-                onSelect={() => go(`/wiki/tournois/${t.slug}`)}
+                onSelect={() => go(`/wiki/tournaments/${t.slug}`)}
                 title={t.name}
                 subtitle={t.name_ja ?? t.saga ?? undefined}
                 kind="Tournoi"
@@ -582,7 +582,7 @@ export default function CommandPalette({
               <Item
                 key={`va-${va.id}`}
                 value={`va-${va.id}-${va.name}`}
-                onSelect={() => go(`/wiki/voix/${va.slug}`)}
+                onSelect={() => go(`/wiki/voice-actors/${va.slug}`)}
                 title={va.name}
                 subtitle={
                   va.name_ja ?? (va.nationality === "ja" ? "Seiyū (VO)" : "Doublage Français (VF)")
@@ -602,9 +602,7 @@ export default function CommandPalette({
                 value={`contrib-${c.id}-${c.name}`}
                 onSelect={() =>
                   go(
-                    c.slug === "akira-toriyama"
-                      ? "/wiki/toriyama"
-                      : `/wiki/contributeurs/${c.slug}`,
+                    c.slug === "akira-toriyama" ? "/wiki/toriyama" : `/wiki/contributors/${c.slug}`,
                   )
                 }
                 title={c.name}
@@ -622,7 +620,7 @@ export default function CommandPalette({
               <Item
                 key={`ost-${s.id}`}
                 value={`ost-${s.id}-${s.title}`}
-                onSelect={() => go(`/wiki/musiques`)}
+                onSelect={() => go(`/wiki/music`)}
                 title={s.title}
                 subtitle={s.title_ja ?? s.series ?? undefined}
                 kind="OST"
@@ -638,7 +636,7 @@ export default function CommandPalette({
               <Item
                 key={`pl-${p.id}`}
                 value={`pl-${p.id}-${p.character_name}-${p.battle_or_context ?? ""}`}
-                onSelect={() => go(`/wiki/puissances`)}
+                onSelect={() => go(`/wiki/power-levels`)}
                 title={`${p.character_name} : ${p.power_value_formatted}`}
                 subtitle={p.battle_or_context || undefined}
                 kind="Scouter"
@@ -654,7 +652,7 @@ export default function CommandPalette({
               <Item
                 key={`item-${i.id}`}
                 value={`item-${i.id}-${i.name}`}
-                onSelect={() => go(`/wiki/objets/${i.slug}`)}
+                onSelect={() => go(`/wiki/items/${i.slug}`)}
                 image={i.image}
                 title={i.name}
                 subtitle={i.name_ja ?? i.category ?? undefined}

@@ -146,7 +146,7 @@ export async function getSagaBestOf(): Promise<BestOfSagaView[]> {
           .filter((m) => !!m.poster)
           .map((m) => ({
             kind: "film" as const,
-            href: `/wiki/films/${m.slug}`,
+            href: `/wiki/movies/${m.slug}`,
             image: assetUrl(m.poster),
             label: m.title,
             badge: movieYear(m.releaseDate) ? `Film · ${movieYear(m.releaseDate)}` : "Film",
@@ -169,7 +169,7 @@ export async function getSagaBestOf(): Promise<BestOfSagaView[]> {
       const [watchHref, watchLabel] = firstEp
         ? [`/wiki/episodes/${firstEp.id}`, "Regarder la saga"]
         : firstMovie
-          ? [`/wiki/films/${firstMovie.slug}`, "Regarder le film"]
+          ? [`/wiki/movies/${firstMovie.slug}`, "Regarder le film"]
           : ["/wiki/episodes", "Voir les épisodes"];
 
       const seriesCode = cur.episodes?.series ?? "";

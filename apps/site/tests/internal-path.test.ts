@@ -3,8 +3,8 @@ import { sanitizeInternalPath } from "../src/lib/internal-path";
 
 describe("sanitizeInternalPath", () => {
   test("conserve et normalise les routes locales", () => {
-    expect(sanitizeInternalPath(" /wiki/personnages/1?tab=bio#sources ")).toBe(
-      "/wiki/personnages/1?tab=bio#sources",
+    expect(sanitizeInternalPath(" /wiki/characters/1?tab=bio#sources ")).toBe(
+      "/wiki/characters/1?tab=bio#sources",
     );
   });
 

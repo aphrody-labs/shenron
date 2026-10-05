@@ -48,7 +48,7 @@ export default async function CommentModerationPage({
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <PublicViewLink href="/news/fil/discussions" label="Voir le fil public" />
+          <PublicViewLink href="/news/feed/discussions" label="Voir le fil public" />
           <Link
             href="/admin/moderation"
             className="text-[13px] text-white/60 underline-offset-4 hover:text-white hover:underline"

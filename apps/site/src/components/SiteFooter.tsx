@@ -15,7 +15,7 @@ import { destinationsOf, type Journey } from "@/lib/site-map";
  * Elles étaient écrites en dur, et avaient divergé du registre d'accès dans les
  * deux sens : le pied de page annonçait des rubriques refermées (307 en bas de
  * chaque page) et ignorait des sections réellement ouvertes (`/tierlists`,
- * `/wiki/databooks`, `/wiki/contribuer`, `/wiki/modifications`). Trois parcours
+ * `/wiki/databooks`, `/wiki/contribute`, `/wiki/modifications`). Trois parcours
  * de `lib/site-map.ts` par colonne : ajouter une rubrique au registre la fait
  * apparaître ici sans toucher à ce fichier.
  */

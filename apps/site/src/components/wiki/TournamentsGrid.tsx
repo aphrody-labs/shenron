@@ -62,7 +62,7 @@ export function TournamentsGrid({
         {filtered.map((t) => (
           <Link
             key={t.slug}
-            href={`/wiki/tournois/${t.slug}`}
+            href={`/wiki/tournaments/${t.slug}`}
             className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 transition-all hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-950/20"
           >
             <div className="space-y-4">

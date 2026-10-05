@@ -275,7 +275,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
           className="mb-4"
           items={[
             { label: "Épisodes", href: "/wiki/episodes" },
-            { label: seriesLabel, href: `/wiki/episodes/serie/${ep.series}` },
+            { label: seriesLabel, href: `/wiki/episodes/series/${ep.series}` },
             // La saga s'intercale quand les bornes la donnent : c'est le seul
             // chemin qui relie un épisode au récit dont il fait partie.
             ...(saga ? [{ label: saga.name, href: `/wiki/sagas/${saga.slug}` }] : []),

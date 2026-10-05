@@ -224,7 +224,7 @@ export function formatTimecode(
 /**
  * Tri prioritaire absolu des résultats de recherche de frames :
  * 1. Correspondances de l'univers Dragon Ball en priorité absolue (écarte le bruit trace.moe).
- * 2. Correspondances rattachées à une fiche du site (/wiki/episodes/<id> ou /wiki/films/<slug>).
+ * 2. Correspondances rattachées à une fiche du site (/wiki/episodes/<id> ou /wiki/movies/<slug>).
  * 3. Similarité décroissante.
  */
 export function sortFrameMatches<

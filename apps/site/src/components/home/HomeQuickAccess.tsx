@@ -27,15 +27,20 @@ interface Rubrique {
 export const QUICK_ACCESS: readonly Rubrique[] = [
   {
     key: "personnages",
-    href: "/wiki/personnages",
+    href: "/wiki/characters",
     labelKey: "categories.personnages.label",
     count: "characters",
   },
-  { key: "lieux", href: "/wiki/lieux", labelKey: "categories.cosmologie.label", count: "planets" },
+  {
+    key: "lieux",
+    href: "/wiki/locations",
+    labelKey: "categories.cosmologie.label",
+    count: "planets",
+  },
   { key: "sagas", href: "/wiki/sagas", labelKey: "categories.sagas.label", count: "sagas" },
   {
     key: "chronologie",
-    href: "/wiki/chronologie",
+    href: "/wiki/timeline",
     labelKey: "categories.chronologie.label",
     count: null,
   },
@@ -45,7 +50,7 @@ export const QUICK_ACCESS: readonly Rubrique[] = [
     labelKey: "categories.episodes.label",
     count: "episodes",
   },
-  { key: "films", href: "/wiki/films", labelKey: "categories.films.label", count: "movies" },
+  { key: "films", href: "/wiki/movies", labelKey: "categories.films.label", count: "movies" },
   { key: "manga", href: "/wiki/manga", labelKey: "categories.manga.label", count: "chapters" },
   {
     key: "databooks",

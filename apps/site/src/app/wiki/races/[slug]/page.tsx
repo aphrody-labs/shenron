@@ -239,7 +239,7 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
               )}
 
               <h3 className="text-2xl font-saiyan tracking-widest text-white">
-                <GatedWrap href="/wiki/lieux" className={`${theme.survol} transition-colors`}>
+                <GatedWrap href="/wiki/locations" className={`${theme.survol} transition-colors`}>
                   {race.homePlanet.name}
                 </GatedWrap>
               </h3>
@@ -266,7 +266,7 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
               {race.characters.map((char, idx) => (
                 <GatedWrap
                   key={char.id}
-                  href={`/wiki/personnages/${char.slug || char.id}`}
+                  href={`/wiki/characters/${char.slug || char.id}`}
                   className="group dbz-panel overflow-hidden hover:scale-105 hover:border-dbz-orange transition-all duration-300"
                   style={{ animationDelay: `${0.1 + idx * 0.03}s` }}
                 >

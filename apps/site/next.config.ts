@@ -2,6 +2,7 @@ import path from "node:path";
 import type { NextConfig } from "next";
 import { ownImageRemotePatterns, resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
 import { sitePublicRedirects } from "@shenron/images/resolve";
+import { PUBLIC_ROUTE_RENAMES, nextApiRewrites, nextRedirectsOf } from "./src/lib/legacy-routes";
 
 // next-intl : son plugin ne fait, pour cette configuration, que poser l'alias
 // `next-intl/config` ; il chargeait en plus `@swc/core` (addon natif de 30 Mio) et
@@ -275,7 +276,7 @@ const nextConfig: NextConfig = {
   compress: true,
 
   // Dédoublonnage des anciennes routes films (id-based, API) vers la source
-  // canonique /wiki/films (Neon, slug-based). Redirect au niveau routing → 308
+  // canonique /wiki/movies (Neon, slug-based). Redirect au niveau routing → 308
   // dur avant tout rendu (un redirect() en composant dégradait en navigation
   // client 200 à cause du layout /wiki force-dynamic qui flush en streaming).
   async redirects() {
@@ -292,30 +293,30 @@ const nextConfig: NextConfig = {
       // liens d'archives, mais les entrées publiques convergent vers leur hub.
       { source: "/wiki/arcs", destination: "/wiki/sagas", permanent: true },
       { source: "/wiki/arcs/:path*", destination: "/wiki/sagas", permanent: true },
-      { source: "/wiki/combats/:path*", destination: "/wiki/evenements", permanent: true },
-      { source: "/wiki/tournois/:path*", destination: "/wiki/evenements", permanent: true },
-      { source: "/wiki/dragons/:path*", destination: "/wiki/personnages", permanent: true },
-      { source: "/wiki/voix/:path*", destination: "/wiki/staff", permanent: true },
-      { source: "/wiki/romans/:path*", destination: "/wiki/manga", permanent: true },
+      // Routes en anglais : chaque ancien segment français (`/wiki/personnages`, `/jeux`,
+      // `/wiki-bientot`…) répond un 308 vers son équivalent, sous-chemins et requête
+      // conservés ; les rubriques retirées (combats, tournois, voix, romans, dragons,
+      // cosmologie) convergent vers leur hub. Table unique : `src/lib/legacy-routes.ts`.
+      ...nextRedirectsOf(PUBLIC_ROUTE_RENAMES),
       // Ancienne vue série épisodes par query (`?series=X`) → route dédiée
-      // STATIQUE `/wiki/episodes/serie/X` (la landing est passée statique pour
+      // STATIQUE `/wiki/episodes/series/X` (la landing est passée statique pour
       // débloquer l'interception @modal + le cache CDN). Capture la valeur du
       // query dans `:series`. `page`/`view` obsolètes (grille complète).
       {
         source: "/wiki/episodes",
         has: [{ type: "query", key: "series", value: "(?<series>[^&]+)" }],
-        destination: "/wiki/episodes/serie/:series",
+        destination: "/wiki/episodes/series/:series",
         permanent: true,
       },
-      { source: "/wiki/dragon-ball/movies", destination: "/wiki/films", permanent: true },
-      { source: "/wiki/dragon-ball/movie/:id", destination: "/wiki/films", permanent: true },
+      { source: "/wiki/dragon-ball/movies", destination: "/wiki/movies", permanent: true },
+      { source: "/wiki/dragon-ball/movie/:id", destination: "/wiki/movies", permanent: true },
       // Ancien index « Encyclopédie » fourre-tout → page Personnages dédiée.
       // 308 dur au routing (un permanentRedirect() en composant dégradait en
       // page 200 + <meta refresh>, cf. layout /wiki en streaming). Les routes
       // détail enfants (/wiki/dragon-ball/character|planet|techniques/…) ne
       // sont PAS capturées : la source est le chemin exact, sans wildcard.
-      { source: "/wiki/dragon-ball", destination: "/wiki/personnages", permanent: true },
-      { source: "/profil", destination: "/profil/me", permanent: true },
+      { source: "/wiki/dragon-ball", destination: "/wiki/characters", permanent: true },
+      { source: "/profile", destination: "/profile/me", permanent: true },
       // Journal : la fiche article vivait sous /post/:slug alors que l'index et
       // ── Unification intégrale : Articles, Journal, Actualités, CMS → /news ──
       // Consolidation sous le service unique canonique https://dragonballfr.com/news
@@ -362,25 +363,21 @@ const nextConfig: NextConfig = {
       // `/wiki/<rubrique>[/<clé>]`, et ces 308 récupèrent l'existant.
       {
         source: "/wiki/dragon-ball/character/:id",
-        destination: "/wiki/personnages/:id",
+        destination: "/wiki/characters/:id",
         permanent: true,
       },
-      // Pointe DIRECTEMENT sur la cosmologie : passer par `/wiki/planetes/:id`
-      // enchaînerait deux 308 pour un même clic.
+      // Pointe DIRECTEMENT sur les lieux (la cosmologie y a été fondue) : passer par
+      // `/wiki/planetes/:id` enchaînerait plusieurs 308 pour un même clic.
       {
         source: "/wiki/dragon-ball/planet/:id",
-        destination: "/wiki/cosmologie/:id",
+        destination: "/wiki/locations",
         permanent: true,
       },
-      // La rubrique « Planètes » est devenue « Cosmologie » : `db_planets`
-      // héberge aussi des dimensions (l'Autre Monde, le Noyau du Monde), des
-      // demeures divines (temple du Roi de Tout, Planète sacrée) et des univers
-      // entiers — une entrée sur huit n'est pas une planète. L'ancien
-      // `/wiki/planetes` n'était de toute façon qu'un `redirect()` de composant
-      // vers `/wiki/personnages?tab=planetes`, qui dégradait en 200 +
-      // `<meta refresh>` sous le layout `/wiki` (piège du streaming).
-      { source: "/wiki/planetes/:id", destination: "/wiki/cosmologie/:id", permanent: true },
-      { source: "/wiki/planetes", destination: "/wiki/cosmologie", permanent: true },
+      // La rubrique « Planètes » était devenue « Cosmologie » (`db_planets` héberge
+      // aussi des dimensions, des demeures divines et des univers entiers), puis a été
+      // fondue dans les lieux : `/wiki/planetes` et `/wiki/cosmologie` répondent par la
+      // table de `legacy-routes.ts` (un `redirect()` de composant dégradait en 200 +
+      // `<meta refresh>` sous le layout `/wiki`, piège du streaming).
       {
         source: "/wiki/dragon-ball/techniques/:slug",
         destination: "/wiki/techniques/:slug",
@@ -394,13 +391,18 @@ const nextConfig: NextConfig = {
     const botHost = resolveApiUrl(process.env);
     // `fallback` (et NON un tableau = `afterFiles`) : ce rewrite ne sert que les
     // MÉDIAS wiki (`/wiki/<asset>.mp4|webp…`) proxifiés vers le bot. En
-    // `afterFiles`, il préemptait les routes dynamiques (`/wiki/films/[slug]`,
+    // `afterFiles`, il préemptait les routes dynamiques (`/wiki/movies/[slug]`,
     // `/wiki/sagas/[slug]`…) sous `next start` → fiches 403 (le bot renvoyait
     // « Extension non autorisée »). En `fallback`, il ne se déclenche que si
     // AUCUNE page (statique ou dynamique) ne matche → les fiches restent à Next.
     return {
       // Discovery card of the public MCP server (served by /api/mcp/card when deployed).
-      beforeFiles: [{ source: "/.well-known/mcp.json", destination: "/api/mcp/card" }],
+      // Anciens chemins d'API en français, servis par le handler anglais (pas de 308 :
+      // un POST redirigé deviendrait un GET chez certains clients).
+      beforeFiles: [
+        { source: "/.well-known/mcp.json", destination: "/api/mcp/card" },
+        ...nextApiRewrites(),
+      ],
       fallback: [
         {
           source: "/wiki/:path*",

@@ -1,7 +1,7 @@
 /**
  * wiki-launch-config — lecture/écriture **server-only** du contrôle d'accès et du
  * classement des rubriques (catégories wiki + sections du site), piloté depuis
- * /admin/lancement.
+ * /admin/launch.
  *
  * Le proxy (`proxy.ts`) lit ceci sur CHAQUE requête → cache module-level à TTL
  * court (30 s) IMPÉRATIF : jamais de round-trip PG par requête anonyme (cf. piège
@@ -21,6 +21,7 @@ import {
   ALWAYS_OPEN_KEYS,
   DEFAULT_OPEN_KEYS,
   GATEABLE_CATEGORIES,
+  currentEntryKey,
   type AccessMode,
   type AccessRule,
 } from "@/lib/wiki-launch";
@@ -45,11 +46,16 @@ const KNOWN_KEYS = new Set(ALL_ENTRIES.map((e) => e.key));
 const ALWAYS_OPEN = new Set(ALWAYS_OPEN_KEYS);
 const MODES: ReadonlySet<string> = new Set<AccessMode>(["public", "members", "roles", "admin"]);
 
+/** Clés lues en base, anciennes clés françaises ramenées à la clé actuelle. */
+function currentKeys(arr: unknown[]): string[] {
+  return arr.filter((k): k is string => typeof k === "string").map(currentEntryKey);
+}
+
 function sanitizeOpenKeys(stored: unknown): string[] {
   const arr = Array.isArray((stored as { openKeys?: unknown })?.openKeys)
     ? ((stored as { openKeys: unknown[] }).openKeys as unknown[])
     : [];
-  const extra = arr.filter((k): k is string => typeof k === "string" && GATEABLE_KEYS.has(k));
+  const extra = currentKeys(arr).filter((k) => GATEABLE_KEYS.has(k));
   // alwaysOpen toujours inclus ; dédoublonné.
   return Array.from(new Set([...ALWAYS_OPEN_KEYS, ...extra]));
 }
@@ -58,16 +64,19 @@ function sanitizeOrder(stored: unknown): string[] {
   const arr = Array.isArray((stored as { order?: unknown })?.order)
     ? ((stored as { order: unknown[] }).order as unknown[])
     : [];
-  return Array.from(
-    new Set(arr.filter((k): k is string => typeof k === "string" && KNOWN_KEYS.has(k))),
-  );
+  return Array.from(new Set(currentKeys(arr).filter((k) => KNOWN_KEYS.has(k))));
 }
 
 function sanitizeAccess(stored: unknown): Record<string, AccessRule> {
   const raw = (stored as { access?: unknown })?.access;
   if (!raw || typeof raw !== "object") return {};
   const out: Record<string, AccessRule> = {};
-  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+  // Une règle enregistrée sous la clé actuelle l'emporte sur celle de l'ancienne clé
+  // française : les anciennes passent d'abord, les actuelles les écrasent.
+  const entries = Object.entries(raw as Record<string, unknown>)
+    .map(([stored, value]) => ({ stored, key: currentEntryKey(stored), value }))
+    .toSorted((a, b) => Number(a.stored === a.key) - Number(b.stored === b.key));
+  for (const { key, value } of entries) {
     // Clé obsolète, ou rubrique verrouillée publique (bêta) → on ignore la règle
     // plutôt que de la persister : elle ne serait jamais appliquée.
     if (!KNOWN_KEYS.has(key) || ALWAYS_OPEN.has(key)) continue;

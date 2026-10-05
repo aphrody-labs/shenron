@@ -39,7 +39,7 @@ describe("UI observability invariants", () => {
   test("keeps canonical URL, Japanese semantics and hydration strategy explicit", async () => {
     const [layout, character, translated, variantsRoute] = await Promise.all([
       Bun.file(new URL("../src/app/layout.tsx", import.meta.url)).text(),
-      Bun.file(new URL("../src/app/wiki/personnages/[slug]/page.tsx", import.meta.url)).text(),
+      Bun.file(new URL("../src/app/wiki/characters/[slug]/page.tsx", import.meta.url)).text(),
       Bun.file(new URL("../src/components/T.tsx", import.meta.url)).text(),
       Bun.file(new URL("../src/app/api/wiki/variants/route.ts", import.meta.url)).text(),
     ]);

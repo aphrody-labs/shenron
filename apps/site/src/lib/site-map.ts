@@ -134,7 +134,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     changeFrequency: "daily",
   },
   {
-    href: "/plan-du-site",
+    href: "/site-map",
     label: "Plan du site",
     blurb: "Toutes les destinations, parcours par parcours.",
     journey: "decouvrir",
@@ -143,7 +143,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     changeFrequency: "monthly",
   },
   {
-    href: "/news/fil",
+    href: "/news/feed",
     label: "Fil d'actualité",
     blurb: "Les parutions de la rédaction et les discussions, dans l'ordre où elles arrivent.",
     journey: "communaute",
@@ -160,7 +160,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     priority: 0,
   },
   {
-    href: "/favoris",
+    href: "/favorites",
     label: "Mes favoris",
     blurb: "Les fiches mises de côté.",
     journey: "espace",
@@ -168,7 +168,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     priority: 0,
   },
   {
-    href: "/profil/me",
+    href: "/profile/me",
     label: "Mon profil",
     blurb: "Carte de joueur publique.",
     journey: "espace",
@@ -176,7 +176,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     priority: 0,
   },
   {
-    href: "/parametres",
+    href: "/settings",
     label: "Paramètres",
     blurb: "Confidentialité, sessions, export et suppression du compte.",
     journey: "espace",
@@ -218,7 +218,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     changeFrequency: "weekly",
   },
   {
-    href: "/licence",
+    href: "/license",
     label: "Licence & usage",
     journey: "legal",
     audience: "public",
@@ -226,7 +226,7 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     changeFrequency: "yearly",
   },
   {
-    href: "/confidentialite",
+    href: "/privacy",
     label: "Confidentialité",
     journey: "legal",
     audience: "public",
@@ -278,7 +278,7 @@ function fromEntry(entry: LaunchCategory): SiteDestination | null {
  * Toutes les destinations du site, registre d'abord, extras ensuite.
  *
  * Dédoublonné par `href` : si une page finit par entrer au registre (par exemple
- * `/news/fil`), l'entrée du registre gagne et l'extra s'effface, sans doublon au
+ * `/news/feed`), l'entrée du registre gagne et l'extra s'effface, sans doublon au
  * sitemap ni dans le pied de page.
  */
 export const SITE_DESTINATIONS: readonly SiteDestination[] = (() => {

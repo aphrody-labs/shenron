@@ -323,14 +323,14 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "encyclopedie",
   },
   {
-    href: "/atelier/traduction",
+    href: "/workshop/translation",
     label: "Atelier : traduction",
     description: "Catalogue des ouvrages, campagnes de traduction et synchronisation",
     icon: <BookOpen className="h-4 w-4" />,
     section: "encyclopedie",
   },
   {
-    href: "/atelier/transcription",
+    href: "/workshop/transcription",
     label: "Atelier : transcription",
     description: "Suivi global, arbitrage des défauts et relecture des planches",
     icon: <ScanText className="h-4 w-4" />,

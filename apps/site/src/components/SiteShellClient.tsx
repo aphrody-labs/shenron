@@ -62,7 +62,7 @@ const TAB_ICONS: Record<string, { icon: ReactNode; activeIcon?: ReactNode }> = {
   "/bureau": { icon: <Scouter size={22} /> },
   "/wiki": { icon: <DragonRadar size={22} /> },
   "/wiki/episodes": { icon: <Tv size={22} /> },
-  "/wiki/films": { icon: <Film size={22} /> },
+  "/wiki/movies": { icon: <Film size={22} /> },
 };
 
 /**

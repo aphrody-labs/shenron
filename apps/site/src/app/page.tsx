@@ -59,7 +59,7 @@ export const metadata: Metadata = {
 /**
  * Le fil de l'accueil : la manchette et les dernières entrées du fil unifié
  * (`lib/feed` : articles publiés et discussions publiques, même règle de
- * visibilité que `/news/fil`). Une source en panne rend un fil vide, pas une
+ * visibilité que `/news/feed`). Une source en panne rend un fil vide, pas une
  * page en erreur.
  */
 async function getHomeFeed() {
@@ -125,7 +125,7 @@ const VITRINE_SAGAS = 8;
  * La requête ramenait la table `db_characters` ENTIÈRE (six colonnes, plus de
  * mille lignes) pour n'en afficher que douze, à chaque régénération de la page,
  * et sans filtrer `visible` : une fiche masquée pouvait s'afficher en vitrine et
- * mener à une page qui répond 404 côté `/wiki/personnages/[id]`. Le tri par
+ * mener à une page qui répond 404 côté `/wiki/characters/[id]`. Le tri par
  * identifiant rend en outre la sélection stable d'une régénération à l'autre —
  * sans `order by`, l'ordre d'un `limit` n'est garanti par rien.
  */

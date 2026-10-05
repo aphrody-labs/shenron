@@ -27,7 +27,7 @@ import {
 // Landing STATIQUE (plus de `searchParams`) → prérendu + ISR + cache CDN, et
 // surtout : l'interception `@modal` s'active (elle ne se déclenche pas depuis une
 // page rendue dynamiquement). La vue par série vit désormais sous
-// `/wiki/episodes/serie/[series]` (statique elle aussi).
+// `/wiki/episodes/series/[series]` (statique elle aussi).
 export const revalidate = 3600;
 
 const title = "Épisodes Dragon Ball — l'intégrale de l'anime";
@@ -69,10 +69,10 @@ export default async function EpisodesLanding() {
         ]}
         synopsis={<T k="wiki.episodes.synopsis" />}
         primaryHref={
-          opener ? `/wiki/episodes/${opener.id}` : `/wiki/episodes/serie/${openerSeries}`
+          opener ? `/wiki/episodes/${opener.id}` : `/wiki/episodes/series/${openerSeries}`
         }
         primaryLabel={<T k="wiki.episodes.start" />}
-        secondaryHref="/wiki/chronologie"
+        secondaryHref="/wiki/timeline"
         secondaryLabel={<T k="categories.chronologie.label" />}
       />
       <div className="wiki-container">
@@ -89,7 +89,7 @@ export default async function EpisodesLanding() {
           {availableSeries.map((series) => (
             <Link
               key={series}
-              href={`/wiki/episodes/serie/${series}`}
+              href={`/wiki/episodes/series/${series}`}
               className="group rounded-xl border border-white/10 bg-white/[0.04] p-4 transition hover:border-dbz-orange/50 hover:bg-white/[0.07]"
             >
               <div className="flex items-center justify-between gap-3">
@@ -159,7 +159,7 @@ export default async function EpisodesLanding() {
 /**
  * Rails par série — async server component (barrière `<Suspense>`). Sur cette
  * page statique il est résolu au prérendu ; `RAIL_CAP` cartes + une carte « Tout
- * voir » vers la vue série complète `/wiki/episodes/serie/[series]`.
+ * voir » vers la vue série complète `/wiki/episodes/series/[series]`.
  */
 async function EpisodeRails({ series }: { series: string[] }) {
   const groups = await Promise.all(
@@ -185,7 +185,7 @@ async function EpisodeRails({ series }: { series: string[] }) {
           title={SERIES_LABELS[g.series] ?? g.series}
           count={g.total}
           accent={ERA_ACCENT[eraOf(g.series)]}
-          seeAllHref={`/wiki/episodes/serie/${g.series}`}
+          seeAllHref={`/wiki/episodes/series/${g.series}`}
         >
           {g.episodes.map((ep, cardIdx) => (
             <EpisodeCard
@@ -207,7 +207,7 @@ async function EpisodeRails({ series }: { series: string[] }) {
           ))}
           {g.total > g.episodes.length && (
             <Link
-              href={`/wiki/episodes/serie/${g.series}`}
+              href={`/wiki/episodes/series/${g.series}`}
               className="flex w-[160px] shrink-0 snap-start items-center justify-center rounded-lg border border-dashed border-white/15 bg-white/[0.02] text-center text-[13px] font-display font-semibold text-white/60 transition-colors hover:border-dbz-orange/50 hover:text-dbz-orange"
             >
               + {g.total - g.episodes.length}

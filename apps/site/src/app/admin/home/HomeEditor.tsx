@@ -479,7 +479,7 @@ function BlockHeadingEditor({
 
 const CATALOGUE_LABELS: Record<HomeCatalogueConfig["destinations"][number]["href"], string> = {
   "/wiki/episodes": "Épisodes",
-  "/wiki/films": "Films",
+  "/wiki/movies": "Films",
   "/wiki/manga": "Manga",
   "/wiki/databooks": "Databooks",
 };

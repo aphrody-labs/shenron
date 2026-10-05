@@ -42,8 +42,8 @@ interface Cible {
 }
 
 const CIBLES: Cible[] = [
-  { table: "db_characters", rubrique: "Personnages", cle: "id", prefixe: "/wiki/personnages" },
-  { table: "db_planets", rubrique: "Cosmologie", cle: "id", prefixe: "/wiki/cosmologie" },
+  { table: "db_characters", rubrique: "Personnages", cle: "id", prefixe: "/wiki/characters" },
+  { table: "db_planets", rubrique: "Cosmologie", cle: "id", prefixe: "/wiki/locations" },
   { table: "db_techniques", rubrique: "Techniques", cle: "slug", prefixe: "/wiki/techniques" },
   { table: "db_races", rubrique: "Races", cle: "slug", prefixe: "/wiki/races" },
   { table: "db_sagas", rubrique: "Sagas", cle: "slug", prefixe: "/wiki/sagas" },

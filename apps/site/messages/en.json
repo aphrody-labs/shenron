@@ -355,7 +355,7 @@
       "readLicence": "Lire la licence"
     }
   },
-  "licence": {
+  "license": {
     "title": "Licence & usage",
     "subtitle": "DBFR (« le site ») est un site de fans communautaire à but non lucratif, dédié à la promotion francophone de l'œuvre Dragon Ball d'Akira Toriyama.",
     "s1": "1. Statut du site",
@@ -378,7 +378,7 @@
     "askAfter": "sur Discord répond sous 24h.",
     "seeCredits": "Voir les crédits"
   },
-  "confidentialite": {
+  "privacy": {
     "title": "Confidentialité",
     "subtitle": "DBFR est un site de fans francophone. On collecte le strict nécessaire pour faire tourner le site, mesurer son audience et financer son hébergement par la publicité. Cette page dit exactement quoi, pourquoi, et comment refuser.",
     "s1": "1. Qui est responsable du traitement",
@@ -1411,16 +1411,16 @@
       }
     }
   },
-  "bibliotheque": {
+  "library": {
     "label": "Dragon Ball library",
     "eyebrow": "Library",
     "tabs": {
       "manga": "Manga",
       "databooks": "Databooks",
-      "atelier": "Transcription & translation",
+      "workshop": "Transcription & translation",
       "koharu": "Koharu"
     },
-    "atelier": {
+    "workshop": {
       "label": "Page workshop",
       "breadcrumb": "Transcription & translation",
       "title": "Transcribing and translating the pages",
@@ -1444,7 +1444,7 @@
           "label": "Transcription",
           "text": "The Japanese text read by OCR, then proofread and settled page by page."
         },
-        "traduction": {
+        "translation": {
           "label": "Translation",
           "text": "The French text, backed by DBFR's canonical lexicon for names and techniques."
         },
@@ -1456,14 +1456,14 @@
       "tabs": {
         "overview": "Overview",
         "transcription": "Transcription",
-        "traduction": "Translation"
+        "translation": "Translation"
       },
       "staff": {
         "transcription": {
           "title": "Transcription and review",
           "description": "Manga and databook corpus: OCR defect review and multi-agent proofreading."
         },
-        "traduction": {
+        "translation": {
           "title": "Translation and campaigns",
           "description": "Catalogue of official books, French translation campaigns and OCR quality."
         },
@@ -1503,7 +1503,7 @@
       },
       "desktopTitle": "Open the editor",
       "desktopText": "The editor opens in the Shenron desktop app, which ships the models and works offline. Translated pages then join the workshop.",
-      "atelierLink": "See the translation progress"
+      "workshopLink": "See the translation progress"
     }
   }
 }

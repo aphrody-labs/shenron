@@ -6,14 +6,14 @@ import { PageShell } from "@shenron/ui/layout/PageShell";
  * État dégradé d'une page index : la requête n'a rien rendu.
  *
  * Remplace le `notFound()` que ces pages appelaient sur jeu de données vide.
- * Le motif est celui déjà retenu — et documenté — sur `/wiki/chronologie` :
+ * Le motif est celui déjà retenu — et documenté — sur `/wiki/timeline` :
  * sous ISR, un 404 rendu pendant une indisponibilité de PostgreSQL est **mis en
  * cache** et continue d'être servi longtemps après le retour de la base. Un 200
  * `noindex`, lui, se répare tout seul à la revalidation suivante, et `noindex`
  * empêche Google de mémoriser la version vide entre-temps.
  *
  * Un vrai 404 reste le bon comportement pour une ressource **identifiée** qui
- * n'existe pas (`/wiki/films/slug-inconnu`) : ce composant ne concerne que les
+ * n'existe pas (`/wiki/movies/slug-inconnu`) : ce composant ne concerne que les
  * index, où « vide » signifie presque toujours « panne », jamais « supprimé ».
  *
  * React 19 remonte `<meta>` dans le `<head>` où qu'il soit rendu.
@@ -50,6 +50,6 @@ export function SectionUnavailable({
 /** Rubriques ouvertes en permanence — toujours un point de sortie valide. */
 const DEFAULT_LINKS = [
   { href: "/wiki/episodes", label: "Les épisodes" },
-  { href: "/wiki/films", label: "Les films" },
+  { href: "/wiki/movies", label: "Les films" },
   { href: "/wiki/manga", label: "Le manga" },
 ] as const;

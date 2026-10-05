@@ -198,9 +198,9 @@ function entityHref(type: RatingTargetType, slugOrId: string): string {
     case "episode":
       return `/wiki/episodes/${slugOrId}`;
     case "movie":
-      return `/wiki/films/${slugOrId}`;
+      return `/wiki/movies/${slugOrId}`;
     case "game":
-      return `/wiki/jeux/${slugOrId}`;
+      return `/wiki/games/${slugOrId}`;
     case "arc":
       return `/wiki/arcs/${slugOrId}`;
   }

@@ -13,12 +13,12 @@ import { publicEntityUrl } from "@/lib/wiki-fields";
 
 /** Pages liste publiques par table (revalidées à chaque écriture). */
 const WIKI_LIST_PATHS: Record<string, string[]> = {
-  db_characters: ["/wiki/personnages"],
-  db_planets: ["/wiki/lieux", "/wiki/cosmologie"],
+  db_characters: ["/wiki/characters"],
+  db_planets: ["/wiki/locations"],
   db_sagas: ["/wiki/sagas"],
   db_arcs: ["/wiki/sagas"],
-  db_movies: ["/wiki/films"],
-  db_games: ["/wiki/jeux"],
+  db_movies: ["/wiki/movies"],
+  db_games: ["/wiki/games"],
   db_manga_volumes: ["/wiki/manga"],
   db_manga_chapters: ["/wiki/manga"],
   db_episodes: ["/wiki/episodes"],
@@ -54,7 +54,7 @@ export function revalidateWikiEntity(table: string, row?: Record<string, unknown
     // Les transformations n'ont pas de page propre → elles s'affichent sur la
     // fiche du personnage.
     if (table === "db_transformations" && row?.characterId != null) {
-      revalidatePath(`/wiki/personnages/${row.characterId}`);
+      revalidatePath(`/wiki/characters/${row.characterId}`);
     }
   } catch {
     /* best-effort : ne jamais faire échouer l'écriture pour une revalidation */

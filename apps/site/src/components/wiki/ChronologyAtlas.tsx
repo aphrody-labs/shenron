@@ -76,7 +76,7 @@ export function ChronologyAtlas({
               icon={<Film className="h-5 w-5" />}
               label={<T k="wikiChronology.films" />}
               value={movies}
-              target="/wiki/films"
+              target="/wiki/movies"
               tone="orange"
             />
             <Metric

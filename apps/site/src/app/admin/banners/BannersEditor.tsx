@@ -285,7 +285,7 @@ export function BannersEditor() {
       <section className="space-y-3">
         <h2 className="font-saiyan text-lg uppercase text-dbz-yellow">Séries</h2>
         <p className="text-xs text-white/50">
-          Utilisées par les vues série (ex. /wiki/episodes/serie/DBZ) et les aperçus sans image
+          Utilisées par les vues série (ex. /wiki/episodes/series/DBZ) et les aperçus sans image
           d&apos;épisode.
         </p>
         <div className="space-y-3">

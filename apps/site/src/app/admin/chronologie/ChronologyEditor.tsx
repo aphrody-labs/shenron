@@ -3,7 +3,7 @@
 /**
  * Éditeur de la chronologie universelle (/admin/chronologie).
  *
- * La frise publique `/wiki/chronologie` est FIXE : son ordre officiel est décidé
+ * La frise publique `/wiki/timeline` est FIXE : son ordre officiel est décidé
  * ici. On part du dataset brut (tous les épisodes + films + tomes du manga) et on
  * applique une **curation** stockée en DB (`ChronologyConfig`) :
  *   - masquer une entrée,
@@ -487,7 +487,7 @@ export default function ChronologyEditor() {
           </p>
         </div>
         <a
-          href="/wiki/chronologie"
+          href="/wiki/timeline"
           target="_blank"
           rel="noreferrer"
           className="btn btn-ghost"

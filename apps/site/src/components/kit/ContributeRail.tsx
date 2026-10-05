@@ -26,7 +26,7 @@ export function ContributeRail({
   /** Clé du dictionnaire nommant ce qui manque ici (`kit.contribute.what.*`). */
   quoiKey,
   /** Lien de contribution ciblé ; à défaut, la page d'explication générale. */
-  contributeHref = "/wiki/contribuer",
+  contributeHref = "/wiki/contribute",
   className = "",
 }: {
   quoiKey: string;

@@ -79,7 +79,7 @@ describe("detectCheatSignals", () => {
  * lisent les sources — les modules concernés ouvrent Postgres à l'import.
  */
 const contributors = await Bun.file(new URL("../src/lib/contributors.ts", import.meta.url)).text();
-const profil = await Bun.file(new URL("../src/app/profil/[id]/page.tsx", import.meta.url)).text();
+const profil = await Bun.file(new URL("../src/app/profile/[id]/page.tsx", import.meta.url)).text();
 const adminConcours = await Bun.file(
   new URL("../src/app/admin/concours/page.tsx", import.meta.url),
 ).text();

@@ -7,6 +7,8 @@
 // Les chemins sont relatifs `./assets/...` → passés par `assetUrl()` côté rendu
 // pour pointer sur le CDN bot (`bot.dragonballfr.com`).
 
+import { publicLegacyRedirect } from "@/lib/legacy-routes";
+
 export type Era = "origin" | "saiyan" | "namek" | "android" | "buu" | "divine" | "summon";
 
 export interface HomeScene {
@@ -416,7 +418,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
   },
   // Panneaux dont la destination dépend du gating (/admin/lancement). Un panneau
   // activé alors que sa rubrique est fermée enverrait le visiteur sur
-  // /wiki-bientot depuis la page d'accueil : on ne l'active par défaut que
+  // /coming-soon depuis la page d'accueil : on ne l'active par défaut que
   // lorsque la route est ouverte.
   personnages: {
     navLabel: "Personnages",
@@ -501,7 +503,7 @@ export interface PlayCard {
 
 export const DEFAULT_PLAY_CARDS: readonly PlayCard[] = [
   {
-    href: "/jeux",
+    href: "/games",
     title: "Mini-jeux",
     desc: "2048, Pierre-Feuille-Ciseaux, Morpion, Pendu, Bingo",
     kanji: "遊",
@@ -514,7 +516,7 @@ export const DEFAULT_PLAY_CARDS: readonly PlayCard[] = [
     kanji: "番付",
   },
   {
-    href: "/profil",
+    href: "/profile",
     title: "Ta carte de combat",
     desc: "Niveau, XP, succès, inventaire",
     kanji: "戦士",
@@ -535,11 +537,11 @@ export const DEFAULT_PLAY_CARDS: readonly PlayCard[] = [
 export const SECTION_DESTINATIONS: Partial<Record<HomeSectionId, readonly string[]>> = {
   universe: ["/wiki"],
   sagas: ["/wiki/sagas"],
-  personnages: ["/wiki/personnages"],
+  personnages: ["/wiki/characters"],
   pantheon: ["/leaderboard"],
-  tops: ["/classements"],
+  tops: ["/rankings"],
   news: ["/news"],
-  play: ["/jeux", "/shop"],
+  play: ["/games", "/shop"],
 };
 
 export interface HomeSectionConfig {
@@ -593,7 +595,7 @@ export interface HomeBlockHeading {
 
 export type HomeCatalogueHref =
   | "/wiki/episodes"
-  | "/wiki/films"
+  | "/wiki/movies"
   | "/wiki/manga"
   | "/wiki/databooks";
 
@@ -652,6 +654,13 @@ const clampInt = (v: unknown, min: number, max: number, dflt: number): number =>
 
 const str = (v: unknown, dflt: string): string => (typeof v === "string" ? v : dflt);
 
+/**
+ * Lien enregistré en base, ramené à son adresse anglaise : la configuration de l'accueil
+ * indexe ses destinations par `href`, et celles enregistrées avant le passage des routes
+ * à l'anglais (`/wiki/films`, `/jeux`…) doivent retrouver leur entrée.
+ */
+const currentHref = (href: string): string => publicLegacyRedirect(href) ?? href;
+
 /** Normalise une scène venue de la DB/de l'éditeur → forme `HomeScene` sûre (accent dérivé de l'ère). */
 export function sanitizeScene(input: unknown, fallback: HomeScene): HomeScene {
   const o = (input ?? {}) as Record<string, unknown>;
@@ -700,7 +709,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
       "Regarder un épisode ou un film, reprendre le manga et ouvrir les guides officiels, depuis un même point de départ.",
     destinations: [
       { href: "/wiki/episodes", enabled: true },
-      { href: "/wiki/films", enabled: true },
+      { href: "/wiki/movies", enabled: true },
       { href: "/wiki/manga", enabled: true },
       { href: "/wiki/databooks", enabled: true },
     ],
@@ -738,7 +747,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
         wide: true,
       },
       {
-        href: "/wiki/chronologie",
+        href: "/wiki/timeline",
         enabled: true,
         label: "Chronologie",
         note: "La frise de l'univers",
@@ -762,7 +771,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
         wide: false,
       },
       {
-        href: "/wiki/jeux",
+        href: "/wiki/games",
         enabled: true,
         label: "Jeux",
         note: "Trente ans d'adaptations",
@@ -786,7 +795,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
         wide: false,
       },
       {
-        href: "/jeux",
+        href: "/games",
         enabled: true,
         label: "Mini-jeux",
         note: "Arène, bingo et duels",
@@ -810,7 +819,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
         wide: false,
       },
       {
-        href: "/classements",
+        href: "/rankings",
         enabled: true,
         label: "Classements",
         note: "Les tops de la communauté",
@@ -909,7 +918,7 @@ const sanitizeCatalogue = (input: unknown): HomeCatalogueConfig => {
     raw
       .map((entry) => (entry ?? {}) as Record<string, unknown>)
       .filter((entry) => typeof entry.href === "string")
-      .map((entry) => [entry.href as string, entry]),
+      .map((entry) => [currentHref(entry.href as string), entry]),
   );
   return {
     ...sanitizeHeading(input, fallback),
@@ -934,7 +943,7 @@ const sanitizeJourney = (input: unknown): HomeJourneyConfig => {
   const destinations: HomeJourneyDestination[] = [];
   for (const value of raw) {
     const entry = (value ?? {}) as Record<string, unknown>;
-    const href = typeof entry.href === "string" ? entry.href : "";
+    const href = typeof entry.href === "string" ? currentHref(entry.href) : "";
     const dflt = fallbackByHref.get(href);
     if (!dflt || seen.has(href)) continue;
     seen.add(href);
@@ -983,7 +992,7 @@ export function resolveHomeConfig(patch: unknown): HomeConfig {
     scenes,
     lede: str(heroPatch.lede, DEFAULT_HOME_CONFIG.hero.lede),
     ctaLabel: str(heroPatch.ctaLabel, DEFAULT_HOME_CONFIG.hero.ctaLabel),
-    ctaHref: str(heroPatch.ctaHref, DEFAULT_HOME_CONFIG.hero.ctaHref),
+    ctaHref: currentHref(str(heroPatch.ctaHref, DEFAULT_HOME_CONFIG.hero.ctaHref)),
   };
 
   // ── Clips ──

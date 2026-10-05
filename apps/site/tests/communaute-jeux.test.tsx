@@ -11,14 +11,14 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import DragonBall2048 from "../src/app/jeux/2048/DragonBall2048";
-import Page2048 from "../src/app/jeux/2048/page";
-import JeuxPage from "../src/app/jeux/page";
+import DragonBall2048 from "../src/app/games/2048/DragonBall2048";
+import Page2048 from "../src/app/games/2048/page";
+import JeuxPage from "../src/app/games/page";
 import {
   SWIPE_THRESHOLD,
   directionFromKey,
   directionFromSwipe,
-} from "../src/app/jeux/2048/controls";
+} from "../src/app/games/2048/controls";
 import { nextGridIndex } from "../src/components/games/grid-nav";
 
 const SRC = join(import.meta.dir, "..", "src");
@@ -92,7 +92,7 @@ describe("2048 — rendu", () => {
   });
 });
 
-describe("index /jeux", () => {
+describe("index /games", () => {
   const html = renderToStaticMarkup(JeuxPage());
 
   test("une colonne au téléphone, grille ensuite", () => {
@@ -104,7 +104,7 @@ describe("index /jeux", () => {
 
   test("liens de jeu en casse normale et cibles de 44 px", () => {
     expect(html).not.toContain("JOUER");
-    const liens = html.match(/<a[^>]*href="\/jeux\/[a-z0-9]+"[^>]*>/g) ?? [];
+    const liens = html.match(/<a[^>]*href="\/games\/[a-z0-9-]+"[^>]*>/g) ?? [];
     expect(liens.length).toBe(4);
     for (const lien of liens) expect(lien).toContain("min-h-11");
   });
@@ -134,7 +134,7 @@ describe("morpion — navigation aux flèches", () => {
   });
 
   test("les cases restent focalisables une fois jouées (aria-disabled, pas disabled)", () => {
-    const code = readFileSync(join(SRC, "app/jeux/morpion/MorpionGame.tsx"), "utf8");
+    const code = readFileSync(join(SRC, "app/games/tic-tac-toe/MorpionGame.tsx"), "utf8");
     expect(code).toContain("aria-disabled={inert}");
     expect(code).toContain("tabIndex={focusable ? 0 : -1}");
     expect(code).not.toMatch(/disabled=\{disabled \|\| !empty\}/);
@@ -142,7 +142,7 @@ describe("morpion — navigation aux flèches", () => {
 });
 
 describe("contrat du shell — jeux", () => {
-  const sources = files(join(SRC, "app/jeux"))
+  const sources = files(join(SRC, "app/games"))
     .concat(files(join(SRC, "components/games")))
     .filter((f) => /\.tsx?$/.test(f))
     .map((f) => [f, readFileSync(f, "utf8")] as const);

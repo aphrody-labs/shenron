@@ -43,7 +43,7 @@ export async function WikiRelatedCharacters({
         {items.map((c) => (
           <CharacterPosterCard
             key={c.id}
-            href={`/wiki/personnages/${c.slug || c.id}`}
+            href={`/wiki/characters/${c.slug || c.id}`}
             name={c.name}
             race={c.race}
             subtitle={c.subtitle}

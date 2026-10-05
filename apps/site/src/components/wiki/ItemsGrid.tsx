@@ -87,7 +87,7 @@ export function ItemsGrid({ items, fallbackImage }: { items: Item[]; fallbackIma
         {filtered.map((it) => (
           <Link
             key={it.slug}
-            href={`/wiki/objets/${it.slug}`}
+            href={`/wiki/items/${it.slug}`}
             className="group relative flex flex-col justify-between rounded-xl border border-white/10 bg-white/[0.03] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-500/40 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-orange-950/20"
           >
             <div className="space-y-3">

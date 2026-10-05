@@ -1,6 +1,6 @@
 /**
  * chronology-config — lecture/écriture **server-only** de la curation de la
- * chronologie universelle (/wiki/chronologie).
+ * chronologie universelle (/wiki/timeline).
  *
  * La table `ChronologyConfig` (schéma public) stocke un unique document JSON
  * (singleton `default`) : ordre des ères + overrides par entrée (ère/date/titre/

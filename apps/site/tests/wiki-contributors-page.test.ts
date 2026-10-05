@@ -2,15 +2,15 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync, existsSync } from "node:fs";
 
 describe("Sprint 4 — Contributor Detail Pages & Wiring", () => {
-  it("la page index /wiki/contributeurs redirige vers /wiki/staff", () => {
-    const filePath = new URL("../src/app/wiki/contributeurs/page.tsx", import.meta.url).pathname;
+  it("la page index /wiki/contributors redirige vers /wiki/staff", () => {
+    const filePath = new URL("../src/app/wiki/contributors/page.tsx", import.meta.url).pathname;
     expect(existsSync(filePath)).toBe(true);
     const content = readFileSync(filePath, "utf-8");
     expect(content).toContain('redirect("/wiki/staff")');
   });
 
-  it("la page de détail /wiki/contributeurs/[slug] existe et intègre les composants canoniques", () => {
-    const filePath = new URL("../src/app/wiki/contributeurs/[slug]/page.tsx", import.meta.url)
+  it("la page de détail /wiki/contributors/[slug] existe et intègre les composants canoniques", () => {
+    const filePath = new URL("../src/app/wiki/contributors/[slug]/page.tsx", import.meta.url)
       .pathname;
     expect(existsSync(filePath)).toBe(true);
     const content = readFileSync(filePath, "utf-8");

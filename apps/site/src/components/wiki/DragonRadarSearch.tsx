@@ -404,7 +404,7 @@ export function DragonRadarSearch({ initialQuery = "" }: { initialQuery?: string
                   {results.movies.map((m) => (
                     <Link
                       key={m.id}
-                      href={`/wiki/films/${m.id}`}
+                      href={`/wiki/movies/${m.id}`}
                       className="p-3 rounded-xl border border-white/10 bg-white/[0.03] hover:border-sky-500 hover:bg-sky-950/20 transition-all group block"
                     >
                       <span className="text-[10px] font-mono text-sky-400 uppercase font-bold">
@@ -438,7 +438,7 @@ export function DragonRadarSearch({ initialQuery = "" }: { initialQuery?: string
                     <ClientGatedWrap
                       key={c.id}
                       access={undefined}
-                      href={`/wiki/personnages/${c.id}`}
+                      href={`/wiki/characters/${c.id}`}
                       className="flex items-center gap-3 p-3 rounded-xl border border-white/10 bg-white/[0.03] hover:border-yellow-500 hover:bg-yellow-950/20 transition-all group"
                     >
                       {c.image && (

@@ -89,7 +89,7 @@ export default async function TierlistPage({ params }: { params: Promise<{ slug:
           ← Toutes les tierlists
         </Link>
         <Link
-          href="/tierlists/creer"
+          href="/tierlists/new"
           className="rounded-lg bg-dbz-orange px-4 py-2 text-sm font-bold text-black transition-opacity hover:opacity-90"
         >
           Créer la mienne

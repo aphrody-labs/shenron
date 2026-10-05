@@ -186,10 +186,10 @@ export function PowerLevelsTable({
                 <td className="px-4 py-3.5">
                   {p.character_id &&
                   ouvert(
-                    `/wiki/personnages/${CHARACTER_CANONICAL_SLUGS[p.character_id] ?? p.character_id}`,
+                    `/wiki/characters/${CHARACTER_CANONICAL_SLUGS[p.character_id] ?? p.character_id}`,
                   ) ? (
                     <Link
-                      href={`/wiki/personnages/${CHARACTER_CANONICAL_SLUGS[p.character_id] ?? p.character_id}`}
+                      href={`/wiki/characters/${CHARACTER_CANONICAL_SLUGS[p.character_id] ?? p.character_id}`}
                       className="font-bold text-white hover:text-orange-400 hover:underline transition-colors"
                     >
                       {p.character_name}

@@ -91,9 +91,9 @@ export function WishesLedger({
                     <strong className="text-white/40">{t("wikiUi.wishes.creator")} :</strong>{" "}
                     {(() => {
                       const slug = resolveCharacterSlugByName(d.creator);
-                      return slug && ouvert(`/wiki/personnages/${slug}`) ? (
+                      return slug && ouvert(`/wiki/characters/${slug}`) ? (
                         <Link
-                          href={`/wiki/personnages/${slug}`}
+                          href={`/wiki/characters/${slug}`}
                           className="text-white hover:text-orange-400 font-medium"
                         >
                           {d.creator}
@@ -110,9 +110,9 @@ export function WishesLedger({
                   <div>
                     <strong className="text-white/40">{t("wikiUi.wishes.balls")} :</strong>{" "}
                     {d.balls_count} Dragon Balls ({d.balls_diameter}) •{" "}
-                    {ouvert("/wiki/objets/dragon-radar") ? (
+                    {ouvert("/wiki/items/dragon-radar") ? (
                       <Link
-                        href="/wiki/objets/dragon-radar"
+                        href="/wiki/items/dragon-radar"
                         className="text-amber-400/80 hover:underline"
                       >
                         Radar
@@ -223,9 +223,9 @@ export function WishesLedger({
                     {t("wikiUi.wishes.requestedBy")}{" "}
                     {(() => {
                       const slug = resolveCharacterSlugByName(w.whisperer);
-                      return slug && ouvert(`/wiki/personnages/${slug}`) ? (
+                      return slug && ouvert(`/wiki/characters/${slug}`) ? (
                         <Link
-                          href={`/wiki/personnages/${slug}`}
+                          href={`/wiki/characters/${slug}`}
                           className="text-orange-400 hover:underline"
                         >
                           {w.whisperer}

@@ -3,7 +3,7 @@
 /**
  * Modal — coquille de fenêtre « aperçu rapide » façon Netflix, montée par une
  * route d'INTERCEPTION Next.js (`@modal/(.)…`). Quand on clique une carte depuis
- * un catalogue (`/wiki/films`), Next intercepte la navigation vers la fiche et
+ * un catalogue (`/wiki/movies`), Next intercepte la navigation vers la fiche et
  * rend son contenu ICI, en overlay, SANS quitter le catalogue. Un accès direct /
  * rechargement de l'URL rend la fiche pleine page (fallback `default.tsx` → null
  * pour le slot). Fermeture = `router.back()`.

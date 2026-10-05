@@ -234,7 +234,7 @@ export function GamesExplorer({ games, ratings }: GamesExplorerProps) {
             return (
               <Link
                 key={g.id}
-                href={`/wiki/jeux/${g.slug}`}
+                href={`/wiki/games/${g.slug}`}
                 className="group flex flex-col rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-dbz-orange/60 hover:bg-white/[0.06] transition-all duration-300 overflow-hidden hover:shadow-xl hover:shadow-dbz-orange/5"
               >
                 {/* Pochette avec badge de note */}
