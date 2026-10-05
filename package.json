@@ -132,7 +132,7 @@
     "test:rust": "cargo test -p shenron-rag -p shenron-translate -p shenron-manga -p shenron-cli -p shenron-mcp -p shenron-ffi -p shenron-studio",
     "test:live": "bun run --filter @shenron/pipeline rag:test",
     "audit:assets": "bun scripts/audit/assets-dedup.ts",
-    "test:scripts": "bun test scripts"
+    "test:scripts": "bun test ./scripts"
   },
   "devDependencies": {
     "@shenron/pipeline": "workspace:*",
