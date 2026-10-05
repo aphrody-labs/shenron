@@ -11,6 +11,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
+import { closeShenronWorkerPool } from "@shenron/native/worker";
 
 import {
   ensureDirectories,
@@ -125,7 +126,8 @@ export async function main(
   const stop = () => {
     site.stop();
     bot?.kill();
-    process.exit(0);
+    // Cancel the native jobs in flight and stop the workers, then leave.
+    void closeShenronWorkerPool().finally(() => process.exit(0));
   };
   process.on("SIGINT", stop);
   process.on("SIGTERM", stop);

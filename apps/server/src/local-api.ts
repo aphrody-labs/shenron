@@ -13,25 +13,38 @@
  *                                         the shenron-ffi C ABI, in process
  *
  * The native library is the one shipped beside the executable (or SHENRON_FFI_LIB), opened
- * through the single `bun:ffi` binding of `@shenron/native`.
+ * through the single `bun:ffi` binding of `@shenron/native`. Searches run on its worker pool
+ * (`@shenron/native/worker`), off the event loop; a client that goes away aborts its search
+ * (the request `AbortSignal` cancels the native job).
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { LocalApiGroups, LocalHealthResponse } from "@shenron/api/contract";
 import type { KoharuBridge } from "./koharu";
-import { SHENRON_FFI_FILE, shenronLoad, shenronLocalSearch } from "@shenron/native/shenron";
+import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
+import { shenronWorkerPool } from "@shenron/native/worker";
 
 import { profileOf, type ServerPaths } from "./config";
 import { VERSION } from "./version";
 
 /** The native calls of the local APIs (`@shenron/native` by default; a fake in tests). */
 export interface LocalNative {
-  /** Open the library at `path` and check its ABI; throws when it cannot. */
+  /** Open the library at `path` and check it (ABI, target, version); throws when it cannot. */
   load(path: string): unknown;
-  search(query: string, limit: number, kind?: string): Record<string, unknown>;
+  /** Search the offline corpus; `signal` aborts with the HTTP request. */
+  search(
+    query: string,
+    limit: number,
+    kind: string | undefined,
+    signal: AbortSignal,
+  ): Promise<Record<string, unknown>> | Record<string, unknown>;
 }
 
-const NATIVE: LocalNative = { load: shenronLoad, search: shenronLocalSearch };
+const NATIVE: LocalNative = {
+  load: (path) => shenronWorkerPool({ path }),
+  search: (query, limit, kind, signal) =>
+    shenronWorkerPool().localSearch(query, { limit, kind, signal }),
+};
 
 function libraryPath(paths: ServerPaths, env: NodeJS.ProcessEnv): string | null {
   const candidates = [
@@ -125,8 +138,15 @@ export function localApi(
       const started = performance.now();
       let value: Record<string, unknown>;
       try {
-        value = native.search(withoutNul(query), Math.trunc(limit), kind || undefined);
+        value = await native.search(
+          withoutNul(query),
+          Math.trunc(limit),
+          kind || undefined,
+          request.signal,
+        );
       } catch (error) {
+        // The client went away: its search was cancelled, nobody reads this answer.
+        if (request.signal.aborted) return new Response(null, { status: 499, headers });
         return Response.json(
           { error: error instanceof Error ? error.message : String(error) },
           { status: 500, headers },

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { LocalHealthResponse } from "@shenron/api/contract";
 import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
+import { closeShenronWorkerPool } from "@shenron/native/worker";
 
 import { unavailableGroups } from "../src/backend";
 import type { ServerPaths } from "../src/config";
@@ -51,9 +52,9 @@ function fakeNative(
       loads.push(path);
       over.load?.(path);
     },
-    search(query, limit, kind) {
+    search(query, limit, kind, signal) {
       searches.push({ query, limit, ...(kind === undefined ? {} : { kind }) });
-      return over.search?.(query, limit, kind) ?? { q: query, mode: "fake", results: [] };
+      return over.search?.(query, limit, kind, signal) ?? { q: query, mode: "fake", results: [] };
     },
   };
 }
@@ -265,6 +266,25 @@ describe("/api/local/rag/search", () => {
     expect(res.status).toBe(500);
     expect(await res.json()).toEqual({ error: "shenron_local_search returned null" });
   });
+
+  test("the request signal reaches the search; a client gone away gets no 500", async () => {
+    const paths = serverPaths();
+    libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));
+    const controller = new AbortController();
+    let received: AbortSignal | undefined;
+    const native = fakeNative({
+      search: async (_query, _limit, _kind, signal) => {
+        received = signal;
+        controller.abort();
+        throw signal.reason;
+      },
+    });
+    const res = (await call(localApi(paths, NO_FACTS, {}, native), "/api/local/rag/search?q=Goku", {
+      signal: controller.signal,
+    }))!;
+    expect(received?.aborted).toBe(true);
+    expect(res.status).toBe(499);
+  });
 });
 
 describe("default binding: @shenron/native", () => {
@@ -277,10 +297,12 @@ describe("default binding: @shenron/native", () => {
     expect(body.localRagError).toContain(`Unable to load shenron-ffi at ${junk}`);
   });
 
-  // Opt-in: only where a shenron-ffi build is present (the test never builds it).
+  // Opt-in: only where a shenron-ffi build is present (the test never builds it); the most
+  // recent build, as @shenron/native resolves it (a stale release is refused by its ABI check).
   const built = ["release", "debug"]
     .map((profile) => join(import.meta.dir, "../../../target", profile, SHENRON_FFI_FILE))
-    .find((path) => existsSync(path));
+    .filter((path) => existsSync(path))
+    .toSorted((x, y) => statSync(y).mtimeMs - statSync(x).mtimeMs)[0];
   test.if(built !== undefined)("the built library answers the local search", async () => {
     const api = localApi(serverPaths(), NO_FACTS, { SHENRON_FFI_LIB: built });
     const health = await read(await call(api, "/api/local/health"));
@@ -291,5 +313,6 @@ describe("default binding: @shenron/native", () => {
     expect(Array.isArray(body.results)).toBe(true);
     expect((body.results as unknown[]).length).toBeLessThanOrEqual(2);
     expect(typeof body.tookMs).toBe("number");
+    await closeShenronWorkerPool();
   });
 });
