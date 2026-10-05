@@ -19,6 +19,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@aphrody/discord-kit": "0.1.0",
+        "@aphrody/messaging": "0.1.0",
         "@aphrody/paths": "0.1.0",
         "@discordx/di": "catalog:",
         "@discordx/pagination": "catalog:",
@@ -71,6 +72,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@aphrody/discord-kit": "0.1.0",
+        "@aphrody/messaging": "0.1.0",
         "@aphrody/paths": "0.1.0",
         "@aphrody/plugin-opener": "3.0.0-alpha.2",
         "@codemirror/lang-markdown": "catalog:",
@@ -485,6 +487,8 @@
     "@aphrody/m3-theme": ["@aphrody/m3-theme@3.3.4", "", { "dependencies": { "@aphrody/m3-tokens": "3.3.4" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-7a+dpk152MjgngBZGKwLbkH9S3SFf9OWBFu6JzJzMjV0TngFX19UnCt6cXQp+G8XhWPIPUdpGRVVRefWe6syxg=="],
 
     "@aphrody/m3-tokens": ["@aphrody/m3-tokens@3.3.4", "", { "dependencies": { "@material/material-color-utilities": "^0.4.0" } }, "sha512-qmpsyPbmmljxv0cGQwh3FHwjp6L+EHeSXFyAEcZXquo55I7Boy9C5LyZonp0Se2eqxe7ZUabhW3rnyIEwX3QVg=="],
+
+    "@aphrody/messaging": ["@aphrody/messaging@0.1.0", "", { "dependencies": { "@discordjs/rest": "^2.6.3" } }, "sha512-QyIBqwEW+iONXTxqxQLeaEmGVajv21XlGPHgHDydb96sFJMLMDmdftZ2fAs+wfbaUNKNOJBe2zfoL+VouvmMCQ=="],
 
     "@aphrody/paths": ["@aphrody/paths@0.1.0", "", {}, "sha512-eVabUEXMUtQyFeweFIKl9KXXiGNlYyKfRfaD8tbnhsVFrOvsX1GMmphd/LXG39VMJH45WHaCSZUhl1PcQZsw+A=="],
 

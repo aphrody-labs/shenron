@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@aphrody/discord-kit": "0.1.0",
+    "@aphrody/messaging": "0.1.0",
     "@aphrody/paths": "0.1.0",
     "@aphrody/plugin-opener": "3.0.0-alpha.2",
     "@codemirror/lang-markdown": "catalog:",

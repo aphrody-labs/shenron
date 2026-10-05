@@ -128,6 +128,7 @@ const nextConfig: NextConfig = {
     "@aphrody/m3-primitives",
     "@aphrody/m3-reader",
     "@aphrody/m3-theme",
+    "@aphrody/messaging",
     "@aphrody/paths",
     "@aphrody/plugin-opener",
     "@aphrody/runtime-sdk",
