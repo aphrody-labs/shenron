@@ -3,15 +3,11 @@
   "version": "0.2.0",
   "private": true,
   "license": "Apache-2.0",
-  "files": [
-    "src"
-  ],
   "type": "module",
   "exports": {
     "./manga": "./src/manga.ts",
     "./ocr": "./src/ocr.ts",
-    "./remote-ocr": "./src/remote-ocr.ts",
-    "./translation-http": "./src/translation-http.ts"
+    "./remote-ocr": "./src/remote-ocr.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -33,8 +29,7 @@
     "runtime": {
       "./manga": "pure",
       "./ocr": "pure",
-      "./remote-ocr": "pure",
-      "./translation-http": "pure"
+      "./remote-ocr": "pure"
     }
   }
 }
