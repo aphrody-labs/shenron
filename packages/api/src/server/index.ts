@@ -133,7 +133,12 @@ type BunServer = Server<ChatSocketData>;
 
 export interface ChatSocketData {
   ownerId: string;
+  /** Relay of each followed stream on this socket (one per stream: a resume replaces it). */
   streams: Map<string, AbortController>;
+  /** Client IP of the upgrade request: chat messages share the HTTP chat budget. */
+  clientIp: string;
+  /** Direct loopback upgrade: exempt from the rate limit, like the HTTP routes. */
+  directLoopback: boolean;
 }
 
 type RouteFn = (request: Request, server?: BunServer) => Promise<Response>;
@@ -156,10 +161,15 @@ export const OPENAPI_PATH = endpoints.openApi.path;
 export const WIKI_CACHE_SECONDS = 3600;
 /** Chat budget per client: 20 requests per minute (generation is expensive). */
 export const CHAT_RATE_LIMIT = { limit: 20, windowMs: 60_000 } as const;
+/** Interval of the SSE comment that keeps proxies from closing an idle chat stream. */
+export const SSE_KEEPALIVE_MS = 15_000;
 const NOT_FOUND = { error: "Not found" } as const;
 
 /** Raised by a data port wrapper: the store is unreachable. */
 class DataUnavailable extends Error {}
+
+/** Raised by an engine port wrapper (OCR, chat backends): the engine failed or is unreachable. */
+class UpstreamUnavailable extends Error {}
 
 class HttpError extends Error {
   constructor(
@@ -177,6 +187,15 @@ async function fromPort<T>(run: () => Promise<T> | T): Promise<T> {
   } catch (error) {
     if (error instanceof HttpError) throw error;
     throw new DataUnavailable(error instanceof Error ? error.message : String(error));
+  }
+}
+
+async function fromUpstream<T>(run: () => Promise<T> | T): Promise<T> {
+  try {
+    return await run();
+  } catch (error) {
+    if (error instanceof HttpError) throw error;
+    throw new UpstreamUnavailable(error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -385,13 +404,28 @@ export function createShenronApi(
     cors: Record<string, string>,
   ) => {
     let keepalive: ReturnType<typeof setInterval> | undefined;
+    // A cancelled body (disconnect, HEAD) stops the follower, not only the keepalive.
+    const cancelled = new AbortController();
     const body = new ReadableStream<Uint8Array>({
       async start(controller) {
-        keepalive = setInterval(() => controller.enqueue(SSE_KEEPALIVE), 15_000);
+        keepalive = setInterval(() => {
+          try {
+            controller.enqueue(SSE_KEEPALIVE);
+          } catch {
+            clearInterval(keepalive);
+          }
+        }, SSE_KEEPALIVE_MS);
         try {
-          for await (const { id: n, event } of streams.follow(id, ownerId, after, signal)) {
+          for await (const { id: n, event } of streams.follow(
+            id,
+            ownerId,
+            after,
+            AbortSignal.any([signal, cancelled.signal]),
+          )) {
             controller.enqueue(sseFrame(event.type, event.data, n));
           }
+        } catch {
+          // the consumer went away while an event was being written
         } finally {
           clearInterval(keepalive);
           try {
@@ -403,6 +437,7 @@ export function createShenronApi(
       },
       cancel() {
         clearInterval(keepalive);
+        cancelled.abort();
       },
     });
     return new Response(body, {
@@ -458,13 +493,20 @@ export function createShenronApi(
     if (!ctx.server)
       return json({ error: "WebSocket needs Bun.serve", code: "invalid_request" }, 426);
     const upgraded = ctx.server.upgrade(ctx.request, {
-      data: { ownerId: ctx.ownerId!, streams: new Map() },
+      data: {
+        ownerId: ctx.ownerId!,
+        streams: new Map(),
+        clientIp: ports.clientIp(ctx.request),
+        directLoopback: ports.isDirectLoopback(ctx.request),
+      },
     });
     return upgraded
       ? (undefined as unknown as Response)
       : json({ error: "upgrade failed", code: "invalid_request" }, 400);
   });
-  add(endpoints.models, chat !== null, async () => json(await fromPort(() => chat!.models()), 200));
+  add(endpoints.models, chat !== null, async () =>
+    json(await fromUpstream(() => chat!.models()), 200),
+  );
 
   // ── OCR ───────────────────────────────────────────────────────────────────
   const ocr = ports.ocr ?? null;
@@ -474,7 +516,7 @@ export function createShenronApi(
     if (bytes.byteLength === 0 || bytes.byteLength > 8 * 1024 * 1024) {
       return json({ error: "attachment must hold 1 byte to 8 MiB", code: "invalid_request" }, 400);
     }
-    return json(await fromPort(() => ocr!.recognize(bytes, body.attachment.mediaType)), 200);
+    return json(await fromUpstream(() => ocr!.recognize(bytes, body.attachment.mediaType)), 200);
   });
 
   // ── Conversations ─────────────────────────────────────────────────────────
@@ -519,7 +561,7 @@ export function createShenronApi(
       throw new HttpError(404, "not_found", "Not found");
     return stat;
   };
-  add(endpoints.vfsInfo, vfs !== null, async () => json(vfs!.info(), 200));
+  add(endpoints.vfsInfo, vfs !== null, async () => json(await fromPort(() => vfs!.info()), 200));
   add(endpoints.vfsStat, vfs !== null, async (ctx) => {
     const path = (ctx.query as { path: string }).path;
     const stat = await vfsCall(() => vfsGuard(path));
@@ -700,8 +742,9 @@ export function createShenronApi(
           return fail(parsed.error);
         }
       }
+      // A POST without a body schema (stream cancel) takes no body: none is read.
       let body: unknown;
-      if (spec.method === "post") {
+      if (spec.method === "post" && spec.body) {
         let raw: unknown;
         try {
           raw = await request.json();
@@ -714,7 +757,7 @@ export function createShenronApi(
             ),
           );
         }
-        const parsed = spec.body ? spec.body.safeParse(raw) : { success: true as const, data: raw };
+        const parsed = spec.body.safeParse(raw);
         if (!parsed.success) return fail(parsed.error);
         body = parsed.data;
       }
@@ -770,6 +813,8 @@ export function createShenronApi(
       for (const [k, v] of Object.entries(cors)) if (!headers.has(k)) headers.set(k, v);
       if (spec.cache === "no-store" && !headers.has("Cache-Control"))
         headers.set("Cache-Control", "no-store");
+      // HEAD drops the body: cancel it so a stream (SSE resume) stops its follower now.
+      if (method === "HEAD") void response.body?.cancel().catch(() => {});
       return finish(
         new Response(method === "HEAD" ? null : response.body, {
           status: response.status,
@@ -779,6 +824,13 @@ export function createShenronApi(
     } catch (error) {
       if (error instanceof HttpError)
         return finish(json({ error: error.message, code: error.code }, error.status, cors));
+      if (error instanceof UpstreamUnavailable) {
+        // Same doctrine as the data store: the engine error never reaches the client.
+        log({ event: `${o.service}.api.upstream`, path, status: 502 });
+        return finish(
+          json({ error: "Upstream unavailable", code: "upstream_unavailable" }, 502, cors),
+        );
+      }
       if (error instanceof DataUnavailable) {
         // The cause stays in the log: connection details never reach a client.
         log({ event: `${o.service}.api.unavailable`, path, status: 503 });
@@ -823,6 +875,8 @@ export function createShenronApi(
         return;
       }
       const relay = async (streamId: string, after: number) => {
+        // One relay per stream and socket: a second resume replaces the first, no duplicates.
+        ws.data.streams.get(streamId)?.abort();
         const controller = new AbortController();
         ws.data.streams.set(streamId, controller);
         try {
@@ -835,23 +889,30 @@ export function createShenronApi(
             ws.send(JSON.stringify({ id, streamId, type: event.type, data: event.data }));
           }
         } finally {
-          ws.data.streams.delete(streamId);
+          if (ws.data.streams.get(streamId) === controller) ws.data.streams.delete(streamId);
         }
       };
+      const sendError = (code: ApiErrorCode, message: string, retryable: boolean) =>
+        ws.send(JSON.stringify({ type: "error", data: { code, message, retryable } }));
       if (message.type === "chat") {
         const parsed = ChatRequest.safeParse(message.request);
         if (!parsed.success) {
-          ws.send(
-            JSON.stringify({
-              type: "error",
-              data: {
-                code: "invalid_request",
-                message: issuesMessage(parsed.error),
-                retryable: false,
-              },
-            }),
-          );
+          sendError("invalid_request", issuesMessage(parsed.error), false);
           return;
+        }
+        // A generation over the socket spends the same budget as POST /api/v1/chat.
+        if (!ws.data.directLoopback) {
+          let verdict: { allowed: boolean };
+          try {
+            verdict = await ports.rateLimit.hit(`chat:${ws.data.clientIp}`, CHAT_RATE_LIMIT);
+          } catch {
+            sendError("internal", "internal", true);
+            return;
+          }
+          if (!verdict.allowed) {
+            sendError("rate_limited", `Rate limit (${CHAT_RATE_LIMIT.limit}/min)`, true);
+            return;
+          }
         }
         await relay(startChat(parsed.data, ws.data.ownerId), 0);
       } else if (message.type === "resume" && message.streamId) {
@@ -869,16 +930,7 @@ export function createShenronApi(
       } else if (message.type === "cancel" && message.streamId) {
         streams.cancel(message.streamId, ws.data.ownerId);
       } else {
-        ws.send(
-          JSON.stringify({
-            type: "error",
-            data: {
-              code: "invalid_request",
-              message: "type must be chat, resume or cancel",
-              retryable: false,
-            },
-          }),
-        );
+        sendError("invalid_request", "type must be chat, resume or cancel", false);
       }
     },
     close(ws) {

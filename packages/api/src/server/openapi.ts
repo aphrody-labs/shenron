@@ -88,6 +88,9 @@ export function buildOpenApiDocument(): Json {
     if (spec.auth === "owner")
       responses[401] = { description: "Authentication required", content: error };
     if (spec.auth === "admin") responses[403] = { description: "Forbidden", content: error };
+    if (spec.upstream) responses[502] = { description: "Upstream unavailable", content: error };
+    if (spec.websocket)
+      responses[426] = { description: "Upgrade required (host without Bun.serve)", content: error };
     const ok: Json = { description: spec.websocket ? "Switching protocols (WebSocket)" : "OK" };
     if (spec.binary)
       ok.content = { "application/octet-stream": { schema: { type: "string", format: "binary" } } };

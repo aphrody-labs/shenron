@@ -129,24 +129,34 @@ export class ChatStreams {
     if (!stream.done) stream.listeners.add(listener);
     const onAbort = () => listener(null);
     signal?.addEventListener("abort", onAbort, { once: true });
+    // An aborted follower stops at once: nothing is replayed or flushed after the abort.
+    const stopped = () => signal?.aborted === true;
     try {
       let last = after;
       for (const numbered of stream.events.slice(after)) {
         last = numbered.id;
         yield numbered;
+        if (stopped()) return;
       }
       if (stream.done) {
         // Completed while the replay was suspended: deliver what came after the snapshot.
-        for (const numbered of stream.events.slice(last)) yield numbered;
+        for (const numbered of stream.events.slice(last)) {
+          yield numbered;
+          if (stopped()) return;
+        }
         return;
       }
       while (true) {
         while (queue.length === 0) await new Promise<void>((resolve) => (wake = resolve));
         wake = null;
         const next = queue.shift()!;
+        if (stopped()) return;
         if (next === null) {
           // Flush anything recorded after the last delivered event (completion race).
-          for (const numbered of stream.events.slice(last)) yield numbered;
+          for (const numbered of stream.events.slice(last)) {
+            yield numbered;
+            if (stopped()) return;
+          }
           return;
         }
         if (next.id <= last) continue;

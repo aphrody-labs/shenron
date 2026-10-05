@@ -73,6 +73,8 @@ export interface EndpointSpec {
   binary?: boolean;
   /** WebSocket upgrade route. */
   websocket?: boolean;
+  /** Answered by an engine (chat backends, OCR): its failure is a 502 `upstream_unavailable`. */
+  upstream?: boolean;
   /** Served by the backend API server (`@shenron/api/server`); false for bot-owned historical routes. */
   native?: boolean;
 }
@@ -114,6 +116,7 @@ export const endpoints = {
     response: ChatResponse,
     cache: "no-store",
     stream: "sse",
+    upstream: true,
     native: true,
   },
   chatResume: {
@@ -154,6 +157,7 @@ export const endpoints = {
     auth: "public",
     response: ModelsResponse,
     cache: { maxAgeSeconds: 10 },
+    upstream: true,
     native: true,
   },
   ocr: {
@@ -164,6 +168,7 @@ export const endpoints = {
     body: OcrRequest,
     response: OcrResponse,
     cache: "no-store",
+    upstream: true,
     native: true,
   },
   syncPush: {
