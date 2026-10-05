@@ -46,15 +46,41 @@ export interface Databook {
   pages: DatabookPage[];
 }
 
-/** Une planche remontée par la recherche plein texte. */
-export interface PlancheTrouvee {
+/** A plate returned by the full-text search. */
+export interface PlateHit {
   databookId: number;
-  titre: string;
-  categorie: string | null;
+  title: string;
+  category: string | null;
   cover: string | null;
-  numero: number;
+  number: number;
   image: string | null;
-  texte: string;
+  text: string;
+}
+
+/** Result of the full-text search over the plates. */
+export interface PlateSearch {
+  items: PlateHit[];
+  total: number;
+  databookCount: number;
+}
+
+/**
+ * Raw answer of `/api/databooks/search`: English fields, with the former French
+ * ones read as a fallback when the site predates the rename.
+ */
+interface PlateSearchResponse {
+  items: Array<
+    Partial<Omit<PlateHit, "databookId">> & {
+      databookId: number;
+      titre?: string;
+      categorie?: string | null;
+      numero?: number;
+      texte?: string;
+    }
+  >;
+  total: number;
+  databookCount?: number;
+  fiches?: number;
 }
 
 const BASE = resolveSiteUrl(Bun.env);
@@ -132,12 +158,23 @@ export class DatabooksService {
    * rend cette requête possible (trigramme sur `bot.databook_pages_text`) est
    * posé sur le PostgreSQL du site.
    */
-  async searchPages(
-    terme: string,
-    limit = 25,
-  ): Promise<{ items: PlancheTrouvee[]; total: number; fiches: number } | null> {
-    return this.get(
-      `/api/databooks/search?q=${encodeURIComponent(terme)}&limit=${Math.min(100, limit)}`,
+  async searchPages(term: string, limit = 25): Promise<PlateSearch | null> {
+    const raw = await this.get<PlateSearchResponse>(
+      `/api/databooks/search?q=${encodeURIComponent(term)}&limit=${Math.min(100, limit)}`,
     );
+    if (!raw) return null;
+    return {
+      items: raw.items.map((item) => ({
+        databookId: item.databookId,
+        title: item.title ?? item.titre ?? "",
+        category: item.category ?? item.categorie ?? null,
+        cover: item.cover ?? null,
+        number: item.number ?? item.numero ?? 0,
+        image: item.image ?? null,
+        text: item.text ?? item.texte ?? "",
+      })),
+      total: raw.total,
+      databookCount: raw.databookCount ?? raw.fiches ?? 0,
+    };
   }
 }

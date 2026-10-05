@@ -6,7 +6,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LibraryNav, WorkshopNav } from "@/components/library/LibraryNav";
 import { DatabooksCatalogManager } from "@/components/admin/DatabooksCatalogManager";
 import { T } from "@/components/T";
-import { getCampagneStats } from "@/lib/databooks-campagne";
+import { getCampaignStats } from "@/lib/databooks-campaign";
 import { progressionTranscription } from "@/lib/databooks-transcription";
 import { requireAdmin } from "@/lib/session";
 
@@ -17,9 +17,9 @@ export const metadata: Metadata = { title: "Traduction · Atelier" };
 /** Catalogue des ouvrages, campagnes de traduction française et qualité OCR. */
 export default async function WorkshopTranslationPage() {
   await requireAdmin();
-  const [progression, campagne] = await Promise.all([
+  const [progression, campaign] = await Promise.all([
     progressionTranscription(),
-    getCampagneStats(),
+    getCampaignStats(),
   ]);
 
   return (
@@ -53,7 +53,7 @@ export default async function WorkshopTranslationPage() {
       />
       <LibraryNav />
       <WorkshopNav />
-      <DatabooksCatalogManager initialFiches={progression.fiches} initialCampagne={campagne} />
+      <DatabooksCatalogManager initialFiches={progression.fiches} initialCampaign={campaign} />
     </PageShell>
   );
 }

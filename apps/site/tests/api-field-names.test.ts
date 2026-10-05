@@ -1,9 +1,10 @@
 /**
- * Champs JSON des API manga, relecture OCR et entités : noms anglais, anciens
- * noms français gardés en doublon déprécié le temps d'une version.
+ * JSON fields of the manga, OCR review, entities, databooks search and campaign
+ * APIs: English names, the former French names kept as deprecated duplicates
+ * for one version.
  *
- * Les modules de base, de session et de stockage sont simulés : aucune base ni
- * aucun secret réel.
+ * The database, session and storage modules are mocked: no real database and no
+ * real secret.
  */
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 
@@ -14,7 +15,7 @@ mock.module("@/lib/config", () => ({
   SITE_URL: "https://dragonballfr.com",
 }));
 
-// --- /api/manga (index) -----------------------------------------------------
+// --- database: each `execute` answers the next queued result ----------------
 let executeResults: unknown[][] = [];
 mock.module("@/lib/db", () => ({
   db: {
@@ -23,8 +24,18 @@ mock.module("@/lib/db", () => ({
   },
 }));
 mock.module("@/lib/pg-unaccent", () => ({ sansAccents: async () => "" }));
+mock.module("@/lib/databooks", () => ({
+  listDatabooks: async () => ({ items: [] }),
+  getDatabook: async () => ({
+    pages: [
+      { number: 1, image: null },
+      { number: 2, image: "./assets/wiki/databooks/x.jpg" },
+    ],
+  }),
+}));
+mock.module("@/lib/databooks-redis", () => ({ indexDatabook: async () => {} }));
 
-// --- manga-api (chapitre) ---------------------------------------------------
+// --- manga-api: one chapter -------------------------------------------------
 mock.module("@/lib/db-universe", () => ({
   dbUniverse: {
     mangaChapter: async (id: number) =>
@@ -47,7 +58,7 @@ mock.module("@/lib/db-universe", () => ({
   },
 }));
 
-// --- entités et relecture OCR ----------------------------------------------
+// --- entities and OCR review ------------------------------------------------
 let isAdmin = true;
 mock.module("@/lib/session", () => ({ isCurrentUserAdmin: async () => isAdmin }));
 mock.module("@/lib/wiki-admin", () => ({
@@ -55,14 +66,6 @@ mock.module("@/lib/wiki-admin", () => ({
   chercheEntites: async () => [{ id: 1, nom: "Son Goku" }],
 }));
 mock.module("@/lib/admin-guard", () => ({ isAdminUserOrToken: async () => isAdmin }));
-mock.module("@/lib/databooks", () => ({
-  getDatabook: async () => ({
-    pages: [
-      { number: 1, image: null },
-      { number: 2, image: "./assets/wiki/databooks/x.jpg" },
-    ],
-  }),
-}));
 
 beforeEach(() => {
   isAdmin = true;
@@ -70,7 +73,7 @@ beforeEach(() => {
 });
 
 describe("/api/manga", () => {
-  test("l'index porte les champs anglais et garde les anciens en doublon", async () => {
+  test("the index carries the English fields and keeps the former ones as duplicates", async () => {
     executeResults = [
       [{ series: "DB", chapitres: 2, planches: 400 }],
       [{ series: "DB", tomes: 42 }],
@@ -141,7 +144,7 @@ describe("/api/manga", () => {
     expect(body.examples).toEqual(body.exemples);
   });
 
-  test("un chapitre expose page, pageList, transcribed et l'édition en anglais", async () => {
+  test("a chapter exposes page, pageList, transcribed and the English edition", async () => {
     executeResults = [[{ planche: 1, text: "Kamehameha", lines: null, lang: "fr" }]];
     const { chapitreApi, plancheApi } = await import("../src/lib/manga-api");
     const chapter = await chapitreApi(7);
@@ -165,7 +168,7 @@ describe("/api/manga", () => {
 });
 
 describe("/api/admin/entities", () => {
-  test("rend entities[].name, avec entites[].nom en doublon", async () => {
+  test("answers entities[].name, with entites[].nom as a duplicate", async () => {
     const { GET } = await import("../src/app/api/admin/entities/route");
     const res = await GET(new Request("http://x/api/admin/entities?type=character&q=goku"));
     const body = (await res.json()) as Record<string, any>;
@@ -177,21 +180,21 @@ describe("/api/admin/entities", () => {
   });
 });
 
-describe("/api/databooks/:id/ocr-review", () => {
-  const call = async (query: string) => {
-    const { GET } = await import("../src/app/api/databooks/[id]/ocr-review/route");
-    return GET(new Request(`http://x/api/databooks/4/ocr-review?${query}`), {
-      params: Promise.resolve({ id: "4" }),
-    });
-  };
+async function call(query: string) {
+  const { GET } = await import("../src/app/api/databooks/[id]/ocr-review/route");
+  return GET(new Request(`http://x/api/databooks/4/ocr-review?${query}`), {
+    params: Promise.resolve({ id: "4" }),
+  });
+}
 
-  test("une planche sans scan répond noScan, avec sansScan en doublon", async () => {
+describe("/api/databooks/:id/ocr-review", () => {
+  test("a plate without a scan answers noScan, with sansScan as a duplicate", async () => {
     const body = (await (await call("page=1")).json()) as Record<string, unknown>;
     expect(body).toMatchObject({ id: 4, page: 1, noScan: true, planche: 1, sansScan: true });
     expect(body.regions).toEqual([]);
   });
 
-  test("les régions lues portent text et box, texte et boite en doublon", async () => {
+  test("the regions read carry text and box, with texte and boite as duplicates", async () => {
     const realFetch = globalThis.fetch;
     globalThis.fetch = (async () =>
       Response.json({
@@ -222,7 +225,7 @@ describe("/api/databooks/:id/ocr-review", () => {
     }
   });
 
-  test("un service injoignable répond unavailable, avec indisponible en doublon", async () => {
+  test("an unreachable service answers unavailable, with indisponible as a duplicate", async () => {
     const realFetch = globalThis.fetch;
     globalThis.fetch = (async () => {
       throw new Error("down");
@@ -233,5 +236,139 @@ describe("/api/databooks/:id/ocr-review", () => {
     } finally {
       globalThis.fetch = realFetch;
     }
+  });
+});
+
+describe("/api/databooks/search", () => {
+  test("each plate carries title, category, number and text, with the French fields as duplicates", async () => {
+    executeResults = [
+      [
+        {
+          id: "4",
+          title: "Daizenshuu 1",
+          category: "guide",
+          cover: "c.webp",
+          plate_number: 12,
+          image: "x.webp",
+          plate_text: "悟空がかめはめ波を放つ",
+          total: 3,
+          databook_count: 2,
+        },
+      ],
+    ];
+    const { chercherDansPlanches } = await import("../src/lib/databooks-transcription");
+    const result = await chercherDansPlanches("かめはめ波");
+    expect(result.total).toBe(3);
+    expect(result.databookCount).toBe(2);
+    expect(result.fiches).toBe(2);
+    expect(result.items[0]).toEqual({
+      databookId: 4,
+      title: "Daizenshuu 1",
+      category: "guide",
+      cover: "c.webp",
+      number: 12,
+      image: "x.webp",
+      text: "悟空がかめはめ波を放つ",
+      titre: "Daizenshuu 1",
+      categorie: "guide",
+      numero: 12,
+      texte: "悟空がかめはめ波を放つ",
+    });
+    expect(await chercherDansPlanches("  ")).toEqual({
+      items: [],
+      total: 0,
+      databookCount: 0,
+      fiches: 0,
+    });
+  });
+});
+
+describe("/api/admin/databooks/campaign", () => {
+  const rows = [
+    {
+      id: 1,
+      title: "Daizenshuu 1",
+      category: "guide",
+      total_pages: 10,
+      transcribed: 8,
+      translated: 3,
+      faulty: 2,
+      ja_chars: 900,
+      ja_chars_untranslated: 500,
+    },
+    {
+      id: 2,
+      title: "Daizenshuu 2",
+      category: null,
+      total_pages: 5,
+      transcribed: 5,
+      translated: 5,
+      faulty: 0,
+      ja_chars: 400,
+      ja_chars_untranslated: 0,
+    },
+  ];
+
+  test("serves the English totals and works, with the French fields as duplicates", async () => {
+    executeResults = [rows];
+    const { GET } = await import("../src/app/api/admin/databooks/campaign/route");
+    const res = await GET();
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, any>;
+
+    expect(body).toMatchObject({
+      totalWorks: 2,
+      pendingWorks: 1,
+      totalPages: 15,
+      transcribedPages: 13,
+      translatedPages: 8,
+      remainingToTranslate: 5,
+      remainingJaChars: 500,
+      totalOuvrages: 2,
+      ouvragesEnAttente: 1,
+      totalPlanches: 15,
+      planchesTranscrites: 13,
+      planchesTraduites: 8,
+      resteATraduire: 5,
+      signesJaRestants: 500,
+    });
+    expect(body.topOuvrages).toEqual(body.topWorks);
+    expect(body.topWorks[0]).toEqual({
+      id: 1,
+      title: "Daizenshuu 1",
+      category: "guide",
+      totalPages: 10,
+      transcribed: 8,
+      translated: 3,
+      faulty: 2,
+      remainingToTranslate: 5,
+      remainingJaChars: 500,
+      sourceQuality: "average",
+      titre: "Daizenshuu 1",
+      totalPlanches: 10,
+      transcrites: 8,
+      traduites: 3,
+      fautives: 2,
+      resteATraduire: 5,
+      signesJaRestants: 500,
+      qualiteSource: "moyenne",
+    });
+    expect(body.topWorks[1]).toMatchObject({ sourceQuality: "sound", qualiteSource: "saine" });
+  });
+
+  test("a source with more than 30% of defective plates is flagged to retranscribe", async () => {
+    executeResults = [[{ ...rows[0], faulty: 7 }]];
+    const { getCampaignStats } = await import("../src/lib/databooks-campaign");
+    const stats = await getCampaignStats();
+    expect(stats.topWorks[0]).toMatchObject({
+      sourceQuality: "to-retranscribe",
+      qualiteSource: "a-retranscrire",
+    });
+  });
+
+  test("refuses a caller that is not an admin", async () => {
+    isAdmin = false;
+    const { GET } = await import("../src/app/api/admin/databooks/campaign/route");
+    expect((await GET()).status).toBe(403);
   });
 });

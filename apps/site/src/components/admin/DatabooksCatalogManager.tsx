@@ -15,15 +15,15 @@ import {
   Pencil,
 } from "lucide-react";
 import type { ProgressionFiche } from "@/lib/databooks-transcription";
-import type { CampagneStats } from "@/lib/databooks-campagne";
+import type { CampaignStats } from "@/lib/databooks-campaign";
 import { assetUrl } from "@/lib/assets";
 
 export function DatabooksCatalogManager({
   initialFiches,
-  initialCampagne,
+  initialCampaign,
 }: {
   initialFiches: ProgressionFiche[];
-  initialCampagne: CampagneStats;
+  initialCampaign: CampaignStats;
 }) {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -36,14 +36,14 @@ export function DatabooksCatalogManager({
   const [sortAsc, setSortAsc] = useState(false);
 
   // Campaign data query
-  const { data: campagne } = useQuery<CampagneStats>({
-    queryKey: ["admin", "databooks", "campagne"],
+  const { data: campaign } = useQuery<CampaignStats>({
+    queryKey: ["admin", "databooks", "campaign"],
     queryFn: async () => {
       const res = await fetch("/api/admin/databooks/campaign");
       if (!res.ok) throw new Error("Erreur de chargement de la campagne");
       return res.json();
     },
-    initialData: initialCampagne,
+    initialData: initialCampaign,
     refetchInterval: 15_000,
   });
 
@@ -160,17 +160,17 @@ export function DatabooksCatalogManager({
           <div className="rounded-lg bg-white/[0.02] p-3 border border-white/5">
             <div className="text-xs text-white/40">Ouvrages en Attente</div>
             <div className="mt-1 text-2xl font-bold text-white">
-              {campagne.ouvragesEnAttente} / {campagne.totalOuvrages}
+              {campaign.pendingWorks} / {campaign.totalWorks}
             </div>
             <div className="mt-1 text-[11px] text-white/40">
-              {campagne.resteATraduire.toLocaleString("fr-FR")} planches à traduire
+              {campaign.remainingToTranslate.toLocaleString("fr-FR")} planches à traduire
             </div>
           </div>
 
           <div className="rounded-lg bg-white/[0.02] p-3 border border-white/5">
             <div className="text-xs text-white/40">Volume Japonais Restant</div>
             <div className="mt-1 text-2xl font-bold text-dbz-orange">
-              {Math.round(campagne.signesJaRestants / 1000).toLocaleString("fr-FR")} k
+              {Math.round(campaign.remainingJaChars / 1000).toLocaleString("fr-FR")} k
             </div>
             <div className="mt-1 text-[11px] text-white/40">signes japonais sains</div>
           </div>
@@ -178,11 +178,11 @@ export function DatabooksCatalogManager({
           <div className="rounded-lg bg-white/[0.02] p-3 border border-white/5">
             <div className="text-xs text-white/40">Planches Déjà Traduites</div>
             <div className="mt-1 text-2xl font-bold text-emerald-400">
-              {campagne.planchesTraduites.toLocaleString("fr-FR")}
+              {campaign.translatedPages.toLocaleString("fr-FR")}
             </div>
             <div className="mt-1 text-[11px] text-emerald-400/60">
-              {campagne.planchesTranscrites > 0
-                ? Math.round((campagne.planchesTraduites / campagne.planchesTranscrites) * 100)
+              {campaign.transcribedPages > 0
+                ? Math.round((campaign.translatedPages / campaign.transcribedPages) * 100)
                 : 0}
               % du corpus transcrit
             </div>

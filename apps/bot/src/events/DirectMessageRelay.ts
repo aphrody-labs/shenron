@@ -8,7 +8,7 @@ import { dmContacts, dmMessages } from "~/db/schema";
 import { logger } from "~/lib/logger";
 import { isBotOwner } from "~/lib/env";
 import { StatsService } from "~/services/StatsService";
-import { DatabooksService, type Databook, type PlancheTrouvee } from "~/services/DatabooksService";
+import { DatabooksService, type Databook, type PlateHit } from "~/services/DatabooksService";
 
 /** IDs des Owners / Fondateurs (Omar, Yoyo / Shawn, trape17) */
 const OWNER_DISCORD_IDS = new Set([
@@ -102,7 +102,7 @@ export class DirectMessageRelay {
     if (result.total === 0) return `Aucune planche transcrite ne contient « ${request.term} ».`;
     return [
       `📚 **Databooks — « ${request.term} »**`,
-      `${result.total} planche(s) trouvée(s) dans ${result.fiches} ouvrage(s).`,
+      `${result.total} planche(s) trouvée(s) dans ${result.databookCount} ouvrage(s).`,
       ...result.items.slice(0, 3).map((item) => this.formatPlanche(item, request.term, site)),
     ]
       .join("\n\n")
@@ -119,12 +119,12 @@ export class DirectMessageRelay {
     ].join("\n");
   }
 
-  private formatPlanche(item: PlancheTrouvee, term: string, site: string): string {
-    const texte = item.texte.replace(/\s+/g, " ").trim();
+  private formatPlanche(item: PlateHit, term: string, site: string): string {
+    const texte = item.text.replace(/\s+/g, " ").trim();
     const position = texte.toLocaleLowerCase().indexOf(term.toLocaleLowerCase());
     const debut = position > 180 ? position - 180 : 0;
     const extrait = `${debut > 0 ? "…" : ""}${texte.slice(debut, debut + 420)}${texte.length > debut + 420 ? "…" : ""}`;
-    return `**${item.titre} — planche ${item.numero}**\n${extrait}\n${site}/wiki/databooks/${item.databookId}`;
+    return `**${item.title} — planche ${item.number}**\n${extrait}\n${site}/wiki/databooks/${item.databookId}`;
   }
 
   /** Génère un bilan opérationnel adapté selon le profil de l'owner */

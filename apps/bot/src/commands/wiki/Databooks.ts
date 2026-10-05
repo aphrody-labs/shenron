@@ -16,7 +16,7 @@ import { Pagination } from "@discordx/pagination";
 import { GuildOnly } from "~/guards/GuildOnly";
 import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { FeatureEnabled } from "~/guards/FeatureEnabled";
-import { DatabooksService, type Databook, type PlancheTrouvee } from "~/services/DatabooksService";
+import { DatabooksService, type Databook, type PlateHit } from "~/services/DatabooksService";
 import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
 
 /**
@@ -244,29 +244,29 @@ export class DatabooksCommands {
   }
 
   private resultatEmbed(
-    p: PlancheTrouvee,
+    p: PlateHit,
     terme: string,
     index: number,
     affichees: number,
-    res: { total: number; fiches: number },
+    res: { total: number; databookCount: number },
   ): EmbedBuilder {
     const embed = new EmbedBuilder()
       .setAuthor({
         name: "ARCHIVES JAPONAISES TRANSCRITES · RECHERCHE",
         iconURL: "https://dragonballfr.com/favicon.ico",
       })
-      .setTitle(`📖 ${p.titre} — Planche ${p.numero}`)
+      .setTitle(`📖 ${p.title} — Planche ${p.number}`)
       .setURL(`${SITE}/wiki/databooks/${p.databookId}`)
-      .setColor(couleur(p.categorie))
+      .setColor(couleur(p.category))
       .setDescription(
         [
           `${SHENRON_SEPARATORS.solid}`,
-          `> ${tronquer(this.centrerSur(p.texte, terme), 3700)}`,
+          `> ${tronquer(this.centrerSur(p.text, terme), 3700)}`,
           `${SHENRON_SEPARATORS.solid}`,
         ].join("\n"),
       )
       .setFooter({
-        text: `${index + 1}/${affichees} affichées · ${res.total} planche${res.total > 1 ? "s" : ""} dans ${res.fiches} ouvrage${res.fiches > 1 ? "s" : ""} · dragonballfr.com`,
+        text: `${index + 1}/${affichees} affichées · ${res.total} planche${res.total > 1 ? "s" : ""} dans ${res.databookCount} ouvrage${res.databookCount > 1 ? "s" : ""} · dragonballfr.com`,
         iconURL: "https://dragonballfr.com/favicon.ico",
       });
     const image = assetUrl(p.image);

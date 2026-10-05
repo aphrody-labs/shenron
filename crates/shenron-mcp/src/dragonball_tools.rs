@@ -986,24 +986,28 @@ pub(crate) async fn databooks_plates(r: DatabooksPlatesRequest) -> CallToolResul
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
-        .map(|item| {
-            let mut item: Map<String, Value> = item.as_object().cloned().unwrap_or_default();
-            // `text` once the site speaks English; `texte` before.
-            let texte = item.remove("text").or_else(|| item.remove("texte"));
-            let id = item
-                .get("databookId")
-                .map(|v| v.as_str().map_or_else(|| v.to_string(), str::to_owned))
-                .unwrap_or_default();
-            item.insert("url".into(), json!(format!("/wiki/databooks/{id}")));
-            let excerpt =
-                extrait_autour(texte.as_ref().and_then(Value::as_str).unwrap_or(""), &r.q);
-            item.insert("excerpt".into(), json!(excerpt));
-            // Deprecated name of `excerpt`.
-            item.insert("extrait".into(), json!(excerpt));
-            Value::Object(item)
-        })
+        .map(|item| plate_hit(item, &r.q))
         .collect();
     ok(json!({ "q": r.q, "total": items.len(), "items": items }))
+}
+
+/// One plate of the site search, with its full text replaced by an excerpt around `query`.
+fn plate_hit(item: &Value, query: &str) -> Value {
+    let mut item: Map<String, Value> = item.as_object().cloned().unwrap_or_default();
+    // The full text travels as `text`, and as the deprecated `texte` on the same response:
+    // both are dropped, the excerpt replaces them.
+    let legacy_text = item.remove("texte");
+    let full_text = item.remove("text").or(legacy_text);
+    let id = item
+        .get("databookId")
+        .map(|v| v.as_str().map_or_else(|| v.to_string(), str::to_owned))
+        .unwrap_or_default();
+    item.insert("url".into(), json!(format!("/wiki/databooks/{id}")));
+    let excerpt = extrait_autour(full_text.as_ref().and_then(Value::as_str).unwrap_or(""), query);
+    item.insert("excerpt".into(), json!(excerpt));
+    // Deprecated name of `excerpt`.
+    item.insert("extrait".into(), json!(excerpt));
+    Value::Object(item)
 }
 
 /// Input of `dragonball.databooks_get`.
@@ -1448,6 +1452,28 @@ mod tests {
         assert_eq!(manga_tome_id(&Tome::Number(13)), "vol13");
         assert_eq!(manga_tome_id(&Tome::Id(" 7 ".into())), "vol7");
         assert_eq!(manga_tome_id(&Tome::Id("ch1407".into())), "ch1407");
+    }
+
+    #[test]
+    fn plate_hits_drop_the_full_text_under_both_names() {
+        let both = json!({
+            "databookId": 4, "title": "Daizenshuu 1", "titre": "Daizenshuu 1",
+            "number": 12, "numero": 12, "text": "Son Goku lance un Kamehameha", "texte": "Son Goku lance un Kamehameha"
+        });
+        let hit = plate_hit(&both, "Kamehameha");
+        assert!(hit.get("text").is_none() && hit.get("texte").is_none());
+        assert_eq!(hit["excerpt"], hit["extrait"]);
+        assert!(hit["excerpt"].as_str().is_some_and(|e| e.contains("Kamehameha")));
+        assert_eq!(hit["url"], "/wiki/databooks/4");
+        assert_eq!(hit["title"], "Daizenshuu 1");
+
+        // A site that predates the rename still answers `texte` only.
+        let old =
+            json!({ "databookId": "9", "titre": "Guide", "numero": 3, "texte": "Kamehameha" });
+        let hit = plate_hit(&old, "Kamehameha");
+        assert!(hit.get("texte").is_none());
+        assert_eq!(hit["excerpt"], "Kamehameha");
+        assert_eq!(hit["url"], "/wiki/databooks/9");
     }
 
     #[test]

@@ -16,6 +16,11 @@
  *
  * Lecture publique, alignée sur `/api/databooks` : seules les fiches
  * `visible = true` sortent, sauf appel porteur d'un jeton valide.
+ *
+ * Response: `{ q, items: [{ databookId, title, category, cover, number, image,
+ * text }], total, databookCount }`. The former French fields (`titre`,
+ * `categorie`, `numero`, `texte` on each item, `fiches` at the top level) stay as
+ * deprecated duplicates for one version.
  */
 import { NextResponse } from "next/server";
 import { hasValidApiToken, isAdminOrToken } from "@/lib/admin-guard";

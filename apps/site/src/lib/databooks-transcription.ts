@@ -484,21 +484,37 @@ async function rythmeRecent(): Promise<{ jour: string; revisions: number }[]> {
 }
 
 /** Une planche qui répond à une recherche. */
-interface PlancheTrouvee {
+/**
+ * A plate whose transcription contains the searched text. The French fields at
+ * the bottom are the former names, served as deprecated duplicates for one version.
+ */
+interface PlateHit {
   databookId: number;
-  titre: string;
-  categorie: string | null;
+  title: string;
+  category: string | null;
   cover: string | null;
-  numero: number;
+  /** Plate number inside its databook. */
+  number: number;
   image: string | null;
+  /** Full transcription of the plate. */
+  text: string;
+  /** @deprecated Former name of `title`. */
+  titre: string;
+  /** @deprecated Former name of `category`. */
+  categorie: string | null;
+  /** @deprecated Former name of `number`. */
+  numero: number;
+  /** @deprecated Former name of `text`. */
   texte: string;
 }
 
-export interface RechercheResultat {
-  items: PlancheTrouvee[];
-  /** Planches correspondantes au total (avant `limit`). */
+export interface PlateSearchResult {
+  items: PlateHit[];
+  /** Matching plates in total (before `limit`). */
   total: number;
-  /** Fiches distinctes concernées. */
+  /** Distinct databooks concerned. */
+  databookCount: number;
+  /** @deprecated Former name of `databookCount`. */
   fiches: number;
 }
 
@@ -517,25 +533,25 @@ export interface RechercheResultat {
 export async function chercherDansPlanches(
   terme: string,
   opts: { limit?: number; includeHidden?: boolean; databookId?: number } = {},
-): Promise<RechercheResultat> {
+): Promise<PlateSearchResult> {
   const cible = terme.trim();
-  if (!cible) return { items: [], total: 0, fiches: 0 };
+  if (!cible) return { items: [], total: 0, databookCount: 0, fiches: 0 };
 
   const limit = Math.min(200, Math.max(1, opts.limit ?? 50));
   const motif = `%${escapeLike(cible)}%`;
   const visibles = opts.includeHidden ? sql`true` : sql`coalesce(d.visible, true)`;
   const uneFiche = opts.databookId ? sql`AND d.id = ${opts.databookId}` : sql``;
 
-  const lignes = await db.execute<{
+  const rows = await db.execute<{
     id: string;
-    titre: string;
-    categorie: string | null;
+    title: string;
+    category: string | null;
     cover: string | null;
-    numero: number;
+    plate_number: number;
     image: string | null;
-    texte: string;
+    plate_text: string;
     total: number;
-    fiches: number;
+    databook_count: number;
   }>(sql`
 		WITH candidats AS (
 			-- Filtre porté par l'index trigramme : ne déroule les planches que des
@@ -547,13 +563,10 @@ export async function chercherDansPlanches(
 			  AND bot.databook_pages_text(d.pages) ILIKE ${motif}
 		),
 		trouvees AS (
-			-- Alias en français : le mapping TypeScript lit titre/categorie.
-			-- Sans eux, SELECT t.* sort title/category et les deux champs
-			-- arrivaient undefined côté client — vu en production.
-			SELECT c.id, c.title AS titre, c.category AS categorie, c.cover,
-			       coalesce((p ->> 'number')::int, ord::int) AS numero,
+			SELECT c.id, c.title, c.category, c.cover,
+			       coalesce((p ->> 'number')::int, ord::int) AS plate_number,
 			       nullif(btrim(p ->> 'image'), '') AS image,
-			       p ->> 'text' AS texte
+			       p ->> 'text' AS plate_text
 			FROM candidats c,
 			     LATERAL jsonb_array_elements(c.pages) WITH ORDINALITY AS t(p, ord)
 			WHERE p ->> 'text' ILIKE ${motif}
@@ -561,25 +574,34 @@ export async function chercherDansPlanches(
 		-- count(DISTINCT ...) OVER () n'existe pas en fenêtre sous PostgreSQL :
 		-- les totaux passent par un CTE d'agrégat joint à chaque ligne.
 		compte AS (
-			SELECT count(*)::int AS total, count(DISTINCT id)::int AS fiches FROM trouvees
+			SELECT count(*)::int AS total, count(DISTINCT id)::int AS databook_count FROM trouvees
 		)
 		SELECT t.*, c.total, c.fiches
 		FROM trouvees t CROSS JOIN compte c
-		ORDER BY t.titre, t.numero
+		ORDER BY t.title, t.plate_number
 		LIMIT ${limit}
 	`);
 
+  const databookCount = rows.length > 0 ? Number(rows[0].databook_count) : 0;
   return {
-    items: lignes.map((l) => ({
-      databookId: Number(l.id),
-      titre: l.titre,
-      categorie: l.categorie,
-      cover: l.cover,
-      numero: Number(l.numero),
-      image: l.image,
-      texte: l.texte,
-    })),
-    total: lignes.length > 0 ? Number(lignes[0].total) : 0,
-    fiches: lignes.length > 0 ? Number(lignes[0].fiches) : 0,
+    items: rows.map((r) => {
+      const number = Number(r.plate_number);
+      return {
+        databookId: Number(r.id),
+        title: r.title,
+        category: r.category,
+        cover: r.cover,
+        number,
+        image: r.image,
+        text: r.plate_text,
+        titre: r.title,
+        categorie: r.category,
+        numero: number,
+        texte: r.plate_text,
+      };
+    }),
+    total: rows.length > 0 ? Number(rows[0].total) : 0,
+    databookCount,
+    fiches: databookCount,
   };
 }

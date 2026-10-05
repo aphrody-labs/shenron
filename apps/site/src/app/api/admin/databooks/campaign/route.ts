@@ -1,6 +1,17 @@
+/**
+ * GET /api/admin/databooks/campaign — translation queue status of the databooks
+ * (admin only): `totalWorks`, `pendingWorks`, `totalPages`, `transcribedPages`,
+ * `translatedPages`, `remainingToTranslate`, `remainingJaChars`, `topWorks[]`.
+ * The former French fields (`totalOuvrages`, `ouvragesEnAttente`, `totalPlanches`,
+ * `planchesTranscrites`, `planchesTraduites`, `resteATraduire`, `signesJaRestants`,
+ * `topOuvrages[]` with `titre`, `transcrites`, `traduites`, `fautives`, `qualiteSource`…)
+ * stay as deprecated duplicates for one version.
+ *
+ * POST `{ action: "reindex-redis" }` rebuilds the Redis index.
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { isCurrentUserAdmin } from "@/lib/session";
-import { getCampagneStats, reindexRedis } from "@/lib/databooks-campagne";
+import { getCampaignStats, reindexRedis } from "@/lib/databooks-campaign";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,12 +22,12 @@ export async function GET() {
   }
 
   try {
-    const stats = await getCampagneStats();
+    const stats = await getCampaignStats();
     return NextResponse.json(stats, {
       headers: { "Cache-Control": "private, no-store, max-age=0" },
     });
   } catch (error) {
-    console.error("Campagne API GET error:", error);
+    console.error("Campaign API GET error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Erreur interne" },
       { status: 500 },
@@ -40,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: "Action non supportée." }, { status: 400 });
   } catch (error) {
-    console.error("Campagne API POST error:", error);
+    console.error("Campaign API POST error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Erreur interne" },
       { status: 500 },
