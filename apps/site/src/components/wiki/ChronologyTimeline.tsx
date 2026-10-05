@@ -11,16 +11,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  Coche,
-  Copie,
-  Film,
-  Lecture,
-  Livre,
-  Recherche,
-  Telecharger,
-  Tv,
-} from "@shenron/ui/icones";
+import { Coche, Copie, Film, Lecture, Livre, Recherche, Telecharger, Tv } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import Image from "next/image";
 import { isEditableAsset } from "@/lib/images";
