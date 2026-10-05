@@ -42,25 +42,15 @@ pub(super) async fn translate(
     let user_content = match request.image.as_deref() {
         Some(image) => MessageContent::Parts(vec![
             ContentPart::Text { text: user },
-            ContentPart::ImageUrl {
-                image_url: ImageUrl {
-                    url: encode_image(image)?.data_url(),
-                },
-            },
+            ContentPart::ImageUrl { image_url: ImageUrl { url: encode_image(image)?.data_url() } },
         ]),
         None => MessageContent::Text(user),
     };
     let body = ChatRequest {
         model,
         messages: [
-            Message {
-                role: "system",
-                content: MessageContent::Text(system),
-            },
-            Message {
-                role: "user",
-                content: user_content,
-            },
+            Message { role: "system", content: MessageContent::Text(system) },
+            Message { role: "user", content: user_content },
         ],
         temperature: generation.temperature,
         top_p: generation.top_p,
@@ -79,9 +69,7 @@ pub(super) async fn translate(
             },
         },
     };
-    let http = client
-        .post(endpoint(config.base_url.as_ref(), "chat/completions"))
-        .json(&body);
+    let http = client.post(endpoint(config.base_url.as_ref(), "chat/completions")).json(&body);
     let http = match api_key {
         Some(api_key) => http.bearer_auth(api_key.expose_secret()),
         None => http,
@@ -95,11 +83,7 @@ pub(super) async fn translate(
         .message
         .content
         .context("OpenAI-compatible backend returned no message content")?;
-    Ok(prompt::translations(
-        "openai-compatible",
-        &text,
-        &request.segments,
-    )?)
+    Ok(prompt::translations("openai-compatible", &text, &request.segments)?)
 }
 
 pub(super) async fn models(client: &Client, config: &OpenAiCompatibleConfig) -> Result<Vec<Model>> {
@@ -126,11 +110,7 @@ pub(super) async fn models(client: &Client, config: &OpenAiCompatibleConfig) -> 
 
 fn endpoint(base_url: Option<&Url>, suffix: &str) -> String {
     let base_url = base_url.map_or(DEFAULT_BASE_URL, Url::as_str);
-    format!(
-        "{}/{}",
-        base_url.trim_end_matches('/'),
-        suffix.trim_start_matches('/')
-    )
+    format!("{}/{}", base_url.trim_end_matches('/'), suffix.trim_start_matches('/'))
 }
 
 #[derive(Serialize)]
@@ -223,10 +203,7 @@ mod tests {
     #[test]
     fn endpoint_preserves_base_path() {
         let url = Url::parse("http://localhost:1234/v1").unwrap();
-        assert_eq!(
-            endpoint(Some(&url), "models"),
-            "http://localhost:1234/v1/models"
-        );
+        assert_eq!(endpoint(Some(&url), "models"), "http://localhost:1234/v1/models");
     }
 
     #[test]
@@ -234,14 +211,8 @@ mod tests {
         let body = ChatRequest {
             model: "model",
             messages: [
-                Message {
-                    role: "system",
-                    content: MessageContent::Text("system".to_owned()),
-                },
-                Message {
-                    role: "user",
-                    content: MessageContent::Text("user".to_owned()),
-                },
+                Message { role: "system", content: MessageContent::Text("system".to_owned()) },
+                Message { role: "user", content: MessageContent::Text("user".to_owned()) },
             ],
             temperature: None,
             top_p: None,
@@ -273,21 +244,14 @@ mod tests {
     #[test]
     fn serializes_text_before_an_attached_image() {
         let content = MessageContent::Parts(vec![
-            ContentPart::Text {
-                text: "translate".to_owned(),
-            },
+            ContentPart::Text { text: "translate".to_owned() },
             ContentPart::ImageUrl {
-                image_url: ImageUrl {
-                    url: "data:image/jpeg;base64,image".to_owned(),
-                },
+                image_url: ImageUrl { url: "data:image/jpeg;base64,image".to_owned() },
             },
         ]);
         let value = serde_json::to_value(content).unwrap();
 
-        assert_eq!(
-            value[0],
-            serde_json::json!({ "type": "text", "text": "translate" })
-        );
+        assert_eq!(value[0], serde_json::json!({ "type": "text", "text": "translate" }));
         assert_eq!(value[1]["type"], "image_url");
         assert_eq!(value[1]["image_url"]["url"], "data:image/jpeg;base64,image");
     }

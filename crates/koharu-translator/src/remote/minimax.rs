@@ -21,11 +21,8 @@ pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
     let Some(api_key) = koharu_secrets::get("minimax")? else {
         return Ok(Vec::new());
     };
-    let response: ModelsResponse = send_json(
-        "minimax",
-        client.get(MODELS_URL).bearer_auth(api_key.expose_secret()),
-    )
-    .await?;
+    let response: ModelsResponse =
+        send_json("minimax", client.get(MODELS_URL).bearer_auth(api_key.expose_secret())).await?;
     Ok(response
         .data
         .into_iter()
@@ -51,26 +48,17 @@ pub(super) async fn translate(
     let (system, user) = prompt::prompts(request)?;
     let response: Response = send_json(
         "minimax",
-        client
-            .post(URL)
-            .bearer_auth(api_key.expose_secret())
-            .json(&Request {
-                model,
-                messages: [
-                    Message {
-                        role: "system",
-                        content: system,
-                    },
-                    Message {
-                        role: "user",
-                        content: user,
-                    },
-                ],
-                temperature: generation.temperature,
-                top_p: generation.top_p,
-                max_completion_tokens: generation.max_tokens,
-                response_format: response_format(model, request.segments.len()),
-            }),
+        client.post(URL).bearer_auth(api_key.expose_secret()).json(&Request {
+            model,
+            messages: [
+                Message { role: "system", content: system },
+                Message { role: "user", content: user },
+            ],
+            temperature: generation.temperature,
+            top_p: generation.top_p,
+            max_completion_tokens: generation.max_tokens,
+            response_format: response_format(model, request.segments.len()),
+        }),
     )
     .await?;
     if response.base_resp.status_code != 0 {
@@ -81,13 +69,8 @@ pub(super) async fn translate(
         )
         .into());
     }
-    let text = response
-        .choices
-        .into_iter()
-        .next()
-        .context("MiniMax returned no choices")?
-        .message
-        .content;
+    let text =
+        response.choices.into_iter().next().context("MiniMax returned no choices")?.message.content;
     Ok(prompt::translations("minimax", &text, &request.segments)?)
 }
 
@@ -180,14 +163,8 @@ mod tests {
         let body = Request {
             model: "MiniMax-M3",
             messages: [
-                Message {
-                    role: "system",
-                    content: "system".to_owned(),
-                },
-                Message {
-                    role: "user",
-                    content: "user".to_owned(),
-                },
+                Message { role: "system", content: "system".to_owned() },
+                Message { role: "user", content: "user".to_owned() },
             ],
             temperature: Some(0.7),
             top_p: Some(0.95),
@@ -207,14 +184,8 @@ mod tests {
         let body = Request {
             model: "MiniMax-Text-01",
             messages: [
-                Message {
-                    role: "system",
-                    content: "system".to_owned(),
-                },
-                Message {
-                    role: "user",
-                    content: "user".to_owned(),
-                },
+                Message { role: "system", content: "system".to_owned() },
+                Message { role: "user", content: "user".to_owned() },
             ],
             temperature: None,
             top_p: None,

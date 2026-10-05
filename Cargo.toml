@@ -97,7 +97,7 @@ koharu-scene = { path = "crates/koharu-scene", version = "1.1.0" }
 koharu-secrets = { path = "crates/koharu-secrets", version = "1.1.0" }
 koharu-storage = { path = "crates/koharu-storage", version = "1.1.0" }
 koharu-torch = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-translator = { path = "crates/koharu-translator", version = "0.83.5" }
+koharu-translator = { path = "crates/koharu-translator", version = "1.1.0" }
 llguidance = "1.8.0"
 log = "0.4.34"
 memmap2 = "0.9.11"

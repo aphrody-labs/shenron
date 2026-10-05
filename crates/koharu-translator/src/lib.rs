@@ -88,19 +88,12 @@ impl Translator {
         }
         self.local
             .try_lock()
-            .map(|loaded| {
-                loaded
-                    .as_ref()
-                    .is_some_and(|loaded| loaded.matches(selection))
-            })
+            .map(|loaded| loaded.as_ref().is_some_and(|loaded| loaded.matches(selection)))
             .unwrap_or(true)
     }
 
     pub fn unload(&self) -> bool {
-        self.local
-            .try_lock()
-            .map(|mut loaded| loaded.take().is_some())
-            .unwrap_or(false)
+        self.local.try_lock().map(|mut loaded| loaded.take().is_some()).unwrap_or(false)
     }
 
     #[tracing::instrument(skip_all)]
@@ -166,10 +159,7 @@ impl Translator {
             request.segments = masked.iter().map(|masked| masked.text.clone()).collect();
         }
         let translated = if provider == Provider::Local {
-            self.local(selection)
-                .await?
-                .translate(request, generation)
-                .await?
+            self.local(selection).await?.translate(request, generation).await?
         } else {
             let providers = self.providers.read()?.clone();
             remote::translate(&self.client, &providers, selection, &generation, &request).await?
@@ -197,7 +187,7 @@ impl Translator {
                     restored.push(outcome.text);
                 }
                 restored
-            }
+            },
             _ => translated,
         };
         tracing::Span::current().record("outcome", "completed");
@@ -212,9 +202,7 @@ impl Translator {
         let providers = providers.read()?.clone();
         let client = CLIENT
             .get_or_try_init(|| async {
-                reqwest::Client::builder()
-                    .timeout(Duration::from_secs(5))
-                    .build()
+                reqwest::Client::builder().timeout(Duration::from_secs(5)).build()
             })
             .await?;
         let mut models = local::models();
@@ -224,22 +212,14 @@ impl Translator {
 
     async fn local(&self, selection: &ModelSelection) -> Result<Arc<LocalTranslator>> {
         let mut loaded = self.local.lock().await;
-        if loaded
-            .as_ref()
-            .is_none_or(|loaded| !loaded.matches(selection))
-        {
+        if loaded.as_ref().is_none_or(|loaded| !loaded.matches(selection)) {
             *loaded = Some(LoadedLocal {
                 model: selection.model.clone(),
                 quantization: selection.quantization.clone(),
                 translator: Arc::new(LocalTranslator::load(self.device.clone(), selection).await?),
             });
         }
-        Ok(Arc::clone(
-            &loaded
-                .as_ref()
-                .expect("local translator was loaded")
-                .translator,
-        ))
+        Ok(Arc::clone(&loaded.as_ref().expect("local translator was loaded").translator))
     }
 }
 
@@ -261,24 +241,15 @@ mod tests {
     fn local_vision_requires_capability_and_generation_setting() {
         assert!(Translator::supports_vision(
             &local_selection("gemma4-e2b-it"),
-            &GenerationConfig {
-                vision: Some(true),
-                ..GenerationConfig::default()
-            }
+            &GenerationConfig { vision: Some(true), ..GenerationConfig::default() }
         ));
         assert!(!Translator::supports_vision(
             &local_selection("gemma4-e2b-it"),
-            &GenerationConfig {
-                vision: Some(false),
-                ..GenerationConfig::default()
-            }
+            &GenerationConfig { vision: Some(false), ..GenerationConfig::default() }
         ));
         assert!(!Translator::supports_vision(
             &local_selection("lfm2.5-1.2b-instruct"),
-            &GenerationConfig {
-                vision: Some(true),
-                ..GenerationConfig::default()
-            }
+            &GenerationConfig { vision: Some(true), ..GenerationConfig::default() }
         ));
     }
 }

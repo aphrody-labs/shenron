@@ -39,11 +39,7 @@ impl Default for GenerationConfig {
 impl GenerationConfig {
     pub(crate) fn for_model(self, model: &ModelSelection) -> Self {
         Self {
-            reasoning: if model.reasoning {
-                self.reasoning
-            } else {
-                None
-            },
+            reasoning: if model.reasoning { self.reasoning } else { None },
             vision: if model.vision { self.vision } else { None },
             ..self
         }
@@ -138,10 +134,7 @@ impl ModelGeneration {
                 .max_tokens
                 .or(self.max_tokens)
                 .map_or(1000, |value| value as usize),
-            temperature: overrides
-                .temperature
-                .or(self.temperature)
-                .unwrap_or(defaults.temperature),
+            temperature: overrides.temperature.or(self.temperature).unwrap_or(defaults.temperature),
             top_k: overrides.top_k.or(self.top_k).map(|value| value as usize),
             top_p: overrides.top_p.or(self.top_p),
             min_p: overrides.min_p.or(self.min_p),
@@ -171,9 +164,9 @@ pub(crate) fn display_name(model: &str) -> String {
         .filter(|part| !part.is_empty())
         .map(|part| {
             let mut characters = part.chars();
-            characters.next().map_or_else(String::new, |first| {
-                first.to_uppercase().chain(characters).collect()
-            })
+            characters
+                .next()
+                .map_or_else(String::new, |first| first.to_uppercase().chain(characters).collect())
         })
         .collect::<Vec<_>>()
         .join(" ")

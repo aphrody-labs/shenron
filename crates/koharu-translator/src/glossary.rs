@@ -43,10 +43,7 @@ pub struct GlossaryEntry {
 impl GlossaryEntry {
     #[must_use]
     pub fn new(source: impl Into<String>, target: impl Into<String>) -> Self {
-        Self {
-            source: source.into(),
-            target: target.into(),
-        }
+        Self { source: source.into(), target: target.into() }
     }
 }
 
@@ -92,18 +89,13 @@ impl Glossary {
     /// A glossary applying to every target language, with the default `Zeta` token prefix.
     #[must_use]
     pub fn new(entries: impl IntoIterator<Item = GlossaryEntry>) -> Self {
-        let entries = entries
-            .into_iter()
-            .map(|entry| MaskEntry::new([entry.source], entry.target))
-            .collect();
+        let entries =
+            entries.into_iter().map(|entry| MaskEntry::new([entry.source], entry.target)).collect();
         Self::from_entries(entries)
     }
 
     fn from_entries(entries: Vec<MaskEntry>) -> Self {
-        Self {
-            masker: Masker::new(entries, MaskOptions::default()),
-            target_language: None,
-        }
+        Self { masker: Masker::new(entries, MaskOptions::default()), target_language: None }
     }
 
     /// The terms of `lexicon` protected in translations into `target` (French or English): every
@@ -111,9 +103,8 @@ impl Glossary {
     /// in the target language stay unmasked. Applies to `target` only.
     #[must_use]
     pub fn from_lexicon(lexicon: &Lexicon, target: Language) -> Self {
-        let entries = lexicon_language(target)
-            .map(|lang| lexicon.mask_entries(lang))
-            .unwrap_or_default();
+        let entries =
+            lexicon_language(target).map(|lang| lexicon.mask_entries(lang)).unwrap_or_default();
         Self::from_entries(entries).for_target(target)
     }
 
@@ -196,10 +187,7 @@ impl Glossary {
         let prefix = prefix.into();
         if !prefix.is_empty() {
             let options = MaskOptions {
-                tokens: TokenOptions {
-                    prefix,
-                    ..self.masker.options().tokens.clone()
-                },
+                tokens: TokenOptions { prefix, ..self.masker.options().tokens.clone() },
                 ..self.masker.options().clone()
             };
             self.masker = Masker::new(self.masker.entries().to_vec(), options);
@@ -229,11 +217,7 @@ impl Glossary {
     #[must_use]
     pub fn mask(&self, text: &str) -> Masked {
         let masked = self.masker.mask(text);
-        Masked {
-            table: masked.table(),
-            text: masked.text,
-            overflow: masked.overflow,
-        }
+        Masked { table: masked.table(), text: masked.text, overflow: masked.overflow }
     }
 
     /// Put the official forms back in place of the tokens of `masked`, whatever spelling the
@@ -243,11 +227,7 @@ impl Glossary {
     pub fn restore(&self, translation: &str, masked: &Masked) -> Restored {
         let restored =
             shenron_lexicon::restore(translation, &masked.table, &self.masker.options().tokens);
-        Restored {
-            text: restored.text,
-            unresolved: restored.unresolved,
-            missing: restored.missing,
-        }
+        Restored { text: restored.text, unresolved: restored.unresolved, missing: restored.missing }
     }
 }
 
@@ -262,10 +242,7 @@ pub fn set_default_glossary(glossary: Option<Arc<Glossary>>) {
 
 #[must_use]
 pub fn default_glossary() -> Option<Arc<Glossary>> {
-    DEFAULT
-        .read()
-        .unwrap_or_else(PoisonError::into_inner)
-        .clone()
+    DEFAULT.read().unwrap_or_else(PoisonError::into_inner).clone()
 }
 
 #[cfg(test)]
@@ -286,10 +263,7 @@ mod tests {
     fn masks_longest_first_without_overlap_and_reuses_tokens() {
         let masked = lexicon().mask("孫悟空は界王拳を使う。悟空と孫悟空。");
         assert_eq!(masked.text, "Zeta001はZeta002を使う。Zeta003とZeta001。");
-        assert_eq!(
-            masked.table[0],
-            ("Zeta001".to_owned(), "Son Goku".to_owned())
-        );
+        assert_eq!(masked.table[0], ("Zeta001".to_owned(), "Son Goku".to_owned()));
         assert_eq!(masked.table[2].1, "Goku");
         assert_eq!(masked.overflow, 0);
     }
@@ -376,7 +350,8 @@ mod tests {
     /// The legacy derived file still loads (consumers of `data/lexique-db-canonique.json`).
     #[test]
     fn the_legacy_lexicon_file_loads() {
-        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../data/lexique-db-canonique.json");
+        let path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../../data/lexique-db-canonique.json");
         if !path.is_file() {
             return;
         }

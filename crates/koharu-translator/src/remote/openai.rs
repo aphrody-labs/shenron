@@ -23,11 +23,8 @@ pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
     let Some(api_key) = koharu_secrets::get("openai")? else {
         return Ok(Vec::new());
     };
-    let response: ModelsResponse = send_json(
-        "openai",
-        client.get(MODELS_URL).bearer_auth(api_key.expose_secret()),
-    )
-    .await?;
+    let response: ModelsResponse =
+        send_json("openai", client.get(MODELS_URL).bearer_auth(api_key.expose_secret())).await?;
     Ok(response
         .data
         .into_iter()
@@ -82,25 +79,15 @@ pub(super) async fn translate(
     let user_content = match request.image.as_deref() {
         Some(image) => MessageContent::Parts(vec![
             ContentPart::Text { text: user },
-            ContentPart::ImageUrl {
-                image_url: ImageUrl {
-                    url: encode_image(image)?.data_url(),
-                },
-            },
+            ContentPart::ImageUrl { image_url: ImageUrl { url: encode_image(image)?.data_url() } },
         ]),
         None => MessageContent::Text(user),
     };
     let body = ChatRequest {
         model,
         messages: [
-            Message {
-                role: "system",
-                content: MessageContent::Text(system),
-            },
-            Message {
-                role: "user",
-                content: user_content,
-            },
+            Message { role: "system", content: MessageContent::Text(system) },
+            Message { role: "user", content: user_content },
         ],
         temperature: generation.temperature,
         top_p: generation.top_p,
@@ -119,14 +106,9 @@ pub(super) async fn translate(
             },
         },
     };
-    let response: ChatResponse = send_json(
-        "openai",
-        client
-            .post(URL)
-            .bearer_auth(api_key.expose_secret())
-            .json(&body),
-    )
-    .await?;
+    let response: ChatResponse =
+        send_json("openai", client.post(URL).bearer_auth(api_key.expose_secret()).json(&body))
+            .await?;
     let text = response
         .choices
         .into_iter()
@@ -241,14 +223,8 @@ mod tests {
         let body = ChatRequest {
             model: "gpt-5.6-luna",
             messages: [
-                Message {
-                    role: "system",
-                    content: MessageContent::Text("system".to_owned()),
-                },
-                Message {
-                    role: "user",
-                    content: MessageContent::Text("user".to_owned()),
-                },
+                Message { role: "system", content: MessageContent::Text("system".to_owned()) },
+                Message { role: "user", content: MessageContent::Text("user".to_owned()) },
             ],
             temperature: None,
             top_p: None,

@@ -1072,20 +1072,14 @@ impl LocalModelDescriptor {
     }
 
     fn filename(self, quantization: Option<&str>) -> anyhow::Result<&'static str> {
-        let quantization = quantization.or_else(|| {
-            self.quantizations
-                .first()
-                .map(|quantization| quantization.id)
-        });
+        let quantization =
+            quantization.or_else(|| self.quantizations.first().map(|quantization| quantization.id));
         let quantization = quantization
             .ok_or_else(|| anyhow::anyhow!("local model '{}' has no quantizations", self.id))?;
-        let definition = self
-            .quantizations
-            .iter()
-            .find(|definition| definition.id == quantization)
-            .ok_or_else(|| {
-                anyhow::anyhow!("unknown quantization '{quantization}' for '{}'", self.id)
-            })?;
+        let definition =
+            self.quantizations.iter().find(|definition| definition.id == quantization).ok_or_else(
+                || anyhow::anyhow!("unknown quantization '{quantization}' for '{}'", self.id),
+            )?;
         Ok(definition.filename)
     }
 }
@@ -1135,9 +1129,7 @@ mod tests {
             .find(|descriptor| descriptor.id == "qwen3.5-2b")
             .expect("Qwen model is cataloged");
         assert_eq!(
-            descriptor
-                .filename(Some("Q8_K_XL"))
-                .expect("quantization is valid"),
+            descriptor.filename(Some("Q8_K_XL")).expect("quantization is valid"),
             "Qwen3.5-2B-UD-Q8_K_XL.gguf"
         );
     }

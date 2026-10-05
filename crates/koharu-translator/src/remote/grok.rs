@@ -39,11 +39,7 @@ pub(super) async fn translate(
         .output
         .into_iter()
         .flat_map(|item| item.content)
-        .find_map(|content| {
-            (content.kind == "output_text")
-                .then_some(content.text)
-                .flatten()
-        })
+        .find_map(|content| (content.kind == "output_text").then_some(content.text).flatten())
         .context("Grok returned no output text")?;
     Ok(prompt::translations("grok", &text, &request.segments)?)
 }
@@ -52,11 +48,8 @@ pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
     let Some(api_key) = koharu_secrets::get("grok")? else {
         return Ok(Vec::new());
     };
-    let response: ModelsResponse = send_json(
-        "grok",
-        client.get(MODELS_URL).bearer_auth(api_key.expose_secret()),
-    )
-    .await?;
+    let response: ModelsResponse =
+        send_json("grok", client.get(MODELS_URL).bearer_auth(api_key.expose_secret())).await?;
     Ok(response
         .models
         .into_iter()
@@ -65,10 +58,7 @@ pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
             name: display_name(&model.id),
             model: Some(model.id),
             quantizations: Vec::new(),
-            vision: model
-                .input_modalities
-                .iter()
-                .any(|modality| modality == "image"),
+            vision: model.input_modalities.iter().any(|modality| modality == "image"),
             reasoning: true,
         })
         .collect())
@@ -83,23 +73,15 @@ fn request_body<'a>(
     let user_content = match request.image.as_deref() {
         Some(image) => InputContent::Parts(vec![
             InputPart::Text { text: user },
-            InputPart::Image {
-                image_url: encode_image(image)?.data_url(),
-            },
+            InputPart::Image { image_url: encode_image(image)?.data_url() },
         ]),
         None => InputContent::Text(user),
     };
     Ok(Request {
         model,
         input: [
-            InputMessage {
-                role: "system",
-                content: InputContent::Text(system),
-            },
-            InputMessage {
-                role: "user",
-                content: user_content,
-            },
+            InputMessage { role: "system", content: InputContent::Text(system) },
+            InputMessage { role: "user", content: user_content },
         ],
         store: false,
         temperature: generation.temperature,

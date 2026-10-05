@@ -64,9 +64,7 @@ async fn main() -> Result<()> {
     }
     let model = args.model.clone().or_else(|| {
         (provider == Provider::Local).then(|| {
-            ModelSelection::default()
-                .model
-                .expect("local translation has a default model")
+            ModelSelection::default().model.expect("local translation has a default model")
         })
     });
     if model.is_none()
@@ -79,20 +77,14 @@ async fn main() -> Result<()> {
     }
     let translator =
         Translator::from_config(koharu_ml::device(args.cpu), Config::memory(providers))?;
-    let selection = ModelSelection {
-        provider,
-        model,
-        quantization: None,
-        vision: true,
-        reasoning: true,
-    };
+    let selection =
+        ModelSelection { provider, model, quantization: None, vision: true, reasoning: true };
     let mut request = TranslationRequest::new(args.segments, args.target);
     if let Some(instructions) = args.instructions {
         request = request.with_instructions(instructions);
     }
-    let (_, translated) = translator
-        .translate(&selection, GenerationConfig::default(), request)
-        .await?;
+    let (_, translated) =
+        translator.translate(&selection, GenerationConfig::default(), request).await?;
 
     if args.json {
         println!("{}", serde_json::to_string_pretty(&translated)?);

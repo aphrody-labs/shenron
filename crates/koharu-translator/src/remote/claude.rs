@@ -64,9 +64,9 @@ pub(super) async fn translate(
         system: &system,
         messages: [Message::user(&user, request.image.as_deref())?],
         temperature: generation.temperature,
-        thinking: generation.reasoning.map(|enabled| ThinkingConfig {
-            kind: if enabled { "adaptive" } else { "disabled" },
-        }),
+        thinking: generation
+            .reasoning
+            .map(|enabled| ThinkingConfig { kind: if enabled { "adaptive" } else { "disabled" } }),
         output_config: OutputConfig {
             format: JsonOutputFormat {
                 kind: "json_schema",
@@ -140,10 +140,7 @@ impl<'a> Message<'a> {
                 },
             });
         }
-        Ok(Self {
-            role: "user",
-            content,
-        })
+        Ok(Self { role: "user", content })
     }
 }
 
@@ -232,10 +229,7 @@ mod tests {
             temperature: None,
             thinking: Some(ThinkingConfig { kind: "adaptive" }),
             output_config: OutputConfig {
-                format: JsonOutputFormat {
-                    kind: "json_schema",
-                    schema: prompt::output_schema(2),
-                },
+                format: JsonOutputFormat { kind: "json_schema", schema: prompt::output_schema(2) },
             },
         };
         let value = serde_json::to_value(body).unwrap();
@@ -265,13 +259,6 @@ mod tests {
             }]
         }))
         .unwrap();
-        assert!(
-            response.data[0]
-                .capabilities
-                .thinking
-                .types
-                .adaptive
-                .supported
-        );
+        assert!(response.data[0].capabilities.thinking.types.adaptive.supported);
     }
 }

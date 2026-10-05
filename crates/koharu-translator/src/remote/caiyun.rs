@@ -37,10 +37,7 @@ pub(super) async fn translate(
         "caiyun",
         client
             .post(URL)
-            .header(
-                "X-Authorization",
-                format!("token {}", api_key.expose_secret()),
-            )
+            .header("X-Authorization", format!("token {}", api_key.expose_secret()))
             .json(&Request {
                 source: &request.segments,
                 trans_type: format!("auto2{target}"),
@@ -62,12 +59,10 @@ pub(super) async fn translate(
         )
         .into());
     }
-    Ok(
-        match response.target.context("Caiyun returned no target")? {
-            Target::One(text) => vec![text],
-            Target::Many(texts) => texts,
-        },
-    )
+    Ok(match response.target.context("Caiyun returned no target")? {
+        Target::One(text) => vec![text],
+        Target::Many(texts) => texts,
+    })
 }
 
 #[derive(Serialize)]

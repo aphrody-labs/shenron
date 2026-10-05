@@ -34,34 +34,22 @@ pub(super) async fn translate(
     let user_content = match request.image.as_deref() {
         Some(image) => MessageContent::Parts(vec![
             ContentPart::Text { text: user },
-            ContentPart::ImageUrl {
-                image_url: ImageUrl {
-                    url: encode_image(image)?.data_url(),
-                },
-            },
+            ContentPart::ImageUrl { image_url: ImageUrl { url: encode_image(image)?.data_url() } },
         ]),
         None => MessageContent::Text(user),
     };
     let body = ChatRequest {
         model,
         messages: [
-            Message {
-                role: "system",
-                content: MessageContent::Text(system),
-            },
-            Message {
-                role: "user",
-                content: user_content,
-            },
+            Message { role: "system", content: MessageContent::Text(system) },
+            Message { role: "user", content: user_content },
         ],
         temperature: generation.temperature,
         top_p: generation.top_p,
         max_tokens: generation.max_tokens,
         frequency_penalty: generation.frequency_penalty,
         presence_penalty: generation.presence_penalty,
-        reasoning: generation
-            .reasoning
-            .map(|enabled| ReasoningConfig { enabled }),
+        reasoning: generation.reasoning.map(|enabled| ReasoningConfig { enabled }),
         response_format: ResponseFormat {
             kind: "json_schema",
             json_schema: JsonSchema {
@@ -70,16 +58,11 @@ pub(super) async fn translate(
                 schema: prompt::output_schema(request.segments.len()),
             },
         },
-        provider: ProviderPreferences {
-            require_parameters: true,
-        },
+        provider: ProviderPreferences { require_parameters: true },
     };
     let response: ChatResponse = send_json(
         "openrouter",
-        client
-            .post(CHAT_URL)
-            .bearer_auth(api_key.expose_secret())
-            .json(&body),
+        client.post(CHAT_URL).bearer_auth(api_key.expose_secret()).json(&body),
     )
     .await?;
     let text = response
@@ -90,22 +73,16 @@ pub(super) async fn translate(
         .message
         .content
         .context("OpenRouter returned no message content")?;
-    Ok(prompt::translations(
-        "openrouter",
-        &text,
-        &request.segments,
-    )?)
+    Ok(prompt::translations("openrouter", &text, &request.segments)?)
 }
 
 pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
     let Some(api_key) = koharu_secrets::get("openrouter")? else {
         return Ok(Vec::new());
     };
-    let discovered: Result<ModelsResponse> = super::send_json(
-        "openrouter",
-        client.get(MODELS_URL).bearer_auth(api_key.expose_secret()),
-    )
-    .await;
+    let discovered: Result<ModelsResponse> =
+        super::send_json("openrouter", client.get(MODELS_URL).bearer_auth(api_key.expose_secret()))
+            .await;
     Ok(match discovered {
         Ok(discovered) => discovered
             .data
@@ -121,16 +98,13 @@ pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
                     .iter()
                     .any(|modality| modality == "image"),
                 reasoning: model.reasoning.is_some()
-                    || model
-                        .supported_parameters
-                        .iter()
-                        .any(|parameter| parameter == "reasoning"),
+                    || model.supported_parameters.iter().any(|parameter| parameter == "reasoning"),
             })
             .collect(),
         Err(error) => {
             tracing::warn!(%error, "failed to list OpenRouter models");
             Vec::new()
-        }
+        },
     })
 }
 
@@ -275,14 +249,8 @@ mod tests {
         let body = ChatRequest {
             model: "provider/model",
             messages: [
-                Message {
-                    role: "system",
-                    content: MessageContent::Text("system".to_owned()),
-                },
-                Message {
-                    role: "user",
-                    content: MessageContent::Text("user".to_owned()),
-                },
+                Message { role: "system", content: MessageContent::Text("system".to_owned()) },
+                Message { role: "user", content: MessageContent::Text("user".to_owned()) },
             ],
             temperature: None,
             top_p: None,
@@ -298,9 +266,7 @@ mod tests {
                     schema: prompt::output_schema(2),
                 },
             },
-            provider: ProviderPreferences {
-                require_parameters: true,
-            },
+            provider: ProviderPreferences { require_parameters: true },
         };
         let value = serde_json::to_value(body).unwrap();
 

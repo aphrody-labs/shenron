@@ -26,116 +26,37 @@ pub enum Language {
         props(tag = "zh-CN")
     )]
     ChineseSimplified,
-    #[strum(
-        to_string = "English",
-        serialize = "en-US",
-        serialize = "en",
-        props(tag = "en-US")
-    )]
+    #[strum(to_string = "English", serialize = "en-US", serialize = "en", props(tag = "en-US"))]
     English,
-    #[strum(
-        to_string = "French",
-        serialize = "fr-FR",
-        serialize = "fr",
-        props(tag = "fr-FR")
-    )]
+    #[strum(to_string = "French", serialize = "fr-FR", serialize = "fr", props(tag = "fr-FR"))]
     French,
-    #[strum(
-        to_string = "Portuguese",
-        serialize = "pt-PT",
-        serialize = "pt",
-        props(tag = "pt-PT")
-    )]
+    #[strum(to_string = "Portuguese", serialize = "pt-PT", serialize = "pt", props(tag = "pt-PT"))]
     Portuguese,
-    #[strum(
-        to_string = "Brazilian Portuguese",
-        serialize = "pt-BR",
-        props(tag = "pt-BR")
-    )]
+    #[strum(to_string = "Brazilian Portuguese", serialize = "pt-BR", props(tag = "pt-BR"))]
     BrazilianPortuguese,
-    #[strum(
-        to_string = "Spanish",
-        serialize = "es-ES",
-        serialize = "es",
-        props(tag = "es-ES")
-    )]
+    #[strum(to_string = "Spanish", serialize = "es-ES", serialize = "es", props(tag = "es-ES"))]
     Spanish,
-    #[strum(
-        to_string = "Japanese",
-        serialize = "ja-JP",
-        serialize = "ja",
-        props(tag = "ja-JP")
-    )]
+    #[strum(to_string = "Japanese", serialize = "ja-JP", serialize = "ja", props(tag = "ja-JP"))]
     Japanese,
-    #[strum(
-        to_string = "Turkish",
-        serialize = "tr-TR",
-        serialize = "tr",
-        props(tag = "tr-TR")
-    )]
+    #[strum(to_string = "Turkish", serialize = "tr-TR", serialize = "tr", props(tag = "tr-TR"))]
     Turkish,
-    #[strum(
-        to_string = "Russian",
-        serialize = "ru-RU",
-        serialize = "ru",
-        props(tag = "ru-RU")
-    )]
+    #[strum(to_string = "Russian", serialize = "ru-RU", serialize = "ru", props(tag = "ru-RU"))]
     Russian,
-    #[strum(
-        to_string = "Arabic",
-        serialize = "ar-SA",
-        serialize = "ar",
-        props(tag = "ar-SA")
-    )]
+    #[strum(to_string = "Arabic", serialize = "ar-SA", serialize = "ar", props(tag = "ar-SA"))]
     Arabic,
-    #[strum(
-        to_string = "Korean",
-        serialize = "ko-KR",
-        serialize = "ko",
-        props(tag = "ko-KR")
-    )]
+    #[strum(to_string = "Korean", serialize = "ko-KR", serialize = "ko", props(tag = "ko-KR"))]
     Korean,
-    #[strum(
-        to_string = "Thai",
-        serialize = "th-TH",
-        serialize = "th",
-        props(tag = "th-TH")
-    )]
+    #[strum(to_string = "Thai", serialize = "th-TH", serialize = "th", props(tag = "th-TH"))]
     Thai,
-    #[strum(
-        to_string = "Italian",
-        serialize = "it-IT",
-        serialize = "it",
-        props(tag = "it-IT")
-    )]
+    #[strum(to_string = "Italian", serialize = "it-IT", serialize = "it", props(tag = "it-IT"))]
     Italian,
-    #[strum(
-        to_string = "German",
-        serialize = "de-DE",
-        serialize = "de",
-        props(tag = "de-DE")
-    )]
+    #[strum(to_string = "German", serialize = "de-DE", serialize = "de", props(tag = "de-DE"))]
     German,
-    #[strum(
-        to_string = "Vietnamese",
-        serialize = "vi-VN",
-        serialize = "vi",
-        props(tag = "vi-VN")
-    )]
+    #[strum(to_string = "Vietnamese", serialize = "vi-VN", serialize = "vi", props(tag = "vi-VN"))]
     Vietnamese,
-    #[strum(
-        to_string = "Malay",
-        serialize = "ms-MY",
-        serialize = "ms",
-        props(tag = "ms-MY")
-    )]
+    #[strum(to_string = "Malay", serialize = "ms-MY", serialize = "ms", props(tag = "ms-MY"))]
     Malay,
-    #[strum(
-        to_string = "Indonesian",
-        serialize = "id-ID",
-        serialize = "id",
-        props(tag = "id-ID")
-    )]
+    #[strum(to_string = "Indonesian", serialize = "id-ID", serialize = "id", props(tag = "id-ID"))]
     Indonesian,
     #[strum(
         to_string = "Filipino",
@@ -145,12 +66,7 @@ pub enum Language {
         props(tag = "fil-PH")
     )]
     Filipino,
-    #[strum(
-        to_string = "Hindi",
-        serialize = "hi-IN",
-        serialize = "hi",
-        props(tag = "hi-IN")
-    )]
+    #[strum(to_string = "Hindi", serialize = "hi-IN", serialize = "hi", props(tag = "hi-IN"))]
     Hindi,
     #[strum(
         to_string = "Traditional Chinese",
@@ -159,138 +75,43 @@ pub enum Language {
         props(tag = "zh-TW")
     )]
     ChineseTraditional,
-    #[strum(
-        to_string = "Polish",
-        serialize = "pl-PL",
-        serialize = "pl",
-        props(tag = "pl-PL")
-    )]
+    #[strum(to_string = "Polish", serialize = "pl-PL", serialize = "pl", props(tag = "pl-PL"))]
     Polish,
-    #[strum(
-        to_string = "Czech",
-        serialize = "cs-CZ",
-        serialize = "cs",
-        props(tag = "cs-CZ")
-    )]
+    #[strum(to_string = "Czech", serialize = "cs-CZ", serialize = "cs", props(tag = "cs-CZ"))]
     Czech,
-    #[strum(
-        to_string = "Dutch",
-        serialize = "nl-NL",
-        serialize = "nl",
-        props(tag = "nl-NL")
-    )]
+    #[strum(to_string = "Dutch", serialize = "nl-NL", serialize = "nl", props(tag = "nl-NL"))]
     Dutch,
-    #[strum(
-        to_string = "Khmer",
-        serialize = "km-KH",
-        serialize = "km",
-        props(tag = "km-KH")
-    )]
+    #[strum(to_string = "Khmer", serialize = "km-KH", serialize = "km", props(tag = "km-KH"))]
     Khmer,
-    #[strum(
-        to_string = "Burmese",
-        serialize = "my-MM",
-        serialize = "my",
-        props(tag = "my-MM")
-    )]
+    #[strum(to_string = "Burmese", serialize = "my-MM", serialize = "my", props(tag = "my-MM"))]
     Burmese,
-    #[strum(
-        to_string = "Persian",
-        serialize = "fa-IR",
-        serialize = "fa",
-        props(tag = "fa-IR")
-    )]
+    #[strum(to_string = "Persian", serialize = "fa-IR", serialize = "fa", props(tag = "fa-IR"))]
     Persian,
-    #[strum(
-        to_string = "Gujarati",
-        serialize = "gu-IN",
-        serialize = "gu",
-        props(tag = "gu-IN")
-    )]
+    #[strum(to_string = "Gujarati", serialize = "gu-IN", serialize = "gu", props(tag = "gu-IN"))]
     Gujarati,
-    #[strum(
-        to_string = "Urdu",
-        serialize = "ur-PK",
-        serialize = "ur",
-        props(tag = "ur-PK")
-    )]
+    #[strum(to_string = "Urdu", serialize = "ur-PK", serialize = "ur", props(tag = "ur-PK"))]
     Urdu,
-    #[strum(
-        to_string = "Telugu",
-        serialize = "te-IN",
-        serialize = "te",
-        props(tag = "te-IN")
-    )]
+    #[strum(to_string = "Telugu", serialize = "te-IN", serialize = "te", props(tag = "te-IN"))]
     Telugu,
-    #[strum(
-        to_string = "Marathi",
-        serialize = "mr-IN",
-        serialize = "mr",
-        props(tag = "mr-IN")
-    )]
+    #[strum(to_string = "Marathi", serialize = "mr-IN", serialize = "mr", props(tag = "mr-IN"))]
     Marathi,
-    #[strum(
-        to_string = "Hebrew",
-        serialize = "he-IL",
-        serialize = "he",
-        props(tag = "he-IL")
-    )]
+    #[strum(to_string = "Hebrew", serialize = "he-IL", serialize = "he", props(tag = "he-IL"))]
     Hebrew,
-    #[strum(
-        to_string = "Bengali",
-        serialize = "bn-BD",
-        serialize = "bn",
-        props(tag = "bn-BD")
-    )]
+    #[strum(to_string = "Bengali", serialize = "bn-BD", serialize = "bn", props(tag = "bn-BD"))]
     Bengali,
-    #[strum(
-        to_string = "Bulgarian",
-        serialize = "bg-BG",
-        serialize = "bg",
-        props(tag = "bg-BG")
-    )]
+    #[strum(to_string = "Bulgarian", serialize = "bg-BG", serialize = "bg", props(tag = "bg-BG"))]
     Bulgarian,
-    #[strum(
-        to_string = "Tamil",
-        serialize = "ta-IN",
-        serialize = "ta",
-        props(tag = "ta-IN")
-    )]
+    #[strum(to_string = "Tamil", serialize = "ta-IN", serialize = "ta", props(tag = "ta-IN"))]
     Tamil,
-    #[strum(
-        to_string = "Ukrainian",
-        serialize = "uk-UA",
-        serialize = "uk",
-        props(tag = "uk-UA")
-    )]
+    #[strum(to_string = "Ukrainian", serialize = "uk-UA", serialize = "uk", props(tag = "uk-UA"))]
     Ukrainian,
-    #[strum(
-        to_string = "Tibetan",
-        serialize = "bo-CN",
-        serialize = "bo",
-        props(tag = "bo-CN")
-    )]
+    #[strum(to_string = "Tibetan", serialize = "bo-CN", serialize = "bo", props(tag = "bo-CN"))]
     Tibetan,
-    #[strum(
-        to_string = "Kazakh",
-        serialize = "kk-KZ",
-        serialize = "kk",
-        props(tag = "kk-KZ")
-    )]
+    #[strum(to_string = "Kazakh", serialize = "kk-KZ", serialize = "kk", props(tag = "kk-KZ"))]
     Kazakh,
-    #[strum(
-        to_string = "Mongolian",
-        serialize = "mn-MN",
-        serialize = "mn",
-        props(tag = "mn-MN")
-    )]
+    #[strum(to_string = "Mongolian", serialize = "mn-MN", serialize = "mn", props(tag = "mn-MN"))]
     Mongolian,
-    #[strum(
-        to_string = "Uyghur",
-        serialize = "ug-CN",
-        serialize = "ug",
-        props(tag = "ug-CN")
-    )]
+    #[strum(to_string = "Uyghur", serialize = "ug-CN", serialize = "ug", props(tag = "ug-CN"))]
     Uyghur,
     #[strum(
         to_string = "Cantonese",
@@ -299,19 +120,9 @@ pub enum Language {
         props(tag = "yue-HK")
     )]
     Cantonese,
-    #[strum(
-        to_string = "Belarusian",
-        serialize = "be-BY",
-        serialize = "be",
-        props(tag = "be-BY")
-    )]
+    #[strum(to_string = "Belarusian", serialize = "be-BY", serialize = "be", props(tag = "be-BY"))]
     Belarusian,
-    #[strum(
-        to_string = "Hungarian",
-        serialize = "hu-HU",
-        serialize = "hu",
-        props(tag = "hu-HU")
-    )]
+    #[strum(to_string = "Hungarian", serialize = "hu-HU", serialize = "hu", props(tag = "hu-HU"))]
     Hungarian,
 }
 
@@ -338,9 +149,7 @@ impl<'de> Deserialize<'de> for Language {
     where
         D: Deserializer<'de>,
     {
-        String::deserialize(deserializer)?
-            .parse()
-            .map_err(de::Error::custom)
+        String::deserialize(deserializer)?.parse().map_err(de::Error::custom)
     }
 }
 
@@ -351,23 +160,14 @@ mod tests {
     #[test]
     fn parses_names_tags_and_aliases() {
         assert_eq!("zh".parse(), Ok(Language::ChineseSimplified));
-        assert_eq!(
-            "Traditional Chinese".parse(),
-            Ok(Language::ChineseTraditional)
-        );
+        assert_eq!("Traditional Chinese".parse(), Ok(Language::ChineseTraditional));
         assert_eq!("TL".parse(), Ok(Language::Filipino));
         assert!("not-a-language".parse::<Language>().is_err());
     }
 
     #[test]
     fn serde_uses_canonical_tags() {
-        assert_eq!(
-            serde_json::to_string(&Language::Japanese).unwrap(),
-            "\"ja-JP\""
-        );
-        assert_eq!(
-            serde_json::from_str::<Language>("\"ja\"").unwrap(),
-            Language::Japanese
-        );
+        assert_eq!(serde_json::to_string(&Language::Japanese).unwrap(), "\"ja-JP\"");
+        assert_eq!(serde_json::from_str::<Language>("\"ja\"").unwrap(), Language::Japanese);
     }
 }

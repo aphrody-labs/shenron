@@ -70,7 +70,7 @@ pub(crate) fn snippet(text: &str) -> String {
             '\t' => output.push_str("\\t"),
             control if control.is_control() => {
                 let _ = write!(output, "\\u{{{:04x}}}", control as u32);
-            }
+            },
             character => output.push(character),
         }
     }
@@ -237,10 +237,7 @@ mod tests {
         let flattened = snippet(&"x".repeat(2_500));
 
         assert!(flattened.starts_with(&"x".repeat(2_000)));
-        assert!(
-            flattened.ends_with("\u{2026} (2500 bytes total)"),
-            "{flattened}"
-        );
+        assert!(flattened.ends_with("\u{2026} (2500 bytes total)"), "{flattened}");
     }
 
     #[test]
@@ -248,10 +245,7 @@ mod tests {
         let source = ["one".to_owned(), "two".to_owned()];
         let response = r#"{"translations":[{"id":0,"text":"hello"},{"id":1,"text":"world"}]}"#;
 
-        assert_eq!(
-            translations("test", response, &source).unwrap(),
-            ["hello", "world"]
-        );
+        assert_eq!(translations("test", response, &source).unwrap(), ["hello", "world"]);
     }
 
     #[test]
@@ -263,10 +257,7 @@ mod tests {
             r#"Here is the result: {"translations": [{"id": 0, "text": "hello"}, {"id": 1, "text": "world"},]}"#,
             "{\"translations\":[{\"id\":0,\"text\":\"hello\"},{\"id\":1,\"text\":\"world\"",
         ] {
-            assert!(
-                translations("test", response, &source).is_err(),
-                "{response}"
-            );
+            assert!(translations("test", response, &source).is_err(), "{response}");
         }
     }
 
@@ -280,30 +271,21 @@ mod tests {
         );
 
         assert!(error.contains("missing field `text`"), "{error}");
-        assert!(
-            error.contains(r#"response was: {\n  "translations": [{"id": 0}]\n}"#),
-            "{error}"
-        );
+        assert!(error.contains(r#"response was: {\n  "translations": [{"id": 0}]\n}"#), "{error}");
     }
 
     #[test]
     fn restores_input_order_from_ids() {
         let source = ["one".to_owned(), "two".to_owned()];
         let response = r#"{"translations":[{"id":1,"text":"world"},{"id":0,"text":"hello"}]}"#;
-        assert_eq!(
-            translations("test", response, &source).unwrap(),
-            ["hello", "world"]
-        );
+        assert_eq!(translations("test", response, &source).unwrap(), ["hello", "world"]);
     }
 
     #[test]
     fn tolerates_duplicate_missing_and_out_of_range_ids() {
         let source = ["one".to_owned(), "two".to_owned()];
         let short = r#"{"translations":[{"id":1,"text":"world"}]}"#;
-        assert_eq!(
-            translations("test", short, &source).unwrap(),
-            ["one", "world"]
-        );
+        assert_eq!(translations("test", short, &source).unwrap(), ["one", "world"]);
 
         let response = concat!(
             r#"{"translations":["#,
@@ -312,10 +294,7 @@ mod tests {
             r#"{"id":9,"text":"extra"}"#,
             "]}"
         );
-        assert_eq!(
-            translations("test", response, &source).unwrap(),
-            ["hello", "two"]
-        );
+        assert_eq!(translations("test", response, &source).unwrap(), ["hello", "two"]);
     }
 
     #[test]

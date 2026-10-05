@@ -24,10 +24,8 @@ pub struct LocalTranslator {
 
 impl LocalTranslator {
     pub async fn load(device: Device, selection: &ModelSelection) -> Result<Self> {
-        let model = selection
-            .model
-            .as_deref()
-            .context("local translation requires a selected model")?;
+        let model =
+            selection.model.as_deref().context("local translation requires a selected model")?;
         let descriptor = catalog::MODELS
             .iter()
             .copied()
@@ -47,10 +45,7 @@ impl LocalTranslator {
             )
             .into());
         }
-        Ok(Self {
-            descriptor,
-            llm: Arc::new(llm),
-        })
+        Ok(Self { descriptor, llm: Arc::new(llm) })
     }
 
     pub(crate) async fn translate(
@@ -62,11 +57,7 @@ impl LocalTranslator {
         if expected == 0 {
             return Ok(Vec::new());
         }
-        if !self
-            .descriptor
-            .target_languages
-            .contains(request.target_language)
-        {
+        if !self.descriptor.target_languages.contains(request.target_language) {
             return Err(Error::UnsupportedLanguage {
                 provider: "local",
                 language: request.target_language,
@@ -82,10 +73,9 @@ impl LocalTranslator {
         let llm = Arc::clone(&self.llm);
         let generation = self.descriptor.generation.options(generation);
         let output = tokio_rayon::spawn(move || {
-            let input = image.as_deref().map_or_else(
-                || Input::new(&prompt),
-                |image| Input::new(&prompt).with_image(image),
-            );
+            let input = image
+                .as_deref()
+                .map_or_else(|| Input::new(&prompt), |image| Input::new(&prompt).with_image(image));
             llm.inference_with_json_schema(&input, &generation, &schema)
         })
         .await?;
@@ -104,10 +94,7 @@ impl LocalTranslator {
             .llm
             .render_chat_prompt_with_options(
                 &[ChatMessage::system(system), ChatMessage::user(payload)],
-                ChatTemplateOptions {
-                    add_generation_prompt: true,
-                    enable_thinking: reasoning,
-                },
+                ChatTemplateOptions { add_generation_prompt: true, enable_thinking: reasoning },
             )
             .context("failed to render local translation prompt")?)
     }

@@ -34,10 +34,7 @@ pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
         .models
         .into_iter()
         .filter(|model| {
-            model
-                .supported_generation_methods
-                .iter()
-                .any(|method| method == "generateContent")
+            model.supported_generation_methods.iter().any(|method| method == "generateContent")
                 && supports_translation(&model.name)
         })
         .filter_map(|model| {
@@ -85,8 +82,7 @@ pub(super) async fn translate(
     let schema = prompt::output_schema(request.segments.len());
     let mut url =
         Url::parse(&format!("{ROOT}/{model}:generateContent")).expect("Gemini API root is valid");
-    url.query_pairs_mut()
-        .append_pair("key", api_key.expose_secret());
+    url.query_pairs_mut().append_pair("key", api_key.expose_secret());
     let body = Request {
         system_instruction: Content::text(&system),
         contents: [Content::user(&user, request.image.as_deref())?],
@@ -141,9 +137,7 @@ struct Content<'a> {
 
 impl<'a> Content<'a> {
     fn text(text: &'a str) -> Self {
-        Self {
-            parts: vec![Part::Text { text }],
-        }
+        Self { parts: vec![Part::Text { text }] }
     }
 
     fn user(text: &'a str, image: Option<&image::DynamicImage>) -> anyhow::Result<Self> {
@@ -277,11 +271,9 @@ mod tests {
         assert_eq!(disabled["thinkingLevel"], "minimal");
         assert!(disabled.get("thinkingBudget").is_none());
 
-        let budget = serde_json::to_value(ThinkingConfig {
-            thinking_budget: Some(0),
-            thinking_level: None,
-        })
-        .unwrap();
+        let budget =
+            serde_json::to_value(ThinkingConfig { thinking_budget: Some(0), thinking_level: None })
+                .unwrap();
         assert_eq!(budget["thinkingBudget"], 0);
         assert!(budget.get("thinkingLevel").is_none());
     }

@@ -37,10 +37,7 @@ pub(super) async fn translate(
     let source = request
         .source_language
         .map(|language| {
-            source(language).ok_or(Error::UnsupportedSourceLanguage {
-                provider: "deepl",
-                language,
-            })
+            source(language).ok_or(Error::UnsupportedSourceLanguage { provider: "deepl", language })
         })
         .transpose()?;
     let root = config.base_url.as_ref().map_or_else(
@@ -54,17 +51,9 @@ pub(super) async fn translate(
         |url| url.as_str().trim_end_matches('/').to_owned(),
     );
     // DeepL accepts source-language context but does not translate it.
-    let context = request
-        .context
-        .iter()
-        .map(|entry| entry.source.as_str())
-        .collect::<Vec<_>>()
-        .join("\n");
-    let mut form = request
-        .segments
-        .iter()
-        .map(|text| ("text", text.as_str()))
-        .collect::<Vec<_>>();
+    let context =
+        request.context.iter().map(|entry| entry.source.as_str()).collect::<Vec<_>>().join("\n");
+    let mut form = request.segments.iter().map(|text| ("text", text.as_str())).collect::<Vec<_>>();
     form.push(("target_lang", target));
     if let Some(source) = source {
         form.push(("source_lang", source));
@@ -76,18 +65,11 @@ pub(super) async fn translate(
         "deepl",
         client
             .post(format!("{root}/v2/translate"))
-            .header(
-                "Authorization",
-                format!("DeepL-Auth-Key {}", api_key.expose_secret()),
-            )
+            .header("Authorization", format!("DeepL-Auth-Key {}", api_key.expose_secret()))
             .form(&form),
     )
     .await?;
-    Ok(response
-        .translations
-        .into_iter()
-        .map(|translation| translation.text)
-        .collect())
+    Ok(response.translations.into_iter().map(|translation| translation.text).collect())
 }
 
 #[derive(Deserialize)]
@@ -139,7 +121,7 @@ fn target(language: Language) -> Option<&'static str> {
         Hungarian => "HU",
         Filipino | Khmer | Burmese | Persian | Tibetan | Mongolian | Uyghur | Cantonese => {
             return None;
-        }
+        },
     })
 }
 

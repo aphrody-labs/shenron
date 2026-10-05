@@ -25,11 +25,8 @@ pub(super) async fn models(client: &Client) -> Result<Vec<Model>> {
     let Some(api_key) = koharu_secrets::get("deepseek")? else {
         return Ok(Vec::new());
     };
-    let response: ModelsResponse = send_json(
-        "deepseek",
-        client.get(MODELS_URL).bearer_auth(api_key.expose_secret()),
-    )
-    .await?;
+    let response: ModelsResponse =
+        send_json("deepseek", client.get(MODELS_URL).bearer_auth(api_key.expose_secret())).await?;
     Ok(response
         .data
         .into_iter()
@@ -56,44 +53,27 @@ pub(super) async fn translate(
     let user_content = match request.image.as_deref() {
         Some(image) => MessageContent::Parts(vec![
             ContentPart::Text { text: user },
-            ContentPart::ImageUrl {
-                image_url: ImageUrl {
-                    url: encode_image(image)?.data_url(),
-                },
-            },
+            ContentPart::ImageUrl { image_url: ImageUrl { url: encode_image(image)?.data_url() } },
         ]),
         None => MessageContent::Text(user),
     };
     let body = ChatRequest {
         model,
         messages: [
-            Message {
-                role: "system",
-                content: MessageContent::Text(system),
-            },
-            Message {
-                role: "user",
-                content: user_content,
-            },
+            Message { role: "system", content: MessageContent::Text(system) },
+            Message { role: "user", content: user_content },
         ],
         temperature: generation.temperature.or(Some(1.3)),
         top_p: generation.top_p,
         max_tokens: generation.max_tokens,
-        thinking: generation.reasoning.map(|enabled| ThinkingConfig {
-            kind: if enabled { "enabled" } else { "disabled" },
-        }),
-        response_format: ResponseFormat {
-            kind: "json_object",
-        },
+        thinking: generation
+            .reasoning
+            .map(|enabled| ThinkingConfig { kind: if enabled { "enabled" } else { "disabled" } }),
+        response_format: ResponseFormat { kind: "json_object" },
     };
-    let response: ChatResponse = send_json(
-        "deepseek",
-        client
-            .post(URL)
-            .bearer_auth(api_key.expose_secret())
-            .json(&body),
-    )
-    .await?;
+    let response: ChatResponse =
+        send_json("deepseek", client.post(URL).bearer_auth(api_key.expose_secret()).json(&body))
+            .await?;
     let text = response
         .choices
         .into_iter()
@@ -191,20 +171,12 @@ mod tests {
         let body = ChatRequest {
             model: "deepseek-v4-pro",
             messages: [
-                Message {
-                    role: "system",
-                    content: MessageContent::Text("return json".to_owned()),
-                },
-                Message {
-                    role: "user",
-                    content: MessageContent::Text("translate".to_owned()),
-                },
+                Message { role: "system", content: MessageContent::Text("return json".to_owned()) },
+                Message { role: "user", content: MessageContent::Text("translate".to_owned()) },
             ],
             thinking: Some(ThinkingConfig { kind: "disabled" }),
             max_tokens: Some(1024),
-            response_format: ResponseFormat {
-                kind: "json_object",
-            },
+            response_format: ResponseFormat { kind: "json_object" },
             temperature: Some(1.3),
             top_p: None,
         };

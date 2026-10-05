@@ -42,25 +42,15 @@ pub(super) async fn translate(
     let user_content = match request.image.as_deref() {
         Some(image) => MessageContent::Parts(vec![
             ContentPart::Text { text: user },
-            ContentPart::ImageUrl {
-                image_url: ImageUrl {
-                    url: encode_image(image)?.data_url(),
-                },
-            },
+            ContentPart::ImageUrl { image_url: ImageUrl { url: encode_image(image)?.data_url() } },
         ]),
         None => MessageContent::Text(user),
     };
     let body = ChatRequest {
         model,
         messages: [
-            Message {
-                role: "system",
-                content: MessageContent::Text(system),
-            },
-            Message {
-                role: "user",
-                content: user_content,
-            },
+            Message { role: "system", content: MessageContent::Text(system) },
+            Message { role: "user", content: user_content },
         ],
         temperature: generation.temperature,
         top_p: generation.top_p,
@@ -79,9 +69,7 @@ pub(super) async fn translate(
             },
         },
     };
-    let http = client
-        .post(endpoint(config.base_url.as_ref(), "v1/chat/completions"))
-        .json(&body);
+    let http = client.post(endpoint(config.base_url.as_ref(), "v1/chat/completions")).json(&body);
     let http = match api_key {
         Some(api_key) => http.bearer_auth(api_key.expose_secret()),
         None => http,
@@ -117,9 +105,7 @@ pub(super) async fn models(client: &Client, config: &LmStudioConfig) -> Result<V
                 name: display_name(&model.key),
                 model: Some(model.key),
                 quantizations: Vec::new(),
-                vision: capabilities
-                    .as_ref()
-                    .is_some_and(|capabilities| capabilities.vision),
+                vision: capabilities.as_ref().is_some_and(|capabilities| capabilities.vision),
                 reasoning: capabilities
                     .is_some_and(|capabilities| capabilities.reasoning.is_some()),
             }
@@ -129,11 +115,7 @@ pub(super) async fn models(client: &Client, config: &LmStudioConfig) -> Result<V
 
 fn endpoint(base_url: Option<&Url>, suffix: &str) -> String {
     let base_url = base_url.map_or(DEFAULT_BASE_URL, Url::as_str);
-    format!(
-        "{}/{}",
-        base_url.trim_end_matches('/'),
-        suffix.trim_start_matches('/')
-    )
+    format!("{}/{}", base_url.trim_end_matches('/'), suffix.trim_start_matches('/'))
 }
 
 #[derive(Serialize)]
@@ -283,9 +265,7 @@ mod tests {
                 let capabilities = model.capabilities;
                 (
                     model.key,
-                    capabilities
-                        .as_ref()
-                        .is_some_and(|capabilities| capabilities.vision),
+                    capabilities.as_ref().is_some_and(|capabilities| capabilities.vision),
                     capabilities.is_some_and(|capabilities| capabilities.reasoning.is_some()),
                 )
             })
@@ -304,14 +284,8 @@ mod tests {
         let body = ChatRequest {
             model: "publisher/model",
             messages: [
-                Message {
-                    role: "system",
-                    content: MessageContent::Text("system".to_owned()),
-                },
-                Message {
-                    role: "user",
-                    content: MessageContent::Text("user".to_owned()),
-                },
+                Message { role: "system", content: MessageContent::Text("system".to_owned()) },
+                Message { role: "user", content: MessageContent::Text("user".to_owned()) },
             ],
             temperature: None,
             top_p: None,
@@ -339,13 +313,9 @@ mod tests {
     #[test]
     fn serializes_openai_compatible_image_input() {
         let content = MessageContent::Parts(vec![
-            ContentPart::Text {
-                text: "translate".to_owned(),
-            },
+            ContentPart::Text { text: "translate".to_owned() },
             ContentPart::ImageUrl {
-                image_url: ImageUrl {
-                    url: "data:image/jpeg;base64,image".to_owned(),
-                },
+                image_url: ImageUrl { url: "data:image/jpeg;base64,image".to_owned() },
             },
         ]);
         let value = serde_json::to_value(content).unwrap();

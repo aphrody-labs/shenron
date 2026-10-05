@@ -7,29 +7,15 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("{provider} does not support target language {language}")]
-    UnsupportedLanguage {
-        provider: &'static str,
-        language: Language,
-    },
+    UnsupportedLanguage { provider: &'static str, language: Language },
     #[error("{provider} does not support source language {language}")]
-    UnsupportedSourceLanguage {
-        provider: &'static str,
-        language: Language,
-    },
+    UnsupportedSourceLanguage { provider: &'static str, language: Language },
     #[error("{provider} returned {actual} segments; expected {expected}")]
-    SegmentCount {
-        provider: &'static str,
-        expected: usize,
-        actual: usize,
-    },
+    SegmentCount { provider: &'static str, expected: usize, actual: usize },
     #[error("{provider} quota or rate limit was exceeded")]
     QuotaExceeded { provider: &'static str },
     #[error("{provider} API request failed with HTTP {status}: {message}")]
-    Api {
-        provider: &'static str,
-        status: u16,
-        message: String,
-    },
+    Api { provider: &'static str, status: u16, message: String },
     #[error("segment {segment} kept glossary tokens the engine invented: {tokens}")]
     GlossaryTokens { segment: usize, tokens: String },
     #[error(transparent)]

@@ -50,22 +50,22 @@ pub(crate) async fn translate(
     match selection.provider {
         Provider::OpenAi => {
             openai::translate(client, &providers.openai, model()?, generation, request).await
-        }
+        },
         Provider::Gemini => {
             gemini::translate(client, &providers.gemini, model()?, generation, request).await
-        }
+        },
         Provider::Claude => {
             claude::translate(client, &providers.claude, model()?, generation, request).await
-        }
+        },
         Provider::Grok => {
             grok::translate(client, &providers.grok, model()?, generation, request).await
-        }
+        },
         Provider::MiniMax => {
             minimax::translate(client, &providers.minimax, model()?, generation, request).await
-        }
+        },
         Provider::DeepSeek => {
             deepseek::translate(client, &providers.deepseek, model()?, generation, request).await
-        }
+        },
         Provider::OpenAiCompatible => {
             openai_compatible::translate(
                 client,
@@ -75,18 +75,18 @@ pub(crate) async fn translate(
                 request,
             )
             .await
-        }
+        },
         Provider::OpenRouter => {
             openrouter::translate(client, &providers.openrouter, model()?, generation, request)
                 .await
-        }
+        },
         Provider::LmStudio => {
             lm_studio::translate(client, &providers.lm_studio, model()?, generation, request).await
-        }
+        },
         Provider::DeepL => deepl::translate(client, &providers.deepl, request).await,
         Provider::GoogleCloudTranslation => {
             google_cloud::translate(client, &providers.google_cloud_translation, request).await
-        }
+        },
         Provider::Caiyun => caiyun::translate(client, &providers.caiyun, request).await,
         Provider::Local => unreachable!("local translation has its own backend"),
     }
@@ -132,15 +132,10 @@ pub(super) async fn send_json<T: DeserializeOwned>(
     provider: &'static str,
     request: RequestBuilder,
 ) -> Result<T> {
-    let response = request
-        .send()
-        .await
-        .with_context(|| format!("{provider} request failed"))?;
+    let response = request.send().await.with_context(|| format!("{provider} request failed"))?;
     let status = response.status();
-    let text = response
-        .text()
-        .await
-        .with_context(|| format!("failed to read {provider} response"))?;
+    let text =
+        response.text().await.with_context(|| format!("failed to read {provider} response"))?;
 
     if !status.is_success() {
         let lower = text.to_ascii_lowercase();

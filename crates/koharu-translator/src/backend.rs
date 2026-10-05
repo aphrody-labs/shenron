@@ -118,16 +118,9 @@ pub(crate) fn encode_image(image: &DynamicImage) -> anyhow::Result<EncodedImage>
     let rgb = image.to_rgb8();
     let mut bytes = Cursor::new(Vec::new());
     JpegEncoder::new_with_quality(&mut bytes, JPEG_QUALITY)
-        .write_image(
-            rgb.as_raw(),
-            rgb.width(),
-            rgb.height(),
-            image::ExtendedColorType::Rgb8,
-        )
+        .write_image(rgb.as_raw(), rgb.width(), rgb.height(), image::ExtendedColorType::Rgb8)
         .context("failed to encode translation image")?;
-    Ok(EncodedImage {
-        data: STANDARD.encode(bytes.into_inner()),
-    })
+    Ok(EncodedImage { data: STANDARD.encode(bytes.into_inner()) })
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -140,9 +133,6 @@ impl TranslationContext {
     #[cfg(test)]
     #[must_use]
     pub fn new(source: impl Into<String>, translation: impl Into<String>) -> Self {
-        Self {
-            source: source.into(),
-            translation: translation.into(),
-        }
+        Self { source: source.into(), translation: translation.into() }
     }
 }
