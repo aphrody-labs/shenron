@@ -17,6 +17,7 @@ import { createYoga } from "graphql-yoga";
 import type { Database } from "bun:sqlite";
 import { container } from "tsyringe";
 import { DatabaseService } from "~/db/index";
+import { logger } from "~/lib/logger";
 import { hybridSearch } from "~/lib/rag";
 
 // ── Lignes brutes (colonnes SQLite snake_case) ──────────────────────────────
@@ -729,8 +730,15 @@ builder.queryType({
         params.push(clampLimit(a.limit, 20, 100));
         try {
           return all<MangaPageRow>(ctx, sql, ...params);
-        } catch {
-          return []; // index FTS manga absent → vide
+        } catch (err) {
+          // Index FTS absent ou cassé : une panne, pas une recherche sans résultat
+          // (même règle que `/api/public/manga/search`, qui répond 503).
+          // `originalError` ferait masquer le message par yoga : l'erreur SQLite
+          // part dans le journal, le client reçoit le code.
+          logger.error({ err }, "graphql mangaSearch: manga_pages_fts query failed");
+          throw new GraphQLError("Index manga indisponible", {
+            extensions: { code: "SERVICE_UNAVAILABLE" },
+          });
         }
       },
     }),
