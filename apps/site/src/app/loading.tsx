@@ -1,4 +1,4 @@
-import { KintoUnLoader } from "@/components/KintoUn";
+import { KintoUnLoader } from "@shenron/ui/toriyama";
 
 export default function Loading() {
   return (
