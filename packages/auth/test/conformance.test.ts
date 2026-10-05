@@ -22,29 +22,29 @@ const agentKeyStore = createAgentKeyRepository(db) satisfies AgentKeyStore;
 const discordAccounts = createDiscordAccountLookup(db) satisfies DiscordAccountLookup;
 
 describe("ports conformance", () => {
-	test("the repositories expose every port method", () => {
-		for (const method of ["findActiveByHash", "touch", "countWritesSince", "recordCall"] as const) {
-			expect(typeof agentKeyStore[method]).toBe("function");
-		}
-		expect(typeof discordAccounts.discordIdForUser).toBe("function");
-	});
+  test("the repositories expose every port method", () => {
+    for (const method of ["findActiveByHash", "touch", "countWritesSince", "recordCall"] as const) {
+      expect(typeof agentKeyStore[method]).toBe("function");
+    }
+    expect(typeof discordAccounts.discordIdForUser).toBe("function");
+  });
 
-	test("the repository plugs into agentKeyStrategy as a store", async () => {
-		// A non-agent Bearer never reaches the store: not applicable → 401 unauthenticated.
-		const decision = await authorize(
-			new Request("https://site.test/api/agent/v1/feed", {
-				headers: { authorization: "Bearer not-an-agent-token" },
-			}),
-			[agentKeyStrategy({ store: agentKeyStore })]
-		);
-		expect(decision).toEqual({ ok: false, status: 401, code: "unauthenticated" });
-	});
+  test("the repository plugs into agentKeyStrategy as a store", async () => {
+    // A non-agent Bearer never reaches the store: not applicable → 401 unauthenticated.
+    const decision = await authorize(
+      new Request("https://site.test/api/agent/v1/feed", {
+        headers: { authorization: "Bearer not-an-agent-token" },
+      }),
+      [agentKeyStrategy({ store: agentKeyStore })],
+    );
+    expect(decision).toEqual({ ok: false, status: 401, code: "unauthenticated" });
+  });
 
-	test("src/ never imports @shenron/db (dev-only edge)", () => {
-		const dir = join(import.meta.dir, "..", "src");
-		for (const file of readdirSync(dir)) {
-			if (!file.endsWith(".ts")) continue;
-			expect(readFileSync(join(dir, file), "utf8")).not.toMatch(/from\s+["']@shenron\/db/);
-		}
-	});
+  test("src/ never imports @shenron/db (dev-only edge)", () => {
+    const dir = join(import.meta.dir, "..", "src");
+    for (const file of readdirSync(dir)) {
+      if (!file.endsWith(".ts")) continue;
+      expect(readFileSync(join(dir, file), "utf8")).not.toMatch(/from\s+["']@shenron\/db/);
+    }
+  });
 });

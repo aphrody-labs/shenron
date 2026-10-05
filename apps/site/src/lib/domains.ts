@@ -22,128 +22,128 @@
  */
 
 const DOMAIN_KEYS = [
-	"news",
-	"wiki",
-	"databooks",
-	"tierlists",
-	"canon",
-	"chronologie",
-	"classements",
-	"moderation",
-	"agents",
+  "news",
+  "wiki",
+  "databooks",
+  "tierlists",
+  "canon",
+  "chronologie",
+  "classements",
+  "moderation",
+  "agents",
 ] as const;
 export type DomainKey = (typeof DOMAIN_KEYS)[number];
 
 export interface SiteDomain {
-	key: DomainKey;
-	/** Nom du domaine, côté lecteur. */
-	label: string;
-	/** Ce que le domaine contient, en une phrase (aide de navigation). */
-	description: string;
-	/** Page publique de référence. `null` = domaine purement interne. */
-	publicHref: string | null;
-	/** Écran d'administration de référence. `null` = pas d'admin dédié. */
-	adminHref: string | null;
-	/**
-	 * Préfixes d'URL publiques qui appartiennent à ce domaine — sert à retrouver
-	 * le domaine courant depuis un `pathname` (barre d'admin contextuelle).
-	 */
-	publicPrefixes: readonly string[];
-	/** Intitulé du bouton d'édition affiché aux admins sur la page publique. */
-	adminCta: string;
+  key: DomainKey;
+  /** Nom du domaine, côté lecteur. */
+  label: string;
+  /** Ce que le domaine contient, en une phrase (aide de navigation). */
+  description: string;
+  /** Page publique de référence. `null` = domaine purement interne. */
+  publicHref: string | null;
+  /** Écran d'administration de référence. `null` = pas d'admin dédié. */
+  adminHref: string | null;
+  /**
+   * Préfixes d'URL publiques qui appartiennent à ce domaine — sert à retrouver
+   * le domaine courant depuis un `pathname` (barre d'admin contextuelle).
+   */
+  publicPrefixes: readonly string[];
+  /** Intitulé du bouton d'édition affiché aux admins sur la page publique. */
+  adminCta: string;
 }
 
 const SITE_DOMAINS: readonly SiteDomain[] = [
-	{
-		key: "news",
-		label: "Actualités",
-		description: "Le fil unique : articles de la rédaction, wiki, contributions, discussions.",
-		publicHref: "/news",
-		adminHref: "/admin/posts",
-		publicPrefixes: ["/news"],
-		adminCta: "Gérer les articles",
-	},
-	{
-		key: "wiki",
-		label: "Wiki",
-		description: "Fiches personnages, sagas, techniques, épisodes et films.",
-		publicHref: "/wiki",
-		adminHref: "/admin/wiki",
-		publicPrefixes: ["/wiki"],
-		adminCta: "Ouvrir le studio wiki",
-	},
-	{
-		key: "databooks",
-		label: "Databooks",
-		description: "Daizenshuu, guides et interviews : planches, transcriptions, traductions.",
-		publicHref: "/wiki/databooks",
-		adminHref: "/admin/databooks",
-		publicPrefixes: ["/wiki/databooks"],
-		adminCta: "Gérer les databooks",
-	},
-	{
-		key: "tierlists",
-		label: "Tier lists",
-		description: "Classements communautaires, votes et curation éditoriale.",
-		publicHref: "/tierlists",
-		adminHref: "/admin/tierlists",
-		publicPrefixes: ["/tierlists"],
-		adminCta: "Gérer les tier lists",
-	},
-	{
-		key: "canon",
-		label: "Canon",
-		description: "Doctrine officielle, corpus de preuves et arbitrage des questions.",
-		publicHref: "/wiki/canon",
-		adminHref: "/admin/ia?tab=canon",
-		publicPrefixes: ["/wiki/canon"],
-		adminCta: "Éditer la doctrine",
-	},
-	{
-		key: "chronologie",
-		label: "Chronologie",
-		description: "Frise des événements de l'univers, de l'âge 261 à Super.",
-		publicHref: "/wiki/chronologie",
-		adminHref: "/admin/chronologie",
-		publicPrefixes: ["/wiki/chronologie"],
-		adminCta: "Éditer la frise",
-	},
-	{
-		key: "classements",
-		label: "Classements",
-		description: "Tops de la communauté et palmarès issus des votes.",
-		publicHref: "/classements",
-		adminHref: "/admin/leaderboards",
-		publicPrefixes: ["/classements", "/leaderboard"],
-		adminCta: "Gérer les classements",
-	},
-	{
-		key: "moderation",
-		label: "Modération",
-		description: "Commentaires, signalements et propositions de correction.",
-		publicHref: null,
-		adminHref: "/admin/moderation",
-		publicPrefixes: [],
-		adminCta: "Ouvrir la modération",
-	},
-	{
-		key: "agents",
-		label: "API interne",
-		description: "Clés d'accès des agents, portées et journal des écritures.",
-		// Aucune vue publique : la documentation d'écriture vit sous /admin/api-docs.
-		publicHref: null,
-		adminHref: "/admin/agents",
-		publicPrefixes: [],
-		adminCta: "Gérer les clés d'agent",
-	},
+  {
+    key: "news",
+    label: "Actualités",
+    description: "Le fil unique : articles de la rédaction, wiki, contributions, discussions.",
+    publicHref: "/news",
+    adminHref: "/admin/posts",
+    publicPrefixes: ["/news"],
+    adminCta: "Gérer les articles",
+  },
+  {
+    key: "wiki",
+    label: "Wiki",
+    description: "Fiches personnages, sagas, techniques, épisodes et films.",
+    publicHref: "/wiki",
+    adminHref: "/admin/wiki",
+    publicPrefixes: ["/wiki"],
+    adminCta: "Ouvrir le studio wiki",
+  },
+  {
+    key: "databooks",
+    label: "Databooks",
+    description: "Daizenshuu, guides et interviews : planches, transcriptions, traductions.",
+    publicHref: "/wiki/databooks",
+    adminHref: "/admin/databooks",
+    publicPrefixes: ["/wiki/databooks"],
+    adminCta: "Gérer les databooks",
+  },
+  {
+    key: "tierlists",
+    label: "Tier lists",
+    description: "Classements communautaires, votes et curation éditoriale.",
+    publicHref: "/tierlists",
+    adminHref: "/admin/tierlists",
+    publicPrefixes: ["/tierlists"],
+    adminCta: "Gérer les tier lists",
+  },
+  {
+    key: "canon",
+    label: "Canon",
+    description: "Doctrine officielle, corpus de preuves et arbitrage des questions.",
+    publicHref: "/wiki/canon",
+    adminHref: "/admin/ia?tab=canon",
+    publicPrefixes: ["/wiki/canon"],
+    adminCta: "Éditer la doctrine",
+  },
+  {
+    key: "chronologie",
+    label: "Chronologie",
+    description: "Frise des événements de l'univers, de l'âge 261 à Super.",
+    publicHref: "/wiki/chronologie",
+    adminHref: "/admin/chronologie",
+    publicPrefixes: ["/wiki/chronologie"],
+    adminCta: "Éditer la frise",
+  },
+  {
+    key: "classements",
+    label: "Classements",
+    description: "Tops de la communauté et palmarès issus des votes.",
+    publicHref: "/classements",
+    adminHref: "/admin/leaderboards",
+    publicPrefixes: ["/classements", "/leaderboard"],
+    adminCta: "Gérer les classements",
+  },
+  {
+    key: "moderation",
+    label: "Modération",
+    description: "Commentaires, signalements et propositions de correction.",
+    publicHref: null,
+    adminHref: "/admin/moderation",
+    publicPrefixes: [],
+    adminCta: "Ouvrir la modération",
+  },
+  {
+    key: "agents",
+    label: "API interne",
+    description: "Clés d'accès des agents, portées et journal des écritures.",
+    // Aucune vue publique : la documentation d'écriture vit sous /admin/api-docs.
+    publicHref: null,
+    adminHref: "/admin/agents",
+    publicPrefixes: [],
+    adminCta: "Gérer les clés d'agent",
+  },
 ] as const;
 
 const BY_KEY = new Map(SITE_DOMAINS.map((d) => [d.key, d]));
 
 export function getDomain(key: DomainKey): SiteDomain {
-	const d = BY_KEY.get(key);
-	if (!d) throw new Error(`domaine inconnu: ${key}`);
-	return d;
+  const d = BY_KEY.get(key);
+  if (!d) throw new Error(`domaine inconnu: ${key}`);
+  return d;
 }
 
 /**
@@ -151,16 +151,15 @@ export function getDomain(key: DomainKey): SiteDomain {
  * `/wiki/databooks/3` appartient aux databooks, pas au wiki générique.
  */
 export function domainForPath(pathname: string): SiteDomain | null {
-	let best: SiteDomain | null = null;
-	let bestLen = -1;
-	for (const d of SITE_DOMAINS) {
-		for (const p of d.publicPrefixes) {
-			if ((pathname === p || pathname.startsWith(`${p}/`)) && p.length > bestLen) {
-				best = d;
-				bestLen = p.length;
-			}
-		}
-	}
-	return best;
+  let best: SiteDomain | null = null;
+  let bestLen = -1;
+  for (const d of SITE_DOMAINS) {
+    for (const p of d.publicPrefixes) {
+      if ((pathname === p || pathname.startsWith(`${p}/`)) && p.length > bestLen) {
+        best = d;
+        bestLen = p.length;
+      }
+    }
+  }
+  return best;
 }
-

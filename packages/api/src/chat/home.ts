@@ -24,7 +24,11 @@ interface TextReader {
   readTextSync(path: string): string;
 }
 
-function fromTexts(soul: string | null, identity: string | null, source: AgentHome["source"]): AgentHome {
+function fromTexts(
+  soul: string | null,
+  identity: string | null,
+  source: AgentHome["source"],
+): AgentHome {
   const s = soul ? parseFrontmatter(soul) : {};
   const i = identity ? parseFrontmatter(identity) : {};
   const persona: HomePersona = { tone: s.tone, brevity: s.brevity, vibe: i.vibe };

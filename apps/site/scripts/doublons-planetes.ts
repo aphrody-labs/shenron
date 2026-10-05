@@ -20,28 +20,28 @@ import postgres from "postgres";
 
 /** « Planète de Beerus », « Planète Beerus », « Beerus » → « beerus ». */
 function noyau(nom: string): string {
-	return (
-		nom
-			.normalize("NFD")
-			.replace(/[̀-ͯ]/g, "")
-			.toLowerCase()
-			.replace(/^(planete|etoile)\s+(de\s+|du\s+|des\s+|d')?/, "")
-			// La parenthèse est retirée SAUF quand elle nomme un univers : « Planète
-			// Kaishin (Univers 7) », « (Univers 10) » et « (Univers 11) » sont trois
-			// mondes distincts, pas trois saisies du même. Les confondre ferait dire au
-			// script l'inverse de ce qu'il doit établir.
-			.replace(/\s*\((?!\s*univers)[^)]*\)$/i, "")
-			.replace(/[^a-z0-9]+/g, " ")
-			.trim()
-	);
+  return (
+    nom
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase()
+      .replace(/^(planete|etoile)\s+(de\s+|du\s+|des\s+|d')?/, "")
+      // La parenthèse est retirée SAUF quand elle nomme un univers : « Planète
+      // Kaishin (Univers 7) », « (Univers 10) » et « (Univers 11) » sont trois
+      // mondes distincts, pas trois saisies du même. Les confondre ferait dire au
+      // script l'inverse de ce qu'il doit établir.
+      .replace(/\s*\((?!\s*univers)[^)]*\)$/i, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+  );
 }
 
 const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
-	.split("\n")
-	.filter((l) => l.startsWith("DATABASE_URL="))
-	.pop()
-	?.slice("DATABASE_URL=".length)
-	.replace(/^["']|["']$/g, "");
+  .split("\n")
+  .filter((l) => l.startsWith("DATABASE_URL="))
+  .pop()
+  ?.slice("DATABASE_URL=".length)
+  .replace(/^["']|["']$/g, "");
 if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 
 const sql = postgres(url);
@@ -51,35 +51,35 @@ const lignes = (await sql`
 		coalesce(length(article), 0) as taille_article
 	from bot.db_planets where visible order by id
 `) as unknown as Array<{
-	id: number;
-	name: string;
-	name_ja: string | null;
-	taille_description: number;
-	taille_article: number;
+  id: number;
+  name: string;
+  name_ja: string | null;
+  taille_description: number;
+  taille_article: number;
 }>;
 
 const groupes = new Map<string, typeof lignes>();
 for (const l of lignes) {
-	const cle = noyau(l.name);
-	if (!cle) continue;
-	groupes.set(cle, [...(groupes.get(cle) ?? []), l]);
+  const cle = noyau(l.name);
+  if (!cle) continue;
+  groupes.set(cle, [...(groupes.get(cle) ?? []), l]);
 }
 
 let paires = 0;
 for (const [cle, membres] of [...groupes].toSorted()) {
-	if (membres.length < 2) continue;
-	paires++;
-	console.log(`\n« ${cle} » — ${membres.length} fiches`);
-	for (const m of membres) {
-		console.log(
-			`   #${String(m.id).padStart(3)} ${m.name.padEnd(34)} ja=${(m.name_ja ?? "—").padEnd(14)} ` +
-				`description ${String(m.taille_description).padStart(4)} · article ${String(m.taille_article).padStart(5)}`
-		);
-	}
+  if (membres.length < 2) continue;
+  paires++;
+  console.log(`\n« ${cle} » — ${membres.length} fiches`);
+  for (const m of membres) {
+    console.log(
+      `   #${String(m.id).padStart(3)} ${m.name.padEnd(34)} ja=${(m.name_ja ?? "—").padEnd(14)} ` +
+        `description ${String(m.taille_description).padStart(4)} · article ${String(m.taille_article).padStart(5)}`,
+    );
+  }
 }
 
 console.log(
-	`\n${paires} groupe(s) en double sur ${lignes.length} planètes visibles.` +
-		"\nAucune modification faite : la fusion demande de lire les deux articles."
+  `\n${paires} groupe(s) en double sur ${lignes.length} planètes visibles.` +
+    "\nAucune modification faite : la fusion demande de lire les deux articles.",
 );
 await sql.end();

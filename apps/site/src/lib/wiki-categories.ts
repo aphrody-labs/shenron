@@ -15,89 +15,89 @@
  * disparaît des deux côtés.
  */
 export type WikiCategory = {
-	key: string;
-	label: string;
-	href: string;
-	countKey: string;
-	group: "encyclopedia" | "media";
+  key: string;
+  label: string;
+  href: string;
+  countKey: string;
+  group: "encyclopedia" | "media";
 };
 
 export const WIKI_CATEGORIES: WikiCategory[] = [
-	{
-		key: "personnages",
-		label: "Personnages",
-		href: "/wiki/personnages",
-		countKey: "characters",
-		group: "encyclopedia",
-	},
-	{ key: "races", label: "Races", href: "/wiki/races", countKey: "races", group: "encyclopedia" },
-	{
-		key: "transformations",
-		label: "Transformations",
-		href: "/wiki/transformations",
-		countKey: "transformations",
-		group: "encyclopedia",
-	},
-	{
-		key: "techniques",
-		label: "Techniques",
-		href: "/wiki/techniques",
-		countKey: "techniques",
-		group: "encyclopedia",
-	},
-	{ key: "sagas", label: "Sagas", href: "/wiki/sagas", countKey: "sagas", group: "encyclopedia" },
-	{
-		key: "puissances",
-		label: "Puissances & Scouter",
-		href: "/wiki/puissances",
-		countKey: "powerLevels",
-		group: "encyclopedia",
-	},
-	{
-		key: "objets",
-		label: "Objets & Technologies",
-		href: "/wiki/objets",
-		countKey: "items",
-		group: "encyclopedia",
-	},
-	{
-		key: "lieux",
-		label: "Lieux & Sanctuaires",
-		href: "/wiki/lieux",
-		countKey: "locations",
-		group: "encyclopedia",
-	},
-	{
-		key: "evenements",
-		label: "Événements",
-		href: "/wiki/evenements",
-		countKey: "timelineEvents",
-		group: "media",
-	},
-	{
-		key: "musiques",
-		label: "Musiques & OST",
-		href: "/wiki/musiques",
-		countKey: "soundtracks",
-		group: "media",
-	},
-	{ key: "films", label: "Films", href: "/wiki/films", countKey: "movies", group: "media" },
-	{
-		key: "episodes",
-		label: "Épisodes",
-		href: "/wiki/episodes",
-		countKey: "episodes",
-		group: "media",
-	},
-	{ key: "manga", label: "Manga", href: "/wiki/manga", countKey: "mangaVolumes", group: "media" },
-	{ key: "jeux", label: "Jeux", href: "/wiki/jeux", countKey: "games", group: "media" },
-	{
-		key: "databooks",
-		label: "Databooks",
-		href: "/wiki/databooks",
-		countKey: "databooks",
-		group: "media",
-	},
+  {
+    key: "personnages",
+    label: "Personnages",
+    href: "/wiki/personnages",
+    countKey: "characters",
+    group: "encyclopedia",
+  },
+  { key: "races", label: "Races", href: "/wiki/races", countKey: "races", group: "encyclopedia" },
+  {
+    key: "transformations",
+    label: "Transformations",
+    href: "/wiki/transformations",
+    countKey: "transformations",
+    group: "encyclopedia",
+  },
+  {
+    key: "techniques",
+    label: "Techniques",
+    href: "/wiki/techniques",
+    countKey: "techniques",
+    group: "encyclopedia",
+  },
+  { key: "sagas", label: "Sagas", href: "/wiki/sagas", countKey: "sagas", group: "encyclopedia" },
+  {
+    key: "puissances",
+    label: "Puissances & Scouter",
+    href: "/wiki/puissances",
+    countKey: "powerLevels",
+    group: "encyclopedia",
+  },
+  {
+    key: "objets",
+    label: "Objets & Technologies",
+    href: "/wiki/objets",
+    countKey: "items",
+    group: "encyclopedia",
+  },
+  {
+    key: "lieux",
+    label: "Lieux & Sanctuaires",
+    href: "/wiki/lieux",
+    countKey: "locations",
+    group: "encyclopedia",
+  },
+  {
+    key: "evenements",
+    label: "Événements",
+    href: "/wiki/evenements",
+    countKey: "timelineEvents",
+    group: "media",
+  },
+  {
+    key: "musiques",
+    label: "Musiques & OST",
+    href: "/wiki/musiques",
+    countKey: "soundtracks",
+    group: "media",
+  },
+  { key: "films", label: "Films", href: "/wiki/films", countKey: "movies", group: "media" },
+  {
+    key: "episodes",
+    label: "Épisodes",
+    href: "/wiki/episodes",
+    countKey: "episodes",
+    group: "media",
+  },
+  { key: "manga", label: "Manga", href: "/wiki/manga", countKey: "mangaVolumes", group: "media" },
+  { key: "jeux", label: "Jeux", href: "/wiki/jeux", countKey: "games", group: "media" },
+  {
+    key: "databooks",
+    label: "Databooks",
+    href: "/wiki/databooks",
+    countKey: "databooks",
+    group: "media",
+  },
 ];
 
 /** Catégories à surfacer dans la nav du wiki (hors navbar → pas de doublon). */

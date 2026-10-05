@@ -2,5 +2,5 @@
 // pour que le rendu pleine page de `/wiki/films/[slug]` et de `/wiki/films` ne
 // 404 pas sur le slot parallèle.
 export default function Default() {
-	return null;
+  return null;
 }

@@ -19,15 +19,15 @@ import "server-only";
  * de la télémétrie), elle ne sert qu'à compter en mémoire.
  */
 export function clientIp(req: Request): string {
-	const realIp = req.headers.get("x-real-ip")?.trim();
-	if (realIp) return realIp;
-	const xff = req.headers.get("x-forwarded-for");
-	if (xff) {
-		const parts = xff
-			.split(",")
-			.map((s) => s.trim())
-			.filter(Boolean);
-		if (parts.length) return parts[parts.length - 1]!;
-	}
-	return "unknown";
+  const realIp = req.headers.get("x-real-ip")?.trim();
+  if (realIp) return realIp;
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) {
+    const parts = xff
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (parts.length) return parts[parts.length - 1]!;
+  }
+  return "unknown";
 }

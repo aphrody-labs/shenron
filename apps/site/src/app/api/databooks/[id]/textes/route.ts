@@ -46,44 +46,44 @@ const MAX_PAGES = 40;
  * les deux chemins répondent la même chose.
  */
 async function fichePubliee(id: number): Promise<boolean> {
-	const lignes = (await db.execute(sql`
+  const lignes = (await db.execute(sql`
 		select 1 as ok from bot.db_databooks where id = ${id}::bigint and visible limit 1
 	`)) as unknown as Array<{ ok: number }>;
-	return lignes.length > 0;
+  return lignes.length > 0;
 }
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
-	const id = parseDatabookId((await ctx.params).id);
-	if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  const id = parseDatabookId((await ctx.params).id);
+  if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
 
-	const demandees = [
-		...new Set(
-			(new URL(req.url).searchParams.get("pages") ?? "")
-				.split(",")
-				.map((v) => Number(v.trim()))
-				.filter((v) => Number.isSafeInteger(v) && v > 0)
-		),
-	].slice(0, MAX_PAGES);
-	if (demandees.length === 0) return NextResponse.json({ textes: {} });
+  const demandees = [
+    ...new Set(
+      (new URL(req.url).searchParams.get("pages") ?? "")
+        .split(",")
+        .map((v) => Number(v.trim()))
+        .filter((v) => Number.isSafeInteger(v) && v > 0),
+    ),
+  ].slice(0, MAX_PAGES);
+  if (demandees.length === 0) return NextResponse.json({ textes: {} });
 
-	// L'index Redis d'abord : il porte les mêmes transcriptions, tenues à jour à
-	// chaque dépôt. Il rend `null` — jamais un lot partiel — dès qu'une planche
-	// demandée lui manque, auquel cas on redescend en base pour le lot entier.
-	//
-	// Les deux lectures partent ensemble : le contrôle de visibilité est une
-	// recherche par clé primaire, il n'a pas à ajouter d'aller-retour au chemin
-	// rapide.
-	const [publiee, indexees] = await Promise.all([
-		fichePubliee(id),
-		readIndexedTextes(id, demandees),
-	]);
-	if (!publiee) return reponse({});
-	if (indexees) return reponse(indexees);
+  // L'index Redis d'abord : il porte les mêmes transcriptions, tenues à jour à
+  // chaque dépôt. Il rend `null` — jamais un lot partiel — dès qu'une planche
+  // demandée lui manque, auquel cas on redescend en base pour le lot entier.
+  //
+  // Les deux lectures partent ensemble : le contrôle de visibilité est une
+  // recherche par clé primaire, il n'a pas à ajouter d'aller-retour au chemin
+  // rapide.
+  const [publiee, indexees] = await Promise.all([
+    fichePubliee(id),
+    readIndexedTextes(id, demandees),
+  ]);
+  if (!publiee) return reponse({});
+  if (indexees) return reponse(indexees);
 
-	// Un seul aller-retour, et le filtrage se fait côté Postgres : rapatrier la
-	// colonne `pages` entière pour en extraire trois planches referait, côté
-	// serveur, exactement la dépense qu'on cherche à supprimer côté client.
-	const lignes = (await db.execute(sql`
+  // Un seul aller-retour, et le filtrage se fait côté Postgres : rapatrier la
+  // colonne `pages` entière pour en extraire trois planches referait, côté
+  // serveur, exactement la dépense qu'on cherche à supprimer côté client.
+  const lignes = (await db.execute(sql`
 		select (e->>'number')::int as numero,
 		       case when jsonb_typeof(e->'text') = 'object' then e->'text'->>'markdown'
 		            else e->>'text' end as texte
@@ -91,28 +91,28 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
 		where d.id = ${id}::bigint
 		  and d.visible
 		  and (e->>'number')::int in (${sql.join(
-				demandees.map((n) => sql`${n}`),
-				sql`, `
-			)})
+        demandees.map((n) => sql`${n}`),
+        sql`, `,
+      )})
 	`)) as unknown as Array<{ numero: number; texte: string | null }>;
 
-	const textes: Record<string, string> = {};
-	for (const l of lignes) {
-		if (l.texte && l.texte.trim()) textes[String(l.numero)] = l.texte;
-	}
+  const textes: Record<string, string> = {};
+  for (const l of lignes) {
+    if (l.texte && l.texte.trim()) textes[String(l.numero)] = l.texte;
+  }
 
-	return reponse(textes);
+  return reponse(textes);
 }
 
 function reponse(textes: Record<string, string>) {
-	return NextResponse.json(
-		{ textes },
-		{
-			headers: {
-				// Le corpus ne bouge qu'au rythme des dépôts de transcription ;
-				// une heure de cache, revalidée en arrière-plan, suffit largement.
-				"Cache-Control": "public, max-age=60, s-maxage=3600, stale-while-revalidate=86400",
-			},
-		}
-	);
+  return NextResponse.json(
+    { textes },
+    {
+      headers: {
+        // Le corpus ne bouge qu'au rythme des dépôts de transcription ;
+        // une heure de cache, revalidée en arrière-plan, suffit largement.
+        "Cache-Control": "public, max-age=60, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    },
+  );
 }

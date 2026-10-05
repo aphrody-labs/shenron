@@ -2,6 +2,7 @@
   "name": "@shenron/ui",
   "version": "0.1.0",
   "private": true,
+  "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio.",
   "type": "module",
   "sideEffects": [
     "*.css"
@@ -56,6 +57,65 @@
     "./studio/*": "./src/studio/*.tsx",
     "./*": "./src/components/*.tsx"
   },
+  "scripts": {
+    "lint": "oxlint -c ../../.oxlintrc.json src",
+    "test": "bun test --path-ignore-patterns='test/koharu/**' && bun test/koharu/run.ts",
+    "tokens": "bun scripts/generate-tokens.ts",
+    "tokens:check": "bun scripts/generate-tokens.ts --check",
+    "css:equivalence": "bun scripts/check-css-equivalence.ts",
+    "build:check": "bun scripts/production-check.ts",
+    "portability:check": "bun scripts/check-portability.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aphrody/api": "3.0.0-alpha.2",
+    "@aphrody/m3-primitives": "3.3.4",
+    "@aphrody/m3-reader": "3.3.4",
+    "@aphrody/m3-theme": "3.3.4",
+    "@aphrody/plugin-opener": "3.0.0-alpha.2",
+    "@base-ui/react": "catalog:",
+    "@shenron/config": "workspace:*",
+    "@shenron/koharu": "workspace:*",
+    "@shenron/pipeline": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-virtual": "catalog:",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "i18next": "catalog:",
+    "i18next-browser-languagedetector": "catalog:",
+    "i18next-localstorage-backend": "catalog:",
+    "lucide-react": "catalog:",
+    "next-themes": "catalog:",
+    "react-colorful": "catalog:",
+    "react-i18next": "catalog:",
+    "react-markdown": "catalog:",
+    "react-resizable-panels": "catalog:",
+    "remark-gfm": "catalog:",
+    "swiper": "^14.3.0",
+    "tailwind-merge": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@aphrody/bun-test-dom": "0.1.0",
+    "@tailwindcss/postcss": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "postcss": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "engines": {
+    "bun": ">=1.4.2"
+  },
   "shenron": {
     "runtime": {
       ".": "pure",
@@ -107,65 +167,5 @@
       "./studio/*": "react",
       "./*": "react"
     }
-  },
-  "scripts": {
-    "lint": "oxlint -c ../../.oxlintrc.json src",
-    "test": "bun test --path-ignore-patterns='test/koharu/**' && bun test/koharu/run.ts",
-    "tokens": "bun scripts/generate-tokens.ts",
-    "tokens:check": "bun scripts/generate-tokens.ts --check",
-    "css:equivalence": "bun scripts/check-css-equivalence.ts",
-    "build:check": "bun scripts/production-check.ts",
-    "portability:check": "bun scripts/check-portability.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@aphrody/api": "3.0.0-alpha.2",
-    "@aphrody/m3-primitives": "3.3.4",
-    "@aphrody/m3-reader": "3.3.4",
-    "@aphrody/m3-theme": "3.3.4",
-    "@aphrody/plugin-opener": "3.0.0-alpha.2",
-    "@base-ui/react": "catalog:",
-    "@shenron/config": "workspace:*",
-    "@shenron/koharu": "workspace:*",
-    "@shenron/pipeline": "workspace:*",
-    "@tanstack/react-query": "catalog:",
-    "@tanstack/react-virtual": "catalog:",
-    "class-variance-authority": "catalog:",
-    "clsx": "catalog:",
-    "i18next": "catalog:",
-    "i18next-browser-languagedetector": "catalog:",
-    "i18next-localstorage-backend": "catalog:",
-    "lucide-react": "catalog:",
-    "next-themes": "catalog:",
-    "react-colorful": "catalog:",
-    "react-i18next": "catalog:",
-    "react-markdown": "catalog:",
-    "react-resizable-panels": "catalog:",
-    "remark-gfm": "catalog:",
-    "swiper": "^14.3.0",
-    "tailwind-merge": "catalog:",
-    "zustand": "catalog:"
-  },
-  "peerDependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:"
-  },
-  "devDependencies": {
-    "@aphrody/bun-test-dom": "0.1.0",
-    "@tailwindcss/postcss": "catalog:",
-    "@testing-library/jest-dom": "catalog:",
-    "@testing-library/react": "catalog:",
-    "@testing-library/user-event": "catalog:",
-    "@types/bun": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "postcss": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "tailwindcss": "catalog:"
-  },
-  "engines": {
-    "bun": ">=1.4.2"
-  },
-  "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio."
+  }
 }

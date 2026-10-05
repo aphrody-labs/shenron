@@ -30,8 +30,8 @@ import { classerDefaut, noteQualite } from "../src/lib/databooks-defauts";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {
-	const i = args.indexOf(`--${nom}`);
-	return i !== -1 && args[i + 1] ? args[i + 1]! : defaut;
+  const i = args.indexOf(`--${nom}`);
+  return i !== -1 && args[i + 1] ? args[i + 1]! : defaut;
 };
 const flag = (nom: string) => args.includes(`--${nom}`);
 
@@ -43,26 +43,26 @@ const ECHANTILLONS = Number(opt("echantillons", "5"));
 const TOUT = flag("tout");
 
 async function urlBase(): Promise<string> {
-	const direct = process.env.DATABASE_URL?.trim();
-	if (direct) return direct;
-	const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
-		.text()
-		.catch(() => "");
-	// La DERNIÈRE ligne active gagne : `apps/site/.env` garde l'URL Neon
-	// d'avant la migration, plus haut dans le fichier.
-	const ligne = texte
-		.split("\n")
-		.filter((l) => l.startsWith("DATABASE_URL="))
-		.pop();
-	const valeur = ligne
-		?.slice("DATABASE_URL=".length)
-		.trim()
-		.replace(/^["']|["']$/g, "");
-	if (!valeur) {
-		console.error("✗ DATABASE_URL introuvable (environnement ou apps/site/.env).");
-		process.exit(1);
-	}
-	return valeur;
+  const direct = process.env.DATABASE_URL?.trim();
+  if (direct) return direct;
+  const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
+    .text()
+    .catch(() => "");
+  // La DERNIÈRE ligne active gagne : `apps/site/.env` garde l'URL Neon
+  // d'avant la migration, plus haut dans le fichier.
+  const ligne = texte
+    .split("\n")
+    .filter((l) => l.startsWith("DATABASE_URL="))
+    .pop();
+  const valeur = ligne
+    ?.slice("DATABASE_URL=".length)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (!valeur) {
+    console.error("✗ DATABASE_URL introuvable (environnement ou apps/site/.env).");
+    process.exit(1);
+  }
+  return valeur;
 }
 
 /**
@@ -72,132 +72,132 @@ async function urlBase(): Promise<string> {
  * même planche — d'où la normalisation du numéro de page en entier.
  */
 function cle(chemin: string): string | null {
-	const nom = basename(chemin.replace(/\\/g, "/"));
-	const m = nom.match(/^(\d+)-(\d+)\./);
-	if (!m) return null;
-	return `${Number(m[1])}-${Number(m[2])}`;
+  const nom = basename(chemin.replace(/\\/g, "/"));
+  const m = nom.match(/^(\d+)-(\d+)\./);
+  if (!m) return null;
+  return `${Number(m[1])}-${Number(m[2])}`;
 }
 
 interface Candidat {
-	texte: string;
-	lot: string;
-	note: number;
+  texte: string;
+  lot: string;
+  note: number;
 }
 
 const candidats = new Map<string, Candidat>();
 
 const fichiers = (await readdir(LOTS)).filter((f) => f.endsWith(".jsonl")).toSorted();
 if (fichiers.length === 0) {
-	console.error(`✗ aucun .jsonl dans ${LOTS}`);
-	process.exit(1);
+  console.error(`✗ aucun .jsonl dans ${LOTS}`);
+  process.exit(1);
 }
 
 for (const fichier of fichiers) {
-	const contenu = await Bun.file(join(LOTS, fichier)).text();
-	for (const ligne of contenu.split("\n")) {
-		if (!ligne.trim()) continue;
-		let objet: { image?: string; text?: { kind?: string; markdown?: string } };
-		try {
-			objet = JSON.parse(ligne);
-		} catch {
-			continue;
-		}
-		const k = objet.image ? cle(objet.image) : null;
-		if (!k) continue;
-		const texte = (objet.text?.markdown ?? "").trim();
-		if (!texte) continue;
-		const note = noteQualite(texte);
-		const connu = candidats.get(k);
-		if (!connu || note > connu.note) candidats.set(k, { texte, lot: fichier, note });
-	}
+  const contenu = await Bun.file(join(LOTS, fichier)).text();
+  for (const ligne of contenu.split("\n")) {
+    if (!ligne.trim()) continue;
+    let objet: { image?: string; text?: { kind?: string; markdown?: string } };
+    try {
+      objet = JSON.parse(ligne);
+    } catch {
+      continue;
+    }
+    const k = objet.image ? cle(objet.image) : null;
+    if (!k) continue;
+    const texte = (objet.text?.markdown ?? "").trim();
+    if (!texte) continue;
+    const note = noteQualite(texte);
+    const connu = candidats.get(k);
+    if (!connu || note > connu.note) candidats.set(k, { texte, lot: fichier, note });
+  }
 }
 
 console.log(`· ${fichiers.length} lot(s) lus, ${candidats.size} planche(s) candidates`);
 
 const sql = postgres(await urlBase(), { max: 2, prepare: false });
 interface Gain {
-	cle: string;
-	fiche: number;
-	page: number;
-	extension: string;
-	avant: string;
-	apres: string;
-	lot: string;
+  cle: string;
+  fiche: number;
+  page: number;
+  extension: string;
+  avant: string;
+  apres: string;
+  lot: string;
 }
 const gains: Gain[] = [];
 try {
-	const fiches = await sql<{ id: number; pages: unknown }[]>`
+  const fiches = await sql<{ id: number; pages: unknown }[]>`
 		SELECT id, pages FROM bot.db_databooks WHERE pages IS NOT NULL ORDER BY id`;
-	for (const fiche of fiches) {
-		const pages = Array.isArray(fiche.pages) ? (fiche.pages as Record<string, unknown>[]) : [];
-		for (const [i, p] of pages.entries()) {
-			// Même repli que `export-databooks-ocr.ts`, qui nomme les fichiers d'un
-			// lot `<fiche>-<numero || index+1>`. Sans lui, les planches sans
-			// `number` recevaient la clé `<fiche>-0`, que le lot n'écrit jamais :
-			// une meilleure transcription retrouvée pour elles n'était jamais
-			// proposée, en silence.
-			const page = Number(p.number ?? 0) || i + 1;
-			const k = `${Number(fiche.id)}-${page}`;
-			const candidat = candidats.get(k);
-			if (!candidat) continue;
-			const actuel = typeof p.text === "string" ? p.text : "";
-			if (candidat.texte === actuel) continue;
-			if (candidat.note <= noteQualite(actuel)) continue;
-			// Par défaut on ne remplace QUE du fautif par du sain. Départager deux
-			// textes sans défaut à la longueur est un mauvais juge : mesuré sur ce
-			// corpus, la « meilleure » version gagnait souvent 30 signes en écrivant
-			// ベージータ au lieu de ベジータ. `--tout` lève la restriction.
-			if (!TOUT && (classerDefaut(actuel) === null || classerDefaut(candidat.texte) !== null))
-				continue;
-			const image = typeof p.image === "string" ? p.image : "";
-			gains.push({
-				cle: k,
-				fiche: fiche.id,
-				page,
-				extension: image.split(".").pop() || "jpg",
-				avant: actuel,
-				apres: candidat.texte,
-				lot: candidat.lot,
-			});
-		}
-	}
+  for (const fiche of fiches) {
+    const pages = Array.isArray(fiche.pages) ? (fiche.pages as Record<string, unknown>[]) : [];
+    for (const [i, p] of pages.entries()) {
+      // Même repli que `export-databooks-ocr.ts`, qui nomme les fichiers d'un
+      // lot `<fiche>-<numero || index+1>`. Sans lui, les planches sans
+      // `number` recevaient la clé `<fiche>-0`, que le lot n'écrit jamais :
+      // une meilleure transcription retrouvée pour elles n'était jamais
+      // proposée, en silence.
+      const page = Number(p.number ?? 0) || i + 1;
+      const k = `${Number(fiche.id)}-${page}`;
+      const candidat = candidats.get(k);
+      if (!candidat) continue;
+      const actuel = typeof p.text === "string" ? p.text : "";
+      if (candidat.texte === actuel) continue;
+      if (candidat.note <= noteQualite(actuel)) continue;
+      // Par défaut on ne remplace QUE du fautif par du sain. Départager deux
+      // textes sans défaut à la longueur est un mauvais juge : mesuré sur ce
+      // corpus, la « meilleure » version gagnait souvent 30 signes en écrivant
+      // ベージータ au lieu de ベジータ. `--tout` lève la restriction.
+      if (!TOUT && (classerDefaut(actuel) === null || classerDefaut(candidat.texte) !== null))
+        continue;
+      const image = typeof p.image === "string" ? p.image : "";
+      gains.push({
+        cle: k,
+        fiche: fiche.id,
+        page,
+        extension: image.split(".").pop() || "jpg",
+        avant: actuel,
+        apres: candidat.texte,
+        lot: candidat.lot,
+      });
+    }
+  }
 } finally {
-	await sql.end();
+  await sql.end();
 }
 
 const parDefaut = new Map<string, number>();
 for (const g of gains) {
-	const d = classerDefaut(g.avant) ?? "sain";
-	parDefaut.set(d, (parDefaut.get(d) ?? 0) + 1);
+  const d = classerDefaut(g.avant) ?? "sain";
+  parDefaut.set(d, (parDefaut.get(d) ?? 0) + 1);
 }
 console.log(`\n${gains.length} planche(s) où un lot bat la base :`);
 for (const [d, n] of [...parDefaut].toSorted((a, b) => b[1] - a[1])) {
-	console.log(`  ${d.padEnd(14)} ${String(n).padStart(5)}`);
+  console.log(`  ${d.padEnd(14)} ${String(n).padStart(5)}`);
 }
 
 for (const g of gains.slice(0, ECHANTILLONS)) {
-	const court = (t: string) => t.slice(0, 90).replaceAll("\n", "⏎");
-	console.log(`\n[#${g.fiche} p.${g.page}] ← ${g.lot}`);
-	console.log(`  base : ${court(g.avant)}`);
-	console.log(`  lot  : ${court(g.apres)}`);
+  const court = (t: string) => t.slice(0, 90).replaceAll("\n", "⏎");
+  console.log(`\n[#${g.fiche} p.${g.page}] ← ${g.lot}`);
+  console.log(`  base : ${court(g.avant)}`);
+  console.log(`  lot  : ${court(g.apres)}`);
 }
 
 if (SORTIE || APPLIQUER) {
-	const chemin = SORTIE ?? join(process.env.TMPDIR ?? "/tmp", "meilleure-source-ocr.jsonl");
-	const lignes = gains.map((g) =>
-		JSON.stringify({
-			image: `${g.fiche}-${g.page}.${g.extension}`,
-			text: { kind: "text", markdown: g.apres },
-		})
-	);
-	await Bun.write(chemin, lignes.join("\n") + "\n");
-	console.log(`\n· ${gains.length} ligne(s) écrite(s) dans ${chemin}`);
-	if (APPLIQUER) {
-		const proc = Bun.spawn(["bun", join(import.meta.dir, "depose-transcriptions.ts"), chemin], {
-			stdout: "inherit",
-			stderr: "inherit",
-			env: process.env,
-		});
-		process.exit(await proc.exited);
-	}
+  const chemin = SORTIE ?? join(process.env.TMPDIR ?? "/tmp", "meilleure-source-ocr.jsonl");
+  const lignes = gains.map((g) =>
+    JSON.stringify({
+      image: `${g.fiche}-${g.page}.${g.extension}`,
+      text: { kind: "text", markdown: g.apres },
+    }),
+  );
+  await Bun.write(chemin, lignes.join("\n") + "\n");
+  console.log(`\n· ${gains.length} ligne(s) écrite(s) dans ${chemin}`);
+  if (APPLIQUER) {
+    const proc = Bun.spawn(["bun", join(import.meta.dir, "depose-transcriptions.ts"), chemin], {
+      stdout: "inherit",
+      stderr: "inherit",
+      env: process.env,
+    });
+    process.exit(await proc.exited);
+  }
 }

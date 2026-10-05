@@ -1,9 +1,5 @@
 import type { GuardFunction } from "discordx";
-import {
-	BaseInteraction,
-	type CommandInteraction,
-	MessageFlags,
-} from "discord.js";
+import { BaseInteraction, type CommandInteraction, MessageFlags } from "discord.js";
 import { container } from "tsyringe";
 import { CommandPermissionsService } from "~/services/CommandPermissionsService";
 
@@ -22,34 +18,34 @@ import { CommandPermissionsService } from "~/services/CommandPermissionsService"
  * silencieusement les exceptions et les events ratent — bug subtil sur Bun).
  */
 export const CommandPermissions: GuardFunction<CommandInteraction> = async (arg, _client, next) => {
-	if (!(arg instanceof BaseInteraction)) {
-		await next();
-		return;
-	}
+  if (!(arg instanceof BaseInteraction)) {
+    await next();
+    return;
+  }
 
-	const interaction = arg;
-	if (!interaction.isCommand()) {
-		await next();
-		return;
-	}
+  const interaction = arg;
+  if (!interaction.isCommand()) {
+    await next();
+    return;
+  }
 
-	const name = buildCommandName(interaction);
-	const userRoleIds = interaction.inCachedGuild()
-		? interaction.member.roles.cache.map((r) => r.id)
-		: [];
-	const service = container.resolve(CommandPermissionsService);
-	const result = await service.check(name, interaction.user.id, userRoleIds);
-	if (result.allowed) {
-		await next();
-		return;
-	}
+  const name = buildCommandName(interaction);
+  const userRoleIds = interaction.inCachedGuild()
+    ? interaction.member.roles.cache.map((r) => r.id)
+    : [];
+  const service = container.resolve(CommandPermissionsService);
+  const result = await service.check(name, interaction.user.id, userRoleIds);
+  if (result.allowed) {
+    await next();
+    return;
+  }
 
-	if (interaction.isRepliable()) {
-		await interaction.reply({
-			content: explain(result.reason, name),
-			flags: MessageFlags.Ephemeral,
-		});
-	}
+  if (interaction.isRepliable()) {
+    await interaction.reply({
+      content: explain(result.reason, name),
+      flags: MessageFlags.Ephemeral,
+    });
+  }
 };
 
 /**
@@ -57,27 +53,27 @@ export const CommandPermissions: GuardFunction<CommandInteraction> = async (arg,
  * sous-commande, ex: `admin reload`, `economy give`, `daily`.
  */
 function buildCommandName(interaction: CommandInteraction): string {
-	const parts: string[] = [interaction.commandName];
-	if (interaction.isChatInputCommand()) {
-		const sg = interaction.options.getSubcommandGroup(false);
-		if (sg) parts.push(sg);
-		const sub = interaction.options.getSubcommand(false);
-		if (sub) parts.push(sub);
-	}
-	return parts.join(" ");
+  const parts: string[] = [interaction.commandName];
+  if (interaction.isChatInputCommand()) {
+    const sg = interaction.options.getSubcommandGroup(false);
+    if (sg) parts.push(sg);
+    const sub = interaction.options.getSubcommand(false);
+    if (sub) parts.push(sub);
+  }
+  return parts.join(" ");
 }
 
 function explain(reason: string, name: string): string {
-	switch (reason) {
-		case "disabled":
-			return `La commande \`/${name}\` est désactivée.`;
-		case "not_in_allowed_roles":
-			return `Tu n'as pas le rôle requis pour utiliser \`/${name}\`.`;
-		case "in_denied_role":
-			return `Un de tes rôles t'interdit d'utiliser \`/${name}\`.`;
-		case "in_denied_users":
-			return `Tu n'as pas le droit d'utiliser \`/${name}\`.`;
-		default:
-			return `\`/${name}\` indisponible.`;
-	}
+  switch (reason) {
+    case "disabled":
+      return `La commande \`/${name}\` est désactivée.`;
+    case "not_in_allowed_roles":
+      return `Tu n'as pas le rôle requis pour utiliser \`/${name}\`.`;
+    case "in_denied_role":
+      return `Un de tes rôles t'interdit d'utiliser \`/${name}\`.`;
+    case "in_denied_users":
+      return `Tu n'as pas le droit d'utiliser \`/${name}\`.`;
+    default:
+      return `\`/${name}\` indisponible.`;
+  }
 }

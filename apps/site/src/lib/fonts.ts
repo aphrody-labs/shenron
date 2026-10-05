@@ -19,11 +19,11 @@ import { Newsreader } from "next/font/google";
  * utilisée que sur le journal — coût LCP inutile partout ailleurs.
  */
 export const editorialSerif = Newsreader({
-	variable: "--font-editorial",
-	subsets: ["latin", "latin-ext"],
-	display: "swap",
-	// Axe optique : Next génère la variable font, le CSS pilote `font-optical-sizing`.
-	axes: ["opsz"],
-	style: ["normal", "italic"],
-	fallback: ["Iowan Old Style", "Charter", "Georgia", "serif"],
+  variable: "--font-editorial",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  // Axe optique : Next génère la variable font, le CSS pilote `font-optical-sizing`.
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  fallback: ["Iowan Old Style", "Charter", "Georgia", "serif"],
 });

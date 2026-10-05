@@ -58,10 +58,12 @@ export async function GET(request: Request, context: { params: Promise<{ path: s
       { mode: "Bearer", token },
     );
     return reply({
-      guilds: data.map((guild) => (Object.assign(guild, {
-	iconUrl: guildIcon(guild.id, guild.icon, { size: 128 }),
-	isCurrent: guild.id === guildId
-}))),
+      guilds: data.map((guild) =>
+        Object.assign(guild, {
+          iconUrl: guildIcon(guild.id, guild.icon, { size: 128 }),
+          isCurrent: guild.id === guildId,
+        }),
+      ),
     });
   } catch (error) {
     return reply(

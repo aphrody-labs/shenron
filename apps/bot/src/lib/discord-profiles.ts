@@ -28,16 +28,16 @@ import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 
 export type DiscordUserData = {
-	username: string | null;
-	avatarHash: string | null;
-	expiresAt: number;
+  username: string | null;
+  avatarHash: string | null;
+  expiresAt: number;
 };
 
 type ProfileRow = {
-	user_id: string;
-	username: string | null;
-	avatar_hash: string | null;
-	updated_at: number;
+  user_id: string;
+  username: string | null;
+  avatar_hash: string | null;
+  updated_at: number;
 };
 
 const MEMORY_TTL_MS = 5 * 60_000;
@@ -50,9 +50,9 @@ const memory = new Map<string, DiscordUserData>();
 const initialised = new WeakSet<Database>();
 
 function sqlite(): Database {
-	const db = container.resolve(DatabaseService).sqlite;
-	if (!initialised.has(db)) {
-		db.exec(`
+  const db = container.resolve(DatabaseService).sqlite;
+  if (!initialised.has(db)) {
+    db.exec(`
 			CREATE TABLE IF NOT EXISTS discord_user_profiles (
 				user_id TEXT PRIMARY KEY,
 				username TEXT,
@@ -60,91 +60,91 @@ function sqlite(): Database {
 				updated_at INTEGER NOT NULL
 			);
 		`);
-		initialised.add(db);
-	}
-	return db;
+    initialised.add(db);
+  }
+  return db;
 }
 
 function readPersisted(id: string): ProfileRow | null {
-	try {
-		return (
-			(sqlite()
-				.query(
-					"SELECT user_id, username, avatar_hash, updated_at FROM discord_user_profiles WHERE user_id = ?1"
-				)
-				.get(id) as ProfileRow | null) ?? null
-		);
-	} catch (err) {
-		logger.warn({ err, userId: id }, "discord profile read failed");
-		return null;
-	}
+  try {
+    return (
+      (sqlite()
+        .query(
+          "SELECT user_id, username, avatar_hash, updated_at FROM discord_user_profiles WHERE user_id = ?1",
+        )
+        .get(id) as ProfileRow | null) ?? null
+    );
+  } catch (err) {
+    logger.warn({ err, userId: id }, "discord profile read failed");
+    return null;
+  }
 }
 
 function persist(id: string, username: string | null, avatarHash: string | null): void {
-	try {
-		sqlite()
-			.query(
-				`INSERT INTO discord_user_profiles (user_id, username, avatar_hash, updated_at)
+  try {
+    sqlite()
+      .query(
+        `INSERT INTO discord_user_profiles (user_id, username, avatar_hash, updated_at)
 				 VALUES (?1, ?2, ?3, ?4)
 				 ON CONFLICT(user_id) DO UPDATE SET
 					username = excluded.username,
 					avatar_hash = excluded.avatar_hash,
-					updated_at = excluded.updated_at`
-			)
-			.run(id, username, avatarHash, Date.now());
-	} catch (err) {
-		logger.warn({ err, userId: id }, "discord profile write failed");
-	}
+					updated_at = excluded.updated_at`,
+      )
+      .run(id, username, avatarHash, Date.now());
+  } catch (err) {
+    logger.warn({ err, userId: id }, "discord profile write failed");
+  }
 }
 
 function remember(id: string, username: string | null, avatarHash: string | null): DiscordUserData {
-	const entry: DiscordUserData = {
-		username,
-		avatarHash,
-		expiresAt: Date.now() + MEMORY_TTL_MS,
-	};
-	memory.delete(id);
-	if (memory.size >= MEMORY_MAX) {
-		const oldest = memory.keys().next().value;
-		if (oldest) memory.delete(oldest);
-	}
-	memory.set(id, entry);
-	return entry;
+  const entry: DiscordUserData = {
+    username,
+    avatarHash,
+    expiresAt: Date.now() + MEMORY_TTL_MS,
+  };
+  memory.delete(id);
+  if (memory.size >= MEMORY_MAX) {
+    const oldest = memory.keys().next().value;
+    if (oldest) memory.delete(oldest);
+  }
+  memory.set(id, entry);
+  return entry;
 }
 
 function clients(): Client[] {
-	try {
-		const map = container.resolve<Map<string, Client>>("ClientMap");
-		// Every persona alias points to the same Gateway client: dedupe.
-		return [...new Set(map.values())];
-	} catch {
-		return [];
-	}
+  try {
+    const map = container.resolve<Map<string, Client>>("ClientMap");
+    // Every persona alias points to the same Gateway client: dedupe.
+    return [...new Set(map.values())];
+  } catch {
+    return [];
+  }
 }
 
 /** Live member of the production guild, kept fresh by the gateway. */
 function liveMemberUser(id: string): User | null {
-	for (const c of clients()) {
-		const member = c.guilds.cache.get(env.GUILD_ID)?.members.cache.get(id);
-		if (member && !member.user.partial) return member.user;
-	}
-	return null;
+  for (const c of clients()) {
+    const member = c.guilds.cache.get(env.GUILD_ID)?.members.cache.get(id);
+    if (member && !member.user.partial) return member.user;
+  }
+  return null;
 }
 
 async function restFetch(id: string): Promise<User | null> {
-	const [shenron] = clients();
-	if (!shenron) return null;
-	let timer: ReturnType<typeof setTimeout> | undefined;
-	try {
-		return await Promise.race([
-			shenron.users.fetch(id, { force: true }).catch(() => null),
-			new Promise<null>((resolve) => {
-				timer = setTimeout(() => resolve(null), REST_TIMEOUT_MS);
-			}),
-		]);
-	} finally {
-		if (timer) clearTimeout(timer);
-	}
+  const [shenron] = clients();
+  if (!shenron) return null;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      shenron.users.fetch(id, { force: true }).catch(() => null),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), REST_TIMEOUT_MS);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 /**
@@ -153,36 +153,35 @@ async function restFetch(id: string): Promise<User | null> {
  * to call on every `guildMemberUpdate`.
  */
 export function recordDiscordProfile(
-	user: Pick<User, "id" | "username" | "avatar">
+  user: Pick<User, "id" | "username" | "avatar">,
 ): DiscordUserData {
-	const username = user.username ?? null;
-	const avatarHash = user.avatar ?? null;
-	const stored = readPersisted(user.id);
-	const changed =
-		!stored || stored.username !== username || stored.avatar_hash !== avatarHash;
-	if (changed) persist(user.id, username, avatarHash);
-	return remember(user.id, username, avatarHash);
+  const username = user.username ?? null;
+  const avatarHash = user.avatar ?? null;
+  const stored = readPersisted(user.id);
+  const changed = !stored || stored.username !== username || stored.avatar_hash !== avatarHash;
+  if (changed) persist(user.id, username, avatarHash);
+  return remember(user.id, username, avatarHash);
 }
 
 /** Username + avatar hash of a Discord user, freshest available source first. */
 export async function fetchDiscordUserCached(id: string): Promise<DiscordUserData> {
-	const cached = memory.get(id);
-	if (cached && cached.expiresAt > Date.now()) return cached;
+  const cached = memory.get(id);
+  if (cached && cached.expiresAt > Date.now()) return cached;
 
-	const live = liveMemberUser(id);
-	if (live) return recordDiscordProfile(live);
+  const live = liveMemberUser(id);
+  if (live) return recordDiscordProfile(live);
 
-	const stored = readPersisted(id);
-	if (stored && Date.now() - stored.updated_at < PERSISTED_FRESH_MS) {
-		return remember(id, stored.username, stored.avatar_hash);
-	}
+  const stored = readPersisted(id);
+  if (stored && Date.now() - stored.updated_at < PERSISTED_FRESH_MS) {
+    return remember(id, stored.username, stored.avatar_hash);
+  }
 
-	const fetched = await restFetch(id);
-	if (fetched) {
-		persist(id, fetched.username, fetched.avatar);
-		return remember(id, fetched.username, fetched.avatar);
-	}
+  const fetched = await restFetch(id);
+  if (fetched) {
+    persist(id, fetched.username, fetched.avatar);
+    return remember(id, fetched.username, fetched.avatar);
+  }
 
-	// REST unavailable (timeout, unknown user): last known profile, else nothing.
-	return remember(id, stored?.username ?? null, stored?.avatar_hash ?? null);
+  // REST unavailable (timeout, unknown user): last known profile, else nothing.
+  return remember(id, stored?.username ?? null, stored?.avatar_hash ?? null);
 }

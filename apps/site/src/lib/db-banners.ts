@@ -4,6 +4,4 @@
  * Aucun reverse-engineering, juste mapping section → asset disponible.
  */
 
-
 export const GAMES_HERO = "/banners/banner-15.jpg"; // Vegito SSB Combats Divins (3216x1072 HD)
-

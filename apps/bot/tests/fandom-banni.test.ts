@@ -20,49 +20,59 @@ const PIPELINE_SCRIPTS = join(import.meta.dir, "../../../packages/pipeline/scrip
 type Doc = { id: string; url?: string; name?: string };
 
 const corpusFiles = () =>
-	existsSync(RAG_DIR)
-		? readdirSync(RAG_DIR).filter((f) => f.startsWith("corpus") || f.startsWith("shard"))
-		: [];
+  existsSync(RAG_DIR)
+    ? readdirSync(RAG_DIR).filter((f) => f.startsWith("corpus") || f.startsWith("shard"))
+    : [];
 
 describe("Fandom reste banni", () => {
-	test("aucun document Fandom dans les corpus RAG", () => {
-		for (const f of corpusFiles()) {
-			const j = JSON.parse(readFileSync(join(RAG_DIR, f), "utf-8")) as { docs?: Doc[] };
-			const coupables = (j.docs ?? []).filter(
-				(d) => /^fd-(en|fr)-/.test(d.id) || `${d.id} ${d.url ?? ""}`.includes("fandom.com")
-			);
-			expect({ fichier: f, coupables: coupables.map((d) => d.id) }).toEqual({
-				fichier: f,
-				coupables: [],
-			});
-		}
-	});
+  test("aucun document Fandom dans les corpus RAG", () => {
+    for (const f of corpusFiles()) {
+      const j = JSON.parse(readFileSync(join(RAG_DIR, f), "utf-8")) as { docs?: Doc[] };
+      const coupables = (j.docs ?? []).filter(
+        (d) => /^fd-(en|fr)-/.test(d.id) || `${d.id} ${d.url ?? ""}`.includes("fandom.com"),
+      );
+      expect({ fichier: f, coupables: coupables.map((d) => d.id) }).toEqual({
+        fichier: f,
+        coupables: [],
+      });
+    }
+  });
 
-	test("aucun fichier de corpus Fandom sur disque", () => {
-		const restes = existsSync(RAG_DIR)
-			? readdirSync(RAG_DIR).filter((f) => f.toLowerCase().includes("fandom"))
-			: [];
-		expect(restes).toEqual([]);
-	});
+  test("aucun fichier de corpus Fandom sur disque", () => {
+    const restes = existsSync(RAG_DIR)
+      ? readdirSync(RAG_DIR).filter((f) => f.toLowerCase().includes("fandom"))
+      : [];
+    expect(restes).toEqual([]);
+  });
 
-	test("aucun script d'ingestion Fandom", () => {
-		const listeRecursive = (dir: string): string[] =>
-			readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-				e.isDirectory() ? listeRecursive(join(dir, e.name)) : [e.name]
-			);
-		const coupables = [BOT_SCRIPTS, PIPELINE_SCRIPTS]
-			.flatMap(listeRecursive)
-			.filter((f) => f.toLowerCase().includes("fandom"));
-		// Le script de purge est l'outil de l'éradication, pas une ingestion.
-		expect(coupables.filter((f) => f !== "purge-fandom-sources.ts")).toEqual([]);
-	});
+  test("aucun script d'ingestion Fandom", () => {
+    const listeRecursive = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+        e.isDirectory() ? listeRecursive(join(dir, e.name)) : [e.name],
+      );
+    const coupables = [BOT_SCRIPTS, PIPELINE_SCRIPTS]
+      .flatMap(listeRecursive)
+      .filter((f) => f.toLowerCase().includes("fandom"));
+    // Le script de purge est l'outil de l'éradication, pas une ingestion.
+    expect(coupables.filter((f) => f !== "purge-fandom-sources.ts")).toEqual([]);
+  });
 
-	test("le rendu commun refuse les documents Fandom avant indexation", () => {
-		const { passages, refusedFandom } = renderCorpusDocs([
-			{ id: "fd-fr-example", name: "Source interdite", url: "https://example.org/article", markdown: "Un contenu pourtant assez long pour être indexé." },
-			{ id: "official-example", name: "Source interdite", url: "https://dragonball.fandom.com/wiki/Example", markdown: "Un second contenu assez long pour être indexé." },
-		]);
-		expect(refusedFandom).toBe(2);
-		expect(passages).toEqual([]);
-	});
+  test("le rendu commun refuse les documents Fandom avant indexation", () => {
+    const { passages, refusedFandom } = renderCorpusDocs([
+      {
+        id: "fd-fr-example",
+        name: "Source interdite",
+        url: "https://example.org/article",
+        markdown: "Un contenu pourtant assez long pour être indexé.",
+      },
+      {
+        id: "official-example",
+        name: "Source interdite",
+        url: "https://dragonball.fandom.com/wiki/Example",
+        markdown: "Un second contenu assez long pour être indexé.",
+      },
+    ]);
+    expect(refusedFandom).toBe(2);
+    expect(passages).toEqual([]);
+  });
 });

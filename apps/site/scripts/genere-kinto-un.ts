@@ -19,25 +19,25 @@ import { svgIcone, svgIllustration, svgMonochrome } from "../src/lib/kinto-un";
 
 const racine = new URL("../../../packages/ui/assets/", import.meta.url).pathname;
 const sorties: [string, string][] = [
-	["dbz/kinto-un.svg", svgIllustration()],
-	["dbz/kinto-un-icone.svg", svgIcone()],
-	["safari-pinned-tab.svg", svgMonochrome()],
+  ["dbz/kinto-un.svg", svgIllustration()],
+  ["dbz/kinto-un-icone.svg", svgIcone()],
+  ["safari-pinned-tab.svg", svgMonochrome()],
 ];
 for (const [nom, svg] of sorties) {
-	await Bun.write(racine + nom, svg);
-	console.log(`packages/ui/assets/${nom} — ${svg.length} octets`);
+  await Bun.write(racine + nom, svg);
+  console.log(`packages/ui/assets/${nom} — ${svg.length} octets`);
 }
 
 if (Bun.argv.includes("--rendu")) {
-	const sharp = (await import("sharp")).default;
-	for (const largeur of [1200, 256, 64]) {
-		const sortie = `/tmp/kinto-un-${largeur}.png`;
-		await sharp(Buffer.from(svgIllustration())).resize({ width: largeur }).png().toFile(sortie);
-		console.log(sortie);
-	}
-	for (const cote of [512, 96, 48, 32, 16]) {
-		const sortie = `/tmp/kinto-un-icone-${cote}.png`;
-		await sharp(Buffer.from(svgIcone())).resize(cote, cote).png().toFile(sortie);
-		console.log(sortie);
-	}
+  const sharp = (await import("sharp")).default;
+  for (const largeur of [1200, 256, 64]) {
+    const sortie = `/tmp/kinto-un-${largeur}.png`;
+    await sharp(Buffer.from(svgIllustration())).resize({ width: largeur }).png().toFile(sortie);
+    console.log(sortie);
+  }
+  for (const cote of [512, 96, 48, 32, 16]) {
+    const sortie = `/tmp/kinto-un-icone-${cote}.png`;
+    await sharp(Buffer.from(svgIcone())).resize(cote, cote).png().toFile(sortie);
+    console.log(sortie);
+  }
 }

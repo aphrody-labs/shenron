@@ -31,11 +31,11 @@
 import postgres from "postgres";
 
 async function main() {
-	const url = process.env.DATABASE_URL;
-	if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
-	const sql = postgres(url, { max: 1 });
-	try {
-		await sql.unsafe(`
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
+  const sql = postgres(url, { max: 1 });
+  try {
+    await sql.unsafe(`
 			CREATE TABLE IF NOT EXISTS bot."db_character_variants" (
 				id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 				character_id  bigint  NOT NULL,
@@ -67,66 +67,66 @@ async function main() {
 			)
 		`);
 
-		// Une seule variante par couple (personnage, saga) : c'est la définition
-		// même de la table, et c'est ce qui permet à l'amorçage d'être rejouable
-		// (ON CONFLICT DO UPDATE) sans dupliquer ce qu'il a déjà posé.
-		await sql.unsafe(`
+    // Une seule variante par couple (personnage, saga) : c'est la définition
+    // même de la table, et c'est ce qui permet à l'amorçage d'être rejouable
+    // (ON CONFLICT DO UPDATE) sans dupliquer ce qu'il a déjà posé.
+    await sql.unsafe(`
 			CREATE UNIQUE INDEX IF NOT EXISTS db_character_variants_uni
 			ON bot."db_character_variants" (character_id, saga_id)
 		`);
-		// Le slug sert d'ancre stable dans l'URL de la fiche (#goku-namek).
-		await sql.unsafe(`
+    // Le slug sert d'ancre stable dans l'URL de la fiche (#goku-namek).
+    await sql.unsafe(`
 			CREATE UNIQUE INDEX IF NOT EXISTS db_character_variants_slug_uni
 			ON bot."db_character_variants" (slug)
 		`);
-		// Lecture publique : « toutes les variantes de ce personnage, dans l'ordre ».
-		await sql.unsafe(`
+    // Lecture publique : « toutes les variantes de ce personnage, dans l'ordre ».
+    await sql.unsafe(`
 			CREATE INDEX IF NOT EXISTS db_character_variants_char_idx
 			ON bot."db_character_variants" (character_id, sort_order)
 		`);
-		// Lecture inverse : « qui apparaît dans cette saga » (page saga).
-		await sql.unsafe(`
+    // Lecture inverse : « qui apparaît dans cette saga » (page saga).
+    await sql.unsafe(`
 			CREATE INDEX IF NOT EXISTS db_character_variants_saga_idx
 			ON bot."db_character_variants" (saga_id) WHERE visible
 		`);
 
-		// Colonnes ajoutées après coup : la table existe déjà en production.
-		for (const col of ["first_episode", "last_episode"]) {
-			await sql.unsafe(
-				`ALTER TABLE bot."db_character_variants" ADD COLUMN IF NOT EXISTS ${col} bigint`
-			);
-		}
-		// Épisodes dont le TITRE nomme le personnage — le seul enrichissement
-		// éditorial qui se mesure au lieu de s'écrire. `[{ num, title }]`.
-		await sql.unsafe(
-			`ALTER TABLE bot."db_character_variants" ADD COLUMN IF NOT EXISTS key_episodes jsonb`
-		);
+    // Colonnes ajoutées après coup : la table existe déjà en production.
+    for (const col of ["first_episode", "last_episode"]) {
+      await sql.unsafe(
+        `ALTER TABLE bot."db_character_variants" ADD COLUMN IF NOT EXISTS ${col} bigint`,
+      );
+    }
+    // Épisodes dont le TITRE nomme le personnage — le seul enrichissement
+    // éditorial qui se mesure au lieu de s'écrire. `[{ num, title }]`.
+    await sql.unsafe(
+      `ALTER TABLE bot."db_character_variants" ADD COLUMN IF NOT EXISTS key_episodes jsonb`,
+    );
 
-		// Bornes manga des sagas — sans elles, aucune mesure de présence possible.
-		for (const col of [
-			"manga_volume_start",
-			"manga_volume_end",
-			"manga_chapter_start",
-			"manga_chapter_end",
-			// Bornes d'ÉPISODES : la seconde source mesurable. 18 sagas sur 33 n'ont
-			// aucun support manga (GT, Daima, DBS anime, films) — leur présence se
-			// mesure sur les synopsis de `db_episodes`, qui nomment les personnages
-			// en clair. `episode_series` est indispensable : la numérotation
-			// recommence à 1 dans chaque série (DBZ #1 ≠ DBGT #1).
-			"episode_start",
-			"episode_end",
-		]) {
-			await sql.unsafe(`ALTER TABLE bot."db_sagas" ADD COLUMN IF NOT EXISTS ${col} bigint`);
-		}
-		await sql.unsafe(`ALTER TABLE bot."db_sagas" ADD COLUMN IF NOT EXISTS episode_series text`);
+    // Bornes manga des sagas — sans elles, aucune mesure de présence possible.
+    for (const col of [
+      "manga_volume_start",
+      "manga_volume_end",
+      "manga_chapter_start",
+      "manga_chapter_end",
+      // Bornes d'ÉPISODES : la seconde source mesurable. 18 sagas sur 33 n'ont
+      // aucun support manga (GT, Daima, DBS anime, films) — leur présence se
+      // mesure sur les synopsis de `db_episodes`, qui nomment les personnages
+      // en clair. `episode_series` est indispensable : la numérotation
+      // recommence à 1 dans chaque série (DBZ #1 ≠ DBGT #1).
+      "episode_start",
+      "episode_end",
+    ]) {
+      await sql.unsafe(`ALTER TABLE bot."db_sagas" ADD COLUMN IF NOT EXISTS ${col} bigint`);
+    }
+    await sql.unsafe(`ALTER TABLE bot."db_sagas" ADD COLUMN IF NOT EXISTS episode_series text`);
 
-		console.log("✓ bot.db_character_variants (+ index) et bornes manga/épisodes sur bot.db_sagas");
-	} finally {
-		await sql.end({ timeout: 5 });
-	}
+    console.log("✓ bot.db_character_variants (+ index) et bornes manga/épisodes sur bot.db_sagas");
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

@@ -20,7 +20,7 @@ import * as apiToken from "@/lib/api-token";
 
 /** Jeton porteur valide (sémantique inchangée de `@/lib/api-token`). */
 export function hasValidApiToken(req: Request): boolean {
-	return apiToken.hasValidApiToken(req);
+  return apiToken.hasValidApiToken(req);
 }
 
 /**
@@ -29,15 +29,15 @@ export function hasValidApiToken(req: Request): boolean {
  * routes), le jeton ensuite.
  */
 export async function isAdminOrToken(req: Request): Promise<boolean> {
-	return (await session.isCurrentUserAdmin()) || hasValidApiToken(req);
+  return (await session.isCurrentUserAdmin()) || hasValidApiToken(req);
 }
 
 export interface AdminUserOrTokenDecision {
-	allowed: boolean;
-	/** Utilisateur courant (identité d'audit des écritures), `null` si anonyme. */
-	me: CurrentUser | null;
-	/** `true` si le jeton porteur est valide (indépendamment de la session). */
-	token: boolean;
+  allowed: boolean;
+  /** Utilisateur courant (identité d'audit des écritures), `null` si anonyme. */
+  me: CurrentUser | null;
+  /** `true` si le jeton porteur est valide (indépendamment de la session). */
+  token: boolean;
 }
 
 /**
@@ -46,12 +46,12 @@ export interface AdminUserOrTokenDecision {
  * (`me?.discordId || me?.user?.id || "token-admin"`).
  */
 export async function adminUserOrToken(req: Request): Promise<AdminUserOrTokenDecision> {
-	const me = await session.getCurrentUser();
-	const token = hasValidApiToken(req);
-	return { allowed: me?.user?.roleAdmin === true || token, me, token };
+  const me = await session.getCurrentUser();
+  const token = hasValidApiToken(req);
+  return { allowed: me?.user?.roleAdmin === true || token, me, token };
 }
 
 /** Forme booléenne de {@link adminUserOrToken}. */
 export async function isAdminUserOrToken(req: Request): Promise<boolean> {
-	return (await adminUserOrToken(req)).allowed;
+  return (await adminUserOrToken(req)).allowed;
 }

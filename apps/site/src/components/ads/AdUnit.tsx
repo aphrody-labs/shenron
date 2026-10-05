@@ -37,23 +37,23 @@ import { usePathname } from "next/navigation";
 import { AD_PLACEMENTS, ADSENSE_CLIENT, getAdPlacement, type AdPlacement } from "@/lib/ads";
 
 declare global {
-	interface Window {
-		adsbygoogle?: unknown[];
-	}
+  interface Window {
+    adsbygoogle?: unknown[];
+  }
 }
 
 interface AdUnitProps {
-	/** Emplacement logique (résolu en ID de bloc via l'env). */
-	placement: AdPlacement;
-	/** Classes du conteneur (marges verticales notamment). */
-	className?: string;
-	/**
-	 * Libellé affiché au-dessus du bloc. Les règles AdSense imposent que la
-	 * publicité ne puisse pas être confondue avec le contenu éditorial —
-	 * « Publicité » est le libellé attendu côté FR. `null` pour l'omettre sur les
-	 * formats déjà auto-libellés (multiplex).
-	 */
-	label?: string | null;
+  /** Emplacement logique (résolu en ID de bloc via l'env). */
+  placement: AdPlacement;
+  /** Classes du conteneur (marges verticales notamment). */
+  className?: string;
+  /**
+   * Libellé affiché au-dessus du bloc. Les règles AdSense imposent que la
+   * publicité ne puisse pas être confondue avec le contenu éditorial —
+   * « Publicité » est le libellé attendu côté FR. `null` pour l'omettre sur les
+   * formats déjà auto-libellés (multiplex).
+   */
+  label?: string | null;
 }
 
 /**
@@ -65,114 +65,112 @@ interface AdUnitProps {
 const DELAI_REPLI_MS = 4000;
 
 export function AdUnit({ placement, className = "", label = "Publicité" }: AdUnitProps) {
-	const spec = getAdPlacement(placement);
-	const pathname = usePathname();
-	const hostRef = useRef<HTMLDivElement | null>(null);
-	// `sans-reponse` : réservation relâchée, bloc toujours monté (une annonce
-	// tardive reste affichable) — à distinguer d'un invendu, qui replie tout.
-	const [state, setState] = useState<"pending" | "filled" | "unfilled" | "sans-reponse">(
-		"pending"
-	);
+  const spec = getAdPlacement(placement);
+  const pathname = usePathname();
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  // `sans-reponse` : réservation relâchée, bloc toujours monté (une annonce
+  // tardive reste affichable) — à distinguer d'un invendu, qui replie tout.
+  const [state, setState] = useState<"pending" | "filled" | "unfilled" | "sans-reponse">("pending");
 
-	useEffect(() => {
-		if (!spec) return;
-		const host = hostRef.current;
-		const ins = host?.querySelector<HTMLElement>("ins.adsbygoogle");
-		if (!host || !ins) return;
+  useEffect(() => {
+    if (!spec) return;
+    const host = hostRef.current;
+    const ins = host?.querySelector<HTMLElement>("ins.adsbygoogle");
+    if (!host || !ins) return;
 
-		setState("pending");
+    setState("pending");
 
-		// Invendu → on replie le conteneur. AdSense pose l'attribut de façon
-		// asynchrone, après la réponse d'enchère : d'où l'observateur.
-		const observer = new MutationObserver(() => {
-			const status = ins.getAttribute("data-ad-status");
-			if (status === "unfilled") setState("unfilled");
-			else if (status === "filled") setState("filled");
-		});
-		observer.observe(ins, { attributes: true, attributeFilter: ["data-ad-status"] });
+    // Invendu → on replie le conteneur. AdSense pose l'attribut de façon
+    // asynchrone, après la réponse d'enchère : d'où l'observateur.
+    const observer = new MutationObserver(() => {
+      const status = ins.getAttribute("data-ad-status");
+      if (status === "unfilled") setState("unfilled");
+      else if (status === "filled") setState("filled");
+    });
+    observer.observe(ins, { attributes: true, attributeFilter: ["data-ad-status"] });
 
-		let cancelled = false;
-		const push = () => {
-			if (cancelled) return;
-			// Largeur nulle (parent caché, layout pas encore stabilisé) → on réessaie
-			// au prochain frame plutôt que de griller le bloc.
-			if (host.offsetWidth === 0) {
-				requestAnimationFrame(push);
-				return;
-			}
-			// Déjà traité par AdSense (StrictMode monte deux fois) → ne pas re-pousser.
-			if (ins.dataset.adsbygoogleStatus) return;
-			try {
-				(window.adsbygoogle = window.adsbygoogle || []).push({});
-			} catch {
-				// Script bloqué (adblock) ou TagError : l'emplacement reste replié,
-				// jamais d'exception remontée dans le rendu.
-				setState("unfilled");
-			}
-		};
-		push();
+    let cancelled = false;
+    const push = () => {
+      if (cancelled) return;
+      // Largeur nulle (parent caché, layout pas encore stabilisé) → on réessaie
+      // au prochain frame plutôt que de griller le bloc.
+      if (host.offsetWidth === 0) {
+        requestAnimationFrame(push);
+        return;
+      }
+      // Déjà traité par AdSense (StrictMode monte deux fois) → ne pas re-pousser.
+      if (ins.dataset.adsbygoogleStatus) return;
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch {
+        // Script bloqué (adblock) ou TagError : l'emplacement reste replié,
+        // jamais d'exception remontée dans le rendu.
+        setState("unfilled");
+      }
+    };
+    push();
 
-		// Filet anti-trou : sans nouvelle d'AdSense, on rend la place au contenu.
-		const repli = window.setTimeout(
-			() => setState((s) => (s === "pending" ? "sans-reponse" : s)),
-			DELAI_REPLI_MS
-		);
+    // Filet anti-trou : sans nouvelle d'AdSense, on rend la place au contenu.
+    const repli = window.setTimeout(
+      () => setState((s) => (s === "pending" ? "sans-reponse" : s)),
+      DELAI_REPLI_MS,
+    );
 
-		return () => {
-			cancelled = true;
-			observer.disconnect();
-			window.clearTimeout(repli);
-		};
-	}, [spec, pathname]);
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      window.clearTimeout(repli);
+    };
+  }, [spec, pathname]);
 
-	// En développement, aucun `<ins>` réel n'est poussé (charger de vraies
-	// annonces hors production est un motif de suspension du compte AdSense) :
-	// on rend un gabarit à la bonne empreinte pour valider la mise en page.
-	if (!spec && process.env.NODE_ENV === "development") {
-		const shape = AD_PLACEMENTS[placement];
-		return (
-			<div
-				className={`ed-no-print print:hidden grid w-full place-items-center rounded-sm border border-dashed border-white/15 bg-white/[0.02] text-[11px] uppercase tracking-[0.18em] text-white/50 ${className}`}
-				style={{ minHeight: shape.minHeight }}
-			>
-				Emplacement pub · {placement} · {shape.format}
-			</div>
-		);
-	}
+  // En développement, aucun `<ins>` réel n'est poussé (charger de vraies
+  // annonces hors production est un motif de suspension du compte AdSense) :
+  // on rend un gabarit à la bonne empreinte pour valider la mise en page.
+  if (!spec && process.env.NODE_ENV === "development") {
+    const shape = AD_PLACEMENTS[placement];
+    return (
+      <div
+        className={`ed-no-print print:hidden grid w-full place-items-center rounded-sm border border-dashed border-white/15 bg-white/[0.02] text-[11px] uppercase tracking-[0.18em] text-white/50 ${className}`}
+        style={{ minHeight: shape.minHeight }}
+      >
+        Emplacement pub · {placement} · {shape.format}
+      </div>
+    );
+  }
 
-	if (!spec) return null;
+  if (!spec) return null;
 
-	return (
-		<div
-			ref={hostRef}
-			// Jamais d'annonce à l'impression. `ed-no-print` n'est défini que dans
-			// `styles/editorial.css`, feuille chargée par le SEUL layout `/news` :
-			// sur les fiches épisode et film, qui posent aussi un `AdUnit`, la classe
-			// était inerte et l'annonce partait au papier. `print:hidden` (variante
-			// Tailwind, donc toujours présente) couvre tous les points d'appel.
-			className={`ed-no-print print:hidden w-full ${state === "unfilled" ? "hidden" : ""} ${className}`}
-			// Réservation d'espace tant que le remplissage n'est pas connu.
-			style={state === "pending" ? { minHeight: spec.minHeight } : undefined}
-			aria-hidden={state === "unfilled"}
-		>
-			{label && state !== "unfilled" && state !== "sans-reponse" && (
-				<p className="mb-1.5 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
-					{label}
-				</p>
-			)}
-			<ins
-				// Clé sur le pathname : force un nœud neuf à chaque page (cf. en-tête).
-				key={`${spec.slot}-${pathname}`}
-				className="adsbygoogle block"
-				style={{ display: "block" }}
-				data-ad-client={ADSENSE_CLIENT}
-				data-ad-slot={spec.slot}
-				data-ad-format={spec.format}
-				data-ad-layout={spec.layout}
-				data-ad-layout-key={spec.layoutKey}
-				// Laisse le bloc occuper toute la largeur disponible sur mobile.
-				data-full-width-responsive="true"
-			/>
-		</div>
-	);
+  return (
+    <div
+      ref={hostRef}
+      // Jamais d'annonce à l'impression. `ed-no-print` n'est défini que dans
+      // `styles/editorial.css`, feuille chargée par le SEUL layout `/news` :
+      // sur les fiches épisode et film, qui posent aussi un `AdUnit`, la classe
+      // était inerte et l'annonce partait au papier. `print:hidden` (variante
+      // Tailwind, donc toujours présente) couvre tous les points d'appel.
+      className={`ed-no-print print:hidden w-full ${state === "unfilled" ? "hidden" : ""} ${className}`}
+      // Réservation d'espace tant que le remplissage n'est pas connu.
+      style={state === "pending" ? { minHeight: spec.minHeight } : undefined}
+      aria-hidden={state === "unfilled"}
+    >
+      {label && state !== "unfilled" && state !== "sans-reponse" && (
+        <p className="mb-1.5 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
+          {label}
+        </p>
+      )}
+      <ins
+        // Clé sur le pathname : force un nœud neuf à chaque page (cf. en-tête).
+        key={`${spec.slot}-${pathname}`}
+        className="adsbygoogle block"
+        style={{ display: "block" }}
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={spec.slot}
+        data-ad-format={spec.format}
+        data-ad-layout={spec.layout}
+        data-ad-layout-key={spec.layoutKey}
+        // Laisse le bloc occuper toute la largeur disponible sur mobile.
+        data-full-width-responsive="true"
+      />
+    </div>
+  );
 }

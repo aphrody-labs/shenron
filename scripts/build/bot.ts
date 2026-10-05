@@ -15,9 +15,9 @@ const ROOT = resolve(import.meta.dir, "../..");
 const BOT = join(ROOT, "apps/bot");
 const args = process.argv.slice(2);
 const index = args.indexOf("--target");
-const target = (index >= 0 ? args[index + 1] : process.platform === "win32" ? "windows-x64" : "linux-x64") as
-  | "linux-x64"
-  | "windows-x64";
+const target = (
+  index >= 0 ? args[index + 1] : process.platform === "win32" ? "windows-x64" : "linux-x64"
+) as "linux-x64" | "windows-x64";
 const bunTarget = { "linux-x64": "bun-linux-x64", "windows-x64": "bun-windows-x64" }[target];
 if (!bunTarget) throw new Error("--target linux-x64|windows-x64");
 const out = join(ROOT, "dist/bot", target);
@@ -49,4 +49,6 @@ if ((await child.exited) !== 0) throw new Error("bot compile failed");
 // Migrations are read from disk by drizzle at boot: ship them beside the binary.
 const migrations = join(BOT, "src/db/migrations");
 if (existsSync(migrations)) cpSync(migrations, join(out, "src/db/migrations"), { recursive: true });
-console.log(JSON.stringify({ target, binary: exe, sizeMiB: Math.round(statSync(exe).size / 1048576) }));
+console.log(
+  JSON.stringify({ target, binary: exe, sizeMiB: Math.round(statSync(exe).size / 1048576) }),
+);

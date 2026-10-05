@@ -57,7 +57,7 @@ import { nettoyerOcr } from "./databooks-format";
 
 /** Échappe une chaîne pour un usage littéral dans un `RegExp`. */
 function echapperRegExp(s: string): string {
-	return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 // ---------------------------------------------------------------------------
@@ -90,12 +90,12 @@ const TITRE_INLINE = /(?<=[^#\n])(#{1,6})[ \t]+(?=[^\s#])/g;
  * ne matche plus (le caractère précédent est `\n`).
  */
 export function corrigerTitresInline(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const sortie = texte.replace(TITRE_INLINE, (_correspondance, hashes: string) => {
-		n++;
-		return `\n${hashes} `;
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(TITRE_INLINE, (_correspondance, hashes: string) => {
+    n++;
+    return `\n${hashes} `;
+  });
+  return { texte: sortie, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -117,12 +117,12 @@ export function corrigerTitresInline(texte: string): { texte: string; correction
  * chasse n'est pas du bruit d'encodage, c'est de la typographie.
  */
 export function normaliserLatinPleineChasse(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const sortie = texte.replace(/[Ａ-Ｚａ-ｚ]/g, (c) => {
-		n++;
-		return String.fromCharCode(c.charCodeAt(0) - 0xfee0);
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(/[Ａ-Ｚａ-ｚ]/g, (c) => {
+    n++;
+    return String.fromCharCode(c.charCodeAt(0) - 0xfee0);
+  });
+  return { texte: sortie, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -152,29 +152,29 @@ const SEUIL_REPETITIONS = 3;
  * une mise en page volontaire.
  */
 export function supprimerRepetitionsConsecutives(texte: string): {
-	texte: string;
-	corrections: number;
+  texte: string;
+  corrections: number;
 } {
-	const lignes = texte.split("\n");
-	const sortie: string[] = [];
-	let n = 0;
-	let i = 0;
-	while (i < lignes.length) {
-		const trim = lignes[i].trim();
-		let j = i + 1;
-		if (trim.length >= LONGUEUR_MIN_REPETITION) {
-			while (j < lignes.length && lignes[j].trim() === trim) j++;
-		}
-		const repetitions = j - i;
-		if (repetitions >= SEUIL_REPETITIONS) {
-			sortie.push(lignes[i]);
-			n += repetitions - 1;
-		} else {
-			for (let k = i; k < j; k++) sortie.push(lignes[k]);
-		}
-		i = j;
-	}
-	return { texte: sortie.join("\n"), corrections: n };
+  const lignes = texte.split("\n");
+  const sortie: string[] = [];
+  let n = 0;
+  let i = 0;
+  while (i < lignes.length) {
+    const trim = lignes[i].trim();
+    let j = i + 1;
+    if (trim.length >= LONGUEUR_MIN_REPETITION) {
+      while (j < lignes.length && lignes[j].trim() === trim) j++;
+    }
+    const repetitions = j - i;
+    if (repetitions >= SEUIL_REPETITIONS) {
+      sortie.push(lignes[i]);
+      n += repetitions - 1;
+    } else {
+      for (let k = i; k < j; k++) sortie.push(lignes[k]);
+    }
+    i = j;
+  }
+  return { texte: sortie.join("\n"), corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -182,12 +182,12 @@ export function supprimerRepetitionsConsecutives(texte: string): {
 // ---------------------------------------------------------------------------
 
 export interface FauteValidee {
-	/** Graphie fautive telle qu'elle apparaît dans le corpus. */
-	lu: string;
-	/** Graphie correcte, celle qui doit apparaître en base. */
-	correct: string;
-	/** Pourquoi c'est sûr : personnage, type de confusion, preuve de fréquence/contexte. */
-	note: string;
+  /** Graphie fautive telle qu'elle apparaît dans le corpus. */
+  lu: string;
+  /** Graphie correcte, celle qui doit apparaître en base. */
+  correct: string;
+  /** Pourquoi c'est sûr : personnage, type de confusion, preuve de fréquence/contexte. */
+  note: string;
 }
 
 /**
@@ -243,93 +243,93 @@ export interface FauteValidee {
  * petit tsu de gémination omis/dupliqué (っ/ッ).
  */
 export const FAUTES_VALIDEES: FauteValidee[] = [
-	// Table de référence dbfr-ocr.md (agent de transcription), déjà documentée.
-	{ lu: "プロリー", correct: "ブロリー", note: "Broly — プ/ブ, 224× dans le corpus, 36 ouvrages" },
-	{ lu: "ビッコロ", correct: "ピッコロ", note: "Piccolo — ビ/ピ, 199×, 35 ouvrages" },
-	{ lu: "ヒッコロ", correct: "ピッコロ", note: "Piccolo — ヒ/ピ, 12×, 6 ouvrages" },
-	{ lu: "ピココロ", correct: "ピッコロ", note: "Piccolo — ッ omis (コ dupliqué), 14×, 7 ouvrages" },
-	{ lu: "フルマ", correct: "ブルマ", note: "Bulma — フ/ブ, 101×, 28 ouvrages" },
-	{ lu: "プルマ", correct: "ブルマ", note: "Bulma — プ/ブ, 34×, 11 ouvrages" },
-	{
-		lu: "ドラコンボール",
-		correct: "ドラゴンボール",
-		note: "Dragon Ball — コ/ゴ, 95× (dbfr-ocr.md)",
-	},
+  // Table de référence dbfr-ocr.md (agent de transcription), déjà documentée.
+  { lu: "プロリー", correct: "ブロリー", note: "Broly — プ/ブ, 224× dans le corpus, 36 ouvrages" },
+  { lu: "ビッコロ", correct: "ピッコロ", note: "Piccolo — ビ/ピ, 199×, 35 ouvrages" },
+  { lu: "ヒッコロ", correct: "ピッコロ", note: "Piccolo — ヒ/ピ, 12×, 6 ouvrages" },
+  { lu: "ピココロ", correct: "ピッコロ", note: "Piccolo — ッ omis (コ dupliqué), 14×, 7 ouvrages" },
+  { lu: "フルマ", correct: "ブルマ", note: "Bulma — フ/ブ, 101×, 28 ouvrages" },
+  { lu: "プルマ", correct: "ブルマ", note: "Bulma — プ/ブ, 34×, 11 ouvrages" },
+  {
+    lu: "ドラコンボール",
+    correct: "ドラゴンボール",
+    note: "Dragon Ball — コ/ゴ, 95× (dbfr-ocr.md)",
+  },
 
-	// Famille Vegeta — la plus attestée du corpus, convergence de 8 graphies
-	// distinctes vers la même cible, chacune vérifiée en contexte.
-	{ lu: "ベジタ", correct: "ベジータ", note: "Vegeta — voyelle longue omise, 64×, 18 ouvrages" },
-	{ lu: "ペジータ", correct: "ベジータ", note: "Vegeta — ペ/ベ, 55×, 22 ouvrages (dbfr-ocr.md)" },
-	{
-		lu: "ベージータ",
-		correct: "ベジータ",
-		note: "Vegeta — voyelle longue ajoutée, 44×, 17 ouvrages (dbfr-ocr.md)",
-	},
-	{
-		lu: "ベジーター",
-		correct: "ベジータ",
-		note: "Vegeta — voyelle longue ajoutée en fin, 25×, 9 ouvrages",
-	},
-	{ lu: "コジータ", correct: "ベジータ", note: "Vegeta — コ/ベ, 31×, 23 ouvrages" },
-	{ lu: "ヘジータ", correct: "ベジータ", note: "Vegeta — ヘ/ベ, 12×, 8 ouvrages" },
-	{ lu: "ベシータ", correct: "ベジータ", note: "Vegeta — シ/ジ, 11×, 7 ouvrages" },
-	{ lu: "ベジレータ", correct: "ベジータ", note: "Vegeta — レ parasite, 12×, 5 ouvrages" },
+  // Famille Vegeta — la plus attestée du corpus, convergence de 8 graphies
+  // distinctes vers la même cible, chacune vérifiée en contexte.
+  { lu: "ベジタ", correct: "ベジータ", note: "Vegeta — voyelle longue omise, 64×, 18 ouvrages" },
+  { lu: "ペジータ", correct: "ベジータ", note: "Vegeta — ペ/ベ, 55×, 22 ouvrages (dbfr-ocr.md)" },
+  {
+    lu: "ベージータ",
+    correct: "ベジータ",
+    note: "Vegeta — voyelle longue ajoutée, 44×, 17 ouvrages (dbfr-ocr.md)",
+  },
+  {
+    lu: "ベジーター",
+    correct: "ベジータ",
+    note: "Vegeta — voyelle longue ajoutée en fin, 25×, 9 ouvrages",
+  },
+  { lu: "コジータ", correct: "ベジータ", note: "Vegeta — コ/ベ, 31×, 23 ouvrages" },
+  { lu: "ヘジータ", correct: "ベジータ", note: "Vegeta — ヘ/ベ, 12×, 8 ouvrages" },
+  { lu: "ベシータ", correct: "ベジータ", note: "Vegeta — シ/ジ, 11×, 7 ouvrages" },
+  { lu: "ベジレータ", correct: "ベジータ", note: "Vegeta — レ parasite, 12×, 5 ouvrages" },
 
-	// Autres personnages confirmés en contexte, schéma de confusion connu.
-	{
-		lu: "サイヤン",
-		correct: "サイヤ人",
-		note: "Saiyan — 人 lu ン, 160×, 45 ouvrages ; confirmé en contexte (『超サイヤン4』, 『サイヤンチーム』…)",
-	},
-	{ lu: "ビラフ", correct: "ピラフ", note: "Pilaf — ビ/ピ, 70×, 19 ouvrages" },
-	{ lu: "ヒラフ", correct: "ピラフ", note: "Pilaf — ヒ/ピ, 15×, 5 ouvrages" },
-	{ lu: "ピラフー", correct: "ピラフ", note: "Pilaf — voyelle longue parasite, 15×, 10 ouvrages" },
-	{
-		lu: "ラディツ",
-		correct: "ラディッツ",
-		note: "Raditz — ッ (gémination) omis, 55×, 14 ouvrages",
-	},
-	{
-		lu: "ラディツツ",
-		correct: "ラディッツ",
-		note: "Raditz — ツ dupliqué au lieu de ッ, 22×, 7 ouvrages",
-	},
-	{ lu: "パビディ", correct: "バビディ", note: "Babidi — パ/バ, 39×, 12 ouvrages" },
-	{ lu: "バビデイ", correct: "バビディ", note: "Babidi — イ au lieu de petit ィ, 15×, 2 ouvrages" },
-	{
-		lu: "バビディー",
-		correct: "バビディ",
-		note: "Babidi — voyelle longue parasite, 11×, 5 ouvrages",
-	},
-	{ lu: "タンパリン", correct: "タンバリン", note: "Tambourine — パ/バ, 30×, 7 ouvrages" },
-	{ lu: "フリザ", correct: "フリーザ", note: "Freezer — voyelle longue omise, 28×, 8 ouvrages" },
-	{ lu: "カリリン", correct: "クリリン", note: "Krillin — カ/ク, 21×, 5 ouvrages" },
-	{ lu: "コテンクス", correct: "ゴテンクス", note: "Gotenks — コ/ゴ, 26×, 8 ouvrages" },
-	{ lu: "ウープ", correct: "ウーブ", note: "Uub — プ/ブ, 25×, 8 ouvrages" },
-	{ lu: "ビデル", correct: "ビーデル", note: "Videl — voyelle longue omise, 24×, 8 ouvrages" },
-	{ lu: "ビーテル", correct: "ビーデル", note: "Videl — テ/デ, 31×, 12 ouvrages" },
-	{ lu: "ピーデル", correct: "ビーデル", note: "Videl — ピ/ビ, 10×, 8 ouvrages" },
-	{ lu: "ヤジロペー", correct: "ヤジロベー", note: "Yajirobé — ペ/ベ, 21×, 11 ouvrages" },
-	{ lu: "スポボビッチ", correct: "スポポビッチ", note: "Spopovitch — ボ/ポ, 20×, 8 ouvrages" },
-	{
-		lu: "スポボピッチ",
-		correct: "スポポビッチ",
-		note: "Spopovitch — ボ/ポ + ッ/ピ, 12×, 6 ouvrages",
-	},
-	{
-		lu: "トクター・ゲロ",
-		correct: "ドクター・ゲロ",
-		note: "Dr. Gero (C-20) — ト/ド, 18×, 2 ouvrages",
-	},
-	{ lu: "パーダック", correct: "バーダック", note: "Bardock — パ/バ, 14×, 12 ouvrages" },
-	{ lu: "ヒルテガーン", correct: "ヒルデガーン", note: "Hildegarn — テ/デ, 24×, 6 ouvrages" },
-	{
-		lu: "イヒルデガーン",
-		correct: "ヒルデガーン",
-		note: "Hildegarn — イ parasite en tête, 12×, 1 ouvrage",
-	},
-	{ lu: "ミスター・ボボ", correct: "ミスター・ポポ", note: "Mr. Popo — ボ/ポ ×2, 14×, 8 ouvrages" },
-	{ lu: "デンテ", correct: "デンデ", note: "Dende — テ/デ, 11×, 9 ouvrages" },
+  // Autres personnages confirmés en contexte, schéma de confusion connu.
+  {
+    lu: "サイヤン",
+    correct: "サイヤ人",
+    note: "Saiyan — 人 lu ン, 160×, 45 ouvrages ; confirmé en contexte (『超サイヤン4』, 『サイヤンチーム』…)",
+  },
+  { lu: "ビラフ", correct: "ピラフ", note: "Pilaf — ビ/ピ, 70×, 19 ouvrages" },
+  { lu: "ヒラフ", correct: "ピラフ", note: "Pilaf — ヒ/ピ, 15×, 5 ouvrages" },
+  { lu: "ピラフー", correct: "ピラフ", note: "Pilaf — voyelle longue parasite, 15×, 10 ouvrages" },
+  {
+    lu: "ラディツ",
+    correct: "ラディッツ",
+    note: "Raditz — ッ (gémination) omis, 55×, 14 ouvrages",
+  },
+  {
+    lu: "ラディツツ",
+    correct: "ラディッツ",
+    note: "Raditz — ツ dupliqué au lieu de ッ, 22×, 7 ouvrages",
+  },
+  { lu: "パビディ", correct: "バビディ", note: "Babidi — パ/バ, 39×, 12 ouvrages" },
+  { lu: "バビデイ", correct: "バビディ", note: "Babidi — イ au lieu de petit ィ, 15×, 2 ouvrages" },
+  {
+    lu: "バビディー",
+    correct: "バビディ",
+    note: "Babidi — voyelle longue parasite, 11×, 5 ouvrages",
+  },
+  { lu: "タンパリン", correct: "タンバリン", note: "Tambourine — パ/バ, 30×, 7 ouvrages" },
+  { lu: "フリザ", correct: "フリーザ", note: "Freezer — voyelle longue omise, 28×, 8 ouvrages" },
+  { lu: "カリリン", correct: "クリリン", note: "Krillin — カ/ク, 21×, 5 ouvrages" },
+  { lu: "コテンクス", correct: "ゴテンクス", note: "Gotenks — コ/ゴ, 26×, 8 ouvrages" },
+  { lu: "ウープ", correct: "ウーブ", note: "Uub — プ/ブ, 25×, 8 ouvrages" },
+  { lu: "ビデル", correct: "ビーデル", note: "Videl — voyelle longue omise, 24×, 8 ouvrages" },
+  { lu: "ビーテル", correct: "ビーデル", note: "Videl — テ/デ, 31×, 12 ouvrages" },
+  { lu: "ピーデル", correct: "ビーデル", note: "Videl — ピ/ビ, 10×, 8 ouvrages" },
+  { lu: "ヤジロペー", correct: "ヤジロベー", note: "Yajirobé — ペ/ベ, 21×, 11 ouvrages" },
+  { lu: "スポボビッチ", correct: "スポポビッチ", note: "Spopovitch — ボ/ポ, 20×, 8 ouvrages" },
+  {
+    lu: "スポボピッチ",
+    correct: "スポポビッチ",
+    note: "Spopovitch — ボ/ポ + ッ/ピ, 12×, 6 ouvrages",
+  },
+  {
+    lu: "トクター・ゲロ",
+    correct: "ドクター・ゲロ",
+    note: "Dr. Gero (C-20) — ト/ド, 18×, 2 ouvrages",
+  },
+  { lu: "パーダック", correct: "バーダック", note: "Bardock — パ/バ, 14×, 12 ouvrages" },
+  { lu: "ヒルテガーン", correct: "ヒルデガーン", note: "Hildegarn — テ/デ, 24×, 6 ouvrages" },
+  {
+    lu: "イヒルデガーン",
+    correct: "ヒルデガーン",
+    note: "Hildegarn — イ parasite en tête, 12×, 1 ouvrage",
+  },
+  { lu: "ミスター・ボボ", correct: "ミスター・ポポ", note: "Mr. Popo — ボ/ポ ×2, 14×, 8 ouvrages" },
+  { lu: "デンテ", correct: "デンデ", note: "Dende — テ/デ, 11×, 9 ouvrages" },
 ];
 
 const KATAKANA_SRC = KATAKANA.source;
@@ -349,26 +349,26 @@ const KATAKANA_SRC = KATAKANA.source;
  * entrée aussi courte, malgré des occurrences légitimes observées.
  */
 export function corrigerFautesDeLecture(texte: string): {
-	texte: string;
-	corrections: number;
-	details: { lu: string; correct: string; n: number }[];
+  texte: string;
+  corrections: number;
+  details: { lu: string; correct: string; n: number }[];
 } {
-	let sortie = texte;
-	const details: { lu: string; correct: string; n: number }[] = [];
-	let total = 0;
-	for (const { lu, correct } of FAUTES_VALIDEES) {
-		const re = new RegExp(`(?<!${KATAKANA_SRC})${echapperRegExp(lu)}(?!${KATAKANA_SRC})`, "g");
-		let n = 0;
-		sortie = sortie.replace(re, () => {
-			n++;
-			return correct;
-		});
-		if (n > 0) {
-			total += n;
-			details.push({ lu, correct, n });
-		}
-	}
-	return { texte: sortie, corrections: total, details };
+  let sortie = texte;
+  const details: { lu: string; correct: string; n: number }[] = [];
+  let total = 0;
+  for (const { lu, correct } of FAUTES_VALIDEES) {
+    const re = new RegExp(`(?<!${KATAKANA_SRC})${echapperRegExp(lu)}(?!${KATAKANA_SRC})`, "g");
+    let n = 0;
+    sortie = sortie.replace(re, () => {
+      n++;
+      return correct;
+    });
+    if (n > 0) {
+      total += n;
+      details.push({ lu, correct, n });
+    }
+  }
+  return { texte: sortie, corrections: total, details };
 }
 
 // ---------------------------------------------------------------------------
@@ -376,16 +376,16 @@ export function corrigerFautesDeLecture(texte: string): {
 // ---------------------------------------------------------------------------
 
 export interface RapportRegle {
-	code: "latin-pleine-chasse" | "titres-inline" | "repetitions-consecutives" | "fautes-de-lecture";
-	corrections: number;
+  code: "latin-pleine-chasse" | "titres-inline" | "repetitions-consecutives" | "fautes-de-lecture";
+  corrections: number;
 }
 
 export interface RapportCorrection {
-	texte: string;
-	/** `true` si au moins une règle a changé le texte. */
-	modifie: boolean;
-	regles: RapportRegle[];
-	fautesDeLecture: { lu: string; correct: string; n: number }[];
+  texte: string;
+  /** `true` si au moins une règle a changé le texte. */
+  modifie: boolean;
+  regles: RapportRegle[];
+  fautesDeLecture: { lu: string; correct: string; n: number }[];
 }
 
 /**
@@ -410,32 +410,32 @@ export interface RapportCorrection {
  * qu'une autre corrige.
  */
 export function corrigerTexte(brut: string): RapportCorrection {
-	const original = brut;
-	let texte = nettoyerOcr(brut);
+  const original = brut;
+  let texte = nettoyerOcr(brut);
 
-	const latin = normaliserLatinPleineChasse(texte);
-	texte = latin.texte;
+  const latin = normaliserLatinPleineChasse(texte);
+  texte = latin.texte;
 
-	const titres = corrigerTitresInline(texte);
-	texte = nettoyerOcr(titres.texte);
+  const titres = corrigerTitresInline(texte);
+  texte = nettoyerOcr(titres.texte);
 
-	const repetitions = supprimerRepetitionsConsecutives(texte);
-	texte = repetitions.texte;
+  const repetitions = supprimerRepetitionsConsecutives(texte);
+  texte = repetitions.texte;
 
-	const fautes = corrigerFautesDeLecture(texte);
-	texte = nettoyerOcr(fautes.texte);
+  const fautes = corrigerFautesDeLecture(texte);
+  texte = nettoyerOcr(fautes.texte);
 
-	return {
-		texte,
-		modifie: texte !== original,
-		regles: [
-			{ code: "latin-pleine-chasse", corrections: latin.corrections },
-			{ code: "titres-inline", corrections: titres.corrections },
-			{ code: "repetitions-consecutives", corrections: repetitions.corrections },
-			{ code: "fautes-de-lecture", corrections: fautes.corrections },
-		],
-		fautesDeLecture: fautes.details,
-	};
+  return {
+    texte,
+    modifie: texte !== original,
+    regles: [
+      { code: "latin-pleine-chasse", corrections: latin.corrections },
+      { code: "titres-inline", corrections: titres.corrections },
+      { code: "repetitions-consecutives", corrections: repetitions.corrections },
+      { code: "fautes-de-lecture", corrections: fautes.corrections },
+    ],
+    fautesDeLecture: fautes.details,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -444,9 +444,9 @@ export function corrigerTexte(brut: string): RapportCorrection {
 
 /** Aucun signe japonais (hiragana/katakana/kanji) : romaji, latin ou vide. */
 export function estRomajiUniquement(texte: string): boolean {
-	const t = texte.trim();
-	if (!t) return false;
-	return !/[぀-ヿ一-鿿]/.test(t);
+  const t = texte.trim();
+  if (!t) return false;
+  return !/[぀-ヿ一-鿿]/.test(t);
 }
 
 /**
@@ -456,7 +456,7 @@ export function estRomajiUniquement(texte: string): boolean {
  * détection seule, aucune correction automatique tentée.
  */
 export function contientMojibakeSuspect(texte: string): boolean {
-	return /Ã.|â€|Â[ ]/.test(texte);
+  return /Ã.|â€|Â[ ]/.test(texte);
 }
 
 /**
@@ -473,6 +473,6 @@ export function contientMojibakeSuspect(texte: string): boolean {
  * sert uniquement au rapport de mesure.
  */
 export function candidatFuriganaOrphelin(ligne: string): boolean {
-	const l = ligne.trim();
-	return l.length >= 2 && l.length <= 10 && /^[ぁ-ゟー・]+$/.test(l);
+  const l = ligne.trim();
+  return l.length >= 2 && l.length <= 10 && /^[ぁ-ゟー・]+$/.test(l);
 }

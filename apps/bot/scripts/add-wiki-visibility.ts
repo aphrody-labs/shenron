@@ -16,38 +16,38 @@
 import postgres from "postgres";
 
 const VISIBILITY_TABLES = [
-	"db_characters",
-	"db_planets",
-	"db_transformations",
-	"db_races",
-	"db_techniques",
-	"db_sagas",
-	"db_arcs",
-	"db_episodes",
-	"db_movies",
-	"db_games",
-	"db_manga_volumes",
-	"db_manga_chapters",
+  "db_characters",
+  "db_planets",
+  "db_transformations",
+  "db_races",
+  "db_techniques",
+  "db_sagas",
+  "db_arcs",
+  "db_episodes",
+  "db_movies",
+  "db_games",
+  "db_manga_volumes",
+  "db_manga_chapters",
 ] as const;
 
 async function main() {
-	const url = process.env.DATABASE_URL;
-	if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
-	const sql = postgres(url, { max: 1 });
-	try {
-		for (const t of VISIBILITY_TABLES) {
-			await sql.unsafe(
-				`ALTER TABLE bot."${t}" ADD COLUMN IF NOT EXISTS visible boolean NOT NULL DEFAULT true`
-			);
-			console.log(`✓ bot.${t}.visible`);
-		}
-		console.log(`\n${VISIBILITY_TABLES.length} tables OK.`);
-	} finally {
-		await sql.end({ timeout: 5 });
-	}
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
+  const sql = postgres(url, { max: 1 });
+  try {
+    for (const t of VISIBILITY_TABLES) {
+      await sql.unsafe(
+        `ALTER TABLE bot."${t}" ADD COLUMN IF NOT EXISTS visible boolean NOT NULL DEFAULT true`,
+      );
+      console.log(`✓ bot.${t}.visible`);
+    }
+    console.log(`\n${VISIBILITY_TABLES.length} tables OK.`);
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

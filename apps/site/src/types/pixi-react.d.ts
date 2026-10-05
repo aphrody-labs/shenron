@@ -8,13 +8,13 @@
 import type { PixiElements } from "@pixi/react";
 
 declare module "react" {
-	namespace JSX {
-		interface IntrinsicElements extends PixiElements {}
-	}
+  namespace JSX {
+    interface IntrinsicElements extends PixiElements {}
+  }
 }
 
 declare module "react/jsx-runtime" {
-	namespace JSX {
-		interface IntrinsicElements extends PixiElements {}
-	}
+  namespace JSX {
+    interface IntrinsicElements extends PixiElements {}
+  }
 }

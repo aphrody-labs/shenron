@@ -10,7 +10,9 @@ export const ChatSurface = z.enum(["site", "desktop", "bot"]).meta({ id: "ChatSu
 export type ChatSurface = z.infer<typeof ChatSurface>;
 
 /** LLM backends in fallback order; `auto` = configured order (Gemini Web, then local). */
-export const ChatBackendId = z.enum(["auto", "gemini-web", "local", "extractive"]).meta({ id: "ChatBackendId" });
+export const ChatBackendId = z
+  .enum(["auto", "gemini-web", "local", "extractive"])
+  .meta({ id: "ChatBackendId" });
 export type ChatBackendId = z.infer<typeof ChatBackendId>;
 
 export const ChatAttachment = z
@@ -146,7 +148,15 @@ export type ChatEvent =
   | { type: "done"; data: ChatDone }
   | { type: "error"; data: ChatErrorEvent };
 
-export const CHAT_EVENT_TYPES = ["meta", "sources", "tool", "backend", "delta", "done", "error"] as const;
+export const CHAT_EVENT_TYPES = [
+  "meta",
+  "sources",
+  "tool",
+  "backend",
+  "delta",
+  "done",
+  "error",
+] as const;
 
 /** Non-streaming answer (`stream: false`). */
 export const ChatResponse = z
@@ -172,7 +182,11 @@ export const ModelsResponse = z
   .object({
     order: z.array(z.string()),
     backends: z.array(ChatBackendStatus),
-    embedder: z.object({ available: z.boolean(), model: z.string(), detail: z.string().optional() }),
+    embedder: z.object({
+      available: z.boolean(),
+      model: z.string(),
+      detail: z.string().optional(),
+    }),
   })
   .meta({ id: "ModelsResponse" });
 export type ModelsResponse = z.infer<typeof ModelsResponse>;

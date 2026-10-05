@@ -11,11 +11,11 @@ import { EpisodeMediaEditor } from "./EpisodeMediaEditor";
  * « JAMAIS de session dans le rendu SSR d'une page publique ».
  */
 export function EpisodeAdminEditor(props: ComponentProps<typeof EpisodeMediaEditor>) {
-	const me = useMe();
-	if (!me?.isAdmin) return null;
-	return (
-		<div className="mb-12">
-			<EpisodeMediaEditor {...props} />
-		</div>
-	);
+  const me = useMe();
+  if (!me?.isAdmin) return null;
+  return (
+    <div className="mb-12">
+      <EpisodeMediaEditor {...props} />
+    </div>
+  );
 }

@@ -42,25 +42,25 @@
 
 /** Même forme que le `RapportRegle` du pipeline frère, codes propres à ce module. */
 export interface RapportRegle {
-	code: CodeArtefact;
-	corrections: number;
+  code: CodeArtefact;
+  corrections: number;
 }
 
 export type CodeArtefact =
-	| "json-brut"
-	| "phrase-meta-modele"
-	| "token-controle"
-	| "latex-hallucine"
-	| "lien-hallucine"
-	| "entite-html"
-	| "balise-html"
-	| "echappement-litteral"
-	| "echappement-repete"
-	| "marqueur-page"
-	| "ellipse-points"
-	| "ellipse-midot"
-	| "ellipse-nakaguro"
-	| "remplacement-terminal";
+  | "json-brut"
+  | "phrase-meta-modele"
+  | "token-controle"
+  | "latex-hallucine"
+  | "lien-hallucine"
+  | "entite-html"
+  | "balise-html"
+  | "echappement-litteral"
+  | "echappement-repete"
+  | "marqueur-page"
+  | "ellipse-points"
+  | "ellipse-midot"
+  | "ellipse-nakaguro"
+  | "remplacement-terminal";
 
 const BS = String.fromCharCode(92);
 
@@ -97,21 +97,21 @@ const JA_FIN = "[\u3001\u3002\uff01\uff1f\u300d\u300f\uff09]";
  * serait deviner.
  */
 export function couperSerialisationJson(texte: string): { texte: string; corrections: number } {
-	const motifs = [
-		/\{\s*"bbox"/,
-		/\s*\(\d{1,4},\s*\d{1,4},\s*\d{1,4},\s*\d{1,4}\],\s*"/,
-		/"\}\s*,\s*\{\s*"/,
-	];
-	let coupe = -1;
-	for (const m of motifs) {
-		const r = m.exec(texte);
-		if (r && (coupe < 0 || r.index < coupe)) coupe = r.index;
-	}
-	if (coupe < 0) return { texte, corrections: 0 };
-	// Le guillemet de fermeture du champ texte précédent reste parfois collé
-	// au dernier caractère utile (« …まったく同じ物を作りてしまった。" »).
-	const sortie = texte.slice(0, coupe).replace(/"\s*$/, "");
-	return { texte: sortie.trimEnd(), corrections: 1 };
+  const motifs = [
+    /\{\s*"bbox"/,
+    /\s*\(\d{1,4},\s*\d{1,4},\s*\d{1,4},\s*\d{1,4}\],\s*"/,
+    /"\}\s*,\s*\{\s*"/,
+  ];
+  let coupe = -1;
+  for (const m of motifs) {
+    const r = m.exec(texte);
+    if (r && (coupe < 0 || r.index < coupe)) coupe = r.index;
+  }
+  if (coupe < 0) return { texte, corrections: 0 };
+  // Le guillemet de fermeture du champ texte précédent reste parfois collé
+  // au dernier caractère utile (« …まったく同じ物を作りてしまった。" »).
+  const sortie = texte.slice(0, coupe).replace(/"\s*$/, "");
+  return { texte: sortie.trimEnd(), corrections: 1 };
 }
 
 // ---------------------------------------------------------------------------
@@ -130,61 +130,61 @@ export function couperSerialisationJson(texte: string): { texte: string; correct
  * Tears » (#46 p.3) un titre d'épisode.
  */
 export const PHRASES_META: { phrase: string; note: string }[] = [
-	{
-		phrase: "I did not find any text in the image.",
-		note: "refus — 8 occ. sur 4 planches (#10 p.9 x4, #59 p.15, #129 p.15, #12 p.97 dans la queue JSON)",
-	},
-	{
-		phrase: "There is no text in the image.",
-		note: "refus — 19 occ. sur 3 planches (#96 p.4 x17, #4 p.204, #45 p.46)",
-	},
-	{ phrase: "There are no text characters in the image.", note: "refus — 1 occ. (#45 p.46)" },
-	{
-		phrase: "This image does not contain any recognizable text.",
-		note: "refus — 1 occ. (#3 p.136), suivie de « It appears to be a drawing or a photo. »",
-	},
-	{
-		phrase: "It appears to be a drawing or a photo.",
-		note: "description d'image — 1 occ. (#3 p.136), toujours accolée au refus ci-dessus",
-	},
-	{
-		phrase: "All the best, but I can't find the text in the image.",
-		note: "refus bavard — 1 occ. (#38 p.111)",
-	},
-	{
-		phrase: "I hope it's okay. Let's see.",
-		note: "bavardage du modèle — 1 occ. (#38 p.111), paragraphe autonome juste après le refus",
-	},
-	{
-		phrase: "The image contains a drawing of a cartoon character with a speech bubble.",
-		note: "description d'image — 1 occ. (#129 p.15)",
-	},
+  {
+    phrase: "I did not find any text in the image.",
+    note: "refus — 8 occ. sur 4 planches (#10 p.9 x4, #59 p.15, #129 p.15, #12 p.97 dans la queue JSON)",
+  },
+  {
+    phrase: "There is no text in the image.",
+    note: "refus — 19 occ. sur 3 planches (#96 p.4 x17, #4 p.204, #45 p.46)",
+  },
+  { phrase: "There are no text characters in the image.", note: "refus — 1 occ. (#45 p.46)" },
+  {
+    phrase: "This image does not contain any recognizable text.",
+    note: "refus — 1 occ. (#3 p.136), suivie de « It appears to be a drawing or a photo. »",
+  },
+  {
+    phrase: "It appears to be a drawing or a photo.",
+    note: "description d'image — 1 occ. (#3 p.136), toujours accolée au refus ci-dessus",
+  },
+  {
+    phrase: "All the best, but I can't find the text in the image.",
+    note: "refus bavard — 1 occ. (#38 p.111)",
+  },
+  {
+    phrase: "I hope it's okay. Let's see.",
+    note: "bavardage du modèle — 1 occ. (#38 p.111), paragraphe autonome juste après le refus",
+  },
+  {
+    phrase: "The image contains a drawing of a cartoon character with a speech bubble.",
+    note: "description d'image — 1 occ. (#129 p.15)",
+  },
 ];
 
 const SPECIAUX_REGEXP = new Set([
-	".",
-	"*",
-	"+",
-	"?",
-	"^",
-	"$",
-	"{",
-	"}",
-	"(",
-	")",
-	"|",
-	"[",
-	"]",
-	BS,
+  ".",
+  "*",
+  "+",
+  "?",
+  "^",
+  "$",
+  "{",
+  "}",
+  "(",
+  ")",
+  "|",
+  "[",
+  "]",
+  BS,
 ]);
 
 function echapperRegExp(s: string): string {
-	return [...s].map((c) => (SPECIAUX_REGEXP.has(c) ? BS + c : c)).join("");
+  return [...s].map((c) => (SPECIAUX_REGEXP.has(c) ? BS + c : c)).join("");
 }
 
 const RE_PHRASES_META = new RegExp(
-	PHRASES_META.map((p) => echapperRegExp(p.phrase)).join("|"),
-	"g"
+  PHRASES_META.map((p) => echapperRegExp(p.phrase)).join("|"),
+  "g",
 );
 
 /**
@@ -204,35 +204,35 @@ const RE_PHRASES_META = new RegExp(
  *     complète pas.
  */
 export function retirerPhrasesMeta(texte: string): { texte: string; corrections: number } {
-	RE_PHRASES_META.lastIndex = 0;
-	if (!RE_PHRASES_META.test(texte)) {
-		RE_PHRASES_META.lastIndex = 0;
-		return { texte, corrections: 0 };
-	}
-	RE_PHRASES_META.lastIndex = 0;
-	let n = 0;
-	const reJa = new RegExp(JA);
-	const gardes: string[] = [];
-	for (const para of texte.split(/\n{2,}/)) {
-		RE_PHRASES_META.lastIndex = 0;
-		const trouve = para.match(RE_PHRASES_META);
-		if (!trouve) {
-			gardes.push(para);
-			continue;
-		}
-		n += trouve.length;
-		const reste = para.replace(RE_PHRASES_META, "").trim();
-		// Paragraphe devenu vide, ou entièrement non japonais : c'était du
-		// commentaire du modèle de bout en bout, il disparaît.
-		if (reste.length === 0 || !reJa.test(reste)) continue;
-		gardes.push(
-			para
-				.replace(RE_PHRASES_META, "")
-				.replace(/[ \t]{2,}/g, " ")
-				.trimEnd()
-		);
-	}
-	return { texte: gardes.join("\n\n"), corrections: n };
+  RE_PHRASES_META.lastIndex = 0;
+  if (!RE_PHRASES_META.test(texte)) {
+    RE_PHRASES_META.lastIndex = 0;
+    return { texte, corrections: 0 };
+  }
+  RE_PHRASES_META.lastIndex = 0;
+  let n = 0;
+  const reJa = new RegExp(JA);
+  const gardes: string[] = [];
+  for (const para of texte.split(/\n{2,}/)) {
+    RE_PHRASES_META.lastIndex = 0;
+    const trouve = para.match(RE_PHRASES_META);
+    if (!trouve) {
+      gardes.push(para);
+      continue;
+    }
+    n += trouve.length;
+    const reste = para.replace(RE_PHRASES_META, "").trim();
+    // Paragraphe devenu vide, ou entièrement non japonais : c'était du
+    // commentaire du modèle de bout en bout, il disparaît.
+    if (reste.length === 0 || !reJa.test(reste)) continue;
+    gardes.push(
+      para
+        .replace(RE_PHRASES_META, "")
+        .replace(/[ \t]{2,}/g, " ")
+        .trimEnd(),
+    );
+  }
+  return { texte: gardes.join("\n\n"), corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -251,15 +251,15 @@ export function retirerPhrasesMeta(texte: string): { texte: string; corrections:
  * verticale entre chevrons.
  */
 const RE_TOKENS =
-	/<\|[a-z0-9_]{1,32}\|>|<\/?s>|<\/?(?:end|start)_of_turn>|\[\/?INST\]|<(?:pad|unk|mask)>/gi;
+  /<\|[a-z0-9_]{1,32}\|>|<\/?s>|<\/?(?:end|start)_of_turn>|\[\/?INST\]|<(?:pad|unk|mask)>/gi;
 
 export function retirerTokensControle(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const sortie = texte.replace(RE_TOKENS, () => {
-		n++;
-		return "";
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(RE_TOKENS, () => {
+    n++;
+    return "";
+  });
+  return { texte: sortie, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -290,31 +290,31 @@ export function retirerTokensControle(texte: string): { texte: string; correctio
  * seraient charcutés.
  */
 const RE_CMD_LATEX = new RegExp(
-	BS + BS + "(?:times|rightarrow|leftarrow|xrightarrow|xleftarrow|text|frac|to)"
+  BS + BS + "(?:times|rightarrow|leftarrow|xrightarrow|xleftarrow|text|frac|to)",
 );
 
 export function normaliserLatexHallucine(texte: string): { texte: string; corrections: number } {
-	if (!RE_CMD_LATEX.test(texte)) return { texte, corrections: 0 };
-	let n = 0;
-	let s = texte;
-	const remplacer = (re: RegExp, par: (m: string, x: string) => string) => {
-		s = s.replace(re, (m: string, x: string) => {
-			n++;
-			return par(m, x);
-		});
-	};
-	// Déballage d'abord : `\xrightarrow{\text{作る}}` devient `\xrightarrow{作る}`.
-	remplacer(new RegExp(BS + BS + "(?:text|mathrm|mathbf)[{]([^{}]*)[}]", "g"), (_m, x) => x);
-	remplacer(new RegExp(BS + BS + "xrightarrow[{]([^{}]*)[}]", "g"), (_m, x) => "\u2192" + x);
-	remplacer(new RegExp(BS + BS + "xleftarrow[{]([^{}]*)[}]", "g"), (_m, x) => "\u2190" + x);
-	remplacer(new RegExp(BS + BS + "(?:rightarrow|to)(?![a-zA-Z])", "g"), () => "\u2192");
-	remplacer(new RegExp(BS + BS + "leftarrow(?![a-zA-Z])", "g"), () => "\u2190");
-	remplacer(new RegExp(BS + BS + "times(?![a-zA-Z])", "g"), () => "\u00d7");
-	// Délimiteurs : ligne isolée, paire double, paire simple.
-	remplacer(/^[ \t]*\$\$[ \t]*$/gm, () => "");
-	remplacer(/\$\$([^$]*)\$\$/g, (_m, x) => x);
-	remplacer(/\$([^$\n]{1,60})\$/g, (_m, x) => x);
-	return { texte: s, corrections: n };
+  if (!RE_CMD_LATEX.test(texte)) return { texte, corrections: 0 };
+  let n = 0;
+  let s = texte;
+  const remplacer = (re: RegExp, par: (m: string, x: string) => string) => {
+    s = s.replace(re, (m: string, x: string) => {
+      n++;
+      return par(m, x);
+    });
+  };
+  // Déballage d'abord : `\xrightarrow{\text{作る}}` devient `\xrightarrow{作る}`.
+  remplacer(new RegExp(BS + BS + "(?:text|mathrm|mathbf)[{]([^{}]*)[}]", "g"), (_m, x) => x);
+  remplacer(new RegExp(BS + BS + "xrightarrow[{]([^{}]*)[}]", "g"), (_m, x) => "\u2192" + x);
+  remplacer(new RegExp(BS + BS + "xleftarrow[{]([^{}]*)[}]", "g"), (_m, x) => "\u2190" + x);
+  remplacer(new RegExp(BS + BS + "(?:rightarrow|to)(?![a-zA-Z])", "g"), () => "\u2192");
+  remplacer(new RegExp(BS + BS + "leftarrow(?![a-zA-Z])", "g"), () => "\u2190");
+  remplacer(new RegExp(BS + BS + "times(?![a-zA-Z])", "g"), () => "\u00d7");
+  // Délimiteurs : ligne isolée, paire double, paire simple.
+  remplacer(/^[ \t]*\$\$[ \t]*$/gm, () => "");
+  remplacer(/\$\$([^$]*)\$\$/g, (_m, x) => x);
+  remplacer(/\$([^$\n]{1,60})\$/g, (_m, x) => x);
+  return { texte: s, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -338,16 +338,16 @@ export function normaliserLatexHallucine(texte: string): { texte: string; correc
  * touché.
  */
 export function retirerLiensHallucines(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	let s = texte.replace(/!\[[^\]\n]*\]\([^)\n]*\)/g, () => {
-		n++;
-		return "";
-	});
-	s = s.replace(/\[([^\]\n]{0,80})\]\(\s*#?\s*\)/g, (_m, libelle: string) => {
-		n++;
-		return libelle;
-	});
-	return { texte: s, corrections: n };
+  let n = 0;
+  let s = texte.replace(/!\[[^\]\n]*\]\([^)\n]*\)/g, () => {
+    n++;
+    return "";
+  });
+  s = s.replace(/\[([^\]\n]{0,80})\]\(\s*#?\s*\)/g, (_m, libelle: string) => {
+    n++;
+    return libelle;
+  });
+  return { texte: s, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -366,21 +366,21 @@ export function retirerLiensHallucines(texte: string): { texte: string; correcti
  * `normaliserLatinPleineChasse` du module frère.
  */
 const ENTITES: Record<string, string> = {
-	"&amp;": "&",
-	"&lt;": "<",
-	"&gt;": ">",
-	"&quot;": '"',
-	"&apos;": "'",
-	"&nbsp;": " ",
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&apos;": "'",
+  "&nbsp;": " ",
 };
 
 export function decoderEntitesHtml(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const sortie = texte.replace(/&(?:amp|lt|gt|quot|apos|nbsp);/gi, (m) => {
-		n++;
-		return ENTITES[m.toLowerCase()] ?? m;
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(/&(?:amp|lt|gt|quot|apos|nbsp);/gi, (m) => {
+    n++;
+    return ENTITES[m.toLowerCase()] ?? m;
+  });
+  return { texte: sortie, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -394,12 +394,12 @@ export function decoderEntitesHtml(texte: string): { texte: string; corrections:
  * ni aux comparaisons réellement imprimées.
  */
 export function retirerBalisesHtml(texte: string): { texte: string; corrections: number } {
-	let corrections = 0;
-	const sortie = texte.replace(/<\/?(?:td|tr|table|div|span|p|br)>/gi, (balise) => {
-		corrections++;
-		return /^<br\s*\/?\s*>$/i.test(balise) ? "\n" : "";
-	});
-	return { texte: sortie, corrections };
+  let corrections = 0;
+  const sortie = texte.replace(/<\/?(?:td|tr|table|div|span|p|br)>/gi, (balise) => {
+    corrections++;
+    return /^<br\s*\/?\s*>$/i.test(balise) ? "\n" : "";
+  });
+  return { texte: sortie, corrections };
 }
 
 // ---------------------------------------------------------------------------
@@ -416,15 +416,15 @@ export function retirerBalisesHtml(texte: string): { texte: string; corrections:
  * nul. On restaure le vrai saut de ligne.
  */
 export function restaurerEchappementsLitteraux(texte: string): {
-	texte: string;
-	corrections: number;
+  texte: string;
+  corrections: number;
 } {
-	let n = 0;
-	const sortie = texte.replace(new RegExp(BS + BS + "n", "g"), () => {
-		n++;
-		return "\n";
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(new RegExp(BS + BS + "n", "g"), () => {
+    n++;
+    return "\n";
+  });
+  return { texte: sortie, corrections: n };
 }
 
 /**
@@ -439,12 +439,12 @@ export function restaurerEchappementsLitteraux(texte: string): {
  * (#195 p.11, #257 p.19, qui restent donc intacts).
  */
 export function reduireEchappementsRepetes(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const sortie = texte.replace(new RegExp("(?:" + BS + BS + "{1,2}[*]){3,}", "g"), (m) => {
-		n += m.length;
-		return "";
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(new RegExp("(?:" + BS + BS + "{1,2}[*]){3,}", "g"), (m) => {
+    n += m.length;
+    return "";
+  });
+  return { texte: sortie, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -483,27 +483,27 @@ export function reduireEchappementsRepetes(texte: string): { texte: string; corr
  *     page suivante d'une double page).
  */
 const RE_PAGE_LIGNE =
-	/^[ \t]*(?:\*\*|#{1,6}[ \t]*)?[ \t]*[Pp][Aa][Gg][Ee][ \t]*\d{1,4}[ \t]*(?:\*\*)?[ \t]*[:!.]?[ \t]*$/;
+  /^[ \t]*(?:\*\*|#{1,6}[ \t]*)?[ \t]*[Pp][Aa][Gg][Ee][ \t]*\d{1,4}[ \t]*(?:\*\*)?[ \t]*[:!.]?[ \t]*$/;
 const RE_PAGE_PREFIXE =
-	/^[ \t]*(?:\*\*|#{1,6}[ \t]*)?[ \t]*[Pp][Aa][Gg][Ee][ \t]*\d{1,4}[ \t]*(?:\*\*)?[ \t]*[:!][ \t]*(?=\S)/;
+  /^[ \t]*(?:\*\*|#{1,6}[ \t]*)?[ \t]*[Pp][Aa][Gg][Ee][ \t]*\d{1,4}[ \t]*(?:\*\*)?[ \t]*[:!][ \t]*(?=\S)/;
 
 export function retirerMarqueursPage(texte: string): { texte: string; corrections: number } {
-	const lignes = texte.split("\n");
-	let n = 0;
-	const sortie: string[] = [];
-	for (let i = 0; i < lignes.length; i++) {
-		if (RE_PAGE_LIGNE.test(lignes[i])) {
-			n++;
-			continue;
-		}
-		if (i === 0 && RE_PAGE_PREFIXE.test(lignes[i])) {
-			n++;
-			sortie.push(lignes[i].replace(RE_PAGE_PREFIXE, ""));
-			continue;
-		}
-		sortie.push(lignes[i]);
-	}
-	return { texte: sortie.join("\n"), corrections: n };
+  const lignes = texte.split("\n");
+  let n = 0;
+  const sortie: string[] = [];
+  for (let i = 0; i < lignes.length; i++) {
+    if (RE_PAGE_LIGNE.test(lignes[i])) {
+      n++;
+      continue;
+    }
+    if (i === 0 && RE_PAGE_PREFIXE.test(lignes[i])) {
+      n++;
+      sortie.push(lignes[i].replace(RE_PAGE_PREFIXE, ""));
+      continue;
+    }
+    sortie.push(lignes[i]);
+  }
+  return { texte: sortie.join("\n"), corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -529,18 +529,18 @@ export function retirerMarqueursPage(texte: string): { texte: string; correction
  * silence long ; 3 à 5 points donnent une ellipse simple.
  */
 export function normaliserEllipsesPoints(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const re = new RegExp(
-		"(" + JA + "|" + JA_FIN + ")([.]{3,6})(?![.])|(?<![.])([.]{3,6})(?=" + JA + ")",
-		"g"
-	);
-	const sortie = texte.replace(re, (_m: string, avant: string, pts1: string, pts2: string) => {
-		const points = pts1 ?? pts2;
-		n++;
-		const ellipse = points.length >= 6 ? "\u2026\u2026" : "\u2026";
-		return avant ? avant + ellipse : ellipse;
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const re = new RegExp(
+    "(" + JA + "|" + JA_FIN + ")([.]{3,6})(?![.])|(?<![.])([.]{3,6})(?=" + JA + ")",
+    "g",
+  );
+  const sortie = texte.replace(re, (_m: string, avant: string, pts1: string, pts2: string) => {
+    const points = pts1 ?? pts2;
+    n++;
+    const ellipse = points.length >= 6 ? "\u2026\u2026" : "\u2026";
+    return avant ? avant + ellipse : ellipse;
+  });
+  return { texte: sortie, corrections: n };
 }
 
 /**
@@ -561,12 +561,12 @@ export function normaliserEllipsesPoints(texte: string): { texte: string; correc
  * doublée.
  */
 export function normaliserEllipsesMidot(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const sortie = texte.replace(/\uff65{2,}/g, (m) => {
-		n++;
-		return m.length >= 6 ? "\u2026\u2026" : "\u2026";
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(/\uff65{2,}/g, (m) => {
+    n++;
+    return m.length >= 6 ? "\u2026\u2026" : "\u2026";
+  });
+  return { texte: sortie, corrections: n };
 }
 
 /**
@@ -595,12 +595,12 @@ export function normaliserEllipsesMidot(texte: string): { texte: string; correct
  * usages dans la même ligne, et seul le run final est touché.
  */
 export function normaliserEllipsesNakaguro(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	const sortie = texte.replace(/\u30fb{3,}/g, (m) => {
-		n++;
-		return m.length >= 6 ? "\u2026\u2026" : "\u2026";
-	});
-	return { texte: sortie, corrections: n };
+  let n = 0;
+  const sortie = texte.replace(/\u30fb{3,}/g, (m) => {
+    n++;
+    return m.length >= 6 ? "\u2026\u2026" : "\u2026";
+  });
+  return { texte: sortie, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -627,24 +627,24 @@ export function normaliserEllipsesNakaguro(texte: string): { texte: string; corr
  * leur marque, qui reste le signal exploitable en relecture.
  */
 export function retirerRemplacementTerminal(texte: string): { texte: string; corrections: number } {
-	let n = 0;
-	// Caractère seul sur sa ligne.
-	let s = texte
-		.split("\n")
-		.filter((l) => {
-			if (/^[ \t]*\ufffd[ \t]*$/.test(l)) {
-				n++;
-				return false;
-			}
-			return true;
-		})
-		.join("\n");
-	// Caractère en tout dernier signe non blanc.
-	s = s.replace(/\ufffd(\s*)$/, (_m, fin: string) => {
-		n++;
-		return fin;
-	});
-	return { texte: s, corrections: n };
+  let n = 0;
+  // Caractère seul sur sa ligne.
+  let s = texte
+    .split("\n")
+    .filter((l) => {
+      if (/^[ \t]*\ufffd[ \t]*$/.test(l)) {
+        n++;
+        return false;
+      }
+      return true;
+    })
+    .join("\n");
+  // Caractère en tout dernier signe non blanc.
+  s = s.replace(/\ufffd(\s*)$/, (_m, fin: string) => {
+    n++;
+    return fin;
+  });
+  return { texte: s, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -652,9 +652,9 @@ export function retirerRemplacementTerminal(texte: string): { texte: string; cor
 // ---------------------------------------------------------------------------
 
 export interface ResultatArtefacts {
-	texte: string;
-	rapport: RapportRegle[];
-	modifie: boolean;
+  texte: string;
+  rapport: RapportRegle[];
+  modifie: boolean;
 }
 
 /**
@@ -680,30 +680,30 @@ export interface ResultatArtefacts {
  * `nettoyerOcr`, que le runner applique après coup, comme le pipeline frère.
  */
 export function corrigerArtefactsModele(texte: string): ResultatArtefacts {
-	const original = texte;
-	const rapport: RapportRegle[] = [];
-	let s = texte;
+  const original = texte;
+  const rapport: RapportRegle[] = [];
+  let s = texte;
 
-	const etape = (code: CodeArtefact, f: (t: string) => { texte: string; corrections: number }) => {
-		const r = f(s);
-		s = r.texte;
-		rapport.push({ code, corrections: r.corrections });
-	};
+  const etape = (code: CodeArtefact, f: (t: string) => { texte: string; corrections: number }) => {
+    const r = f(s);
+    s = r.texte;
+    rapport.push({ code, corrections: r.corrections });
+  };
 
-	etape("json-brut", couperSerialisationJson);
-	etape("echappement-litteral", restaurerEchappementsLitteraux);
-	etape("token-controle", retirerTokensControle);
-	etape("phrase-meta-modele", retirerPhrasesMeta);
-	etape("latex-hallucine", normaliserLatexHallucine);
-	etape("lien-hallucine", retirerLiensHallucines);
-	etape("entite-html", decoderEntitesHtml);
-	etape("balise-html", retirerBalisesHtml);
-	etape("echappement-repete", reduireEchappementsRepetes);
-	etape("marqueur-page", retirerMarqueursPage);
-	etape("ellipse-points", normaliserEllipsesPoints);
-	etape("ellipse-midot", normaliserEllipsesMidot);
-	etape("ellipse-nakaguro", normaliserEllipsesNakaguro);
-	etape("remplacement-terminal", retirerRemplacementTerminal);
+  etape("json-brut", couperSerialisationJson);
+  etape("echappement-litteral", restaurerEchappementsLitteraux);
+  etape("token-controle", retirerTokensControle);
+  etape("phrase-meta-modele", retirerPhrasesMeta);
+  etape("latex-hallucine", normaliserLatexHallucine);
+  etape("lien-hallucine", retirerLiensHallucines);
+  etape("entite-html", decoderEntitesHtml);
+  etape("balise-html", retirerBalisesHtml);
+  etape("echappement-repete", reduireEchappementsRepetes);
+  etape("marqueur-page", retirerMarqueursPage);
+  etape("ellipse-points", normaliserEllipsesPoints);
+  etape("ellipse-midot", normaliserEllipsesMidot);
+  etape("ellipse-nakaguro", normaliserEllipsesNakaguro);
+  etape("remplacement-terminal", retirerRemplacementTerminal);
 
-	return { texte: s, rapport, modifie: s !== original };
+  return { texte: s, rapport, modifie: s !== original };
 }

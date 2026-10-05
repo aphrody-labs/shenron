@@ -18,15 +18,15 @@ import { acceptedStaticTokens, verifyStaticBearer } from "@shenron/auth/tokens";
 
 /** Le jeton configuré brut (même repli `??` qu'historiquement). */
 function configuredApiToken(): string {
-	return process.env.DATABOOKS_API_TOKEN ?? process.env.SHENRON_ADMIN_TOKEN ?? "";
+  return process.env.DATABOOKS_API_TOKEN ?? process.env.SHENRON_ADMIN_TOKEN ?? "";
 }
 
 /** Le jeton attendu, ou `null` si aucun n'est configuré (écriture fermée). */
 export function expectedApiToken(): string | null {
-	return acceptedStaticTokens([configuredApiToken()])[0] ?? null;
+  return acceptedStaticTokens([configuredApiToken()])[0] ?? null;
 }
 
 /** La requête porte-t-elle un jeton porteur valide ? */
 export function hasValidApiToken(req: Request): boolean {
-	return verifyStaticBearer(req.headers, [configuredApiToken()]) === "valid";
+  return verifyStaticBearer(req.headers, [configuredApiToken()]) === "valid";
 }

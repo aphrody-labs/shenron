@@ -16,22 +16,22 @@ import postgres from "postgres";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
-	console.error("✗ DATABASE_URL (Neon) requis.");
-	process.exit(1);
+  console.error("✗ DATABASE_URL (Neon) requis.");
+  process.exit(1);
 }
 
 import os from "node:os";
 
 const JSON_PATH =
-	process.env.VOIRANIME_JSON ?? `${os.homedir()}/bxc/data/voiranime/dragon-ball-full.json`;
+  process.env.VOIRANIME_JSON ?? `${os.homedir()}/bxc/data/voiranime/dragon-ball-full.json`;
 
 // série DB → slug principal voiranime (VOSTFR).
 const SERIES_SLUG: Record<string, string> = {
-	DB: "dragon-ball",
-	DBZ: "dragon-ball-z",
-	DBGT: "dragon-ball-gt",
-	DBS: "dragon-ball-super",
-	DB_DAIMA: "dragon-ball-daima",
+  DB: "dragon-ball",
+  DBZ: "dragon-ball-z",
+  DBGT: "dragon-ball-gt",
+  DBS: "dragon-ball-super",
+  DB_DAIMA: "dragon-ball-daima",
 };
 
 type Player = { name: string; provider: string; embedUrl: string };
@@ -47,42 +47,42 @@ await sql`ALTER TABLE bot.db_episodes ADD COLUMN IF NOT EXISTS players jsonb`;
 let updated = 0;
 let noMatch = 0;
 for (const [series, slug] of Object.entries(SERIES_SLUG)) {
-	const v = bySlug.get(slug);
-	if (!v) {
-		console.log(`  ⚠ slug voiranime absent : ${slug} (${series})`);
-		continue;
-	}
-	const byNum = new Map<number, Player[]>();
-	for (const e of v.episodes) {
-		if (typeof e.number === "number" && e.players?.length) {
-			byNum.set(
-				e.number,
-				e.players.map((p) => ({
-					name: p.name,
-					provider: p.provider,
-					embedUrl: p.embedUrl,
-				}))
-			);
-		}
-	}
-	const rows = (await sql`
+  const v = bySlug.get(slug);
+  if (!v) {
+    console.log(`  ⚠ slug voiranime absent : ${slug} (${series})`);
+    continue;
+  }
+  const byNum = new Map<number, Player[]>();
+  for (const e of v.episodes) {
+    if (typeof e.number === "number" && e.players?.length) {
+      byNum.set(
+        e.number,
+        e.players.map((p) => ({
+          name: p.name,
+          provider: p.provider,
+          embedUrl: p.embedUrl,
+        })),
+      );
+    }
+  }
+  const rows = (await sql`
 		SELECT id, number_in_series FROM bot.db_episodes WHERE series = ${series}
 	`) as unknown as { id: number; number_in_series: number }[];
-	for (const r of rows) {
-		const players = byNum.get(Number(r.number_in_series));
-		if (!players) {
-			noMatch++;
-			continue;
-		}
-		// postgres.js : sql.json() pour un jsonb correct ; `${JSON.stringify}::jsonb`
-		// produit un scalaire string double-encodé (bug attrapé 2026-05-28).
-		await sql`UPDATE bot.db_episodes SET players = ${sql.json(players)} WHERE id = ${r.id}`;
-		updated++;
-	}
-	console.log(`  ✓ ${series} (${slug}) : ${byNum.size} épisodes avec lecteurs côté voiranime`);
+  for (const r of rows) {
+    const players = byNum.get(Number(r.number_in_series));
+    if (!players) {
+      noMatch++;
+      continue;
+    }
+    // postgres.js : sql.json() pour un jsonb correct ; `${JSON.stringify}::jsonb`
+    // produit un scalaire string double-encodé (bug attrapé 2026-05-28).
+    await sql`UPDATE bot.db_episodes SET players = ${sql.json(players)} WHERE id = ${r.id}`;
+    updated++;
+  }
+  console.log(`  ✓ ${series} (${slug}) : ${byNum.size} épisodes avec lecteurs côté voiranime`);
 }
 
 console.log(
-	`✓ Terminé : ${updated} épisodes avec lecteurs importés, ${noMatch} sans correspondance.`
+  `✓ Terminé : ${updated} épisodes avec lecteurs importés, ${noMatch} sans correspondance.`,
 );
 await sql.end();

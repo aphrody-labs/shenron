@@ -15,32 +15,32 @@ import { EditorView } from "@codemirror/view";
 import CodeMirror, { oneDark } from "@uiw/react-codemirror";
 
 const CM_EXTENSIONS = [
-	markdown({ base: markdownLanguage, codeLanguages: languages }),
-	EditorView.lineWrapping,
+  markdown({ base: markdownLanguage, codeLanguages: languages }),
+  EditorView.lineWrapping,
 ];
 
 export function SourceView({
-	value,
-	onChange,
-	height = "60vh",
-	readOnly,
+  value,
+  onChange,
+  height = "60vh",
+  readOnly,
 }: {
-	value: string;
-	onChange: (v: string) => void;
-	height?: string;
-	readOnly?: boolean;
+  value: string;
+  onChange: (v: string) => void;
+  height?: string;
+  readOnly?: boolean;
 }) {
-	return (
-		<CodeMirror
-			value={value}
-			onChange={onChange}
-			extensions={CM_EXTENSIONS}
-			theme={oneDark}
-			height={height}
-			readOnly={readOnly}
-			basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
-			placeholder="Markdown et HTML…"
-			className="overflow-hidden text-[13px]"
-		/>
-	);
+  return (
+    <CodeMirror
+      value={value}
+      onChange={onChange}
+      extensions={CM_EXTENSIONS}
+      theme={oneDark}
+      height={height}
+      readOnly={readOnly}
+      basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
+      placeholder="Markdown et HTML…"
+      className="overflow-hidden text-[13px]"
+    />
+  );
 }

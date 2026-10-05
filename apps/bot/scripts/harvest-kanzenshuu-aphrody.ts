@@ -36,26 +36,31 @@ import { join } from "node:path";
 import { aphrodyWebScrape } from "@shenron/pipeline/aphrody";
 
 const SITEMAPS = [
-	"https://www.kanzenshuu.com/page-sitemap.xml",
-	"https://www.kanzenshuu.com/page-sitemap2.xml",
-	"https://www.kanzenshuu.com/page-sitemap3.xml",
+  "https://www.kanzenshuu.com/page-sitemap.xml",
+  "https://www.kanzenshuu.com/page-sitemap2.xml",
+  "https://www.kanzenshuu.com/page-sitemap3.xml",
 ];
 const PREFIXE = "kanzenshuu-trad_";
 const DELAI_MS = Number(process.env.KZ_DELAI_MS ?? 4000);
 
 const argLimite = process.argv.findIndex((a) => a === "--limite");
-const LIMITE = argLimite > -1 ? Number(process.argv[argLimite + 1]) : process.argv.includes("--tout") ? Infinity : 3;
+const LIMITE =
+  argLimite > -1
+    ? Number(process.argv[argLimite + 1])
+    : process.argv.includes("--tout")
+      ? Infinity
+      : 3;
 
 async function corpusMemoire(): Promise<string> {
-	const candidats = [
-		process.env.APHRODY_HOME,
-		join(homedir(), ".aphrody", "workspace"),
-		join(homedir(), ".aphrody", "workspaces", "dbfr"),
-	].filter((c): c is string => Boolean(c));
-	for (const base of candidats) {
-		if (await Bun.file(join(base, "ai.json")).exists()) return join(base, "memory");
-	}
-	throw new Error(`Corpus .aphrody introuvable (essayés : ${candidats.join(", ")}).`);
+  const candidats = [
+    process.env.APHRODY_HOME,
+    join(homedir(), ".aphrody", "workspace"),
+    join(homedir(), ".aphrody", "workspaces", "dbfr"),
+  ].filter((c): c is string => Boolean(c));
+  for (const base of candidats) {
+    if (await Bun.file(join(base, "ai.json")).exists()) return join(base, "memory");
+  }
+  throw new Error(`Corpus .aphrody introuvable (essayés : ${candidats.join(", ")}).`);
 }
 
 /**
@@ -68,33 +73,38 @@ async function corpusMemoire(): Promise<string> {
  * l'ouvrage traduit, et tout ce qui le précède est du chrome.
  */
 function corpsDArticle(markdown: string): string {
-	const lignes = markdown.split("\n");
-	const iSoulignement = lignes.findIndex((l) => /^-{5,}\s*$/.test(l));
-	if (iSoulignement < 1) return "";
-	const corps = lignes.slice(iSoulignement - 1);
-	// Le pied de page, quand le thème en rend un, commence à l'un de ces repères.
-	const iFin = corps.findIndex((l) =>
-		/^(Leave a Reply|Post navigation|Follow Kanzenshuu|Search for:)/i.test(l.trim())
-	);
-	return (iFin > 0 ? corps.slice(0, iFin) : corps).join("\n").trim();
+  const lignes = markdown.split("\n");
+  const iSoulignement = lignes.findIndex((l) => /^-{5,}\s*$/.test(l));
+  if (iSoulignement < 1) return "";
+  const corps = lignes.slice(iSoulignement - 1);
+  // Le pied de page, quand le thème en rend un, commence à l'un de ces repères.
+  const iFin = corps.findIndex((l) =>
+    /^(Leave a Reply|Post navigation|Follow Kanzenshuu|Search for:)/i.test(l.trim()),
+  );
+  return (iFin > 0 ? corps.slice(0, iFin) : corps).join("\n").trim();
 }
 
 /** Le titre lisible : la première ligne du corps, celle que souligne `-----`. */
 function titreDe(corps: string): string {
-	return corps.split("\n")[0]?.replace(/[*_`#]/g, "").trim() ?? "";
+  return (
+    corps
+      .split("\n")[0]
+      ?.replace(/[*_`#]/g, "")
+      .trim() ?? ""
+  );
 }
 
 async function scrape(url: string): Promise<{ markdown: string; erreur: string }> {
-	try {
-		const markdown = await aphrodyWebScrape(url, {
-			profile: "max",
-			bin: process.env.APHRODY_BIN,
-			timeoutMs: 120_000,
-		});
-		return { markdown, erreur: "" };
-	} catch (error) {
-		return { markdown: "", erreur: error instanceof Error ? error.message : String(error) };
-	}
+  try {
+    const markdown = await aphrodyWebScrape(url, {
+      profile: "max",
+      bin: process.env.APHRODY_BIN,
+      timeoutMs: 120_000,
+    });
+    return { markdown, erreur: "" };
+  } catch (error) {
+    return { markdown: "", erreur: error instanceof Error ? error.message : String(error) };
+  }
 }
 
 /**
@@ -104,14 +114,14 @@ async function scrape(url: string): Promise<{ markdown: string; erreur: string }
  * que rien ne signale.
  */
 async function corpsAvecReprise(url: string): Promise<{ corps: string; erreur: string }> {
-	for (let essai = 0; essai < 2; essai++) {
-		const { markdown, erreur } = await scrape(url);
-		const corps = corpsDArticle(markdown);
-		if (corps.length >= 600) return { corps, erreur };
-		if (essai === 0) await Bun.sleep(DELAI_MS * 4);
-		else return { corps, erreur };
-	}
-	return { corps: "", erreur: "" };
+  for (let essai = 0; essai < 2; essai++) {
+    const { markdown, erreur } = await scrape(url);
+    const corps = corpsDArticle(markdown);
+    if (corps.length >= 600) return { corps, erreur };
+    if (essai === 0) await Bun.sleep(DELAI_MS * 4);
+    else return { corps, erreur };
+  }
+  return { corps: "", erreur: "" };
 }
 
 // ── Récolte ─────────────────────────────────────────────────────────────────
@@ -122,11 +132,11 @@ const deja = new Set(await readdir(memoire));
 
 const urls: string[] = [];
 for (const sitemap of SITEMAPS) {
-	const xml = await fetch(sitemap).then((r) => (r.ok ? r.text() : ""));
-	for (const m of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
-		const url = m[1];
-		if (url.includes("/translations/") && !url.endsWith("/translations/")) urls.push(url);
-	}
+  const xml = await fetch(sitemap).then((r) => (r.ok ? r.text() : ""));
+  for (const m of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+    const url = m[1];
+    if (url.includes("/translations/") && !url.endsWith("/translations/")) urls.push(url);
+  }
 }
 const uniques = [...new Set(urls)];
 console.log(`→ ${uniques.length} traductions listées par le sitemap Kanzenshuu.`);
@@ -135,43 +145,43 @@ let deposes = 0;
 let ignores = 0;
 let sautes = 0;
 for (const url of uniques) {
-	const slug = url.replace(/\/$/, "").split("/").pop() ?? "";
-	const fichier = `${PREFIXE}${slug}.md`;
-	if (deja.has(fichier)) {
-		sautes++;
-		continue;
-	}
-	if (deposes >= LIMITE) break;
+  const slug = url.replace(/\/$/, "").split("/").pop() ?? "";
+  const fichier = `${PREFIXE}${slug}.md`;
+  if (deja.has(fichier)) {
+    sautes++;
+    continue;
+  }
+  if (deposes >= LIMITE) break;
 
-	const { corps, erreur } = await corpsAvecReprise(url);
-	// Une page qui ne rend presque rien est une page qui n'a pas chargé, pas une
-	// page courte : la déposer polluerait le corpus d'un titre sans texte.
-	if (corps.length < 600) {
-		console.warn(
-			`  ⨯ ${slug} — corps trop court (${corps.length} car.), ignoré. ${erreur.trim().split("\n").at(-1) ?? ""}`
-		);
-		ignores++;
-		await Bun.sleep(DELAI_MS);
-		continue;
-	}
-	const titre = titreDe(corps);
-	const entete = [
-		"---",
-		`title: ${JSON.stringify(titre)}`,
-		`source: ${JSON.stringify(`${titre} (trad. Kanzenshuu)`)}`,
-		`url: ${url}`,
-		"lang: en",
-		`harvested: ${new Date().toISOString().slice(0, 10)}`,
-		"---",
-		"",
-	].join("\n");
-	await writeFile(join(memoire, fichier), entete + corps + "\n", "utf-8");
-	deposes++;
-	console.log(`  ✓ ${slug} — ${corps.length} car. — ${titre}`);
-	await Bun.sleep(DELAI_MS);
+  const { corps, erreur } = await corpsAvecReprise(url);
+  // Une page qui ne rend presque rien est une page qui n'a pas chargé, pas une
+  // page courte : la déposer polluerait le corpus d'un titre sans texte.
+  if (corps.length < 600) {
+    console.warn(
+      `  ⨯ ${slug} — corps trop court (${corps.length} car.), ignoré. ${erreur.trim().split("\n").at(-1) ?? ""}`,
+    );
+    ignores++;
+    await Bun.sleep(DELAI_MS);
+    continue;
+  }
+  const titre = titreDe(corps);
+  const entete = [
+    "---",
+    `title: ${JSON.stringify(titre)}`,
+    `source: ${JSON.stringify(`${titre} (trad. Kanzenshuu)`)}`,
+    `url: ${url}`,
+    "lang: en",
+    `harvested: ${new Date().toISOString().slice(0, 10)}`,
+    "---",
+    "",
+  ].join("\n");
+  await writeFile(join(memoire, fichier), entete + corps + "\n", "utf-8");
+  deposes++;
+  console.log(`  ✓ ${slug} — ${corps.length} car. — ${titre}`);
+  await Bun.sleep(DELAI_MS);
 }
 
 console.log(
-	`✓ ${deposes} déposés, ${sautes} déjà présents, ${ignores} ignorés (corps vide) sur ${uniques.length}.`
+  `✓ ${deposes} déposés, ${sautes} déjà présents, ${ignores} ignorés (corps vide) sur ${uniques.length}.`,
 );
 console.log("→ Enchaîner : bun apps/bot/scripts/ingest-aphrody-rag.ts --injecte");

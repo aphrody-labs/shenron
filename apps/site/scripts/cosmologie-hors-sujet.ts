@@ -27,20 +27,20 @@ const DEMASQUER = process.argv.includes("--demasquer");
 
 /** Chaque entrée porte la raison qui l'exclut — vérifiable ligne à ligne. */
 const HORS_SUJET: Array<{ id: number; nom: string; raison: string }> = [
-	{
-		id: 45,
-		nom: "Moro",
-		raison: "personnage (db_characters #838), pas un lieu — surnom « mangeur de planète »",
-	},
-	{ id: 16, nom: "Inconnu", raison: "valeur de remplissage d'import, sans contenu" },
+  {
+    id: 45,
+    nom: "Moro",
+    raison: "personnage (db_characters #838), pas un lieu — surnom « mangeur de planète »",
+  },
+  { id: 16, nom: "Inconnu", raison: "valeur de remplissage d'import, sans contenu" },
 ];
 
 const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
-	.split("\n")
-	.filter((l) => l.startsWith("DATABASE_URL="))
-	.pop()
-	?.slice("DATABASE_URL=".length)
-	.replace(/^["']|["']$/g, "");
+  .split("\n")
+  .filter((l) => l.startsWith("DATABASE_URL="))
+  .pop()
+  ?.slice("DATABASE_URL=".length)
+  .replace(/^["']|["']$/g, "");
 if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 
 const sql = postgres(url);
@@ -49,35 +49,35 @@ const visibiliteVoulue = DEMASQUER;
 let touchees = 0;
 
 for (const { id, nom, raison } of HORS_SUJET) {
-	const [ligne] = (await sql`
+  const [ligne] = (await sql`
 		select id, name, visible from bot.db_planets where id = ${id}
 	`) as unknown as Array<{ id: number; name: string; visible: boolean }>;
-	if (!ligne) {
-		console.log(`  #${id} introuvable — ignoré`);
-		continue;
-	}
-	// Garde-fou : si le nom en base a changé, on ne masque pas à l'aveugle une
-	// ligne dont l'identité ne correspond plus à ce qui a été vérifié.
-	if (ligne.name.trim() !== nom) {
-		console.log(`  #${id} s'appelle désormais « ${ligne.name} » (et non « ${nom} ») — ignoré`);
-		continue;
-	}
-	if (ligne.visible === visibiliteVoulue) {
-		console.log(`  #${id} « ${nom} » déjà ${visibiliteVoulue ? "visible" : "masqué"}`);
-		continue;
-	}
-	touchees++;
-	console.log(`  #${id} « ${nom} » → ${DEMASQUER ? "visible" : "masqué"} · ${raison}`);
-	if (APPLIQUER || DEMASQUER) {
-		await sql`update bot.db_planets set visible = ${visibiliteVoulue} where id = ${id}`;
-	}
+  if (!ligne) {
+    console.log(`  #${id} introuvable — ignoré`);
+    continue;
+  }
+  // Garde-fou : si le nom en base a changé, on ne masque pas à l'aveugle une
+  // ligne dont l'identité ne correspond plus à ce qui a été vérifié.
+  if (ligne.name.trim() !== nom) {
+    console.log(`  #${id} s'appelle désormais « ${ligne.name} » (et non « ${nom} ») — ignoré`);
+    continue;
+  }
+  if (ligne.visible === visibiliteVoulue) {
+    console.log(`  #${id} « ${nom} » déjà ${visibiliteVoulue ? "visible" : "masqué"}`);
+    continue;
+  }
+  touchees++;
+  console.log(`  #${id} « ${nom} » → ${DEMASQUER ? "visible" : "masqué"} · ${raison}`);
+  if (APPLIQUER || DEMASQUER) {
+    await sql`update bot.db_planets set visible = ${visibiliteVoulue} where id = ${id}`;
+  }
 }
 
 console.log(
-	touchees === 0
-		? "Rien à faire."
-		: APPLIQUER || DEMASQUER
-			? `${touchees} entrée(s) mise(s) à jour.`
-			: `${touchees} entrée(s) à masquer — relancer avec --appliquer.`
+  touchees === 0
+    ? "Rien à faire."
+    : APPLIQUER || DEMASQUER
+      ? `${touchees} entrée(s) mise(s) à jour.`
+      : `${touchees} entrée(s) à masquer — relancer avec --appliquer.`,
 );
 await sql.end();

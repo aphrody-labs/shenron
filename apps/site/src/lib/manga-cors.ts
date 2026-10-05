@@ -6,8 +6,8 @@
  * inutilisable depuis un navigateur, et le défaut ne se voit pas en `curl`.
  */
 export const CORS_MANGA = {
-	"Access-Control-Allow-Origin": "*",
-	"Access-Control-Allow-Methods": "GET, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type",
-	"Access-Control-Max-Age": "86400",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": "86400",
 } as const;

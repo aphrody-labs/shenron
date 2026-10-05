@@ -4,14 +4,14 @@ import type {
   ModelSelection,
   Provider,
   ProviderPreference,
-} from '@shenron/koharu/protocol'
+} from "@shenron/koharu/protocol";
 
 export function providerName(entries: ProviderPreference[], provider: Provider): string {
-  return entries.find((entry) => entry.config.provider === provider)?.name ?? provider
+  return entries.find((entry) => entry.config.provider === provider)?.name ?? provider;
 }
 
 export function modelKey(model: Model | ModelSelection): string {
-  return `${model.provider}:${model.model ?? ''}`
+  return `${model.provider}:${model.model ?? ""}`;
 }
 
 export function modelSelection(model: Model, quantization: string | null): ModelSelection {
@@ -21,7 +21,7 @@ export function modelSelection(model: Model, quantization: string | null): Model
     quantization,
     vision: model.vision,
     reasoning: model.reasoning,
-  }
+  };
 }
 
 export function orderedLanguageChoices(
@@ -30,6 +30,6 @@ export function orderedLanguageChoices(
   return languages
     .map((language) => ({ tag: language.tag, name: language.name }))
     .toSorted((left, right) =>
-      left.name.localeCompare(right.name, undefined, { numeric: true, sensitivity: 'base' }),
-    )
+      left.name.localeCompare(right.name, undefined, { numeric: true, sensitivity: "base" }),
+    );
 }

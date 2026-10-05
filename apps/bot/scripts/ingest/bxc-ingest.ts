@@ -30,91 +30,93 @@ const WEB_PROFILE = process.env.APHRODY_WEB_PROFILE ?? "max";
 const DRY_RUN = process.argv.includes("--dry-run");
 
 const SOURCES = [
-	{
-		name: "Dragon Ball Official (FR)",
-		url: "https://dragonball.news/fr/",
-		selector: ".m-articleList_item",
-		category: "official",
-	},
-	{
-		name: "Bandai Namco News",
-		url: "https://en.bandainamcoent.eu/news",
-		selector: ".news-item",
-		category: "game",
-	},
+  {
+    name: "Dragon Ball Official (FR)",
+    url: "https://dragonball.news/fr/",
+    selector: ".m-articleList_item",
+    category: "official",
+  },
+  {
+    name: "Bandai Namco News",
+    url: "https://en.bandainamcoent.eu/news",
+    selector: ".news-item",
+    category: "game",
+  },
 ];
 
 type BxcScrapeItem = { index: number; text: string };
 
 /** Extrait les textContent non vides depuis l'owner Aphrody Web. */
 async function scrapeWithAphrody(url: string, selector: string): Promise<string[]> {
-	console.log(`Scraping via Aphrody Web (${WEB_PROFILE}): ${url}`);
-	let out: string;
-	try {
-		out = await aphrodyWebScrape(url, {
-			profile: WEB_PROFILE as "static" | "fast" | "http" | "stealth" | "max",
-			selector,
-			max: 10,
-		});
-	} catch (error) {
-		console.error(`  Aphrody Web scrape failed: ${error instanceof Error ? error.message : String(error)}`);
-		return [];
-	}
-	let items: BxcScrapeItem[];
-	try {
-		items = JSON.parse(out) as BxcScrapeItem[];
-	} catch {
-		console.error("  Sortie Aphrody Web non-JSON (parse échoué)");
-		return [];
-	}
-	return items.map((it) => it.text?.replace(/\s+/g, " ").trim() ?? "").filter((t) => t.length > 0);
+  console.log(`Scraping via Aphrody Web (${WEB_PROFILE}): ${url}`);
+  let out: string;
+  try {
+    out = await aphrodyWebScrape(url, {
+      profile: WEB_PROFILE as "static" | "fast" | "http" | "stealth" | "max",
+      selector,
+      max: 10,
+    });
+  } catch (error) {
+    console.error(
+      `  Aphrody Web scrape failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return [];
+  }
+  let items: BxcScrapeItem[];
+  try {
+    items = JSON.parse(out) as BxcScrapeItem[];
+  } catch {
+    console.error("  Sortie Aphrody Web non-JSON (parse échoué)");
+    return [];
+  }
+  return items.map((it) => it.text?.replace(/\s+/g, " ").trim() ?? "").filter((t) => t.length > 0);
 }
 
 async function main() {
-	console.log(`Lancement de l'ingestion Aphrody Web${DRY_RUN ? " (dry-run)" : ""}.`);
+  console.log(`Lancement de l'ingestion Aphrody Web${DRY_RUN ? " (dry-run)" : ""}.`);
 
-	for (const source of SOURCES) {
-		try {
-			const items = await scrapeWithAphrody(source.url, source.selector);
-			console.log(`${items.length} items trouvés pour ${source.name}`);
+  for (const source of SOURCES) {
+    try {
+      const items = await scrapeWithAphrody(source.url, source.selector);
+      console.log(`${items.length} items trouvés pour ${source.name}`);
 
-			for (const title of items) {
-				const slug = title
-					.toLowerCase()
-					.trim()
-					.replace(/\s+/g, "-")
-					.replace(/[^\w-]+/g, "");
-				const sourceUrl = `${source.url}#${slug.substring(0, 50)}`;
-				const sourceId = source.name.toLowerCase().replace(/\s+/g, "-");
+      for (const title of items) {
+        const slug = title
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, "-")
+          .replace(/[^\w-]+/g, "");
+        const sourceUrl = `${source.url}#${slug.substring(0, 50)}`;
+        const sourceId = source.name.toLowerCase().replace(/\s+/g, "-");
 
-				if (DRY_RUN) {
-					console.log(`  [dry] ${source.category} — ${title.substring(0, 60)}`);
-					continue;
-				}
+        if (DRY_RUN) {
+          console.log(`  [dry] ${source.category} — ${title.substring(0, 60)}`);
+          continue;
+        }
 
-				const exists = await db
-					.select()
-					.from(dbNews)
-					.where(eq(dbNews.sourceUrl, sourceUrl))
-					.limit(1);
-				if (exists.length > 0) continue;
+        const exists = await db
+          .select()
+          .from(dbNews)
+          .where(eq(dbNews.sourceUrl, sourceUrl))
+          .limit(1);
+        if (exists.length > 0) continue;
 
-				await db.insert(dbNews).values({
-					sourceId,
-					sourceUrl,
-					title: title.substring(0, 255),
-					excerpt: "Scrapé via bxc",
-					category: source.category,
-					publishedAt: new Date(),
-				});
-				console.log(`  News importée : ${title.substring(0, 50)}`);
-			}
-		} catch (err) {
-			console.error(`Erreur sur ${source.name}:`, err);
-		}
-	}
+        await db.insert(dbNews).values({
+          sourceId,
+          sourceUrl,
+          title: title.substring(0, 255),
+          excerpt: "Scrapé via bxc",
+          category: source.category,
+          publishedAt: new Date(),
+        });
+        console.log(`  News importée : ${title.substring(0, 50)}`);
+      }
+    } catch (err) {
+      console.error(`Erreur sur ${source.name}:`, err);
+    }
+  }
 
-	console.log("Ingestion bxc terminée.");
+  console.log("Ingestion bxc terminée.");
 }
 
 main();

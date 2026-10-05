@@ -38,31 +38,31 @@ await db.delete(levelRewards);
  * comme items "banner_*" dans le shop (cosmétiques, prix échelonnés Zéni).
  */
 const BANNERS: Record<number, string> = {
-	1: "assets/banners/banner-17.jpg", // Goku enfant + Shenron
-	2: "assets/banners/banner-14.jpg", // Goku + Gohan enfant
-	3: "assets/banners/banner-06.jpg", // Goku SSJ vs Frieza
-	4: "assets/banners/banner-08.jpg", // Goku SSJ Kamehameha
-	5: "assets/banners/banner-04.jpg", // 5 SSJ ère Cell
-	6: "assets/banners/banner-12.jpg", // Goku SSJ3
-	7: "assets/banners/banner-10.jpg", // Goku SSG vs Beerus
-	8: "assets/banners/banner-07.jpg", // Goku+Vegeta SSJ4 (GT)
-	9: "assets/banners/banner-11.jpg", // Merged Zamasu
-	10: "assets/banners/banner-02.jpg", // Ultra Instinct Maîtrisé silhouette
+  1: "assets/banners/banner-17.jpg", // Goku enfant + Shenron
+  2: "assets/banners/banner-14.jpg", // Goku + Gohan enfant
+  3: "assets/banners/banner-06.jpg", // Goku SSJ vs Frieza
+  4: "assets/banners/banner-08.jpg", // Goku SSJ Kamehameha
+  5: "assets/banners/banner-04.jpg", // 5 SSJ ère Cell
+  6: "assets/banners/banner-12.jpg", // Goku SSJ3
+  7: "assets/banners/banner-10.jpg", // Goku SSG vs Beerus
+  8: "assets/banners/banner-07.jpg", // Goku+Vegeta SSJ4 (GT)
+  9: "assets/banners/banner-11.jpg", // Merged Zamasu
+  10: "assets/banners/banner-02.jpg", // Ultra Instinct Maîtrisé silhouette
 };
 
 for (const { level, xp } of LEVEL_THRESHOLDS) {
-	const roleId = LEVEL_ROLE_MAP[level];
-	if (!roleId) continue;
-	await db.insert(levelRewards).values({
-		level,
-		roleId,
-		xpThreshold: xp,
-		zeniBonus: ZENI_PER_LEVEL * level,
-		bannerUrl: BANNERS[level] ?? null,
-	});
-	console.log(
-		`  L${level.toString().padStart(2)} (${xp.toLocaleString("fr").padStart(11)} XP) → ${roleId} · ${BANNERS[level] ?? "—"}`
-	);
+  const roleId = LEVEL_ROLE_MAP[level];
+  if (!roleId) continue;
+  await db.insert(levelRewards).values({
+    level,
+    roleId,
+    xpThreshold: xp,
+    zeniBonus: ZENI_PER_LEVEL * level,
+    bannerUrl: BANNERS[level] ?? null,
+  });
+  console.log(
+    `  L${level.toString().padStart(2)} (${xp.toLocaleString("fr").padStart(11)} XP) → ${roleId} · ${BANNERS[level] ?? "—"}`,
+  );
 }
 
 console.log(`✓ ${LEVEL_THRESHOLDS.length} level rewards seeded`);

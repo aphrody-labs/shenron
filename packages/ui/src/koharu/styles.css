@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-@import './internal/styles/globals.css';
+@import "./internal/styles/globals.css";
 
 @font-face {
-  font-family: 'Koharu Noto Sans CJK';
-  src: url('./assets/NotoSansCJK-VF.otf') format('opentype');
+  font-family: "Koharu Noto Sans CJK";
+  src: url("./assets/NotoSansCJK-VF.otf") format("opentype");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -53,7 +53,7 @@
     min-height: 100%;
     font-size: 18px;
     line-height: 1.2;
-    font-family: var(--aphrody-font-brand, 'Koharu Noto Sans CJK', system-ui, sans-serif);
+    font-family: var(--aphrody-font-brand, "Koharu Noto Sans CJK", system-ui, sans-serif);
     color: var(--md-sys-color-on-surface);
     background-color: var(--md-sys-color-surface);
     scrollbar-color: var(--md-sys-color-outline) var(--md-sys-color-surface-container);
@@ -63,7 +63,7 @@
   [data-koharu-ui-layer] {
     font-size: 18px;
     line-height: 1.2;
-    font-family: var(--aphrody-font-brand, 'Koharu Noto Sans CJK', system-ui, sans-serif);
+    font-family: var(--aphrody-font-brand, "Koharu Noto Sans CJK", system-ui, sans-serif);
     color: var(--md-sys-color-on-surface);
   }
 
@@ -74,7 +74,8 @@
     transition: none !important;
   }
 
-  :is([data-koharu-ui], [data-koharu-ui-layer]) :is(button, [role='button'], input, select, textarea, [role='slider']) {
+  :is([data-koharu-ui], [data-koharu-ui-layer])
+    :is(button, [role="button"], input, select, textarea, [role="slider"]) {
     min-height: 48px;
   }
 
@@ -86,7 +87,9 @@
     app-region: drag;
   }
 
-  [data-koharu-ui] [data-tauri-drag-region] :is(button, a, input, select, textarea, [role='button']) {
+  [data-koharu-ui]
+    [data-tauri-drag-region]
+    :is(button, a, input, select, textarea, [role="button"]) {
     app-region: no-drag;
   }
 
@@ -98,18 +101,19 @@
 
 /* Keep dense legacy utility classes readable while preserving larger display text. */
 @layer utilities {
-  :is([data-koharu-ui], [data-koharu-ui-layer]) :where(
-    .text-xs,
-    .text-sm,
-    .text-base,
-    [class~='text-[8px]'],
-    [class~='text-[9px]'],
-    [class~='text-[10px]'],
-    [class~='text-[11px]'],
-    [class~='text-[12px]'],
-    [class~='text-[13px]'],
-    [class~='text-[15px]']
-  ) {
+  :is([data-koharu-ui], [data-koharu-ui-layer])
+    :where(
+      .text-xs,
+      .text-sm,
+      .text-base,
+      [class~="text-[8px]"],
+      [class~="text-[9px]"],
+      [class~="text-[10px]"],
+      [class~="text-[11px]"],
+      [class~="text-[12px]"],
+      [class~="text-[13px]"],
+      [class~="text-[15px]"]
+    ) {
     font-size: 18px !important;
     line-height: 1.2 !important;
   }
@@ -118,13 +122,13 @@
     .text-xs,
     .text-sm,
     .text-base,
-    [class~='text-[8px]'],
-    [class~='text-[9px]'],
-    [class~='text-[10px]'],
-    [class~='text-[11px]'],
-    [class~='text-[12px]'],
-    [class~='text-[13px]'],
-    [class~='text-[15px]']
+    [class~="text-[8px]"],
+    [class~="text-[9px]"],
+    [class~="text-[10px]"],
+    [class~="text-[11px]"],
+    [class~="text-[12px]"],
+    [class~="text-[13px]"],
+    [class~="text-[15px]"]
   ) {
     font-size: 18px !important;
     line-height: 1.2 !important;
@@ -144,7 +148,7 @@
   width: var(--workspace-corner-radius);
   height: var(--workspace-corner-radius);
   pointer-events: none;
-  content: '';
+  content: "";
   background: radial-gradient(
     circle at bottom right,
     transparent 0 calc(var(--workspace-corner-radius) - 1px),
@@ -152,46 +156,46 @@
   );
 }
 
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='button']:not(.rounded-none),
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='input'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='textarea'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='select-trigger'],
-[data-koharu-ui-layer][data-slot='button']:not(.rounded-none),
-[data-koharu-ui-layer][data-slot='input'],
-[data-koharu-ui-layer][data-slot='textarea'],
-[data-koharu-ui-layer][data-slot='select-trigger'] {
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="button"]:not(.rounded-none),
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="input"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="textarea"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="select-trigger"],
+[data-koharu-ui-layer][data-slot="button"]:not(.rounded-none),
+[data-koharu-ui-layer][data-slot="input"],
+[data-koharu-ui-layer][data-slot="textarea"],
+[data-koharu-ui-layer][data-slot="select-trigger"] {
   border-radius: var(--md-sys-shape-corner-small);
   box-shadow: none;
 }
 
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='popover-content'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='dropdown-menu-content'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='select-content'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='dialog-content'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='alert-dialog-content'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='sheet-content'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='drawer-popup'],
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='toast'],
-[data-koharu-ui-layer][data-slot='combobox-content'],
-[data-koharu-ui-layer][data-slot='context-menu-content'],
-[data-koharu-ui-layer][data-slot='popover-content'],
-[data-koharu-ui-layer][data-slot='hover-card-content'],
-[data-koharu-ui-layer][data-slot='dropdown-menu-content'],
-[data-koharu-ui-layer][data-slot='navigation-menu-content'],
-[data-koharu-ui-layer][data-slot='menubar-content'],
-[data-koharu-ui-layer][data-slot='select-content'],
-[data-koharu-ui-layer][data-slot='dialog-content'],
-[data-koharu-ui-layer][data-slot='alert-dialog-content'],
-[data-koharu-ui-layer][data-slot='sheet-content'],
-[data-koharu-ui-layer][data-slot='drawer-popup'],
-[data-koharu-ui-layer][data-slot='toast'] {
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="popover-content"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="dropdown-menu-content"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="select-content"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="dialog-content"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="alert-dialog-content"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="sheet-content"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="drawer-popup"],
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="toast"],
+[data-koharu-ui-layer][data-slot="combobox-content"],
+[data-koharu-ui-layer][data-slot="context-menu-content"],
+[data-koharu-ui-layer][data-slot="popover-content"],
+[data-koharu-ui-layer][data-slot="hover-card-content"],
+[data-koharu-ui-layer][data-slot="dropdown-menu-content"],
+[data-koharu-ui-layer][data-slot="navigation-menu-content"],
+[data-koharu-ui-layer][data-slot="menubar-content"],
+[data-koharu-ui-layer][data-slot="select-content"],
+[data-koharu-ui-layer][data-slot="dialog-content"],
+[data-koharu-ui-layer][data-slot="alert-dialog-content"],
+[data-koharu-ui-layer][data-slot="sheet-content"],
+[data-koharu-ui-layer][data-slot="drawer-popup"],
+[data-koharu-ui-layer][data-slot="toast"] {
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: var(--md-sys-shape-corner-large);
   box-shadow: var(--md-sys-elevation-level3);
 }
 
-:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot='tabs-trigger'],
-[data-koharu-ui-layer][data-slot='tabs-trigger'] {
+:is([data-koharu-ui], [data-koharu-ui-layer]) [data-slot="tabs-trigger"],
+[data-koharu-ui-layer][data-slot="tabs-trigger"] {
   min-height: 48px;
   border-radius: var(--md-sys-shape-corner-small);
 }
@@ -213,7 +217,8 @@
     outline-width: 4px;
   }
 
-  :is([data-koharu-ui], [data-koharu-ui-layer]) :is(button, [role='button'], input, select, textarea, [role='slider']) {
+  :is([data-koharu-ui], [data-koharu-ui-layer])
+    :is(button, [role="button"], input, select, textarea, [role="slider"]) {
     border-color: var(--md-sys-color-outline);
   }
 }
@@ -224,7 +229,8 @@
     outline-color: Highlight;
   }
 
-  :is([data-koharu-ui], [data-koharu-ui-layer]) :is(button, [role='button'], input, select, textarea) {
+  :is([data-koharu-ui], [data-koharu-ui-layer])
+    :is(button, [role="button"], input, select, textarea) {
     border: 1px solid ButtonText;
   }
 }

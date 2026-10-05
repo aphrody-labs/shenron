@@ -9,19 +9,19 @@
  * balises empilées. À appliquer AUSSI aux épisodes (pas seulement aux films).
  */
 export function stripSourceTags(s: string | null | undefined): string | null {
-	if (!s) return s ?? null;
-	let out = s;
-	let prev: string;
-	do {
-		prev = out;
-		// Emphase markdown optionnelle autour du parenthétique : `_(Source : Kitsu.)_`,
-		// `*(…)*`, `**(…)**` ou nu `(…)`. Ancré en fin de chaîne.
-		out = out.replace(
-			/\s*[_*]{0,2}\s*[([]\s*(?:sources?|écrit par)[^)\]]*[)\]]\s*[_*]{0,2}\s*$/i,
-			""
-		);
-	} while (out !== prev);
-	return out.trimEnd();
+  if (!s) return s ?? null;
+  let out = s;
+  let prev: string;
+  do {
+    prev = out;
+    // Emphase markdown optionnelle autour du parenthétique : `_(Source : Kitsu.)_`,
+    // `*(…)*`, `**(…)**` ou nu `(…)`. Ancré en fin de chaîne.
+    out = out.replace(
+      /\s*[_*]{0,2}\s*[([]\s*(?:sources?|écrit par)[^)\]]*[)\]]\s*[_*]{0,2}\s*$/i,
+      "",
+    );
+  } while (out !== prev);
+  return out.trimEnd();
 }
 
 type Player = { lang?: "vf" | "vostfr" };
@@ -34,9 +34,9 @@ type Player = { lang?: "vf" | "vostfr" };
  * silencieuse (pas de badge) plutôt que crash.
  */
 export function langBadges(players: unknown): { hasVf: boolean; hasVostfr: boolean } {
-	const arr = Array.isArray(players) ? (players as Player[]) : [];
-	return {
-		hasVf: arr.some((p) => p?.lang === "vf"),
-		hasVostfr: arr.some((p) => p?.lang === "vostfr"),
-	};
+  const arr = Array.isArray(players) ? (players as Player[]) : [];
+  return {
+    hasVf: arr.some((p) => p?.lang === "vf"),
+    hasVostfr: arr.some((p) => p?.lang === "vostfr"),
+  };
 }

@@ -17,25 +17,25 @@ const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 
 const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
 
 export async function GET(req: NextRequest) {
-	if (!(await isAdminOrToken(req))) return forbidden();
-	return NextResponse.json({ theme: await getSiteTheme() });
+  if (!(await isAdminOrToken(req))) return forbidden();
+  return NextResponse.json({ theme: await getSiteTheme() });
 }
 
 export async function PUT(req: NextRequest) {
-	const { allowed, me } = await adminUserOrToken(req);
-	if (!allowed) return forbidden();
-	let body: unknown;
-	try {
-		body = await req.json();
-	} catch {
-		return badRequest("JSON body requis");
-	}
-	try {
-		const theme = await saveSiteTheme(body, me?.discordId || me?.user?.id || "token-admin");
-		// Le thème vit dans le layout racine → revalide TOUT le site.
-		revalidatePath("/", "layout");
-		return NextResponse.json({ ok: true, theme });
-	} catch (err) {
-		return badRequest(err instanceof Error ? err.message : "erreur");
-	}
+  const { allowed, me } = await adminUserOrToken(req);
+  if (!allowed) return forbidden();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return badRequest("JSON body requis");
+  }
+  try {
+    const theme = await saveSiteTheme(body, me?.discordId || me?.user?.id || "token-admin");
+    // Le thème vit dans le layout racine → revalide TOUT le site.
+    revalidatePath("/", "layout");
+    return NextResponse.json({ ok: true, theme });
+  } catch (err) {
+    return badRequest(err instanceof Error ? err.message : "erreur");
+  }
 }

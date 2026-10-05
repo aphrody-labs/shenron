@@ -7,8 +7,8 @@ import { authorize, type AuthDecision, type Strategy } from "./guards";
 
 /** Request headers of the current Next request scope (copied, mutable). */
 export async function requestHeaders(): Promise<Headers> {
-	const { headers } = await import("next/headers");
-	return new Headers(await headers());
+  const { headers } = await import("next/headers");
+  return new Headers(await headers());
 }
 
 /**
@@ -17,16 +17,16 @@ export async function requestHeaders(): Promise<Headers> {
  * built from the forwarded host, else `http://localhost/`.
  */
 export async function currentRequest(url?: string): Promise<Request> {
-	const headers = await requestHeaders();
-	if (url) return new Request(url, { headers });
-	const host = headers.get("x-forwarded-host") ?? headers.get("host");
-	const proto = headers.get("x-forwarded-proto") ?? "https";
-	return new Request(host ? `${proto}://${host}/` : "http://localhost/", { headers });
+  const headers = await requestHeaders();
+  if (url) return new Request(url, { headers });
+  const host = headers.get("x-forwarded-host") ?? headers.get("host");
+  const proto = headers.get("x-forwarded-proto") ?? "https";
+  return new Request(host ? `${proto}://${host}/` : "http://localhost/", { headers });
 }
 
 export async function authorizeNext(
-	strategies: readonly Strategy[],
-	url?: string
+  strategies: readonly Strategy[],
+  url?: string,
 ): Promise<AuthDecision> {
-	return authorize(await currentRequest(url), strategies);
+  return authorize(await currentRequest(url), strategies);
 }

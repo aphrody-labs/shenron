@@ -30,60 +30,60 @@ const racine = fileURLToPath(new URL("..", import.meta.url));
 const ENVELOPPES_NOMMANTES = /<(PanelField|PlainField)\b[^>]*\blabel=/;
 
 async function champsSansNom(): Promise<string[]> {
-	const sans: string[] = [];
-	for (const dossier of ["src/components", "src/app"]) {
-		for await (const rel of new Glob("**/*.tsx").scan({ cwd: `${racine}${dossier}` })) {
-			const chemin = `${dossier}/${rel}`.replaceAll("\\", "/");
-			// L'admin est hors périmètre public : traité séparément.
-			if (chemin.includes("/admin/") || PRIMITIVES.has(chemin)) continue;
-			const lignes = (await Bun.file(`${racine}${chemin}`).text()).split("\n");
-			let dansCommentaire = false;
-			for (let i = 0; i < lignes.length; i++) {
-				const ligne = lignes[i]!;
-				// Une docstring qui PARLE d'un `<textarea>` n'en rend pas un.
-				const ouvre = ligne.lastIndexOf("/*");
-				const ferme = ligne.lastIndexOf("*/");
-				const commentaire = dansCommentaire || /^\s*(\*|\/\/)/.test(ligne);
-				if (ouvre !== -1 && ouvre > ferme) dansCommentaire = true;
-				else if (ferme !== -1 && ferme > ouvre) dansCommentaire = false;
-				if (commentaire) continue;
+  const sans: string[] = [];
+  for (const dossier of ["src/components", "src/app"]) {
+    for await (const rel of new Glob("**/*.tsx").scan({ cwd: `${racine}${dossier}` })) {
+      const chemin = `${dossier}/${rel}`.replaceAll("\\", "/");
+      // L'admin est hors périmètre public : traité séparément.
+      if (chemin.includes("/admin/") || PRIMITIVES.has(chemin)) continue;
+      const lignes = (await Bun.file(`${racine}${chemin}`).text()).split("\n");
+      let dansCommentaire = false;
+      for (let i = 0; i < lignes.length; i++) {
+        const ligne = lignes[i]!;
+        // Une docstring qui PARLE d'un `<textarea>` n'en rend pas un.
+        const ouvre = ligne.lastIndexOf("/*");
+        const ferme = ligne.lastIndexOf("*/");
+        const commentaire = dansCommentaire || /^\s*(\*|\/\/)/.test(ligne);
+        if (ouvre !== -1 && ouvre > ferme) dansCommentaire = true;
+        else if (ferme !== -1 && ferme > ouvre) dansCommentaire = false;
+        if (commentaire) continue;
 
-				if (!/<(input|select|textarea)\b/.test(ligne)) continue;
-				let bloc = "";
-				for (let j = i; j < Math.min(i + 18, lignes.length); j++) {
-					bloc += `${lignes[j]}\n`;
-					if (/\/>|<\/(input|select|textarea)>/.test(lignes[j]!)) break;
-				}
-				// Un champ caché n'est pas exposé à l'arbre d'accessibilité : ni
-				// `type="hidden"`, ni `display:none` (la classe `hidden` de
-				// Tailwind) — c'est ainsi qu'on déclenche un sélecteur de fichier
-				// depuis un vrai bouton, lui-même nommé.
-				if (/type="hidden"/.test(bloc)) continue;
-				if (/className="[^"]*\bhidden\b/.test(bloc)) continue;
-				if (/aria-label|aria-labelledby|\btitle=/.test(bloc)) continue;
-				const amont = lignes.slice(Math.max(0, i - 14), i).join("\n");
-				const ouvert = amont.lastIndexOf("<label");
-				if (ouvert !== -1 && !amont.slice(ouvert).includes("</label>")) continue; // <label> englobant
-				if (/<label[^>]*htmlFor/.test(amont + lignes.slice(i, i + 18).join("\n"))) continue;
-				// La DERNIÈRE enveloppe ouverte, pas la première : deux champs qui se
-				// suivent laissent le `</PanelField>` du précédent dans la fenêtre
-				// amont, et chercher en avant faisait croire l'enveloppe refermée.
-				const ouvertures = [...amont.matchAll(new RegExp(ENVELOPPES_NOMMANTES, "g"))];
-				const derniere = ouvertures.at(-1);
-				if (
-					derniere?.index !== undefined &&
-					!/<\/(PanelField|PlainField)>/.test(amont.slice(derniere.index))
-				)
-					continue;
-				sans.push(`${chemin}:${i + 1}`);
-			}
-		}
-	}
-	return sans.toSorted();
+        if (!/<(input|select|textarea)\b/.test(ligne)) continue;
+        let bloc = "";
+        for (let j = i; j < Math.min(i + 18, lignes.length); j++) {
+          bloc += `${lignes[j]}\n`;
+          if (/\/>|<\/(input|select|textarea)>/.test(lignes[j]!)) break;
+        }
+        // Un champ caché n'est pas exposé à l'arbre d'accessibilité : ni
+        // `type="hidden"`, ni `display:none` (la classe `hidden` de
+        // Tailwind) — c'est ainsi qu'on déclenche un sélecteur de fichier
+        // depuis un vrai bouton, lui-même nommé.
+        if (/type="hidden"/.test(bloc)) continue;
+        if (/className="[^"]*\bhidden\b/.test(bloc)) continue;
+        if (/aria-label|aria-labelledby|\btitle=/.test(bloc)) continue;
+        const amont = lignes.slice(Math.max(0, i - 14), i).join("\n");
+        const ouvert = amont.lastIndexOf("<label");
+        if (ouvert !== -1 && !amont.slice(ouvert).includes("</label>")) continue; // <label> englobant
+        if (/<label[^>]*htmlFor/.test(amont + lignes.slice(i, i + 18).join("\n"))) continue;
+        // La DERNIÈRE enveloppe ouverte, pas la première : deux champs qui se
+        // suivent laissent le `</PanelField>` du précédent dans la fenêtre
+        // amont, et chercher en avant faisait croire l'enveloppe refermée.
+        const ouvertures = [...amont.matchAll(new RegExp(ENVELOPPES_NOMMANTES, "g"))];
+        const derniere = ouvertures.at(-1);
+        if (
+          derniere?.index !== undefined &&
+          !/<\/(PanelField|PlainField)>/.test(amont.slice(derniere.index))
+        )
+          continue;
+        sans.push(`${chemin}:${i + 1}`);
+      }
+    }
+  }
+  return sans.toSorted();
 }
 
 describe("accessibilité des formulaires publics", () => {
-	test("aucun champ public n'est dépourvu de nom accessible", async () => {
-		expect(await champsSansNom()).toEqual([]);
-	});
+  test("aucun champ public n'est dépourvu de nom accessible", async () => {
+    expect(await champsSansNom()).toEqual([]);
+  });
 });

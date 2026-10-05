@@ -16,60 +16,61 @@ const writes: Array<{ kind: string; patch: unknown; by?: string | null }> = [];
 const revalidated: Array<[string, "layout" | "page" | undefined]> = [];
 
 mock.module("@/lib/session", () => ({
-	isCurrentUserAdmin: async () => isAdmin,
-	getCurrentUser: async () => currentUser,
+  isCurrentUserAdmin: async () => isAdmin,
+  getCurrentUser: async () => currentUser,
 }));
 mock.module("@/lib/api-token", () => ({
-	hasValidApiToken: (req: Request) => req.headers.get("authorization") === "Bearer test-admin-token",
+  hasValidApiToken: (req: Request) =>
+    req.headers.get("authorization") === "Bearer test-admin-token",
 }));
 mock.module("@/lib/home-config", () => ({
-	getHomeConfig: async () => ({ version: 1, hero: { lede: "défaut", scenes: [] } }),
-	saveHomeConfig: async (patch: unknown, by?: string | null) => {
-		writes.push({ kind: "home", patch, by });
-		return patch;
-	},
+  getHomeConfig: async () => ({ version: 1, hero: { lede: "défaut", scenes: [] } }),
+  saveHomeConfig: async (patch: unknown, by?: string | null) => {
+    writes.push({ kind: "home", patch, by });
+    return patch;
+  },
 }));
 mock.module("@/lib/banner-config", () => ({
-	getPageBanners: async () => ({ fallback: "/banners/default.jpg", pages: {}, series: {} }),
-	savePageBanners: async (patch: unknown, by?: string | null) => {
-		writes.push({ kind: "banners", patch, by });
-		return patch;
-	},
+  getPageBanners: async () => ({ fallback: "/banners/default.jpg", pages: {}, series: {} }),
+  savePageBanners: async (patch: unknown, by?: string | null) => {
+    writes.push({ kind: "banners", patch, by });
+    return patch;
+  },
 }));
 mock.module("@/lib/theme-config", () => ({
-	getSiteTheme: async () => ({ version: 1, colors: {}, radius: 1 }),
-	saveSiteTheme: async (patch: unknown, by?: string | null) => {
-		writes.push({ kind: "theme", patch, by });
-		return patch;
-	},
+  getSiteTheme: async () => ({ version: 1, colors: {}, radius: 1 }),
+  saveSiteTheme: async (patch: unknown, by?: string | null) => {
+    writes.push({ kind: "theme", patch, by });
+    return patch;
+  },
 }));
 mock.module("@/lib/chronology-config", () => ({
-	getChronologyConfig: async () => ({ overrides: {} }),
-	saveChronologyConfig: async (patch: unknown, by?: string | null) => {
-		writes.push({ kind: "chronology", patch, by });
-		return patch;
-	},
+  getChronologyConfig: async () => ({ overrides: {} }),
+  saveChronologyConfig: async (patch: unknown, by?: string | null) => {
+    writes.push({ kind: "chronology", patch, by });
+    return patch;
+  },
 }));
 mock.module("@/lib/db-universe", () => ({
-	dbUniverse: { timeline: async () => [] },
+  dbUniverse: { timeline: async () => [] },
 }));
 mock.module("@/lib/canon-config", () => ({
-	getCanonConfig: async () => ({ version: 1 }),
-	getCanonReferences: async () => [],
-	saveCanonConfig: async (patch: unknown, by?: string | null) => {
-		writes.push({ kind: "canon", patch, by });
-		return patch;
-	},
+  getCanonConfig: async () => ({ version: 1 }),
+  getCanonReferences: async () => [],
+  saveCanonConfig: async (patch: unknown, by?: string | null) => {
+    writes.push({ kind: "canon", patch, by });
+    return patch;
+  },
 }));
 mock.module("@/lib/wiki-launch-config", () => ({
-	getLaunchConfig: async () => ({ openKeys: [], order: [], access: {} }),
-	saveLaunchConfig: async (patch: unknown, by?: string | null) => {
-		writes.push({ kind: "launch", patch, by });
-		return patch;
-	},
+  getLaunchConfig: async () => ({ openKeys: [], order: [], access: {} }),
+  saveLaunchConfig: async (patch: unknown, by?: string | null) => {
+    writes.push({ kind: "launch", patch, by });
+    return patch;
+  },
 }));
 mock.module("next/cache", () => ({
-	revalidatePath: (path: string, type?: "layout" | "page") => revalidated.push([path, type]),
+  revalidatePath: (path: string, type?: "layout" | "page") => revalidated.push([path, type]),
 }));
 
 const home = await import("../src/app/api/home-config/route");
@@ -80,86 +81,124 @@ const canon = await import("../src/app/api/canon-config/route");
 const launch = await import("../src/app/api/wiki-launch/route");
 
 const request = (url: string, body: unknown) =>
-	new NextRequest(url, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(body),
-	});
+  new NextRequest(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 
 const tokenRequest = (url: string, body: unknown) =>
-	new NextRequest(url, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json", Authorization: "Bearer test-admin-token" },
-		body: JSON.stringify(body),
-	});
+  new NextRequest(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer test-admin-token" },
+    body: JSON.stringify(body),
+  });
 
 beforeEach(() => {
-	isAdmin = false;
-	currentUser = null;
-	writes.length = 0;
-	revalidated.length = 0;
+  isAdmin = false;
+  currentUser = null;
+  writes.length = 0;
+  revalidated.length = 0;
 });
 
 describe("API de configuration du dashboard — Better Auth + persistance", () => {
-	test("refusent toute lecture ou écriture lorsqu'aucune session admin n'est présente", async () => {
-		for (const route of [home, banners, theme, chronology, canon, launch]) {
-			expect((await route.GET(new NextRequest("http://test/api/config"))).status).toBe(403);
-			expect((await route.PUT(request("http://test/api/admin", { version: 1 }))).status).toBe(403);
-		}
-		expect(writes).toEqual([]);
-	});
+  test("refusent toute lecture ou écriture lorsqu'aucune session admin n'est présente", async () => {
+    for (const route of [home, banners, theme, chronology, canon, launch]) {
+      expect((await route.GET(new NextRequest("http://test/api/config"))).status).toBe(403);
+      expect((await route.PUT(request("http://test/api/admin", { version: 1 }))).status).toBe(403);
+    }
+    expect(writes).toEqual([]);
+  });
 
-	test("enregistre la configuration home sous l'identité admin et purge l'accueil", async () => {
-		currentUser = { user: { id: "user-1", roleAdmin: true }, discordId: "discord-1" };
-		const patch = { hero: { lede: "Une nouvelle légende", scenes: [] } };
+  test("enregistre la configuration home sous l'identité admin et purge l'accueil", async () => {
+    currentUser = { user: { id: "user-1", roleAdmin: true }, discordId: "discord-1" };
+    const patch = { hero: { lede: "Une nouvelle légende", scenes: [] } };
 
-		const response = await home.PUT(request("http://test/api/home-config", patch));
-		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual({ ok: true, config: patch });
-		expect(writes).toEqual([{ kind: "home", patch, by: "discord-1" }]);
-		expect(revalidated).toEqual([["/", undefined]]);
-	});
+    const response = await home.PUT(request("http://test/api/home-config", patch));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true, config: patch });
+    expect(writes).toEqual([{ kind: "home", patch, by: "discord-1" }]);
+    expect(revalidated).toEqual([["/", undefined]]);
+  });
 
-	test("enregistre les bannières héros et invalide toutes les pages concernées", async () => {
-		currentUser = { user: { id: "user-2", roleAdmin: true }, discordId: "" };
-		const patch = { pages: { episodes: "/banners/new-episodes.jpg" } };
+  test("enregistre les bannières héros et invalide toutes les pages concernées", async () => {
+    currentUser = { user: { id: "user-2", roleAdmin: true }, discordId: "" };
+    const patch = { pages: { episodes: "/banners/new-episodes.jpg" } };
 
-		const response = await banners.PUT(request("http://test/api/banner-config", patch));
-		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual({ ok: true, banners: patch });
-		expect(writes).toEqual([{ kind: "banners", patch, by: "user-2" }]);
-		expect(revalidated).toContainEqual(["/wiki/episodes", undefined]);
-		expect(revalidated).toContainEqual(["/wiki/episodes/serie/[series]", "page"]);
-		expect(revalidated).toContainEqual(["/actualites", undefined]);
-		expect(revalidated).toContainEqual(["/", "layout"]);
-	});
+    const response = await banners.PUT(request("http://test/api/banner-config", patch));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true, banners: patch });
+    expect(writes).toEqual([{ kind: "banners", patch, by: "user-2" }]);
+    expect(revalidated).toContainEqual(["/wiki/episodes", undefined]);
+    expect(revalidated).toContainEqual(["/wiki/episodes/serie/[series]", "page"]);
+    expect(revalidated).toContainEqual(["/actualites", undefined]);
+    expect(revalidated).toContainEqual(["/", "layout"]);
+  });
 
-	test("accepte le jeton d'administration sans session et laisse une identité d'audit", async () => {
-		const cases = [
-			{ route: home, url: "home-config", patch: { hero: { lede: "token" } }, kind: "home", path: "/" },
-			{ route: banners, url: "banner-config", patch: { pages: { episodes: "/banners/verified-by-token.jpg" } }, kind: "banners", path: "/wiki/episodes" },
-			{ route: theme, url: "theme-config", patch: { colors: { ember: "#123456" } }, kind: "theme", path: "/" },
-			{ route: chronology, url: "chronologie-config", patch: { overrides: {} }, kind: "chronology", path: "/wiki/chronologie" },
-			{ route: canon, url: "canon-config", patch: { version: 1 }, kind: "canon", path: "/wiki/canon" },
-			{ route: launch, url: "wiki-launch", patch: { openKeys: ["wiki"] }, kind: "launch", path: "/" },
-		] as const;
+  test("accepte le jeton d'administration sans session et laisse une identité d'audit", async () => {
+    const cases = [
+      {
+        route: home,
+        url: "home-config",
+        patch: { hero: { lede: "token" } },
+        kind: "home",
+        path: "/",
+      },
+      {
+        route: banners,
+        url: "banner-config",
+        patch: { pages: { episodes: "/banners/verified-by-token.jpg" } },
+        kind: "banners",
+        path: "/wiki/episodes",
+      },
+      {
+        route: theme,
+        url: "theme-config",
+        patch: { colors: { ember: "#123456" } },
+        kind: "theme",
+        path: "/",
+      },
+      {
+        route: chronology,
+        url: "chronologie-config",
+        patch: { overrides: {} },
+        kind: "chronology",
+        path: "/wiki/chronologie",
+      },
+      {
+        route: canon,
+        url: "canon-config",
+        patch: { version: 1 },
+        kind: "canon",
+        path: "/wiki/canon",
+      },
+      {
+        route: launch,
+        url: "wiki-launch",
+        patch: { openKeys: ["wiki"] },
+        kind: "launch",
+        path: "/",
+      },
+    ] as const;
 
-		for (const item of cases) {
-			const response = await item.route.PUT(tokenRequest(`http://test/api/${item.url}`, item.patch));
-			expect(response.status).toBe(200);
-			expect(writes).toContainEqual({ kind: item.kind, patch: item.patch, by: "token-admin" });
-			expect(revalidated.some(([path]) => path === item.path)).toBe(true);
-		}
-	});
+    for (const item of cases) {
+      const response = await item.route.PUT(
+        tokenRequest(`http://test/api/${item.url}`, item.patch),
+      );
+      expect(response.status).toBe(200);
+      expect(writes).toContainEqual({ kind: item.kind, patch: item.patch, by: "token-admin" });
+      expect(revalidated.some(([path]) => path === item.path)).toBe(true);
+    }
+  });
 
-	test("enregistre le thème de site et invalide le layout global", async () => {
-		currentUser = { user: { id: "user-3", roleAdmin: true }, discordId: "discord-3" };
-		const patch = { colors: { ember: "#123456" } };
+  test("enregistre le thème de site et invalide le layout global", async () => {
+    currentUser = { user: { id: "user-3", roleAdmin: true }, discordId: "discord-3" };
+    const patch = { colors: { ember: "#123456" } };
 
-		const response = await theme.PUT(request("http://test/api/theme-config", patch));
-		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual({ ok: true, theme: patch });
-		expect(writes).toEqual([{ kind: "theme", patch, by: "discord-3" }]);
-		expect(revalidated).toEqual([["/", "layout"]]);
-	});
+    const response = await theme.PUT(request("http://test/api/theme-config", patch));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true, theme: patch });
+    expect(writes).toEqual([{ kind: "theme", patch, by: "discord-3" }]);
+    expect(revalidated).toEqual([["/", "layout"]]);
+  });
 });

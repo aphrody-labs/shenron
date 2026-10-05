@@ -31,15 +31,15 @@ export const dynamic = "force-dynamic";
  * épisode porte déjà cette garde ; elle manquait de ce côté.
  */
 function lienTelechargeable(valeur: string | null | undefined): string | null {
-	if (!valeur || !URL.canParse(valeur)) return null;
-	const u = new URL(valeur);
-	return u.protocol === "http:" || u.protocol === "https:" ? u.toString() : null;
+  if (!valeur || !URL.canParse(valeur)) return null;
+  const u = new URL(valeur);
+  return u.protocol === "http:" || u.protocol === "https:" ? u.toString() : null;
 }
 
 /** Extrait l'identifiant Archive.org d'une URL `embed`/`download`. `null` sinon. */
 function archiveIdentifier(embedUrl: string): string | null {
-	const m = /archive\.org\/(?:embed|download)\/([^/?#]+)/i.exec(embedUrl);
-	return m ? m[1] : null;
+  const m = /archive\.org\/(?:embed|download)\/([^/?#]+)/i.exec(embedUrl);
+  return m ? m[1] : null;
 }
 
 /**
@@ -49,81 +49,81 @@ function archiveIdentifier(embedUrl: string): string | null {
  * l'item n'a aucun MP4 ou en cas d'erreur réseau (dégradation propre).
  */
 async function resolveArchiveMp4(identifier: string): Promise<string | null> {
-	try {
-		const res = await fetch(`https://archive.org/metadata/${encodeURIComponent(identifier)}`, {
-			// Sans borne, une lenteur d'Archive.org fait attendre le visiteur
-			// indéfiniment sur un clic « Télécharger » : mieux vaut retomber sur le
-			// résolveur du bot que laisser la requête Next pendante.
-			signal: AbortSignal.timeout(8_000),
-		});
-		if (!res.ok) return null;
-		const meta = (await res.json()) as { files?: { name?: string; size?: string }[] };
-		const files = (meta.files ?? []).filter((f) => /\.mp4$/i.test(f.name ?? ""));
-		if (files.length === 0) return null;
-		const largest = files.toSorted((a, b) => Number(b.size ?? 0) - Number(a.size ?? 0))[0];
-		if (!largest?.name) return null;
-		return `https://archive.org/download/${encodeURIComponent(identifier)}/${encodeURIComponent(largest.name)}`;
-	} catch {
-		return null;
-	}
+  try {
+    const res = await fetch(`https://archive.org/metadata/${encodeURIComponent(identifier)}`, {
+      // Sans borne, une lenteur d'Archive.org fait attendre le visiteur
+      // indéfiniment sur un clic « Télécharger » : mieux vaut retomber sur le
+      // résolveur du bot que laisser la requête Next pendante.
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!res.ok) return null;
+    const meta = (await res.json()) as { files?: { name?: string; size?: string }[] };
+    const files = (meta.files ?? []).filter((f) => /\.mp4$/i.test(f.name ?? ""));
+    if (files.length === 0) return null;
+    const largest = files.toSorted((a, b) => Number(b.size ?? 0) - Number(a.size ?? 0))[0];
+    if (!largest?.name) return null;
+    return `https://archive.org/download/${encodeURIComponent(identifier)}/${encodeURIComponent(largest.name)}`;
+  } catch {
+    return null;
+  }
 }
 
 /** URL téléchargeable dérivée des lecteurs (`players`), sinon `null`. */
 async function resolveDownloadFromPlayers(
-	players: { provider: string; embedUrl: string }[] | null | undefined
+  players: { provider: string; embedUrl: string }[] | null | undefined,
 ): Promise<string | null> {
-	// Embed déjà direct (MP4/HLS) : utilisable tel quel.
-	for (const p of players ?? []) {
-		if (/\.(mp4|m3u8)(\?|$)/i.test(p.embedUrl)) return p.embedUrl;
-	}
-	// Archive.org : MP4 direct dérivé de l'API metadata.
-	for (const p of players ?? []) {
-		const identifier =
-			p.provider === "archive" || /archive\.org\/(?:embed|download)\//i.test(p.embedUrl)
-				? archiveIdentifier(p.embedUrl)
-				: null;
-		if (identifier) {
-			const mp4 = await resolveArchiveMp4(identifier);
-			if (mp4) return mp4;
-		}
-	}
-	return null;
+  // Embed déjà direct (MP4/HLS) : utilisable tel quel.
+  for (const p of players ?? []) {
+    if (/\.(mp4|m3u8)(\?|$)/i.test(p.embedUrl)) return p.embedUrl;
+  }
+  // Archive.org : MP4 direct dérivé de l'API metadata.
+  for (const p of players ?? []) {
+    const identifier =
+      p.provider === "archive" || /archive\.org\/(?:embed|download)\//i.test(p.embedUrl)
+        ? archiveIdentifier(p.embedUrl)
+        : null;
+    if (identifier) {
+      const mp4 = await resolveArchiveMp4(identifier);
+      if (mp4) return mp4;
+    }
+  }
+  return null;
 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-	const { id } = await params;
-	if (!/^\d+$/.test(id)) {
-		return new Response("Film introuvable.", { status: 404 });
-	}
+  const { id } = await params;
+  if (!/^\d+$/.test(id)) {
+    return new Response("Film introuvable.", { status: 404 });
+  }
 
-	const m = await dbUniverse.movie(id);
-	if (!m) {
-		return new Response("Film introuvable.", { status: 404 });
-	}
+  const m = await dbUniverse.movie(id);
+  if (!m) {
+    return new Response("Film introuvable.", { status: 404 });
+  }
 
-	const me = await getCurrentUser();
-	if (!me?.user) {
-		// Location relatif (résolu contre l'URL publique côté navigateur).
-		const back = encodeURIComponent(`/wiki/films/${m.slug}`);
-		return new Response(null, {
-			status: 302,
-			headers: { Location: `/signin?callbackURL=${back}` },
-		});
-	}
+  const me = await getCurrentUser();
+  if (!me?.user) {
+    // Location relatif (résolu contre l'URL publique côté navigateur).
+    const back = encodeURIComponent(`/wiki/films/${m.slug}`);
+    return new Response(null, {
+      status: 302,
+      headers: { Location: `/signin?callbackURL=${back}` },
+    });
+  }
 
-	// 1) MP4 direct stocké. Garde `lienTelechargeable` : une valeur admin non
-	// absolue ferait throw `Response.redirect` → 500, et un schéma exotique
-	// (`javascript:`, `data:`) ferait de la fiche une redirection ouverte. Dans
-	// les deux cas on retombe sur le résolveur du bot.
-	const stocke = lienTelechargeable(m.video_url);
-	if (stocke) {
-		return Response.redirect(stocke, 302);
-	}
-	// 2) Source téléchargeable dérivée des lecteurs (Archive.org MP4 / embed direct).
-	const derived = lienTelechargeable(await resolveDownloadFromPlayers(m.players));
-	if (derived) {
-		return Response.redirect(derived, 302);
-	}
-	// 3) Repli : le bot résout une source stockée (stream_url HLS). 404 propre sinon.
-	return Response.redirect(apiUrl(`api/hls/movie-${id}/download`), 302);
+  // 1) MP4 direct stocké. Garde `lienTelechargeable` : une valeur admin non
+  // absolue ferait throw `Response.redirect` → 500, et un schéma exotique
+  // (`javascript:`, `data:`) ferait de la fiche une redirection ouverte. Dans
+  // les deux cas on retombe sur le résolveur du bot.
+  const stocke = lienTelechargeable(m.video_url);
+  if (stocke) {
+    return Response.redirect(stocke, 302);
+  }
+  // 2) Source téléchargeable dérivée des lecteurs (Archive.org MP4 / embed direct).
+  const derived = lienTelechargeable(await resolveDownloadFromPlayers(m.players));
+  if (derived) {
+    return Response.redirect(derived, 302);
+  }
+  // 3) Repli : le bot résout une source stockée (stream_url HLS). 404 propre sinon.
+  return Response.redirect(apiUrl(`api/hls/movie-${id}/download`), 302);
 }

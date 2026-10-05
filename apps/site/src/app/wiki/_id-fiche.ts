@@ -21,7 +21,7 @@
  * `String(row.id)`, donc celle des liens du site et de `generateStaticParams`.
  */
 export function idDeFiche(brut: string): number | null {
-	if (!/^(0|[1-9][0-9]*)$/.test(brut)) return null;
-	const n = Number(brut);
-	return Number.isSafeInteger(n) ? n : null;
+  if (!/^(0|[1-9][0-9]*)$/.test(brut)) return null;
+  const n = Number(brut);
+  return Number.isSafeInteger(n) ? n : null;
 }

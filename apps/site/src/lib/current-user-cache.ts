@@ -3,9 +3,9 @@ import type { users } from "@/db/schema";
 export type SiteUser = typeof users.$inferSelect;
 
 export type CurrentUser = {
-	sessionUserId: string;
-	discordId: string;
-	user: SiteUser | null;
+  sessionUserId: string;
+  discordId: string;
+  user: SiteUser | null;
 };
 
 const resolvedUsers = new Map<string, { at: number; value: CurrentUser }>();
@@ -21,37 +21,37 @@ const MAX_ENTRIES = 2_000;
 
 /** Purge les entrées périmées, puis évince les plus anciennes si besoin. */
 function elague(now: number): void {
-	for (const [key, entry] of resolvedUsers) {
-		if (now - entry.at >= TTL) resolvedUsers.delete(key);
-	}
-	// L'ordre d'itération d'une Map est celui de l'insertion : la première clé
-	// est la plus ancienne écriture.
-	while (resolvedUsers.size >= MAX_ENTRIES) {
-		const plusAncienne = resolvedUsers.keys().next().value;
-		if (plusAncienne === undefined) break;
-		resolvedUsers.delete(plusAncienne);
-	}
+  for (const [key, entry] of resolvedUsers) {
+    if (now - entry.at >= TTL) resolvedUsers.delete(key);
+  }
+  // L'ordre d'itération d'une Map est celui de l'insertion : la première clé
+  // est la plus ancienne écriture.
+  while (resolvedUsers.size >= MAX_ENTRIES) {
+    const plusAncienne = resolvedUsers.keys().next().value;
+    if (plusAncienne === undefined) break;
+    resolvedUsers.delete(plusAncienne);
+  }
 }
 
 export function readCachedCurrentUser(sessionUserId: string): CurrentUser | null {
-	const cached = resolvedUsers.get(sessionUserId);
-	if (!cached) return null;
-	if (Date.now() - cached.at >= TTL) {
-		resolvedUsers.delete(sessionUserId);
-		return null;
-	}
-	return cached.value;
+  const cached = resolvedUsers.get(sessionUserId);
+  if (!cached) return null;
+  if (Date.now() - cached.at >= TTL) {
+    resolvedUsers.delete(sessionUserId);
+    return null;
+  }
+  return cached.value;
 }
 
 export function cacheCurrentUser(sessionUserId: string, value: CurrentUser): void {
-	const now = Date.now();
-	if (resolvedUsers.size >= MAX_ENTRIES) elague(now);
-	// Réinsérer après suppression remet la clé en fin d'ordre d'insertion, ce qui
-	// garde l'éviction cohérente pour une session qui se rafraîchit.
-	resolvedUsers.delete(sessionUserId);
-	resolvedUsers.set(sessionUserId, { at: now, value });
+  const now = Date.now();
+  if (resolvedUsers.size >= MAX_ENTRIES) elague(now);
+  // Réinsérer après suppression remet la clé en fin d'ordre d'insertion, ce qui
+  // garde l'éviction cohérente pour une session qui se rafraîchit.
+  resolvedUsers.delete(sessionUserId);
+  resolvedUsers.set(sessionUserId, { at: now, value });
 }
 
 export function invalidateCurrentUser(sessionUserId: string): void {
-	resolvedUsers.delete(sessionUserId);
+  resolvedUsers.delete(sessionUserId);
 }

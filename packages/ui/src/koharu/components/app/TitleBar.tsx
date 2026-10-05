@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { openUrl } from '@aphrody/plugin-opener'
-import { FilePlus2, FolderOpen, LoaderCircle, Settings } from 'lucide-react'
-import { useState, type ComponentProps } from 'react'
-import { useTranslation } from 'react-i18next'
+import { openUrl } from "@aphrody/plugin-opener";
+import { FilePlus2, FolderOpen, LoaderCircle, Settings } from "lucide-react";
+import { useState, type ComponentProps } from "react";
+import { useTranslation } from "react-i18next";
 
-import { AboutDialog } from './AboutDialog'
-import { useMacOS, WindowControls } from './WindowChrome'
-import { call } from '../../lib/backend'
-import { selectableLayer } from '../../lib/geometry'
+import { AboutDialog } from "./AboutDialog";
+import { useMacOS, WindowControls } from "./WindowChrome";
+import { call } from "../../lib/backend";
+import { selectableLayer } from "../../lib/geometry";
 import {
   pageKey,
   pagesKey,
@@ -19,10 +19,10 @@ import {
   usePage,
   usePages,
   useProject,
-} from '../../lib/queries'
-import { useKoharuStore } from '../../lib/store'
-import { titleBarMenuSections } from '../../navigation'
-import { commands, type Operation, type Scope, type Stage } from '@shenron/koharu/protocol'
+} from "../../lib/queries";
+import { useKoharuStore } from "../../lib/store";
+import { titleBarMenuSections } from "../../navigation";
+import { commands, type Operation, type Scope, type Stage } from "@shenron/koharu/protocol";
 import {
   Menubar,
   MenubarContent as UiMenubarContent,
@@ -34,56 +34,56 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger as UiMenubarTrigger,
-} from '../../internal/components/menubar'
-import { cn } from '../../internal/lib/utils'
+} from "../../internal/components/menubar";
+import { cn } from "../../internal/lib/utils";
 
 export function TitleBar({ windowControls = true }: { windowControls?: boolean } = {}) {
-  const { t } = useTranslation()
-  const [aboutOpen, setAboutOpen] = useState(false)
-  const macOS = useMacOS()
-  const project = useProject().data
-  const pagesQuery = usePages(Boolean(project))
-  const pageQuery = usePage(Boolean(project))
-  const pages = project ? (pagesQuery.data ?? []) : []
-  const page = project ? (pageQuery.data ?? null) : null
-  const selectedPages = useKoharuStore((state) => state.selectedPages)
-  const selectedLayers = useKoharuStore((state) => state.selectedLayers)
-  const selectLayers = useKoharuStore((state) => state.selectLayers)
-  const setSettingsOpen = useKoharuStore((state) => state.setSettingsOpen)
-  const requestCanvasFit = useKoharuStore((state) => state.requestCanvasFit)
-  const { importPages, importing } = useImportPages()
+  const { t } = useTranslation();
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const macOS = useMacOS();
+  const project = useProject().data;
+  const pagesQuery = usePages(Boolean(project));
+  const pageQuery = usePage(Boolean(project));
+  const pages = project ? (pagesQuery.data ?? []) : [];
+  const page = project ? (pageQuery.data ?? null) : null;
+  const selectedPages = useKoharuStore((state) => state.selectedPages);
+  const selectedLayers = useKoharuStore((state) => state.selectedLayers);
+  const selectLayers = useKoharuStore((state) => state.selectLayers);
+  const setSettingsOpen = useKoharuStore((state) => state.setSettingsOpen);
+  const requestCanvasFit = useKoharuStore((state) => state.requestCanvasFit);
+  const { importPages, importing } = useImportPages();
   const { run: exportProject, busy: exporting } = useCommand(
-    ['export-project'],
+    ["export-project"],
     commands.export,
-    'menu.export',
-  )
+    "menu.export",
+  );
 
-  const run = (scope: Scope, operation: Operation = { operation: 'full' }) =>
-    void call(commands.process, scope, operation).catch(() => undefined)
+  const run = (scope: Scope, operation: Operation = { operation: "full" }) =>
+    void call(commands.process, scope, operation).catch(() => undefined);
 
-  const closeProject = () => void call(commands.closeProject).catch(() => undefined)
+  const closeProject = () => void call(commands.closeProject).catch(() => undefined);
 
   return (
     <>
       <header
-        data-tauri-drag-region='deep'
-        className='relative flex h-10 shrink-0 items-center bg-[var(--surface-titlebar)] text-[12px]'
+        data-tauri-drag-region="deep"
+        className="relative flex h-10 shrink-0 items-center bg-[var(--surface-titlebar)] text-[12px]"
       >
         {macOS ? (
-          <div className='w-[84px] shrink-0' />
+          <div className="w-[84px] shrink-0" />
         ) : (
-          <div className='relative z-10 flex h-full w-10 shrink-0 items-center justify-center rounded-br-lg'>
+          <div className="relative z-10 flex h-full w-10 shrink-0 items-center justify-center rounded-br-lg">
             <img
-              className='pointer-events-none'
-              src='/icon.png'
-              alt='Koharu'
+              className="pointer-events-none"
+              src="/icon.png"
+              alt="Koharu"
               width={17}
               height={17}
               draggable={false}
             />
           </div>
         )}
-        <Menubar className='relative z-10 h-full shrink-0 gap-0 border-0 bg-transparent p-0 shadow-none'>
+        <Menubar className="relative z-10 h-full shrink-0 gap-0 border-0 bg-transparent p-0 shadow-none">
           <MenubarMenu>
             <MenubarTrigger>{t(titleBarMenuSections.file)}</MenubarTrigger>
             <MenubarContent>
@@ -91,19 +91,19 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
                 <MenubarSubTrigger
                   disabled={!project || importing}
                   aria-busy={importing}
-                  className='min-h-8 gap-1.5 px-2 py-1 text-xs'
+                  className="min-h-8 gap-1.5 px-2 py-1 text-xs"
                 >
-                  {importing && <LoaderCircle className='animate-spin' aria-hidden='true' />}
-                  {importing ? t('navigator.importing') : t('menu.import')}
+                  {importing && <LoaderCircle className="animate-spin" aria-hidden="true" />}
+                  {importing ? t("navigator.importing") : t("menu.import")}
                 </MenubarSubTrigger>
-                <MenubarSubContent className='min-w-40 p-1'>
-                  <MenubarItem disabled={importing} onClick={() => importPages('files')}>
+                <MenubarSubContent className="min-w-40 p-1">
+                  <MenubarItem disabled={importing} onClick={() => importPages("files")}>
                     <FilePlus2 />
-                    {t('navigator.importFiles')}
+                    {t("navigator.importFiles")}
                   </MenubarItem>
-                  <MenubarItem disabled={importing} onClick={() => importPages('folder')}>
+                  <MenubarItem disabled={importing} onClick={() => importPages("folder")}>
                     <FolderOpen />
-                    {t('navigator.importFolder')}
+                    {t("navigator.importFolder")}
                   </MenubarItem>
                 </MenubarSubContent>
               </MenubarSub>
@@ -111,13 +111,13 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
                 <MenubarSubTrigger
                   disabled={!project || pages.length === 0 || exporting}
                   aria-busy={exporting}
-                  className='min-h-8 gap-1.5 px-2 py-1 text-xs'
+                  className="min-h-8 gap-1.5 px-2 py-1 text-xs"
                 >
-                  {exporting && <LoaderCircle className='animate-spin' aria-hidden='true' />}
-                  {t('menu.export')}
+                  {exporting && <LoaderCircle className="animate-spin" aria-hidden="true" />}
+                  {t("menu.export")}
                 </MenubarSubTrigger>
-                <MenubarSubContent className='min-w-40 p-1'>
-                  {(['png', 'psd', 'cbz'] as const).map((format) => (
+                <MenubarSubContent className="min-w-40 p-1">
+                  {(["png", "psd", "cbz"] as const).map((format) => (
                     <MenubarItem
                       key={format}
                       disabled={exporting}
@@ -130,12 +130,12 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
               </MenubarSub>
               <MenubarSeparator />
               <MenubarItem disabled={!project} onClick={closeProject}>
-                {t('menu.closeProject')}
+                {t("menu.closeProject")}
               </MenubarItem>
               <MenubarSeparator />
               <MenubarItem onClick={() => setSettingsOpen(true)}>
                 <Settings />
-                {t('menu.settings')}
+                {t("menu.settings")}
               </MenubarItem>
             </MenubarContent>
           </MenubarMenu>
@@ -151,7 +151,7 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
                     .catch(() => undefined)
                 }
               >
-                {t('menu.undo')}
+                {t("menu.undo")}
                 <MenubarShortcut>Ctrl+Z</MenubarShortcut>
               </MenubarItem>
               <MenubarItem
@@ -162,7 +162,7 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
                     .catch(() => undefined)
                 }
               >
-                {t('menu.redo')}
+                {t("menu.redo")}
                 <MenubarShortcut>Ctrl+Shift+Z</MenubarShortcut>
               </MenubarItem>
               <MenubarSeparator />
@@ -172,19 +172,19 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
                   selectLayers(page?.layers.filter(selectableLayer).map((layer) => layer.id) ?? [])
                 }
               >
-                {t('menu.selectAllLayers')}
+                {t("menu.selectAllLayers")}
                 <MenubarShortcut>Ctrl+A</MenubarShortcut>
               </MenubarItem>
               <MenubarItem
                 disabled={selectedLayers.length === 0}
-                variant='destructive'
+                variant="destructive"
                 onClick={() =>
                   void call(commands.deleteLayers, selectedLayers)
                     .then(() => refresh(projectKey, pagesKey, pageKey))
                     .catch(() => undefined)
                 }
               >
-                {t('menu.delete')}
+                {t("menu.delete")}
                 <MenubarShortcut>Del</MenubarShortcut>
               </MenubarItem>
             </MenubarContent>
@@ -195,35 +195,35 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
             <MenubarContent>
               <MenubarItem
                 disabled={!project || pages.length === 0}
-                onClick={() => run({ scope: 'project' })}
+                onClick={() => run({ scope: "project" })}
               >
-                {t('menu.processProject')}
+                {t("menu.processProject")}
               </MenubarItem>
               <MenubarItem
                 disabled={selectedPages.length === 0}
-                onClick={() => run({ scope: 'pages', value: selectedPages })}
+                onClick={() => run({ scope: "pages", value: selectedPages })}
               >
-                {t('menu.processPages')}
+                {t("menu.processPages")}
               </MenubarItem>
               <MenubarItem
                 disabled={selectedLayers.length === 0}
                 onClick={() =>
                   run(
-                    { scope: 'entities', value: selectedLayers },
-                    { operation: 'stages', stages: ['ocr', 'translation'] },
+                    { scope: "entities", value: selectedLayers },
+                    { operation: "stages", stages: ["ocr", "translation"] },
                   )
                 }
               >
-                {t('menu.processLayers')}
+                {t("menu.processLayers")}
               </MenubarItem>
               <MenubarSeparator />
-              {(['detection', 'ocr', 'translation', 'inpainting'] as Stage[]).map((stage) => (
+              {(["detection", "ocr", "translation", "inpainting"] as Stage[]).map((stage) => (
                 <MenubarItem
                   key={stage}
                   disabled={!project || pages.length === 0}
-                  onClick={() => run({ scope: 'project' }, { operation: 'through', stage })}
+                  onClick={() => run({ scope: "project" }, { operation: "through", stage })}
                 >
-                  {t('menu.runPhase', {
+                  {t("menu.runPhase", {
                     phase: t(`phase.${stage}`),
                   })}
                 </MenubarItem>
@@ -235,7 +235,7 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
             <MenubarTrigger>{t(titleBarMenuSections.view)}</MenubarTrigger>
             <MenubarContent>
               <MenubarItem disabled={!page} onClick={requestCanvasFit}>
-                {t('menu.fit')}
+                {t("menu.fit")}
               </MenubarItem>
             </MenubarContent>
           </MenubarMenu>
@@ -244,31 +244,31 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
             <MenubarTrigger>{t(titleBarMenuSections.help)}</MenubarTrigger>
             <MenubarContent>
               <MenubarItem
-                onClick={() => void openUrl('https://discord.gg/mHvHkxGnUY').catch(() => undefined)}
+                onClick={() => void openUrl("https://discord.gg/mHvHkxGnUY").catch(() => undefined)}
               >
-                {t('menu.discord')}
+                {t("menu.discord")}
               </MenubarItem>
               <MenubarItem
                 onClick={() =>
-                  void openUrl('https://github.com/koharu-rs/koharu').catch(() => undefined)
+                  void openUrl("https://github.com/koharu-rs/koharu").catch(() => undefined)
                 }
               >
-                {t('menu.github')}
+                {t("menu.github")}
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem onClick={() => setAboutOpen(true)}>{t('menu.about')}</MenubarItem>
+              <MenubarItem onClick={() => setAboutOpen(true)}>{t("menu.about")}</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
 
-        <div className='min-w-0 flex-1' />
-        <div className='pointer-events-none absolute inset-y-0 left-1/2 flex max-w-[40vw] min-w-16 -translate-x-1/2 items-center justify-center px-3 text-[11px] text-muted-foreground select-none'>
+        <div className="min-w-0 flex-1" />
+        <div className="pointer-events-none absolute inset-y-0 left-1/2 flex max-w-[40vw] min-w-16 -translate-x-1/2 items-center justify-center px-3 text-[11px] text-muted-foreground select-none">
           {project ? (
-            <span className='truncate'>
-              <span className='font-medium text-foreground'>{project.name}</span>
+            <span className="truncate">
+              <span className="font-medium text-foreground">{project.name}</span>
               {page && (
                 <>
-                  <span className='mx-2'>/</span>
+                  <span className="mx-2">/</span>
                   <span>{page.label}</span>
                 </>
               )}
@@ -282,23 +282,23 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
       </header>
       <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
     </>
-  )
+  );
 }
 
 function MenubarTrigger({ className, ...props }: ComponentProps<typeof UiMenubarTrigger>) {
   return (
     <UiMenubarTrigger
       className={cn(
-        'h-6 px-1.5 text-[11px] text-muted-foreground transition-colors hover:bg-primary/10 hover:text-muted-foreground aria-expanded:bg-primary/10 aria-expanded:text-muted-foreground',
+        "h-6 px-1.5 text-[11px] text-muted-foreground transition-colors hover:bg-primary/10 hover:text-muted-foreground aria-expanded:bg-primary/10 aria-expanded:text-muted-foreground",
         className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function MenubarContent({ className, ...props }: ComponentProps<typeof UiMenubarContent>) {
-  return <UiMenubarContent className={cn('min-w-44 p-1', className)} {...props} />
+  return <UiMenubarContent className={cn("min-w-44 p-1", className)} {...props} />;
 }
 
 function MenubarItem({ className, ...props }: ComponentProps<typeof UiMenubarItem>) {
@@ -310,13 +310,13 @@ function MenubarItem({ className, ...props }: ComponentProps<typeof UiMenubarIte
       )}
       {...props}
     />
-  )
+  );
 }
 
 function MenubarShortcut({ className, ...props }: ComponentProps<typeof UiMenubarShortcut>) {
-  return <UiMenubarShortcut className={cn('text-[11px]', className)} {...props} />
+  return <UiMenubarShortcut className={cn("text-[11px]", className)} {...props} />;
 }
 
 function MenubarSeparator({ className, ...props }: ComponentProps<typeof UiMenubarSeparator>) {
-  return <UiMenubarSeparator className={cn('my-0.5', className)} {...props} />
+  return <UiMenubarSeparator className={cn("my-0.5", className)} {...props} />;
 }

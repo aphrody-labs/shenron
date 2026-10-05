@@ -303,7 +303,8 @@ describe("handles()", () => {
 
   test("without any port nothing is claimed, meta routes included; requests → historical 404", async () => {
     const full = Object.keys(
-      (createShenronApi(ports(), { service: "shenron-bot" }).openApiDocument() as { paths: object }).paths,
+      (createShenronApi(ports(), { service: "shenron-bot" }).openApiDocument() as { paths: object })
+        .paths,
     );
     for (const wiki of [undefined, null]) {
       const api = createShenronApi(ports({ wiki }), { service: "shenron-bot" });

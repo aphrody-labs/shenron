@@ -40,25 +40,25 @@ import { encode } from "modern-gif";
 /** Une frame à encoder. `data` peut être un canvas, une ImageBitmap, des
  *  pixels (Uint8ClampedArray RGBA via BufferSource) ou une URL d'image. */
 interface GifFrameInput {
-	/** Source de pixels du frame. */
-	data: CanvasImageSource | BufferSource | string;
-	/** Durée d'affichage du frame en millisecondes (défaut: 100). */
-	delay?: number;
+  /** Source de pixels du frame. */
+  data: CanvasImageSource | BufferSource | string;
+  /** Durée d'affichage du frame en millisecondes (défaut: 100). */
+  delay?: number;
 }
 
 export interface EncodeGifOptions {
-	/** Largeur du GIF en pixels. */
-	width: number;
-	/** Hauteur du GIF en pixels. */
-	height: number;
-	/** Frames dans l'ordre de lecture. */
-	frames: GifFrameInput[];
-	/** Nombre max de couleurs de la palette (2-255, défaut: 256 → 255). */
-	maxColors?: number;
-	/** Méthode de dithering pour des dégradés plus doux. */
-	dither?: "floyd-steinberg" | "atkinson" | "stucki";
-	/** 0 = boucle infinie (défaut), N = nombre de boucles. */
-	loopCount?: number;
+  /** Largeur du GIF en pixels. */
+  width: number;
+  /** Hauteur du GIF en pixels. */
+  height: number;
+  /** Frames dans l'ordre de lecture. */
+  frames: GifFrameInput[];
+  /** Nombre max de couleurs de la palette (2-255, défaut: 256 → 255). */
+  maxColors?: number;
+  /** Méthode de dithering pour des dégradés plus doux. */
+  dither?: "floyd-steinberg" | "atkinson" | "stucki";
+  /** 0 = boucle infinie (défaut), N = nombre de boucles. */
+  loopCount?: number;
 }
 
 /**
@@ -66,26 +66,25 @@ export interface EncodeGifOptions {
  * Lève si appelé hors navigateur ou sans frame.
  */
 export async function encodeFramesToGif(options: EncodeGifOptions): Promise<Blob> {
-	if (typeof window === "undefined") {
-		throw new Error("encodeFramesToGif() est browser-only (worker + canvas).");
-	}
-	const { width, height, frames, maxColors, dither, loopCount } = options;
-	if (frames.length === 0) {
-		throw new Error("encodeFramesToGif(): au moins un frame est requis.");
-	}
+  if (typeof window === "undefined") {
+    throw new Error("encodeFramesToGif() est browser-only (worker + canvas).");
+  }
+  const { width, height, frames, maxColors, dither, loopCount } = options;
+  if (frames.length === 0) {
+    throw new Error("encodeFramesToGif(): au moins un frame est requis.");
+  }
 
-	return encode({
-		format: "blob",
-		width,
-		height,
-		maxColors,
-		dither,
-		looped: true,
-		loopCount: loopCount ?? 0,
-		frames: frames.map((f) => ({
-			data: f.data,
-			delay: f.delay ?? 100,
-		})),
-	});
+  return encode({
+    format: "blob",
+    width,
+    height,
+    maxColors,
+    dither,
+    looped: true,
+    loopCount: loopCount ?? 0,
+    frames: frames.map((f) => ({
+      data: f.data,
+      delay: f.delay ?? 100,
+    })),
+  });
 }
-

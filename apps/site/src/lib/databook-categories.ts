@@ -7,30 +7,29 @@
  * automatiquement de la catégorie à l'écriture.
  */
 export const DATABOOK_CATEGORIES = [
-	"Databook",
-	"Interview",
-	"Art Book",
-	"Saikyō Jump",
-	"V-Jump",
-	"Weekly Shonen Jump",
-	"Pamphlet & Fair",
-	"Autre",
+  "Databook",
+  "Interview",
+  "Art Book",
+  "Saikyō Jump",
+  "V-Jump",
+  "Weekly Shonen Jump",
+  "Pamphlet & Fair",
+  "Autre",
 ] as const;
 
 export type DatabookCategory = (typeof DATABOOK_CATEGORIES)[number];
 
-
 export type DatabookKind = "databook" | "interview" | "artbook" | "guidebook";
 
 export function resolveDatabookCategory(c: string | null | undefined): DatabookCategory {
-	const t = (c ?? "").trim();
-	// Alias historique : la catégorie s'appelait « Guidebook » avant d'être
-	// renommée en « Saikyō Jump » (elle ne contient que ce magazine).
-	if (t === "Guidebook") return "Saikyō Jump";
-	if ((DATABOOK_CATEGORIES as readonly string[]).includes(t)) {
-		return t as DatabookCategory;
-	}
-	return "Autre";
+  const t = (c ?? "").trim();
+  // Alias historique : la catégorie s'appelait « Guidebook » avant d'être
+  // renommée en « Saikyō Jump » (elle ne contient que ce magazine).
+  if (t === "Guidebook") return "Saikyō Jump";
+  if ((DATABOOK_CATEGORIES as readonly string[]).includes(t)) {
+    return t as DatabookCategory;
+  }
+  return "Autre";
 }
 
 /**
@@ -38,15 +37,14 @@ export function resolveDatabookCategory(c: string | null | undefined): DatabookC
  * Les catégories éditoriales (V-Jump, …) restent rattachées à `databook`.
  */
 export function kindFromCategory(c: string | null | undefined): DatabookKind {
-	switch (resolveDatabookCategory(c)) {
-		case "Interview":
-			return "interview";
-		case "Art Book":
-			return "artbook";
-		case "Saikyō Jump":
-			return "guidebook";
-		default:
-			return "databook";
-	}
+  switch (resolveDatabookCategory(c)) {
+    case "Interview":
+      return "interview";
+    case "Art Book":
+      return "artbook";
+    case "Saikyō Jump":
+      return "guidebook";
+    default:
+      return "databook";
+  }
 }
-

@@ -19,17 +19,17 @@ import { tempPath } from "@aphrody/paths";
 
 export const SOCKET = Bun.env.A2A_SOCKET ?? tempPath("dbfr-a2a.sock");
 export const COORD_DIR =
-	Bun.env.COORD_DIR ?? `${process.cwd().replace(/\/apps\/(shenron\/)?bot\/?$/, "")}/.coord`;
+  Bun.env.COORD_DIR ?? `${process.cwd().replace(/\/apps\/(shenron\/)?bot\/?$/, "")}/.coord`;
 
 export function brokerArgs(socket: string = SOCKET, coordDir: string = COORD_DIR): string[] {
-	return ["a2a", "serve", "--unix", socket, "--coord-dir", coordDir, "--no-tcp"];
+  return ["a2a", "serve", "--unix", socket, "--coord-dir", coordDir, "--no-tcp"];
 }
 
 if (import.meta.main) {
-	const bin = Bun.env.APHRODY_BIN ?? "aphrody";
-	const child = Bun.spawn([bin, ...brokerArgs()], { stdio: ["inherit", "inherit", "inherit"] });
-	for (const signal of ["SIGINT", "SIGTERM"] as const) {
-		process.on(signal, () => child.kill(signal));
-	}
-	process.exit(await child.exited);
+  const bin = Bun.env.APHRODY_BIN ?? "aphrody";
+  const child = Bun.spawn([bin, ...brokerArgs()], { stdio: ["inherit", "inherit", "inherit"] });
+  for (const signal of ["SIGINT", "SIGTERM"] as const) {
+    process.on(signal, () => child.kill(signal));
+  }
+  process.exit(await child.exited);
 }

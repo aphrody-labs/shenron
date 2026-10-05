@@ -17,26 +17,26 @@ export { sectionAccent } from "@/lib/wiki-section-accents";
 import { sectionAccent, type SectionAccent } from "@/lib/wiki-section-accents";
 
 export interface ArticleSection {
-	/** Slug unique de la section (clé React + pilule + ancre). */
-	key: string;
-	/** Libellé affiché (titre H2 d'origine). */
-	label: string;
-	/** Corps markdown de la section, titre H2 retiré (rendu comme heading à part). */
-	body: string;
-	accent: SectionAccent;
+  /** Slug unique de la section (clé React + pilule + ancre). */
+  key: string;
+  /** Libellé affiché (titre H2 d'origine). */
+  label: string;
+  /** Corps markdown de la section, titre H2 retiré (rendu comme heading à part). */
+  body: string;
+  accent: SectionAccent;
 }
 
 /** Slug ASCII stable depuis un libellé (accents retirés, non-alphanum → tiret). */
 export function sectionSlug(label: string): string {
-	return (
-		label
-			.normalize("NFD")
-			.replace(/[̀-ͯ]/g, "")
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, "-")
-			.replace(/^-+|-+$/g, "")
-			.slice(0, 48) || "section"
-	);
+  return (
+    label
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 48) || "section"
+  );
 }
 
 /**
@@ -46,71 +46,71 @@ export function sectionSlug(label: string): string {
  * aucun H2, une unique section (`fallbackLabel`) porte tout l'article.
  */
 export function splitArticleSections(
-	article: string | null | undefined,
-	fallbackLabel = "Histoire"
+  article: string | null | undefined,
+  fallbackLabel = "Histoire",
 ): ArticleSection[] {
-	const src = (article ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-	if (!src.trim()) return [];
+  const src = (article ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  if (!src.trim()) return [];
 
-	const lines = src.split("\n");
-	let inFence = false;
-	let fenceChar = "";
-	const preamble: string[] = [];
-	const blocks: Array<{ label: string; lines: string[] }> = [];
-	let current: { label: string; lines: string[] } | null = null;
+  const lines = src.split("\n");
+  let inFence = false;
+  let fenceChar = "";
+  const preamble: string[] = [];
+  const blocks: Array<{ label: string; lines: string[] }> = [];
+  let current: { label: string; lines: string[] } | null = null;
 
-	for (const line of lines) {
-		const fence = /^\s*(`{3,}|~{3,})/.exec(line);
-		if (fence) {
-			const ch = fence[1][0];
-			if (!inFence) {
-				inFence = true;
-				fenceChar = ch;
-			} else if (ch === fenceChar) {
-				inFence = false;
-				fenceChar = "";
-			}
-		}
+  for (const line of lines) {
+    const fence = /^\s*(`{3,}|~{3,})/.exec(line);
+    if (fence) {
+      const ch = fence[1][0];
+      if (!inFence) {
+        inFence = true;
+        fenceChar = ch;
+      } else if (ch === fenceChar) {
+        inFence = false;
+        fenceChar = "";
+      }
+    }
 
-		// H2 = exactement `## ` (pas `#`, pas `###`). Trailing `#` optionnels tolérés.
-		const h2 = !inFence ? /^##[ \t]+(.+?)[ \t]*#*[ \t]*$/.exec(line) : null;
-		if (h2) {
-			current = { label: h2[1].trim(), lines: [] };
-			blocks.push(current);
-		} else if (current) {
-			current.lines.push(line);
-		} else {
-			preamble.push(line);
-		}
-	}
+    // H2 = exactement `## ` (pas `#`, pas `###`). Trailing `#` optionnels tolérés.
+    const h2 = !inFence ? /^##[ \t]+(.+?)[ \t]*#*[ \t]*$/.exec(line) : null;
+    if (h2) {
+      current = { label: h2[1].trim(), lines: [] };
+      blocks.push(current);
+    } else if (current) {
+      current.lines.push(line);
+    } else {
+      preamble.push(line);
+    }
+  }
 
-	if (blocks.length === 0) {
-		return [
-			{ key: sectionSlug(fallbackLabel), label: fallbackLabel, body: src.trim(), accent: "orange" },
-		];
-	}
+  if (blocks.length === 0) {
+    return [
+      { key: sectionSlug(fallbackLabel), label: fallbackLabel, body: src.trim(), accent: "orange" },
+    ];
+  }
 
-	const pre = preamble.join("\n").trim();
-	if (pre) blocks[0].lines.unshift(pre, "");
+  const pre = preamble.join("\n").trim();
+  if (pre) blocks[0].lines.unshift(pre, "");
 
-	const seen = new Set<string>();
-	return (
-		blocks
-			.map((b) => {
-				let key = sectionSlug(b.label);
-				let n = 2;
-				while (seen.has(key)) key = `${sectionSlug(b.label)}-${n++}`;
-				seen.add(key);
-				return {
-					key,
-					label: b.label,
-					body: b.lines.join("\n").trim(),
-					accent: sectionAccent(b.label),
-				};
-			})
-			// Section vide (titre sans corps) : ignorée, comme les sections DB vides.
-			.filter((s) => s.body.length > 0)
-	);
+  const seen = new Set<string>();
+  return (
+    blocks
+      .map((b) => {
+        let key = sectionSlug(b.label);
+        let n = 2;
+        while (seen.has(key)) key = `${sectionSlug(b.label)}-${n++}`;
+        seen.add(key);
+        return {
+          key,
+          label: b.label,
+          body: b.lines.join("\n").trim(),
+          accent: sectionAccent(b.label),
+        };
+      })
+      // Section vide (titre sans corps) : ignorée, comme les sections DB vides.
+      .filter((s) => s.body.length > 0)
+  );
 }
 
 /**
@@ -120,19 +120,19 @@ export function splitArticleSections(
  * panneau au lieu d'ajouter une pilule en double.
  */
 export const TECH_SECTION_KEYS = new Set([
-	"techniques",
-	"pouvoirs-et-techniques",
-	"pouvoirs-et-capacites",
-	"pouvoirs",
-	"capacites",
-	"techniques-et-capacites",
-	"pouvoirs-et-competences",
+  "techniques",
+  "pouvoirs-et-techniques",
+  "pouvoirs-et-capacites",
+  "pouvoirs",
+  "capacites",
+  "techniques-et-capacites",
+  "pouvoirs-et-competences",
 ]);
 
 export const TRANSFO_SECTION_KEYS = new Set([
-	"transformations",
-	"transformations-et-fusions",
-	"transformations-et-formes",
-	"formes",
-	"fusions",
+  "transformations",
+  "transformations-et-fusions",
+  "transformations-et-formes",
+  "formes",
+  "fusions",
 ]);

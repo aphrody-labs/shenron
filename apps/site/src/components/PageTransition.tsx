@@ -12,16 +12,16 @@ import { ViewTransition } from "@/components/ViewTransition";
  * puis le nouveau arriver lors d'une navigation annotée par `transitionTypes`.
  */
 export function PageTransition({ children }: { children: React.ReactNode }) {
-	const pathname = usePathname();
+  const pathname = usePathname();
 
-	return (
-		<ViewTransition
-			key={pathname}
-			enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
-			exit={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
-			default="none"
-		>
-			{children}
-		</ViewTransition>
-	);
+  return (
+    <ViewTransition
+      key={pathname}
+      enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+      exit={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+      default="none"
+    >
+      {children}
+    </ViewTransition>
+  );
 }

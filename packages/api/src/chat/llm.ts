@@ -37,7 +37,11 @@ export interface LlmBackend {
   readonly model: string | null;
   status(): Promise<LlmStatus>;
   /** Text deltas; throws before the first delta when the backend cannot answer. */
-  stream(messages: readonly LlmMessage[], options: LlmOptions, signal: AbortSignal): AsyncIterable<string>;
+  stream(
+    messages: readonly LlmMessage[],
+    options: LlmOptions,
+    signal: AbortSignal,
+  ): AsyncIterable<string>;
 }
 
 export class BackendUnavailable extends Error {
@@ -53,7 +57,10 @@ export class BackendUnavailable extends Error {
 // ── OpenAI-compatible (llama-server) ────────────────────────────────────────
 
 /** Parse an OpenAI-compatible SSE completion stream into text deltas. */
-export async function* openAiDeltas(body: ReadableStream<Uint8Array>, signal: AbortSignal): AsyncGenerator<string> {
+export async function* openAiDeltas(
+  body: ReadableStream<Uint8Array>,
+  signal: AbortSignal,
+): AsyncGenerator<string> {
   const reader = body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
@@ -69,7 +76,10 @@ export async function* openAiDeltas(body: ReadableStream<Uint8Array>, signal: Ab
         if (!line.startsWith("data:")) continue;
         const data = line.slice(5).trim();
         if (data === "[DONE]") return;
-        let chunk: { choices?: { delta?: { content?: string | null }; finish_reason?: string | null }[]; error?: { message?: string } };
+        let chunk: {
+          choices?: { delta?: { content?: string | null }; finish_reason?: string | null }[];
+          error?: { message?: string };
+        };
         try {
           chunk = JSON.parse(data);
         } catch {
@@ -105,13 +115,21 @@ export function createOpenAiBackend(o: {
     model: o.model,
     async status() {
       try {
-        const response = await doFetch(`${base}/models`, { headers: headers(), signal: AbortSignal.timeout(3000) });
-        if (!response.ok) return { available: false, model: o.model, detail: `HTTP ${response.status}` };
+        const response = await doFetch(`${base}/models`, {
+          headers: headers(),
+          signal: AbortSignal.timeout(3000),
+        });
+        if (!response.ok)
+          return { available: false, model: o.model, detail: `HTTP ${response.status}` };
         const body = (await response.json()) as { data?: { id: string }[] };
         const served = body.data?.map((m) => m.id) ?? [];
         return { available: true, model: o.model ?? served[0] ?? null, detail: served.join(", ") };
       } catch (error) {
-        return { available: false, model: o.model, detail: error instanceof Error ? error.message : String(error) };
+        return {
+          available: false,
+          model: o.model,
+          detail: error instanceof Error ? error.message : String(error),
+        };
       }
     },
     async *stream(messages, options, signal) {
@@ -133,7 +151,10 @@ export function createOpenAiBackend(o: {
         throw new BackendUnavailable(id, error instanceof Error ? error.message : String(error));
       }
       if (!response.ok || !response.body) {
-        throw new BackendUnavailable(id, `HTTP ${response.status}: ${(await response.text()).slice(0, 200)}`);
+        throw new BackendUnavailable(
+          id,
+          `HTTP ${response.status}: ${(await response.text()).slice(0, 200)}`,
+        );
       }
       yield* openAiDeltas(response.body, signal);
     },
@@ -143,7 +164,10 @@ export function createOpenAiBackend(o: {
 // ── Gemini web app (aphrody-gemini-web) ─────────────────────────────────────
 
 /** Cookie stores of the Gemini web client, in the crate's resolution order. */
-export function geminiCookieCandidates(env: Record<string, string | undefined>, home = homedir()): string[] {
+export function geminiCookieCandidates(
+  env: Record<string, string | undefined>,
+  home = homedir(),
+): string[] {
   const explicit = env.APHRODY_GOOGLE_COOKIES_JSON?.trim();
   const dir = env.APHRODY_HOME?.trim() || join(home, ".aphrody");
   return [
@@ -159,7 +183,10 @@ export function geminiCookieCandidates(env: Record<string, string | undefined>, 
 
 /** Flatten a chat into the single prompt the Gemini web client accepts. */
 export function flattenPrompt(messages: readonly LlmMessage[]): string {
-  const system = messages.filter((m) => m.role === "system").map((m) => m.content).join("\n\n");
+  const system = messages
+    .filter((m) => m.role === "system")
+    .map((m) => m.content)
+    .join("\n\n");
   const turns = messages
     .filter((m) => m.role !== "system")
     .map((m) => `${m.role === "user" ? "Utilisateur" : "Assistant"} : ${m.content}`)
@@ -179,18 +206,35 @@ export function createGeminiWebBackend(o: {
   let failedUntil = 0;
   let lastError: string | undefined;
   const cookie = () => o.cookiePaths.find((path) => existsSync(path)) ?? null;
-  const installed = () => o.binary.includes("/") ? existsSync(o.binary) : Bun.which(o.binary) !== null;
+  const installed = () =>
+    o.binary.includes("/") ? existsSync(o.binary) : Bun.which(o.binary) !== null;
   return {
     id: "gemini-web",
     model: `gemini-web/${model}`,
     async status() {
-      if (!installed()) return { available: false, model: `gemini-web/${model}`, detail: `${o.binary} not installed` };
-      if (!cookie()) return { available: false, model: `gemini-web/${model}`, detail: "no Gemini cookie store" };
-      if (Date.now() < failedUntil) return { available: false, model: `gemini-web/${model}`, detail: `cooling down: ${lastError}` };
-      return { available: true, model: `gemini-web/${model}`, detail: lastError ? `last error: ${lastError}` : undefined };
+      if (!installed())
+        return {
+          available: false,
+          model: `gemini-web/${model}`,
+          detail: `${o.binary} not installed`,
+        };
+      if (!cookie())
+        return { available: false, model: `gemini-web/${model}`, detail: "no Gemini cookie store" };
+      if (Date.now() < failedUntil)
+        return {
+          available: false,
+          model: `gemini-web/${model}`,
+          detail: `cooling down: ${lastError}`,
+        };
+      return {
+        available: true,
+        model: `gemini-web/${model}`,
+        detail: lastError ? `last error: ${lastError}` : undefined,
+      };
     },
     async *stream(messages, _options, signal) {
-      if (Date.now() < failedUntil) throw new BackendUnavailable("gemini-web", `cooling down after: ${lastError}`);
+      if (Date.now() < failedUntil)
+        throw new BackendUnavailable("gemini-web", `cooling down after: ${lastError}`);
       const path = cookie();
       if (!path) throw new BackendUnavailable("gemini-web", "no Gemini cookie store");
       if (!installed()) throw new BackendUnavailable("gemini-web", `${o.binary} not installed`);
@@ -235,7 +279,9 @@ export function createExtractiveBackend(): LlmBackend {
     async *stream(messages) {
       // The engine passes the numbered sources in the last user message.
       const user = messages.findLast((m) => m.role === "user")?.content ?? "";
-      const blocks = [...user.matchAll(/^\[(\d+)\] ([^\n]+)\n([\s\S]*?)(?=\n\[\d+\] |\n\nQuestion|$)/gm)].slice(0, 3);
+      const blocks = [
+        ...user.matchAll(/^\[(\d+)\] ([^\n]+)\n([\s\S]*?)(?=\n\[\d+\] |\n\nQuestion|$)/gm),
+      ].slice(0, 3);
       if (blocks.length === 0) {
         yield "Aucune source de la base Shenron ne répond à cette question.";
         return;
@@ -269,7 +315,9 @@ export function backendsFromEnv(env: Record<string, string | undefined>): LlmBac
       const base =
         env.APHRODY_AI_CHAT_BASE_URL?.trim() ||
         env.APHRODY_SHENRON_LLM_BASE_URL?.trim() ||
-        (env.APHRODY_LOCAL_MODEL_URL?.trim() ? `${env.APHRODY_LOCAL_MODEL_URL.trim().replace(/\/+$/, "")}/v1` : "");
+        (env.APHRODY_LOCAL_MODEL_URL?.trim()
+          ? `${env.APHRODY_LOCAL_MODEL_URL.trim().replace(/\/+$/, "")}/v1`
+          : "");
       if (base) {
         out.push(
           createOpenAiBackend({

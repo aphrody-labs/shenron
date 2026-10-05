@@ -10,11 +10,11 @@
  * la syntaxe Markdown (`*_#>\``), écrase les espaces et tronque à `max` caractères.
  */
 export function excerpt(text: string | null, max = 160): string {
-	if (!text) return "";
-	const clean = text
-		.replace(/_?\(Sources?\s*:[^)]*\)_?/gi, "")
-		.replace(/[*_#>`]/g, "")
-		.replace(/\s+/g, " ")
-		.trim();
-	return clean.length > max ? `${clean.slice(0, max).trimEnd()}…` : clean;
+  if (!text) return "";
+  const clean = text
+    .replace(/_?\(Sources?\s*:[^)]*\)_?/gi, "")
+    .replace(/[*_#>`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return clean.length > max ? `${clean.slice(0, max).trimEnd()}…` : clean;
 }

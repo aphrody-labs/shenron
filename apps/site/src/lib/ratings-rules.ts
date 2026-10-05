@@ -19,13 +19,13 @@ const RATING_SCORE_MIN = 1;
 const RATING_SCORE_MAX = 5;
 
 export function isRatingTargetType(v: unknown): v is RatingTargetType {
-	return typeof v === "string" && (RATING_TARGET_TYPES as readonly string[]).includes(v);
+  return typeof v === "string" && (RATING_TARGET_TYPES as readonly string[]).includes(v);
 }
 
 /** Ramène une note à un entier de 1 à 5 ; `null` si la valeur est inexploitable. */
 export function clampScore(n: number): number | null {
-	if (!Number.isFinite(n)) return null;
-	const s = Math.round(n);
-	if (s < RATING_SCORE_MIN || s > RATING_SCORE_MAX) return null;
-	return s;
+  if (!Number.isFinite(n)) return null;
+  const s = Math.round(n);
+  if (s < RATING_SCORE_MIN || s > RATING_SCORE_MAX) return null;
+  return s;
 }

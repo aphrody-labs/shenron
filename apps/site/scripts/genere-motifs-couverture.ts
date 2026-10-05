@@ -15,28 +15,28 @@ import { tempPath } from "@aphrody/paths";
  *   bun scripts/genere-motifs-couverture.ts --rendu    # + PNG de contrôle dans /tmp
  */
 import {
-	BANC_NUAGE,
-	PASTILLE,
-	anneauPastille,
-	etoilePath,
-	etoileViewBox,
-	svgBancNuage,
+  BANC_NUAGE,
+  PASTILLE,
+  anneauPastille,
+  etoilePath,
+  etoileViewBox,
+  svgBancNuage,
 } from "../src/lib/couverture";
 
 const racine = new URL("../public/", import.meta.url).pathname;
 const sorties: [string, string][] = [["dbz/marque/banc-nuage.svg", svgBancNuage()]];
 for (const [nom, svg] of sorties) {
-	await Bun.write(racine + nom, svg);
-	console.log(`public/${nom} — ${svg.length} octets`);
+  await Bun.write(racine + nom, svg);
+  console.log(`public/${nom} — ${svg.length} octets`);
 }
 
 if (Bun.argv.includes("--rendu")) {
-	const sharp = (await import("sharp")).default;
-	// Planche de contrôle : les trois motifs dessinés, aux aplats MESURÉS (les
-	// jetons CSS n'existent pas hors navigateur), sur fond sombre du site.
-	const a = anneauPastille();
-	const e = etoileViewBox(50);
-	const planche = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460">
+  const sharp = (await import("sharp")).default;
+  // Planche de contrôle : les trois motifs dessinés, aux aplats MESURÉS (les
+  // jetons CSS n'existent pas hors navigateur), sur fond sombre du site.
+  const a = anneauPastille();
+  const e = etoileViewBox(50);
+  const planche = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460">
 <rect width="720" height="460" fill="#0a0a0a"/>
 <g transform="translate(20 20)">
   <rect x="0" y="0" width="240" height="118" fill="#3760B2"/>
@@ -64,15 +64,15 @@ if (Bun.argv.includes("--rendu")) {
   <rect x="-7" y="-7" width="194" height="254" fill="none" stroke="#131b08" stroke-width="2"/>
 </g>
 </svg>`;
-	for (const largeur of [1440, 720, 360]) {
-		const sortie = `/tmp/couverture-motifs-${largeur}.png`;
-		await sharp(Buffer.from(planche)).resize({ width: largeur }).png().toFile(sortie);
-		console.log(sortie);
-	}
-	const tuile = svgBancNuage(BANC_NUAGE);
-	await sharp(Buffer.from(tuile))
-		.resize({ width: 960 })
-		.png()
-		.toFile(tempPath("couverture-banc-nuage.png"));
-	console.log(tempPath("couverture-banc-nuage.png"));
+  for (const largeur of [1440, 720, 360]) {
+    const sortie = `/tmp/couverture-motifs-${largeur}.png`;
+    await sharp(Buffer.from(planche)).resize({ width: largeur }).png().toFile(sortie);
+    console.log(sortie);
+  }
+  const tuile = svgBancNuage(BANC_NUAGE);
+  await sharp(Buffer.from(tuile))
+    .resize({ width: 960 })
+    .png()
+    .toFile(tempPath("couverture-banc-nuage.png"));
+  console.log(tempPath("couverture-banc-nuage.png"));
 }

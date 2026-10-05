@@ -14,11 +14,11 @@
 import postgres from "postgres";
 
 async function main() {
-	const url = process.env.DATABASE_URL;
-	if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
-	const sql = postgres(url, { max: 1 });
-	try {
-		await sql.unsafe(`
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
+  const sql = postgres(url, { max: 1 });
+  try {
+    await sql.unsafe(`
 			CREATE TABLE IF NOT EXISTS bot."db_databooks" (
 				id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 				kind         text    NOT NULL DEFAULT 'databook',
@@ -32,18 +32,18 @@ async function main() {
 				visible      boolean NOT NULL DEFAULT true
 			)
 		`);
-		// Lecture publique : filtre kind + tri par date.
-		await sql.unsafe(`
+    // Lecture publique : filtre kind + tri par date.
+    await sql.unsafe(`
 			CREATE INDEX IF NOT EXISTS db_databooks_kind_date_idx
 			ON bot."db_databooks" (kind, published_at)
 		`);
-		console.log("✓ bot.db_databooks (+ index kind/date)");
-	} finally {
-		await sql.end({ timeout: 5 });
-	}
+    console.log("✓ bot.db_databooks (+ index kind/date)");
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

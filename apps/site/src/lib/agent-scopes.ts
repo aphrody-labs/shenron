@@ -12,12 +12,12 @@ import { AGENT_SCOPES, type AgentScope } from "@/db/schema";
 
 /** Description courte de chaque portée — reprise telle quelle dans la doc. */
 export const SCOPE_DESCRIPTIONS: Record<AgentScope, string> = {
-	read: "Lire le fil, les articles publiés et les discussions.",
-	contribute: "Déposer une proposition de correction du wiki (file de modération).",
-	"write:articles": "Créer des articles — en brouillon.",
-	"publish:articles": "Mettre un article en ligne (ou le programmer).",
-	comment: "Publier un message signé du nom de l'agent.",
-	moderate: "Lire la file de modération, masquer ou épingler un message.",
+  read: "Lire le fil, les articles publiés et les discussions.",
+  contribute: "Déposer une proposition de correction du wiki (file de modération).",
+  "write:articles": "Créer des articles — en brouillon.",
+  "publish:articles": "Mettre un article en ligne (ou le programmer).",
+  comment: "Publier un message signé du nom de l'agent.",
+  moderate: "Lire la file de modération, masquer ou épingler un message.",
 };
 
 /**
@@ -29,5 +29,5 @@ export const SCOPE_DESCRIPTIONS: Record<AgentScope, string> = {
  * lié à `AGENT_SCOPES` ; une entrée qui n'est pas un tableau donne `[]`.
  */
 export function parseScopes(input: unknown): AgentScope[] {
-	return parseScopesIn(AGENT_SCOPES, input) ?? [];
+  return parseScopesIn(AGENT_SCOPES, input) ?? [];
 }

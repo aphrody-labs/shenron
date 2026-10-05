@@ -59,16 +59,16 @@ import { KATAKANA } from "./normalisation";
 
 /** Échappe une chaîne pour un usage littéral dans un `RegExp`. */
 function echapperRegExp(s: string): string {
-	return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 export interface VarianteGraphie {
-	/** Graphie fautive telle qu'elle apparaît dans le corpus. */
-	lu: string;
-	/** Graphie correcte, attestée majoritaire dans le corpus. */
-	correct: string;
-	/** Preuve : personnage, décompte corpus, nombre d'ouvrages. */
-	note: string;
+  /** Graphie fautive telle qu'elle apparaît dans le corpus. */
+  lu: string;
+  /** Graphie correcte, attestée majoritaire dans le corpus. */
+  correct: string;
+  /** Preuve : personnage, décompte corpus, nombre d'ouvrages. */
+  note: string;
 }
 
 /**
@@ -76,41 +76,41 @@ export interface VarianteGraphie {
  * chaque entrée vérifiée par lecture du contexte réel dans le corpus.
  */
 export const VARIANTES_ALLONGEMENT: VarianteGraphie[] = [
-	{ lu: "ガリック", correct: "ガーリック", note: "Garlic Jr. — ー manquant, 25×, 7 ouvrages" },
-	{
-		lu: "ミスター・サターン",
-		correct: "ミスター・サタン",
-		note: "Mr. Satan — ー en trop (lu « Saturne »), 13×, 4 ouvrages",
-	},
-	{
-		lu: "ジャッキー・チューン",
-		correct: "ジャッキー・チュン",
-		note: "Jackie Chun — ー en trop, 8×, 1 ouvrage",
-	},
-	{ lu: "タレス", correct: "ターレス", note: "Tullece — ー manquant, 7×, 5 ouvrages" },
-	{ lu: "カリーン", correct: "カリン", note: "Karin — ー en trop, 7×, 4 ouvrages" },
-	{
-		lu: "ターレース",
-		correct: "ターレス",
-		note: "Tullece — ー en trop en fin de mot, 5×, 2 ouvrages",
-	},
-	{
-		lu: "クリーリン",
-		correct: "クリリン",
-		note: "Krillin — ー en trop, 5×, 1 ouvrage (ratio 218×)",
-	},
-	{ lu: "ブロリ", correct: "ブロリー", note: "Broly — ー manquant, 3×, 2 ouvrages (ratio 321×)" },
-	{
-		lu: "レージック",
-		correct: "レジック",
-		note: "Ledgic — ー en trop, 3×, 1 ouvrage (ratio 12×, liste d'ennemis nommés)",
-	},
-	{ lu: "ザーーボン", correct: "ザーボン", note: "Zarbon — ー doublé, 3×, 1 ouvrage" },
-	{
-		lu: "クリリーン",
-		correct: "クリリン",
-		note: "Krillin — ー en trop, 3×, 3 ouvrages (ratio 363×)",
-	},
+  { lu: "ガリック", correct: "ガーリック", note: "Garlic Jr. — ー manquant, 25×, 7 ouvrages" },
+  {
+    lu: "ミスター・サターン",
+    correct: "ミスター・サタン",
+    note: "Mr. Satan — ー en trop (lu « Saturne »), 13×, 4 ouvrages",
+  },
+  {
+    lu: "ジャッキー・チューン",
+    correct: "ジャッキー・チュン",
+    note: "Jackie Chun — ー en trop, 8×, 1 ouvrage",
+  },
+  { lu: "タレス", correct: "ターレス", note: "Tullece — ー manquant, 7×, 5 ouvrages" },
+  { lu: "カリーン", correct: "カリン", note: "Karin — ー en trop, 7×, 4 ouvrages" },
+  {
+    lu: "ターレース",
+    correct: "ターレス",
+    note: "Tullece — ー en trop en fin de mot, 5×, 2 ouvrages",
+  },
+  {
+    lu: "クリーリン",
+    correct: "クリリン",
+    note: "Krillin — ー en trop, 5×, 1 ouvrage (ratio 218×)",
+  },
+  { lu: "ブロリ", correct: "ブロリー", note: "Broly — ー manquant, 3×, 2 ouvrages (ratio 321×)" },
+  {
+    lu: "レージック",
+    correct: "レジック",
+    note: "Ledgic — ー en trop, 3×, 1 ouvrage (ratio 12×, liste d'ennemis nommés)",
+  },
+  { lu: "ザーーボン", correct: "ザーボン", note: "Zarbon — ー doublé, 3×, 1 ouvrage" },
+  {
+    lu: "クリリーン",
+    correct: "クリリン",
+    note: "Krillin — ー en trop, 3×, 3 ouvrages (ratio 363×)",
+  },
 ];
 
 /**
@@ -119,18 +119,18 @@ export const VARIANTES_ALLONGEMENT: VarianteGraphie[] = [
  * chaque vérification.
  */
 export const ALLONGEMENTS_ECARTES: { lu: string; cible: string; raison: string }[] = [
-	{
-		lu: "タブル",
-		cible: "ターブル",
-		raison:
-			"5×/3 ouvrages, ratio 9× — mais le contexte réel est soit un terme de jeu de cartes distinct (« CAAタブル »), soit une sous-chaîne de vrais mots japonais (ベジタブル, コレクタブル, ポータブル) : aucune occurrence ne désigne fiablement le personnage Table.",
-	},
-	{
-		lu: "ケル",
-		cible: "ケール",
-		raison:
-			"4×/4 ouvrages — chaque occurrence est soit un texte corrompu par l'OCR (lettre bengalie « ত » dans le même passage), soit un fragment sans rapport (« ケル状 », « 連携ケルの気力 ») : aucune ne désigne fiablement le personnage Kale.",
-	},
+  {
+    lu: "タブル",
+    cible: "ターブル",
+    raison:
+      "5×/3 ouvrages, ratio 9× — mais le contexte réel est soit un terme de jeu de cartes distinct (« CAAタブル »), soit une sous-chaîne de vrais mots japonais (ベジタブル, コレクタブル, ポータブル) : aucune occurrence ne désigne fiablement le personnage Table.",
+  },
+  {
+    lu: "ケル",
+    cible: "ケール",
+    raison:
+      "4×/4 ouvrages — chaque occurrence est soit un texte corrompu par l'OCR (lettre bengalie « ত » dans le même passage), soit un fragment sans rapport (« ケル状 », « 連携ケルの気力 ») : aucune ne désigne fiablement le personnage Kale.",
+  },
 ];
 
 const KATAKANA_SRC = KATAKANA.source;
@@ -147,26 +147,26 @@ const KATAKANA_SRC = KATAKANA.source;
  * entrées, prouvé par `bun test`).
  */
 export function corrigerAllongements(texte: string): {
-	texte: string;
-	corrections: number;
-	details: { lu: string; correct: string; n: number }[];
+  texte: string;
+  corrections: number;
+  details: { lu: string; correct: string; n: number }[];
 } {
-	let sortie = texte;
-	const details: { lu: string; correct: string; n: number }[] = [];
-	let total = 0;
-	for (const { lu, correct } of VARIANTES_ALLONGEMENT) {
-		const re = new RegExp(`(?<!${KATAKANA_SRC})${echapperRegExp(lu)}(?!${KATAKANA_SRC})`, "g");
-		let n = 0;
-		sortie = sortie.replace(re, () => {
-			n++;
-			return correct;
-		});
-		if (n > 0) {
-			total += n;
-			details.push({ lu, correct, n });
-		}
-	}
-	return { texte: sortie, corrections: total, details };
+  let sortie = texte;
+  const details: { lu: string; correct: string; n: number }[] = [];
+  let total = 0;
+  for (const { lu, correct } of VARIANTES_ALLONGEMENT) {
+    const re = new RegExp(`(?<!${KATAKANA_SRC})${echapperRegExp(lu)}(?!${KATAKANA_SRC})`, "g");
+    let n = 0;
+    sortie = sortie.replace(re, () => {
+      n++;
+      return correct;
+    });
+    if (n > 0) {
+      total += n;
+      details.push({ lu, correct, n });
+    }
+  }
+  return { texte: sortie, corrections: total, details };
 }
 
 // ---------------------------------------------------------------------------
@@ -204,13 +204,13 @@ export function corrigerAllongements(texte: string): {
  * fonctionne, mais sans généralisation aveugle aux 40 autres.
  */
 export const VARIANTES_COMPOSEES: VarianteGraphie[] = [
-	{
-		lu: "プロリー",
-		correct: "ブロリー",
-		note:
-			"Broly — 54 occurrences collées à du katakana (titres de cartes/figurines : " +
-			"プロリーフルパワー, パラガスプロリー, プロリーデッキ…), toutes vérifiées en contexte, aucune collision.",
-	},
+  {
+    lu: "プロリー",
+    correct: "ブロリー",
+    note:
+      "Broly — 54 occurrences collées à du katakana (titres de cartes/figurines : " +
+      "プロリーフルパワー, パラガスプロリー, プロリーデッキ…), toutes vérifiées en contexte, aucune collision.",
+  },
 ];
 
 /**
@@ -220,24 +220,24 @@ export const VARIANTES_COMPOSEES: VarianteGraphie[] = [
  * vérification individuelle.
  */
 export function corrigerDansComposes(texte: string): {
-	texte: string;
-	corrections: number;
-	details: { lu: string; correct: string; n: number }[];
+  texte: string;
+  corrections: number;
+  details: { lu: string; correct: string; n: number }[];
 } {
-	let sortie = texte;
-	const details: { lu: string; correct: string; n: number }[] = [];
-	let total = 0;
-	for (const { lu, correct } of VARIANTES_COMPOSEES) {
-		if (!sortie.includes(lu)) continue;
-		// Remplacement littéral (pas de RegExp) : ces entrées sont admises
-		// précisément SANS garde de frontière, cf. docstring de la table.
-		const morceaux = sortie.split(lu);
-		const n = morceaux.length - 1;
-		sortie = morceaux.join(correct);
-		total += n;
-		details.push({ lu, correct, n });
-	}
-	return { texte: sortie, corrections: total, details };
+  let sortie = texte;
+  const details: { lu: string; correct: string; n: number }[] = [];
+  let total = 0;
+  for (const { lu, correct } of VARIANTES_COMPOSEES) {
+    if (!sortie.includes(lu)) continue;
+    // Remplacement littéral (pas de RegExp) : ces entrées sont admises
+    // précisément SANS garde de frontière, cf. docstring de la table.
+    const morceaux = sortie.split(lu);
+    const n = morceaux.length - 1;
+    sortie = morceaux.join(correct);
+    total += n;
+    details.push({ lu, correct, n });
+  }
+  return { texte: sortie, corrections: total, details };
 }
 
 // ---------------------------------------------------------------------------
@@ -245,11 +245,11 @@ export function corrigerDansComposes(texte: string): {
 // ---------------------------------------------------------------------------
 
 export interface RapportCoherence {
-	texte: string;
-	modifie: boolean;
-	corrections: number;
-	allongements: { lu: string; correct: string; n: number }[];
-	composes: { lu: string; correct: string; n: number }[];
+  texte: string;
+  modifie: boolean;
+  corrections: number;
+  allongements: { lu: string; correct: string; n: number }[];
+  composes: { lu: string; correct: string; n: number }[];
 }
 
 /**
@@ -259,15 +259,15 @@ export interface RapportCoherence {
  * de l'une sur l'autre. Idempotent (prouvé par `bun test`).
  */
 export function corrigerCoherence(brut: string): RapportCoherence {
-	const a = corrigerAllongements(brut);
-	const c = corrigerDansComposes(a.texte);
-	return {
-		texte: c.texte,
-		modifie: c.texte !== brut,
-		corrections: a.corrections + c.corrections,
-		allongements: a.details,
-		composes: c.details,
-	};
+  const a = corrigerAllongements(brut);
+  const c = corrigerDansComposes(a.texte);
+  return {
+    texte: c.texte,
+    modifie: c.texte !== brut,
+    corrections: a.corrections + c.corrections,
+    allongements: a.details,
+    composes: c.details,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -303,103 +303,103 @@ export function corrigerCoherence(brut: string): RapportCoherence {
  * n'est possible sur la seule fréquence ; signalé, non tranché.
  */
 export interface DivergenceWiki {
-	/** Graphie stockée dans `name_ja` (le wiki). */
-	formeWiki: string;
-	/** Graphie attestée dans le corpus des databooks. */
-	formeCorpus: string;
-	occWiki: number;
-	occCorpus: number;
-	fr: string;
-	nature: "wiki-bug-espacement" | "wiki-choonpu-superflu" | "ambigu";
+  /** Graphie stockée dans `name_ja` (le wiki). */
+  formeWiki: string;
+  /** Graphie attestée dans le corpus des databooks. */
+  formeCorpus: string;
+  occWiki: number;
+  occCorpus: number;
+  fr: string;
+  nature: "wiki-bug-espacement" | "wiki-choonpu-superflu" | "ambigu";
 }
 
 export const DIVERGENCES_CORPUS_WIKI: DivergenceWiki[] = [
-	{
-		formeWiki: "フ ラ ッ ペ 博士",
-		formeCorpus: "フラッペ博士",
-		occWiki: 0,
-		occCorpus: 3,
-		fr: "Dr. Frappé",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "コ リ ー 博士",
-		formeCorpus: "コリー博士",
-		occWiki: 0,
-		occCorpus: 8,
-		fr: "Dr Cory",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "イ コ ー セ",
-		formeCorpus: "イコーセ",
-		occWiki: 0,
-		occCorpus: 16,
-		fr: "Ikôse",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "ジ ン グ ル 村 の 村長",
-		formeCorpus: "ジングル村の村長",
-		occWiki: 0,
-		occCorpus: 11,
-		fr: "Maire du village Jingle",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "蛇 姫",
-		formeCorpus: "蛇姫",
-		occWiki: 0,
-		occCorpus: 18,
-		fr: "Princesse Serpent",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "ウ サ ギ 団",
-		formeCorpus: "ウサギ団",
-		occWiki: 0,
-		occCorpus: 33,
-		fr: "Sbires de To le carotteur",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "ス ノ",
-		formeCorpus: "スノ",
-		occWiki: 0,
-		occCorpus: 37,
-		fr: "Snow",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "未来 トランクス",
-		formeCorpus: "未来トランクス",
-		occWiki: 0,
-		occCorpus: 18,
-		fr: "Trunks (futur)",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "孫 悟飯",
-		formeCorpus: "孫悟飯",
-		occWiki: 0,
-		occCorpus: 591,
-		fr: "Son Gohan",
-		nature: "wiki-bug-espacement",
-	},
-	{
-		formeWiki: "マゲッター",
-		formeCorpus: "マゲッタ",
-		occWiki: 0,
-		occCorpus: 3,
-		fr: "Otta Magetta",
-		nature: "wiki-choonpu-superflu",
-	},
-	{
-		formeWiki: "マロン",
-		formeCorpus: "マーロン",
-		occWiki: 37,
-		occCorpus: 38,
-		fr: "Maron",
-		nature: "ambigu",
-	},
+  {
+    formeWiki: "フ ラ ッ ペ 博士",
+    formeCorpus: "フラッペ博士",
+    occWiki: 0,
+    occCorpus: 3,
+    fr: "Dr. Frappé",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "コ リ ー 博士",
+    formeCorpus: "コリー博士",
+    occWiki: 0,
+    occCorpus: 8,
+    fr: "Dr Cory",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "イ コ ー セ",
+    formeCorpus: "イコーセ",
+    occWiki: 0,
+    occCorpus: 16,
+    fr: "Ikôse",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "ジ ン グ ル 村 の 村長",
+    formeCorpus: "ジングル村の村長",
+    occWiki: 0,
+    occCorpus: 11,
+    fr: "Maire du village Jingle",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "蛇 姫",
+    formeCorpus: "蛇姫",
+    occWiki: 0,
+    occCorpus: 18,
+    fr: "Princesse Serpent",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "ウ サ ギ 団",
+    formeCorpus: "ウサギ団",
+    occWiki: 0,
+    occCorpus: 33,
+    fr: "Sbires de To le carotteur",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "ス ノ",
+    formeCorpus: "スノ",
+    occWiki: 0,
+    occCorpus: 37,
+    fr: "Snow",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "未来 トランクス",
+    formeCorpus: "未来トランクス",
+    occWiki: 0,
+    occCorpus: 18,
+    fr: "Trunks (futur)",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "孫 悟飯",
+    formeCorpus: "孫悟飯",
+    occWiki: 0,
+    occCorpus: 591,
+    fr: "Son Gohan",
+    nature: "wiki-bug-espacement",
+  },
+  {
+    formeWiki: "マゲッター",
+    formeCorpus: "マゲッタ",
+    occWiki: 0,
+    occCorpus: 3,
+    fr: "Otta Magetta",
+    nature: "wiki-choonpu-superflu",
+  },
+  {
+    formeWiki: "マロン",
+    formeCorpus: "マーロン",
+    occWiki: 37,
+    occCorpus: 38,
+    fr: "Maron",
+    nature: "ambigu",
+  },
 ];

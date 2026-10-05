@@ -16,7 +16,13 @@ import { homedir } from "node:os";
 import { join, normalize, resolve, sep } from "node:path";
 import { verifyActingUser } from "@shenron/auth/acting-user";
 import { hmacSha256Hex, parseBearer, timingSafeEqualString } from "@shenron/auth/crypto";
-import { ENV_ALIASES, envFirst, envString, type EnvSource, isProduction } from "@shenron/config/env";
+import {
+  ENV_ALIASES,
+  envFirst,
+  envString,
+  type EnvSource,
+  isProduction,
+} from "@shenron/config/env";
 import { clientIpFromHeaders, isDirectLoopback } from "@shenron/config/net";
 import { DEV_SITE_ORIGIN, originOf, resolveSiteUrl } from "@shenron/config/public-urls";
 import { resolveShenronApiBind } from "@shenron/config/services";
@@ -58,7 +64,11 @@ const OWNER_SKEW_MS = 5 * 60_000;
 const OWNER_ID = /^[A-Za-z0-9_:@.-]{1,128}$/;
 
 /** Headers of a signed owner (site session user, desktop account): `X-Shenron-Owner{,-Ts,-Sig}`. */
-export function signOwner(secret: string, ownerId: string, nowMs = Date.now()): Record<string, string> {
+export function signOwner(
+  secret: string,
+  ownerId: string,
+  nowMs = Date.now(),
+): Record<string, string> {
   const ts = String(nowMs);
   return {
     [OWNER_HEADERS.owner]: ownerId,
@@ -174,7 +184,11 @@ export function createVfsRagPort(
           content: hit.content,
         });
       }
-      return { mode: result.mode, hits, ...(result.embedError ? { error: `embedder: ${result.embedError}` } : {}) };
+      return {
+        mode: result.mode,
+        hits,
+        ...(result.embedError ? { error: `embedder: ${result.embedError}` } : {}),
+      };
     },
   };
 }
@@ -189,7 +203,10 @@ function assetFile(assetsDir: string | null, path: string): string | null {
 }
 
 /** `VfsPort` of the API over an opened VFS; `assetsDir` serves local files without a copy. */
-export function createVfsPort(opened: OpenedVfs, options: { publicOnly: boolean; assetsDir?: string | null }): VfsPort {
+export function createVfsPort(
+  opened: OpenedVfs,
+  options: { publicOnly: boolean; assetsDir?: string | null },
+): VfsPort {
   const { vfs, rag } = opened;
   return {
     publicOnly: options.publicOnly,
@@ -231,7 +248,11 @@ export function createVfsPort(opened: OpenedVfs, options: { publicOnly: boolean;
 }
 
 /** Static file with a precompressed sibling (`.br`, `.gz`) chosen from `Accept-Encoding`. */
-export function staticFileResponse(request: Request, file: string, headers: Record<string, string> = {}): Response {
+export function staticFileResponse(
+  request: Request,
+  file: string,
+  headers: Record<string, string> = {},
+): Response {
   const accept = request.headers.get("accept-encoding") ?? "";
   const type = Bun.file(file).type;
   for (const [encoding, ext] of [
@@ -242,11 +263,18 @@ export function staticFileResponse(request: Request, file: string, headers: Reco
     const sibling = `${file}${ext}`;
     if (existsSync(sibling)) {
       return new Response(Bun.file(sibling), {
-        headers: { ...headers, "Content-Type": type, "Content-Encoding": encoding, Vary: "Accept-Encoding" },
+        headers: {
+          ...headers,
+          "Content-Type": type,
+          "Content-Encoding": encoding,
+          Vary: "Accept-Encoding",
+        },
       });
     }
   }
-  return new Response(Bun.file(file), { headers: { ...headers, "Content-Type": type, Vary: "Accept-Encoding" } });
+  return new Response(Bun.file(file), {
+    headers: { ...headers, "Content-Type": type, Vary: "Accept-Encoding" },
+  });
 }
 
 export interface LocalApiOptions {
@@ -269,7 +297,10 @@ export interface LocalApi {
   close(): Promise<void>;
 }
 
-type HostRoute = (request: Request, server: Bun.Server<ChatSocketData>) => Response | Promise<Response>;
+type HostRoute = (
+  request: Request,
+  server: Bun.Server<ChatSocketData>,
+) => Response | Promise<Response>;
 
 export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): LocalApi {
   const paths = hostPaths(env);
@@ -277,14 +308,22 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const cdn = defaultCdn(env);
   let opened: OpenedVfs | null = null;
   if (options.vfsDatabase) {
-    opened = openShenronVfs(options.vfsDatabase, { readOnly: true, embedded: options.embedded ?? {}, cdn });
+    opened = openShenronVfs(options.vfsDatabase, {
+      readOnly: true,
+      embedded: options.embedded ?? {},
+      cdn,
+    });
   } else if (existsSync(paths.vfs)) {
     opened = openShenronVfs(paths.vfs, { readOnly: true, cdn });
   }
   const embedModel = envString(env, "APHRODY_AI_EMBED_MODEL") ?? RAG_EMBED_MODEL;
   const embedBase = envString(env, "APHRODY_AI_EMBED_BASE_URL");
   const embedder = embedBase
-    ? createE5Embedder({ baseUrl: embedBase, model: embedModel, ...(options.fetch ? { fetch: options.fetch } : {}) })
+    ? createE5Embedder({
+        baseUrl: embedBase,
+        model: embedModel,
+        ...(options.fetch ? { fetch: options.fetch } : {}),
+      })
     : null;
 
   let conversations: ConversationStore | null = options.conversations ?? null;
@@ -293,7 +332,9 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     const pgUrl = envString(env, "SHENRON_CHAT_PG_URL");
     if (pgUrl) {
       pg = new Bun.SQL(pgUrl);
-      conversations = new PgConversationStore(pg, { schema: envString(env, "SHENRON_CHAT_PG_SCHEMA") ?? "chat" });
+      conversations = new PgConversationStore(pg, {
+        schema: envString(env, "SHENRON_CHAT_PG_SCHEMA") ?? "chat",
+      });
     } else if (env.SHENRON_CHAT_STORE !== "off") {
       conversations = new SqliteConversationStore(paths.conversations);
     }
@@ -302,10 +343,14 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   // Direct loopback requests, marked by the Bun.serve entry points from the socket address.
   const loopback = new WeakSet<Request>();
   const isLoopback = (request: Request) => loopback.has(request);
-  const mcpBin = envString(env, "SHENRON_MCP_BIN") ?? (Bun.which("shenron-mcp") ? "shenron-mcp" : "");
+  const mcpBin =
+    envString(env, "SHENRON_MCP_BIN") ?? (Bun.which("shenron-mcp") ? "shenron-mcp" : "");
   const mcp =
     mcpBin && env.SHENRON_CHAT_TOOLS !== "0"
-      ? createStdioMcpClient({ command: [mcpBin], env: existsSync(paths.vfs) ? { SHENRON_VFS_DB: paths.vfs } : {} })
+      ? createStdioMcpClient({
+          command: [mcpBin],
+          env: existsSync(paths.vfs) ? { SHENRON_VFS_DB: paths.vfs } : {},
+        })
       : null;
   const ocr = createCliOcr({ binary: envString(env, "SHENRON_CLI_BIN") ?? "shenron" });
   const ocrPort = ocr.available() ? ocr : null;
@@ -317,7 +362,9 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     publicOnly,
     backends: backendsFromEnv(env),
     home: () =>
-      opened && opened.vfs.exists("/home/SOUL.md") ? agentHomeFromVfs(opened.vfs) : agentHomeFromDir(paths.agentHome),
+      opened && opened.vfs.exists("/home/SOUL.md")
+        ? agentHomeFromVfs(opened.vfs)
+        : agentHomeFromDir(paths.agentHome),
     mcp,
     ocr: ocrPort,
     store: conversations,
@@ -351,20 +398,25 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   );
 
   const mark = (request: Request, server: Bun.Server<ChatSocketData>) => {
-    if (isDirectLoopback(request.headers, server.requestIP(request)?.address)) loopback.add(request);
+    if (isDirectLoopback(request.headers, server.requestIP(request)?.address))
+      loopback.add(request);
   };
 
   const serveAsset: HostRoute = async (request, server) => {
     mark(request, server);
     const path = decodeURIComponent(new URL(request.url).pathname);
     const file = assetFile(assetsDir, path);
-    if (file) return staticFileResponse(request, file, { "Cache-Control": "public, max-age=86400" });
+    if (file)
+      return staticFileResponse(request, file, { "Cache-Control": "public, max-age=86400" });
     if (opened && opened.vfs.exists(path)) {
       const stat = opened.vfs.stat(path);
       if (!(publicOnly && stat.visibility === "private")) {
         try {
           return new Response((await opened.vfs.read(path)) as Uint8Array<ArrayBuffer>, {
-            headers: { "Content-Type": stat.mime ?? "application/octet-stream", "Cache-Control": "public, max-age=86400" },
+            headers: {
+              "Content-Type": stat.mime ?? "application/octet-stream",
+              "Cache-Control": "public, max-age=86400",
+            },
           });
         } catch (error) {
           return Response.json(

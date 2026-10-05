@@ -125,14 +125,14 @@ const PASSES_MAX = 8;
 
 /** Un segment périodique repéré dans le flux de caractères. */
 export interface BoucleDetectee {
-	/** Indice du premier caractère du segment périodique. */
-	debut: number;
-	/** Période, en nombre de caractères. */
-	periode: number;
-	/** Longueur totale du segment périodique (période × répétitions). */
-	longueur: number;
-	/** `longueur / periode` — fractionnaire si la boucle est coupée en son milieu. */
-	repetitions: number;
+  /** Indice du premier caractère du segment périodique. */
+  debut: number;
+  /** Période, en nombre de caractères. */
+  periode: number;
+  /** Longueur totale du segment périodique (période × répétitions). */
+  longueur: number;
+  /** `longueur / periode` — fractionnaire si la boucle est coupée en son milieu. */
+  repetitions: number;
 }
 
 /**
@@ -149,22 +149,22 @@ export interface BoucleDetectee {
  * ne peut plus tenir trois fois dans le texte.
  */
 function* segmentsPeriodiques(texte: string): Generator<BoucleDetectee> {
-	const n = texte.length;
-	for (let p = PERIODE_MIN; p <= PERIODE_MAX; p++) {
-		if (n < p * REPETITIONS_MIN_ABSOLU) break;
-		let i = 0;
-		while (i + p < n) {
-			if (texte[i] !== texte[i + p]) {
-				i++;
-				continue;
-			}
-			let j = i;
-			while (j + p < n && texte[j] === texte[j + p]) j++;
-			const longueur = j + p - i;
-			yield { debut: i, periode: p, longueur, repetitions: longueur / p };
-			i = j + 1;
-		}
-	}
+  const n = texte.length;
+  for (let p = PERIODE_MIN; p <= PERIODE_MAX; p++) {
+    if (n < p * REPETITIONS_MIN_ABSOLU) break;
+    let i = 0;
+    while (i + p < n) {
+      if (texte[i] !== texte[i + p]) {
+        i++;
+        continue;
+      }
+      let j = i;
+      while (j + p < n && texte[j] === texte[j + p]) j++;
+      const longueur = j + p - i;
+      yield { debut: i, periode: p, longueur, repetitions: longueur / p };
+      i = j + 1;
+    }
+  }
 }
 
 /**
@@ -180,22 +180,22 @@ function* segmentsPeriodiques(texte: string): Generator<BoucleDetectee> {
  * rien à sauver dans ces 40 signes.
  */
 export function segmentUniforme(texte: string, b: BoucleDetectee): boolean {
-	const premier = texte[b.debut];
-	for (let i = b.debut + 1; i < b.debut + b.longueur; i++) {
-		if (texte[i] !== premier) return false;
-	}
-	return true;
+  const premier = texte[b.debut];
+  for (let i = b.debut + 1; i < b.debut + b.longueur; i++) {
+    if (texte[i] !== premier) return false;
+  }
+  return true;
 }
 
 /** Le segment franchit-il les seuils de sa classe de période ? */
 export function estBoucleDegeneree(b: BoucleDetectee, longueurTexte: number): boolean {
-	if (b.repetitions < REPETITIONS_MIN_ABSOLU) return false;
-	if (b.periode >= PERIODE_MOTIF_LONG) return b.repetitions >= REPETITIONS_MOTIF_LONG;
-	return (
-		b.repetitions >= REPETITIONS_MOTIF_COURT &&
-		longueurTexte > 0 &&
-		b.longueur / longueurTexte >= COUVERTURE_MOTIF_COURT
-	);
+  if (b.repetitions < REPETITIONS_MIN_ABSOLU) return false;
+  if (b.periode >= PERIODE_MOTIF_LONG) return b.repetitions >= REPETITIONS_MOTIF_LONG;
+  return (
+    b.repetitions >= REPETITIONS_MOTIF_COURT &&
+    longueurTexte > 0 &&
+    b.longueur / longueurTexte >= COUVERTURE_MOTIF_COURT
+  );
 }
 
 /**
@@ -206,19 +206,19 @@ export function estBoucleDegeneree(b: BoucleDetectee, longueurTexte: number): bo
  * masquerait une vraie boucle plus courte de la même planche.
  */
 export function plusLongueBoucle(texte: string): BoucleDetectee | null {
-	let meilleure: BoucleDetectee | null = null;
-	for (const b of segmentsPeriodiques(texte)) {
-		if (!estBoucleDegeneree(b, texte.length)) continue;
-		if (segmentUniforme(texte, b)) continue;
-		if (
-			meilleure === null ||
-			b.longueur > meilleure.longueur ||
-			(b.longueur === meilleure.longueur && b.periode < meilleure.periode)
-		) {
-			meilleure = b;
-		}
-	}
-	return meilleure;
+  let meilleure: BoucleDetectee | null = null;
+  for (const b of segmentsPeriodiques(texte)) {
+    if (!estBoucleDegeneree(b, texte.length)) continue;
+    if (segmentUniforme(texte, b)) continue;
+    if (
+      meilleure === null ||
+      b.longueur > meilleure.longueur ||
+      (b.longueur === meilleure.longueur && b.periode < meilleure.periode)
+    ) {
+      meilleure = b;
+    }
+  }
+  return meilleure;
 }
 
 /**
@@ -252,20 +252,20 @@ export function plusLongueBoucle(texte: string): BoucleDetectee | null {
  * aucun segment périodique qualifiant ne subsiste au même endroit.
  */
 export function couperBouclesDegenerees(texte: string): {
-	texte: string;
-	corrections: number;
-	coupes: BoucleDetectee[];
+  texte: string;
+  corrections: number;
+  coupes: BoucleDetectee[];
 } {
-	let sortie = texte;
-	const coupes: BoucleDetectee[] = [];
-	for (let passe = 0; passe < PASSES_MAX; passe++) {
-		const b = plusLongueBoucle(sortie);
-		if (!b) break;
-		const garde = b.periode + (b.longueur % b.periode);
-		sortie = sortie.slice(0, b.debut + garde) + sortie.slice(b.debut + b.longueur);
-		coupes.push(b);
-	}
-	return { texte: sortie, corrections: coupes.length, coupes };
+  let sortie = texte;
+  const coupes: BoucleDetectee[] = [];
+  for (let passe = 0; passe < PASSES_MAX; passe++) {
+    const b = plusLongueBoucle(sortie);
+    if (!b) break;
+    const garde = b.periode + (b.longueur % b.periode);
+    sortie = sortie.slice(0, b.debut + garde) + sortie.slice(b.debut + b.longueur);
+    coupes.push(b);
+  }
+  return { texte: sortie, corrections: coupes.length, coupes };
 }
 
 // ---------------------------------------------------------------------------
@@ -281,14 +281,14 @@ const LONGUEUR_MIN_QUEUE = 4;
 
 /** Le bloc boucle-t-il déjà sur lui-même (deux lignes non triviales identiques d'affilée) ? */
 export function blocBoucleEnInterne(bloc: string): boolean {
-	const lignes = bloc
-		.split("\n")
-		.map((l) => l.trim())
-		.filter(Boolean);
-	for (let i = 1; i < lignes.length; i++) {
-		if (lignes[i].length >= LONGUEUR_MIN_BLOC && lignes[i] === lignes[i - 1]) return true;
-	}
-	return false;
+  const lignes = bloc
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  for (let i = 1; i < lignes.length; i++) {
+    if (lignes[i].length >= LONGUEUR_MIN_BLOC && lignes[i] === lignes[i - 1]) return true;
+  }
+  return false;
 }
 
 /**
@@ -322,38 +322,38 @@ export function blocBoucleEnInterne(bloc: string): boolean {
  * le seul endroit où l'on peut affirmer qu'un fragment est une coupure.
  */
 export function supprimerBlocsHallucinesRepetes(texte: string): {
-	texte: string;
-	corrections: number;
-	blocsSupprimes: string[];
+  texte: string;
+  corrections: number;
+  blocsSupprimes: string[];
 } {
-	const blocs = texte.split(/\n{2,}/);
-	const compte = new Map<string, number>();
-	for (const b of blocs) {
-		const t = b.trim();
-		if (t.length >= LONGUEUR_MIN_BLOC) compte.set(t, (compte.get(t) ?? 0) + 1);
-	}
-	const cibles = [...compte.entries()]
-		.filter(([bloc, n]) => n >= OCCURRENCES_MIN_BLOC && blocBoucleEnInterne(bloc))
-		.map(([bloc]) => bloc);
-	if (cibles.length === 0) return { texte, corrections: 0, blocsSupprimes: [] };
+  const blocs = texte.split(/\n{2,}/);
+  const compte = new Map<string, number>();
+  for (const b of blocs) {
+    const t = b.trim();
+    if (t.length >= LONGUEUR_MIN_BLOC) compte.set(t, (compte.get(t) ?? 0) + 1);
+  }
+  const cibles = [...compte.entries()]
+    .filter(([bloc, n]) => n >= OCCURRENCES_MIN_BLOC && blocBoucleEnInterne(bloc))
+    .map(([bloc]) => bloc);
+  if (cibles.length === 0) return { texte, corrections: 0, blocsSupprimes: [] };
 
-	const dernier = blocs.length - 1;
-	const estQueueTronquee = (t: string, i: number) =>
-		i === dernier &&
-		t.length >= LONGUEUR_MIN_QUEUE &&
-		!t.startsWith("#") &&
-		cibles.some((c) => c !== t && c.startsWith(t));
+  const dernier = blocs.length - 1;
+  const estQueueTronquee = (t: string, i: number) =>
+    i === dernier &&
+    t.length >= LONGUEUR_MIN_QUEUE &&
+    !t.startsWith("#") &&
+    cibles.some((c) => c !== t && c.startsWith(t));
 
-	let corrections = 0;
-	const gardes = blocs.filter((b, i) => {
-		const t = b.trim();
-		if (cibles.includes(t) || estQueueTronquee(t, i)) {
-			corrections++;
-			return false;
-		}
-		return true;
-	});
-	return { texte: gardes.join("\n\n"), corrections, blocsSupprimes: cibles };
+  let corrections = 0;
+  const gardes = blocs.filter((b, i) => {
+    const t = b.trim();
+    if (cibles.includes(t) || estQueueTronquee(t, i)) {
+      corrections++;
+      return false;
+    }
+    return true;
+  });
+  return { texte: gardes.join("\n\n"), corrections, blocsSupprimes: cibles };
 }
 
 // ---------------------------------------------------------------------------
@@ -364,19 +364,19 @@ type CodeRegleDeraillee = "bloc-hallucine-repete" | "boucle-degeneree";
 
 /** Même forme que le `RapportRegle` de `../databooks-ocr-corrections.ts`. */
 interface RapportRegle {
-	code: CodeRegleDeraillee;
-	corrections: number;
+  code: CodeRegleDeraillee;
+  corrections: number;
 }
 
 export interface RapportGenerationDeraillee {
-	texte: string;
-	rapport: RapportRegle[];
-	/** `true` si au moins une règle a changé le texte. */
-	modifie: boolean;
-	/** Boucles coupées, pour le rapport du runner (taille, position, répétitions). */
-	coupes: BoucleDetectee[];
-	/** Blocs hallucinés supprimés, pour le rapport du runner. */
-	blocsSupprimes: string[];
+  texte: string;
+  rapport: RapportRegle[];
+  /** `true` si au moins une règle a changé le texte. */
+  modifie: boolean;
+  /** Boucles coupées, pour le rapport du runner (taille, position, répétitions). */
+  coupes: BoucleDetectee[];
+  /** Blocs hallucinés supprimés, pour le rapport du runner. */
+  blocsSupprimes: string[];
 }
 
 /**
@@ -396,20 +396,20 @@ export interface RapportGenerationDeraillee {
  * supprime.
  */
 export function corrigerGenerationsDeraillees(texte: string): RapportGenerationDeraillee {
-	const blocs = supprimerBlocsHallucinesRepetes(texte);
-	const boucles = couperBouclesDegenerees(blocs.texte);
-	const brut = boucles.texte;
-	const modifie = brut !== texte;
-	return {
-		texte: modifie ? nettoyerOcr(brut) : texte,
-		modifie,
-		rapport: [
-			{ code: "bloc-hallucine-repete", corrections: blocs.corrections },
-			{ code: "boucle-degeneree", corrections: boucles.corrections },
-		],
-		coupes: boucles.coupes,
-		blocsSupprimes: blocs.blocsSupprimes,
-	};
+  const blocs = supprimerBlocsHallucinesRepetes(texte);
+  const boucles = couperBouclesDegenerees(blocs.texte);
+  const brut = boucles.texte;
+  const modifie = brut !== texte;
+  return {
+    texte: modifie ? nettoyerOcr(brut) : texte,
+    modifie,
+    rapport: [
+      { code: "bloc-hallucine-repete", corrections: blocs.corrections },
+      { code: "boucle-degeneree", corrections: boucles.corrections },
+    ],
+    coupes: boucles.coupes,
+    blocsSupprimes: blocs.blocsSupprimes,
+  };
 }
 
 /**
@@ -418,6 +418,6 @@ export function corrigerGenerationsDeraillees(texte: string): RapportGenerationD
  * de désactiver le garde.
  */
 export const REGLES_BOUCLE_DEGENEREE: ReadonlySet<string> = new Set<CodeRegleDeraillee>([
-	"bloc-hallucine-repete",
-	"boucle-degeneree",
+  "bloc-hallucine-repete",
+  "boucle-degeneree",
 ]);

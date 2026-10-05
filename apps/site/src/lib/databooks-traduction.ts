@@ -45,18 +45,18 @@ const LATIN_COLLE = /[぀-ヿ一-鿿][a-z]{3,}|(?<![A-Za-z])[a-z]{3,}[぀-ヿ一
  * HISTORY ») où le modèle reprend un paragraphe entier après une insertion.
  */
 export function boucleDispersee(texte: string): boolean {
-	for (let i = 0; i + 30 <= texte.length; i += 15) {
-		const bloc = texte.slice(i, i + 30);
-		if (!/[぀-ヿ一-鿿]/.test(bloc)) continue;
-		let n = 0;
-		let j = 0;
-		while ((j = texte.indexOf(bloc, j)) !== -1) {
-			n++;
-			j += 30;
-		}
-		if (n >= 3) return true;
-	}
-	return false;
+  for (let i = 0; i + 30 <= texte.length; i += 15) {
+    const bloc = texte.slice(i, i + 30);
+    if (!/[぀-ヿ一-鿿]/.test(bloc)) continue;
+    let n = 0;
+    let j = 0;
+    while ((j = texte.indexOf(bloc, j)) !== -1) {
+      n++;
+      j += 30;
+    }
+    if (n >= 3) return true;
+  }
+  return false;
 }
 
 /** Signatures d'échec qui rendent une transcription intraduisible. */
@@ -70,10 +70,10 @@ export type Intraduisible = "chinois-simplifie" | "latin-colle" | "boucle-disper
  * planches sur 9 356, soit 23 % du travail restant.
  */
 export function intraduisible(texte: string): Intraduisible | null {
-	if (SIMPLIFIES.test(texte)) return "chinois-simplifie";
-	if (LATIN_COLLE.test(texte)) return "latin-colle";
-	if (boucleDispersee(texte)) return "boucle-dispersee";
-	return null;
+  if (SIMPLIFIES.test(texte)) return "chinois-simplifie";
+  if (LATIN_COLLE.test(texte)) return "latin-colle";
+  if (boucleDispersee(texte)) return "boucle-dispersee";
+  return null;
 }
 
 /**
@@ -85,27 +85,27 @@ const PART_JA_MAX = 0.15;
 
 /** Pourquoi une traduction est refusée au dépôt, ou `null` si elle passe. */
 export function refus(fr: string, ja: string): string | null {
-	const texte = fr.trim();
-	if (!texte) return "vide";
-	const part = proportionJaponais(texte);
-	if (part > PART_JA_MAX) return `${Math.round(part * 100)} % de japonais résiduel (non traduit)`;
-	// On applique les détecteurs UN À UN, et non `classerDefaut` en bloc : ce juge
-	// note du japonais, et deux de ses verdicts n'ont aucun sens sur du français.
-	//   - « han-sans-kana » se déclenche sur TOUTE sortie française qui garde une
-	//     graphie en kanji — donc sur « Kaïō-ken (界王拳) », qui est justement la
-	//     bonne pratique. Mesuré : deux dépôts corrects refusés à ce titre lors de
-	//     la première passe, que le traducteur a cru être de sa faute.
-	//   - « courte » est un verdict de transcription : une planche qui ne porte
-	//     qu'un titre rend légitimement dix signes. C'est le rapport de longueur,
-	//     plus bas, qui juge une sortie tronquée.
-	if (compteRemplacements(texte) > 0) return "défaut remplacement";
-	if (contientAlphabetEtranger(texte)) return "défaut etranger";
-	if (contientBoucle(texte)) return "défaut boucle";
-	if (texte.length > ja.length * 3.5)
-		return `${texte.length} signes pour ${ja.length} en japonais (glose)`;
-	if (texte.length * 6 < ja.length)
-		return `${texte.length} signes pour ${ja.length} en japonais (tronqué)`;
-	return null;
+  const texte = fr.trim();
+  if (!texte) return "vide";
+  const part = proportionJaponais(texte);
+  if (part > PART_JA_MAX) return `${Math.round(part * 100)} % de japonais résiduel (non traduit)`;
+  // On applique les détecteurs UN À UN, et non `classerDefaut` en bloc : ce juge
+  // note du japonais, et deux de ses verdicts n'ont aucun sens sur du français.
+  //   - « han-sans-kana » se déclenche sur TOUTE sortie française qui garde une
+  //     graphie en kanji — donc sur « Kaïō-ken (界王拳) », qui est justement la
+  //     bonne pratique. Mesuré : deux dépôts corrects refusés à ce titre lors de
+  //     la première passe, que le traducteur a cru être de sa faute.
+  //   - « courte » est un verdict de transcription : une planche qui ne porte
+  //     qu'un titre rend légitimement dix signes. C'est le rapport de longueur,
+  //     plus bas, qui juge une sortie tronquée.
+  if (compteRemplacements(texte) > 0) return "défaut remplacement";
+  if (contientAlphabetEtranger(texte)) return "défaut etranger";
+  if (contientBoucle(texte)) return "défaut boucle";
+  if (texte.length > ja.length * 3.5)
+    return `${texte.length} signes pour ${ja.length} en japonais (glose)`;
+  if (texte.length * 6 < ja.length)
+    return `${texte.length} signes pour ${ja.length} en japonais (tronqué)`;
+  return null;
 }
 
 /**
@@ -128,12 +128,12 @@ export const replier = (s: string) => s.replace(/[・･·\s]/g, "").replace(/�
  * rend « Dâburâ » au lieu de « Dâbra ».
  */
 export function noyaux(ja: string): string[] {
-	const formes = new Set([ja]);
-	const nu = ja
-		.replace(/^(未来の|少年|幼少期の)/, "")
-		.replace(/[：:][ゼ][ノ]$/, "")
-		.replace(/[（(][^）)]*[）)]$/, "")
-		.trim();
-	if (nu.length >= 2) formes.add(nu);
-	return [...formes];
+  const formes = new Set([ja]);
+  const nu = ja
+    .replace(/^(未来の|少年|幼少期の)/, "")
+    .replace(/[：:][ゼ][ノ]$/, "")
+    .replace(/[（(][^）)]*[）)]$/, "")
+    .trim();
+  if (nu.length >= 2) formes.add(nu);
+  return [...formes];
 }

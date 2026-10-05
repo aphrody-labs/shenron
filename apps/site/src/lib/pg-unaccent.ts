@@ -19,18 +19,18 @@ let wrapper: Promise<boolean> | null = null;
 
 /** Le wrapper IMMUTABLE est-il installé ? Lu une fois par process. */
 function wrapperDisponible(): Promise<boolean> {
-	wrapper ??= db
-		.execute<{ ok: boolean }>(
-			sql`SELECT to_regprocedure('bot.immutable_unaccent(text)') IS NOT NULL AS ok`
-		)
-		.then((rows) => rows[0]?.ok === true)
-		.catch(() => false);
-	return wrapper;
+  wrapper ??= db
+    .execute<{ ok: boolean }>(
+      sql`SELECT to_regprocedure('bot.immutable_unaccent(text)') IS NOT NULL AS ok`,
+    )
+    .then((rows) => rows[0]?.ok === true)
+    .catch(() => false);
+  return wrapper;
 }
 
 /** `lower(<sans accents>(expr))`, indexable quand le wrapper est installé. */
 export async function sansAccents(expr: SQL): Promise<SQL> {
-	return (await wrapperDisponible())
-		? sql`lower(bot.immutable_unaccent(${expr}))`
-		: sql`lower(unaccent(${expr}))`;
+  return (await wrapperDisponible())
+    ? sql`lower(bot.immutable_unaccent(${expr}))`
+    : sql`lower(unaccent(${expr}))`;
 }

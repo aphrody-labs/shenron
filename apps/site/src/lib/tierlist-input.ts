@@ -18,36 +18,36 @@ export const MAX_TIERS = 12;
  * `data:`/`javascript:`/`blob:` (poids jsonb / XSS) et la traversée de chemin.
  */
 function asImage(v: unknown): string | null {
-	if (typeof v !== "string") return null;
-	const s = v.trim();
-	if (!s || s.length > 512 || s.includes("..")) return null;
-	if (/^https:\/\//i.test(s)) return s;
-	if (/^\.?\/?(assets\/|wiki\/|db\/)/i.test(s)) return s;
-	return null;
+  if (typeof v !== "string") return null;
+  const s = v.trim();
+  if (!s || s.length > 512 || s.includes("..")) return null;
+  if (/^https:\/\//i.test(s)) return s;
+  if (/^\.?\/?(assets\/|wiki\/|db\/)/i.test(s)) return s;
+  return null;
 }
 
 function asItem(v: unknown): TierlistItem | null {
-	if (!v || typeof v !== "object") return null;
-	const o = v as Record<string, unknown>;
-	if (typeof o.id !== "string" || typeof o.label !== "string") return null;
-	// id/label non vides : un id vide casserait le dédoublonnage de l'éditeur
-	// (plusieurs cartes avec id="" deviennent indistinguables au déplacement).
-	const id = o.id.trim().slice(0, 80);
-	const label = o.label.trim().slice(0, 80);
-	if (!id || !label) return null;
-	return { id, label, image: asImage(o.image) };
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  if (typeof o.id !== "string" || typeof o.label !== "string") return null;
+  // id/label non vides : un id vide casserait le dédoublonnage de l'éditeur
+  // (plusieurs cartes avec id="" deviennent indistinguables au déplacement).
+  const id = o.id.trim().slice(0, 80);
+  const label = o.label.trim().slice(0, 80);
+  if (!id || !label) return null;
+  return { id, label, image: asImage(o.image) };
 }
 
 export function asTier(v: unknown): TierlistTier | null {
-	if (!v || typeof v !== "object") return null;
-	const o = v as Record<string, unknown>;
-	if (typeof o.id !== "string" || typeof o.label !== "string") return null;
-	const color =
-		typeof o.color === "string" && /^#[0-9a-fA-F]{3,8}$/.test(o.color) ? o.color : "#888";
-	const items = Array.isArray(o.items)
-		? o.items.map(asItem).filter((x): x is TierlistItem => x !== null)
-		: [];
-	return { id: o.id.slice(0, 40), label: o.label.slice(0, 24), color, items };
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  if (typeof o.id !== "string" || typeof o.label !== "string") return null;
+  const color =
+    typeof o.color === "string" && /^#[0-9a-fA-F]{3,8}$/.test(o.color) ? o.color : "#888";
+  const items = Array.isArray(o.items)
+    ? o.items.map(asItem).filter((x): x is TierlistItem => x !== null)
+    : [];
+  return { id: o.id.slice(0, 40), label: o.label.slice(0, 24), color, items };
 }
 
 /**
@@ -56,30 +56,30 @@ export function asTier(v: unknown): TierlistTier | null {
  * et le total de cartes (l'appelant décide si 0 carte est acceptable).
  */
 export function sanitizeTiers(
-	input: unknown
+  input: unknown,
 ): { tiers: TierlistTier[]; totalItems: number } | null {
-	const tiers = Array.isArray(input)
-		? input
-				.map(asTier)
-				.filter((x): x is TierlistTier => x !== null)
-				.slice(0, MAX_TIERS)
-		: [];
-	if (tiers.length === 0) return null;
-	const totalItems = tiers.reduce((n, t) => n + t.items.length, 0);
-	if (totalItems > MAX_ITEMS) return null;
-	return { tiers, totalItems };
+  const tiers = Array.isArray(input)
+    ? input
+        .map(asTier)
+        .filter((x): x is TierlistTier => x !== null)
+        .slice(0, MAX_TIERS)
+    : [];
+  if (tiers.length === 0) return null;
+  const totalItems = tiers.reduce((n, t) => n + t.items.length, 0);
+  if (totalItems > MAX_ITEMS) return null;
+  return { tiers, totalItems };
 }
 
 /** Payload de sauvegarde d'une tier list officielle (admin). */
 export interface OfficialTierlistPayload {
-	id?: string | null;
-	title: string;
-	description?: string | null;
-	templateKey?: string | null;
-	tiers: TierlistTier[];
-	official?: boolean;
-	featured?: boolean;
-	published?: boolean;
+  id?: string | null;
+  title: string;
+  description?: string | null;
+  templateKey?: string | null;
+  tiers: TierlistTier[];
+  official?: boolean;
+  featured?: boolean;
+  published?: boolean;
 }
 
 /** Résultat d'une sauvegarde (Server Action) consommé par l'éditeur client. */

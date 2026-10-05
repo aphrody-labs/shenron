@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function ContributeursIndexPage() {
-	redirect("/wiki/staff");
+  redirect("/wiki/staff");
 }

@@ -11,7 +11,9 @@ import { resolve } from "node:path";
 
 const distro = process.env.WSL_DISTRO_NAME;
 if (!distro) throw new Error("makensis-wsl runs inside WSL only");
-const localAppData = process.env.SHENRON_WINDOWS_LOCALAPPDATA ?? "/mnt/c/Users/" + (process.env.SHENRON_WINDOWS_USER ?? process.env.USER) + "/AppData/Local";
+const localAppData =
+  process.env.SHENRON_WINDOWS_LOCALAPPDATA ??
+  "/mnt/c/Users/" + (process.env.SHENRON_WINDOWS_USER ?? process.env.USER) + "/AppData/Local";
 const makensis = `${localAppData}/tauri/NSIS/makensis.exe`;
 if (!existsSync(makensis)) throw new Error(`Windows NSIS toolset missing: ${makensis}`);
 
@@ -23,7 +25,10 @@ function windowsPath(path: string): string {
 
 /** Quoted absolute Linux paths of an NSIS script become Windows paths. */
 function translateScript(text: string): string {
-  return text.replace(/"(\/(?:home|tmp|root|usr|opt|var|mnt)\/[^"\n]*)"/g, (_match, path: string) => `"${windowsPath(path)}"`);
+  return text.replace(
+    /"(\/(?:home|tmp|root|usr|opt|var|mnt)\/[^"\n]*)"/g,
+    (_match, path: string) => `"${windowsPath(path)}"`,
+  );
 }
 
 const args = process.argv.slice(2);
@@ -36,5 +41,8 @@ const translated = args.map((arg) => {
   }
   return arg.startsWith("/") && existsSync(arg) ? windowsPath(arg) : arg;
 });
-const child = Bun.spawn([makensis, ...translated], { stdio: ["inherit", "inherit", "inherit"], cwd: process.cwd() });
+const child = Bun.spawn([makensis, ...translated], {
+  stdio: ["inherit", "inherit", "inherit"],
+  cwd: process.cwd(),
+});
 process.exit(await child.exited);

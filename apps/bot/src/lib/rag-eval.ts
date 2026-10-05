@@ -14,49 +14,49 @@
  *   - `tags`        rubriques libres pour ventiler les scores.
  */
 import {
-	aggregate,
-	aggregateByTag,
-	type CaseResult,
-	firstHitRank as sharedFirstHitRank,
-	type GoldCase,
-	isHit,
-	matchesExpectedUrl,
-	type Metrics,
-	ndcgAtK as sharedNdcgAtK,
-	normalizeUrl,
-	parseGold,
-	RANKS,
-	runCase as sharedRunCase,
+  aggregate,
+  aggregateByTag,
+  type CaseResult,
+  firstHitRank as sharedFirstHitRank,
+  type GoldCase,
+  isHit,
+  matchesExpectedUrl,
+  type Metrics,
+  ndcgAtK as sharedNdcgAtK,
+  normalizeUrl,
+  parseGold,
+  RANKS,
+  runCase as sharedRunCase,
 } from "@shenron/pipeline/ai/eval";
 import type { RagHit } from "./rag";
 
 export {
-	aggregate,
-	aggregateByTag,
-	type CaseResult,
-	type GoldCase,
-	isHit,
-	matchesExpectedUrl,
-	type Metrics,
-	normalizeUrl,
-	parseGold,
-	RANKS,
+  aggregate,
+  aggregateByTag,
+  type CaseResult,
+  type GoldCase,
+  isHit,
+  matchesExpectedUrl,
+  type Metrics,
+  normalizeUrl,
+  parseGold,
+  RANKS,
 };
 
 /** Rang 1-based du premier hit juste, 0 si aucun. */
 export function firstHitRank(results: RagHit[], c: GoldCase): number {
-	return sharedFirstHitRank(results, c);
+  return sharedFirstHitRank(results, c);
 }
 
 /** nDCG@k à gain binaire (IDCG : tous les hits justes trouvés en tête). */
 export function ndcgAtK(results: RagHit[], c: GoldCase, k = 10): number {
-	return sharedNdcgAtK(results, c, k);
+  return sharedNdcgAtK(results, c, k);
 }
 
 /** Exécute un cas avec la fonction de recherche fournie. */
 export async function runCase(
-	c: GoldCase,
-	search: (q: string) => Promise<{ results: RagHit[]; mode: string }>
+  c: GoldCase,
+  search: (q: string) => Promise<{ results: RagHit[]; mode: string }>,
 ): Promise<CaseResult> {
-	return sharedRunCase(c, search);
+  return sharedRunCase(c, search);
 }

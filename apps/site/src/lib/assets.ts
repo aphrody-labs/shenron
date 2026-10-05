@@ -14,27 +14,27 @@ import { API_URL, ASSET_BASE } from "@/lib/config";
  * telles quelles.
  */
 export function assetUrl(path: string | null | undefined): string {
-	const value = path?.trim();
-	if (!value) return "";
-	if (/^https?:\/\//i.test(value)) return value;
-	// Un chemin qui commence par « / » (et non « ./ ») est DÉJÀ une URL de ce
-	// site — `/wiki/taopaipai.poster.webp`, servi par `public/`. Le préfixer de
-	// l'hôte du bot produisait `https://bot.dragonballfr.com/wiki/…`, hors des
-	// `remotePatterns` de `next.config.ts` (qui n'ouvrent que `/db/**` et
-	// `/assets/**`) : `next/image` lève à la construction du src, et c'est la
-	// PAGE ENTIÈRE qui tombe sur sa frontière d'erreur. L'accueil ne le montrait
-	// qu'un tirage sur deux, les clips de fond étant piochés au hasard.
-	// Vérifié en base avant d'ouvrir ce cas : aucune des 16 colonnes d'image du
-	// schéma `bot` ne contient de valeur commençant par « / ».
-	if (value.startsWith("/")) return value;
-	const clean = value.replace(/^\.?\/*/, "");
-	// Tous les assets — y compris `assets/wiki/*` uploadés à l'admin — sont servis
-	// par le bot. NE PAS réécrire `assets/wiki/` → `/wiki/` (même origine) : le
-	// dossier `public/` de Next est indexé au build, donc une image uploadée au
-	// runtime y est masquée par la route catch-all `/wiki/[...slug]` (→ HTML, d'où
-	// la vignette cassée). Le bot sert le même fichier (`../site/public/wiki/...`)
-	// via `/assets/wiki/...` sans collision de route.
-	return `${ASSET_BASE}/${clean}`;
+  const value = path?.trim();
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  // Un chemin qui commence par « / » (et non « ./ ») est DÉJÀ une URL de ce
+  // site — `/wiki/taopaipai.poster.webp`, servi par `public/`. Le préfixer de
+  // l'hôte du bot produisait `https://bot.dragonballfr.com/wiki/…`, hors des
+  // `remotePatterns` de `next.config.ts` (qui n'ouvrent que `/db/**` et
+  // `/assets/**`) : `next/image` lève à la construction du src, et c'est la
+  // PAGE ENTIÈRE qui tombe sur sa frontière d'erreur. L'accueil ne le montrait
+  // qu'un tirage sur deux, les clips de fond étant piochés au hasard.
+  // Vérifié en base avant d'ouvrir ce cas : aucune des 16 colonnes d'image du
+  // schéma `bot` ne contient de valeur commençant par « / ».
+  if (value.startsWith("/")) return value;
+  const clean = value.replace(/^\.?\/*/, "");
+  // Tous les assets — y compris `assets/wiki/*` uploadés à l'admin — sont servis
+  // par le bot. NE PAS réécrire `assets/wiki/` → `/wiki/` (même origine) : le
+  // dossier `public/` de Next est indexé au build, donc une image uploadée au
+  // runtime y est masquée par la route catch-all `/wiki/[...slug]` (→ HTML, d'où
+  // la vignette cassée). Le bot sert le même fichier (`../site/public/wiki/...`)
+  // via `/assets/wiki/...` sans collision de route.
+  return `${ASSET_BASE}/${clean}`;
 }
 
 /**
@@ -50,14 +50,13 @@ export function assetUrl(path: string | null | undefined): string {
  * @param lang  variante audio ; `vostfr` = audio japonais
  */
 export function hlsMasterUrl(id: string | number, lang?: "vf" | "vostfr"): string {
-	return `${API_URL}/api/hls/${id}/master.m3u8${lang ? `?lang=${lang}` : ""}`;
+  return `${API_URL}/api/hls/${id}/master.m3u8${lang ? `?lang=${lang}` : ""}`;
 }
 
 /**
  * URL de la carte profil PNG générée par le canvas du bot (8 thèmes).
  */
 export function getProfileCardUrl(discordId: string, theme?: string): string {
-	const q = theme ? `?theme=${encodeURIComponent(theme)}` : "";
-	return `${API_URL}/api/public/profile/${encodeURIComponent(discordId)}/card.png${q}`;
+  const q = theme ? `?theme=${encodeURIComponent(theme)}` : "";
+  return `${API_URL}/api/public/profile/${encodeURIComponent(discordId)}/card.png${q}`;
 }
-

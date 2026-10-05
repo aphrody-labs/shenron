@@ -27,20 +27,20 @@
 import { normaliserJa } from "./normalisation";
 
 export interface TermeLexique {
-	ja: string;
-	fr: string;
-	kind: string;
+  ja: string;
+  fr: string;
+  kind: string;
 }
 
 export interface Suggestion {
-	/** Graphie telle qu'elle figure dans la transcription. */
-	lu: string;
-	/** Graphie du lexique dont elle est proche. */
-	attendu: string;
-	fr: string;
-	kind: string;
-	/** Nombre de signes à changer (1 ou 2). */
-	distance: number;
+  /** Graphie telle qu'elle figure dans la transcription. */
+  lu: string;
+  /** Graphie du lexique dont elle est proche. */
+  attendu: string;
+  fr: string;
+  kind: string;
+  /** Nombre de signes à changer (1 ou 2). */
+  distance: number;
 }
 
 /**
@@ -51,22 +51,22 @@ export interface Suggestion {
  * entier, mot par mot et signe par signe.
  */
 export function distanceBornee(a: string, b: string, max: number): number {
-	if (Math.abs(a.length - b.length) > max) return max + 1;
-	let precedente = Array.from({ length: b.length + 1 }, (_, i) => i);
-	for (let i = 1; i <= a.length; i++) {
-		const courante = [i];
-		let minLigne = i;
-		for (let j = 1; j <= b.length; j++) {
-			const cout = a[i - 1] === b[j - 1] ? 0 : 1;
-			const v = Math.min(courante[j - 1] + 1, precedente[j] + 1, precedente[j - 1] + cout);
-			courante.push(v);
-			if (v < minLigne) minLigne = v;
-		}
-		// Toute la ligne dépasse déjà le seuil : aucune suite ne le fera redescendre.
-		if (minLigne > max) return max + 1;
-		precedente = courante;
-	}
-	return precedente[b.length];
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let precedente = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const courante = [i];
+    let minLigne = i;
+    for (let j = 1; j <= b.length; j++) {
+      const cout = a[i - 1] === b[j - 1] ? 0 : 1;
+      const v = Math.min(courante[j - 1] + 1, precedente[j] + 1, precedente[j - 1] + cout);
+      courante.push(v);
+      if (v < minLigne) minLigne = v;
+    }
+    // Toute la ligne dépasse déjà le seuil : aucune suite ne le fera redescendre.
+    if (minLigne > max) return max + 1;
+    precedente = courante;
+  }
+  return precedente[b.length];
 }
 
 /**
@@ -78,30 +78,30 @@ export function distanceBornee(a: string, b: string, max: number): number {
  * connu n'est pas une faute de lecture, où qu'il tombe dans le mot.
  */
 export interface IndexLexique {
-	exacts: Set<string>;
-	fragments: Set<string>;
+  exacts: Set<string>;
+  fragments: Set<string>;
 }
 
 export function indexerLexique(lex: TermeLexique[]): IndexLexique {
-	const exacts = new Set<string>();
-	const fragments = new Set<string>();
-	for (const t of lex) {
-		const n = normaliserJa(t.ja);
-		if (!n) continue;
-		exacts.add(n);
-		for (let debut = 0; debut < n.length; debut++) {
-			for (let fin = debut + 2; fin <= n.length; fin++) {
-				const sous = n.slice(debut, fin);
-				if (sous !== n) fragments.add(sous);
-			}
-		}
-	}
-	return { exacts, fragments };
+  const exacts = new Set<string>();
+  const fragments = new Set<string>();
+  for (const t of lex) {
+    const n = normaliserJa(t.ja);
+    if (!n) continue;
+    exacts.add(n);
+    for (let debut = 0; debut < n.length; debut++) {
+      for (let fin = debut + 2; fin <= n.length; fin++) {
+        const sous = n.slice(debut, fin);
+        if (sous !== n) fragments.add(sous);
+      }
+    }
+  }
+  return { exacts, fragments };
 }
 
 /** Trie le lexique du plus long au plus court — l'appariement long d'abord. */
 export function trierLexique(lex: TermeLexique[]): TermeLexique[] {
-	return lex.slice().toSorted((a, b) => b.ja.length - a.ja.length);
+  return lex.slice().toSorted((a, b) => b.ja.length - a.ja.length);
 }
 
 /**
@@ -113,32 +113,32 @@ export function trierLexique(lex: TermeLexique[]): TermeLexique[] {
  * les deux sont à un signe près, et c'est l'ordre du lexique qui tranchait.
  */
 export function suggerer(
-	mot: string,
-	lexTrie: TermeLexique[],
-	index: IndexLexique,
-	poidsDe?: (ja: string) => number
+  mot: string,
+  lexTrie: TermeLexique[],
+  index: IndexLexique,
+  poidsDe?: (ja: string) => number,
 ): Suggestion | null {
-	const norme = normaliserJa(mot);
-	// Sous trois signes, tout ressemble à tout : on ne suggère rien.
-	if (norme.length < 3) return null;
-	if (index.exacts.has(norme)) return null;
-	if (index.fragments.has(norme)) return null;
+  const norme = normaliserJa(mot);
+  // Sous trois signes, tout ressemble à tout : on ne suggère rien.
+  if (norme.length < 3) return null;
+  if (index.exacts.has(norme)) return null;
+  if (index.fragments.has(norme)) return null;
 
-	const max = norme.length <= 4 ? 1 : 2;
-	let meilleur: Suggestion | null = null;
-	let meilleurPoids = -1;
-	for (const t of lexTrie) {
-		const cible = normaliserJa(t.ja);
-		if (Math.abs(cible.length - norme.length) > max) continue;
-		const d = distanceBornee(norme, cible, max);
-		if (d > max || d === 0) continue;
-		const poids = poidsDe?.(t.ja) ?? 0;
-		if (!meilleur || d < meilleur.distance || (d === meilleur.distance && poids > meilleurPoids)) {
-			meilleur = { lu: mot, attendu: t.ja, fr: t.fr, kind: t.kind, distance: d };
-			meilleurPoids = poids;
-		}
-	}
-	return meilleur;
+  const max = norme.length <= 4 ? 1 : 2;
+  let meilleur: Suggestion | null = null;
+  let meilleurPoids = -1;
+  for (const t of lexTrie) {
+    const cible = normaliserJa(t.ja);
+    if (Math.abs(cible.length - norme.length) > max) continue;
+    const d = distanceBornee(norme, cible, max);
+    if (d > max || d === 0) continue;
+    const poids = poidsDe?.(t.ja) ?? 0;
+    if (!meilleur || d < meilleur.distance || (d === meilleur.distance && poids > meilleurPoids)) {
+      meilleur = { lu: mot, attendu: t.ja, fr: t.fr, kind: t.kind, distance: d };
+      meilleurPoids = poids;
+    }
+  }
+  return meilleur;
 }
 
 /**
@@ -149,8 +149,8 @@ export function suggerer(
  * « ベジータ » est partout — corriger « ペジータ » vers lui en a un.
  */
 export function retenirParFrequence(
-	s: Suggestion,
-	occurrences: (graphie: string) => number
+  s: Suggestion,
+  occurrences: (graphie: string) => number,
 ): boolean {
-	return occurrences(s.attendu) > occurrences(s.lu);
+  return occurrences(s.attendu) > occurrences(s.lu);
 }

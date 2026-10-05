@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { LEVEL_THRESHOLDS } from "./constants";
 import {
-	calculateLevelForXP,
-	calculateNextThresholdFrom,
-	calculateXpRequiredForLevel,
-	formatXP as formatXpHelper,
-	type LevelThreshold,
+  calculateLevelForXP,
+  calculateNextThresholdFrom,
+  calculateXpRequiredForLevel,
+  formatXP as formatXpHelper,
+  type LevelThreshold,
 } from "@shenron/config/xp";
 
 export type { LevelThreshold };
@@ -20,36 +20,36 @@ let ACTIVE_THRESHOLDS: readonly LevelThreshold[] = LEVEL_THRESHOLDS;
 
 /** Remplace la courbe de niveaux active (validée + triée par xp croissant). */
 export function setLevelThresholds(rows: LevelThreshold[]): void {
-	const clean = rows
-		.filter((r) => Number.isFinite(r.level) && Number.isFinite(r.xp) && r.xp >= 0)
-		.toSorted((a, b) => a.xp - b.xp);
-	ACTIVE_THRESHOLDS = clean.length ? clean : LEVEL_THRESHOLDS;
+  const clean = rows
+    .filter((r) => Number.isFinite(r.level) && Number.isFinite(r.xp) && r.xp >= 0)
+    .toSorted((a, b) => a.xp - b.xp);
+  ACTIVE_THRESHOLDS = clean.length ? clean : LEVEL_THRESHOLDS;
 }
 
 /** Courbe de niveaux active (source unique de vérité runtime). */
 export function getLevelThresholds(): readonly LevelThreshold[] {
-	return ACTIVE_THRESHOLDS;
+  return ACTIVE_THRESHOLDS;
 }
 
 /**
  * Niveau atteint pour un XP.
  */
 export function levelForXP(xp: number): number {
-	return calculateLevelForXP(xp, ACTIVE_THRESHOLDS);
+  return calculateLevelForXP(xp, ACTIVE_THRESHOLDS);
 }
 
 export function xpRequiredForLevel(level: number): number {
-	return calculateXpRequiredForLevel(level, ACTIVE_THRESHOLDS);
+  return calculateXpRequiredForLevel(level, ACTIVE_THRESHOLDS);
 }
 
 export function nextThresholdFrom(xp: number) {
-	return calculateNextThresholdFrom(xp, ACTIVE_THRESHOLDS);
+  return calculateNextThresholdFrom(xp, ACTIVE_THRESHOLDS);
 }
 
 export function randomInt(min: number, max: number): number {
-	return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export function formatXP(xp: number): string {
-	return formatXpHelper(xp);
+  return formatXpHelper(xp);
 }

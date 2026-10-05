@@ -5,18 +5,20 @@ if (!connectionString) throw new Error("DATABASE_URL is required.");
 const sql = postgres(connectionString);
 
 async function main() {
-	console.log("=== ENRICHISSEMENT WIKI : GUIDE POWER SCALING ET NIVEAUX DE PUISSANCE FULL CANON ===");
+  console.log(
+    "=== ENRICHISSEMENT WIKI : GUIDE POWER SCALING ET NIVEAUX DE PUISSANCE FULL CANON ===",
+  );
 
-	// 1. Assurer la catégorie
-	await sql`
+  // 1. Assurer la catégorie
+  await sql`
 		INSERT INTO "WikiCategory" (id, slug, name, "order")
 		VALUES ('cat_power_scaling', 'power-scaling-et-niveaux-de-combat', 'Power Scaling & Système de Puissance', 4)
 		ON CONFLICT (id) DO UPDATE
 		SET slug = EXCLUDED.slug, name = EXCLUDED.name, "order" = EXCLUDED."order"
 	`;
 
-	// 2. Créer l'article complet et exhaustif
-	const body = `# Guide Canonique du Power Scaling : Scouters, Sentōryoku et Kiri
+  // 2. Créer l'article complet et exhaustif
+  const body = `# Guide Canonique du Power Scaling : Scouters, Sentōryoku et Kiri
 
 Ce dossier récapitule l'ensemble du système de quantification de la puissance dans *Dragon Ball*, fondé **strictement sur les sources primaires d'Akira Toriyama** : le manga original (42 volumes), les repères des **Daizenshuu 7 (Dragon Ball Daijiten)** et les multiplicateurs officiels du **Super Exciting Guide (Story Volume)**.
 
@@ -124,7 +126,7 @@ D'après le *Daizenshuu 7* et le *Super Exciting Guide* :
   - Formule décrite par le Vieux Kaiōshin : l'effet est encore plus dévastateur que la Danse car il n'exige aucun nivellement de puissance par le bas et engendre une union parfaite. Le *Super Exciting Guide* évoque une multiplication des capacités ($A \times B$ au sens figuré de démultiplication monumentale).
 `;
 
-	await sql`
+  await sql`
 		INSERT INTO "WikiPage" (id, "categoryId", title, slug, body, "order", "updatedAt")
 		VALUES (
 			'page_power_scaling_canon',
@@ -142,11 +144,11 @@ D'après le *Daizenshuu 7* et le *Super Exciting Guide* :
 		    "updatedAt" = NOW()
 	`;
 
-	console.log("=== GUIDE POWER SCALING CANONIQUE AJOUTE AU WIKI AVEC SUCCES ===");
-	await sql.end();
+  console.log("=== GUIDE POWER SCALING CANONIQUE AJOUTE AU WIKI AVEC SUCCES ===");
+  await sql.end();
 }
 
 main().catch((err) => {
-	console.error("Erreur script power scaling:", err);
-	process.exit(1);
+  console.error("Erreur script power scaling:", err);
+  process.exit(1);
 });

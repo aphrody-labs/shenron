@@ -20,29 +20,29 @@ export type Series = "DB" | "DBZ" | "DBGT" | "DBS" | "DB_DAIMA" | "DBZ_KAI" | "D
  * `apps/bot/assets/`).
  */
 export interface EpisodeFrame {
-	/** Provenance : "ffmpeg" (vidéo locale). */
-	source: "ffmpeg";
-	/** Id stable côté source (ex. `ffmpeg:dbz:001:00042`). */
-	sourceId: string;
-	/** URL/chemin d'origine (page wiki, ou chemin de la vidéo source). */
-	sourceUrl: string | null;
-	/** Numéro d'épisode dans la série (= `db_episodes.number_in_series`). */
-	episodeNumber: number;
-	/**
-	 * Chemin d'asset bot RELATIF (`./assets/ext/db_episodes_frames/...`) — servi
-	 * via `bot.dragonballfr.com/assets/...`. null pour un dry-run (frame non écrite).
-	 */
-	imagePath: string | null;
-	/** Timecode dans l'épisode en secondes. */
-	timecodeSec: number | null;
-	width: number | null;
-	height: number | null;
-	/** Noms de personnages présents (rempli par le merge, livrable séparé). */
-	characterNames: string[];
-	tags: string[];
-	caption: string | null;
-	/** Frame marquante (ex. scene-cut fort, épisode de combat). */
-	isNotable: boolean;
-	/** Ordre stable pour l'affichage. */
-	sortOrder: number;
+  /** Provenance : "ffmpeg" (vidéo locale). */
+  source: "ffmpeg";
+  /** Id stable côté source (ex. `ffmpeg:dbz:001:00042`). */
+  sourceId: string;
+  /** URL/chemin d'origine (page wiki, ou chemin de la vidéo source). */
+  sourceUrl: string | null;
+  /** Numéro d'épisode dans la série (= `db_episodes.number_in_series`). */
+  episodeNumber: number;
+  /**
+   * Chemin d'asset bot RELATIF (`./assets/ext/db_episodes_frames/...`) — servi
+   * via `bot.dragonballfr.com/assets/...`. null pour un dry-run (frame non écrite).
+   */
+  imagePath: string | null;
+  /** Timecode dans l'épisode en secondes. */
+  timecodeSec: number | null;
+  width: number | null;
+  height: number | null;
+  /** Noms de personnages présents (rempli par le merge, livrable séparé). */
+  characterNames: string[];
+  tags: string[];
+  caption: string | null;
+  /** Frame marquante (ex. scene-cut fort, épisode de combat). */
+  isNotable: boolean;
+  /** Ordre stable pour l'affichage. */
+  sortOrder: number;
 }

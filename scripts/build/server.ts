@@ -22,7 +22,17 @@
  *
  * Every step is measured (scripts/build/measure.ts JSONL in dist/server/measures.jsonl).
  */
-import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 
 import { pack } from "../../apps/server/src/payload";
@@ -35,14 +45,27 @@ const option = (name: string, fallback: string) => {
   return index >= 0 ? args[index + 1]! : fallback;
 };
 const TARGETS = {
-  "linux-x64": { bun: "bun-linux-x64", exe: "shenron-server", rust: "x86_64-unknown-linux-gnu", lib: "libshenron_ffi.so" },
-  "windows-x64": { bun: "bun-windows-x64", exe: "shenron-server.exe", rust: "x86_64-pc-windows-msvc", lib: "shenron_ffi.dll" },
+  "linux-x64": {
+    bun: "bun-linux-x64",
+    exe: "shenron-server",
+    rust: "x86_64-unknown-linux-gnu",
+    lib: "libshenron_ffi.so",
+  },
+  "windows-x64": {
+    bun: "bun-windows-x64",
+    exe: "shenron-server.exe",
+    rust: "x86_64-pc-windows-msvc",
+    lib: "shenron_ffi.dll",
+  },
 } as const;
 type Target = keyof typeof TARGETS;
 const flavor = option("--flavor", "desktop");
 if (flavor !== "desktop" && flavor !== "production") throw new Error("--flavor desktop|production");
 const CDN_URL = "https://cdn.dragonballfr.com";
-const target = option("--target", process.platform === "win32" ? "windows-x64" : "linux-x64") as Target;
+const target = option(
+  "--target",
+  process.platform === "win32" ? "windows-x64" : "linux-x64",
+) as Target;
 const spec = TARGETS[target];
 if (!spec) throw new Error(`unknown --target ${target} (${Object.keys(TARGETS).join(", ")})`);
 
@@ -52,9 +75,23 @@ const OUT = join(ROOT, "dist/server", target);
 const MEASURES = join(ROOT, "dist/server/measures.jsonl");
 mkdirSync(join(ROOT, "dist/server"), { recursive: true });
 
-async function measured(label: string, command: string[], cwd: string, env: Record<string, string> = {}) {
+async function measured(
+  label: string,
+  command: string[],
+  cwd: string,
+  env: Record<string, string> = {},
+) {
   const child = Bun.spawn(
-    [process.execPath, join(ROOT, "scripts/build/measure.ts"), "--out", MEASURES, "--label", label, "--", ...command],
+    [
+      process.execPath,
+      join(ROOT, "scripts/build/measure.ts"),
+      "--out",
+      MEASURES,
+      "--label",
+      label,
+      "--",
+      ...command,
+    ],
     { cwd, env: { ...process.env, ...env }, stdio: ["inherit", "inherit", "inherit"] },
   );
   if ((await child.exited) !== 0) throw new Error(`${label} failed`);
@@ -65,7 +102,15 @@ if (!flag("--skip-site")) {
   rmSync(join(SITE, DIST_DIR), { recursive: true, force: true });
   await measured(
     "site-build-standalone",
-    [process.execPath, "--bun", "--no-env-file", "next", "build", "--turbopack", "--experimental-build-mode=compile"],
+    [
+      process.execPath,
+      "--bun",
+      "--no-env-file",
+      "next",
+      "build",
+      "--turbopack",
+      "--experimental-build-mode=compile",
+    ],
     SITE,
     {
       NEXT_OUTPUT: "standalone",
@@ -80,7 +125,8 @@ if (!flag("--skip-site")) {
   );
 }
 const standalone = join(SITE, DIST_DIR, "standalone");
-if (!existsSync(join(standalone, "apps/site/server.js"))) throw new Error(`no standalone build in ${standalone}`);
+if (!existsSync(join(standalone, "apps/site/server.js")))
+  throw new Error(`no standalone build in ${standalone}`);
 
 /**
  * Bun's isolated linker leaves node_modules/.bun/<pkg>@<ver>/node_modules/<name> plus
@@ -95,19 +141,29 @@ function flattenNodeModules(root: string) {
     const modules = join(store, entry, "node_modules");
     if (!existsSync(modules)) continue;
     for (const name of readdirSync(modules)) {
-      const scoped = name.startsWith("@") ? readdirSync(join(modules, name)).map((n) => `${name}/${n}`) : [name];
+      const scoped = name.startsWith("@")
+        ? readdirSync(join(modules, name)).map((n) => `${name}/${n}`)
+        : [name];
       for (const pkg of scoped) {
         const path = join(modules, pkg);
         if (lstatSync(path).isSymbolicLink()) continue;
         const previous = hoisted.get(pkg);
-        if (previous && previous !== path) throw new Error(`two versions of ${pkg} in the trace: ${previous} and ${path}`);
+        if (previous && previous !== path)
+          throw new Error(`two versions of ${pkg} in the trace: ${previous} and ${path}`);
         hoisted.set(pkg, path);
       }
     }
   }
-  for (const [pkg, path] of hoisted) cpSync(path, join(root, "node_modules", pkg), { recursive: true, dereference: true });
+  for (const [pkg, path] of hoisted)
+    cpSync(path, join(root, "node_modules", pkg), { recursive: true, dereference: true });
   rmSync(store, { recursive: true, force: true });
-  for (const link of [...new Bun.Glob("**/node_modules/*").scanSync({ cwd: root, onlyFiles: false, followSymlinks: false })]) {
+  for (const link of [
+    ...new Bun.Glob("**/node_modules/*").scanSync({
+      cwd: root,
+      onlyFiles: false,
+      followSymlinks: false,
+    }),
+  ]) {
     const path = join(root, link);
     if (lstatSync(path).isSymbolicLink()) rmSync(path, { force: true });
   }
@@ -119,16 +175,23 @@ rmSync(OUT, { recursive: true, force: true });
 const siteOut = join(OUT, "site");
 cpSync(standalone, siteOut, { recursive: true, verbatimSymlinks: true });
 flattenNodeModules(siteOut);
-cpSync(join(SITE, "public"), join(siteOut, "apps/site/public"), { recursive: true, dereference: true });
-cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "static"), { recursive: true });
+cpSync(join(SITE, "public"), join(siteOut, "apps/site/public"), {
+  recursive: true,
+  dereference: true,
+});
+cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "static"), {
+  recursive: true,
+});
 // Server source maps only weigh the payload: drop them.
-for (const map of [...new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true })]) rmSync(join(siteOut, map));
+for (const map of [...new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true })])
+  rmSync(join(siteOut, map));
 // Nothing private may ship: no database, env file or key.
 const forbidden = new Bun.Glob("**/*.{db,db-wal,db-shm,sqlite,sqlite3,pem,key,p12,pfx}");
-const leaks = [...forbidden.scanSync({ cwd: siteOut, dot: true })].concat(
-  [...new Bun.Glob("**/.env*").scanSync({ cwd: siteOut, dot: true })],
-);
-if (leaks.length) throw new Error(`private files in the release tree: ${leaks.slice(0, 10).join(", ")}`);
+const leaks = [...forbidden.scanSync({ cwd: siteOut, dot: true })].concat([
+  ...new Bun.Glob("**/.env*").scanSync({ cwd: siteOut, dot: true }),
+]);
+if (leaks.length)
+  throw new Error(`private files in the release tree: ${leaks.slice(0, 10).join(", ")}`);
 
 // 3. Native library of the target (optional; the local RAG API reports its absence).
 const libCandidates = [
@@ -153,7 +216,13 @@ if (embed) {
     join(buildDir, "entry.ts"),
     `// Generated by scripts/build/server.ts\nimport payload from "./payload.pak.zst" with { type: "file" };\nimport { main } from "../src/main";\n\nawait main(process.argv.slice(2), { embeddedPayload: payload });\n`,
   );
-  console.error(JSON.stringify({ label: "payload", bytes: payload.byteLength, ms: Math.round(performance.now() - started) }));
+  console.error(
+    JSON.stringify({
+      label: "payload",
+      bytes: payload.byteLength,
+      ms: Math.round(performance.now() - started),
+    }),
+  );
 } else {
   writeFileSync(
     join(buildDir, "entry.ts"),
@@ -162,7 +231,16 @@ if (embed) {
 }
 await measured(
   `server-compile-${target}`,
-  [process.execPath, "build", join(buildDir, "entry.ts"), "--compile", `--target=${spec.bun}`, "--minify", "--outfile", join(OUT, spec.exe)],
+  [
+    process.execPath,
+    "build",
+    join(buildDir, "entry.ts"),
+    "--compile",
+    `--target=${spec.bun}`,
+    "--minify",
+    "--outfile",
+    join(OUT, spec.exe),
+  ],
   ROOT,
 );
 if (embed) {
@@ -179,4 +257,14 @@ const buildId = readFileSync(join(SITE, DIST_DIR, "BUILD_ID"), "utf8").trim();
 writeFileSync(join(cdn, "BUILD_ID"), `${buildId}\n`);
 
 const size = statSync(join(OUT, spec.exe)).size;
-console.log(JSON.stringify({ target, flavor, binary: join(OUT, spec.exe), sizeMiB: Math.round(size / 1048576), embedded: embed, buildId, cdn }));
+console.log(
+  JSON.stringify({
+    target,
+    flavor,
+    binary: join(OUT, spec.exe),
+    sizeMiB: Math.round(size / 1048576),
+    embedded: embed,
+    buildId,
+    cdn,
+  }),
+);

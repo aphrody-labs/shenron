@@ -32,12 +32,12 @@ import postgres from "postgres";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
-	console.error("✗ DATABASE_URL (Neon/PG) requis.");
-	process.exit(1);
+  console.error("✗ DATABASE_URL (Neon/PG) requis.");
+  process.exit(1);
 }
 
 const JSON_PATH =
-	process.env.VOIRANIME_JSON ?? `${os.homedir()}/bxc/data/voiranime/dragon-ball-full.json`;
+  process.env.VOIRANIME_JSON ?? `${os.homedir()}/bxc/data/voiranime/dragon-ball-full.json`;
 
 /** Première partie Kai (MAL 9617) — declaredEpisodes voiranime = 97. */
 const KAI_PART1 = 97;
@@ -56,65 +56,65 @@ const VF_SLUG = "dragon-ball-kai-vf";
  * (épisode japonais scindé par le découpage international) n'en reçoit aucune.
  */
 const vostfrKaiFinal = new Map<number, number>(
-	(
-		(await Bun.file(new URL("../data/kai-final-correspondance.json", import.meta.url)).json()) as {
-			entrees: { n: number; jp: number }[];
-		}
-	).entrees.map((e) => [e.n, e.jp])
+  (
+    (await Bun.file(new URL("../data/kai-final-correspondance.json", import.meta.url)).json()) as {
+      entrees: { n: number; jp: number }[];
+    }
+  ).entrees.map((e) => [e.n, e.jp]),
 );
 
 type Player = {
-	name: string;
-	provider: string;
-	embedUrl: string;
-	lang?: "vf" | "vostfr";
+  name: string;
+  provider: string;
+  embedUrl: string;
+  lang?: "vf" | "vostfr";
 };
 type VEpisode = { number: number | null; label?: string; players?: Player[] };
 type VSeries = { slug: string; title?: string; declaredEpisodes?: number; episodes: VEpisode[] };
 
 const file = Bun.file(JSON_PATH);
 if (!(await file.exists())) {
-	console.error(`✗ Dataset introuvable : ${JSON_PATH}`);
-	process.exit(1);
+  console.error(`✗ Dataset introuvable : ${JSON_PATH}`);
+  process.exit(1);
 }
 
 const doc = (await file.json()) as { series: VSeries[] };
 const bySlug = new Map(doc.series.map((s) => [s.slug, s]));
 
 function indexByNumber(slug: string, lang: "vf" | "vostfr"): Map<number, Player[]> {
-	const out = new Map<number, Player[]>();
-	const s = bySlug.get(slug);
-	if (!s) {
-		console.log(`  ⚠ slug voiranime absent : ${slug} (${lang})`);
-		return out;
-	}
-	for (const e of s.episodes) {
-		if (typeof e.number === "number" && e.players?.length) {
-			out.set(
-				e.number,
-				e.players.map((p) => ({
-					name: `${lang === "vf" ? "VF" : "VOSTFR"} · ${p.name}`,
-					provider: p.provider,
-					embedUrl: p.embedUrl,
-					lang,
-				}))
-			);
-		}
-	}
-	console.log(
-		`  · ${slug.padEnd(22)} ${lang.padEnd(6)} : ${out.size} eps avec players (sur ${s.episodes.length})`
-	);
-	return out;
+  const out = new Map<number, Player[]>();
+  const s = bySlug.get(slug);
+  if (!s) {
+    console.log(`  ⚠ slug voiranime absent : ${slug} (${lang})`);
+    return out;
+  }
+  for (const e of s.episodes) {
+    if (typeof e.number === "number" && e.players?.length) {
+      out.set(
+        e.number,
+        e.players.map((p) => ({
+          name: `${lang === "vf" ? "VF" : "VOSTFR"} · ${p.name}`,
+          provider: p.provider,
+          embedUrl: p.embedUrl,
+          lang,
+        })),
+      );
+    }
+  }
+  console.log(
+    `  · ${slug.padEnd(22)} ${lang.padEnd(6)} : ${out.size} eps avec players (sur ${s.episodes.length})`,
+  );
+  return out;
 }
 
 function maxEpisodeNumber(slug: string): number {
-	const s = bySlug.get(slug);
-	if (!s) return 0;
-	let m = 0;
-	for (const e of s.episodes) {
-		if (typeof e.number === "number" && e.number > m) m = e.number;
-	}
-	return m;
+  const s = bySlug.get(slug);
+  if (!s) return 0;
+  let m = 0;
+  for (const e of s.episodes) {
+    if (typeof e.number === "number" && e.number > m) m = e.number;
+  }
+  return m;
 }
 
 const vfByNum = indexByNumber(VF_SLUG, "vf");
@@ -124,15 +124,15 @@ const maxVoir = Math.max(maxEpisodeNumber(VF_SLUG), maxEpisodeNumber(VOSTFR_SLUG
 const finalCount = Math.max(0, maxVoir - KAI_PART1);
 
 if (finalCount !== KAI_FINAL_CANON) {
-	console.log(
-		`  ⚠ écart Final : dataset → ${finalCount} eps (voiranime ${KAI_PART1 + 1}…${maxVoir}),` +
-			` canon MAL ≈ ${KAI_FINAL_CANON}. Import de ${finalCount} fiches Final.`
-	);
+  console.log(
+    `  ⚠ écart Final : dataset → ${finalCount} eps (voiranime ${KAI_PART1 + 1}…${maxVoir}),` +
+      ` canon MAL ≈ ${KAI_FINAL_CANON}. Import de ${finalCount} fiches Final.`,
+  );
 }
 if (maxVoir < KAI_PART1) {
-	console.log(
-		`  ⚠ dataset max=${maxVoir} < KAI_PART1=${KAI_PART1} — DBZ_KAI tronqué à ${maxVoir}.`
-	);
+  console.log(
+    `  ⚠ dataset max=${maxVoir} < KAI_PART1=${KAI_PART1} — DBZ_KAI tronqué à ${maxVoir}.`,
+  );
 }
 
 const sql = postgres(NEON_URL, { max: 2, prepare: false });
@@ -140,25 +140,25 @@ await sql`ALTER TABLE bot.db_episodes ADD COLUMN IF NOT EXISTS players jsonb`;
 
 // IDs manuels : pas d'IDENTITY auto partout.
 const [{ max: maxIdRaw }] =
-	(await sql`SELECT COALESCE(MAX(id), 0) AS max FROM bot.db_episodes`) as {
-		max: string | number;
-	}[];
+  (await sql`SELECT COALESCE(MAX(id), 0) AS max FROM bot.db_episodes`) as {
+    max: string | number;
+  }[];
 let nextId = Number(maxIdRaw) + 1;
 
 type Target = {
-	series: "DBZ_KAI" | "DBZ_KAI_FINAL";
-	numberInSeries: number;
-	/** Numéro épisode dans le slug voiranime continu. */
-	voirNum: number;
+  series: "DBZ_KAI" | "DBZ_KAI_FINAL";
+  numberInSeries: number;
+  /** Numéro épisode dans le slug voiranime continu. */
+  voirNum: number;
 };
 
 const targets: Target[] = [];
 const kaiMax = Math.min(KAI_PART1, maxVoir);
 for (let n = 1; n <= kaiMax; n++) {
-	targets.push({ series: "DBZ_KAI", numberInSeries: n, voirNum: n });
+  targets.push({ series: "DBZ_KAI", numberInSeries: n, voirNum: n });
 }
 for (let n = 1; n <= finalCount; n++) {
-	targets.push({ series: "DBZ_KAI_FINAL", numberInSeries: n, voirNum: KAI_PART1 + n });
+  targets.push({ series: "DBZ_KAI_FINAL", numberInSeries: n, voirNum: KAI_PART1 + n });
 }
 
 let created = 0;
@@ -166,62 +166,62 @@ let skippedExisting = 0;
 let playersUpdated = 0;
 let noMatch = 0;
 const perSeries: Record<
-	string,
-	{ created: number; existing: number; withPlayers: number; noMatch: number }
+  string,
+  { created: number; existing: number; withPlayers: number; noMatch: number }
 > = {
-	DBZ_KAI: { created: 0, existing: 0, withPlayers: 0, noMatch: 0 },
-	DBZ_KAI_FINAL: { created: 0, existing: 0, withPlayers: 0, noMatch: 0 },
+  DBZ_KAI: { created: 0, existing: 0, withPlayers: 0, noMatch: 0 },
+  DBZ_KAI_FINAL: { created: 0, existing: 0, withPlayers: 0, noMatch: 0 },
 };
 
 for (const t of targets) {
-	const stats = perSeries[t.series]!;
-	const existing = (await sql`
+  const stats = perSeries[t.series]!;
+  const existing = (await sql`
 		SELECT id FROM bot.db_episodes
 		WHERE series = ${t.series} AND number_in_series = ${t.numberInSeries}
 		LIMIT 1
 	`) as unknown as { id: number }[];
 
-	let id: number;
-	if (existing.length > 0) {
-		id = Number(existing[0]!.id);
-		skippedExisting++;
-		stats.existing++;
-	} else {
-		const title = `Épisode ${t.numberInSeries}`;
-		await sql`
+  let id: number;
+  if (existing.length > 0) {
+    id = Number(existing[0]!.id);
+    skippedExisting++;
+    stats.existing++;
+  } else {
+    const title = `Épisode ${t.numberInSeries}`;
+    await sql`
 			INSERT INTO bot.db_episodes (id, series, number_in_series, title, visible)
 			VALUES (${nextId}, ${t.series}, ${t.numberInSeries}, ${title}, true)
 		`;
-		id = nextId;
-		nextId++;
-		created++;
-		stats.created++;
-	}
+    id = nextId;
+    nextId++;
+    created++;
+    stats.created++;
+  }
 
-	const vf = vfByNum.get(t.voirNum) ?? [];
-	const vostfrNum = t.series === "DBZ_KAI_FINAL" ? vostfrKaiFinal.get(t.numberInSeries) : t.voirNum;
-	const vostfr = vostfrNum === undefined ? [] : (vostfrByNum.get(vostfrNum) ?? []);
-	const merged = [...vf, ...vostfr];
-	if (merged.length === 0) {
-		noMatch++;
-		stats.noMatch++;
-		continue;
-	}
-	await sql`UPDATE bot.db_episodes SET players = ${sql.json(merged)} WHERE id = ${id}`;
-	playersUpdated++;
-	stats.withPlayers++;
+  const vf = vfByNum.get(t.voirNum) ?? [];
+  const vostfrNum = t.series === "DBZ_KAI_FINAL" ? vostfrKaiFinal.get(t.numberInSeries) : t.voirNum;
+  const vostfr = vostfrNum === undefined ? [] : (vostfrByNum.get(vostfrNum) ?? []);
+  const merged = [...vf, ...vostfr];
+  if (merged.length === 0) {
+    noMatch++;
+    stats.noMatch++;
+    continue;
+  }
+  await sql`UPDATE bot.db_episodes SET players = ${sql.json(merged)} WHERE id = ${id}`;
+  playersUpdated++;
+  stats.withPlayers++;
 }
 
 console.log("\n=== Récap import Kai ===");
 for (const [series, s] of Object.entries(perSeries)) {
-	console.log(
-		`  ${series.padEnd(14)} created=${s.created} existing=${s.existing}` +
-			` players=${s.withPlayers} noMatch=${s.noMatch}`
-	);
+  console.log(
+    `  ${series.padEnd(14)} created=${s.created} existing=${s.existing}` +
+      ` players=${s.withPlayers} noMatch=${s.noMatch}`,
+  );
 }
 console.log(
-	`\n✓ Terminé : ${created} créés, ${skippedExisting} déjà présents,` +
-		` ${playersUpdated} players mis à jour, ${noMatch} sans lecteurs.`
+  `\n✓ Terminé : ${created} créés, ${skippedExisting} déjà présents,` +
+    ` ${playersUpdated} players mis à jour, ${noMatch} sans lecteurs.`,
 );
 console.log(`  next free id would be ${nextId}`);
 

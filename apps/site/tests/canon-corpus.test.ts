@@ -61,74 +61,74 @@ source_file: X
 `;
 
 describe("extraction du corpus .aphrody", () => {
-	test("une citation française ressort avec son texte, sa source et son année", () => {
-		const [citation] = PARSEURS.citations(FR);
-		expect(citation).toBeDefined();
-		expect(citation!.texte).toStartWith("Je suppose que j'aime Piccolo");
-		// Les guillemets et l'attribution ne font pas partie de la citation.
-		expect(citation!.texte).not.toContain("Akira Toriyama");
-		expect(citation!.annee).toBe(1995);
-		expect(citation!.precision).toContain("Daizenshuu 2");
-		expect(citation!.sujet).toContain("Piccolo");
-	});
+  test("une citation française ressort avec son texte, sa source et son année", () => {
+    const [citation] = PARSEURS.citations(FR);
+    expect(citation).toBeDefined();
+    expect(citation!.texte).toStartWith("Je suppose que j'aime Piccolo");
+    // Les guillemets et l'attribution ne font pas partie de la citation.
+    expect(citation!.texte).not.toContain("Akira Toriyama");
+    expect(citation!.annee).toBe(1995);
+    expect(citation!.precision).toContain("Daizenshuu 2");
+    expect(citation!.sujet).toContain("Piccolo");
+  });
 
-	test("la synthèse d'une section ne recopie pas la citation qu'elle entoure", () => {
-		const [fait] = PARSEURS.faits(FR);
-		expect(fait).toBeDefined();
-		expect(fait!.texte).not.toContain("Je suppose que j'aime Piccolo");
-		expect(fait!.texte).toContain("mentor");
-	});
+  test("la synthèse d'une section ne recopie pas la citation qu'elle entoure", () => {
+    const [fait] = PARSEURS.faits(FR);
+    expect(fait).toBeDefined();
+    expect(fait!.texte).not.toContain("Je suppose que j'aime Piccolo");
+    expect(fait!.texte).toContain("mentor");
+  });
 
-	test("un guide Kanzenshuu rend une entrée par question", () => {
-		const extraits = PARSEURS.sections(GUIDE);
-		const satan = extraits.find((e) => e.sujet.includes("Satan"));
-		expect(satan).toBeDefined();
-		expect(satan!.texte).toContain("Mark");
-		expect(extraits.some((e) => e.sujet.includes("grouped into sets"))).toBe(true);
-	});
+  test("un guide Kanzenshuu rend une entrée par question", () => {
+    const extraits = PARSEURS.sections(GUIDE);
+    const satan = extraits.find((e) => e.sujet.includes("Satan"));
+    expect(satan).toBeDefined();
+    expect(satan!.texte).toContain("Mark");
+    expect(extraits.some((e) => e.sujet.includes("grouped into sets"))).toBe(true);
+  });
 
-	test("les introductions de tankōbon sortent numérotées et datées", () => {
-		const extraits = PARSEURS.tankobon(TANKOBON);
-		expect(extraits).toHaveLength(2);
-		expect(extraits[0]!.sujet).toBe("Tome 01 — Son Goku and Friends");
-		expect(extraits[0]!.annee).toBe(1985);
-		// L'image d'en-tête n'est pas du texte d'auteur.
-		expect(extraits[0]!.texte).not.toContain("![](");
-		expect(extraits[0]!.texte).toStartWith("The setting of Dragon Ball");
-		expect(extraits[1]!.annee).toBe(1986);
-	});
+  test("les introductions de tankōbon sortent numérotées et datées", () => {
+    const extraits = PARSEURS.tankobon(TANKOBON);
+    expect(extraits).toHaveLength(2);
+    expect(extraits[0]!.sujet).toBe("Tome 01 — Son Goku and Friends");
+    expect(extraits[0]!.annee).toBe(1985);
+    // L'image d'en-tête n'est pas du texte d'auteur.
+    expect(extraits[0]!.texte).not.toContain("![](");
+    expect(extraits[0]!.texte).toStartWith("The setting of Dragon Ball");
+    expect(extraits[1]!.annee).toBe(1986);
+  });
 });
 
 describe("mots-clés d'une citation", () => {
-	const lexique = ["Son Goku", "Piccolo", "Long", "Apple"];
+  const lexique = ["Son Goku", "Piccolo", "Long", "Apple"];
 
-	test("les entités du wiki priment sur les mots du titre", () => {
-		const cles = motsCles("Le Personnage Préféré", "Toriyama préfère Piccolo à Son Goku.", lexique);
-		expect(cles[0]).toBe("son goku");
-		expect(cles).toContain("piccolo");
-		expect(cles).toContain("personnage");
-	});
+  test("les entités du wiki priment sur les mots du titre", () => {
+    const cles = motsCles("Le Personnage Préféré", "Toriyama préfère Piccolo à Son Goku.", lexique);
+    expect(cles[0]).toBe("son goku");
+    expect(cles).toContain("piccolo");
+    expect(cles).toContain("personnage");
+  });
 
-	test("un nom propre ne s'apparie pas à son homonyme commun en minuscule", () => {
-		// « Long » et « Apple » sont des personnages ; « a long apple pie » n'en parle pas.
-		const cles = motsCles("Recette", "It was a long apple pie, nothing more.", lexique);
-		expect(cles).not.toContain("long");
-		expect(cles).not.toContain("apple");
-	});
+  test("un nom propre ne s'apparie pas à son homonyme commun en minuscule", () => {
+    // « Long » et « Apple » sont des personnages ; « a long apple pie » n'en parle pas.
+    const cles = motsCles("Recette", "It was a long apple pie, nothing more.", lexique);
+    expect(cles).not.toContain("long");
+    expect(cles).not.toContain("apple");
+  });
 
-	test("les mots vides ne deviennent jamais des mots-clés", () => {
-		expect(motsCles("What did you use as design motifs?", "…", lexique)).not.toContain("what");
-	});
+  test("les mots vides ne deviennent jamais des mots-clés", () => {
+    expect(motsCles("What did you use as design motifs?", "…", lexique)).not.toContain("what");
+  });
 });
 
 describe("garde-fou des sources", () => {
-	test("aucun document admis n'est un wiki de fans", () => {
-		for (const doc of DOCUMENTS) expect(REFUSÉ.test(doc.motif)).toBe(false);
-	});
+  test("aucun document admis n'est un wiki de fans", () => {
+    for (const doc of DOCUMENTS) expect(REFUSÉ.test(doc.motif)).toBe(false);
+  });
 
-	test("le garde-fou attrape les noms de fichiers interdits", () => {
-		for (const nom of ["fandom-broly-fr.md", "wikipedia-dragon-ball.md", "wiki-dbz.md"]) {
-			expect(REFUSÉ.test(nom)).toBe(true);
-		}
-	});
+  test("le garde-fou attrape les noms de fichiers interdits", () => {
+    for (const nom of ["fandom-broly-fr.md", "wikipedia-dragon-ball.md", "wiki-dbz.md"]) {
+      expect(REFUSÉ.test(nom)).toBe(true);
+    }
+  });
 });

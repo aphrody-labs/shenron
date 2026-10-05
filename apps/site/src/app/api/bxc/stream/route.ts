@@ -29,14 +29,15 @@ export async function GET(req: Request) {
 
     return NextResponse.json(
       { error: "Paramètre 'resolve' (URL embed) ou 'search' (titre) requis." },
-      { status: 400 }
+      { status: 400 },
     );
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Erreur lors de la résolution de flux via BXC",
+        error:
+          error instanceof Error ? error.message : "Erreur lors de la résolution de flux via BXC",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

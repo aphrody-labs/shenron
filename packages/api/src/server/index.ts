@@ -73,7 +73,9 @@ export interface OcrPort {
 export interface VfsPort {
   info(): VfsInfoResponse;
   stat(path: string): Omit<VfsStatResponse, "path">;
-  readDir(path: string): { name: string; kind: "file" | "dir"; size: number; storage: "inline" | "embedded" | "cdn" }[];
+  readDir(
+    path: string,
+  ): { name: string; kind: "file" | "dir"; size: number; storage: "inline" | "embedded" | "cdn" }[];
   read(path: string): Promise<Uint8Array>;
   /** Local file serving `path` without a copy (`Bun.file` in the host), when there is one. */
   localFile?(path: string): Blob | null;
@@ -121,7 +123,11 @@ export interface ShenronApiPorts {
   log?(event: ShenronApiLogEvent): void;
 }
 
-export type ShenronApiService = "shenron-bot" | "shenron-site" | "shenron-server" | "shenron-desktop";
+export type ShenronApiService =
+  | "shenron-bot"
+  | "shenron-site"
+  | "shenron-server"
+  | "shenron-desktop";
 
 type BunServer = Server<ChatSocketData>;
 
@@ -196,7 +202,9 @@ async function vfsCall<T>(run: () => Promise<T> | T): Promise<T | Response> {
 }
 
 function issuesMessage(error: z.ZodError): string {
-  return error.issues.map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`).join("; ");
+  return error.issues
+    .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`)
+    .join("; ");
 }
 
 /** Query string → object; repeated keys become arrays, `true`/`false` and numbers stay strings for zod coercion. */
@@ -204,7 +212,12 @@ function queryObject(url: URL): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [key, value] of url.searchParams) {
     const current = out[key];
-    out[key] = current === undefined ? value : Array.isArray(current) ? [...current, value] : [current, value];
+    out[key] =
+      current === undefined
+        ? value
+        : Array.isArray(current)
+          ? [...current, value]
+          : [current, value];
   }
   return out;
 }
@@ -217,7 +230,10 @@ interface SchemaDef {
 /** Base type of a field, through `optional`, `default`, `nullable` and `prefault` wrappers. */
 function baseType(field: z.ZodType): string | undefined {
   let def = (field as unknown as { def?: SchemaDef }).def;
-  while (def?.innerType && ["optional", "default", "nullable", "prefault"].includes(def.type ?? "")) {
+  while (
+    def?.innerType &&
+    ["optional", "default", "nullable", "prefault"].includes(def.type ?? "")
+  ) {
     def = def.innerType.def;
   }
   return def?.type;
@@ -232,13 +248,17 @@ function coerceQuery(schema: z.ZodType, raw: Record<string, unknown>): unknown {
     const value = out[key];
     if (typeof value !== "string") continue;
     const type = baseType(field);
-    if (type === "number" && value.trim() !== "" && Number.isFinite(Number(value))) out[key] = Number(value);
+    if (type === "number" && value.trim() !== "" && Number.isFinite(Number(value)))
+      out[key] = Number(value);
     if (type === "boolean") out[key] = value === "true" || value === "1";
   }
   return out;
 }
 
-export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronApiService }): ShenronApi {
+export function createShenronApi(
+  ports: ShenronApiPorts,
+  o: { service: ShenronApiService },
+): ShenronApi {
   const streams = new ChatStreams();
   const router = new Router<{ spec: EndpointSpec; run: Handler }>();
   let cachedDocument: Record<string, unknown> | null = null;
@@ -273,9 +293,15 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
   };
 
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
-  const anyGroup = [ports.wiki, ports.rag, ports.chat, ports.conversations, ports.vfs, ports.ocr, ports.mcp].some(
-    (port) => port != null,
-  );
+  const anyGroup = [
+    ports.wiki,
+    ports.rag,
+    ports.chat,
+    ports.conversations,
+    ports.vfs,
+    ports.ocr,
+    ports.mcp,
+  ].some((port) => port != null);
   add(endpoints.health, anyGroup, async () => json({ status: "ok" }, 200));
   add(endpoints.apiHealth, anyGroup, async () => json({ status: "ok" }, 200));
   add(endpoints.openApi, anyGroup, async () => json(openApiDocument(), 200));
@@ -294,7 +320,10 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
     const page = await fromPort(() =>
       wiki!.list({ category, limit: query.limit, offset: query.offset, ...(q ? { q } : {}) }),
     );
-    return json({ category, items: page.items, total: page.total, limit: query.limit, offset: query.offset }, 200);
+    return json(
+      { category, items: page.items, total: page.total, limit: query.limit, offset: query.offset },
+      200,
+    );
   });
   add(endpoints.wikiEntity, wiki !== null, async (ctx) => {
     const category = ctx.params.category ?? "";
@@ -309,11 +338,21 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
     const query = ctx.query as RagSearchQuery;
     if (!query.q.trim()) return json({ q: query.q, results: [], mode: "lexical" }, 200);
     const result = await fromPort(() => rag!.search(query));
-    return json({ q: query.q, results: result.hits, mode: result.mode, ...(result.error ? { error: result.error } : {}) }, 200);
+    return json(
+      {
+        q: query.q,
+        results: result.hits,
+        mode: result.mode,
+        ...(result.error ? { error: result.error } : {}),
+      },
+      200,
+    );
   });
   add(endpoints.ragContext, rag !== null, async (ctx) => {
     const query = ctx.query as RagSearchQuery;
-    const result = query.q.trim() ? await fromPort(() => rag!.search(query)) : { mode: "lexical" as const, hits: [] };
+    const result = query.q.trim()
+      ? await fromPort(() => rag!.search(query))
+      : { mode: "lexical" as const, hits: [] };
     const maxChars = query.maxChars ?? 6000;
     let context = "";
     const sources: RagContextResponse["sources"] = [];
@@ -338,7 +377,13 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
 
   // ── Chat ──────────────────────────────────────────────────────────────────
   const chat = ports.chat ?? null;
-  const sseResponse = (id: string, ownerId: string, after: number, signal: AbortSignal, cors: Record<string, string>) => {
+  const sseResponse = (
+    id: string,
+    ownerId: string,
+    after: number,
+    signal: AbortSignal,
+    cors: Record<string, string>,
+  ) => {
     let keepalive: ReturnType<typeof setInterval> | undefined;
     const body = new ReadableStream<Uint8Array>({
       async start(controller) {
@@ -360,11 +405,16 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
         clearInterval(keepalive);
       },
     });
-    return new Response(body, { status: 200, headers: { ...cors, ...SSE_HEADERS, "X-Stream-Id": id } });
+    return new Response(body, {
+      status: 200,
+      headers: { ...cors, ...SSE_HEADERS, "X-Stream-Id": id },
+    });
   };
   const startChat = (request: ChatRequestParsed, ownerId: string) => {
     const streamId = `s${crypto.randomUUID().replaceAll("-", "")}`;
-    return streams.start(streamId, ownerId, (signal) => chat!.run({ request, ownerId, streamId }, signal)).id;
+    return streams.start(streamId, ownerId, (signal) =>
+      chat!.run({ request, ownerId, streamId }, signal),
+    ).id;
   };
   add(endpoints.chat, chat !== null, async (ctx) => {
     const request = ctx.body as ChatRequestParsed;
@@ -381,7 +431,11 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
       else if (event.type === "done") done = event.data;
       else if (event.type === "error") {
         return json(
-          { error: "Chat generation failed", code: "upstream_unavailable", message: `${event.data.code}: ${event.data.message}` },
+          {
+            error: "Chat generation failed",
+            code: "upstream_unavailable",
+            message: `${event.data.code}: ${event.data.message}`,
+          },
           502,
         );
       }
@@ -391,7 +445,9 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
   add(endpoints.chatResume, chat !== null, async (ctx) => {
     const id = ctx.params.streamId ?? "";
     if (!streams.has(id, ctx.ownerId!)) return json(NOT_FOUND, 404);
-    const after = Number(ctx.request.headers.get("last-event-id") ?? ctx.url.searchParams.get("after") ?? 0) || 0;
+    const after =
+      Number(ctx.request.headers.get("last-event-id") ?? ctx.url.searchParams.get("after") ?? 0) ||
+      0;
     return sseResponse(id, ctx.ownerId!, Math.max(0, after), ctx.request.signal, ctx.cors);
   });
   add(endpoints.chatCancel, chat !== null, async (ctx) => {
@@ -399,9 +455,14 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
     return cancelled ? json({ ok: true }, 200) : json(NOT_FOUND, 404);
   });
   add(endpoints.chatSocket, chat !== null, async (ctx) => {
-    if (!ctx.server) return json({ error: "WebSocket needs Bun.serve", code: "invalid_request" }, 426);
-    const upgraded = ctx.server.upgrade(ctx.request, { data: { ownerId: ctx.ownerId!, streams: new Map() } });
-    return upgraded ? (undefined as unknown as Response) : json({ error: "upgrade failed", code: "invalid_request" }, 400);
+    if (!ctx.server)
+      return json({ error: "WebSocket needs Bun.serve", code: "invalid_request" }, 426);
+    const upgraded = ctx.server.upgrade(ctx.request, {
+      data: { ownerId: ctx.ownerId!, streams: new Map() },
+    });
+    return upgraded
+      ? (undefined as unknown as Response)
+      : json({ error: "upgrade failed", code: "invalid_request" }, 400);
   });
   add(endpoints.models, chat !== null, async () => json(await fromPort(() => chat!.models()), 200));
 
@@ -431,7 +492,10 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
   add(endpoints.syncPull, store !== null, async (ctx) => {
     const query = ctx.query as { cursor?: string; limit?: number };
     try {
-      return json(await fromPort(() => store!.pull(ctx.ownerId!, query.cursor ?? null, query.limit)), 200);
+      return json(
+        await fromPort(() => store!.pull(ctx.ownerId!, query.cursor ?? null, query.limit)),
+        200,
+      );
     } catch (error) {
       if (error instanceof DataUnavailable && error.message === "invalid sync cursor") {
         return json({ error: "invalid sync cursor", code: "invalid_request" }, 400);
@@ -451,7 +515,8 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
   const vfs = ports.vfs ?? null;
   const vfsGuard = (path: string) => {
     const stat = vfs!.stat(path);
-    if (vfs!.publicOnly && stat.visibility === "private") throw new HttpError(404, "not_found", "Not found");
+    if (vfs!.publicOnly && stat.visibility === "private")
+      throw new HttpError(404, "not_found", "Not found");
     return stat;
   };
   add(endpoints.vfsInfo, vfs !== null, async () => json(vfs!.info(), 200));
@@ -488,7 +553,9 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
     const local = vfs!.localFile?.(path);
     if (local) return new Response(local, { status: 200, headers });
     const bytes = await vfsCall(() => vfs!.read(path));
-    return bytes instanceof Response ? bytes : new Response(bytes as Uint8Array<ArrayBuffer>, { status: 200, headers });
+    return bytes instanceof Response
+      ? bytes
+      : new Response(bytes as Uint8Array<ArrayBuffer>, { status: 200, headers });
   });
   add(endpoints.vfsQuery, vfs !== null, async (ctx) => {
     const body = ctx.body as { sql: string; params: (string | number | boolean | null)[] };
@@ -497,7 +564,10 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
       const rows = vfs!.query(body.sql, body.params);
       return json({ rows, ms: Math.round((performance.now() - started) * 10) / 10 }, 200);
     } catch (error) {
-      return json({ error: error instanceof Error ? error.message : String(error), code: "invalid_request" }, 400);
+      return json(
+        { error: error instanceof Error ? error.message : String(error), code: "invalid_request" },
+        400,
+      );
     }
   });
 
@@ -506,11 +576,16 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
   const mcpPrefix = "/mcp";
 
   const handles = (pathname: string): boolean =>
-    router.match(pathname).length > 0 || (mcp !== null && (pathname === mcpPrefix || pathname.startsWith(`${mcpPrefix}/`)));
+    router.match(pathname).length > 0 ||
+    (mcp !== null && (pathname === mcpPrefix || pathname.startsWith(`${mcpPrefix}/`)));
 
   const ALLOWED_METHODS = ["GET", "HEAD", "POST", "OPTIONS"];
 
-  async function proxyMcp(request: Request, url: URL, cors: Record<string, string>): Promise<Response> {
+  async function proxyMcp(
+    request: Request,
+    url: URL,
+    cors: Record<string, string>,
+  ): Promise<Response> {
     const target = new URL(url.pathname + url.search, mcp!.url);
     const headers = new Headers(request.headers);
     headers.delete("host");
@@ -528,11 +603,19 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
       for (const [key, value] of Object.entries(cors)) out.set(key, value);
       return new Response(upstream.body, { status: upstream.status, headers: out });
     } catch (error) {
-      return json({ error: "MCP server unreachable", code: "upstream_unavailable", message: String(error) }, 502, cors);
+      return json(
+        { error: "MCP server unreachable", code: "upstream_unavailable", message: String(error) },
+        502,
+        cors,
+      );
     }
   }
 
-  async function dispatch(request: Request, server?: BunServer, forced?: { spec: EndpointSpec; run: Handler; params: Record<string, string> }): Promise<Response> {
+  async function dispatch(
+    request: Request,
+    server?: BunServer,
+    forced?: { spec: EndpointSpec; run: Handler; params: Record<string, string> },
+  ): Promise<Response> {
     const started = performance.now();
     const url = new URL(request.url);
     const path = url.pathname;
@@ -540,25 +623,40 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
     const ip = ports.clientIp(request);
     const methods = [...ALLOWED_METHODS];
     const cors = corsHeaders(request.headers.get("origin"), ports.cors.allowedOrigins, methods);
-    cors["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Last-Event-ID, X-Shenron-Owner";
+    cors["Access-Control-Allow-Headers"] =
+      "Content-Type, Authorization, Last-Event-ID, X-Shenron-Owner";
     cors["Access-Control-Expose-Headers"] = "X-Stream-Id, ETag";
     const finish = (response: Response) => {
-      log({ event: `${o.service}.api`, path, status: response.status, ms: performance.now() - started });
+      log({
+        event: `${o.service}.api`,
+        path,
+        status: response.status,
+        ms: performance.now() - started,
+      });
       return response;
     };
-    if (mcp && (path === mcpPrefix || path.startsWith(`${mcpPrefix}/`))) return finish(await proxyMcp(request, url, cors));
-    const candidates = forced ? [{ route: { handler: forced }, params: forced.params }] : router.match(path);
+    if (mcp && (path === mcpPrefix || path.startsWith(`${mcpPrefix}/`)))
+      return finish(await proxyMcp(request, url, cors));
+    const candidates = forced
+      ? [{ route: { handler: forced }, params: forced.params }]
+      : router.match(path);
     if (candidates.length === 0) return finish(json(NOT_FOUND, 404, cors));
     if (method === "OPTIONS") return finish(new Response(null, { status: 204, headers: cors }));
     const wanted = method === "HEAD" ? "GET" : method;
-    const found = candidates.find((c) => (c.route.handler.spec.method === "post" ? "POST" : "GET") === wanted);
+    const found = candidates.find(
+      (c) => (c.route.handler.spec.method === "post" ? "POST" : "GET") === wanted,
+    );
     if (!found) return finish(json(NOT_FOUND, 404, cors));
     const { spec, run } = found.route.handler;
     try {
       // Rate limit (direct loopback exempt): the chat has its own budget.
       if (!ports.isDirectLoopback(request)) {
-        const budget = spec.id === "chat" || spec.id === "ocr" ? CHAT_RATE_LIMIT : PUBLIC_RATE_LIMIT;
-        const verdict = await ports.rateLimit.hit(`${spec.id === "chat" || spec.id === "ocr" ? "chat" : "public"}:${ip}`, budget);
+        const budget =
+          spec.id === "chat" || spec.id === "ocr" ? CHAT_RATE_LIMIT : PUBLIC_RATE_LIMIT;
+        const verdict = await ports.rateLimit.hit(
+          `${spec.id === "chat" || spec.id === "ocr" ? "chat" : "public"}:${ip}`,
+          budget,
+        );
         if (!verdict.allowed) {
           return finish(
             json({ error: `Rate limit (${budget.limit}/min)`, code: "rate_limited" }, 429, {
@@ -571,13 +669,23 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
       let ownerId: string | null = null;
       if (spec.auth === "owner") {
         ownerId = (await ports.auth?.owner(request)) ?? null;
-        if (!ownerId) return finish(json({ error: "Authentication required", code: "unauthenticated" }, 401, cors));
+        if (!ownerId)
+          return finish(
+            json({ error: "Authentication required", code: "unauthenticated" }, 401, cors),
+          );
       } else if (spec.auth === "admin") {
-        if (!(await ports.auth?.admin(request))) return finish(json({ error: "Forbidden", code: "forbidden" }, 403, cors));
+        if (!(await ports.auth?.admin(request)))
+          return finish(json({ error: "Forbidden", code: "forbidden" }, 403, cors));
       }
       // Validation.
       const fail = (error: z.ZodError) =>
-        finish(json({ error: "Invalid request", code: "invalid_request", message: issuesMessage(error) }, 400, cors));
+        finish(
+          json(
+            { error: "Invalid request", code: "invalid_request", message: issuesMessage(error) },
+            400,
+            cors,
+          ),
+        );
       let query: unknown = {};
       if (spec.query) {
         const parsed = spec.query.safeParse(coerceQuery(spec.query, queryObject(url)));
@@ -598,7 +706,13 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
         try {
           raw = await request.json();
         } catch {
-          return finish(json({ error: "Invalid request", code: "invalid_request", message: "body must be JSON" }, 400, cors));
+          return finish(
+            json(
+              { error: "Invalid request", code: "invalid_request", message: "body must be JSON" },
+              400,
+              cors,
+            ),
+          );
         }
         const parsed = spec.body ? spec.body.safeParse(raw) : { success: true as const, data: raw };
         if (!parsed.success) return fail(parsed.error);
@@ -606,32 +720,65 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
       }
       // Public JSON cache (200 only).
       const cacheable =
-        method !== "POST" && spec.auth === "public" && !spec.binary && typeof spec.cache === "object";
+        method !== "POST" &&
+        spec.auth === "public" &&
+        !spec.binary &&
+        typeof spec.cache === "object";
       const key = cacheable ? publicCacheKey(url) : "";
       if (cacheable) {
         const hit = ports.publicCache.get(key);
         if (hit) {
-          const headers = { ...cors, "Content-Type": "application/json; charset=utf-8", ...publicCacheHeaders((spec.cache as { maxAgeSeconds: number }).maxAgeSeconds), ETag: hit.etag };
-          if (request.headers.get("if-none-match") === hit.etag) return finish(new Response(null, { status: 304, headers }));
-          return finish(new Response(method === "HEAD" ? null : hit.body, { status: 200, headers }));
+          const headers = {
+            ...cors,
+            "Content-Type": "application/json; charset=utf-8",
+            ...publicCacheHeaders((spec.cache as { maxAgeSeconds: number }).maxAgeSeconds),
+            ETag: hit.etag,
+          };
+          if (request.headers.get("if-none-match") === hit.etag)
+            return finish(new Response(null, { status: 304, headers }));
+          return finish(
+            new Response(method === "HEAD" ? null : hit.body, { status: 200, headers }),
+          );
         }
       }
-      const response = await run({ request, url, params: found.params, query, body, ownerId, server, cors });
+      const response = await run({
+        request,
+        url,
+        params: found.params,
+        query,
+        body,
+        ownerId,
+        server,
+        cors,
+      });
       if (response === undefined) return response as unknown as Response; // WebSocket upgraded
       if (cacheable && response.status === 200) {
         const text = await response.text();
         const ttl = (spec.cache as { maxAgeSeconds: number }).maxAgeSeconds;
         const { etag } = ports.publicCache.set(key, text, ttl * 1000);
-        const headers = { ...cors, "Content-Type": "application/json; charset=utf-8", ...publicCacheHeaders(ttl), ETag: etag };
-        if (request.headers.get("if-none-match") === etag) return finish(new Response(null, { status: 304, headers }));
+        const headers = {
+          ...cors,
+          "Content-Type": "application/json; charset=utf-8",
+          ...publicCacheHeaders(ttl),
+          ETag: etag,
+        };
+        if (request.headers.get("if-none-match") === etag)
+          return finish(new Response(null, { status: 304, headers }));
         return finish(new Response(method === "HEAD" ? null : text, { status: 200, headers }));
       }
       const headers = new Headers(response.headers);
       for (const [k, v] of Object.entries(cors)) if (!headers.has(k)) headers.set(k, v);
-      if (spec.cache === "no-store" && !headers.has("Cache-Control")) headers.set("Cache-Control", "no-store");
-      return finish(new Response(method === "HEAD" ? null : response.body, { status: response.status, headers }));
+      if (spec.cache === "no-store" && !headers.has("Cache-Control"))
+        headers.set("Cache-Control", "no-store");
+      return finish(
+        new Response(method === "HEAD" ? null : response.body, {
+          status: response.status,
+          headers,
+        }),
+      );
     } catch (error) {
-      if (error instanceof HttpError) return finish(json({ error: error.message, code: error.code }, error.status, cors));
+      if (error instanceof HttpError)
+        return finish(json({ error: error.message, code: error.code }, error.status, cors));
       if (error instanceof DataUnavailable) {
         // The cause stays in the log: connection details never reach a client.
         log({ event: `${o.service}.api.unavailable`, path, status: 503 });
@@ -667,14 +814,24 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
       try {
         message = JSON.parse(typeof raw === "string" ? raw : new TextDecoder().decode(raw));
       } catch {
-        ws.send(JSON.stringify({ type: "error", data: { code: "invalid_request", message: "frames are JSON", retryable: false } }));
+        ws.send(
+          JSON.stringify({
+            type: "error",
+            data: { code: "invalid_request", message: "frames are JSON", retryable: false },
+          }),
+        );
         return;
       }
       const relay = async (streamId: string, after: number) => {
         const controller = new AbortController();
         ws.data.streams.set(streamId, controller);
         try {
-          for await (const { id, event } of streams.follow(streamId, ws.data.ownerId, after, controller.signal)) {
+          for await (const { id, event } of streams.follow(
+            streamId,
+            ws.data.ownerId,
+            after,
+            controller.signal,
+          )) {
             ws.send(JSON.stringify({ id, streamId, type: event.type, data: event.data }));
           }
         } finally {
@@ -684,20 +841,44 @@ export function createShenronApi(ports: ShenronApiPorts, o: { service: ShenronAp
       if (message.type === "chat") {
         const parsed = ChatRequest.safeParse(message.request);
         if (!parsed.success) {
-          ws.send(JSON.stringify({ type: "error", data: { code: "invalid_request", message: issuesMessage(parsed.error), retryable: false } }));
+          ws.send(
+            JSON.stringify({
+              type: "error",
+              data: {
+                code: "invalid_request",
+                message: issuesMessage(parsed.error),
+                retryable: false,
+              },
+            }),
+          );
           return;
         }
         await relay(startChat(parsed.data, ws.data.ownerId), 0);
       } else if (message.type === "resume" && message.streamId) {
         if (!streams.has(message.streamId, ws.data.ownerId)) {
-          ws.send(JSON.stringify({ type: "error", streamId: message.streamId, data: { code: "not_found", message: "unknown stream", retryable: false } }));
+          ws.send(
+            JSON.stringify({
+              type: "error",
+              streamId: message.streamId,
+              data: { code: "not_found", message: "unknown stream", retryable: false },
+            }),
+          );
           return;
         }
         await relay(message.streamId, Math.max(0, Number(message.after) || 0));
       } else if (message.type === "cancel" && message.streamId) {
         streams.cancel(message.streamId, ws.data.ownerId);
       } else {
-        ws.send(JSON.stringify({ type: "error", data: { code: "invalid_request", message: "type must be chat, resume or cancel", retryable: false } }));
+        ws.send(
+          JSON.stringify({
+            type: "error",
+            data: {
+              code: "invalid_request",
+              message: "type must be chat, resume or cancel",
+              retryable: false,
+            },
+          }),
+        );
       }
     },
     close(ws) {

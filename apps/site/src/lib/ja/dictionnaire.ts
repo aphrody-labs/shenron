@@ -51,53 +51,53 @@ const CANDIDATS = [".ja-data", "apps/site/.ja-data", "../.ja-data"];
 let racineResolue: string | null = null;
 
 function dossierDonnees(): string {
-	if (racineResolue) return racineResolue;
-	const force = process.env.JA_DATA_DIR;
-	if (force) {
-		racineResolue = force;
-		return force;
-	}
-	const base = process.cwd();
-	for (const c of CANDIDATS) {
-		const chemin = join(/* turbopackIgnore: true */ base, c);
-		// `existsSync` plutôt qu'une vérification asynchrone : la fonction est
-		// appelée depuis des chemins synchrones, et le coût est celui d'un stat.
-		if (
-			existsSync(join(chemin, "jmdict-graphies.txt")) ||
-			existsSync(join(chemin, "kuromoji-dict"))
-		) {
-			racineResolue = chemin;
-			return chemin;
-		}
-	}
-	// Rien trouvé : on renvoie le candidat le plus probable, pour que le message
-	// d'erreur nomme un chemin utile plutôt que « undefined ».
-	racineResolue = join(base, ".ja-data");
-	return racineResolue;
+  if (racineResolue) return racineResolue;
+  const force = process.env.JA_DATA_DIR;
+  if (force) {
+    racineResolue = force;
+    return force;
+  }
+  const base = process.cwd();
+  for (const c of CANDIDATS) {
+    const chemin = join(/* turbopackIgnore: true */ base, c);
+    // `existsSync` plutôt qu'une vérification asynchrone : la fonction est
+    // appelée depuis des chemins synchrones, et le coût est celui d'un stat.
+    if (
+      existsSync(join(chemin, "jmdict-graphies.txt")) ||
+      existsSync(join(chemin, "kuromoji-dict"))
+    ) {
+      racineResolue = chemin;
+      return chemin;
+    }
+  }
+  // Rien trouvé : on renvoie le candidat le plus probable, pour que le message
+  // d'erreur nomme un chemin utile plutôt que « undefined ».
+  racineResolue = join(base, ".ja-data");
+  return racineResolue;
 }
 
 export interface Token {
-	surface: string;
-	/** Nature grammaticale telle que rendue par IPADIC (名詞, 動詞, 助詞…). */
-	pos: string;
-	/** Lecture en katakana, ou `null` si le dictionnaire ne la connaît pas. */
-	lecture: string | null;
-	/** Forme de base (lemme) — « 使う » pour « 使っ ». */
-	base: string | null;
-	/** Le token est absent du dictionnaire morphologique. */
-	inconnu: boolean;
+  surface: string;
+  /** Nature grammaticale telle que rendue par IPADIC (名詞, 動詞, 助詞…). */
+  pos: string;
+  /** Lecture en katakana, ou `null` si le dictionnaire ne la connaît pas. */
+  lecture: string | null;
+  /** Forme de base (lemme) — « 使う » pour « 使っ ». */
+  base: string | null;
+  /** Le token est absent du dictionnaire morphologique. */
+  inconnu: boolean;
 }
 
 type KuromojiToken = {
-	surface_form: string;
-	pos: string;
-	reading?: string;
-	basic_form?: string;
-	word_type?: string;
+  surface_form: string;
+  pos: string;
+  reading?: string;
+  basic_form?: string;
+  word_type?: string;
 };
 
 export interface Analyseur {
-	tokenize(s: string): KuromojiToken[];
+  tokenize(s: string): KuromojiToken[];
 }
 
 let tokenizer: Analyseur | null = null;
@@ -111,40 +111,40 @@ let chargementTokenizer: Promise<Analyseur | null> | null = null;
  * face à son sidecar d'embeddings — une ressource absente dégrade, elle ne casse pas.
  */
 export async function analyseur(): Promise<Analyseur | null> {
-	if (tokenizer) return tokenizer;
-	if (chargementTokenizer) return chargementTokenizer;
-	chargementTokenizer = (async () => {
-		try {
-			const kuromoji = (await import("@sglkc/kuromoji")).default;
-			tokenizer = await new Promise<Analyseur>((res, rej) =>
-				kuromoji
-					.builder({ dicPath: join(dossierDonnees(), "kuromoji-dict") })
-					.build((e: Error | null, t: Analyseur) => (e ? rej(e) : res(t)))
-			);
-			return tokenizer;
-		} catch (e) {
-			console.warn(
-				`[ja] analyseur morphologique indisponible (${dossierDonnees()}) :`,
-				(e as Error).message
-			);
-			return null;
-		}
-	})();
-	return chargementTokenizer;
+  if (tokenizer) return tokenizer;
+  if (chargementTokenizer) return chargementTokenizer;
+  chargementTokenizer = (async () => {
+    try {
+      const kuromoji = (await import("@sglkc/kuromoji")).default;
+      tokenizer = await new Promise<Analyseur>((res, rej) =>
+        kuromoji
+          .builder({ dicPath: join(dossierDonnees(), "kuromoji-dict") })
+          .build((e: Error | null, t: Analyseur) => (e ? rej(e) : res(t))),
+      );
+      return tokenizer;
+    } catch (e) {
+      console.warn(
+        `[ja] analyseur morphologique indisponible (${dossierDonnees()}) :`,
+        (e as Error).message,
+      );
+      return null;
+    }
+  })();
+  return chargementTokenizer;
 }
 
 /** Découpe un texte japonais. Tableau vide si l'analyseur n'est pas installé. */
 export async function segmenter(texte: string): Promise<Token[]> {
-	const tk = await analyseur();
-	if (!tk) return [];
-	return tk.tokenize(texte).map((t) => ({
-		surface: t.surface_form,
-		pos: t.pos,
-		// IPADIC écrit « * » pour un champ qu'il ne connaît pas.
-		lecture: t.reading && t.reading !== "*" ? t.reading : null,
-		base: t.basic_form && t.basic_form !== "*" ? t.basic_form : null,
-		inconnu: t.word_type === "UNKNOWN",
-	}));
+  const tk = await analyseur();
+  if (!tk) return [];
+  return tk.tokenize(texte).map((t) => ({
+    surface: t.surface_form,
+    pos: t.pos,
+    // IPADIC écrit « * » pour un champ qu'il ne connaît pas.
+    lecture: t.reading && t.reading !== "*" ? t.reading : null,
+    base: t.basic_form && t.basic_form !== "*" ? t.basic_form : null,
+    inconnu: t.word_type === "UNKNOWN",
+  }));
 }
 
 let graphies: Set<string> | null = null;
@@ -159,18 +159,18 @@ let graphies: Set<string> | null = null;
  * bruyant, mais il fonctionne.
  */
 export async function graphiesJmdict(): Promise<Set<string>> {
-	if (graphies) return graphies;
-	// `node:fs` plutôt que `Bun.file` : ce module traverse le bundler de Next,
-	// et s'en tenir aux API Node évite d'y introduire une dépendance au runtime
-	// — c'est exactement ce genre de raccourci qui a fait échouer un build.
-	const chemin = join(dossierDonnees(), "jmdict-graphies.txt");
-	if (!existsSync(chemin)) {
-		console.warn("[ja] JMdict absent — lancer `bun apps/site/scripts/ja-preparer.ts`");
-		graphies = new Set();
-		return graphies;
-	}
-	graphies = new Set((await readFile(chemin, "utf8")).split("\n").filter(Boolean));
-	return graphies;
+  if (graphies) return graphies;
+  // `node:fs` plutôt que `Bun.file` : ce module traverse le bundler de Next,
+  // et s'en tenir aux API Node évite d'y introduire une dépendance au runtime
+  // — c'est exactement ce genre de raccourci qui a fait échouer un build.
+  const chemin = join(dossierDonnees(), "jmdict-graphies.txt");
+  if (!existsSync(chemin)) {
+    console.warn("[ja] JMdict absent — lancer `bun apps/site/scripts/ja-preparer.ts`");
+    graphies = new Set();
+    return graphies;
+  }
+  graphies = new Set((await readFile(chemin, "utf8")).split("\n").filter(Boolean));
+  return graphies;
 }
 
 /**
@@ -183,13 +183,13 @@ export async function graphiesJmdict(): Promise<Set<string>> {
  * démarrer plutôt que de produire un résultat faussement rassurant.
  */
 export async function exigerRessources(): Promise<void> {
-	const manquantes: string[] = [];
-	if (!(await analyseur())) manquantes.push("dictionnaire kuromoji");
-	if ((await graphiesJmdict()).size === 0) manquantes.push("index JMdict");
-	if (manquantes.length > 0) {
-		throw new Error(
-			`ressources japonaises absentes (${manquantes.join(", ")}) dans ${dossierDonnees()}.\n` +
-				"Lancer : bun apps/site/scripts/ja-preparer.ts"
-		);
-	}
+  const manquantes: string[] = [];
+  if (!(await analyseur())) manquantes.push("dictionnaire kuromoji");
+  if ((await graphiesJmdict()).size === 0) manquantes.push("index JMdict");
+  if (manquantes.length > 0) {
+    throw new Error(
+      `ressources japonaises absentes (${manquantes.join(", ")}) dans ${dossierDonnees()}.\n` +
+        "Lancer : bun apps/site/scripts/ja-preparer.ts",
+    );
+  }
 }

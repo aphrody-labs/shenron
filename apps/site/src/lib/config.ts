@@ -20,12 +20,12 @@
  */
 
 import {
-	DEFAULT_PUBLIC_ORIGINS,
-	joinUrl,
-	originOf,
-	resolveApiUrl,
-	resolveAssetsUrl,
-	resolveSiteUrl,
+  DEFAULT_PUBLIC_ORIGINS,
+  joinUrl,
+  originOf,
+  resolveApiUrl,
+  resolveAssetsUrl,
+  resolveSiteUrl,
 } from "@shenron/config/public-urls";
 
 /**
@@ -35,16 +35,15 @@ import {
 const trimSlash = (u: string): string => u.replace(/\/+$/, "");
 
 const PUBLIC_ENV = {
-	NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-	NEXT_PUBLIC_SHENRON_API_URL: process.env.NEXT_PUBLIC_SHENRON_API_URL,
-	NEXT_PUBLIC_SHENRON_ASSETS_URL: process.env.NEXT_PUBLIC_SHENRON_ASSETS_URL,
-	SHENRON_PUBLIC_SITE_URL: process.env.SHENRON_PUBLIC_SITE_URL,
-	SHENRON_PUBLIC_API_URL: process.env.SHENRON_PUBLIC_API_URL,
-	SHENRON_PUBLIC_ASSETS_URL: process.env.SHENRON_PUBLIC_ASSETS_URL,
-	SHENRON_API_URL: process.env.SHENRON_API_URL,
-	BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  NEXT_PUBLIC_SHENRON_API_URL: process.env.NEXT_PUBLIC_SHENRON_API_URL,
+  NEXT_PUBLIC_SHENRON_ASSETS_URL: process.env.NEXT_PUBLIC_SHENRON_ASSETS_URL,
+  SHENRON_PUBLIC_SITE_URL: process.env.SHENRON_PUBLIC_SITE_URL,
+  SHENRON_PUBLIC_API_URL: process.env.SHENRON_PUBLIC_API_URL,
+  SHENRON_PUBLIC_ASSETS_URL: process.env.SHENRON_PUBLIC_ASSETS_URL,
+  SHENRON_API_URL: process.env.SHENRON_API_URL,
+  BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 };
-
 
 /** Hôte canonique du bot (API REST + assets + SSE + canvas). */
 export const BOT_HOST: string = DEFAULT_PUBLIC_ORIGINS.api;
@@ -91,9 +90,8 @@ export const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL ?? DISC
 
 /** Construit une URL absolue sur l'API bot : `apiUrl("api/public/stats")`. */
 export function apiUrl(path = ""): string {
-	return joinUrl(API_URL, path);
+  return joinUrl(API_URL, path);
 }
-
 
 /**
  * Base de l'API du bot pour les appels **serveur** (client admin
@@ -108,8 +106,8 @@ export function apiUrl(path = ""): string {
  * `db-universe.ts` garde sa propre résolution jusqu'à SH-API-4.
  */
 export function botApiBaseUrl(env: Record<string, string | undefined> = process.env): string {
-	const internal = env.BOT_INTERNAL_URL?.trim();
-	if (internal) return trimSlash(internal);
-	const configured = (env.NEXT_PUBLIC_SHENRON_API_URL ?? env.SHENRON_API_URL)?.trim();
-	return trimSlash(configured || BOT_HOST);
+  const internal = env.BOT_INTERNAL_URL?.trim();
+  if (internal) return trimSlash(internal);
+  const configured = (env.NEXT_PUBLIC_SHENRON_API_URL ?? env.SHENRON_API_URL)?.trim();
+  return trimSlash(configured || BOT_HOST);
 }

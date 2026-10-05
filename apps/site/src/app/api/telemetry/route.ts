@@ -36,24 +36,24 @@ const CANONICAL_HOST = new URL(SITE_URL).host.replace(/^www\./, "");
 // --- Validation --------------------------------------------------------------
 
 const eventSchema = z.object({
-	type: z.string().min(1).max(64),
-	path: z.string().min(1).max(512),
-	referrer: z.string().max(512).nullish(),
-	sessionId: z.string().min(1).max(64),
-	entityType: z.string().max(64).nullish(),
-	entityId: z.string().max(128).nullish(),
-	// Borne le volume de `props` : jusqu'à 20 events/POST × jsonb non borné →
-	// amplification de stockage (nginx client_max_body_size = 60m). Rejette si la
-	// sérialisation dépasse ~2 Ko.
-	props: z
-		.record(z.string(), z.unknown())
-		.refine((p) => JSON.stringify(p).length <= 2000, { message: "props too large" })
-		.optional(),
-	ts: z.number().optional(),
+  type: z.string().min(1).max(64),
+  path: z.string().min(1).max(512),
+  referrer: z.string().max(512).nullish(),
+  sessionId: z.string().min(1).max(64),
+  entityType: z.string().max(64).nullish(),
+  entityId: z.string().max(128).nullish(),
+  // Borne le volume de `props` : jusqu'à 20 events/POST × jsonb non borné →
+  // amplification de stockage (nginx client_max_body_size = 60m). Rejette si la
+  // sérialisation dépasse ~2 Ko.
+  props: z
+    .record(z.string(), z.unknown())
+    .refine((p) => JSON.stringify(p).length <= 2000, { message: "props too large" })
+    .optional(),
+  ts: z.number().optional(),
 });
 
 const bodySchema = z.object({
-	events: z.array(eventSchema).min(1).max(20),
+  events: z.array(eventSchema).min(1).max(20),
 });
 
 /**
@@ -88,10 +88,10 @@ const TS_RETARD_MAX_MS = 24 * 60 * 60 * 1000;
 const TS_AVANCE_MAX_MS = 5 * 60 * 1000;
 
 function horodatage(brut: number | undefined, maintenant: number): Date | null {
-	if (brut === undefined || !Number.isFinite(brut)) return null;
-	if (brut > maintenant + TS_AVANCE_MAX_MS) return null;
-	if (brut < maintenant - TS_RETARD_MAX_MS) return null;
-	return new Date(brut);
+  if (brut === undefined || !Number.isFinite(brut)) return null;
+  if (brut > maintenant + TS_AVANCE_MAX_MS) return null;
+  if (brut < maintenant - TS_RETARD_MAX_MS) return null;
+  return new Date(brut);
 }
 
 // --- Anonymisation -----------------------------------------------------------
@@ -100,16 +100,16 @@ function horodatage(brut: number | undefined, maintenant: number): Date | null {
 // déjà présents en prod) — jamais committé. Combiné à la date du jour, il rotate
 // quotidiennement le hash visiteur. Fallback dev si aucun secret n'est posé.
 function serverSecret(): string {
-	return env.SHENRON_USER_SECRET ?? env.BETTER_AUTH_SECRET ?? "dbfr-telemetry-dev-secret-change-me";
+  return env.SHENRON_USER_SECRET ?? env.BETTER_AUTH_SECRET ?? "dbfr-telemetry-dev-secret-change-me";
 }
 
 /** Hash visiteur quotidien (anti-doublon), jamais d'IP brute stockée. */
 function dailyVisitorHash(ip: string, ua: string): string {
-	const day = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
-	return createHash("sha256")
-		.update(`${ip}|${ua}|${day}|${serverSecret()}`)
-		.digest("hex")
-		.slice(0, 32);
+  const day = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+  return createHash("sha256")
+    .update(`${ip}|${ua}|${day}|${serverSecret()}`)
+    .digest("hex")
+    .slice(0, 32);
 }
 
 // --- Cookie anonId signé (HMAC) ---------------------------------------------
@@ -118,127 +118,127 @@ const ANON_COOKIE = "dbfr_aid";
 const ANON_MAX_AGE = 60 * 60 * 24 * 180; // 180 j
 
 function signAnon(raw: string): string {
-	const mac = createHmac("sha256", serverSecret()).update(raw).digest("base64url").slice(0, 24);
-	return `${raw}.${mac}`;
+  const mac = createHmac("sha256", serverSecret()).update(raw).digest("base64url").slice(0, 24);
+  return `${raw}.${mac}`;
 }
 
 function verifyAnon(value: string | undefined): string | null {
-	if (!value) return null;
-	const dot = value.lastIndexOf(".");
-	if (dot <= 0) return null;
-	const raw = value.slice(0, dot);
-	const mac = value.slice(dot + 1);
-	const expected = createHmac("sha256", serverSecret())
-		.update(raw)
-		.digest("base64url")
-		.slice(0, 24);
-	return timingSafeEqualString(mac, expected) ? raw : null;
+  if (!value) return null;
+  const dot = value.lastIndexOf(".");
+  if (dot <= 0) return null;
+  const raw = value.slice(0, dot);
+  const mac = value.slice(dot + 1);
+  const expected = createHmac("sha256", serverSecret())
+    .update(raw)
+    .digest("base64url")
+    .slice(0, 24);
+  return timingSafeEqualString(mac, expected) ? raw : null;
 }
 
 function newAnonId(): string {
-	return createHash("sha256")
-		.update(`${Date.now()}-${Math.random()}-${serverSecret()}`)
-		.digest("base64url")
-		.slice(0, 20);
+  return createHash("sha256")
+    .update(`${Date.now()}-${Math.random()}-${serverSecret()}`)
+    .digest("base64url")
+    .slice(0, 20);
 }
 
 // --- Rate-limit en mémoire (best-effort, par visitorHash) -------------------
 
 const telemetryRateLimit = createMemoryRateLimiter({
-	windowMs: 60_000,
-	limit: 120,
-	namespace: "telemetry-ip",
+  windowMs: 60_000,
+  limit: 120,
+  namespace: "telemetry-ip",
 });
 
 // --- Handler -----------------------------------------------------------------
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-	const annoncee = Number(req.headers.get("content-length") ?? 0);
-	if (Number.isFinite(annoncee) && annoncee > CORPS_MAX) {
-		return NextResponse.json({ ok: false, error: "payload_too_large" }, { status: 413 });
-	}
+  const annoncee = Number(req.headers.get("content-length") ?? 0);
+  if (Number.isFinite(annoncee) && annoncee > CORPS_MAX) {
+    return NextResponse.json({ ok: false, error: "payload_too_large" }, { status: 413 });
+  }
 
-	let parsed: z.infer<typeof bodySchema>;
-	try {
-		parsed = bodySchema.parse(await req.json());
-	} catch {
-		return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
-	}
+  let parsed: z.infer<typeof bodySchema>;
+  try {
+    parsed = bodySchema.parse(await req.json());
+  } catch {
+    return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
+  }
 
-	const ua = req.headers.get("user-agent")?.slice(0, 256) ?? "";
-	const ip = clientIp(req);
-	const visitorHash = dailyVisitorHash(ip, ua);
+  const ua = req.headers.get("user-agent")?.slice(0, 256) ?? "";
+  const ip = clientIp(req);
+  const visitorHash = dailyVisitorHash(ip, ua);
 
-	const rate = await telemetryRateLimit.consume(visitorHash, parsed.events.length);
-	if (rate.limited) {
-		return NextResponse.json(
-			{ ok: false, error: "rate_limited" },
-			{ status: 429, headers: { "Retry-After": String(rate.retryAfter) } }
-		);
-	}
+  const rate = await telemetryRateLimit.consume(visitorHash, parsed.events.length);
+  if (rate.limited) {
+    return NextResponse.json(
+      { ok: false, error: "rate_limited" },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
+    );
+  }
 
-	// Identité : userId (connecté) prioritaire ; sinon anonId cookie signé.
-	let userId: string | null = null;
-	try {
-		const me = await getCurrentUser();
-		userId = me?.user?.id ?? null;
-	} catch {
-		userId = null;
-	}
+  // Identité : userId (connecté) prioritaire ; sinon anonId cookie signé.
+  let userId: string | null = null;
+  try {
+    const me = await getCurrentUser();
+    userId = me?.user?.id ?? null;
+  } catch {
+    userId = null;
+  }
 
-	const existingAnon = verifyAnon(req.cookies.get(ANON_COOKIE)?.value);
-	const anonId = existingAnon ?? newAnonId();
+  const existingAnon = verifyAnon(req.cookies.get(ANON_COOKIE)?.value);
+  const anonId = existingAnon ?? newAnonId();
 
-	// Normalise le path (retire query string + fragment → pas de PII).
-	const cleanPath = (p: string): string => p.split("?")[0]!.split("#")[0]!;
-	// Référent : chemin seul si interne (host canonique ou son variant `www.`),
-	// sinon host seul pour l'externe (pas de chemin tiers complet).
-	const cleanReferrer = (r: string | null | undefined): string | null => {
-		if (!r) return null;
-		try {
-			const u = new URL(r);
-			const host = u.host.replace(/^www\./, "");
-			return host === CANONICAL_HOST ? cleanPath(u.pathname) : u.host;
-		} catch {
-			return null;
-		}
-	};
+  // Normalise le path (retire query string + fragment → pas de PII).
+  const cleanPath = (p: string): string => p.split("?")[0]!.split("#")[0]!;
+  // Référent : chemin seul si interne (host canonique ou son variant `www.`),
+  // sinon host seul pour l'externe (pas de chemin tiers complet).
+  const cleanReferrer = (r: string | null | undefined): string | null => {
+    if (!r) return null;
+    try {
+      const u = new URL(r);
+      const host = u.host.replace(/^www\./, "");
+      return host === CANONICAL_HOST ? cleanPath(u.pathname) : u.host;
+    } catch {
+      return null;
+    }
+  };
 
-	const maintenant = Date.now();
-	const rows: SiteEventInsert[] = parsed.events.map((e) => {
-		const ts = horodatage(e.ts, maintenant);
-		return {
-			type: e.type,
-			userId,
-			anonId,
-			sessionId: e.sessionId,
-			entityType: e.entityType ?? null,
-			entityId: e.entityId ?? null,
-			path: cleanPath(e.path),
-			referrer: cleanReferrer(e.referrer),
-			visitorHash,
-			props: (e.props ?? null) as Record<string, unknown> | null,
-			...(ts ? { ts } : {}),
-		};
-	});
+  const maintenant = Date.now();
+  const rows: SiteEventInsert[] = parsed.events.map((e) => {
+    const ts = horodatage(e.ts, maintenant);
+    return {
+      type: e.type,
+      userId,
+      anonId,
+      sessionId: e.sessionId,
+      entityType: e.entityType ?? null,
+      entityId: e.entityId ?? null,
+      path: cleanPath(e.path),
+      referrer: cleanReferrer(e.referrer),
+      visitorHash,
+      props: (e.props ?? null) as Record<string, unknown> | null,
+      ...(ts ? { ts } : {}),
+    };
+  });
 
-	try {
-		await db.insert(siteEvents).values(rows);
-	} catch (err) {
-		console.error("[telemetry] insert failed", err);
-		return NextResponse.json({ ok: false, error: "insert_failed" }, { status: 500 });
-	}
+  try {
+    await db.insert(siteEvents).values(rows);
+  } catch (err) {
+    console.error("[telemetry] insert failed", err);
+    return NextResponse.json({ ok: false, error: "insert_failed" }, { status: 500 });
+  }
 
-	const res = NextResponse.json({ ok: true, count: rows.length });
-	// (Re)pose le cookie anonId signé (httpOnly, SameSite=Lax, sécurisé en prod).
-	if (!existingAnon) {
-		res.cookies.set(ANON_COOKIE, signAnon(anonId), {
-			httpOnly: true,
-			sameSite: "lax",
-			secure: env.NODE_ENV === "production",
-			maxAge: ANON_MAX_AGE,
-			path: "/",
-		});
-	}
-	return res;
+  const res = NextResponse.json({ ok: true, count: rows.length });
+  // (Re)pose le cookie anonId signé (httpOnly, SameSite=Lax, sécurisé en prod).
+  if (!existingAnon) {
+    res.cookies.set(ANON_COOKIE, signAnon(anonId), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: env.NODE_ENV === "production",
+      maxAge: ANON_MAX_AGE,
+      path: "/",
+    });
+  }
+  return res;
 }

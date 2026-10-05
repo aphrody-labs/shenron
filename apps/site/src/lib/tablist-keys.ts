@@ -19,32 +19,32 @@ import type { KeyboardEvent } from "react";
 const TOUCHES = new Set(["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", "Home", "End"]);
 
 export function onTablistKeyDown(e: KeyboardEvent<HTMLElement>): void {
-	if (!TOUCHES.has(e.key)) return;
-	const onglets = Array.from(
-		e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]:not([disabled])')
-	);
-	if (onglets.length < 2) return;
+  if (!TOUCHES.has(e.key)) return;
+  const onglets = Array.from(
+    e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]:not([disabled])'),
+  );
+  if (onglets.length < 2) return;
 
-	const actif = typeof document === "undefined" ? null : (document.activeElement as HTMLElement);
-	let i = actif ? onglets.indexOf(actif) : -1;
-	// Focus hors du jeu d'onglets (activation à la souris) : on repart du sélectionné.
-	if (i === -1)
-		i = Math.max(
-			0,
-			onglets.findIndex((o) => o.getAttribute("aria-selected") === "true")
-		);
+  const actif = typeof document === "undefined" ? null : (document.activeElement as HTMLElement);
+  let i = actif ? onglets.indexOf(actif) : -1;
+  // Focus hors du jeu d'onglets (activation à la souris) : on repart du sélectionné.
+  if (i === -1)
+    i = Math.max(
+      0,
+      onglets.findIndex((o) => o.getAttribute("aria-selected") === "true"),
+    );
 
-	const cible =
-		e.key === "Home"
-			? 0
-			: e.key === "End"
-				? onglets.length - 1
-				: e.key === "ArrowRight" || e.key === "ArrowDown"
-					? (i + 1) % onglets.length
-					: (i - 1 + onglets.length) % onglets.length;
+  const cible =
+    e.key === "Home"
+      ? 0
+      : e.key === "End"
+        ? onglets.length - 1
+        : e.key === "ArrowRight" || e.key === "ArrowDown"
+          ? (i + 1) % onglets.length
+          : (i - 1 + onglets.length) % onglets.length;
 
-	e.preventDefault();
-	const suivant = onglets[cible];
-	suivant?.focus();
-	suivant?.click();
+  e.preventDefault();
+  const suivant = onglets[cible];
+  suivant?.focus();
+  suivant?.click();
 }

@@ -12,12 +12,3 @@
  *     pont markdown, partagés avec le rendu serveur.
  */
 export { ShenronEditor } from "./Editor";
-;
-;
-;
-;
-;
-;
-;
-;
-;

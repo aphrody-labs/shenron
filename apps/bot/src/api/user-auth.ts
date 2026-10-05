@@ -27,18 +27,18 @@ import { logger } from "~/lib/logger";
  * `API_USER_SECRET` (`ENV_ALIASES.actingUserSecret`), lu à chaque appel.
  */
 export function actingUserSecret(): string | undefined {
-	return envFirst(
-		{ SHENRON_USER_SECRET: Bun.env.SHENRON_USER_SECRET, API_USER_SECRET: env.API_USER_SECRET },
-		ENV_ALIASES.actingUserSecret
-	)?.value;
+  return envFirst(
+    { SHENRON_USER_SECRET: Bun.env.SHENRON_USER_SECRET, API_USER_SECRET: env.API_USER_SECRET },
+    ENV_ALIASES.actingUserSecret,
+  )?.value;
 }
 
 /** Retourne le `discordId` de l'utilisateur agissant, ou null si invalide. */
 export function verifyActingUser(req: Request, nowMs?: number): string | null {
-	const result = verifyActingUserHeaders(req.headers, { secret: actingUserSecret(), nowMs });
-	if (result.ok) return result.discordId;
-	if (result.code === "not_configured") {
-		logger.warn("API_USER_SECRET non configuré — routes user-auth désactivées");
-	}
-	return null;
+  const result = verifyActingUserHeaders(req.headers, { secret: actingUserSecret(), nowMs });
+  if (result.ok) return result.discordId;
+  if (result.code === "not_configured") {
+    logger.warn("API_USER_SECRET non configuré — routes user-auth désactivées");
+  }
+  return null;
 }

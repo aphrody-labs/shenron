@@ -3,8 +3,8 @@
  * Façade de compatibilité vers @shenron/config/techniques-types.
  */
 export {
-	LIBELLES_TYPE,
-	libelleType,
-	estTypeDeJeu,
-	NOTE_PROVENANCE,
+  LIBELLES_TYPE,
+  libelleType,
+  estTypeDeJeu,
+  NOTE_PROVENANCE,
 } from "@shenron/config/techniques-types";

@@ -37,17 +37,17 @@
  */
 import postgres from "postgres";
 import {
-	AGGLUTINATIONS_VALIDEES_A_LA_MAIN,
-	NOMS_PROPRES_MAL_LUS,
-	detaillerNomsPropres,
+  AGGLUTINATIONS_VALIDEES_A_LA_MAIN,
+  NOMS_PROPRES_MAL_LUS,
+  detaillerNomsPropres,
 } from "../src/lib/databooks-ocr/noms-propres";
 import { origineSite } from "./_origine-site";
 
 const args = process.argv.slice(2);
 const flag = (nom: string) => args.includes(`--${nom}`);
 const opt = (nom: string): string | undefined => {
-	const i = args.indexOf(`--${nom}`);
-	return i >= 0 ? args[i + 1] : undefined;
+  const i = args.indexOf(`--${nom}`);
+  return i >= 0 ? args[i + 1] : undefined;
 };
 
 const SIMULATION = flag("simulation");
@@ -59,19 +59,19 @@ const PAIRE = opt("paire") ?? null;
 const PAQUET = Number(opt("paquet") ?? 50);
 
 if (SIMULATION === APPLIQUER) {
-	console.error("erreur : il faut choisir exactement un mode, --simulation OU --appliquer.");
-	process.exit(2);
+  console.error("erreur : il faut choisir exactement un mode, --simulation OU --appliquer.");
+  process.exit(2);
 }
 
 async function lireEnv(cle: string): Promise<string | undefined> {
-	const contenu = await Bun.file(new URL("../.env", import.meta.url)).text();
-	return contenu
-		.split("\n")
-		.filter((l) => l.startsWith(`${cle}=`))
-		.pop()
-		?.slice(cle.length + 1)
-		.replace(/^"|"$/g, "")
-		.trim();
+  const contenu = await Bun.file(new URL("../.env", import.meta.url)).text();
+  return contenu
+    .split("\n")
+    .filter((l) => l.startsWith(`${cle}=`))
+    .pop()
+    ?.slice(cle.length + 1)
+    .replace(/^"|"$/g, "")
+    .trim();
 }
 
 const DATABASE_URL = await lireEnv("DATABASE_URL");
@@ -80,23 +80,23 @@ const sql = postgres(DATABASE_URL, { max: 2 });
 
 const API = origineSite();
 const JETON = (
-	(await lireEnv("DATABOOKS_API_TOKEN")) ??
-	(await lireEnv("SHENRON_ADMIN_TOKEN")) ??
-	""
+  (await lireEnv("DATABOOKS_API_TOKEN")) ??
+  (await lireEnv("SHENRON_ADMIN_TOKEN")) ??
+  ""
 ).trim();
 
 if (APPLIQUER && JETON.length < 16) {
-	console.error(
-		"erreur : jeton absent — DATABOOKS_API_TOKEN ou SHENRON_ADMIN_TOKEN doit être dans apps/site/.env"
-	);
-	process.exit(2);
+  console.error(
+    "erreur : jeton absent — DATABOOKS_API_TOKEN ou SHENRON_ADMIN_TOKEN doit être dans apps/site/.env",
+  );
+  process.exit(2);
 }
 
 interface Planche {
-	id: number;
-	titre: string;
-	numero: number;
-	texte: string;
+  id: number;
+  titre: string;
+  numero: number;
+  texte: string;
 }
 
 console.log("· lecture des transcriptions…");
@@ -111,19 +111,19 @@ const planches = await sql<Planche[]>`
 	${LIMITE !== null ? sql`LIMIT ${LIMITE}` : sql``}
 `;
 console.log(
-	`  ${planches.length} planche(s) transcrite(s) examinée(s)${FICHE !== null ? ` (fiche #${FICHE})` : ""}\n`
+  `  ${planches.length} planche(s) transcrite(s) examinée(s)${FICHE !== null ? ` (fiche #${FICHE})` : ""}\n`,
 );
 
 if (planches.length === 0) {
-	console.log("rien à faire.");
-	await sql.end();
-	process.exit(0);
+  console.log("rien à faire.");
+  await sql.end();
+  process.exit(0);
 }
 
 interface Modification {
-	planche: Planche;
-	texteCorrige: string;
-	details: { lu: string; correct: string; n: number }[];
+  planche: Planche;
+  texteCorrige: string;
+  details: { lu: string; correct: string; n: number }[];
 }
 
 /** Une planche qui perdrait plus de la moitié de sa matière est un bug, pas un cas limite. */
@@ -132,8 +132,8 @@ const SEUIL_SECURITE_LONGUEUR = 0.5;
 const modifications: Modification[] = [];
 const ecartesSecurite: { planche: Planche; ratio: number }[] = [];
 const totaux = new Map<
-	string,
-	{ correct: string; fr: string; n: number; planches: number; ouvrages: Set<string> }
+  string,
+  { correct: string; fr: string; n: number; planches: number; ouvrages: Set<string> }
 >();
 
 /**
@@ -142,36 +142,36 @@ const totaux = new Map<
  * ce qui permet au relecteur de retrouver le cas qui a été tranché à la main.
  */
 const LIBELLE = new Map<string, string>([
-	...NOMS_PROPRES_MAL_LUS.map((f) => [f.lu, f.fr] as [string, string]),
-	...AGGLUTINATIONS_VALIDEES_A_LA_MAIN.map(
-		(a) => [a.lu, `agglutination ${a.planche} — ${a.note}`] as [string, string]
-	),
+  ...NOMS_PROPRES_MAL_LUS.map((f) => [f.lu, f.fr] as [string, string]),
+  ...AGGLUTINATIONS_VALIDEES_A_LA_MAIN.map(
+    (a) => [a.lu, `agglutination ${a.planche} — ${a.note}`] as [string, string],
+  ),
 ]);
 
 for (const p of planches) {
-	const { texte, corrections, details } = detaillerNomsPropres(p.texte);
-	if (corrections === 0) continue;
+  const { texte, corrections, details } = detaillerNomsPropres(p.texte);
+  if (corrections === 0) continue;
 
-	for (const d of details) {
-		const acc = totaux.get(d.lu) ?? {
-			correct: d.correct,
-			fr: LIBELLE.get(d.lu) ?? "?",
-			n: 0,
-			planches: 0,
-			ouvrages: new Set<string>(),
-		};
-		acc.n += d.n;
-		acc.planches++;
-		acc.ouvrages.add(p.titre);
-		totaux.set(d.lu, acc);
-	}
+  for (const d of details) {
+    const acc = totaux.get(d.lu) ?? {
+      correct: d.correct,
+      fr: LIBELLE.get(d.lu) ?? "?",
+      n: 0,
+      planches: 0,
+      ouvrages: new Set<string>(),
+    };
+    acc.n += d.n;
+    acc.planches++;
+    acc.ouvrages.add(p.titre);
+    totaux.set(d.lu, acc);
+  }
 
-	const ratio = p.texte.length > 0 ? texte.length / p.texte.length : 1;
-	if (texte.length > 0 && ratio < SEUIL_SECURITE_LONGUEUR) {
-		ecartesSecurite.push({ planche: p, ratio });
-		continue;
-	}
-	modifications.push({ planche: p, texteCorrige: texte, details });
+  const ratio = p.texte.length > 0 ? texte.length / p.texte.length : 1;
+  if (texte.length > 0 && ratio < SEUIL_SECURITE_LONGUEUR) {
+    ecartesSecurite.push({ planche: p, ratio });
+    continue;
+  }
+  modifications.push({ planche: p, texteCorrige: texte, details });
 }
 
 console.log("=".repeat(78));
@@ -179,36 +179,36 @@ console.log("NOMS PROPRES MAL LUS — confusion sourde / sonore");
 console.log("=".repeat(78));
 const totalCorrections = [...totaux.values()].reduce((s, v) => s + v.n, 0);
 console.log(
-	`${totaux.size} graphie(s) distincte(s) rencontrée(s) sur ${NOMS_PROPRES_MAL_LUS.length} paire(s) + ${AGGLUTINATIONS_VALIDEES_A_LA_MAIN.length} agglutination(s) en table`
+  `${totaux.size} graphie(s) distincte(s) rencontrée(s) sur ${NOMS_PROPRES_MAL_LUS.length} paire(s) + ${AGGLUTINATIONS_VALIDEES_A_LA_MAIN.length} agglutination(s) en table`,
 );
 console.log(
-	`${totalCorrections} correction(s) sur ${modifications.length} planche(s) / ${planches.length} examinées\n`
+  `${totalCorrections} correction(s) sur ${modifications.length} planche(s) / ${planches.length} examinées\n`,
 );
 
 const tri = [...totaux.entries()].toSorted((a, b) => b[1].n - a[1].n);
 for (const [lu, v] of tri) {
-	console.log(
-		`  ${String(v.n).padStart(4)}×  ${lu.padEnd(16)} → ${v.correct.padEnd(16)} ${String(v.planches).padStart(3)} pl  ${String(v.ouvrages.size).padStart(2)} ouv   ${v.fr}`
-	);
+  console.log(
+    `  ${String(v.n).padStart(4)}×  ${lu.padEnd(16)} → ${v.correct.padEnd(16)} ${String(v.planches).padStart(3)} pl  ${String(v.ouvrages.size).padStart(2)} ouv   ${v.fr}`,
+  );
 }
 
 const jamaisVues = NOMS_PROPRES_MAL_LUS.filter((f) => !totaux.has(f.lu));
 if (jamaisVues.length > 0) {
-	console.log(
-		`\n${jamaisVues.length} paire(s) de la table sans occurrence dans le périmètre examiné :`
-	);
-	console.log(`  ${jamaisVues.map((f) => f.lu).join(" ")}`);
+  console.log(
+    `\n${jamaisVues.length} paire(s) de la table sans occurrence dans le périmètre examiné :`,
+  );
+  console.log(`  ${jamaisVues.map((f) => f.lu).join(" ")}`);
 }
 
 if (ecartesSecurite.length > 0) {
-	console.log(
-		`\n⚠ ${ecartesSecurite.length} planche(s) écartée(s) par le garde-fou (texte corrigé < ${Math.round(SEUIL_SECURITE_LONGUEUR * 100)} % de l'original) — aucune paire ne changeant la longueur, c'est un BUG à investiguer :`
-	);
-	for (const e of ecartesSecurite.slice(0, 20)) {
-		console.log(
-			`  #${e.planche.id} "${e.planche.titre}" p.${e.planche.numero} — ratio ${(e.ratio * 100).toFixed(0)} %`
-		);
-	}
+  console.log(
+    `\n⚠ ${ecartesSecurite.length} planche(s) écartée(s) par le garde-fou (texte corrigé < ${Math.round(SEUIL_SECURITE_LONGUEUR * 100)} % de l'original) — aucune paire ne changeant la longueur, c'est un BUG à investiguer :`,
+  );
+  for (const e of ecartesSecurite.slice(0, 20)) {
+    console.log(
+      `  #${e.planche.id} "${e.planche.titre}" p.${e.planche.numero} — ratio ${(e.ratio * 100).toFixed(0)} %`,
+    );
+  }
 }
 
 /**
@@ -218,50 +218,50 @@ if (ecartesSecurite.length > 0) {
  * elle.
  */
 function contextes(m: Modification, filtre: string | null): string[] {
-	const out: string[] = [];
-	for (const d of m.details) {
-		if (filtre && d.lu !== filtre) continue;
-		let depuis = 0;
-		for (let k = 0; k < d.n; k++) {
-			const i = m.planche.texte.indexOf(d.lu, depuis);
-			if (i < 0) break;
-			depuis = i + d.lu.length;
-			const gauche = m.planche.texte.slice(Math.max(0, i - 34), i).replace(/\n/g, "⏎");
-			const droite = m.planche.texte
-				.slice(i + d.lu.length, i + d.lu.length + 34)
-				.replace(/\n/g, "⏎");
-			out.push(`    …${gauche}[${d.lu} → ${d.correct}]${droite}…`);
-		}
-	}
-	return out;
+  const out: string[] = [];
+  for (const d of m.details) {
+    if (filtre && d.lu !== filtre) continue;
+    let depuis = 0;
+    for (let k = 0; k < d.n; k++) {
+      const i = m.planche.texte.indexOf(d.lu, depuis);
+      if (i < 0) break;
+      depuis = i + d.lu.length;
+      const gauche = m.planche.texte.slice(Math.max(0, i - 34), i).replace(/\n/g, "⏎");
+      const droite = m.planche.texte
+        .slice(i + d.lu.length, i + d.lu.length + 34)
+        .replace(/\n/g, "⏎");
+      out.push(`    …${gauche}[${d.lu} → ${d.correct}]${droite}…`);
+    }
+  }
+  return out;
 }
 
 if (N_ECHANTILLONS > 0 && modifications.length > 0) {
-	const candidats = PAIRE
-		? modifications.filter((m) => m.details.some((d) => d.lu === PAIRE))
-		: modifications;
-	console.log(`\n${"=".repeat(78)}`);
-	console.log(
-		`DIFFS (${Math.min(N_ECHANTILLONS, candidats.length)} planche(s) sur ${candidats.length})`
-	);
-	console.log("=".repeat(78));
-	const pas = Math.max(
-		1,
-		Math.floor(candidats.length / Math.min(N_ECHANTILLONS, candidats.length))
-	);
-	for (let i = 0, vus = 0; i < candidats.length && vus < N_ECHANTILLONS; i += pas, vus++) {
-		const m = candidats[i];
-		console.log(`\n[#${m.planche.id} "${m.planche.titre}" p.${m.planche.numero}]`);
-		for (const ligne of contextes(m, PAIRE)) console.log(ligne);
-	}
+  const candidats = PAIRE
+    ? modifications.filter((m) => m.details.some((d) => d.lu === PAIRE))
+    : modifications;
+  console.log(`\n${"=".repeat(78)}`);
+  console.log(
+    `DIFFS (${Math.min(N_ECHANTILLONS, candidats.length)} planche(s) sur ${candidats.length})`,
+  );
+  console.log("=".repeat(78));
+  const pas = Math.max(
+    1,
+    Math.floor(candidats.length / Math.min(N_ECHANTILLONS, candidats.length)),
+  );
+  for (let i = 0, vus = 0; i < candidats.length && vus < N_ECHANTILLONS; i += pas, vus++) {
+    const m = candidats[i];
+    console.log(`\n[#${m.planche.id} "${m.planche.titre}" p.${m.planche.numero}]`);
+    for (const ligne of contextes(m, PAIRE)) console.log(ligne);
+  }
 }
 
 if (SIMULATION) {
-	console.log(
-		`\n(simulation : rien n'a été écrit — relancer avec --appliquer pour déposer ${modifications.length} planche(s))`
-	);
-	await sql.end();
-	process.exit(0);
+  console.log(
+    `\n(simulation : rien n'a été écrit — relancer avec --appliquer pour déposer ${modifications.length} planche(s))`,
+  );
+  await sql.end();
+  process.exit(0);
 }
 
 console.log(`\n${"=".repeat(78)}`);
@@ -270,55 +270,55 @@ console.log("=".repeat(78));
 
 const parOuvrage = new Map<number, Modification[]>();
 for (const m of modifications) {
-	const liste = parOuvrage.get(m.planche.id) ?? [];
-	liste.push(m);
-	parOuvrage.set(m.planche.id, liste);
+  const liste = parOuvrage.get(m.planche.id) ?? [];
+  liste.push(m);
+  parOuvrage.set(m.planche.id, liste);
 }
 
 function paquets<T>(items: T[], taille: number): T[][] {
-	const out: T[][] = [];
-	for (let i = 0; i < items.length; i += taille) out.push(items.slice(i, i + taille));
-	return out;
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += taille) out.push(items.slice(i, i + taille));
+  return out;
 }
 
 let deposees = 0;
 let echecs = 0;
 
 for (const [databookId, liste] of [...parOuvrage.entries()].toSorted((a, b) => a[0] - b[0])) {
-	for (const lot of paquets(liste, PAQUET)) {
-		const corps = JSON.stringify({
-			mode: "merge",
-			pages: lot.map((m) => ({ number: m.planche.numero, text: m.texteCorrige })),
-		});
-		let ok = false;
-		let detail = "";
-		for (let essai = 1; essai <= 2; essai++) {
-			try {
-				const r = await fetch(`${API}/api/databooks/${databookId}/transcription`, {
-					method: "POST",
-					headers: { Authorization: `Bearer ${JETON}`, "Content-Type": "application/json" },
-					body: corps,
-				});
-				detail = await r.text();
-				if (r.ok) {
-					ok = true;
-					break;
-				}
-				if (r.status < 500 || essai === 2) break;
-			} catch (e) {
-				detail = (e as Error).message;
-				if (essai === 2) break;
-			}
-			await new Promise((res) => setTimeout(res, 5_000));
-		}
-		if (ok) {
-			deposees += lot.length;
-			console.log(`  #${databookId} ${lot.length} page(s) -> ${detail.slice(0, 160)}`);
-		} else {
-			echecs += lot.length;
-			console.error(`  #${databookId} ÉCHEC : ${detail.slice(0, 200)}`);
-		}
-	}
+  for (const lot of paquets(liste, PAQUET)) {
+    const corps = JSON.stringify({
+      mode: "merge",
+      pages: lot.map((m) => ({ number: m.planche.numero, text: m.texteCorrige })),
+    });
+    let ok = false;
+    let detail = "";
+    for (let essai = 1; essai <= 2; essai++) {
+      try {
+        const r = await fetch(`${API}/api/databooks/${databookId}/transcription`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${JETON}`, "Content-Type": "application/json" },
+          body: corps,
+        });
+        detail = await r.text();
+        if (r.ok) {
+          ok = true;
+          break;
+        }
+        if (r.status < 500 || essai === 2) break;
+      } catch (e) {
+        detail = (e as Error).message;
+        if (essai === 2) break;
+      }
+      await new Promise((res) => setTimeout(res, 5_000));
+    }
+    if (ok) {
+      deposees += lot.length;
+      console.log(`  #${databookId} ${lot.length} page(s) -> ${detail.slice(0, 160)}`);
+    } else {
+      echecs += lot.length;
+      console.error(`  #${databookId} ÉCHEC : ${detail.slice(0, 200)}`);
+    }
+  }
 }
 
 console.log(`\n${deposees} page(s) déposée(s), ${echecs} en échec.`);

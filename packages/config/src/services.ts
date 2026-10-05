@@ -64,7 +64,10 @@ export function resolveShenronApiBind(env: EnvSource): { hostname: string; port:
   const port = Number(envString(env, "SHENRON_API_PORT"));
   return {
     hostname: envString(env, "SHENRON_API_HOST") ?? DEFAULT_INTERNAL_SERVICES.shenronApiHost,
-    port: Number.isInteger(port) && port > 0 && port < 65_536 ? port : DEFAULT_INTERNAL_SERVICES.shenronApiPort,
+    port:
+      Number.isInteger(port) && port > 0 && port < 65_536
+        ? port
+        : DEFAULT_INTERNAL_SERVICES.shenronApiPort,
   };
 }
 

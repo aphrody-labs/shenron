@@ -10,51 +10,51 @@ export type DB = BunSQLiteDatabase<typeof schema>;
 
 @singleton()
 export class DatabaseService {
-	readonly sqlite: Database;
-	readonly db: DB;
+  readonly sqlite: Database;
+  readonly db: DB;
 
-	constructor() {
-		const targetPath = env.DATABASE_PATH;
-		mkdirSync(dirname(targetPath), { recursive: true });
-		this.sqlite = new Database(targetPath, { create: true });
-		this.configureSqlite();
-		this.db = drizzle(this.sqlite, { schema });
-	}
+  constructor() {
+    const targetPath = env.DATABASE_PATH;
+    mkdirSync(dirname(targetPath), { recursive: true });
+    this.sqlite = new Database(targetPath, { create: true });
+    this.configureSqlite();
+    this.db = drizzle(this.sqlite, { schema });
+  }
 
-	static forPath(customPath: string): DatabaseService {
-		const instance = Object.create(DatabaseService.prototype) as DatabaseService;
-		if (customPath !== ":memory:") mkdirSync(dirname(customPath), { recursive: true });
-		(instance as any).sqlite = new Database(customPath, { create: true });
-		(instance as any).configureSqlite();
-		(instance as any).db = drizzle((instance as any).sqlite, { schema });
-		return instance;
-	}
+  static forPath(customPath: string): DatabaseService {
+    const instance = Object.create(DatabaseService.prototype) as DatabaseService;
+    if (customPath !== ":memory:") mkdirSync(dirname(customPath), { recursive: true });
+    (instance as any).sqlite = new Database(customPath, { create: true });
+    (instance as any).configureSqlite();
+    (instance as any).db = drizzle((instance as any).sqlite, { schema });
+    return instance;
+  }
 
-	static forReadOnlyPath(customPath: string): DatabaseService {
-		const instance = Object.create(DatabaseService.prototype) as DatabaseService;
-		(instance as any).sqlite = new Database(customPath, { readonly: true, create: false });
-		(instance as any).db = drizzle((instance as any).sqlite);
-		return instance;
-	}
+  static forReadOnlyPath(customPath: string): DatabaseService {
+    const instance = Object.create(DatabaseService.prototype) as DatabaseService;
+    (instance as any).sqlite = new Database(customPath, { readonly: true, create: false });
+    (instance as any).db = drizzle((instance as any).sqlite);
+    return instance;
+  }
 
-	private configureSqlite() {
-		// Concurrence + durabilité raisonnable
-		this.sqlite.exec("PRAGMA journal_mode = WAL");
-		this.sqlite.exec("PRAGMA synchronous = NORMAL");
-		this.sqlite.exec("PRAGMA foreign_keys = ON");
-		this.sqlite.exec("PRAGMA busy_timeout = 5000");
-		// Performance reads (leaderboard ORDER BY xp, action_logs filtres, RAG kNN)
-		// - cache_size négatif = KiB (-131072 = 128 MiB, partagé via WAL across readers)
-		// - temp_store=MEMORY évite les spills disque sur ORDER BY/GROUP BY
-		// - mmap_size=512MiB → page reads zero-copy (cap RAM systemd relevé à 2.5G ⇒ OK,
-		//   la base fait ~200-400 Mo ; mmap couvre quasi tout le fichier sans I/O)
-		// Le VPS a 11 Go et ~8 Go libres : on exploite la RAM pour éviter les I/O disque.
-		this.sqlite.exec("PRAGMA cache_size = -131072");
-		this.sqlite.exec("PRAGMA temp_store = MEMORY");
-		this.sqlite.exec("PRAGMA mmap_size = 536870912");
+  private configureSqlite() {
+    // Concurrence + durabilité raisonnable
+    this.sqlite.exec("PRAGMA journal_mode = WAL");
+    this.sqlite.exec("PRAGMA synchronous = NORMAL");
+    this.sqlite.exec("PRAGMA foreign_keys = ON");
+    this.sqlite.exec("PRAGMA busy_timeout = 5000");
+    // Performance reads (leaderboard ORDER BY xp, action_logs filtres, RAG kNN)
+    // - cache_size négatif = KiB (-131072 = 128 MiB, partagé via WAL across readers)
+    // - temp_store=MEMORY évite les spills disque sur ORDER BY/GROUP BY
+    // - mmap_size=512MiB → page reads zero-copy (cap RAM systemd relevé à 2.5G ⇒ OK,
+    //   la base fait ~200-400 Mo ; mmap couvre quasi tout le fichier sans I/O)
+    // Le VPS a 11 Go et ~8 Go libres : on exploite la RAM pour éviter les I/O disque.
+    this.sqlite.exec("PRAGMA cache_size = -131072");
+    this.sqlite.exec("PRAGMA temp_store = MEMORY");
+    this.sqlite.exec("PRAGMA mmap_size = 536870912");
 
-		// Table de feedback et entraînement direct RAG & APIs (création idempotente)
-		this.sqlite.exec(`
+    // Table de feedback et entraînement direct RAG & APIs (création idempotente)
+    this.sqlite.exec(`
 			CREATE TABLE IF NOT EXISTS rag_training_feedback (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				user_id TEXT NOT NULL,
@@ -144,13 +144,13 @@ export class DatabaseService {
 			CREATE INDEX IF NOT EXISTS idx_lab_messages_user ON admin_lab_messages(user_id);
 			CREATE INDEX IF NOT EXISTS idx_lab_messages_created ON admin_lab_messages(created_at);
 		`);
-	}
+  }
 
-	close() {
-		this.sqlite.close();
-	}
+  close() {
+    this.sqlite.close();
+  }
 
-	runRaw(sql: string) {
-		this.sqlite.exec(sql);
-	}
+  runRaw(sql: string) {
+    this.sqlite.exec(sql);
+  }
 }

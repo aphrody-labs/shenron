@@ -71,8 +71,8 @@
  * l'intégration.
  */
 export interface RapportRegle {
-	code: "enumeration-hangul" | "sosies-typographiques";
-	corrections: number;
+  code: "enumeration-hangul" | "sosies-typographiques";
+  corrections: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -104,17 +104,17 @@ const ENUMERATION_JAPONAISE = /[①-⑳㉑-㉟]/;
  * passage ne trouve plus rien.
  */
 export function corrigerEnumerationHangul(texte: string): { texte: string; corrections: number } {
-	if (!ENUMERATION_JAPONAISE.test(texte)) return { texte, corrections: 0 };
-	let n = 0;
-	const sortie = [...texte]
-		.map((c) => {
-			const cp = c.codePointAt(0)!;
-			if (cp < HANGUL_CERCLE_DEBUT || cp > HANGUL_CERCLE_FIN) return c;
-			n++;
-			return String.fromCodePoint(NOMBRE_CERCLE_36 + (cp - HANGUL_CERCLE_DEBUT));
-		})
-		.join("");
-	return { texte: sortie, corrections: n };
+  if (!ENUMERATION_JAPONAISE.test(texte)) return { texte, corrections: 0 };
+  let n = 0;
+  const sortie = [...texte]
+    .map((c) => {
+      const cp = c.codePointAt(0)!;
+      if (cp < HANGUL_CERCLE_DEBUT || cp > HANGUL_CERCLE_FIN) return c;
+      n++;
+      return String.fromCodePoint(NOMBRE_CERCLE_36 + (cp - HANGUL_CERCLE_DEBUT));
+    })
+    .join("");
+  return { texte: sortie, corrections: n };
 }
 
 // ---------------------------------------------------------------------------
@@ -131,17 +131,17 @@ export function corrigerEnumerationHangul(texte: string): { texte: string; corre
  * casserait 95 % des cas pour en réparer 5 %.
  */
 const SOSIES: Readonly<Record<string, string>> = {
-	力: "カ", // chikara / ka
-	口: "ロ", // kuchi / ro
-	二: "ニ", // ni (kanji) / ni (katakana)
-	卜: "ト", // boku / to
-	夕: "タ", // yuu / ta
-	工: "エ", // kou / e
-	八: "ハ", // hachi / ha
-	匕: "ヒ", // hi (kanji rare) / hi
-	へ: "ヘ", // hiragana he / katakana he, au dessin identique
-	べ: "ベ",
-	ぺ: "ペ",
+  力: "カ", // chikara / ka
+  口: "ロ", // kuchi / ro
+  二: "ニ", // ni (kanji) / ni (katakana)
+  卜: "ト", // boku / to
+  夕: "タ", // yuu / ta
+  工: "エ", // kou / e
+  八: "ハ", // hachi / ha
+  匕: "ヒ", // hi (kanji rare) / hi
+  へ: "ヘ", // hiragana he / katakana he, au dessin identique
+  べ: "ベ",
+  ぺ: "ペ",
 };
 
 /**
@@ -154,14 +154,14 @@ const SOSIES: Readonly<Record<string, string>> = {
 const SUITE_MINIMUM = 3;
 
 function estKatakana(c: string): boolean {
-	const cp = c.codePointAt(0)!;
-	// U+30A1 à U+30FA : katakana ; U+30FC : prolongateur ; U+30FD/FE : itérations.
-	return (cp >= 0x30a1 && cp <= 0x30fa) || cp === 0x30fc || cp === 0x30fd || cp === 0x30fe;
+  const cp = c.codePointAt(0)!;
+  // U+30A1 à U+30FA : katakana ; U+30FC : prolongateur ; U+30FD/FE : itérations.
+  return (cp >= 0x30a1 && cp <= 0x30fa) || cp === 0x30fc || cp === 0x30fd || cp === 0x30fe;
 }
 
 function estKanji(c: string): boolean {
-	const cp = c.codePointAt(0)!;
-	return (cp >= 0x4e00 && cp <= 0x9fff) || (cp >= 0x3400 && cp <= 0x4dbf);
+  const cp = c.codePointAt(0)!;
+  return (cp >= 0x4e00 && cp <= 0x9fff) || (cp >= 0x3400 && cp <= 0x4dbf);
 }
 
 /**
@@ -197,11 +197,11 @@ function estKanji(c: string): boolean {
  * existe.
  */
 function bordeKanji(chars: string[], debut: number, fin: number): boolean {
-	const teteEstSosie = SOSIES[chars[debut]] !== undefined;
-	const queueEstSosie = SOSIES[chars[fin - 1]] !== undefined;
-	if (teteEstSosie && debut > 0 && estKanji(chars[debut - 1])) return true;
-	if (queueEstSosie && fin < chars.length && estKanji(chars[fin])) return true;
-	return false;
+  const teteEstSosie = SOSIES[chars[debut]] !== undefined;
+  const queueEstSosie = SOSIES[chars[fin - 1]] !== undefined;
+  if (teteEstSosie && debut > 0 && estKanji(chars[debut - 1])) return true;
+  if (queueEstSosie && fin < chars.length && estKanji(chars[fin])) return true;
+  return false;
 }
 
 /**
@@ -215,36 +215,36 @@ function bordeKanji(chars: string[], debut: number, fin: number): boolean {
  * `databooks-ocr-corrections.ts` : rien n'entre ici sans sa preuve en contexte.
  */
 export const SOSIES_VALIDES_A_LA_MAIN: { lu: string; correct: string; note: string }[] = [
-	{
-		lu: "巨大口ボット",
-		correct: "巨大ロボット",
-		note: "Chōzenshū 3 p.199 : 「かめはめ波が、巨大ロボットを…」. Écarté par le garde-fou parce que 大口 est un mot ; mais 巨大 + ロボット est la seule lecture qui tienne. ロボット est attesté sur 211 planches du corpus.",
-	},
-	{
-		lu: "誘導口ボット",
-		correct: "誘導ロボット",
-		note: "Daizenshuu 7 p.126 : 「誘導ロボット☆」. 導口 n'est pas un mot ; le garde-fou ne tombe que sur le fait que 導 est un kanji.",
-	},
-	{
-		lu: "聖地力リン",
-		correct: "聖地カリン",
-		note: "TV Anime Guide #24 p.10 : 「▲聖地カリンにそそえたつ塔」, dans un encadré titré カリン塔. カリン塔 est attesté sur 83 planches du corpus.",
-	},
-	{
-		lu: "仙猫力リン",
-		correct: "仙猫カリン",
-		note: "TV Anime Guide #24 p.10, même encadré : 「仙猫カリンの修業を受けた」. 仙猫カリン est attesté sur 4 planches du corpus.",
-	},
-	{
-		lu: "オネ工言葉",
-		correct: "オネエ言葉",
-		note: "Jump Anime Library #33 p.34 : 「なぜかオネエ言葉をしゃべる」. Écarté par le garde-fou parce que le sosie est en queue de suite, collé au kanji 言 ; mais 工言 n'est un mot dans aucun dictionnaire, alors que オネエ言葉 est dans JMdict.",
-	},
-	{
-		lu: "茅野力エデ",
-		correct: "茅野カエデ",
-		note: "Fiches #16 p.363 et #17 p.359 : 「さらわれた茅野カエデと神崎有希子を救出する」, deux personnages d'Assassination Classroom cités ensemble. La lecture 野力 n'existe pas.",
-	},
+  {
+    lu: "巨大口ボット",
+    correct: "巨大ロボット",
+    note: "Chōzenshū 3 p.199 : 「かめはめ波が、巨大ロボットを…」. Écarté par le garde-fou parce que 大口 est un mot ; mais 巨大 + ロボット est la seule lecture qui tienne. ロボット est attesté sur 211 planches du corpus.",
+  },
+  {
+    lu: "誘導口ボット",
+    correct: "誘導ロボット",
+    note: "Daizenshuu 7 p.126 : 「誘導ロボット☆」. 導口 n'est pas un mot ; le garde-fou ne tombe que sur le fait que 導 est un kanji.",
+  },
+  {
+    lu: "聖地力リン",
+    correct: "聖地カリン",
+    note: "TV Anime Guide #24 p.10 : 「▲聖地カリンにそそえたつ塔」, dans un encadré titré カリン塔. カリン塔 est attesté sur 83 planches du corpus.",
+  },
+  {
+    lu: "仙猫力リン",
+    correct: "仙猫カリン",
+    note: "TV Anime Guide #24 p.10, même encadré : 「仙猫カリンの修業を受けた」. 仙猫カリン est attesté sur 4 planches du corpus.",
+  },
+  {
+    lu: "オネ工言葉",
+    correct: "オネエ言葉",
+    note: "Jump Anime Library #33 p.34 : 「なぜかオネエ言葉をしゃべる」. Écarté par le garde-fou parce que le sosie est en queue de suite, collé au kanji 言 ; mais 工言 n'est un mot dans aucun dictionnaire, alors que オネエ言葉 est dans JMdict.",
+  },
+  {
+    lu: "茅野力エデ",
+    correct: "茅野カエデ",
+    note: "Fiches #16 p.363 et #17 p.359 : 「さらわれた茅野カエデと神崎有希子を救出する」, deux personnages d'Assassination Classroom cités ensemble. La lecture 野力 n'existe pas.",
+  },
 ];
 
 /**
@@ -258,59 +258,59 @@ export const SOSIES_VALIDES_A_LA_MAIN: { lu: string; correct: string; note: stri
  * dégradation que `dictionnaire.ts` face à une ressource absente.
  */
 export function corrigerSosies(
-	texte: string,
-	motConnu?: (mot: string) => boolean
+  texte: string,
+  motConnu?: (mot: string) => boolean,
 ): { texte: string; corrections: number; details: { avant: string; apres: string }[] } {
-	const details: { avant: string; apres: string }[] = [];
-	let sortie = texte;
+  const details: { avant: string; apres: string }[] = [];
+  let sortie = texte;
 
-	// Rattrapage des cas vérifiés à la main, avant la règle générale : ce sont
-	// justement ceux que le garde-fou écarte.
-	for (const { lu, correct } of SOSIES_VALIDES_A_LA_MAIN) {
-		let i = sortie.indexOf(lu);
-		while (i >= 0) {
-			details.push({ avant: lu, apres: correct });
-			sortie = sortie.slice(0, i) + correct + sortie.slice(i + lu.length);
-			i = sortie.indexOf(lu, i + correct.length);
-		}
-	}
+  // Rattrapage des cas vérifiés à la main, avant la règle générale : ce sont
+  // justement ceux que le garde-fou écarte.
+  for (const { lu, correct } of SOSIES_VALIDES_A_LA_MAIN) {
+    let i = sortie.indexOf(lu);
+    while (i >= 0) {
+      details.push({ avant: lu, apres: correct });
+      sortie = sortie.slice(0, i) + correct + sortie.slice(i + lu.length);
+      i = sortie.indexOf(lu, i + correct.length);
+    }
+  }
 
-	if (!motConnu) return { texte: sortie, corrections: details.length, details };
+  if (!motConnu) return { texte: sortie, corrections: details.length, details };
 
-	const chars = [...sortie];
-	const morceaux: string[] = [];
-	let i = 0;
-	while (i < chars.length) {
-		let fin = i;
-		let katakanas = 0;
-		let sosies = 0;
-		while (fin < chars.length) {
-			const c = chars[fin];
-			if (estKatakana(c)) katakanas++;
-			else if (SOSIES[c] !== undefined) sosies++;
-			else break;
-			fin++;
-		}
-		if (fin === i) {
-			morceaux.push(chars[i]);
-			i++;
-			continue;
-		}
-		const avant = chars.slice(i, fin).join("");
-		if (fin - i >= SUITE_MINIMUM && katakanas > 0 && sosies > 0 && !bordeKanji(chars, i, fin)) {
-			const apres = [...avant].map((c) => SOSIES[c] ?? c).join("");
-			if (apres !== avant && motConnu(apres) && !motConnu(avant)) {
-				details.push({ avant, apres });
-				morceaux.push(apres);
-				i = fin;
-				continue;
-			}
-		}
-		morceaux.push(avant);
-		i = fin;
-	}
+  const chars = [...sortie];
+  const morceaux: string[] = [];
+  let i = 0;
+  while (i < chars.length) {
+    let fin = i;
+    let katakanas = 0;
+    let sosies = 0;
+    while (fin < chars.length) {
+      const c = chars[fin];
+      if (estKatakana(c)) katakanas++;
+      else if (SOSIES[c] !== undefined) sosies++;
+      else break;
+      fin++;
+    }
+    if (fin === i) {
+      morceaux.push(chars[i]);
+      i++;
+      continue;
+    }
+    const avant = chars.slice(i, fin).join("");
+    if (fin - i >= SUITE_MINIMUM && katakanas > 0 && sosies > 0 && !bordeKanji(chars, i, fin)) {
+      const apres = [...avant].map((c) => SOSIES[c] ?? c).join("");
+      if (apres !== avant && motConnu(apres) && !motConnu(avant)) {
+        details.push({ avant, apres });
+        morceaux.push(apres);
+        i = fin;
+        continue;
+      }
+    }
+    morceaux.push(avant);
+    i = fin;
+  }
 
-	return { texte: morceaux.join(""), corrections: details.length, details };
+  return { texte: morceaux.join(""), corrections: details.length, details };
 }
 
 // ---------------------------------------------------------------------------
@@ -319,12 +319,12 @@ export function corrigerSosies(
 
 /** Un fragment d'écriture étrangère posé au milieu d'un texte japonais. */
 export interface Intrusion {
-	/** Position du fragment, en unités de code UTF-16 dans le texte. */
-	debut: number;
-	/** Le fragment lui-même. */
-	fragment: string;
-	/** Le morceau de texte autour, pour qu'un rapport soit lisible seul. */
-	contexte: string;
+  /** Position du fragment, en unités de code UTF-16 dans le texte. */
+  debut: number;
+  /** Le fragment lui-même. */
+  fragment: string;
+  /** Le morceau de texte autour, pour qu'un rapport soit lisible seul. */
+  contexte: string;
 }
 
 /**
@@ -349,17 +349,17 @@ const JAPONAIS = /[぀-ヿ㐀-䶿一-鿿]/;
  * signalement.
  */
 export function signalerIntrusions(texte: string): Intrusion[] {
-	if (!JAPONAIS.test(texte)) return [];
-	const out: Intrusion[] = [];
-	for (const m of texte.matchAll(ECRITURE_ETRANGERE)) {
-		const debut = m.index!;
-		out.push({
-			debut,
-			fragment: m[0],
-			contexte: texte.slice(Math.max(0, debut - 12), debut + m[0].length + 12).replace(/\n/g, "⏎"),
-		});
-	}
-	return out;
+  if (!JAPONAIS.test(texte)) return [];
+  const out: Intrusion[] = [];
+  for (const m of texte.matchAll(ECRITURE_ETRANGERE)) {
+    const debut = m.index!;
+    out.push({
+      debut,
+      fragment: m[0],
+      contexte: texte.slice(Math.max(0, debut - 12), debut + m[0].length + 12).replace(/\n/g, "⏎"),
+    });
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -378,17 +378,17 @@ export function signalerIntrusions(texte: string): Intrusion[] {
  * l'est aussi.
  */
 export function corrigerSosiesEtIntrusions(
-	texte: string,
-	options?: { motConnu?: (mot: string) => boolean }
+  texte: string,
+  options?: { motConnu?: (mot: string) => boolean },
 ): { texte: string; rapport: RapportRegle[]; details: { avant: string; apres: string }[] } {
-	const hangul = corrigerEnumerationHangul(texte);
-	const sosies = corrigerSosies(hangul.texte, options?.motConnu);
-	return {
-		texte: sosies.texte,
-		rapport: [
-			{ code: "enumeration-hangul", corrections: hangul.corrections },
-			{ code: "sosies-typographiques", corrections: sosies.corrections },
-		],
-		details: sosies.details,
-	};
+  const hangul = corrigerEnumerationHangul(texte);
+  const sosies = corrigerSosies(hangul.texte, options?.motConnu);
+  return {
+    texte: sosies.texte,
+    rapport: [
+      { code: "enumeration-hangul", corrections: hangul.corrections },
+      { code: "sosies-typographiques", corrections: sosies.corrections },
+    ],
+    details: sosies.details,
+  };
 }

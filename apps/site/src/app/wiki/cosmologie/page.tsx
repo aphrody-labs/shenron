@@ -17,8 +17,11 @@ export const revalidate = 3600;
  * (piège documenté dans CLAUDE.md, vérifié encore ici). Le visiteur voyait une
  * page blanche une seconde, et un moteur indexait une coquille de 76 Ko.
  */
-export const metadata: Metadata = { title: "Lieux Dragon Ball", robots: { index: false, follow: true } };
+export const metadata: Metadata = {
+  title: "Lieux Dragon Ball",
+  robots: { index: false, follow: true },
+};
 
 export default async function CosmologiePage() {
-	permanentRedirect("/wiki/lieux");
+  permanentRedirect("/wiki/lieux");
 }

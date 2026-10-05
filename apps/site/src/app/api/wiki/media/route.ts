@@ -18,60 +18,60 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const CORS = {
-	"Access-Control-Allow-Origin": "*",
-	"Access-Control-Allow-Methods": "GET, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type",
-	"Access-Control-Max-Age": "86400",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": "86400",
 };
 
 export function OPTIONS() {
-	return new NextResponse(null, { status: 204, headers: CORS });
+  return new NextResponse(null, { status: 204, headers: CORS });
 }
 
 export async function GET(req: NextRequest) {
-	const url = req.nextUrl ?? new URL(req.url);
-	const kind = url.searchParams.get("kind") || undefined;
-	const series = url.searchParams.get("series") || undefined;
-	const slug = url.searchParams.get("slug") || undefined;
-	const edition = url.searchParams.get("edition") || undefined;
+  const url = req.nextUrl ?? new URL(req.url);
+  const kind = url.searchParams.get("kind") || undefined;
+  const series = url.searchParams.get("series") || undefined;
+  const slug = url.searchParams.get("slug") || undefined;
+  const edition = url.searchParams.get("edition") || undefined;
 
-	try {
-		const works = (await dbUniverse.mediaWorks({ kind, series, slug })) ?? [];
+  try {
+    const works = (await dbUniverse.mediaWorks({ kind, series, slug })) ?? [];
 
-		// Si filtrage par édition demandé, filtrer les éditions imbriquées
-		const filteredWorks = works
-			.map((w) => {
-				const matchingEditions = edition
-					? w.editions.filter((e) => e.edition === edition)
-					: w.editions;
-				return Object.assign(w, { editions: matchingEditions });
-			})
-			.filter((w) => w.editions.length > 0 || !edition);
+    // Si filtrage par édition demandé, filtrer les éditions imbriquées
+    const filteredWorks = works
+      .map((w) => {
+        const matchingEditions = edition
+          ? w.editions.filter((e) => e.edition === edition)
+          : w.editions;
+        return Object.assign(w, { editions: matchingEditions });
+      })
+      .filter((w) => w.editions.length > 0 || !edition);
 
-		return NextResponse.json(
-			{
-				data: filteredWorks,
-				total: filteredWorks.length,
-				filters: {
-					kind: kind ?? null,
-					series: series ?? null,
-					slug: slug ?? null,
-					edition: edition ?? null,
-				},
-			},
-			{
-				headers: {
-					...CORS,
-					"Content-Type": "application/json; charset=utf-8",
-					"Cache-Control": "public, max-age=60, stale-while-revalidate=300",
-				},
-			},
-		);
-	} catch (error) {
-		console.error("[API_WIKI_MEDIA_ERROR]", error);
-		return NextResponse.json(
-			{ error: "Erreur interne lors de la récupération des œuvres média." },
-			{ status: 500, headers: CORS },
-		);
-	}
+    return NextResponse.json(
+      {
+        data: filteredWorks,
+        total: filteredWorks.length,
+        filters: {
+          kind: kind ?? null,
+          series: series ?? null,
+          slug: slug ?? null,
+          edition: edition ?? null,
+        },
+      },
+      {
+        headers: {
+          ...CORS,
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+        },
+      },
+    );
+  } catch (error) {
+    console.error("[API_WIKI_MEDIA_ERROR]", error);
+    return NextResponse.json(
+      { error: "Erreur interne lors de la récupération des œuvres média." },
+      { status: 500, headers: CORS },
+    );
+  }
 }

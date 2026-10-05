@@ -13,12 +13,12 @@ import { SectionError } from "@/components/SectionError";
  * déclenche un chemin fragile du moteur de recherche).
  */
 export default function Error(props: { error: Error & { digest?: string }; reset: () => void }) {
-	return (
-		<SectionError
-			{...props}
-			title="La vérification de canonicité n'a pas pu s'afficher"
-			backHref="/wiki/canon"
-			backLabel="Reposer une question"
-		/>
-	);
+  return (
+    <SectionError
+      {...props}
+      title="La vérification de canonicité n'a pas pu s'afficher"
+      backHref="/wiki/canon"
+      backLabel="Reposer une question"
+    />
+  );
 }

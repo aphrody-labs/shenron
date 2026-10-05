@@ -22,42 +22,42 @@ import { logger } from "~/lib/logger";
 @Bot("shenron")
 @injectable()
 export class NewsScanEvent {
-	constructor(
-		@inject(NewsService) private news: NewsService,
-		@inject(SettingsService) private settings: SettingsService
-	) {}
+  constructor(
+    @inject(NewsService) private news: NewsService,
+    @inject(SettingsService) private settings: SettingsService,
+  ) {}
 
-	private async isAnnounceSource(channelId: string, channelType: number) {
-		if (channelType === ChannelType.GuildAnnouncement) return true;
-		const configured = await this.settings.getSnowflake("channel.announce");
-		return !!configured && channelId === configured;
-	}
+  private async isAnnounceSource(channelId: string, channelType: number) {
+    if (channelType === ChannelType.GuildAnnouncement) return true;
+    const configured = await this.settings.getSnowflake("channel.announce");
+    return !!configured && channelId === configured;
+  }
 
-	private isHumanOrWebhook(authorBot: boolean, webhookId: string | null) {
-		// Webhook = annonce relayée (OK) ; bot pur (nos personas) = ignoré.
-		return !authorBot || !!webhookId;
-	}
+  private isHumanOrWebhook(authorBot: boolean, webhookId: string | null) {
+    // Webhook = annonce relayée (OK) ; bot pur (nos personas) = ignoré.
+    return !authorBot || !!webhookId;
+  }
 
-	@On({ event: "messageCreate" })
-	async onCreate([message]: ArgsOf<"messageCreate">) {
-		if (!message.inGuild()) return;
-		if (!this.isHumanOrWebhook(message.author.bot, message.webhookId)) return;
-		if (!(await this.isAnnounceSource(message.channelId, message.channel.type))) return;
-		const ok = await this.news.saveFromDiscord(message);
-		if (ok) logger.info(`[NewsScan] annonce captée → ${message.url}`);
-	}
+  @On({ event: "messageCreate" })
+  async onCreate([message]: ArgsOf<"messageCreate">) {
+    if (!message.inGuild()) return;
+    if (!this.isHumanOrWebhook(message.author.bot, message.webhookId)) return;
+    if (!(await this.isAnnounceSource(message.channelId, message.channel.type))) return;
+    const ok = await this.news.saveFromDiscord(message);
+    if (ok) logger.info(`[NewsScan] annonce captée → ${message.url}`);
+  }
 
-	@On({ event: "messageUpdate" })
-	async onUpdate([, newM]: ArgsOf<"messageUpdate">) {
-		if (!newM.inGuild()) return;
-		if (!this.isHumanOrWebhook(newM.author?.bot ?? true, newM.webhookId)) return;
-		if (!(await this.isAnnounceSource(newM.channelId, newM.channel.type))) return;
-		await this.news.saveFromDiscord(newM);
-	}
+  @On({ event: "messageUpdate" })
+  async onUpdate([, newM]: ArgsOf<"messageUpdate">) {
+    if (!newM.inGuild()) return;
+    if (!this.isHumanOrWebhook(newM.author?.bot ?? true, newM.webhookId)) return;
+    if (!(await this.isAnnounceSource(newM.channelId, newM.channel.type))) return;
+    await this.news.saveFromDiscord(newM);
+  }
 
-	@On({ event: "messageDelete" })
-	async onDelete([message]: ArgsOf<"messageDelete">) {
-		if (!message.url) return;
-		await this.news.deleteBySourceUrl(message.url);
-	}
+  @On({ event: "messageDelete" })
+  async onDelete([message]: ArgsOf<"messageDelete">) {
+    if (!message.url) return;
+    await this.news.deleteBySourceUrl(message.url);
+  }
 }

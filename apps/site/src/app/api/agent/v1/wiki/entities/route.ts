@@ -16,36 +16,38 @@ export const dynamic = "force-dynamic";
 const tables = new Map(getAgentWikiContributionContract().map((table) => [table.table, table]));
 
 function camel(column: string): string {
-	return column.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+  return column.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
 }
 
 function label(row: Record<string, unknown>): string {
-	for (const key of ["name", "title", "label", "displayName", "slug"]) {
-		const value = row[key];
-		if (typeof value === "string" && value.trim()) return value.trim();
-	}
-	return "Fiche sans libellé";
+  for (const key of ["name", "title", "label", "displayName", "slug"]) {
+    const value = row[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "Fiche sans libellé";
 }
 
 export async function GET(req: Request) {
-	return withAgent(req, "read", async () => {
-		const url = new URL(req.url);
-		const tableName = url.searchParams.get("table")?.trim() ?? "";
-		const table = tables.get(tableName);
-		if (!table) {
-			return agentError("bad_request", "`table` doit être une table du contrat de contribution.");
-		}
+  return withAgent(req, "read", async () => {
+    const url = new URL(req.url);
+    const tableName = url.searchParams.get("table")?.trim() ?? "";
+    const table = tables.get(tableName);
+    if (!table) {
+      return agentError("bad_request", "`table` doit être une table du contrat de contribution.");
+    }
 
-		const limit = readInt(url.searchParams.get("limit"), { min: 1, max: 100, fallback: 25 });
-		const data = await listWiki(tableName, { limit, q: url.searchParams.get("q") ?? undefined });
-		const primaryKeys = (Array.isArray(table.primaryKey) ? table.primaryKey : [table.primaryKey]).map(camel);
-		const rows = data.rows
-			.filter((row) => row.visible !== false)
-			.map((row) => ({
-				rowId: primaryKeys.map((key) => String(row[key] ?? "")).join(":"),
-				label: label(row),
-			}));
+    const limit = readInt(url.searchParams.get("limit"), { min: 1, max: 100, fallback: 25 });
+    const data = await listWiki(tableName, { limit, q: url.searchParams.get("q") ?? undefined });
+    const primaryKeys = (
+      Array.isArray(table.primaryKey) ? table.primaryKey : [table.primaryKey]
+    ).map(camel);
+    const rows = data.rows
+      .filter((row) => row.visible !== false)
+      .map((row) => ({
+        rowId: primaryKeys.map((key) => String(row[key] ?? "")).join(":"),
+        label: label(row),
+      }));
 
-		return agentOk({ table: tableName, rows, total: rows.length, limit });
-	});
+    return agentOk({ table: tableName, rows, total: rows.length, limit });
+  });
 }

@@ -137,13 +137,19 @@ describe("S2 — Site Liveness & Readiness Separation", () => {
 
     it("cancels a stalled availability request at its deadline", async () => {
       let cancelled = false;
-      const state = await probeRag({ RAG_BACKEND: "aphrody" }, (_q, _limit, signal) =>
-        new Promise((_resolve, reject) => {
-          signal!.addEventListener("abort", () => {
-            cancelled = true;
-            reject(new Error("request cancelled"));
-          }, { once: true });
-        })
+      const state = await probeRag(
+        { RAG_BACKEND: "aphrody" },
+        (_q, _limit, signal) =>
+          new Promise((_resolve, reject) => {
+            signal!.addEventListener(
+              "abort",
+              () => {
+                cancelled = true;
+                reject(new Error("request cancelled"));
+              },
+              { once: true },
+            );
+          }),
       );
       expect(state).toBe("unreachable");
       expect(cancelled).toBe(true);

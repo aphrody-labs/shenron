@@ -24,7 +24,11 @@ function tagOf(path: string): string {
 }
 
 function convert(schema: z.ZodType, io: "input" | "output", components: Json): Json {
-  const out = z.toJSONSchema(schema, { target: "draft-2020-12", unrepresentable: "any", io }) as Json;
+  const out = z.toJSONSchema(schema, {
+    target: "draft-2020-12",
+    unrepresentable: "any",
+    io,
+  }) as Json;
   const defs = (out.$defs ?? {}) as Record<string, Json>;
   delete out.$defs;
   delete out.$schema;
@@ -33,7 +37,9 @@ function convert(schema: z.ZodType, io: "input" | "output", components: Json): J
     if (value && typeof value === "object") {
       const entries = Object.entries(value as Json).map(([key, inner]) => [
         key,
-        key === "$ref" && typeof inner === "string" ? inner.replace("#/$defs/", "#/components/schemas/") : rewrite(inner),
+        key === "$ref" && typeof inner === "string"
+          ? inner.replace("#/$defs/", "#/components/schemas/")
+          : rewrite(inner),
       ]);
       return Object.fromEntries(entries);
     }
@@ -48,11 +54,17 @@ function parameters(spec: EndpointSpec, components: Json): Json[] {
   const add = (schema: z.ZodType | undefined, where: "path" | "query") => {
     if (!schema) return;
     const json = convert(schema, "input", components);
-    const resolved = typeof json.$ref === "string" ? (components[json.$ref.split("/").pop()!] as Json) : json;
+    const resolved =
+      typeof json.$ref === "string" ? (components[json.$ref.split("/").pop()!] as Json) : json;
     const properties = (resolved?.properties ?? {}) as Record<string, Json>;
     const required = new Set((resolved?.required ?? []) as string[]);
     for (const [name, property] of Object.entries(properties)) {
-      out.push({ name, in: where, required: where === "path" || required.has(name), schema: property });
+      out.push({
+        name,
+        in: where,
+        required: where === "path" || required.has(name),
+        schema: property,
+      });
     }
   };
   add(spec.params, "path");
@@ -73,15 +85,20 @@ export function buildOpenApiDocument(): Json {
       500: { description: "Internal error", content: error },
       503: { description: "Data store unavailable", content: error },
     };
-    if (spec.auth === "owner") responses[401] = { description: "Authentication required", content: error };
+    if (spec.auth === "owner")
+      responses[401] = { description: "Authentication required", content: error };
     if (spec.auth === "admin") responses[403] = { description: "Forbidden", content: error };
     const ok: Json = { description: spec.websocket ? "Switching protocols (WebSocket)" : "OK" };
-    if (spec.binary) ok.content = { "application/octet-stream": { schema: { type: "string", format: "binary" } } };
+    if (spec.binary)
+      ok.content = { "application/octet-stream": { schema: { type: "string", format: "binary" } } };
     else if (!spec.websocket) {
       ok.content = { "application/json": { schema: convert(spec.response, "output", components) } };
       if (spec.stream === "sse") {
         (ok.content as Json)["text/event-stream"] = {
-          schema: { type: "string", description: "SSE frames: meta, sources, tool, backend, delta, done, error" },
+          schema: {
+            type: "string",
+            description: "SSE frames: meta, sources, tool, backend, delta, done, error",
+          },
         };
       }
     }
@@ -103,7 +120,9 @@ export function buildOpenApiDocument(): Json {
     info: DOCUMENT_INFO,
     paths,
     components: {
-      schemas: Object.fromEntries(Object.entries(components).toSorted(([a], [b]) => a.localeCompare(b))),
+      schemas: Object.fromEntries(
+        Object.entries(components).toSorted(([a], [b]) => a.localeCompare(b)),
+      ),
       securitySchemes: { bearer: { type: "http", scheme: "bearer" } },
     },
   };

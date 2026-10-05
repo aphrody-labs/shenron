@@ -3,7 +3,6 @@
 // webview never reaches (ShenronExportPanel hashes the cleanup layer itself).
 // koharu-ui does not load bun types, so declare only what that module names.
 
-
 declare global {
   var Bun: {
     [member: string]: any;

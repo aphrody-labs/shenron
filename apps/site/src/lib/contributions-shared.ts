@@ -13,66 +13,66 @@
 
 /** Colonnes proposables, avec leur libellé humain et ce qu'on en attend. */
 export const CONTRIBUTABLE_COLUMNS: Record<string, { label: string; hint: string; long: boolean }> =
-	{
-		article: {
-			label: "Article",
-			hint: "Le texte long de la fiche, en markdown. Les titres `## …` deviennent les onglets de la fiche.",
-			long: true,
-		},
-		description: {
-			label: "Description",
-			hint: "Le résumé court affiché en tête de fiche.",
-			long: true,
-		},
-		synopsis: { label: "Synopsis", hint: "Le résumé de l'épisode ou du film.", long: true },
-		body: {
-			label: "Contenu de la section",
-			hint: "Le corps de la section, en markdown.",
-			long: true,
-		},
-		summary: { label: "Résumé", hint: "Le résumé de cette version du personnage.", long: true },
-		note: { label: "Note", hint: "La note attachée à cette apparition.", long: true },
-		biography: {
-			label: "Biographie",
-			hint: "La biographie du comédien ou de la comédienne, sourcée.",
-			long: true,
-		},
-		rulesSummary: {
-			label: "Règles",
-			hint: "Les règles du tournoi, telles que le manga les énonce.",
-			long: true,
-		},
-		climaxSummary: {
-			label: "Dénouement",
-			hint: "Le dénouement du combat, avec la planche ou l'épisode.",
-			long: true,
-		},
-		rules: {
-			label: "Règles",
-			hint: "Les règles d'invocation et de vœux du dragon.",
-			long: true,
-		},
-		nameJa: {
-			label: "Nom japonais",
-			hint: "La graphie japonaise, telle qu'elle est imprimée dans le databook.",
-			long: false,
-		},
-		nameRomaji: {
-			label: "Nom en rōmaji",
-			hint: "La transcription latine du nom japonais.",
-			long: false,
-		},
-		titleJa: { label: "Titre japonais", hint: "Le titre japonais imprimé.", long: false },
-		titleRomaji: {
-			label: "Titre en rōmaji",
-			hint: "La transcription latine du titre.",
-			long: false,
-		},
-	};
+  {
+    article: {
+      label: "Article",
+      hint: "Le texte long de la fiche, en markdown. Les titres `## …` deviennent les onglets de la fiche.",
+      long: true,
+    },
+    description: {
+      label: "Description",
+      hint: "Le résumé court affiché en tête de fiche.",
+      long: true,
+    },
+    synopsis: { label: "Synopsis", hint: "Le résumé de l'épisode ou du film.", long: true },
+    body: {
+      label: "Contenu de la section",
+      hint: "Le corps de la section, en markdown.",
+      long: true,
+    },
+    summary: { label: "Résumé", hint: "Le résumé de cette version du personnage.", long: true },
+    note: { label: "Note", hint: "La note attachée à cette apparition.", long: true },
+    biography: {
+      label: "Biographie",
+      hint: "La biographie du comédien ou de la comédienne, sourcée.",
+      long: true,
+    },
+    rulesSummary: {
+      label: "Règles",
+      hint: "Les règles du tournoi, telles que le manga les énonce.",
+      long: true,
+    },
+    climaxSummary: {
+      label: "Dénouement",
+      hint: "Le dénouement du combat, avec la planche ou l'épisode.",
+      long: true,
+    },
+    rules: {
+      label: "Règles",
+      hint: "Les règles d'invocation et de vœux du dragon.",
+      long: true,
+    },
+    nameJa: {
+      label: "Nom japonais",
+      hint: "La graphie japonaise, telle qu'elle est imprimée dans le databook.",
+      long: false,
+    },
+    nameRomaji: {
+      label: "Nom en rōmaji",
+      hint: "La transcription latine du nom japonais.",
+      long: false,
+    },
+    titleJa: { label: "Titre japonais", hint: "Le titre japonais imprimé.", long: false },
+    titleRomaji: {
+      label: "Titre en rōmaji",
+      hint: "La transcription latine du titre.",
+      long: false,
+    },
+  };
 
 /** Une colonne est-elle ouverte aux propositions de la communauté ? */
 export function isContributableColumn(col: string): boolean {
-	return col in CONTRIBUTABLE_COLUMNS;
+  return col in CONTRIBUTABLE_COLUMNS;
 }
 
 /** Bornes de saisie — alignées sur celles de `depose-wiki.ts`. */
@@ -87,19 +87,19 @@ export const CONTRIBUTION_SOURCES_MAX = 500;
  * Miroir exact du garde-fou de `scripts/depose-wiki.ts`.
  */
 export const TOURNURES_NON_SOURCEES =
-	/\b(probablement|sans doute|vraisemblablement|on suppose|il semblerait|peut-être que)\b/i;
+  /\b(probablement|sans doute|vraisemblablement|on suppose|il semblerait|peut-être que)\b/i;
 
 export type ContributionStatusKey =
-	| "pending"
-	| "accepted"
-	| "rejected"
-	| "superseded"
-	| "withdrawn";
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "superseded"
+  | "withdrawn";
 
 export const CONTRIBUTION_STATUS_LABELS: Record<ContributionStatusKey, string> = {
-	pending: "En attente",
-	accepted: "Acceptée",
-	rejected: "Refusée",
-	superseded: "Obsolète",
-	withdrawn: "Retirée",
+  pending: "En attente",
+  accepted: "Acceptée",
+  rejected: "Refusée",
+  superseded: "Obsolète",
+  withdrawn: "Retirée",
 };

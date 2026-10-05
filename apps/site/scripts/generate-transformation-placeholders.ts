@@ -8,83 +8,83 @@ import sharp from "sharp";
 import { join } from "node:path";
 
 interface PlaceholderDef {
-	filename: string;
-	characterName: string;
-	transformationName: string;
-	japaneseTitle: string;
-	badgeKanji: string;
-	accentColor: string;
-	glowColor: string;
+  filename: string;
+  characterName: string;
+  transformationName: string;
+  japaneseTitle: string;
+  badgeKanji: string;
+  accentColor: string;
+  glowColor: string;
 }
 
 const PLACEHOLDERS: PlaceholderDef[] = [
-	{
-		filename: "freezer-perfect-form.webp",
-		characterName: "FREEZER",
-		transformationName: "FORME FINALE",
-		japaneseTitle: "フリーザ（最終形態）",
-		badgeKanji: "帝",
-		accentColor: "#a855f7",
-		glowColor: "rgba(168, 85, 247, 0.25)",
-	},
-	{
-		filename: "gohan-ssj.webp",
-		characterName: "SON GOHAN",
-		transformationName: "SUPER SAIYAN",
-		japaneseTitle: "孫悟飯（超サイヤ人）",
-		badgeKanji: "悟",
-		accentColor: "#ffea00",
-		glowColor: "rgba(255, 234, 0, 0.25)",
-	},
-	{
-		filename: "gohan-beast.webp",
-		characterName: "SON GOHAN",
-		transformationName: "GOHAN BEAST",
-		japaneseTitle: "孫悟飯ビースト",
-		badgeKanji: "獣",
-		accentColor: "#c084fc",
-		glowColor: "rgba(192, 132, 252, 0.3)",
-	},
-	{
-		filename: "trunks-ssj.webp",
-		characterName: "TRUNKS DU FUTUR",
-		transformationName: "SUPER SAIYAN",
-		japaneseTitle: "トランクス（超サイヤ人）",
-		badgeKanji: "未",
-		accentColor: "#ffea00",
-		glowColor: "rgba(255, 234, 0, 0.25)",
-	},
-	{
-		filename: "majin-buu-gotenks.webp",
-		characterName: "MAJIN BOO",
-		transformationName: "GOTENKS ABSORBÉ",
-		japaneseTitle: "魔人ブウ（ゴテンクス吸収）",
-		badgeKanji: "魔",
-		accentColor: "#f472b6",
-		glowColor: "rgba(244, 114, 182, 0.25)",
-	},
-	{
-		filename: "gogeta-ssj.webp",
-		characterName: "GOGETA",
-		transformationName: "SUPER SAIYAN",
-		japaneseTitle: "超ゴジータ",
-		badgeKanji: "合",
-		accentColor: "#ffb200",
-		glowColor: "rgba(255, 178, 0, 0.25)",
-	},
-	{
-		filename: "gogeta-ssjb-evolved.webp",
-		characterName: "GOGETA",
-		transformationName: "SUPER SAIYAN BLUE EVOLUTION",
-		japaneseTitle: "ゴジータ（超サイヤ人ゴッドSS・進化）",
-		badgeKanji: "神",
-		accentColor: "#38bdf8",
-		glowColor: "rgba(56, 189, 248, 0.3)",
-	},
+  {
+    filename: "freezer-perfect-form.webp",
+    characterName: "FREEZER",
+    transformationName: "FORME FINALE",
+    japaneseTitle: "フリーザ（最終形態）",
+    badgeKanji: "帝",
+    accentColor: "#a855f7",
+    glowColor: "rgba(168, 85, 247, 0.25)",
+  },
+  {
+    filename: "gohan-ssj.webp",
+    characterName: "SON GOHAN",
+    transformationName: "SUPER SAIYAN",
+    japaneseTitle: "孫悟飯（超サイヤ人）",
+    badgeKanji: "悟",
+    accentColor: "#ffea00",
+    glowColor: "rgba(255, 234, 0, 0.25)",
+  },
+  {
+    filename: "gohan-beast.webp",
+    characterName: "SON GOHAN",
+    transformationName: "GOHAN BEAST",
+    japaneseTitle: "孫悟飯ビースト",
+    badgeKanji: "獣",
+    accentColor: "#c084fc",
+    glowColor: "rgba(192, 132, 252, 0.3)",
+  },
+  {
+    filename: "trunks-ssj.webp",
+    characterName: "TRUNKS DU FUTUR",
+    transformationName: "SUPER SAIYAN",
+    japaneseTitle: "トランクス（超サイヤ人）",
+    badgeKanji: "未",
+    accentColor: "#ffea00",
+    glowColor: "rgba(255, 234, 0, 0.25)",
+  },
+  {
+    filename: "majin-buu-gotenks.webp",
+    characterName: "MAJIN BOO",
+    transformationName: "GOTENKS ABSORBÉ",
+    japaneseTitle: "魔人ブウ（ゴテンクス吸収）",
+    badgeKanji: "魔",
+    accentColor: "#f472b6",
+    glowColor: "rgba(244, 114, 182, 0.25)",
+  },
+  {
+    filename: "gogeta-ssj.webp",
+    characterName: "GOGETA",
+    transformationName: "SUPER SAIYAN",
+    japaneseTitle: "超ゴジータ",
+    badgeKanji: "合",
+    accentColor: "#ffb200",
+    glowColor: "rgba(255, 178, 0, 0.25)",
+  },
+  {
+    filename: "gogeta-ssjb-evolved.webp",
+    characterName: "GOGETA",
+    transformationName: "SUPER SAIYAN BLUE EVOLUTION",
+    japaneseTitle: "ゴジータ（超サイヤ人ゴッドSS・進化）",
+    badgeKanji: "神",
+    accentColor: "#38bdf8",
+    glowColor: "rgba(56, 189, 248, 0.3)",
+  },
 ];
 
 function generateSvg(p: PlaceholderDef): string {
-	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" width="800" height="1200">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" width="800" height="1200">
   <defs>
     <radialGradient id="auraGlow" cx="50%" cy="45%" r="45%">
       <stop offset="0%" stop-color="${p.glowColor}" stop-opacity="1"/>
@@ -153,20 +153,20 @@ function generateSvg(p: PlaceholderDef): string {
 }
 
 async function main() {
-	const outDir = join(import.meta.dir, "..", "public", "dbz", "transformations");
-	console.log("=== GÉNÉRATION DES 7 PLACEHOLDERS DE TRANSFORMATIONS (non officiels) ===");
-	for (const p of PLACEHOLDERS) {
-		const svg = generateSvg(p);
-		const targetFile = join(outDir, p.filename);
-		await sharp(Buffer.from(svg))
-			.webp({ quality: 90 })
-			.toFile(targetFile);
-		console.log(`✓ Placeholder généré: ${p.filename} (${p.transformationName})`);
-	}
-	console.log("=== SUCCÈS : 7/7 fan-arts retirés et remplacés par des placeholders générés (non officiels) ===");
+  const outDir = join(import.meta.dir, "..", "public", "dbz", "transformations");
+  console.log("=== GÉNÉRATION DES 7 PLACEHOLDERS DE TRANSFORMATIONS (non officiels) ===");
+  for (const p of PLACEHOLDERS) {
+    const svg = generateSvg(p);
+    const targetFile = join(outDir, p.filename);
+    await sharp(Buffer.from(svg)).webp({ quality: 90 }).toFile(targetFile);
+    console.log(`✓ Placeholder généré: ${p.filename} (${p.transformationName})`);
+  }
+  console.log(
+    "=== SUCCÈS : 7/7 fan-arts retirés et remplacés par des placeholders générés (non officiels) ===",
+  );
 }
 
 main().catch((error) => {
-	console.error(error);
-	process.exit(1);
+  console.error(error);
+  process.exit(1);
 });

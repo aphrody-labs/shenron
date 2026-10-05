@@ -31,7 +31,9 @@ describe("internal service resolvers", () => {
   });
   test("Shenron API bind: loopback default, invalid port ignored", () => {
     expect(resolveShenronApiBind({})).toEqual({ hostname: "127.0.0.1", port: 8797 });
-    expect(resolveShenronApiBind({ SHENRON_API_HOST: "0.0.0.0", SHENRON_API_PORT: "9000" })).toEqual({
+    expect(
+      resolveShenronApiBind({ SHENRON_API_HOST: "0.0.0.0", SHENRON_API_PORT: "9000" }),
+    ).toEqual({
       hostname: "0.0.0.0",
       port: 9000,
     });

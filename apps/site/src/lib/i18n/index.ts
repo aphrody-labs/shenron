@@ -22,19 +22,18 @@ const DICTIONARIES: Record<SupportedLocale, Dictionary> = { fr, ja, en };
 
 /** The full dictionary of a locale; an unknown locale yields the reference one. */
 export function getDictionary(locale?: string | null): Dictionary {
-	const loc = normalizeLocale(locale);
-	return DICTIONARIES[loc] ?? DICTIONARIES[DEFAULT_LOCALE];
+  const loc = normalizeLocale(locale);
+  return DICTIONARIES[loc] ?? DICTIONARIES[DEFAULT_LOCALE];
 }
-
 
 /** Normalises and validates a language code against the supported list. */
 export function normalizeLocale(locale?: string | null): SupportedLocale {
-	if (!locale) return DEFAULT_LOCALE;
-	const clean = locale.toLowerCase().trim().slice(0, 2);
-	if (clean === "ja" || clean === "jp") return "ja";
-	if (clean === "en") return "en";
-	if (clean === "fr") return "fr";
-	return DEFAULT_LOCALE;
+  if (!locale) return DEFAULT_LOCALE;
+  const clean = locale.toLowerCase().trim().slice(0, 2);
+  if (clean === "ja" || clean === "jp") return "ja";
+  if (clean === "en") return "en";
+  if (clean === "fr") return "fr";
+  return DEFAULT_LOCALE;
 }
 
 /**
@@ -42,20 +41,19 @@ export function normalizeLocale(locale?: string | null): SupportedLocale {
  * Used by the request config only on routes that are already dynamic.
  */
 export function negotiateLocale(acceptLanguage?: string | null): SupportedLocale {
-	if (!acceptLanguage) return DEFAULT_LOCALE;
-	const candidates = acceptLanguage
-		.split(",")
-		.map((part) => {
-			const [tag, q] = part.trim().split(";q=");
-			return { tag: (tag ?? "").toLowerCase(), q: q ? Number(q) : 1 };
-		})
-		.toSorted((a, b) => b.q - a.q);
-	for (const c of candidates) {
-		const two = c.tag.slice(0, 2);
-		if (two === "fr" || two === "en" || two === "ja") return two;
-	}
-	return DEFAULT_LOCALE;
+  if (!acceptLanguage) return DEFAULT_LOCALE;
+  const candidates = acceptLanguage
+    .split(",")
+    .map((part) => {
+      const [tag, q] = part.trim().split(";q=");
+      return { tag: (tag ?? "").toLowerCase(), q: q ? Number(q) : 1 };
+    })
+    .toSorted((a, b) => b.q - a.q);
+  for (const c of candidates) {
+    const two = c.tag.slice(0, 2);
+    if (two === "fr" || two === "en" || two === "ja") return two;
+  }
+  return DEFAULT_LOCALE;
 }
-
 
 export const COOKIE_LOCALE_NAME = "NEXT_LOCALE";

@@ -15,21 +15,21 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-	if (!(await isCurrentUserAdmin())) {
-		return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
-	}
+  if (!(await isCurrentUserAdmin())) {
+    return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
+  }
 
-	const rangeParam = req.nextUrl.searchParams.get("range") ?? "7d";
-	const range = isAnalyticsRange(rangeParam) ? rangeParam : "7d";
+  const rangeParam = req.nextUrl.searchParams.get("range") ?? "7d";
+  const range = isAnalyticsRange(rangeParam) ? rangeParam : "7d";
 
-	try {
-		const overview = await getAnalyticsOverview(range);
-		return NextResponse.json(
-			{ ok: true, ...overview },
-			{ headers: { "cache-control": "no-store" } }
-		);
-	} catch (err) {
-		console.error("[analytics] query failed", err);
-		return NextResponse.json({ ok: false, error: "query_failed" }, { status: 500 });
-	}
+  try {
+    const overview = await getAnalyticsOverview(range);
+    return NextResponse.json(
+      { ok: true, ...overview },
+      { headers: { "cache-control": "no-store" } },
+    );
+  } catch (err) {
+    console.error("[analytics] query failed", err);
+    return NextResponse.json({ ok: false, error: "query_failed" }, { status: 500 });
+  }
 }

@@ -6,16 +6,16 @@
  * pleine page (le slot rend `default.tsx` → null). Pass-through, aucun style.
  */
 export default function FilmsLayout({
-	children,
-	modal,
+  children,
+  modal,
 }: {
-	children: React.ReactNode;
-	modal: React.ReactNode;
+  children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
-	return (
-		<>
-			{children}
-			{modal}
-		</>
-	);
+  return (
+    <>
+      {children}
+      {modal}
+    </>
+  );
 }

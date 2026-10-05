@@ -23,44 +23,44 @@ import { isPathPublic } from "@/lib/wiki-launch";
  * client, résoudre l'état côté serveur et le passer en props.
  */
 export async function GatedLink({
-	href,
-	children,
-	className = "",
-	closedClassName,
-	title,
+  href,
+  children,
+  className = "",
+  closedClassName,
+  title,
 }: {
-	href: string;
-	children: ReactNode;
-	className?: string;
-	/** Classes appliquées quand la cible est fermée (défaut : `className` atténué). */
-	closedClassName?: string;
-	title?: string;
+  href: string;
+  children: ReactNode;
+  className?: string;
+  /** Classes appliquées quand la cible est fermée (défaut : `className` atténué). */
+  closedClassName?: string;
+  title?: string;
 }) {
-	const cfg = await getLaunchConfig().catch(() => null);
-	// Config illisible → on laisse le lien. Mieux vaut un lien qui redirige qu'un
-	// site entier qui se fige en texte mort parce que PostgreSQL a hoqueté.
-	const open = cfg ? isPathPublic(href, cfg) : true;
+  const cfg = await getLaunchConfig().catch(() => null);
+  // Config illisible → on laisse le lien. Mieux vaut un lien qui redirige qu'un
+  // site entier qui se fige en texte mort parce que PostgreSQL a hoqueté.
+  const open = cfg ? isPathPublic(href, cfg) : true;
 
-	if (open) {
-		return (
-			<Link href={href} className={className} title={title}>
-				{children}
-			</Link>
-		);
-	}
+  if (open) {
+    return (
+      <Link href={href} className={className} title={title}>
+        {children}
+      </Link>
+    );
+  }
 
-	return (
-		<span
-			className={closedClassName ?? `${className} cursor-default opacity-60`}
-			title="Cette section n'est pas ouverte"
-			aria-disabled="true"
-		>
-			{children}
-			<span className="ml-1.5 align-middle rounded-full border border-white/15 px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.12em] text-white/50">
-				fermée
-			</span>
-		</span>
-	);
+  return (
+    <span
+      className={closedClassName ?? `${className} cursor-default opacity-60`}
+      title="Cette section n'est pas ouverte"
+      aria-disabled="true"
+    >
+      {children}
+      <span className="ml-1.5 align-middle rounded-full border border-white/15 px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.12em] text-white/50">
+        fermée
+      </span>
+    </span>
+  );
 }
 
 /**
@@ -68,41 +68,41 @@ export async function GatedLink({
  * Pour les cas où la pastille casserait la mise en page (vignette, carte pleine).
  */
 export async function GatedWrap({
-	href,
-	children,
-	className = "",
-	style,
-	title,
+  href,
+  children,
+  className = "",
+  style,
+  title,
 }: {
-	href: string;
-	children: ReactNode;
-	className?: string;
-	/** Styles en ligne des cartes (délai d'animation en cascade, notamment). */
-	style?: CSSProperties;
-	title?: string;
+  href: string;
+  children: ReactNode;
+  className?: string;
+  /** Styles en ligne des cartes (délai d'animation en cascade, notamment). */
+  style?: CSSProperties;
+  title?: string;
 }) {
-	const cfg = await getLaunchConfig().catch(() => null);
-	const open = cfg ? isPathPublic(href, cfg) : true;
-	if (open) {
-		return (
-			<Link href={href} className={className} style={style} title={title}>
-				{children}
-			</Link>
-		);
-	}
-	// Même raison que dans `ClientGatedWrap` : une carte inerte doit DIRE qu'elle
-	// est inerte, sinon le clic sans effet passe pour un bug.
-	return (
-		<div
-			className={`${className} relative cursor-not-allowed opacity-70`}
-			style={style}
-			title="Cette section n'est pas ouverte"
-			aria-disabled="true"
-		>
-			{children}
-			<span className="pointer-events-none absolute right-1.5 top-1.5 z-40 rounded-full border border-white/20 bg-black/75 px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.12em] text-white/70 backdrop-blur-sm">
-				fermée
-			</span>
-		</div>
-	);
+  const cfg = await getLaunchConfig().catch(() => null);
+  const open = cfg ? isPathPublic(href, cfg) : true;
+  if (open) {
+    return (
+      <Link href={href} className={className} style={style} title={title}>
+        {children}
+      </Link>
+    );
+  }
+  // Même raison que dans `ClientGatedWrap` : une carte inerte doit DIRE qu'elle
+  // est inerte, sinon le clic sans effet passe pour un bug.
+  return (
+    <div
+      className={`${className} relative cursor-not-allowed opacity-70`}
+      style={style}
+      title="Cette section n'est pas ouverte"
+      aria-disabled="true"
+    >
+      {children}
+      <span className="pointer-events-none absolute right-1.5 top-1.5 z-40 rounded-full border border-white/20 bg-black/75 px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.12em] text-white/70 backdrop-blur-sm">
+        fermée
+      </span>
+    </div>
+  );
 }

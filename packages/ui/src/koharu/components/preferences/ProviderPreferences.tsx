@@ -1,24 +1,18 @@
-'use client'
+"use client";
 
-import { Eraser } from 'lucide-react'
-import { useEffect, useId, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Eraser } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-import {
-  PreferencePage,
-  PreferenceRow,
-  PreferenceSection,
-  TextField,
-} from './PreferenceFields'
+import { PreferencePage, PreferenceRow, PreferenceSection, TextField } from "./PreferenceFields";
 import type {
   CredentialInput,
   ProviderConfig,
   ProviderPreference,
   ProviderPreferences as ProviderSettings,
-} from '@shenron/koharu/protocol'
-import { Button } from '../../internal/components/button'
-import { Input } from '../../internal/components/input'
-
+} from "@shenron/koharu/protocol";
+import { Button } from "../../internal/components/button";
+import { Input } from "../../internal/components/input";
 
 type ConfigWithSetting<T, Key extends PropertyKey> = T extends { settings: infer Settings }
   ? Key extends keyof Settings
@@ -26,35 +20,35 @@ type ConfigWithSetting<T, Key extends PropertyKey> = T extends { settings: infer
       ? never
       : T
     : never
-  : never
+  : never;
 
-type BaseUrlConfig = ConfigWithSetting<ProviderConfig, 'base_url'>
+type BaseUrlConfig = ConfigWithSetting<ProviderConfig, "base_url">;
 
 export function ProviderPreferences({
   value,
   onChange,
 }: {
-  value: ProviderSettings
-  onChange: (value: ProviderSettings) => void
+  value: ProviderSettings;
+  onChange: (value: ProviderSettings) => void;
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <PreferencePage
-      title={t('settings.providers.title')}
-      description={t('settings.providers.description')}
+      title={t("settings.providers.title")}
+      description={t("settings.providers.description")}
     >
       <PreferenceSection
-        title={t('settings.providers.connections')}
-        description={t('settings.providers.connectionsDescription')}
+        title={t("settings.providers.connections")}
+        description={t("settings.providers.connectionsDescription")}
       >
         {value.entries.filter(isConfigurable).map((entry) => (
           <PreferenceRow
             key={entry.config.provider}
             title={entry.name}
             description={t(`providerDescriptions.${entry.config.provider}`)}
-            align='start'
+            align="start"
           >
-            <div className='grid gap-2'>
+            <div className="grid gap-2">
               {entry.credential && (
                 <CredentialField
                   label={entry.name}
@@ -64,9 +58,9 @@ export function ProviderPreferences({
               )}
               {hasBaseUrl(entry.config) && (
                 <TextField
-                  label={t('model.baseUrl')}
-                  type='url'
-                  value={entry.config.settings.base_url ?? ''}
+                  label={t("model.baseUrl")}
+                  type="url"
+                  value={entry.config.settings.base_url ?? ""}
                   onChange={(base_url) =>
                     onChange(
                       replaceEntry(value, {
@@ -82,7 +76,7 @@ export function ProviderPreferences({
         ))}
       </PreferenceSection>
     </PreferencePage>
-  )
+  );
 }
 
 function CredentialField({
@@ -90,51 +84,51 @@ function CredentialField({
   value,
   onChange,
 }: {
-  label: string
-  value: CredentialInput
-  onChange: (value: CredentialInput) => void
+  label: string;
+  value: CredentialInput;
+  onChange: (value: CredentialInput) => void;
 }) {
-  const { t } = useTranslation()
-  const inputId = useId()
-  const [draftValue, setDraftValue] = useState(value.value ?? '')
+  const { t } = useTranslation();
+  const inputId = useId();
+  const [draftValue, setDraftValue] = useState(value.value ?? "");
   useEffect(() => {
-    if (value.value !== null) setDraftValue(value.value)
-    else if (!value.configured || value.clear) setDraftValue('')
-  }, [value.clear, value.configured, value.value])
-  const configured = !value.clear && (value.configured || Boolean(draftValue))
+    if (value.value !== null) setDraftValue(value.value);
+    else if (!value.configured || value.clear) setDraftValue("");
+  }, [value.clear, value.configured, value.value]);
+  const configured = !value.clear && (value.configured || Boolean(draftValue));
   return (
-    <div className='grid gap-1'>
-      <label htmlFor={inputId} className='text-[10px] text-muted-foreground'>
-        {t('settings.providers.credential')}
+    <div className="grid gap-1">
+      <label htmlFor={inputId} className="text-[10px] text-muted-foreground">
+        {t("settings.providers.credential")}
       </label>
-      <div className='flex gap-2'>
+      <div className="flex gap-2">
         <Input
           id={inputId}
-          aria-label={t('settings.providers.credentialLabel', { provider: label })}
-          type='text'
-          autoComplete='off'
-          autoCapitalize='none'
+          aria-label={t("settings.providers.credentialLabel", { provider: label })}
+          type="text"
+          autoComplete="off"
+          autoCapitalize="none"
           spellCheck={false}
           value={draftValue}
           placeholder={
-            configured ? t('settings.providers.configured') : t('settings.providers.notConfigured')
+            configured ? t("settings.providers.configured") : t("settings.providers.notConfigured")
           }
-          className='h-8 min-w-0 flex-1 text-[12px] [-webkit-text-security:disc] [&::placeholder]:[-webkit-text-security:none]'
+          className="h-8 min-w-0 flex-1 text-[12px] [-webkit-text-security:disc] [&::placeholder]:[-webkit-text-security:none]"
           onChange={(event) => {
-            const draft = event.currentTarget.value
-            setDraftValue(draft)
-            onChange({ ...value, value: draft || null, clear: false })
+            const draft = event.currentTarget.value;
+            setDraftValue(draft);
+            onChange({ ...value, value: draft || null, clear: false });
           }}
         />
         {configured && (
           <Button
-            type='button'
-            variant='outline'
-            size='icon'
-            aria-label={t('settings.providers.clearCredential', { provider: label })}
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label={t("settings.providers.clearCredential", { provider: label })}
             onClick={() => {
-              setDraftValue('')
-              onChange({ configured: false, value: null, clear: true })
+              setDraftValue("");
+              onChange({ configured: false, value: null, clear: true });
             }}
           >
             <Eraser />
@@ -142,23 +136,23 @@ function CredentialField({
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function isConfigurable(entry: ProviderPreference): boolean {
-  return entry.credential !== null || hasBaseUrl(entry.config)
+  return entry.credential !== null || hasBaseUrl(entry.config);
 }
 
 function hasBaseUrl(config: ProviderConfig): config is BaseUrlConfig {
-  return 'base_url' in config.settings
+  return "base_url" in config.settings;
 }
 
 function withBaseUrl(config: ProviderConfig, base_url: string): ProviderConfig {
-  if (!hasBaseUrl(config)) return config
+  if (!hasBaseUrl(config)) return config;
   return {
     ...config,
     settings: { ...config.settings, base_url: base_url || null },
-  } as ProviderConfig
+  } as ProviderConfig;
 }
 
 function replaceEntry(
@@ -169,5 +163,5 @@ function replaceEntry(
     entries: preferences.entries.map((entry) =>
       entry.config.provider === replacement.config.provider ? replacement : entry,
     ),
-  }
+  };
 }

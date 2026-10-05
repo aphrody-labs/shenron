@@ -1,6 +1,7 @@
 {
   "name": "@shenron/media",
   "version": "0.1.0",
+  "private": true,
   "license": "Apache-2.0",
   "files": [
     "src"
@@ -28,7 +29,6 @@
   "engines": {
     "bun": ">=1.4.2"
   },
-  "private": true,
   "shenron": {
     "runtime": {
       "./manga": "pure",

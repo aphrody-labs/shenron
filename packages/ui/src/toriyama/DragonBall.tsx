@@ -52,89 +52,86 @@
  */
 
 import {
-	SPHERE_DEGRADE,
-	SPHERE_ENCRE,
-	SPHERE_FOYER,
-	SPHERE_R_EXT,
-	SPHERE_R_INT,
-	SPHERE_ROUGE_ETOILE,
-	etoilesSphere,
-	nombreEtoiles,
-	type DragonBallStars,
+  SPHERE_DEGRADE,
+  SPHERE_ENCRE,
+  SPHERE_FOYER,
+  SPHERE_R_EXT,
+  SPHERE_R_INT,
+  SPHERE_ROUGE_ETOILE,
+  etoilesSphere,
+  nombreEtoiles,
+  type DragonBallStars,
 } from "../toriyama-svg/sphere";
 
 export type { DragonBallStars };
 
 export function DragonBall({
-	stars = 4,
-	size = 64,
-	className,
-	title,
-	decorative = false,
+  stars = 4,
+  size = 64,
+  className,
+  title,
+  decorative = false,
 }: {
-	stars?: number;
-	size?: number;
-	className?: string;
-	title?: string;
-	/**
-	 * Décor pur : la boule sort de l'arbre d'accessibilité.
-	 *
-	 * `KintoUn` et `DragonBallLoader` portaient déjà cet interrupteur, pas elle —
-	 * si bien qu'une boule posée pour le décor s'annonçait quand même. Les sept
-	 * boules dispersées de la page 404 se lisaient « Dragon Ball à 1 étoile,
-	 * Dragon Ball à 2 étoiles… », sept fois, avant le seul texte utile de la
-	 * page ; et le loader annonçait « Chargement » PUIS le nom de sa propre
-	 * illustration.
-	 */
-	decorative?: boolean;
+  stars?: number;
+  size?: number;
+  className?: string;
+  title?: string;
+  /**
+   * Décor pur : la boule sort de l'arbre d'accessibilité.
+   *
+   * `KintoUn` et `DragonBallLoader` portaient déjà cet interrupteur, pas elle —
+   * si bien qu'une boule posée pour le décor s'annonçait quand même. Les sept
+   * boules dispersées de la page 404 se lisaient « Dragon Ball à 1 étoile,
+   * Dragon Ball à 2 étoiles… », sept fois, avant le seul texte utile de la
+   * page ; et le loader annonçait « Chargement » PUIS le nom de sa propre
+   * illustration.
+   */
+  decorative?: boolean;
 }) {
-	const n = nombreEtoiles(stars);
-	const a11y = decorative
-		? { "aria-hidden": true as const }
-		: { role: "img" as const, "aria-label": title ?? `Dragon Ball à ${n} étoile${n > 1 ? "s" : ""}` };
-	// Identifiant DÉTERMINISTE, pas un compteur de module ni un `useId` : le
-	// composant est rendu côté serveur sans état, et deux boules de même nombre
-	// d'étoiles partagent alors une définition strictement identique — la
-	// collision d'id est sans effet, là où un compteur casserait l'hydratation.
-	const gid = `db-sphere-${n}`;
+  const n = nombreEtoiles(stars);
+  const a11y = decorative
+    ? { "aria-hidden": true as const }
+    : {
+        role: "img" as const,
+        "aria-label": title ?? `Dragon Ball à ${n} étoile${n > 1 ? "s" : ""}`,
+      };
+  // Identifiant DÉTERMINISTE, pas un compteur de module ni un `useId` : le
+  // composant est rendu côté serveur sans état, et deux boules de même nombre
+  // d'étoiles partagent alors une définition strictement identique — la
+  // collision d'id est sans effet, là où un compteur casserait l'hydratation.
+  const gid = `db-sphere-${n}`;
 
-	return (
-		<svg
-			viewBox="0 0 512 512"
-			width={size}
-			height={size}
-			className={className}
-			{...a11y}
-		>
-			<defs>
-				{/* `userSpaceOnUse` et non `objectBoundingBox` : le dégradé appartient
+  return (
+    <svg viewBox="0 0 512 512" width={size} height={size} className={className} {...a11y}>
+      <defs>
+        {/* `userSpaceOnUse` et non `objectBoundingBox` : le dégradé appartient
 				    au disque INTÉRIEUR (r = 233), pas à la boîte englobante, qui
 				    contient en plus le cerne. */}
-				<radialGradient
-					id={gid}
-					gradientUnits="userSpaceOnUse"
-					cx={SPHERE_R_EXT}
-					cy={SPHERE_R_EXT}
-					r={SPHERE_R_INT}
-					fx={SPHERE_FOYER.x}
-					fy={SPHERE_FOYER.y}
-				>
-					{SPHERE_DEGRADE.map(([offset, couleur]) => (
-						<stop key={offset} offset={offset} stopColor={couleur} />
-					))}
-				</radialGradient>
-			</defs>
-			{/* Cerne d'encre : un disque noir plein, le dégradé par-dessus. Un
+        <radialGradient
+          id={gid}
+          gradientUnits="userSpaceOnUse"
+          cx={SPHERE_R_EXT}
+          cy={SPHERE_R_EXT}
+          r={SPHERE_R_INT}
+          fx={SPHERE_FOYER.x}
+          fy={SPHERE_FOYER.y}
+        >
+          {SPHERE_DEGRADE.map(([offset, couleur]) => (
+            <stop key={offset} offset={offset} stopColor={couleur} />
+          ))}
+        </radialGradient>
+      </defs>
+      {/* Cerne d'encre : un disque noir plein, le dégradé par-dessus. Un
 			    `stroke` centré sur le cercle déborderait du viewBox. */}
-			<circle cx={SPHERE_R_EXT} cy={SPHERE_R_EXT} r={SPHERE_R_EXT} fill={SPHERE_ENCRE} />
-			<circle cx={SPHERE_R_EXT} cy={SPHERE_R_EXT} r={SPHERE_R_INT} fill={`url(#${gid})`} />
-			{/* Étoiles rouges (1 à 7), aplat franc sans contour — la couverture n'en
+      <circle cx={SPHERE_R_EXT} cy={SPHERE_R_EXT} r={SPHERE_R_EXT} fill={SPHERE_ENCRE} />
+      <circle cx={SPHERE_R_EXT} cy={SPHERE_R_EXT} r={SPHERE_R_INT} fill={`url(#${gid})`} />
+      {/* Étoiles rouges (1 à 7), aplat franc sans contour — la couverture n'en
 			    pose aucun autour d'elles. */}
-			{etoilesSphere(n).map((points, i) => (
-				<polygon key={i} points={points} fill={SPHERE_ROUGE_ETOILE} />
-			))}
-		</svg>
-	);
+      {etoilesSphere(n).map((points, i) => (
+        <polygon key={i} points={points} fill={SPHERE_ROUGE_ETOILE} />
+      ))}
+    </svg>
+  );
 }
 
 /**
@@ -146,27 +143,27 @@ export function DragonBall({
  * `aria-hidden` et n'usurpe plus le nom accessible du contrôle.
  */
 export function DragonBallLoader({
-	size = 40,
-	stars = 4,
-	className = "",
-	decorative = false,
+  size = 40,
+  stars = 4,
+  className = "",
+  decorative = false,
 }: {
-	size?: number;
-	stars?: DragonBallStars;
-	className?: string;
-	decorative?: boolean;
+  size?: number;
+  stars?: DragonBallStars;
+  className?: string;
+  decorative?: boolean;
 }) {
-	return (
-		<span
-			className={`inline-block ${className}`}
-			style={{ width: size, height: size, animation: "db-spin 1.1s linear infinite" }}
-			{...(decorative ? { "aria-hidden": true } : { "aria-label": "Chargement", role: "status" })}
-		>
-			{/* `decorative` : l'enveloppe porte déjà « Chargement » (ou est masquée) —
+  return (
+    <span
+      className={`inline-block ${className}`}
+      style={{ width: size, height: size, animation: "db-spin 1.1s linear infinite" }}
+      {...(decorative ? { "aria-hidden": true } : { "aria-label": "Chargement", role: "status" })}
+    >
+      {/* `decorative` : l'enveloppe porte déjà « Chargement » (ou est masquée) —
 			    sans cela, le lecteur d'écran enchaînait avec le nom de l'illustration.
 			    Même parti pris que `KintoUnLoader`. */}
-			<DragonBall stars={stars} size={size} decorative />
-			<style>{`@keyframes db-spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.inline-block[style*="db-spin"]{animation:none!important}}`}</style>
-		</span>
-	);
+      <DragonBall stars={stars} size={size} decorative />
+      <style>{`@keyframes db-spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.inline-block[style*="db-spin"]{animation:none!important}}`}</style>
+    </span>
+  );
 }

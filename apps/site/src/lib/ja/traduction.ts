@@ -46,15 +46,15 @@ const MAX_JETONS = 16;
 
 /** Le jeton numéro `n` (à partir de 1). */
 function jeton(n: number, prefixe = PREFIXE_JETON, largeur = 3): string {
-	return `${prefixe}${String(n).padStart(largeur, "0")}`;
+  return `${prefixe}${String(n).padStart(largeur, "0")}`;
 }
 
 const VOYELLES: Record<string, string> = {
-	a: "[aàâäá]",
-	e: "[eéèêë]",
-	i: "[iîïí]",
-	o: "[oôöó]",
-	u: "[uùûüú]",
+  a: "[aàâäá]",
+  e: "[eéèêë]",
+  i: "[iîïí]",
+  o: "[oôöó]",
+  u: "[uùûüú]",
 };
 
 /**
@@ -63,16 +63,20 @@ const VOYELLES: Record<string, string> = {
  * porte le numéro. `(?!\d)` empêche `Zeta001` de mordre dans `Zeta0010`.
  */
 function motifJetons(prefixe = PREFIXE_JETON, largeur?: number): RegExp {
-	const corps = [...prefixe.toLowerCase()]
-		.map((c) => VOYELLES[c] ?? c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-		.join("");
-	const chiffres = largeur ? `(\\d{${largeur}})` : `(\\d{3,4})(?!\\d)`;
-	return new RegExp(`${corps}[\\s\\-_]?${chiffres}`, "giu");
+  const corps = [...prefixe.toLowerCase()]
+    .map((c) => VOYELLES[c] ?? c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("");
+  const chiffres = largeur ? `(\\d{${largeur}})` : `(\\d{3,4})(?!\\d)`;
+  return new RegExp(`${corps}[\\s\\-_]?${chiffres}`, "giu");
 }
 
 /** Jetons encore présents dans un texte (vide = restauration complète). */
-export function jetonsResiduels(texte: string, prefixe = PREFIXE_JETON, largeur?: number): string[] {
-	return [...texte.matchAll(motifJetons(prefixe, largeur))].map((m) => m[0]);
+export function jetonsResiduels(
+  texte: string,
+  prefixe = PREFIXE_JETON,
+  largeur?: number,
+): string[] {
+  return [...texte.matchAll(motifJetons(prefixe, largeur))].map((m) => m[0]);
 }
 
 // ── Appariement du lexique ──────────────────────────────────────────────────
@@ -97,25 +101,25 @@ const KATAKANA_MOT = /[ァ-ヺー-ヿㇰ-ㇿｦ-ﾟ]/;
 const LATIN_MOT = /[A-Za-z0-9À-ɏ]/;
 
 function classeDeSigne(c: string | undefined): "katakana" | "latin" | null {
-	if (!c) return null;
-	if (KATAKANA_MOT.test(c)) return "katakana";
-	if (LATIN_MOT.test(c)) return "latin";
-	return null;
+  if (!c) return null;
+  if (KATAKANA_MOT.test(c)) return "katakana";
+  if (LATIN_MOT.test(c)) return "latin";
+  return null;
 }
 
 /** Vrai si `texte.slice(debut, fin)` n'est pas un morceau d'un mot plus long. */
 export function bordsDeMot(texte: string, debut: number, fin: number): boolean {
-	const initiale = classeDeSigne(texte[debut]);
-	if (initiale && classeDeSigne(texte[debut - 1]) === initiale) return false;
-	const finale = classeDeSigne(texte[fin - 1]);
-	if (finale && classeDeSigne(texte[fin]) === finale) return false;
-	return true;
+  const initiale = classeDeSigne(texte[debut]);
+  if (initiale && classeDeSigne(texte[debut - 1]) === initiale) return false;
+  const finale = classeDeSigne(texte[fin - 1]);
+  if (finale && classeDeSigne(texte[fin]) === finale) return false;
+  return true;
 }
 
 export interface Occurrence<T> {
-	debut: number;
-	fin: number;
-	terme: T;
+  debut: number;
+  fin: number;
+  terme: T;
 }
 
 /**
@@ -127,43 +131,43 @@ export interface Occurrence<T> {
  * texte déjà modifié.
  */
 export function occurrencesDuLexique<T extends { ja: string }>(
-	texte: string,
-	termes: readonly T[]
+  texte: string,
+  termes: readonly T[],
 ): Occurrence<T>[] {
-	const parInitiale = new Map<string, T[]>();
-	for (const t of termes) {
-		if (!t.ja || [...t.ja].length < 2) continue;
-		const liste = parInitiale.get(t.ja[0]!) ?? [];
-		liste.push(t);
-		parInitiale.set(t.ja[0]!, liste);
-	}
-	const candidates: Occurrence<T>[] = [];
-	for (let i = 0; i < texte.length; i++) {
-		const liste = parInitiale.get(texte[i]!);
-		if (!liste) continue;
-		for (const t of liste) {
-			const fin = i + t.ja.length;
-			if (texte.startsWith(t.ja, i) && bordsDeMot(texte, i, fin)) {
-				candidates.push({ debut: i, fin, terme: t });
-			}
-		}
-	}
-	candidates.sort((a, b) => b.fin - b.debut - (a.fin - a.debut) || a.debut - b.debut);
-	const occupe = new Uint8Array(texte.length);
-	const retenues: Occurrence<T>[] = [];
-	for (const c of candidates) {
-		let libre = true;
-		for (let k = c.debut; k < c.fin; k++) {
-			if (occupe[k]) {
-				libre = false;
-				break;
-			}
-		}
-		if (!libre) continue;
-		occupe.fill(1, c.debut, c.fin);
-		retenues.push(c);
-	}
-	return retenues.toSorted((a, b) => a.debut - b.debut);
+  const parInitiale = new Map<string, T[]>();
+  for (const t of termes) {
+    if (!t.ja || [...t.ja].length < 2) continue;
+    const liste = parInitiale.get(t.ja[0]!) ?? [];
+    liste.push(t);
+    parInitiale.set(t.ja[0]!, liste);
+  }
+  const candidates: Occurrence<T>[] = [];
+  for (let i = 0; i < texte.length; i++) {
+    const liste = parInitiale.get(texte[i]!);
+    if (!liste) continue;
+    for (const t of liste) {
+      const fin = i + t.ja.length;
+      if (texte.startsWith(t.ja, i) && bordsDeMot(texte, i, fin)) {
+        candidates.push({ debut: i, fin, terme: t });
+      }
+    }
+  }
+  candidates.sort((a, b) => b.fin - b.debut - (a.fin - a.debut) || a.debut - b.debut);
+  const occupe = new Uint8Array(texte.length);
+  const retenues: Occurrence<T>[] = [];
+  for (const c of candidates) {
+    let libre = true;
+    for (let k = c.debut; k < c.fin; k++) {
+      if (occupe[k]) {
+        libre = false;
+        break;
+      }
+    }
+    if (!libre) continue;
+    occupe.fill(1, c.debut, c.fin);
+    retenues.push(c);
+  }
+  return retenues.toSorted((a, b) => a.debut - b.debut);
 }
 
 /**
@@ -173,35 +177,35 @@ export function occurrencesDuLexique<T extends { ja: string }>(
  * suivants restent en clair (`debordement`) plutôt que de partager un jeton.
  */
 export function masquerTermes<T extends { ja: string }>(
-	texte: string,
-	termes: readonly T[],
-	options: { max?: number; prefixe?: string; largeur?: number } = {}
+  texte: string,
+  termes: readonly T[],
+  options: { max?: number; prefixe?: string; largeur?: number } = {},
 ): { masque: string; jetons: Map<string, T>; debordement: number } {
-	const max = options.max ?? Number.POSITIVE_INFINITY;
-	const prefixe = options.prefixe ?? PREFIXE_JETON;
-	const jetons = new Map<string, T>();
-	const jetonDe = new Map<string, string | null>();
-	let debordement = 0;
-	let masque = "";
-	let curseur = 0;
-	for (const o of occurrencesDuLexique(texte, termes)) {
-		let j = jetonDe.get(o.terme.ja);
-		if (j === undefined) {
-			if (jetons.size >= max) {
-				j = null;
-				debordement++;
-			} else {
-				j = jeton(jetons.size + 1, prefixe, options.largeur);
-				jetons.set(j, o.terme);
-			}
-			jetonDe.set(o.terme.ja, j);
-		}
-		if (j === null) continue;
-		masque += texte.slice(curseur, o.debut) + j;
-		curseur = o.fin;
-	}
-	masque += texte.slice(curseur);
-	return { masque, jetons, debordement };
+  const max = options.max ?? Number.POSITIVE_INFINITY;
+  const prefixe = options.prefixe ?? PREFIXE_JETON;
+  const jetons = new Map<string, T>();
+  const jetonDe = new Map<string, string | null>();
+  let debordement = 0;
+  let masque = "";
+  let curseur = 0;
+  for (const o of occurrencesDuLexique(texte, termes)) {
+    let j = jetonDe.get(o.terme.ja);
+    if (j === undefined) {
+      if (jetons.size >= max) {
+        j = null;
+        debordement++;
+      } else {
+        j = jeton(jetons.size + 1, prefixe, options.largeur);
+        jetons.set(j, o.terme);
+      }
+      jetonDe.set(o.terme.ja, j);
+    }
+    if (j === null) continue;
+    masque += texte.slice(curseur, o.debut) + j;
+    curseur = o.fin;
+  }
+  masque += texte.slice(curseur);
+  return { masque, jetons, debordement };
 }
 
 const echappe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -221,41 +225,46 @@ const ABSORBE_APRES = "\u0002";
  * faire échouer la planche s'il n'est pas vide.
  */
 export function restaurerJetons(
-	traduction: string,
-	table: Map<string, string>,
-	prefixe = PREFIXE_JETON,
-	largeur?: number
+  traduction: string,
+  table: Map<string, string>,
+  prefixe = PREFIXE_JETON,
+  largeur?: number,
 ): { texte: string; residuels: string[] } {
-	const parNumero = new Map<number, string>();
-	for (const [cle, fr] of table) {
-		const m = /(\d{3,4})$/.exec(cle);
-		if (m) parNumero.set(Number(m[1]), fr);
-	}
-	const texte = traduction
-		.replace(motifJetons(prefixe, largeur), (brut, numero: string, decalage: number, source: string) => {
-			const fr = parNumero.get(Number(numero));
-			if (fr === undefined) return brut;
-			const motFr = echappe(fr);
-			const avant = source.slice(0, decalage);
-			const apres = source.slice(decalage + brut.length);
-			// Doublon absorbé : un marqueur dit de quel côté retirer l'espace qui
-			// séparait le jeton du mot déjà traduit.
-			if (new RegExp(`(?:^|[^\\p{L}\\p{N}])${motFr}[ \\t]*$`, "iu").test(avant)) return ABSORBE_AVANT;
-			if (new RegExp(`^[ \\t]*${motFr}(?![\\p{L}\\p{N}])`, "iu").test(apres)) return ABSORBE_APRES;
-			return fr;
-		})
-		.replace(new RegExp(`[ \\t]*${ABSORBE_AVANT}`, "g"), "")
-		.replace(new RegExp(`${ABSORBE_APRES}[ \\t]*`, "g"), "");
-	return { texte, residuels: jetonsResiduels(texte, prefixe, largeur) };
+  const parNumero = new Map<number, string>();
+  for (const [cle, fr] of table) {
+    const m = /(\d{3,4})$/.exec(cle);
+    if (m) parNumero.set(Number(m[1]), fr);
+  }
+  const texte = traduction
+    .replace(
+      motifJetons(prefixe, largeur),
+      (brut, numero: string, decalage: number, source: string) => {
+        const fr = parNumero.get(Number(numero));
+        if (fr === undefined) return brut;
+        const motFr = echappe(fr);
+        const avant = source.slice(0, decalage);
+        const apres = source.slice(decalage + brut.length);
+        // Doublon absorbé : un marqueur dit de quel côté retirer l'espace qui
+        // séparait le jeton du mot déjà traduit.
+        if (new RegExp(`(?:^|[^\\p{L}\\p{N}])${motFr}[ \\t]*$`, "iu").test(avant))
+          return ABSORBE_AVANT;
+        if (new RegExp(`^[ \\t]*${motFr}(?![\\p{L}\\p{N}])`, "iu").test(apres))
+          return ABSORBE_APRES;
+        return fr;
+      },
+    )
+    .replace(new RegExp(`[ \\t]*${ABSORBE_AVANT}`, "g"), "")
+    .replace(new RegExp(`${ABSORBE_APRES}[ \\t]*`, "g"), "");
+  return { texte, residuels: jetonsResiduels(texte, prefixe, largeur) };
 }
 
 export interface TexteProtege {
-	/** Texte à soumettre au modèle, termes du domaine masqués. */
-	masque: string;
-	/** Jeton → forme française officielle. */
-	table: Map<string, string>;
-	/** Termes du lexique présents mais non masqués, faute de jetons libres. */
-	debordement: number;
+  /** Texte à soumettre au modèle, termes du domaine masqués. */
+  masque: string;
+  /** Jeton → forme française officielle. */
+  table: Map<string, string>;
+  /** Termes du lexique présents mais non masqués, faute de jetons libres. */
+  debordement: number;
 }
 
 /**
@@ -271,18 +280,18 @@ export interface TexteProtege {
  * silencieuse. `debordement` remonte le compte.
  */
 export function protegerTermes(
-	texte: string,
-	lexTrie: TermeLexique[],
-	options: { prefixe?: string; largeur?: number } = {}
+  texte: string,
+  lexTrie: TermeLexique[],
+  options: { prefixe?: string; largeur?: number } = {},
 ): TexteProtege {
-	const { masque, jetons, debordement } = masquerTermes(
-		texte,
-		lexTrie.filter((t) => t.fr),
-		{ max: MAX_JETONS, prefixe: options.prefixe, largeur: options.largeur }
-	);
-	const table = new Map<string, string>();
-	for (const [j, t] of jetons) table.set(j, t.fr);
-	return { masque, table, debordement };
+  const { masque, jetons, debordement } = masquerTermes(
+    texte,
+    lexTrie.filter((t) => t.fr),
+    { max: MAX_JETONS, prefixe: options.prefixe, largeur: options.largeur },
+  );
+  const table = new Map<string, string>();
+  for (const [j, t] of jetons) table.set(j, t.fr);
+  return { masque, table, debordement };
 }
 
 /**
@@ -291,7 +300,7 @@ export function protegerTermes(
  * non restaurés.
  */
 export function restaurerTermes(traduction: string, table: Map<string, string>): string {
-	return restaurerJetons(traduction, table).texte;
+  return restaurerJetons(traduction, table).texte;
 }
 
 /**
@@ -303,16 +312,16 @@ export function restaurerTermes(traduction: string, table: Map<string, string>):
  * segment tronqué se traduit en contresens plutôt qu'en phrase incomplète.
  */
 export function segmentsTraduisibles(texte: string, maxSignes = 300): string[] {
-	const out: string[] = [];
-	let courant = "";
-	// Le séparateur est conservé avec le segment qui le précède.
-	for (const morceau of texte.split(/(?<=[。！？\n])/)) {
-		if (courant.length + morceau.length > maxSignes && courant.trim()) {
-			out.push(courant.trim());
-			courant = "";
-		}
-		courant += morceau;
-	}
-	if (courant.trim()) out.push(courant.trim());
-	return out;
+  const out: string[] = [];
+  let courant = "";
+  // Le séparateur est conservé avec le segment qui le précède.
+  for (const morceau of texte.split(/(?<=[。！？\n])/)) {
+    if (courant.length + morceau.length > maxSignes && courant.trim()) {
+      out.push(courant.trim());
+      courant = "";
+    }
+    courant += morceau;
+  }
+  if (courant.trim()) out.push(courant.trim());
+  return out;
 }

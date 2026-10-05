@@ -136,7 +136,10 @@ export type VfsListResponse = z.infer<typeof VfsListResponse>;
 export const VfsQueryBody = z
   .object({
     sql: z.string().min(1).max(10_000),
-    params: z.array(z.union([z.string(), z.number(), z.boolean(), z.null()])).max(50).default([]),
+    params: z
+      .array(z.union([z.string(), z.number(), z.boolean(), z.null()]))
+      .max(50)
+      .default([]),
   })
   .meta({ id: "VfsQueryBody" });
 

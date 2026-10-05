@@ -18,44 +18,44 @@ type WikiViewProps = Extract<TelemetryEvent, { name: "wiki_view" }>["props"];
 
 /** Rubrique lisible, pour l'affichage de l'historique. */
 const RUBRIQUE: Record<string, string> = {
-	character: "Personnage",
-	saga: "Saga",
-	movie: "Film",
-	episode: "Épisode",
-	planet: "Monde",
-	technique: "Technique",
-	game: "Jeu",
-	manga: "Manga",
-	race: "Race",
-	arc: "Arc",
+  character: "Personnage",
+  saga: "Saga",
+  movie: "Film",
+  episode: "Épisode",
+  planet: "Monde",
+  technique: "Technique",
+  game: "Jeu",
+  manga: "Manga",
+  race: "Race",
+  arc: "Arc",
 };
 
 export function TrackView({
-	entityType,
-	entityId,
-	entityName,
-	series,
-	image,
+  entityType,
+  entityId,
+  entityName,
+  series,
+  image,
 }: WikiViewProps & { image?: string | null }) {
-	const pathname = usePathname();
+  const pathname = usePathname();
 
-	useEffect(() => {
-		trackWikiView(entityType, entityId, { entityName, series });
-		// Re-track si on navigue d'une fiche à l'autre (clé id change).
-	}, [entityType, entityId, entityName, series]);
+  useEffect(() => {
+    trackWikiView(entityType, entityId, { entityName, series });
+    // Re-track si on navigue d'une fiche à l'autre (clé id change).
+  }, [entityType, entityId, entityName, series]);
 
-	// Marque-page LOCAL, indépendant de la télémétrie : il doit fonctionner
-	// aussi pour qui a refusé la mesure d'audience — c'est un service rendu au
-	// lecteur, pas une collecte.
-	useEffect(() => {
-		if (!entityName || !pathname) return;
-		noterVisite({
-			href: pathname,
-			titre: entityName,
-			rubrique: RUBRIQUE[entityType] ?? "Fiche",
-			image: image ?? null,
-		});
-	}, [pathname, entityType, entityName, image]);
+  // Marque-page LOCAL, indépendant de la télémétrie : il doit fonctionner
+  // aussi pour qui a refusé la mesure d'audience — c'est un service rendu au
+  // lecteur, pas une collecte.
+  useEffect(() => {
+    if (!entityName || !pathname) return;
+    noterVisite({
+      href: pathname,
+      titre: entityName,
+      rubrique: RUBRIQUE[entityType] ?? "Fiche",
+      image: image ?? null,
+    });
+  }, [pathname, entityType, entityName, image]);
 
-	return null;
+  return null;
 }

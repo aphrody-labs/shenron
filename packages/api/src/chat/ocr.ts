@@ -9,7 +9,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { OcrResponse } from "../contract/chat";
 
-const EXT: Record<string, string> = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+const EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+};
 
 export function createCliOcr(o: { binary?: string; timeoutMs?: number } = {}) {
   const binary = o.binary ?? "shenron";
@@ -35,7 +39,10 @@ export function createCliOcr(o: { binary?: string; timeoutMs?: number } = {}) {
           new Response(child.stderr).text(),
           child.exited,
         ]);
-        if (code !== 0) throw new Error(`shenron ocr image failed (exit ${code}): ${err.trim().split("\n").at(-1) ?? ""}`);
+        if (code !== 0)
+          throw new Error(
+            `shenron ocr image failed (exit ${code}): ${err.trim().split("\n").at(-1) ?? ""}`,
+          );
         const parsed = JSON.parse(out) as { engine?: string; text?: string; regions?: number };
         return {
           engine: parsed.engine ?? "ppocr-v5-mobile",

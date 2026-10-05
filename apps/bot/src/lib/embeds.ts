@@ -13,12 +13,12 @@ import { EmbedBuilder, type ColorResolvable, type GuildMember, type User } from 
 import { formatZeni } from "~/lib/zeni";
 
 export const COLORS = {
-	success: 0x57f287,
-	error: 0xed4245,
-	warning: 0xfee75c,
-	info: 0x5865f2,
-	brand: 0xfbbf24,
-	muted: 0x71717a,
+  success: 0x57f287,
+  error: 0xed4245,
+  warning: 0xfee75c,
+  info: 0x5865f2,
+  brand: 0xfbbf24,
+  muted: 0x71717a,
 } as const;
 
 /**
@@ -26,45 +26,45 @@ export const COLORS = {
  * sanctions, etc.). Chaque rang = une transformation iconique.
  */
 export const DBZ_COLORS = {
-	saiyan: 0xfacc15, // SS jaune
-	blue: 0x3b82f6, // SS Blue
-	rose: 0xec4899, // SS Rose / Black
-	ultra: 0xa1a1aa, // Ultra Instinct argenté
-	kaio: 0xdc2626, // Kaio-ken rouge
-	namek: 0x16a34a, // Vert Namek
-	power: 0xef4444, // Sanction
-	zeni: 0xf59e0b, // Zenis / économie
-	achievement: 0x8b5cf6, // Succès
-	goku: 0xea580c, // Gi Goku
+  saiyan: 0xfacc15, // SS jaune
+  blue: 0x3b82f6, // SS Blue
+  rose: 0xec4899, // SS Rose / Black
+  ultra: 0xa1a1aa, // Ultra Instinct argenté
+  kaio: 0xdc2626, // Kaio-ken rouge
+  namek: 0x16a34a, // Vert Namek
+  power: 0xef4444, // Sanction
+  zeni: 0xf59e0b, // Zenis / économie
+  achievement: 0x8b5cf6, // Succès
+  goku: 0xea580c, // Gi Goku
 } as const;
 
 export type EmbedKind = keyof typeof COLORS;
 
 export function brandedEmbed(opts: {
-	title?: string;
-	description?: string;
-	kind?: EmbedKind;
-	footer?: string;
-	timestamp?: boolean;
+  title?: string;
+  description?: string;
+  kind?: EmbedKind;
+  footer?: string;
+  timestamp?: boolean;
 }): EmbedBuilder {
-	const e = new EmbedBuilder().setColor(COLORS[opts.kind ?? "brand"]);
-	if (opts.title) e.setTitle(opts.title);
-	if (opts.description) e.setDescription(opts.description);
-	if (opts.footer) e.setFooter({ text: opts.footer });
-	if (opts.timestamp !== false) e.setTimestamp(new Date());
-	return e;
+  const e = new EmbedBuilder().setColor(COLORS[opts.kind ?? "brand"]);
+  if (opts.title) e.setTitle(opts.title);
+  if (opts.description) e.setDescription(opts.description);
+  if (opts.footer) e.setFooter({ text: opts.footer });
+  if (opts.timestamp !== false) e.setTimestamp(new Date());
+  return e;
 }
 
 export function successEmbed(message: string, description?: string): EmbedBuilder {
-	return brandedEmbed({ title: `✅ ${message}`, description, kind: "success" });
+  return brandedEmbed({ title: `✅ ${message}`, description, kind: "success" });
 }
 
 export function errorEmbed(message: string, description?: string): EmbedBuilder {
-	return brandedEmbed({ title: `❌ ${message}`, description, kind: "error" });
+  return brandedEmbed({ title: `❌ ${message}`, description, kind: "error" });
 }
 
 export function warningEmbed(message: string, description?: string): EmbedBuilder {
-	return brandedEmbed({ title: `⚠️ ${message}`, description, kind: "warning" });
+  return brandedEmbed({ title: `⚠️ ${message}`, description, kind: "warning" });
 }
 
 // ─── Helpers safety (limites Discord) ────────────────────────────────────
@@ -74,7 +74,7 @@ export function warningEmbed(message: string, description?: string): EmbedBuilde
 
 /** Tronque proprement à `max` chars (avec ellipsis si coupure). */
 function trim(str: string, max: number): string {
-	return str.length > max ? `${str.slice(0, max - 3)}...` : str;
+  return str.length > max ? `${str.slice(0, max - 3)}...` : str;
 }
 
 // ─── Embeds DBZ thématiques ──────────────────────────────────────────────
@@ -83,12 +83,12 @@ const FOOTER_DBZ = { text: "Shenron · réalise tes vœux DBZ" };
 
 /** Couleur d'un level-up selon le palier atteint (1→namek, 4→saiyan, 6→kaio, 8→blue, 9→rose, 10→ultra). */
 function colorForLevel(level: number): ColorResolvable {
-	if (level >= 10) return DBZ_COLORS.ultra;
-	if (level >= 9) return DBZ_COLORS.rose;
-	if (level >= 8) return DBZ_COLORS.blue;
-	if (level >= 6) return DBZ_COLORS.kaio;
-	if (level >= 4) return DBZ_COLORS.saiyan;
-	return DBZ_COLORS.namek;
+  if (level >= 10) return DBZ_COLORS.ultra;
+  if (level >= 9) return DBZ_COLORS.rose;
+  if (level >= 8) return DBZ_COLORS.blue;
+  if (level >= 6) return DBZ_COLORS.kaio;
+  if (level >= 4) return DBZ_COLORS.saiyan;
+  return DBZ_COLORS.namek;
 }
 
 /**
@@ -96,60 +96,60 @@ function colorForLevel(level: number): ColorResolvable {
  * Niveau / XP / Récompense.
  */
 export function levelUpEmbed(opts: {
-	member: GuildMember;
-	level: number;
-	xp: number;
-	zeniBonus?: number;
-	message: string;
+  member: GuildMember;
+  level: number;
+  xp: number;
+  zeniBonus?: number;
+  message: string;
 }): EmbedBuilder {
-	const { member, level, xp, zeniBonus, message } = opts;
-	const embed = new EmbedBuilder()
-		.setColor(colorForLevel(level))
-		.setAuthor({
-			name: member.displayName,
-			iconURL: member.displayAvatarURL({ size: 128 }),
-		})
-		.setTitle(trim(`Niveau ${level} atteint !`, 256))
-		.setDescription(trim(message, 4096))
-		.setThumbnail(member.displayAvatarURL({ size: 256 }))
-		.addFields(
-			{ name: "Niveau", value: `**${level}**`, inline: true },
-			{ name: "XP total", value: xp.toLocaleString("fr-FR"), inline: true }
-		)
-		.setTimestamp()
-		.setFooter(FOOTER_DBZ);
-	if (zeniBonus && zeniBonus > 0) {
-		embed.addFields({
-			name: "Récompense",
-			value: `**+${formatZeni(zeniBonus)}**`,
-			inline: true,
-		});
-	}
-	return embed;
+  const { member, level, xp, zeniBonus, message } = opts;
+  const embed = new EmbedBuilder()
+    .setColor(colorForLevel(level))
+    .setAuthor({
+      name: member.displayName,
+      iconURL: member.displayAvatarURL({ size: 128 }),
+    })
+    .setTitle(trim(`Niveau ${level} atteint !`, 256))
+    .setDescription(trim(message, 4096))
+    .setThumbnail(member.displayAvatarURL({ size: 256 }))
+    .addFields(
+      { name: "Niveau", value: `**${level}**`, inline: true },
+      { name: "XP total", value: xp.toLocaleString("fr-FR"), inline: true },
+    )
+    .setTimestamp()
+    .setFooter(FOOTER_DBZ);
+  if (zeniBonus && zeniBonus > 0) {
+    embed.addFields({
+      name: "Récompense",
+      value: `**+${formatZeni(zeniBonus)}**`,
+      inline: true,
+    });
+  }
+  return embed;
 }
 
 /** Sanction modération (warn / mute / kick / ban / jail) avec leur opposé `un*`. */
 type SanctionAction =
-	| "warn"
-	| "mute"
-	| "kick"
-	| "ban"
-	| "jail"
-	| "unwarn"
-	| "unmute"
-	| "unjail"
-	| "unban";
+  | "warn"
+  | "mute"
+  | "kick"
+  | "ban"
+  | "jail"
+  | "unwarn"
+  | "unmute"
+  | "unjail"
+  | "unban";
 
 const SANCTION_EMOJI: Record<SanctionAction, string> = {
-	warn: "⚠️",
-	mute: "🔇",
-	unmute: "🔊",
-	kick: "👢",
-	ban: "🔨",
-	unban: "🔓",
-	jail: "⛓️",
-	unjail: "🕊️",
-	unwarn: "✅",
+  warn: "⚠️",
+  mute: "🔇",
+  unmute: "🔊",
+  kick: "👢",
+  ban: "🔨",
+  unban: "🔓",
+  jail: "⛓️",
+  unjail: "🕊️",
+  unwarn: "✅",
 };
 
 /**
@@ -163,89 +163,89 @@ const SANCTION_EMOJI: Record<SanctionAction, string> = {
  * sanctions via `sanctionEmbed()` standard.
  */
 export function sanctionLogEmbed(opts: {
-	target: User;
-	action: "ban" | "kick" | "jail";
-	gifUrl?: string;
+  target: User;
+  action: "ban" | "kick" | "jail";
+  gifUrl?: string;
 }): EmbedBuilder {
-	const { target, action, gifUrl } = opts;
-	const phrase: Record<typeof action, { line: string; color: number }> = {
-		jail: {
-			line: `**${target.username}** a été envoyé en enfer !`,
-			color: DBZ_COLORS.power,
-		},
-		ban: {
-			line: `**${target.username}** a été désintégré par Beerus !`,
-			color: DBZ_COLORS.power,
-		},
-		kick: {
-			line: `**${target.username}** a été éjecté par Beerus !`,
-			color: DBZ_COLORS.kaio,
-		},
-	};
-	const { line, color } = phrase[action];
-	const embed = new EmbedBuilder().setColor(color).setDescription(line);
-	if (gifUrl && /^(https:\/\/|attachment:\/\/)/i.test(gifUrl)) embed.setImage(gifUrl);
-	return embed;
+  const { target, action, gifUrl } = opts;
+  const phrase: Record<typeof action, { line: string; color: number }> = {
+    jail: {
+      line: `**${target.username}** a été envoyé en enfer !`,
+      color: DBZ_COLORS.power,
+    },
+    ban: {
+      line: `**${target.username}** a été désintégré par Beerus !`,
+      color: DBZ_COLORS.power,
+    },
+    kick: {
+      line: `**${target.username}** a été éjecté par Beerus !`,
+      color: DBZ_COLORS.kaio,
+    },
+  };
+  const { line, color } = phrase[action];
+  const embed = new EmbedBuilder().setColor(color).setDescription(line);
+  if (gifUrl && /^(https:\/\/|attachment:\/\/)/i.test(gifUrl)) embed.setImage(gifUrl);
+  return embed;
 }
 
 export function sanctionEmbed(opts: {
-	target: User;
-	moderator: User;
-	action: SanctionAction;
-	reason?: string;
-	duration?: string;
-	/** URL d'un GIF/image à afficher en bas de l'embed (Discord setImage). */
-	gifUrl?: string;
+  target: User;
+  moderator: User;
+  action: SanctionAction;
+  reason?: string;
+  duration?: string;
+  /** URL d'un GIF/image à afficher en bas de l'embed (Discord setImage). */
+  gifUrl?: string;
 }): EmbedBuilder {
-	const { target, moderator, action, reason, duration, gifUrl } = opts;
-	const isUndo = action.startsWith("un");
-	const embed = new EmbedBuilder()
-		.setColor(isUndo ? COLORS.success : DBZ_COLORS.power)
-		.setTitle(`${SANCTION_EMOJI[action]} ${action.charAt(0).toUpperCase() + action.slice(1)}`)
-		.setDescription(`<@${target.id}>`)
-		.addFields(
-			{ name: "Modérateur", value: `<@${moderator.id}>`, inline: true },
-			{
-				name: "Cible",
-				value: `${target.username} \`${target.id}\``,
-				inline: true,
-			}
-		)
-		.setTimestamp()
-		.setFooter(FOOTER_DBZ);
-	if (reason) embed.addFields({ name: "Motif", value: reason });
-	if (duration) embed.addFields({ name: "Durée", value: duration, inline: true });
-	if (gifUrl && /^(https:\/\/|attachment:\/\/)/i.test(gifUrl)) embed.setImage(gifUrl);
-	return embed;
+  const { target, moderator, action, reason, duration, gifUrl } = opts;
+  const isUndo = action.startsWith("un");
+  const embed = new EmbedBuilder()
+    .setColor(isUndo ? COLORS.success : DBZ_COLORS.power)
+    .setTitle(`${SANCTION_EMOJI[action]} ${action.charAt(0).toUpperCase() + action.slice(1)}`)
+    .setDescription(`<@${target.id}>`)
+    .addFields(
+      { name: "Modérateur", value: `<@${moderator.id}>`, inline: true },
+      {
+        name: "Cible",
+        value: `${target.username} \`${target.id}\``,
+        inline: true,
+      },
+    )
+    .setTimestamp()
+    .setFooter(FOOTER_DBZ);
+  if (reason) embed.addFields({ name: "Motif", value: reason });
+  if (duration) embed.addFields({ name: "Durée", value: duration, inline: true });
+  if (gifUrl && /^(https:\/\/|attachment:\/\/)/i.test(gifUrl)) embed.setImage(gifUrl);
+  return embed;
 }
 
 /**
  * Palette Harmonisée Dragon Ball & Shenron (Lead UI Design)
  */
 export const SHENRON_THEME = {
-	gold: 0xf59e0b, // Gold Shenron (#F59E0B)
-	orange: 0xff6b00, // Orange Shenron (#FF6B00)
-	saiyanBlue: 0x2563eb, // Bleu Saiyan (#2563EB)
-	majinRed: 0xdc2626, // Rouge Majin (#DC2626)
-	kiGreen: 0x22c55e, // Vert Namek / Ki (#22C55E)
-	beerusPurple: 0x8b5cf6, // Violet Beerus (#8B5CF6)
-	silverUltra: 0xe2e8f0, // Argent Ultra Instinct (#E2E8F0)
+  gold: 0xf59e0b, // Gold Shenron (#F59E0B)
+  orange: 0xff6b00, // Orange Shenron (#FF6B00)
+  saiyanBlue: 0x2563eb, // Bleu Saiyan (#2563EB)
+  majinRed: 0xdc2626, // Rouge Majin (#DC2626)
+  kiGreen: 0x22c55e, // Vert Namek / Ki (#22C55E)
+  beerusPurple: 0x8b5cf6, // Violet Beerus (#8B5CF6)
+  silverUltra: 0xe2e8f0, // Argent Ultra Instinct (#E2E8F0)
 } as const;
 
 export const SHENRON_SEPARATORS = {
-	solid: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
-	dashed: "──────────────────────────",
-	stars: "─── ⋆⋅☆⋅⋆ ───",
+  solid: "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+  dashed: "──────────────────────────",
+  stars: "─── ⋆⋅☆⋅⋆ ───",
 } as const;
 
 /**
  * Génère une barre de progression Unicode esthétique (ex: ▰▰▰▰▱▱▱▱▱▱ 40%)
  */
 export function renderProgressBar(current: number, max: number, size = 10): string {
-	if (max <= 0) return `${"▱".repeat(size)} 0%`;
-	const ratio = Math.max(0, Math.min(1, current / max));
-	const filled = Math.round(ratio * size);
-	const empty = size - filled;
-	const pct = Math.round(ratio * 100);
-	return `${"▰".repeat(filled)}${"▱".repeat(empty)} ${pct}%`;
+  if (max <= 0) return `${"▱".repeat(size)} 0%`;
+  const ratio = Math.max(0, Math.min(1, current / max));
+  const filled = Math.round(ratio * size);
+  const empty = size - filled;
+  const pct = Math.round(ratio * 100);
+  return `${"▰".repeat(filled)}${"▱".repeat(empty)} ${pct}%`;
 }

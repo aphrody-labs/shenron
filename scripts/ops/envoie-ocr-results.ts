@@ -4,10 +4,7 @@
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { inspectOcrResults } from "./_ocr-results-db";
-import {
-  runAphrodyCli,
-  type CliResult,
-} from "../../packages/pipeline/src/aphrody/cli.ts";
+import { runAphrodyCli, type CliResult } from "../../packages/pipeline/src/aphrody/cli.ts";
 
 const args = process.argv.slice(2);
 function option(name: string, fallback?: string): string | undefined {

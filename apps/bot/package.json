@@ -51,6 +51,7 @@
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
     "@shenron/images": "workspace:*",
+    "@shenron/media": "workspace:*",
     "@shenron/pipeline": "workspace:*",
     "better-auth": "catalog:",
     "discord.js": "catalog:",
@@ -65,8 +66,7 @@
     "sharp": "catalog:",
     "sqlite-vec": "catalog:",
     "tsyringe": "catalog:",
-    "zod": "catalog:",
-    "@shenron/media": "workspace:*"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "drizzle-kit": "catalog:",

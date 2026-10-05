@@ -15,16 +15,15 @@ import { bestVariant, type ImageVariant } from "@shenron/images/variants";
 import variantsJson from "@/data/image-variants.json";
 
 interface VariantRecord {
-	w: number;
-	h: number;
-	/** A larger copy of the same picture, when one exists. */
-	best?: { path: string; w: number; h: number };
+  w: number;
+  h: number;
+  /** A larger copy of the same picture, when one exists. */
+  best?: { path: string; w: number; h: number };
 }
 
 const VARIANTS = variantsJson as Record<string, VariantRecord>;
 
 const key = (p: string) => p.trim().replace(/^\.?\/+/, "");
-
 
 /**
  * Picks the best resolution among candidate DB paths (and their recorded larger
@@ -33,22 +32,25 @@ const key = (p: string) => p.trim().replace(/^\.?\/+/, "");
  * editorial image is never displaced by a guess.
  */
 export function pickBestImage(candidates: readonly (string | null | undefined)[]): string | null {
-	const present = candidates.filter((c): c is string => !!c && c.trim().length > 0);
-	if (!present.length) return null;
-	const measured: ImageVariant[] = [];
-	for (const c of present) {
-		const r = VARIANTS[key(c)];
-		if (!r) continue;
-		measured.push({ path: c, width: r.w, height: r.h });
-		if (r.best) measured.push({ path: r.best.path, width: r.best.w, height: r.best.h });
-	}
-	if (!measured.length) return present[0]!;
-	// The first candidate is the editorial choice: only a strictly larger picture
-	// (on both axes) may replace it.
-	const first = measured.find((m) => m.path === present[0]);
-	const best = bestVariant(measured);
-	if (!best) return present[0]!;
-	if (first && !((best.width ?? 0) > (first.width ?? 0) && (best.height ?? 0) >= (first.height ?? 0)))
-		return present[0]!;
-	return best.path;
+  const present = candidates.filter((c): c is string => !!c && c.trim().length > 0);
+  if (!present.length) return null;
+  const measured: ImageVariant[] = [];
+  for (const c of present) {
+    const r = VARIANTS[key(c)];
+    if (!r) continue;
+    measured.push({ path: c, width: r.w, height: r.h });
+    if (r.best) measured.push({ path: r.best.path, width: r.best.w, height: r.best.h });
+  }
+  if (!measured.length) return present[0]!;
+  // The first candidate is the editorial choice: only a strictly larger picture
+  // (on both axes) may replace it.
+  const first = measured.find((m) => m.path === present[0]);
+  const best = bestVariant(measured);
+  if (!best) return present[0]!;
+  if (
+    first &&
+    !((best.width ?? 0) > (first.width ?? 0) && (best.height ?? 0) >= (first.height ?? 0))
+  )
+    return present[0]!;
+  return best.path;
 }

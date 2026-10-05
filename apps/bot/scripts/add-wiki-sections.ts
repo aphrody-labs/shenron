@@ -19,11 +19,11 @@
 import postgres from "postgres";
 
 async function main() {
-	const url = process.env.DATABASE_URL;
-	if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
-	const sql = postgres(url, { max: 1 });
-	try {
-		await sql.unsafe(`
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
+  const sql = postgres(url, { max: 1 });
+  try {
+    await sql.unsafe(`
 			CREATE TABLE IF NOT EXISTS bot."db_wiki_sections" (
 				id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 				entity_type text    NOT NULL,
@@ -36,28 +36,28 @@ async function main() {
 				visible     boolean NOT NULL DEFAULT true
 			)
 		`);
-		// Sous-catégories (2e niveau de hiérarchie) + pages wiki affiliées.
-		// - group_label : nom d'un GROUPE parent optionnel qui regroupe plusieurs
-		//   sections sous une même catégorie (ex. « Powerscaling » → « Feats »,
-		//   « Statements »…). NULL = section de 1er niveau (comportement historique).
-		// - links : tableau jsonb de cartes vers d'AUTRES pages wiki, chacune
-		//   { href, label, image } → rendues en vignettes avec photo dans la section.
-		await sql.unsafe(
-			`ALTER TABLE bot."db_wiki_sections" ADD COLUMN IF NOT EXISTS group_label text`
-		);
-		await sql.unsafe(`ALTER TABLE bot."db_wiki_sections" ADD COLUMN IF NOT EXISTS links jsonb`);
-		// Lecture publique : filtre (entity_type, entity_id) + tri sort_order.
-		await sql.unsafe(`
+    // Sous-catégories (2e niveau de hiérarchie) + pages wiki affiliées.
+    // - group_label : nom d'un GROUPE parent optionnel qui regroupe plusieurs
+    //   sections sous une même catégorie (ex. « Powerscaling » → « Feats »,
+    //   « Statements »…). NULL = section de 1er niveau (comportement historique).
+    // - links : tableau jsonb de cartes vers d'AUTRES pages wiki, chacune
+    //   { href, label, image } → rendues en vignettes avec photo dans la section.
+    await sql.unsafe(
+      `ALTER TABLE bot."db_wiki_sections" ADD COLUMN IF NOT EXISTS group_label text`,
+    );
+    await sql.unsafe(`ALTER TABLE bot."db_wiki_sections" ADD COLUMN IF NOT EXISTS links jsonb`);
+    // Lecture publique : filtre (entity_type, entity_id) + tri sort_order.
+    await sql.unsafe(`
 			CREATE INDEX IF NOT EXISTS db_wiki_sections_entity_idx
 			ON bot."db_wiki_sections" (entity_type, entity_id, sort_order)
 		`);
-		console.log("✓ bot.db_wiki_sections (+ group_label, links, index entité)");
-	} finally {
-		await sql.end({ timeout: 5 });
-	}
+    console.log("✓ bot.db_wiki_sections (+ group_label, links, index entité)");
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

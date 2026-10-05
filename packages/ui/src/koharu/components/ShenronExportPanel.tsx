@@ -86,7 +86,9 @@ export function ShenronExportPanel({ host }: { host: ShenronExportHost }) {
     }
   };
 
-  useEffect(() => { void refresh(); }, []);
+  useEffect(() => {
+    void refresh();
+  }, []);
 
   useEffect(() => {
     try {
@@ -123,9 +125,14 @@ export function ShenronExportPanel({ host }: { host: ShenronExportHost }) {
     // The shared mapper hashes the cleanup layer with Bun.CryptoHasher, which the
     // webview lacks; hash it here with WebCrypto and map the rest unchanged.
     const cleanup = result.cleanup_layer_png;
-    const mapped = mapNativeKoharuPageResult({ result: { ...result, cleanup_layer_png: null }, sourceSha256: sha256 }, source);
+    const mapped = mapNativeKoharuPageResult(
+      { result: { ...result, cleanup_layer_png: null }, sourceSha256: sha256 },
+      source,
+    );
     if (Array.isArray(cleanup)) {
-      mapped.artifacts = { cleanupOverlaySha256: await sha256Hex(Uint8Array.from(cleanup as number[])) };
+      mapped.artifacts = {
+        cleanupOverlaySha256: await sha256Hex(Uint8Array.from(cleanup as number[])),
+      };
     }
     const candidate = toMangaReviewCandidateInput(mapped, manifest);
     const base = settings.apiUrl.trim().replace(/\/+$/, "");
@@ -168,23 +175,45 @@ export function ShenronExportPanel({ host }: { host: ShenronExportHost }) {
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2.5 text-[11px]">
       <label className="grid gap-1">
         <span>SHENRON_API_URL</span>
-        <input className={fieldClass} type="url" value={settings.apiUrl}
-          onChange={(e) => setSettings({ ...settings, apiUrl: e.currentTarget.value })} />
+        <input
+          className={fieldClass}
+          type="url"
+          value={settings.apiUrl}
+          onChange={(e) => setSettings({ ...settings, apiUrl: e.currentTarget.value })}
+        />
       </label>
       <label className="grid gap-1">
         <span>Jeton</span>
-        <input className={fieldClass} type="password" value={settings.token}
-          onChange={(e) => setSettings({ ...settings, token: e.currentTarget.value })} />
+        <input
+          className={fieldClass}
+          type="password"
+          value={settings.token}
+          onChange={(e) => setSettings({ ...settings, token: e.currentTarget.value })}
+        />
       </label>
       <div className="flex gap-1">
-        <button type="button" className="h-7 flex-1 rounded border border-border" onClick={() => void refresh()} disabled={running}>
+        <button
+          type="button"
+          className="h-7 flex-1 rounded border border-border"
+          onClick={() => void refresh()}
+          disabled={running}
+        >
           Actualiser
         </button>
-        <button type="button" className="h-7 flex-1 rounded bg-primary text-primary-foreground" onClick={() => void exportAll()} disabled={running || pages.length === 0}>
+        <button
+          type="button"
+          className="h-7 flex-1 rounded bg-primary text-primary-foreground"
+          onClick={() => void exportAll()}
+          disabled={running || pages.length === 0}
+        >
           Exporter
         </button>
       </div>
-      {error && <p role="alert" className="text-destructive">{error}</p>}
+      {error && (
+        <p role="alert" className="text-destructive">
+          {error}
+        </p>
+      )}
       <ul className="grid gap-2">
         {pages.map((page) => {
           const binding = bindings[page.id];
@@ -194,16 +223,36 @@ export function ShenronExportPanel({ host }: { host: ShenronExportHost }) {
               <div className="flex justify-between gap-2">
                 <span className="truncate font-medium">{page.label}</span>
                 <span data-state={status.state}>
-                  {status.state === "idle" ? "—" : status.state === "busy" ? "…" : status.state === "done" ? `OK ${status.detail}` : "Erreur"}
+                  {status.state === "idle"
+                    ? "—"
+                    : status.state === "busy"
+                      ? "…"
+                      : status.state === "done"
+                        ? `OK ${status.detail}`
+                        : "Erreur"}
                 </span>
               </div>
-              <input className={fieldClass} placeholder="ID page manga" value={binding?.mangaPageId ?? ""}
-                onChange={(e) => setBinding(page.id, { mangaPageId: e.currentTarget.value })} />
-              <input className={fieldClass} placeholder="sourceSha256 (manifeste)" value={binding?.sourceSha256 ?? ""}
-                onChange={(e) => setBinding(page.id, { sourceSha256: e.currentTarget.value })} />
-              <input className={fieldClass} placeholder="image (manifeste)" value={binding?.image ?? ""}
-                onChange={(e) => setBinding(page.id, { image: e.currentTarget.value })} />
-              {status.state === "error" && <p className="break-words text-destructive">{status.detail}</p>}
+              <input
+                className={fieldClass}
+                placeholder="ID page manga"
+                value={binding?.mangaPageId ?? ""}
+                onChange={(e) => setBinding(page.id, { mangaPageId: e.currentTarget.value })}
+              />
+              <input
+                className={fieldClass}
+                placeholder="sourceSha256 (manifeste)"
+                value={binding?.sourceSha256 ?? ""}
+                onChange={(e) => setBinding(page.id, { sourceSha256: e.currentTarget.value })}
+              />
+              <input
+                className={fieldClass}
+                placeholder="image (manifeste)"
+                value={binding?.image ?? ""}
+                onChange={(e) => setBinding(page.id, { image: e.currentTarget.value })}
+              />
+              {status.state === "error" && (
+                <p className="break-words text-destructive">{status.detail}</p>
+              )}
             </li>
           );
         })}

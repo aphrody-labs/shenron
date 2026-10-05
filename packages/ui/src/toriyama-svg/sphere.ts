@@ -30,8 +30,8 @@ export const SPHERE_R_INT = SPHERE_R_EXT - SPHERE_CERNE; // 233
  * éclairée d'en haut.
  */
 export const SPHERE_FOYER = {
-	x: SPHERE_R_EXT - 0.3 * SPHERE_R_INT, // 186
-	y: SPHERE_R_EXT - 0.39 * SPHERE_R_INT, // 165
+  x: SPHERE_R_EXT - 0.3 * SPHERE_R_INT, // 186
+  y: SPHERE_R_EXT - 0.39 * SPHERE_R_INT, // 165
 } as const;
 
 /**
@@ -39,17 +39,17 @@ export const SPHERE_FOYER = {
  * à foyer (médiane sur 180 rayons foyer → bord) : les offsets se recopient tels quels.
  */
 export const SPHERE_DEGRADE: ReadonlyArray<readonly [number, string]> = [
-	[0, "#fdffea"],
-	[0.1, "#fdfcca"],
-	[0.2, "#fef6bb"],
-	[0.3, "#fce7a6"],
-	[0.4, "#fcdc93"],
-	[0.5, "#fdcd7f"],
-	[0.6, "#fcc06a"],
-	[0.7, "#fcb455"],
-	[0.8, "#fba740"],
-	[0.9, "#f29d32"],
-	[1, "#ef9a2b"],
+  [0, "#fdffea"],
+  [0.1, "#fdfcca"],
+  [0.2, "#fef6bb"],
+  [0.3, "#fce7a6"],
+  [0.4, "#fcdc93"],
+  [0.5, "#fdcd7f"],
+  [0.6, "#fcc06a"],
+  [0.7, "#fcb455"],
+  [0.8, "#fba740"],
+  [0.9, "#f29d32"],
+  [1, "#ef9a2b"],
 ];
 
 /** Rouge des étoiles : médiane sur 758 px (second relevé `#EA1E24`). */
@@ -62,47 +62,49 @@ export const SPHERE_ENCRE = "#000000";
  * Seule la position de l'étoile unique est mesurée (concentrique à 1 px) ; les
  * autres sont une mise en page de lisibilité, non sourcée.
  */
-export const SPHERE_ETOILES: Readonly<Record<DragonBallStars, ReadonlyArray<readonly [number, number]>>> = {
-	1: [[0, 0]],
-	2: [
-		[-0.22, 0],
-		[0.22, 0],
-	],
-	3: [
-		[0, -0.24],
-		[-0.21, 0.13],
-		[0.21, 0.13],
-	],
-	4: [
-		[-0.2, -0.2],
-		[0.2, -0.2],
-		[-0.2, 0.2],
-		[0.2, 0.2],
-	],
-	5: [
-		[-0.22, -0.2],
-		[0.22, -0.2],
-		[0, 0],
-		[-0.22, 0.2],
-		[0.22, 0.2],
-	],
-	6: [
-		[-0.22, -0.22],
-		[0.22, -0.22],
-		[-0.22, 0],
-		[0.22, 0],
-		[-0.22, 0.22],
-		[0.22, 0.22],
-	],
-	7: [
-		[0, -0.26],
-		[-0.22, -0.11],
-		[0.22, -0.11],
-		[0, 0.04],
-		[-0.22, 0.2],
-		[0.22, 0.2],
-		[0, 0.28],
-	],
+export const SPHERE_ETOILES: Readonly<
+  Record<DragonBallStars, ReadonlyArray<readonly [number, number]>>
+> = {
+  1: [[0, 0]],
+  2: [
+    [-0.22, 0],
+    [0.22, 0],
+  ],
+  3: [
+    [0, -0.24],
+    [-0.21, 0.13],
+    [0.21, 0.13],
+  ],
+  4: [
+    [-0.2, -0.2],
+    [0.2, -0.2],
+    [-0.2, 0.2],
+    [0.2, 0.2],
+  ],
+  5: [
+    [-0.22, -0.2],
+    [0.22, -0.2],
+    [0, 0],
+    [-0.22, 0.2],
+    [0.22, 0.2],
+  ],
+  6: [
+    [-0.22, -0.22],
+    [0.22, -0.22],
+    [-0.22, 0],
+    [0.22, 0],
+    [-0.22, 0.22],
+    [0.22, 0.22],
+  ],
+  7: [
+    [0, -0.26],
+    [-0.22, -0.11],
+    [0.22, -0.11],
+    [0, 0.04],
+    [-0.22, 0.2],
+    [0.22, 0.2],
+    [0, 0.28],
+  ],
 };
 
 /**
@@ -111,27 +113,27 @@ export const SPHERE_ETOILES: Readonly<Record<DragonBallStars, ReadonlyArray<read
  * décroissent pour tenir dans le disque sans se toucher.
  */
 export const SPHERE_R_ETOILE: Readonly<Record<DragonBallStars, number>> = {
-	1: 0.412,
-	2: 0.3,
-	3: 0.26,
-	4: 0.25,
-	5: 0.21,
-	6: 0.2,
-	7: 0.185,
+  1: 0.412,
+  2: 0.3,
+  3: 0.26,
+  4: 0.25,
+  5: 0.21,
+  6: 0.2,
+  7: 0.185,
 };
 
 /** Borne un nombre d'étoiles quelconque dans 1..7. */
 export const nombreEtoiles = (n: number): DragonBallStars =>
-	Math.min(7, Math.max(1, Math.round(n))) as DragonBallStars;
+  Math.min(7, Math.max(1, Math.round(n))) as DragonBallStars;
 
 /**
  * Polygones des étoiles d'une boule à `n` étoiles, dans le viewBox 512.
  * Rayon intérieur 0,45 (mesures 0,45 / 0,45 / 0,479 ; cf. `ETOILE_INTERIEUR`).
  */
 export function etoilesSphere(n: number): string[] {
-	const k = nombreEtoiles(n);
-	const r = SPHERE_R_ETOILE[k] * SPHERE_R_INT;
-	return SPHERE_ETOILES[k].map(([nx, ny]) =>
-		starPoints(SPHERE_R_EXT + nx * SPHERE_BOITE, SPHERE_R_EXT + ny * SPHERE_BOITE, r)
-	);
+  const k = nombreEtoiles(n);
+  const r = SPHERE_R_ETOILE[k] * SPHERE_R_INT;
+  return SPHERE_ETOILES[k].map(([nx, ny]) =>
+    starPoints(SPHERE_R_EXT + nx * SPHERE_BOITE, SPHERE_R_EXT + ny * SPHERE_BOITE, r),
+  );
 }

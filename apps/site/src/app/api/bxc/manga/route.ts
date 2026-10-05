@@ -22,7 +22,7 @@ export async function GET(req: Request) {
           headers: {
             "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
           },
-        }
+        },
       );
     }
 
@@ -31,7 +31,7 @@ export async function GET(req: Request) {
       if (!did) {
         return NextResponse.json(
           { error: "Paramètre 'did' requis (ex: ?did=0-10-1)" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -45,7 +45,7 @@ export async function GET(req: Request) {
           headers: {
             "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
           },
-        }
+        },
       );
     }
 
@@ -55,16 +55,13 @@ export async function GET(req: Request) {
       if (!did || !pageStr) {
         return NextResponse.json(
           { error: "Paramètres 'did' et 'page' requis (ex: ?did=0-10-1&page=1)" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       const pageNum = Number.parseInt(pageStr, 10);
       if (Number.isNaN(pageNum) || pageNum < 1) {
-        return NextResponse.json(
-          { error: "Numéro de page invalide" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Numéro de page invalide" }, { status: 400 });
       }
 
       const pageView = await bxc.dragonballcn.view(did, pageNum);
@@ -76,14 +73,15 @@ export async function GET(req: Request) {
 
     return NextResponse.json(
       { error: `Action inconnue '${action}'. Actions valides: catalog, volume, page.` },
-      { status: 400 }
+      { status: 400 },
     );
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Erreur interne lors de la requête manga BXC",
+        error:
+          error instanceof Error ? error.message : "Erreur interne lors de la requête manga BXC",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

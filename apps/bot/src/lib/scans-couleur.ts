@@ -68,8 +68,8 @@ const CHEMIN_SALONS = new URL("../../data/scans-couleur-salons.json", import.met
 
 /** Une signature en cours de validité, et l'instant où elle cesse de l'être. */
 interface Signature {
-	readonly url: string;
-	readonly expireA: number;
+  readonly url: string;
+  readonly expireA: number;
 }
 
 const cache = new Map<string, Signature>();
@@ -83,74 +83,74 @@ let salonsCharges = 0;
 
 /** Les fils du forum autorisés, relus au plus une fois par minute. */
 async function salonsAutorises(): Promise<Set<string>> {
-	if (salons && Date.now() - salonsCharges < 60_000) return salons;
-	try {
-		const brut = (await Bun.file(CHEMIN_SALONS).json()) as unknown;
-		const liste = Array.isArray(brut) ? brut : [];
-		salons = new Set(liste.filter((x): x is string => typeof x === "string"));
-	} catch {
-		// Absent = chaîne couleur non ingérée sur cet hôte : on refuse tout,
-		// plutôt que d'ouvrir la redirection à n'importe quel salon.
-		salons = new Set<string>();
-	}
-	salonsCharges = Date.now();
-	return salons;
+  if (salons && Date.now() - salonsCharges < 60_000) return salons;
+  try {
+    const brut = (await Bun.file(CHEMIN_SALONS).json()) as unknown;
+    const liste = Array.isArray(brut) ? brut : [];
+    salons = new Set(liste.filter((x): x is string => typeof x === "string"));
+  } catch {
+    // Absent = chaîne couleur non ingérée sur cet hôte : on refuse tout,
+    // plutôt que d'ouvrir la redirection à n'importe quel salon.
+    salons = new Set<string>();
+  }
+  salonsCharges = Date.now();
+  return salons;
 }
 
 /** L'échéance réelle d'une URL signée, lue dans `ex` (timestamp UNIX en hexa). */
 function echeance(url: string): number {
-	const ex = new URL(url).searchParams.get("ex");
-	const secondes = ex ? Number.parseInt(ex, 16) : Number.NaN;
-	if (!Number.isFinite(secondes)) return Date.now() + DUREE_DEFAUT_MS;
-	return secondes * 1000;
+  const ex = new URL(url).searchParams.get("ex");
+  const secondes = ex ? Number.parseInt(ex, 16) : Number.NaN;
+  if (!Number.isFinite(secondes)) return Date.now() + DUREE_DEFAUT_MS;
+  return secondes * 1000;
 }
 
 /** Un appel de rafraîchissement pour un lot d'au plus 50 URL nues. */
 async function rafraichitLot(urls: readonly string[]): Promise<Map<string, Signature>> {
-	const sorti = new Map<string, Signature>();
-	const res = await fetch(`${API_DISCORD}/attachments/refresh-urls`, {
-		method: "POST",
-		headers: {
-			Authorization: `Bot ${env.DISCORD_TOKEN_GRAND_PRETRE}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ attachment_urls: urls }),
-	});
-	if (!res.ok) {
-		logger.warn(`[scans-couleur] refresh-urls → HTTP ${res.status} (${urls.length} URL)`);
-		return sorti;
-	}
-	const corps = (await res.json()) as {
-		refreshed_urls?: Array<{ original?: string; refreshed?: string }>;
-	};
-	for (const item of corps.refreshed_urls ?? []) {
-		if (!item.original || !item.refreshed) continue;
-		sorti.set(item.original, { url: item.refreshed, expireA: echeance(item.refreshed) });
-	}
-	return sorti;
+  const sorti = new Map<string, Signature>();
+  const res = await fetch(`${API_DISCORD}/attachments/refresh-urls`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bot ${env.DISCORD_TOKEN_GRAND_PRETRE}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ attachment_urls: urls }),
+  });
+  if (!res.ok) {
+    logger.warn(`[scans-couleur] refresh-urls → HTTP ${res.status} (${urls.length} URL)`);
+    return sorti;
+  }
+  const corps = (await res.json()) as {
+    refreshed_urls?: Array<{ original?: string; refreshed?: string }>;
+  };
+  for (const item of corps.refreshed_urls ?? []) {
+    if (!item.original || !item.refreshed) continue;
+    sorti.set(item.original, { url: item.refreshed, expireA: echeance(item.refreshed) });
+  }
+  return sorti;
 }
 
 /** Vide la file d'attente en un minimum d'appels au endpoint. */
 async function videLaFile(): Promise<void> {
-	const file = enAttente;
-	enAttente = new Map();
-	minuteurLot = null;
+  const file = enAttente;
+  enAttente = new Map();
+  minuteurLot = null;
 
-	const urls = [...file.keys()];
-	for (let i = 0; i < urls.length; i += LOT_MAX) {
-		const lot = urls.slice(i, i + LOT_MAX);
-		let resolus = new Map<string, Signature>();
-		try {
-			resolus = await rafraichitLot(lot);
-		} catch (err) {
-			logger.warn(`[scans-couleur] rafraîchissement en échec : ${String(err)}`);
-		}
-		for (const nue of lot) {
-			const sig = resolus.get(nue) ?? null;
-			if (sig) cache.set(nue, sig);
-			for (const rendre of file.get(nue) ?? []) rendre(sig);
-		}
-	}
+  const urls = [...file.keys()];
+  for (let i = 0; i < urls.length; i += LOT_MAX) {
+    const lot = urls.slice(i, i + LOT_MAX);
+    let resolus = new Map<string, Signature>();
+    try {
+      resolus = await rafraichitLot(lot);
+    } catch (err) {
+      logger.warn(`[scans-couleur] rafraîchissement en échec : ${String(err)}`);
+    }
+    for (const nue of lot) {
+      const sig = resolus.get(nue) ?? null;
+      if (sig) cache.set(nue, sig);
+      for (const rendre of file.get(nue) ?? []) rendre(sig);
+    }
+  }
 }
 
 /**
@@ -162,25 +162,25 @@ async function videLaFile(): Promise<void> {
  * saute au premier chapitre ouvert.
  */
 export async function urlSignee(urlNue: string): Promise<string | null> {
-	const connue = cache.get(urlNue);
-	if (connue && connue.expireA - MARGE_MS > Date.now()) return connue.url;
+  const connue = cache.get(urlNue);
+  if (connue && connue.expireA - MARGE_MS > Date.now()) return connue.url;
 
-	return new Promise<string | null>((resoudre) => {
-		const rendre = (sig: Signature | null) => resoudre(sig?.url ?? null);
-		const deja = enAttente.get(urlNue);
-		if (deja) deja.push(rendre);
-		else enAttente.set(urlNue, [rendre]);
-		// Une fenêtre courte suffit à agréger la rafale de préchargement d'un
-		// lecteur sans rien ajouter de perceptible à la latence de la 1re planche.
-		minuteurLot ??= setTimeout(() => void videLaFile(), 15);
-	});
+  return new Promise<string | null>((resoudre) => {
+    const rendre = (sig: Signature | null) => resoudre(sig?.url ?? null);
+    const deja = enAttente.get(urlNue);
+    if (deja) deja.push(rendre);
+    else enAttente.set(urlNue, [rendre]);
+    // Une fenêtre courte suffit à agréger la rafale de préchargement d'un
+    // lecteur sans rien ajouter de perceptible à la latence de la 1re planche.
+    minuteurLot ??= setTimeout(() => void videLaFile(), 15);
+  });
 }
 
 /** Une pièce jointe du forum, telle que l'URL publique la décrit. */
 export interface CiblePlanche {
-	readonly salonId: string;
-	readonly pieceJointeId: string;
-	readonly fichier: string;
+  readonly salonId: string;
+  readonly pieceJointeId: string;
+  readonly fichier: string;
 }
 
 const ID = /^\d{17,20}$/;
@@ -194,8 +194,8 @@ const FICHIER = /^[\w.-]{1,120}\.(jpg|jpeg|png|webp|gif)$/i;
  * quoi la route servirait de rafraîchisseur universel d'URL Discord.
  */
 export async function urlNueDe(cible: CiblePlanche): Promise<string | null> {
-	if (!ID.test(cible.salonId) || !ID.test(cible.pieceJointeId)) return null;
-	if (!FICHIER.test(cible.fichier)) return null;
-	if (!(await salonsAutorises()).has(cible.salonId)) return null;
-	return `${RACINE_CDN}${cible.salonId}/${cible.pieceJointeId}/${cible.fichier}`;
+  if (!ID.test(cible.salonId) || !ID.test(cible.pieceJointeId)) return null;
+  if (!FICHIER.test(cible.fichier)) return null;
+  if (!(await salonsAutorises()).has(cible.salonId)) return null;
+  return `${RACINE_CDN}${cible.salonId}/${cible.pieceJointeId}/${cible.fichier}`;
 }

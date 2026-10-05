@@ -23,10 +23,10 @@
  */
 
 export interface StatPersonnage {
-	label: string;
-	value: string;
-	/** Accent de couleur, conservé tel quel quand la mesure existait déjà. */
-	accent?: string | null;
+  label: string;
+  value: string;
+  /** Accent de couleur, conservé tel quel quand la mesure existait déjà. */
+  accent?: string | null;
 }
 
 /** Séparateurs acceptés entre l'intitulé et la valeur. */
@@ -42,40 +42,40 @@ const STAT_VALUE_MAX = 60;
  * autrement valable.
  */
 export function parseStats(texte: string): StatPersonnage[] {
-	const out: StatPersonnage[] = [];
-	for (const brute of texte.split(/\r?\n/)) {
-		const ligne = brute.replace(/^\s*[-*•]\s*/, "").trim();
-		if (!ligne) continue;
-		const sep = SEPARATEUR.exec(ligne);
-		if (!sep || sep.index === 0) continue;
-		const label = ligne.slice(0, sep.index).trim().slice(0, STAT_LABEL_MAX);
-		const value = ligne
-			.slice(sep.index + sep[0].length)
-			.trim()
-			.slice(0, STAT_VALUE_MAX);
-		if (!label || !value) continue;
-		// Un même intitulé deux fois : la dernière écriture gagne, sans doublon
-		// dans le rendu.
-		const dejaLa = out.findIndex((s) => s.label.toLowerCase() === label.toLowerCase());
-		if (dejaLa >= 0) out[dejaLa] = { ...out[dejaLa], value };
-		else out.push({ label, value });
-		if (out.length >= STATS_MAX) break;
-	}
-	return out;
+  const out: StatPersonnage[] = [];
+  for (const brute of texte.split(/\r?\n/)) {
+    const ligne = brute.replace(/^\s*[-*•]\s*/, "").trim();
+    if (!ligne) continue;
+    const sep = SEPARATEUR.exec(ligne);
+    if (!sep || sep.index === 0) continue;
+    const label = ligne.slice(0, sep.index).trim().slice(0, STAT_LABEL_MAX);
+    const value = ligne
+      .slice(sep.index + sep[0].length)
+      .trim()
+      .slice(0, STAT_VALUE_MAX);
+    if (!label || !value) continue;
+    // Un même intitulé deux fois : la dernière écriture gagne, sans doublon
+    // dans le rendu.
+    const dejaLa = out.findIndex((s) => s.label.toLowerCase() === label.toLowerCase());
+    if (dejaLa >= 0) out[dejaLa] = { ...out[dejaLa], value };
+    else out.push({ label, value });
+    if (out.length >= STATS_MAX) break;
+  }
+  return out;
 }
 
 /** Mesures → texte, dans l'ordre d'affichage. */
 export function formatStats(stats: unknown): string {
-	if (!Array.isArray(stats)) return "";
-	return stats
-		.map((s) => {
-			const o = (s ?? {}) as Record<string, unknown>;
-			const label = typeof o.label === "string" ? o.label.trim() : "";
-			const value = typeof o.value === "string" ? o.value.trim() : "";
-			return label && value ? `${label} : ${value}` : null;
-		})
-		.filter((l): l is string => l !== null)
-		.join("\n");
+  if (!Array.isArray(stats)) return "";
+  return stats
+    .map((s) => {
+      const o = (s ?? {}) as Record<string, unknown>;
+      const label = typeof o.label === "string" ? o.label.trim() : "";
+      const value = typeof o.value === "string" ? o.value.trim() : "";
+      return label && value ? `${label} : ${value}` : null;
+    })
+    .filter((l): l is string => l !== null)
+    .join("\n");
 }
 
 /**
@@ -84,22 +84,22 @@ export function formatStats(stats: unknown): string {
  * mesure, et une correction de valeur ne doit pas repeindre la fiche.
  */
 export function fusionnerStats(propose: StatPersonnage[], actuel: unknown): StatPersonnage[] {
-	const accents = new Map<string, string>();
-	if (Array.isArray(actuel)) {
-		for (const s of actuel) {
-			const o = (s ?? {}) as Record<string, unknown>;
-			if (typeof o.label === "string" && typeof o.accent === "string") {
-				accents.set(o.label.toLowerCase(), o.accent);
-			}
-		}
-	}
-	return propose.map((s) => {
-		const accent = accents.get(s.label.toLowerCase());
-		return accent ? { ...s, accent } : s;
-	});
+  const accents = new Map<string, string>();
+  if (Array.isArray(actuel)) {
+    for (const s of actuel) {
+      const o = (s ?? {}) as Record<string, unknown>;
+      if (typeof o.label === "string" && typeof o.accent === "string") {
+        accents.set(o.label.toLowerCase(), o.accent);
+      }
+    }
+  }
+  return propose.map((s) => {
+    const accent = accents.get(s.label.toLowerCase());
+    return accent ? { ...s, accent } : s;
+  });
 }
 
 /** Cette cible désigne-t-elle la zone de statistiques d'un personnage ? */
 export function estCibleStats(table: string, column: string): boolean {
-	return table === "db_characters" && column === "stats";
+  return table === "db_characters" && column === "stats";
 }

@@ -36,14 +36,14 @@
 import { Glyphe, type ProprietesIcone } from "./glyphe";
 
 export {
-	BOITE_ICONE,
-	GEOMETRIES,
-	NOMS_ICONES,
-	POINTE_ICONE,
-	TRAIT_ICONE,
-	svgIcone,
-	type GeometrieIcone,
-	type NomIcone,
+  BOITE_ICONE,
+  GEOMETRIES,
+  NOMS_ICONES,
+  POINTE_ICONE,
+  TRAIT_ICONE,
+  svgIcone,
+  type GeometrieIcone,
+  type NomIcone,
 } from "./geometries";
 
 export { Glyphe } from "./glyphe";
@@ -125,7 +125,7 @@ export const Eclair = (p: ProprietesIcone) => <Glyphe nom="eclair" {...p} />;
 export const Terminal = (p: ProprietesIcone) => <Glyphe nom="terminal" {...p} />;
 export const Alimentation = (p: ProprietesIcone) => <Glyphe nom="alimentation" {...p} />;
 export const AlimentationCoupee = (p: ProprietesIcone) => (
-	<Glyphe nom="alimentationCoupee" {...p} />
+  <Glyphe nom="alimentationCoupee" {...p} />
 );
 export const Base = (p: ProprietesIcone) => <Glyphe nom="base" {...p} />;
 export const Palette = (p: ProprietesIcone) => <Glyphe nom="palette" {...p} />;

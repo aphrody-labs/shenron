@@ -24,30 +24,30 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request): Promise<NextResponse> {
-	const agent = await authenticateAgent(req).catch(() => null);
-	const lisible =
-		(agent?.scopes.includes("read") ?? false) ||
-		(await getCurrentUser()
-			.then((me) => me?.user?.roleAdmin === true)
-			.catch(() => false));
+  const agent = await authenticateAgent(req).catch(() => null);
+  const lisible =
+    (agent?.scopes.includes("read") ?? false) ||
+    (await getCurrentUser()
+      .then((me) => me?.user?.roleAdmin === true)
+      .catch(() => false));
 
-	if (!lisible) {
-		return NextResponse.json(
-			{ ok: false, error: "not_found", message: "Ressource introuvable." },
-			{ status: 404, headers: { "Cache-Control": "private, no-store" } }
-		);
-	}
+  if (!lisible) {
+    return NextResponse.json(
+      { ok: false, error: "not_found", message: "Ressource introuvable." },
+      { status: 404, headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
 
-	// L'origine réelle de la requête plutôt que la constante : le schéma servi
-	// depuis une préproduction doit pointer cette préproduction, sinon le client
-	// généré écrit en production.
-	let origin = SITE_URL;
-	try {
-		origin = new URL(req.url).origin;
-	} catch {
-		// URL illisible (jamais en pratique) : la constante du site fait l'affaire.
-	}
-	return NextResponse.json(buildOpenApiDocument(origin), {
-		headers: { "Cache-Control": "private, no-store" },
-	});
+  // L'origine réelle de la requête plutôt que la constante : le schéma servi
+  // depuis une préproduction doit pointer cette préproduction, sinon le client
+  // généré écrit en production.
+  let origin = SITE_URL;
+  try {
+    origin = new URL(req.url).origin;
+  } catch {
+    // URL illisible (jamais en pratique) : la constante du site fait l'affaire.
+  }
+  return NextResponse.json(buildOpenApiDocument(origin), {
+    headers: { "Cache-Control": "private, no-store" },
+  });
 }

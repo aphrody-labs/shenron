@@ -12,17 +12,11 @@
     "sagaGroups": [
       {
         "group": "Dragon Ball",
-        "sagas": [
-          "Dragon Ball"
-        ]
+        "sagas": ["Dragon Ball"]
       },
       {
         "group": "Son Goku",
-        "sagas": [
-          "Emperor Pilaf",
-          "Turtle School Training",
-          "Tournament"
-        ]
+        "sagas": ["Emperor Pilaf", "Turtle School Training", "Tournament"]
       },
       {
         "group": "Red Ribbon Army",
@@ -46,40 +40,23 @@
       },
       {
         "group": "Dragon Ball Z / Kai",
-        "sagas": [
-          "Dragon Ball Z / Kai"
-        ]
+        "sagas": ["Dragon Ball Z / Kai"]
       },
       {
         "group": "Saiyan",
-        "sagas": [
-          "Raditz",
-          "Vegeta"
-        ]
+        "sagas": ["Raditz", "Vegeta"]
       },
       {
         "group": "Frieza",
-        "sagas": [
-          "Namek",
-          "Captain Ginyu",
-          "Frieza"
-        ]
+        "sagas": ["Namek", "Captain Ginyu", "Frieza"]
       },
       {
         "group": "Frieza/Androids",
-        "sagas": [
-          "Garlic Jr.",
-          "Trunks"
-        ]
+        "sagas": ["Garlic Jr.", "Trunks"]
       },
       {
         "group": "Androids",
-        "sagas": [
-          "Androids",
-          "Imperfect Cell",
-          "Perfect Cell",
-          "Cell Games"
-        ]
+        "sagas": ["Androids", "Imperfect Cell", "Perfect Cell", "Cell Games"]
       },
       {
         "group": "Majin Buu",
@@ -95,35 +72,23 @@
       },
       {
         "group": "Ending",
-        "sagas": [
-          "Gods of the Universe",
-          "Peaceful World"
-        ]
+        "sagas": ["Gods of the Universe", "Peaceful World"]
       },
       {
         "group": "Dragon Ball Daima",
-        "sagas": [
-          "Dragon Ball Daima"
-        ]
+        "sagas": ["Dragon Ball Daima"]
       },
       {
         "group": "Daima",
-        "sagas": [
-          "Daima Saga"
-        ]
+        "sagas": ["Daima Saga"]
       },
       {
         "group": "Dragon Ball Super",
-        "sagas": [
-          "Dragon Ball Super"
-        ]
+        "sagas": ["Dragon Ball Super"]
       },
       {
         "group": "Gods of the Universe",
-        "sagas": [
-          "God of Destruction Beerus",
-          "Golden Frieza"
-        ]
+        "sagas": ["God of Destruction Beerus", "Golden Frieza"]
       },
       {
         "group": "Zeno",
@@ -137,84 +102,51 @@
       },
       {
         "group": "Universe 7",
-        "sagas": [
-          "Broly",
-          "Galactic Patrol Prisoner",
-          "Granolah the Survivor"
-        ]
+        "sagas": ["Broly", "Galactic Patrol Prisoner", "Granolah the Survivor"]
       },
       {
         "group": "Super Hero",
-        "sagas": [
-          "High School",
-          "Super Hero"
-        ]
+        "sagas": ["High School", "Super Hero"]
       },
       {
         "group": "Dragon Ball GT",
-        "sagas": [
-          "Dragon Ball GT"
-        ]
+        "sagas": ["Dragon Ball GT"]
       },
       {
         "group": "Grand Tour",
-        "sagas": [
-          "Black Star Dragon Ball",
-          "Baby"
-        ]
+        "sagas": ["Black Star Dragon Ball", "Baby"]
       },
       {
         "group": "Cracked Dragon Ball",
-        "sagas": [
-          "Super 17",
-          "Shadow Dragon"
-        ]
+        "sagas": ["Super 17", "Shadow Dragon"]
       },
       {
         "group": "Super Dragon Ball Heroes",
-        "sagas": [
-          "Super Dragon Ball Heroes"
-        ]
+        "sagas": ["Super Dragon Ball Heroes"]
       },
       {
         "group": "Demon Realm",
-        "sagas": [
-          "Dark Demon Realm",
-          "Dark Empire",
-          "Dark King Mechikabura"
-        ]
+        "sagas": ["Dark Demon Realm", "Dark Empire", "Dark King Mechikabura"]
       },
       {
         "group": "Universe",
-        "sagas": [
-          "Prison Planet",
-          "Universal Conflict"
-        ]
+        "sagas": ["Prison Planet", "Universal Conflict"]
       },
       {
         "group": "Big Bang",
-        "sagas": [
-          "Universe Creation",
-          "New Space-Time War"
-        ]
+        "sagas": ["Universe Creation", "New Space-Time War"]
       },
       {
         "group": "Ultra God",
-        "sagas": [
-          "Supreme Kai of Time"
-        ]
+        "sagas": ["Supreme Kai of Time"]
       },
       {
         "group": "Meteor",
-        "sagas": [
-          "Demon Invader"
-        ]
+        "sagas": ["Demon Invader"]
       },
       {
         "group": "Other",
-        "sagas": [
-          "Other"
-        ]
+        "sagas": ["Other"]
       },
       {
         "group": "Xenoverse",
@@ -231,11 +163,7 @@
       },
       {
         "group": "FighterZ",
-        "sagas": [
-          "Super Warrior",
-          "Enemy Warrior",
-          "Android 21"
-        ]
+        "sagas": ["Super Warrior", "Enemy Warrior", "Android 21"]
       },
       {
         "group": "Other",

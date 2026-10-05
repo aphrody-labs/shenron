@@ -52,32 +52,32 @@ const APPLIQUER = args.includes("--appliquer");
 const MOTIF_FANART = /(_by_[a-z0-9]{3,}|-removebg-preview|deviantart)/i;
 
 async function urlBase(): Promise<string> {
-	const direct = process.env.DATABASE_URL?.trim();
-	if (direct) return direct;
-	const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
-		.text()
-		.catch(() => "");
-	// La DERNIÈRE ligne : `.env` porte l'ancienne URL Neon en commentaire AVANT
-	// la locale, et un `find` sur la première tape la base morte.
-	const lignes = texte.split("\n").filter((l) => l.startsWith("DATABASE_URL="));
-	const valeur = lignes
-		.at(-1)
-		?.slice("DATABASE_URL=".length)
-		.trim()
-		.replace(/^["']|["']$/g, "");
-	if (!valeur) {
-		console.error("✗ DATABASE_URL introuvable.");
-		process.exit(1);
-	}
-	return valeur;
+  const direct = process.env.DATABASE_URL?.trim();
+  if (direct) return direct;
+  const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
+    .text()
+    .catch(() => "");
+  // La DERNIÈRE ligne : `.env` porte l'ancienne URL Neon en commentaire AVANT
+  // la locale, et un `find` sur la première tape la base morte.
+  const lignes = texte.split("\n").filter((l) => l.startsWith("DATABASE_URL="));
+  const valeur = lignes
+    .at(-1)
+    ?.slice("DATABASE_URL=".length)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (!valeur) {
+    console.error("✗ DATABASE_URL introuvable.");
+    process.exit(1);
+  }
+  return valeur;
 }
 
 /** Identifiant de révision au format du site (24 signes base36). */
 const idRevision = () =>
-	Array.from(
-		{ length: 24 },
-		() => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]
-	).join("");
+  Array.from(
+    { length: 24 },
+    () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)],
+  ).join("");
 
 const sql = postgres(await urlBase(), { max: 2, prepare: false });
 
@@ -102,37 +102,37 @@ const vises = lignes.filter((l) => MOTIF_FANART.test(l.image));
 
 console.log(`${lignes.length} transformations illustrées, ${vises.length} visées.\n`);
 for (const l of vises) {
-	const raison = /-removebg-preview/i.test(l.image) ? "détourage automatique" : "fan-art signé";
-	console.log(`  #${l.id} ${l.name}\n      ${raison} — ${l.image}`);
+  const raison = /-removebg-preview/i.test(l.image) ? "détourage automatique" : "fan-art signé";
+  console.log(`  #${l.id} ${l.name}\n      ${raison} — ${l.image}`);
 }
 
 if (vises.length === 0) {
-	console.log("\nRien à retirer.");
-	await sql.end();
-	process.exit(0);
+  console.log("\nRien à retirer.");
+  await sql.end();
+  process.exit(0);
 }
 
 if (!APPLIQUER) {
-	console.log(`\n(simulation — relancer avec --appliquer pour retirer ces ${vises.length} images)`);
-	await sql.end();
-	process.exit(0);
+  console.log(`\n(simulation — relancer avec --appliquer pour retirer ces ${vises.length} images)`);
+  await sql.end();
+  process.exit(0);
 }
 
 await sql.begin(async (tx) => {
-	for (const l of vises) {
-		await tx`update bot.db_transformations set image = null where id = ${l.id}`;
-		await tx`insert into public.wiki_revisions ${tx({
-			id: idRevision(),
-			tableName: "db_transformations",
-			rowId: String(l.id),
-			action: "update",
-			label: l.name,
-			before: jsonb({ image: l.image }),
-			after: jsonb({ image: null }),
-			editorId: "script",
-			editorName: "retire-fanart-transformations (illustration non officielle)",
-		})}`;
-	}
+  for (const l of vises) {
+    await tx`update bot.db_transformations set image = null where id = ${l.id}`;
+    await tx`insert into public.wiki_revisions ${tx({
+      id: idRevision(),
+      tableName: "db_transformations",
+      rowId: String(l.id),
+      action: "update",
+      label: l.name,
+      before: jsonb({ image: l.image }),
+      after: jsonb({ image: null }),
+      editorId: "script",
+      editorName: "retire-fanart-transformations (illustration non officielle)",
+    })}`;
+  }
 });
 
 console.log(`\n✔ ${vises.length} illustrations retirées et versionnées.`);

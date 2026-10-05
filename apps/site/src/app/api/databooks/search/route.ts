@@ -25,65 +25,65 @@ import { parseDatabookId } from "@/lib/databooks-rules";
 export const dynamic = "force-dynamic";
 
 const CORS = {
-	"Access-Control-Allow-Origin": "*",
-	"Access-Control-Allow-Methods": "GET, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type, Authorization",
-	"Access-Control-Max-Age": "86400",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Max-Age": "86400",
 };
 
 /** Au-delà, le motif n'est plus une recherche mais un balayage déguisé. */
 const TERME_MAX = 200;
 
 export function OPTIONS() {
-	return new NextResponse(null, { status: 204, headers: CORS });
+  return new NextResponse(null, { status: 204, headers: CORS });
 }
 
 export async function GET(req: Request) {
-	const url = new URL(req.url);
-	const terme = (url.searchParams.get("q") ?? "").trim().slice(0, TERME_MAX);
-	if (!terme) {
-		return NextResponse.json({ error: "Paramètre `q` requis." }, { status: 400, headers: CORS });
-	}
+  const url = new URL(req.url);
+  const terme = (url.searchParams.get("q") ?? "").trim().slice(0, TERME_MAX);
+  if (!terme) {
+    return NextResponse.json({ error: "Paramètre `q` requis." }, { status: 400, headers: CORS });
+  }
 
-	// `searchParams.get("limit")` vaut `null` quand le paramètre est absent, et
-	// `Number(null)` vaut 0 — un nombre fini. On passait donc `limit: 0`, que le
-	// `?? 50` de `chercherDansPlanches` ne rattrape pas (0 n'est pas nullish) :
-	// toute recherche sans `limit` explicite ne renvoyait qu'UN résultat sur des
-	// milliers. L'interface passe toujours `limit=60`, mais pas les appelants
-	// externes (MCP, scripts) — la troncature y était silencieuse.
-	const limitBrut = url.searchParams.has("limit") ? Number(url.searchParams.get("limit")) : NaN;
-	const limit = Number.isFinite(limitBrut) && limitBrut > 0 ? limitBrut : undefined;
-	const cible = url.searchParams.get("databook");
-	// Un administrateur connecté n'envoie pas d'en-tête `Authorization` : sans ce
-	// second chemin, `includeHidden=1` était ignoré depuis le navigateur alors
-	// que l'écran de recherche annonce inclure les fiches masquées.
-	// Une erreur de session reste silencieuse : elle ne casse pas la recherche,
-	// seul le jeton porteur décide alors.
-	const autorise = await isAdminOrToken(req).catch(() => hasValidApiToken(req));
-	const inclureMasquees = autorise && url.searchParams.get("includeHidden") === "1";
+  // `searchParams.get("limit")` vaut `null` quand le paramètre est absent, et
+  // `Number(null)` vaut 0 — un nombre fini. On passait donc `limit: 0`, que le
+  // `?? 50` de `chercherDansPlanches` ne rattrape pas (0 n'est pas nullish) :
+  // toute recherche sans `limit` explicite ne renvoyait qu'UN résultat sur des
+  // milliers. L'interface passe toujours `limit=60`, mais pas les appelants
+  // externes (MCP, scripts) — la troncature y était silencieuse.
+  const limitBrut = url.searchParams.has("limit") ? Number(url.searchParams.get("limit")) : NaN;
+  const limit = Number.isFinite(limitBrut) && limitBrut > 0 ? limitBrut : undefined;
+  const cible = url.searchParams.get("databook");
+  // Un administrateur connecté n'envoie pas d'en-tête `Authorization` : sans ce
+  // second chemin, `includeHidden=1` était ignoré depuis le navigateur alors
+  // que l'écran de recherche annonce inclure les fiches masquées.
+  // Une erreur de session reste silencieuse : elle ne casse pas la recherche,
+  // seul le jeton porteur décide alors.
+  const autorise = await isAdminOrToken(req).catch(() => hasValidApiToken(req));
+  const inclureMasquees = autorise && url.searchParams.get("includeHidden") === "1";
 
-	try {
-		const r = await chercherDansPlanches(terme, {
-			limit,
-			includeHidden: inclureMasquees,
-			databookId: cible ? (parseDatabookId(cible) ?? undefined) : undefined,
-		});
-		return NextResponse.json(
-			{ q: terme, ...r },
-			{
-				headers: {
-					...CORS,
-					// Une réponse qui inclut des fiches masquées dépend de l'identité de
-					// l'appelant : elle ne doit jamais atterrir dans un cache partagé.
-					"Cache-Control": inclureMasquees
-						? "private, no-store"
-						: "public, max-age=60, s-maxage=300",
-					Vary: "Authorization, Cookie",
-				},
-			}
-		);
-	} catch (e) {
-		console.error("[api/databooks/search] a échoué:", e);
-		return NextResponse.json({ error: "Recherche impossible." }, { status: 500, headers: CORS });
-	}
+  try {
+    const r = await chercherDansPlanches(terme, {
+      limit,
+      includeHidden: inclureMasquees,
+      databookId: cible ? (parseDatabookId(cible) ?? undefined) : undefined,
+    });
+    return NextResponse.json(
+      { q: terme, ...r },
+      {
+        headers: {
+          ...CORS,
+          // Une réponse qui inclut des fiches masquées dépend de l'identité de
+          // l'appelant : elle ne doit jamais atterrir dans un cache partagé.
+          "Cache-Control": inclureMasquees
+            ? "private, no-store"
+            : "public, max-age=60, s-maxage=300",
+          Vary: "Authorization, Cookie",
+        },
+      },
+    );
+  } catch (e) {
+    console.error("[api/databooks/search] a échoué:", e);
+    return NextResponse.json({ error: "Recherche impossible." }, { status: 500, headers: CORS });
+  }
 }

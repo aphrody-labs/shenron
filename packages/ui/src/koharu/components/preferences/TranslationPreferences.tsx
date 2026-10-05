@@ -1,33 +1,29 @@
-'use client'
+"use client";
 
-import { ChevronDown } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { ChevronDown } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-import { ModelPicker } from '../controls/ModelPicker'
-import { GenerationPreferences } from './GenerationPreferences'
-import {
-  PreferencePage,
-  PreferenceRow,
-  PreferenceSection,
-} from './PreferenceFields'
-import { modelKey, orderedLanguageChoices, providerName } from '../../lib/translation'
+import { ModelPicker } from "../controls/ModelPicker";
+import { GenerationPreferences } from "./GenerationPreferences";
+import { PreferencePage, PreferenceRow, PreferenceSection } from "./PreferenceFields";
+import { modelKey, orderedLanguageChoices, providerName } from "../../lib/translation";
 import type {
   LanguageChoice,
   Model,
   ProviderPreference,
   TranslationConfig as TranslationSettings,
-} from '@shenron/koharu/protocol'
-import { Badge } from '@aphrody/m3-primitives'
-import { Popover, PopoverContent, PopoverTrigger } from '../../internal/components/popover'
+} from "@shenron/koharu/protocol";
+import { Badge } from "@aphrody/m3-primitives";
+import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../internal/components/select'
-import { Textarea } from '../../internal/components/textarea'
+} from "../../internal/components/select";
+import { Textarea } from "../../internal/components/textarea";
 
 export function TranslationPreferences({
   value,
@@ -36,16 +32,16 @@ export function TranslationPreferences({
   languages,
   onChange,
 }: {
-  value: TranslationSettings
-  modelChoices: Model[]
-  providers: ProviderPreference[]
-  languages: LanguageChoice[]
-  onChange: (value: TranslationSettings) => void
+  value: TranslationSettings;
+  modelChoices: Model[];
+  providers: ProviderPreference[];
+  languages: LanguageChoice[];
+  onChange: (value: TranslationSettings) => void;
 }) {
-  const { t } = useTranslation()
-  const [modelOpen, setModelOpen] = useState(false)
+  const { t } = useTranslation();
+  const [modelOpen, setModelOpen] = useState(false);
   const selected =
-    modelChoices.find((candidate) => modelKey(candidate) === modelKey(value.model)) ?? null
+    modelChoices.find((candidate) => modelKey(candidate) === modelKey(value.model)) ?? null;
   const current: Model = selected ?? {
     ...value.model,
     model: value.model.model ?? null,
@@ -53,44 +49,44 @@ export function TranslationPreferences({
     quantizations: [],
     vision: value.model.vision ?? false,
     reasoning: value.model.reasoning ?? false,
-  }
-  const choices = selected ? modelChoices : [current, ...modelChoices]
+  };
+  const choices = selected ? modelChoices : [current, ...modelChoices];
   const quantization =
     current.quantizations.find((quantization) => quantization.id === value.model.quantization) ??
-    current.quantizations[0]
-  const languageChoices = useMemo(() => orderedLanguageChoices(languages), [languages])
+    current.quantizations[0];
+  const languageChoices = useMemo(() => orderedLanguageChoices(languages), [languages]);
   return (
     <PreferencePage
-      title={t('settings.translation.title')}
-      description={t('settings.translation.description')}
+      title={t("settings.translation.title")}
+      description={t("settings.translation.description")}
     >
       <PreferenceSection
-        title={t('settings.translation.model')}
-        description={t('settings.translation.modelDescription')}
+        title={t("settings.translation.model")}
+        description={t("settings.translation.modelDescription")}
       >
         <PreferenceRow
-          title={t('settings.translation.translationModel')}
-          description={t('settings.translation.translationModelDescription')}
+          title={t("settings.translation.translationModel")}
+          description={t("settings.translation.translationModelDescription")}
         >
           <Popover open={modelOpen} onOpenChange={setModelOpen}>
             <PopoverTrigger
-              type='button'
-              aria-label={t('settings.translation.translationModel')}
-              className='flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-input bg-transparent px-2.5 text-[11px] transition-colors outline-none hover:bg-foreground/[0.03] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
+              type="button"
+              aria-label={t("settings.translation.translationModel")}
+              className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-input bg-transparent px-2.5 text-[11px] transition-colors outline-none hover:bg-foreground/[0.03] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
-              <span className='min-w-0 flex-1 text-left'>
+              <span className="min-w-0 flex-1 text-left">
                 <ModelLabel
                   model={current}
                   providers={providers}
                   quantization={quantization?.name ?? value.model.quantization}
                 />
               </span>
-              <ChevronDown className='size-3.5 shrink-0 text-muted-foreground' />
+              <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
             </PopoverTrigger>
             <PopoverContent
-              align='start'
+              align="start"
               sideOffset={4}
-              className='w-(--anchor-width) min-w-64 gap-0 overflow-hidden rounded-xl border border-border/50 p-1 shadow-sm ring-0'
+              className="w-(--anchor-width) min-w-64 gap-0 overflow-hidden rounded-xl border border-border/50 p-1 shadow-sm ring-0"
             >
               <ModelPicker
                 value={value.model}
@@ -101,8 +97,8 @@ export function TranslationPreferences({
                   onChange({
                     ...value,
                     model,
-                  })
-                  setModelOpen(false)
+                  });
+                  setModelOpen(false);
                 }}
               />
             </PopoverContent>
@@ -115,10 +111,10 @@ export function TranslationPreferences({
         onChange={(generation) => onChange({ ...value, generation })}
       />
 
-      <PreferenceSection title={t('settings.translation.output')}>
+      <PreferenceSection title={t("settings.translation.output")}>
         <PreferenceRow
-          title={t('model.targetLanguage')}
-          description={t('settings.translation.targetLanguageDescription')}
+          title={t("model.targetLanguage")}
+          description={t("settings.translation.targetLanguageDescription")}
         >
           <Select
             value={value.target_language}
@@ -130,8 +126,8 @@ export function TranslationPreferences({
             }
           >
             <SelectTrigger
-              aria-label={t('model.targetLanguage')}
-              className='h-8 w-full text-[11px]'
+              aria-label={t("model.targetLanguage")}
+              className="h-8 w-full text-[11px]"
             >
               <SelectValue />
             </SelectTrigger>
@@ -145,15 +141,15 @@ export function TranslationPreferences({
           </Select>
         </PreferenceRow>
         <PreferenceRow
-          title={t('model.instructions')}
-          description={t('settings.translation.instructionsDescription')}
-          align='start'
+          title={t("model.instructions")}
+          description={t("settings.translation.instructionsDescription")}
+          align="start"
         >
           <Textarea
-            aria-label={t('settings.translation.instructionsLabel')}
-            value={value.instructions ?? ''}
-            className='field-sizing-fixed min-h-24 resize-y overflow-y-auto text-[12px] leading-5'
-            placeholder={t('settings.translation.instructionsPlaceholder')}
+            aria-label={t("settings.translation.instructionsLabel")}
+            value={value.instructions ?? ""}
+            className="field-sizing-fixed min-h-24 resize-y overflow-y-auto text-[12px] leading-5"
+            placeholder={t("settings.translation.instructionsPlaceholder")}
             onChange={(event) =>
               onChange({ ...value, instructions: event.currentTarget.value || null })
             }
@@ -161,7 +157,7 @@ export function TranslationPreferences({
         </PreferenceRow>
       </PreferenceSection>
     </PreferencePage>
-  )
+  );
 }
 
 function ModelLabel({
@@ -169,19 +165,19 @@ function ModelLabel({
   providers,
   quantization,
 }: {
-  model: Model
-  providers: ProviderPreference[]
-  quantization: string | null | undefined
+  model: Model;
+  providers: ProviderPreference[];
+  quantization: string | null | undefined;
 }) {
   return (
-    <span className='flex min-w-0 items-center gap-2'>
-      <Badge variant='outline' className='shrink-0 px-1.5 py-0 text-[9px] font-medium'>
+    <span className="flex min-w-0 items-center gap-2">
+      <Badge variant="outline" className="shrink-0 px-1.5 py-0 text-[9px] font-medium">
         {providerName(providers, model.provider)}
       </Badge>
-      <span className='truncate'>
+      <span className="truncate">
         {model.name}
-        {quantization && <span className='text-muted-foreground'> · {quantization}</span>}
+        {quantization && <span className="text-muted-foreground"> · {quantization}</span>}
       </span>
     </span>
-  )
+  );
 }

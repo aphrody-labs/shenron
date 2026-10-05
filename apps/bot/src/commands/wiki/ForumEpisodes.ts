@@ -37,14 +37,14 @@ const RANG_PROVIDER: Readonly<Record<string, number>> = { vidmoly: 0, yourupload
 const MAX_SYNOPSIS = 1_400;
 
 function urlAsset(chemin: string | null): string | null {
-	if (!chemin) return null;
-	if (/^https?:\/\//.test(chemin)) return chemin;
-	return `${ASSETS}/${chemin.replace(/^\.?\/*/, "")}`;
+  if (!chemin) return null;
+  if (/^https?:\/\//.test(chemin)) return chemin;
+  return `${ASSETS}/${chemin.replace(/^\.?\/*/, "")}`;
 }
 
 function coupe(texte: string, taille: number): string {
-	const propre = texte.replace(/\s+/g, " ").trim();
-	return propre.length <= taille ? propre : `${propre.slice(0, taille - 1).trimEnd()}…`;
+  const propre = texte.replace(/\s+/g, " ").trim();
+  return propre.length <= taille ? propre : `${propre.slice(0, taille - 1).trimEnd()}…`;
 }
 
 /**
@@ -54,91 +54,91 @@ function coupe(texte: string, taille: number): string {
  * vidmoly tombe, le membre a besoin du repli sans redemander l'épisode.
  */
 export function lecteursParLangue(
-	players: readonly LecteurEpisode[],
-	langue: "vf" | "vostfr"
+  players: readonly LecteurEpisode[],
+  langue: "vf" | "vostfr",
 ): string | null {
-	const liste = players
-		.filter((p) => p.lang === langue && p.embedUrl)
-		.toSorted(
-			(a, b) => (RANG_PROVIDER[a.provider ?? ""] ?? 9) - (RANG_PROVIDER[b.provider ?? ""] ?? 9)
-		);
-	if (liste.length === 0) return null;
-	return liste.map((p) => `[${p.provider ?? "lecteur"}](${p.embedUrl})`).join(" · ");
+  const liste = players
+    .filter((p) => p.lang === langue && p.embedUrl)
+    .toSorted(
+      (a, b) => (RANG_PROVIDER[a.provider ?? ""] ?? 9) - (RANG_PROVIDER[b.provider ?? ""] ?? 9),
+    );
+  if (liste.length === 0) return null;
+  return liste.map((p) => `[${p.provider ?? "lecteur"}](${p.embedUrl})`).join(" · ");
 }
 
 @Discord()
 @Bot("shenron")
 @injectable()
 export class ForumEpisodesComponents {
-	constructor(@inject(EpisodesService) private episodes: EpisodesService) {}
+  constructor(@inject(EpisodesService) private episodes: EpisodesService) {}
 
-	@SelectMenuComponent({ id: new RegExp(`^${PREFIXE_MENU_EPISODES}:`) })
-	async choisirEpisode(interaction: StringSelectMenuInteraction) {
-		const valeur = interaction.values[0] ?? "";
-		const id = lireValeurEpisode(valeur);
-		if (id === null) {
-			await interaction.reply({
-				content: "Ce menu est trop ancien pour être relu — relance-le depuis le fil.",
-				flags: MessageFlags.Ephemeral,
-			});
-			return;
-		}
+  @SelectMenuComponent({ id: new RegExp(`^${PREFIXE_MENU_EPISODES}:`) })
+  async choisirEpisode(interaction: StringSelectMenuInteraction) {
+    const valeur = interaction.values[0] ?? "";
+    const id = lireValeurEpisode(valeur);
+    if (id === null) {
+      await interaction.reply({
+        content: "Ce menu est trop ancien pour être relu — relance-le depuis le fil.",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
 
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-		let episode: Awaited<ReturnType<EpisodesService["parId"]>> = null;
-		try {
-			episode = await this.episodes.parId(id);
-		} catch (e) {
-			logger.warn({ err: e, id }, "[forum-episodes] lecture de l'épisode en échec");
-		}
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    let episode: Awaited<ReturnType<EpisodesService["parId"]>> = null;
+    try {
+      episode = await this.episodes.parId(id);
+    } catch (e) {
+      logger.warn({ err: e, id }, "[forum-episodes] lecture de l'épisode en échec");
+    }
 
-		if (!episode) {
-			await interaction.editReply({
-				content:
-					"Cet épisode n'est plus dans la base (ou elle est momentanément injoignable). " +
-					`La fiche reste lisible sur ${SITE}/wiki/episodes/${id}.`,
-			});
-			return;
-		}
+    if (!episode) {
+      await interaction.editReply({
+        content:
+          "Cet épisode n'est plus dans la base (ou elle est momentanément injoignable). " +
+          `La fiche reste lisible sur ${SITE}/wiki/episodes/${id}.`,
+      });
+      return;
+    }
 
-		const titre = episode.titre?.trim() || `Épisode ${episode.numero ?? id}`;
-		const embed = new EmbedBuilder()
-			.setColor(0xf59e0b)
-			.setTitle(coupe(`${episode.numero ? `#${episode.numero} · ` : ""}${titre}`, 256))
-			.setURL(`${SITE}/wiki/episodes/${episode.id}`);
+    const titre = episode.titre?.trim() || `Épisode ${episode.numero ?? id}`;
+    const embed = new EmbedBuilder()
+      .setColor(0xf59e0b)
+      .setTitle(coupe(`${episode.numero ? `#${episode.numero} · ` : ""}${titre}`, 256))
+      .setURL(`${SITE}/wiki/episodes/${episode.id}`);
 
-		if (episode.titreJa) embed.setAuthor({ name: coupe(episode.titreJa, 256) });
+    if (episode.titreJa) embed.setAuthor({ name: coupe(episode.titreJa, 256) });
 
-		const entete: string[] = [`**${episode.series}**`];
-		if (episode.numero !== null) entete.push(`Épisode ${episode.numero}`);
-		if (episode.dateDiffusion && episode.dateDiffusion > 0) {
-			entete.push(`<t:${Math.trunc(episode.dateDiffusion)}:D>`);
-		}
+    const entete: string[] = [`**${episode.series}**`];
+    if (episode.numero !== null) entete.push(`Épisode ${episode.numero}`);
+    if (episode.dateDiffusion && episode.dateDiffusion > 0) {
+      entete.push(`<t:${Math.trunc(episode.dateDiffusion)}:D>`);
+    }
 
-		const corps = [entete.join(" · ")];
-		if (episode.synopsis?.trim()) corps.push("", coupe(episode.synopsis, MAX_SYNOPSIS));
-		embed.setDescription(corps.join("\n"));
+    const corps = [entete.join(" · ")];
+    if (episode.synopsis?.trim()) corps.push("", coupe(episode.synopsis, MAX_SYNOPSIS));
+    embed.setDescription(corps.join("\n"));
 
-		const vf = lecteursParLangue(episode.players, "vf");
-		const vostfr = lecteursParLangue(episode.players, "vostfr");
-		if (vf) embed.addFields({ name: "🇫🇷 VF", value: coupe(vf, 1_024) });
-		if (vostfr) embed.addFields({ name: "🇯🇵 VOSTFR", value: coupe(vostfr, 1_024) });
-		if (!vf && !vostfr) {
-			// Un épisode sans lecteur est une information, pas un échec : le taire
-			// laisserait croire à une panne du menu.
-			embed.addFields({
-				name: "Lecteurs",
-				value: "Aucun lecteur en ligne pour cet épisode pour le moment.",
-			});
-		}
+    const vf = lecteursParLangue(episode.players, "vf");
+    const vostfr = lecteursParLangue(episode.players, "vostfr");
+    if (vf) embed.addFields({ name: "🇫🇷 VF", value: coupe(vf, 1_024) });
+    if (vostfr) embed.addFields({ name: "🇯🇵 VOSTFR", value: coupe(vostfr, 1_024) });
+    if (!vf && !vostfr) {
+      // Un épisode sans lecteur est une information, pas un échec : le taire
+      // laisserait croire à une panne du menu.
+      embed.addFields({
+        name: "Lecteurs",
+        value: "Aucun lecteur en ligne pour cet épisode pour le moment.",
+      });
+    }
 
-		const image = urlAsset(episode.image);
-		if (image) embed.setThumbnail(image);
-		embed.addFields({
-			name: "Fiche",
-			value: `[${SITE.replace(/^https:\/\//, "")}/wiki/episodes/${episode.id}](${SITE}/wiki/episodes/${episode.id})`,
-		});
+    const image = urlAsset(episode.image);
+    if (image) embed.setThumbnail(image);
+    embed.addFields({
+      name: "Fiche",
+      value: `[${SITE.replace(/^https:\/\//, "")}/wiki/episodes/${episode.id}](${SITE}/wiki/episodes/${episode.id})`,
+    });
 
-		await interaction.editReply({ embeds: [embed] });
-	}
+    await interaction.editReply({ embeds: [embed] });
+  }
 }

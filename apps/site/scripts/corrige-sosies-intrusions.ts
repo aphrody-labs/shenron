@@ -32,9 +32,9 @@
  */
 import postgres from "postgres";
 import {
-	corrigerSosiesEtIntrusions,
-	signalerIntrusions,
-	type RapportRegle,
+  corrigerSosiesEtIntrusions,
+  signalerIntrusions,
+  type RapportRegle,
 } from "../src/lib/databooks-ocr/sosies-intrusions";
 import { analyseur, exigerRessources, graphiesJmdict } from "../src/lib/ja/dictionnaire";
 import { origineSite } from "./_origine-site";
@@ -42,8 +42,8 @@ import { origineSite } from "./_origine-site";
 const args = process.argv.slice(2);
 const flag = (nom: string) => args.includes(`--${nom}`);
 const opt = (nom: string): string | undefined => {
-	const i = args.indexOf(`--${nom}`);
-	return i >= 0 ? args[i + 1] : undefined;
+  const i = args.indexOf(`--${nom}`);
+  return i >= 0 ? args[i + 1] : undefined;
 };
 
 const SIMULATION = flag("simulation");
@@ -54,19 +54,19 @@ const N_INTRUSIONS = Number(opt("intrusions") ?? 20);
 const PAQUET = Number(opt("paquet") ?? 50);
 
 if (SIMULATION === APPLIQUER) {
-	console.error("erreur : il faut choisir exactement un mode, --simulation OU --appliquer.");
-	process.exit(2);
+  console.error("erreur : il faut choisir exactement un mode, --simulation OU --appliquer.");
+  process.exit(2);
 }
 
 async function lireEnv(cle: string): Promise<string | undefined> {
-	const contenu = await Bun.file(new URL("../.env", import.meta.url)).text();
-	return contenu
-		.split("\n")
-		.filter((l) => l.startsWith(`${cle}=`))
-		.pop() // la dernière ligne qui matche fait autorité (piège documenté)
-		?.slice(cle.length + 1)
-		.replace(/^"|"$/g, "")
-		.trim();
+  const contenu = await Bun.file(new URL("../.env", import.meta.url)).text();
+  return contenu
+    .split("\n")
+    .filter((l) => l.startsWith(`${cle}=`))
+    .pop() // la dernière ligne qui matche fait autorité (piège documenté)
+    ?.slice(cle.length + 1)
+    .replace(/^"|"$/g, "")
+    .trim();
 }
 
 const DATABASE_URL = await lireEnv("DATABASE_URL");
@@ -75,15 +75,15 @@ const sql = postgres(DATABASE_URL, { max: 2 });
 
 const API = origineSite();
 const JETON = (
-	(await lireEnv("DATABOOKS_API_TOKEN")) ??
-	(await lireEnv("SHENRON_ADMIN_TOKEN")) ??
-	""
+  (await lireEnv("DATABOOKS_API_TOKEN")) ??
+  (await lireEnv("SHENRON_ADMIN_TOKEN")) ??
+  ""
 ).trim();
 if (APPLIQUER && JETON.length < 16) {
-	console.error(
-		"erreur : jeton absent — DATABOOKS_API_TOKEN ou SHENRON_ADMIN_TOKEN doit être dans apps/site/.env"
-	);
-	process.exit(2);
+  console.error(
+    "erreur : jeton absent — DATABOOKS_API_TOKEN ou SHENRON_ADMIN_TOKEN doit être dans apps/site/.env",
+  );
+  process.exit(2);
 }
 
 // ---------------------------------------------------------------------------
@@ -110,15 +110,15 @@ const tokenizer = (await analyseur())!;
  */
 const cache = new Map<string, boolean>();
 function motConnu(mot: string): boolean {
-	const vu = cache.get(mot);
-	if (vu !== undefined) return vu;
-	let ok = jmdict.has(mot);
-	if (!ok) {
-		const tokens = tokenizer.tokenize(mot) as { word_type?: string }[];
-		ok = tokens.length === 1 && tokens[0].word_type !== "UNKNOWN";
-	}
-	cache.set(mot, ok);
-	return ok;
+  const vu = cache.get(mot);
+  if (vu !== undefined) return vu;
+  let ok = jmdict.has(mot);
+  if (!ok) {
+    const tokens = tokenizer.tokenize(mot) as { word_type?: string }[];
+    ok = tokens.length === 1 && tokens[0].word_type !== "UNKNOWN";
+  }
+  cache.set(mot, ok);
+  return ok;
 }
 
 // ---------------------------------------------------------------------------
@@ -126,10 +126,10 @@ function motConnu(mot: string): boolean {
 // ---------------------------------------------------------------------------
 
 interface Planche {
-	id: number;
-	titre: string;
-	numero: number;
-	texte: string;
+  id: number;
+  titre: string;
+  numero: number;
+  texte: string;
 }
 
 console.log("· lecture des transcriptions…");
@@ -144,12 +144,12 @@ const planches = await sql<Planche[]>`
 	${LIMITE !== null ? sql`LIMIT ${LIMITE}` : sql``}
 `;
 console.log(
-	`  ${planches.length} planche(s) examinée(s)${FICHE !== null ? ` (fiche #${FICHE})` : ""}\n`
+  `  ${planches.length} planche(s) examinée(s)${FICHE !== null ? ` (fiche #${FICHE})` : ""}\n`,
 );
 if (planches.length === 0) {
-	console.log("rien à faire.");
-	await sql.end();
-	process.exit(0);
+  console.log("rien à faire.");
+  await sql.end();
+  process.exit(0);
 }
 
 // ---------------------------------------------------------------------------
@@ -157,10 +157,10 @@ if (planches.length === 0) {
 // ---------------------------------------------------------------------------
 
 interface Modification {
-	planche: Planche;
-	texteCorrige: string;
-	rapport: RapportRegle[];
-	details: { avant: string; apres: string }[];
+  planche: Planche;
+  texteCorrige: string;
+  rapport: RapportRegle[];
+  details: { avant: string; apres: string }[];
 }
 
 const SEUIL_SECURITE_LONGUEUR = 0.5;
@@ -169,8 +169,8 @@ const modifications: Modification[] = [];
 const ecartesSecurite: { planche: Planche; ratio: number }[] = [];
 const totaux = new Map<string, { planches: Set<string>; corrections: number }>();
 const parSubstitution = new Map<
-	string,
-	{ apres: string; n: number; ouvrages: Set<string>; ou: string[] }
+  string,
+  { apres: string; n: number; ouvrages: Set<string>; ou: string[] }
 >();
 
 let planchesIntrusions = 0;
@@ -178,49 +178,49 @@ let signesIntrusions = 0;
 const echantillonsIntrusions: string[] = [];
 
 for (const p of planches) {
-	// Signalement sur le texte ORIGINAL, avant toute correction.
-	const intrusions = signalerIntrusions(p.texte);
-	if (intrusions.length > 0) {
-		planchesIntrusions++;
-		signesIntrusions += intrusions.reduce((a, i) => a + i.fragment.length, 0);
-		if (echantillonsIntrusions.length < N_INTRUSIONS) {
-			echantillonsIntrusions.push(
-				`#${p.id} "${p.titre}" p.${p.numero} [${intrusions[0].fragment}] … ${intrusions[0].contexte}`
-			);
-		}
-	}
+  // Signalement sur le texte ORIGINAL, avant toute correction.
+  const intrusions = signalerIntrusions(p.texte);
+  if (intrusions.length > 0) {
+    planchesIntrusions++;
+    signesIntrusions += intrusions.reduce((a, i) => a + i.fragment.length, 0);
+    if (echantillonsIntrusions.length < N_INTRUSIONS) {
+      echantillonsIntrusions.push(
+        `#${p.id} "${p.titre}" p.${p.numero} [${intrusions[0].fragment}] … ${intrusions[0].contexte}`,
+      );
+    }
+  }
 
-	const { texte, rapport, details } = corrigerSosiesEtIntrusions(p.texte, { motConnu });
-	if (texte === p.texte) continue;
+  const { texte, rapport, details } = corrigerSosiesEtIntrusions(p.texte, { motConnu });
+  if (texte === p.texte) continue;
 
-	for (const r of rapport) {
-		if (r.corrections === 0) continue;
-		const acc = totaux.get(r.code) ?? { planches: new Set<string>(), corrections: 0 };
-		// Clé par PLANCHE (fiche + numéro) : `p.id` seul est l'identifiant de
-		// l'OUVRAGE, partagé par toutes ses pages.
-		acc.planches.add(`${p.id}-${p.numero}`);
-		acc.corrections += r.corrections;
-		totaux.set(r.code, acc);
-	}
-	for (const d of details) {
-		const acc = parSubstitution.get(d.avant) ?? {
-			apres: d.apres,
-			n: 0,
-			ouvrages: new Set<string>(),
-			ou: [],
-		};
-		acc.n++;
-		acc.ouvrages.add(p.titre);
-		if (acc.ou.length < 4) acc.ou.push(`#${p.id} p.${p.numero}`);
-		parSubstitution.set(d.avant, acc);
-	}
+  for (const r of rapport) {
+    if (r.corrections === 0) continue;
+    const acc = totaux.get(r.code) ?? { planches: new Set<string>(), corrections: 0 };
+    // Clé par PLANCHE (fiche + numéro) : `p.id` seul est l'identifiant de
+    // l'OUVRAGE, partagé par toutes ses pages.
+    acc.planches.add(`${p.id}-${p.numero}`);
+    acc.corrections += r.corrections;
+    totaux.set(r.code, acc);
+  }
+  for (const d of details) {
+    const acc = parSubstitution.get(d.avant) ?? {
+      apres: d.apres,
+      n: 0,
+      ouvrages: new Set<string>(),
+      ou: [],
+    };
+    acc.n++;
+    acc.ouvrages.add(p.titre);
+    if (acc.ou.length < 4) acc.ou.push(`#${p.id} p.${p.numero}`);
+    parSubstitution.set(d.avant, acc);
+  }
 
-	const ratio = p.texte.length > 0 ? texte.length / p.texte.length : 1;
-	if (texte.length > 0 && ratio < SEUIL_SECURITE_LONGUEUR) {
-		ecartesSecurite.push({ planche: p, ratio });
-		continue;
-	}
-	modifications.push({ planche: p, texteCorrige: texte, rapport, details });
+  const ratio = p.texte.length > 0 ? texte.length / p.texte.length : 1;
+  if (texte.length > 0 && ratio < SEUIL_SECURITE_LONGUEUR) {
+    ecartesSecurite.push({ planche: p, ratio });
+    continue;
+  }
+  modifications.push({ planche: p, texteCorrige: texte, rapport, details });
 }
 
 // ---------------------------------------------------------------------------
@@ -228,69 +228,69 @@ for (const p of planches) {
 // ---------------------------------------------------------------------------
 
 const LIBELLES: Record<string, string> = {
-	"enumeration-hangul": "Énumération débordée en hangul cerclé",
-	"sosies-typographiques": "Sosies typographiques kanji/katakana",
+  "enumeration-hangul": "Énumération débordée en hangul cerclé",
+  "sosies-typographiques": "Sosies typographiques kanji/katakana",
 };
 
 console.log("=".repeat(78));
 console.log("RÈGLES DE CORRECTION");
 console.log("=".repeat(78));
 for (const [code, libelle] of Object.entries(LIBELLES)) {
-	const acc = totaux.get(code);
-	console.log(
-		`${libelle.padEnd(46)} ${String(acc?.planches.size ?? 0).padStart(5)} planche(s)  ${String(acc?.corrections ?? 0).padStart(6)} correction(s)`
-	);
+  const acc = totaux.get(code);
+  console.log(
+    `${libelle.padEnd(46)} ${String(acc?.planches.size ?? 0).padStart(5)} planche(s)  ${String(acc?.corrections ?? 0).padStart(6)} correction(s)`,
+  );
 }
 console.log(`\nplanches modifiées au total : ${modifications.length} / ${planches.length}`);
 
 if (ecartesSecurite.length > 0) {
-	console.log(
-		`\n⚠ ${ecartesSecurite.length} planche(s) écartée(s) par le garde-fou (texte corrigé < ${Math.round(SEUIL_SECURITE_LONGUEUR * 100)} % de l'original) — À RELIRE :`
-	);
-	for (const e of ecartesSecurite.slice(0, 20)) {
-		console.log(
-			`  #${e.planche.id} "${e.planche.titre}" p.${e.planche.numero} — ratio ${(e.ratio * 100).toFixed(0)} %`
-		);
-	}
+  console.log(
+    `\n⚠ ${ecartesSecurite.length} planche(s) écartée(s) par le garde-fou (texte corrigé < ${Math.round(SEUIL_SECURITE_LONGUEUR * 100)} % de l'original) — À RELIRE :`,
+  );
+  for (const e of ecartesSecurite.slice(0, 20)) {
+    console.log(
+      `  #${e.planche.id} "${e.planche.titre}" p.${e.planche.numero} — ratio ${(e.ratio * 100).toFixed(0)} %`,
+    );
+  }
 }
 
 if (parSubstitution.size > 0) {
-	console.log(`\n${"-".repeat(78)}`);
-	console.log(`Sosies corrigés, cas par cas (${parSubstitution.size} suites distinctes) :`);
-	for (const [avant, v] of [...parSubstitution].toSorted((a, b) => b[1].n - a[1].n)) {
-		console.log(
-			`  ${String(v.n).padStart(3)}×  ${avant.padEnd(16)} → ${v.apres.padEnd(16)} ${v.ou.join(", ")}`
-		);
-	}
+  console.log(`\n${"-".repeat(78)}`);
+  console.log(`Sosies corrigés, cas par cas (${parSubstitution.size} suites distinctes) :`);
+  for (const [avant, v] of [...parSubstitution].toSorted((a, b) => b[1].n - a[1].n)) {
+    console.log(
+      `  ${String(v.n).padStart(3)}×  ${avant.padEnd(16)} → ${v.apres.padEnd(16)} ${v.ou.join(", ")}`,
+    );
+  }
 }
 
 console.log(`\n${"=".repeat(78)}`);
 console.log("SIGNALÉ, JAMAIS CORRIGÉ (demande une relecture à l'image)");
 console.log("=".repeat(78));
 console.log(
-	`intrusions d'alphabet étranger … ${planchesIntrusions} planche(s), ${signesIntrusions} signe(s)`
+  `intrusions d'alphabet étranger … ${planchesIntrusions} planche(s), ${signesIntrusions} signe(s)`,
 );
 for (const e of echantillonsIntrusions) console.log(`    ${e}`);
 
 if (SIMULATION && modifications.length > 0) {
-	console.log(`\n${"=".repeat(78)}`);
-	console.log("DIFFS — toutes les planches touchées");
-	console.log("=".repeat(78));
-	for (const m of modifications) {
-		const n = m.rapport.map((r) => `${r.code}=${r.corrections}`).join(" ");
-		console.log(`\n[#${m.planche.id} "${m.planche.titre}" p.${m.planche.numero}] ${n}`);
-		for (const d of m.details) console.log(`   sosie : ${d.avant} → ${d.apres}`);
-		// Premières lignes qui diffèrent, pour voir le changement en contexte.
-		const av = m.planche.texte.split("\n");
-		const ap = m.texteCorrige.split("\n");
-		let montrees = 0;
-		for (let i = 0; i < Math.max(av.length, ap.length) && montrees < 4; i++) {
-			if (av[i] === ap[i]) continue;
-			console.log(`   L${i + 1} avant : ${(av[i] ?? "").slice(0, 150)}`);
-			console.log(`   L${i + 1} après : ${(ap[i] ?? "").slice(0, 150)}`);
-			montrees++;
-		}
-	}
+  console.log(`\n${"=".repeat(78)}`);
+  console.log("DIFFS — toutes les planches touchées");
+  console.log("=".repeat(78));
+  for (const m of modifications) {
+    const n = m.rapport.map((r) => `${r.code}=${r.corrections}`).join(" ");
+    console.log(`\n[#${m.planche.id} "${m.planche.titre}" p.${m.planche.numero}] ${n}`);
+    for (const d of m.details) console.log(`   sosie : ${d.avant} → ${d.apres}`);
+    // Premières lignes qui diffèrent, pour voir le changement en contexte.
+    const av = m.planche.texte.split("\n");
+    const ap = m.texteCorrige.split("\n");
+    let montrees = 0;
+    for (let i = 0; i < Math.max(av.length, ap.length) && montrees < 4; i++) {
+      if (av[i] === ap[i]) continue;
+      console.log(`   L${i + 1} avant : ${(av[i] ?? "").slice(0, 150)}`);
+      console.log(`   L${i + 1} après : ${(ap[i] ?? "").slice(0, 150)}`);
+      montrees++;
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -298,11 +298,11 @@ if (SIMULATION && modifications.length > 0) {
 // ---------------------------------------------------------------------------
 
 if (SIMULATION) {
-	console.log(
-		`\n(simulation : rien n'a été écrit — relancer avec --appliquer pour déposer ${modifications.length} planche(s))`
-	);
-	await sql.end();
-	process.exit(0);
+  console.log(
+    `\n(simulation : rien n'a été écrit — relancer avec --appliquer pour déposer ${modifications.length} planche(s))`,
+  );
+  await sql.end();
+  process.exit(0);
 }
 
 console.log(`\n${"=".repeat(78)}`);
@@ -311,54 +311,54 @@ console.log("=".repeat(78));
 
 const parOuvrage = new Map<number, Modification[]>();
 for (const m of modifications) {
-	const liste = parOuvrage.get(m.planche.id) ?? [];
-	liste.push(m);
-	parOuvrage.set(m.planche.id, liste);
+  const liste = parOuvrage.get(m.planche.id) ?? [];
+  liste.push(m);
+  parOuvrage.set(m.planche.id, liste);
 }
 
 function paquets<T>(items: T[], taille: number): T[][] {
-	const out: T[][] = [];
-	for (let i = 0; i < items.length; i += taille) out.push(items.slice(i, i + taille));
-	return out;
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += taille) out.push(items.slice(i, i + taille));
+  return out;
 }
 
 let deposees = 0;
 let echecs = 0;
 for (const [databookId, liste] of [...parOuvrage.entries()].toSorted((a, b) => a[0] - b[0])) {
-	for (const lot of paquets(liste, PAQUET)) {
-		const corps = JSON.stringify({
-			mode: "merge",
-			pages: lot.map((m) => ({ number: m.planche.numero, text: m.texteCorrige })),
-		});
-		let ok = false;
-		let detail = "";
-		for (let essai = 1; essai <= 2; essai++) {
-			try {
-				const r = await fetch(`${API}/api/databooks/${databookId}/transcription`, {
-					method: "POST",
-					headers: { Authorization: `Bearer ${JETON}`, "Content-Type": "application/json" },
-					body: corps,
-				});
-				detail = await r.text();
-				if (r.ok) {
-					ok = true;
-					break;
-				}
-				if (r.status < 500 || essai === 2) break;
-			} catch (e) {
-				detail = (e as Error).message;
-				if (essai === 2) break;
-			}
-			await new Promise((res) => setTimeout(res, 5_000));
-		}
-		if (ok) {
-			deposees += lot.length;
-			console.log(`  #${databookId} ${lot.length} page(s) -> ${detail.slice(0, 160)}`);
-		} else {
-			echecs += lot.length;
-			console.error(`  #${databookId} ÉCHEC : ${detail.slice(0, 200)}`);
-		}
-	}
+  for (const lot of paquets(liste, PAQUET)) {
+    const corps = JSON.stringify({
+      mode: "merge",
+      pages: lot.map((m) => ({ number: m.planche.numero, text: m.texteCorrige })),
+    });
+    let ok = false;
+    let detail = "";
+    for (let essai = 1; essai <= 2; essai++) {
+      try {
+        const r = await fetch(`${API}/api/databooks/${databookId}/transcription`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${JETON}`, "Content-Type": "application/json" },
+          body: corps,
+        });
+        detail = await r.text();
+        if (r.ok) {
+          ok = true;
+          break;
+        }
+        if (r.status < 500 || essai === 2) break;
+      } catch (e) {
+        detail = (e as Error).message;
+        if (essai === 2) break;
+      }
+      await new Promise((res) => setTimeout(res, 5_000));
+    }
+    if (ok) {
+      deposees += lot.length;
+      console.log(`  #${databookId} ${lot.length} page(s) -> ${detail.slice(0, 160)}`);
+    } else {
+      echecs += lot.length;
+      console.error(`  #${databookId} ÉCHEC : ${detail.slice(0, 200)}`);
+    }
+  }
 }
 
 console.log(`\n${deposees} page(s) déposée(s), ${echecs} en échec.`);

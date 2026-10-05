@@ -43,94 +43,93 @@ type BackgroundVariant = "none" | "kenburns" | "parallax" | "fixed";
 type BackgroundOverlay = "none" | "bottom" | "full" | "sides" | "top";
 
 export interface BackgroundImageProps {
-	/** URL absolue (assetUrl("assets/...")) ou same-origin. */
-	src: string;
-	/** Alt a11y. Vide = décoratif (aria-hidden). */
-	alt?: string;
-	/** Effet de mouvement (défaut: "kenburns"). */
-	variant?: BackgroundVariant;
-	/** Dégradé d'assombrissement posé sur l'image (défaut: "bottom"). */
-	overlay?: BackgroundOverlay;
-	/** Ajoute grain + vignette ciné (défaut: true). */
-	grain?: boolean;
-	/** Floute le fond (héro net par-dessus) (défaut: false). */
-	blur?: boolean;
-	/** Hero LCP : passe `priority` + `loading=eager` à next/image (défaut: false). */
-	priority?: boolean;
-	/** `sizes` next/image (défaut: "100vw"). */
-	sizes?: string;
-	/** Contenu superposé (rendu au-dessus de l'overlay, z-10). */
-	children?: ReactNode;
-	className?: string;
-	style?: CSSProperties;
+  /** URL absolue (assetUrl("assets/...")) ou same-origin. */
+  src: string;
+  /** Alt a11y. Vide = décoratif (aria-hidden). */
+  alt?: string;
+  /** Effet de mouvement (défaut: "kenburns"). */
+  variant?: BackgroundVariant;
+  /** Dégradé d'assombrissement posé sur l'image (défaut: "bottom"). */
+  overlay?: BackgroundOverlay;
+  /** Ajoute grain + vignette ciné (défaut: true). */
+  grain?: boolean;
+  /** Floute le fond (héro net par-dessus) (défaut: false). */
+  blur?: boolean;
+  /** Hero LCP : passe `priority` + `loading=eager` à next/image (défaut: false). */
+  priority?: boolean;
+  /** `sizes` next/image (défaut: "100vw"). */
+  sizes?: string;
+  /** Contenu superposé (rendu au-dessus de l'overlay, z-10). */
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
 }
 
 const OVERLAY_CLASS: Record<BackgroundOverlay, string> = {
-	none: "",
-	bottom: "bg-gradient-to-t from-black via-black/55 to-transparent",
-	full: "bg-gradient-to-t from-black via-black/70 to-black/40",
-	sides: "bg-gradient-to-r from-black/85 via-black/30 to-black/70",
-	top: "bg-gradient-to-b from-black/80 via-black/20 to-transparent",
+  none: "",
+  bottom: "bg-gradient-to-t from-black via-black/55 to-transparent",
+  full: "bg-gradient-to-t from-black via-black/70 to-black/40",
+  sides: "bg-gradient-to-r from-black/85 via-black/30 to-black/70",
+  top: "bg-gradient-to-b from-black/80 via-black/20 to-transparent",
 };
 
 export function BackgroundImage({
-	src,
-	alt = "",
-	variant = "kenburns",
-	overlay = "bottom",
-	grain = true,
-	blur = false,
-	priority = false,
-	sizes = "100vw",
-	children,
-	className = "",
-	style,
+  src,
+  alt = "",
+  variant = "kenburns",
+  overlay = "bottom",
+  grain = true,
+  blur = false,
+  priority = false,
+  sizes = "100vw",
+  children,
+  className = "",
+  style,
 }: BackgroundImageProps) {
-	const isParallax = variant === "parallax";
-	const isFixed = variant === "fixed";
+  const isParallax = variant === "parallax";
+  const isFixed = variant === "fixed";
 
-	// Classe d'animation appliquée à la couche image.
-	const motionClass = variant === "kenburns" ? "ken-burns" : isParallax ? "bg-parallax-layer" : "";
+  // Classe d'animation appliquée à la couche image.
+  const motionClass = variant === "kenburns" ? "ken-burns" : isParallax ? "bg-parallax-layer" : "";
 
-	const overlayClass = OVERLAY_CLASS[overlay];
+  const overlayClass = OVERLAY_CLASS[overlay];
 
-	return (
-		<div
-			className={`absolute inset-0 overflow-hidden ${grain ? "film-grain vignette" : ""} ${
-				isParallax ? "bg-parallax-host" : ""
-			} ${className}`}
-			// `aria-hidden` seulement quand la couche est VRAIMENT décorative. Posé sur
-			// le seul critère de `alt`, il masquait aussi tout `children` superposé :
-			// l'API en accepte (cf. `BackgroundImageProps.children`), et un appelant qui
-			// aurait mis son titre là l'aurait rendu muet aux lecteurs d'écran sans le
-			// voir. Aucun point d'appel actuel n'en passe — `HeroBackground` rend les
-			// siens à côté du fond, pas dedans — donc c'est une garde, pas un correctif.
-			aria-hidden={!alt && !children ? true : undefined}
-			style={style}
-		>
-			<Image
-				src={src}
-				alt={alt}
-				fill
-				priority={priority}
-				loading={priority ? "eager" : "lazy"}
-				sizes={sizes}
-				quality={70}
-				// Bannière téléversée depuis l'admin : servie telle quelle pour rester
-				// fraîche dès le remplacement (cf. lib/images.ts).
-				unoptimized={isEditableAsset(src)}
-				className={`object-cover object-center ${motionClass} ${blur ? "scale-110 blur-2xl" : ""}`}
-				style={
-					// `fixed` : on simule le background-attachment via une couche figée
-					// (background-attachment: fixed est buggé sur mobile/Safari).
-					isFixed ? { transform: "scale(1.05)" } : undefined
-				}
-			/>
+  return (
+    <div
+      className={`absolute inset-0 overflow-hidden ${grain ? "film-grain vignette" : ""} ${
+        isParallax ? "bg-parallax-host" : ""
+      } ${className}`}
+      // `aria-hidden` seulement quand la couche est VRAIMENT décorative. Posé sur
+      // le seul critère de `alt`, il masquait aussi tout `children` superposé :
+      // l'API en accepte (cf. `BackgroundImageProps.children`), et un appelant qui
+      // aurait mis son titre là l'aurait rendu muet aux lecteurs d'écran sans le
+      // voir. Aucun point d'appel actuel n'en passe — `HeroBackground` rend les
+      // siens à côté du fond, pas dedans — donc c'est une garde, pas un correctif.
+      aria-hidden={!alt && !children ? true : undefined}
+      style={style}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority={priority}
+        loading={priority ? "eager" : "lazy"}
+        sizes={sizes}
+        quality={70}
+        // Bannière téléversée depuis l'admin : servie telle quelle pour rester
+        // fraîche dès le remplacement (cf. lib/images.ts).
+        unoptimized={isEditableAsset(src)}
+        className={`object-cover object-center ${motionClass} ${blur ? "scale-110 blur-2xl" : ""}`}
+        style={
+          // `fixed` : on simule le background-attachment via une couche figée
+          // (background-attachment: fixed est buggé sur mobile/Safari).
+          isFixed ? { transform: "scale(1.05)" } : undefined
+        }
+      />
 
-			{overlayClass && <div className={`pointer-events-none absolute inset-0 ${overlayClass}`} />}
+      {overlayClass && <div className={`pointer-events-none absolute inset-0 ${overlayClass}`} />}
 
-			{children && <div className="relative z-10 h-full">{children}</div>}
-		</div>
-	);
+      {children && <div className="relative z-10 h-full">{children}</div>}
+    </div>
+  );
 }
-

@@ -9,14 +9,14 @@ import { BillboardSkeleton, RailSkeleton } from "@/components/stream/StreamSkele
  * apparaît d'emblée et se remplit.
  */
 export default function Loading() {
-	return (
-		<>
-			<BillboardSkeleton />
-			<div className="wiki-container">
-				{Array.from({ length: 4 }).map((_, i) => (
-					<RailSkeleton key={i} variant="episode" />
-				))}
-			</div>
-		</>
-	);
+  return (
+    <>
+      <BillboardSkeleton />
+      <div className="wiki-container">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <RailSkeleton key={i} variant="episode" />
+        ))}
+      </div>
+    </>
+  );
 }

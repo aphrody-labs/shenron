@@ -17,12 +17,12 @@ import { AUTO_ROLE_ID } from "~/lib/constants";
 const DRY = process.argv.includes("--dry");
 const TOKEN = env.DISCORD_TOKEN_GRAND_PRETRE ?? env.DISCORD_TOKEN_KAIO ?? env.DISCORD_TOKEN_SHENRON;
 if (!TOKEN) {
-	console.error("Need DISCORD_TOKEN_GRAND_PRETRE|KAIO|SHENRON");
-	process.exit(1);
+  console.error("Need DISCORD_TOKEN_GRAND_PRETRE|KAIO|SHENRON");
+  process.exit(1);
 }
 
 const client = new Client({
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
 await client.login(TOKEN);
@@ -35,14 +35,14 @@ console.log(`Cached ${guild.members.cache.size} members in ${guild.name}`);
 const me = guild.members.me!;
 const role = guild.roles.cache.get(AUTO_ROLE_ID);
 if (!role) {
-	console.error(`AUTO_ROLE_ID ${AUTO_ROLE_ID} introuvable !`);
-	process.exit(1);
+  console.error(`AUTO_ROLE_ID ${AUTO_ROLE_ID} introuvable !`);
+  process.exit(1);
 }
 if (role.position >= me.roles.highest.position) {
-	console.error(
-		`Bot (${me.roles.highest.name} pos ${me.roles.highest.position}) ne peut pas assigner ${role.name} (pos ${role.position})`
-	);
-	process.exit(1);
+  console.error(
+    `Bot (${me.roles.highest.name} pos ${me.roles.highest.position}) ne peut pas assigner ${role.name} (pos ${role.position})`,
+  );
+  process.exit(1);
 }
 
 let added = 0;
@@ -51,28 +51,28 @@ let bots = 0;
 let errors = 0;
 
 for (const member of guild.members.cache.values()) {
-	if (member.user.bot) {
-		bots++;
-		continue;
-	}
-	if (member.roles.cache.has(AUTO_ROLE_ID)) {
-		already++;
-		continue;
-	}
-	if (DRY) {
-		console.log(`  [DRY] would add Saiyan to ${member.user.username}`);
-		added++;
-	} else {
-		try {
-			await member.roles.add(AUTO_ROLE_ID, "Backfill auto-role Saiyan");
-			console.log(`  ✓ Saiyan → ${member.user.username}`);
-			added++;
-			await new Promise((r) => setTimeout(r, 200));
-		} catch (err) {
-			console.log(`  ✗ ${member.user.username}: ${err}`);
-			errors++;
-		}
-	}
+  if (member.user.bot) {
+    bots++;
+    continue;
+  }
+  if (member.roles.cache.has(AUTO_ROLE_ID)) {
+    already++;
+    continue;
+  }
+  if (DRY) {
+    console.log(`  [DRY] would add Saiyan to ${member.user.username}`);
+    added++;
+  } else {
+    try {
+      await member.roles.add(AUTO_ROLE_ID, "Backfill auto-role Saiyan");
+      console.log(`  ✓ Saiyan → ${member.user.username}`);
+      added++;
+      await new Promise((r) => setTimeout(r, 200));
+    } catch (err) {
+      console.log(`  ✗ ${member.user.username}: ${err}`);
+      errors++;
+    }
+  }
 }
 
 console.log("");

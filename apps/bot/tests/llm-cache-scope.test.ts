@@ -52,7 +52,10 @@ test("the same question only reuses a cached answer with the same evidence and m
   };
   let modelCalls = 0;
   globalThis.fetch = (async () =>
-    Response.json({ answer: `Réponse ${++modelCalls}`, model: "fixture" })) as unknown as typeof fetch;
+    Response.json({
+      answer: `Réponse ${++modelCalls}`,
+      model: "fixture",
+    })) as unknown as typeof fetch;
   const db = new Database(":memory:");
   const hit = (content: string) => ({
     rowid: 1,

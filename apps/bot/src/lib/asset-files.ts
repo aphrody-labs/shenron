@@ -19,14 +19,14 @@ import { resolve } from "node:path";
 import { type AssetRoots, resolveAppFile } from "@shenron/images/resolve";
 
 function assetRoots(cwd: string = process.cwd()): AssetRoots {
-	return { bot: resolve(cwd), site: resolve(cwd, "..", "site") };
+  return { bot: resolve(cwd), site: resolve(cwd, "..", "site") };
 }
 
 const posix = (path: string) => path.replaceAll("\\", "/");
 
 /** `packages/ui/assets`, source of the artwork the site copies into `public/`. */
 export function uiAssetsDir(cwd: string = process.cwd()): string {
-	return posix(resolve(cwd, "..", "..", "packages", "ui", "assets"));
+  return posix(resolve(cwd, "..", "..", "packages", "ui", "assets"));
 }
 
 /**
@@ -36,12 +36,12 @@ export function uiAssetsDir(cwd: string = process.cwd()): string {
  * resolves to that source file.
  */
 export function botFile(relative: string, cwd?: string): string {
-	const roots = assetRoots(cwd);
-	const path = posix(resolveAppFile("bot", relative, roots));
-	const sitePublic = `${posix(resolve(roots.site, "public"))}/`;
-	if (path.startsWith(sitePublic)) {
-		const source = `${uiAssetsDir(cwd)}/${path.slice(sitePublic.length)}`;
-		if (existsSync(source)) return source;
-	}
-	return path;
+  const roots = assetRoots(cwd);
+  const path = posix(resolveAppFile("bot", relative, roots));
+  const sitePublic = `${posix(resolve(roots.site, "public"))}/`;
+  if (path.startsWith(sitePublic)) {
+    const source = `${uiAssetsDir(cwd)}/${path.slice(sitePublic.length)}`;
+    if (existsSync(source)) return source;
+  }
+  return path;
 }

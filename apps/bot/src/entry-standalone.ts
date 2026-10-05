@@ -5,7 +5,9 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`  -h, --help     Show this help message`);
   console.log(`  -v, --version  Show version and runtime info`);
   console.log(`  --dry-run      Validate environment and exit without services or Discord login`);
-  console.log(`  --smoke        Load every command and event in this binary, without databases or Discord`);
+  console.log(
+    `  --smoke        Load every command and event in this binary, without databases or Discord`,
+  );
   process.exit(0);
 }
 
@@ -39,7 +41,8 @@ if (process.argv.includes("--smoke")) {
       smoke: "ok",
       runtime: `Bun ${Bun.version}`,
       slashCommands: storage.applicationCommandSlashesFlat.length,
-      contextMenus: storage.applicationCommandMessages.length + storage.applicationCommandUsers.length,
+      contextMenus:
+        storage.applicationCommandMessages.length + storage.applicationCommandUsers.length,
       events: storage.events.length,
       discordClasses: storage.discords.length,
       fixtureEnv: fixtured,

@@ -31,17 +31,17 @@ describe("stripNonCode", () => {
 describe("importSpecifiers", () => {
   test("static, type-only, side-effect, dynamic and require specifiers; never comments or strings", () => {
     const source = [
-      "// import fake from \"in-comment\";",
-      "import type { A } from \"./types\";",
+      '// import fake from "in-comment";',
+      'import type { A } from "./types";',
       "import {",
       "  b,",
       "  c,",
-      "} from \"@scope/pkg/sub\";",
-      "import \"./side-effect\";",
-      "export * from \"./reexport\";",
+      '} from "@scope/pkg/sub";',
+      'import "./side-effect";',
+      'export * from "./reexport";',
       "const text = \"from 'not-an-import'\";",
-      "const lazy = await import(\"./lazy\");",
-      "const req = require(\"node:fs\");",
+      'const lazy = await import("./lazy");',
+      'const req = require("node:fs");',
     ].join("\n");
     expect(importSpecifiers(source)).toEqual([
       { specifier: "./types", typeOnly: true },

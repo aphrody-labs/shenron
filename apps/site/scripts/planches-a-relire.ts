@@ -34,8 +34,8 @@ import { defautDePlanche, gravite, type Defaut } from "../src/lib/databooks-defa
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {
-	const i = args.indexOf(`--${nom}`);
-	return i !== -1 && args[i + 1] ? args[i + 1]! : defaut;
+  const i = args.indexOf(`--${nom}`);
+  return i !== -1 && args[i + 1] ? args[i + 1]! : defaut;
 };
 const flag = (nom: string) => args.includes(`--${nom}`);
 
@@ -47,129 +47,129 @@ const RACINE = join(import.meta.dir, "..", "public", "wiki", "databooks");
 /** URL de la base, lue dans `apps/site/.env` (ancrage `^DATABASE_URL=` : le
  *  fichier porte une ligne Neon COMMENTÉE avant la ligne active). */
 async function urlBase(): Promise<string> {
-	const direct = process.env.DATABASE_URL?.trim();
-	if (direct) return direct;
-	const distant = await Bun.file(join(import.meta.dir, "../../../.env.remote-db"))
-		.text()
-		.catch(() => "");
-	const remoteLine = distant.split("\n").findLast((l) => l.startsWith("REMOTE_DATABASE_URL="));
-	const remoteValue = remoteLine
-		?.slice("REMOTE_DATABASE_URL=".length)
-		.trim()
-		.replace(/^["']|["']$/g, "");
-	if (remoteValue) return remoteValue;
-	const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
-		.text()
-		.catch(() => "");
-	const ligne = texte
-		.split("\n")
-		.filter((l) => l.startsWith("DATABASE_URL="))
-		.pop();
-	const valeur = ligne
-		?.slice("DATABASE_URL=".length)
-		.trim()
-		.replace(/^["']|["']$/g, "");
-	if (!valeur) {
-		console.error("✗ DATABASE_URL introuvable (environnement ou apps/site/.env).");
-		process.exit(1);
-	}
-	return valeur;
+  const direct = process.env.DATABASE_URL?.trim();
+  if (direct) return direct;
+  const distant = await Bun.file(join(import.meta.dir, "../../../.env.remote-db"))
+    .text()
+    .catch(() => "");
+  const remoteLine = distant.split("\n").findLast((l) => l.startsWith("REMOTE_DATABASE_URL="));
+  const remoteValue = remoteLine
+    ?.slice("REMOTE_DATABASE_URL=".length)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (remoteValue) return remoteValue;
+  const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
+    .text()
+    .catch(() => "");
+  const ligne = texte
+    .split("\n")
+    .filter((l) => l.startsWith("DATABASE_URL="))
+    .pop();
+  const valeur = ligne
+    ?.slice("DATABASE_URL=".length)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (!valeur) {
+    console.error("✗ DATABASE_URL introuvable (environnement ou apps/site/.env).");
+    process.exit(1);
+  }
+  return valeur;
 }
 
 interface Planche {
-	fiche: number;
-	titre: string;
-	page: number;
-	image: string;
-	defaut: Defaut;
-	/** Nombre de signes fautifs (remplacement/étranger) — sert à trier le pire d'abord. */
-	gravite: number;
+  fiche: number;
+  titre: string;
+  page: number;
+  image: string;
+  defaut: Defaut;
+  /** Nombre de signes fautifs (remplacement/étranger) — sert à trier le pire d'abord. */
+  gravite: number;
 }
 
 const sql = postgres(await urlBase(), { max: 2, prepare: false });
 try {
-	const lignes = await sql<{ id: number; title: string; pages: unknown }[]>`
+  const lignes = await sql<{ id: number; title: string; pages: unknown }[]>`
 		SELECT id, title, pages FROM bot.db_databooks WHERE pages IS NOT NULL ORDER BY id`;
 
-	const file: Planche[] = [];
-	/** Emplacements sans image ni texte — comptés, jamais mis en file. */
-	let fantomes = 0;
-	for (const fiche of lignes) {
-		const pages = Array.isArray(fiche.pages) ? (fiche.pages as Record<string, unknown>[]) : [];
-		for (const p of pages) {
-			const texte = typeof p.text === "string" ? p.text : "";
-			// Le drapeau posé par le relecteur (« vérifier quand même ») sort la
-			// planche de la file : les signatures se trompent sur les planches
-			// maigres, et une file qui redonne éternellement les mêmes planches
-			// déjà regardées finit par ne plus être ouverte.
-			const defaut = defautDePlanche(p, texte);
-			if (!defaut) continue;
-			const image = typeof p.image === "string" ? p.image.split("/").pop()! : "";
-			// Emplacement sans image ET sans texte : il n'y a rien à rouvrir. Ce
-			// sont des trous dans le dépôt (262 au 2026-08-25, dont 228 pour le
-			// seul Daizenshuu 1), déjà filtrés à l'affichage — les compter comme
-			// « à relire » ferait passer un manque de scans pour un défaut d'OCR.
-			if (!image) {
-				fantomes++;
-				continue;
-			}
-			file.push({
-				// `Number()` obligatoire : postgres-js rend les bigint en CHAÎNES.
-				// Sans lui, `--fiche 142` comparait `"142" === 142` et ne rendait
-				// JAMAIS rien — un relecteur en concluait « rien à relire ici ».
-				fiche: Number(fiche.id),
-				titre: fiche.title,
-				page: Number(p.number ?? 0),
-				image,
-				defaut,
-				gravite: gravite(texte, defaut),
-			});
-		}
-	}
+  const file: Planche[] = [];
+  /** Emplacements sans image ni texte — comptés, jamais mis en file. */
+  let fantomes = 0;
+  for (const fiche of lignes) {
+    const pages = Array.isArray(fiche.pages) ? (fiche.pages as Record<string, unknown>[]) : [];
+    for (const p of pages) {
+      const texte = typeof p.text === "string" ? p.text : "";
+      // Le drapeau posé par le relecteur (« vérifier quand même ») sort la
+      // planche de la file : les signatures se trompent sur les planches
+      // maigres, et une file qui redonne éternellement les mêmes planches
+      // déjà regardées finit par ne plus être ouverte.
+      const defaut = defautDePlanche(p, texte);
+      if (!defaut) continue;
+      const image = typeof p.image === "string" ? p.image.split("/").pop()! : "";
+      // Emplacement sans image ET sans texte : il n'y a rien à rouvrir. Ce
+      // sont des trous dans le dépôt (262 au 2026-08-25, dont 228 pour le
+      // seul Daizenshuu 1), déjà filtrés à l'affichage — les compter comme
+      // « à relire » ferait passer un manque de scans pour un défaut d'OCR.
+      if (!image) {
+        fantomes++;
+        continue;
+      }
+      file.push({
+        // `Number()` obligatoire : postgres-js rend les bigint en CHAÎNES.
+        // Sans lui, `--fiche 142` comparait `"142" === 142` et ne rendait
+        // JAMAIS rien — un relecteur en concluait « rien à relire ici ».
+        fiche: Number(fiche.id),
+        titre: fiche.title,
+        page: Number(p.number ?? 0),
+        image,
+        defaut,
+        gravite: gravite(texte, defaut),
+      });
+    }
+  }
 
-	if (flag("compte")) {
-		for (const c of CLASSES) {
-			const n = file.filter((p) => p.defaut === c).length;
-			console.log(`${c.padEnd(14)} ${String(n).padStart(6)}`);
-		}
-		console.log(`${"TOTAL".padEnd(14)} ${String(file.length).padStart(6)}`);
-		console.log(
-			`\n(+ ${fantomes} emplacement(s) sans image ni texte : rien à relire, il manque le scan)`
-		);
-	} else {
-		const classe = opt("classe") as Classe | undefined;
-		if (classe && !CLASSES.includes(classe)) {
-			console.error(`✗ classe inconnue : ${classe} (attendu : ${CLASSES.join(", ")})`);
-			process.exit(2);
-		}
-		const fiche = opt("fiche") ? Number(opt("fiche")) : null;
-		const limite = Number(opt("limite", "0"));
-		const depuis = Number(opt("depuis", "0"));
+  if (flag("compte")) {
+    for (const c of CLASSES) {
+      const n = file.filter((p) => p.defaut === c).length;
+      console.log(`${c.padEnd(14)} ${String(n).padStart(6)}`);
+    }
+    console.log(`${"TOTAL".padEnd(14)} ${String(file.length).padStart(6)}`);
+    console.log(
+      `\n(+ ${fantomes} emplacement(s) sans image ni texte : rien à relire, il manque le scan)`,
+    );
+  } else {
+    const classe = opt("classe") as Classe | undefined;
+    if (classe && !CLASSES.includes(classe)) {
+      console.error(`✗ classe inconnue : ${classe} (attendu : ${CLASSES.join(", ")})`);
+      process.exit(2);
+    }
+    const fiche = opt("fiche") ? Number(opt("fiche")) : null;
+    const limite = Number(opt("limite", "0"));
+    const depuis = Number(opt("depuis", "0"));
 
-		let sortie = file
-			.filter((p) => (classe ? p.defaut === classe : true))
-			.filter((p) => (fiche ? p.fiche === fiche : true))
-			.toSorted((a, b) => b.gravite - a.gravite || a.fiche - b.fiche || a.page - b.page)
-			.slice(depuis);
-		if (limite > 0) sortie = sortie.slice(0, limite);
+    let sortie = file
+      .filter((p) => (classe ? p.defaut === classe : true))
+      .filter((p) => (fiche ? p.fiche === fiche : true))
+      .toSorted((a, b) => b.gravite - a.gravite || a.fiche - b.fiche || a.page - b.page)
+      .slice(depuis);
+    if (limite > 0) sortie = sortie.slice(0, limite);
 
-		if (flag("json")) {
-			console.log(JSON.stringify(sortie, null, 2));
-		} else {
-			for (const p of sortie) {
-				const extension = p.image.split(".").pop() ?? "jpg";
-				console.log(
-					[
-						p.fiche,
-						p.page,
-						`${p.fiche}-${p.page}.${extension}`,
-						join(RACINE, p.image),
-						p.defaut,
-					].join("\t")
-				);
-			}
-		}
-	}
+    if (flag("json")) {
+      console.log(JSON.stringify(sortie, null, 2));
+    } else {
+      for (const p of sortie) {
+        const extension = p.image.split(".").pop() ?? "jpg";
+        console.log(
+          [
+            p.fiche,
+            p.page,
+            `${p.fiche}-${p.page}.${extension}`,
+            join(RACINE, p.image),
+            p.defaut,
+          ].join("\t"),
+        );
+      }
+    }
+  }
 } finally {
-	await sql.end();
+  await sql.end();
 }

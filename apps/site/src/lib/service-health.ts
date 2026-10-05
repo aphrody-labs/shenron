@@ -42,9 +42,7 @@ export async function probeDatabase(): Promise<"ok" | "unreachable" | "disabled"
 }
 
 /** Database is mandatory when the native RAG backend is selected or explicitly required. */
-export function databaseRequired(
-  env: EnvSource = process.env,
-): boolean {
+export function databaseRequired(env: EnvSource = process.env): boolean {
   return env.RAG_BACKEND === "aphrody" || env.SITE_REQUIRE_DATABASE === "1";
 }
 

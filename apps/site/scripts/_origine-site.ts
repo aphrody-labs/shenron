@@ -12,7 +12,7 @@
  * dépôt depuis un poste distant vers `https://dragonballfr.com`).
  */
 export function origineSite(): string {
-	const forcee = process.env.DATABOOKS_API_BASE?.trim() || process.env.SITE_INTERNAL_URL?.trim();
-	if (forcee) return forcee.replace(/\/$/, "");
-	return "http://127.0.0.1:5011";
+  const forcee = process.env.DATABOOKS_API_BASE?.trim() || process.env.SITE_INTERNAL_URL?.trim();
+  if (forcee) return forcee.replace(/\/$/, "");
+  return "http://127.0.0.1:5011";
 }

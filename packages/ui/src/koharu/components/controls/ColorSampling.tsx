@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   createContext,
@@ -8,63 +8,63 @@ import {
   useEffect,
   useMemo,
   useRef,
-} from 'react'
+} from "react";
 
-import { useKoharuStore, type CanvasTool } from '../../lib/store'
+import { useKoharuStore, type CanvasTool } from "../../lib/store";
 
-type ApplyColor = (color: string) => void
+type ApplyColor = (color: string) => void;
 
 export interface ColorSampling {
-  request: (apply: ApplyColor) => void
-  complete: (color: string) => boolean
-  cancel: () => void
+  request: (apply: ApplyColor) => void;
+  complete: (color: string) => boolean;
+  cancel: () => void;
 }
 
-const ColorSamplingContext = createContext<ColorSampling | null>(null)
+const ColorSamplingContext = createContext<ColorSampling | null>(null);
 
 export function ColorSamplingProvider({ children }: { children: ReactNode }) {
-  const pending = useRef<ApplyColor | null>(null)
-  const previousTool = useRef<CanvasTool>('select')
-  const tool = useKoharuStore((state) => state.tool)
-  const setTool = useKoharuStore((state) => state.setTool)
+  const pending = useRef<ApplyColor | null>(null);
+  const previousTool = useRef<CanvasTool>("select");
+  const tool = useKoharuStore((state) => state.tool);
+  const setTool = useKoharuStore((state) => state.setTool);
 
   const request = useCallback(
     (apply: ApplyColor) => {
-      if (!pending.current) previousTool.current = useKoharuStore.getState().tool
-      pending.current = apply
-      setTool('color_picker')
+      if (!pending.current) previousTool.current = useKoharuStore.getState().tool;
+      pending.current = apply;
+      setTool("color_picker");
     },
     [setTool],
-  )
+  );
 
   const cancel = useCallback(() => {
-    const active = pending.current !== null
-    pending.current = null
-    if (active && useKoharuStore.getState().tool === 'color_picker') {
-      setTool(previousTool.current)
+    const active = pending.current !== null;
+    pending.current = null;
+    if (active && useKoharuStore.getState().tool === "color_picker") {
+      setTool(previousTool.current);
     }
-  }, [setTool])
+  }, [setTool]);
 
   const complete = useCallback(
     (color: string) => {
-      const apply = pending.current
-      if (!apply) return false
-      pending.current = null
-      apply(color)
-      if (useKoharuStore.getState().tool === 'color_picker') setTool(previousTool.current)
-      return true
+      const apply = pending.current;
+      if (!apply) return false;
+      pending.current = null;
+      apply(color);
+      if (useKoharuStore.getState().tool === "color_picker") setTool(previousTool.current);
+      return true;
     },
     [setTool],
-  )
+  );
 
   useEffect(() => {
-    if (tool !== 'color_picker') cancel()
-  }, [cancel, tool])
+    if (tool !== "color_picker") cancel();
+  }, [cancel, tool]);
 
-  const value = useMemo(() => ({ request, complete, cancel }), [cancel, complete, request])
-  return <ColorSamplingContext.Provider value={value}>{children}</ColorSamplingContext.Provider>
+  const value = useMemo(() => ({ request, complete, cancel }), [cancel, complete, request]);
+  return <ColorSamplingContext.Provider value={value}>{children}</ColorSamplingContext.Provider>;
 }
 
 export function useColorSampling(): ColorSampling | null {
-  return useContext(ColorSamplingContext)
+  return useContext(ColorSamplingContext);
 }

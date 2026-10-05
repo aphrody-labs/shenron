@@ -18,23 +18,23 @@ import { TikTokService } from "~/services/TikTokService";
 @Bot("shenron")
 @injectable()
 export class TikTokWatchEvent {
-	constructor(
-		@inject(CronRegistry) private cron: CronRegistry,
-		@inject(TikTokService) private tiktok: TikTokService
-	) {}
+  constructor(
+    @inject(CronRegistry) private cron: CronRegistry,
+    @inject(TikTokService) private tiktok: TikTokService,
+  ) {}
 
-	@Once({ event: "clientReady" })
-	ready([client]: [Client]) {
-		this.tiktok.setClient(client);
-		try {
-			this.cron.register({
-				name: "tiktok-watch",
-				description: "Surveillance TikTok (@goku_dbfr) : notif live + nouvelles vidéos",
-				intervalMs: 2 * 60_000,
-				fn: () => void this.tiktok.tick(),
-			});
-		} catch (err) {
-			logger.error(err as Error, "[tiktok] impossible d'enregistrer le cron tiktok-watch");
-		}
-	}
+  @Once({ event: "clientReady" })
+  ready([client]: [Client]) {
+    this.tiktok.setClient(client);
+    try {
+      this.cron.register({
+        name: "tiktok-watch",
+        description: "Surveillance TikTok (@goku_dbfr) : notif live + nouvelles vidéos",
+        intervalMs: 2 * 60_000,
+        fn: () => void this.tiktok.tick(),
+      });
+    } catch (err) {
+      logger.error(err as Error, "[tiktok] impossible d'enregistrer le cron tiktok-watch");
+    }
+  }
 }

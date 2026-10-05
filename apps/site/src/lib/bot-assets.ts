@@ -11,7 +11,6 @@ import { ASSET_BASE } from "@/lib/config";
  * Accepte aussi les paths DB stockés `./assets/dbz/x.png` ou `/assets/dbz/x.png`.
  */
 export function botAsset(path: string): string {
-	const sub = path.replace(/^\.?\/?(assets\/)?/, "").replace(/^\/+/, "");
-	return `${ASSET_BASE}/assets/${sub}`;
+  const sub = path.replace(/^\.?\/?(assets\/)?/, "").replace(/^\/+/, "");
+  return `${ASSET_BASE}/assets/${sub}`;
 }
-

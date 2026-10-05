@@ -32,28 +32,31 @@ test.if(LIVE)("serves real preloaded retrieval from Redis without mixing filters
   expect(missing.body.results).toHaveLength(0);
 });
 
-test.if(LIVE)("invalidates the real Redis result when an existing editorial passage is reindexed", async () => {
-  const { results } = await live.client.ragSearchWithMode("Son Goku", 5, {
-    sourceId: "db_characters",
-    lang: "fr",
-  });
-  const hit = results[0]!;
-  expect(hit.sourceId).toBeDefined();
-  expect(hit.content?.length).toBeGreaterThan(0);
-  await search();
-  const result = await live.client.ragIngest({
-    sourceId: hit.sourceId!,
-    title: hit.title,
-    url: hit.url,
-    content: hit.content!,
-    kind: hit.kind,
-    lang: hit.lang,
-    originSourceId: hit.originSourceId,
-    entity: hit.entity,
-  });
-  expect(result.vectorIndexed).toBe(true);
-  const refreshed = await search();
-  expect(refreshed.cache).toBe("miss");
-  expect(refreshed.body.mode).toBe("hybrid");
-  expect((await search()).cache).toBe("hit");
-});
+test.if(LIVE)(
+  "invalidates the real Redis result when an existing editorial passage is reindexed",
+  async () => {
+    const { results } = await live.client.ragSearchWithMode("Son Goku", 5, {
+      sourceId: "db_characters",
+      lang: "fr",
+    });
+    const hit = results[0]!;
+    expect(hit.sourceId).toBeDefined();
+    expect(hit.content?.length).toBeGreaterThan(0);
+    await search();
+    const result = await live.client.ragIngest({
+      sourceId: hit.sourceId!,
+      title: hit.title,
+      url: hit.url,
+      content: hit.content!,
+      kind: hit.kind,
+      lang: hit.lang,
+      originSourceId: hit.originSourceId,
+      entity: hit.entity,
+    });
+    expect(result.vectorIndexed).toBe(true);
+    const refreshed = await search();
+    expect(refreshed.cache).toBe("miss");
+    expect(refreshed.body.mode).toBe("hybrid");
+    expect((await search()).cache).toBe("hit");
+  },
+);

@@ -15,19 +15,19 @@ export const dynamic = "force-dynamic";
  *   should restart the container.
  */
 export async function GET(): Promise<NextResponse> {
-	const health = createServiceHealth(
-		"site",
-		process.env.npm_package_version ?? "0.1.0",
-		{ http: "ok" },
-		{
-			probe: "liveness",
-			failureSemantics:
-				"Liveness probe indicates if the site process is running and responding. Unresponsive state triggers container restart.",
-		}
-	);
+  const health = createServiceHealth(
+    "site",
+    process.env.npm_package_version ?? "0.1.0",
+    { http: "ok" },
+    {
+      probe: "liveness",
+      failureSemantics:
+        "Liveness probe indicates if the site process is running and responding. Unresponsive state triggers container restart.",
+    },
+  );
 
-	return NextResponse.json(health, {
-		status: 200,
-		headers: { "cache-control": "no-store" },
-	});
+  return NextResponse.json(health, {
+    status: 200,
+    headers: { "cache-control": "no-store" },
+  });
 }

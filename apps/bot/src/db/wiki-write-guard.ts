@@ -25,10 +25,10 @@ const entry = Bun.main ?? process.argv[1] ?? "";
 const isBotRuntime = /(?:^|\/)(?:src\/)?index\.ts$/.test(entry);
 
 if (!isBotRuntime && !Bun.env.ALLOW_SQLITE_WIKI_WRITE) {
-	console.error(
-		"✗ Wiki migré sur Neon (source de vérité). Ce script écrit le SQLite local,\n" +
-			"  écrasé par le reverse-sync Neon→SQLite. Seed/ingest éditorial doit cibler Neon.\n" +
-			"  Override (risqué, perdu au prochain pull) : ALLOW_SQLITE_WIKI_WRITE=1."
-	);
-	process.exit(1);
+  console.error(
+    "✗ Wiki migré sur Neon (source de vérité). Ce script écrit le SQLite local,\n" +
+      "  écrasé par le reverse-sync Neon→SQLite. Seed/ingest éditorial doit cibler Neon.\n" +
+      "  Override (risqué, perdu au prochain pull) : ALLOW_SQLITE_WIKI_WRITE=1.",
+  );
+  process.exit(1);
 }

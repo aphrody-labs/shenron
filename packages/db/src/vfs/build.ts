@@ -52,7 +52,9 @@ export function isPublicRagRow(
   row: Pick<RagRow, "url" | "metadata">,
   siteOrigin: string = DEFAULT_PUBLIC_ORIGINS.site,
 ): boolean {
-  const meta = (typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata ?? {}) as Record<string, unknown>;
+  const meta = (
+    typeof row.metadata === "string" ? JSON.parse(row.metadata) : (row.metadata ?? {})
+  ) as Record<string, unknown>;
   if (meta.visible === false) return false;
   if (!row.url?.startsWith(`${siteOrigin}/`)) return false;
   const source = String(meta.originSourceId ?? "");
@@ -98,8 +100,12 @@ export function createRagWriter(db: Database, vectors: VectorMode): RagWriter {
     `INSERT OR IGNORE INTO chunks (doc_id, chunk_index, heading, symbol, content, start_line, end_line, token_count)
      VALUES (?, ?, ?, NULL, ?, 1, ?, ?) RETURNING id`,
   );
-  const insertF32 = db.query("INSERT OR REPLACE INTO vectors (chunk_id, model_id, dim, quant, embedding) VALUES (?, ?, ?, 'f32', ?)");
-  const insertI8 = db.query("INSERT OR REPLACE INTO vectors_i8 (chunk_id, model_id, dim, scale, codes) VALUES (?, ?, ?, ?, ?)");
+  const insertF32 = db.query(
+    "INSERT OR REPLACE INTO vectors (chunk_id, model_id, dim, quant, embedding) VALUES (?, ?, ?, 'f32', ?)",
+  );
+  const insertI8 = db.query(
+    "INSERT OR REPLACE INTO vectors_i8 (chunk_id, model_id, dim, scale, codes) VALUES (?, ?, ?, ?, ?)",
+  );
   const docIds = new Map<string, number>();
   let docs = 0;
   let chunks = 0;
@@ -108,14 +114,25 @@ export function createRagWriter(db: Database, vectors: VectorMode): RagWriter {
   db.exec("BEGIN");
   return {
     add(row, visibility) {
-      const meta = (typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata ?? {}) as Record<string, unknown>;
+      const meta = (
+        typeof row.metadata === "string" ? JSON.parse(row.metadata) : (row.metadata ?? {})
+      ) as Record<string, unknown>;
       const { doc, chunk } = splitEntityId(row.entity_id);
       const content = row.content.trim();
       if (!content) return false;
       let docId = docIds.get(doc);
       if (docId === undefined) {
         const updated = row.updated_at ? new Date(row.updated_at).getTime() : 0;
-        docId = (insertDoc.get(doc, sha256Hex(content), row.title, typeof meta.lang === "string" ? meta.lang : null, updated, content.length) as { id: number }).id;
+        docId = (
+          insertDoc.get(
+            doc,
+            sha256Hex(content),
+            row.title,
+            typeof meta.lang === "string" ? meta.lang : null,
+            updated,
+            content.length,
+          ) as { id: number }
+        ).id;
         docIds.set(doc, docId);
         insertAttr.run(
           docId,
@@ -130,7 +147,14 @@ export function createRagWriter(db: Database, vectors: VectorMode): RagWriter {
         docs++;
       }
       const heading = /^\[([^\]]{1,300})\]/.exec(content)?.[1] ?? row.title;
-      const inserted = insertChunk.get(docId, chunk, heading, content, content.split("\n").length, Math.ceil(content.length / 4)) as {
+      const inserted = insertChunk.get(
+        docId,
+        chunk,
+        heading,
+        content,
+        content.split("\n").length,
+        Math.ceil(content.length / 4),
+      ) as {
         id: number;
       } | null;
       if (!inserted) return false;
@@ -163,7 +187,9 @@ export function createRagWriter(db: Database, vectors: VectorMode): RagWriter {
     },
     finish() {
       if (model) {
-        db.query("INSERT INTO meta (key, value) VALUES ('embed_model_id', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(model);
+        db.query(
+          "INSERT INTO meta (key, value) VALUES ('embed_model_id', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        ).run(model);
       }
       db.exec("COMMIT");
       db.exec("INSERT INTO chunks_fts(chunks_fts) VALUES ('optimize')");
@@ -180,8 +206,21 @@ export interface SqlLike {
 export async function exportRag(
   sql: SqlLike,
   db: Database,
-  o: { profile: "public" | "complet"; vectors: VectorMode; limit?: number; pageSize?: number; onProgress?: (n: number) => void },
-): Promise<{ scanned: number; kept: number; docs: number; chunks: number; vectors: number; private: number }> {
+  o: {
+    profile: "public" | "complet";
+    vectors: VectorMode;
+    limit?: number;
+    pageSize?: number;
+    onProgress?: (n: number) => void;
+  },
+): Promise<{
+  scanned: number;
+  kept: number;
+  docs: number;
+  chunks: number;
+  vectors: number;
+  private: number;
+}> {
   const writer = createRagWriter(db, o.vectors);
   let after = "00000000-0000-0000-0000-000000000000";
   let scanned = 0;
@@ -213,12 +252,23 @@ export async function exportRag(
     if (o.limit && kept >= o.limit) break;
   }
   writer.finish();
-  return { scanned, kept, docs: writer.docs, chunks: writer.chunks, vectors: writer.vectors, private: privateRows };
+  return {
+    scanned,
+    kept,
+    docs: writer.docs,
+    chunks: writer.chunks,
+    vectors: writer.vectors,
+    private: privateRows,
+  };
 }
 
 /** Port matching `createWikiReadRepository` used by the wiki export. */
 export interface WikiSource {
-  list(i: { category: WikiCategoryName; limit: number; offset: number }): Promise<{ items: Record<string, unknown>[]; total: number }>;
+  list(i: {
+    category: WikiCategoryName;
+    limit: number;
+    offset: number;
+  }): Promise<{ items: Record<string, unknown>[]; total: number }>;
 }
 
 /** Export every visible row of the 21 public categories (`search` = lowercased search columns). */
@@ -230,7 +280,13 @@ export async function exportWiki(
   const counts: Record<string, number> = {};
   for (const { name } of WIKI_CATEGORIES) {
     const s = spec[name];
-    const rows: { category: WikiCategoryName; id: number; slug: string | null; search: string; data: Record<string, unknown> }[] = [];
+    const rows: {
+      category: WikiCategoryName;
+      id: number;
+      slug: string | null;
+      search: string;
+      data: Record<string, unknown>;
+    }[] = [];
     for (let offset = 0; ; offset += 200) {
       const page = await source.list({ category: name, limit: 200, offset });
       for (const item of page.items) {
@@ -239,7 +295,10 @@ export async function exportWiki(
         rows.push({
           category: name,
           id,
-          slug: s.slugColumn && typeof item[s.slugColumn] === "string" ? (item[s.slugColumn] as string) : null,
+          slug:
+            s.slugColumn && typeof item[s.slugColumn] === "string"
+              ? (item[s.slugColumn] as string)
+              : null,
           search: s.searchColumns
             .map((key) => item[key])
             .filter((v) => typeof v === "string")
@@ -257,7 +316,9 @@ export async function exportWiki(
 }
 
 /** Every file below `dir` (relative POSIX paths), skipping dotfiles and precompressed siblings. */
-export function listFiles(dir: string): { rel: string; size: number; mtimeMs: number; abs: string }[] {
+export function listFiles(
+  dir: string,
+): { rel: string; size: number; mtimeMs: number; abs: string }[] {
   const out: { rel: string; size: number; mtimeMs: number; abs: string }[] = [];
   const walk = (current: string) => {
     for (const entry of readdirSync(current, { withFileTypes: true })) {
@@ -266,7 +327,12 @@ export function listFiles(dir: string): { rel: string; size: number; mtimeMs: nu
       if (entry.isDirectory()) walk(abs);
       else if (entry.isFile() && !/\.(br|gz)$/.test(entry.name)) {
         const stat = statSync(abs);
-        out.push({ rel: relative(dir, abs).split(sep).join("/"), size: stat.size, mtimeMs: Math.trunc(stat.mtimeMs), abs });
+        out.push({
+          rel: relative(dir, abs).split(sep).join("/"),
+          size: stat.size,
+          mtimeMs: Math.trunc(stat.mtimeMs),
+          abs,
+        });
       }
     }
   };
@@ -282,7 +348,13 @@ export function listFiles(dir: string): { rel: string; size: number; mtimeMs: nu
 export async function indexTree(
   vfs: ShenronVfs,
   dir: string,
-  o: { prefix: string; storage: VfsStorage; visibility: VfsVisibility; hash?: boolean; filter?: (rel: string) => boolean },
+  o: {
+    prefix: string;
+    storage: VfsStorage;
+    visibility: VfsVisibility;
+    hash?: boolean;
+    filter?: (rel: string) => boolean;
+  },
 ): Promise<{ files: number; bytes: number; embedded: Record<string, string> }> {
   const embedded: Record<string, string> = {};
   let files = 0;
@@ -294,10 +366,19 @@ export async function indexTree(
     if (o.storage === "inline") {
       const parent = path.slice(0, path.lastIndexOf("/")) || "/";
       vfs.mkdirAll(parent);
-      vfs.write(path, await Bun.file(file.abs).bytes(), { visibility: o.visibility, mime: mimeOf(path) });
+      vfs.write(path, await Bun.file(file.abs).bytes(), {
+        visibility: o.visibility,
+        mime: mimeOf(path),
+      });
     } else {
       const sha = o.hash === false ? null : sha256Hex(await Bun.file(file.abs).bytes());
-      vfs.index(path, { storage: o.storage, size: file.size, sha256: sha, visibility: o.visibility, mtimeMs: file.mtimeMs });
+      vfs.index(path, {
+        storage: o.storage,
+        size: file.size,
+        sha256: sha,
+        visibility: o.visibility,
+        mtimeMs: file.mtimeMs,
+      });
       if (o.storage === "embedded") embedded[path] = file.abs;
     }
     files++;
@@ -311,7 +392,11 @@ export async function indexTree(
  * binary: `import db from "…" with { type: "sqlite", embed: "true" }` and one
  * `with { type: "file" }` import per asset (their `$bunfs` paths form the embedded map).
  */
-export function renderEntryModule(o: { database: string; embedded: Record<string, string>; vfsModule: string }): string {
+export function renderEntryModule(o: {
+  database: string;
+  embedded: Record<string, string>;
+  vfsModule: string;
+}): string {
   const lines = [
     "// SPDX-License-Identifier: Apache-2.0",
     "// Generated by scripts/data/build-vfs.ts — do not edit. Import it from the binary entry.",

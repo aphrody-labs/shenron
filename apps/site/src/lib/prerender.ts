@@ -26,7 +26,7 @@ const PRERENDER_CAP = 40;
  * Passer `cap: 0` désactive le prérendu (jamais souhaitable : cf. en-tête).
  */
 export function capParams<T>(list: readonly T[], cap: number = PRERENDER_CAP): T[] {
-	return list.length <= cap ? [...list] : list.slice(0, cap);
+  return list.length <= cap ? [...list] : list.slice(0, cap);
 }
 
 /**
@@ -36,5 +36,5 @@ export function capParams<T>(list: readonly T[], cap: number = PRERENDER_CAP): T
  * running server is given, if any.
  */
 export function hasEditorialDatabase(env: NodeJS.ProcessEnv = process.env): boolean {
-	return Boolean(env.DATABASE_URL?.trim());
+  return Boolean(env.DATABASE_URL?.trim());
 }

@@ -18,14 +18,14 @@ const SEUIL_MS = 1e11;
 
 /** Convertit un horodatage de la base en millisecondes, quelle que soit son unité. */
 export function toMillis(v: number): number {
-	return v >= SEUIL_MS ? v : v * 1000;
+  return v >= SEUIL_MS ? v : v * 1000;
 }
 
 /** Année d'un horodatage de la base, ou `null` s'il est inexploitable. */
 export function yearOf(v: number | null | undefined): number | null {
-	if (v === null || v === undefined || !Number.isFinite(v)) return null;
-	const an = new Date(toMillis(v)).getFullYear();
-	return Number.isFinite(an) ? an : null;
+  if (v === null || v === undefined || !Number.isFinite(v)) return null;
+  const an = new Date(toMillis(v)).getFullYear();
+  return Number.isFinite(an) ? an : null;
 }
 
 /**
@@ -38,5 +38,5 @@ export function yearOf(v: number | null | undefined): number | null {
  * et de créer deux unités dans la même colonne. On normalise donc à l'entrée.
  */
 export function toSeconds(v: number): number {
-	return Math.trunc(v >= SEUIL_MS ? v / 1000 : v);
+  return Math.trunc(v >= SEUIL_MS ? v / 1000 : v);
 }

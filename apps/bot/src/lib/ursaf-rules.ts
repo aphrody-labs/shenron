@@ -18,19 +18,19 @@
 export type FlagSeverity = "low" | "medium" | "high" | "critical";
 
 export type FlagInput = {
-	id: number;
-	code: string;
-	severity: FlagSeverity;
-	meta: Record<string, unknown>;
+  id: number;
+  code: string;
+  severity: FlagSeverity;
+  meta: Record<string, unknown>;
 };
 
 export type UrsafRates = Record<FlagSeverity, number>;
 
 const DEFAULT_URSAF_RATES: UrsafRates = {
-	low: 0,
-	medium: 0.25,
-	high: 0.5,
-	critical: 0.9,
+  low: 0,
+  medium: 0.25,
+  high: 0.5,
+  critical: 0.9,
 };
 
 /** Majoration par avis déjà recouvré. */
@@ -46,73 +46,75 @@ const SEVERITY_ORDER: FlagSeverity[] = ["low", "medium", "high", "critical"];
 
 /** Excès imposable d'un signalement (0 pour les signaux sans montant). */
 export function flagExcess(flag: FlagInput): { gains: number; wealth: number } {
-	const m = flag.meta;
-	switch (flag.code) {
-		case "SPIKE":
-			return { gains: Math.max(0, num(m.amount) - num(m.threshold)), wealth: 0 };
-		case "HOURLY_CAP":
-			return { gains: Math.max(0, num(m.hourSum) - num(m.threshold)), wealth: 0 };
-		case "DAILY_CAP":
-			return { gains: Math.max(0, num(m.daySum) - num(m.threshold)), wealth: 0 };
-		case "RATIO":
-			return { gains: 0, wealth: Math.max(0, num(m.balance) - num(m.maxReasonable)) };
-		default:
-			return { gains: 0, wealth: 0 };
-	}
+  const m = flag.meta;
+  switch (flag.code) {
+    case "SPIKE":
+      return { gains: Math.max(0, num(m.amount) - num(m.threshold)), wealth: 0 };
+    case "HOURLY_CAP":
+      return { gains: Math.max(0, num(m.hourSum) - num(m.threshold)), wealth: 0 };
+    case "DAILY_CAP":
+      return { gains: Math.max(0, num(m.daySum) - num(m.threshold)), wealth: 0 };
+    case "RATIO":
+      return { gains: 0, wealth: Math.max(0, num(m.balance) - num(m.maxReasonable)) };
+    default:
+      return { gains: 0, wealth: 0 };
+  }
 }
 
 export type Assessment = {
-	taxable: number;
-	rate: number;
-	amount: number;
-	severity: FlagSeverity;
-	flagIds: number[];
+  taxable: number;
+  rate: number;
+  amount: number;
+  severity: FlagSeverity;
+  flagIds: number[];
 };
 
 export function assess(input: {
-	flags: readonly FlagInput[];
-	balance: number;
-	previousNotices: number;
-	rates?: Partial<UrsafRates>;
+  flags: readonly FlagInput[];
+  balance: number;
+  previousNotices: number;
+  rates?: Partial<UrsafRates>;
 }): Assessment | null {
-	const flags = input.flags.filter((f) => SEVERITY_ORDER.includes(f.severity));
-	if (flags.length === 0) return null;
-	const rates = { ...DEFAULT_URSAF_RATES, ...input.rates };
+  const flags = input.flags.filter((f) => SEVERITY_ORDER.includes(f.severity));
+  if (flags.length === 0) return null;
+  const rates = { ...DEFAULT_URSAF_RATES, ...input.rates };
 
-	let spikes = 0;
-	let windows = 0;
-	let wealth = 0;
-	for (const f of flags) {
-		const e = flagExcess(f);
-		if (f.code === "SPIKE") spikes += e.gains;
-		else windows = Math.max(windows, e.gains);
-		wealth = Math.max(wealth, e.wealth);
-	}
-	const taxable = Math.floor(Math.max(spikes, windows, wealth));
+  let spikes = 0;
+  let windows = 0;
+  let wealth = 0;
+  for (const f of flags) {
+    const e = flagExcess(f);
+    if (f.code === "SPIKE") spikes += e.gains;
+    else windows = Math.max(windows, e.gains);
+    wealth = Math.max(wealth, e.wealth);
+  }
+  const taxable = Math.floor(Math.max(spikes, windows, wealth));
 
-	const severity = flags.reduce<FlagSeverity>(
-		(acc, f) =>
-			SEVERITY_ORDER.indexOf(f.severity) > SEVERITY_ORDER.indexOf(acc) ? f.severity : acc,
-		"low"
-	);
-	const base = Math.max(0, Math.min(1, rates[severity] ?? 0));
-	const rate =
-		base === 0
-			? 0
-			: Math.min(MAX_RATE, base * (1 + RECIDIVE_SURCHARGE * Math.max(0, input.previousNotices)));
-	const amount = Math.floor(Math.min(taxable * rate, Math.max(0, input.balance) * MAX_BALANCE_SHARE));
-	if (amount < MIN_NOTICE) return null;
+  const severity = flags.reduce<FlagSeverity>(
+    (acc, f) =>
+      SEVERITY_ORDER.indexOf(f.severity) > SEVERITY_ORDER.indexOf(acc) ? f.severity : acc,
+    "low",
+  );
+  const base = Math.max(0, Math.min(1, rates[severity] ?? 0));
+  const rate =
+    base === 0
+      ? 0
+      : Math.min(MAX_RATE, base * (1 + RECIDIVE_SURCHARGE * Math.max(0, input.previousNotices)));
+  const amount = Math.floor(
+    Math.min(taxable * rate, Math.max(0, input.balance) * MAX_BALANCE_SHARE),
+  );
+  if (amount < MIN_NOTICE) return null;
 
-	return {
-		taxable,
-		rate: Math.round(rate * 1000) / 1000,
-		amount,
-		severity,
-		flagIds: flags.map((f) => f.id),
-	};
+  return {
+    taxable,
+    rate: Math.round(rate * 1000) / 1000,
+    amount,
+    severity,
+    flagIds: flags.map((f) => f.id),
+  };
 }
 
 /** `URSAF-2026-000042` */
 export function noticeReference(id: number, date = new Date()): string {
-	return `URSAF-${date.getUTCFullYear()}-${String(id).padStart(6, "0")}`;
+  return `URSAF-${date.getUTCFullYear()}-${String(id).padStart(6, "0")}`;
 }

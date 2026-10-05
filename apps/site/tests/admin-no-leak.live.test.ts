@@ -25,51 +25,51 @@ const racine = fileURLToPath(new URL("..", import.meta.url));
 
 /** Valeurs réelles pour les segments dynamiques — une page 404 ne prouverait rien. */
 const ECHANTILLONS: Record<string, string> = {
-	"[id]": "19",
-	"[table]": "db_databooks",
-	"[param]": "1",
+  "[id]": "19",
+  "[table]": "db_databooks",
+  "[param]": "1",
 };
 
 /** `src/app/admin/**\/page.tsx` → chemin URL, groupes `(x)` transparents. */
 function cheminUrl(fichier: string): string | null {
-	fichier = fichier.replaceAll("\\", "/");
-	const rel = fichier.replace(/^src\/app/, "").replace(/\/page\.tsx$/, "");
-	const segments: string[] = [];
-	for (const seg of rel.split("/").filter(Boolean)) {
-		if (seg.startsWith("(") && seg.endsWith(")")) continue;
-		if (seg.startsWith("[")) {
-			const valeur = ECHANTILLONS[seg];
-			if (!valeur) return null;
-			segments.push(valeur);
-			continue;
-		}
-		segments.push(seg);
-	}
-	return `/${segments.join("/")}`;
+  fichier = fichier.replaceAll("\\", "/");
+  const rel = fichier.replace(/^src\/app/, "").replace(/\/page\.tsx$/, "");
+  const segments: string[] = [];
+  for (const seg of rel.split("/").filter(Boolean)) {
+    if (seg.startsWith("(") && seg.endsWith(")")) continue;
+    if (seg.startsWith("[")) {
+      const valeur = ECHANTILLONS[seg];
+      if (!valeur) return null;
+      segments.push(valeur);
+      continue;
+    }
+    segments.push(seg);
+  }
+  return `/${segments.join("/")}`;
 }
 
 const pages = [...new Glob("src/app/admin/**/page.tsx").scanSync(racine)]
-	.map(cheminUrl)
-	.filter((u): u is string => u !== null)
-	.toSorted();
+  .map(cheminUrl)
+  .filter((u): u is string => u !== null)
+  .toSorted();
 
 describe("l'espace /admin est fermé aux anonymes", () => {
-	test("le recensement des pages admin n'est pas vide", () => {
-		// Sans ce garde-fou, un glob cassé ferait passer la suite en « 0 test vert ».
-		expect(pages.length).toBeGreaterThan(20);
-	});
+  test("le recensement des pages admin n'est pas vide", () => {
+    // Sans ce garde-fou, un glob cassé ferait passer la suite en « 0 test vert ».
+    expect(pages.length).toBeGreaterThan(20);
+  });
 
-	for (const chemin of pages) {
-		test(`${chemin} redirige un anonyme`, async () => {
-			const r = await fetch(`${BASE}${chemin}`, {
-				redirect: "manual",
-				headers: { "user-agent": "shenron-tests/admin-no-leak" },
-				signal: AbortSignal.timeout(20_000),
-			});
-			// 3xx = le proxy a tranché avant tout rendu. Un 200 signifie que la page
-			// a été rendue et servie — donc que son contenu est parti sur le réseau.
-			expect(r.status).toBeGreaterThanOrEqual(300);
-			expect(r.status).toBeLessThan(400);
-		});
-	}
+  for (const chemin of pages) {
+    test(`${chemin} redirige un anonyme`, async () => {
+      const r = await fetch(`${BASE}${chemin}`, {
+        redirect: "manual",
+        headers: { "user-agent": "shenron-tests/admin-no-leak" },
+        signal: AbortSignal.timeout(20_000),
+      });
+      // 3xx = le proxy a tranché avant tout rendu. Un 200 signifie que la page
+      // a été rendue et servie — donc que son contenu est parti sur le réseau.
+      expect(r.status).toBeGreaterThanOrEqual(300);
+      expect(r.status).toBeLessThan(400);
+    });
+  }
 });

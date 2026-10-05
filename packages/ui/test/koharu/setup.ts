@@ -1,31 +1,30 @@
-import * as matchers from '@testing-library/jest-dom/matchers'
-import { afterEach, beforeEach, expect, mock, vi } from 'bun:test'
+import * as matchers from "@testing-library/jest-dom/matchers";
+import { afterEach, beforeEach, expect, mock, vi } from "bun:test";
 
-expect.extend(matchers)
+expect.extend(matchers);
 
+import { queryClient } from "@shenron/ui/koharu/lib/queries";
+import { defaultShortcuts, useKoharuStore } from "@shenron/ui/koharu/lib/store";
 
-import { queryClient } from '@shenron/ui/koharu/lib/queries'
-import { defaultShortcuts, useKoharuStore } from '@shenron/ui/koharu/lib/store'
-
-const actual = await import('react-i18next')
-const { createInstance } = await import('i18next')
-const { default: translations } = await import('@shenron/ui/koharu/locales/en-US/translation.json')
-const i18n = createInstance()
+const actual = await import("react-i18next");
+const { createInstance } = await import("i18next");
+const { default: translations } = await import("@shenron/ui/koharu/locales/en-US/translation.json");
+const i18n = createInstance();
 await i18n.init({
-  resources: { 'en-US': { translation: translations } },
-  lng: 'en-US',
-  fallbackLng: 'en-US',
+  resources: { "en-US": { translation: translations } },
+  lng: "en-US",
+  fallbackLng: "en-US",
   interpolation: { escapeValue: false },
-})
+});
 
-mock.module('react-i18next', () => ({
+mock.module("react-i18next", () => ({
   ...actual,
   useTranslation: () => ({ t: i18n.t.bind(i18n), i18n }),
-  initReactI18next: { type: '3rdParty', init: () => undefined },
+  initReactI18next: { type: "3rdParty", init: () => undefined },
   I18nextProvider: ({ children }: { children: React.ReactNode }) => children,
-}))
+}));
 
-mock.module('@aphrody/api/window', () => {
+mock.module("@aphrody/api/window", () => {
   const window = {
     close: vi.fn(async () => undefined),
     isMaximized: vi.fn(async () => false),
@@ -33,9 +32,9 @@ mock.module('@aphrody/api/window', () => {
     onResized: vi.fn(async () => () => undefined),
     startResizeDragging: vi.fn(async () => undefined),
     toggleMaximize: vi.fn(async () => undefined),
-  }
-  return { getCurrentWindow: () => window }
-})
+  };
+  return { getCurrentWindow: () => window };
+});
 
 class Observer {
   observe() {}
@@ -43,8 +42,8 @@ class Observer {
   disconnect() {}
 }
 
-Object.defineProperty(globalThis, 'ResizeObserver', { value: Observer, writable: true })
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(globalThis, "ResizeObserver", { value: Observer, writable: true });
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn((query: string) => ({
     matches: false,
@@ -54,41 +53,41 @@ Object.defineProperty(window, 'matchMedia', {
     addListener: vi.fn(),
     removeListener: vi.fn(),
   })),
-})
-Element.prototype.scrollIntoView = vi.fn()
-Element.prototype.setPointerCapture = vi.fn()
-Element.prototype.hasPointerCapture = vi.fn(() => true)
-Element.prototype.releasePointerCapture = vi.fn()
-Element.prototype.getAnimations = vi.fn(() => [])
-Object.defineProperty(URL, 'createObjectURL', {
-  value: vi.fn(() => 'blob:koharu-thumbnail'),
+});
+Element.prototype.scrollIntoView = vi.fn();
+Element.prototype.setPointerCapture = vi.fn();
+Element.prototype.hasPointerCapture = vi.fn(() => true);
+Element.prototype.releasePointerCapture = vi.fn();
+Element.prototype.getAnimations = vi.fn(() => []);
+Object.defineProperty(URL, "createObjectURL", {
+  value: vi.fn(() => "blob:koharu-thumbnail"),
   writable: true,
-})
-Object.defineProperty(URL, 'revokeObjectURL', { value: vi.fn(), writable: true })
+});
+Object.defineProperty(URL, "revokeObjectURL", { value: vi.fn(), writable: true });
 
-let callbackId = 0
-const tauriCallbacks = new Map<number, (payload: any) => void>()
-Object.defineProperty(window, '__TAURI_INTERNALS__', {
+let callbackId = 0;
+const tauriCallbacks = new Map<number, (payload: any) => void>();
+Object.defineProperty(window, "__TAURI_INTERNALS__", {
   value: {
     metadata: {
-      currentWindow: { label: 'main' },
-      currentWebview: { label: 'main' },
+      currentWindow: { label: "main" },
+      currentWebview: { label: "main" },
     },
     callbacks: tauriCallbacks,
     transformCallback: (callback: (payload: any) => void) => {
-      const id = ++callbackId
-      tauriCallbacks.set(id, callback)
-      return id
+      const id = ++callbackId;
+      tauriCallbacks.set(id, callback);
+      return id;
     },
     invoke: vi.fn(async () => undefined),
   },
   writable: true,
-})
+});
 
-const initial = useKoharuStore.getState()
+const initial = useKoharuStore.getState();
 beforeEach(() => {
-  mock.clearAllMocks() // vitest `clearMocks: true` equivalent
-  queryClient.clear()
+  mock.clearAllMocks(); // vitest `clearMocks: true` equivalent
+  queryClient.clear();
   useKoharuStore.setState({
     ...initial,
     initialized: false,
@@ -106,16 +105,16 @@ beforeEach(() => {
     layerFrames: {},
     selectedLayers: [],
     selectedPages: [],
-    tool: 'select',
-    brush: { diameter: 48, color: '#FFFFFF' },
-    inspector: 'copy',
-    processingScope: 'selected-pages',
-    processingStages: ['detection', 'ocr', 'translation', 'inpainting'],
+    tool: "select",
+    brush: { diameter: 48, color: "#FFFFFF" },
+    inspector: "copy",
+    processingScope: "selected-pages",
+    processingStages: ["detection", "ocr", "translation", "inpainting"],
     settingsOpen: false,
     shortcuts: defaultShortcuts,
-  })
-})
+  });
+});
 
 afterEach(() => {
-  vi.restoreAllMocks()
-})
+  vi.restoreAllMocks();
+});

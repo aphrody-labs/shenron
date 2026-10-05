@@ -21,91 +21,91 @@ import { Node } from "@tiptap/core";
 const CONTAINER_TAGS = ["div", "section", "aside", "article", "header", "footer", "nav"] as const;
 
 export const HtmlContainer = Node.create({
-	name: "htmlContainer",
-	group: "block",
-	content: "block+",
-	defining: true,
+  name: "htmlContainer",
+  group: "block",
+  content: "block+",
+  defining: true,
 
-	addAttributes() {
-		return {
-			tag: {
-				default: "div",
-				parseHTML: (el: HTMLElement) => el.tagName.toLowerCase(),
-				renderHTML: () => ({}),
-			},
-			class: {
-				default: null,
-				parseHTML: (el: HTMLElement) => el.getAttribute("class"),
-				renderHTML: (attrs: Record<string, unknown>) =>
-					attrs.class ? { class: String(attrs.class) } : {},
-			},
-			style: {
-				default: null,
-				parseHTML: (el: HTMLElement) => el.getAttribute("style"),
-				renderHTML: (attrs: Record<string, unknown>) =>
-					attrs.style ? { style: String(attrs.style) } : {},
-			},
-			id: {
-				default: null,
-				parseHTML: (el: HTMLElement) => el.getAttribute("id"),
-				renderHTML: (attrs: Record<string, unknown>) => (attrs.id ? { id: String(attrs.id) } : {}),
-			},
-		};
-	},
+  addAttributes() {
+    return {
+      tag: {
+        default: "div",
+        parseHTML: (el: HTMLElement) => el.tagName.toLowerCase(),
+        renderHTML: () => ({}),
+      },
+      class: {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute("class"),
+        renderHTML: (attrs: Record<string, unknown>) =>
+          attrs.class ? { class: String(attrs.class) } : {},
+      },
+      style: {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute("style"),
+        renderHTML: (attrs: Record<string, unknown>) =>
+          attrs.style ? { style: String(attrs.style) } : {},
+      },
+      id: {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute("id"),
+        renderHTML: (attrs: Record<string, unknown>) => (attrs.id ? { id: String(attrs.id) } : {}),
+      },
+    };
+  },
 
-	parseHTML() {
-		return CONTAINER_TAGS.map((tag) => ({ tag, priority: 8 }));
-	},
+  parseHTML() {
+    return CONTAINER_TAGS.map((tag) => ({ tag, priority: 8 }));
+  },
 
-	renderHTML({ node, HTMLAttributes }) {
-		return [String(node.attrs.tag || "div"), HTMLAttributes, 0];
-	},
+  renderHTML({ node, HTMLAttributes }) {
+    return [String(node.attrs.tag || "div"), HTMLAttributes, 0];
+  },
 });
 
 export const HtmlBlock = Node.create({
-	name: "htmlBlock",
-	group: "block",
-	atom: true,
-	draggable: true,
-	selectable: true,
+  name: "htmlBlock",
+  group: "block",
+  atom: true,
+  draggable: true,
+  selectable: true,
 
-	addAttributes() {
-		return {
-			html: {
-				default: "",
-				parseHTML: (el: HTMLElement) => el.outerHTML,
-				renderHTML: (attrs: Record<string, unknown>) => ({ "data-html": String(attrs.html ?? "") }),
-			},
-		};
-	},
+  addAttributes() {
+    return {
+      html: {
+        default: "",
+        parseHTML: (el: HTMLElement) => el.outerHTML,
+        renderHTML: (attrs: Record<string, unknown>) => ({ "data-html": String(attrs.html ?? "") }),
+      },
+    };
+  },
 
-	parseHTML() {
-		return [
-			{ tag: "svg", priority: 5 },
-			{ tag: "video", priority: 5 },
-			{ tag: "audio", priority: 5 },
-		];
-	},
+  parseHTML() {
+    return [
+      { tag: "svg", priority: 5 },
+      { tag: "video", priority: 5 },
+      { tag: "audio", priority: 5 },
+    ];
+  },
 
-	/**
-	 * Rendu **statique** : on ne peut pas émettre du HTML brut depuis un
-	 * `DOMOutputSpec`. Le chemin réel de publication du wiki est la sérialisation
-	 * markdown (qui, elle, réinjecte `attrs.html` verbatim) ; ce rendu-ci n'est
-	 * qu'un porteur inerte pour les rares aperçus DOM.
-	 */
-	renderHTML({ node }) {
-		return ["div", { class: "wiki-raw", "data-html": String(node.attrs.html ?? "") }];
-	},
+  /**
+   * Rendu **statique** : on ne peut pas émettre du HTML brut depuis un
+   * `DOMOutputSpec`. Le chemin réel de publication du wiki est la sérialisation
+   * markdown (qui, elle, réinjecte `attrs.html` verbatim) ; ce rendu-ci n'est
+   * qu'un porteur inerte pour les rares aperçus DOM.
+   */
+  renderHTML({ node }) {
+    return ["div", { class: "wiki-raw", "data-html": String(node.attrs.html ?? "") }];
+  },
 
-	/** En édition, on affiche vraiment le HTML (inerte, non éditable). */
-	addNodeView() {
-		return ({ node }) => {
-			const dom = document.createElement("div");
-			dom.className = "ed-raw";
-			dom.contentEditable = "false";
-			dom.setAttribute("data-drag-handle", "");
-			dom.innerHTML = String(node.attrs.html ?? "");
-			return { dom };
-		};
-	},
+  /** En édition, on affiche vraiment le HTML (inerte, non éditable). */
+  addNodeView() {
+    return ({ node }) => {
+      const dom = document.createElement("div");
+      dom.className = "ed-raw";
+      dom.contentEditable = "false";
+      dom.setAttribute("data-drag-handle", "");
+      dom.innerHTML = String(node.attrs.html ?? "");
+      return { dom };
+    };
+  },
 });

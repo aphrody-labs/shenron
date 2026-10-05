@@ -14,10 +14,10 @@
  */
 
 export type ConsentState = {
-	/** L'utilisateur a-t-il accepté la mesure d'audience / analytics ? */
-	analytics: boolean;
-	/** A-t-il fait un choix explicite (true) ou est-ce l'état par défaut ? */
-	decided: boolean;
+  /** L'utilisateur a-t-il accepté la mesure d'audience / analytics ? */
+  analytics: boolean;
+  /** A-t-il fait un choix explicite (true) ou est-ce l'état par défaut ? */
+  decided: boolean;
 };
 
 const STORAGE_KEY = "dbfr_consent";
@@ -30,34 +30,34 @@ let current: ConsentState = DEFAULT;
 const listeners = new Set<(c: ConsentState) => void>();
 
 function read(): ConsentState {
-	if (!isBrowser) return DEFAULT;
-	try {
-		const raw = localStorage.getItem(STORAGE_KEY);
-		if (!raw) return DEFAULT;
-		const parsed = JSON.parse(raw) as Partial<ConsentState>;
-		return {
-			analytics: parsed.analytics === true,
-			decided: parsed.decided === true,
-		};
-	} catch {
-		return DEFAULT;
-	}
+  if (!isBrowser) return DEFAULT;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT;
+    const parsed = JSON.parse(raw) as Partial<ConsentState>;
+    return {
+      analytics: parsed.analytics === true,
+      decided: parsed.decided === true,
+    };
+  } catch {
+    return DEFAULT;
+  }
 }
 
 // Hydrate au chargement du module (client).
 if (isBrowser) {
-	current = read();
-	syncGoogleConsent(current);
+  current = read();
+  syncGoogleConsent(current);
 }
 
 /** État de consentement courant (lecture synchrone). */
 export function getConsent(): ConsentState {
-	return current;
+  return current;
 }
 
 type GtagWindow = Window & {
-	dataLayer?: unknown[];
-	gtag?: (...args: unknown[]) => void;
+  dataLayer?: unknown[];
+  gtag?: (...args: unknown[]) => void;
 };
 
 /**
@@ -66,35 +66,35 @@ type GtagWindow = Window & {
  * acceptée par GTM : `['consent','update', {...}]`).
  */
 function syncGoogleConsent(c: ConsentState): void {
-	if (!isBrowser) return;
-	const w = window as GtagWindow;
-	const granted = c.analytics ? "granted" : "denied";
-	const update = {
-		analytics_storage: granted,
-		ad_storage: granted,
-		ad_user_data: granted,
-		ad_personalization: granted,
-	};
-	if (typeof w.gtag === "function") {
-		w.gtag("consent", "update", update);
-	} else {
-		w.dataLayer ??= [];
-		w.dataLayer.push(["consent", "update", update]);
-	}
+  if (!isBrowser) return;
+  const w = window as GtagWindow;
+  const granted = c.analytics ? "granted" : "denied";
+  const update = {
+    analytics_storage: granted,
+    ad_storage: granted,
+    ad_user_data: granted,
+    ad_personalization: granted,
+  };
+  if (typeof w.gtag === "function") {
+    w.gtag("consent", "update", update);
+  } else {
+    w.dataLayer ??= [];
+    w.dataLayer.push(["consent", "update", update]);
+  }
 }
 
 /** Enregistre le choix utilisateur et notifie les abonnés + Google Consent Mode. */
 export function setConsent(analytics: boolean): void {
-	current = { analytics, decided: true };
-	if (isBrowser) {
-		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-		} catch {
-			/* ignore */
-		}
-		syncGoogleConsent(current);
-	}
-	for (const l of listeners) l(current);
+  current = { analytics, decided: true };
+  if (isBrowser) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+    } catch {
+      /* ignore */
+    }
+    syncGoogleConsent(current);
+  }
+  for (const l of listeners) l(current);
 }
 
 /**
@@ -111,26 +111,26 @@ export function setConsent(analytics: boolean): void {
  * visiteur a déjà tranché dans celle du CMP.
  */
 export function setConsentFromCmp(analytics: boolean): void {
-	current = { analytics, decided: true };
-	if (isBrowser) {
-		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-		} catch {
-			/* ignore */
-		}
-		const w = window as GtagWindow;
-		const update = { analytics_storage: analytics ? "granted" : "denied" };
-		if (typeof w.gtag === "function") w.gtag("consent", "update", update);
-		else {
-			w.dataLayer ??= [];
-			w.dataLayer.push(["consent", "update", update]);
-		}
-	}
-	for (const l of listeners) l(current);
+  current = { analytics, decided: true };
+  if (isBrowser) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+    } catch {
+      /* ignore */
+    }
+    const w = window as GtagWindow;
+    const update = { analytics_storage: analytics ? "granted" : "denied" };
+    if (typeof w.gtag === "function") w.gtag("consent", "update", update);
+    else {
+      w.dataLayer ??= [];
+      w.dataLayer.push(["consent", "update", update]);
+    }
+  }
+  for (const l of listeners) l(current);
 }
 
 /** S'abonne aux changements de consentement. Retourne un cleanup. */
 export function onConsentChange(fn: (c: ConsentState) => void): () => void {
-	listeners.add(fn);
-	return () => listeners.delete(fn);
+  listeners.add(fn);
+  return () => listeners.delete(fn);
 }

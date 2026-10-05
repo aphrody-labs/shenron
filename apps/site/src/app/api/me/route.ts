@@ -8,14 +8,14 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-	const me = await getCurrentUser();
-	return NextResponse.json(
-		{
-			authenticated: Boolean(me),
-			username: me?.user?.username ?? null,
-			avatar: me?.user?.avatar ?? null,
-			isAdmin: me?.user?.roleAdmin === true,
-		},
-		{ headers: { "Cache-Control": "private, no-store" } }
-	);
+  const me = await getCurrentUser();
+  return NextResponse.json(
+    {
+      authenticated: Boolean(me),
+      username: me?.user?.username ?? null,
+      avatar: me?.user?.avatar ?? null,
+      isAdmin: me?.user?.roleAdmin === true,
+    },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }

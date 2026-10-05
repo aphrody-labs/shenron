@@ -25,14 +25,14 @@ const marked = new Marked({ gfm: true, breaks: true, async: false });
 
 /** Markdown (+ HTML libre) → HTML. */
 export function markdownToHtml(source: string): string {
-	return marked.parse(source ?? "", { async: false }) as string;
+  return marked.parse(source ?? "", { async: false }) as string;
 }
 
 /** Markdown (+ HTML libre) → document Tiptap. */
 export function parseMarkdown(source: string, extensions: Extensions): JSONContent {
-	const html = markdownToHtml(source);
-	if (!html.trim()) return { type: "doc", content: [{ type: "paragraph" }] };
-	return generateJSON(html, extensions) as JSONContent;
+  const html = markdownToHtml(source);
+  if (!html.trim()) return { type: "doc", content: [{ type: "paragraph" }] };
+  return generateJSON(html, extensions) as JSONContent;
 }
 
 /**
@@ -42,29 +42,29 @@ export function parseMarkdown(source: string, extensions: Extensions): JSONConte
  * espaces normalisés.
  */
 function normalizeRendered(md: string): string {
-	// Les espaces en fin de ligne ne changent rien au rendu (`breaks: true` fait
-	// déjà d'un simple retour à la ligne un `<br>`), mais ils suffiraient à faire
-	// crier au faux positif.
-	const trimmed = md
-		.split("\n")
-		.map((l) => l.replace(/[ \t]+$/, ""))
-		.join("\n");
-	return markdownToHtml(trimmed).replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
+  // Les espaces en fin de ligne ne changent rien au rendu (`breaks: true` fait
+  // déjà d'un simple retour à la ligne un `<br>`), mais ils suffiraient à faire
+  // crier au faux positif.
+  const trimmed = md
+    .split("\n")
+    .map((l) => l.replace(/[ \t]+$/, ""))
+    .join("\n");
+  return markdownToHtml(trimmed).replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
 }
 
 export type RoundTripReport = {
-	/** `true` si relire puis réécrire la source la laisse inchangée. */
-	faithful: boolean;
-	/** Source telle qu'elle serait réenregistrée (utile au diagnostic). */
-	rewritten: string;
+  /** `true` si relire puis réécrire la source la laisse inchangée. */
+  faithful: boolean;
+  /** Source telle qu'elle serait réenregistrée (utile au diagnostic). */
+  rewritten: string;
 };
 
 /** Vérifie qu'un aller-retour markdown → document → markdown est fidèle. */
 export function roundTripReport(source: string, extensions: Extensions): RoundTripReport {
-	try {
-		const rewritten = serializeMarkdown(parseMarkdown(source, extensions));
-		return { faithful: normalizeRendered(rewritten) === normalizeRendered(source), rewritten };
-	} catch {
-		return { faithful: false, rewritten: source };
-	}
+  try {
+    const rewritten = serializeMarkdown(parseMarkdown(source, extensions));
+    return { faithful: normalizeRendered(rewritten) === normalizeRendered(source), rewritten };
+  } catch {
+    return { faithful: false, rewritten: source };
+  }
 }

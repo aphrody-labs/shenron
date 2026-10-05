@@ -23,21 +23,20 @@ import "server-only";
 import { DEFAULT_AGENT_RATE_LIMIT } from "@shenron/auth/agent-keys";
 import { agentKeyStrategy, authorize } from "@shenron/auth/guards";
 import {
-	createAgentKeyRepository,
-	type AgentAuditView,
-	type AgentKeyView,
-	type CreatedAgentKey,
+  createAgentKeyRepository,
+  type AgentAuditView,
+  type AgentKeyView,
+  type CreatedAgentKey,
 } from "@shenron/db/repos/agent-keys";
 import { db } from "@/lib/db";
 import type { AgentScope } from "@/db/schema";
 
 /** Quota d'écritures par heure quand la clé n'en fixe pas. */
-;
 
 // Le vocabulaire des portées et sa validation vivent dans `lib/agent-scopes.ts`
 // (client-safe) : l'écran d'administration et la page de documentation publique
 // en ont besoin hors serveur. Ré-exporté ici pour les appelants historiques.
-export {  parseScopes } from "@/lib/agent-scopes";
+export { parseScopes } from "@/lib/agent-scopes";
 
 export type { AgentKeyView, CreatedAgentKey };
 
@@ -50,34 +49,34 @@ const repository = createAgentKeyRepository(db);
 
 /** Crée une clé. Le jeton renvoyé est la seule copie en clair qui existera. */
 export function createAgentKey(input: {
-	name: string;
-	scopes: AgentScope[];
-	note?: string | null;
-	createdBy?: string | null;
-	rateLimitPerHour?: number | null;
+  name: string;
+  scopes: AgentScope[];
+  note?: string | null;
+  createdBy?: string | null;
+  rateLimitPerHour?: number | null;
 }): Promise<CreatedAgentKey> {
-	return repository.createAgentKey(input);
+  return repository.createAgentKey(input);
 }
 
 export function listAgentKeys(): Promise<AgentKeyView[]> {
-	return repository.listAgentKeys();
+  return repository.listAgentKeys();
 }
 
 /** Révoque une clé (la ligne reste : l'audit doit rester lisible). */
 export function revokeAgentKey(id: string): Promise<boolean> {
-	return repository.revokeAgentKey(id);
+  return repository.revokeAgentKey(id);
 }
 
 /** Modifie les portées d'une clé existante sans en changer le jeton. */
 export function updateAgentKeyScopes(id: string, scopes: AgentScope[]): Promise<boolean> {
-	return repository.updateAgentKeyScopes(id, scopes);
+  return repository.updateAgentKeyScopes(id, scopes);
 }
 
 export interface AgentIdentity {
-	keyId: string;
-	name: string;
-	scopes: AgentScope[];
-	rateLimitPerHour: number;
+  keyId: string;
+  name: string;
+  scopes: AgentScope[];
+  rateLimitPerHour: number;
 }
 
 /**
@@ -88,35 +87,35 @@ export interface AgentIdentity {
  * d'exploitation : une écriture ratée ne fait pas échouer l'appel.
  */
 export async function authenticateAgent(req: Request): Promise<AgentIdentity | null> {
-	const decision = await authorize(req, [agentKeyStrategy({ store: repository })]);
-	if (!decision.ok || decision.principal.kind !== "agent") return null;
-	const principal = decision.principal;
-	return {
-		keyId: principal.keyId,
-		name: principal.name ?? "",
-		scopes: [...principal.scopes] as AgentScope[],
-		rateLimitPerHour: principal.rateLimit ?? DEFAULT_AGENT_RATE_LIMIT,
-	};
+  const decision = await authorize(req, [agentKeyStrategy({ store: repository })]);
+  if (!decision.ok || decision.principal.kind !== "agent") return null;
+  const principal = decision.principal;
+  return {
+    keyId: principal.keyId,
+    name: principal.name ?? "",
+    scopes: [...principal.scopes] as AgentScope[],
+    rateLimitPerHour: principal.rateLimit ?? DEFAULT_AGENT_RATE_LIMIT,
+  };
 }
 
 /** Nombre d'appels de cette clé sur l'heure écoulée (quota). */
 export function agentCallsLastHour(keyId: string): Promise<number> {
-	return repository.agentCallsLastHour(keyId);
+  return repository.agentCallsLastHour(keyId);
 }
 
 /** Journalise un appel d'agent. Ne lève jamais : l'audit ne casse pas l'API. */
 export function recordAgentCall(entry: {
-	keyId: string | null;
-	keyName: string | null;
-	method: string;
-	path: string;
-	status: number;
-	summary?: string | null;
+  keyId: string | null;
+  keyName: string | null;
+  method: string;
+  path: string;
+  status: number;
+  summary?: string | null;
 }): Promise<void> {
-	return repository.recordAgentCall(entry);
+  return repository.recordAgentCall(entry);
 }
 
 /** Derniers appels d'agents — écran d'administration. */
 export function listAgentAudit(limit = 100): Promise<AgentAuditView[]> {
-	return repository.listAgentAudit(limit);
+  return repository.listAgentAudit(limit);
 }

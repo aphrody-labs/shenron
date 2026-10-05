@@ -26,34 +26,34 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
-	if (!(await isAdminUserOrToken(req))) {
-		return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
-	}
+  if (!(await isAdminUserOrToken(req))) {
+    return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
+  }
 
-	const id = parseDatabookId((await ctx.params).id);
-	if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  const id = parseDatabookId((await ctx.params).id);
+  if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
 
-	const fiche = await getDatabook(id);
-	if (!fiche) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  const fiche = await getDatabook(id);
+  if (!fiche) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
 
-	// Une seule passe sur l'ouvrage : la référence de fréquence, c'est tout son
-	// texte — une faute y est rare, une graphie juste s'y répète de planche en
-	// planche. Analyser page par page referait le même travail à chaque fois.
-	const { total, planches: parPlanche } = await anomaliesOuvrage(fiche.pages);
+  // Une seule passe sur l'ouvrage : la référence de fréquence, c'est tout son
+  // texte — une faute y est rare, une graphie juste s'y répète de planche en
+  // planche. Analyser page par page referait le même travail à chaque fois.
+  const { total, planches: parPlanche } = await anomaliesOuvrage(fiche.pages);
 
-	return NextResponse.json({
-		id,
-		total,
-		planches: parPlanche,
-		// L'absence de dictionnaire n'est pas une absence de faute : sans ce
-		// drapeau, le relecteur afficherait « aucune anomalie » sur un ouvrage
-		// qui n'a simplement pas pu être analysé.
-		analysePossible: total > 0 || (await estAnalysable()),
-	});
+  return NextResponse.json({
+    id,
+    total,
+    planches: parPlanche,
+    // L'absence de dictionnaire n'est pas une absence de faute : sans ce
+    // drapeau, le relecteur afficherait « aucune anomalie » sur un ouvrage
+    // qui n'a simplement pas pu être analysé.
+    analysePossible: total > 0 || (await estAnalysable()),
+  });
 }
 
 /** Les ressources japonaises sont-elles installées ? */
 async function estAnalysable(): Promise<boolean> {
-	const { analyseur } = await import("@/lib/ja/dictionnaire");
-	return (await analyseur()) !== null;
+  const { analyseur } = await import("@/lib/ja/dictionnaire");
+  return (await analyseur()) !== null;
 }

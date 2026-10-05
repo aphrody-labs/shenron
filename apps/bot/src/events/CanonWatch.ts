@@ -18,23 +18,23 @@ import { CanonService } from "~/services/CanonService";
 @Bot("shenron")
 @injectable()
 export class CanonWatchEvent {
-	constructor(
-		@inject(CronRegistry) private cron: CronRegistry,
-		@inject(CanonService) private canon: CanonService
-	) {}
+  constructor(
+    @inject(CronRegistry) private cron: CronRegistry,
+    @inject(CanonService) private canon: CanonService,
+  ) {}
 
-	@Once({ event: "clientReady" })
-	ready([client]: [Client]) {
-		this.canon.setClient(client);
-		try {
-			this.cron.register({
-				name: "canon-daily",
-				description: "Canon du jour : publie un sujet tranché de la doctrine de canonicité",
-				intervalMs: 15 * 60_000,
-				fn: () => void this.canon.tick(),
-			});
-		} catch (err) {
-			logger.error(err as Error, "[canon] impossible d'enregistrer le cron canon-daily");
-		}
-	}
+  @Once({ event: "clientReady" })
+  ready([client]: [Client]) {
+    this.canon.setClient(client);
+    try {
+      this.cron.register({
+        name: "canon-daily",
+        description: "Canon du jour : publie un sujet tranché de la doctrine de canonicité",
+        intervalMs: 15 * 60_000,
+        fn: () => void this.canon.tick(),
+      });
+    } catch (err) {
+      logger.error(err as Error, "[canon] impossible d'enregistrer le cron canon-daily");
+    }
+  }
 }

@@ -8,31 +8,12 @@ import "server-only";
  *   - **lire** : poser un furigana sur les kanji ;
  *   - **chercher** : découper une requête japonaise en mots réels.
  */
-;
-export {
-
-
-
-
-
-
-	type Suggestion,
-
-} from "./anomalies";
-;
-;
+export { type Suggestion } from "./anomalies";
 
 import { graphiesJmdict, segmenter } from "./dictionnaire";
 import { retenirParFrequence, suggerer, type Suggestion } from "./anomalies";
 import { indexLexiqueDomaine, lexiqueDomaine } from "./lexique";
-import {
-	contientJaponais,
-	normaliserJa,
-} from "./normalisation";
-
-
-
-
+import { contientJaponais, normaliserJa } from "./normalisation";
 
 /**
  * Analyse un ouvrage entier en UNE passe.
@@ -48,52 +29,52 @@ import {
  * fréquences sur l'ensemble que l'on décide si une graphie est fautive.
  */
 export async function anomaliesOuvrage(
-	pages: { number: number; text: string | null }[]
+  pages: { number: number; text: string | null }[],
 ): Promise<{ total: number; planches: Record<number, Suggestion[]> }> {
-	const [jmdict, lex, index] = await Promise.all([
-		graphiesJmdict(),
-		lexiqueDomaine(),
-		indexLexiqueDomaine(),
-	]);
+  const [jmdict, lex, index] = await Promise.all([
+    graphiesJmdict(),
+    lexiqueDomaine(),
+    indexLexiqueDomaine(),
+  ]);
 
-	const corpus = normaliserJa(pages.map((p) => p.text ?? "").join("\n"));
-	const cacheOcc = new Map<string, number>();
-	const occurrences = (graphie: string): number => {
-		const cle = normaliserJa(graphie);
-		const vu = cacheOcc.get(cle);
-		if (vu !== undefined) return vu;
-		const n = cle ? corpus.split(cle).length - 1 : 0;
-		cacheOcc.set(cle, n);
-		return n;
-	};
+  const corpus = normaliserJa(pages.map((p) => p.text ?? "").join("\n"));
+  const cacheOcc = new Map<string, number>();
+  const occurrences = (graphie: string): number => {
+    const cle = normaliserJa(graphie);
+    const vu = cacheOcc.get(cle);
+    if (vu !== undefined) return vu;
+    const n = cle ? corpus.split(cle).length - 1 : 0;
+    cacheOcc.set(cle, n);
+    return n;
+  };
 
-	// Verdict mémorisé par graphie : la même faute revient d'une planche à
-	// l'autre, et la décision ne dépend pas de la planche où on la rencontre.
-	const verdicts = new Map<string, Suggestion | null>();
-	const planches: Record<number, Suggestion[]> = {};
-	let total = 0;
+  // Verdict mémorisé par graphie : la même faute revient d'une planche à
+  // l'autre, et la décision ne dépend pas de la planche où on la rencontre.
+  const verdicts = new Map<string, Suggestion | null>();
+  const planches: Record<number, Suggestion[]> = {};
+  let total = 0;
 
-	for (const page of pages) {
-		const texte = page.text?.trim();
-		if (!texte || !contientJaponais(texte)) continue;
-		const trouvees: Suggestion[] = [];
-		const vues = new Set<string>();
-		for (const t of await segmenter(texte)) {
-			if (!t.inconnu || !contientJaponais(t.surface) || vues.has(t.surface)) continue;
-			vues.add(t.surface);
-			if (jmdict.has(t.surface)) continue;
-			let verdict = verdicts.get(t.surface);
-			if (verdict === undefined) {
-				const s = suggerer(t.surface, lex, index, occurrences);
-				verdict = s && retenirParFrequence(s, occurrences) ? s : null;
-				verdicts.set(t.surface, verdict);
-			}
-			if (verdict) trouvees.push(verdict);
-		}
-		if (trouvees.length > 0) {
-			planches[page.number] = trouvees;
-			total += trouvees.length;
-		}
-	}
-	return { total, planches };
+  for (const page of pages) {
+    const texte = page.text?.trim();
+    if (!texte || !contientJaponais(texte)) continue;
+    const trouvees: Suggestion[] = [];
+    const vues = new Set<string>();
+    for (const t of await segmenter(texte)) {
+      if (!t.inconnu || !contientJaponais(t.surface) || vues.has(t.surface)) continue;
+      vues.add(t.surface);
+      if (jmdict.has(t.surface)) continue;
+      let verdict = verdicts.get(t.surface);
+      if (verdict === undefined) {
+        const s = suggerer(t.surface, lex, index, occurrences);
+        verdict = s && retenirParFrequence(s, occurrences) ? s : null;
+        verdicts.set(t.surface, verdict);
+      }
+      if (verdict) trouvees.push(verdict);
+    }
+    if (trouvees.length > 0) {
+      planches[page.number] = trouvees;
+      total += trouvees.length;
+    }
+  }
+  return { total, planches };
 }

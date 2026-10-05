@@ -18,7 +18,15 @@ const json = args.includes("--json");
 const roots = args.filter((arg) => !arg.startsWith("--"));
 const scan = roots.length
   ? roots
-  : ["apps/site/public", "apps/bot/assets", "apps/bot/public", "packages/ui/assets", "packages/images", "crates/shenron-desktop/icons", "crates/shenron-desktop/splash"];
+  : [
+      "apps/site/public",
+      "apps/bot/assets",
+      "apps/bot/public",
+      "packages/ui/assets",
+      "packages/images",
+      "crates/shenron-desktop/icons",
+      "crates/shenron-desktop/splash",
+    ];
 
 const files = (await $`git -C ${ROOT} ls-files -- ${scan}`.text()).split("\n").filter(Boolean);
 const groups = new Map<string, { size: number; paths: string[] }>();
@@ -33,7 +41,9 @@ for (const path of files) {
   group.paths.push(path);
   groups.set(hash, group);
 }
-const duplicates = [...groups.entries()].filter(([, g]) => g.paths.length > 1).sort((a, b) => b[1].size * (b[1].paths.length - 1) - a[1].size * (a[1].paths.length - 1));
+const duplicates = [...groups.entries()]
+  .filter(([, g]) => g.paths.length > 1)
+  .sort((a, b) => b[1].size * (b[1].paths.length - 1) - a[1].size * (a[1].paths.length - 1));
 const duplicateFiles = duplicates.reduce((n, [, g]) => n + g.paths.length - 1, 0);
 const recoverable = duplicates.reduce((n, [, g]) => n + g.size * (g.paths.length - 1), 0);
 const report = {
@@ -52,6 +62,7 @@ else {
     `${report.files} fichiers, ${report.uniqueContents} contenus uniques, ${(totalBytes / 1048576).toFixed(1)} Mio ; ` +
       `${duplicates.length} groupes de doublons, ${duplicateFiles} copies en trop, ${(recoverable / 1048576).toFixed(2)} Mio récupérables`,
   );
-  for (const g of report.groups.slice(0, 20)) console.log(`  ${g.size} o × ${g.paths.length} : ${g.paths.join("  ")}`);
+  for (const g of report.groups.slice(0, 20))
+    console.log(`  ${g.size} o × ${g.paths.length} : ${g.paths.join("  ")}`);
 }
 process.exitCode = 0;

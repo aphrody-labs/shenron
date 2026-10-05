@@ -2,5 +2,5 @@
 import { KoharuEditor } from "./KoharuEditor";
 
 export default function KoharuPage() {
-	return <KoharuEditor />;
+  return <KoharuEditor />;
 }

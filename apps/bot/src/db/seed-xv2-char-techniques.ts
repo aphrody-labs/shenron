@@ -19,44 +19,44 @@ import { dbCharacterTechniques, dbCharacters, dbTechniques } from "~/db/schema";
  * Lancer : `bun db:seed-xv2-char-techniques` (après techniques + characters).
  */
 const skillsets: Record<string, Record<string, string[]>> = JSON.parse(
-	readFileSync("./assets/dbz/xv2-skillsets.json", "utf-8")
+  readFileSync("./assets/dbz/xv2-skillsets.json", "utf-8"),
 );
 const catalog: { characters: Record<string, string> } = JSON.parse(
-	readFileSync("./assets/dbz/xv2-catalog.json", "utf-8")
+  readFileSync("./assets/dbz/xv2-catalog.json", "utf-8"),
 );
 
 const SYN: Record<string, string> = {
-	songoku: "goku",
-	songohan: "gohan",
-	songoten: "goten",
-	krilin: "krillin",
-	bills: "beerus",
-	celula: "cell",
-	majinbuu: "buu",
-	boo: "buu",
-	vegeto: "vegetto",
-	msatan: "mrsatan",
-	satan: "mrsatan",
-	doria: "dodoria",
-	vermoud: "vermoudh",
+  songoku: "goku",
+  songohan: "gohan",
+  songoten: "goten",
+  krilin: "krillin",
+  bills: "beerus",
+  celula: "cell",
+  majinbuu: "buu",
+  boo: "buu",
+  vegeto: "vegetto",
+  msatan: "mrsatan",
+  satan: "mrsatan",
+  doria: "dodoria",
+  vermoud: "vermoudh",
 };
 const canon = (s: string) => {
-	const n = s
-		.split(/[,(]/)[0]
-		.trim()
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[̀-ͯ]/g, "")
-		.replace(/^c-?(\d+)/, "android$1")
-		.replace(/[^a-z0-9]/g, "");
-	return SYN[n] ?? n;
+  const n = s
+    .split(/[,(]/)[0]
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/^c-?(\d+)/, "android$1")
+    .replace(/[^a-z0-9]/g, "");
+  return SYN[n] ?? n;
 };
 const normT = (s: string) =>
-	s
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[̀-ͯ]/g, "")
-		.replace(/[^a-z0-9]/g, "");
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]/g, "");
 
 const dbs = container.resolve(DatabaseService);
 const db = dbs.db;
@@ -71,51 +71,51 @@ const techByName = new Map(techs.map((t) => [normT(t.name), t.id]));
 // (type NULL). Couvre les liens XV2 ET les liens orphelins (le seed techniques
 // supprime/réinsère les techniques XV2 -> leurs ids changent à chaque run).
 const curatedTechIds = (
-	await db.select({ id: dbTechniques.id }).from(dbTechniques).where(isNull(dbTechniques.type))
+  await db.select({ id: dbTechniques.id }).from(dbTechniques).where(isNull(dbTechniques.type))
 ).map((t) => t.id);
 await db
-	.delete(dbCharacterTechniques)
-	.where(notInArray(dbCharacterTechniques.techniqueId, curatedTechIds));
+  .delete(dbCharacterTechniques)
+  .where(notInArray(dbCharacterTechniques.techniqueId, curatedTechIds));
 
 // liens existants (pour ne pas dupliquer)
 const existingPairs = new Set(
-	(
-		await db
-			.select({ c: dbCharacterTechniques.characterId, t: dbCharacterTechniques.techniqueId })
-			.from(dbCharacterTechniques)
-	).map((p) => `${p.c}:${p.t}`)
+  (
+    await db
+      .select({ c: dbCharacterTechniques.characterId, t: dbCharacterTechniques.techniqueId })
+      .from(dbCharacterTechniques)
+  ).map((p) => `${p.c}:${p.t}`),
 );
 
 let links = 0;
 let linkedChars = 0;
 let unresolvedTech = 0;
 for (const [code, cats] of Object.entries(skillsets)) {
-	const charName = catalog.characters[code];
-	if (!charName) continue;
-	const charId = charByCanon.get(canon(charName));
-	if (!charId) continue;
-	let any = false;
-	for (const names of Object.values(cats)) {
-		for (const skill of names) {
-			const techId = techByName.get(normT(skill));
-			if (!techId) {
-				unresolvedTech++;
-				continue;
-			}
-			const key = `${charId}:${techId}`;
-			if (existingPairs.has(key)) continue;
-			existingPairs.add(key);
-			await db.insert(dbCharacterTechniques).values({ characterId: charId, techniqueId: techId });
-			links++;
-			any = true;
-		}
-	}
-	if (any) linkedChars++;
+  const charName = catalog.characters[code];
+  if (!charName) continue;
+  const charId = charByCanon.get(canon(charName));
+  if (!charId) continue;
+  let any = false;
+  for (const names of Object.values(cats)) {
+    for (const skill of names) {
+      const techId = techByName.get(normT(skill));
+      if (!techId) {
+        unresolvedTech++;
+        continue;
+      }
+      const key = `${charId}:${techId}`;
+      if (existingPairs.has(key)) continue;
+      existingPairs.add(key);
+      await db.insert(dbCharacterTechniques).values({ characterId: charId, techniqueId: techId });
+      links++;
+      any = true;
+    }
+  }
+  if (any) linkedChars++;
 }
 
 console.log(`✓ ${links} liens perso↔technique XV2 (${linkedChars} persos liés)`);
 if (unresolvedTech)
-	console.log(`  (${unresolvedTech} occurrences de compétences sans technique en base)`);
+  console.log(`  (${unresolvedTech} occurrences de compétences sans technique en base)`);
 const total = await db.select({ c: dbCharacterTechniques.characterId }).from(dbCharacterTechniques);
 console.log(`→ db_character_techniques : ${total.length} liens`);
 dbs.close();

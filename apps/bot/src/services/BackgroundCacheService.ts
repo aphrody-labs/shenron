@@ -20,47 +20,47 @@ import { logger } from "~/lib/logger";
  */
 @singleton()
 export class BackgroundCacheService {
-	private cache = new Map<string, Image | null>();
-	private inflight = new Map<string, Promise<Image | null>>();
+  private cache = new Map<string, Image | null>();
+  private inflight = new Map<string, Promise<Image | null>>();
 
-	async get(relativePath: string): Promise<Image | null> {
-		// Cache hit (même null négatif pour éviter de re-tenter)
-		if (this.cache.has(relativePath)) return this.cache.get(relativePath) ?? null;
+  async get(relativePath: string): Promise<Image | null> {
+    // Cache hit (même null négatif pour éviter de re-tenter)
+    if (this.cache.has(relativePath)) return this.cache.get(relativePath) ?? null;
 
-		// Évite la double-charge si plusieurs services demandent en parallèle
-		const pending = this.inflight.get(relativePath);
-		if (pending) return pending;
+    // Évite la double-charge si plusieurs services demandent en parallèle
+    const pending = this.inflight.get(relativePath);
+    if (pending) return pending;
 
-		const promise = this.load(relativePath);
-		this.inflight.set(relativePath, promise);
-		const result = await promise;
-		this.inflight.delete(relativePath);
-		this.cache.set(relativePath, result);
-		return result;
-	}
+    const promise = this.load(relativePath);
+    this.inflight.set(relativePath, promise);
+    const result = await promise;
+    this.inflight.delete(relativePath);
+    this.cache.set(relativePath, result);
+    return result;
+  }
 
-	private async load(relativePath: string): Promise<Image | null> {
-		const absolute = botFile(relativePath);
-		try {
-			const file = Bun.file(absolute);
-			if (!(await file.exists())) {
-				logger.warn({ path: relativePath }, "background missing on disk");
-				return null;
-			}
-			const buf = Buffer.from(await file.arrayBuffer());
-			const img = await loadImage(buf);
-			logger.debug({ path: relativePath, w: img.width, h: img.height }, "background loaded");
-			return img;
-		} catch (err) {
-			logger.warn({ err, path: relativePath }, "background load failed");
-			return null;
-		}
-	}
+  private async load(relativePath: string): Promise<Image | null> {
+    const absolute = botFile(relativePath);
+    try {
+      const file = Bun.file(absolute);
+      if (!(await file.exists())) {
+        logger.warn({ path: relativePath }, "background missing on disk");
+        return null;
+      }
+      const buf = Buffer.from(await file.arrayBuffer());
+      const img = await loadImage(buf);
+      logger.debug({ path: relativePath, w: img.width, h: img.height }, "background loaded");
+      return img;
+    } catch (err) {
+      logger.warn({ err, path: relativePath }, "background load failed");
+      return null;
+    }
+  }
 
-	stats(): { count: number; paths: string[] } {
-		return {
-			count: this.cache.size,
-			paths: [...this.cache.keys()],
-		};
-	}
+  stats(): { count: number; paths: string[] } {
+    return {
+      count: this.cache.size,
+      paths: [...this.cache.keys()],
+    };
+  }
 }

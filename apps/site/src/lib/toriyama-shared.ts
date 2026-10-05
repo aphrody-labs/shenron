@@ -18,47 +18,47 @@
  * qu'il s'agit d'un recueil d'interviews.
  */
 export interface ToriyamaWord {
-	id: string;
-	subject: string;
-	text: string;
-	textFr: string | null;
-	lang: "fr" | "en" | "ja";
-	source: string;
-	year: number | null;
-	document: string;
-	href: string | null;
+  id: string;
+  subject: string;
+  text: string;
+  textFr: string | null;
+  lang: "fr" | "en" | "ja";
+  source: string;
+  year: number | null;
+  document: string;
+  href: string | null;
 }
 
 export interface ToriyamaSourceGroup {
-	document: string;
-	documentKey: string;
-	year: number | null;
-	databookId: number | null;
-	kind: string | null;
-	cover: string | null;
-	words: ToriyamaWord[];
+  document: string;
+  documentKey: string;
+  year: number | null;
+  databookId: number | null;
+  kind: string | null;
+  cover: string | null;
+  words: ToriyamaWord[];
 }
 
 /** Source link for a citation once its catalogue document is known. */
 export function resolveToriyamaHref(
-	refHref: string | null | undefined,
-	databookId: number | null | undefined
+  refHref: string | null | undefined,
+  databookId: number | null | undefined,
 ): string | null {
-	if (databookId && (!refHref || refHref === "/wiki/canon")) {
-		return `/wiki/databooks/${databookId}`;
-	}
-	return refHref ?? null;
+  if (databookId && (!refHref || refHref === "/wiki/canon")) {
+    return `/wiki/databooks/${databookId}`;
+  }
+  return refHref ?? null;
 }
 
 const DOCUMENT_TITLES: Record<string, string> = {
-	"toriyama_toriyama-interviews.md": "Interviews d'Akira Toriyama",
-	"toriyama_akira-toriyama-tankobon-introductions.md":
-		"Introductions des tomes, par Akira Toriyama",
-	"toriyama_dragon-ball-forever-toriyama.md": "Dragon Ball Forever — entretien avec l'auteur",
-	"toriyama_doctrine-artistique-akira-toriyama.md": "Doctrine artistique d'Akira Toriyama",
-	"toriyama_toriyama-databook-seg.md": "Super Exciting Guide — Entretiens d'Akira Toriyama",
-	"kanzenshuu-trad_chozenshu-4-akira-toriyama.md": "Chōzenshū 4 — Rétrospective Akira Toriyama",
-	"saikyo-jump-2014-toriyama": "Saikyō Jump (2014 & 2018) — Entretiens d'Akira Toriyama",
+  "toriyama_toriyama-interviews.md": "Interviews d'Akira Toriyama",
+  "toriyama_akira-toriyama-tankobon-introductions.md":
+    "Introductions des tomes, par Akira Toriyama",
+  "toriyama_dragon-ball-forever-toriyama.md": "Dragon Ball Forever — entretien avec l'auteur",
+  "toriyama_doctrine-artistique-akira-toriyama.md": "Doctrine artistique d'Akira Toriyama",
+  "toriyama_toriyama-databook-seg.md": "Super Exciting Guide — Entretiens d'Akira Toriyama",
+  "kanzenshuu-trad_chozenshu-4-akira-toriyama.md": "Chōzenshū 4 — Rétrospective Akira Toriyama",
+  "saikyo-jump-2014-toriyama": "Saikyō Jump (2014 & 2018) — Entretiens d'Akira Toriyama",
 };
 
 /**
@@ -67,17 +67,17 @@ const DOCUMENT_TITLES: Record<string, string> = {
  * de chemin de sauvegarde, tirets).
  */
 export function prettyDocument(raw: string): string {
-	const known = DOCUMENT_TITLES[raw];
-	if (known) return known;
-	// Un titre d'ouvrage normal (« Dragon Ball Daizenshuu 7 — … ») n'est pas un
-	// nom de fichier : on le rend tel quel.
-	if (!/\.md$|_|\//.test(raw)) return raw;
+  const known = DOCUMENT_TITLES[raw];
+  if (known) return known;
+  // Un titre d'ouvrage normal (« Dragon Ball Daizenshuu 7 — … ») n'est pas un
+  // nom de fichier : on le rend tel quel.
+  if (!/\.md$|_|\//.test(raw)) return raw;
 
-	let out = raw.replace(/\.md$/i, "");
-	// Queue ajoutée par l'ingestion : « …_shenron_data_backups_dbfr-20260906_apps_bot_data_rag_raw_guides ».
-	out = out.replace(/_shenron_data_backups_.*$/i, "");
-	out = out.replace(/^(toriyama|shenron|dbfr)_/i, "");
-	out = out.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
-	if (!out) return raw;
-	return out.charAt(0).toUpperCase() + out.slice(1);
+  let out = raw.replace(/\.md$/i, "");
+  // Queue ajoutée par l'ingestion : « …_shenron_data_backups_dbfr-20260906_apps_bot_data_rag_raw_guides ».
+  out = out.replace(/_shenron_data_backups_.*$/i, "");
+  out = out.replace(/^(toriyama|shenron|dbfr)_/i, "");
+  out = out.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!out) return raw;
+  return out.charAt(0).toUpperCase() + out.slice(1);
 }

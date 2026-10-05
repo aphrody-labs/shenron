@@ -31,10 +31,13 @@ describe("openapi/public.json", () => {
     const doc = JSON.parse(renderPublicDocument()) as Doc;
     expect(doc.openapi).toBe("3.1.0");
     const native = ENDPOINTS.filter((spec) => spec.native);
-    expect(Object.keys(doc.paths).toSorted()).toEqual([...new Set(native.map((spec) => spec.path))].toSorted());
+    expect(Object.keys(doc.paths).toSorted()).toEqual(
+      [...new Set(native.map((spec) => spec.path))].toSorted(),
+    );
     for (const spec of native) expect(doc.paths[spec.path]).toHaveProperty(spec.method);
     // Bot-owned historical routes stay out of the document.
-    for (const spec of ENDPOINTS.filter((e) => !e.native)) expect(doc.paths).not.toHaveProperty(spec.path);
+    for (const spec of ENDPOINTS.filter((e) => !e.native))
+      expect(doc.paths).not.toHaveProperty(spec.path);
     for (const id of [
       "ErrorEnvelope",
       "ApiErrorCode",

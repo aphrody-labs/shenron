@@ -37,7 +37,13 @@ export { ProviderPreferences } from "./components/preferences/ProviderPreference
 export { TranslationPreferences } from "./components/preferences/TranslationPreferences";
 export { TypesettingPreferences } from "./components/preferences/TypesettingPreferences";
 export { GenerationPreferences } from "./components/preferences/GenerationPreferences";
-export { PreferencePage, PreferenceSection, PreferenceRow, TextField, NumberField } from "./components/preferences/PreferenceFields";
+export {
+  PreferencePage,
+  PreferenceSection,
+  PreferenceRow,
+  TextField,
+  NumberField,
+} from "./components/preferences/PreferenceFields";
 
 // Controls
 export { FontPicker } from "./components/controls/FontPicker";

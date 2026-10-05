@@ -15,26 +15,26 @@ import { SettingsService } from "~/services/SettingsService";
  * situation se produit (ex: signaler un comportement depuis le salon source).
  */
 export const CommandsChannelOnly: GuardFunction<
-	CommandInteraction | ButtonInteraction | ModalSubmitInteraction
+  CommandInteraction | ButtonInteraction | ModalSubmitInteraction
 > = async (interaction, _client, next) => {
-	const settings = container.resolve(SettingsService);
-	const override = await settings.getSnowflake("channel.commands");
-	const target = override ?? env.COMMANDS_CHANNEL_ID;
-	if (target && interaction.channelId !== target) {
-		const userId = interaction.user.id;
-		const isOwner = isBotOwner(userId);
-		const isStaff =
-			interaction.inCachedGuild() &&
-			interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers);
-		if (!isOwner && !isStaff) {
-			if (interaction.isRepliable()) {
-				await interaction.reply({
-					content: `Utilise <#${target}> pour les commandes.`,
-					flags: MessageFlags.Ephemeral,
-				});
-			}
-			return;
-		}
-	}
-	await next();
+  const settings = container.resolve(SettingsService);
+  const override = await settings.getSnowflake("channel.commands");
+  const target = override ?? env.COMMANDS_CHANNEL_ID;
+  if (target && interaction.channelId !== target) {
+    const userId = interaction.user.id;
+    const isOwner = isBotOwner(userId);
+    const isStaff =
+      interaction.inCachedGuild() &&
+      interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers);
+    if (!isOwner && !isStaff) {
+      if (interaction.isRepliable()) {
+        await interaction.reply({
+          content: `Utilise <#${target}> pour les commandes.`,
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+      return;
+    }
+  }
+  await next();
 };

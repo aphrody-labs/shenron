@@ -26,17 +26,17 @@ import postgres from "postgres";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
-	console.error("✗ DATABASE_URL (Neon) requis dans l'environnement.");
-	process.exit(1);
+  console.error("✗ DATABASE_URL (Neon) requis dans l'environnement.");
+  process.exit(1);
 }
 
 // series DB → id anime MAL (vérifiés via Jikan : titre + nb d'épisodes).
 const ANIME: Record<string, number> = {
-	DB: 223,
-	DBZ: 813,
-	DBGT: 225,
-	DBS: 30694,
-	DB_DAIMA: 56894,
+  DB: 223,
+  DBZ: 813,
+  DBGT: 225,
+  DBS: 30694,
+  DB_DAIMA: 56894,
 };
 
 const ONLY = process.env.ONLY_SERIES?.trim() || null;
@@ -47,47 +47,47 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Récupère le synopsis d'un épisode via Jikan, avec retries (MAL flaky). */
 async function jikanSynopsis(animeId: number, ep: number): Promise<string | null> {
-	for (let attempt = 0; attempt < 4; attempt++) {
-		try {
-			const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}/episodes/${ep}`, {
-				headers: { accept: "application/json" },
-			});
-			if (res.status === 429) {
-				await sleep(2500); // rate-limit → backoff
-				continue;
-			}
-			if (res.status >= 500) {
-				await sleep(1500); // upstream MAL down → retry
-				continue;
-			}
-			if (!res.ok) return null; // 404 etc. → pas de donnée
-			const j = (await res.json()) as { data?: { synopsis?: string | null } };
-			const s = j?.data?.synopsis;
-			return typeof s === "string" && s.trim() ? s.trim() : null;
-		} catch {
-			await sleep(1500);
-		}
-	}
-	return null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}/episodes/${ep}`, {
+        headers: { accept: "application/json" },
+      });
+      if (res.status === 429) {
+        await sleep(2500); // rate-limit → backoff
+        continue;
+      }
+      if (res.status >= 500) {
+        await sleep(1500); // upstream MAL down → retry
+        continue;
+      }
+      if (!res.ok) return null; // 404 etc. → pas de donnée
+      const j = (await res.json()) as { data?: { synopsis?: string | null } };
+      const s = j?.data?.synopsis;
+      return typeof s === "string" && s.trim() ? s.trim() : null;
+    } catch {
+      await sleep(1500);
+    }
+  }
+  return null;
 }
 
 type Row = { id: number; series: string; number_in_series: number };
 
 const rows = ONLY
-	? ((await sql`
+  ? ((await sql`
 			SELECT id, series, number_in_series FROM bot.db_episodes
 			WHERE (synopsis IS NULL OR synopsis = '') AND series = ${ONLY}
 			ORDER BY number_in_series
 		`) as unknown as Row[])
-	: ((await sql`
+  : ((await sql`
 			SELECT id, series, number_in_series FROM bot.db_episodes
 			WHERE (synopsis IS NULL OR synopsis = '')
 			ORDER BY series, number_in_series
 		`) as unknown as Row[]);
 
 console.log(
-	`→ ${rows.length} épisode(s) sans synopsis${ONLY ? ` (série ${ONLY})` : ""}` +
-		(LIMIT !== Number.POSITIVE_INFINITY ? `, limité à ${LIMIT}` : "")
+  `→ ${rows.length} épisode(s) sans synopsis${ONLY ? ` (série ${ONLY})` : ""}` +
+    (LIMIT !== Number.POSITIVE_INFINITY ? `, limité à ${LIMIT}` : ""),
 );
 
 let updated = 0;
@@ -96,29 +96,29 @@ let skipped = 0;
 let processed = 0;
 
 for (const row of rows) {
-	if (processed >= LIMIT) break;
-	const animeId = ANIME[row.series];
-	if (!animeId) {
-		skipped++;
-		continue;
-	}
-	processed++;
-	const syn = await jikanSynopsis(animeId, row.number_in_series);
-	if (syn) {
-		await sql`UPDATE bot.db_episodes SET synopsis = ${syn} WHERE id = ${row.id}`;
-		updated++;
-	} else {
-		missing++;
-	}
-	if (processed % 25 === 0) {
-		console.log(
-			`  … ${processed}/${Math.min(rows.length, LIMIT)} (maj ${updated}, vide ${missing})`
-		);
-	}
-	await sleep(1100); // ~54 req/min < 60/min Jikan
+  if (processed >= LIMIT) break;
+  const animeId = ANIME[row.series];
+  if (!animeId) {
+    skipped++;
+    continue;
+  }
+  processed++;
+  const syn = await jikanSynopsis(animeId, row.number_in_series);
+  if (syn) {
+    await sql`UPDATE bot.db_episodes SET synopsis = ${syn} WHERE id = ${row.id}`;
+    updated++;
+  } else {
+    missing++;
+  }
+  if (processed % 25 === 0) {
+    console.log(
+      `  … ${processed}/${Math.min(rows.length, LIMIT)} (maj ${updated}, vide ${missing})`,
+    );
+  }
+  await sleep(1100); // ~54 req/min < 60/min Jikan
 }
 
 console.log(
-	`✓ Terminé : ${updated} synopsis écrits, ${missing} sans donnée Jikan, ${skipped} séries non mappées.`
+  `✓ Terminé : ${updated} synopsis écrits, ${missing} sans donnée Jikan, ${skipped} séries non mappées.`,
 );
 await sql.end();

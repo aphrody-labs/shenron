@@ -10,5 +10,5 @@ import type { RagHit } from "./rag";
 
 /** Réponse du persona Whis à partir des faits récupérés. */
 export async function generateAnswer(db: Database, query: string, hits: RagHit[]): Promise<string> {
-	return generateLlmAnswer(db, query, hits, "whis");
+  return generateLlmAnswer(db, query, hits, "whis");
 }

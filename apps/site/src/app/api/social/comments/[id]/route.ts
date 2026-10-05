@@ -13,12 +13,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import {
-	editComment,
-	listReplies,
-	moderateComment,
-	removeComment,
-	SocialError,
-	type SocialActor,
+  editComment,
+  listReplies,
+  moderateComment,
+  removeComment,
+  SocialError,
+  type SocialActor,
 } from "@/lib/social";
 import { COMMENT_MAX, socialErrorMessage } from "@/lib/social-shared";
 
@@ -29,89 +29,89 @@ const NO_STORE = { "Cache-Control": "private, no-store" } as const;
 const MODERATION_ACTIONS = new Set(["hide", "restore", "pin", "unpin"]);
 
 function fail(code: string, status: number): NextResponse {
-	return NextResponse.json(
-		{ ok: false, error: code, message: socialErrorMessage(code) },
-		{ status, headers: NO_STORE }
-	);
+  return NextResponse.json(
+    { ok: false, error: code, message: socialErrorMessage(code) },
+    { status, headers: NO_STORE },
+  );
 }
 
 async function actor(): Promise<SocialActor | null> {
-	try {
-		const me = await getCurrentUser();
-		if (!me?.user?.id) return null;
-		return {
-			type: "user",
-			id: me.user.id,
-			name: me.user.username,
-			isAdmin: me.user.roleAdmin === true,
-		};
-	} catch {
-		return null;
-	}
+  try {
+    const me = await getCurrentUser();
+    if (!me?.user?.id) return null;
+    return {
+      type: "user",
+      id: me.user.id,
+      name: me.user.username,
+      isAdmin: me.user.roleAdmin === true,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(
-	req: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
-	const { id } = await params;
-	const me = await actor();
-	const replies = await listReplies(id, {
-		viewerId: me?.type === "user" ? me.id : null,
-		viewerIsAdmin: me?.type === "user" ? me.isAdmin : false,
-	});
-	return NextResponse.json({ ok: true, replies }, { headers: NO_STORE });
+  const { id } = await params;
+  const me = await actor();
+  const replies = await listReplies(id, {
+    viewerId: me?.type === "user" ? me.id : null,
+    viewerIsAdmin: me?.type === "user" ? me.isAdmin : false,
+  });
+  return NextResponse.json({ ok: true, replies }, { headers: NO_STORE });
 }
 
 export async function PATCH(
-	req: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
-	const { id } = await params;
-	const me = await actor();
-	if (!me) return fail("auth_required", 401);
+  const { id } = await params;
+  const me = await actor();
+  if (!me) return fail("auth_required", 401);
 
-	let payload: Record<string, unknown>;
-	try {
-		payload = (await req.json()) as Record<string, unknown>;
-	} catch {
-		return fail("body_empty", 400);
-	}
+  let payload: Record<string, unknown>;
+  try {
+    payload = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return fail("body_empty", 400);
+  }
 
-	try {
-		const action = payload.action;
-		if (typeof action === "string") {
-			if (!MODERATION_ACTIONS.has(action)) return fail("forbidden", 400);
-			await moderateComment(id, action as "hide" | "restore" | "pin" | "unpin", me);
-			return NextResponse.json({ ok: true }, { headers: NO_STORE });
-		}
+  try {
+    const action = payload.action;
+    if (typeof action === "string") {
+      if (!MODERATION_ACTIONS.has(action)) return fail("forbidden", 400);
+      await moderateComment(id, action as "hide" | "restore" | "pin" | "unpin", me);
+      return NextResponse.json({ ok: true }, { headers: NO_STORE });
+    }
 
-		const body = payload.body;
-		if (typeof body !== "string") return fail("body_empty", 400);
-		if (body.length > COMMENT_MAX * 2) return fail("body_too_long", 413);
-		const comment = await editComment(id, body, me);
-		return NextResponse.json({ ok: true, comment }, { headers: NO_STORE });
-	} catch (err) {
-		if (err instanceof SocialError) return fail(err.code, err.status);
-		console.error("[social] PATCH comment", err);
-		return fail("server_error", 500);
-	}
+    const body = payload.body;
+    if (typeof body !== "string") return fail("body_empty", 400);
+    if (body.length > COMMENT_MAX * 2) return fail("body_too_long", 413);
+    const comment = await editComment(id, body, me);
+    return NextResponse.json({ ok: true, comment }, { headers: NO_STORE });
+  } catch (err) {
+    if (err instanceof SocialError) return fail(err.code, err.status);
+    console.error("[social] PATCH comment", err);
+    return fail("server_error", 500);
+  }
 }
 
 export async function DELETE(
-	_req: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
-	const { id } = await params;
-	const me = await actor();
-	if (!me) return fail("auth_required", 401);
+  const { id } = await params;
+  const me = await actor();
+  if (!me) return fail("auth_required", 401);
 
-	try {
-		const res = await removeComment(id, me);
-		return NextResponse.json({ ok: true, status: res.status }, { headers: NO_STORE });
-	} catch (err) {
-		if (err instanceof SocialError) return fail(err.code, err.status);
-		console.error("[social] DELETE comment", err);
-		return fail("server_error", 500);
-	}
+  try {
+    const res = await removeComment(id, me);
+    return NextResponse.json({ ok: true, status: res.status }, { headers: NO_STORE });
+  } catch (err) {
+    if (err instanceof SocialError) return fail(err.code, err.status);
+    console.error("[social] DELETE comment", err);
+    return fail("server_error", 500);
+  }
 }

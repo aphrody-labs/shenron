@@ -14,28 +14,28 @@ import { getRequestConfig } from "next-intl/server";
 import { COOKIE_LOCALE_NAME, getDictionary, negotiateLocale, normalizeLocale } from "@/lib/i18n";
 
 export default getRequestConfig(async () => {
-	const jar = await cookies();
-	const fromCookie = jar.get(COOKIE_LOCALE_NAME)?.value;
-	const locale = fromCookie
-		? normalizeLocale(fromCookie)
-		: negotiateLocale((await headers()).get("accept-language"));
-	return {
-		locale,
-		messages: getDictionary(locale),
-		timeZone: "Europe/Paris",
-		// French is the reference: a key missing elsewhere shows the French text
-		// rather than the raw key. The type system already flags the gap.
-		getMessageFallback: ({ namespace, key }) => messageFr(namespace, key),
-	};
+  const jar = await cookies();
+  const fromCookie = jar.get(COOKIE_LOCALE_NAME)?.value;
+  const locale = fromCookie
+    ? normalizeLocale(fromCookie)
+    : negotiateLocale((await headers()).get("accept-language"));
+  return {
+    locale,
+    messages: getDictionary(locale),
+    timeZone: "Europe/Paris",
+    // French is the reference: a key missing elsewhere shows the French text
+    // rather than the raw key. The type system already flags the gap.
+    getMessageFallback: ({ namespace, key }) => messageFr(namespace, key),
+  };
 });
 
 /** The French message at `namespace.key`, or the key itself when even French lacks it. */
 function messageFr(namespace: string | undefined, key: string): string {
-	const path = [...(namespace ? namespace.split(".") : []), ...key.split(".")];
-	let node: unknown = getDictionary("fr");
-	for (const segment of path) {
-		if (!node || typeof node !== "object" || !(segment in node)) return key;
-		node = (node as Record<string, unknown>)[segment];
-	}
-	return typeof node === "string" ? node : key;
+  const path = [...(namespace ? namespace.split(".") : []), ...key.split(".")];
+  let node: unknown = getDictionary("fr");
+  for (const segment of path) {
+    if (!node || typeof node !== "object" || !(segment in node)) return key;
+    node = (node as Record<string, unknown>)[segment];
+  }
+  return typeof node === "string" ? node : key;
 }

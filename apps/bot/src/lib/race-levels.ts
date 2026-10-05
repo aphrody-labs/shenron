@@ -25,24 +25,24 @@ import { raceLevelRoles } from "~/db/schema";
  * bun:sqlite est SYNCHRONE → l'API publique de ce module reste synchrone (pas d'async).
  */
 export const RACE_LEVEL_ROLES: Record<RaceId, Partial<Record<number, string>>> = {
-	saiyan: {
-		1: "1058910891124457482", // Kaioken
-		2: "1058910426164908075", // Super Saiyan
-		3: "1058910477847109743", // Super Saiyan 2
-		4: "1058910518720593920", // Super Saiyan 3
-		5: "1058910672068563024", // Super Saiyan 4
-		6: "1058910743736614962", // Super Saiyan God
-		7: "1058910776687087637", // Super Saiyan Blue
-		8: "1074616048487247902", // Super Saiyan Blue Évolution
-		9: "1074616052350193674", // Ultra Instinct
-		10: "1074619485450932304", // Perfect Ultra Instinct
-	},
-	// Vides par défaut — complétées par l'admin via le dashboard (table race_level_roles) :
-	humain: {},
-	namek: {},
-	mutant: {},
-	cyborg: {},
-	majin: {},
+  saiyan: {
+    1: "1058910891124457482", // Kaioken
+    2: "1058910426164908075", // Super Saiyan
+    3: "1058910477847109743", // Super Saiyan 2
+    4: "1058910518720593920", // Super Saiyan 3
+    5: "1058910672068563024", // Super Saiyan 4
+    6: "1058910743736614962", // Super Saiyan God
+    7: "1058910776687087637", // Super Saiyan Blue
+    8: "1074616048487247902", // Super Saiyan Blue Évolution
+    9: "1074616052350193674", // Ultra Instinct
+    10: "1074619485450932304", // Perfect Ultra Instinct
+  },
+  // Vides par défaut — complétées par l'admin via le dashboard (table race_level_roles) :
+  humain: {},
+  namek: {},
+  mutant: {},
+  cyborg: {},
+  majin: {},
 };
 
 /** Race de repli pour l'attribution des paliers quand aucun rôle de race n'est posé. */
@@ -62,22 +62,22 @@ let dbRef: DB | null = null;
 
 /** Échelles effectives : cache DB si hydraté, sinon défaut. */
 function ladders(): RaceLadders {
-	return cache ?? RACE_LEVEL_ROLES;
+  return cache ?? RACE_LEVEL_ROLES;
 }
 
 function emptyLadders(): RaceLadders {
-	return { saiyan: {}, humain: {}, namek: {}, mutant: {}, cyborg: {}, majin: {} };
+  return { saiyan: {}, humain: {}, namek: {}, mutant: {}, cyborg: {}, majin: {} };
 }
 
 /** (Re)lit la table `race_level_roles` dans le cache module. */
 function rebuildCache(): void {
-	if (!dbRef) return;
-	const rows = dbRef.select().from(raceLevelRoles).all();
-	const next = emptyLadders();
-	for (const row of rows) {
-		if (isRaceId(row.race)) next[row.race][row.level] = row.roleId;
-	}
-	cache = next;
+  if (!dbRef) return;
+  const rows = dbRef.select().from(raceLevelRoles).all();
+  const next = emptyLadders();
+  for (const row of rows) {
+    if (isRaceId(row.race)) next[row.race][row.level] = row.roleId;
+  }
+  cache = next;
 }
 
 /**
@@ -87,67 +87,67 @@ function rebuildCache(): void {
  * Synchrone (bun:sqlite).
  */
 export function loadRaceLevelRoles(db: DB): void {
-	dbRef = db;
-	const existing = db.select().from(raceLevelRoles).all();
-	if (existing.length === 0) {
-		const seed: { race: string; level: number; roleId: string }[] = [];
-		for (const race of RACE_IDS) {
-			for (const [lvl, roleId] of Object.entries(RACE_LEVEL_ROLES[race])) {
-				if (roleId) seed.push({ race, level: Number(lvl), roleId });
-			}
-		}
-		if (seed.length) db.insert(raceLevelRoles).values(seed).run();
-	}
-	rebuildCache();
+  dbRef = db;
+  const existing = db.select().from(raceLevelRoles).all();
+  if (existing.length === 0) {
+    const seed: { race: string; level: number; roleId: string }[] = [];
+    for (const race of RACE_IDS) {
+      for (const [lvl, roleId] of Object.entries(RACE_LEVEL_ROLES[race])) {
+        if (roleId) seed.push({ race, level: Number(lvl), roleId });
+      }
+    }
+    if (seed.length) db.insert(raceLevelRoles).values(seed).run();
+  }
+  rebuildCache();
 }
 
 /** Re-lit la table `race_level_roles` dans le cache (appelé par l'API après une écriture). */
 export function reloadRaceLevelRoles(): void {
-	rebuildCache();
+  rebuildCache();
 }
 
 /** true ssi la race possède au moins un palier de rôle configuré. */
 export function hasRaceLadder(race: RaceId): boolean {
-	return Object.values(ladders()[race]).some((r) => !!r);
+  return Object.values(ladders()[race]).some((r) => !!r);
 }
 
 /** Tous les rôles de transformation configurés, toutes races confondues (pour le nettoyage). */
 export function allRaceLevelRoleIds(): string[] {
-	const l = ladders();
-	return RACE_IDS.flatMap((id) => Object.values(l[id]).filter((r): r is string => !!r));
+  const l = ladders();
+  return RACE_IDS.flatMap((id) => Object.values(l[id]).filter((r): r is string => !!r));
 }
 
 /** Rôles de palier d'une race jusqu'au niveau `uptoLevel` inclus. */
 export function raceLevelRoleIds(race: RaceId, uptoLevel: number): string[] {
-	const map = ladders()[race];
-	const out: string[] = [];
-	for (let lvl = 1; lvl <= uptoLevel; lvl++) {
-		const r = map[lvl];
-		if (r) out.push(r);
-	}
-	return out;
+  const map = ladders()[race];
+  const out: string[] = [];
+  for (let lvl = 1; lvl <= uptoLevel; lvl++) {
+    const r = map[lvl];
+    if (r) out.push(r);
+  }
+  return out;
 }
 
 /** Rôle de palier attribué exactement au niveau `level` d'une race (ou null). */
 export function raceLevelRoleAt(race: RaceId, level: number): string | null {
-	return ladders()[race][level] ?? null;
+  return ladders()[race][level] ?? null;
 }
 
 /** Niveau associé à un rôle de palier (toutes races) ou null. */
 export function levelOfRoleId(roleId: string): number | null {
-	const l = ladders();
-	for (const id of RACE_IDS) {
-		for (const [lvl, rid] of Object.entries(l[id])) {
-			if (rid === roleId) return Number(lvl);
-		}
-	}
-	return null;
+  const l = ladders();
+  for (const id of RACE_IDS) {
+    for (const [lvl, rid] of Object.entries(l[id])) {
+      if (rid === roleId) return Number(lvl);
+    }
+  }
+  return null;
 }
 
 /** Race effective d'un membre = la race dont il porte le rôle Discord, sinon null. */
 export function memberRaceId(member: GuildMember): RaceId | null {
-	for (const [roleId, race] of ROLE_TO_RACE) {
-		if (member.roles.cache.has(roleId)) return race;
-	}
-	return null;
+  for (const [roleId, race] of ROLE_TO_RACE) {
+    if (member.roles.cache.has(roleId)) return race;
+  }
+  return null;
 }

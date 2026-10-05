@@ -14,5 +14,5 @@ import "@shenron/ui/editorial.css";
  * règle « jamais de session dans un layout » de CLAUDE.md).
  */
 export default function ActualitesLayout({ children }: { children: React.ReactNode }) {
-	return <div className={`${editorialSerif.variable} editorial min-h-screen`}>{children}</div>;
+  return <div className={`${editorialSerif.variable} editorial min-h-screen`}>{children}</div>;
 }

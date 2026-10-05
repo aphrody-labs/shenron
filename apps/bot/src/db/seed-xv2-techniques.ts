@@ -22,25 +22,25 @@ import { dbTechniques } from "~/db/schema";
  */
 type SkillEntry = { name: string; desc: string };
 type Catalog = {
-	skills: Record<"super" | "ultimate" | "awoken" | "evasive", Record<string, SkillEntry>>;
+  skills: Record<"super" | "ultimate" | "awoken" | "evasive", Record<string, SkillEntry>>;
 };
 
 const catalog: Catalog = JSON.parse(readFileSync("./assets/dbz/xv2-catalog.json", "utf-8"));
 
 const norm = (s: string) =>
-	s
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[̀-ͯ]/g, "")
-		.replace(/[^a-z0-9]/g, "");
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]/g, "");
 
 const slugify = (s: string) =>
-	s
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[̀-ͯ]/g, "")
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "");
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const dbs = container.resolve(DatabaseService);
 const db = dbs.db;
@@ -52,8 +52,8 @@ await db.delete(dbTechniques).where(inArray(dbTechniques.type, CAT_VALUES));
 
 // Index des techniques déjà présentes (normalisé) + slugs pris.
 const existing = await db
-	.select({ name: dbTechniques.name, slug: dbTechniques.slug })
-	.from(dbTechniques);
+  .select({ name: dbTechniques.name, slug: dbTechniques.slug })
+  .from(dbTechniques);
 const seenNames = new Set(existing.map((t) => norm(t.name)));
 const usedSlugs = new Set(existing.map((t) => t.slug));
 
@@ -62,29 +62,29 @@ let inserted = 0;
 const perCat: Record<string, number> = {};
 
 for (const cat of CATS) {
-	perCat[cat] = 0;
-	for (const entry of Object.values(catalog.skills[cat])) {
-		const key = norm(entry.name);
-		if (!key || seenNames.has(key)) continue;
-		seenNames.add(key);
+  perCat[cat] = 0;
+  for (const entry of Object.values(catalog.skills[cat])) {
+    const key = norm(entry.name);
+    if (!key || seenNames.has(key)) continue;
+    seenNames.add(key);
 
-		let slug = slugify(entry.name) || `xv2-${cat}-${inserted}`;
-		let n = 1;
-		while (usedSlugs.has(slug)) slug = `${slugify(entry.name)}-${++n}`;
-		usedSlugs.add(slug);
+    let slug = slugify(entry.name) || `xv2-${cat}-${inserted}`;
+    let n = 1;
+    while (usedSlugs.has(slug)) slug = `${slugify(entry.name)}-${++n}`;
+    usedSlugs.add(slug);
 
-		await db.insert(dbTechniques).values({
-			slug,
-			name: entry.name,
-			type: cat,
-			description: entry.desc || null,
-		});
-		inserted++;
-		perCat[cat]++;
-	}
+    await db.insert(dbTechniques).values({
+      slug,
+      name: entry.name,
+      type: cat,
+      description: entry.desc || null,
+    });
+    inserted++;
+    perCat[cat]++;
+  }
 }
 
 console.log(
-	`✓ ${inserted} techniques XV2 importées (${CATS.map((c) => `${c}:${perCat[c]}`).join(" ")})`
+  `✓ ${inserted} techniques XV2 importées (${CATS.map((c) => `${c}:${perCat[c]}`).join(" ")})`,
 );
 dbs.close();

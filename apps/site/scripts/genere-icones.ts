@@ -38,42 +38,42 @@ const pleine = Buffer.from(svgIcone({ coins: 0 }));
 const maskable = Buffer.from(svgIcone({ coins: 0, echelle: 0.8 }));
 
 const png = (svg: Buffer, cote: number, opaque = false) => {
-	let s = sharp(svg, { density: Math.max(72, (72 * cote) / 512) }).resize(cote, cote, {
-		kernel: "lanczos3",
-	});
-	if (opaque) s = s.flatten({ background: KINTO_UN_COULEURS.pastille });
-	return s.png({ compressionLevel: 9, palette: false }).toBuffer();
+  let s = sharp(svg, { density: Math.max(72, (72 * cote) / 512) }).resize(cote, cote, {
+    kernel: "lanczos3",
+  });
+  if (opaque) s = s.flatten({ background: KINTO_UN_COULEURS.pastille });
+  return s.png({ compressionLevel: 9, palette: false }).toBuffer();
 };
 
 /** ICO = en-tête (6 o) + une entrée de 16 o par image + les PNG bout à bout. */
 function ico(images: { cote: number; png: Buffer }[]): Buffer {
-	const tete = Buffer.alloc(6);
-	tete.writeUInt16LE(0, 0);
-	tete.writeUInt16LE(1, 2);
-	tete.writeUInt16LE(images.length, 4);
-	const entrees: Buffer[] = [];
-	let decalage = 6 + 16 * images.length;
-	for (const { cote, png } of images) {
-		const e = Buffer.alloc(16);
-		e.writeUInt8(cote >= 256 ? 0 : cote, 0);
-		e.writeUInt8(cote >= 256 ? 0 : cote, 1);
-		e.writeUInt8(0, 2); // palette
-		e.writeUInt8(0, 3); // réservé
-		e.writeUInt16LE(1, 4); // plans
-		e.writeUInt16LE(32, 6); // bits par pixel
-		e.writeUInt32LE(png.length, 8);
-		e.writeUInt32LE(decalage, 12);
-		decalage += png.length;
-		entrees.push(e);
-	}
-	return Buffer.concat([tete, ...entrees, ...images.map((i) => i.png)]);
+  const tete = Buffer.alloc(6);
+  tete.writeUInt16LE(0, 0);
+  tete.writeUInt16LE(1, 2);
+  tete.writeUInt16LE(images.length, 4);
+  const entrees: Buffer[] = [];
+  let decalage = 6 + 16 * images.length;
+  for (const { cote, png } of images) {
+    const e = Buffer.alloc(16);
+    e.writeUInt8(cote >= 256 ? 0 : cote, 0);
+    e.writeUInt8(cote >= 256 ? 0 : cote, 1);
+    e.writeUInt8(0, 2); // palette
+    e.writeUInt8(0, 3); // réservé
+    e.writeUInt16LE(1, 4); // plans
+    e.writeUInt16LE(32, 6); // bits par pixel
+    e.writeUInt32LE(png.length, 8);
+    e.writeUInt32LE(decalage, 12);
+    decalage += png.length;
+    entrees.push(e);
+  }
+  return Buffer.concat([tete, ...entrees, ...images.map((i) => i.png)]);
 }
 
 const fichiers: Record<string, Buffer> = {};
 for (const cote of [16, 32, 48, 96])
-	fichiers[`favicon-${cote}.png`] = await png(cote < 64 ? sansVolutes : transparente, cote);
+  fichiers[`favicon-${cote}.png`] = await png(cote < 64 ? sansVolutes : transparente, cote);
 fichiers["favicon.ico"] = ico(
-	[16, 32, 48].map((cote) => ({ cote, png: fichiers[`favicon-${cote}.png`] }))
+  [16, 32, 48].map((cote) => ({ cote, png: fichiers[`favicon-${cote}.png`] })),
 );
 fichiers["apple-touch-icon.png"] = await png(pleine, 180, true);
 fichiers["icon-192.png"] = await png(transparente, 192);
@@ -82,18 +82,18 @@ fichiers["icon-maskable-512.png"] = await png(maskable, 512, true);
 fichiers["mstile-150.png"] = await png(pleine, 150, true);
 
 for (const dossier of [site]) {
-	for (const [nom, contenu] of Object.entries(fichiers)) {
-		await Bun.write(dossier + nom, contenu);
-	}
-	console.log(`${dossier} — ${Object.keys(fichiers).length} fichiers`);
+  for (const [nom, contenu] of Object.entries(fichiers)) {
+    await Bun.write(dossier + nom, contenu);
+  }
+  console.log(`${dossier} — ${Object.keys(fichiers).length} fichiers`);
 }
 for (const [nom, contenu] of Object.entries(fichiers))
-	console.log(`  ${nom.padEnd(24)} ${contenu.length} o`);
+  console.log(`  ${nom.padEnd(24)} ${contenu.length} o`);
 
 const logo = await sharp(transparente, { density: 144 })
-	.resize(1024, 1024)
-	.webp({ quality: 92 })
-	.toBuffer();
+  .resize(1024, 1024)
+  .webp({ quality: 92 })
+  .toBuffer();
 await Bun.write(logoBot, logo);
 console.log(`${logoBot} — ${logo.length} o`);
 
@@ -106,39 +106,39 @@ const ill = Buffer.from(svgIllustration());
 const carreNu = Buffer.from(svgIcone({ pastille: null, echelle: 1.12 }));
 const carrePlein = Buffer.from(svgIcone({ coins: 0.18 }));
 const rendre = (buf: Buffer, w: number, h: number) =>
-	sharp(buf, { density: 300 }).resize(w, h, {
-		fit: "contain",
-		background: { r: 0, g: 0, b: 0, alpha: 0 },
-	});
+  sharp(buf, { density: 300 }).resize(w, h, {
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  });
 
 const banniereNuage = await rendre(ill, 760, 428).png().toBuffer();
 const pngMarque: Record<string, Buffer> = {
-	"kinto-un-2048.png": await rendre(ill, 2048, 1154).png().toBuffer(),
-	"kinto-un-1024.png": await rendre(ill, 1024, 577).png().toBuffer(),
-	"avatar-1024-transparent.png": await rendre(carreNu, 1024, 1024).png().toBuffer(),
-	"avatar-1024-fond-sombre.png": await rendre(carrePlein, 1024, 1024)
-		.flatten({ background: KINTO_UN_COULEURS.pastille })
-		.png()
-		.toBuffer(),
-	"banniere-960x540.png": await sharp({
-		create: { width: 960, height: 540, channels: 4, background: KINTO_UN_COULEURS.pastille },
-	})
-		.composite([{ input: banniereNuage, left: 100, top: 56 }])
-		.png()
-		.toBuffer(),
-	// Émoji : les volutes deviennent du bruit une fois réduites à 32 px dans un fil.
-	"emoji-128.png": await rendre(
-		Buffer.from(svgIcone({ pastille: null, echelle: 1.12, volutes: false })),
-		128,
-		128
-	)
-		.png({ compressionLevel: 9 })
-		.toBuffer(),
+  "kinto-un-2048.png": await rendre(ill, 2048, 1154).png().toBuffer(),
+  "kinto-un-1024.png": await rendre(ill, 1024, 577).png().toBuffer(),
+  "avatar-1024-transparent.png": await rendre(carreNu, 1024, 1024).png().toBuffer(),
+  "avatar-1024-fond-sombre.png": await rendre(carrePlein, 1024, 1024)
+    .flatten({ background: KINTO_UN_COULEURS.pastille })
+    .png()
+    .toBuffer(),
+  "banniere-960x540.png": await sharp({
+    create: { width: 960, height: 540, channels: 4, background: KINTO_UN_COULEURS.pastille },
+  })
+    .composite([{ input: banniereNuage, left: 100, top: 56 }])
+    .png()
+    .toBuffer(),
+  // Émoji : les volutes deviennent du bruit une fois réduites à 32 px dans un fil.
+  "emoji-128.png": await rendre(
+    Buffer.from(svgIcone({ pastille: null, echelle: 1.12, volutes: false })),
+    128,
+    128,
+  )
+    .png({ compressionLevel: 9 })
+    .toBuffer(),
 };
 for (const dossier of [marque]) {
-	await Bun.$`mkdir -p ${dossier}`.quiet();
-	for (const [nom, contenu] of Object.entries(pngMarque)) await Bun.write(dossier + nom, contenu);
-	console.log(`${dossier} — ${Object.keys(pngMarque).length} PNG de marque`);
+  await Bun.$`mkdir -p ${dossier}`.quiet();
+  for (const [nom, contenu] of Object.entries(pngMarque)) await Bun.write(dossier + nom, contenu);
+  console.log(`${dossier} — ${Object.keys(pngMarque).length} PNG de marque`);
 }
 
 /**
@@ -152,13 +152,15 @@ const appIcone = Buffer.from(svgIcone({ coins: 0.22 }));
 const appPetite = Buffer.from(svgIcone({ coins: 0.22, volutes: false }));
 const pngApp = (cote: number) => png(cote < 64 ? appPetite : appIcone, cote);
 const icones: Record<string, Buffer> = {
-	"32x32.png": await pngApp(32),
-	"128x128.png": await pngApp(128),
-	"128x128@2x.png": await pngApp(256),
-	"icon.png": await pngApp(512),
+  "32x32.png": await pngApp(32),
+  "128x128.png": await pngApp(128),
+  "128x128@2x.png": await pngApp(256),
+  "icon.png": await pngApp(512),
 };
 icones["icon.ico"] = ico(
-	await Promise.all([16, 24, 32, 48, 64, 128, 256].map(async (cote) => ({ cote, png: await pngApp(cote) })))
+  await Promise.all(
+    [16, 24, 32, 48, 64, 128, 256].map(async (cote) => ({ cote, png: await pngApp(cote) })),
+  ),
 );
 await Bun.$`mkdir -p ${bureau} ${splash}`.quiet();
 for (const [nom, contenu] of Object.entries(icones)) await Bun.write(bureau + nom, contenu);

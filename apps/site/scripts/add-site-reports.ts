@@ -11,11 +11,11 @@
 import postgres from "postgres";
 
 async function main() {
-	const url = process.env.DATABASE_URL;
-	if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
-	const sql = postgres(url, { max: 1 });
-	try {
-		await sql.unsafe(`
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
+  const sql = postgres(url, { max: 1 });
+  try {
+    await sql.unsafe(`
 			CREATE TABLE IF NOT EXISTS public."site_reports" (
 				id          text PRIMARY KEY,
 				"createdAt" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,25 +34,25 @@ async function main() {
 				"resolvedAt" timestamp(3)
 			)
 		`);
-		await sql.unsafe(
-			`ALTER TABLE public."site_reports" ADD COLUMN IF NOT EXISTS visible boolean NOT NULL DEFAULT true`
-		);
-		await sql.unsafe(
-			`CREATE INDEX IF NOT EXISTS site_reports_status_idx ON public."site_reports" (status)`
-		);
-		await sql.unsafe(
-			`CREATE INDEX IF NOT EXISTS site_reports_created_idx ON public."site_reports" ("createdAt")`
-		);
-		await sql.unsafe(
-			`CREATE INDEX IF NOT EXISTS site_reports_user_idx ON public."site_reports" ("userId")`
-		);
-		console.log("✓ public.site_reports (+ index status/created/user)");
-	} finally {
-		await sql.end({ timeout: 5 });
-	}
+    await sql.unsafe(
+      `ALTER TABLE public."site_reports" ADD COLUMN IF NOT EXISTS visible boolean NOT NULL DEFAULT true`,
+    );
+    await sql.unsafe(
+      `CREATE INDEX IF NOT EXISTS site_reports_status_idx ON public."site_reports" (status)`,
+    );
+    await sql.unsafe(
+      `CREATE INDEX IF NOT EXISTS site_reports_created_idx ON public."site_reports" ("createdAt")`,
+    );
+    await sql.unsafe(
+      `CREATE INDEX IF NOT EXISTS site_reports_user_idx ON public."site_reports" ("userId")`,
+    );
+    console.log("✓ public.site_reports (+ index status/created/user)");
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

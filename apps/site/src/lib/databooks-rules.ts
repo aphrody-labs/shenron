@@ -12,15 +12,15 @@ import { publicDatabookImage } from "./databook-media";
 
 /** Une page de lecteur : image et/ou texte transcrit. */
 export interface DatabookPageInput {
-	number: number;
-	image: string | null;
-	text: string | null;
-	/**
-	 * Transcription acquittée à la main : les signatures de défaut se taisent.
-	 * Cf. `estPlancheVerifiee` — sans ce drapeau, une planche dont la lecture
-	 * est courte mais exacte reste éternellement « à vérifier ».
-	 */
-	verifiee: boolean;
+  number: number;
+  image: string | null;
+  text: string | null;
+  /**
+   * Transcription acquittée à la main : les signatures de défaut se taisent.
+   * Cf. `estPlancheVerifiee` — sans ce drapeau, une planche dont la lecture
+   * est courte mais exacte reste éternellement « à vérifier ».
+   */
+  verifiee: boolean;
 }
 
 /**
@@ -31,21 +31,21 @@ export interface DatabookPageInput {
  * recevoir autre chose qu'un tableau de pages exploitables.
  */
 export function normalizePages(raw: unknown): DatabookPageInput[] {
-	if (!Array.isArray(raw)) return [];
-	const out: DatabookPageInput[] = [];
-	for (let i = 0; i < raw.length; i++) {
-		const p = raw[i];
-		if (!p || typeof p !== "object") continue;
-		const o = p as Record<string, unknown>;
-		const n = Number(o.number);
-		out.push({
-			number: Number.isFinite(n) && n > 0 ? Math.trunc(n) : i + 1,
-			image: typeof o.image === "string" && o.image.trim() ? o.image.trim() : null,
-			text: typeof o.text === "string" && o.text.trim() ? o.text.trim() : null,
-			verifiee: o[CLE_VERIFIEE] === true,
-		});
-	}
-	return out;
+  if (!Array.isArray(raw)) return [];
+  const out: DatabookPageInput[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    const p = raw[i];
+    if (!p || typeof p !== "object") continue;
+    const o = p as Record<string, unknown>;
+    const n = Number(o.number);
+    out.push({
+      number: Number.isFinite(n) && n > 0 ? Math.trunc(n) : i + 1,
+      image: typeof o.image === "string" && o.image.trim() ? o.image.trim() : null,
+      text: typeof o.text === "string" && o.text.trim() ? o.text.trim() : null,
+      verifiee: o[CLE_VERIFIEE] === true,
+    });
+  }
+  return out;
 }
 
 /**
@@ -58,9 +58,9 @@ export function normalizePages(raw: unknown): DatabookPageInput[] {
  * produisent en continu). On tranche avant la base.
  */
 export function parseDatabookId(brut: string): number | null {
-	if (!/^\d+$/.test(brut)) return null;
-	const n = Number(brut);
-	return Number.isSafeInteger(n) && n > 0 ? n : null;
+  if (!/^\d+$/.test(brut)) return null;
+  const n = Number(brut);
+  return Number.isSafeInteger(n) && n > 0 ? n : null;
 }
 
 /** En deçà, une description ne dit rien d'utile (souvent « — » ou un mot). */
@@ -79,13 +79,13 @@ const DESCRIPTION_MIN = 40;
  * les cas — on retire l'indexation, pas la page.
  */
 export function isDatabookIndexable(fiche: {
-	description?: string | null;
-	pages?: { image?: string | null; text?: string | null }[] | null;
+  description?: string | null;
+  pages?: { image?: string | null; text?: string | null }[] | null;
 }): boolean {
-	const pages = Array.isArray(fiche.pages) ? fiche.pages : [];
-	const aDuContenu = pages.some(
-		(p) => Boolean(publicDatabookImage(p?.image)) || (p?.text ?? "").trim() !== ""
-	);
-	if (aDuContenu) return true;
-	return (fiche.description ?? "").trim().length >= DESCRIPTION_MIN;
+  const pages = Array.isArray(fiche.pages) ? fiche.pages : [];
+  const aDuContenu = pages.some(
+    (p) => Boolean(publicDatabookImage(p?.image)) || (p?.text ?? "").trim() !== "",
+  );
+  if (aDuContenu) return true;
+  return (fiche.description ?? "").trim().length >= DESCRIPTION_MIN;
 }

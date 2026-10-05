@@ -27,7 +27,7 @@ const TIMEOUT_MS = 2_000;
 const cache = new Map<string, { roles: string[]; ts: number }>();
 
 interface MembersResponse {
-	members?: { id: string; roleIds?: string[] }[];
+  members?: { id: string; roleIds?: string[] }[];
 }
 
 /**
@@ -35,36 +35,36 @@ interface MembersResponse {
  * bot est injoignable — cf. fail-closed ci-dessus).
  */
 export async function getMemberRoleIds(discordId: string): Promise<string[]> {
-	if (!discordId || !/^\d{17,20}$/.test(discordId)) return [];
+  if (!discordId || !/^\d{17,20}$/.test(discordId)) return [];
 
-	const now = Date.now();
-	const hit = cache.get(discordId);
-	if (hit && now - hit.ts < TTL_MS) return hit.roles;
+  const now = Date.now();
+  const hit = cache.get(discordId);
+  if (hit && now - hit.ts < TTL_MS) return hit.roles;
 
-	let roles: string[] = [];
-	try {
-		const res = await fetch(
-			`${API_URL}/api/discord/members?limit=1&search=${encodeURIComponent(discordId)}`,
-			{
-				headers: { accept: "application/json", authorization: `Bearer ${TOKEN}` },
-				signal: AbortSignal.timeout(TIMEOUT_MS),
-				cache: "no-store",
-			}
-		);
-		if (res.ok) {
-			const data = (await res.json()) as MembersResponse;
-			const member = data.members?.find((m) => m.id === discordId);
-			roles = member?.roleIds ?? [];
-		}
-	} catch (e) {
-		// Panne/timeout du bot : on ne met PAS en cache pour retenter au prochain
-		// passage, et on renvoie le dernier état connu s'il existe (moins brutal
-		// qu'une déconnexion apparente pour un membre légitime pendant un restart).
-		console.error("[member-roles] bot injoignable :", e);
-		return hit?.roles ?? [];
-	}
+  let roles: string[] = [];
+  try {
+    const res = await fetch(
+      `${API_URL}/api/discord/members?limit=1&search=${encodeURIComponent(discordId)}`,
+      {
+        headers: { accept: "application/json", authorization: `Bearer ${TOKEN}` },
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+        cache: "no-store",
+      },
+    );
+    if (res.ok) {
+      const data = (await res.json()) as MembersResponse;
+      const member = data.members?.find((m) => m.id === discordId);
+      roles = member?.roleIds ?? [];
+    }
+  } catch (e) {
+    // Panne/timeout du bot : on ne met PAS en cache pour retenter au prochain
+    // passage, et on renvoie le dernier état connu s'il existe (moins brutal
+    // qu'une déconnexion apparente pour un membre légitime pendant un restart).
+    console.error("[member-roles] bot injoignable :", e);
+    return hit?.roles ?? [];
+  }
 
-	if (cache.size >= MAX_ENTRIES) cache.clear();
-	cache.set(discordId, { roles, ts: now });
-	return roles;
+  if (cache.size >= MAX_ENTRIES) cache.clear();
+  cache.set(discordId, { roles, ts: now });
+  return roles;
 }

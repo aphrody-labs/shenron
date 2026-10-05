@@ -14,12 +14,12 @@ import { describe, expect, mock, test } from "bun:test";
 import { SESSION_COOKIE_CACHE, drizzleDebugLogs, loggingOptions } from "@shenron/auth/options";
 
 const fakeEnv = {
-	NODE_ENV: "production" as const,
-	BETTER_AUTH_URL: "https://dragonballfr.com/\n",
-	BETTER_AUTH_SECRET: "test-better-auth-secret-0123456789abcdef",
-	DISCORD_CLIENT_ID: "123456789012345678",
-	DISCORD_CLIENT_SECRET: "test-discord-client-secret",
-	OAUTH_ALLOWED_USERS: [] as string[],
+  NODE_ENV: "production" as const,
+  BETTER_AUTH_URL: "https://dragonballfr.com/\n",
+  BETTER_AUTH_SECRET: "test-better-auth-secret-0123456789abcdef",
+  DISCORD_CLIENT_ID: "123456789012345678",
+  DISCORD_CLIENT_SECRET: "test-discord-client-secret",
+  OAUTH_ALLOWED_USERS: [] as string[],
 };
 
 mock.module("server-only", () => ({}));
@@ -31,59 +31,59 @@ mock.module("../src/lib/current-user-cache", () => ({ invalidateCurrentUser: () 
 const { authDatabaseConfig, buildAuthOptions } = await import("../src/lib/auth");
 
 function options(nodeEnv: "production" | "development" | "test") {
-	return buildAuthOptions({
-		env: { ...fakeEnv, NODE_ENV: nodeEnv },
-		// oxlint-disable-next-line no-explicit-any -- dépendance factice, jamais interrogée
-		db: {} as any,
-		purgeAccountData: async () => {},
-		invalidateCurrentUser: () => {},
-	});
+  return buildAuthOptions({
+    env: { ...fakeEnv, NODE_ENV: nodeEnv },
+    // oxlint-disable-next-line no-explicit-any -- dépendance factice, jamais interrogée
+    db: {} as any,
+    purgeAccountData: async () => {},
+    invalidateCurrentUser: () => {},
+  });
 }
 
 describe("presets @shenron/auth/options", () => {
-	test("niveau de log : warn en production, debug ailleurs", () => {
-		expect(loggingOptions("production")).toEqual({ logger: { level: "warn" } });
-		expect(loggingOptions("development")).toEqual({ logger: { level: "debug" } });
-		expect(loggingOptions(undefined)).toEqual({ logger: { level: "debug" } });
-	});
+  test("niveau de log : warn en production, debug ailleurs", () => {
+    expect(loggingOptions("production")).toEqual({ logger: { level: "warn" } });
+    expect(loggingOptions("development")).toEqual({ logger: { level: "debug" } });
+    expect(loggingOptions(undefined)).toEqual({ logger: { level: "debug" } });
+  });
 
-	test("logs de l'adaptateur Drizzle coupés en production seulement", () => {
-		expect(drizzleDebugLogs("production")).toBe(false);
-		expect(drizzleDebugLogs("development")).toBe(true);
-		expect(drizzleDebugLogs("test")).toBe(true);
-	});
+  test("logs de l'adaptateur Drizzle coupés en production seulement", () => {
+    expect(drizzleDebugLogs("production")).toBe(false);
+    expect(drizzleDebugLogs("development")).toBe(true);
+    expect(drizzleDebugLogs("test")).toBe(true);
+  });
 
-	test("cache de cookie de session : 300 s", () => {
-		expect(SESSION_COOKIE_CACHE).toEqual({ enabled: true, maxAge: 300 });
-	});
+  test("cache de cookie de session : 300 s", () => {
+    expect(SESSION_COOKIE_CACHE).toEqual({ enabled: true, maxAge: 300 });
+  });
 });
 
 describe("câblage de src/lib/auth.ts", () => {
-	test("le niveau de log suit NODE_ENV (jamais debug en production)", () => {
-		expect(options("production").logger).toEqual({ level: "warn" });
-		expect(options("development").logger).toEqual({ level: "debug" });
-	});
+  test("le niveau de log suit NODE_ENV (jamais debug en production)", () => {
+    expect(options("production").logger).toEqual({ level: "warn" });
+    expect(options("development").logger).toEqual({ level: "debug" });
+  });
 
-	test("debugLogs de l'adaptateur suit NODE_ENV (jamais true en production)", () => {
-		expect(authDatabaseConfig("production").debugLogs).toBe(false);
-		expect(authDatabaseConfig("development").debugLogs).toBe(true);
-		expect(authDatabaseConfig("production").provider).toBe("pg");
-	});
+  test("debugLogs de l'adaptateur suit NODE_ENV (jamais true en production)", () => {
+    expect(authDatabaseConfig("production").debugLogs).toBe(false);
+    expect(authDatabaseConfig("development").debugLogs).toBe(true);
+    expect(authDatabaseConfig("production").provider).toBe("pg");
+  });
 
-	test("cache de session, cookies sécurisés et URL normalisée", () => {
-		const prod = options("production");
-		expect(prod.session.cookieCache).toEqual({ enabled: true, maxAge: 300 });
-		expect(prod.advanced.useSecureCookies).toBe(true);
-		expect(options("development").advanced.useSecureCookies).toBe(false);
-		expect(prod.baseURL.fallback).toBe("https://dragonballfr.com");
-	});
+  test("cache de session, cookies sécurisés et URL normalisée", () => {
+    const prod = options("production");
+    expect(prod.session.cookieCache).toEqual({ enabled: true, maxAge: 300 });
+    expect(prod.advanced.useSecureCookies).toBe(true);
+    expect(options("development").advanced.useSecureCookies).toBe(false);
+    expect(prod.baseURL.fallback).toBe("https://dragonballfr.com");
+  });
 
-	test("fournisseur Discord : consent, portées dédoublonnées, e-mail de substitution", () => {
-		const discord = options("production").socialProviders.discord;
-		expect(discord.prompt).toBe("consent");
-		expect(discord.scope).toEqual(["guilds", "guilds.members.read"]);
-		expect(discord.mapProfileToUser({ id: "42", email: null } as never)).toEqual({
-			email: "42@discord.placeholder.local",
-		});
-	});
+  test("fournisseur Discord : consent, portées dédoublonnées, e-mail de substitution", () => {
+    const discord = options("production").socialProviders.discord;
+    expect(discord.prompt).toBe("consent");
+    expect(discord.scope).toEqual(["guilds", "guilds.members.read"]);
+    expect(discord.mapProfileToUser({ id: "42", email: null } as never)).toEqual({
+      email: "42@discord.placeholder.local",
+    });
+  });
 });

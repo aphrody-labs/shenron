@@ -8,10 +8,10 @@ import type { SettingsService } from "~/services/SettingsService";
  *    custom — utile si l'admin nomme manuellement un booster sans Nitro).
  */
 async function isBooster(member: GuildMember, settings: SettingsService): Promise<boolean> {
-	if (member.premiumSince) return true;
-	const roleId = await settings.getRaw("role.booster");
-	if (roleId && member.roles.cache.has(roleId)) return true;
-	return false;
+  if (member.premiumSince) return true;
+  const roleId = await settings.getRaw("role.booster");
+  if (roleId && member.roles.cache.has(roleId)) return true;
+  return false;
 }
 
 /**
@@ -19,10 +19,10 @@ async function isBooster(member: GuildMember, settings: SettingsService): Promis
  * Setting `xp.boost.boosters` (float, default 2.0). Désactivable en mettant 1.
  */
 export async function boosterXpMultiplier(
-	member: GuildMember,
-	settings: SettingsService
+  member: GuildMember,
+  settings: SettingsService,
 ): Promise<number> {
-	if (!(await isBooster(member, settings))) return 1;
-	const mult = await settings.getFloat("xp.boost.boosters", 2.0);
-	return mult >= 1 ? mult : 1;
+  if (!(await isBooster(member, settings))) return 1;
+  const mult = await settings.getFloat("xp.boost.boosters", 2.0);
+  return mult >= 1 ? mult : 1;
 }

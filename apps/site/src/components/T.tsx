@@ -33,22 +33,22 @@ import type { Dictionary } from "@/lib/i18n";
 
 /** Walks `nav.wiki` through the dictionary. Returns null rather than a half-path. */
 export function lookup(dico: Dictionary, key: string): string | null {
-	let node: unknown = dico;
-	for (const segment of key.split(".")) {
-		if (!node || typeof node !== "object" || !(segment in node)) return null;
-		node = (node as Record<string, unknown>)[segment];
-	}
-	return typeof node === "string" ? node : null;
+  let node: unknown = dico;
+  for (const segment of key.split(".")) {
+    if (!node || typeof node !== "object" || !(segment in node)) return null;
+    node = (node as Record<string, unknown>)[segment];
+  }
+  return typeof node === "string" ? node : null;
 }
 
 const manquantes = new Set<string>();
 
 /** Fills `{name}` placeholders — the ICU subset the interface actually uses. */
 function interpolate(text: string, values?: Record<string, string | number>): string {
-	if (!values) return text;
-	return text.replace(/\{(\w+)\}/g, (whole, name: string) =>
-		name in values ? String(values[name]) : whole
-	);
+  if (!values) return text;
+  return text.replace(/\{(\w+)\}/g, (whole, name: string) =>
+    name in values ? String(values[name]) : whole,
+  );
 }
 
 /**
@@ -56,28 +56,28 @@ function interpolate(text: string, values?: Record<string, string | number>): st
  * computed labels). Same dictionary, same switch, no provider to add.
  */
 export function useT(): (key: string, values?: Record<string, string | number>) => string {
-	const { dico } = useLangue();
-	return (key, values) => {
-		const found = lookup(dico, key);
-		if (found === null) {
-			if (!manquantes.has(key)) {
-				manquantes.add(key);
-				console.warn(`[i18n] clé absente : ${key}`);
-			}
-			return "";
-		}
-		return interpolate(found, values);
-	};
+  const { dico } = useLangue();
+  return (key, values) => {
+    const found = lookup(dico, key);
+    if (found === null) {
+      if (!manquantes.has(key)) {
+        manquantes.add(key);
+        console.warn(`[i18n] clé absente : ${key}`);
+      }
+      return "";
+    }
+    return interpolate(found, values);
+  };
 }
 
 export function T({
-	k,
-	values,
+  k,
+  values,
 }: {
-	/** Dotted path in `messages/*.json`, e.g. `categories.films.label`. */
-	k: string;
-	values?: Record<string, string | number>;
+  /** Dotted path in `messages/*.json`, e.g. `categories.films.label`. */
+  k: string;
+  values?: Record<string, string | number>;
 }) {
-	const t = useT();
-	return <>{t(k, values)}</>;
+  const t = useT();
+  return <>{t(k, values)}</>;
 }

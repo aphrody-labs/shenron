@@ -1,28 +1,28 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it } from "bun:test";
 
-import { receiveDownload, useKoharuStore } from '@shenron/ui/koharu/lib/store'
+import { receiveDownload, useKoharuStore } from "@shenron/ui/koharu/lib/store";
 
-describe('editor state', () => {
-  it('retains failed downloads until they are dismissed', () => {
-    useKoharuStore.setState({ downloads: {} })
+describe("editor state", () => {
+  it("retains failed downloads until they are dismissed", () => {
+    useKoharuStore.setState({ downloads: {} });
     receiveDownload({
-      state: 'failed',
+      state: "failed",
       id: 9,
-      name: 'weights.bin',
+      name: "weights.bin",
       completed: 0,
       total: 0,
-      error: 'network unavailable',
-    })
+      error: "network unavailable",
+    });
     expect(useKoharuStore.getState().downloads[9]).toMatchObject({
-      state: 'failed',
-      name: 'weights.bin',
-    })
+      state: "failed",
+      name: "weights.bin",
+    });
 
-    useKoharuStore.getState().dismissDownload(9)
-    expect(useKoharuStore.getState().downloads[9]).toBeUndefined()
-  })
+    useKoharuStore.getState().dismissDownload(9);
+    expect(useKoharuStore.getState().downloads[9]).toBeUndefined();
+  });
 
-  it('defaults paint brush color to pure white (#FFFFFF)', () => {
-    expect(useKoharuStore.getState().brush.color).toBe('#FFFFFF')
-  })
-})
+  it("defaults paint brush color to pure white (#FFFFFF)", () => {
+    expect(useKoharuStore.getState().brush.color).toBe("#FFFFFF");
+  });
+});

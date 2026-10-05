@@ -26,59 +26,59 @@ import type { AccessSnapshot } from "@/lib/wiki-launch";
 const AUTRES_CATEGORIES = ENCYCLOPEDIA_CATEGORIES.filter((c) => c.key !== "personnages");
 
 type Props = {
-	characters: GridCharacter[];
-	/** Nombre de versions par saga (les données sont chargées à la demande). */
-	nbVariants?: number;
-	counts?: Record<string, number>;
-	facets?: CharacterFacets;
+  characters: GridCharacter[];
+  /** Nombre de versions par saga (les données sont chargées à la demande). */
+  nbVariants?: number;
+  counts?: Record<string, number>;
+  facets?: CharacterFacets;
 };
 
 export function UniverseTabs({
-	characters,
-	nbVariants = 0,
-	counts = {},
-	facets,
-	access,
+  characters,
+  nbVariants = 0,
+  counts = {},
+  facets,
+  access,
 }: Props & { access?: AccessSnapshot | null }) {
-	return (
-		<div className="space-y-8">
-			<nav
-				aria-label="Entrées de l'encyclopédie"
-				// `min-w-0` : sans lui, l'enfant `shrink-0` (707 px de contenu) imposait sa
-				// largeur au conteneur malgré `overflow-x-auto`, et c'est toute la page
-				// qui s'étirait à 948 px dans un viewport de 390.
-				className="flex min-w-0 items-center overflow-x-auto border-b border-white/[0.08] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-			>
-				<span className="shrink-0 whitespace-nowrap border-b-2 border-dbz-orange px-5 py-3 font-display text-sm font-semibold text-dbz-orange">
-					Personnages ({characters.length})
-				</span>
-				<span className="mx-2 h-5 w-px shrink-0 bg-white/10" aria-hidden />
-				<div className="flex shrink-0 items-center">
-					{AUTRES_CATEGORIES.map((c) => {
-						const n = counts[c.countKey];
-						return (
-							<ClientGatedWrap
-								access={access}
-								key={c.key}
-								href={c.href}
-								className="whitespace-nowrap px-4 py-3 font-display text-sm font-semibold text-white/55 transition-colors hover:text-white"
-							>
-								{c.label}
-								{typeof n === "number" && n > 0 && (
-									<span className="ml-1 text-[11px] tabular-nums text-white/50">{n}</span>
-								)}
-							</ClientGatedWrap>
-						);
-					})}
-				</div>
-			</nav>
+  return (
+    <div className="space-y-8">
+      <nav
+        aria-label="Entrées de l'encyclopédie"
+        // `min-w-0` : sans lui, l'enfant `shrink-0` (707 px de contenu) imposait sa
+        // largeur au conteneur malgré `overflow-x-auto`, et c'est toute la page
+        // qui s'étirait à 948 px dans un viewport de 390.
+        className="flex min-w-0 items-center overflow-x-auto border-b border-white/[0.08] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <span className="shrink-0 whitespace-nowrap border-b-2 border-dbz-orange px-5 py-3 font-display text-sm font-semibold text-dbz-orange">
+          Personnages ({characters.length})
+        </span>
+        <span className="mx-2 h-5 w-px shrink-0 bg-white/10" aria-hidden />
+        <div className="flex shrink-0 items-center">
+          {AUTRES_CATEGORIES.map((c) => {
+            const n = counts[c.countKey];
+            return (
+              <ClientGatedWrap
+                access={access}
+                key={c.key}
+                href={c.href}
+                className="whitespace-nowrap px-4 py-3 font-display text-sm font-semibold text-white/55 transition-colors hover:text-white"
+              >
+                {c.label}
+                {typeof n === "number" && n > 0 && (
+                  <span className="ml-1 text-[11px] tabular-nums text-white/50">{n}</span>
+                )}
+              </ClientGatedWrap>
+            );
+          })}
+        </div>
+      </nav>
 
-			<CharacterGrid
-				characters={characters}
-				nbVariants={nbVariants}
-				facets={facets}
-				access={access}
-			/>
-		</div>
-	);
+      <CharacterGrid
+        characters={characters}
+        nbVariants={nbVariants}
+        facets={facets}
+        access={access}
+      />
+    </div>
+  );
 }

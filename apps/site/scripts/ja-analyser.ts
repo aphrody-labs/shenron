@@ -17,18 +17,18 @@
 import postgres from "postgres";
 import { exigerRessources, graphiesJmdict, segmenter } from "../src/lib/ja/dictionnaire";
 import {
-	indexerLexique,
-	retenirParFrequence,
-	suggerer,
-	trierLexique,
-	type Suggestion,
-	type TermeLexique,
+  indexerLexique,
+  retenirParFrequence,
+  suggerer,
+  trierLexique,
+  type Suggestion,
+  type TermeLexique,
 } from "../src/lib/ja/anomalies";
 import { contientJaponais, normaliserJa } from "../src/lib/ja/normalisation";
 
 function argument(nom: string): string | undefined {
-	const i = process.argv.indexOf(`--${nom}`);
-	return i >= 0 ? process.argv[i + 1] : undefined;
+  const i = process.argv.indexOf(`--${nom}`);
+  return i >= 0 ? process.argv[i + 1] : undefined;
 }
 
 const LIMITE = Number(argument("limite") ?? 0) || 0;
@@ -36,11 +36,11 @@ const SEUIL = Number(argument("seuil") ?? 1) || 1;
 const SORTIE = argument("json");
 
 const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
-	.split("\n")
-	.find((l) => l.startsWith("DATABASE_URL="))
-	?.slice("DATABASE_URL=".length)
-	.replace(/^"|"$/g, "")
-	.trim();
+  .split("\n")
+  .find((l) => l.startsWith("DATABASE_URL="))
+  ?.slice("DATABASE_URL=".length)
+  .replace(/^"|"$/g, "")
+  .trim();
 if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(url, { max: 2 });
 
@@ -60,21 +60,21 @@ const brut = await sql<{ ja: string; fr: string; kind: string }[]>`
 const vus = new Set<string>();
 const termes: TermeLexique[] = [];
 for (const l of brut) {
-	for (const variante of String(l.ja).split(/[,、;]/)) {
-		const ja = variante
-			.trim()
-			.replace(/^[（(]+|[）)]+$/g, "")
-			.trim();
-		if (ja.length < 2 || !contientJaponais(ja) || vus.has(ja)) continue;
-		vus.add(ja);
-		termes.push({
-			ja,
-			fr: String(l.fr ?? "")
-				.replace(/\s*\([^)]*\)\s*$/, "")
-				.trim(),
-			kind: l.kind,
-		});
-	}
+  for (const variante of String(l.ja).split(/[,、;]/)) {
+    const ja = variante
+      .trim()
+      .replace(/^[（(]+|[）)]+$/g, "")
+      .trim();
+    if (ja.length < 2 || !contientJaponais(ja) || vus.has(ja)) continue;
+    vus.add(ja);
+    termes.push({
+      ja,
+      fr: String(l.fr ?? "")
+        .replace(/\s*\([^)]*\)\s*$/, "")
+        .trim(),
+      kind: l.kind,
+    });
+  }
 }
 const lex = trierLexique(termes);
 const index = indexerLexique(lex);
@@ -97,12 +97,12 @@ console.log(`  ${planches.length} planches transcrites`);
 const corpus = normaliserJa(planches.map((p) => p.texte).join("\n"));
 const cacheOcc = new Map<string, number>();
 function occurrences(graphie: string): number {
-	const cle = normaliserJa(graphie);
-	const vu = cacheOcc.get(cle);
-	if (vu !== undefined) return vu;
-	const n = cle ? corpus.split(cle).length - 1 : 0;
-	cacheOcc.set(cle, n);
-	return n;
+  const cle = normaliserJa(graphie);
+  const vu = cacheOcc.get(cle);
+  if (vu !== undefined) return vu;
+  const n = cle ? corpus.split(cle).length - 1 : 0;
+  cacheOcc.set(cle, n);
+  return n;
 }
 
 console.log("· analyse…");
@@ -113,61 +113,63 @@ let inconnus = 0;
 let absousJmdict = 0;
 
 for (const [i, p] of planches.entries()) {
-	if (i > 0 && i % 500 === 0) {
-		console.log(`  ${i}/${planches.length}…`);
-	}
-	for (const t of await segmenter(p.texte)) {
-		tokens++;
-		if (!t.inconnu || !contientJaponais(t.surface)) continue;
-		inconnus++;
-		if (jmdict.has(t.surface)) {
-			absousJmdict++;
-			continue;
-		}
-		const deja = parGraphie.get(t.surface);
-		if (deja) {
-			deja.n++;
-			deja.ou.add(p.titre);
-			continue;
-		}
-		const s = suggerer(t.surface, lex, index, occurrences);
-		if (s) parGraphie.set(t.surface, { s, n: 1, ou: new Set([p.titre]) });
-	}
+  if (i > 0 && i % 500 === 0) {
+    console.log(`  ${i}/${planches.length}…`);
+  }
+  for (const t of await segmenter(p.texte)) {
+    tokens++;
+    if (!t.inconnu || !contientJaponais(t.surface)) continue;
+    inconnus++;
+    if (jmdict.has(t.surface)) {
+      absousJmdict++;
+      continue;
+    }
+    const deja = parGraphie.get(t.surface);
+    if (deja) {
+      deja.n++;
+      deja.ou.add(p.titre);
+      continue;
+    }
+    const s = suggerer(t.surface, lex, index, occurrences);
+    if (s) parGraphie.set(t.surface, { s, n: 1, ou: new Set([p.titre]) });
+  }
 }
 
 const retenues = [...parGraphie.values()]
-	.filter((c) => retenirParFrequence(c.s, occurrences) && c.n >= SEUIL)
-	.toSorted((a, b) => b.n - a.n);
+  .filter((c) => retenirParFrequence(c.s, occurrences) && c.n >= SEUIL)
+  .toSorted((a, b) => b.n - a.n);
 
 const secs = (Bun.nanoseconds() - t0) / 1e9;
 console.log(
-	`\n${planches.length} planches · ${tokens.toLocaleString("fr-FR")} tokens · ${secs.toFixed(0)} s`
+  `\n${planches.length} planches · ${tokens.toLocaleString("fr-FR")} tokens · ${secs.toFixed(0)} s`,
 );
 console.log(`inconnus du dictionnaire : ${inconnus.toLocaleString("fr-FR")}`);
 console.log(`  absous par JMdict ...... ${absousJmdict.toLocaleString("fr-FR")}`);
 console.log(`corrections proposées .... ${retenues.length}\n`);
 
 for (const c of retenues.slice(0, 40)) {
-	const ouvrages = c.ou.size === 1 ? [...c.ou][0].slice(0, 34) : `${c.ou.size} ouvrages`;
-	console.log(
-		`${String(c.n).padStart(4)}×  ${c.s.lu.padEnd(12)} → ${c.s.attendu.padEnd(12)} ` +
-			`${c.s.fr.padEnd(18)} ${ouvrages}`
-	);
+  const ouvrages = c.ou.size === 1 ? [...c.ou][0].slice(0, 34) : `${c.ou.size} ouvrages`;
+  console.log(
+    `${String(c.n).padStart(4)}×  ${c.s.lu.padEnd(12)} → ${c.s.attendu.padEnd(12)} ` +
+      `${c.s.fr.padEnd(18)} ${ouvrages}`,
+  );
 }
 
 if (SORTIE) {
-	await Bun.write(
-		SORTIE,
-		JSON.stringify(
-			retenues.map((c) => (Object.assign(c.s, {
-	occurrences: c.n,
-	ouvrages: [...c.ou]
-}))),
-			null,
-			2
-		)
-	);
-	console.log(`\n→ ${SORTIE}`);
+  await Bun.write(
+    SORTIE,
+    JSON.stringify(
+      retenues.map((c) =>
+        Object.assign(c.s, {
+          occurrences: c.n,
+          ouvrages: [...c.ou],
+        }),
+      ),
+      null,
+      2,
+    ),
+  );
+  console.log(`\n→ ${SORTIE}`);
 }
 
 await sql.end();

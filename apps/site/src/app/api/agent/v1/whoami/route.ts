@@ -14,22 +14,22 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-	return withAgent(req, "read", async ({ agent }) => {
-		const used = await agentCallsLastHour(agent.keyId);
-		return agentOk({
-			name: agent.name,
-			scopes: agent.scopes,
-			/** Toutes les portées existantes — pour qu'un agent sache quoi demander. */
-			availableScopes: AGENT_SCOPES,
-			rateLimit: {
-				perHour: agent.rateLimitPerHour,
-				used,
-				remaining: Math.max(0, agent.rateLimitPerHour - used),
-			},
-			docs: "/api/agent/v1/openapi.json",
-			openapi: "/api/agent/v1/openapi.json",
-			wikiContributionSchema: "/api/agent/v1/wiki/contribution-schema",
-			wikiContributionTargets: "/api/agent/v1/wiki/entities?table=db_characters",
-		});
-	});
+  return withAgent(req, "read", async ({ agent }) => {
+    const used = await agentCallsLastHour(agent.keyId);
+    return agentOk({
+      name: agent.name,
+      scopes: agent.scopes,
+      /** Toutes les portées existantes — pour qu'un agent sache quoi demander. */
+      availableScopes: AGENT_SCOPES,
+      rateLimit: {
+        perHour: agent.rateLimitPerHour,
+        used,
+        remaining: Math.max(0, agent.rateLimitPerHour - used),
+      },
+      docs: "/api/agent/v1/openapi.json",
+      openapi: "/api/agent/v1/openapi.json",
+      wikiContributionSchema: "/api/agent/v1/wiki/contribution-schema",
+      wikiContributionTargets: "/api/agent/v1/wiki/entities?table=db_characters",
+    });
+  });
 }

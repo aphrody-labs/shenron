@@ -36,9 +36,9 @@ const TTL_MS = 10 * 60_000;
  * avant que « サイヤ » ne morde dessus.
  */
 export async function lexiqueDomaine(): Promise<TermeLexique[]> {
-	if (cache && Date.now() - cache.at < TTL_MS) return cache.termes;
+  if (cache && Date.now() - cache.at < TTL_MS) return cache.termes;
 
-	const lignes = await db.execute<{ ja: string; fr: string; kind: string }>(sql`
+  const lignes = await db.execute<{ ja: string; fr: string; kind: string }>(sql`
 		SELECT name_ja AS ja, name AS fr, 'personnage' AS kind FROM bot.db_characters WHERE name_ja IS NOT NULL
 		UNION ALL SELECT name_ja, name, 'planete'   FROM bot.db_planets     WHERE name_ja IS NOT NULL
 		UNION ALL SELECT name_ja, name, 'race'      FROM bot.db_races       WHERE name_ja IS NOT NULL
@@ -47,37 +47,36 @@ export async function lexiqueDomaine(): Promise<TermeLexique[]> {
 		UNION ALL SELECT name_ja, name, 'technique' FROM bot.db_techniques  WHERE name_ja IS NOT NULL
 	`);
 
-	const vus = new Set<string>();
-	const termes: TermeLexique[] = [];
-	for (const l of lignes) {
-		for (const variante of String(l.ja).split(/[,、;]/)) {
-			const ja = variante
-				.trim()
-				.replace(/^[（(]+|[）)]+$/g, "")
-				.trim();
-			if (ja.length < LONGUEUR_MIN || !contientJaponais(ja) || vus.has(ja)) continue;
-			vus.add(ja);
-			// Le libellé français porte parfois une désambiguïsation entre
-			// parenthèses (« Piccolo (futur) ») : utile en base, parasite dès qu'on
-			// réinjecte le terme dans une phrase traduite.
-			const fr = String(l.fr ?? "")
-				.replace(/\s*\([^)]*\)\s*$/, "")
-				.trim();
-			termes.push({ ja, fr, kind: l.kind });
-		}
-	}
+  const vus = new Set<string>();
+  const termes: TermeLexique[] = [];
+  for (const l of lignes) {
+    for (const variante of String(l.ja).split(/[,、;]/)) {
+      const ja = variante
+        .trim()
+        .replace(/^[（(]+|[）)]+$/g, "")
+        .trim();
+      if (ja.length < LONGUEUR_MIN || !contientJaponais(ja) || vus.has(ja)) continue;
+      vus.add(ja);
+      // Le libellé français porte parfois une désambiguïsation entre
+      // parenthèses (« Piccolo (futur) ») : utile en base, parasite dès qu'on
+      // réinjecte le terme dans une phrase traduite.
+      const fr = String(l.fr ?? "")
+        .replace(/\s*\([^)]*\)\s*$/, "")
+        .trim();
+      termes.push({ ja, fr, kind: l.kind });
+    }
+  }
 
-	const tries = trierLexique(termes);
-	// L'index est bâti ICI, avec le lexique, et pas à chaque analyse : il énumère
-	// toutes les sous-chaînes des 763 termes. Le reconstruire par planche revenait
-	// à le refaire 362 fois pour un seul ouvrage.
-	cache = { at: Date.now(), termes: tries, index: indexerLexique(tries) };
-	return tries;
+  const tries = trierLexique(termes);
+  // L'index est bâti ICI, avec le lexique, et pas à chaque analyse : il énumère
+  // toutes les sous-chaînes des 763 termes. Le reconstruire par planche revenait
+  // à le refaire 362 fois pour un seul ouvrage.
+  cache = { at: Date.now(), termes: tries, index: indexerLexique(tries) };
+  return tries;
 }
 
 /** Index d'appartenance du lexique, construit une fois avec lui. */
 export async function indexLexiqueDomaine(): Promise<IndexLexique> {
-	await lexiqueDomaine();
-	return cache!.index;
+  await lexiqueDomaine();
+  return cache!.index;
 }
-

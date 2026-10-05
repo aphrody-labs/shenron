@@ -15,5 +15,5 @@ import { SITE_URL } from "@/lib/config";
  * initial.
  */
 export const authClient = createShenronAuthClient({
-	fallbackURL: SITE_URL,
+  fallbackURL: SITE_URL,
 });

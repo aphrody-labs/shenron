@@ -18,40 +18,40 @@ import { dbCharacters, dbTransformations } from "~/db/schema";
  */
 const PORTRAIT_DIR = "./assets/dbz/xv2-portraits";
 const catalog: { characters: Record<string, string> } = JSON.parse(
-	readFileSync("./assets/dbz/xv2-catalog.json", "utf-8")
+  readFileSync("./assets/dbz/xv2-catalog.json", "utf-8"),
 );
 
 const SYN: Record<string, string> = {
-	songoku: "goku",
-	songohan: "gohan",
-	songoten: "goten",
-	krilin: "krillin",
-	bills: "beerus",
-	celula: "cell",
-	majinbuu: "buu",
-	boo: "buu",
-	vegeto: "vegetto",
-	msatan: "mrsatan",
-	satan: "mrsatan",
-	doria: "dodoria",
-	vermoud: "vermoudh",
+  songoku: "goku",
+  songohan: "gohan",
+  songoten: "goten",
+  krilin: "krillin",
+  bills: "beerus",
+  celula: "cell",
+  majinbuu: "buu",
+  boo: "buu",
+  vegeto: "vegetto",
+  msatan: "mrsatan",
+  satan: "mrsatan",
+  doria: "dodoria",
+  vermoud: "vermoudh",
 };
 const canon = (s: string) => {
-	const n = s
-		.split(/[,(]/)[0]
-		.trim()
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[̀-ͯ]/g, "")
-		.replace(/^c-?(\d+)/, "android$1")
-		.replace(/[^a-z0-9]/g, "");
-	return SYN[n] ?? n;
+  const n = s
+    .split(/[,(]/)[0]
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/^c-?(\d+)/, "android$1")
+    .replace(/[^a-z0-9]/g, "");
+  return SYN[n] ?? n;
 };
 
 const portraitCodes = new Set(
-	readdirSync(PORTRAIT_DIR)
-		.filter((f) => /^[A-Z0-9]{3}\.png$/.test(f))
-		.map((f) => f.slice(0, 3))
+  readdirSync(PORTRAIT_DIR)
+    .filter((f) => /^[A-Z0-9]{3}\.png$/.test(f))
+    .map((f) => f.slice(0, 3)),
 );
 
 const dbs = container.resolve(DatabaseService);
@@ -67,27 +67,27 @@ let added = 0;
 const seen = new Set<string>();
 const unlinked = new Set<string>();
 for (const [code, raw] of Object.entries(catalog.characters)) {
-	const m = raw.match(/^(.+?)\s*\((.+)\)\s*$/);
-	if (!m || !portraitCodes.has(code)) continue;
-	const baseName = m[1]!.trim();
-	const form = m[2]!.trim();
-	// ignore les variantes d'âge / de période (pas de vraies transformations)
-	if (/^(petit|ado|adulte|enfant|jeune|bébé|\d+\s*ans|du futur|gt|base|jeunesse)$/i.test(form))
-		continue;
-	const charId = byCanon.get(canon(baseName));
-	if (!charId) {
-		unlinked.add(baseName);
-		continue;
-	}
-	const dedup = `${charId}:${form.toLowerCase()}`;
-	if (seen.has(dedup)) continue;
-	seen.add(dedup);
-	await db.insert(dbTransformations).values({
-		name: form,
-		image: `${PORTRAIT_DIR}/${code}.png`,
-		characterId: charId,
-	});
-	added++;
+  const m = raw.match(/^(.+?)\s*\((.+)\)\s*$/);
+  if (!m || !portraitCodes.has(code)) continue;
+  const baseName = m[1]!.trim();
+  const form = m[2]!.trim();
+  // ignore les variantes d'âge / de période (pas de vraies transformations)
+  if (/^(petit|ado|adulte|enfant|jeune|bébé|\d+\s*ans|du futur|gt|base|jeunesse)$/i.test(form))
+    continue;
+  const charId = byCanon.get(canon(baseName));
+  if (!charId) {
+    unlinked.add(baseName);
+    continue;
+  }
+  const dedup = `${charId}:${form.toLowerCase()}`;
+  if (seen.has(dedup)) continue;
+  seen.add(dedup);
+  await db.insert(dbTransformations).values({
+    name: form,
+    image: `${PORTRAIT_DIR}/${code}.png`,
+    characterId: charId,
+  });
+  added++;
 }
 
 console.log(`✓ ${added} transformations XV2 ajoutées`);

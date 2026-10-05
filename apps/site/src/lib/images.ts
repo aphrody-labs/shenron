@@ -30,8 +30,8 @@ const PREFIXE_EDITABLE = "assets/wiki/";
  * qu'une URL absolue servie par le bot.
  */
 export function isEditableAsset(src: string | null | undefined): boolean {
-	if (!src) return false;
-	return src.includes(PREFIXE_EDITABLE);
+  if (!src) return false;
+  return src.includes(PREFIXE_EDITABLE);
 }
 
 /**
@@ -41,7 +41,7 @@ export function isEditableAsset(src: string | null | undefined): boolean {
  * les tailles imaginables.
  */
 export const LARGEURS_OPTIMISEUR = [
-	64, 96, 128, 192, 256, 384, 640, 828, 1080, 1200, 1920,
+  64, 96, 128, 192, 256, 384, 640, 828, 1080, 1200, 1920,
 ] as const;
 
 /**
@@ -57,15 +57,15 @@ export const LARGEURS_OPTIMISEUR = [
  * son remplacement (cf. `isEditableAsset`).
  */
 export function optimizedSrc(src: string, width: number, quality = 70): string {
-	if (isEditableAsset(src)) return src;
-	const w = LARGEURS_OPTIMISEUR.find((c) => c >= width) ?? LARGEURS_OPTIMISEUR.at(-1)!;
-	return `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${quality}`;
+  if (isEditableAsset(src)) return src;
+  const w = LARGEURS_OPTIMISEUR.find((c) => c >= width) ?? LARGEURS_OPTIMISEUR.at(-1)!;
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${quality}`;
 }
 
 /** `srcSet` sur plusieurs largeurs, pour laisser le navigateur choisir. */
 export function optimizedSrcSet(src: string, largeurs: readonly number[], quality = 70): string {
-	if (isEditableAsset(src)) return "";
-	return largeurs
-		.map((l) => `${optimizedSrc(src, l, quality)} ${LARGEURS_OPTIMISEUR.find((c) => c >= l) ?? l}w`)
-		.join(", ");
+  if (isEditableAsset(src)) return "";
+  return largeurs
+    .map((l) => `${optimizedSrc(src, l, quality)} ${LARGEURS_OPTIMISEUR.find((c) => c >= l) ?? l}w`)
+    .join(", ");
 }

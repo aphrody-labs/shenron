@@ -11,38 +11,38 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const CORS = {
-	"Access-Control-Allow-Origin": "*",
-	"Access-Control-Allow-Methods": "GET, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type",
-	"Access-Control-Max-Age": "86400",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": "86400",
 };
 
 export function OPTIONS() {
-	return new NextResponse(null, { status: 204, headers: CORS });
+  return new NextResponse(null, { status: 204, headers: CORS });
 }
 
 export async function GET(_req: NextRequest) {
-	try {
-		const timelines = (await dbUniverse.narrativeTimelines()) ?? [];
+  try {
+    const timelines = (await dbUniverse.narrativeTimelines()) ?? [];
 
-		return NextResponse.json(
-			{
-				data: timelines,
-				total: timelines.length,
-			},
-			{
-				headers: {
-					...CORS,
-					"Content-Type": "application/json; charset=utf-8",
-					"Cache-Control": "public, max-age=60, stale-while-revalidate=300",
-				},
-			},
-		);
-	} catch (error) {
-		console.error("[API_WIKI_TIMELINES_ERROR]", error);
-		return NextResponse.json(
-			{ error: "Erreur interne lors de la récupération des timelines narratives." },
-			{ status: 500, headers: CORS },
-		);
-	}
+    return NextResponse.json(
+      {
+        data: timelines,
+        total: timelines.length,
+      },
+      {
+        headers: {
+          ...CORS,
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+        },
+      },
+    );
+  } catch (error) {
+    console.error("[API_WIKI_TIMELINES_ERROR]", error);
+    return NextResponse.json(
+      { error: "Erreur interne lors de la récupération des timelines narratives." },
+      { status: 500, headers: CORS },
+    );
+  }
 }

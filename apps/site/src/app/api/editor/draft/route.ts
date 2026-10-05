@@ -44,9 +44,9 @@ const FORMATS = new Set(["doc", "markdown", "text"]);
  * disque d'un compte qui bouclerait sur des clés inventées.
  */
 const draftRateLimit = createMemoryRateLimiter({
-	windowMs: 60_000,
-	limit: 60,
-	namespace: "drafts",
+  windowMs: 60_000,
+  limit: 60,
+  namespace: "drafts",
 });
 
 /**
@@ -62,86 +62,86 @@ const draftRateLimit = createMemoryRateLimiter({
 const CORPS_MAX = 4 * 1024 * 1024;
 
 export async function GET(req: Request) {
-	const user = await getCurrentUser();
-	if (!user) return Response.json({ draft: null }, { status: 200 });
+  const user = await getCurrentUser();
+  if (!user) return Response.json({ draft: null }, { status: 200 });
 
-	const key = new URL(req.url).searchParams.get("key");
-	if (!key || key.length > MAX_KEY) {
-		return Response.json({ error: "Clé manquante ou trop longue." }, { status: 400 });
-	}
+  const key = new URL(req.url).searchParams.get("key");
+  if (!key || key.length > MAX_KEY) {
+    return Response.json({ error: "Clé manquante ou trop longue." }, { status: 400 });
+  }
 
-	const [draft] = await db
-		.select()
-		.from(editorDrafts)
-		.where(and(eq(editorDrafts.docKey, key), eq(editorDrafts.userId, user.sessionUserId)))
-		.limit(1);
+  const [draft] = await db
+    .select()
+    .from(editorDrafts)
+    .where(and(eq(editorDrafts.docKey, key), eq(editorDrafts.userId, user.sessionUserId)))
+    .limit(1);
 
-	return Response.json({ draft: draft ?? null });
+  return Response.json({ draft: draft ?? null });
 }
 
 export async function PUT(req: Request) {
-	const user = await getCurrentUser();
-	if (!user) return Response.json({ error: "Session requise." }, { status: 401 });
+  const user = await getCurrentUser();
+  if (!user) return Response.json({ error: "Session requise." }, { status: 401 });
 
-	// Les deux garde-fous passent AVANT la lecture du corps : un compte déjà
-	// limité, ou qui annonce une charge hors norme, ne doit pas faire désérialiser
-	// sa requête pour s'entendre refuser ensuite.
-	const rate = await draftRateLimit.consume(user.sessionUserId);
-	if (rate.limited) {
-		return Response.json(
-			{ error: "Trop d'enregistrements d'affilée." },
-			{ status: 429, headers: { "Retry-After": String(rate.retryAfter) } }
-		);
-	}
-	const annoncee = Number(req.headers.get("content-length") ?? 0);
-	if (Number.isFinite(annoncee) && annoncee > CORPS_MAX) {
-		return Response.json({ error: "Brouillon trop volumineux." }, { status: 413 });
-	}
+  // Les deux garde-fous passent AVANT la lecture du corps : un compte déjà
+  // limité, ou qui annonce une charge hors norme, ne doit pas faire désérialiser
+  // sa requête pour s'entendre refuser ensuite.
+  const rate = await draftRateLimit.consume(user.sessionUserId);
+  if (rate.limited) {
+    return Response.json(
+      { error: "Trop d'enregistrements d'affilée." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
+    );
+  }
+  const annoncee = Number(req.headers.get("content-length") ?? 0);
+  if (Number.isFinite(annoncee) && annoncee > CORPS_MAX) {
+    return Response.json({ error: "Brouillon trop volumineux." }, { status: 413 });
+  }
 
-	const body = (await req.json().catch(() => null)) as {
-		key?: string;
-		format?: string;
-		content?: string;
-		label?: string;
-	} | null;
-	if (!body?.key || body.key.length > MAX_KEY || typeof body.content !== "string") {
-		return Response.json({ error: "Requête invalide." }, { status: 400 });
-	}
-	if (body.content.length > MAX_CONTENT) {
-		return Response.json({ error: "Brouillon trop volumineux." }, { status: 413 });
-	}
+  const body = (await req.json().catch(() => null)) as {
+    key?: string;
+    format?: string;
+    content?: string;
+    label?: string;
+  } | null;
+  if (!body?.key || body.key.length > MAX_KEY || typeof body.content !== "string") {
+    return Response.json({ error: "Requête invalide." }, { status: 400 });
+  }
+  if (body.content.length > MAX_CONTENT) {
+    return Response.json({ error: "Brouillon trop volumineux." }, { status: 413 });
+  }
 
-	// Un format inconnu ne serait relu par personne : on retombe sur le défaut
-	// plutôt que d'écrire une valeur libre venue du navigateur.
-	const format =
-		typeof body.format === "string" && FORMATS.has(body.format) ? body.format : "markdown";
-	const label =
-		typeof body.label === "string" && body.label.trim()
-			? body.label.trim().slice(0, MAX_LABEL)
-			: null;
+  // Un format inconnu ne serait relu par personne : on retombe sur le défaut
+  // plutôt que d'écrire une valeur libre venue du navigateur.
+  const format =
+    typeof body.format === "string" && FORMATS.has(body.format) ? body.format : "markdown";
+  const label =
+    typeof body.label === "string" && body.label.trim()
+      ? body.label.trim().slice(0, MAX_LABEL)
+      : null;
 
-	const now = new Date();
-	await db
-		.insert(editorDrafts)
-		.values({
-			docKey: body.key,
-			userId: user.sessionUserId,
-			format,
-			content: body.content,
-			label,
-			updatedAt: now,
-		})
-		.onConflictDoUpdate({
-			target: [editorDrafts.docKey, editorDrafts.userId],
-			set: {
-				content: body.content,
-				format,
-				label,
-				updatedAt: now,
-			},
-		});
+  const now = new Date();
+  await db
+    .insert(editorDrafts)
+    .values({
+      docKey: body.key,
+      userId: user.sessionUserId,
+      format,
+      content: body.content,
+      label,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: [editorDrafts.docKey, editorDrafts.userId],
+      set: {
+        content: body.content,
+        format,
+        label,
+        updatedAt: now,
+      },
+    });
 
-	return Response.json({ ok: true, savedAt: now.toISOString() });
+  return Response.json({ ok: true, savedAt: now.toISOString() });
 }
 
 /**
@@ -152,17 +152,17 @@ export async function PUT(req: Request) {
 export const POST = PUT;
 
 export async function DELETE(req: Request) {
-	const user = await getCurrentUser();
-	if (!user) return Response.json({ ok: true });
+  const user = await getCurrentUser();
+  if (!user) return Response.json({ ok: true });
 
-	const key = new URL(req.url).searchParams.get("key");
-	if (!key || key.length > MAX_KEY) {
-		return Response.json({ error: "Clé manquante ou trop longue." }, { status: 400 });
-	}
+  const key = new URL(req.url).searchParams.get("key");
+  if (!key || key.length > MAX_KEY) {
+    return Response.json({ error: "Clé manquante ou trop longue." }, { status: 400 });
+  }
 
-	await db
-		.delete(editorDrafts)
-		.where(and(eq(editorDrafts.docKey, key), eq(editorDrafts.userId, user.sessionUserId)));
+  await db
+    .delete(editorDrafts)
+    .where(and(eq(editorDrafts.docKey, key), eq(editorDrafts.userId, user.sessionUserId)));
 
-	return Response.json({ ok: true });
+  return Response.json({ ok: true });
 }

@@ -9,9 +9,7 @@
     "/api/public/openapi.json": {
       "get": {
         "operationId": "openApi",
-        "tags": [
-          "meta"
-        ],
+        "tags": ["meta"],
         "responses": {
           "200": {
             "description": "OK",
@@ -79,9 +77,7 @@
     "/api/v1/chat": {
       "post": {
         "operationId": "chat",
-        "tags": [
-          "chat"
-        ],
+        "tags": ["chat"],
         "responses": {
           "200": {
             "description": "OK",
@@ -180,9 +176,7 @@
     "/api/v1/chat/streams/{streamId}": {
       "get": {
         "operationId": "chatResume",
-        "tags": [
-          "chat"
-        ],
+        "tags": ["chat"],
         "responses": {
           "200": {
             "description": "OK",
@@ -282,9 +276,7 @@
     "/api/v1/chat/streams/{streamId}/cancel": {
       "post": {
         "operationId": "chatCancel",
-        "tags": [
-          "chat"
-        ],
+        "tags": ["chat"],
         "responses": {
           "200": {
             "description": "OK",
@@ -378,9 +370,7 @@
     "/api/v1/chat/ws": {
       "get": {
         "operationId": "chatSocket",
-        "tags": [
-          "chat"
-        ],
+        "tags": ["chat"],
         "responses": {
           "101": {
             "description": "Switching protocols (WebSocket)"
@@ -456,9 +446,7 @@
     "/api/v1/models": {
       "get": {
         "operationId": "models",
-        "tags": [
-          "models"
-        ],
+        "tags": ["models"],
         "responses": {
           "200": {
             "description": "OK",
@@ -526,9 +514,7 @@
     "/api/v1/ocr": {
       "post": {
         "operationId": "ocr",
-        "tags": [
-          "ocr"
-        ],
+        "tags": ["ocr"],
         "responses": {
           "200": {
             "description": "OK",
@@ -621,9 +607,7 @@
     "/api/v1/sync/conversations": {
       "post": {
         "operationId": "syncPush",
-        "tags": [
-          "sync"
-        ],
+        "tags": ["sync"],
         "responses": {
           "200": {
             "description": "OK",
@@ -714,9 +698,7 @@
       },
       "get": {
         "operationId": "syncPull",
-        "tags": [
-          "sync"
-        ],
+        "tags": ["sync"],
         "responses": {
           "200": {
             "description": "OK",
@@ -820,9 +802,7 @@
     "/api/v1/conversations": {
       "get": {
         "operationId": "conversations",
-        "tags": [
-          "conversations"
-        ],
+        "tags": ["conversations"],
         "responses": {
           "200": {
             "description": "OK",
@@ -905,9 +885,7 @@
     "/api/v1/conversations/{id}": {
       "get": {
         "operationId": "conversation",
-        "tags": [
-          "conversations"
-        ],
+        "tags": ["conversations"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1001,9 +979,7 @@
     "/api/v1/vfs": {
       "get": {
         "operationId": "vfsInfo",
-        "tags": [
-          "vfs"
-        ],
+        "tags": ["vfs"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1071,9 +1047,7 @@
     "/api/v1/vfs/stat": {
       "get": {
         "operationId": "vfsStat",
-        "tags": [
-          "vfs"
-        ],
+        "tags": ["vfs"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1153,9 +1127,7 @@
     "/api/v1/vfs/list": {
       "get": {
         "operationId": "vfsList",
-        "tags": [
-          "vfs"
-        ],
+        "tags": ["vfs"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1235,9 +1207,7 @@
     "/api/v1/vfs/file": {
       "get": {
         "operationId": "vfsFile",
-        "tags": [
-          "vfs"
-        ],
+        "tags": ["vfs"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1318,9 +1288,7 @@
     "/api/v1/vfs/query": {
       "post": {
         "operationId": "vfsQuery",
-        "tags": [
-          "vfs"
-        ],
+        "tags": ["vfs"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1413,9 +1381,7 @@
     "/health": {
       "get": {
         "operationId": "health",
-        "tags": [
-          "meta"
-        ],
+        "tags": ["meta"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1483,9 +1449,7 @@
     "/api/health": {
       "get": {
         "operationId": "apiHealth",
-        "tags": [
-          "meta"
-        ],
+        "tags": ["meta"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1553,9 +1517,7 @@
     "/api/public/rag/search": {
       "get": {
         "operationId": "ragSearch",
-        "tags": [
-          "rag"
-        ],
+        "tags": ["rag"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1698,9 +1660,7 @@
     "/api/public/rag/context": {
       "get": {
         "operationId": "ragContext",
-        "tags": [
-          "rag"
-        ],
+        "tags": ["rag"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1843,9 +1803,7 @@
     "/api/public/wiki/categories": {
       "get": {
         "operationId": "wikiCategories",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "responses": {
           "200": {
             "description": "OK",
@@ -1913,9 +1871,7 @@
     "/api/public/wiki/{category}": {
       "get": {
         "operationId": "wikiList",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "responses": {
           "200": {
             "description": "OK",
@@ -2024,9 +1980,7 @@
     "/api/public/wiki/{category}/{idOrSlug}": {
       "get": {
         "operationId": "wikiEntity",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "responses": {
           "200": {
             "description": "OK",
@@ -2135,9 +2089,7 @@
             "const": true
           }
         },
-        "required": [
-          "ok"
-        ],
+        "required": ["ok"],
         "additionalProperties": false
       },
       "ChatAttachment": {
@@ -2145,11 +2097,7 @@
         "properties": {
           "mediaType": {
             "type": "string",
-            "enum": [
-              "image/png",
-              "image/jpeg",
-              "image/webp"
-            ]
+            "enum": ["image/png", "image/jpeg", "image/webp"]
           },
           "data": {
             "type": "string",
@@ -2160,19 +2108,11 @@
             "maxLength": 200
           }
         },
-        "required": [
-          "mediaType",
-          "data"
-        ]
+        "required": ["mediaType", "data"]
       },
       "ChatBackendId": {
         "type": "string",
-        "enum": [
-          "auto",
-          "gemini-web",
-          "local",
-          "extractive"
-        ]
+        "enum": ["auto", "gemini-web", "local", "extractive"]
       },
       "ChatBackendStatus": {
         "type": "object",
@@ -2184,20 +2124,13 @@
             "type": "boolean"
           },
           "model": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "detail": {
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "available",
-          "model"
-        ],
+        "required": ["id", "available", "model"],
         "additionalProperties": false
       },
       "ChatDone": {
@@ -2213,10 +2146,7 @@
             "type": "string"
           },
           "model": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "fallbacks": {
             "type": "array",
@@ -2230,10 +2160,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "backend",
-                "error"
-              ],
+              "required": ["backend", "error"],
               "additionalProperties": false
             }
           },
@@ -2248,12 +2175,7 @@
           },
           "finishReason": {
             "type": "string",
-            "enum": [
-              "stop",
-              "length",
-              "aborted",
-              "error"
-            ]
+            "enum": ["stop", "length", "aborted", "error"]
           },
           "stored": {
             "type": "boolean"
@@ -2295,11 +2217,7 @@
             "properties": {
               "mode": {
                 "type": "string",
-                "enum": [
-                  "hybrid",
-                  "lexical",
-                  "none"
-                ]
+                "enum": ["hybrid", "lexical", "none"]
               },
               "hits": {
                 "type": "integer",
@@ -2310,21 +2228,11 @@
                 "type": "string"
               }
             },
-            "required": [
-              "mode",
-              "hits"
-            ],
+            "required": ["mode", "hits"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "streamId",
-          "conversationId",
-          "messageId",
-          "replyId",
-          "persona",
-          "retrieval"
-        ],
+        "required": ["streamId", "conversationId", "messageId", "replyId", "persona", "retrieval"],
         "additionalProperties": false
       },
       "ChatRequest": {
@@ -2398,9 +2306,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "ChatResponse": {
         "type": "object",
@@ -2421,21 +2327,12 @@
             }
           }
         },
-        "required": [
-          "meta",
-          "answer",
-          "done",
-          "tools"
-        ],
+        "required": ["meta", "answer", "done", "tools"],
         "additionalProperties": false
       },
       "ChatSurface": {
         "type": "string",
-        "enum": [
-          "site",
-          "desktop",
-          "bot"
-        ]
+        "enum": ["site", "desktop", "bot"]
       },
       "ChatToolEvent": {
         "type": "object",
@@ -2458,11 +2355,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name",
-          "ok",
-          "ms"
-        ],
+        "required": ["name", "ok", "ms"],
         "additionalProperties": false
       },
       "ChatTurn": {
@@ -2470,10 +2363,7 @@
         "properties": {
           "role": {
             "type": "string",
-            "enum": [
-              "user",
-              "assistant"
-            ]
+            "enum": ["user", "assistant"]
           },
           "content": {
             "type": "string",
@@ -2481,10 +2371,7 @@
             "maxLength": 16000
           }
         },
-        "required": [
-          "role",
-          "content"
-        ]
+        "required": ["role", "content"]
       },
       "ChatUsage": {
         "type": "object",
@@ -2517,18 +2404,10 @@
             "type": "number"
           },
           "firstTokenMs": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           }
         },
-        "required": [
-          "promptTokens",
-          "completionTokens",
-          "ms",
-          "firstTokenMs"
-        ],
+        "required": ["promptTokens", "completionTokens", "ms", "firstTokenMs"],
         "additionalProperties": false
       },
       "Citation": {
@@ -2543,10 +2422,7 @@
             "type": "string"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "kind": {
             "type": "string"
@@ -2561,13 +2437,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "n",
-          "title",
-          "url",
-          "kind",
-          "source"
-        ],
+        "required": ["n", "title", "url", "kind", "source"],
         "additionalProperties": false
       },
       "ConversationDetail": {
@@ -2583,10 +2453,7 @@
             }
           }
         },
-        "required": [
-          "conversation",
-          "messages"
-        ],
+        "required": ["conversation", "messages"],
         "additionalProperties": false
       },
       "ConversationListResponse": {
@@ -2599,9 +2466,7 @@
             }
           }
         },
-        "required": [
-          "conversations"
-        ],
+        "required": ["conversations"],
         "additionalProperties": false
       },
       "ConversationRecord": {
@@ -2613,11 +2478,7 @@
           },
           "surface": {
             "type": "string",
-            "enum": [
-              "site",
-              "desktop",
-              "bot"
-            ]
+            "enum": ["site", "desktop", "bot"]
           },
           "title": {
             "anyOf": [
@@ -2704,9 +2565,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       },
       "HealthResponse": {
@@ -2717,9 +2576,7 @@
             "const": "ok"
           }
         },
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "additionalProperties": false
       },
       "MessageRecord": {
@@ -2735,12 +2592,7 @@
           },
           "role": {
             "type": "string",
-            "enum": [
-              "user",
-              "assistant",
-              "system",
-              "tool"
-            ]
+            "enum": ["user", "assistant", "system", "tool"]
           },
           "content": {
             "type": "string",
@@ -2828,18 +2680,11 @@
                 "type": "string"
               }
             },
-            "required": [
-              "available",
-              "model"
-            ],
+            "required": ["available", "model"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "order",
-          "backends",
-          "embedder"
-        ],
+        "required": ["order", "backends", "embedder"],
         "additionalProperties": false
       },
       "OcrRequest": {
@@ -2853,9 +2698,7 @@
             "maxLength": 8
           }
         },
-        "required": [
-          "attachment"
-        ]
+        "required": ["attachment"]
       },
       "OcrResponse": {
         "type": "object",
@@ -2875,12 +2718,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "engine",
-          "text",
-          "regions",
-          "ms"
-        ],
+        "required": ["engine", "text", "regions", "ms"],
         "additionalProperties": false
       },
       "OpenApiDocument": {
@@ -2890,9 +2728,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "openapi"
-        ],
+        "required": ["openapi"],
         "additionalProperties": {}
       },
       "RagContextResponse": {
@@ -2917,12 +2753,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "q",
-          "mode",
-          "context",
-          "sources"
-        ],
+        "required": ["q", "mode", "context", "sources"],
         "additionalProperties": false
       },
       "RagContextSource": {
@@ -2953,14 +2784,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "n",
-          "rowid",
-          "title",
-          "url",
-          "kind",
-          "score"
-        ],
+        "required": ["n", "rowid", "title", "url", "kind", "score"],
         "additionalProperties": false
       },
       "RagHit": {
@@ -2994,23 +2818,12 @@
             "type": "string"
           }
         },
-        "required": [
-          "rowid",
-          "kind",
-          "title",
-          "url",
-          "snippet",
-          "score"
-        ],
+        "required": ["rowid", "kind", "title", "url", "snippet", "score"],
         "additionalProperties": false
       },
       "RagMode": {
         "type": "string",
-        "enum": [
-          "hybrid+rerank",
-          "hybrid",
-          "lexical"
-        ]
+        "enum": ["hybrid+rerank", "hybrid", "lexical"]
       },
       "RagSearchQuery": {
         "type": "object",
@@ -3049,9 +2862,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "q"
-        ]
+        "required": ["q"]
       },
       "RagSearchResponse": {
         "type": "object",
@@ -3072,10 +2883,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "q",
-          "results"
-        ],
+        "required": ["q", "results"],
         "additionalProperties": false
       },
       "StoredCitation": {
@@ -3090,10 +2898,7 @@
             "type": "string"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "kind": {
             "type": "string"
@@ -3105,13 +2910,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "n",
-          "title",
-          "url",
-          "kind",
-          "source"
-        ],
+        "required": ["n", "title", "url", "kind", "source"],
         "additionalProperties": false
       },
       "SyncPullQuery": {
@@ -3150,12 +2949,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "conversations",
-          "messages",
-          "cursor",
-          "hasMore"
-        ],
+        "required": ["conversations", "messages", "cursor", "hasMore"],
         "additionalProperties": false
       },
       "SyncPushBody": {
@@ -3200,10 +2994,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "id",
-                "canonicalId"
-              ],
+              "required": ["id", "canonicalId"],
               "additionalProperties": false
             }
           },
@@ -3223,10 +3014,7 @@
                   "additionalProperties": {}
                 }
               },
-              "required": [
-                "id",
-                "server"
-              ],
+              "required": ["id", "server"],
               "additionalProperties": false
             }
           },
@@ -3242,10 +3030,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "id",
-                "reason"
-              ],
+              "required": ["id", "reason"],
               "additionalProperties": false
             }
           },
@@ -3253,35 +3038,20 @@
             "type": "string"
           }
         },
-        "required": [
-          "accepted",
-          "duplicates",
-          "conflicts",
-          "rejected",
-          "cursor"
-        ],
+        "required": ["accepted", "duplicates", "conflicts", "rejected", "cursor"],
         "additionalProperties": false
       },
       "VfsInfoResponse": {
         "type": "object",
         "properties": {
           "profile": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "schemaVersion": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "generatedAt": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "files": {
             "type": "integer",
@@ -3335,10 +3105,7 @@
                 "maximum": 9007199254740991
               },
               "model": {
-                "type": [
-                  "string",
-                  "null"
-                ]
+                "type": ["string", "null"]
               },
               "kinds": {
                 "type": "object",
@@ -3350,14 +3117,7 @@
                 }
               }
             },
-            "required": [
-              "docs",
-              "chunks",
-              "vectorsF32",
-              "vectorsI8",
-              "model",
-              "kinds"
-            ],
+            "required": ["docs", "chunks", "vectorsF32", "vectorsI8", "model", "kinds"],
             "additionalProperties": false
           },
           "wiki": {
@@ -3395,10 +3155,7 @@
                 },
                 "kind": {
                   "type": "string",
-                  "enum": [
-                    "file",
-                    "dir"
-                  ]
+                  "enum": ["file", "dir"]
                 },
                 "size": {
                   "type": "integer",
@@ -3407,27 +3164,15 @@
                 },
                 "storage": {
                   "type": "string",
-                  "enum": [
-                    "inline",
-                    "embedded",
-                    "cdn"
-                  ]
+                  "enum": ["inline", "embedded", "cdn"]
                 }
               },
-              "required": [
-                "name",
-                "kind",
-                "size",
-                "storage"
-              ],
+              "required": ["name", "kind", "size", "storage"],
               "additionalProperties": false
             }
           }
         },
-        "required": [
-          "path",
-          "entries"
-        ],
+        "required": ["path", "entries"],
         "additionalProperties": false
       },
       "VfsPathQuery": {
@@ -3439,9 +3184,7 @@
             "maxLength": 4096
           }
         },
-        "required": [
-          "path"
-        ]
+        "required": ["path"]
       },
       "VfsQueryBody": {
         "type": "object",
@@ -3456,18 +3199,11 @@
             "maxItems": 50,
             "type": "array",
             "items": {
-              "type": [
-                "string",
-                "number",
-                "boolean",
-                "null"
-              ]
+              "type": ["string", "number", "boolean", "null"]
             }
           }
         },
-        "required": [
-          "sql"
-        ]
+        "required": ["sql"]
       },
       "VfsQueryResponse": {
         "type": "object",
@@ -3486,10 +3222,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "rows",
-          "ms"
-        ],
+        "required": ["rows", "ms"],
         "additionalProperties": false
       },
       "VfsStatResponse": {
@@ -3500,10 +3233,7 @@
           },
           "kind": {
             "type": "string",
-            "enum": [
-              "file",
-              "dir"
-            ]
+            "enum": ["file", "dir"]
           },
           "size": {
             "type": "integer",
@@ -3511,37 +3241,21 @@
             "maximum": 9007199254740991
           },
           "sha256": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "mime": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "storage": {
             "type": "string",
-            "enum": [
-              "inline",
-              "embedded",
-              "cdn"
-            ]
+            "enum": ["inline", "embedded", "cdn"]
           },
           "sourceUrl": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "visibility": {
             "type": "string",
-            "enum": [
-              "public",
-              "private"
-            ]
+            "enum": ["public", "private"]
           }
         },
         "required": [
@@ -3566,9 +3280,7 @@
             }
           }
         },
-        "required": [
-          "categories"
-        ],
+        "required": ["categories"],
         "additionalProperties": false
       },
       "WikiCategoryName": {
@@ -3612,11 +3324,7 @@
             "maximum": 9007199254740991
           }
         },
-        "required": [
-          "name",
-          "label",
-          "total"
-        ],
+        "required": ["name", "label", "total"],
         "additionalProperties": false
       },
       "WikiEntity": {
@@ -3675,13 +3383,7 @@
             "maximum": 9007199254740991
           }
         },
-        "required": [
-          "category",
-          "items",
-          "total",
-          "limit",
-          "offset"
-        ],
+        "required": ["category", "items", "total", "limit", "offset"],
         "additionalProperties": false
       }
     },

@@ -10,15 +10,15 @@ import { isCurrentUserAdmin } from "@/lib/session";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-	if (!(await isCurrentUserAdmin())) {
-		return Response.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
-	}
-	const url = new URL(req.url);
-	const type = url.searchParams.get("type") ?? "";
-	const q = url.searchParams.get("q") ?? "";
-	if (!TYPES_RATTACHABLES.includes(type)) {
-		return Response.json({ error: `Type inconnu : ${type}` }, { status: 400 });
-	}
-	if (q.trim().length < 2) return Response.json({ entites: [] });
-	return Response.json({ entites: await chercheEntites(type, q) });
+  if (!(await isCurrentUserAdmin())) {
+    return Response.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
+  }
+  const url = new URL(req.url);
+  const type = url.searchParams.get("type") ?? "";
+  const q = url.searchParams.get("q") ?? "";
+  if (!TYPES_RATTACHABLES.includes(type)) {
+    return Response.json({ error: `Type inconnu : ${type}` }, { status: 400 });
+  }
+  if (q.trim().length < 2) return Response.json({ entites: [] });
+  return Response.json({ entites: await chercheEntites(type, q) });
 }

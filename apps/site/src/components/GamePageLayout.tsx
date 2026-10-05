@@ -7,29 +7,29 @@ import { PageHeader } from "@/components/PageHeader";
  * Gère l'auth, le conteneur centré et l'en-tête (grammaire `PageHero`).
  */
 export async function GamePageLayout({
-	path,
-	title,
-	subtitle,
-	maxWidth = "max-w-xl",
-	children,
+  path,
+  title,
+  subtitle,
+  maxWidth = "max-w-xl",
+  children,
 }: {
-	path: string;
-	title: string;
-	subtitle: (username: string) => ReactNode;
-	maxWidth?: string;
-	children: ReactNode;
+  path: string;
+  title: string;
+  subtitle: (username: string) => ReactNode;
+  maxWidth?: string;
+  children: ReactNode;
 }) {
-	const me = await requireUser(path);
-	return (
-		<div className={`container mx-auto px-4 py-12 ${maxWidth}`}>
-			<PageHeader
-				eyebrow="Arène de combat"
-				title={title}
-				size="md"
-				className="mb-8"
-				subtitle={subtitle(me.user?.username ?? "")}
-			/>
-			{children}
-		</div>
-	);
+  const me = await requireUser(path);
+  return (
+    <div className={`container mx-auto px-4 py-12 ${maxWidth}`}>
+      <PageHeader
+        eyebrow="Arène de combat"
+        title={title}
+        size="md"
+        className="mb-8"
+        subtitle={subtitle(me.user?.username ?? "")}
+      />
+      {children}
+    </div>
+  );
 }

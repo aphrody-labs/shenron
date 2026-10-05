@@ -143,10 +143,20 @@ export function createStdioMcpClient(o: {
         } catch {
           // plain text result
         }
-        if (result.isError) return { ok: false, value, error: typeof value === "string" ? value.slice(0, 300) : JSON.stringify(value).slice(0, 300) };
+        if (result.isError)
+          return {
+            ok: false,
+            value,
+            error:
+              typeof value === "string" ? value.slice(0, 300) : JSON.stringify(value).slice(0, 300),
+          };
         return { ok: true, value };
       } catch (error) {
-        return { ok: false, value: null, error: error instanceof Error ? error.message : String(error) };
+        return {
+          ok: false,
+          value: null,
+          error: error instanceof Error ? error.message : String(error),
+        };
       }
     },
     async tools() {
@@ -163,22 +173,34 @@ export function createStdioMcpClient(o: {
 }
 
 /** Tools asked for one question: wiki always, then intent-specific ones. */
-export function pickTools(question: string): { name: string; args: Record<string, unknown>; kind: string }[] {
+export function pickTools(
+  question: string,
+): { name: string; args: Record<string, unknown>; kind: string }[] {
   const q = question.toLowerCase();
   const tools: { name: string; args: Record<string, unknown>; kind: string }[] = [
     { name: "dragonball.wiki_search", args: { query: question, limit: 5 }, kind: "wiki" },
   ];
   if (/\b(databook|daizenshu+|chōzensh|chozensh|guide|artbook|interview|v-?jump)\b/.test(q))
-    tools.push({ name: "dragonball.databooks_planches", args: { q: question, limit: 5 }, kind: "databook" });
+    tools.push({
+      name: "dragonball.databooks_planches",
+      args: { q: question, limit: 5 },
+      kind: "databook",
+    });
   if (/\b(manga|tome|chapitre|planche|case|bulle)\b/.test(q))
-    tools.push({ name: "dragonball.manga_recherche", args: { query: question, limit: 5 }, kind: "manga_page" });
+    tools.push({
+      name: "dragonball.manga_recherche",
+      args: { query: question, limit: 5 },
+      kind: "manga_page",
+    });
   if (/\b(canon|canonique|officiel|non-canon|filler)\b/.test(q))
     tools.push({ name: "dragonball.canon_check", args: { question }, kind: "canon" });
   return tools;
 }
 
 /** Citable items of a tool result (title, url, snippet), whatever its exact shape. */
-export function toolItems(value: unknown): { title: string; url: string | null; snippet: string }[] {
+export function toolItems(
+  value: unknown,
+): { title: string; url: string | null; snippet: string }[] {
   const out: { title: string; url: string | null; snippet: string }[] = [];
   const visit = (node: unknown, depth: number) => {
     if (out.length >= 5 || depth > 3 || !node || typeof node !== "object") return;
@@ -187,13 +209,21 @@ export function toolItems(value: unknown): { title: string; url: string | null; 
       return;
     }
     const r = node as Record<string, unknown>;
-    const title = [r.title, r.name, r.titre, r.label].find((v) => typeof v === "string") as string | undefined;
-    const url = [r.url, r.href, r.lien, r.readUrl].find((v) => typeof v === "string") as string | undefined;
+    const title = [r.title, r.name, r.titre, r.label].find((v) => typeof v === "string") as
+      | string
+      | undefined;
+    const url = [r.url, r.href, r.lien, r.readUrl].find((v) => typeof v === "string") as
+      | string
+      | undefined;
     if (title && (url || typeof r.snippet === "string" || typeof r.extrait === "string")) {
-      const snippet = [r.snippet, r.extrait, r.text, r.texte, r.verdict, r.summary].find((v) => typeof v === "string") as
-        | string
-        | undefined;
-      out.push({ title, url: url ?? null, snippet: (snippet ?? "").replace(/\s+/g, " ").slice(0, 400) });
+      const snippet = [r.snippet, r.extrait, r.text, r.texte, r.verdict, r.summary].find(
+        (v) => typeof v === "string",
+      ) as string | undefined;
+      out.push({
+        title,
+        url: url ?? null,
+        snippet: (snippet ?? "").replace(/\s+/g, " ").slice(0, 400),
+      });
       return;
     }
     for (const child of Object.values(r)) visit(child, depth + 1);

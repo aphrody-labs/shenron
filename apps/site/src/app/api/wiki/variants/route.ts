@@ -16,21 +16,21 @@ export const runtime = "nodejs";
 export const revalidate = 3600;
 
 export async function GET(): Promise<NextResponse> {
-	try {
-		const variants = await getShenronVariantCards();
-		return NextResponse.json(
-			{ ok: true, variants },
-			{
-				headers: {
-					"cache-control": "public, s-maxage=3600, stale-while-revalidate=86400",
-				},
-			}
-		);
-	} catch (error) {
-		console.error("[wiki/variants] database unavailable", error);
-		return NextResponse.json(
-			{ ok: false, error: "database_unavailable" },
-			{ status: 503, headers: { "cache-control": "no-store", "retry-after": "30" } }
-		);
-	}
+  try {
+    const variants = await getShenronVariantCards();
+    return NextResponse.json(
+      { ok: true, variants },
+      {
+        headers: {
+          "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      },
+    );
+  } catch (error) {
+    console.error("[wiki/variants] database unavailable", error);
+    return NextResponse.json(
+      { ok: false, error: "database_unavailable" },
+      { status: 503, headers: { "cache-control": "no-store", "retry-after": "30" } },
+    );
+  }
 }

@@ -13,20 +13,20 @@ import { SettingsService } from "~/services/SettingsService";
  * `false` désactiverait la feature partout par défaut (régression silencieuse).
  */
 export function FeatureEnabled(
-	key: string,
-	label = "Cette fonctionnalité"
+  key: string,
+  label = "Cette fonctionnalité",
 ): GuardFunction<CommandInteraction | ButtonInteraction | ModalSubmitInteraction> {
-	return async (interaction, _client, next) => {
-		const settings = container.resolve(SettingsService);
-		if (await settings.getBool(key, true)) {
-			await next();
-			return;
-		}
-		if (interaction.isRepliable()) {
-			await interaction.reply({
-				content: `${label} est actuellement désactivée.`,
-				flags: MessageFlags.Ephemeral,
-			});
-		}
-	};
+  return async (interaction, _client, next) => {
+    const settings = container.resolve(SettingsService);
+    if (await settings.getBool(key, true)) {
+      await next();
+      return;
+    }
+    if (interaction.isRepliable()) {
+      await interaction.reply({
+        content: `${label} est actuellement désactivée.`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+  };
 }

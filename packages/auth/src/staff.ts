@@ -15,47 +15,47 @@ const SNOWFLAKE = /^\d{17,20}$/;
 
 /** Splits a CSV of Discord snowflakes; blanks and non-snowflakes are dropped, order kept, deduped. */
 export function parseSnowflakeCsv(raw: string | undefined): string[] {
-	if (!raw) return [];
-	const out: string[] = [];
-	for (const part of raw.split(",")) {
-		const value = part.trim();
-		if (SNOWFLAKE.test(value) && !out.includes(value)) out.push(value);
-	}
-	return out;
+  if (!raw) return [];
+  const out: string[] = [];
+  for (const part of raw.split(",")) {
+    const value = part.trim();
+    if (SNOWFLAKE.test(value) && !out.includes(value)) out.push(value);
+  }
+  return out;
 }
 
 export interface StaffPolicy {
-	readonly ids: ReadonlySet<string>;
-	isStaff(discordId: string | null | undefined): boolean;
+  readonly ids: ReadonlySet<string>;
+  isStaff(discordId: string | null | undefined): boolean;
 }
 
 export interface StaffPolicyInput {
-	ownerIds?: readonly string[];
-	devIds?: readonly string[];
-	allowedUsers?: readonly string[];
+  ownerIds?: readonly string[];
+  devIds?: readonly string[];
+  allowedUsers?: readonly string[];
 }
 
 export function createStaffPolicy(input: StaffPolicyInput): StaffPolicy {
-	const ids: ReadonlySet<string> = new Set(
-		[...(input.ownerIds ?? []), ...(input.devIds ?? []), ...(input.allowedUsers ?? [])].filter(
-			(id) => SNOWFLAKE.test(id)
-		)
-	);
-	return {
-		ids,
-		isStaff: (discordId) => !!discordId && ids.has(discordId),
-	};
+  const ids: ReadonlySet<string> = new Set(
+    [...(input.ownerIds ?? []), ...(input.devIds ?? []), ...(input.allowedUsers ?? [])].filter(
+      (id) => SNOWFLAKE.test(id),
+    ),
+  );
+  return {
+    ids,
+    isStaff: (discordId) => !!discordId && ids.has(discordId),
+  };
 }
 
 export type StaffScope = "bot" | "site";
 
 export function staffPolicyFromEnv(env: StaffEnvSource, scope: StaffScope): StaffPolicy {
-	const owner = parseSnowflakeCsv(env.OWNER_ID);
-	const allowedUsers = parseSnowflakeCsv(env.OAUTH_ALLOWED_USERS);
-	if (scope === "site") return createStaffPolicy({ ownerIds: owner, allowedUsers });
-	return createStaffPolicy({
-		ownerIds: [...owner, ...parseSnowflakeCsv(env.OWNER_IDS)],
-		devIds: parseSnowflakeCsv(env.BOT_DEV_ID),
-		allowedUsers,
-	});
+  const owner = parseSnowflakeCsv(env.OWNER_ID);
+  const allowedUsers = parseSnowflakeCsv(env.OAUTH_ALLOWED_USERS);
+  if (scope === "site") return createStaffPolicy({ ownerIds: owner, allowedUsers });
+  return createStaffPolicy({
+    ownerIds: [...owner, ...parseSnowflakeCsv(env.OWNER_IDS)],
+    devIds: parseSnowflakeCsv(env.BOT_DEV_ID),
+    allowedUsers,
+  });
 }

@@ -6,15 +6,15 @@ const KANJI = /[一-鿿㐀-䶿]/;
 const JAPONAIS = /[ぁ-ゟ゠-ヿｦ-ﾟ一-鿿㐀-䶿]/;
 
 export function contientJaponais(s: string): boolean {
-	return JAPONAIS.test(s);
+  return JAPONAIS.test(s);
 }
 
 /** Part de signes japonais dans un texte, entre 0 et 1. */
 export function proportionJaponais(s: string): number {
-	if (!s) return 0;
-	let n = 0;
-	for (const c of s) if (JAPONAIS.test(c)) n++;
-	return n / [...s].length;
+  if (!s) return 0;
+  let n = 0;
+  for (const c of s) if (JAPONAIS.test(c)) n++;
+  return n / [...s].length;
 }
 
 /**
@@ -30,7 +30,7 @@ export function proportionJaponais(s: string): number {
  * dans les sources : `・` (U+30FB), `･` (U+FF65) et `·` (U+00B7).
  */
 export function normaliserJa(s: string): string {
-	return s.replace(/[・･·\s]/g, "");
+  return s.replace(/[・･·\s]/g, "");
 }
 
 /**
@@ -42,12 +42,12 @@ export function normaliserJa(s: string): string {
  * demi-chasse et les signes de prolongation en sont exclus.
  */
 export function katakanaVersHiragana(s: string): string {
-	let out = "";
-	for (const c of s) {
-		const cp = c.codePointAt(0)!;
-		out += cp >= 0x30a1 && cp <= 0x30f6 ? String.fromCodePoint(cp - 0x60) : c;
-	}
-	return out;
+  let out = "";
+  for (const c of s) {
+    const cp = c.codePointAt(0)!;
+    out += cp >= 0x30a1 && cp <= 0x30f6 ? String.fromCodePoint(cp - 0x60) : c;
+  }
+  return out;
 }
 
 /**
@@ -56,7 +56,7 @@ export function katakanaVersHiragana(s: string): string {
  * Inutile sur ce qui est déjà en kana : n'annoter que ce qui porte un kanji.
  */
 export function besoinFurigana(surface: string, lecture: string | null): boolean {
-	if (!lecture) return false;
-	if (!KANJI.test(surface)) return false;
-	return katakanaVersHiragana(lecture) !== surface;
+  if (!lecture) return false;
+  if (!KANJI.test(surface)) return false;
+  return katakanaVersHiragana(lecture) !== surface;
 }

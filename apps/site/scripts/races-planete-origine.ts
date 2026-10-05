@@ -30,18 +30,18 @@ const APPLIQUER = APPLY;
 
 /** Le nom japonais d'une planète, tel qu'il apparaît dans une race gentilée. */
 function planeteAttendue(raceJa: string): string | null {
-	const nettoye = raceJa.trim();
-	if (!nettoye.endsWith("人")) return null;
-	const base = nettoye.slice(0, -1);
-	return base.length >= 2 ? base : null;
+  const nettoye = raceJa.trim();
+  if (!nettoye.endsWith("人")) return null;
+  const base = nettoye.slice(0, -1);
+  return base.length >= 2 ? base : null;
 }
 
 const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
-	.split("\n")
-	.filter((l) => l.startsWith("DATABASE_URL="))
-	.pop()
-	?.slice("DATABASE_URL=".length)
-	.replace(/^["']|["']$/g, "");
+  .split("\n")
+  .filter((l) => l.startsWith("DATABASE_URL="))
+  .pop()
+  ?.slice("DATABASE_URL=".length)
+  .replace(/^["']|["']$/g, "");
 if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 
 const sql = postgres(url);
@@ -54,38 +54,38 @@ const planetes = (await sql`
 
 const parJa = new Map<string, { id: number; name: string }>();
 for (const p of planetes) {
-	// Certaines planètes portent plusieurs graphies séparées par une virgule.
-	for (const graphie of p.name_ja.split(/[,、]/)) {
-		const cle = graphie.trim();
-		if (cle && !parJa.has(cle)) parJa.set(cle, { id: p.id, name: p.name });
-	}
+  // Certaines planètes portent plusieurs graphies séparées par une virgule.
+  for (const graphie of p.name_ja.split(/[,、]/)) {
+    const cle = graphie.trim();
+    if (cle && !parJa.has(cle)) parJa.set(cle, { id: p.id, name: p.name });
+  }
 }
 
 let total = 0;
 const changes: FieldChange[] = [];
 for (const r of races) {
-	if (!r.name_ja) continue;
-	const attendue = planeteAttendue(r.name_ja);
-	if (!attendue) continue;
-	const planete = parJa.get(attendue);
-	if (!planete) continue;
-	total++;
-	console.log(`  ${r.name} (${r.name_ja}) → ${planete.name} (${attendue})`);
-	changes.push({
-		table: "db_races",
-		id: Number(r.id),
-		label: r.name,
-		after: { home_planet_id: Number(planete.id) },
-		source: `races-planete-origine : ${r.name_ja} = habitant de ${attendue} (db_planets#${planete.id})`,
-	});
+  if (!r.name_ja) continue;
+  const attendue = planeteAttendue(r.name_ja);
+  if (!attendue) continue;
+  const planete = parJa.get(attendue);
+  if (!planete) continue;
+  total++;
+  console.log(`  ${r.name} (${r.name_ja}) → ${planete.name} (${attendue})`);
+  changes.push({
+    table: "db_races",
+    id: Number(r.id),
+    label: r.name,
+    after: { home_planet_id: Number(planete.id) },
+    source: `races-planete-origine : ${r.name_ja} = habitant de ${attendue} (db_planets#${planete.id})`,
+  });
 }
 
 if (APPLIQUER && changes.length) await applyChanges(sql, changes, "races-planete-origine");
 console.log(
-	total === 0
-		? "Aucune race supplémentaire ne se rattache par le nom japonais."
-		: APPLIQUER
-			? `${total} race(s) rattachée(s) à leur planète.`
-			: `${total} race(s) rattachables — relancer avec --appliquer.`
+  total === 0
+    ? "Aucune race supplémentaire ne se rattache par le nom japonais."
+    : APPLIQUER
+      ? `${total} race(s) rattachée(s) à leur planète.`
+      : `${total} race(s) rattachables — relancer avec --appliquer.`,
 );
 await sql.end();

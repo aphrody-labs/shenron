@@ -13,9 +13,9 @@
 import { lookup } from "@/components/T";
 import { useLangue } from "@/lib/i18n/client";
 import {
-	DEFAULT_PAGINATION_LABELS,
-	Pagination as PaginationBase,
-	type PaginationLabels,
+  DEFAULT_PAGINATION_LABELS,
+  Pagination as PaginationBase,
+  type PaginationLabels,
 } from "@shenron/ui/pagination";
 import { pagesVisibles } from "@shenron/ui/lib/page-window";
 
@@ -25,39 +25,39 @@ export { pagesVisibles };
 const CLES = ["previous", "next", "range"] as const satisfies ReadonlyArray<keyof PaginationLabels>;
 
 export function Pagination({
-	page,
-	parPage,
-	total,
-	onPageChange,
-	/** Paramètre d'URL synchronisé. `null` = ne rien écrire dans l'URL. */
-	urlParam = "p",
-	/** Nom des éléments comptés, pour le libellé (« 121–240 sur 1 307 fiches »). */
-	unite,
-	className = "",
+  page,
+  parPage,
+  total,
+  onPageChange,
+  /** Paramètre d'URL synchronisé. `null` = ne rien écrire dans l'URL. */
+  urlParam = "p",
+  /** Nom des éléments comptés, pour le libellé (« 121–240 sur 1 307 fiches »). */
+  unite,
+  className = "",
 }: {
-	page: number;
-	parPage: number;
-	total: number;
-	onPageChange: (page: number) => void;
-	urlParam?: string | null;
-	unite?: string;
-	className?: string;
+  page: number;
+  parPage: number;
+  total: number;
+  onPageChange: (page: number) => void;
+  urlParam?: string | null;
+  unite?: string;
+  className?: string;
 }) {
-	const { dico } = useLangue();
-	const labels: PaginationLabels = { ...DEFAULT_PAGINATION_LABELS };
-	for (const cle of CLES) labels[cle] = lookup(dico, `pagination.${cle}`) || labels[cle];
-	labels.unit = unite ?? (lookup(dico, "pagination.unit") || labels.unit);
+  const { dico } = useLangue();
+  const labels: PaginationLabels = { ...DEFAULT_PAGINATION_LABELS };
+  for (const cle of CLES) labels[cle] = lookup(dico, `pagination.${cle}`) || labels[cle];
+  labels.unit = unite ?? (lookup(dico, "pagination.unit") || labels.unit);
 
-	return (
-		<PaginationBase
-			page={page}
-			parPage={parPage}
-			total={total}
-			onPageChange={onPageChange}
-			urlParam={urlParam}
-			locale="fr-FR"
-			labels={labels}
-			className={className}
-		/>
-	);
+  return (
+    <PaginationBase
+      page={page}
+      parPage={parPage}
+      total={total}
+      onPageChange={onPageChange}
+      urlParam={urlParam}
+      locale="fr-FR"
+      labels={labels}
+      className={className}
+    />
+  );
 }

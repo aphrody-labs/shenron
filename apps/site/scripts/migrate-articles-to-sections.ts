@@ -21,90 +21,90 @@ import { splitArticleSections } from "../src/lib/wiki-article-sections";
 
 /** Table wiki → type d'entité (`db_wiki_sections.entity_type`). */
 const TABLE_ENTITY: Record<string, string> = {
-	db_characters: "character",
-	db_planets: "planet",
-	db_sagas: "saga",
-	db_arcs: "arc",
-	db_races: "race",
-	db_techniques: "technique",
+  db_characters: "character",
+  db_planets: "planet",
+  db_sagas: "saga",
+  db_arcs: "arc",
+  db_races: "race",
+  db_techniques: "technique",
 };
 
 function argVal(args: string[], flag: string): string | undefined {
-	const i = args.indexOf(flag);
-	return i >= 0 ? args[i + 1] : undefined;
+  const i = args.indexOf(flag);
+  return i >= 0 ? args[i + 1] : undefined;
 }
 
 async function main() {
-	const args = process.argv.slice(2);
-	const apply = args.includes("--apply");
-	const table = argVal(args, "--table") ?? "db_characters";
-	const entityType = argVal(args, "--entity-type") ?? TABLE_ENTITY[table] ?? "character";
-	const limit = Number(argVal(args, "--limit") ?? "0") || 0;
+  const args = process.argv.slice(2);
+  const apply = args.includes("--apply");
+  const table = argVal(args, "--table") ?? "db_characters";
+  const entityType = argVal(args, "--entity-type") ?? TABLE_ENTITY[table] ?? "character";
+  const limit = Number(argVal(args, "--limit") ?? "0") || 0;
 
-	const url = process.env.DATABASE_URL;
-	if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
-	const sql = postgres(url, { max: 1 });
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
+  const sql = postgres(url, { max: 1 });
 
-	const stats = { scanned: 0, migrated: 0, skipped: 0, unstructured: 0, inserted: 0 };
-	const sample: string[] = [];
+  const stats = { scanned: 0, migrated: 0, skipped: 0, unstructured: 0, inserted: 0 };
+  const sample: string[] = [];
 
-	try {
-		const rows = limit
-			? await sql`select id, article from bot.${sql(table)}
+  try {
+    const rows = limit
+      ? await sql`select id, article from bot.${sql(table)}
 					where article is not null and length(trim(article)) > 0 order by id limit ${limit}`
-			: await sql`select id, article from bot.${sql(table)}
+      : await sql`select id, article from bot.${sql(table)}
 					where article is not null and length(trim(article)) > 0 order by id`;
-		stats.scanned = rows.length;
+    stats.scanned = rows.length;
 
-		for (const r of rows) {
-			const id = Number(r.id);
-			const [{ n }] =
-				await sql`select count(*)::int n from bot.db_wiki_sections where entity_type = ${entityType} and entity_id = ${id}`;
-			if (Number(n) > 0) {
-				stats.skipped++;
-				continue;
-			}
+    for (const r of rows) {
+      const id = Number(r.id);
+      const [{ n }] =
+        await sql`select count(*)::int n from bot.db_wiki_sections where entity_type = ${entityType} and entity_id = ${id}`;
+      if (Number(n) > 0) {
+        stats.skipped++;
+        continue;
+      }
 
-			const secs = splitArticleSections(r.article as string);
-			// Article sans structure (< 2 titres ##) → laissé tel quel (le rendu
-			// public l'affiche déjà en section unique « Histoire »).
-			if (secs.length < 2) {
-				stats.unstructured++;
-				continue;
-			}
+      const secs = splitArticleSections(r.article as string);
+      // Article sans structure (< 2 titres ##) → laissé tel quel (le rendu
+      // public l'affiche déjà en section unique « Histoire »).
+      if (secs.length < 2) {
+        stats.unstructured++;
+        continue;
+      }
 
-			if (apply) {
-				// Transaction par entité : un crash ne laisse jamais une fiche à moitié
-				// migrée (que le garde-fou `count>0` sauterait ensuite pour toujours).
-				await sql.begin(async (tx) => {
-					for (let i = 0; i < secs.length; i++) {
-						const s = secs[i];
-						await tx`insert into bot.db_wiki_sections
+      if (apply) {
+        // Transaction par entité : un crash ne laisse jamais une fiche à moitié
+        // migrée (que le garde-fou `count>0` sauterait ensuite pour toujours).
+        await sql.begin(async (tx) => {
+          for (let i = 0; i < secs.length; i++) {
+            const s = secs[i];
+            await tx`insert into bot.db_wiki_sections
 							(entity_type, entity_id, key, label, accent, body, sort_order, visible)
 							values (${entityType}, ${id}, ${s.key}, ${s.label}, ${s.accent}, ${s.body}, ${i}, true)`;
-					}
-				});
-			}
-			stats.migrated++;
-			stats.inserted += secs.length;
-			if (sample.length < 6) sample.push(`#${id}: ${secs.map((s) => s.label).join(" · ")}`);
-		}
+          }
+        });
+      }
+      stats.migrated++;
+      stats.inserted += secs.length;
+      if (sample.length < 6) sample.push(`#${id}: ${secs.map((s) => s.label).join(" · ")}`);
+    }
 
-		console.log(
-			`\n${apply ? "✓ APPLIQUÉ" : "▷ DRY-RUN (aucune écriture)"} — table=${table} entity=${entityType}`
-		);
-		console.table(stats);
-		if (sample.length) {
-			console.log("Exemples de découpage :");
-			for (const s of sample) console.log("  " + s);
-		}
-		if (!apply && stats.migrated > 0) console.log("\nRelancer avec --apply pour écrire.");
-	} finally {
-		await sql.end({ timeout: 5 });
-	}
+    console.log(
+      `\n${apply ? "✓ APPLIQUÉ" : "▷ DRY-RUN (aucune écriture)"} — table=${table} entity=${entityType}`,
+    );
+    console.table(stats);
+    if (sample.length) {
+      console.log("Exemples de découpage :");
+      for (const s of sample) console.log("  " + s);
+    }
+    if (!apply && stats.migrated > 0) console.log("\nRelancer avec --apply pour écrire.");
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

@@ -6,10 +6,10 @@ import { createAuthClient } from "better-auth/react";
 
 /** Origin to send auth calls to: the browser origin first, else the fallback. */
 export function resolveClientBaseURL(fallbackURL: string): string {
-	if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
-	return fallbackURL.replace(/\/+$/, "");
+  if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
+  return fallbackURL.replace(/\/+$/, "");
 }
 
 export function createShenronAuthClient(options: { fallbackURL: string }) {
-	return createAuthClient({ baseURL: resolveClientBaseURL(options.fallbackURL) });
+  return createAuthClient({ baseURL: resolveClientBaseURL(options.fallbackURL) });
 }

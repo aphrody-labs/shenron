@@ -5,10 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const [versionRes, statsRes] = await Promise.allSettled([
-      bxc.version(),
-      bxc.frames.stats(),
-    ]);
+    const [versionRes, statsRes] = await Promise.allSettled([bxc.version(), bxc.frames.stats()]);
 
     const binaryPath = bxc.resolvePath();
     const version = versionRes.status === "fulfilled" ? versionRes.value : "unknown";
@@ -22,10 +19,12 @@ export async function GET() {
           engine: "bxc",
           binaryPath,
           error:
-            versionRes.reason instanceof Error ? versionRes.reason.message : String(versionRes.reason),
+            versionRes.reason instanceof Error
+              ? versionRes.reason.message
+              : String(versionRes.reason),
           timestamp: new Date().toISOString(),
         },
-        { status: 503, headers: { "Cache-Control": "no-store" } }
+        { status: 503, headers: { "Cache-Control": "no-store" } },
       );
     }
 
@@ -52,7 +51,7 @@ export async function GET() {
         status: "error",
         error: error instanceof Error ? error.message : "Erreur interne BXC status",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

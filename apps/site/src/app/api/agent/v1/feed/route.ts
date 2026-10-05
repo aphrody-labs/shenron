@@ -15,16 +15,19 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-	return withAgent(req, "read", async () => {
-		const url = new URL(req.url);
-		const filterParam = url.searchParams.get("filter") ?? "tout";
-		if (!isFeedFilter(filterParam)) {
-			return agentError("bad_request", "Filtre inconnu (tout|articles|wiki|communaute|discussions).");
-		}
-		const page = readInt(url.searchParams.get("page"), { min: 1, max: 25, fallback: 1 });
-		const perPage = readInt(url.searchParams.get("perPage"), { min: 5, max: 50, fallback: 20 });
+  return withAgent(req, "read", async () => {
+    const url = new URL(req.url);
+    const filterParam = url.searchParams.get("filter") ?? "tout";
+    if (!isFeedFilter(filterParam)) {
+      return agentError(
+        "bad_request",
+        "Filtre inconnu (tout|articles|wiki|communaute|discussions).",
+      );
+    }
+    const page = readInt(url.searchParams.get("page"), { min: 1, max: 25, fallback: 1 });
+    const perPage = readInt(url.searchParams.get("perPage"), { min: 5, max: 50, fallback: 20 });
 
-		const data = await listFeed({ filter: filterParam, page, perPage });
-		return agentOk(data);
-	});
+    const data = await listFeed({ filter: filterParam, page, perPage });
+    return agentOk(data);
+  });
 }

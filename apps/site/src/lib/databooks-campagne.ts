@@ -4,44 +4,44 @@ import { listDatabooks } from "@/lib/databooks";
 import { indexDatabook } from "@/lib/databooks-redis";
 
 interface OuvrageCampagneStatus {
-	id: number;
-	titre: string;
-	category: string | null;
-	totalPlanches: number;
-	transcrites: number;
-	traduites: number;
-	fautives: number;
-	resteATraduire: number;
-	signesJaRestants: number;
-	qualiteSource: "saine" | "moyenne" | "a-retranscrire";
+  id: number;
+  titre: string;
+  category: string | null;
+  totalPlanches: number;
+  transcrites: number;
+  traduites: number;
+  fautives: number;
+  resteATraduire: number;
+  signesJaRestants: number;
+  qualiteSource: "saine" | "moyenne" | "a-retranscrire";
 }
 
 export interface CampagneStats {
-	totalOuvrages: number;
-	ouvragesEnAttente: number;
-	totalPlanches: number;
-	planchesTranscrites: number;
-	planchesTraduites: number;
-	resteATraduire: number;
-	signesJaRestants: number;
-	topOuvrages: OuvrageCampagneStatus[];
+  totalOuvrages: number;
+  ouvragesEnAttente: number;
+  totalPlanches: number;
+  planchesTranscrites: number;
+  planchesTraduites: number;
+  resteATraduire: number;
+  signesJaRestants: number;
+  topOuvrages: OuvrageCampagneStatus[];
 }
 
 /**
  * Aggregates translation queue status across all databooks.
  */
 export async function getCampagneStats(): Promise<CampagneStats> {
-	const rows = await db.execute<{
-		id: number;
-		titre: string;
-		category: string | null;
-		total_planches: number;
-		transcrites: number;
-		traduites: number;
-		fautives: number;
-		signes_ja: number;
-		signes_ja_non_traduits: number;
-	}>(sql`
+  const rows = await db.execute<{
+    id: number;
+    titre: string;
+    category: string | null;
+    total_planches: number;
+    transcrites: number;
+    traduites: number;
+    fautives: number;
+    signes_ja: number;
+    signes_ja_non_traduits: number;
+  }>(sql`
 		WITH book_stats AS (
 			SELECT
 				d.id,
@@ -83,72 +83,72 @@ export async function getCampagneStats(): Promise<CampagneStats> {
 		ORDER BY (transcrites - traduites) DESC, id ASC
 	`);
 
-	let totalPlanches = 0;
-	let planchesTranscrites = 0;
-	let planchesTraduites = 0;
-	let resteATraduireTotal = 0;
-	let signesJaRestantsTotal = 0;
-	let ouvragesEnAttente = 0;
+  let totalPlanches = 0;
+  let planchesTranscrites = 0;
+  let planchesTraduites = 0;
+  let resteATraduireTotal = 0;
+  let signesJaRestantsTotal = 0;
+  let ouvragesEnAttente = 0;
 
-	const allOuvrages: OuvrageCampagneStatus[] = rows.map((r) => {
-		const reste = Math.max(0, r.transcrites - r.traduites);
-		totalPlanches += r.total_planches;
-		planchesTranscrites += r.transcrites;
-		planchesTraduites += r.traduites;
-		resteATraduireTotal += reste;
-		signesJaRestantsTotal += r.signes_ja_non_traduits;
-		if (reste > 0) ouvragesEnAttente++;
+  const allOuvrages: OuvrageCampagneStatus[] = rows.map((r) => {
+    const reste = Math.max(0, r.transcrites - r.traduites);
+    totalPlanches += r.total_planches;
+    planchesTranscrites += r.transcrites;
+    planchesTraduites += r.traduites;
+    resteATraduireTotal += reste;
+    signesJaRestantsTotal += r.signes_ja_non_traduits;
+    if (reste > 0) ouvragesEnAttente++;
 
-		// Rate source quality based on defective plates ratio
-		let qualiteSource: OuvrageCampagneStatus["qualiteSource"] = "saine";
-		if (r.transcrites > 0 && r.fautives / r.transcrites > 0.3) {
-			qualiteSource = "a-retranscrire";
-		} else if (r.fautives > 0) {
-			qualiteSource = "moyenne";
-		}
+    // Rate source quality based on defective plates ratio
+    let qualiteSource: OuvrageCampagneStatus["qualiteSource"] = "saine";
+    if (r.transcrites > 0 && r.fautives / r.transcrites > 0.3) {
+      qualiteSource = "a-retranscrire";
+    } else if (r.fautives > 0) {
+      qualiteSource = "moyenne";
+    }
 
-		return {
-			id: r.id,
-			titre: r.titre,
-			category: r.category,
-			totalPlanches: r.total_planches,
-			transcrites: r.transcrites,
-			traduites: r.traduites,
-			fautives: r.fautives,
-			resteATraduire: reste,
-			signesJaRestants: r.signes_ja_non_traduits,
-			qualiteSource,
-		};
-	});
+    return {
+      id: r.id,
+      titre: r.titre,
+      category: r.category,
+      totalPlanches: r.total_planches,
+      transcrites: r.transcrites,
+      traduites: r.traduites,
+      fautives: r.fautives,
+      resteATraduire: reste,
+      signesJaRestants: r.signes_ja_non_traduits,
+      qualiteSource,
+    };
+  });
 
-	return {
-		totalOuvrages: rows.length,
-		ouvragesEnAttente,
-		totalPlanches,
-		planchesTranscrites,
-		planchesTraduites,
-		resteATraduire: resteATraduireTotal,
-		signesJaRestants: signesJaRestantsTotal,
-		topOuvrages: allOuvrages.slice(0, 50),
-	};
+  return {
+    totalOuvrages: rows.length,
+    ouvragesEnAttente,
+    totalPlanches,
+    planchesTranscrites,
+    planchesTraduites,
+    resteATraduire: resteATraduireTotal,
+    signesJaRestants: signesJaRestantsTotal,
+    topOuvrages: allOuvrages.slice(0, 50),
+  };
 }
 
 /**
  * Triggers Redis index sync across all databooks.
  */
 export async function reindexRedis(): Promise<{ indexed: number; failed: number }> {
-	const { items: allBooks } = await listDatabooks({ limit: 1000, includeHidden: true });
-	let indexed = 0;
-	let failed = 0;
+  const { items: allBooks } = await listDatabooks({ limit: 1000, includeHidden: true });
+  let indexed = 0;
+  let failed = 0;
 
-	for (const book of allBooks) {
-		try {
-			await indexDatabook(book as any);
-			indexed++;
-		} catch {
-			failed++;
-		}
-	}
+  for (const book of allBooks) {
+    try {
+      await indexDatabook(book as any);
+      indexed++;
+    } catch {
+      failed++;
+    }
+  }
 
-	return { indexed, failed };
+  return { indexed, failed };
 }

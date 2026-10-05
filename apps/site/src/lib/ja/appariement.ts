@@ -37,23 +37,23 @@
 
 /** Un candidat de graphie, tel que le jeu l'indexe. */
 export interface CandidatXv2 {
-	/** Identifiant de la compétence dans les fichiers du jeu (`spe_skill_0000`). */
-	id: string;
-	/** Nom tel que la localisation française l'écrit. */
-	fr: string;
-	/** Graphie japonaise correspondante, même identifiant côté `msg` JP. */
-	ja: string;
+  /** Identifiant de la compétence dans les fichiers du jeu (`spe_skill_0000`). */
+  id: string;
+  /** Nom tel que la localisation française l'écrit. */
+  fr: string;
+  /** Graphie japonaise correspondante, même identifiant côté `msg` JP. */
+  ja: string;
 }
 
 /** Une entrée de l'index de techniques d'un databook. */
 export interface EntreeIndex {
-	ja: string;
-	/** Première apparition, telle qu'imprimée : « 16巻 其之二百三十一 ». */
-	debut: string | null;
-	/** Numéro de chapitre déduit de `debut`, ou `null` si illisible. */
-	chapitre: number | null;
-	/** Utilisateurs cités, tels qu'imprimés. */
-	usagers: string | null;
+  ja: string;
+  /** Première apparition, telle qu'imprimée : « 16巻 其之二百三十一 ». */
+  debut: string | null;
+  /** Numéro de chapitre déduit de `debut`, ou `null` si illisible. */
+  chapitre: number | null;
+  /** Utilisateurs cités, tels qu'imprimés. */
+  usagers: string | null;
 }
 
 /**
@@ -66,11 +66,11 @@ export interface EntreeIndex {
  * la mauvaise technique, ce qui est pire qu'un champ vide.
  */
 export function cleNom(s: string): string {
-	return s
-		.normalize("NFD")
-		.replace(/[̀-ͯ]/g, "")
-		.toLowerCase()
-		.replace(/[^a-z0-9]/g, "");
+  return s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 }
 
 /**
@@ -83,16 +83,16 @@ export function cleNom(s: string): string {
  * parenthèse latine, qu'il ne faut pas prendre pour une graphie.
  */
 export function extraireCandidatsXv2(docs: { id: string; markdown: string }[]): CandidatXv2[] {
-	const out: CandidatXv2[] = [];
-	for (const d of docs) {
-		if (!d.id.startsWith("xv2-skill-")) continue;
-		const m = /^(.+?) \(([^)]+)\) est une compétence/.exec(d.markdown);
-		if (!m) continue;
-		const [, fr, ja] = m;
-		if (!/[ぁ-ゟ゠-ヿ一-鿿]/.test(ja)) continue;
-		out.push({ id: d.id.slice("xv2-skill-".length), fr: fr.trim(), ja: ja.trim() });
-	}
-	return out;
+  const out: CandidatXv2[] = [];
+  for (const d of docs) {
+    if (!d.id.startsWith("xv2-skill-")) continue;
+    const m = /^(.+?) \(([^)]+)\) est une compétence/.exec(d.markdown);
+    if (!m) continue;
+    const [, fr, ja] = m;
+    if (!/[ぁ-ゟ゠-ヿ一-鿿]/.test(ja)) continue;
+    out.push({ id: d.id.slice("xv2-skill-".length), fr: fr.trim(), ja: ja.trim() });
+  }
+  return out;
 }
 
 /**
@@ -104,14 +104,14 @@ export function extraireCandidatsXv2(docs: { id: string; markdown: string }[]): 
  * choisir une : c'est à l'appelant de refuser l'appariement ambigu.
  */
 export function grouperCandidats(cands: CandidatXv2[]): Map<string, CandidatXv2[]> {
-	const m = new Map<string, CandidatXv2[]>();
-	for (const c of cands) {
-		const k = cleNom(c.fr);
-		const deja = m.get(k);
-		if (!deja) m.set(k, [c]);
-		else if (!deja.some((x) => x.ja === c.ja)) deja.push(c);
-	}
-	return m;
+  const m = new Map<string, CandidatXv2[]>();
+  for (const c of cands) {
+    const k = cleNom(c.fr);
+    const deja = m.get(k);
+    if (!deja) m.set(k, [c]);
+    else if (!deja.some((x) => x.ja === c.ja)) deja.push(c);
+  }
+  return m;
 }
 
 /**
@@ -121,8 +121,8 @@ export function grouperCandidats(cands: CandidatXv2[]): Map<string, CandidatXv2[
  * parenthèses et des points médians, que l'échappement rendrait fragile.
  */
 export function compterOccurrences(texte: string, graphie: string): number {
-	if (!graphie) return 0;
-	return texte.split(graphie).length - 1;
+  if (!graphie) return 0;
+  return texte.split(graphie).length - 1;
 }
 
 /**
@@ -146,7 +146,7 @@ export function compterOccurrences(texte: string, graphie: string): number {
 const SIGNES_ISOLES = /(?:[ぁ-ゟ゠-ヿ一-鿿] ){2,}[ぁ-ゟ゠-ヿ一-鿿]/;
 
 export function graphieEspacee(s: string): boolean {
-	return SIGNES_ISOLES.test(s);
+  return SIGNES_ISOLES.test(s);
 }
 
 /**
@@ -163,18 +163,18 @@ export function graphieEspacee(s: string): boolean {
  * toute valeur qui traverse ce module, d'où qu'elle vienne.
  */
 export function graphieSuspecte(ja: string): boolean {
-	if (!ja || ja.includes("�")) return true;
-	if (!/[ぁ-ゟ゠-ヿ一-鿿]/.test(ja)) return true;
-	if (graphieEspacee(ja)) return true;
-	return [...ja].length < 2;
+  if (!ja || ja.includes("�")) return true;
+  if (!/[ぁ-ゟ゠-ヿ一-鿿]/.test(ja)) return true;
+  if (graphieEspacee(ja)) return true;
+  return [...ja].length < 2;
 }
 
 /** Verdict porté sur une proposition de graphie. */
 export type Niveau = "sur" | "a_verifier" | "rejete";
 
 export interface Verdict {
-	niveau: Niveau;
-	motif: string;
+  niveau: Niveau;
+  motif: string;
 }
 
 /**
@@ -197,18 +197,18 @@ export interface Verdict {
  * JMdict : c'est le manga qui parle, pas une coïncidence de vocabulaire.
  */
 export function juger(p: {
-	ja: string;
-	ambigu: boolean;
-	occurrences: number;
-	motCourant: boolean;
-	dansIndexTechniques: boolean;
+  ja: string;
+  ambigu: boolean;
+  occurrences: number;
+  motCourant: boolean;
+  dansIndexTechniques: boolean;
 }): Verdict {
-	if (graphieSuspecte(p.ja)) return { niveau: "rejete", motif: "graphie illisible ou trop courte" };
-	if (p.ambigu) return { niveau: "rejete", motif: "plusieurs graphies pour ce nom" };
-	if (p.occurrences === 0) return { niveau: "rejete", motif: "graphie absente des databooks" };
-	if (p.dansIndexTechniques) return { niveau: "sur", motif: "index de techniques d'un databook" };
-	if (p.motCourant) return { niveau: "a_verifier", motif: "mot japonais courant (JMdict)" };
-	return { niveau: "sur", motif: `${p.occurrences} attestation(s) dans les databooks` };
+  if (graphieSuspecte(p.ja)) return { niveau: "rejete", motif: "graphie illisible ou trop courte" };
+  if (p.ambigu) return { niveau: "rejete", motif: "plusieurs graphies pour ce nom" };
+  if (p.occurrences === 0) return { niveau: "rejete", motif: "graphie absente des databooks" };
+  if (p.dansIndexTechniques) return { niveau: "sur", motif: "index de techniques d'un databook" };
+  if (p.motCourant) return { niveau: "a_verifier", motif: "mot japonais courant (JMdict)" };
+  return { niveau: "sur", motif: `${p.occurrences} attestation(s) dans les databooks` };
 }
 
 /**
@@ -237,27 +237,27 @@ export type Portee = "manga" | "ouvrage" | "periodique";
 const CATALOGUES_DE_CARTES = /\b(SDBH|DBH)\b/i;
 
 export function porteeSource(p: {
-	categorie: string | null;
-	titre: string;
-	dansIndexTechniques: boolean;
+  categorie: string | null;
+  titre: string;
+  dansIndexTechniques: boolean;
 }): Portee {
-	if (p.dansIndexTechniques) return "manga";
-	if (p.categorie !== "Databook") return "periodique";
-	return CATALOGUES_DE_CARTES.test(p.titre) ? "periodique" : "ouvrage";
+  if (p.dansIndexTechniques) return "manga";
+  if (p.categorie !== "Databook") return "periodique";
+  return CATALOGUES_DE_CARTES.test(p.titre) ? "periodique" : "ouvrage";
 }
 
 const CHIFFRES: Record<string, number> = {
-	〇: 0,
-	零: 0,
-	一: 1,
-	二: 2,
-	三: 3,
-	四: 4,
-	五: 5,
-	六: 6,
-	七: 7,
-	八: 8,
-	九: 9,
+  〇: 0,
+  零: 0,
+  一: 1,
+  二: 2,
+  三: 3,
+  四: 4,
+  五: 5,
+  六: 6,
+  七: 7,
+  八: 8,
+  九: 9,
 };
 const RANGS: Record<string, number> = { 十: 10, 百: 100, 千: 1000 };
 
@@ -272,25 +272,25 @@ const RANGS: Record<string, number> = { 十: 10, 百: 100, 千: 1000 };
  * « deux-cent deux-dix six ». Un rang sans chiffre devant vaut un (十四 = 14).
  */
 export function nombreKanji(s: string): number | null {
-	const t = s.trim();
-	if (!t) return null;
-	let total = 0;
-	let courant = 0;
-	let vu = false;
-	for (const c of t) {
-		if (c in CHIFFRES) {
-			courant = CHIFFRES[c];
-			vu = true;
-		} else if (c in RANGS) {
-			total += (courant || 1) * RANGS[c];
-			courant = 0;
-			vu = true;
-		} else {
-			return null;
-		}
-	}
-	if (!vu) return null;
-	return total + courant;
+  const t = s.trim();
+  if (!t) return null;
+  let total = 0;
+  let courant = 0;
+  let vu = false;
+  for (const c of t) {
+    if (c in CHIFFRES) {
+      courant = CHIFFRES[c];
+      vu = true;
+    } else if (c in RANGS) {
+      total += (courant || 1) * RANGS[c];
+      courant = 0;
+      vu = true;
+    } else {
+      return null;
+    }
+  }
+  if (!vu) return null;
+  return total + courant;
 }
 
 /**
@@ -309,36 +309,36 @@ export function nombreKanji(s: string): number | null {
  * de techniques.
  */
 export function extraireIndexTechniques(planches: { texte: string }[]): EntreeIndex[] {
-	const out: EntreeIndex[] = [];
-	for (const p of planches) {
-		const lignes = p.texte.split("\n");
-		for (let i = 0; i < lignes.length; i++) {
-			if (!lignes[i].includes("初登場")) continue;
-			const debut = nettoyerPuce(lignes[i])
-				.replace(/^初登場[回]?[：:]\s*/, "")
-				.trim();
-			const chap = /其之([一二三四五六七八九十百千]+)/.exec(debut);
-			if (!/^\d+巻/.test(debut) || !chap) continue;
-			let ja = "";
-			for (let j = i - 1; j >= 0 && !ja; j--)
-				ja = nettoyerPuce(lignes[j])
-					.replace(/^代表技[：:]\s*/, "")
-					.trim();
-			if (!ja) continue;
-			const suivante = nettoyerPuce(lignes[i + 1] ?? "");
-			out.push({
-				ja,
-				debut,
-				chapitre: nombreKanji(chap[1]),
-				usagers: suivante.startsWith("使用者")
-					? suivante.replace(/^使用者[：:]\s*/, "").trim()
-					: null,
-			});
-		}
-	}
-	return out;
+  const out: EntreeIndex[] = [];
+  for (const p of planches) {
+    const lignes = p.texte.split("\n");
+    for (let i = 0; i < lignes.length; i++) {
+      if (!lignes[i].includes("初登場")) continue;
+      const debut = nettoyerPuce(lignes[i])
+        .replace(/^初登場[回]?[：:]\s*/, "")
+        .trim();
+      const chap = /其之([一二三四五六七八九十百千]+)/.exec(debut);
+      if (!/^\d+巻/.test(debut) || !chap) continue;
+      let ja = "";
+      for (let j = i - 1; j >= 0 && !ja; j--)
+        ja = nettoyerPuce(lignes[j])
+          .replace(/^代表技[：:]\s*/, "")
+          .trim();
+      if (!ja) continue;
+      const suivante = nettoyerPuce(lignes[i + 1] ?? "");
+      out.push({
+        ja,
+        debut,
+        chapitre: nombreKanji(chap[1]),
+        usagers: suivante.startsWith("使用者")
+          ? suivante.replace(/^使用者[：:]\s*/, "").trim()
+          : null,
+      });
+    }
+  }
+  return out;
 }
 
 function nettoyerPuce(l: string): string {
-	return l.replace(/^[\s*•・-]+/, "").trim();
+  return l.replace(/^[\s*•・-]+/, "").trim();
 }

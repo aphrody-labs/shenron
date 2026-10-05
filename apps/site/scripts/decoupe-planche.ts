@@ -26,8 +26,8 @@ import sharp from "sharp";
 const [source, prefixe, colonnesArg = "2", lignesArg = "2"] = process.argv.slice(2);
 
 if (!source || !prefixe) {
-	console.error("usage : bun scripts/decoupe-planche.ts <image> <préfixe> [colonnes] [lignes]");
-	process.exit(2);
+  console.error("usage : bun scripts/decoupe-planche.ts <image> <préfixe> [colonnes] [lignes]");
+  process.exit(2);
 }
 
 const colonnes = Math.max(1, Number(colonnesArg));
@@ -39,27 +39,27 @@ const LARGEUR_MAX = 1500;
 
 const { width = 0, height = 0 } = await sharp(source).metadata();
 if (!width || !height) {
-	console.error(`✗ image illisible : ${source}`);
-	process.exit(1);
+  console.error(`✗ image illisible : ${source}`);
+  process.exit(1);
 }
 
 const largeurTuile = Math.floor(width / colonnes);
 const hauteurTuile = Math.floor(height / lignes);
 
 for (let y = 0; y < lignes; y++) {
-	for (let x = 0; x < colonnes; x++) {
-		const gauche = Math.max(0, Math.round(x * largeurTuile - largeurTuile * CHEVAUCHEMENT));
-		const haut = Math.max(0, Math.round(y * hauteurTuile - hauteurTuile * CHEVAUCHEMENT));
-		const largeur = Math.min(width - gauche, Math.round(largeurTuile * (1 + 2 * CHEVAUCHEMENT)));
-		const hauteur = Math.min(height - haut, Math.round(hauteurTuile * (1 + 2 * CHEVAUCHEMENT)));
-		const sortie = `${prefixe}-${y + 1}${x + 1}.png`;
-		await sharp(source)
-			.extract({ left: gauche, top: haut, width: largeur, height: hauteur })
-			// Agrandissement volontaire (`withoutEnlargement: false`) : c'est lui qui
-			// rend lisible le petit texte d'un scan basse définition.
-			.resize({ width: Math.min(LARGEUR_MAX, largeur * 2), withoutEnlargement: false })
-			.png()
-			.toFile(sortie);
-		console.log(sortie);
-	}
+  for (let x = 0; x < colonnes; x++) {
+    const gauche = Math.max(0, Math.round(x * largeurTuile - largeurTuile * CHEVAUCHEMENT));
+    const haut = Math.max(0, Math.round(y * hauteurTuile - hauteurTuile * CHEVAUCHEMENT));
+    const largeur = Math.min(width - gauche, Math.round(largeurTuile * (1 + 2 * CHEVAUCHEMENT)));
+    const hauteur = Math.min(height - haut, Math.round(hauteurTuile * (1 + 2 * CHEVAUCHEMENT)));
+    const sortie = `${prefixe}-${y + 1}${x + 1}.png`;
+    await sharp(source)
+      .extract({ left: gauche, top: haut, width: largeur, height: hauteur })
+      // Agrandissement volontaire (`withoutEnlargement: false`) : c'est lui qui
+      // rend lisible le petit texte d'un scan basse définition.
+      .resize({ width: Math.min(LARGEUR_MAX, largeur * 2), withoutEnlargement: false })
+      .png()
+      .toFile(sortie);
+    console.log(sortie);
+  }
 }

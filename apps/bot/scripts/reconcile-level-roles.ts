@@ -25,8 +25,8 @@ const GUILD_ID = process.argv.find((a) => a.startsWith("--guild="))?.split("=")[
 const BOT_TOKEN = env.DISCORD_TOKEN_KAIO ?? env.DISCORD_TOKEN_SHENRON;
 
 if (!BOT_TOKEN) {
-	console.error("Need DISCORD_TOKEN_KAIO or DISCORD_TOKEN_SHENRON");
-	process.exit(1);
+  console.error("Need DISCORD_TOKEN_KAIO or DISCORD_TOKEN_SHENRON");
+  process.exit(1);
 }
 
 const dbs = container.resolve(DatabaseService);
@@ -35,15 +35,15 @@ const db = dbs.db;
 const rewards = await db.select().from(levelRewards).orderBy(levelRewards.level);
 console.log(`Loaded ${rewards.length} level rewards`);
 if (rewards.length === 0) {
-	console.error("No level_rewards in DB. Configure via /admin/levels first.");
-	process.exit(1);
+  console.error("No level_rewards in DB. Configure via /admin/levels first.");
+  process.exit(1);
 }
 
 const allUsers = await db.select().from(users).where(gt(users.xp, 0));
 console.log(`Loaded ${allUsers.length} users with xp > 0`);
 
 const client = new Client({
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
 await client.login(BOT_TOKEN);
@@ -65,49 +65,49 @@ let aboveHierarchy = 0;
 let alreadyHas = 0;
 
 for (const user of allUsers) {
-	const targetLevel = levelForXP(user.xp);
-	if (targetLevel < 1) continue;
+  const targetLevel = levelForXP(user.xp);
+  if (targetLevel < 1) continue;
 
-	const member = guild.members.cache.get(user.id);
-	if (!member) {
-		missing++;
-		continue;
-	}
+  const member = guild.members.cache.get(user.id);
+  if (!member) {
+    missing++;
+    continue;
+  }
 
-	// Tous les rôles level <= targetLevel
-	const expectedRoles = rewards.filter((r) => r.level <= targetLevel);
-	for (const reward of expectedRoles) {
-		if (member.roles.cache.has(reward.roleId)) {
-			alreadyHas++;
-			continue;
-		}
-		const role = guild.roles.cache.get(reward.roleId);
-		if (!role) {
-			console.log(`  ⚠ role ${reward.roleId} introuvable (level ${reward.level})`);
-			skipped++;
-			continue;
-		}
-		if (role.position >= me.roles.highest.position) {
-			console.log(`  ⚠ role ${role.name} above bot — skipped`);
-			aboveHierarchy++;
-			continue;
-		}
-		if (DRY) {
-			console.log(`  [DRY] would add ${role.name} to ${member.user.username} (lvl ${targetLevel})`);
-		} else {
-			try {
-				await member.roles.add(reward.roleId, `Reconcile level ${targetLevel}`);
-				console.log(
-					`  ✓ +${role.name} → ${member.user.username} (lvl ${targetLevel}, xp ${user.xp})`
-				);
-				added++;
-				await new Promise((r) => setTimeout(r, 200)); // rate-limit
-			} catch (err) {
-				console.log(`  ✗ ${role.name} → ${member.user.username}: ${err}`);
-				skipped++;
-			}
-		}
-	}
+  // Tous les rôles level <= targetLevel
+  const expectedRoles = rewards.filter((r) => r.level <= targetLevel);
+  for (const reward of expectedRoles) {
+    if (member.roles.cache.has(reward.roleId)) {
+      alreadyHas++;
+      continue;
+    }
+    const role = guild.roles.cache.get(reward.roleId);
+    if (!role) {
+      console.log(`  ⚠ role ${reward.roleId} introuvable (level ${reward.level})`);
+      skipped++;
+      continue;
+    }
+    if (role.position >= me.roles.highest.position) {
+      console.log(`  ⚠ role ${role.name} above bot — skipped`);
+      aboveHierarchy++;
+      continue;
+    }
+    if (DRY) {
+      console.log(`  [DRY] would add ${role.name} to ${member.user.username} (lvl ${targetLevel})`);
+    } else {
+      try {
+        await member.roles.add(reward.roleId, `Reconcile level ${targetLevel}`);
+        console.log(
+          `  ✓ +${role.name} → ${member.user.username} (lvl ${targetLevel}, xp ${user.xp})`,
+        );
+        added++;
+        await new Promise((r) => setTimeout(r, 200)); // rate-limit
+      } catch (err) {
+        console.log(`  ✗ ${role.name} → ${member.user.username}: ${err}`);
+        skipped++;
+      }
+    }
+  }
 }
 
 console.log("");

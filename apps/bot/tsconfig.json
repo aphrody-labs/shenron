@@ -1,37 +1,25 @@
 {
-	"compilerOptions": {
-		"ignoreDeprecations": "6.0",
-		"target": "ESNext",
-		"module": "ESNext",
-		"moduleResolution": "Bundler",
-		"moduleDetection": "force",
-		"allowImportingTsExtensions": true,
-		"noEmit": true,
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"verbatimModuleSyntax": false,
-		"lib": [
-			"ESNext"
-		],
-		"types": [
-			"bun"
-		],
-		"paths": {
-			"~/*": [
-				"./src/*"
-			],
-			"undici-types": [
-				"./node_modules/undici-types"
-			]
-		}
-	},
-	"include": [
-		"src/**/*",
-		"tests/**/*",
-		"drizzle.config.ts"
-	]
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "verbatimModuleSyntax": false,
+    "lib": ["ESNext"],
+    "types": ["bun"],
+    "paths": {
+      "~/*": ["./src/*"],
+      "undici-types": ["./node_modules/undici-types"]
+    }
+  },
+  "include": ["src/**/*", "tests/**/*", "drizzle.config.ts"]
 }

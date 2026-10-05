@@ -5,74 +5,74 @@ if (!connectionString) throw new Error("DATABASE_URL is required.");
 const sql = postgres(connectionString);
 
 interface CategoryDef {
-	id: string;
-	slug: string;
-	name: string;
-	order: number;
+  id: string;
+  slug: string;
+  name: string;
+  order: number;
 }
 
 interface PageDef {
-	id: string;
-	categoryId: string;
-	title: string;
-	slug: string;
-	order: number;
-	body: string;
+  id: string;
+  categoryId: string;
+  title: string;
+  slug: string;
+  order: number;
+  body: string;
 }
 
 const CATEGORIES: CategoryDef[] = [
-	{
-		id: "cat_cosmologie",
-		slug: "cosmologie-et-macrocosme",
-		name: "Cosmologie & Macrocosme",
-		order: 1,
-	},
-	{
-		id: "cat_chronologie",
-		slug: "chronologie-et-histoire",
-		name: "Chronologie & Histoire Galactique",
-		order: 2,
-	},
-	{
-		id: "cat_lore_peuples",
-		slug: "peuples-et-civilisations",
-		name: "Peuples & Civilisations",
-		order: 3,
-	},
-	{
-		id: "cat_arts_martiaux",
-		slug: "ki-et-arts-martiaux",
-		name: "Ki & Arts Martiaux",
-		order: 4,
-	},
-	{
-		id: "cat_transformations_lore",
-		slug: "lore-des-transformations",
-		name: "Généalogie des Formes & Transformations",
-		order: 5,
-	},
-	{
-		id: "cat_databooks_guides",
-		slug: "guides-et-databooks",
-		name: "Guides & Databooks Officiels",
-		order: 6,
-	},
-	{
-		id: "cat_toriyama_archive",
-		slug: "archives-akira-toriyama",
-		name: "Archives Akira Toriyama",
-		order: 7,
-	},
+  {
+    id: "cat_cosmologie",
+    slug: "cosmologie-et-macrocosme",
+    name: "Cosmologie & Macrocosme",
+    order: 1,
+  },
+  {
+    id: "cat_chronologie",
+    slug: "chronologie-et-histoire",
+    name: "Chronologie & Histoire Galactique",
+    order: 2,
+  },
+  {
+    id: "cat_lore_peuples",
+    slug: "peuples-et-civilisations",
+    name: "Peuples & Civilisations",
+    order: 3,
+  },
+  {
+    id: "cat_arts_martiaux",
+    slug: "ki-et-arts-martiaux",
+    name: "Ki & Arts Martiaux",
+    order: 4,
+  },
+  {
+    id: "cat_transformations_lore",
+    slug: "lore-des-transformations",
+    name: "Généalogie des Formes & Transformations",
+    order: 5,
+  },
+  {
+    id: "cat_databooks_guides",
+    slug: "guides-et-databooks",
+    name: "Guides & Databooks Officiels",
+    order: 6,
+  },
+  {
+    id: "cat_toriyama_archive",
+    slug: "archives-akira-toriyama",
+    name: "Archives Akira Toriyama",
+    order: 7,
+  },
 ];
 
 const PAGES: PageDef[] = [
-	{
-		id: "page_structure_macrocosme",
-		categoryId: "cat_cosmologie",
-		title: "Structure du Macrocosme (Uchū) — L'Univers Sphérique de Dragon Ball",
-		slug: "structure-du-macrocosme-uchu",
-		order: 1,
-		body: `# Structure du Macrocosme (Uchū)
+  {
+    id: "page_structure_macrocosme",
+    categoryId: "cat_cosmologie",
+    title: "Structure du Macrocosme (Uchū) — L'Univers Sphérique de Dragon Ball",
+    slug: "structure-du-macrocosme-uchu",
+    order: 1,
+    body: `# Structure du Macrocosme (Uchū)
 
 D'après le **Daizenshuu 4 : World Guide** et le **Daizenshuu 7 : Daijiten**, le monde habité dans Dragon Ball ne correspond pas à un univers infini standard, mais à une sphère dimensionnelle close et gigantesque nommée le **Macrocosme** (*Uchū*), entourée d'un vide dimensionnel.
 
@@ -102,14 +102,14 @@ Le macrocosme est rigoureusement structuré en strates hiérarchiques :
 5. **Le Royaume des Démons (*Makai*) :**
    - Domaine dimensionnel scellé, foyer originel de la magie noire et des Démons comme Dabra.
 `,
-	},
-	{
-		id: "page_hierarchie_divine",
-		categoryId: "cat_cosmologie",
-		title: "La Hiérarchie Divine : Kaïō, Kaïōshin, Hakaïshin et Anges",
-		slug: "hierarchie-divine-kaioshin-hakaishin-anges",
-		order: 2,
-		body: `# La Hiérarchie Divine dans l'Univers Dragon Ball
+  },
+  {
+    id: "page_hierarchie_divine",
+    categoryId: "cat_cosmologie",
+    title: "La Hiérarchie Divine : Kaïō, Kaïōshin, Hakaïshin et Anges",
+    slug: "hierarchie-divine-kaioshin-hakaishin-anges",
+    order: 2,
+    body: `# La Hiérarchie Divine dans l'Univers Dragon Ball
 
 L'équilibre du monde repose sur un dualisme sacré entre la Création et la Destruction, chapeauté par une autorité omnipotente.
 
@@ -135,14 +135,14 @@ Incarnés notamment par [Beerus](/wiki/personnages/beerus) pour l'Univers 7 et [
 - **Zeno :** Roi Absolu des 12 Univers, capable d'effacer des réalités entières en un instant.
 - **Le Grand Prêtre :** Père des anges et administrateur omniscient de l'ensemble du multivers.
 `,
-	},
-	{
-		id: "page_chronologie_canonique",
-		categoryId: "cat_chronologie",
-		title: "Chronologie Canonique — De l'Ère Cosmique à l'An 784",
-		slug: "chronologie-canonique-ere-cosmique-an-784",
-		order: 1,
-		body: `# Chronologie Canonique de Dragon Ball
+  },
+  {
+    id: "page_chronologie_canonique",
+    categoryId: "cat_chronologie",
+    title: "Chronologie Canonique — De l'Ère Cosmique à l'An 784",
+    slug: "chronologie-canonique-ere-cosmique-an-784",
+    order: 1,
+    body: `# Chronologie Canonique de Dragon Ball
 
 La chronologie officielle de Dragon Ball est établie d'après la datation standard de la Terre (l'Année Cosmique), consolidée dans les **Daizenshuu 7** et le **Chōzenshū**.
 
@@ -173,14 +173,14 @@ La chronologie officielle de Dragon Ball est établie d'après la datation stand
 - **An 774 :** Réveil de Majin Buu. Fusion ([Vegetto](/wiki/personnages/vegetto), [Gotenks](/wiki/personnages/gotenks)), [Super Saiyan 3](/wiki/transformations/super-saiyan-3), et Genkidama final sur le Kaiōshin-kai.
 - **An 784 :** 28e Tenkaichi Budōkai. Rencontre avec Uub et départ de Goku pour l'entraîner.
 `,
-	},
-	{
-		id: "page_histoire_saiyans",
-		categoryId: "cat_lore_peuples",
-		title: "Histoire et Physiologie des Saiyans — Du Sadala originel à la destruction de Vegeta",
-		slug: "histoire-et-physiologie-des-saiyans",
-		order: 1,
-		body: `# Histoire et Physiologie des Saiyans
+  },
+  {
+    id: "page_histoire_saiyans",
+    categoryId: "cat_lore_peuples",
+    title: "Histoire et Physiologie des Saiyans — Du Sadala originel à la destruction de Vegeta",
+    slug: "histoire-et-physiologie-des-saiyans",
+    order: 1,
+    body: `# Histoire et Physiologie des Saiyans
 
 Les Saiyans (*Saiya-jin*) sont une race guerrière au cœur de la mythologie de Dragon Ball.
 
@@ -195,14 +195,14 @@ Les Saiyans (*Saiya-jin*) sont une race guerrière au cœur de la mythologie de 
 - **Longévité Combative :** Les Saiyans conservent une jeunesse prolongée jusqu'à environ 80 ans afin de rester de redoutables guerriers jusqu'au crépuscule de leur vie.
 - **Les Cellules S (*S-Cells*) :** Découvertes dans les interviews d'Akira Toriyama (*Saikyō Jump 2018*), ces cellules déterminent la prédisposition génétique au Super Saiyan. Elles se développent par un esprit doux et un entraînement intensif.
 `,
-	},
-	{
-		id: "page_mecanique_du_ki",
-		categoryId: "cat_arts_martiaux",
-		title: "La Mécanique du Ki : Genki, Yūki et Shōki dans les Arts Martiaux",
-		slug: "mecanique-du-ki-genki-yuki-shoki",
-		order: 1,
-		body: `# La Mécanique du Ki (*Kikō*)
+  },
+  {
+    id: "page_mecanique_du_ki",
+    categoryId: "cat_arts_martiaux",
+    title: "La Mécanique du Ki : Genki, Yūki et Shōki dans les Arts Martiaux",
+    slug: "mecanique-du-ki-genki-yuki-shoki",
+    order: 1,
+    body: `# La Mécanique du Ki (*Kikō*)
 
 Dans la doctrine d'Akira Toriyama explicitée dans le **Super Exciting Guide**, le *Ki* (氣) ne se résume pas à de l'énergie physique brute. Il est la somme de trois composantes fondamentales :
 
@@ -222,14 +222,14 @@ Dans la doctrine d'Akira Toriyama explicitée dans le **Super Exciting Guide**, 
 - **La Maîtrise du Ki Divin (*God Ki*) :** Contrairement au Ki ordinaire qui fuit naturellement du corps sous forme d'aura explosive, le Ki divin est scellé et comprimé à l'intérieur du corps sans aucune déperdition.
 - **L'Ultra Instinct (*Migatte no Goku'i*) :** État ultime enseigné par les Anges où le corps réagit indépendamment des signaux du cerveau, abolissant le temps de latence de la pensée.
 `,
-	},
-	{
-		id: "page_guide_databooks_reference",
-		categoryId: "cat_databooks_guides",
-		title: "Guide Exhaustif des Databooks Officiels : Daizenshuu, Chōzenshū et SEG",
-		slug: "guide-exhaustif-databooks-daizenshuu-chozenshu",
-		order: 1,
-		body: `# Les Databooks de Référence de Dragon Ball
+  },
+  {
+    id: "page_guide_databooks_reference",
+    categoryId: "cat_databooks_guides",
+    title: "Guide Exhaustif des Databooks Officiels : Daizenshuu, Chōzenshū et SEG",
+    slug: "guide-exhaustif-databooks-daizenshuu-chozenshu",
+    order: 1,
+    body: `# Les Databooks de Référence de Dragon Ball
 
 Pour analyser le canon et le lore officiel, plusieurs séries de guides d'archives ont été publiées par Shūeisha sous la supervision directe d'Akira Toriyama.
 
@@ -248,26 +248,26 @@ Pour analyser le canon et le lore officiel, plusieurs séries de guides d'archiv
 ## 3. Chōzenshū (2013)
 - Version remastérisée et mise à jour en 4 volumes des Daizenshuu intégrant les éléments modernes de l'histoire.
 `,
-	},
+  },
 ];
 
 async function main() {
-	console.log("=== INGESTION COMPLETE DU WIKI DRAGON BALL ===");
+  console.log("=== INGESTION COMPLETE DU WIKI DRAGON BALL ===");
 
-	// 1. Insertion des catégories
-	for (const cat of CATEGORIES) {
-		await sql`
+  // 1. Insertion des catégories
+  for (const cat of CATEGORIES) {
+    await sql`
 			INSERT INTO "WikiCategory" (id, slug, name, "order")
 			VALUES (${cat.id}, ${cat.slug}, ${cat.name}, ${cat.order})
 			ON CONFLICT (id) DO UPDATE
 			SET slug = EXCLUDED.slug, name = EXCLUDED.name, "order" = EXCLUDED."order"
 		`;
-		console.log(`[CAT] ${cat.name} (${cat.slug}) upserted`);
-	}
+    console.log(`[CAT] ${cat.name} (${cat.slug}) upserted`);
+  }
 
-	// 2. Insertion des pages wiki
-	for (const p of PAGES) {
-		await sql`
+  // 2. Insertion des pages wiki
+  for (const p of PAGES) {
+    await sql`
 			INSERT INTO "WikiPage" (id, "categoryId", title, slug, body, "order", "updatedAt")
 			VALUES (${p.id}, ${p.categoryId}, ${p.title}, ${p.slug}, ${p.body}, ${p.order}, NOW())
 			ON CONFLICT (slug) DO UPDATE
@@ -277,15 +277,17 @@ async function main() {
 			    "order" = EXCLUDED."order",
 			    "updatedAt" = NOW()
 		`;
-		console.log(`[PAGE] ${p.title} (${p.slug}) upserted`);
-	}
+    console.log(`[PAGE] ${p.title} (${p.slug}) upserted`);
+  }
 
-	const [count] = await sql`SELECT count(*)::int AS total FROM "WikiPage"`;
-	console.log(`=== SUCCES : Total de ${count.total} pages wiki encyclopédiques désormais actives en base ===`);
-	await sql.end();
+  const [count] = await sql`SELECT count(*)::int AS total FROM "WikiPage"`;
+  console.log(
+    `=== SUCCES : Total de ${count.total} pages wiki encyclopédiques désormais actives en base ===`,
+  );
+  await sql.end();
 }
 
 main().catch((err) => {
-	console.error("Erreur ingestion wiki:", err);
-	process.exit(1);
+  console.error("Erreur ingestion wiki:", err);
+  process.exit(1);
 });

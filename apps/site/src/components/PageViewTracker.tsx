@@ -18,14 +18,14 @@ import { trackPageView } from "@/lib/telemetry";
  * Ne compte pas les query strings (le path est normalisé côté ingest, sans `?`).
  */
 export function PageViewTracker() {
-	const pathname = usePathname();
-	const last = useRef<string | null>(null);
+  const pathname = usePathname();
+  const last = useRef<string | null>(null);
 
-	useEffect(() => {
-		if (last.current === pathname) return; // dé-doublonne un même path
-		last.current = pathname;
-		trackPageView();
-	}, [pathname]);
+  useEffect(() => {
+    if (last.current === pathname) return; // dé-doublonne un même path
+    last.current = pathname;
+    trackPageView();
+  }, [pathname]);
 
-	return null;
+  return null;
 }

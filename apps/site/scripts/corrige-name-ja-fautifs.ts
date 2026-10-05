@@ -47,31 +47,31 @@ import { join } from "node:path";
 const APPLIQUER = process.argv.includes("--appliquer");
 
 async function urlBase(): Promise<string> {
-	const direct = process.env.DATABASE_URL?.trim();
-	if (direct) return direct;
-	const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
-		.text()
-		.catch(() => "");
-	// La DERNIÈRE : `.env` porte l'ancienne URL Neon en commentaire AVANT la locale.
-	const valeur = texte
-		.split("\n")
-		.filter((l) => l.startsWith("DATABASE_URL="))
-		.at(-1)
-		?.slice("DATABASE_URL=".length)
-		.trim()
-		.replace(/^["']|["']$/g, "");
-	if (!valeur) {
-		console.error("✗ DATABASE_URL introuvable.");
-		process.exit(1);
-	}
-	return valeur;
+  const direct = process.env.DATABASE_URL?.trim();
+  if (direct) return direct;
+  const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
+    .text()
+    .catch(() => "");
+  // La DERNIÈRE : `.env` porte l'ancienne URL Neon en commentaire AVANT la locale.
+  const valeur = texte
+    .split("\n")
+    .filter((l) => l.startsWith("DATABASE_URL="))
+    .at(-1)
+    ?.slice("DATABASE_URL=".length)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (!valeur) {
+    console.error("✗ DATABASE_URL introuvable.");
+    process.exit(1);
+  }
+  return valeur;
 }
 
 const idRevision = () =>
-	Array.from(
-		{ length: 24 },
-		() => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]
-	).join("");
+  Array.from(
+    { length: 24 },
+    () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)],
+  ).join("");
 
 const sql = postgres(await urlBase(), { max: 2, prepare: false });
 /** `sql.json()` — jamais `JSON.stringify(...)::jsonb`, qui écrit un scalaire. */
@@ -101,31 +101,31 @@ const laissees: Ligne[] = [];
 // tombé dans la mauvaise colonne. On le mesure au lieu de coder « Kōji Totani ».
 const partages = new Map<string, Ligne[]>();
 for (const f of fautifs) {
-	const k = (f.name_ja ?? "").trim();
-	partages.set(k, [...(partages.get(k) ?? []), f]);
+  const k = (f.name_ja ?? "").trim();
+  partages.set(k, [...(partages.get(k) ?? []), f]);
 }
 
 for (const f of fautifs) {
-	const ja = (f.name_ja ?? "").trim();
-	if ((partages.get(ja)?.length ?? 0) > 1) {
-		corrections.push({
-			ligne: f,
-			ja: null,
-			raison: `valeur partagée par ${partages.get(ja)!.length} fiches — attribut, pas un nom`,
-		});
-		continue;
-	}
-	if (A_DU_JAPONAIS.test(f.name_romaji ?? "")) {
-		corrections.push({
-			ligne: f,
-			ja: f.name_romaji,
-			romaji: ja,
-			raison: "colonnes inversées (le japonais est dans name_romaji)",
-		});
-		continue;
-	}
-	// Graphie appartenant à une AUTRE fiche : elle existe ailleurs, en japonais.
-	laissees.push(f);
+  const ja = (f.name_ja ?? "").trim();
+  if ((partages.get(ja)?.length ?? 0) > 1) {
+    corrections.push({
+      ligne: f,
+      ja: null,
+      raison: `valeur partagée par ${partages.get(ja)!.length} fiches — attribut, pas un nom`,
+    });
+    continue;
+  }
+  if (A_DU_JAPONAIS.test(f.name_romaji ?? "")) {
+    corrections.push({
+      ligne: f,
+      ja: f.name_romaji,
+      romaji: ja,
+      raison: "colonnes inversées (le japonais est dans name_romaji)",
+    });
+    continue;
+  }
+  // Graphie appartenant à une AUTRE fiche : elle existe ailleurs, en japonais.
+  laissees.push(f);
 }
 
 // La graphie d'un autre personnage se détecte en base, pas de mémoire : on
@@ -143,60 +143,60 @@ const collisionsJa = (await sql`
 console.log(`${suspects.length} fiches avec un name_ja, ${fautifs.length} sans japonais.\n`);
 console.log(`${corrections.length} correction(s) démontrable(s) :`);
 for (const c of corrections) {
-	console.log(
-		`  #${c.ligne.id} ${c.ligne.name}\n` +
-			`      name_ja « ${c.ligne.name_ja} » → ${c.ja === null ? "vide" : `« ${c.ja} »`}` +
-			(c.romaji !== undefined ? `, name_romaji → « ${c.romaji} »` : "") +
-			`\n      ${c.raison}`
-	);
+  console.log(
+    `  #${c.ligne.id} ${c.ligne.name}\n` +
+      `      name_ja « ${c.ligne.name_ja} » → ${c.ja === null ? "vide" : `« ${c.ja} »`}` +
+      (c.romaji !== undefined ? `, name_romaji → « ${c.romaji} »` : "") +
+      `\n      ${c.raison}`,
+  );
 }
 
 console.log(`\n${laissees.length} laissée(s) en place (rien de démontrable) :`);
 for (const f of laissees) {
-	console.log(
-		`  #${f.id} ${f.name} — « ${f.name_ja} »` +
-			(CORÉEN.test(f.name_ja ?? "") ? " (coréen)" : " (rōmaji)")
-	);
+  console.log(
+    `  #${f.id} ${f.name} — « ${f.name_ja} »` +
+      (CORÉEN.test(f.name_ja ?? "") ? " (coréen)" : " (rōmaji)"),
+  );
 }
 
 if (collisionsJa.length) {
-	console.log(
-		`\n${collisionsJa.length} graphie(s) japonaise(s) portée(s) par plusieurs fiches VISIBLES :`
-	);
-	for (const c of collisionsJa) console.log(`  ${c.name_ja} ×${c.n} — ${c.fiches}`);
-	console.log(
-		"  (à trancher à la main : une version de saga, un homonyme, ou une graphie recopiée)"
-	);
+  console.log(
+    `\n${collisionsJa.length} graphie(s) japonaise(s) portée(s) par plusieurs fiches VISIBLES :`,
+  );
+  for (const c of collisionsJa) console.log(`  ${c.name_ja} ×${c.n} — ${c.fiches}`);
+  console.log(
+    "  (à trancher à la main : une version de saga, un homonyme, ou une graphie recopiée)",
+  );
 }
 
 if (!APPLIQUER || corrections.length === 0) {
-	if (corrections.length) console.log("\n(simulation — relancer avec --appliquer)");
-	await sql.end();
-	process.exit(0);
+  if (corrections.length) console.log("\n(simulation — relancer avec --appliquer)");
+  await sql.end();
+  process.exit(0);
 }
 
 await sql.begin(async (tx) => {
-	for (const c of corrections) {
-		if (c.romaji !== undefined) {
-			await tx`update bot.db_characters set name_ja = ${c.ja}, name_romaji = ${c.romaji} where id = ${c.ligne.id}`;
-		} else {
-			await tx`update bot.db_characters set name_ja = ${c.ja} where id = ${c.ligne.id}`;
-		}
-		await tx`insert into public.wiki_revisions ${tx({
-			id: idRevision(),
-			tableName: "db_characters",
-			rowId: String(c.ligne.id),
-			action: "update",
-			label: c.ligne.name,
-			before: jsonb({ name_ja: c.ligne.name_ja, name_romaji: c.ligne.name_romaji }),
-			after: jsonb({
-				name_ja: c.ja,
-				name_romaji: c.romaji !== undefined ? c.romaji : c.ligne.name_romaji,
-			}),
-			editorId: "script",
-			editorName: `corrige-name-ja-fautifs (${c.raison})`,
-		})}`;
-	}
+  for (const c of corrections) {
+    if (c.romaji !== undefined) {
+      await tx`update bot.db_characters set name_ja = ${c.ja}, name_romaji = ${c.romaji} where id = ${c.ligne.id}`;
+    } else {
+      await tx`update bot.db_characters set name_ja = ${c.ja} where id = ${c.ligne.id}`;
+    }
+    await tx`insert into public.wiki_revisions ${tx({
+      id: idRevision(),
+      tableName: "db_characters",
+      rowId: String(c.ligne.id),
+      action: "update",
+      label: c.ligne.name,
+      before: jsonb({ name_ja: c.ligne.name_ja, name_romaji: c.ligne.name_romaji }),
+      after: jsonb({
+        name_ja: c.ja,
+        name_romaji: c.romaji !== undefined ? c.romaji : c.ligne.name_romaji,
+      }),
+      editorId: "script",
+      editorName: `corrige-name-ja-fautifs (${c.raison})`,
+    })}`;
+  }
 });
 
 console.log(`\n✔ ${corrections.length} fiche(s) corrigée(s) et versionnée(s).`);

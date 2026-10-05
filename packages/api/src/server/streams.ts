@@ -45,7 +45,8 @@ export class ChatStreams {
 
   #sweep(): void {
     const now = this.#now();
-    for (const [id, stream] of this.#streams) if (stream.done && stream.expiresAt < now) this.#streams.delete(id);
+    for (const [id, stream] of this.#streams)
+      if (stream.done && stream.expiresAt < now) this.#streams.delete(id);
     if (this.#streams.size < this.#max) return;
     for (const [id, stream] of this.#streams) {
       if (this.#streams.size < this.#max) break;
@@ -110,7 +111,12 @@ export class ChatStreams {
   }
 
   /** Events after `after` (0 = from the start), then the live tail until the stream ends. */
-  async *follow(id: string, ownerId: string, after = 0, signal?: AbortSignal): AsyncGenerator<NumberedEvent> {
+  async *follow(
+    id: string,
+    ownerId: string,
+    after = 0,
+    signal?: AbortSignal,
+  ): AsyncGenerator<NumberedEvent> {
     const stream = this.#streams.get(id);
     if (!stream || stream.ownerId !== ownerId || signal?.aborted) return;
     const queue: (NumberedEvent | null)[] = [];

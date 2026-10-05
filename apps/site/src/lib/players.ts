@@ -25,10 +25,10 @@ const FIABILITE: readonly string[] = ["vidmoly", "mailru", "yourupload"];
 const MORTS = new Set(["streamhide", "filemoon", "voe", "streamtape", "doodstream"]);
 
 function rang(provider: string | undefined): number {
-	const p = (provider ?? "").toLowerCase();
-	if (MORTS.has(p)) return 900;
-	const i = FIABILITE.indexOf(p);
-	return i === -1 ? 500 : i;
+  const p = (provider ?? "").toLowerCase();
+  if (MORTS.has(p)) return 900;
+  const i = FIABILITE.indexOf(p);
+  return i === -1 ? 500 : i;
 }
 
 /**
@@ -36,13 +36,13 @@ function rang(provider: string | undefined): number {
  * relatif d'origine à fiabilité égale.
  */
 export function orderPlayers<T extends { provider: string }>(
-	players: readonly T[] | null | undefined
+  players: readonly T[] | null | undefined,
 ): T[] | null {
-	// `players` est un jsonb : il a déjà été un scalaire corrompu par le passé
-	// (cf. piège `sql.json` dans CLAUDE.md). On ne fait confiance à rien.
-	if (!Array.isArray(players)) return null;
-	return players
-		.map((p, i) => ({ p, i, r: rang(p?.provider) }))
-		.toSorted((a, b) => a.r - b.r || a.i - b.i)
-		.map((x) => x.p);
+  // `players` est un jsonb : il a déjà été un scalaire corrompu par le passé
+  // (cf. piège `sql.json` dans CLAUDE.md). On ne fait confiance à rien.
+  if (!Array.isArray(players)) return null;
+  return players
+    .map((p, i) => ({ p, i, r: rang(p?.provider) }))
+    .toSorted((a, b) => a.r - b.r || a.i - b.i)
+    .map((x) => x.p);
 }

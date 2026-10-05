@@ -171,7 +171,9 @@ async function runBxcCommand(args: string[]): Promise<string> {
   return stdout;
 }
 
-function classifyImage(img: WikiImage): "poster" | "profile" | "manga" | "anime" | "logo" | "illustration" | "other" {
+function classifyImage(
+  img: WikiImage,
+): "poster" | "profile" | "manga" | "anime" | "logo" | "illustration" | "other" {
   const name = img.fichier.toLowerCase();
   if (name.includes("logo") || img.mime === "image/svg+xml") return "logo";
   if (name.includes("poster") || name.includes("cover")) return "poster";
@@ -193,7 +195,7 @@ function filterHighResImages(images: WikiImage[]): WikiImage[] {
         img.fichier.toLowerCase().includes("bullet");
       return !isTiny && !isIcon;
     })
-    .map((img) => (Object.assign(img, { category: classifyImage(img) })))
+    .map((img) => Object.assign(img, { category: classifyImage(img) }))
     .toSorted((a, b) => b.largeur * b.hauteur - a.largeur * a.hauteur);
 }
 
@@ -241,7 +243,8 @@ async function extractSagasOverview() {
     ]);
     const tables = JSON.parse(tablesRaw);
 
-    const siteNavTable = tables.find((t: any) => t.titre === "Site Navigation") ?? tables[tables.length - 1];
+    const siteNavTable =
+      tables.find((t: any) => t.titre === "Site Navigation") ?? tables[tables.length - 1];
 
     const structuredSagas: Array<{ group: string; sagas: string[] }> = [];
     if (siteNavTable && Array.isArray(siteNavTable.lignes)) {
@@ -334,7 +337,9 @@ async function main() {
       const imagesRaw = await runBxcCommand(["wiki", "images", item.url]);
       rawImages = JSON.parse(imagesRaw);
       highResVisuals = filterHighResImages(rawImages);
-      console.log(`  -> Found ${rawImages.length} images (${highResVisuals.length} high-res visuals)`);
+      console.log(
+        `  -> Found ${rawImages.length} images (${highResVisuals.length} high-res visuals)`,
+      );
     } catch (err: any) {
       console.warn(`  [!] Images failed for ${item.name}: ${err.message}`);
     }
@@ -384,7 +389,9 @@ async function main() {
 
   const durationSec = ((Date.now() - startTime) / 1000).toFixed(1);
   console.log(`\n=== Extraction Complete in ${durationSec}s ===`);
-  console.log(`Saved ${results.metadata.totalItemsExtracted} entities with ${results.metadata.totalHighResVisuals} high-res assets to ${outputPath}`);
+  console.log(
+    `Saved ${results.metadata.totalItemsExtracted} entities with ${results.metadata.totalHighResVisuals} high-res assets to ${outputPath}`,
+  );
 }
 
 main().catch((err) => {

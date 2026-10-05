@@ -12,22 +12,22 @@ import { useEffect } from "react";
 import { recordHistory, type HistoryKind } from "@/lib/history";
 
 export function TrackHistory({
-	kind,
-	id,
-	title,
-	href,
-	image,
-	caption,
+  kind,
+  id,
+  title,
+  href,
+  image,
+  caption,
 }: {
-	kind: HistoryKind;
-	id: string | number;
-	title: string;
-	href: string;
-	image?: string | null;
-	caption?: string | null;
+  kind: HistoryKind;
+  id: string | number;
+  title: string;
+  href: string;
+  image?: string | null;
+  caption?: string | null;
 }) {
-	useEffect(() => {
-		recordHistory({ kind, id: String(id), title, href, image, caption });
-	}, [kind, id, title, href, image, caption]);
-	return null;
+  useEffect(() => {
+    recordHistory({ kind, id: String(id), title, href, image, caption });
+  }, [kind, id, title, href, image, caption]);
+  return null;
 }

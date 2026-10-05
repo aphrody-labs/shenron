@@ -23,26 +23,26 @@ const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 
 const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
 
 export async function GET(req: NextRequest) {
-	if (!(await isAdminOrToken(req))) return forbidden();
-	const [config, items] = await Promise.all([getChronologyConfig(), dbUniverse.timeline()]);
-	return NextResponse.json({ config, items: items ?? [] });
+  if (!(await isAdminOrToken(req))) return forbidden();
+  const [config, items] = await Promise.all([getChronologyConfig(), dbUniverse.timeline()]);
+  return NextResponse.json({ config, items: items ?? [] });
 }
 
 export async function PUT(req: NextRequest) {
-	const { allowed, me } = await adminUserOrToken(req);
-	if (!allowed) return forbidden();
-	let body: unknown;
-	try {
-		body = await req.json();
-	} catch {
-		return badRequest("JSON body requis");
-	}
-	try {
-		const config = await saveChronologyConfig(body, me?.discordId || me?.user?.id || "token-admin");
-		// La frise publique est en ISR (revalidate 3600) → purge immédiate.
-		revalidatePath("/wiki/chronologie");
-		return NextResponse.json({ ok: true, config });
-	} catch (err) {
-		return badRequest(err instanceof Error ? err.message : "erreur");
-	}
+  const { allowed, me } = await adminUserOrToken(req);
+  if (!allowed) return forbidden();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return badRequest("JSON body requis");
+  }
+  try {
+    const config = await saveChronologyConfig(body, me?.discordId || me?.user?.id || "token-admin");
+    // La frise publique est en ISR (revalidate 3600) → purge immédiate.
+    revalidatePath("/wiki/chronologie");
+    return NextResponse.json({ ok: true, config });
+  } catch (err) {
+    return badRequest(err instanceof Error ? err.message : "erreur");
+  }
 }

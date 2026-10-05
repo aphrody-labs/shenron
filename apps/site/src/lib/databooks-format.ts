@@ -20,10 +20,10 @@
  */
 
 import {
-	contientAlphabetEtranger,
-	contientBoucle,
-	estHanSansKana,
-	SEUIL_COURT,
+  contientAlphabetEtranger,
+  contientBoucle,
+  estHanSansKana,
+  SEUIL_COURT,
 } from "./databooks-defauts";
 
 /** Caractère de remplacement U+FFFD : l'OCR a rendu un glyphe qu'il n'a pas su lire. */
@@ -53,44 +53,44 @@ const LONGUEUR_SUSPECTE = SEUIL_COURT;
  *   - espaces en tête et en fin de texte.
  */
 export function nettoyerOcr(texte: string): string {
-	return texte
-		.replace(/\r\n?/g, "\n")
-		.split("\n")
-		.map((ligne) => {
-			const indentation = ligne.match(/^[ \t]*/)?.[0] ?? "";
-			return (
-				indentation +
-				ligne
-					.slice(indentation.length)
-					.replace(/[ 　 \t]{2,}/g, " ")
-					.replace(/[ 　 \t]+$/, "")
-			);
-		})
-		.join("\n")
-		.replace(/\n{3,}/g, "\n\n")
-		.trim();
+  return texte
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map((ligne) => {
+      const indentation = ligne.match(/^[ \t]*/)?.[0] ?? "";
+      return (
+        indentation +
+        ligne
+          .slice(indentation.length)
+          .replace(/[ 　 \t]{2,}/g, " ")
+          .replace(/[ 　 \t]+$/, "")
+      );
+    })
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 /** `nettoyerOcr` changerait-il quelque chose ? Sert à ne pas proposer un no-op. */
 export function aBesoinDeNettoyage(texte: string): boolean {
-	return nettoyerOcr(texte) !== texte;
+  return nettoyerOcr(texte) !== texte;
 }
 
 type CodeAnomalie =
-	| "remplacement"
-	| "tres-court"
-	| "repetition"
-	| "boucle"
-	| "alphabet-etranger"
-	| "han-sans-kana"
-	| "mise-en-forme";
+  | "remplacement"
+  | "tres-court"
+  | "repetition"
+  | "boucle"
+  | "alphabet-etranger"
+  | "han-sans-kana"
+  | "mise-en-forme";
 
 export interface Anomalie {
-	code: CodeAnomalie;
-	/** Phrase affichable telle quelle dans l'interface de relecture. */
-	message: string;
-	/** `true` si `nettoyerOcr` la corrige — sinon il faut relire la planche. */
-	reparable: boolean;
+  code: CodeAnomalie;
+  /** Phrase affichable telle quelle dans l'interface de relecture. */
+  message: string;
+  /** `true` si `nettoyerOcr` la corrige — sinon il faut relire la planche. */
+  reparable: boolean;
 }
 
 /**
@@ -101,15 +101,15 @@ export interface Anomalie {
  * répètent légitimement dans un tableau ou une fiche technique.
  */
 function ligneRepetee(texte: string): string | null {
-	const vues = new Map<string, number>();
-	for (const brute of texte.split("\n")) {
-		const ligne = brute.trim();
-		if (ligne.length < 12) continue;
-		const n = (vues.get(ligne) ?? 0) + 1;
-		if (n >= 3) return ligne;
-		vues.set(ligne, n);
-	}
-	return null;
+  const vues = new Map<string, number>();
+  for (const brute of texte.split("\n")) {
+    const ligne = brute.trim();
+    if (ligne.length < 12) continue;
+    const n = (vues.get(ligne) ?? 0) + 1;
+    if (n >= 3) return ligne;
+    vues.set(ligne, n);
+  }
+  return null;
 }
 
 /**
@@ -119,85 +119,85 @@ function ligneRepetee(texte: string): string | null {
  * signal automatique de défaut ». La relecture reste la seule validation.
  */
 export function diagnostiquerPlanche(texte: string | null | undefined): Anomalie[] {
-	const t = (texte ?? "").trim();
-	if (!t) return [];
-	const out: Anomalie[] = [];
+  const t = (texte ?? "").trim();
+  if (!t) return [];
+  const out: Anomalie[] = [];
 
-	const remplacements = t.split(REMPLACEMENT).length - 1;
-	if (remplacements > 0) {
-		out.push({
-			code: "remplacement",
-			message: `${remplacements} caractère${remplacements > 1 ? "s" : ""} illisible${
-				remplacements > 1 ? "s" : ""
-			} (${REMPLACEMENT}) — le modèle n'a pas su lire ces glyphes.`,
-			reparable: false,
-		});
-	}
+  const remplacements = t.split(REMPLACEMENT).length - 1;
+  if (remplacements > 0) {
+    out.push({
+      code: "remplacement",
+      message: `${remplacements} caractère${remplacements > 1 ? "s" : ""} illisible${
+        remplacements > 1 ? "s" : ""
+      } (${REMPLACEMENT}) — le modèle n'a pas su lire ces glyphes.`,
+      reparable: false,
+    });
+  }
 
-	if (t.length < LONGUEUR_SUSPECTE) {
-		out.push({
-			code: "tres-court",
-			message: `${t.length} caractère${t.length > 1 ? "s" : ""} seulement — lecture probablement partielle.`,
-			reparable: false,
-		});
-	}
+  if (t.length < LONGUEUR_SUSPECTE) {
+    out.push({
+      code: "tres-court",
+      message: `${t.length} caractère${t.length > 1 ? "s" : ""} seulement — lecture probablement partielle.`,
+      reparable: false,
+    });
+  }
 
-	const repetee = ligneRepetee(t);
-	if (repetee) {
-		out.push({
-			code: "repetition",
-			message: `Ligne répétée au moins 3 fois : « ${repetee.slice(0, 60)}${repetee.length > 60 ? "…" : ""} ».`,
-			reparable: false,
-		});
-	} else if (contientBoucle(t)) {
-		// `ligneRepetee` ne voit que des lignes entières identiques. Le modèle
-		// boucle aussi À L'INTÉRIEUR d'une ligne (« いるかといますいるかといます… »),
-		// ce qui passait sous le radar du relecteur alors que la file de
-		// relecture, elle, le comptait.
-		out.push({
-			code: "boucle",
-			message: "Un même segment est répété en rafale — le modèle a bouclé.",
-			reparable: false,
-		});
-	}
+  const repetee = ligneRepetee(t);
+  if (repetee) {
+    out.push({
+      code: "repetition",
+      message: `Ligne répétée au moins 3 fois : « ${repetee.slice(0, 60)}${repetee.length > 60 ? "…" : ""} ».`,
+      reparable: false,
+    });
+  } else if (contientBoucle(t)) {
+    // `ligneRepetee` ne voit que des lignes entières identiques. Le modèle
+    // boucle aussi À L'INTÉRIEUR d'une ligne (« いるかといますいるかといます… »),
+    // ce qui passait sous le radar du relecteur alors que la file de
+    // relecture, elle, le comptait.
+    out.push({
+      code: "boucle",
+      message: "Un même segment est répété en rafale — le modèle a bouclé.",
+      reparable: false,
+    });
+  }
 
-	// Les deux signatures les plus fréquentes du corpus, et les seules que le
-	// diagnostic ignorait : 720 planches portent un alphabet qui n'a rien à
-	// faire là, 154 sont en faux chinois. Sans elles, le back-office annonçait
-	// « à vérifier » sur 116 planches au lieu de 1 911.
-	if (contientAlphabetEtranger(t)) {
-		out.push({
-			code: "alphabet-etranger",
-			message:
-				"Contient du cyrillique, de l'arabe, du thaï ou du coréen — signes hallucinés par le modèle, jamais lus sur la planche.",
-			reparable: false,
-		});
-	}
+  // Les deux signatures les plus fréquentes du corpus, et les seules que le
+  // diagnostic ignorait : 720 planches portent un alphabet qui n'a rien à
+  // faire là, 154 sont en faux chinois. Sans elles, le back-office annonçait
+  // « à vérifier » sur 116 planches au lieu de 1 911.
+  if (contientAlphabetEtranger(t)) {
+    out.push({
+      code: "alphabet-etranger",
+      message:
+        "Contient du cyrillique, de l'arabe, du thaï ou du coréen — signes hallucinés par le modèle, jamais lus sur la planche.",
+      reparable: false,
+    });
+  }
 
-	if (estHanSansKana(t)) {
-		out.push({
-			code: "han-sans-kana",
-			message:
-				"Idéogrammes sans un seul kana : du chinois inventé plutôt que le japonais de la planche.",
-			reparable: false,
-		});
-	}
+  if (estHanSansKana(t)) {
+    out.push({
+      code: "han-sans-kana",
+      message:
+        "Idéogrammes sans un seul kana : du chinois inventé plutôt que le japonais de la planche.",
+      reparable: false,
+    });
+  }
 
-	if (aBesoinDeNettoyage(texte ?? "")) {
-		out.push({
-			code: "mise-en-forme",
-			message: "Espaces ou sauts de ligne superflus.",
-			reparable: true,
-		});
-	}
+  if (aBesoinDeNettoyage(texte ?? "")) {
+    out.push({
+      code: "mise-en-forme",
+      message: "Espaces ou sauts de ligne superflus.",
+      reparable: true,
+    });
+  }
 
-	return out;
+  return out;
 }
 
 /** Un segment d'extrait : `correspond` marque la portion cherchée. */
 export interface Segment {
-	texte: string;
-	correspond: boolean;
+  texte: string;
+  correspond: boolean;
 }
 
 /**
@@ -212,56 +212,56 @@ export interface Segment {
  * titres et les crédits latins, eux, en ont.
  */
 export function extraireSegments(
-	texte: string,
-	terme: string,
-	options: { contexte?: number; max?: number } = {}
+  texte: string,
+  terme: string,
+  options: { contexte?: number; max?: number } = {},
 ): Segment[] {
-	const contexte = options.contexte ?? 60;
-	const max = options.max ?? 3;
-	const cible = terme.trim();
-	if (!cible) return [{ texte: texte.slice(0, contexte * 2), correspond: false }];
+  const contexte = options.contexte ?? 60;
+  const max = options.max ?? 3;
+  const cible = terme.trim();
+  if (!cible) return [{ texte: texte.slice(0, contexte * 2), correspond: false }];
 
-	// Repérage insensible à la casse SANS changer les longueurs : `İ` (U+0130)
-	// devient deux unités en minuscule, et les offsets calculés sur la version
-	// minuscule ne pointaient alors plus les bonnes positions dans le texte
-	// d'origine — surlignage décalé. `toLowerCase()` par caractère préserve la
-	// correspondance d'index quand la conversion s'allonge : on retombe sur le
-	// caractère d'origine dans ce cas.
-	const memeLongueur = (t: string) =>
-		Array.from(t)
-			.map((c) => {
-				const bas = c.toLocaleLowerCase();
-				return bas.length === c.length ? bas : c;
-			})
-			.join("");
-	const foin = memeLongueur(texte);
-	const aiguille = memeLongueur(cible);
-	const positions: number[] = [];
-	let i = foin.indexOf(aiguille);
-	while (i !== -1 && positions.length < max) {
-		positions.push(i);
-		i = foin.indexOf(aiguille, i + aiguille.length);
-	}
-	if (positions.length === 0) {
-		return [{ texte: texte.slice(0, contexte * 2), correspond: false }];
-	}
+  // Repérage insensible à la casse SANS changer les longueurs : `İ` (U+0130)
+  // devient deux unités en minuscule, et les offsets calculés sur la version
+  // minuscule ne pointaient alors plus les bonnes positions dans le texte
+  // d'origine — surlignage décalé. `toLowerCase()` par caractère préserve la
+  // correspondance d'index quand la conversion s'allonge : on retombe sur le
+  // caractère d'origine dans ce cas.
+  const memeLongueur = (t: string) =>
+    Array.from(t)
+      .map((c) => {
+        const bas = c.toLocaleLowerCase();
+        return bas.length === c.length ? bas : c;
+      })
+      .join("");
+  const foin = memeLongueur(texte);
+  const aiguille = memeLongueur(cible);
+  const positions: number[] = [];
+  let i = foin.indexOf(aiguille);
+  while (i !== -1 && positions.length < max) {
+    positions.push(i);
+    i = foin.indexOf(aiguille, i + aiguille.length);
+  }
+  if (positions.length === 0) {
+    return [{ texte: texte.slice(0, contexte * 2), correspond: false }];
+  }
 
-	const segments: Segment[] = [];
-	let curseur = Math.max(0, positions[0] - contexte);
-	if (curseur > 0) segments.push({ texte: "…", correspond: false });
+  const segments: Segment[] = [];
+  let curseur = Math.max(0, positions[0] - contexte);
+  if (curseur > 0) segments.push({ texte: "…", correspond: false });
 
-	for (const pos of positions) {
-		// Les occurrences proches se rejoignent en un seul extrait continu ; les
-		// éloignées sont séparées par une ellipse, sans jamais revenir en arrière.
-		const debut = Math.max(curseur, pos - contexte);
-		if (debut > curseur) segments.push({ texte: "…", correspond: false });
-		if (debut < pos) segments.push({ texte: texte.slice(debut, pos), correspond: false });
-		segments.push({ texte: texte.slice(pos, pos + cible.length), correspond: true });
-		curseur = pos + cible.length;
-	}
+  for (const pos of positions) {
+    // Les occurrences proches se rejoignent en un seul extrait continu ; les
+    // éloignées sont séparées par une ellipse, sans jamais revenir en arrière.
+    const debut = Math.max(curseur, pos - contexte);
+    if (debut > curseur) segments.push({ texte: "…", correspond: false });
+    if (debut < pos) segments.push({ texte: texte.slice(debut, pos), correspond: false });
+    segments.push({ texte: texte.slice(pos, pos + cible.length), correspond: true });
+    curseur = pos + cible.length;
+  }
 
-	const fin = Math.min(texte.length, curseur + contexte);
-	if (fin > curseur) segments.push({ texte: texte.slice(curseur, fin), correspond: false });
-	if (fin < texte.length) segments.push({ texte: "…", correspond: false });
-	return segments;
+  const fin = Math.min(texte.length, curseur + contexte);
+  if (fin > curseur) segments.push({ texte: texte.slice(curseur, fin), correspond: false });
+  if (fin < texte.length) segments.push({ texte: "…", correspond: false });
+  return segments;
 }

@@ -15,7 +15,14 @@ import {
   resolvePersona,
   withHomePersona,
 } from "@shenron/pipeline/ai/prompts";
-import type { ChatEvent, ChatRequestParsed, ChatToolEvent, Citation, ModelsResponse, OcrResponse } from "../contract/chat";
+import type {
+  ChatEvent,
+  ChatRequestParsed,
+  ChatToolEvent,
+  Citation,
+  ModelsResponse,
+  OcrResponse,
+} from "../contract/chat";
 import type { AgentHome } from "./home";
 import { BackendUnavailable, type LlmBackend, type LlmMessage } from "./llm";
 import { type McpClient, pickTools, toolItems } from "./mcp";
@@ -49,14 +56,18 @@ function citationOf(hit: VfsHit, n: number): Citation {
     title: hit.title,
     url: hit.url,
     kind: hit.kind,
-    source: hit.corpus === "home" ? "home" : hit.corpus === "conversations" ? "conversations" : "vfs",
+    source:
+      hit.corpus === "home" ? "home" : hit.corpus === "conversations" ? "conversations" : "vfs",
     snippet: hit.snippet,
     score: Math.round(hit.score * 10_000) / 10_000,
   };
 }
 
 /** Sources block of the user prompt (`[n] title — url` then the passage). */
-export function sourcesBlock(items: { n: number; title: string; url: string | null; text: string }[], maxChars: number): string {
+export function sourcesBlock(
+  items: { n: number; title: string; url: string | null; text: string }[],
+  maxChars: number,
+): string {
   let out = "";
   for (const item of items) {
     const block = `[${item.n}] ${item.title}${item.url ? ` — ${item.url}` : ""}\n${item.text.trim()}\n\n`;
@@ -66,13 +77,20 @@ export function sourcesBlock(items: { n: number; title: string; url: string | nu
   return out.trim();
 }
 
-export function systemPrompt(persona: string, surface: ChatRequestParsed["surface"], home: AgentHome, chitchat: boolean): string {
+export function systemPrompt(
+  persona: string,
+  surface: ChatRequestParsed["surface"],
+  home: AgentHome,
+  chitchat: boolean,
+): string {
   const id = resolvePersona(persona);
   const base =
     surface === "bot"
       ? buildGroundingInstructions(id, undefined, { chitchat })
       : buildGroundingInstructions(id, "site-long");
-  const body = base.endsWith(INJECTION_GUARD) ? base.slice(0, -INJECTION_GUARD.length).trimEnd() : base;
+  const body = base.endsWith(INJECTION_GUARD)
+    ? base.slice(0, -INJECTION_GUARD.length).trimEnd()
+    : base;
   const withRule = `${body}\n${CITATION_RULE} ${INJECTION_GUARD}`;
   return home.persona ? withHomePersona(withRule, home.persona) : withRule;
 }
@@ -85,7 +103,10 @@ export function createChatEngine(deps: ChatEngineDeps) {
     const backends = await Promise.all(
       deps.backends.map(async (b) => ({ id: b.id, ...(await b.status()) })),
     );
-    let embedder: ModelsResponse["embedder"] = { available: false, model: deps.embedderModel ?? "none" };
+    let embedder: ModelsResponse["embedder"] = {
+      available: false,
+      model: deps.embedderModel ?? "none",
+    };
     if (deps.embed) {
       try {
         await deps.embed("Son Goku");
@@ -126,14 +147,26 @@ export function createChatEngine(deps: ChatEngineDeps) {
         const bytes = Uint8Array.from(Buffer.from(attachment.data, "base64"));
         const result = await deps.ocr.recognize(bytes, attachment.mediaType);
         ocrTexts.push({ name: attachment.name ?? `image ${index + 1}`, text: result.text });
-        tools.push({ name: `ocr:${result.engine}`, ok: true, ms: Math.round(performance.now() - t0), hits: result.regions });
+        tools.push({
+          name: `ocr:${result.engine}`,
+          ok: true,
+          ms: Math.round(performance.now() - t0),
+          hits: result.regions,
+        });
       } catch (error) {
-        tools.push({ name: "ocr", ok: false, ms: Math.round(performance.now() - t0), error: error instanceof Error ? error.message : String(error) });
+        tools.push({
+          name: "ocr",
+          ok: false,
+          ms: Math.round(performance.now() - t0),
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
 
     // 2. Retrieval (skipped for small talk).
-    const query = [request.message, ...ocrTexts.map((o) => o.text.slice(0, 300))].join("\n").slice(0, 1200);
+    const query = [request.message, ...ocrTexts.map((o) => o.text.slice(0, 300))]
+      .join("\n")
+      .slice(0, 1200);
     let mode: "hybrid" | "lexical" | "none" = "none";
     let hits: VfsHit[] = [];
     let embedError: string | undefined;
@@ -161,7 +194,13 @@ export function createChatEngine(deps: ChatEngineDeps) {
       );
       for (const { tool, result, ms } of results) {
         const items = result.ok ? toolItems(result.value) : [];
-        tools.push({ name: tool.name, ok: result.ok, ms, hits: items.length, ...(result.error ? { error: result.error } : {}) });
+        tools.push({
+          name: tool.name,
+          ok: result.ok,
+          ms,
+          hits: items.length,
+          ...(result.error ? { error: result.error } : {}),
+        });
         for (const item of items.slice(0, 3)) toolSources.push({ ...item, tool: tool.name });
       }
     }
@@ -171,7 +210,14 @@ export function createChatEngine(deps: ChatEngineDeps) {
     const promptItems: { n: number; title: string; url: string | null; text: string }[] = [];
     for (const ocr of ocrTexts) {
       const n = citations.length + 1;
-      citations.push({ n, title: `Texte de ${ocr.name} (OCR)`, url: null, kind: "ocr", source: "ocr", snippet: ocr.text.slice(0, 300) });
+      citations.push({
+        n,
+        title: `Texte de ${ocr.name} (OCR)`,
+        url: null,
+        kind: "ocr",
+        source: "ocr",
+        snippet: ocr.text.slice(0, 300),
+      });
       promptItems.push({ n, title: `Texte de ${ocr.name} (OCR)`, url: null, text: ocr.text });
     }
     for (const hit of hits) {
@@ -183,7 +229,14 @@ export function createChatEngine(deps: ChatEngineDeps) {
     for (const item of toolSources) {
       if (item.url && seen.has(item.url)) continue;
       const n = citations.length + 1;
-      citations.push({ n, title: item.title, url: item.url, kind: "tool", source: `mcp:${item.tool}`, snippet: item.snippet });
+      citations.push({
+        n,
+        title: item.title,
+        url: item.url,
+        kind: "tool",
+        source: `mcp:${item.tool}`,
+        snippet: item.snippet,
+      });
       promptItems.push({ n, title: item.title, url: item.url, text: item.snippet });
       if (item.url) seen.add(item.url);
     }
@@ -217,13 +270,18 @@ export function createChatEngine(deps: ChatEngineDeps) {
       ...history.slice(-8),
       {
         role: "user",
-        content: sources ? `Sources :\n\n${sources}\n\nQuestion : ${request.message}` : request.message,
+        content: sources
+          ? `Sources :\n\n${sources}\n\nQuestion : ${request.message}`
+          : request.message,
       },
     ];
 
     // 6. Generation with fallback.
     const fallbacks: { backend: string; error: string }[] = [];
-    const order = request.backend === "auto" ? deps.backends : deps.backends.filter((b) => b.id === request.backend);
+    const order =
+      request.backend === "auto"
+        ? deps.backends
+        : deps.backends.filter((b) => b.id === request.backend);
     let answer = "";
     let used: LlmBackend | null = null;
     let firstTokenMs: number | null = null;
@@ -232,7 +290,11 @@ export function createChatEngine(deps: ChatEngineDeps) {
       if (signal.aborted) break;
       try {
         let started_ = false;
-        for await (const delta of backend.stream(messages, { maxTokens: deps.maxTokens ?? 700 }, signal)) {
+        for await (const delta of backend.stream(
+          messages,
+          { maxTokens: deps.maxTokens ?? 700 },
+          signal,
+        )) {
           if (!started_) {
             started_ = true;
             used = backend;
@@ -250,10 +312,19 @@ export function createChatEngine(deps: ChatEngineDeps) {
         if (used === backend) {
           // Failure after the first token: keep the partial answer, report it.
           finishReason = "error";
-          yield { type: "error", data: { code: "backend_failed", message: `${backend.id}: ${message}`, retryable: true } };
+          yield {
+            type: "error",
+            data: { code: "backend_failed", message: `${backend.id}: ${message}`, retryable: true },
+          };
           break;
         }
-        fallbacks.push({ backend: backend.id, error: error instanceof BackendUnavailable ? message : `${error instanceof Error ? error.name : "Error"}: ${message}` });
+        fallbacks.push({
+          backend: backend.id,
+          error:
+            error instanceof BackendUnavailable
+              ? message
+              : `${error instanceof Error ? error.name : "Error"}: ${message}`,
+        });
       }
     }
     if (signal.aborted) finishReason = "aborted";
@@ -275,8 +346,17 @@ export function createChatEngine(deps: ChatEngineDeps) {
       const now = new Date().toISOString();
       const storedCitations: StoredCitation[] = citations
         .filter((c) => new RegExp(`\\[${c.n}\\]`).test(answer))
-        .map((c) => ({ n: c.n, title: c.title, url: c.url, kind: c.kind, source: c.source, ...(c.snippet ? { snippet: c.snippet.slice(0, 600) } : {}) }));
-      const existing = request.conversationId ? await deps.store.get(ownerId, conversationId).catch(() => null) : null;
+        .map((c) => ({
+          n: c.n,
+          title: c.title,
+          url: c.url,
+          kind: c.kind,
+          source: c.source,
+          ...(c.snippet ? { snippet: c.snippet.slice(0, 600) } : {}),
+        }));
+      const existing = request.conversationId
+        ? await deps.store.get(ownerId, conversationId).catch(() => null)
+        : null;
       const conversation = existing?.conversation ?? {
         id: conversationId,
         surface: request.surface,
@@ -289,7 +369,17 @@ export function createChatEngine(deps: ChatEngineDeps) {
         ragOptIn: request.ragOptIn === true,
         metadata: {},
       };
-      const user: Message = { id: messageId, conversationId, role: "user", content: request.message, citations: [], model: null, createdAt: now, updatedAt: now, deletedAt: null };
+      const user: Message = {
+        id: messageId,
+        conversationId,
+        role: "user",
+        content: request.message,
+        citations: [],
+        model: null,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+      };
       const reply: Message = {
         id: replyId,
         conversationId,
@@ -315,7 +405,10 @@ export function createChatEngine(deps: ChatEngineDeps) {
         });
         stored = result.accepted.includes(replyId);
       } catch (error) {
-        deps.log?.({ event: "chat.store_failed", error: error instanceof Error ? error.message : String(error) });
+        deps.log?.({
+          event: "chat.store_failed",
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
 
@@ -328,7 +421,12 @@ export function createChatEngine(deps: ChatEngineDeps) {
         model: used?.model ?? null,
         fallbacks,
         citations: citations.filter((c) => answer.includes(`[${c.n}]`)),
-        usage: { promptTokens: null, completionTokens: null, ms: Math.round(performance.now() - started), firstTokenMs },
+        usage: {
+          promptTokens: null,
+          completionTokens: null,
+          ms: Math.round(performance.now() - started),
+          firstTokenMs,
+        },
         finishReason,
         stored,
       },

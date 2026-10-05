@@ -37,8 +37,8 @@ import postgres from "postgres";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
-	console.error("✗ DATABASE_URL requis.");
-	process.exit(1);
+  console.error("✗ DATABASE_URL requis.");
+  process.exit(1);
 }
 
 const DRY = process.argv.includes("--dry-run");
@@ -54,114 +54,114 @@ const HEADERS = { "X-Target-Distribution": "fr", accept: "application/json" };
  * ne commence.
  */
 const SERIES: Record<string, { show: number; offset: number }> = {
-	DB: { show: 996, offset: 0 },
-	DBZ: { show: 1003, offset: 0 },
-	DBGT: { show: 998, offset: 0 },
-	DBS: { show: 999, offset: 0 },
-	DB_DAIMA: { show: 1239, offset: 0 },
-	DBZ_KAI: { show: 997, offset: 0 },
-	// Final Chapters = épisodes 98..167 du show Kai chez ADN.
-	DBZ_KAI_FINAL: { show: 997, offset: 97 },
+  DB: { show: 996, offset: 0 },
+  DBZ: { show: 1003, offset: 0 },
+  DBGT: { show: 998, offset: 0 },
+  DBS: { show: 999, offset: 0 },
+  DB_DAIMA: { show: 1239, offset: 0 },
+  DBZ_KAI: { show: 997, offset: 0 },
+  // Final Chapters = épisodes 98..167 du show Kai chez ADN.
+  DBZ_KAI_FINAL: { show: 997, offset: 97 },
 };
 
 /** Films ADN de la franchise (type MOV), découverts par la recherche catalogue. */
 const RECHERCHES = ["dragon ball", "dragon"];
 
 type AdnVideo = {
-	id: number;
-	title: string;
-	shortNumber: string | null;
-	url: string;
-	embeddedUrl: string | null;
-	languages: string[] | null;
-	available: boolean;
-	duration: number | null;
+  id: number;
+  title: string;
+  shortNumber: string | null;
+  url: string;
+  embeddedUrl: string | null;
+  languages: string[] | null;
+  available: boolean;
+  duration: number | null;
 };
 
 type AdnShow = {
-	id: number;
-	title: string;
-	type: string;
-	reference: string;
-	languages: string[] | null;
+  id: number;
+  title: string;
+  type: string;
+  reference: string;
+  languages: string[] | null;
 };
 
 /** Notre vocabulaire : ADN dit « vostf », le site dit « vostfr ». */
 function langues(l: string[] | null | undefined): ("vf" | "vostfr")[] {
-	const out = new Set<"vf" | "vostfr">();
-	for (const x of l ?? []) {
-		const v = x.toLowerCase();
-		if (v === "vf") out.add("vf");
-		// « vostf » (ADN) et « vostfr » (nous) désignent la même chose : la piste
-		// audio japonaise d'origine, sous-titrée en français.
-		if (v.startsWith("vost")) out.add("vostfr");
-	}
-	return [...out];
+  const out = new Set<"vf" | "vostfr">();
+  for (const x of l ?? []) {
+    const v = x.toLowerCase();
+    if (v === "vf") out.add("vf");
+    // « vostf » (ADN) et « vostfr » (nous) désignent la même chose : la piste
+    // audio japonaise d'origine, sous-titrée en français.
+    if (v.startsWith("vost")) out.add("vostfr");
+  }
+  return [...out];
 }
 
 type Entree = {
-	provider: "adn";
-	label: string;
-	url: string;
-	embedUrl: string | null;
-	langs: ("vf" | "vostfr")[];
-	available: boolean;
-	checkedAt: number;
+  provider: "adn";
+  label: string;
+  url: string;
+  embedUrl: string | null;
+  langs: ("vf" | "vostfr")[];
+  available: boolean;
+  checkedAt: number;
 };
 
 async function getJson<T>(url: string): Promise<T | null> {
-	for (let attempt = 0; attempt < 4; attempt++) {
-		try {
-			const res = await fetch(url, { headers: HEADERS });
-			if (res.status === 429) {
-				await sleep(2500);
-				continue;
-			}
-			if (!res.ok) return null;
-			return (await res.json()) as T;
-		} catch {
-			await sleep(1200);
-		}
-	}
-	return null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const res = await fetch(url, { headers: HEADERS });
+      if (res.status === 429) {
+        await sleep(2500);
+        continue;
+      }
+      if (!res.ok) return null;
+      return (await res.json()) as T;
+    } catch {
+      await sleep(1200);
+    }
+  }
+  return null;
 }
 
 /** Toutes les vidéos d'un show ADN, paginées. */
 async function videos(show: number): Promise<AdnVideo[]> {
-	const out: AdnVideo[] = [];
-	for (let offset = 0; offset < 2000; offset += 100) {
-		const d = await getJson<{ videos?: AdnVideo[] }>(
-			`${API}/video/show/${show}?offset=${offset}&limit=100`
-		);
-		const v = d?.videos ?? [];
-		out.push(...v);
-		if (v.length < 100) break;
-		await sleep(200);
-	}
-	return out;
+  const out: AdnVideo[] = [];
+  for (let offset = 0; offset < 2000; offset += 100) {
+    const d = await getJson<{ videos?: AdnVideo[] }>(
+      `${API}/video/show/${show}?offset=${offset}&limit=100`,
+    );
+    const v = d?.videos ?? [];
+    out.push(...v);
+    if (v.length < 100) break;
+    await sleep(200);
+  }
+  return out;
 }
 
 /** Normalise un titre pour la jointure : casse, accents, ponctuation, préfixe série. */
 function cle(t: string): string {
-	return t
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "")
-		.toLowerCase()
-		.replace(/^dragon ?ball( z| gt| super)? ?:? ?/i, "")
-		.replace(/[^a-z0-9]+/g, " ")
-		.trim();
+  return t
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/^dragon ?ball( z| gt| super)? ?:? ?/i, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 const maintenant = Math.floor(Date.now() / 1000);
 
 /** Fusionne l'entrée ADN dans une colonne `availability` existante. */
 function fusionne(actuel: unknown, adn: Entree | null): Entree[] {
-	// La colonne a pu être un scalaire corrompu par le passé (cf. piège sql.json
-	// dans CLAUDE.md) : on ne fait confiance à rien.
-	const autres = Array.isArray(actuel)
-		? (actuel as Entree[]).filter((e) => e && e.provider !== "adn")
-		: [];
-	return adn ? [adn, ...autres] : autres;
+  // La colonne a pu être un scalaire corrompu par le passé (cf. piège sql.json
+  // dans CLAUDE.md) : on ne fait confiance à rien.
+  const autres = Array.isArray(actuel)
+    ? (actuel as Entree[]).filter((e) => e && e.provider !== "adn")
+    : [];
+  return adn ? [adn, ...autres] : autres;
 }
 
 // ── Épisodes ────────────────────────────────────────────────────────────────
@@ -176,59 +176,59 @@ let epVostfr = 0;
 let epSans = 0;
 
 for (const [series, { show, offset }] of Object.entries(SERIES)) {
-	const rows = (await sql`
+  const rows = (await sql`
 		SELECT id, number_in_series, availability FROM bot.db_episodes
 		WHERE series = ${series} ORDER BY number_in_series
 	`) as unknown as { id: number; number_in_series: number | null; availability: unknown }[];
-	if (rows.length === 0) continue;
+  if (rows.length === 0) continue;
 
-	const vids = await videos(show);
-	const parNum = new Map<number, AdnVideo>();
-	for (const v of vids) {
-		const n = Number(v.shortNumber);
-		if (Number.isFinite(n)) parNum.set(n, v);
-	}
-	let ok = 0;
-	for (const r of rows) {
-		const n = r.number_in_series === null ? null : Number(r.number_in_series);
-		const v = n === null ? undefined : parNum.get(n + offset);
-		if (!v || !v.available) {
-			epSans++;
-			continue;
-		}
-		const langs = langues(v.languages);
-		const entree: Entree = {
-			provider: "adn",
-			label: "ADN",
-			url: v.url,
-			embedUrl: v.embeddedUrl,
-			langs,
-			available: true,
-			checkedAt: maintenant,
-		};
-		if (langs.includes("vf")) epVf++;
-		if (langs.includes("vostfr")) epVostfr++;
-		ok++;
-		epMaj++;
-		if (DRY) continue;
-		await sql`
+  const vids = await videos(show);
+  const parNum = new Map<number, AdnVideo>();
+  for (const v of vids) {
+    const n = Number(v.shortNumber);
+    if (Number.isFinite(n)) parNum.set(n, v);
+  }
+  let ok = 0;
+  for (const r of rows) {
+    const n = r.number_in_series === null ? null : Number(r.number_in_series);
+    const v = n === null ? undefined : parNum.get(n + offset);
+    if (!v || !v.available) {
+      epSans++;
+      continue;
+    }
+    const langs = langues(v.languages);
+    const entree: Entree = {
+      provider: "adn",
+      label: "ADN",
+      url: v.url,
+      embedUrl: v.embeddedUrl,
+      langs,
+      available: true,
+      checkedAt: maintenant,
+    };
+    if (langs.includes("vf")) epVf++;
+    if (langs.includes("vostfr")) epVostfr++;
+    ok++;
+    epMaj++;
+    if (DRY) continue;
+    await sql`
 			UPDATE bot.db_episodes SET availability = ${sql.json(fusionne(r.availability, entree))}
 			WHERE id = ${r.id}
 		`;
-	}
-	console.log(
-		`  ${series.padEnd(14)} adn:${show}${offset ? ` +${offset}` : ""} → ${ok}/${rows.length} épisode(s) disponibles`
-	);
+  }
+  console.log(
+    `  ${series.padEnd(14)} adn:${show}${offset ? ` +${offset}` : ""} → ${ok}/${rows.length} épisode(s) disponibles`,
+  );
 }
 
 // ── Films ───────────────────────────────────────────────────────────────────
 const shows = new Map<number, AdnShow>();
 for (const q of RECHERCHES) {
-	const d = await getJson<{ shows?: AdnShow[] }>(
-		`${API}/show/catalog?search=${encodeURIComponent(q)}&limit=50`
-	);
-	for (const s of d?.shows ?? []) if (/dragon ?ball/i.test(s.title ?? "")) shows.set(s.id, s);
-	await sleep(200);
+  const d = await getJson<{ shows?: AdnShow[] }>(
+    `${API}/show/catalog?search=${encodeURIComponent(q)}&limit=50`,
+  );
+  for (const s of d?.shows ?? []) if (/dragon ?ball/i.test(s.title ?? "")) shows.set(s.id, s);
+  await sleep(200);
 }
 const filmsAdn = [...shows.values()].filter((s) => s.type === "MOV");
 console.log(`  films ADN découverts : ${filmsAdn.length}`);
@@ -243,12 +243,12 @@ for (const f of filmsAdn) filmParCle.set(cle(f.title), f);
  * Clé = slug de la base, valeur = id du show ADN.
  */
 const ALIAS: Record<string, number> = {
-	// Base : « Dragon Ball Z: Resurrection 'F' » — ADN 430 : « La Résurrection de ‘F’ ».
-	"dragon-ball-z-movie-15-fukkatsu-no-f": 430,
+  // Base : « Dragon Ball Z: Resurrection 'F' » — ADN 430 : « La Résurrection de ‘F’ ».
+  "dragon-ball-z-movie-15-fukkatsu-no-f": 430,
 };
 for (const [slug, id] of Object.entries(ALIAS)) {
-	const f = filmsAdn.find((x) => x.id === id);
-	if (f) filmParCle.set(`@${slug}`, f);
+  const f = filmsAdn.find((x) => x.id === id);
+  if (f) filmParCle.set(`@${slug}`, f);
 }
 
 const movies = (await sql`
@@ -261,49 +261,49 @@ let fVostfr = 0;
 const fSans: string[] = [];
 
 for (const m of movies) {
-	const f = filmParCle.get(`@${m.slug}`) ?? filmParCle.get(cle(m.title));
-	if (!f) {
-		fSans.push(`${m.slug} « ${m.title} »`);
-		if (!DRY) {
-			// Un film retiré du catalogue doit PERDRE son entrée ADN, sinon la page
-			// promet une offre qui n'existe plus.
-			const reste = fusionne(m.availability, null);
-			await sql`UPDATE bot.db_movies SET availability = ${sql.json(reste)} WHERE id = ${m.id}`;
-		}
-		continue;
-	}
-	const vids = await videos(f.id);
-	const v = vids.find((x) => x.available) ?? vids[0];
-	const langs = langues(v?.languages ?? f.languages);
-	const entree: Entree = {
-		provider: "adn",
-		label: "ADN",
-		url: v?.url ?? `https://animationdigitalnetwork.com/video/${f.id}`,
-		embedUrl: v?.embeddedUrl ?? null,
-		langs,
-		available: v?.available ?? true,
-		checkedAt: maintenant,
-	};
-	if (langs.includes("vf")) fVf++;
-	if (langs.includes("vostfr")) fVostfr++;
-	fMaj++;
-	if (DRY) {
-		console.log(`  [dry] ${m.slug} ← adn:${f.id} « ${f.title} » [${langs.join(", ")}]`);
-		continue;
-	}
-	await sql`
+  const f = filmParCle.get(`@${m.slug}`) ?? filmParCle.get(cle(m.title));
+  if (!f) {
+    fSans.push(`${m.slug} « ${m.title} »`);
+    if (!DRY) {
+      // Un film retiré du catalogue doit PERDRE son entrée ADN, sinon la page
+      // promet une offre qui n'existe plus.
+      const reste = fusionne(m.availability, null);
+      await sql`UPDATE bot.db_movies SET availability = ${sql.json(reste)} WHERE id = ${m.id}`;
+    }
+    continue;
+  }
+  const vids = await videos(f.id);
+  const v = vids.find((x) => x.available) ?? vids[0];
+  const langs = langues(v?.languages ?? f.languages);
+  const entree: Entree = {
+    provider: "adn",
+    label: "ADN",
+    url: v?.url ?? `https://animationdigitalnetwork.com/video/${f.id}`,
+    embedUrl: v?.embeddedUrl ?? null,
+    langs,
+    available: v?.available ?? true,
+    checkedAt: maintenant,
+  };
+  if (langs.includes("vf")) fVf++;
+  if (langs.includes("vostfr")) fVostfr++;
+  fMaj++;
+  if (DRY) {
+    console.log(`  [dry] ${m.slug} ← adn:${f.id} « ${f.title} » [${langs.join(", ")}]`);
+    continue;
+  }
+  await sql`
 		UPDATE bot.db_movies SET availability = ${sql.json(fusionne(m.availability, entree))}
 		WHERE id = ${m.id}
 	`;
-	await sleep(150);
+  await sleep(150);
 }
 
 console.log(
-	`${DRY ? "≈" : "✓"} Épisodes : ${epMaj} avec offre ADN (VF ${epVf}, VOSTFR ${epVostfr}), ${epSans} sans.`
+  `${DRY ? "≈" : "✓"} Épisodes : ${epMaj} avec offre ADN (VF ${epVf}, VOSTFR ${epVostfr}), ${epSans} sans.`,
 );
 console.log(`${DRY ? "≈" : "✓"} Films : ${fMaj} avec offre ADN (VF ${fVf}, VOSTFR ${fVostfr}).`);
 if (fSans.length) {
-	console.log(`⚠ ${fSans.length} film(s) absents du catalogue ADN :`);
-	for (const s of fSans) console.log(`   · ${s}`);
+  console.log(`⚠ ${fSans.length} film(s) absents du catalogue ADN :`);
+  for (const s of fSans) console.log(`   · ${s}`);
 }
 await sql.end();

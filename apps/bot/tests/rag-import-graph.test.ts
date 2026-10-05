@@ -47,21 +47,24 @@ describe("rag.ts import graph (B3)", () => {
     expect(staticClosure(join(SRC, "lib", "rag-answer.ts")).has(LLM)).toBe(true);
   });
 
-  test.if(LIVE)("an invalid legacy EMBED_URL does not override the configured real hybrid backend", async () => {
-    loadLiveRagEnv();
-    await requireLiveRag();
-    const previous = process.env.EMBED_URL;
-    try {
-      process.env.EMBED_URL = "::not a url::";
-      const rag = await import("../src/lib/rag");
-      const { results, mode } = await rag.hybridSearch(null, "Goku Saiyan", 5);
-      expect(mode).toBe("hybrid");
-      expect(results.length).toBeGreaterThan(0);
-      expect(results.some((hit) => /Goku/i.test(hit.title))).toBe(true);
-      expect(results.every((hit) => hit.content?.trim())).toBe(true);
-    } finally {
-      if (previous === undefined) delete process.env.EMBED_URL;
-      else process.env.EMBED_URL = previous;
-    }
-  });
+  test.if(LIVE)(
+    "an invalid legacy EMBED_URL does not override the configured real hybrid backend",
+    async () => {
+      loadLiveRagEnv();
+      await requireLiveRag();
+      const previous = process.env.EMBED_URL;
+      try {
+        process.env.EMBED_URL = "::not a url::";
+        const rag = await import("../src/lib/rag");
+        const { results, mode } = await rag.hybridSearch(null, "Goku Saiyan", 5);
+        expect(mode).toBe("hybrid");
+        expect(results.length).toBeGreaterThan(0);
+        expect(results.some((hit) => /Goku/i.test(hit.title))).toBe(true);
+        expect(results.every((hit) => hit.content?.trim())).toBe(true);
+      } finally {
+        if (previous === undefined) delete process.env.EMBED_URL;
+        else process.env.EMBED_URL = previous;
+      }
+    },
+  );
 });

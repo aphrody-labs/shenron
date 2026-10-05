@@ -29,12 +29,7 @@ import { assertDatabooksWritable } from "@/lib/databooks-freeze";
 // Les fonctions PURES du ciblage vivent dans le module partagé : la modale de
 // contribution en a besoin côté client, et une règle écrite deux fois finit
 // toujours par diverger.
-export {
-
-
-	estCiblePlanche,
-	numeroDePlanche,
-} from "@/lib/databook-pages-shared";
+export { estCiblePlanche, numeroDePlanche } from "@/lib/databook-pages-shared";
 
 /**
  * Index (0-based) de la planche portant ce numéro éditorial, `-1` si absente.
@@ -44,7 +39,7 @@ export {
  * impossible précisément là où les transcriptions sont les plus abîmées.
  */
 async function indexDePlanche(bookId: string, numero: number): Promise<number> {
-	const [r] = (await db.execute(sql`
+  const [r] = (await db.execute(sql`
 		select coalesce(
 			(
 				select (ord - 1)::int
@@ -61,25 +56,25 @@ async function indexDePlanche(bookId: string, numero: number): Promise<number> {
 			end
 		) as idx
 	`)) as unknown as Array<{ idx: number }>;
-	return Number(r?.idx ?? -1);
+  return Number(r?.idx ?? -1);
 }
 
 /** Transcription courante d'une planche (`null` si la planche n'existe pas). */
 export async function lireTranscription(bookId: string, numero: number): Promise<string | null> {
-	const idx = await indexDePlanche(bookId, numero);
-	if (idx < 0) return null;
-	// `::int` OBLIGATOIRE sur l'index. Sans lui, le paramètre est lié en TEXTE
-	// et `pages->$1` devient l'opérateur « clé d'objet », pas « élément de
-	// tableau » : sur un tableau, il rend NULL, toujours. Cette lecture-là
-	// renvoyait donc systématiquement `null` pour une planche pourtant
-	// transcrite — le formulaire de correction publique s'ouvrait vide, et la
-	// comparaison anti-conflit de l'acceptation ne comparait rien.
-	const [r] = (await db.execute(sql`
+  const idx = await indexDePlanche(bookId, numero);
+  if (idx < 0) return null;
+  // `::int` OBLIGATOIRE sur l'index. Sans lui, le paramètre est lié en TEXTE
+  // et `pages->$1` devient l'opérateur « clé d'objet », pas « élément de
+  // tableau » : sur un tableau, il rend NULL, toujours. Cette lecture-là
+  // renvoyait donc systématiquement `null` pour une planche pourtant
+  // transcrite — le formulaire de correction publique s'ouvrait vide, et la
+  // comparaison anti-conflit de l'acceptation ne comparait rien.
+  const [r] = (await db.execute(sql`
 		select pages->${idx}::int->>'text' as texte
 		from bot.db_databooks
 		where id = ${bookId}::bigint
 	`)) as unknown as Array<{ texte: string | null }>;
-	return r?.texte ?? null;
+  return r?.texte ?? null;
 }
 
 /**
@@ -87,22 +82,21 @@ export async function lireTranscription(bookId: string, numero: number): Promise
  * pas — jamais un faux succès, sinon le relecteur croirait avoir publié.
  */
 export async function ecrireTranscription(
-	bookId: string,
-	numero: number,
-	texte: string
+  bookId: string,
+  numero: number,
+  texte: string,
 ): Promise<boolean> {
-	assertDatabooksWritable();
-	const idx = await indexDePlanche(bookId, numero);
-	if (idx < 0) return false;
-	const res = (await db.execute(sql`
+  assertDatabooksWritable();
+  const idx = await indexDePlanche(bookId, numero);
+  if (idx < 0) return false;
+  const res = (await db.execute(sql`
 		update bot.db_databooks
 		set pages = jsonb_set(pages, ${`{${idx},text}`}::text[], to_jsonb(${texte}::text), true)
 		where id = ${bookId}::bigint
 		returning id
 	`)) as unknown as Array<{ id: unknown }>;
-	return res.length > 0;
+  return res.length > 0;
 }
-
 
 /**
  * Écrit — ou retire — la traduction française d'UNE planche.
@@ -113,18 +107,18 @@ export async function ecrireTranscription(
  * Le japonais, lui, n'est jamais touché.
  */
 export async function ecrireTraduction(
-	bookId: string,
-	numero: number,
-	texte: string | null,
-	par = "machine:sonnet"
+  bookId: string,
+  numero: number,
+  texte: string | null,
+  par = "machine:sonnet",
 ): Promise<boolean> {
-	assertDatabooksWritable();
-	const idx = await indexDePlanche(bookId, numero);
-	if (idx < 0) return false;
-	const chemin = `{${idx}}`;
-	const res = (await db.execute(
-		texte === null
-			? sql`
+  assertDatabooksWritable();
+  const idx = await indexDePlanche(bookId, numero);
+  if (idx < 0) return false;
+  const chemin = `{${idx}}`;
+  const res = (await db.execute(
+    texte === null
+      ? sql`
 				update bot.db_databooks
 				set pages = jsonb_set(
 					pages, ${chemin}::text[],
@@ -132,7 +126,7 @@ export async function ecrireTraduction(
 				where id = ${bookId}::bigint
 				  and jsonb_typeof(pages->${idx}::int) = 'object'
 				returning id`
-			: sql`
+      : sql`
 				update bot.db_databooks
 				set pages = jsonb_set(
 					pages, ${chemin}::text[],
@@ -142,9 +136,7 @@ export async function ecrireTraduction(
 						'text_fr_at', ${Date.now()}::bigint), true)
 				where id = ${bookId}::bigint
 				  and jsonb_typeof(pages->${idx}::int) = 'object'
-				returning id`
-	)) as unknown as Array<{ id: unknown }>;
-	return res.length > 0;
+				returning id`,
+  )) as unknown as Array<{ id: unknown }>;
+  return res.length > 0;
 }
-
-

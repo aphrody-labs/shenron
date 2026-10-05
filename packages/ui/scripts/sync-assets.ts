@@ -22,8 +22,11 @@ for (const name of uiAssetPaths) {
   const outputPath = join(target, name);
   const output = Bun.file(outputPath);
   const expected = new Uint8Array(await input.arrayBuffer());
-  const actual = await output.exists() ? new Uint8Array(await output.arrayBuffer()) : null;
-  const matches = actual !== null && expected.length === actual.length && expected.every((value, index) => value === actual[index]);
+  const actual = (await output.exists()) ? new Uint8Array(await output.arrayBuffer()) : null;
+  const matches =
+    actual !== null &&
+    expected.length === actual.length &&
+    expected.every((value, index) => value === actual[index]);
   if (!matches) {
     mismatches++;
     if (!check) {

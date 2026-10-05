@@ -20,28 +20,28 @@ import { SITE_HOST, SITE_URL } from "@/lib/config";
 
 /** Origines CORS du site : l'URL configurée, le domaine canonique et son `www`. */
 const SITE_PUBLIC_CORS_ORIGINS: readonly string[] = [
-	...new Set([SITE_URL, SITE_HOST, SITE_HOST.replace("https://", "https://www.")]),
+  ...new Set([SITE_URL, SITE_HOST, SITE_HOST.replace("https://", "https://www.")]),
 ];
 
 /** Application `@shenron/api` du site sur un port wiki donné (`null` → groupe désactivé). */
 function createSiteShenronApi(wiki: WikiReadPort | null): ShenronApi {
-	return createShenronApi(
-		{
-			wiki,
-			rateLimit: createMemoryRateLimiter(),
-			publicCache: createPublicCache(),
-			invalidation: noopInvalidation,
-			cors: { allowedOrigins: SITE_PUBLIC_CORS_ORIGINS },
-			clientIp: (request) => clientIpFromHeaders(request.headers),
-			// Next ne donne pas l'adresse de socket : aucune requête n'est « loopback direct ».
-			isDirectLoopback: () => false,
-			log: (event) => {
-				if ((event.status ?? 0) >= 500)
-					console.error(`[${event.event}] ${event.path} → ${event.status}`);
-			},
-		},
-		{ service: "shenron-site" }
-	);
+  return createShenronApi(
+    {
+      wiki,
+      rateLimit: createMemoryRateLimiter(),
+      publicCache: createPublicCache(),
+      invalidation: noopInvalidation,
+      cors: { allowedOrigins: SITE_PUBLIC_CORS_ORIGINS },
+      clientIp: (request) => clientIpFromHeaders(request.headers),
+      // Next ne donne pas l'adresse de socket : aucune requête n'est « loopback direct ».
+      isDirectLoopback: () => false,
+      log: (event) => {
+        if ((event.status ?? 0) >= 500)
+          console.error(`[${event.event}] ${event.path} → ${event.status}`);
+      },
+    },
+    { service: "shenron-site" },
+  );
 }
 
 let injectedWiki: WikiReadPort | null | undefined;
@@ -52,28 +52,28 @@ let pending: Promise<ShenronApi> | null = null;
  * site. Réinitialise l'application construite.
  */
 export function setSiteWikiPort(port: WikiReadPort | null | undefined): void {
-	injectedWiki = port;
-	pending = null;
+  injectedWiki = port;
+  pending = null;
 }
 
 async function siteWikiPort(): Promise<WikiReadPort | null> {
-	if (injectedWiki !== undefined) return injectedWiki;
-	try {
-		const { db } = await import("@/lib/db");
-		return createWikiReadRepository(db) as WikiReadPort;
-	} catch (error) {
-		console.error("[shenron-site.api] PostgreSQL indisponible, groupe wiki désactivé:", error);
-		return null;
-	}
+  if (injectedWiki !== undefined) return injectedWiki;
+  try {
+    const { db } = await import("@/lib/db");
+    return createWikiReadRepository(db) as WikiReadPort;
+  } catch (error) {
+    console.error("[shenron-site.api] PostgreSQL indisponible, groupe wiki désactivé:", error);
+    return null;
+  }
 }
 
 /** Application partagée du process, construite à la première requête. */
 function getSiteShenronApi(): Promise<ShenronApi> {
-	pending ??= siteWikiPort().then(createSiteShenronApi);
-	return pending;
+  pending ??= siteWikiPort().then(createSiteShenronApi);
+  return pending;
 }
 
 /** Adaptateur `fetch` paresseux pour `toNextRouteHandlers`. */
 export const siteShenronApi: FetchableApi = {
-	fetch: async (request) => (await getSiteShenronApi()).fetch(request),
+  fetch: async (request) => (await getSiteShenronApi()).fetch(request),
 };

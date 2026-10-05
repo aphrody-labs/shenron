@@ -23,24 +23,24 @@ import glossaireBrut from "../../../messages/glossary.json";
 import type { SupportedLocale } from "./types";
 
 export interface GlossaryTerm {
-	/** The reference (French) spelling, as printed by the site. */
-	fr: string;
-	/** Japanese spelling, only when the source really is Japanese script. */
-	ja?: string;
-	/** Hepburn romanisation, when the corpus carries one. */
-	romaji?: string;
+  /** The reference (French) spelling, as printed by the site. */
+  fr: string;
+  /** Japanese spelling, only when the source really is Japanese script. */
+  ja?: string;
+  /** Hepburn romanisation, when the corpus carries one. */
+  romaji?: string;
 }
 
 /** Terms longest first: « Super Saiyan Blue » must match before « Super Saiyan ». */
 export const GLOSSARY: GlossaryTerm[] = [...(glossaireBrut as GlossaryTerm[])].toSorted(
-	(a, b) => b.fr.length - a.fr.length
+  (a, b) => b.fr.length - a.fr.length,
 );
 
 const TOKEN = /⟦(\d+)⟧/g;
 
 /** A token that survives translation: no letters to translate, no spaces to split. */
 function token(index: number): string {
-	return `⟦${index}⟧`;
+  return `⟦${index}⟧`;
 }
 
 /**
@@ -53,12 +53,12 @@ function token(index: number): string {
  * Folding character by character keeps one output character per input one.
  */
 function fold(value: string): string {
-	let out = "";
-	for (const c of value) {
-		const nu = c.normalize("NFD").replace(/\p{M}/gu, "");
-		out += nu.length === 1 ? nu : c;
-	}
-	return out;
+  let out = "";
+  for (const c of value) {
+    const nu = c.normalize("NFD").replace(/\p{M}/gu, "");
+    out += nu.length === 1 ? nu : c;
+  }
+  return out;
 }
 
 /**
@@ -74,55 +74,55 @@ function fold(value: string): string {
  * language. A capital is exactly what tells the name from the word.
  */
 function boundedMatches(haystack: string, needle: string): number[] {
-	const positions: number[] = [];
-	const foin = fold(haystack);
-	const aiguille = fold(needle);
-	let from = 0;
-	for (;;) {
-		const at = foin.indexOf(aiguille, from);
-		if (at === -1) break;
-		const before = haystack[at - 1];
-		const after = haystack[at + needle.length];
-		const isWord = (c: string | undefined) => c !== undefined && /[\p{L}\p{N}]/u.test(c);
-		if (!isWord(before) && !isWord(after)) positions.push(at);
-		from = at + needle.length;
-	}
-	return positions;
+  const positions: number[] = [];
+  const foin = fold(haystack);
+  const aiguille = fold(needle);
+  let from = 0;
+  for (;;) {
+    const at = foin.indexOf(aiguille, from);
+    if (at === -1) break;
+    const before = haystack[at - 1];
+    const after = haystack[at + needle.length];
+    const isWord = (c: string | undefined) => c !== undefined && /[\p{L}\p{N}]/u.test(c);
+    if (!isWord(before) && !isWord(after)) positions.push(at);
+    from = at + needle.length;
+  }
+  return positions;
 }
 
 export interface Protected {
-	/** The text with every known term replaced by a token. */
-	text: string;
-	/** Terms in token order. */
-	terms: GlossaryTerm[];
+  /** The text with every known term replaced by a token. */
+  text: string;
+  /** Terms in token order. */
+  terms: GlossaryTerm[];
 }
 
 /** Replaces every glossary term with an opaque token. */
 export function protect(text: string, glossary: GlossaryTerm[] = GLOSSARY): Protected {
-	const terms: GlossaryTerm[] = [];
-	let out = text;
-	for (const term of glossary) {
-		if (!boundedMatches(out, term.fr).length) continue;
-		const index = terms.length;
-		terms.push(term);
-		// Rebuild rather than `replaceAll`, so the boundary rule applies to every
-		// occurrence and the term's own spelling is never used as a regex.
-		let rebuilt = "";
-		let cursor = 0;
-		for (const at of boundedMatches(out, term.fr)) {
-			rebuilt += out.slice(cursor, at) + token(index);
-			cursor = at + term.fr.length;
-		}
-		out = rebuilt + out.slice(cursor);
-	}
-	return { text: out, terms };
+  const terms: GlossaryTerm[] = [];
+  let out = text;
+  for (const term of glossary) {
+    if (!boundedMatches(out, term.fr).length) continue;
+    const index = terms.length;
+    terms.push(term);
+    // Rebuild rather than `replaceAll`, so the boundary rule applies to every
+    // occurrence and the term's own spelling is never used as a regex.
+    let rebuilt = "";
+    let cursor = 0;
+    for (const at of boundedMatches(out, term.fr)) {
+      rebuilt += out.slice(cursor, at) + token(index);
+      cursor = at + term.fr.length;
+    }
+    out = rebuilt + out.slice(cursor);
+  }
+  return { text: out, terms };
 }
 
 /** The spelling of a term for a target language. */
 export function spell(term: GlossaryTerm, locale: SupportedLocale): string {
-	if (locale === "ja" && term.ja) return term.ja;
-	if (locale === "en" && term.romaji) return term.romaji;
-	return term.fr;
+  if (locale === "ja" && term.ja) return term.ja;
+  if (locale === "en" && term.romaji) return term.romaji;
+  return term.fr;
 }
 
 /**
@@ -133,18 +133,18 @@ export function spell(term: GlossaryTerm, locale: SupportedLocale): string {
  * (the translation script refuses the string).
  */
 export function restore(
-	translated: string,
-	terms: GlossaryTerm[],
-	locale: SupportedLocale
+  translated: string,
+  terms: GlossaryTerm[],
+  locale: SupportedLocale,
 ): { text: string; missing: number[] } {
-	const seen = new Set<number>();
-	const text = translated.replace(TOKEN, (whole, raw: string) => {
-		const index = Number(raw);
-		const term = terms[index];
-		if (!term) return whole;
-		seen.add(index);
-		return spell(term, locale);
-	});
-	const missing = terms.map((_, i) => i).filter((i) => !seen.has(i));
-	return { text, missing };
+  const seen = new Set<number>();
+  const text = translated.replace(TOKEN, (whole, raw: string) => {
+    const index = Number(raw);
+    const term = terms[index];
+    if (!term) return whole;
+    seen.add(index);
+    return spell(term, locale);
+  });
+  const missing = terms.map((_, i) => i).filter((i) => !seen.has(i));
+  return { text, missing };
 }

@@ -20,22 +20,22 @@ import { defineConfig } from "drizzle-kit";
 const REFUSED_COMMANDS = ["push", "migrate"] as const;
 const refused = process.argv.find((arg) => (REFUSED_COMMANDS as readonly string[]).includes(arg));
 if (refused) {
-	// Refus AVANT toute lecture d'URL ou connexion : le schéma `bot` est
-	// generate-only, PostgreSQL est appliqué par le pipeline aphrody-infra.
-	throw new Error(
-		`drizzle.config.bot.ts : « drizzle-kit ${refused} » refusé — le schéma bot est generate-only. ` +
-			"Les migrations PostgreSQL passent par le runbook aphrody-infra (docs/operations/INFRA-DELEGATION.md)."
-	);
+  // Refus AVANT toute lecture d'URL ou connexion : le schéma `bot` est
+  // generate-only, PostgreSQL est appliqué par le pipeline aphrody-infra.
+  throw new Error(
+    `drizzle.config.bot.ts : « drizzle-kit ${refused} » refusé — le schéma bot est generate-only. ` +
+      "Les migrations PostgreSQL passent par le runbook aphrody-infra (docs/operations/INFRA-DELEGATION.md).",
+  );
 }
 
 export default defineConfig({
-	schema: "./src/db/bot-schema.ts",
-	out: "./drizzle-bot",
-	dialect: "postgresql",
-	dbCredentials: {
-		url: process.env.DATABASE_URL!,
-	},
-	schemaFilter: ["bot"],
-	verbose: true,
-	strict: true,
+  schema: "./src/db/bot-schema.ts",
+  out: "./drizzle-bot",
+  dialect: "postgresql",
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+  schemaFilter: ["bot"],
+  verbose: true,
+  strict: true,
 });

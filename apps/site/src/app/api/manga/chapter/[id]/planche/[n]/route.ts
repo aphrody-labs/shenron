@@ -17,44 +17,44 @@ export const runtime = "nodejs";
 export const revalidate = 3600;
 
 export function OPTIONS() {
-	return new NextResponse(null, { status: 204, headers: CORS_MANGA });
+  return new NextResponse(null, { status: 204, headers: CORS_MANGA });
 }
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string; n: string }> }) {
-	const { id: idBrut, n: nBrut } = await ctx.params;
-	const id = Number(idBrut);
-	const n = Number(nBrut);
-	if (!Number.isSafeInteger(id) || id <= 0 || !Number.isSafeInteger(n) || n <= 0) {
-		return NextResponse.json(
-			{ error: "Adresse invalide : /api/manga/chapter/{id}/planche/{n}." },
-			{ status: 400, headers: CORS_MANGA }
-		);
-	}
+  const { id: idBrut, n: nBrut } = await ctx.params;
+  const id = Number(idBrut);
+  const n = Number(nBrut);
+  if (!Number.isSafeInteger(id) || id <= 0 || !Number.isSafeInteger(n) || n <= 0) {
+    return NextResponse.json(
+      { error: "Adresse invalide : /api/manga/chapter/{id}/planche/{n}." },
+      { status: 400, headers: CORS_MANGA },
+    );
+  }
 
-	const planche = await plancheApi(id, n);
-	if (!planche) {
-		return NextResponse.json(
-			{ error: "Planche introuvable." },
-			{ status: 404, headers: CORS_MANGA }
-		);
-	}
+  const planche = await plancheApi(id, n);
+  if (!planche) {
+    return NextResponse.json(
+      { error: "Planche introuvable." },
+      { status: 404, headers: CORS_MANGA },
+    );
+  }
 
-	const cache = { ...CORS_MANGA, "Cache-Control": "public, max-age=600, s-maxage=86400" };
-	const format = new URL(req.url).searchParams.get("format");
+  const cache = { ...CORS_MANGA, "Cache-Control": "public, max-age=600, s-maxage=86400" };
+  const format = new URL(req.url).searchParams.get("format");
 
-	// Redirection plutôt que proxy : l'image est déjà servie (et mise en cache par
-	// le CDN) à son adresse d'origine ; la relayer doublerait la bande passante
-	// pour un octet identique.
-	if (format === "image") {
-		return NextResponse.redirect(planche.image, { status: 302, headers: cache });
-	}
+  // Redirection plutôt que proxy : l'image est déjà servie (et mise en cache par
+  // le CDN) à son adresse d'origine ; la relayer doublerait la bande passante
+  // pour un octet identique.
+  if (format === "image") {
+    return NextResponse.redirect(planche.image, { status: 302, headers: cache });
+  }
 
-	if (format === "text") {
-		return new NextResponse(planche.text ?? "", {
-			status: planche.text ? 200 : 404,
-			headers: { ...cache, "Content-Type": "text/plain; charset=utf-8" },
-		});
-	}
+  if (format === "text") {
+    return new NextResponse(planche.text ?? "", {
+      status: planche.text ? 200 : 404,
+      headers: { ...cache, "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
 
-	return NextResponse.json(planche, { headers: cache });
+  return NextResponse.json(planche, { headers: cache });
 }

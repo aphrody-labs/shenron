@@ -11,11 +11,11 @@
 import postgres from "postgres";
 
 async function main() {
-	const url = process.env.DATABASE_URL;
-	if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
-	const sql = postgres(url, { max: 1 });
-	try {
-		await sql.unsafe(`
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL requis (Postgres du site).");
+  const sql = postgres(url, { max: 1 });
+  try {
+    await sql.unsafe(`
 			CREATE TABLE IF NOT EXISTS public."site_ratings" (
 				id           text PRIMARY KEY,
 				"targetType" text NOT NULL,
@@ -27,26 +27,26 @@ async function main() {
 				"updatedAt"  timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 			)
 		`);
-		await sql.unsafe(`
+    await sql.unsafe(`
 			CREATE UNIQUE INDEX IF NOT EXISTS site_ratings_target_user_unique
 			ON public."site_ratings" ("targetType", "targetId", "userId")
 		`);
-		await sql.unsafe(
-			`CREATE INDEX IF NOT EXISTS site_ratings_target_idx ON public."site_ratings" ("targetType", "targetId")`
-		);
-		await sql.unsafe(
-			`CREATE INDEX IF NOT EXISTS site_ratings_user_idx ON public."site_ratings" ("userId")`
-		);
-		await sql.unsafe(
-			`CREATE INDEX IF NOT EXISTS site_ratings_created_idx ON public."site_ratings" ("createdAt")`
-		);
-		console.log("✓ public.site_ratings (+ index unique target/user + target/user/created)");
-	} finally {
-		await sql.end({ timeout: 5 });
-	}
+    await sql.unsafe(
+      `CREATE INDEX IF NOT EXISTS site_ratings_target_idx ON public."site_ratings" ("targetType", "targetId")`,
+    );
+    await sql.unsafe(
+      `CREATE INDEX IF NOT EXISTS site_ratings_user_idx ON public."site_ratings" ("userId")`,
+    );
+    await sql.unsafe(
+      `CREATE INDEX IF NOT EXISTS site_ratings_created_idx ON public."site_ratings" ("createdAt")`,
+    );
+    console.log("✓ public.site_ratings (+ index unique target/user + target/user/created)");
+  } finally {
+    await sql.end({ timeout: 5 });
+  }
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });
