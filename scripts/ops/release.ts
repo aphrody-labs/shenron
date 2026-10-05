@@ -237,8 +237,8 @@ async function probes(): Promise<void> {
   const failures: string[] = [];
   for (const path of [
     "/",
-    "/jeux",
-    "/wiki/personnages",
+    "/games",
+    "/wiki/characters",
     "/llms.txt",
     "/plugin.json",
     "/api/public/plugin",
