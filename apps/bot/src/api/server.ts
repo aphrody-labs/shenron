@@ -1396,7 +1396,7 @@ export class ApiServer {
             return Response.json({
               totalPages: countResult?.count ?? 0,
               pagesWithText: countResult?.with_text ?? 0,
-              // Anciens noms, dépréciés : retirés à la prochaine version.
+              // Former names, deprecated: removed in the next version.
               totalPlanches: countResult?.count ?? 0,
               planchesAvecTexte: countResult?.with_text ?? 0,
               currentRun: ocrRun,
@@ -2529,24 +2529,10 @@ export class ApiServer {
         // `cache-control` court et `private` : c'est la REDIRECTION qui ne doit
         // pas être mise en cache au-delà de la validité de sa cible, l'image
         // elle-même étant mise en cache par le CDN de Discord.
-        "/api/public/manga/couleur/:channelId/:attachmentId/:file": async (req) => {
-          const cors = publicCorsHeaders(req);
-          if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
-          const nue = await urlNueDe({
-            salonId: String(req.params.channelId),
-            pieceJointeId: String(req.params.attachmentId),
-            fichier: String(req.params.file),
-          });
-          if (!nue) return new Response("Planche couleur inconnue", { status: 404, headers: cors });
-          const signee = await urlSignee(nue);
-          if (!signee) {
-            return new Response("Signature indisponible", { status: 502, headers: cors });
-          }
-          return new Response(null, {
-            status: 302,
-            headers: { ...cors, Location: signee, "cache-control": "private, max-age=300" },
-          });
-        },
+        "/api/public/manga/color/:channelId/:attachmentId/:file": fullColorRedirect,
+        // Former path, served as an alias: the page URLs already stored in
+        // `bot.db_manga_chapters.pages` still point here.
+        "/api/public/manga/couleur/:channelId/:attachmentId/:file": fullColorRedirect,
 
         // --- Manga : transcriptions OCR des planches (durable, bilingue FR+JP) ---
         // Liste des tomes transcrits + compteurs. ?series=DB|DBS pour filtrer.
@@ -2576,7 +2562,7 @@ export class ApiServer {
               lines: r.lines,
               pagesWithJa: r.planches_ja,
               pageRange: [r.first, r.last],
-              // Anciens noms, dépréciés : retirés à la prochaine version.
+              // Former names, deprecated: removed in the next version.
               tome: r.tome,
               planches: r.planches,
               planchesWithJa: r.planches_ja,
@@ -2602,7 +2588,7 @@ export class ApiServer {
               series,
               volume: tome,
               pageCount: pages.length,
-              // Anciens noms, dépréciés : retirés à la prochaine version.
+              // Former names, deprecated: removed in the next version.
               tome,
               planches: pages.length,
               pages: pages.map((p) => ({
@@ -2635,7 +2621,7 @@ export class ApiServer {
               series: page.series,
               volume: page.tome,
               page: page.planche,
-              // Anciens noms, dépréciés : retirés à la prochaine version.
+              // Former names, deprecated: removed in the next version.
               tome: page.tome,
               planche: page.planche,
               lang: page.lang,
@@ -6438,6 +6424,28 @@ function publicCorsHeaders(req: Request): Record<string, string> {
     "Access-Control-Max-Age": "600",
     Vary: "Origin",
   };
+}
+
+/** 302 to a fresh signed Discord CDN URL for a Full Color page (`/color/…`, former `/couleur/…`). */
+export async function fullColorRedirect(
+  req: Request & { params: Record<string, string> },
+): Promise<Response> {
+  const cors = publicCorsHeaders(req);
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  const nue = await urlNueDe({
+    salonId: String(req.params.channelId),
+    pieceJointeId: String(req.params.attachmentId),
+    fichier: String(req.params.file),
+  });
+  if (!nue) return new Response("Planche couleur inconnue", { status: 404, headers: cors });
+  const signee = await urlSignee(nue);
+  if (!signee) {
+    return new Response("Signature indisponible", { status: 502, headers: cors });
+  }
+  return new Response(null, {
+    status: 302,
+    headers: { ...cors, Location: signee, "cache-control": "private, max-age=300" },
+  });
 }
 
 // `clientIp` (S3) vient de ./request-guards : x-real-ip, sinon DERNIER saut XFF.

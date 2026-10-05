@@ -15,7 +15,8 @@
  * ---------------------
  * Pas du disque : les planches restent sur le CDN de Discord, et `pages`
  * enregistre l'URL STABLE de notre redirection
- * (`/api/public/manga/couleur/<salon>/<pièce>/<fichier>`). La raison est dans
+ * (`/api/public/manga/color/<salon>/<pièce>/<fichier>`, ancien chemin `couleur`
+ * encore servi). La raison est dans
  * `src/lib/scans-couleur.ts` : une URL CDN signée meurt en 24 h, une page ISR
  * non. `assetUrl()` côté site laisse passer tel quel ce qui commence par
  * `http`, donc le lecteur existant n'a rien à apprendre.
@@ -237,7 +238,7 @@ async function main(): Promise<void> {
         const chemin = new URL(p.url).pathname.split("/");
         const pieceJointeId = chemin[3] ?? "";
         const fichier = chemin[4] ?? "";
-        return `${API_PUBLIQUE}/api/public/manga/couleur/${fil.id}/${pieceJointeId}/${fichier}`;
+        return `${API_PUBLIQUE}/api/public/manga/color/${fil.id}/${pieceJointeId}/${fichier}`;
       });
     chapitres.push({
       id: numero === null ? ID_HORS_SERIE : ID_BASE + numero,

@@ -79,6 +79,9 @@ describe("ownImageRemotePatterns and Discord helpers", () => {
     expect(keys).toContain("https://api.test/assets/**");
     expect(keys).toContain("https://site.test/assets/**");
     expect(keys).toContain("https://cdn.discordapp.com/**");
+    // Full Color pages: the `/color/` path, and the former `/couleur/` stored in the database.
+    expect(keys).toContain("https://api.test/api/public/manga/color/**");
+    expect(keys).toContain("https://api.test/api/public/manga/couleur/**");
     expect(new Set(keys).size).toBe(keys.length);
     expect(discordUserAvatar("1", "a_x", { size: 64 })).toBe(
       "https://cdn.discordapp.com/avatars/1/a_x.gif?size=64",

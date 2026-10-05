@@ -80,12 +80,16 @@ curl -s "https://bot.dragonballfr.com/api/public/wiki/search?q=kamehameha&limit=
 
 ## Manga
 
-| Chemin                                                 | Paramètres   | Renvoie                                 |
-| ------------------------------------------------------ | ------------ | --------------------------------------- |
-| `GET /api/public/manga/tomes`                          | —            | liste des tomes                         |
-| `GET /api/public/manga/tomes/{series}/{tome}`          | path         | détail d'un tome + planches             |
-| `GET /api/public/manga/page/{series}/{tome}/{planche}` | path         | métadonnées + URL image d'une planche   |
-| `GET /api/public/manga/search`                         | `q`, `limit` | recherche texte (OCR) dans les planches |
+| Chemin                                                          | Paramètres   | Renvoie                                                                                      |
+| --------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------- |
+| `GET /api/public/manga/tomes`                                   | —            | `volumes[]` : `series`, `volume`, `pages`, `lines`, `pagesWithJa`, `pageRange`            |
+| `GET /api/public/manga/tomes/{series}/{volume}`                 | path         | détail d'un volume : `pageCount`, `pages[]` (`page`, `lang`, `lines`, `text`)             |
+| `GET /api/public/manga/page/{series}/{volume}/{page}`           | path         | métadonnées d'une page : `volume`, `page`, `lang`, `lines`, `text`                         |
+| `GET /api/public/manga/search`                                  | `q`, `limit` | recherche texte (OCR) : `results[]` (`series`, `volume`, `page`, `snippet`)                  |
+| `GET /api/public/manga/color/{channelId}/{attachmentId}/{file}` | path         | redirection 302 vers l'image « Full Color » (ancien chemin `couleur` encore servi)          |
+
+Les anciens noms de champs (`tomes`, `tome`, `planche`, `planches`, `planchesWithJa`,
+`plancheRange`) restent servis en doublon déprécié le temps d'une version.
 
 ```bash
 curl -s "https://bot.dragonballfr.com/api/public/manga/search?q=kamehameha&limit=5" | jq

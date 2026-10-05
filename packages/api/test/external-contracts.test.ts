@@ -137,6 +137,14 @@ describe("LEGACY_PUBLIC_PATHS ↔ apps/bot/src/api/server.ts", () => {
     expect(missing).toEqual([]);
   });
 
+  test("the Full Color redirect is served under /color/ and under the former /couleur/ alias", () => {
+    for (const root of ["color", "couleur"]) {
+      const path = `/api/public/manga/${root}/{channelId}/{attachmentId}/{file}`;
+      expect(LEGACY_PUBLIC_PATHS).toContain(path);
+      expect(routeKeys.has(toBun(path))).toBe(true);
+    }
+  });
+
   test("every /api/public/* route key of the bot is listed", () => {
     const unlisted = [...routeKeys]
       .filter((k) => k.startsWith("/api/public/"))

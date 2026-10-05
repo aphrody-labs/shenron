@@ -18,7 +18,8 @@
  * l'expiration et le lecteur n'afficherait que des 404.
  *
  * D'où la redirection : le site pointe une URL STABLE de notre API
- * (`/api/public/manga/couleur/…`) et c'est nous qui, à chaque requête, rendons
+ * (`/api/public/manga/color/…`, ancien `couleur` en alias) et c'est nous qui, à chaque
+ * requête, rendons
  * un `302` vers une signature fraîche. Le HTML mis en cache reste valable
  * indéfiniment, et les 3,2 Go d'images ne transitent jamais par le VPS — c'est
  * le CDN de Discord qui sert l'octet.

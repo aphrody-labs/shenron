@@ -217,7 +217,9 @@ export function ownImageRemotePatterns(env: PublicUrlEnv): RemoteImagePattern[] 
     patternFor(resolveAssetsUrl(env), "/assets/**"),
     patternFor(api, "/db/**"),
     patternFor(api, "/assets/**"),
-    // Full Color pages: stable URL answering a 302 to Discord's signed CDN.
+    // Full Color pages: stable URL answering a 302 to Discord's signed CDN. The former
+    // `/couleur/` path stays: the page URLs already stored in the database use it.
+    patternFor(api, "/api/public/manga/color/**"),
     patternFor(api, "/api/public/manga/couleur/**"),
     patternFor(site, "/db/**"),
     patternFor(site, "/assets/**"),

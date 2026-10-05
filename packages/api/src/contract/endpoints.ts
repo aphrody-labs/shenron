@@ -526,6 +526,7 @@ export const LEGACY_PUBLIC_PATHS: readonly string[] = [
   "/api/public/eval/lore-stats",
   "/api/public/eval/reports",
   "/api/public/leaderboard",
+  "/api/public/manga/color/{channelId}/{attachmentId}/{file}",
   "/api/public/manga/couleur/{channelId}/{attachmentId}/{file}",
   "/api/public/manga/page/{series}/{volume}/{page}",
   "/api/public/manga/search",
