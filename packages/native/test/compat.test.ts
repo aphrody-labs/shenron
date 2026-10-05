@@ -11,7 +11,7 @@ import { SHENRON_FFI_ABI, SHENRON_FFI_VERSION, SYMBOLS } from "../src/generated/
 import type { BuildInfo } from "../src/generated/types";
 
 const linux: BuildInfo = {
-  version: "1.1.0",
+  version: "1.2.0",
   abi: 2,
   target: "x86_64-unknown-linux-gnu",
   os: "linux",
@@ -22,7 +22,7 @@ const linux: BuildInfo = {
 };
 const expected = {
   abi: 2,
-  version: "1.1.0",
+  version: "1.2.0",
   platform: "linux",
   arch: "x64",
   allowVersionSkew: false,

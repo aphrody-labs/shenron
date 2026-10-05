@@ -12,7 +12,7 @@ import { FFIType } from "bun:ffi";
 export const SHENRON_FFI_ABI = 2;
 
 /** Version of the shenron-ffi crate the table was generated from (the workspace version). */
-export const SHENRON_FFI_VERSION = "1.1.0";
+export const SHENRON_FFI_VERSION = "1.2.0";
 
 /** `status` of a `JobOutcome`; `usage` and `software` are also boundary exit codes. */
 export const SHENRON_STATUS = {

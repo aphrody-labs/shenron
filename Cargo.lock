@@ -5166,7 +5166,7 @@ checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 
 [[package]]
 name = "koharu-agent"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5187,7 +5187,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-app"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "aphrody-tauri",
@@ -5223,7 +5223,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-canvas"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "futures-channel",
  "js-sys",
@@ -5252,7 +5252,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-desktop"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "koharu-rasterizer",
@@ -5290,7 +5290,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-library"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "alphanumeric-sort",
  "anyhow",
@@ -5367,7 +5367,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-ml"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "ab_glyph",
  "anyhow",
@@ -5399,7 +5399,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-pipeline"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -5429,7 +5429,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-psd"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "image",
  "koharu-rasterizer",
@@ -5442,7 +5442,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-rasterizer"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "blake3",
@@ -5458,7 +5458,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-renderer"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -5524,7 +5524,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-scene"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "blake3",
  "bytes",
@@ -5546,7 +5546,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-secrets"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "keyring",
@@ -5558,7 +5558,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-storage"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "blake3",
@@ -5606,7 +5606,7 @@ dependencies = [
 
 [[package]]
 name = "koharu-translator"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "base64 0.23.1",
@@ -9158,7 +9158,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-cli"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-config",
@@ -9183,7 +9183,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-desktop"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-build",
@@ -9203,7 +9203,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-ffi"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-rag-core",
@@ -9221,7 +9221,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-lexicon"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -9230,7 +9230,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-manga"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "aphrody-ocr-core",
  "image",
@@ -9248,7 +9248,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-mcp"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "axum",
  "reqwest",
@@ -9268,7 +9268,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-rag"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "aphrody-config",
  "aphrody-rag",
@@ -9287,7 +9287,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-studio"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "aphrody-llama-server",
  "aphrody-tauri",

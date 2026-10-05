@@ -9,7 +9,7 @@ resolver = "3"
 members = ["crates/*"]
 
 [workspace.package]
-version = "1.1.0"
+version = "1.2.0"
 edition = "2024"
 rust-version = "1.97"
 license = "Apache-2.0"
@@ -80,24 +80,24 @@ fs4 = "1.1.0"
 futures = "0.3.34"
 image = "0.25.10"
 js-sys = "0.3.105"
-koharu-agent = { path = "crates/koharu-agent", version = "1.1.0" }
-koharu-app = { path = "crates/koharu-app", version = "1.1.0" }
+koharu-agent = { path = "crates/koharu-agent", version = "1.2.0" }
+koharu-app = { path = "crates/koharu-app", version = "1.2.0" }
 koharu-config = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-desktop = { path = "crates/koharu-desktop", version = "1.1.0" }
+koharu-desktop = { path = "crates/koharu-desktop", version = "1.2.0" }
 koharu-diffusion = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-library = { path = "crates/koharu-library", version = "1.1.0" }
+koharu-library = { path = "crates/koharu-library", version = "1.2.0" }
 koharu-llama = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-ml = { path = "crates/koharu-ml", version = "1.1.0" }
-koharu-pipeline = { path = "crates/koharu-pipeline", version = "1.1.0" }
-koharu-psd = { path = "crates/koharu-psd", version = "1.1.0" }
-koharu-rasterizer = { path = "crates/koharu-rasterizer", version = "1.1.0" }
-koharu-renderer = { path = "crates/koharu-renderer", version = "1.1.0" }
+koharu-ml = { path = "crates/koharu-ml", version = "1.2.0" }
+koharu-pipeline = { path = "crates/koharu-pipeline", version = "1.2.0" }
+koharu-psd = { path = "crates/koharu-psd", version = "1.2.0" }
+koharu-rasterizer = { path = "crates/koharu-rasterizer", version = "1.2.0" }
+koharu-renderer = { path = "crates/koharu-renderer", version = "1.2.0" }
 koharu-runtime = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-scene = { path = "crates/koharu-scene", version = "1.1.0" }
-koharu-secrets = { path = "crates/koharu-secrets", version = "1.1.0" }
-koharu-storage = { path = "crates/koharu-storage", version = "1.1.0" }
+koharu-scene = { path = "crates/koharu-scene", version = "1.2.0" }
+koharu-secrets = { path = "crates/koharu-secrets", version = "1.2.0" }
+koharu-storage = { path = "crates/koharu-storage", version = "1.2.0" }
 koharu-torch = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-translator = { path = "crates/koharu-translator", version = "1.1.0" }
+koharu-translator = { path = "crates/koharu-translator", version = "1.2.0" }
 llguidance = "1.8.0"
 log = "0.4.34"
 memmap2 = "0.9.11"
@@ -119,11 +119,11 @@ schemars = { version = "1.2.2", features = ["derive", "chrono04", "indexmap2", "
 serde = { version = "1.0.229", features = ["derive", "std"], default-features = false }
 serde_json = "1.0.151"
 sha2 = "0.11.0"
-shenron-cli = { path = "crates/shenron-cli", version = "1.1.0" }
-shenron-lexicon = { path = "crates/shenron-lexicon", version = "1.1.0" }
-shenron-manga = { path = "crates/shenron-manga", version = "1.1.0" }
-shenron-rag = { path = "crates/shenron-rag", version = "1.1.0" }
-shenron-studio = { path = "crates/shenron-studio", version = "1.1.0" }
+shenron-cli = { path = "crates/shenron-cli", version = "1.2.0" }
+shenron-lexicon = { path = "crates/shenron-lexicon", version = "1.2.0" }
+shenron-manga = { path = "crates/shenron-manga", version = "1.2.0" }
+shenron-rag = { path = "crates/shenron-rag", version = "1.2.0" }
+shenron-studio = { path = "crates/shenron-studio", version = "1.2.0" }
 skrifa = "0.47.0"
 specta = { version = "=2.0.0-rc.25", features = ["derive", "url", "uuid"] }
 specta-typescript = "=0.0.12"

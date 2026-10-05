@@ -1,6 +1,6 @@
 {
   "name": "@shenron/pipeline",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Shenron compute clients and Dragon Ball data pipeline: AI, Aphrody services, BXC and OCR/RAG workflows",
   "bin": {

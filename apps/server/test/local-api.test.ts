@@ -104,7 +104,7 @@ describe("/api/local/health", () => {
     expect(body).toEqual({
       ok: false,
       service: "shenron-server",
-      version: "1.1.0",
+      version: "1.2.0",
       profile: "public",
       home: paths.home,
       localRag: false,
