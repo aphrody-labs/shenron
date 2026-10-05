@@ -10,6 +10,7 @@
  * Cf. piège CLAUDE.md : sans l'intent MessageContent, `content` est vide pour les messages qui ne
  * mentionnent pas le bot — mais l'indexation des métadonnées (auteur, salon, date) reste valable.
  */
+import { isCompiledBinary } from "@aphrody/discord-kit";
 import { Client, ChannelType } from "discord.js";
 import { injectable, singleton } from "tsyringe";
 
@@ -63,8 +64,7 @@ export class RedisIndexerService {
     try {
       // Exécutable compilé : le worker est un point d’entrée de `bun build --compile`
       // (scripts/build/bot.ts), résolu depuis la racine des entrées (src/).
-      const compiled = /\/\$bunfs\/|~BUN/.test(import.meta.url);
-      const workerUrl = compiled
+      const workerUrl = isCompiledBinary()
         ? "./workers/indexer.ts"
         : new URL("../workers/indexer.ts", import.meta.url).href;
       this.worker = new Worker(workerUrl, { type: "module" });

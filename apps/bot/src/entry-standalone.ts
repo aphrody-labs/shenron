@@ -12,8 +12,11 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
+  // Runtime info from the kit: interpreted source or compiled binary, Bun version, platform.
+  const { getBotRuntimeInfo } = await import("@aphrody/discord-kit");
+  const info = getBotRuntimeInfo();
   console.log(
-    `@shenron/bot v1.0.0 (Bun ${typeof Bun !== "undefined" ? Bun.version : process.version})`,
+    `@shenron/bot v1.0.0 (Bun ${info.bunVersion}, ${info.platform}-${info.arch}, ${info.isCompiled ? "compiled" : "source"})`,
   );
   process.exit(0);
 }
@@ -33,13 +36,17 @@ if (process.argv.includes("--smoke")) {
   const started = performance.now();
   await import("reflect-metadata");
   const { MetadataStorage } = await import("discordx");
+  const { getBotRuntimeInfo } = await import("@aphrody/discord-kit");
+  const runtime = getBotRuntimeInfo();
   await import("./_entries");
   const storage = MetadataStorage.instance;
   await storage.build();
   console.log(
     JSON.stringify({
       smoke: "ok",
-      runtime: `Bun ${Bun.version}`,
+      runtime: `Bun ${runtime.bunVersion}`,
+      platform: `${runtime.platform}-${runtime.arch}`,
+      compiled: runtime.isCompiled,
       slashCommands: storage.applicationCommandSlashesFlat.length,
       contextMenus:
         storage.applicationCommandMessages.length + storage.applicationCommandUsers.length,

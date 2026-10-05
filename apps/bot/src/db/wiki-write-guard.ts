@@ -25,12 +25,11 @@
  */
 import { realpathSync } from "node:fs";
 import { resolve } from "node:path";
+import { isCompiledBinary } from "@aphrody/discord-kit";
 
 const entry = Bun.main ?? process.argv[1] ?? "";
-// Exécutable `bun build --compile` (shenron-bot) : les modules vivent sous /$bunfs/ (Linux,
-// macOS) ou ~BUN (Windows) ; seul le runtime du bot y est compilé.
-const COMPILED = /^\/\$bunfs\/|~BUN/;
-const isCompiled = COMPILED.test(import.meta.path) || COMPILED.test(entry);
+// Exécutable `bun build --compile` (shenron-bot) : seul le runtime du bot y est compilé.
+const isCompiled = isCompiledBinary();
 // Runtime du bot = src/index.ts ou src/entry-standalone.ts → exempté (auto-seed légitime, idempotent).
 const isBotRuntime =
   isCompiled || /(?:^|[\\/])(?:src[\\/])?(?:index|entry-standalone)\.ts$/.test(entry);
