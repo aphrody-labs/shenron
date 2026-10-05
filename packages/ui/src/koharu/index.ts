@@ -7,7 +7,6 @@ export { StartupView } from "./components/app/StartupView";
 export { TitleBar } from "./components/app/TitleBar";
 export { AboutDialog } from "./components/app/AboutDialog";
 export { WindowControls, useMacOS } from "./components/app/WindowChrome";
-export { Updater } from "./components/app/Updater";
 
 // Editor components
 export { Editor } from "./components/editor/Editor";
@@ -30,7 +29,6 @@ export { useCanvas } from "./components/editor/useCanvas";
 export { StartView } from "./components/start/StartView";
 
 // Preferences & Settings
-export { KoharuSettings, type KoharuSettingsHost } from "./components/preferences/KoharuSettings";
 export { SettingsPage } from "./components/preferences/SettingsPage";
 export { PipelinePreferences } from "./components/preferences/PipelinePreferences";
 export { ProviderPreferences } from "./components/preferences/ProviderPreferences";
