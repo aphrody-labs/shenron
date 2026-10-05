@@ -512,7 +512,10 @@
   },
   "wiki": {
     "breadcrumb": "Wiki",
-    "index": { "exploreSanctuary": "Explore location", "properties": "Profile & Properties" },
+    "index": {
+      "exploreSanctuary": "Explore location",
+      "properties": "Profile & Properties"
+    },
     "editorialNav": {
       "databooks": "Databooks",
       "interviews": "Interviews",
@@ -960,6 +963,38 @@
       "standfirst": "Anime releases, manga chapters, films, events and analysis from the community.",
       "viewFeed": "The feed",
       "rss": "RSS feed"
+    }
+  },
+  "shell": {
+    "sidebar": "Site navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "primaryNav": "Main navigation",
+    "more": "More",
+    "moreTitle": "All sections",
+    "close": "Close",
+    "search": "Search",
+    "breadcrumb": "Breadcrumb",
+    "back": "Back",
+    "home": "Home",
+    "windowMinimize": "Minimize",
+    "windowMaximize": "Maximize",
+    "windowRestore": "Restore",
+    "windowClose": "Close window",
+    "brandLabel": "Dragon Ball France, home",
+    "staff": "Closed sections (staff)",
+    "backToSite": "Back to the site",
+    "bureau": "Desktop",
+    "bureauHint": "The desktop app: local corpus, editor, studio.",
+    "journeys": {
+      "decouvrir": "Discover",
+      "encyclopedie": "Encyclopedia",
+      "oeuvres": "Works and broadcasts",
+      "archives": "Books and archives",
+      "communaute": "Community",
+      "participer": "Contribute",
+      "espace": "My space",
+      "legal": "About the site"
     }
   }
 }

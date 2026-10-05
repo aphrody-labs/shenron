@@ -512,7 +512,10 @@
   },
   "wiki": {
     "breadcrumb": "Wiki",
-    "index": { "exploreSanctuary": "Explorer le sanctuaire", "properties": "Fiche & Propriétés" },
+    "index": {
+      "exploreSanctuary": "Explorer le sanctuaire",
+      "properties": "Fiche & Propriétés"
+    },
     "editorialNav": {
       "databooks": "Databooks",
       "interviews": "Interviews",
@@ -960,6 +963,38 @@
       "standfirst": "Sorties anime, chapitres du manga, films, événements et analyses de la communauté.",
       "viewFeed": "Le fil",
       "rss": "Flux RSS"
+    }
+  },
+  "shell": {
+    "sidebar": "Navigation du site",
+    "collapseSidebar": "Replier la barre latérale",
+    "expandSidebar": "Déplier la barre latérale",
+    "primaryNav": "Navigation principale",
+    "more": "Plus",
+    "moreTitle": "Toutes les rubriques",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "breadcrumb": "Fil d’Ariane",
+    "back": "Retour",
+    "home": "Accueil",
+    "windowMinimize": "Réduire",
+    "windowMaximize": "Agrandir",
+    "windowRestore": "Restaurer",
+    "windowClose": "Fermer la fenêtre",
+    "brandLabel": "Dragon Ball France, accueil",
+    "staff": "Rubriques fermées (staff)",
+    "backToSite": "Retour au site",
+    "bureau": "Bureau",
+    "bureauHint": "L’application de bureau : corpus local, éditeur, studio.",
+    "journeys": {
+      "decouvrir": "Découvrir",
+      "encyclopedie": "Encyclopédie",
+      "oeuvres": "Œuvres et diffusion",
+      "archives": "Livres et archives",
+      "communaute": "Communauté",
+      "participer": "Participer",
+      "espace": "Mon espace",
+      "legal": "Le site"
     }
   }
 }

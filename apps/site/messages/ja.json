@@ -512,7 +512,10 @@
   },
   "wiki": {
     "breadcrumb": "ウィキ",
-    "index": { "exploreSanctuary": "場所を見る", "properties": "プロフィールと詳細" },
+    "index": {
+      "exploreSanctuary": "場所を見る",
+      "properties": "プロフィールと詳細"
+    },
     "editorialNav": {
       "databooks": "データブック",
       "interviews": "インタビュー",
@@ -960,6 +963,38 @@
       "standfirst": "アニメの放送、漫画の新章、映画、イベント、そしてコミュニティによる分析。",
       "viewFeed": "フィード",
       "rss": "RSSフィード"
+    }
+  },
+  "shell": {
+    "sidebar": "サイトナビゲーション",
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "expandSidebar": "サイドバーを展開",
+    "primaryNav": "メインナビゲーション",
+    "more": "その他",
+    "moreTitle": "すべてのセクション",
+    "close": "閉じる",
+    "search": "検索",
+    "breadcrumb": "パンくずリスト",
+    "back": "戻る",
+    "home": "ホーム",
+    "windowMinimize": "最小化",
+    "windowMaximize": "最大化",
+    "windowRestore": "元に戻す",
+    "windowClose": "ウィンドウを閉じる",
+    "brandLabel": "ドラゴンボール・フランス ホーム",
+    "staff": "非公開セクション（スタッフ）",
+    "backToSite": "サイトに戻る",
+    "bureau": "デスクトップ",
+    "bureauHint": "デスクトップアプリ：ローカルコーパス、エディター、スタジオ。",
+    "journeys": {
+      "decouvrir": "見つける",
+      "encyclopedie": "百科事典",
+      "oeuvres": "作品と放送",
+      "archives": "書籍とアーカイブ",
+      "communaute": "コミュニティ",
+      "participer": "参加する",
+      "espace": "マイスペース",
+      "legal": "このサイトについて"
     }
   }
 }
