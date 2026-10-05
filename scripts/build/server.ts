@@ -36,6 +36,7 @@ import {
 import { join, resolve } from "node:path";
 
 import { pack } from "../../apps/server/src/payload";
+import { ensureKoharuWasm } from "./koharu-wasm.ts";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const args = process.argv.slice(2);
@@ -99,6 +100,7 @@ async function measured(
 
 // 1. Front app, without the editorial database and without a platform image optimizer.
 if (!flag("--skip-site")) {
+  ensureKoharuWasm();
   rmSync(join(SITE, DIST_DIR), { recursive: true, force: true });
   await measured(
     "site-build-standalone",

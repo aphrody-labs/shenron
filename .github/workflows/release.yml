@@ -39,6 +39,12 @@ jobs:
       - name: Install
         run: bun ci
 
+      # Le site importe la sortie wasm-pack de crates/koharu-canvas (générée, ignorée par Git).
+      - name: Koharu canvas toolchain (wasm32 + wasm-pack)
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo install wasm-pack --locked
+
       # Application frontale (Next standalone, sans base) + API locales, un seul fichier.
       - name: shenron-server
         run: bun scripts/build/server.ts --target ${{ matrix.target }} --flavor desktop

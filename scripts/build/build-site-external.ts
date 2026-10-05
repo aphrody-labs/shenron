@@ -12,6 +12,7 @@ import { connect } from "node:net";
 import { join, relative } from "node:path";
 import { createRequire } from "node:module";
 
+import { ensureKoharuWasm } from "./koharu-wasm.ts";
 import { artifactStore, artifactPath } from "./site-artifact-paths.ts";
 
 const releaseArgs = process.argv.slice(2);
@@ -96,6 +97,8 @@ console.log(`▶ Démarrage du build Next.js Turbopack pour commit ${sha}...`);
 
 // Nettoyage à froid
 await rm(buildDir, { recursive: true, force: true });
+
+ensureKoharuWasm();
 
 const prebuild = Bun.spawnSync([process.execPath, "run", "prebuild"], {
   cwd: siteDir,
