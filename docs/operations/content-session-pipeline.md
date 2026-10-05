@@ -1,29 +1,28 @@
-# Persistent content-session pipeline
+# Session d'enrichissement de contenu
 
-`shenron-content-session.timer` runs a resumable enrichment session after boot
-and then every six hours. Its state is stored atomically in
-`data/session-pipeline/latest.json` (not in repo); it contains no credentials or source body.
+`scripts/ops/run-content-session-pipeline.ts` enchaîne une session
+d'enrichissement reprenable :
 
-Each session imports completed BXC crawl databases into
-`public.external_source_records`, optionally refreshes available media readers,
-and records coverage for episodes, films, manga and databooks. Existing data is
-never cleared when a source is unavailable: the next session retries it.
+1. indexer dans `public.external_source_records` les bases de crawl BXC
+   terminées (`BXC_STATE_DIR`) ;
+2. matérialiser les enregistrements collectés en pages wiki attribuées et
+   publier les actualités officielles sous forme de renvoi ;
+3. rafraîchir, sur demande, les lecteurs média disponibles ;
+4. mesurer depuis PostgreSQL la couverture des épisodes, films, tomes et
+   databooks.
 
-Run once manually:
+Chaque étape se rejoue séparément. Une source indisponible est rapportée comme
+telle, jamais comme un contenu acquis, et n'efface aucun résultat antérieur.
+L'état de la dernière session (sans secret ni corps de source) est écrit de
+façon atomique dans `data/session-pipeline/latest.json`, fichier local ignoré
+par Git.
 
-```bash
-set -a && . ./.env && set +a
-bun scripts/ops/run-content-session-pipeline.ts --apply --refresh-players
+```sh
+bun scripts/ops/run-content-session-pipeline.ts                                # simulation
+bun scripts/ops/run-content-session-pipeline.ts --apply                        # écriture
+bun scripts/ops/run-content-session-pipeline.ts --apply --refresh-players      # + lecteurs
 ```
 
-Install on the VPS:
-
-```bash
-sudo install -m 0644 deploy/systemd/shenron-content-session.{service,timer} /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now shenron-content-session.timer
-```
-
-The report distinguishes successful, skipped and failed steps. A crawl or
-reader source that is unavailable is reported as such; it is not represented as
-content that was acquired.
+`DATABASE_URL` vient de l'environnement (ou, à défaut, de la dernière ligne
+`DATABASE_URL=` du `.env` racine ou de celui du site). Une exécution périodique
+sur un hôte relève d'`aphrody-infra` ([`INFRA-DELEGATION.md`](INFRA-DELEGATION.md)).

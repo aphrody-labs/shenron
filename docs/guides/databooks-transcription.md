@@ -1,20 +1,21 @@
-# Databooks — transcription de masse et API
+# Databooks — transcription, OCR et API
 
-Chaîne complète pour transcrire les planches des databooks en texte via un
-modèle local, puis réinjecter le résultat dans le site.
-
-**État du corpus au 2026-08-21** : 318 fiches, 11 513 planches, dont **11 277
-sans texte**. Les planches brutes pèsent 17 Gio (~1,5 Mio pièce).
-
----
+Procédure d'export, de transcription et de réinjection des planches de
+databooks. Les règles de qualité (juges, découpe, lexique) sont dans
+[`databooks-doctrine.md`](../reference/databooks-doctrine.md) ; la traduction
+dans [`TRADUCTION-DATABOOKS.md`](TRADUCTION-DATABOOKS.md) ; les consignes à
+donner à un modèle de vision dans
+[`prompt-transcription-databooks.md`](prompt-transcription-databooks.md).
 
 ## 1. Exporter des lots
 
 ```bash
-cd ~/shenron/apps/site
-DATABASE_URL="$(grep -m1 '^DATABASE_URL=' .env | cut -d= -f2-)" \
-  bun scripts/export-databooks-ocr.ts --sortie ~/databooks-ocr --taille 400
+cd apps/site
+bun scripts/export-databooks-ocr.ts --sortie <dossier-lots> --taille 400
 ```
+
+`DATABASE_URL` vient de l'environnement (dernière ligne `^DATABASE_URL=` du
+`.env`, jamais la première).
 
 | Option           | Défaut            | Rôle                                                 |
 | ---------------- | ----------------- | ---------------------------------------------------- |
@@ -27,17 +28,14 @@ DATABASE_URL="$(grep -m1 '^DATABASE_URL=' .env | cut -d= -f2-)" \
 | `--plan`         | non               | N'estime que le volume, n'écrit rien                 |
 | `--force`        | non               | Refaire un lot déjà présent                          |
 
-Chaque lot est autonome :
+Chaque lot est autonome et la commande est relançable (les lots écrits sont
+sautés) :
 
 ```
 lot-001/
   manifeste.json     # entrées + format de réponse attendu
   images/1-0001.jpg  # <databookId>-<page sur 4 chiffres>.jpg
 ```
-
-**Poids mesuré** : ~200 Kio par planche après réduction, soit **~2,3 Gio** pour
-le corpus entier (contre 17 Gio en brut). Les lots déjà écrits sont sautés — la
-commande est relançable.
 
 Une entrée de `manifeste.json` :
 
@@ -52,9 +50,47 @@ Une entrée de `manifeste.json` :
 }
 ```
 
----
+Les manifestes récents portent aussi les empreintes SHA-256 du scan original et
+du JPEG réduit, exigées par les adaptateurs de candidats Koharu/Aphrody
+([`koharu/README.md`](../products/koharu/README.md)).
 
-## 2. Réinjecter les transcriptions
+## 2. Chaîne OCR Aphrody
+
+L'OCR des lots tourne hors ligne avec la CLI `aphrody` compilée avec la feature
+`ocr` (poste GPU) ; Shenron reste le juge et l'unique écrivain :
+
+```bash
+aphrody ocr shenron doctor
+aphrody ocr shenron emit <id> --out <lot>
+bun apps/site/scripts/databooks.ts verifie <lot>/resultats.jsonl
+bun apps/site/scripts/depose-transcriptions.ts <lot>/resultats.jsonl --simulation
+bun apps/site/scripts/databooks.ts depose <lot>/resultats.jsonl
+```
+
+Les sous-commandes exactes se lisent par `aphrody ocr shenron --help`.
+
+Règles :
+
+- `--skip-done` rend la reprise idempotente.
+- Un résultat sans texte n'est jamais déposé par défaut : il ne doit pas effacer
+  une transcription existante.
+- Le dépôt n'a lieu qu'après les deux juges : l'audit natif d'Aphrody (jetons de
+  contrôle, boucles, CJK compris, alphabet étranger mêlé au japonais) et
+  `classerDefaut` de ce dépôt. En cas de défaut bloquant, le JSONL est conservé
+  pour relecture et rien n'est déposé.
+- Un lot mixte n'est pas publié partiellement : séparer les pages saines des
+  pages fautives et auditer le sous-lot avant dépôt.
+- Ne pas utiliser `--force` pour contourner l'audit : une page vide, en boucle
+  ou dans une langue étrangère se relit sur son scan.
+- Un lot de planches très lourdes (plus de 4 Mio en moyenne) va directement à
+  PP-OCR : un VLM y est trop lent pour un gain nul (mesuré).
+- Le jeton d'écriture vient de l'environnement ; il n'apparaît ni dans les
+  journaux ni dans ce document.
+
+Après un dépôt accepté : vérifier les compteurs par l'API, puis relancer le
+réplica et le RAG selon la doctrine.
+
+## 3. Réinjecter par l'API
 
 ```bash
 curl -X POST https://dragonballfr.com/api/databooks/1/transcription \
@@ -63,17 +99,15 @@ curl -X POST https://dragonballfr.com/api/databooks/1/transcription \
   -d '{"mode":"merge","pages":[{"number":1,"text":"…"},{"number":2,"text":"…"}]}'
 ```
 
-- **`merge` (défaut)** — ne touche QUE le champ `text` des pages citées. L'image
-  et les pages absentes du corps restent intactes. **Idempotent** : relancer le
-  même lot ne change rien. C'est le mode à utiliser pour un traitement par lots.
-- **`replace`** — remplace tout le tableau de pages. À réserver à une reprise
-  complète ; les images non redonnées sont conservées depuis l'état précédent.
-- `description` (facultatif) — chapô de la fiche, en markdown, rendu comme un
-  article par `WikiMarkdown`.
+- **`merge` (défaut)** — ne touche que le champ `text` des pages citées ;
+  l'image et les pages absentes restent intactes. Idempotent : c'est le mode des
+  traitements par lots.
+- **`replace`** — remplace tout le tableau de pages ; à réserver à une reprise
+  complète (les images non redonnées sont conservées).
+- `description` (facultatif) — chapô de la fiche, en Markdown.
 - `"text": null` **efface** la transcription d'une page. Une chaîne vide ou
-  blanche est en revanche **ignorée** : c'est presque toujours une planche que le
-  modèle n'a pas su lire, et la traiter comme un effacement détruirait une bonne
-  transcription au passage suivant.
+  blanche est **ignorée** : c'est presque toujours une planche illisible, et
+  l'effacer détruirait une bonne transcription au passage suivant.
 
 Réponse :
 
@@ -89,20 +123,14 @@ Réponse :
 }
 ```
 
-`pagesInconnues` > 0 signale un décalage entre le lot exporté et la base (fiche
-modifiée entre-temps) : réexporter le lot concerné.
+`pagesInconnues` > 0 signale un décalage entre le lot exporté et la base :
+réexporter le lot. Chaque dépôt écrit une révision dans `public.wiki_revisions`,
+réversible depuis `/admin/wiki/history`. Limites : 40 000 caractères par
+planche, 2 000 pages par appel.
 
-Chaque dépôt écrit une révision dans `public.wiki_revisions` — consultable et
-**réversible** depuis `/admin/wiki/history`. Une transcription automatique est
-une proposition, pas une vérité.
+## 4. API databooks
 
-Limites : 40 000 caractères par planche, 2 000 pages par appel.
-
----
-
-## 3. API databooks
-
-Lecture publique, écriture par jeton porteur. CORS ouvert (`*`) : l'écriture est
+Lecture publique, écriture par jeton porteur. CORS ouvert : l'écriture est
 protégée par le jeton, pas par l'origine.
 
 | Méthode  | Route                                                     | Auth  |
@@ -114,23 +142,21 @@ protégée par le jeton, pas par l'origine.
 | `DELETE` | `/api/databooks/:id`                                      | jeton |
 | `POST`   | `/api/databooks/:id/transcription`                        | jeton |
 
-- `q` fait une recherche **plein texte française** (titre, titre japonais,
-  auteur, description), adossée à l'index GIN `db_databooks_fts`.
-- `includeHidden=1` n'a d'effet qu'avec un jeton valide : une fiche masquée
-  n'est jamais servie autrement.
-- Jeton = `DATABOOKS_API_TOKEN`, repli sur `SHENRON_ADMIN_TOKEN`. **Sans jeton
-  configuré, toute écriture est refusée** — jamais ouverte par défaut.
+- `q` fait une recherche plein texte française (titre, titre japonais, auteur,
+  description), adossée à l'index GIN `db_databooks_fts`.
+- `includeHidden=1` n'a d'effet qu'avec un jeton valide.
+- Jeton : `DATABOOKS_API_TOKEN`, repli sur `SHENRON_ADMIN_TOKEN`. Sans jeton
+  configuré, toute écriture est refusée.
 
----
+## 5. Index Redis
 
-## 4. Index Redis
-
-Miroir de lecture en base 4 (`dbfr:databook:*`), tenu à jour à chaque écriture
-passant par l'API. Postgres reste la source de vérité ; une panne Redis ne fait
-jamais échouer une écriture.
+Miroir de lecture (`dbfr:databook:*`), tenu à jour à chaque écriture passant
+par l'API par `apps/site/src/lib/databooks-redis.ts`. PostgreSQL reste la source
+de vérité ; une panne Redis ne fait jamais échouer une écriture. Premier
+remplissage ou réparation :
 
 ```bash
-DATABASE_URL=… bun apps/site/scripts/index-databooks-redis.ts --purge
+bun apps/site/scripts/index-databooks-redis.ts --purge
 ```
 
 | Clé                             | Type          | Contenu                        |
@@ -140,20 +166,9 @@ DATABASE_URL=… bun apps/site/scripts/index-databooks-redis.ts --purge
 | `dbfr:databooks:kind:<kind>`    | set           | par type d'ouvrage             |
 | `dbfr:databooks:category:<cat>` | set           | par catégorie éditoriale       |
 
----
+## 6. MCP
 
-## 5. MCP
-
-Le serveur MCP public `mcp.dragonballfr.com` a été retiré. Le serveur unifié
-`aphrody-mcp` expose les outils Dragon Ball en stdio local, avec les noms
-qualifiés suivants :
-
-- `dragonball.databooks_search` — recherche plein texte, renvoie les fiches sans les
-  planches (une fiche peut en compter 300) ;
-- `dragonball.databooks_get` — fiche détaillée, planches et transcriptions incluses
-  (plafond `maxPages`, défaut 50).
-
-Ces outils appellent l'API du site avec la configuration runtime Shenron de
-`aphrody-mcp`; ils ne constituent pas une surface HTTP MCP publique. Utiliser
-`tools/list` sur le binaire construit pour obtenir les schémas actifs. La
-configuration de l'ancien hôte ne doit pas servir de cible client.
+`shenron-mcp` expose `dragonball.databooks_search` (fiches sans planches),
+`dragonball.databooks_get` (fiche, planches et transcriptions, plafond
+`maxPages`) et `dragonball.databooks_planches`. Les schémas actifs se lisent par
+`tools/list`.

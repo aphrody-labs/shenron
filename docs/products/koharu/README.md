@@ -1,47 +1,80 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-# Aphrody Koharu
+# Koharu dans Shenron
 
-Standalone Rust/Bun library extracted from Koharu revision `c697b31e`.
-[Upstream README](../../../crates/koharu/UPSTREAM-README.md) and MIT/Apache-2.0 notices preserve provenance.
+Koharu est le moteur de traduction de manga absorbé dans ce dépôt (projets,
+scènes, détection, OCR, traduction, nettoyage, rendu, export). Référence unique
+pour son emplacement, son interface et sa frontière éditoriale. Documentation
+amont (en/ja/zh) : [`docs/koharu/`](../../koharu/) ; journal amont :
+[`docs/koharu/CHANGELOG.md`](../../koharu/CHANGELOG.md) ; licences MIT/Apache-2.0
+d'origine : [`docs/licenses/koharu/`](../../licenses/koharu/).
 
-## Ownership and use
+## Emplacement
 
-| Owner | Surface |
+| Surface | Chemin |
 | --- | --- |
-| `crates/koharu/koharu-library` and workspace crates | Projects, scenes, processing, translation, agent, render/export |
-| `koharu-sdk` binary | Headless JSONL requests: `id`, `method`, `params`; response `result` or `error` |
-| `packages/koharu/sdk` | Host-neutral Bun client plus native, settings and Tauri adapters |
-| `packages/koharu/bridge` | Generated commands and WASM/WebGPU canvas bindings |
-| `packages/koharu/ui` and `apps/koharu/editor` | Editor components, styles and standalone consumer |
+| Moteur Rust | `crates/koharu-*` (`library`, `app`, `pipeline`, `ml`, `translator`, `scene`, `storage`, `renderer`, `rasterizer`, `psd`, `canvas`, `desktop`, `agent`, `metrics`, `secrets`) |
+| Socle ML | `koharu-{llama,torch,diffusion,runtime,config}`, fournis par Aphrody (voir [`APHRODY-ECOSYSTEM.md`](../../architecture/APHRODY-ECOSYSTEM.md)) |
+| Client Bun | `@shenron/koharu` (`packages/koharu`) : protocole typé, transports Tauri et natif, réglages, médias, canvas WASM |
+| Interface | `@shenron/ui`, montée par le site sous `/koharu` |
+
+`koharu-library` est le point d'entrée Rust sans Tauri. Son exécutable
+`koharu-sdk` parle JSON Lines sur stdin/stdout (`{ id, method, params }` →
+`{ id, result }` ou `{ id, error }`) ; `--root <dossier>` choisit la collection de
+projets. Les méthodes sont listées dans `crates/koharu-library/README.md`.
 
 ```sh
-RUSTC_WRAPPER= cargo build -p koharu-library --bin koharu-sdk
+cargo build -p koharu-library --bin koharu-sdk
+bun --filter @shenron/koharu protocol      # régénère packages/koharu/src/protocol.ts (Specta)
+bun --filter @shenron/koharu build:wasm    # reconstruit koharu-canvas
 ```
 
-The binary accepts `--root <directory>`. Current methods live in
-`packages/koharu/sdk/src/native.ts` and `crates/koharu/koharu-library/src/bin/koharu-sdk.rs`.
-UI's `koharu_rpc` broker uses the JSONL settings contract; the complete editor
-is not yet mounted. Keep native durable scene/export work separate from transient
-WebGPU canvas interaction.
+Les fichiers générés (protocole, WASM) ne s'éditent jamais à la main.
 
-## Remaining integration
+## Candidats vers Shenron
 
-Follow [K0–K9 in the shared plan](../../plans/ai/PLAN.md#koharu-aphrody-and-shenron-convergence)
-and [AGENTS.md](../../reference/koharu/AGENTS.md) for NHITL, ownership and focused validation.
-The Rust, Bun, bridge, SDK, UI, and editor consumer now share this monorepo. The former standalone source checkout is no longer an active dependency.
-Weights and native runtime binaries need separate distribution for offline use.
+Une sortie Koharu ou de l'OCR Aphrody n'entre dans Shenron que comme
+**candidat non arbitré**, lié par empreintes au manifeste Shenron :
 
-The standalone Rust desktop is Tauri v3 alpha while JavaScript adapters use v2;
-that pairing is unqualified.
+```sh
+bun run --filter @shenron/pipeline pipeline koharu-candidate <manifeste-manga.json> <résultats.jsonl> <candidats.jsonl>
+bun run --filter @shenron/pipeline pipeline koharu-databook-candidate <manifeste-haché.json> <résultats.jsonl> <candidats.jsonl>
+bun run --filter @shenron/pipeline pipeline koharu-native-candidate <manga|databook> <manifeste.json> <racine-projets> <projet> <candidats.jsonl> [--sdk <koharu-sdk>]
+bun run --filter @shenron/pipeline pipeline aphrody-ocr-candidate <manga|databook> <manifeste-haché.json> <ocr-v2.jsonl> <candidats.jsonl>
+```
 
-## Release
+- L'adaptateur exige que l'empreinte SHA-256 de l'image traitée corresponde à
+  une entrée unique du manifeste ; il refuse les pages inconnues, dupliquées ou
+  aux empreintes divergentes. Les manifestes databooks sans empreinte sont
+  refusés : régénérer l'export.
+- Le candidat garde géométrie, textes, confiances et provenance par étape ; sa
+  décision reste `unreviewed`.
 
-Run `bun run release [-- --version <semver>]` from the repository root. The command
-uses `aphrody-ops koharu-release`, updates the workspace version and lockfile,
-generates `CHANGELOG.md`, then creates the release commit and tag. Shenron consumes hash-bound **unreviewed** candidates;
-visual judgment, authorization and editorial database writes remain in Shenron.
+## Frontière éditoriale
 
-## Documentation
+- PostgreSQL, les scans sources, le lexique japonais canonique, les juges, la
+  quarantaine OCR, les révisions et la publication restent l'autorité Shenron.
+- Aucun adaptateur n'écrit en base ni ne pose de verdict. Un candidat manga ne
+  sert que d'indice dans le paquet de relecture visuelle hors ligne ; la
+  relecture de l'image et l'audit de couverture restent obligatoires.
+- Un run Koharu ne lève pas une quarantaine databooks, ne marque pas une
+  traduction comme acceptée et ne change pas le canon. Une traduction fluide
+  n'est pas une acceptation éditoriale ([`TRADUCTION-DATABOOKS.md`](../../guides/TRADUCTION-DATABOOKS.md)).
+- Les révisions de scène, l'annulation et le stockage de projet appartiennent à
+  Koharu ; ils ne remplacent pas `wiki_revisions`.
 
-Run `bun run docs:check` to validate local Markdown/MDX links and Mint
-root-relative routes under `packages/koharu/docs`.
+## Règles de travail sur les crates
+
+- Garder les API sûres séparées du FFI, du chargement dynamique et de
+  l'intégration de build. Quand un contrat change, migrer tous ses consommateurs
+  du dépôt et retirer l'ancienne forme, sans alias de compatibilité.
+- Portages de modèles : conserver la structure, les noms et l'ordre
+  d'exécution amont, documenter toute divergence ; examiner un écart de poids
+  avant de toucher au chargeur. Convertir le device une seule fois à la
+  frontière du modèle, réutiliser les runtimes, désactiver les gradients en
+  inférence.
+- Mesures : entrées identiques et sorties structurées comparées ; chauffer les
+  modèles hors des régions mesurées ; rapporter device, entrée, référence et
+  écarts.
+- Poids, jeux de données, identifiants et sorties locales restent hors de Git.
+- Le travail de scène et d'export durable reste natif ; l'interaction
+  transitoire du canvas reste dans le navigateur (WASM/WebGPU).

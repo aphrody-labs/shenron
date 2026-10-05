@@ -1,70 +1,53 @@
-# Bun package manager
+# Dépendances Bun
 
-Le dépôt utilise Bun `1.4.2`, épinglé par `packageManager` à la racine. `bun.lock`
-est le lockfile canonique et doit être commité. Les workspaces sont déclarés
-dans le `package.json` racine ; les dépendances internes utilisent
-`workspace:*`, et les versions npm partagées utilisent le catalogue racine et
-`catalog:`.
+Bun 1.4.2 est épinglé par `packageManager` dans le `package.json` racine ;
+`bun.lock` (texte) est le lockfile canonique et se commite. Les workspaces sont
+`apps/*` et `packages/*`.
 
-## Règles d'installation
+## Règles
 
-- Après un clone ou une modification des dépendances : `bun ci`.
-- Avant un commit de dépendances : `bun install --frozen-lockfile --dry-run` puis
-  `bun run check:catalog`.
-- Conserver le linker `hoisted` : le lancement du site en production attend
-  `node_modules/next` (not in repo) à la racine.
-- L'installation automatique à l'exécution est désactivée. Ajouter une
-  dépendance nécessite donc une modification explicite du manifeste et du lock.
-- Bun ne lance pas les scripts de cycle de vie des dépendances sauf confiance
-  explicite via `trustedDependencies`. Ne pas élargir cette liste sans nécessité
-  vérifiée.
-- Les nouvelles résolutions observent un délai de quarantaine de trois jours.
+- **Linker isolé** (`bunfig.toml` : `linker = "isolated"`, `hoist = false`) :
+  chaque paquet déclare toutes ses dépendances ; rien n'est garanti à la racine
+  de `node_modules`.
+- **Catalogue** : les versions tierces partagées vivent dans
+  `workspaces.catalog` du `package.json` racine et s'écrivent `"catalog:"` dans
+  les paquets. Les dépendances internes s'écrivent `workspace:*`.
+- **`@aphrody/*`** : épinglés exactement, exclus du délai de publication
+  (`minimumReleaseAgeExcludes`). Les autres résolutions observent un délai de
+  trois jours (`minimumReleaseAge`).
+- **Scripts de cycle de vie** : seuls les paquets de `trustedDependencies`
+  exécutent les leurs ; n'élargir la liste qu'après vérification.
+- `bun.lock` ne s'édite jamais à la main. La CI installe par `bun ci`.
 
-## Modifier les dépendances
-
-Ajouter une dépendance publique au catalogue partagé et au workspace concerné :
+## Modifier
 
 ```sh
-bun add zod --filter @shenron/site --catalog
+bun add zod --filter @shenron/site --catalog          # version au catalogue, "catalog:" dans le paquet
 bun add -d typescript --filter @shenron/site --catalog
+bun add @shenron/db --filter @shenron/api             # dépendance interne : vérifier "workspace:*"
 ```
 
-Bun ajoute ou réutilise la version dans le catalogue racine et inscrit
-`catalog:` dans le manifeste du workspace. Garder les dépendances réellement
-spécifiques hors catalogue. Pour une dépendance interne, employer
-`bun add @shenron/<package> --filter @shenron/<consumer>` puis vérifier que le
-manifeste utilise `workspace:*`.
-
-Après édition ou mise à jour :
+Après toute modification :
 
 ```sh
-bun run check:catalog
 bun install --frozen-lockfile --dry-run
-bun run deps:dedupe:check
-bun run check:packages --strict
+bun scripts/audit/check-workspace-catalog.ts
+bun scripts/audit/check-workspace-packages.ts --strict
 ```
 
-Ne pas éditer `bun.lock` à la main. Les workflows CI et release font
-`bun ci`, équivalent à une installation avec lockfile figé.
+`check-workspace-packages.ts` contrôle la conformité des paquets `@shenron/*`
+(graphe, classes `shenron.runtime`, exports) ; voir
+[`STACK.md`](../architecture/STACK.md) §4.3.
 
-## Audit et entretien
+## Entretien
 
 ```sh
-bun outdated                 # versions nouvelles disponibles, sans mise à jour
-bun why <package>            # pourquoi une dépendance est présente
-bun run deps:audit           # avis high/critical sur bun.lock
-bun audit                    # inclut aussi low/moderate
-bun dedupe                   # réécrit le lockfile pour réduire les versions dupliquées
+bun outdated          # versions disponibles, sans mise à jour
+bun why <paquet>      # origine d'une dépendance
+bun audit             # avis de sécurité sur bun.lock
+bun dedupe            # réduit les versions dupliquées (relire le diff du lock)
 ```
 
-`bun update` met à jour dans les plages déclarées ; le workflow hebdomadaire
-ouvre une PR pour cette opération. `bun dedupe` et `bun audit fix` modifient le
-lockfile : examiner leurs diffs, puis exécuter les contrôles de dépendances et
-les vérifications CI avant de commiter.
-
-## Workspaces
-
-Utiliser `bun --filter <workspace>` pour une commande ciblée, par exemple
-`bun --filter @shenron/site type-check`. `bun --filter '*'` cible tous les
-workspaces, sans la racine. Les scripts racine qui agrègent les packages
-passent par Turbo ou le filtre Bun déjà configuré.
+`bun update`, `bun dedupe` et `bun audit fix` réécrivent le lockfile : relire
+le diff, puis repasser les portes (`bun run typecheck`, `bun run test`,
+`bun run lint`) avant de committer.
