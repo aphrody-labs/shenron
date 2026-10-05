@@ -31,7 +31,7 @@ data fetching, and optimized image rendering.
 The package provides ordinary `<a>` and `<img>` defaults. A framework host can
 pass its own link component to `TabNav`, `NavMega`, `AdminSidebarView`, `Chip`,
 `EmptyState`, and `StatTiles`, and an image renderer to `PageHero`. The Shenron site does this through small
-adapters in `apps/shenron/site/src/components`.
+adapters in `apps/site/src/components`.
 
 `JsonLd`, `Markdown`, and `VideoSourceSummary` are server-safe presentation
 helpers. `ApiAccess` is client-side because it uses the browser clipboard; it
@@ -75,20 +75,20 @@ Base UI's `render` API. See [Base UI accessibility](https://base-ui.com/react/ov
 | Reader components, scoped stylesheets and 24 generated or vector interface assets | Fonts and content media |
 | Default HTML links and images | Optional router links and optimized image renderer |
 
-`apps/shenron/site` keeps the thin Next adapters and its domain screens. The server
+`apps/site` keeps the thin Next adapters and its domain screens. The server
 entry renders React views; it does not provide an HTTP server or Shenron APIs.
 
 ## Checks
 
-From the Aphrody workspace root:
+From the repository root:
 
 ```sh
-bun --filter @shenron/ui type-check
+bun --filter @shenron/ui typecheck
 bun --filter @shenron/ui test
 bun --filter @shenron/ui portability:check
-bun m3/packages/shenron-ui/scripts/sync-assets.ts --to apps/shenron/site/public --check
-bun m3/packages/shenron-ui/scripts/check-css-equivalence.ts
-bun run --cwd m3 check
+bun packages/ui/scripts/generate-tokens.ts --check
+bun packages/ui/scripts/sync-assets.ts --to apps/site/public --check
+bun packages/ui/scripts/check-css-equivalence.ts
 ```
 
 The tarball has also been installed in a separate Bun project and checked with

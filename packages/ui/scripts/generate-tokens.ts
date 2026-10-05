@@ -1,8 +1,8 @@
 /**
- * Generates `packages/shenron-ui/src/tokens.ts` from `packages/shenron-ui/src/styles.css`.
+ * Generates `packages/ui/src/tokens.ts` from `packages/ui/src/styles.css`.
  *
- *   bun packages/shenron-ui/scripts/generate-tokens.ts          # rewrite src/tokens.ts
- *   bun packages/shenron-ui/scripts/generate-tokens.ts --check  # exit 1 when src/tokens.ts is stale
+ *   bun packages/ui/scripts/generate-tokens.ts          # rewrite src/tokens.ts
+ *   bun packages/ui/scripts/generate-tokens.ts --check  # exit 1 when src/tokens.ts is stale
  *
  * The stylesheet is the single source of truth: Tailwind reads its `@theme inline`
  * blocks and the site imports it. The TypeScript module is a checked projection
@@ -204,7 +204,7 @@ export function renderTokensModule(set: TokenSet): string {
 		"/**",
 		" * Design tokens of `@shenron/ui`, generated from `src/styles.css`.",
 		" *",
-		" * Do not edit by hand: run `bun packages/shenron-ui/scripts/generate-tokens.ts`.",
+		" * Do not edit by hand: run `bun packages/ui/scripts/generate-tokens.ts`.",
 		" * `--check` and `test/tokens.test.ts` fail when this file drifts from the",
 		" * stylesheet.",
 		" *",
@@ -275,7 +275,7 @@ async function main(argv: string[]): Promise<number> {
 				? "tokens: src/tokens.ts is missing"
 				: `tokens: src/tokens.ts is stale (first difference at line ${line + 1}: expected ${JSON.stringify(want[line])}, found ${JSON.stringify(have[line])})`
 		);
-		console.error("tokens: run `bun packages/shenron-ui/scripts/generate-tokens.ts`");
+		console.error("tokens: run `bun packages/ui/scripts/generate-tokens.ts`");
 		return 1;
 	}
 

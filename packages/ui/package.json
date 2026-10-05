@@ -114,8 +114,6 @@
     "tokens": "bun scripts/generate-tokens.ts",
     "tokens:check": "bun scripts/generate-tokens.ts --check",
     "css:equivalence": "bun scripts/check-css-equivalence.ts",
-    "assets:check": "bun scripts/sync-assets.ts --check",
-    "assets:sync": "bun scripts/sync-assets.ts",
     "build:check": "bun scripts/production-check.ts",
     "portability:check": "bun scripts/check-portability.ts",
     "typecheck": "tsc --noEmit"

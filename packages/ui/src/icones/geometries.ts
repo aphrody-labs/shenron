@@ -28,7 +28,7 @@
  * dimensions rendues, même inertie optique, mêmes props (`size`, `className`,
  * `strokeWidth`).
  *
- * Rendu : `packages/shenron-ui/src/icones/` (composants React, sous-chemin `@shenron/ui/icones`). Contrôle
+ * Rendu : `packages/ui/src/icones/` (composants React, sous-chemin `@shenron/ui/icones`). Contrôle
  * visuel : `apps/site/scripts/rend-icones.ts` (SVG → PNG à 16/24/32 px).
  */
 

@@ -12,7 +12,7 @@ const FORBIDDEN: Array<[string, RegExp]> = [
 
 const srcDir = new URL("../src/", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 
-describe("purity of packages/shenron-ui/src", async () => {
+describe("purity of packages/ui/src", async () => {
 	const files = await Array.fromAsync(new Glob("**/*.{ts,tsx}").scan({ cwd: srcDir }));
 
 	test("scans source files", () => {

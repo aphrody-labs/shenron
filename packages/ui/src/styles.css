@@ -14,8 +14,8 @@
  *
  * Every palette value stays `var(--dbz-*, <default>)`: /admin/design overrides
  * `--dbz-*` at runtime. `src/tokens.ts` is generated from this file
- * (`bun packages/shenron-ui/scripts/generate-tokens.ts`); the compiled site CSS is
- * proven unchanged by `bun packages/shenron-ui/scripts/check-css-equivalence.ts`.
+ * (`bun packages/ui/scripts/generate-tokens.ts`); the compiled site CSS is
+ * proven unchanged by `bun packages/ui/scripts/check-css-equivalence.ts`.
  */
 
 @source ".";

@@ -1,9 +1,9 @@
 /**
  * Proves that the site stylesheet compiles to the same CSS before and after a
- * change of `apps/site/src/app/globals.css` / `packages/shenron-ui/src/styles.css`
+ * change of `apps/site/src/app/globals.css` / `packages/ui/src/styles.css`
  * (first use: moving the token layer into `@shenron/ui/styles.css`).
  *
- *   bun packages/shenron-ui/scripts/check-css-equivalence.ts [--ref <rev>] [--keep <dir>] [--limit <n>]
+ *   bun packages/ui/scripts/check-css-equivalence.ts [--ref <rev>] [--keep <dir>] [--limit <n>]
  *
  * Both sides are compiled like Next compiles the site: postcss +
  * `@tailwindcss/postcss`, `base` = apps/site, candidates scanned from the
@@ -29,14 +29,14 @@
  */
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import postcss, { type AtRule, type ChildNode, type Container, type Rule } from "postcss";
 
 const REPO_ROOT = resolve(import.meta.dir, "..", "..", "..");
 const SITE_DIR = join(REPO_ROOT, "apps", "site");
 const GLOBALS_PATH = join(SITE_DIR, "src", "app", "globals.css");
 const GLOBALS_GIT_PATH = "apps/site/src/app/globals.css";
-const PACKAGE_STYLES_GIT_PATH = "packages/shenron-ui/src/styles.css";
+const PACKAGE_STYLES_GIT_PATH = "packages/ui/src/styles.css";
 const PACKAGE_IMPORT = /@import\s+["']@shenron\/ui\/styles\.css["']\s*;/;
 
 // ─── Compilation ────────────────────────────────────────────────────────────
@@ -88,7 +88,15 @@ export function baselineSource(rev: string): { css: string; inlinedPackage: bool
 	if (!PACKAGE_IMPORT.test(globals)) return { css: globals, inlinedPackage: false };
 	const pkg = gitShow(rev, PACKAGE_STYLES_GIT_PATH);
 	if (pkg === null) throw new Error(`git show ${rev}:${PACKAGE_STYLES_GIT_PATH} failed`);
-	return { css: globals.replace(PACKAGE_IMPORT, () => pkg), inlinedPackage: true };
+	// Inlined, the package stylesheet compiles from `globals.css`: its relative `@source`
+	// paths must keep naming the package directory, or the baseline scans the wrong tree.
+	const packageDir = dirname(join(REPO_ROOT, PACKAGE_STYLES_GIT_PATH));
+	const anchored = pkg.replace(
+		/@source(\s+not)?\s+(["'])([^"']+)\2/g,
+		(match, not: string | undefined, quote: string, path: string) =>
+			isAbsolute(path) ? match : `@source${not ?? ""} ${quote}${join(packageDir, path)}${quote}`
+	);
+	return { css: globals.replace(PACKAGE_IMPORT, () => anchored), inlinedPackage: true };
 }
 
 // ─── Analysis ───────────────────────────────────────────────────────────────
