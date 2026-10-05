@@ -3,8 +3,12 @@
 //!
 //! - `shenron-mcp`: stdio (Claude Code plugin, local agents), every tool.
 //! - `shenron-mcp --http [ADDR]`: Streamable HTTP on ADDR (default 127.0.0.1:8790), every tool.
-//! - `shenron-mcp --http [ADDR] --public`: read-only public server; required for a
-//!   non-loopback ADDR. Put it behind the site's TLS proxy at `/mcp`.
+//! - `shenron-mcp --http [ADDR] --public`: tiered public server; required for a non-loopback
+//!   ADDR. Anonymous callers get the read-only tools; a valid `Authorization: Bearer <token>`
+//!   (`SHENRON_MCP_TOKENS`, `SHENRON_API_ADMIN_TOKEN`, `DBFR_TOKEN`) or an IP in
+//!   `SHENRON_MCP_ALLOWED_IPS` (client IP read from `X-Forwarded-For`/`X-Real-IP` only when the
+//!   peer is in `SHENRON_MCP_TRUSTED_PROXIES`, loopback by default) unlocks every tool, write and
+//!   admin included. An invalid bearer is a 401. Put it behind the site's TLS proxy at `/mcp`.
 
 use std::net::SocketAddr;
 
@@ -41,7 +45,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             None => SocketAddr::from(([127, 0, 0, 1], 8790)),
         };
         if !bind.ip().is_loopback() && !public {
-            return Err("a non-loopback HTTP bind requires --public (read-only tools)".into());
+            return Err(
+                "a non-loopback HTTP bind requires --public (read-only unless authorised)".into()
+            );
         }
         shenron_mcp::http::serve(bind, server).await?;
         return Ok(());

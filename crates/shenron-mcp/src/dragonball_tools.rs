@@ -99,7 +99,7 @@ fn api_base() -> String {
     url_env("SHENRON_API_URL", "https://bot.dragonballfr.com")
 }
 
-fn site_api_base() -> String {
+pub(crate) fn site_api_base() -> String {
     url_env("SHENRON_SITE_API_URL", &site_base())
 }
 
@@ -115,7 +115,7 @@ fn client() -> Result<reqwest::Client, String> {
         .clone()
 }
 
-type Query<'a> = Vec<(&'a str, Option<String>)>;
+pub(crate) type Query<'a> = Vec<(&'a str, Option<String>)>;
 
 fn enc(segment: &str) -> String {
     let mut out = String::with_capacity(segment.len());
@@ -145,7 +145,7 @@ fn build_url(base: &str, path: &str, query: &Query<'_>) -> String {
     url
 }
 
-async fn call(
+pub(crate) async fn call(
     method: reqwest::Method,
     base: &str,
     path: &str,
@@ -164,11 +164,11 @@ async fn call(
         request = request.json(body);
     }
     let response = request.send().await.map_err(|e| {
-        let reason = if e.is_timeout() { "timeout" } else { "réseau" };
-        format!("API injoignable ({reason}) sur {path}")
+        let reason = if e.is_timeout() { "timeout" } else { "network" };
+        format!("API unreachable ({reason}) on {path}")
     })?;
     let status = response.status();
-    let text = response.text().await.map_err(|e| format!("lecture de {path}: {e}"))?;
+    let text = response.text().await.map_err(|e| format!("reading {path}: {e}"))?;
     if !status.is_success() {
         let snippet: String = text
             .chars()
@@ -178,26 +178,27 @@ async fn call(
             .collect::<Vec<_>>()
             .join(" ");
         let suffix = if snippet.is_empty() { String::new() } else { format!(" — {snippet}") };
-        return Err(format!("API {} sur {path}{suffix}", status.as_u16()));
+        return Err(format!("API {} on {path}{suffix}", status.as_u16()));
     }
     if text.is_empty() {
         return Ok(Value::Null);
     }
-    serde_json::from_str(&text).map_err(|_| format!("Réponse non-JSON de {path}"))
+    serde_json::from_str(&text).map_err(|_| format!("Non-JSON response from {path}"))
 }
 
-const DEFAULT_TIMEOUT: Duration = Duration::from_secs(20);
+pub(crate) const DEFAULT_TIMEOUT: Duration = Duration::from_secs(20);
 
 async fn api_get(path: &str, query: Query<'_>) -> Result<Value, String> {
     call(reqwest::Method::GET, &api_base(), path, &query, None, None, DEFAULT_TIMEOUT).await
 }
 
-async fn site_get(path: &str, query: Query<'_>) -> Result<Value, String> {
+pub(crate) async fn site_get(path: &str, query: Query<'_>) -> Result<Value, String> {
     call(reqwest::Method::GET, &site_api_base(), path, &query, None, None, DEFAULT_TIMEOUT).await
 }
 
 fn admin_token(name: &str, label: &str) -> Result<String, String> {
-    process_env(name).ok_or_else(|| format!("Jeton {label} upstream non configuré (${name})"))
+    process_env(name)
+        .ok_or_else(|| format!("The {label} upstream token is not configured (${name})"))
 }
 
 // ---------------------------------------------------------------------------
@@ -227,23 +228,23 @@ pub(crate) fn absolutize(value: Value, site: &str) -> Value {
     }
 }
 
-fn ok(data: Value) -> CallToolResult {
+pub(crate) fn ok(data: Value) -> CallToolResult {
     let mut text = serde_json::to_string_pretty(&absolutize(data, &site_base()))
         .unwrap_or_else(|_| "null".into());
     if text.chars().count() > MAX_RESULT_CHARS {
         text = format!(
-            "{}\n\n… [résultat tronqué à {MAX_RESULT_CHARS} caractères — affinez la requête ou réduisez 'limit']",
+            "{}\n\n… [result truncated to {MAX_RESULT_CHARS} characters - narrow the query or lower 'limit']",
             text.chars().take(MAX_RESULT_CHARS).collect::<String>()
         );
     }
     CallToolResult::success(vec![ContentBlock::text(text)])
 }
 
-fn err(message: impl std::fmt::Display) -> CallToolResult {
-    CallToolResult::error(vec![ContentBlock::text(format!("Erreur : {message}"))])
+pub(crate) fn err(message: impl std::fmt::Display) -> CallToolResult {
+    CallToolResult::error(vec![ContentBlock::text(format!("Error: {message}"))])
 }
 
-fn done(result: Result<Value, String>) -> CallToolResult {
+pub(crate) fn done(result: Result<Value, String>) -> CallToolResult {
     match result {
         Ok(value) => ok(value),
         Err(message) => err(message),
@@ -284,33 +285,33 @@ fn local_opts(
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct RagSearchRequest {
-    #[schemars(description = "Question ou mots-clés en langage naturel (au moins 2 caractères)")]
+    #[schemars(description = "Question or keywords in natural language (at least 2 characters)")]
     pub query: String,
-    #[schemars(description = "Nombre de passages à renvoyer (défaut 8, max 25)")]
+    #[schemars(description = "Number of passages to return (default 8, max 25)")]
     #[serde(default)]
     pub limit: Option<u32>,
-    #[schemars(description = "Filtrer par langue des documents (ex. 'fr', 'en')")]
+    #[schemars(description = "Filter by document language (e.g. 'fr', 'en')")]
     #[serde(default)]
     pub lang: Option<String>,
-    #[schemars(description = "Filtrer par entité/personnage indexé (ex. 'Son Goku', 'Vegeta')")]
+    #[schemars(description = "Filter by indexed entity/character (e.g. 'Son Goku', 'Vegeta')")]
     #[serde(default)]
     pub entity: Option<String>,
-    #[schemars(description = "Filtrer par corpus : db_characters, db_wiki_sections, db_battles, \
+    #[schemars(description = "Filter by corpus: db_characters, db_wiki_sections, db_battles, \
                               canon_references, wiki_pages, manga, databooks…")]
     #[serde(default)]
     pub source_id: Option<String>,
-    #[schemars(description = "Filtrer par type de passage : character, technique, saga, \
+    #[schemars(description = "Filter by passage kind: character, technique, saga, \
                               manga_page, battle, canon, article, databook…")]
     #[serde(default)]
     pub kind: Option<String>,
-    #[schemars(description = "Forcer la recherche via le corpus local d'Aphrody")]
+    #[schemars(description = "Force the search through the local Aphrody corpus")]
     #[serde(default)]
     pub local: Option<bool>,
 }
 
 pub(crate) async fn rag_search(r: RagSearchRequest) -> CallToolResult {
     if r.query.trim().chars().count() < 2 {
-        return err("query doit contenir au moins 2 caractères");
+        return err("query must contain at least 2 characters");
     }
     let limit = r.limit.map(|l| l.clamp(1, 25));
     let local = || {
@@ -341,34 +342,34 @@ pub(crate) async fn rag_search(r: RagSearchRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct RagContextRequest {
-    #[schemars(description = "Question en langage naturel (FR/EN/JP)")]
+    #[schemars(description = "Question in natural language (FR/EN/JP)")]
     pub query: String,
-    #[schemars(description = "Nombre de passages (défaut 6, max 12)")]
+    #[schemars(description = "Number of passages (default 6, max 12)")]
     #[serde(default)]
     pub limit: Option<u32>,
-    #[schemars(description = "Budget total de caractères (défaut 6000, 500 à 16000)")]
+    #[schemars(description = "Total character budget (default 6000, 500 to 16000)")]
     #[serde(default)]
     pub max_chars: Option<u32>,
     #[schemars(description = "fr | en | ja")]
     #[serde(default)]
     pub lang: Option<String>,
-    #[schemars(description = "Entité canonique (ex. 'Vegeta')")]
+    #[schemars(description = "Canonical entity (e.g. 'Vegeta')")]
     #[serde(default)]
     pub entity: Option<String>,
-    #[schemars(description = "Corpus (ex. 'manga', 'canon_references')")]
+    #[schemars(description = "Corpus (e.g. 'manga', 'canon_references')")]
     #[serde(default)]
     pub source_id: Option<String>,
-    #[schemars(description = "Type de passage (ex. 'canon', 'battle')")]
+    #[schemars(description = "Passage kind (e.g. 'canon', 'battle')")]
     #[serde(default)]
     pub kind: Option<String>,
-    #[schemars(description = "Forcer le contexte via le corpus local d'Aphrody")]
+    #[schemars(description = "Force the context through the local Aphrody corpus")]
     #[serde(default)]
     pub local: Option<bool>,
 }
 
 pub(crate) async fn rag_context(r: RagContextRequest) -> CallToolResult {
     if r.query.trim().chars().count() < 2 {
-        return err("query doit contenir au moins 2 caractères");
+        return err("query must contain at least 2 characters");
     }
     let limit = r.limit.map(|l| l.clamp(1, 12));
     let max_chars = r.max_chars.map(|m| m.clamp(500, 16_000));
@@ -401,18 +402,16 @@ pub(crate) async fn rag_context(r: RagContextRequest) -> CallToolResult {
 /// Input of `dragonball.rag_ask`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct RagAskRequest {
-    #[schemars(description = "La question à poser, en langage naturel")]
+    #[schemars(description = "The question to ask, in natural language")]
     pub question: String,
-    #[schemars(
-        description = "Forcer l'inférence locale (contrat APHRODY_AI_*) et le corpus local"
-    )]
+    #[schemars(description = "Force local inference (APHRODY_AI_* contract) and the local corpus")]
     #[serde(default)]
     pub local: Option<bool>,
 }
 
 pub(crate) async fn rag_ask(r: RagAskRequest) -> CallToolResult {
     if r.question.trim().chars().count() < 2 {
-        return err("question doit contenir au moins 2 caractères");
+        return err("question must contain at least 2 characters");
     }
     if local_forced(r.local) {
         return ok(local_corpus().ask_json(&r.question, &process_env).await);
@@ -454,7 +453,7 @@ fn check_category(category: &str) -> Result<(), String> {
         Ok(())
     } else {
         Err(format!(
-            "catégorie inconnue « {category} » ; attendues : {}",
+            "unknown category \"{category}\"; expected one of: {}",
             WIKI_CATEGORIES.join(", ")
         ))
     }
@@ -463,15 +462,15 @@ fn check_category(category: &str) -> Result<(), String> {
 /// Input of `dragonball.wiki_search`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct WikiSearchRequest {
-    #[schemars(description = "Termes recherchés")]
+    #[schemars(description = "Search terms")]
     pub query: String,
-    #[schemars(description = "Catégories à interroger (omettre = toutes) : characters, planets, \
+    #[schemars(description = "Categories to query (omit = all): characters, planets, \
                               races, techniques, transformations, sagas, arcs, episodes, movies, \
                               games, tools, battles, items, dragons, wishes, locations, tournaments, \
                               voice_actors, soundtracks, power_levels, timeline_events")]
     #[serde(default)]
     pub categories: Option<Vec<String>>,
-    #[schemars(description = "Nombre maximal de résultats (1 à 50)")]
+    #[schemars(description = "Maximum number of results (1 to 50)")]
     #[serde(default)]
     pub limit: Option<u32>,
 }
@@ -492,15 +491,15 @@ pub(crate) async fn wiki_search(r: WikiSearchRequest) -> CallToolResult {
 /// Input of `dragonball.wiki_list`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct WikiListRequest {
-    #[schemars(description = "Catégorie d'entités à lister (voir wiki_categories)")]
+    #[schemars(description = "Entity category to list (see wiki_categories)")]
     pub category: String,
-    #[schemars(description = "Taille de page (défaut 50, max 200)")]
+    #[schemars(description = "Page size (default 50, max 200)")]
     #[serde(default)]
     pub limit: Option<u32>,
-    #[schemars(description = "Décalage de pagination (défaut 0)")]
+    #[schemars(description = "Pagination offset (default 0)")]
     #[serde(default)]
     pub offset: Option<u32>,
-    #[schemars(description = "Filtre textuel sur la catégorie")]
+    #[schemars(description = "Text filter within the category")]
     #[serde(default)]
     pub q: Option<String>,
 }
@@ -517,9 +516,9 @@ pub(crate) async fn wiki_list(r: WikiListRequest) -> CallToolResult {
 /// Input of `dragonball.wiki_get`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct WikiGetRequest {
-    #[schemars(description = "Catégorie de l'entité (voir wiki_categories)")]
+    #[schemars(description = "Entity category (see wiki_categories)")]
     pub category: String,
-    #[schemars(description = "Identifiant numérique ou slug de l'entité")]
+    #[schemars(description = "Numeric id or slug of the entity")]
     pub id: String,
 }
 
@@ -575,8 +574,8 @@ async fn resolve_wiki_id(category: &str, id: &str) -> Result<String, String> {
         .map(|v| v.as_str().map_or_else(|| v.to_string(), str::to_owned));
     found.ok_or_else(|| {
         format!(
-            "Aucune entrée {category} ne correspond au slug « {id} » ; passez l'identifiant \
-             numérique (wiki_search ou wiki_list)"
+            "No {category} entry matches the slug \"{id}\"; pass the numeric id \
+             (wiki_search or wiki_list)"
         )
     })
 }
@@ -623,9 +622,9 @@ pub(crate) fn manga_tome_id(tome: &Tome) -> String {
 /// Input of `dragonball.manga_search`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct QueryLimitRequest {
-    #[schemars(description = "Texte recherché")]
+    #[schemars(description = "Text to search for")]
     pub query: String,
-    #[schemars(description = "Nombre de résultats (défaut 20)")]
+    #[schemars(description = "Number of results (default 20)")]
     #[serde(default)]
     pub limit: Option<u32>,
 }
@@ -644,13 +643,11 @@ pub(crate) async fn manga_search(r: QueryLimitRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct MangaTomesRequest {
     #[schemars(
-        description = "Code de série OCR (ex. 'DB'), tel que renvoyé par manga_tomes ; omettre pour tout lister"
+        description = "OCR series code (e.g. 'DB') as returned by manga_tomes; omit to list everything"
     )]
     #[serde(default)]
     pub series: Option<String>,
-    #[schemars(
-        description = "Tome : numéro (13 → vol13) ou identifiant OCR (vol13, ch1407, t901)"
-    )]
+    #[schemars(description = "Volume: number (13 -> vol13) or OCR id (vol13, ch1407, t901)")]
     #[serde(default)]
     pub tome: Option<Tome>,
 }
@@ -668,13 +665,11 @@ pub(crate) async fn manga_tomes(r: MangaTomesRequest) -> CallToolResult {
 /// Input of `dragonball.manga_page`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct MangaPageRequest {
-    #[schemars(description = "Code de série OCR (ex. 'DB'), tel que renvoyé par manga_tomes")]
+    #[schemars(description = "OCR series code (e.g. 'DB') as returned by manga_tomes")]
     pub series: String,
-    #[schemars(
-        description = "Tome : numéro (13 → vol13) ou identifiant OCR (vol13, ch1407, t901)"
-    )]
+    #[schemars(description = "Volume: number (13 -> vol13) or OCR id (vol13, ch1407, t901)")]
     pub tome: Tome,
-    #[schemars(description = "Numéro de planche")]
+    #[schemars(description = "Page (plate) number")]
     pub planche: u32,
 }
 
@@ -692,9 +687,9 @@ pub(crate) async fn manga_page(r: MangaPageRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct MangaChapitreRequest {
-    #[schemars(description = "Identifiant du chapitre sur le site")]
+    #[schemars(description = "Chapter id on the site")]
     pub chapter_id: u32,
-    #[schemars(description = "Ne rendre que les transcriptions (défaut : vrai)")]
+    #[schemars(description = "Return transcriptions only (default: true)")]
     #[serde(default)]
     pub texte_seul: Option<bool>,
 }
@@ -725,9 +720,9 @@ pub(crate) async fn manga_chapitre(r: MangaChapitreRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct MangaPlancheRequest {
-    #[schemars(description = "Identifiant du chapitre sur le site")]
+    #[schemars(description = "Chapter id sur le site")]
     pub chapter_id: u32,
-    #[schemars(description = "Rang de la planche dans le chapitre (1 = première)")]
+    #[schemars(description = "Rank of the page within the chapter (1 = first)")]
     pub planche: u32,
 }
 
@@ -754,9 +749,9 @@ pub(crate) async fn manga_recherche(r: QueryLimitRequest) -> CallToolResult {
 pub(crate) struct MangaScanlateRequest {
     #[schemars(description = "Identifiant du chapitre")]
     pub chapter_id: u32,
-    #[schemars(description = "Rang de la planche dans le chapitre (1 = première)")]
+    #[schemars(description = "Rank of the page within the chapter (1 = first)")]
     pub planche: u32,
-    #[schemars(description = "Langue cible pour la scanlation (défaut : 'fr')")]
+    #[schemars(description = "Target language for the scanlation (default: 'fr')")]
     #[serde(default)]
     pub target_lang: Option<String>,
 }
@@ -787,10 +782,10 @@ pub(crate) async fn manga_scanlate(r: MangaScanlateRequest) -> CallToolResult {
 /// Input of `dragonball.chronologie`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct ChronologieRequest {
-    #[schemars(description = "Ère à isoler (DB, DBZ, GT, Super, Daima, Manga)")]
+    #[schemars(description = "Era to isolate (DB, DBZ, GT, Super, Daima, Manga)")]
     #[serde(default)]
     pub era: Option<String>,
-    #[schemars(description = "Nature d'entrée à isoler : episode, movie ou manga")]
+    #[schemars(description = "Entry kind to isolate: episode, movie or manga")]
     #[serde(default)]
     pub kind: Option<String>,
 }
@@ -810,9 +805,7 @@ pub(crate) async fn bot_stats() -> CallToolResult {
 /// Input of `dragonball.bot_personas`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct BotPersonasRequest {
-    #[schemars(
-        description = "Définir le persona du bot unique (écrit <APHRODY_HOME>/persona.json)"
-    )]
+    #[schemars(description = "Set the single bot's persona (writes <APHRODY_HOME>/persona.json)")]
     #[serde(default)]
     pub set_persona: Option<String>,
 }
@@ -823,10 +816,10 @@ pub(crate) async fn bot_personas(r: BotPersonasRequest) -> CallToolResult {
             Ok(updated) => ok(json!({
                 "bot": "shenron-bot",
                 "single_bot": true,
-                "message": format!("Persona configuré avec succès : {}", updated.name),
+                "message": format!("Persona set: {}", updated.name),
                 "updated_persona": updated,
             })),
-            Err(e) => err(format!("écriture du persona : {e}")),
+            Err(e) => err(format!("writing the persona: {e}")),
         };
     }
     match api_get("/api/public/personas", vec![]).await {
@@ -839,7 +832,7 @@ pub(crate) async fn bot_personas(r: BotPersonasRequest) -> CallToolResult {
                 "active_persona": active,
                 "personas": [active],
                 "source": "local",
-                "description": "Un seul bot unifié — persona Akira Toriyama par défaut en mode YOLO",
+                "description": "One unified bot - Akira Toriyama persona by default in YOLO mode",
             }))
         },
     }
@@ -848,7 +841,7 @@ pub(crate) async fn bot_personas(r: BotPersonasRequest) -> CallToolResult {
 /// Input of `dragonball.bot_leaderboard` and `dragonball.news`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct LimitRequest {
-    #[schemars(description = "Nombre d'entrées")]
+    #[schemars(description = "Number of entries")]
     #[serde(default)]
     pub limit: Option<u32>,
 }
@@ -875,19 +868,19 @@ pub(crate) async fn news(r: LimitRequest) -> CallToolResult {
 /// Input of `dragonball.databooks_search`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct DatabooksSearchRequest {
-    #[schemars(description = "Termes recherchés (titre, titre japonais, auteur, description)")]
+    #[schemars(description = "Search terms (title, Japanese title, author, description)")]
     #[serde(default)]
     pub q: Option<String>,
-    #[schemars(description = "Type d'ouvrage : databook, interview ou artbook")]
+    #[schemars(description = "Work kind: databook, interview or artbook")]
     #[serde(default)]
     pub kind: Option<String>,
-    #[schemars(description = "Catégorie éditoriale (ex. « V-Jump », « Art Book »)")]
+    #[schemars(description = "Editorial category (e.g. 'V-Jump', 'Art Book')")]
     #[serde(default)]
     pub category: Option<String>,
-    #[schemars(description = "Nombre de fiches (défaut 20, max 100)")]
+    #[schemars(description = "Number of records (default 20, max 100)")]
     #[serde(default)]
     pub limit: Option<u32>,
-    #[schemars(description = "Décalage de pagination")]
+    #[schemars(description = "Pagination offset")]
     #[serde(default)]
     pub offset: Option<u32>,
 }
@@ -952,12 +945,12 @@ pub(crate) fn extrait_autour(texte: &str, terme: &str) -> String {
 /// Input of `dragonball.databooks_planches`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct DatabooksPlanchesRequest {
-    #[schemars(description = "Expression cherchée dans le texte des planches")]
+    #[schemars(description = "Phrase to search for in the plate text")]
     pub q: String,
-    #[schemars(description = "Restreindre la recherche à un seul ouvrage")]
+    #[schemars(description = "Restrict the search to a single work")]
     #[serde(default)]
     pub databook: Option<u32>,
-    #[schemars(description = "Nombre de planches (défaut 10, max 50)")]
+    #[schemars(description = "Number of plates (default 10, max 50)")]
     #[serde(default)]
     pub limit: Option<u32>,
 }
@@ -999,12 +992,12 @@ pub(crate) async fn databooks_planches(r: DatabooksPlanchesRequest) -> CallToolR
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DatabooksGetRequest {
-    #[schemars(description = "Identifiant de la fiche")]
+    #[schemars(description = "Record id")]
     pub id: u32,
-    #[schemars(description = "Inclure les planches et leur transcription (défaut : oui)")]
+    #[schemars(description = "Include the plates and their transcription (default: yes)")]
     #[serde(default)]
     pub include_pages: Option<bool>,
-    #[schemars(description = "Plafond de planches renvoyées (défaut 50, max 300)")]
+    #[schemars(description = "Cap on returned plates (default 50, max 300)")]
     #[serde(default)]
     pub max_pages: Option<u32>,
 }
@@ -1035,11 +1028,11 @@ pub(crate) async fn databooks_get(r: DatabooksGetRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DatabooksScanlateRequest {
-    #[schemars(description = "Identifiant du databook (ex: 312)")]
+    #[schemars(description = "Databook id (e.g. 312)")]
     pub databook_id: u64,
-    #[schemars(description = "Numéro de planche ou page dans l'ouvrage")]
+    #[schemars(description = "Plate or page number within the work")]
     pub page: u32,
-    #[schemars(description = "Langue cible pour la scanlation (défaut : 'fr')")]
+    #[schemars(description = "Target language for the scanlation (default: 'fr')")]
     #[serde(default)]
     pub target_lang: Option<String>,
 }
@@ -1074,9 +1067,7 @@ pub(crate) async fn databooks_scanlate(r: DatabooksScanlateRequest) -> CallToolR
 /// Input of `dragonball.canon_check`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct CanonCheckRequest {
-    #[schemars(
-        description = "L'affirmation ou la question à arbitrer (vide = renvoyer la doctrine)"
-    )]
+    #[schemars(description = "The claim or question to rule on (empty = return the doctrine)")]
     #[serde(default)]
     pub question: Option<String>,
 }
@@ -1089,16 +1080,16 @@ pub(crate) async fn canon_check(r: CanonCheckRequest) -> CallToolResult {
 /// Input of `dragonball.canon_references`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct CanonReferencesRequest {
-    #[schemars(description = "Mot ou nom à chercher (ex. 'Broly', 'Kaiōken')")]
+    #[schemars(description = "Word or name to look for (e.g. 'Broly', 'Kaiōken')")]
     #[serde(default)]
     pub q: Option<String>,
-    #[schemars(description = "Provenance : aphrody, databooks ou manuel")]
+    #[schemars(description = "Provenance: aphrody, databooks or manual")]
     #[serde(default)]
     pub provenance: Option<String>,
-    #[schemars(description = "Nombre d'items (défaut 20, max 100)")]
+    #[schemars(description = "Number of items (default 20, max 100)")]
     #[serde(default)]
     pub limit: Option<u32>,
-    #[schemars(description = "Décalage de pagination")]
+    #[schemars(description = "Pagination offset")]
     #[serde(default)]
     pub offset: Option<u32>,
 }
@@ -1127,7 +1118,7 @@ async fn a2a_rpc(method: &str, params: Value) -> Result<Value, String> {
         .timeout(DEFAULT_TIMEOUT)
         .send()
         .await
-        .map_err(|e| format!("Shenron A2A injoignable : {e}"))?;
+        .map_err(|e| format!("Shenron A2A unreachable: {e}"))?;
     let status = response.status();
     if !status.is_success() && status.as_u16() != 400 {
         return Err(format!("Shenron A2A HTTP {}", status.as_u16()));
@@ -1156,33 +1147,31 @@ async fn a2a_get_task(task_id: &str) -> Result<Option<Value>, String> {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct A2aSendRequest {
-    #[schemars(
-        description = "Destinataire : codex, agycli, claude, local_model, rag, subagents, \
-                              ocr, translation ou broadcast (ignoré quand taskId est fourni)"
-    )]
+    #[schemars(description = "Recipient: codex, agycli, claude, local_model, rag, subagents, \
+                              ocr, translation or broadcast (ignored when taskId is given)")]
     pub target: String,
-    #[schemars(description = "Ordre, consigne ou requête ; avec taskId : compte rendu du pair")]
+    #[schemars(description = "Order, instruction or request; with taskId: the peer's report")]
     pub instruction: String,
-    #[schemars(description = "Nom de l'agent émetteur (défaut : mcp-client)")]
+    #[schemars(description = "Name of the sending agent (default: mcp-client)")]
     #[serde(default)]
     pub source_agent: Option<String>,
-    #[schemars(description = "Payload de données structurées JSON")]
+    #[schemars(description = "Structured JSON data payload")]
     #[serde(default)]
     pub data: Option<HashMap<String, Value>>,
-    #[schemars(description = "Exécution autonome sans HITL (défaut true)")]
+    #[schemars(description = "Autonomous execution without a human in the loop (default true)")]
     #[serde(default)]
     pub yolo: Option<bool>,
-    #[schemars(description = "Tâche existante à mettre à jour (réponse d'un pair)")]
+    #[schemars(description = "Existing task to update (a peer's answer)")]
     #[serde(default)]
     pub task_id: Option<String>,
-    #[schemars(description = "Verdict du pair : FAIT (avec artefact), INCOMPLET ou NON_FAIT")]
+    #[schemars(description = "Peer verdict: FAIT (with an artifact), INCOMPLET or NON_FAIT")]
     #[serde(default)]
     pub verdict: Option<String>,
-    #[schemars(description = "Statut : working, input_required, completed ou failed")]
+    #[schemars(description = "Status: working, input_required, completed or failed")]
     #[serde(default)]
     pub status: Option<String>,
     #[schemars(
-        description = "Artefacts vérifiables : [{name, type: json|markdown|code|file, uri?, content?, data?}]"
+        description = "Verifiable artifacts: [{name, type: json|markdown|code|file, uri?, content?, data?}]"
     )]
     #[serde(default)]
     pub artifacts: Option<Vec<Value>>,
@@ -1206,7 +1195,7 @@ pub(crate) async fn a2a_send(r: A2aSendRequest) -> CallToolResult {
     }
     if !A2A_TARGETS.contains(&r.target.as_str()) {
         return err(format!(
-            "cible A2A inconnue « {} » ; attendues : {}",
+            "unknown A2A target \"{}\"; expected one of: {}",
             r.target,
             A2A_TARGETS.join(", ")
         ));
@@ -1220,7 +1209,7 @@ pub(crate) async fn a2a_send(r: A2aSendRequest) -> CallToolResult {
         Err(e) => return err(e),
     };
     let Some(task_id) = result.get("taskId").and_then(Value::as_str) else {
-        return err("Shenron A2A: réponse sans taskId");
+        return err("Shenron A2A: response without taskId");
     };
     let task = match a2a_get_task(task_id).await {
         Ok(Some(task)) => task,
@@ -1244,14 +1233,14 @@ pub(crate) async fn a2a_send(r: A2aSendRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct A2aTaskStatusRequest {
-    #[schemars(description = "Identifiant de la tâche A2A")]
+    #[schemars(description = "A2A task id")]
     pub task_id: String,
 }
 
 pub(crate) async fn a2a_task_status(r: A2aTaskStatusRequest) -> CallToolResult {
     match a2a_get_task(&r.task_id).await {
         Ok(Some(task)) => ok(task),
-        Ok(None) => err(format!("Tâche A2A introuvable : {}", r.task_id)),
+        Ok(None) => err(format!("A2A task not found: {}", r.task_id)),
         Err(e) => err(e),
     }
 }
@@ -1260,7 +1249,7 @@ pub(crate) async fn a2a_task_status(r: A2aTaskStatusRequest) -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct A2aTaskListRequest {
     #[schemars(
-        description = "Filtrer par cible (codex, agycli, claude, local_model, rag, subagents, ocr, translation, broadcast)"
+        description = "Filter by target (codex, agycli, claude, local_model, rag, subagents, ocr, translation, broadcast)"
     )]
     #[serde(default)]
     pub target: Option<String>,
@@ -1281,17 +1270,17 @@ pub(crate) async fn a2a_task_list(r: A2aTaskListRequest) -> CallToolResult {
 pub(crate) fn agent_card() -> Value {
     json!({
         "name": "shenron-dragonball",
-        "description": "Hub A2A Dragon Ball : RAG sourcé réel, état mesuré OCR/traduction, et boîte d'ordres pour Codex, agycli, Claude, workers locaux et sous-agents (résultat seulement quand le pair le poste).",
+        "description": "Dragon Ball A2A hub: real sourced RAG, measured OCR/translation status, and an order inbox for Codex, agycli, Claude, local workers and sub-agents (a result only when the peer posts it).",
         "version": env!("CARGO_PKG_VERSION"),
         "url": format!("{}/api/a2a", site_api_base()),
         "capabilities": { "streaming": false, "pushNotifications": false, "yoloMode": true },
         "supportedTargets": A2A_TARGETS,
         "skills": [
-            { "id": "rag_query", "name": "RAG Canonique", "description": "Recherche hybride réelle sur l'index Shenron : passages, titres et URL absolues. FAIT seulement si au moins un passage revient." },
-            { "id": "ocr_dispatch", "name": "État OCR & traduction", "description": "Statut mesuré (bot.db_databooks, systemd, results.db, heartbeat worker) ; un ordre OCR reste en attente jusqu'au résultat d'un worker." },
-            { "id": "subagent_task", "name": "Délégation d'ordres", "description": "Dépôt d'un ordre dans la boîte .coord pour un agent ou des sous-agents ; tâche submitted/INCOMPLET jusqu'au résultat du pair." },
-            { "id": "model_infer", "name": "Ordre pour worker local", "description": "Dépôt d'un ordre pour un modèle local ; aucun modèle ni état VRAM n'est affirmé sans résultat du worker." },
-            { "id": "task_update", "name": "Clôture par un pair", "description": "tasks/update, message/send avec taskId, ou enveloppe .coord avec re : statut + verdict (FAIT exige au moins un artefact)." }
+            { "id": "rag_query", "name": "Canonical RAG", "description": "Real hybrid search over the Shenron index: passages, titles and absolute URLs. DONE only if at least one passage comes back." },
+            { "id": "ocr_dispatch", "name": "OCR and translation status", "description": "Measured status (bot.db_databooks, systemd, results.db, worker heartbeat); an OCR order stays pending until a worker reports a result." },
+            { "id": "subagent_task", "name": "Order delegation", "description": "Drops an order into the .coord inbox for an agent or sub-agents; the task stays submitted/INCOMPLET until the peer reports." },
+            { "id": "model_infer", "name": "Order for a local worker", "description": "Drops an order for a local model; no model or VRAM state is claimed without a worker result." },
+            { "id": "task_update", "name": "Closure by a peer", "description": "tasks/update, message/send with a taskId, or a .coord envelope with re: status + verdict (FAIT requires at least one artifact)." }
         ]
     })
 }
@@ -1303,9 +1292,9 @@ pub(crate) fn agent_card() -> Value {
 /// One validated transcription for `dragonball.admin_databooks_deposit`.
 #[derive(Debug, Clone, Deserialize, serde::Serialize, JsonSchema)]
 pub(crate) struct DepositPage {
-    #[schemars(description = "Numéro de planche (≥ 1)")]
+    #[schemars(description = "Plate number (>= 1)")]
     pub number: u32,
-    #[schemars(description = "Transcription vérifiée (1 à 40 000 caractères)")]
+    #[schemars(description = "Verified transcription (1 to 40,000 characters)")]
     pub text: String,
 }
 
@@ -1313,15 +1302,15 @@ pub(crate) struct DepositPage {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct AdminDepositRequest {
-    #[schemars(description = "Identifiant du databook")]
+    #[schemars(description = "Databook id")]
     pub databook_id: u32,
-    #[schemars(description = "Planches à fusionner (1 à 2000)")]
+    #[schemars(description = "Plates to merge (1 to 2000)")]
     pub pages: Vec<DepositPage>,
 }
 
 pub(crate) async fn admin_databooks_deposit(r: AdminDepositRequest) -> CallToolResult {
     if r.databook_id == 0 || r.pages.is_empty() || r.pages.len() > 2_000 {
-        return err("databookId ≥ 1 et 1 à 2000 planches attendus");
+        return err("databookId >= 1 and 1 to 2000 pages expected");
     }
     if let Some(bad) = r
         .pages
@@ -1329,7 +1318,7 @@ pub(crate) async fn admin_databooks_deposit(r: AdminDepositRequest) -> CallToolR
         .find(|p| p.number == 0 || p.text.trim().is_empty() || p.text.chars().count() > 40_000)
     {
         return err(format!(
-            "planche {} invalide : numéro ≥ 1 et texte non vide ≤ 40 000 caractères",
+            "page {} is invalid: number >= 1 and a non-empty text of at most 40,000 characters",
             bad.number
         ));
     }
@@ -1372,12 +1361,12 @@ pub(crate) async fn admin_bot_commands() -> CallToolResult {
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct AdminCommandRequest {
-    #[schemars(description = "Commande à exécuter (1 à 160 caractères), voir admin_bot_commands")]
+    #[schemars(description = "Command to run (1 to 160 characters), see admin_bot_commands")]
     pub invocation: String,
-    #[schemars(description = "Options de la commande")]
+    #[schemars(description = "Command options")]
     #[serde(default)]
     pub options: Option<HashMap<String, Value>>,
-    #[schemars(description = "Salon Discord (snowflake de 17 à 20 chiffres)")]
+    #[schemars(description = "Discord channel (snowflake of 17 to 20 digits)")]
     #[serde(default)]
     pub channel_id: Option<String>,
 }
@@ -1385,12 +1374,12 @@ pub(crate) struct AdminCommandRequest {
 pub(crate) async fn admin_bot_command_execute(r: AdminCommandRequest) -> CallToolResult {
     let len = r.invocation.chars().count();
     if len == 0 || len > 160 {
-        return err("invocation : 1 à 160 caractères");
+        return err("invocation: 1 to 160 characters");
     }
     if let Some(channel) = &r.channel_id
         && (!(17..=20).contains(&channel.len()) || !channel.bytes().all(|b| b.is_ascii_digit()))
     {
-        return err("channelId : snowflake de 17 à 20 chiffres");
+        return err("channelId: a snowflake of 17 to 20 digits");
     }
     let body =
         json!({ "invocation": r.invocation, "options": r.options, "channelId": r.channel_id });
@@ -1404,11 +1393,11 @@ pub(crate) async fn admin_services() -> CallToolResult {
 /// Input of `dragonball.admin_service_action`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct AdminServiceActionRequest {
-    #[schemars(description = "Service listé par admin_services ([a-z0-9-]{1,80})")]
+    #[schemars(description = "Service listed by admin_services ([a-z0-9-]{1,80})")]
     pub service: String,
-    #[schemars(description = "Action listée par admin_services ([a-z0-9-]{1,80})")]
+    #[schemars(description = "Action listed by admin_services ([a-z0-9-]{1,80})")]
     pub action: String,
-    #[schemars(description = "Arguments de l'action")]
+    #[schemars(description = "Action arguments")]
     #[serde(default)]
     pub arguments: Option<HashMap<String, Value>>,
 }
@@ -1421,7 +1410,7 @@ pub(crate) fn is_service_token(value: &str) -> bool {
 
 pub(crate) async fn admin_service_action(r: AdminServiceActionRequest) -> CallToolResult {
     if !is_service_token(&r.service) || !is_service_token(&r.action) {
-        return err("service et action : [a-z0-9-]{1,80}");
+        return err("service and action: [a-z0-9-]{1,80}");
     }
     let body = json!(r.arguments.unwrap_or_default());
     bot_admin(

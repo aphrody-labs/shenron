@@ -66,11 +66,12 @@ fn client() -> Result<reqwest::Client, String> {
         .map_err(|e| error(&format!("build HTTP client: {e}")))
 }
 
-/// GET a JSON endpoint, attaching the token when one is available.
-async fn get_json(path: &str) -> Result<serde_json::Value, String> {
+/// GET a JSON endpoint. The token is attached only for an `elevated` caller: the anonymous tier
+/// of the public server never reads with the process credentials (it would see hidden records).
+async fn get_json(path: &str, elevated: bool) -> Result<serde_json::Value, String> {
     let url = format!("{}{path}", base_url());
     let mut request = client()?.get(&url);
-    if let Some(token) = token() {
+    if elevated && let Some(token) = token() {
         request = request.bearer_auth(token);
     }
     let response = request.send().await.map_err(|e| error(&format!("GET {path} failed: {e}")))?;
@@ -118,13 +119,18 @@ pub(crate) struct DatabooksListRequest {
 }
 
 /// List databook records.
-pub(crate) async fn list(req: DatabooksListRequest) -> String {
+pub(crate) async fn list(req: DatabooksListRequest, elevated: bool) -> String {
     let limit = req.limit.unwrap_or(20).clamp(1, 200);
     let mut path = format!("/api/databooks?limit={limit}");
     if let Some(q) = req.q.as_deref().map(str::trim).filter(|q| !q.is_empty()) {
         path.push_str(&format!("&q={}", urlencode(q)));
     }
     if req.include_hidden {
+        if !elevated {
+            return error(
+                "include_hidden needs elevated access: send a bearer token or call from an allow-listed IP",
+            );
+        }
         if token().is_none() {
             return error(
                 "include_hidden needs an API token: set $DBFR_TOKEN (or $SHENRON_ADMIN_TOKEN)",
@@ -132,7 +138,7 @@ pub(crate) async fn list(req: DatabooksListRequest) -> String {
         }
         path.push_str("&includeHidden=1");
     }
-    match get_json(&path).await {
+    match get_json(&path, elevated).await {
         Ok(json) => json.to_string(),
         Err(message) => message,
     }
@@ -147,8 +153,8 @@ pub(crate) struct DatabookPagesRequest {
 }
 
 /// Report a record's plates and which of them still lack a transcription.
-pub(crate) async fn pages(req: DatabookPagesRequest) -> String {
-    let record = match get_json(&format!("/api/databooks/{}", req.id)).await {
+pub(crate) async fn pages(req: DatabookPagesRequest, elevated: bool) -> String {
+    let record = match get_json(&format!("/api/databooks/{}", req.id), elevated).await {
         Ok(record) => record,
         Err(message) => return message,
     };
@@ -200,7 +206,7 @@ pub(crate) struct DatabookTextesRequest {
 }
 
 /// Read the stored text of specific plates.
-pub(crate) async fn textes(req: DatabookTextesRequest) -> String {
+pub(crate) async fn textes(req: DatabookTextesRequest, elevated: bool) -> String {
     if req.pages.is_empty() {
         return error("pages must name at least one plate");
     }
@@ -208,7 +214,12 @@ pub(crate) async fn textes(req: DatabookTextesRequest) -> String {
         return error("the API serves at most 40 plates per call; split the request");
     }
     let list = req.pages.iter().map(ToString::to_string).collect::<Vec<_>>().join(",");
-    match get_json(&format!("/api/databooks/{}/textes?pages={}", req.id, urlencode(&list))).await {
+    match get_json(
+        &format!("/api/databooks/{}/textes?pages={}", req.id, urlencode(&list)),
+        elevated,
+    )
+    .await
+    {
         Ok(json) => json.to_string(),
         Err(message) => message,
     }
