@@ -1,7 +1,6 @@
 import { requireAdmin } from "@/lib/session";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { QueryProvider } from "@/components/admin/QueryProvider";
-import { AdminFrame } from "@shenron/ui/layout/AdminFrame";
 import type { Metadata } from "next";
 
 // L'espace admin n'est pas indexable par les moteurs de recherche
@@ -24,9 +23,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // Vérifie que l'utilisateur est bien admin — redirige sinon
   await requireAdmin();
 
+  // La navigation admin est celle du shell (barre latérale et feuille mobile) : `AdminSidebar`
+  // la lui confie le temps que l'on reste sous /admin. Le contenu garde la largeur pleine.
   return (
     <QueryProvider>
-      <AdminFrame sidebar={<AdminSidebar />}>{children}</AdminFrame>
+      <AdminSidebar />
+      <div id="admin-content" className="relative w-full min-w-0 flex-1 p-4 sm:p-6 lg:p-10">
+        {children}
+      </div>
     </QueryProvider>
   );
 }

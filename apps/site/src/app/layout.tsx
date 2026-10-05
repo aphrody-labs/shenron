@@ -7,10 +7,9 @@ import "./globals.css";
 import "@shenron/ui/barre-nav.css";
 import dynamic from "next/dynamic";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
-import { SiteNav } from "@/components/SiteNav";
+import { ShellBoot } from "@shenron/ui/navigation/ShellBoot";
+import { SiteShell } from "@/components/SiteShell";
 import { LocaleProvider } from "@/lib/i18n/client";
-import { SiteFooter } from "@/components/SiteFooter";
-import { BarreNavMobile } from "@/components/BarreNavMobile";
 import { PageTransition } from "@/components/PageTransition";
 import { NavigationProgress } from "@/components/NavigationProgress";
 import { PageViewTracker } from "@/components/PageViewTracker";
@@ -106,6 +105,12 @@ export const metadata: Metadata = {
     "Akira Toriyama",
     "canon",
     "encyclopédie",
+    "Dragon Ball wiki",
+    "Dragon Ball encyclopedia",
+    "Dragon Ball canon",
+    "Dragon Ball manga",
+    "Dragon Ball databooks",
+    "Dragon Ball timeline",
     "ドラゴンボール",
   ],
   robots: {
@@ -209,6 +214,9 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
 
+        {/* Préférences du shell (barre latérale repliée, fenêtre Tauri) avant la première
+				    peinture : sans elles, la barre se déplierait puis se replierait. */}
+        <ShellBoot />
         {/* Initialisation par défaut du Consent Mode v2 de Google avant le chargement des scripts */}
         <script
           dangerouslySetInnerHTML={{
@@ -224,6 +232,10 @@ export default async function RootLayout({
 						`,
           }}
         />
+        {/* Robots et agents IA : la carte du site pour les LLM et le serveur MCP. Rien de
+            visible ; les mêmes liens partent en en-tête HTTP `Link` (next.config.ts). */}
+        <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+        <link rel="service-desc" type="application/json" href="/.well-known/mcp.json" />
         {/* Thème de design global surchargeant les tokens `--dbz-*` (voir globals.css). */}
         {themeCss && (
           <style id="site-theme" dangerouslySetInnerHTML={{ __html: `:root{${themeCss}}` }} />
@@ -282,17 +294,13 @@ export default async function RootLayout({
         {/* La langue d'interface vit dans un contexte CLIENT : lire le cookie
 				    ici rendrait tout le site dynamique et tuerait le cache CDN. */}
         <LocaleProvider>
-          <SiteNav />
-          <main id="contenu" tabIndex={-1} className="relative z-10 flex-1 w-full flex flex-col">
+          {/* La coque unique : barre latérale (desktop), onglets et feuille (mobile),
+				    palette ⌘K, fil d'Ariane, barre de titre Tauri. Elle porte le `main#contenu`
+				    et le pied de page ; les onglets mobiles viennent après dans le DOM (ordre
+				    de tabulation : contenu, pied, puis navigation basse). */}
+          <SiteShell>
             <PageTransition>{children}</PageTransition>
-          </main>
-          <SiteFooter />
-          {/* Barre de navigation basse — sous 1024 px seulement, là où la nav de
-				    la barre du haut se replie. Elle est montée APRÈS le pied de page :
-				    l'ordre du DOM est aussi l'ordre de tabulation, et une navigation
-				    de premier rang qui s'insère avant le pied ferait relire tout le
-				    pied avant d'y arriver. */}
-          <BarreNavMobile />
+          </SiteShell>
         </LocaleProvider>
         <DiscordInviteFAB />
         <ReportButton />

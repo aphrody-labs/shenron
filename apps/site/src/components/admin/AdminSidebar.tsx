@@ -1,8 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { AdminSidebarView } from "@shenron/ui/admin/AdminSidebarView";
+/**
+ * Navigation de l'administration, portée par le shell : montée par `app/admin/layout.tsx`,
+ * elle remplace les sections du site dans la même barre latérale (desktop) et la même
+ * feuille « Plus » (mobile), avec un retour au site. Les liens (et leurs routes) restent
+ * déclarés ici : les tests de navigation admin les lisent dans ce fichier.
+ */
+import { ShellContextNav, type ShellNavSection } from "@shenron/ui/navigation/AppShell";
 import {
   PenLine,
   LayoutDashboard,
@@ -596,19 +600,39 @@ const SECTIONS: SectionConfig[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Composant principal
+// Navigation de contexte du shell
 // ---------------------------------------------------------------------------
 
+const SECTION_ICONS: Record<SectionId, React.ReactNode> = {
+  pilotage: <LayoutDashboard className="h-[18px] w-[18px]" />,
+  site: <Home className="h-[18px] w-[18px]" />,
+  systeme: <Server className="h-[18px] w-[18px]" />,
+  encyclopedie: <BookOpen className="h-[18px] w-[18px]" />,
+  communaute: <Users className="h-[18px] w-[18px]" />,
+  economie: <Coins className="h-[18px] w-[18px]" />,
+  securite: <Shield className="h-[18px] w-[18px]" />,
+};
+
+export const ADMIN_SECTIONS: readonly ShellNavSection[] = SECTIONS.map((section) => ({
+  id: section.id,
+  label: section.label,
+  icon: SECTION_ICONS[section.id],
+  items: ADMIN_LINKS.filter((link) => link.section === section.id).map((link) => ({
+    href: link.href,
+    label: link.label,
+    description: link.description,
+    icon: link.icon,
+  })),
+}));
+
+const ADMIN_NAV = {
+  id: "admin",
+  label: "Administration",
+  backHref: "/",
+  backLabel: "Retour au site",
+  sections: ADMIN_SECTIONS,
+} as const;
+
 export function AdminSidebar() {
-  const pathname = usePathname() ?? "/";
-  return (
-    <AdminSidebarView
-      pathname={pathname}
-      links={ADMIN_LINKS}
-      sections={SECTIONS}
-      linkComponent={Link}
-      initialSection="pilotage"
-      brand="Aphrody · Shenron"
-    />
-  );
+  return <ShellContextNav nav={ADMIN_NAV} />;
 }

@@ -7,7 +7,6 @@ export * from "./layout/ViewTransition";
 export * from "./layout/PageShell";
 export * from "./layout/SectionHeading";
 export * from "./navigation/FooterFrame";
-export * from "./navigation/HeaderFrame";
 export * from "./navigation/MobileNavFrame";
 export * from "./navigation/TabNav";
 export * from "./navigation/LinkPager";

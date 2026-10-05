@@ -58,16 +58,15 @@ export function TabNav({
                 href={item.href}
                 aria-current={current ? "page" : undefined}
                 className={[
-                  "inline-flex min-h-11 items-center gap-2 border-2 px-4 font-display text-[0.75rem] font-bold uppercase tracking-[0.1em] transition-colors",
-                  "shadow-[3px_3px_0px_#000]",
+                  "inline-flex min-h-11 items-center gap-2 rounded-full border px-4 font-display text-[0.875rem] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere",
                   current
-                    ? "border-black bg-dbz-orange text-black"
-                    : "border-white/20 bg-white/[0.06] text-white/75 hover:border-white/40 hover:text-white",
+                    ? "border-dbz-green bg-dbz-green/25 text-os"
+                    : "border-os/15 text-os/75 hover:border-os/40 hover:text-os",
                 ].join(" ")}
               >
                 {item.label}
                 {typeof item.count === "number" && (
-                  <span className={current ? "text-black/60" : "text-white/40"}>
+                  <span className={current ? "tabular-nums text-os/70" : "tabular-nums text-os/45"}>
                     {nf.format(item.count)}
                   </span>
                 )}

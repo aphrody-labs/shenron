@@ -12,6 +12,7 @@
  * Server component.
  */
 import type { ReactNode } from "react";
+import { ChevronDroite, ChevronGauche } from "../icones";
 import { pagerWindow } from "../lib/page-window";
 import type { UiLinkComponent } from "./link";
 
@@ -44,24 +45,26 @@ export function LinkPager({
   const numbers = pagerWindow(page, pages);
 
   const arrow =
-    "inline-flex min-h-11 items-center border-2 px-4 font-display text-[0.75rem] font-bold uppercase tracking-[0.1em] transition-colors";
+    "inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 font-display text-[0.875rem] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
 
   return (
     <nav
       aria-label={ariaLabel}
-      className={`flex flex-wrap items-center justify-between gap-4 border-t-2 border-white/12 pt-6 ${className}`}
+      className={`flex flex-wrap items-center justify-between gap-4 border-t border-os/12 pt-6 ${className}`}
     >
       {page > 1 ? (
         <Link
           href={href(page - 1)}
           rel="prev"
-          className={`${arrow} border-white/20 bg-white/[0.06] text-white/80 hover:border-white/40 hover:text-white`}
+          className={`${arrow} border-os/20 text-os/85 hover:border-os/45 hover:text-os`}
         >
-          ← {previousLabel}
+          <ChevronGauche size={16} />
+          {previousLabel}
         </Link>
       ) : (
-        <span className={`${arrow} border-white/10 text-white/25`} aria-hidden>
-          ← {previousLabel}
+        <span className={`${arrow} border-os/10 text-os/30`} aria-hidden>
+          <ChevronGauche size={16} />
+          {previousLabel}
         </span>
       )}
 
@@ -70,7 +73,7 @@ export function LinkPager({
       <ul className="hidden items-center gap-1.5 sm:flex">
         {numbers.map((n, i) =>
           n === null ? (
-            <li key={`gap-${i}`} className="px-1 text-white/30" aria-hidden>
+            <li key={`gap-${i}`} className="px-1 text-os/35" aria-hidden>
               …
             </li>
           ) : (
@@ -79,10 +82,10 @@ export function LinkPager({
                 href={href(n)}
                 aria-current={n === page ? "page" : undefined}
                 className={[
-                  "inline-flex size-10 items-center justify-center border-2 font-display text-[0.8125rem] font-bold tabular-nums transition-colors",
+                  "inline-flex size-11 items-center justify-center rounded-full border font-display text-[0.875rem] font-semibold tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere",
                   n === page
-                    ? "border-black bg-dbz-orange text-black"
-                    : "border-white/15 text-white/70 hover:border-white/40 hover:text-white",
+                    ? "border-dbz-green bg-dbz-green/25 text-os"
+                    : "border-os/15 text-os/75 hover:border-os/45 hover:text-os",
                 ].join(" ")}
               >
                 {n}
@@ -92,21 +95,21 @@ export function LinkPager({
         )}
       </ul>
 
-      <span className="font-display text-[0.75rem] uppercase tracking-[0.1em] text-white/45 sm:hidden">
-        {positionLabel}
-      </span>
+      <span className="text-[0.875rem] tabular-nums text-os/60 sm:hidden">{positionLabel}</span>
 
       {page < pages ? (
         <Link
           href={href(page + 1)}
           rel="next"
-          className={`${arrow} border-white/20 bg-white/[0.06] text-white/80 hover:border-white/40 hover:text-white`}
+          className={`${arrow} border-os/20 text-os/85 hover:border-os/45 hover:text-os`}
         >
-          {nextLabel} →
+          {nextLabel}
+          <ChevronDroite size={16} />
         </Link>
       ) : (
-        <span className={`${arrow} border-white/10 text-white/25`} aria-hidden>
-          {nextLabel} →
+        <span className={`${arrow} border-os/10 text-os/30`} aria-hidden>
+          {nextLabel}
+          <ChevronDroite size={16} />
         </span>
       )}
     </nav>

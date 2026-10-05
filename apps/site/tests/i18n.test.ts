@@ -103,9 +103,7 @@ describe("sélecteur de langue", () => {
     // cette chaîne, changer de langue ne fait rien de visible.
     for (const fichier of [
       "../src/components/LanguageSwitcher.tsx",
-      "../src/components/NavMega.tsx",
-      "../src/components/BarreNavMobile.tsx",
-      "../src/components/CommandMenu.tsx",
+      "../src/components/SiteShellClient.tsx",
       "../src/components/NavAuth.tsx",
     ]) {
       expect(await source(fichier)).toContain("@/lib/i18n/client");

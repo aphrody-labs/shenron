@@ -44,10 +44,10 @@ export function HeroTitles({
       <h1
         className={
           regime === "image"
-            ? "font-saiyan font-bold uppercase text-[40px] md:text-[58px] leading-[1.02] tracking-[0.01em] title-gold mb-3"
+            ? "font-saiyan font-bold uppercase text-[clamp(2.125rem,1.5rem+3.2vw,3.625rem)] leading-[1.02] tracking-[0.01em] title-gold mb-3 text-balance"
             : regime === "compact"
-              ? "font-serif font-semibold text-[30px] md:text-[38px] leading-[1.1] tracking-[-0.015em] text-white mb-2 text-balance"
-              : "font-serif font-semibold text-[42px] md:text-[56px] leading-[1.05] tracking-[-0.02em] text-white mb-3 text-balance"
+              ? "font-serif font-semibold text-[clamp(1.625rem,1.3rem+1.6vw,2.375rem)] leading-[1.1] tracking-[-0.015em] text-white mb-2 text-balance"
+              : "font-serif font-semibold text-[clamp(2rem,1.35rem+3.2vw,3.5rem)] leading-[1.05] tracking-[-0.02em] text-white mb-3 text-balance break-words"
         }
       >
         {title}
@@ -73,7 +73,7 @@ export function HeroTitles({
       {lead && (
         <p
           className={`leading-relaxed text-white/85 max-w-xl ${
-            regime === "compact" ? "text-[15px]" : "text-[17px]"
+            regime === "compact" ? "text-[15px]" : "text-[16px] md:text-[17px]"
           }`}
         >
           {lead}

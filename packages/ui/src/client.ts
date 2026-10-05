@@ -38,6 +38,5 @@ export * from "./admin/QueryProvider";
 export * from "./admin/AdminSidebarView";
 export * from "./public/FilterDropdown";
 export * from "./public/Stars";
-export * from "./navigation/NavMega";
 export * from "./navigation/FooterFabGuard";
 export * from "./api-access";
