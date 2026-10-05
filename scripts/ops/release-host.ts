@@ -155,13 +155,28 @@ async function cdn(): Promise<void> {
   console.log(JSON.stringify({ cdn: "published", commit }));
 }
 
+/** dbfr ne garde rien entre deux builds : seul le dépôt de build (sources) reste. */
+function clean(): void {
+  step("nettoyage", [
+    "rm",
+    "-rf",
+    "node_modules",
+    "artifacts",
+    "target",
+    "dist",
+    ".cache",
+    join(HOME, ".bun", "install"),
+  ]);
+}
+
 const [command, ref] = process.argv.slice(2);
 if (command === "build") build();
 else if (command === "cargo") cargo(ref ?? "origin/main");
 else if (command === "bundle" && ref) bundle(ref);
 else if (command === "assemble" && ref) assemble(join("artifacts", "releases", ref), ref);
+else if (command === "clean") clean();
 else if (command === "cdn") await cdn();
 else
   throw new Error(
-    "usage: release-host.ts build | cargo [ref] | bundle <sha> | assemble <sha> | cdn",
+    "usage: release-host.ts build | cargo [ref] | bundle <sha> | assemble <sha> | clean | cdn",
   );

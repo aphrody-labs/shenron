@@ -152,6 +152,8 @@ async function buildOnDbfr(): Promise<string> {
     "vps",
     "mkdir -p ~/shenron/artifacts/releases && tar -C ~/shenron/artifacts/releases -xf -",
   );
+  // dbfr (PostgreSQL et Redis de production) ne garde ni dépendances ni release après le relais.
+  ssh(`SHENRON_BUILD_REPO=${BUILD_REPO} $HOME/.bun/bin/bun ${REMOTE} clean`, 300, "dbfr");
   await detached(
     "vps",
     `$HOME/.bun/bin/bun ${REMOTE} assemble ${sha}`,
