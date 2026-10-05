@@ -18,7 +18,7 @@ import {
   FlecheHaut,
   Groupe,
   Plus,
-} from "@/components/icones";
+} from "@shenron/ui/icones";
 import {
   ALL_ENTRIES,
   ALWAYS_OPEN_KEYS,

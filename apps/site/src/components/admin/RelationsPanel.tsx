@@ -6,7 +6,7 @@
  * (jamais d'id brut), via la table de jointure (`/api/wiki-admin/<join>`).
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chargement, Croix, Lien } from "@/components/icones";
+import { Chargement, Croix, Lien } from "@shenron/ui/icones";
 import { useState } from "react";
 import { apiAt } from "@/lib/admin-api";
 import { entityRelations, type RelationSpec } from "@/lib/wiki-fields";

@@ -3,9 +3,9 @@
 /** Éditeur du thème global, composé comme une couverture de tankōbon mesurée. */
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { DragonBallLoader } from "@/components/DragonBall";
-import { Enregistrer, Palette, Reinitialiser } from "@/components/icones";
-import { BancNuages, CadreCase, Etoile, PastilleTome } from "@/components/MotifsCouverture";
+import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { Enregistrer, Palette, Reinitialiser } from "@shenron/ui/icones";
+import { BancNuages, CadreCase, Etoile, PastilleTome } from "@shenron/ui/toriyama/MotifsCouverture";
 import {
   DEFAULT_SITE_THEME,
   THEME_COLORS,

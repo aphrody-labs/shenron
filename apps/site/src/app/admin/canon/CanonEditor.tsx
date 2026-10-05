@@ -25,7 +25,7 @@ import {
   Plus,
   Recherche,
   Reinitialiser,
-} from "@/components/icones";
+} from "@shenron/ui/icones";
 import {
   analyzeCanon,
   CANON_TIERS,

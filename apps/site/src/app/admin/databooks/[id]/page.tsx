@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Crayon, FlecheGauche, LienExterne } from "@/components/icones";
+import { Crayon, FlecheGauche, LienExterne } from "@shenron/ui/icones";
 import { AdminHeader } from "../../db-universe/_Header";
 import {
   TranscriptionRelecteur,

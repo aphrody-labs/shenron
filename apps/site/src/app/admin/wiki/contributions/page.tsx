@@ -13,7 +13,7 @@
  * que recevra la personne qui a pris le temps de lire une planche.
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chargement, Coche, Croix, LienExterne } from "@/components/icones";
+import { Chargement, Coche, Croix, LienExterne } from "@shenron/ui/icones";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PlainField } from "@/components/editor/PlainField";

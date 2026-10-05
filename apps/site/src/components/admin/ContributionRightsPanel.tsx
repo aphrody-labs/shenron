@@ -10,7 +10,7 @@
  * sont réservés à une équipe de relecture.
  */
 import { useEffect, useState } from "react";
-import { Chargement, Croix, Enregistrer, Plus } from "@/components/icones";
+import { Chargement, Croix, Enregistrer, Plus } from "@shenron/ui/icones";
 import { RoleSelect, RoleBadge } from "@/components/admin/RoleSelect";
 import { UserSelect } from "@/components/admin/UserSelect";
 import {

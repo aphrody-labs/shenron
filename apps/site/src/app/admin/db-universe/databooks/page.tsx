@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Scan } from "@/components/icones";
+import { Scan } from "@shenron/ui/icones";
 import { AdminHeader } from "../_Header";
 import { DbAddButton } from "@/components/admin/DbCrud";
 import { DatabookAdminList } from "@/components/admin/DatabookAdminList";

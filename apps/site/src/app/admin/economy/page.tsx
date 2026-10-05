@@ -17,7 +17,7 @@ import {
   Rafraichir,
   Tendance,
   Trophee,
-} from "@/components/icones";
+} from "@shenron/ui/icones";
 import { useState } from "react";
 import { api } from "@/lib/admin-api";
 import { fmtNum } from "@/lib/admin-format";

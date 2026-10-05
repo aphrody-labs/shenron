@@ -1,8 +1,8 @@
 import { db } from "@/lib/db";
 import Link from "next/link";
-import { Crayon, Document, Etoile, Plus } from "@/components/icones";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Crayon, Document, Etoile, Plus } from "@shenron/ui/icones";
+import { Badge } from "@shenron/ui/badge";
+import { Button } from "@shenron/ui/button";
 import { cn } from "@/lib/utils";
 import type { PostStatus } from "@/db/schema";
 

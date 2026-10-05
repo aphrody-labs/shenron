@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Base, Cadenas, Crayon } from "@/components/icones";
+import { Base, Cadenas, Crayon } from "@shenron/ui/icones";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/admin-api";
 

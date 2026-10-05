@@ -13,7 +13,7 @@ import {
   Plus,
   Rafraichir,
   Telecharger,
-} from "@/components/icones";
+} from "@shenron/ui/icones";
 import { type FormEvent, type ReactNode, useMemo, useState } from "react";
 import { Sketch } from "@uiw/react-color";
 import { api, proxyAsset } from "@/lib/admin-api";

@@ -11,7 +11,7 @@
  */
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chargement, Oeil, OeilBarre, Recherche } from "@/components/icones";
+import { Chargement, Oeil, OeilBarre, Recherche } from "@shenron/ui/icones";
 import { apiAt } from "@/lib/admin-api";
 import { assetUrl } from "@/lib/assets";
 

@@ -7,7 +7,7 @@
  * suppression. Lecture/écriture via /api/admin/reports (Postgres site).
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bulle, Chargement, Corbeille, Drapeau } from "@/components/icones";
+import { Bulle, Chargement, Corbeille, Drapeau } from "@shenron/ui/icones";
 import Link from "next/link";
 import { useState } from "react";
 import {

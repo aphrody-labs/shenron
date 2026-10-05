@@ -11,7 +11,7 @@
  */
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bouclier, Chargement, Croix, Plus, Rafraichir } from "@/components/icones";
+import { Bouclier, Chargement, Croix, Plus, Rafraichir } from "@shenron/ui/icones";
 import { api } from "@/lib/admin-api";
 import { RoleBadge, RoleSelect } from "@/components/admin/RoleSelect";
 

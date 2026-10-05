@@ -21,7 +21,7 @@ import {
   Reinitialiser,
   Tendance,
   Trophee,
-} from "@/components/icones";
+} from "@shenron/ui/icones";
 import { type FormEvent, useRef, useState } from "react";
 import { api } from "@/lib/admin-api";
 import { formatDuration } from "@/lib/admin-format";

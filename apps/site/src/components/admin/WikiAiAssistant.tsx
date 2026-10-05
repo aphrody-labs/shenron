@@ -8,7 +8,7 @@
  */
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Baguette, Chargement, Etincelle, LienExterne, Plus } from "@/components/icones";
+import { Baguette, Chargement, Etincelle, LienExterne, Plus } from "@shenron/ui/icones";
 import { apiAt } from "@/lib/admin-api";
 import { sectionKeyFromLabel } from "@/lib/wiki-fields";
 import { crudBase } from "@/lib/wiki-tables";

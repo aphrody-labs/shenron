@@ -12,7 +12,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Croix, Recherche } from "@/components/icones";
+import { Croix, Recherche } from "@shenron/ui/icones";
 import { api } from "@/lib/admin-api";
 
 interface Member {

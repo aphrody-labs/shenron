@@ -7,7 +7,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState, useTransition } from "react";
-import { Alerte, Chargement, ChevronDroite, Recherche, Terminal } from "@/components/icones";
+import { Alerte, Chargement, ChevronDroite, Recherche, Terminal } from "@shenron/ui/icones";
 import { api } from "@/lib/admin-api";
 
 interface OptionSpec {
