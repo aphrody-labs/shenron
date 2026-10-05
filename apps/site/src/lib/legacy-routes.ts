@@ -94,7 +94,8 @@ export const WORKSHOP_STAFF_PREFIXES = [
 export const STAFF_ROUTE_RENAMES: readonly RouteRename[] = [
   { from: "/atelier/transcription", to: "/workshop/transcription" },
   { from: "/atelier/traduction", to: "/workshop/translation" },
-  { from: "/atelier/databooks", to: "/workshop/databooks" },
+  // `/workshop/databooks` seul n'a pas de page : la liste des ouvrages est l'onglet Transcription.
+  { from: "/atelier/databooks", to: "/workshop/transcription", restTo: "/workshop/databooks" },
   { from: "/admin/transcriptions", to: "/workshop/transcription", keepRest: false },
   { from: "/admin/databooks", to: "/workshop/translation", restTo: "/workshop/databooks" },
   { from: "/admin/activite", to: "/admin/activity" },

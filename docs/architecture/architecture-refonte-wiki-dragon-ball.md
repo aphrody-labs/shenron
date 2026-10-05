@@ -253,7 +253,7 @@ create table if not exists bot.contributor_credits (
 
 Akira Toriyama reçoit `spotlight_rank = 0` uniquement lorsque sa preuve biographique et ses
 crédits sont validés. La page hub ne recopie pas sa biographie : elle affiche un synopsis court
-et un lien vers `/wiki/contributeurs/akira-toriyama`. Les autres personnes sont filtrables par
+et un lien vers `/wiki/contributors/akira-toriyama`. Les autres personnes sont filtrables par
 catégorie et rôle, avec pagination et chargement différé.
 
 ### 1.4 Dépréciation des catégories obsolètes

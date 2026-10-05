@@ -43,7 +43,7 @@ Si l'API ou le MCP répondent, ils complètent l'instantané :
 | Fiche du wiki | `wiki_search`, `wiki_get` | `/api/public/wiki/search` |
 | Manga | `manga_search`, puis page, chapitre, planche | `/api/public/manga/search` |
 | Databook | `databooks_search`, `databooks_planches`, `databooks_get` | `/api/databooks/search` |
-| Chronologie | `chronologie` | `/api/chronologie` |
+| Chronologie | `chronologie` | `/api/timeline` |
 
 Détails : [API REST](references/api.md), [MCP et GraphQL](references/mcp-graphql.md).
 Lire `error`, `mode`, `sources` et `data_coverage` : un index absent ou une

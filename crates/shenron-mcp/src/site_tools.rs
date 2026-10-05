@@ -457,8 +457,8 @@ pub(crate) async fn databook_relecture_ocr(r: RelectureRequest) -> CallToolResul
     }
     send(
         reqwest::Method::GET,
-        &format!("/api/databooks/{}/relecture-ocr", r.id),
-        vec![("planche", Some(r.plate.to_string()))],
+        &format!("/api/databooks/{}/ocr-review", r.id),
+        vec![("page", Some(r.plate.to_string()))],
         None,
         Auth::Site,
     )
@@ -489,7 +489,7 @@ pub(crate) enum ConfigName {
 impl ConfigName {
     const fn path(self) -> &'static str {
         match self {
-            Self::Chronologie => "/api/chronologie-config",
+            Self::Chronologie => "/api/timeline-config",
             Self::Home => "/api/home-config",
             Self::Canon => "/api/canon-config",
             Self::Banner => "/api/banner-config",
@@ -831,7 +831,7 @@ pub(crate) struct AgentWikiContributeRequest {
     #[schemars(description = "Comment for the moderator")]
     #[serde(default)]
     pub comment: Option<String>,
-    #[schemars(description = "Public path of the entity page (e.g. /wiki/personnages/1)")]
+    #[schemars(description = "Public path of the entity page (e.g. /wiki/characters/1)")]
     #[serde(default)]
     pub path: Option<String>,
 }
@@ -866,7 +866,7 @@ mod tests {
 
     #[test]
     fn config_names_map_to_real_routes() {
-        assert_eq!(ConfigName::Chronologie.path(), "/api/chronologie-config");
+        assert_eq!(ConfigName::Chronologie.path(), "/api/timeline-config");
         assert_eq!(ConfigName::WikiLaunch.path(), "/api/wiki-launch");
         let parsed: ConfigName = serde_json::from_str("\"wiki-launch\"").expect("name");
         assert_eq!(parsed.path(), "/api/wiki-launch");

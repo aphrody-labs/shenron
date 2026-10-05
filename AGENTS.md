@@ -134,9 +134,12 @@ Lancer et construire :
 - **Site** : Next 16 App Router, Turbopack ; `src/proxy.ts` remplace le middleware (host
   canonique, garde admin) ; next-intl par cookie `NEXT_LOCALE`, sans segment `[locale]`
   (`messages/{fr,en,ja}.json`). `/koharu`, `/studio`, `/bureau` montent `@shenron/ui`.
-  Espace Bibliothèque (`src/lib/bibliotheque.ts`) : `/wiki/manga`, `/wiki/databooks`, `/atelier`
-  (avancement public ; outils staff `/atelier/{transcription,traduction,databooks/[id]}`, gardés
-  par `proxy.ts` comme `/admin`) et `/koharu` partagent leurs onglets.
+  Espace Bibliothèque (`src/lib/library.ts`) : `/wiki/manga`, `/wiki/databooks`, `/workshop`
+  (avancement public ; outils staff `/workshop/{transcription,translation,databooks/[id]}`, gardés
+  par `proxy.ts` comme `/admin`) et `/koharu` partagent leurs onglets. Les anciennes adresses
+  françaises vivent dans `src/lib/legacy-routes.ts` : 308 de `next.config.ts` (pages publiques),
+  308 du proxy après la garde (admin, outils staff), `rewrite` vers le handler anglais (API) ;
+  `tests/english-routes.test.ts` refuse tout nouveau segment français.
   `/mcp` relaie vers `shenron-mcp --http --public`.
 - **Bot** : discordx + tsyringe ; `entry-standalone.ts` (`--smoke`, `--dry-run`) puis
   `index.ts` (migrations, base, `ApiServer`, Discord). Le socle Discord vient d'Aphrody :

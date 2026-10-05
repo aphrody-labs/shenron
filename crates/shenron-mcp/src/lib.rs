@@ -463,7 +463,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.manga_planche",
-        description = "One page of a chapter: image, OCR transcription, speech bubbles, neighbours and reading URL. API: site /api/manga/chapter/{id}/planche/{n}.",
+        description = "One page of a chapter: image, OCR transcription, speech bubbles, neighbours and reading URL. API: site /api/manga/chapter/{id}/pages/{n}.",
         annotations(
             title = "Manga page (site)",
             read_only_hint = true,
@@ -517,7 +517,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.chronologie",
-        description = "Use this for any Dragon Ball timeline or order question: the official timeline in its editorial order (episodes, films, volumes); never rebuild it from broadcast dates. Filters era and kind. API: site /api/chronologie.",
+        description = "Use this for any Dragon Ball timeline or order question: the official timeline in its editorial order (episodes, films, volumes); never rebuild it from broadcast dates. Filters era and kind. API: site /api/timeline.",
         annotations(
             title = "Official timeline",
             read_only_hint = true,
@@ -1128,7 +1128,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.databook_relecture_ocr",
-        description = "Elevated only. A second OCR reading of one plate by an engine of another family (a second opinion, never a replacement of the transcription). API: site /api/databooks/{id}/relecture-ocr.",
+        description = "Elevated only. A second OCR reading of one plate by an engine of another family (a second opinion, never a replacement of the transcription). API: site /api/databooks/{id}/ocr-review.",
         annotations(
             title = "Second OCR reading of a plate",
             read_only_hint = true,

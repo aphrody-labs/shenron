@@ -1,5 +1,5 @@
 /**
- * Admin write endpoints used by the site's IA cockpit (/admin/ia).
+ * Admin write endpoints used by the site's AI cockpit (/admin/ai).
  *
  * The bot owns these runtime tables (SQLite, mirrored into PostgreSQL `bot.*`)
  * and the gold set file. The site reads the mirror and sends its writes here

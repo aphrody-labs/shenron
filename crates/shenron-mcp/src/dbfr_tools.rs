@@ -215,7 +215,7 @@ pub(crate) async fn textes(req: DatabookTextesRequest, elevated: bool) -> String
     }
     let list = req.pages.iter().map(ToString::to_string).collect::<Vec<_>>().join(",");
     match get_json(
-        &format!("/api/databooks/{}/textes?pages={}", req.id, urlencode(&list)),
+        &format!("/api/databooks/{}/texts?pages={}", req.id, urlencode(&list)),
         elevated,
     )
     .await

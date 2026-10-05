@@ -43,9 +43,9 @@ Quatre sources : articles (`Post`), révisions wiki (`wiki_revisions` via
 discussions (`ContentComment`).
 
 - `/news` = articles en tête (ce qui se lit) + aperçu du fil.
-- `/news/fil[/<onglet>][/page/<n>]` = le fil complet, **une URL par onglet et par
+- `/news/feed[/<onglet>][/page/<n>]` = le fil complet, **une URL par onglet et par
   page** (catch-all). Un `?filter=` rendrait la page dynamique sous Next 16.
-- `/wiki/modifications` redirige en permanent vers `/news/fil/wiki`.
+- `/wiki/modifications` redirige en permanent vers `/news`.
 - La pagination tire chaque source jusqu'à `page × parPage` puis fusionne :
   l'ordre final n'existe qu'après fusion, un `OFFSET` SQL serait faux. D'où
   `FEED_MAX_PAGES` — au-delà, c'est une archive, pas un fil.
@@ -73,10 +73,10 @@ Dérivée de `lib/wiki-launch.ts` (le registre d'accès, seule source de vérit�
 rubriques) + les pages non *gatables* (légal, espace membre, documentation d'API).
 
 Consommateurs : `app/sitemap.ts`, `components/SiteFooter.tsx`,
-`lib/site-menu.ts` (menu mobile), `/plan-du-site`, `/llms.txt`.
+`lib/site-menu.ts` (menu mobile), `/site-map`, `/llms.txt`.
 
 > Avant, ces listes existaient en cinq exemplaires divergents : ouvrir une
-> rubrique depuis `/admin/lancement` la faisait apparaître dans la nav mais pas
+> rubrique depuis `/admin/launch` la faisait apparaître dans la nav mais pas
 > au sitemap ni au pied de page, et le pied de page annonçait des rubriques
 > refermées (307 en bas de chaque page).
 
@@ -136,7 +136,7 @@ que publier reste une portée distincte.
 ## Écrans d'administration
 
 - `/admin/agents` — clés, portées, quotas, journal des appels.
-- `/admin/moderation/commentaires` — file unique des commentaires, toutes
+- `/admin/moderation/comments` — file unique des commentaires, toutes
   surfaces confondues, avec lien de retour vers le contexte public.
 
 ## Pièges
@@ -146,7 +146,7 @@ que publier reste une portée distincte.
 - **Ne pas lire la session** dans une page publique pour afficher un état social :
   utiliser les îlots (`LikeButton`, `CommentThread`, `DomainBar`).
 - **Ne pas ajouter un `?filter=`** au fil ni au journal : cela casse le cache CDN
-  (cf. `app/news/fil/[[...path]]`).
+  (cf. `app/news/feed/[[...path]]`).
 - **Ne pas donner `SHENRON_ADMIN_TOKEN` à un agent** : créer une clé d'agent avec
   les seules portées nécessaires.
 - La migration `0015` s'applique **directement en SQL** (`psql -f`) :

@@ -24,10 +24,10 @@ To ensure international maintainability and compliance with modern open-source s
 - **Global Semantic Slugs**:
   - URLs must use canonical, international English/Hepburn naming rather than opaque numeric IDs or untranslated local jargon.
   - Examples:
-    - `/wiki/personnages/son-goku` (not `/wiki/personnages/1`)
-    - `/wiki/personnages/cell` (not `/wiki/personnages/celula`)
+    - `/wiki/characters/son-goku` (not `/wiki/characters/1`)
+    - `/wiki/characters/cell` (not `/wiki/characters/celula`)
     - `/wiki/transformations/super-saiyan` (not `/wiki/transformations/1`)
-    - `/wiki/cosmologie/namek` (not `/wiki/cosmologie/1`)
+    - `/wiki/locations/namek` (not `/wiki/locations/1`)
 - **Canonical & 301 Redirects**:
   - Every legacy numeric URL (`/wiki/<category>/<id>`) and regional alias must permanently redirect (HTTP 301 / 308) to the canonical international slug.
   - Strict `<link rel="canonical" href="..." />` tag pointing exclusively to the canonical slug.

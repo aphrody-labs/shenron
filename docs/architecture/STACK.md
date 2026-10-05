@@ -1258,7 +1258,7 @@ Phase 1.
 | Bot : `/graphql` | schéma inchangé, limiteur public (S9) | V4 |
 | Site : `app/api/public/[...route]/route.ts` (neuf) | `toNextRouteHandlers(createShenronApi(sitePorts))`, `runtime = "nodejs"`, `dynamic = "force-dynamic"` | V4 |
 | `apps/site/src/lib/bot-admin.ts`, `app/admin/sync/page.tsx` | client validé (B11), cast supprimé | V4 |
-| `apps/site/src/app/api/admin/ia/route.ts`, `lib/ia-cockpit-server.ts` | corps du contrat, `FEEDBACK_STATUSES` de `@shenron/db/constants`, client typé à la place de `postToBot` ; `revalidatePath` conservé ; lecture du salon admin conservée | V4 |
+| `apps/site/src/app/api/admin/ai/route.ts`, `lib/ia-cockpit-server.ts` | corps du contrat, `FEEDBACK_STATUSES` de `@shenron/db/constants`, client typé à la place de `postToBot` ; `revalidatePath` conservé ; lecture du salon admin conservée | V4 |
 | `apps/site/src/lib/config.ts` | résolveur unique de l'URL du bot pour ces clients | V4 |
 | `apps/site/src/lib/{shenron,member-roles,db-universe}.ts`, `components/home/useLiveBotState.ts`, téléversements, actions serveur | Phase 2 (SH-API-4) | — |
 | `aphrody-ai/plugins/aphrody/skills/dragon-ball/**`, `app/llms.txt/route.ts`, `aphrody-mcp` | tests de dérive (§8.4) ; documents mis à jour dans le même commit que tout changement de contrat | V4 |

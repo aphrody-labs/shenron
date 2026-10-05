@@ -4261,7 +4261,7 @@ export class ApiServer {
           }),
         },
 
-        // ── Cockpit IA du site (/admin/ia) : écritures sur les tables runtime ──
+        // ── Cockpit IA du site (/admin/ai) : écritures sur les tables runtime ──
         // Le site lit le miroir PostgreSQL `bot.*` et délègue ici ses écritures :
         // le bot reste l'autorité de admin_goals, rag_training_feedback,
         // rag_eval_history et du jeu doré (cf. ~/api/ia-cockpit).
