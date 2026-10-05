@@ -8,6 +8,8 @@
  *
  * Source de données = SQLite local (`DatabaseService.sqlite`), requêtes brutes
  * paramétrées (même pattern que l'API REST). Lecture seule : aucune mutation.
+ * Suppression logique (SH-P0-004) : chaque requête du wiki, relations et
+ * compteurs compris, ne lit que les lignes `visible = 1` (db/wiki-visibility).
  * Garde-fou anti-abus : limite de profondeur de requête (cycles personnage ↔
  * transformation). GraphiQL activé pour l'exploration.
  */
@@ -181,7 +183,11 @@ Character.implement({
       nullable: true,
       resolve: (c, _a, ctx) =>
         c.origin_planet_id
-          ? one<PlanetRow>(ctx, "SELECT * FROM db_planets WHERE id=?", c.origin_planet_id)
+          ? one<PlanetRow>(
+              ctx,
+              "SELECT * FROM db_planets WHERE id=? AND visible = 1",
+              c.origin_planet_id,
+            )
           : null,
     }),
     transformations: t.field({
@@ -189,7 +195,7 @@ Character.implement({
       resolve: (c, _a, ctx) =>
         all<TransformationRow>(
           ctx,
-          "SELECT * FROM db_transformations WHERE character_id=? ORDER BY id",
+          "SELECT * FROM db_transformations WHERE character_id=? AND visible = 1 ORDER BY id",
           c.id,
         ),
     }),
@@ -199,7 +205,7 @@ Character.implement({
       resolve: (c, _a, ctx) =>
         all<TechniqueRow>(
           ctx,
-          "SELECT * FROM db_techniques WHERE creator_id=? ORDER BY name",
+          "SELECT * FROM db_techniques WHERE creator_id=? AND visible = 1 ORDER BY name",
           c.id,
         ),
     }),
@@ -222,7 +228,7 @@ Planet.implement({
       resolve: (p, _a, ctx) =>
         all<CharacterRow>(
           ctx,
-          "SELECT * FROM db_characters WHERE origin_planet_id=? ORDER BY name",
+          "SELECT * FROM db_characters WHERE origin_planet_id=? AND visible = 1 ORDER BY name",
           p.id,
         ),
     }),
@@ -340,7 +346,11 @@ Race.implement({
       nullable: true,
       resolve: (r, _a, ctx) =>
         r.home_planet_id
-          ? one<PlanetRow>(ctx, "SELECT * FROM db_planets WHERE id=?", r.home_planet_id)
+          ? one<PlanetRow>(
+              ctx,
+              "SELECT * FROM db_planets WHERE id=? AND visible = 1",
+              r.home_planet_id,
+            )
           : null,
     }),
   }),
@@ -467,7 +477,7 @@ builder.queryType({
       resolve: (_r, a, ctx) => {
         const limit = clampLimit(a.limit, 20, 100);
         const offset = Math.max(a.offset ?? 0, 0);
-        const where: string[] = [];
+        const where: string[] = ["visible = 1"];
         const params: unknown[] = [];
         if (a.search) {
           where.push("(name LIKE ? OR name_ja LIKE ? OR name_romaji LIKE ?)");
@@ -477,7 +487,7 @@ builder.queryType({
           where.push("race = ?");
           params.push(a.race);
         }
-        const w = where.length ? `WHERE ${where.join(" AND ")}` : "";
+        const w = `WHERE ${where.join(" AND ")}`;
         return all<CharacterRow>(
           ctx,
           `SELECT * FROM db_characters ${w} ORDER BY name LIMIT ? OFFSET ?`,
@@ -491,7 +501,8 @@ builder.queryType({
       type: Planet,
       nullable: true,
       args: { id: t.arg.int({ required: true }) },
-      resolve: (_r, a, ctx) => one<PlanetRow>(ctx, "SELECT * FROM db_planets WHERE id=?", a.id),
+      resolve: (_r, a, ctx) =>
+        one<PlanetRow>(ctx, "SELECT * FROM db_planets WHERE id=? AND visible = 1", a.id),
     }),
     planets: t.field({
       type: [Planet],
@@ -499,7 +510,7 @@ builder.queryType({
       resolve: (_r, a, ctx) =>
         all<PlanetRow>(
           ctx,
-          "SELECT * FROM db_planets ORDER BY name LIMIT ? OFFSET ?",
+          "SELECT * FROM db_planets WHERE visible = 1 ORDER BY name LIMIT ? OFFSET ?",
           clampLimit(a.limit, 50, 200),
           Math.max(a.offset ?? 0, 0),
         ),
@@ -510,9 +521,9 @@ builder.queryType({
       args: { id: t.arg.int(), slug: t.arg.string() },
       resolve: (_r, a, ctx) =>
         a.slug
-          ? one<SagaRow>(ctx, "SELECT * FROM db_sagas WHERE slug=?", a.slug)
+          ? one<SagaRow>(ctx, "SELECT * FROM db_sagas WHERE slug=? AND visible = 1", a.slug)
           : a.id != null
-            ? one<SagaRow>(ctx, "SELECT * FROM db_sagas WHERE id=?", a.id)
+            ? one<SagaRow>(ctx, "SELECT * FROM db_sagas WHERE id=? AND visible = 1", a.id)
             : null,
     }),
     sagas: t.field({
@@ -520,14 +531,19 @@ builder.queryType({
       args: { series: t.arg.string() },
       resolve: (_r, a, ctx) =>
         a.series
-          ? all<SagaRow>(ctx, "SELECT * FROM db_sagas WHERE series=? ORDER BY order_idx", a.series)
-          : all<SagaRow>(ctx, "SELECT * FROM db_sagas ORDER BY order_idx"),
+          ? all<SagaRow>(
+              ctx,
+              "SELECT * FROM db_sagas WHERE series=? AND visible = 1 ORDER BY order_idx",
+              a.series,
+            )
+          : all<SagaRow>(ctx, "SELECT * FROM db_sagas WHERE visible = 1 ORDER BY order_idx"),
     }),
     episode: t.field({
       type: Episode,
       nullable: true,
       args: { id: t.arg.int({ required: true }) },
-      resolve: (_r, a, ctx) => one<EpisodeRow>(ctx, "SELECT * FROM db_episodes WHERE id=?", a.id),
+      resolve: (_r, a, ctx) =>
+        one<EpisodeRow>(ctx, "SELECT * FROM db_episodes WHERE id=? AND visible = 1", a.id),
     }),
     episodes: t.field({
       type: [Episode],
@@ -538,14 +554,14 @@ builder.queryType({
         return a.series
           ? all<EpisodeRow>(
               ctx,
-              "SELECT * FROM db_episodes WHERE series=? ORDER BY number_in_series LIMIT ? OFFSET ?",
+              "SELECT * FROM db_episodes WHERE series=? AND visible = 1 ORDER BY number_in_series LIMIT ? OFFSET ?",
               a.series,
               limit,
               offset,
             )
           : all<EpisodeRow>(
               ctx,
-              "SELECT * FROM db_episodes ORDER BY series, number_in_series LIMIT ? OFFSET ?",
+              "SELECT * FROM db_episodes WHERE visible = 1 ORDER BY series, number_in_series LIMIT ? OFFSET ?",
               limit,
               offset,
             );
@@ -557,9 +573,13 @@ builder.queryType({
       args: { id: t.arg.int(), slug: t.arg.string() },
       resolve: (_r, a, ctx) =>
         a.slug
-          ? one<TechniqueRow>(ctx, "SELECT * FROM db_techniques WHERE slug=?", a.slug)
+          ? one<TechniqueRow>(
+              ctx,
+              "SELECT * FROM db_techniques WHERE slug=? AND visible = 1",
+              a.slug,
+            )
           : a.id != null
-            ? one<TechniqueRow>(ctx, "SELECT * FROM db_techniques WHERE id=?", a.id)
+            ? one<TechniqueRow>(ctx, "SELECT * FROM db_techniques WHERE id=? AND visible = 1", a.id)
             : null,
     }),
     techniques: t.field({
@@ -570,11 +590,15 @@ builder.queryType({
         return a.type
           ? all<TechniqueRow>(
               ctx,
-              "SELECT * FROM db_techniques WHERE type=? ORDER BY name LIMIT ?",
+              "SELECT * FROM db_techniques WHERE type=? AND visible = 1 ORDER BY name LIMIT ?",
               a.type,
               limit,
             )
-          : all<TechniqueRow>(ctx, "SELECT * FROM db_techniques ORDER BY name LIMIT ?", limit);
+          : all<TechniqueRow>(
+              ctx,
+              "SELECT * FROM db_techniques WHERE visible = 1 ORDER BY name LIMIT ?",
+              limit,
+            );
       },
     }),
     transformations: t.field({
@@ -584,10 +608,13 @@ builder.queryType({
         a.characterId != null
           ? all<TransformationRow>(
               ctx,
-              "SELECT * FROM db_transformations WHERE character_id=? ORDER BY id",
+              "SELECT * FROM db_transformations WHERE character_id=? AND visible = 1 ORDER BY id",
               a.characterId,
             )
-          : all<TransformationRow>(ctx, "SELECT * FROM db_transformations ORDER BY name"),
+          : all<TransformationRow>(
+              ctx,
+              "SELECT * FROM db_transformations WHERE visible = 1 ORDER BY name",
+            ),
     }),
     movie: t.field({
       type: Movie,
@@ -595,14 +622,15 @@ builder.queryType({
       args: { id: t.arg.int(), slug: t.arg.string() },
       resolve: (_r, a, ctx) =>
         a.slug
-          ? one<MovieRow>(ctx, "SELECT * FROM db_movies WHERE slug=?", a.slug)
+          ? one<MovieRow>(ctx, "SELECT * FROM db_movies WHERE slug=? AND visible = 1", a.slug)
           : a.id != null
-            ? one<MovieRow>(ctx, "SELECT * FROM db_movies WHERE id=?", a.id)
+            ? one<MovieRow>(ctx, "SELECT * FROM db_movies WHERE id=? AND visible = 1", a.id)
             : null,
     }),
     movies: t.field({
       type: [Movie],
-      resolve: (_r, _a, ctx) => all<MovieRow>(ctx, "SELECT * FROM db_movies ORDER BY release_date"),
+      resolve: (_r, _a, ctx) =>
+        all<MovieRow>(ctx, "SELECT * FROM db_movies WHERE visible = 1 ORDER BY release_date"),
     }),
     game: t.field({
       type: Game,
@@ -610,9 +638,9 @@ builder.queryType({
       args: { id: t.arg.int(), slug: t.arg.string() },
       resolve: (_r, a, ctx) =>
         a.slug
-          ? one<GameRow>(ctx, "SELECT * FROM db_games WHERE slug=?", a.slug)
+          ? one<GameRow>(ctx, "SELECT * FROM db_games WHERE slug=? AND visible = 1", a.slug)
           : a.id != null
-            ? one<GameRow>(ctx, "SELECT * FROM db_games WHERE id=?", a.id)
+            ? one<GameRow>(ctx, "SELECT * FROM db_games WHERE id=? AND visible = 1", a.id)
             : null,
     }),
     games: t.field({
@@ -621,7 +649,7 @@ builder.queryType({
       resolve: (_r, a, ctx) =>
         all<GameRow>(
           ctx,
-          "SELECT * FROM db_games ORDER BY release_date LIMIT ?",
+          "SELECT * FROM db_games WHERE visible = 1 ORDER BY release_date LIMIT ?",
           clampLimit(a.limit, 60, 200),
         ),
     }),
@@ -631,14 +659,15 @@ builder.queryType({
       args: { id: t.arg.int(), slug: t.arg.string() },
       resolve: (_r, a, ctx) =>
         a.slug
-          ? one<RaceRow>(ctx, "SELECT * FROM db_races WHERE slug=?", a.slug)
+          ? one<RaceRow>(ctx, "SELECT * FROM db_races WHERE slug=? AND visible = 1", a.slug)
           : a.id != null
-            ? one<RaceRow>(ctx, "SELECT * FROM db_races WHERE id=?", a.id)
+            ? one<RaceRow>(ctx, "SELECT * FROM db_races WHERE id=? AND visible = 1", a.id)
             : null,
     }),
     races: t.field({
       type: [Race],
-      resolve: (_r, _a, ctx) => all<RaceRow>(ctx, "SELECT * FROM db_races ORDER BY name"),
+      resolve: (_r, _a, ctx) =>
+        all<RaceRow>(ctx, "SELECT * FROM db_races WHERE visible = 1 ORDER BY name"),
     }),
     ragSearch: t.field({
       type: RagResult,
@@ -747,7 +776,7 @@ builder.queryType({
       description: "Compteurs par entité du wiki.",
       resolve: (_r, _a, ctx) => {
         const c = (table: string) =>
-          one<{ n: number }>(ctx, `SELECT COUNT(*) n FROM ${table}`)?.n ?? 0;
+          one<{ n: number }>(ctx, `SELECT COUNT(*) n FROM ${table} WHERE visible = 1`)?.n ?? 0;
         return {
           characters: c("db_characters"),
           planets: c("db_planets"),
@@ -820,7 +849,7 @@ export function graphqlHandler(req: Request): Response | Promise<Response> {
       if (charCache.has(id)) return charCache.get(id) ?? null;
       const row = one<CharacterRow>(
         { sqlite, charById: () => null },
-        "SELECT * FROM db_characters WHERE id=?",
+        "SELECT * FROM db_characters WHERE id=? AND visible = 1",
         id,
       );
       charCache.set(id, row);

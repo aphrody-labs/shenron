@@ -55,6 +55,9 @@ for (const statement of [
   "ALTER TABLE users ADD COLUMN equipped_banner TEXT;",
   "ALTER TABLE users ADD COLUMN zeni_frozen INTEGER NOT NULL DEFAULT 0;",
   "ALTER TABLE level_rewards ADD COLUMN banner_url TEXT;",
+  // Colonne présente dans le réplica de production (15 colonnes) et dans le schéma
+  // Drizzle, absente des migrations SQLite.
+  "ALTER TABLE db_episodes ADD COLUMN video_url TEXT;",
 ]) {
   try {
     sqlite.exec(statement);

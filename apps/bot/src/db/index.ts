@@ -5,6 +5,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { env } from "~/lib/env";
 import * as schema from "./schema";
+import { ensureWikiVisibility } from "./wiki-visibility";
 
 export type DB = BunSQLiteDatabase<typeof schema>;
 
@@ -144,6 +145,11 @@ export class DatabaseService {
 			CREATE INDEX IF NOT EXISTS idx_lab_messages_user ON admin_lab_messages(user_id);
 			CREATE INDEX IF NOT EXISTS idx_lab_messages_created ON admin_lab_messages(created_at);
 		`);
+
+    // Réplica wiki : la colonne `visible` doit exister avant toute lecture
+    // publique (SH-P0-004). Base neuve : `src/index.ts` rappelle la garantie
+    // après les migrations, qui créent les tables.
+    ensureWikiVisibility(this.sqlite);
   }
 
   close() {

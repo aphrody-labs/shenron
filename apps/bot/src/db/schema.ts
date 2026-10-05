@@ -318,6 +318,8 @@ export const dbPlanets = sqliteTable("db_planets", {
   image: text("image").notNull(),
   isDestroyed: integer("is_destroyed", { mode: "boolean" }).notNull().default(false),
   description: text("description"),
+  /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
 });
 
 export const dbCharacters = sqliteTable(
@@ -336,6 +338,8 @@ export const dbCharacters = sqliteTable(
     affiliation: text("affiliation"),
     description: text("description"),
     originPlanetId: integer("origin_planet_id"),
+    /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [index("idx_db_char_race").on(t.race), index("idx_db_char_affiliation").on(t.affiliation)],
 );
@@ -373,6 +377,8 @@ export const dbTransformations = sqliteTable(
     image: text("image").notNull(),
     ki: text("ki"),
     characterId: integer("character_id").notNull(),
+    /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [index("idx_db_transfo_char").on(t.characterId)],
 );
@@ -654,6 +660,8 @@ export const dbRaces = sqliteTable("db_races", {
   nameJa: text("name_ja"),
   homePlanetId: integer("home_planet_id"),
   description: text("description"),
+  /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
 });
 
 export const dbTechniques = sqliteTable(
@@ -669,6 +677,8 @@ export const dbTechniques = sqliteTable(
     description: text("description"),
     debutEpisodeId: integer("debut_episode_id"),
     debutChapterId: integer("debut_chapter_id"),
+    /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [index("idx_db_techniques_creator").on(t.creatorId)],
 );
@@ -695,6 +705,8 @@ export const dbSagas = sqliteTable("db_sagas", {
   orderIdx: integer("order_idx").notNull(),
   description: text("description"),
   image: text("image"),
+  /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
 });
 
 export const dbArcs = sqliteTable(
@@ -707,6 +719,8 @@ export const dbArcs = sqliteTable(
     nameJa: text("name_ja"),
     orderIdx: integer("order_idx").notNull(),
     description: text("description"),
+    /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [index("idx_db_arcs_saga").on(t.sagaId)],
 );
@@ -732,6 +746,8 @@ export const dbEpisodes = sqliteTable(
     // de lecture (reverse-sync Neon→SQLite). Colonnes nullable → boot safe.
     frames: text("frames", { mode: "json" }).$type<EpisodeFrame[]>(),
     scenePreview: text("scene_preview"), // chemin relatif MP4 montage, ex. ./assets/ext/db_episodes_frames/<series>/ep<NNN>/preview.mp4
+    /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [
     index("idx_db_episodes_series_num").on(t.series, t.numberInSeries),
@@ -751,6 +767,8 @@ export const dbMangaVolumes = sqliteTable(
     publishedAt: integer("published_at", { mode: "timestamp" }),
     cover: text("cover"),
     isbn: text("isbn"),
+    /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [index("idx_db_manga_vol").on(t.series, t.volumeNumber)],
 );
@@ -1021,6 +1039,8 @@ export const dbMangaChapters = sqliteTable(
     titleJa: text("title_ja"),
     volumeId: integer("volume_id"),
     publishedAt: integer("published_at", { mode: "timestamp" }),
+    /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+    visible: integer("visible", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [
     index("idx_db_manga_chap").on(t.series, t.chapterNumber),
@@ -1097,6 +1117,8 @@ export const dbMovies = sqliteTable("db_movies", {
   poster: text("poster"),
   malId: integer("mal_id"),
   anilistId: integer("anilist_id"),
+  /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
 });
 
 export const dbGames = sqliteTable("db_games", {
@@ -1111,6 +1133,8 @@ export const dbGames = sqliteTable("db_games", {
   description: text("description"),
   cover: text("cover"),
   officialUrl: text("official_url"),
+  /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
+  visible: integer("visible", { mode: "boolean" }).notNull().default(true),
 });
 
 export const dbGameCharacters = sqliteTable(

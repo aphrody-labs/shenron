@@ -85,6 +85,8 @@ async function main() {
       for (const c of cols) {
         let v = row[c];
         if (v instanceof Uint8Array && !(v instanceof Buffer)) v = Buffer.from(v);
+        // SQLite range les booléens (dont `visible`, la suppression logique) en 0/1.
+        if (pgColType.get(c) === "boolean" && typeof v === "number") v = v !== 0;
         if (pgColType.get(c) === "jsonb" && typeof v === "string") {
           try {
             v = sql.json(JSON.parse(v));

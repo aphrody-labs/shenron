@@ -1,8 +1,9 @@
 import { singleton, inject } from "tsyringe";
-import { eq, like, sql, desc } from "drizzle-orm";
+import { and, asc, desc, eq, like, sql } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
 import {
   dbCharacters,
+  dbCharacterTechniques,
   dbPlanets,
   dbTransformations,
   dbMovies,
@@ -16,33 +17,50 @@ import {
   dbNews,
   dbRaces,
   dbTools,
-  type DBCharacter,
-  type DBPlanet,
-  type DBTransformation,
 } from "~/db/schema";
 import { logger } from "~/lib/logger";
 
-export type { DBCharacter, DBPlanet, DBTransformation };
-export type DBMovie = typeof dbMovies.$inferSelect;
-export type DBTechnique = typeof dbTechniques.$inferSelect;
-export type DBGame = typeof dbGames.$inferSelect;
-export type DBMangaVolume = typeof dbMangaVolumes.$inferSelect;
-export type DBSaga = typeof dbSagas.$inferSelect;
-export type DBArc = typeof dbArcs.$inferSelect;
-export type DBEpisode = typeof dbEpisodes.$inferSelect;
-export type DBMangaChapter = typeof dbMangaChapters.$inferSelect;
+/** Ligne publique : le drapeau éditorial `visible` n'est jamais exposé. */
+export type Public<T> = Omit<T, "visible">;
+
+export type DBCharacter = Public<typeof dbCharacters.$inferSelect>;
+export type DBPlanet = Public<typeof dbPlanets.$inferSelect>;
+export type DBTransformation = Public<typeof dbTransformations.$inferSelect>;
+export type DBMovie = Public<typeof dbMovies.$inferSelect>;
+export type DBTechnique = Public<typeof dbTechniques.$inferSelect>;
+export type DBGame = Public<typeof dbGames.$inferSelect>;
+export type DBMangaVolume = Public<typeof dbMangaVolumes.$inferSelect>;
+export type DBSaga = Public<typeof dbSagas.$inferSelect>;
+export type DBArc = Public<typeof dbArcs.$inferSelect>;
+export type DBEpisode = Public<typeof dbEpisodes.$inferSelect>;
+export type DBMangaChapter = Public<typeof dbMangaChapters.$inferSelect>;
 export type DBNews = typeof dbNews.$inferSelect;
-export type DBRace = typeof dbRaces.$inferSelect;
-export type DBTool = typeof dbTools.$inferSelect;
+export type DBRace = Public<typeof dbRaces.$inferSelect>;
+export type DBTool = Public<typeof dbTools.$inferSelect>;
 
 export interface CharacterWithRelations extends DBCharacter {
   transformations: DBTransformation[];
   originPlanet: DBPlanet | null;
-  techniques: { technique: DBTechnique }[];
+  techniques: { characterId: number; techniqueId: number; technique: DBTechnique }[];
+}
+
+export type TechniqueWithCreator = DBTechnique & {
+  creatorName: string | null;
+  creatorImage: string | null;
+};
+
+/** Retire `visible` d'une ligne déjà filtrée. */
+function publicRow<T extends { visible: boolean }>(row: T): Public<T> {
+  const { visible: _visible, ...rest } = row;
+  return rest;
 }
 
 /**
  * Lectures du wiki dans le réplica SQLite du bot.
+ *
+ * Suppression logique (SH-P0-004) : chaque lecture, relations comprises, ne
+ * rend que les lignes `visible = 1` (colonne garantie par `db/wiki-visibility`),
+ * comme le dépôt PostgreSQL de `/api/public/wiki/categories`.
  *
  * Une erreur de base se propage : une liste vide ou une fiche absente doivent
  * rester des faits, jamais le masque d'une panne. Les routes publiques la
@@ -59,152 +77,216 @@ export class WikiService {
   // --- Tools ---
 
   /**
-   * Liste tous les outils communautaires.
+   * Liste les outils communautaires visibles.
    */
   async listTools(): Promise<DBTool[]> {
-    return await this.db.select().from(dbTools).orderBy(desc(dbTools.stars));
+    const rows = await this.db
+      .select()
+      .from(dbTools)
+      .where(eq(dbTools.visible, true))
+      .orderBy(desc(dbTools.stars));
+    return rows.map(publicRow);
   }
 
   /**
-   * Récupère un outil par son slug.
+   * Récupère un outil visible par son slug, avec son jeu cible s'il est visible.
    */
-  async getTool(slug: string): Promise<DBTool | null> {
-    return (
-      (await this.db.query.dbTools.findFirst({
-        where: eq(dbTools.slug, slug),
-        with: {
-          targetGame: true,
-        },
-      })) ?? null
-    );
+  async getTool(slug: string): Promise<(DBTool & { targetGame: DBGame | null }) | null> {
+    const [tool] = await this.db
+      .select()
+      .from(dbTools)
+      .where(and(eq(dbTools.slug, slug), eq(dbTools.visible, true)))
+      .limit(1);
+    if (!tool) return null;
+    const [game] =
+      tool.targetGameId == null
+        ? []
+        : await this.db
+            .select()
+            .from(dbGames)
+            .where(and(eq(dbGames.id, tool.targetGameId), eq(dbGames.visible, true)))
+            .limit(1);
+    return { ...publicRow(tool), targetGame: game ? publicRow(game) : null };
   }
 
   // --- Characters ---
 
   /**
-   * Liste tous les personnages (local DB, rapide).
+   * Liste les personnages visibles (local DB, rapide).
    */
   async listAll(): Promise<DBCharacter[]> {
-    return await this.db.select().from(dbCharacters);
+    const rows = await this.db.select().from(dbCharacters).where(eq(dbCharacters.visible, true));
+    return rows.map(publicRow);
   }
 
   /**
-   * Recherche fuzzy par nom (partial, case-insensitive).
+   * Recherche fuzzy par nom (partial, case-insensitive) parmi les personnages visibles.
    */
   async search(query: string, limit = 25): Promise<DBCharacter[]> {
     const q = query.trim();
-    if (!q) return this.db.select().from(dbCharacters).limit(limit);
-    return await this.db
+    const rows = await this.db
       .select()
       .from(dbCharacters)
-      .where(like(sql`LOWER(${dbCharacters.name})`, `%${q.toLowerCase()}%`))
+      .where(
+        q
+          ? and(
+              eq(dbCharacters.visible, true),
+              like(sql`LOWER(${dbCharacters.name})`, `%${q.toLowerCase()}%`),
+            )
+          : eq(dbCharacters.visible, true),
+      )
       .limit(limit);
+    return rows.map(publicRow);
   }
 
   /**
-   * Récupère un personnage avec ses relations (transformations, planète, techniques).
+   * Récupère un personnage visible avec ses relations visibles (transformations,
+   * planète d'origine, techniques).
    */
   async getCharacter(id: number): Promise<CharacterWithRelations | null> {
-    const c = await this.db.query.dbCharacters.findFirst({
-      where: eq(dbCharacters.id, id),
-      with: {
-        transformations: true,
-        originPlanet: true,
-        techniques: {
-          with: {
-            technique: true,
-          },
-        },
-      },
-    });
-    return (c as CharacterWithRelations) ?? null;
+    const [character] = await this.db
+      .select()
+      .from(dbCharacters)
+      .where(and(eq(dbCharacters.id, id), eq(dbCharacters.visible, true)))
+      .limit(1);
+    if (!character) return null;
+    const [transformations, planets, techniques] = await Promise.all([
+      this.db
+        .select()
+        .from(dbTransformations)
+        .where(and(eq(dbTransformations.characterId, id), eq(dbTransformations.visible, true)))
+        .orderBy(asc(dbTransformations.id)),
+      character.originPlanetId == null
+        ? Promise.resolve([])
+        : this.db
+            .select()
+            .from(dbPlanets)
+            .where(and(eq(dbPlanets.id, character.originPlanetId), eq(dbPlanets.visible, true)))
+            .limit(1),
+      this.db
+        .select({ link: dbCharacterTechniques, technique: dbTechniques })
+        .from(dbCharacterTechniques)
+        .innerJoin(
+          dbTechniques,
+          and(
+            eq(dbCharacterTechniques.techniqueId, dbTechniques.id),
+            eq(dbTechniques.visible, true),
+          ),
+        )
+        .where(eq(dbCharacterTechniques.characterId, id)),
+    ]);
+    const planet = planets[0];
+    return {
+      ...publicRow(character),
+      transformations: transformations.map(publicRow),
+      originPlanet: planet ? publicRow(planet) : null,
+      techniques: techniques.map((r) =>
+        Object.assign(r.link, { technique: publicRow(r.technique) }),
+      ),
+    };
   }
 
   // --- Transformations ---
 
   /**
-   * Liste toutes les transformations (SSJ, SSJ2, etc.) tous personnages
+   * Liste les transformations visibles (SSJ, SSJ2, etc.) tous personnages
    * confondus. Exposé en lecture publique pour le site (page wiki dédiée).
    */
   async listTransformations(): Promise<DBTransformation[]> {
-    return await this.db.select().from(dbTransformations);
+    const rows = await this.db
+      .select()
+      .from(dbTransformations)
+      .where(eq(dbTransformations.visible, true));
+    return rows.map(publicRow);
   }
 
   // --- Planets ---
 
   /**
-   * Récupère une planète par son ID avec ses personnages.
+   * Récupère une planète visible par son ID avec ses personnages visibles.
    */
   async getPlanet(id: number): Promise<(DBPlanet & { characters: DBCharacter[] }) | null> {
-    const p = await this.db.query.dbPlanets.findFirst({
-      where: eq(dbPlanets.id, id),
-      with: {
-        characters: true,
-      },
-    });
-    return p ?? null;
+    const [planet] = await this.db
+      .select()
+      .from(dbPlanets)
+      .where(and(eq(dbPlanets.id, id), eq(dbPlanets.visible, true)))
+      .limit(1);
+    if (!planet) return null;
+    const characters = await this.db
+      .select()
+      .from(dbCharacters)
+      .where(and(eq(dbCharacters.originPlanetId, id), eq(dbCharacters.visible, true)));
+    return { ...publicRow(planet), characters: characters.map(publicRow) };
   }
 
   /**
-   * Liste toutes les planètes.
+   * Liste les planètes visibles.
    */
   async listPlanets(): Promise<DBPlanet[]> {
-    return await this.db.select().from(dbPlanets);
+    const rows = await this.db.select().from(dbPlanets).where(eq(dbPlanets.visible, true));
+    return rows.map(publicRow);
   }
 
   // --- Races ---
 
   /**
-   * Liste toutes les races.
+   * Liste les races visibles.
    */
   async listRaces(): Promise<DBRace[]> {
-    return await this.db.select().from(dbRaces);
+    const rows = await this.db.select().from(dbRaces).where(eq(dbRaces.visible, true));
+    return rows.map(publicRow);
   }
 
   /**
-   * Récupère une race par son slug avec ses personnages.
+   * Récupère une race visible par son slug avec ses personnages visibles.
    */
   async getRace(slug: string): Promise<(DBRace & { characters: DBCharacter[] }) | null> {
-    const r = await this.db.query.dbRaces.findFirst({
-      where: eq(dbRaces.slug, slug),
-    });
-    if (!r) return null;
-
-    const characters = await this.db
+    const [race] = await this.db
       .select()
-      .from(dbCharacters)
-      .where(eq(dbCharacters.race, r.name));
-
-    return { ...r, characters };
+      .from(dbRaces)
+      .where(and(eq(dbRaces.slug, slug), eq(dbRaces.visible, true)))
+      .limit(1);
+    if (!race) return null;
+    return { ...publicRow(race), characters: await this.listByRace(race.name) };
   }
 
   /**
-   * Liste les personnages d'une race donnée.
+   * Liste les personnages visibles d'une race donnée.
    */
   async listByRace(race: string): Promise<DBCharacter[]> {
-    return await this.db.select().from(dbCharacters).where(eq(dbCharacters.race, race));
+    const rows = await this.db
+      .select()
+      .from(dbCharacters)
+      .where(and(eq(dbCharacters.race, race), eq(dbCharacters.visible, true)));
+    return rows.map(publicRow);
   }
 
   // --- Techniques ---
 
-  /**
-   * Liste toutes les techniques, enrichies du créateur (nom + image) via un
-   * left join sur `db_characters` — les techniques n'ayant pas d'image propre,
-   * le portrait du personnage créateur sert de visuel côté site.
-   */
-  async listTechniques(): Promise<
-    (DBTechnique & { creatorName: string | null; creatorImage: string | null })[]
-  > {
-    const rows = await this.db
+  /** Technique + créateur (nom, image) ; un créateur masqué ne prête pas son visuel. */
+  private techniquesWithCreator() {
+    return this.db
       .select({
         t: dbTechniques,
         creatorName: dbCharacters.name,
         creatorImage: dbCharacters.image,
       })
       .from(dbTechniques)
-      .leftJoin(dbCharacters, eq(dbTechniques.creatorId, dbCharacters.id));
+      .leftJoin(
+        dbCharacters,
+        and(eq(dbTechniques.creatorId, dbCharacters.id), eq(dbCharacters.visible, true)),
+      );
+  }
+
+  /**
+   * Liste les techniques visibles, enrichies du créateur (nom + image) via un
+   * left join sur `db_characters` — les techniques n'ayant pas d'image propre,
+   * le portrait du personnage créateur sert de visuel côté site.
+   */
+  async listTechniques(): Promise<TechniqueWithCreator[]> {
+    const rows = await this.techniquesWithCreator().where(eq(dbTechniques.visible, true));
     return rows.map((r) =>
-      Object.assign({}, r.t, {
+      Object.assign(publicRow(r.t), {
         creatorName: r.creatorName ?? null,
         creatorImage: r.creatorImage ?? null,
       }),
@@ -212,24 +294,15 @@ export class WikiService {
   }
 
   /**
-   * Récupère une technique par son slug.
+   * Récupère une technique visible par son slug.
    */
-  async getTechnique(
-    slug: string,
-  ): Promise<(DBTechnique & { creatorName: string | null; creatorImage: string | null }) | null> {
-    const [row] = await this.db
-      .select({
-        t: dbTechniques,
-        creatorName: dbCharacters.name,
-        creatorImage: dbCharacters.image,
-      })
-      .from(dbTechniques)
-      .leftJoin(dbCharacters, eq(dbTechniques.creatorId, dbCharacters.id))
-      .where(eq(dbTechniques.slug, slug))
+  async getTechnique(slug: string): Promise<TechniqueWithCreator | null> {
+    const [row] = await this.techniquesWithCreator()
+      .where(and(eq(dbTechniques.slug, slug), eq(dbTechniques.visible, true)))
       .limit(1);
     if (!row) return null;
     return {
-      ...row.t,
+      ...publicRow(row.t),
       creatorName: row.creatorName ?? null,
       creatorImage: row.creatorImage ?? null,
     };
@@ -238,131 +311,163 @@ export class WikiService {
   // --- Narration (Sagas, Arcs, Episodes) ---
 
   /**
-   * Liste toutes les sagas ordonnées.
+   * Liste les sagas visibles ordonnées.
    */
   async listSagas(): Promise<DBSaga[]> {
-    return await this.db.select().from(dbSagas).orderBy(dbSagas.orderIdx);
+    const rows = await this.db
+      .select()
+      .from(dbSagas)
+      .where(eq(dbSagas.visible, true))
+      .orderBy(dbSagas.orderIdx);
+    return rows.map(publicRow);
   }
 
   /**
-   * Récupère une saga avec ses arcs.
+   * Récupère une saga visible avec ses arcs visibles.
    */
   async getSaga(slug: string): Promise<(DBSaga & { arcs: DBArc[] }) | null> {
-    const s = await this.db.query.dbSagas.findFirst({
-      where: eq(dbSagas.slug, slug),
-      with: {
-        arcs: {
-          orderBy: (arcs, { asc }) => asc(arcs.orderIdx),
-        },
-      },
-    });
-    return s ?? null;
+    const [saga] = await this.db
+      .select()
+      .from(dbSagas)
+      .where(and(eq(dbSagas.slug, slug), eq(dbSagas.visible, true)))
+      .limit(1);
+    if (!saga) return null;
+    const arcs = await this.db
+      .select()
+      .from(dbArcs)
+      .where(and(eq(dbArcs.sagaId, saga.id), eq(dbArcs.visible, true)))
+      .orderBy(asc(dbArcs.orderIdx));
+    return { ...publicRow(saga), arcs: arcs.map(publicRow) };
   }
 
   /**
-   * Récupère un arc avec ses épisodes.
+   * Récupère un arc visible avec ses épisodes visibles.
    */
   async getArc(slug: string): Promise<(DBArc & { episodes: DBEpisode[] }) | null> {
-    const a = await this.db.query.dbArcs.findFirst({
-      where: eq(dbArcs.slug, slug),
-      with: {
-        episodes: {
-          orderBy: (ep, { asc }) => asc(ep.numberInSeries),
-        },
-      },
-    });
-    return a ?? null;
+    const [arc] = await this.db
+      .select()
+      .from(dbArcs)
+      .where(and(eq(dbArcs.slug, slug), eq(dbArcs.visible, true)))
+      .limit(1);
+    if (!arc) return null;
+    const episodes = await this.db
+      .select()
+      .from(dbEpisodes)
+      .where(and(eq(dbEpisodes.arcId, arc.id), eq(dbEpisodes.visible, true)))
+      .orderBy(asc(dbEpisodes.numberInSeries));
+    return { ...publicRow(arc), episodes: episodes.map(publicRow) };
   }
 
   /**
-   * Récupère un épisode spécifique par son ID.
+   * Récupère un épisode visible par son ID.
    */
   async getEpisodeById(id: number): Promise<DBEpisode | null> {
-    return (
-      (await this.db.query.dbEpisodes.findFirst({
-        where: eq(dbEpisodes.id, id),
-      })) ?? null
-    );
+    const [episode] = await this.db
+      .select()
+      .from(dbEpisodes)
+      .where(and(eq(dbEpisodes.id, id), eq(dbEpisodes.visible, true)))
+      .limit(1);
+    return episode ? publicRow(episode) : null;
   }
 
   /**
-   * Récupère un épisode spécifique par série et numéro.
+   * Récupère un épisode visible par série et numéro.
    */
   async getEpisode(series: string, number: number): Promise<DBEpisode | null> {
-    return (
-      (await this.db.query.dbEpisodes.findFirst({
-        where: sql`${dbEpisodes.series} = ${series} AND ${dbEpisodes.numberInSeries} = ${number}`,
-      })) ?? null
-    );
+    const [episode] = await this.db
+      .select()
+      .from(dbEpisodes)
+      .where(
+        and(
+          eq(dbEpisodes.series, series),
+          eq(dbEpisodes.numberInSeries, number),
+          eq(dbEpisodes.visible, true),
+        ),
+      )
+      .limit(1);
+    return episode ? publicRow(episode) : null;
   }
 
   // --- Manga ---
 
   /**
-   * Liste les volumes d'un manga (DB, DBS).
+   * Liste les volumes visibles d'un manga (DB, DBS).
    */
   async listMangaVolumes(series: string): Promise<DBMangaVolume[]> {
-    return await this.db
+    const rows = await this.db
       .select()
       .from(dbMangaVolumes)
-      .where(eq(dbMangaVolumes.series, series))
+      .where(and(eq(dbMangaVolumes.series, series), eq(dbMangaVolumes.visible, true)))
       .orderBy(dbMangaVolumes.volumeNumber);
+    return rows.map(publicRow);
   }
 
   /**
-   * Récupère un volume avec ses chapitres.
+   * Récupère un volume visible avec ses chapitres visibles.
    */
   async getMangaVolume(
     id: number,
   ): Promise<(DBMangaVolume & { chapters: DBMangaChapter[] }) | null> {
-    const v = await this.db.query.dbMangaVolumes.findFirst({
-      where: eq(dbMangaVolumes.id, id),
-      with: {
-        chapters: {
-          orderBy: (ch, { asc }) => asc(ch.chapterNumber),
-        },
-      },
-    });
-    return v ?? null;
+    const [volume] = await this.db
+      .select()
+      .from(dbMangaVolumes)
+      .where(and(eq(dbMangaVolumes.id, id), eq(dbMangaVolumes.visible, true)))
+      .limit(1);
+    if (!volume) return null;
+    const chapters = await this.db
+      .select()
+      .from(dbMangaChapters)
+      .where(and(eq(dbMangaChapters.volumeId, id), eq(dbMangaChapters.visible, true)))
+      .orderBy(asc(dbMangaChapters.chapterNumber));
+    return { ...publicRow(volume), chapters: chapters.map(publicRow) };
   }
 
   // --- Movies & Games ---
 
   /**
-   * Liste tous les films.
+   * Liste les films visibles.
    */
   async listMovies(): Promise<DBMovie[]> {
-    return await this.db.select().from(dbMovies);
+    const rows = await this.db.select().from(dbMovies).where(eq(dbMovies.visible, true));
+    return rows.map(publicRow);
   }
 
   /**
-   * Récupère un film par son slug.
+   * Récupère un film visible par son id ou son slug.
    */
   async getMovie(idOrSlug: string): Promise<DBMovie | null> {
     const isId = /^\d+$/.test(idOrSlug);
-    return (
-      (await this.db.query.dbMovies.findFirst({
-        where: isId ? eq(dbMovies.id, Number(idOrSlug)) : eq(dbMovies.slug, idOrSlug),
-      })) ?? null
-    );
+    const [movie] = await this.db
+      .select()
+      .from(dbMovies)
+      .where(
+        and(
+          isId ? eq(dbMovies.id, Number(idOrSlug)) : eq(dbMovies.slug, idOrSlug),
+          eq(dbMovies.visible, true),
+        ),
+      )
+      .limit(1);
+    return movie ? publicRow(movie) : null;
   }
 
   /**
-   * Liste tous les jeux.
+   * Liste les jeux visibles.
    */
   async listGames(): Promise<DBGame[]> {
-    return await this.db.select().from(dbGames);
+    const rows = await this.db.select().from(dbGames).where(eq(dbGames.visible, true));
+    return rows.map(publicRow);
   }
 
   /**
-   * Récupère un jeu par son slug.
+   * Récupère un jeu visible par son slug.
    */
   async getGame(slug: string): Promise<DBGame | null> {
-    return (
-      (await this.db.query.dbGames.findFirst({
-        where: eq(dbGames.slug, slug),
-      })) ?? null
-    );
+    const [game] = await this.db
+      .select()
+      .from(dbGames)
+      .where(and(eq(dbGames.slug, slug), eq(dbGames.visible, true)))
+      .limit(1);
+    return game ? publicRow(game) : null;
   }
 
   // --- News ---
@@ -377,7 +482,8 @@ export class WikiService {
   // --- Stats & Utility ---
 
   /**
-   * Compte les entrées dans les tables principales.
+   * Compte les entrées (masquées comprises) dans les tables principales : sert
+   * au seed et aux statistiques d'administration, pas aux lectures publiques.
    */
   async count(): Promise<{
     characters: number;

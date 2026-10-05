@@ -149,6 +149,7 @@ import { contextPublicRag, searchPublicRag } from "./public-rag";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import { generateLlmAnswer, isFallbackAnswer } from "~/lib/llm";
 import { graphqlHandler } from "~/api/graphql";
+import { countVisibleWiki, listVisibleEpisodes, searchVisibleWiki } from "~/api/wiki-replica";
 import { openapiSpec, scalarHtml } from "~/api/openapi";
 import { ADMIN_ROUTES, dashboardRedirect } from "@shenron/config/admin";
 import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth";
@@ -2362,25 +2363,11 @@ export class ApiServer {
             const series = url.searchParams.get("series");
             const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "100", 10), 500);
             const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
-            const dbs = container.resolve(DatabaseService);
-            const sql = series
-              ? "SELECT * FROM db_episodes WHERE series = ? ORDER BY number_in_series LIMIT ? OFFSET ?"
-              : "SELECT * FROM db_episodes ORDER BY series, number_in_series LIMIT ? OFFSET ?";
-            const episodes = series
-              ? dbs.sqlite.query(sql).all(series, limit, offset)
-              : dbs.sqlite.query(sql).all(limit, offset);
-            const total = series
-              ? (
-                  dbs.sqlite
-                    .query("SELECT COUNT(*) AS n FROM db_episodes WHERE series = ?")
-                    .get(series) as { n: number }
-                ).n
-              : (
-                  dbs.sqlite.query("SELECT COUNT(*) AS n FROM db_episodes").get() as {
-                    n: number;
-                  }
-                ).n;
-            return { episodes, total, limit, offset };
+            return listVisibleEpisodes(container.resolve(DatabaseService).sqlite, {
+              series,
+              limit,
+              offset,
+            });
           }),
 
         "/api/public/wiki/episodes/:id": (req) =>
@@ -2472,62 +2459,7 @@ export class ApiServer {
             const url = new URL(req.url);
             const q = (url.searchParams.get("q") ?? "").trim();
             if (q.length < 2) return { results: [], q };
-            const dbs = container.resolve(DatabaseService);
-            // Search both FTS5 (if populated) AND raw LIKE across canonical entities
-            const like = `%${q}%`;
-            const characters = dbs.sqlite
-              .query(
-                "SELECT id, name, name_ja, image, race FROM db_characters WHERE name LIKE ? OR name_ja LIKE ? OR name_romaji LIKE ? LIMIT 20",
-              )
-              .all(like, like, like);
-            const planets = dbs.sqlite
-              .query(
-                "SELECT id, name, name_ja, image FROM db_planets WHERE name LIKE ? OR name_ja LIKE ? LIMIT 10",
-              )
-              .all(like, like);
-            const sagas = dbs.sqlite
-              .query(
-                "SELECT id, slug, name, name_ja, series FROM db_sagas WHERE name LIKE ? OR name_ja LIKE ? LIMIT 10",
-              )
-              .all(like, like);
-            const movies = dbs.sqlite
-              .query(
-                "SELECT id, slug, title, title_ja, series FROM db_movies WHERE title LIKE ? OR title_ja LIKE ? LIMIT 10",
-              )
-              .all(like, like);
-            const games = dbs.sqlite
-              .query(
-                "SELECT id, slug, title, title_ja FROM db_games WHERE title LIKE ? OR title_ja LIKE ? LIMIT 10",
-              )
-              .all(like, like);
-            // Techniques, transformations and races are wiki entities too:
-            // without them `q=kamehameha` matched nothing.
-            const techniques = dbs.sqlite
-              .query(
-                "SELECT id, slug, name, name_ja, type FROM db_techniques WHERE name LIKE ? OR name_ja LIKE ? OR name_romaji LIKE ? OR slug LIKE ? LIMIT 10",
-              )
-              .all(like, like, like, like);
-            const transformations = dbs.sqlite
-              .query(
-                "SELECT id, name, image, character_id FROM db_transformations WHERE name LIKE ? LIMIT 10",
-              )
-              .all(like);
-            const races = dbs.sqlite
-              .query(
-                "SELECT id, slug, name, name_ja FROM db_races WHERE name LIKE ? OR name_ja LIKE ? OR slug LIKE ? LIMIT 10",
-              )
-              .all(like, like, like);
-            return {
-              q,
-              characters,
-              planets,
-              sagas,
-              movies,
-              games,
-              techniques,
-              transformations,
-              races,
-            };
+            return searchVisibleWiki(container.resolve(DatabaseService).sqlite, q);
           }),
 
         // Redis in the shared backend invalidates retrieval after editorial writes.
@@ -3008,44 +2940,8 @@ export class ApiServer {
                       "SELECT source_id, kind, count(*) n FROM rag_chunks GROUP BY 1,2 ORDER BY n DESC",
                     )
                     .all();
-            // Une seule requête UNION ALL plutôt que treize allers-retours ;
-            // une table absente du réplica ne doit pas faire échouer la route.
-            const wikiTables = [
-              "db_characters",
-              "db_planets",
-              "db_races",
-              "db_techniques",
-              "db_transformations",
-              "db_sagas",
-              "db_arcs",
-              "db_movies",
-              "db_games",
-              "db_episodes",
-              "db_manga_volumes",
-              "db_manga_chapters",
-              "db_tools",
-            ];
-            const present = new Set(
-              dbs.sqlite
-                .query<{ name: string }, []>(
-                  "SELECT name FROM sqlite_master WHERE type IN ('table','view')",
-                )
-                .all()
-                .map((r) => r.name),
-            );
-            const usable = wikiTables.filter((t) => present.has(t));
-            const wiki: Record<string, number | null> = {};
-            for (const t of wikiTables) wiki[t] = null;
-            if (usable.length > 0) {
-              const rows = dbs.sqlite
-                .query<{ table_name: string; n: number }, []>(
-                  usable
-                    .map((t) => `SELECT '${t}' AS table_name, count(*) AS n FROM ${t}`)
-                    .join(" UNION ALL "),
-                )
-                .all();
-              for (const row of rows) wiki[row.table_name] = row.n;
-            }
+            // Volume VISIBLE du réplica (SH-P0-004), comme /api/public/wiki/categories.
+            const wiki = countVisibleWiki(dbs.sqlite);
             // Dernier passage de `scripts/orchestre-donnees.ts` : il dit quel
             // maillon de la chaîne (réplica → index → canon) était en retard,
             // ce qu'aucun comptage ne révèle. Absent tant qu'il n'a pas tourné.
