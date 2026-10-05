@@ -1,20 +1,18 @@
 "use client";
 
 /**
- * Trousse `components/ui/` — périmètre volontairement restreint.
+ * Bouton de la trousse `@shenron/ui` (base-ui + cva + jetons sémantiques :
+ * `bg-primary`, `ring`, `destructive`…).
  *
- * Ces primitives (base-ui + cva + tokens shadcn : `bg-primary`, `ring`,
- * `destructive`…) ne servent QU'À l'éditeur d'articles de l'admin
- * (`app/admin/posts/`). Elles ne sont pas le système de design du site.
+ * Il sert les surfaces applicatives : l'éditeur d'articles de l'admin
+ * (`app/admin/posts/`), l'éditeur de traduction Koharu (`src/koharu/`, où les
+ * jetons pointent sur les rôles M3 de l'hôte) et les parties de la trousse qui
+ * en dérivent (`AlertDialogAction`, `AlertDialogCancel`).
  *
- * Le langage visuel de dragonballfr.com vit dans `globals.css` : `.dbz-button`,
- * `.dbz-panel`, `.btn`, `.input`, adossés aux tokens `--color-dbz-*` que
- * `/admin/design` pilote au runtime. Les 460 `<button>` du site l'utilisent —
- * c'est cohérent, thémable, et il n'y a rien à « migrer ».
- *
- * Autrement dit : ne pas généraliser `<Button>`, et ne pas supprimer ces
- * fichiers non plus (l'éditeur d'articles en dépend). L'état intermédiaire est
- * ici un choix, pas un oubli.
+ * Les pages publiques de dragonballfr.com gardent leur langage visuel dans
+ * `globals.css` (`.dbz-button`, `.btn`, `.input`), adossé aux jetons
+ * `--color-dbz-*` que `/admin/design` pilote au runtime : ne pas y substituer
+ * `<Button>` sans revue visuelle.
  */
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";

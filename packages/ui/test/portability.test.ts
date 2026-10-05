@@ -29,6 +29,7 @@ const WRAPPERS = [
   "select",
   "separator",
   "slider",
+  "surface",
   "switch",
   "tabs",
   "textarea",
