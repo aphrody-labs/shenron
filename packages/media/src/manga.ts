@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Shared Aphrody/Koharu wire contract. Editorial identity is a consumer policy.
+import { sha256Hex } from "./sha256";
 export const KOHARU_PAGE_RESULT_SCHEMA = "aphrody.manga.page-result/v1" as const;
 const SHA256 = /^[a-f0-9]{64}$/;
 const IMAGE_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -478,9 +479,7 @@ export function mapNativeKoharuPageResult(
     ) {
       throw new Error("native cleanup layer must be PNG bytes below 100 MB");
     }
-    cleanupOverlaySha256 = new Bun.CryptoHasher("sha256")
-      .update(Uint8Array.from(native.cleanup_layer_png))
-      .digest("hex");
+    cleanupOverlaySha256 = sha256Hex(Uint8Array.from(native.cleanup_layer_png));
   }
   const mapped = {
     schema: KOHARU_PAGE_RESULT_SCHEMA,

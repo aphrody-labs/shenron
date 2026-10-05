@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { JsonTransportError, requestJson } from "@aphrody/http";
+import { sha256Hex } from "./sha256";
 export interface RemoteOcrBlock {
   text: string;
   confidence: number;
@@ -172,7 +173,7 @@ export function toOcrResultV2(imagePath: string, imageBytes: Uint8Array, result:
     page_id: imagePath,
     image: {
       path: imagePath,
-      sha256: new Bun.CryptoHasher("sha256").update(imageBytes).digest("hex"),
+      sha256: sha256Hex(imageBytes),
     },
     attempts: [
       {

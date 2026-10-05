@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import { sha256Hex } from "./sha256";
 /** OCR evidence is separate from an approved transcription. */
 export interface AphrodyOcrEvidence {
   schema: "aphrody.ocr.result/v2";
@@ -191,9 +192,6 @@ export function parseOcrEvidence(
     blocks,
     quality: quality(result.quality ?? {}, "OCR quality"),
     attempts,
-    rawSha256:
-      raw === null
-        ? null
-        : new Bun.CryptoHasher("sha256").update(new TextEncoder().encode(raw)).digest("hex"),
+    rawSha256: raw === null ? null : sha256Hex(raw),
   };
 }
