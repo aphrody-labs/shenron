@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CapsuleCorp, Coeur, Kame, Reglages, Tendance } from "@/components/icones";
+import { CapsuleCorp, Coeur, Kame, Reglages, Tendance } from "@shenron/ui/icones";
 
 const ITEMS = [
   { href: "/dashboard", label: "Vue d’ensemble", icon: CapsuleCorp },

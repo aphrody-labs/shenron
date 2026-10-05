@@ -12,7 +12,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { useLangue } from "@/lib/i18n/client";
-import { Recherche } from "@/components/icones";
+import { Recherche } from "@shenron/ui/icones";
 
 // `ssr: false` : la palette n'a rien à rendre côté serveur (elle est fermée) et
 // n'existe que suite à une interaction.

@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { KintoUnLoader } from "@/components/KintoUn";
+import { KintoUnLoader } from "@shenron/ui/toriyama";
 
 type Status = "idle" | "loading" | "done";
 

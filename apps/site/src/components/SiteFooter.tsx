@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FooterFrame } from "@shenron/ui/navigation/FooterFrame";
-import { DragonBall } from "@/components/DragonBall";
+import { DragonBall } from "@shenron/ui/toriyama";
 import { FooterFabGuard } from "@/components/FooterFabGuard";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { T } from "@/components/T";
