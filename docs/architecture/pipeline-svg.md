@@ -14,13 +14,13 @@ Ce document-ci est l'inventaire, pas la méthode.
 
 | Rôle                                                                 | Outil                       | Où                                                  | Version mesurée            |
 | -------------------------------------------------------------------- | --------------------------- | --------------------------------------------------- | -------------------------- |
-| SVG → PNG/WebP/ICO, redimensionnement, composition, métadonnées      | `sharp`                     | **`package.json` racine** (jamais dans `apps/site`) | 0.35.4, libvips 8.18.6     |
+| SVG → PNG/WebP/ICO, redimensionnement, composition, métadonnées      | `sharp`                     | chaque paquet qui l’emploie, version du catalogue    | catalogue (^0.35.5)        |
 | Masque, k-means, HSL/OKLCH, profil de silhouette, épaisseur du trait | Pillow + numpy              | système (`apt install python3-pil python3-numpy`)   | Pillow 12.1.1, numpy 2.3.5 |
 | Dessin raster côté bot (runtime Discord)                             | `@napi-rs/canvas`           | `apps/bot`                                          | 1.0.9                      |
 | Rendu d'image sociale (OG)                                           | `next/og` (`ImageResponse`) | `apps/site`                                         | Next 16.3.5 (stable)       |
 
-`sharp` vit dans le `node_modules` **racine** : l'installer depuis `apps/site`
-dé-hoiste `next` et casse `deploy-site.ts` (cf. [`pieges.md`](../guides/pieges.md)).
+Avec le linker isolé, chaque paquet déclare `sharp` (`"catalog:"`) ; la version
+vient du catalogue racine (voir [`BUN-PACKAGE-MANAGER.md`](../operations/BUN-PACKAGE-MANAGER.md)).
 
 ### Ce qui n'est pas installé, et pourquoi
 

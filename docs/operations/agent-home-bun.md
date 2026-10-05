@@ -55,7 +55,7 @@ bun run --filter @shenron/pipeline rag:test
 ```
 
 Les cinq suites ciblées passent : 61 tests, 249 assertions, deux tests ignorés
-préexistants. Le test `workflows-rag-live.test.ts` contrôle que les citations
+préexistants. Le test `workflows-rag.live.test.ts` contrôle que les citations
 réellement récupérées atteignent le prompt ; seul le modèle de capture est
 simulé. Il exige le préchargement complet, sans contournement par des réponses
 RAG fabriquées. La qualification live reste ouverte pendant l'ingestion.
