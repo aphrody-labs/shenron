@@ -996,5 +996,352 @@
       "espace": "マイスペース",
       "legal": "このサイトについて"
     }
+  },
+  "admin": {
+    "families": {
+      "pilotage": "運用",
+      "site": "サイトと公開",
+      "systeme": "システムと連携",
+      "encyclopedie": "百科事典",
+      "communaute": "コミュニティ",
+      "economie": "経済と成長",
+      "securite": "モデレーションとセキュリティ"
+    },
+    "table": {
+      "empty": "表示する行はありません。",
+      "noMatch": "「{query}」に一致する行はありません。",
+      "search": "表を絞り込む",
+      "searchPlaceholder": "絞り込み…",
+      "clearSearch": "絞り込みを解除",
+      "sortBy": "並べ替え",
+      "sortDefault": "元の順序",
+      "ascending": "昇順",
+      "descending": "降順",
+      "pagination": "表のページ送り",
+      "previous": "前へ",
+      "next": "次へ",
+      "pageOf": "{count} ページ中 {page} ページ",
+      "range": "{total} 件中 {from}–{to} 件",
+      "selectAll": "表示中の行をすべて選択",
+      "selectRow": "{row} を選択",
+      "selected": "{count} 件選択中",
+      "clearSelection": "選択を解除",
+      "shortcuts": "j / k：次・前の行 · x：選択 · /：絞り込み · [ ]：ページ"
+    },
+    "confirm": {
+      "confirm": "確定",
+      "cancel": "キャンセル",
+      "pending": "処理中…"
+    },
+    "pages": {
+      "dashboard": {
+        "title": "ダッシュボード",
+        "description": "ボット、サービス、エージェントの活動の概要。"
+      },
+      "sync": {
+        "title": "同期",
+        "description": "ボットのデータベースと Discord、サイト、バックアップの同期の仕組み。"
+      },
+      "bot": {
+        "title": "ボット管理",
+        "description": "ボットのペルソナの状態と操作。"
+      },
+      "botDetail": {
+        "title": "ペルソナ",
+        "description": "ペルソナの状態、統計、コマンド。"
+      },
+      "console": {
+        "title": "ボットコンソール",
+        "description": "チャンネルのメッセージを読み、ボットとして投稿する。"
+      },
+      "send": {
+        "title": "メッセージ送信",
+        "description": "ボットのアカウントで Discord チャンネルに告知を投稿する。"
+      },
+      "commandes": {
+        "title": "コマンド実行",
+        "description": "ボットのコマンドを、すべてのオプション付きでリモート実行する。"
+      },
+      "home": {
+        "title": "トップページ",
+        "description": "トップページのセクション、背景クリップ、内容を並べ替える。"
+      },
+      "design": {
+        "title": "デザインとテーマ",
+        "description": "サイト全体に適用するパレットと角丸を設定する。"
+      },
+      "posts": {
+        "title": "記事",
+        "description": "サイトのジャーナル：執筆、予約公開、SEO。"
+      },
+      "postNew": {
+        "title": "新しい記事",
+        "description": "ジャーナル記事を書く。"
+      },
+      "postEdit": {
+        "title": "記事を編集",
+        "description": "記事の執筆、予約公開、SEO。"
+      },
+      "banners": {
+        "title": "ページバナー",
+        "description": "編集ビジュアルと注目のお知らせ。"
+      },
+      "logs": {
+        "title": "サービスログ",
+        "description": "Shenron サービスの出力（常時更新）。"
+      },
+      "settings": {
+        "title": "設定",
+        "description": "ボットの全般設定。"
+      },
+      "events": {
+        "title": "A2A イベント",
+        "description": "ボットのモジュールがエージェント間で発行するイベントの流れ。"
+      },
+      "cron": {
+        "title": "定期ジョブ",
+        "description": "ボットの自動ジョブ：状態、間隔、手動実行。"
+      },
+      "services": {
+        "title": "サービス",
+        "description": "内部サービスの状態と運用操作。"
+      },
+      "live": {
+        "title": "ライブフィード",
+        "description": "ボットのすべての動作をリアルタイムで。"
+      },
+      "stats": {
+        "title": "統計",
+        "description": "ボットの利用状況の全体数値。"
+      },
+      "activite": {
+        "title": "サイトのアクティビティ",
+        "description": "ウェブの訪問数、訪問者、流入元、よく読まれたページ。"
+      },
+      "ia": {
+        "title": "AI と正典",
+        "description": "監視、RAG の学習、ドクトリン、エージェント。"
+      },
+      "triggers": {
+        "title": "トリガー",
+        "description": "メッセージで発動する自動返信と実績。"
+      },
+      "webhooks": {
+        "title": "Webhook",
+        "description": "外部接続と送信通知。"
+      },
+      "database": {
+        "title": "データベース",
+        "description": "百科事典とボットのテーブルへの直接アクセス。"
+      },
+      "databaseTable": {
+        "title": "テーブル",
+        "description": "テーブルの行：閲覧、編集、削除。"
+      },
+      "agents": {
+        "title": "エージェントと API",
+        "description": "書き込み API のエージェント用キー、権限範囲、書き込み履歴。"
+      },
+      "a2a": {
+        "title": "A2A 連携",
+        "description": "Agent2Agent プロトコルのタスク、エージェント、やり取り。"
+      },
+      "apiDocs": {
+        "title": "API ドキュメント",
+        "description": "権限範囲、書き込みエンドポイント、ボットのルート。"
+      },
+      "lancement": {
+        "title": "セクションの公開範囲",
+        "description": "Wiki の各カテゴリとサイトの各セクションを誰が見られるか。"
+      },
+      "visibilite": {
+        "title": "表示設定",
+        "description": "公開サイトで Wiki の各項目を表示または非表示にする。"
+      },
+      "sources": {
+        "title": "出典とクレジット",
+        "description": "Wiki のデータの出どころ。"
+      },
+      "assets": {
+        "title": "画像とメディア",
+        "description": "Wiki のイラスト、アイコン、ビジュアル。"
+      },
+      "sagas": {
+        "title": "サーガ",
+        "description": "各シリーズのストーリーアーク（放送順）。"
+      },
+      "episodes": {
+        "title": "エピソード",
+        "description": "エピソード一覧。"
+      },
+      "films": {
+        "title": "映画",
+        "description": "ドラゴンボールの映画と OVA。"
+      },
+      "games": {
+        "title": "ゲーム",
+        "description": "登録済みのドラゴンボールのゲーム。"
+      },
+      "dbDatabooks": {
+        "title": "資料集とインタビュー",
+        "description": "公式ガイド、画集、インタビュー（日付順に並べ替え可能）。"
+      },
+      "campagnesBxc": {
+        "title": "BXC キャンペーン",
+        "description": "BXC 収集の受付、出どころ、レビュー。"
+      },
+      "chronologie": {
+        "title": "年表",
+        "description": "エピソードと映画による公式年表の順序。"
+      },
+      "databooks": {
+        "title": "資料集と翻訳",
+        "description": "公式書籍の目録、翻訳キャンペーン、OCR の品質。"
+      },
+      "databookDetail": {
+        "title": "資料集",
+        "description": "書籍のページ、翻訳、校正。"
+      },
+      "transcriptions": {
+        "title": "文字起こしと判定",
+        "description": "漫画と資料集のコーパス：OCR の不具合判定と校正。"
+      },
+      "wiki": {
+        "title": "Wiki",
+        "description": "Wiki の項目、カテゴリ、自由ページ。"
+      },
+      "wikiHistory": {
+        "title": "改訂履歴",
+        "description": "Wiki の改訂履歴（差し戻し可能）。"
+      },
+      "wikiCategoryNew": {
+        "title": "新しいカテゴリ",
+        "description": "Wiki のカテゴリを作成する。"
+      },
+      "wikiCategoryEdit": {
+        "title": "カテゴリを編集",
+        "description": "カテゴリの名前、説明、順序。"
+      },
+      "wikiPageNew": {
+        "title": "新しいページ",
+        "description": "Wiki の自由ページを書く。"
+      },
+      "wikiPageEdit": {
+        "title": "ページを編集",
+        "description": "自由ページの内容と公開。"
+      },
+      "wikiTodo": {
+        "title": "要追記の項目",
+        "description": "画像、概要、出典のいずれかが欠けている項目。"
+      },
+      "wikiStudio": {
+        "title": "Wiki スタジオ",
+        "description": "項目、そのセクション、メディア、関連を編集する。"
+      },
+      "discord": {
+        "title": "Discord サーバー",
+        "description": "サーバーの現在のチャンネルとロール（ライブ）。"
+      },
+      "profile": {
+        "title": "メンバープロフィール",
+        "description": "メンバーを検索し、1 枚のシートで成長を管理する。"
+      },
+      "canvas": {
+        "title": "プロフィールカード",
+        "description": "ボットが生成する画像をプレビューし、カードのテーマを編集する。"
+      },
+      "canvasThemes": {
+        "title": "カードテーマ",
+        "description": "プロフィールカードで使えるビジュアルテーマ。"
+      },
+      "giveaways": {
+        "title": "抽選",
+        "description": "サーバーで実施中・終了済みの抽選。"
+      },
+      "tickets": {
+        "title": "サポートチケット",
+        "description": "メンバーからのヘルプ依頼。"
+      },
+      "signalements": {
+        "title": "報告",
+        "description": "メンバーがサイトから報告した誤り。"
+      },
+      "wikiContributions": {
+        "title": "コミュニティの投稿",
+        "description": "項目から提案された修正（確認して公開）。"
+      },
+      "tierlists": {
+        "title": "ティアリスト",
+        "description": "ティアリストのモデレーション、注目、公式作成。"
+      },
+      "tierlistNew": {
+        "title": "公式ティアリスト",
+        "description": "カードの候補を選び、並べて、保存する。"
+      },
+      "tierlistEdit": {
+        "title": "ティアリストを編集",
+        "description": "順位、キュレーション、注目設定。"
+      },
+      "messages": {
+        "title": "自動メッセージ",
+        "description": "サーバーのイベント時にボットが送るメッセージ。"
+      },
+      "economy": {
+        "title": "経済",
+        "description": "残高、取引、流通中のゼニー。"
+      },
+      "levels": {
+        "title": "レベルと XP",
+        "description": "経験値の段階、報酬、成長の設定。"
+      },
+      "shop": {
+        "title": "ショップ",
+        "description": "購入できるアイテム。"
+      },
+      "leaderboards": {
+        "title": "ランキング",
+        "description": "サーバーの上位 50 人（指標別）。"
+      },
+      "ursaf": {
+        "title": "URSAF とインフレ",
+        "description": "不正者への課税通知とサーバーの物価指数。"
+      },
+      "concours": {
+        "title": "コミュニティコンテスト",
+        "description": "評価数上位、ゼニー上位、メンバーごとの健全性ファイル。"
+      },
+      "account": {
+        "title": "Discord アカウント",
+        "description": "ログイン中のアカウントのプロフィール、サーバー、ロール。"
+      },
+      "audit": {
+        "title": "監査ログ",
+        "description": "ボットの操作と Discord の監査ログ（閲覧のみ）。"
+      },
+      "moderation": {
+        "title": "モデレーション",
+        "description": "処分、警告、タイムアウト、BAN。"
+      },
+      "moderationComments": {
+        "title": "サイトのコメント",
+        "description": "記事、項目、資料集、ティアリストのコメントを 1 つのキューで。"
+      },
+      "auditInternal": {
+        "title": "内部ログ",
+        "description": "ボットの内部監査ログ。"
+      },
+      "hierarchy": {
+        "title": "スタッフの階層",
+        "description": "誰が誰を処分できるか：レベルとロール。"
+      },
+      "commands": {
+        "title": "コマンドの権限",
+        "description": "どのボットコマンドを誰が使えるか。"
+      },
+      "access": {
+        "title": "管理者アクセス",
+        "description": "Discord を使わず、トークンでログインする。"
+      }
+    }
   }
 }

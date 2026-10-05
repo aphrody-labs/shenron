@@ -996,5 +996,352 @@
       "espace": "My space",
       "legal": "About the site"
     }
+  },
+  "admin": {
+    "families": {
+      "pilotage": "Operations",
+      "site": "Site and publishing",
+      "systeme": "System and integrations",
+      "encyclopedie": "Encyclopedia",
+      "communaute": "Community",
+      "economie": "Economy and progression",
+      "securite": "Moderation and security"
+    },
+    "table": {
+      "empty": "No rows to show.",
+      "noMatch": "No rows match “{query}”.",
+      "search": "Filter the table",
+      "searchPlaceholder": "Filter…",
+      "clearSearch": "Clear filter",
+      "sortBy": "Sort by",
+      "sortDefault": "Original order",
+      "ascending": "ascending",
+      "descending": "descending",
+      "pagination": "Table pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {count}",
+      "range": "{from}–{to} of {total}",
+      "selectAll": "Select the rows shown",
+      "selectRow": "Select {row}",
+      "selected": "{count} selected",
+      "clearSelection": "Clear selection",
+      "shortcuts": "j / k: next or previous row · x: select · /: filter · [ ]: page"
+    },
+    "confirm": {
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "pending": "Working…"
+    },
+    "pages": {
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Overview of the bot, the services and agent activity."
+      },
+      "sync": {
+        "title": "Synchronisation",
+        "description": "How the bot database syncs with Discord, the site and the backups."
+      },
+      "bot": {
+        "title": "Bot management",
+        "description": "Status and control of the bot personas."
+      },
+      "botDetail": {
+        "title": "Persona",
+        "description": "Status, statistics and commands of the persona."
+      },
+      "console": {
+        "title": "Bot console",
+        "description": "Read a channel’s messages and post as the bot."
+      },
+      "send": {
+        "title": "Send a message",
+        "description": "Post an announcement in a Discord channel from the bot account."
+      },
+      "commandes": {
+        "title": "Run a command",
+        "description": "Run any bot command remotely, with all of its options."
+      },
+      "home": {
+        "title": "Home page",
+        "description": "Rearrange the home page: sections, background clips and content."
+      },
+      "design": {
+        "title": "Design and theme",
+        "description": "Compose the palette and corner radii applied to the whole site."
+      },
+      "posts": {
+        "title": "Articles",
+        "description": "The site’s journal: writing, scheduling and SEO."
+      },
+      "postNew": {
+        "title": "New article",
+        "description": "Write a journal article."
+      },
+      "postEdit": {
+        "title": "Edit article",
+        "description": "Writing, scheduling and SEO for the article."
+      },
+      "banners": {
+        "title": "Page banners",
+        "description": "Editorial visuals and featured announcements."
+      },
+      "logs": {
+        "title": "Service logs",
+        "description": "Output of the Shenron service, refreshed continuously."
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "General bot settings."
+      },
+      "events": {
+        "title": "A2A events",
+        "description": "Stream of events published between agents by the bot modules."
+      },
+      "cron": {
+        "title": "Scheduled jobs",
+        "description": "Automatic bot jobs: status, interval and manual runs."
+      },
+      "services": {
+        "title": "Services",
+        "description": "Status of internal services and operational actions."
+      },
+      "live": {
+        "title": "Live feed",
+        "description": "Every bot action, in real time."
+      },
+      "stats": {
+        "title": "Statistics",
+        "description": "Overall bot usage figures."
+      },
+      "activite": {
+        "title": "Site activity",
+        "description": "Web audience: visits, visitors, sources and most-read pages."
+      },
+      "ia": {
+        "title": "AI and canon",
+        "description": "Supervision, RAG training, doctrine and agents."
+      },
+      "triggers": {
+        "title": "Triggers",
+        "description": "Automatic replies and achievements triggered by messages."
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "description": "External connections and outgoing notifications."
+      },
+      "database": {
+        "title": "Database",
+        "description": "Direct access to the encyclopedia and bot tables."
+      },
+      "databaseTable": {
+        "title": "Table",
+        "description": "Table rows: read, edit and delete."
+      },
+      "agents": {
+        "title": "Agents and API",
+        "description": "Agent access keys for the write API, scopes and write log."
+      },
+      "a2a": {
+        "title": "A2A coordination",
+        "description": "Tasks, agents and exchanges of the Agent2Agent protocol."
+      },
+      "apiDocs": {
+        "title": "API documentation",
+        "description": "Scopes, write endpoints and bot routes."
+      },
+      "lancement": {
+        "title": "Section access",
+        "description": "Who can see each wiki category and each site section."
+      },
+      "visibilite": {
+        "title": "Visibility",
+        "description": "Show or hide each wiki entity on the public site."
+      },
+      "sources": {
+        "title": "Sources and credits",
+        "description": "Where the wiki data comes from."
+      },
+      "assets": {
+        "title": "Images and media",
+        "description": "Wiki illustrations, icons and visuals."
+      },
+      "sagas": {
+        "title": "Sagas",
+        "description": "Story arcs of each series, in broadcast order."
+      },
+      "episodes": {
+        "title": "Episodes",
+        "description": "Episode catalogue."
+      },
+      "films": {
+        "title": "Films",
+        "description": "Dragon Ball films and OVAs."
+      },
+      "games": {
+        "title": "Video games",
+        "description": "Listed Dragon Ball games."
+      },
+      "dbDatabooks": {
+        "title": "Databooks and interviews",
+        "description": "Official guides, artbooks and interviews, sortable by date."
+      },
+      "campagnesBxc": {
+        "title": "BXC campaigns",
+        "description": "Intake, provenance and review of BXC harvests."
+      },
+      "chronologie": {
+        "title": "Timeline",
+        "description": "Official order of the universal timeline: episodes and films."
+      },
+      "databooks": {
+        "title": "Databooks and translations",
+        "description": "Catalogue of official books, translation campaigns and OCR quality."
+      },
+      "databookDetail": {
+        "title": "Databook",
+        "description": "Pages, translation and proofreading of the book."
+      },
+      "transcriptions": {
+        "title": "Transcriptions and review",
+        "description": "Manga and databook corpus: OCR defect review and proofreading."
+      },
+      "wiki": {
+        "title": "Wiki",
+        "description": "Wiki entries, categories and free pages."
+      },
+      "wikiHistory": {
+        "title": "Revision history",
+        "description": "Wiki revision log, with rollback."
+      },
+      "wikiCategoryNew": {
+        "title": "New category",
+        "description": "Create a wiki category."
+      },
+      "wikiCategoryEdit": {
+        "title": "Edit category",
+        "description": "Category name, description and order."
+      },
+      "wikiPageNew": {
+        "title": "New page",
+        "description": "Write a free wiki page."
+      },
+      "wikiPageEdit": {
+        "title": "Edit page",
+        "description": "Content and publishing of the free page."
+      },
+      "wikiTodo": {
+        "title": "Entries to complete",
+        "description": "Entries missing an image, a summary or sources."
+      },
+      "wikiStudio": {
+        "title": "Wiki studio",
+        "description": "Edit an entry, its sections, media and relations."
+      },
+      "discord": {
+        "title": "Discord server",
+        "description": "The server’s current channels and roles, live."
+      },
+      "profile": {
+        "title": "Member profiles",
+        "description": "Find a member and manage their progression from a single sheet."
+      },
+      "canvas": {
+        "title": "Profile cards",
+        "description": "Preview the images generated by the bot and edit card themes."
+      },
+      "canvasThemes": {
+        "title": "Card themes",
+        "description": "Visual themes available for profile cards."
+      },
+      "giveaways": {
+        "title": "Giveaways",
+        "description": "Active and past giveaways on the server."
+      },
+      "tickets": {
+        "title": "Support tickets",
+        "description": "Help requests opened by members."
+      },
+      "signalements": {
+        "title": "Reports",
+        "description": "Errors reported by members from the site."
+      },
+      "wikiContributions": {
+        "title": "Community contributions",
+        "description": "Corrections suggested from entries, to review and publish."
+      },
+      "tierlists": {
+        "title": "Tier lists",
+        "description": "Moderate, feature and create official tier lists."
+      },
+      "tierlistNew": {
+        "title": "Official tier list",
+        "description": "Pick a card pool, rank it, then save."
+      },
+      "tierlistEdit": {
+        "title": "Edit tier list",
+        "description": "Ranking, curation and featuring."
+      },
+      "messages": {
+        "title": "Automatic messages",
+        "description": "Messages the bot sends on server events."
+      },
+      "economy": {
+        "title": "Economy",
+        "description": "Balances, transactions and Zeni in circulation."
+      },
+      "levels": {
+        "title": "Levels and XP",
+        "description": "Experience thresholds, rewards and progression settings."
+      },
+      "shop": {
+        "title": "Shop",
+        "description": "Items available for purchase."
+      },
+      "leaderboards": {
+        "title": "Leaderboards",
+        "description": "The server’s top 50 members, by metric."
+      },
+      "ursaf": {
+        "title": "URSAF and inflation",
+        "description": "Tax notices for cheaters and the server price index."
+      },
+      "concours": {
+        "title": "Community contests",
+        "description": "Top raters, top Zeni and an integrity file per member."
+      },
+      "account": {
+        "title": "My Discord account",
+        "description": "Profile, servers and roles of the signed-in account."
+      },
+      "audit": {
+        "title": "Audit log",
+        "description": "Bot actions and the Discord audit log, read only."
+      },
+      "moderation": {
+        "title": "Moderation",
+        "description": "Sanctions, warnings, timeouts and bans."
+      },
+      "moderationComments": {
+        "title": "Site comments",
+        "description": "One queue for comments on articles, entries, databooks and tier lists."
+      },
+      "auditInternal": {
+        "title": "Internal log",
+        "description": "The bot’s internal audit log."
+      },
+      "hierarchy": {
+        "title": "Staff hierarchy",
+        "description": "Who can sanction whom: levels and roles."
+      },
+      "commands": {
+        "title": "Command permissions",
+        "description": "Who can use which bot command."
+      },
+      "access": {
+        "title": "Administrator access",
+        "description": "Sign in with a token, without Discord."
+      }
+    }
   }
 }
