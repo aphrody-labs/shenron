@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dragonballfr.com/schemas/lexicon/terms.schema.json",
+  "title": "Shenron Dragon Ball lexicon",
+  "description": "The one translation lexicon of Shenron (site, API, bot, plugin, pipeline, Shenron Studio translator). Japanese and French forms come from the dragonballfr.com wiki (name_ja / name) unless `sources` says otherwise; manga, scans and Akira Toriyama's statements prevail, Fandom is never a source. Edited by hand, checked by `bun scripts/data/lexicon.ts --check`, read by the Rust crate shenron-lexicon and the package @shenron/lexicon.",
+  "type": "object",
+  "required": ["version", "terms"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "terms": {
+      "type": "array",
+      "description": "Sorted by id. A Japanese spelling (main form or alias) belongs to one term only.",
+      "items": { "$ref": "#/$defs/term" }
+    }
+  },
+  "$defs": {
+    "form": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S(.*\\S)?$"
+    },
+    "term": {
+      "type": "object",
+      "required": ["id", "kind", "ja", "fr", "en"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Stable English slug; never renamed nor reused once published.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "kind": {
+          "enum": [
+            "character",
+            "technique",
+            "transformation",
+            "race",
+            "place",
+            "item",
+            "event",
+            "title",
+            "saga",
+            "arc",
+            "organization",
+            "other"
+          ]
+        },
+        "ja": {
+          "$ref": "#/$defs/form",
+          "description": "Japanese form; masked before machine translation (with aliases.ja)."
+        },
+        "fr": { "$ref": "#/$defs/form", "description": "French form of the wiki." },
+        "en": {
+          "description": "Official English form; empty while no source establishes it.",
+          "anyOf": [{ "const": "" }, { "$ref": "#/$defs/form" }]
+        },
+        "romaji": { "$ref": "#/$defs/form", "description": "Hepburn romanisation." },
+        "aliases": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "ja": { "$ref": "#/$defs/aliasList" },
+            "fr": { "$ref": "#/$defs/aliasList" },
+            "en": { "$ref": "#/$defs/aliasList" }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["ref"],
+            "additionalProperties": false,
+            "properties": {
+              "lang": { "enum": ["ja", "fr", "en", "romaji"] },
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Repository path or editorial reference (volume, chapter, guide page)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "aliasList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/form" }
+    }
+  }
+}

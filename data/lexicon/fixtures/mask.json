@@ -1,0 +1,181 @@
+{
+  "description": "maskText() then restoreTokens(): `entries` are { sources, target }; `options` are { prefix, width, maxTokens }. `tokens` lists [token, target] in token order. When `translation` is given, restoring it with the tokens must give `restored`, `unresolved` and `missing`. Shared by shenron_lexicon (Rust) and @shenron/lexicon (TypeScript).",
+  "cases": [
+    {
+      "name": "longest first, one pass, no overlap, one token per entry",
+      "entries": [
+        { "sources": ["孫悟空"], "target": "Son Goku" },
+        { "sources": ["悟空"], "target": "Goku" },
+        { "sources": ["セル"], "target": "Cell" },
+        { "sources": ["カプセルコーポレーション"], "target": "Capsule Corporation" },
+        { "sources": ["界王拳"], "target": "Kaïō-ken" }
+      ],
+      "input": "孫悟空は界王拳を使う。悟空と孫悟空。",
+      "masked": "Zeta001はZeta002を使う。Zeta003とZeta001。",
+      "tokens": [
+        ["Zeta001", "Son Goku"],
+        ["Zeta002", "Kaïō-ken"],
+        ["Zeta003", "Goku"]
+      ],
+      "overflow": 0,
+      "translation": "ZETA 001 utilise zêta002. Zeta003 et Zeta001.",
+      "restored": "Son Goku utilise Kaïō-ken. Goku et Son Goku.",
+      "unresolved": [],
+      "missing": []
+    },
+    {
+      "name": "katakana spellings stay whole inside longer katakana words",
+      "entries": [
+        { "sources": ["セル"], "target": "Cell" },
+        { "sources": ["カプセルコーポレーション"], "target": "Capsule Corporation" }
+      ],
+      "input": "カプセルコーポレーションのセル",
+      "masked": "Zeta001のZeta002",
+      "tokens": [
+        ["Zeta001", "Capsule Corporation"],
+        ["Zeta002", "Cell"]
+      ],
+      "overflow": 0
+    },
+    {
+      "name": "the order of the entries does not matter (shortest given first)",
+      "entries": [
+        { "sources": ["セル"], "target": "Cell" },
+        { "sources": ["地球"], "target": "Terre" },
+        { "sources": ["天津飯"], "target": "Tenshinhan" },
+        { "sources": ["悟空"], "target": "Goku" },
+        { "sources": ["孫悟空"], "target": "Son Goku" },
+        { "sources": ["サイヤ"], "target": "Saiya" },
+        { "sources": ["サイヤ人"], "target": "Saiyan" }
+      ],
+      "input": "孫悟空と超サイヤ人",
+      "masked": "Zeta001と超Zeta002",
+      "tokens": [
+        ["Zeta001", "Son Goku"],
+        ["Zeta002", "Saiyan"]
+      ],
+      "overflow": 0
+    },
+    {
+      "name": "an isolated katakana spelling is masked, glued to kana particles or kanji",
+      "entries": [
+        { "sources": ["セル"], "target": "Cell" },
+        { "sources": ["地球"], "target": "Terre" }
+      ],
+      "input": "セルは強い。セル編と、カプセル",
+      "masked": "Zeta001は強い。Zeta001編と、カプセル",
+      "tokens": [["Zeta001", "Cell"]],
+      "overflow": 0
+    },
+    {
+      "name": "Capsule Corporation is never Capsule Cell Corporation",
+      "entries": [
+        { "sources": ["セル"], "target": "Cell" },
+        { "sources": ["地球"], "target": "Terre" }
+      ],
+      "input": "地球上の乗り物のなんと48%がカプセルコーポレーションの製品",
+      "masked": "Zeta001上の乗り物のなんと48%がカプセルコーポレーションの製品",
+      "tokens": [["Zeta001", "Terre"]],
+      "overflow": 0
+    },
+    {
+      "name": "a fixed-width token stays restorable before a digit",
+      "entries": [{ "sources": ["サイヤ人"], "target": "Saiyan" }],
+      "options": { "prefix": "QXZ", "width": 4 },
+      "input": "超サイヤ人3",
+      "masked": "超QXZ00013",
+      "tokens": [["QXZ0001", "Saiyan"]],
+      "overflow": 0,
+      "translation": "Super QXZ00013",
+      "restored": "Super Saiyan3",
+      "unresolved": [],
+      "missing": []
+    },
+    {
+      "name": "past the token budget the next entries stay in clear",
+      "entries": [
+        { "sources": ["ベジータ"], "target": "Vegeta" },
+        { "sources": ["ピッコロ"], "target": "Piccolo" },
+        { "sources": ["ブルマ"], "target": "Bulma" }
+      ],
+      "options": { "maxTokens": 2 },
+      "input": "ベジータとピッコロとブルマとベジータ",
+      "masked": "Zeta001とZeta002とブルマとZeta001",
+      "tokens": [
+        ["Zeta001", "Vegeta"],
+        ["Zeta002", "Piccolo"]
+      ],
+      "overflow": 1
+    },
+    {
+      "name": "an entry without target form and a one-sign spelling are never masked",
+      "entries": [
+        { "sources": ["ベジータ"], "target": "" },
+        { "sources": ["人"], "target": "humain" }
+      ],
+      "input": "ベジータは人だ",
+      "masked": "ベジータは人だ",
+      "tokens": [],
+      "overflow": 0
+    },
+    {
+      "name": "every spelling of an entry shares its token",
+      "entries": [
+        {
+          "sources": ["超サイヤ人ゴッド超サイヤ人", "超サイヤ人ブルー"],
+          "target": "Super Saiyan Blue"
+        },
+        { "sources": ["超サイヤ人"], "target": "Super Saiyan" }
+      ],
+      "input": "超サイヤ人ブルーと超サイヤ人ゴッド超サイヤ人と超サイヤ人",
+      "masked": "Zeta001とZeta001とZeta002",
+      "tokens": [
+        ["Zeta001", "Super Saiyan Blue"],
+        ["Zeta002", "Super Saiyan"]
+      ],
+      "overflow": 0,
+      "translation": "Zeta001, Zeta001 et Zeta002",
+      "restored": "Super Saiyan Blue, Super Saiyan Blue et Super Saiyan",
+      "unresolved": [],
+      "missing": []
+    },
+    {
+      "name": "Latin spellings match on Latin word edges only",
+      "entries": [{ "sources": ["OG"], "target": "Organisme" }],
+      "input": "OG と LOGO と OG72",
+      "masked": "Zeta001 と LOGO と OG72",
+      "tokens": [["Zeta001", "Organisme"]],
+      "overflow": 0
+    },
+    {
+      "name": "offsets are code points (astral signs before a term)",
+      "entries": [{ "sources": ["孫悟空"], "target": "Son Goku" }],
+      "input": "𠮷野家の孫悟空",
+      "masked": "𠮷野家のZeta001",
+      "tokens": [["Zeta001", "Son Goku"]],
+      "overflow": 0,
+      "translation": "Zeta001 chez 𠮷野家",
+      "restored": "Son Goku chez 𠮷野家",
+      "unresolved": [],
+      "missing": []
+    },
+    {
+      "name": "a dropped term is reported missing, an invented token unresolved",
+      "entries": [
+        { "sources": ["ベジータ"], "target": "Vegeta" },
+        { "sources": ["フリーザ"], "target": "Freezer" }
+      ],
+      "input": "ベジータとフリーザ",
+      "masked": "Zeta001とZeta002",
+      "tokens": [
+        ["Zeta001", "Vegeta"],
+        ["Zeta002", "Freezer"]
+      ],
+      "overflow": 0,
+      "translation": "Zeta001 et Zeta003",
+      "restored": "Vegeta et Zeta003",
+      "unresolved": ["Zeta003"],
+      "missing": ["Zeta002"]
+    }
+  ]
+}

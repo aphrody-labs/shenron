@@ -168,6 +168,12 @@
     "length": 9
   },
   {
+    "ja": "フリーザ第79惑星",
+    "fr": "Freezer No. 79",
+    "kind": "planete",
+    "length": 9
+  },
+  {
     "ja": "ブリアンデシャート",
     "fr": "Brianne de Chateau",
     "kind": "personnage",
@@ -360,12 +366,6 @@
     "length": 8
   },
   {
-    "ja": "フリーザ第79惑星",
-    "fr": "Freezer No. 79",
-    "kind": "planete",
-    "length": 8
-  },
-  {
     "ja": "あかかめんじん",
     "fr": "Saiyan au Masque Écarlate",
     "kind": "personnage",
@@ -392,7 +392,7 @@
   {
     "ja": "ギニュー特戦隊",
     "fr": "Commando Ginyu",
-    "kind": "personnage",
+    "kind": "autre",
     "length": 7
   },
   {
@@ -638,7 +638,7 @@
   {
     "ja": "精神と時の部屋",
     "fr": "Salle de l'Esprit et du Temps",
-    "kind": "autre",
+    "kind": "planete",
     "length": 7
   },
   {
@@ -1526,7 +1526,7 @@
   {
     "ja": "フリーザ軍",
     "fr": "Armée de Freezer",
-    "kind": "race",
+    "kind": "autre",
     "length": 5
   },
   {
@@ -4676,7 +4676,7 @@
   {
     "ja": "聖地",
     "fr": "terre sainte",
-    "kind": "autre",
+    "kind": "planete",
     "length": 2
   },
   {

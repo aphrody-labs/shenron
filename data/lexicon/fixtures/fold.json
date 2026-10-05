@@ -1,0 +1,89 @@
+{
+  "description": "fold(): search key of a form. Rust shenron_lexicon::fold and TypeScript @shenron/lexicon fold() must both return `output` for `input`.",
+  "cases": [
+    {
+      "input": "Kaïō-ken",
+      "output": "kaioken"
+    },
+    {
+      "input": "Mr. Satan",
+      "output": "mrsatan"
+    },
+    {
+      "input": "Mr Satan",
+      "output": "mrsatan"
+    },
+    {
+      "input": "Tortue Géniale",
+      "output": "tortuegeniale"
+    },
+    {
+      "input": "フリーザ",
+      "output": "ふりーざ"
+    },
+    {
+      "input": "ミスター・サタン",
+      "output": "みすたーさたん"
+    },
+    {
+      "input": "超サイヤ人３",
+      "output": "超さいや人3"
+    },
+    {
+      "input": "ＶＥＧＥＴＡ　様",
+      "output": "vegeta様"
+    },
+    {
+      "input": "Ｚｅｔａ００１",
+      "output": "zeta001"
+    },
+    {
+      "input": "ヴァヵヶヷ",
+      "output": "ゔぁゕゖヷ"
+    },
+    {
+      "input": "ﾌﾘｰｻﾞ",
+      "output": "ﾌﾘｰｻﾞ"
+    },
+    {
+      "input": "Œuvre ß Ø æ",
+      "output": "œuvreßøæ"
+    },
+    {
+      "input": "été",
+      "output": "ete"
+    },
+    {
+      "input": "İstanbul",
+      "output": "istanbul"
+    },
+    {
+      "input": "Son Goku (futur)",
+      "output": "songokufutur"
+    },
+    {
+      "input": "C-17 & C-18",
+      "output": "c17c18"
+    },
+    {
+      "input": "魔人ブウ！？",
+      "output": "魔人ぶう"
+    },
+    {
+      "input": "",
+      "output": ""
+    },
+    {
+      "input": "・ー・",
+      "output": "ー"
+    },
+    {
+      "input": "àáâãäåçèéêëìíîïñòóôõöùúûüýÿāăąćĉċčďēĕėęěĝğġģĥĩīĭįĵķĺļľńņňōŏőŕŗřśŝşšţťũūŭůűųŵŷźżž",
+      "output": "aaaaaaceeeeiiiinooooouuuuyyaaaccccdeeeeegggghiiiijklllnnnooorrrssssttuuuuuuwyzzz"
+    },
+    {
+      "input": "ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝŸĀĂĄĆĈĊČĎĒĔĖĘĚĜĞĠĢĤĨĪĬĮĴĶĹĻĽŃŅŇŌŎŐŔŖŘŚŜŞŠŢŤŨŪŬŮŰŲŴŶŹŻŽ",
+      "output": "aaaaaaceeeeiiiinooooouuuuyyaaaccccdeeeeegggghiiiijklllnnnooorrrssssttuuuuuuwyzzz"
+    }
+  ]
+}

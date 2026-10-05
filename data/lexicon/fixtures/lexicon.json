@@ -1,0 +1,261 @@
+{
+  "description": "Lexicon rules on a small lexicon: resolution (id, main forms, romaji, aliases), labels with the English → French fallback, ranked search, masking per target language and coverage. `invalid` documents must be rejected. Shared by shenron_lexicon (Rust) and @shenron/lexicon (TypeScript).",
+  "lexicon": {
+    "version": 1,
+    "terms": [
+      {
+        "id": "frieza",
+        "kind": "character",
+        "ja": "フリーザ",
+        "fr": "Freezer",
+        "en": "Frieza",
+        "aliases": { "en": ["Freeza"] }
+      },
+      {
+        "id": "frieza-race",
+        "kind": "race",
+        "ja": "フリーザ一族",
+        "fr": "Race de Freezer",
+        "en": "Frieza Race"
+      },
+      {
+        "id": "kaio-ken",
+        "kind": "technique",
+        "ja": "界王拳",
+        "fr": "Kaioken",
+        "en": "Kaio-ken",
+        "romaji": "Kaiō-ken",
+        "sources": [{ "lang": "en", "ref": "packages/pipeline/scripts/rag-lexique.ts" }]
+      },
+      {
+        "id": "krillin",
+        "kind": "character",
+        "ja": "クリリン",
+        "fr": "Krilin",
+        "en": "Krillin"
+      },
+      {
+        "id": "planete-vegeta",
+        "kind": "place",
+        "ja": "ベジータ星",
+        "fr": "Planète Vegeta",
+        "en": ""
+      },
+      {
+        "id": "saiyan",
+        "kind": "race",
+        "ja": "サイヤ人",
+        "fr": "Saiyan",
+        "en": "Saiyan",
+        "aliases": { "fr": ["Saïyen"] }
+      },
+      {
+        "id": "son-gohan",
+        "kind": "character",
+        "ja": "孫悟飯",
+        "fr": "Son Gohan",
+        "en": "Son Gohan",
+        "aliases": { "ja": ["悟飯"], "en": ["Gohan"] }
+      },
+      {
+        "id": "super-saiyan",
+        "kind": "transformation",
+        "ja": "超サイヤ人",
+        "fr": "Super Saiyan",
+        "en": "Super Saiyan",
+        "aliases": { "fr": ["Super Saïyen"] }
+      },
+      {
+        "id": "vegeta",
+        "kind": "character",
+        "ja": "ベジータ",
+        "fr": "Vegeta",
+        "en": ""
+      }
+    ]
+  },
+  "resolve": [
+    { "query": "frieza", "id": "frieza" },
+    { "query": "  FRIEZA ", "id": "frieza" },
+    { "query": "Freezer", "id": "frieza" },
+    { "query": "フリーザ", "id": "frieza" },
+    { "query": "freeza", "id": "frieza" },
+    { "query": "悟飯", "id": "son-gohan" },
+    { "query": "Gohan", "id": "son-gohan" },
+    { "query": "Kaiōken", "id": "kaio-ken" },
+    { "query": "kaio ken", "id": "kaio-ken" },
+    { "query": "Super Saïyen", "id": "super-saiyan" },
+    { "query": "Saiyan", "id": "saiyan" },
+    { "query": "planète végéta", "id": "planete-vegeta" },
+    { "query": "Cell", "id": null },
+    { "query": "・・", "id": null }
+  ],
+  "labels": [
+    { "id": "frieza", "lang": "en", "text": "Frieza", "from": "en", "fallback": false },
+    { "id": "frieza", "lang": "fr", "text": "Freezer", "from": "fr", "fallback": false },
+    { "id": "frieza", "lang": "ja", "text": "フリーザ", "from": "ja", "fallback": false },
+    { "id": "vegeta", "lang": "en", "text": "Vegeta", "from": "fr", "fallback": true }
+  ],
+  "search": [
+    {
+      "query": "frieza",
+      "hits": [
+        ["frieza", 100, "en", "Frieza"],
+        ["frieza-race", 70, "en", "Frieza Race"]
+      ]
+    },
+    {
+      "query": "Freezer",
+      "hits": [
+        ["frieza", 100, "fr", "Freezer"],
+        ["frieza-race", 50, "fr", "Race de Freezer"]
+      ]
+    },
+    {
+      "query": "saiyan",
+      "hits": [
+        ["saiyan", 100, "fr", "Saiyan"],
+        ["super-saiyan", 50, "fr", "Super Saiyan"]
+      ]
+    },
+    {
+      "query": "サイヤ",
+      "hits": [
+        ["saiyan", 70, "ja", "サイヤ人"],
+        ["super-saiyan", 50, "ja", "超サイヤ人"]
+      ]
+    },
+    {
+      "query": "ベジータは界王拳を使った",
+      "hits": [
+        ["kaio-ken", 20, "ja", "界王拳"],
+        ["vegeta", 20, "ja", "ベジータ"]
+      ]
+    },
+    {
+      "query": "frieza",
+      "kind": "race",
+      "hits": [["frieza-race", 70, "en", "Frieza Race"]]
+    },
+    {
+      "query": "gohan",
+      "hits": [["son-gohan", 90, "en", "Gohan"]]
+    },
+    {
+      "query": "s",
+      "limit": 2,
+      "hits": [
+        ["saiyan", 70, "fr", "Saiyan"],
+        ["son-gohan", 70, "fr", "Son Gohan"]
+      ]
+    },
+    { "query": "!!", "hits": [] }
+  ],
+  "mask": [
+    {
+      "target": "en",
+      "input": "ベジータとフリーザ",
+      "masked": "ベジータとZeta001",
+      "tokens": [["Zeta001", "Frieza"]]
+    },
+    {
+      "target": "fr",
+      "input": "ベジータとフリーザ",
+      "masked": "Zeta001とZeta002",
+      "tokens": [
+        ["Zeta001", "Vegeta"],
+        ["Zeta002", "Freezer"]
+      ]
+    },
+    {
+      "target": "en",
+      "input": "悟飯と孫悟飯とベジータ星",
+      "masked": "Zeta001とZeta001とベジータ星",
+      "tokens": [["Zeta001", "Son Gohan"]]
+    }
+  ],
+  "coverage": {
+    "total": 9,
+    "filled": { "ja": 9, "fr": 9, "en": 7, "romaji": 1 },
+    "byKind": {
+      "character": { "total": 4, "ja": 4, "fr": 4, "en": 3, "romaji": 0 },
+      "technique": { "total": 1, "ja": 1, "fr": 1, "en": 1, "romaji": 1 },
+      "transformation": { "total": 1, "ja": 1, "fr": 1, "en": 1, "romaji": 0 },
+      "race": { "total": 2, "ja": 2, "fr": 2, "en": 2, "romaji": 0 },
+      "place": { "total": 1, "ja": 1, "fr": 1, "en": 0, "romaji": 0 }
+    }
+  },
+  "invalid": [
+    { "name": "not an object", "doc": [] },
+    { "name": "wrong version", "doc": { "version": 2, "terms": [] } },
+    {
+      "name": "duplicate id",
+      "doc": {
+        "version": 1,
+        "terms": [
+          { "id": "a", "kind": "other", "ja": "ああ", "fr": "A", "en": "" },
+          { "id": "a", "kind": "other", "ja": "いい", "fr": "B", "en": "" }
+        ]
+      }
+    },
+    {
+      "name": "unknown kind",
+      "doc": {
+        "version": 1,
+        "terms": [{ "id": "a", "kind": "personnage", "ja": "ああ", "fr": "A", "en": "" }]
+      }
+    },
+    {
+      "name": "id not a slug",
+      "doc": {
+        "version": 1,
+        "terms": [{ "id": "Son Goku", "kind": "character", "ja": "孫悟空", "fr": "Son Goku", "en": "" }]
+      }
+    },
+    {
+      "name": "empty French form",
+      "doc": {
+        "version": 1,
+        "terms": [{ "id": "a", "kind": "other", "ja": "ああ", "fr": "", "en": "" }]
+      }
+    },
+    {
+      "name": "outer blanks",
+      "doc": {
+        "version": 1,
+        "terms": [{ "id": "a", "kind": "other", "ja": "ああ", "fr": "A", "en": "A " }]
+      }
+    },
+    {
+      "name": "a Japanese spelling owned by two terms",
+      "doc": {
+        "version": 1,
+        "terms": [
+          { "id": "a", "kind": "other", "ja": "ああ", "fr": "A", "en": "" },
+          {
+            "id": "b",
+            "kind": "other",
+            "ja": "いい",
+            "fr": "B",
+            "en": "",
+            "aliases": { "ja": ["ああ"] }
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown field",
+      "doc": {
+        "version": 1,
+        "terms": [{ "id": "a", "kind": "other", "ja": "ああ", "fr": "A", "en": "", "length": 2 }]
+      }
+    },
+    {
+      "name": "empty alias list",
+      "doc": {
+        "version": 1,
+        "terms": [{ "id": "a", "kind": "other", "ja": "ああ", "fr": "A", "en": "", "aliases": { "fr": [] } }]
+      }
+    }
+  ]
+}
