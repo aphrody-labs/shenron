@@ -1,46 +1,265 @@
-use std::{future::Future, pin::Pin};
+// SPDX-License-Identifier: MIT OR Apache-2.0
+//! The editor's Codex agent: its runs and sign-in, and the host that lets it read and edit
+//! the open project (plus the tools of an optional [`Toolbox`]).
+
+use std::{
+    collections::HashMap,
+    sync::{Arc, Weak},
+};
 
 use anyhow::{Context as _, Result, anyhow, bail};
 use async_trait::async_trait;
 use base64::{Engine as _, engine::general_purpose::STANDARD};
-use koharu_agent::{Control, Host, Invocation, Tool, ToolCall};
-use koharu_desktop::{Desktop, Frame};
-use koharu_library::agent_tools::*;
-use koharu_library::project::{GeometryUpdate, Point, Project, Typography, TypographyUpdate};
-use koharu_pipeline::{Committer, RunStatus, StageOutput, StopToken};
-use koharu_scene::{Commit, EntityId, Snapshot};
+use koharu_agent::{
+    Account, Agent, Codex, CodexModel, Config, Control, Event, Host, Invocation, LoginEvent,
+    RunId, Tool, ToolCall, Toolbox,
+};
+use koharu_desktop::Frame;
+use koharu_pipeline::StopToken;
+use parking_lot::{Mutex, RwLock};
+use serde::Serialize;
 use serde_json::{Value, json};
-use tauri::{AppHandle, Manager as _};
+use specta::Type;
+use tokio::sync::Notify;
 
-use crate::commands::{
-    ChannelExt as _,
-    canvas::CanvasChannel,
-    output,
-    preferences::Preferences,
-    processing::{JobId, Processing},
-    project::CurrentProject,
+use super::{Change, Editor, Inner, Preferences, Sink, output};
+use crate::{
+    agent_tools::*,
+    project::{GeometryUpdate, Point, Project, Typography, TypographyUpdate},
 };
 
-pub(super) struct KoharuHost<R: tauri::Runtime> {
-    handle: AppHandle<R>,
+#[derive(Clone, Debug, Serialize, Type)]
+pub struct AgentStatus {
+    pub account: Option<Account>,
+    pub models: Vec<CodexModel>,
+    pub config: Config,
+    pub running: Option<RunId>,
 }
 
-// Manual impl: `#[derive(Clone)]` would wrongly require `R: Clone`.
-impl<R: tauri::Runtime> Clone for KoharuHost<R> {
-    fn clone(&self) -> Self {
-        Self { handle: self.handle.clone() }
+type SharedToolbox = Arc<RwLock<Option<Arc<dyn Toolbox>>>>;
+
+pub(super) struct AgentState {
+    agent: Arc<Agent<EditorHost>>,
+    inner: Weak<Inner>,
+    toolbox: SharedToolbox,
+    runs: Mutex<HashMap<RunId, Control>>,
+    login: Mutex<Option<Control>>,
+    idle: Notify,
+}
+
+impl AgentState {
+    pub(super) fn new(host: EditorHost) -> Result<Self> {
+        let toolbox = Arc::clone(&host.toolbox);
+        let inner = host.inner.clone();
+        Ok(Self {
+            agent: Arc::new(Agent::new(Codex::new()?, host)?),
+            inner,
+            toolbox,
+            runs: Mutex::new(HashMap::new()),
+            login: Mutex::new(None),
+            idle: Notify::new(),
+        })
+    }
+
+    pub(super) fn set_toolbox(&self, toolbox: Option<Arc<dyn Toolbox>>) {
+        *self.toolbox.write() = toolbox;
+    }
+
+    pub(super) async fn status(&self) -> Result<AgentStatus> {
+        let mut account = self.agent.codex().account()?;
+        let models = if account.is_some() {
+            match self.agent.models().await {
+                Ok(models) => models,
+                Err(error) => {
+                    account = self.agent.codex().account()?;
+                    if account.is_some() {
+                        return Err(error);
+                    }
+                    self.agent.clear().await;
+                    Vec::new()
+                }
+            }
+        } else {
+            Vec::new()
+        };
+        Ok(AgentStatus {
+            account,
+            models,
+            config: self.agent.config()?,
+            running: self.running(),
+        })
+    }
+
+    pub(super) async fn models(&self) -> Result<Vec<CodexModel>> {
+        self.agent.models().await
+    }
+
+    pub(super) fn running(&self) -> Option<RunId> {
+        self.runs.lock().keys().next().copied()
+    }
+
+    pub(super) fn login_running(&self) -> bool {
+        self.login.lock().is_some()
+    }
+
+    /// Cancel every run and the sign-in, wait for them, then forget the conversation.
+    pub(super) async fn reset(&self) {
+        if let Some(login) = self.login.lock().as_ref() {
+            login.cancel();
+        }
+        for control in self.runs.lock().values() {
+            control.cancel();
+        }
+        loop {
+            let idle = self.idle.notified();
+            if self.login.lock().is_none() && self.runs.lock().is_empty() {
+                break;
+            }
+            idle.await;
+        }
+        self.agent.clear().await;
+    }
+
+    pub(super) fn cancel_all(&self) {
+        if let Some(login) = self.login.lock().take() {
+            login.cancel();
+        }
+        for control in self.runs.lock().drain().map(|(_, control)| control) {
+            control.cancel();
+        }
+    }
+
+    pub(super) async fn clear(&self) -> Result<()> {
+        if !self.runs.lock().is_empty() {
+            bail!("cannot clear agent history during a run");
+        }
+        self.agent.clear().await;
+        Ok(())
+    }
+
+    pub(super) async fn login(&self, on_event: Sink<LoginEvent>) -> Result<AgentStatus> {
+        let control = Control::default();
+        {
+            let mut login = self.login.lock();
+            if login.is_some() {
+                bail!("Codex sign-in is already running");
+            }
+            *login = Some(control.clone());
+        }
+        tracing::info!(provider = "codex", "Koharu agent sign-in started");
+        let result = self
+            .agent
+            .codex()
+            .login_device(&control, |event| {
+                on_event(event);
+            })
+            .await;
+        self.login.lock().take();
+        self.idle.notify_waiters();
+        result?;
+        self.status().await
+    }
+
+    pub(super) fn cancel_login(&self) -> Result<()> {
+        self.login
+            .lock()
+            .as_ref()
+            .context("no agent login is active")?
+            .cancel();
+        Ok(())
+    }
+
+    pub(super) async fn logout(&self) -> Result<AgentStatus> {
+        self.reset().await;
+        self.agent.codex().logout()?;
+        self.status().await
+    }
+
+    pub(super) fn save_config(&self, config: Config) -> Result<Config> {
+        self.agent.save_config(config)
+    }
+
+    pub(super) fn run(&self, prompt: &str, on_event: Sink<Event>) -> Result<RunId> {
+        let prompt = prompt.trim().to_owned();
+        if prompt.is_empty() {
+            bail!("message cannot be empty");
+        }
+        if self.agent.codex().account()?.is_none() {
+            bail!("Codex is not signed in");
+        }
+        let run = RunId::new();
+        let control = Control::default();
+        {
+            let mut runs = self.runs.lock();
+            if !runs.is_empty() {
+                bail!("another agent request is already running");
+            }
+            runs.insert(run, control.clone());
+        }
+        let agent = Arc::clone(&self.agent);
+        let inner = self.inner.clone();
+        tokio::spawn(async move {
+            let publish_control = control.clone();
+            let result = agent
+                .run(run, prompt, control, |event| {
+                    if !on_event(event) {
+                        publish_control.cancel();
+                    }
+                })
+                .await;
+            if let Err(error) = result {
+                tracing::error!(%run, error = ?error, "agent request failed");
+            }
+            drop(agent);
+            if let Some(inner) = inner.upgrade() {
+                let editor = Editor::from_inner(inner);
+                let state = editor.agent();
+                state.runs.lock().remove(&run);
+                state.idle.notify_waiters();
+            }
+        });
+        Ok(run)
+    }
+
+    pub(super) fn cancel(&self, run: RunId) -> Result<()> {
+        self.runs
+            .lock()
+            .get(&run)
+            .with_context(|| format!("agent run {run} is not active"))?
+            .cancel();
+        Ok(())
     }
 }
 
-impl<R: tauri::Runtime> KoharuHost<R> {
-    pub(super) fn new(handle: AppHandle<R>) -> Self {
-        Self { handle }
+/// The agent's view of the editor: project context, project tools and the toolbox.
+pub(super) struct EditorHost {
+    inner: Weak<Inner>,
+    toolbox: SharedToolbox,
+}
+
+impl EditorHost {
+    pub(super) fn new(inner: Weak<Inner>) -> Self {
+        Self {
+            inner,
+            toolbox: Arc::new(RwLock::new(None)),
+        }
+    }
+
+    fn editor(&self) -> Result<Editor> {
+        self.inner
+            .upgrade()
+            .map(Editor::from_inner)
+            .context("the Koharu editor is closed")
+    }
+
+    fn toolbox(&self) -> Option<Arc<dyn Toolbox>> {
+        self.toolbox.read().clone()
     }
 
     async fn project_context(&self) -> Result<Value> {
+        let editor = self.editor()?;
         let (project, pages) = {
-            let current = self.handle.state::<CurrentProject>();
-            let current = current.project.lock().await;
+            let current = editor.inner.project.lock().await;
             let project = current.as_ref().context("no project is open")?;
             let snapshot = project.snapshot();
             let pages = Project::pages(&snapshot)?
@@ -50,12 +269,7 @@ impl<R: tauri::Runtime> KoharuHost<R> {
             (project.info(), pages)
         };
         let preferences = Preferences::load()?;
-        let fonts = self
-            .handle
-            .state::<Desktop>()
-            .renderer()
-            .available_fonts()
-            .await?;
+        let fonts = editor.inner.desktop.renderer().available_fonts().await?;
         let providers = preferences
             .providers
             .entries
@@ -83,67 +297,29 @@ impl<R: tauri::Runtime> KoharuHost<R> {
         }))
     }
 
+    /// Apply a project change as one undoable revision and present it.
     async fn mutate<T>(
         &self,
-        mutation: impl for<'project> FnOnce(
-            &'project mut Project,
-        ) -> Pin<
-            Box<dyn Future<Output = Result<(Commit, T)>> + Send + 'project>,
-        >,
+        change: impl for<'project> FnOnce(&'project mut Project) -> Change<'project, T>,
     ) -> Result<Invocation>
     where
-        T: serde::Serialize + Send,
+        T: Serialize + Send,
     {
-        let (commit, value, page, project) = {
-            let current = self.handle.state::<CurrentProject>();
-            let mut current = current.project.lock().await;
-            let project = current.as_mut().context("no project is open")?;
-            let (commit, value) = mutation(project).await?;
-            project.record_commit(&commit);
-            project.reconcile_page();
-            (commit, value, project.active_page(), project.info())
-        };
-        let revision = commit.revision;
-        self.synchronize(commit, page).await?;
+        let editor = self.editor()?;
+        let (commit, value) = editor.mutate(true, true, change).await?;
+        let project = editor.project_info().await;
         Invocation::changed(json!({
-            "revision": revision,
+            "revision": commit.revision,
             "project": project,
             "result": value,
         }))
     }
 
-    async fn synchronize(&self, commit: Commit, page: Option<EntityId>) -> Result<()> {
-        let desktop = self.handle.state::<Desktop>();
-        desktop.synchronize(&commit.snapshot, page, &commit).await?;
-        let canvas = desktop.canvas_state();
-        self.handle.state::<CanvasChannel>().channel.publish(canvas);
-        Ok(())
-    }
-
     async fn run_pipeline(&self, arguments: RunPipeline, control: &Control) -> Result<Invocation> {
+        let editor = self.editor()?;
         let scope = arguments.scope()?;
-        let operation = arguments.operation.into();
-        let snapshot = self
-            .handle
-            .state::<CurrentProject>()
-            .project
-            .lock()
-            .await
-            .as_ref()
-            .context("no project is open")?
-            .snapshot();
-        let job = JobId::new();
         let stop = StopToken::default();
-        {
-            let processing = self.handle.state::<Processing>();
-            let mut stops = processing.stops.lock();
-            if !stops.is_empty() {
-                bail!("another pipeline process is already running");
-            }
-            stops.insert(job, stop.clone());
-        }
-
-        let watcher = tauri::async_runtime::spawn({
+        let watcher = tokio::spawn({
             let control = control.clone();
             let stop = stop.clone();
             async move {
@@ -151,23 +327,12 @@ impl<R: tauri::Runtime> KoharuHost<R> {
                 stop.stop();
             }
         });
-        let mut committer = AgentCommitter { host: self.clone() };
-        let request = koharu_pipeline::Request {
-            operation,
-            scope,
-            stop,
-            progress: None,
-            inpainting_mask: None,
-        };
-        let result = self
-            .handle
-            .state::<koharu_pipeline::Pipeline>()
-            .execute(snapshot, request, &mut committer)
+        let result = editor
+            .run(scope, arguments.operation.into(), stop, None)
             .await;
         watcher.abort();
-        self.handle.state::<Processing>().stops.lock().remove(&job);
-        let report = result.map_err(|error| anyhow!(error))?;
-        if report.status == RunStatus::Stopped {
+        let report = result?;
+        if report.status == koharu_pipeline::RunStatus::Stopped {
             bail!("pipeline processing was cancelled");
         }
         Invocation::changed(json!({
@@ -181,22 +346,21 @@ impl<R: tauri::Runtime> KoharuHost<R> {
 }
 
 #[async_trait]
-impl<R: tauri::Runtime> Host for KoharuHost<R> {
+impl Host for EditorHost {
     async fn context(&self) -> Result<Value> {
         self.project_context().await
     }
 
     fn tools(&self) -> Vec<Tool> {
-        koharu_library::agent_tools::definitions()
+        let mut tools = definitions();
+        if let Some(toolbox) = self.toolbox() {
+            tools.extend(toolbox.tools());
+        }
+        tools
     }
 
-    #[tracing::instrument(
-        target = "koharu_metrics",
-        name = "agent_tool",
-        skip_all,
-        fields(tool = call.name.as_str()),
-    )]
     async fn invoke(&self, call: ToolCall, control: &Control) -> Result<Invocation> {
+        tracing::debug!(tool = call.name.as_str(), "Koharu agent tool");
         match call.name.as_str() {
             "inspect_project" => {
                 let _: InspectProject = arguments(&call)?;
@@ -205,19 +369,10 @@ impl<R: tauri::Runtime> Host for KoharuHost<R> {
             "view_page" => {
                 let arguments: ViewPage = arguments(&call)?;
                 let page = entity(&arguments.page)?;
-                let (label, snapshot) = {
-                    let current = self.handle.state::<CurrentProject>();
-                    let current = current.project.lock().await;
-                    let project = current.as_ref().context("no project is open")?;
-                    let snapshot = project.snapshot();
-                    let label = snapshot.page(page)?.page()?.label;
-                    (label, snapshot)
-                };
-                let desktop = self.handle.state::<Desktop>();
-                let renderer = desktop.renderer();
-                let rasterizer = desktop.rasterizer().await?;
-                let bytes =
-                    output::rendered_preview(&renderer, rasterizer, &snapshot, page).await?;
+                let editor = self.editor()?;
+                let snapshot = editor.snapshot().await?;
+                let label = snapshot.page(page)?.page()?.label;
+                let bytes = output::rendered_preview(&editor.inner.desktop, &snapshot, page).await?;
                 Ok(
                     Invocation::read(json!({ "page": page, "label": label }))?.with_image(
                         format!("Rendered page {label} ({page})"),
@@ -411,30 +566,13 @@ impl<R: tauri::Runtime> Host for KoharuHost<R> {
                 .await
             }
             "run_pipeline" => self.run_pipeline(arguments(&call)?, control).await,
-            name => bail!("unknown Koharu tool {name}"),
+            name => match self.toolbox() {
+                Some(toolbox) => toolbox
+                    .invoke(&call, control)
+                    .await
+                    .unwrap_or_else(|| Err(anyhow!("unknown Koharu tool {name}"))),
+                None => bail!("unknown Koharu tool {name}"),
+            },
         }
-    }
-}
-
-struct AgentCommitter<R: tauri::Runtime> {
-    host: KoharuHost<R>,
-}
-
-#[async_trait]
-impl<R: tauri::Runtime> Committer for AgentCommitter<R> {
-    async fn commit(&mut self, output: StageOutput) -> Result<Snapshot> {
-        let (commit, page) = {
-            let current = self.host.handle.state::<CurrentProject>();
-            let mut current = current.project.lock().await;
-            let project = current.as_mut().context("no project is open")?;
-            let Some(commit) = project.commit_rebased(output.patch).await? else {
-                return Ok(project.snapshot());
-            };
-            project.record_commit(&commit);
-            (commit, project.active_page())
-        };
-        let snapshot = commit.snapshot.clone();
-        self.host.synchronize(commit, page).await?;
-        Ok(snapshot)
     }
 }

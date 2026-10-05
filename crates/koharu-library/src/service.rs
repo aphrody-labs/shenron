@@ -1,119 +1,91 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-//! Native in-process Koharu service and RPC dispatcher.
+//! The headless method set of `koharu-sdk` (`@shenron/koharu/native`, the Shenron editorial
+//! chain): `project.*`, `page.*`, `text.*`, `layer.*`, `raster.stroke`, `pipeline.*`,
+//! `canvas.*`, `preferences.*`, `models.*`, `resources.status` and `agent.*`.
 //!
-//! Provides direct in-process execution of all Koharu document, pipeline,
-//! project, canvas, and translation operations without spawning external subprocesses.
+//! Every method runs on the one [`Editor`] of the process: the same project, jobs, canvas and
+//! agent the editor commands use. Methods address pages explicitly; asynchronous work
+//! (`pipeline.start`, `agent.run`, `agent.login`) reports through event lines without `id`.
 
-use std::{path::PathBuf, sync::Arc};
+use std::{
+    path::PathBuf,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+};
 
 use anyhow::{Context as _, Result, bail};
 use base64::{Engine as _, engine::general_purpose::STANDARD};
-use koharu_desktop::Desktop;
-use koharu_agent::{Agent, Codex, Config as AgentConfig, Control, RunId};
-use koharu_pipeline::{Progress, RunStatus, StopToken};
-use koharu_rasterizer::ResourceId;
+use koharu_agent::{Codex, Config as AgentConfig, RunId};
+use koharu_desktop::Frame;
+use koharu_pipeline::{Progress, Report, RunStatus, StopToken};
 use koharu_scene::EntityId;
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_json::{Value, json};
-use tokio::sync::{Mutex, mpsc};
+use tokio::sync::mpsc;
 
-use crate::agent_host::ProjectHost;
-use crate::project::{
-    GeometryUpdate, Point, Project, ProjectLibrary, RasterStrokeMode, TypographyUpdate,
-};
 use crate::{
-    Library, Operation, PipelineConfig, ProvidersConfig, Request, Scope,
+    Operation, PipelineConfig, ProvidersConfig, Scope,
+    editor::{Editor, PageFormat},
+    project::{GeometryUpdate, Point, RasterStrokeMode, TypographyUpdate},
     renderer::TypesettingConfig,
     secrets,
     translator::{Provider, ProviderConfig, Translator},
 };
 
-pub struct ActiveAgent {
-    pub run: RunId,
-    pub control: Control,
-    pub task: tokio::task::JoinHandle<()>,
+struct ActivePipeline {
+    job: u64,
+    stop: StopToken,
+    task: tokio::task::JoinHandle<()>,
 }
 
-pub struct ActiveLogin {
-    pub control: Control,
-    pub task: tokio::task::JoinHandle<()>,
+struct ActiveLogin {
+    cancelled: Arc<AtomicBool>,
+    task: tokio::task::JoinHandle<()>,
 }
 
-pub struct ActivePipeline {
-    pub job: u64,
-    pub stop: StopToken,
-    pub task: tokio::task::JoinHandle<()>,
-}
-
+/// The headless methods over an [`Editor`]; event lines go to `output`.
 pub struct Service {
-    pub projects: ProjectLibrary,
-    pub project: Option<Arc<Mutex<Project>>>,
-    pub library: Option<(bool, Library)>,
-    pub desktop: Option<Desktop>,
-    pub agent: Option<ActiveAgent>,
-    pub agent_instance: Option<(bool, Arc<Agent<ProjectHost>>)>,
-    pub login: Option<ActiveLogin>,
-    pub pipeline: Option<ActivePipeline>,
-    pub next_job: u64,
-    pub output: mpsc::UnboundedSender<Value>,
+    editor: Editor,
+    output: mpsc::UnboundedSender<Value>,
+    pipeline: Option<ActivePipeline>,
+    login: Option<ActiveLogin>,
+    next_job: u64,
 }
 
 impl Service {
-    pub fn new(output: mpsc::UnboundedSender<Value>) -> Result<Self> {
-        Self::with_root(None, output)
-    }
-
-    pub fn with_root(root: Option<PathBuf>, output: mpsc::UnboundedSender<Value>) -> Result<Self> {
-        let projects = match root {
-            Some(root) => ProjectLibrary::at(root)?,
-            None => ProjectLibrary::new()?,
-        };
-        Ok(Self {
-            projects,
-            project: None,
-            library: None,
-            desktop: None,
-            agent: None,
-            agent_instance: None,
-            login: None,
-            pipeline: None,
-            next_job: 0,
+    #[must_use]
+    pub fn new(editor: Editor, output: mpsc::UnboundedSender<Value>) -> Self {
+        Self {
+            editor,
             output,
-        })
-    }
-
-    pub async fn project(&self) -> Result<tokio::sync::MutexGuard<'_, Project>> {
-        Ok(self
-            .project
-            .as_ref()
-            .context("no project is open")?
-            .lock()
-            .await)
-    }
-
-    pub fn active_agent(&mut self) -> Option<&ActiveAgent> {
-        if self
-            .agent
-            .as_ref()
-            .is_some_and(|agent| agent.task.is_finished())
-        {
-            self.agent = None;
+            pipeline: None,
+            login: None,
+            next_job: 0,
         }
-        self.agent.as_ref()
     }
 
-    pub fn active_login(&mut self) -> Option<&ActiveLogin> {
-        if self
-            .login
-            .as_ref()
-            .is_some_and(|login| login.task.is_finished())
-        {
-            self.login = None;
+    #[must_use]
+    pub fn editor(&self) -> &Editor {
+        &self.editor
+    }
+
+    /// Stop the jobs, the agent run and the sign-in this process started.
+    pub fn shutdown(&mut self) {
+        if let Some(login) = self.login.take() {
+            login.cancelled.store(true, Ordering::SeqCst);
+            let _ = self.editor.cancel_agent_login();
+            login.task.abort();
         }
-        self.login.as_ref()
+        if let Some(pipeline) = self.pipeline.take() {
+            pipeline.stop.stop();
+            pipeline.task.abort();
+        }
+        self.editor.cancel_work();
     }
 
-    pub fn active_pipeline(&mut self) -> Option<&ActivePipeline> {
+    fn active_pipeline(&mut self) -> Option<&ActivePipeline> {
         if self
             .pipeline
             .as_ref()
@@ -124,154 +96,142 @@ impl Service {
         self.pipeline.as_ref()
     }
 
-    pub fn desktop(&mut self) -> Result<&Desktop> {
-        if self.desktop.is_none() {
-            self.desktop = Some(Desktop::new()?);
+    fn login_active(&mut self) -> bool {
+        if self
+            .login
+            .as_ref()
+            .is_some_and(|login| login.task.is_finished())
+        {
+            self.login = None;
         }
-        Ok(self.desktop.as_ref().expect("desktop was initialized"))
+        self.login.is_some()
     }
 
-    pub async fn library(&mut self, cpu: bool) -> Result<&Library> {
-        if self.library.is_none() {
-            let pipeline = PipelineConfig::load()?.read()?.clone();
-            let providers = ProvidersConfig::load()?.read()?.clone();
-            self.library = Some((cpu, Library::initialize(pipeline, providers, cpu).await?));
-        }
-        let (selected_cpu, library) = self.library.as_ref().expect("library was initialized");
-        if *selected_cpu != cpu {
+    fn processing(&mut self) -> bool {
+        self.active_pipeline().is_some() || self.editor.busy()
+    }
+
+    fn check_device(&self, cpu: Option<bool>) -> Result<()> {
+        if cpu.is_some_and(|cpu| cpu != self.editor.cpu()) {
             bail!("compute device is fixed for this SDK process");
         }
-        Ok(library)
+        Ok(())
+    }
+
+    async fn info(&self) -> Result<Value> {
+        Ok(json!(
+            self.editor
+                .project_info()
+                .await
+                .context("no project is open")?
+        ))
     }
 
     pub async fn call(&mut self, method: &str, value: Value) -> Result<Value> {
         match method {
             "agent.status" => {
                 let authenticated = Codex::new()?.account()?.is_some();
-                let running = self.active_agent().map(|agent| agent.run);
-                let login_running = self.active_login().is_some();
+                let login_running = self.login_active() || self.editor.agent_login_running();
                 let config = AgentConfig::load()?.read()?.clone();
-                Ok(
-                    json!({"authenticated": authenticated, "running": running, "login_running": login_running, "config": config}),
-                )
+                Ok(json!({
+                    "authenticated": authenticated,
+                    "running": self.editor.agent_run(),
+                    "login_running": login_running,
+                    "config": config,
+                }))
             }
-            "agent.models" => Ok(json!(Codex::new()?.models().await?)),
+            "agent.models" => Ok(json!(self.editor.agent_models().await?)),
             "agent.setConfig" => {
                 let AgentPreference { config } = decode(value)?;
-                let saved = if let Some((_, agent)) = &self.agent_instance {
-                    agent.save_config(config)?
-                } else {
-                    let stored = AgentConfig::load()?;
-                    let mut current = stored.write()?;
-                    *current = config;
-                    let saved = current.clone();
-                    current.save()?;
-                    saved
-                };
-                Ok(json!({"config": saved}))
+                Ok(json!({"config": self.editor.save_agent_config(config)?}))
             }
             "agent.clear" => {
-                if self.active_agent().is_some() {
-                    bail!("cannot clear agent history during a run");
-                }
-                if let Some((_, agent)) = &self.agent_instance {
-                    agent.clear().await;
-                }
+                self.editor.clear_agent().await?;
                 Ok(Value::Null)
             }
             "agent.login" => {
-                if self.active_login().is_some() {
+                if self.login_active() || self.editor.agent_login_running() {
                     bail!("agent login is already active");
                 }
-                let codex = Codex::new()?;
-                let control = Control::default();
-                let task_control = control.clone();
+                let cancelled = Arc::new(AtomicBool::new(false));
+                let editor = self.editor.clone();
                 let output = self.output.clone();
+                let task_cancelled = Arc::clone(&cancelled);
                 let task = tokio::spawn(async move {
-                    let result = codex
-                        .login_device(&task_control, |event| {
-                            let _ = output.send(json!({"event": "agent_login", "value": event}));
-                        })
+                    let events = output.clone();
+                    let result = editor
+                        .login_agent(Arc::new(move |event| {
+                            events
+                                .send(json!({"event": "agent_login", "value": event}))
+                                .is_ok()
+                        }))
                         .await;
                     let value = match result {
                         Ok(_) => json!({"type": "completed", "authenticated": true}),
-                        Err(_) if task_control.is_cancelled() => json!({"type": "cancelled"}),
+                        Err(_) if task_cancelled.load(Ordering::SeqCst) => {
+                            json!({"type": "cancelled"})
+                        }
                         Err(error) => json!({"type": "failed", "message": format!("{error:#}")}),
                     };
                     let _ = output.send(json!({"event": "agent_login", "value": value}));
                 });
-                self.login = Some(ActiveLogin { control, task });
+                self.login = Some(ActiveLogin { cancelled, task });
                 Ok(json!({"started": true}))
             }
             "agent.cancelLogin" => {
-                let login = self.active_login().context("no agent login is active")?;
-                login.control.cancel();
+                if !self.login_active() {
+                    bail!("no agent login is active");
+                }
+                if let Some(login) = &self.login {
+                    login.cancelled.store(true, Ordering::SeqCst);
+                }
+                self.editor.cancel_agent_login()?;
                 Ok(json!({"cancelled": true}))
             }
             "agent.logout" => {
-                if self.active_agent().is_some() || self.active_login().is_some() {
+                if self.editor.agent_run().is_some() || self.login_active() {
                     bail!("cancel the active agent work before logout");
                 }
-                Codex::new()?.logout()?;
-                self.agent_instance = None;
+                self.editor.logout_agent().await?;
                 Ok(json!({"authenticated": false}))
             }
             "agent.run" => {
                 let AgentRun { prompt, cpu } = decode(value)?;
+                self.check_device(cpu)?;
                 if prompt.trim().is_empty() {
                     bail!("agent prompt must not be empty");
                 }
-                if self.active_agent().is_some() {
+                if self.editor.agent_run().is_some() {
                     bail!("an agent run is already active");
                 }
-                if self.active_pipeline().is_some() {
+                if self.processing() {
                     bail!("a pipeline job is active");
                 }
-                if self.active_login().is_some() {
+                if self.login_active() {
                     bail!("agent login is active");
                 }
-                let codex = Codex::new()?;
-                if codex.account()?.is_none() {
-                    bail!("Codex account is not authenticated");
+                if self.editor.project_info().await.is_none() {
+                    bail!("no project is open");
                 }
-                let cpu = cpu.unwrap_or(false);
-                let agent = match &self.agent_instance {
-                    Some((selected_cpu, agent)) => {
-                        if *selected_cpu != cpu {
-                            bail!("agent compute device is fixed while the project is open");
-                        }
-                        Arc::clone(agent)
-                    }
-                    None => {
-                        let project =
-                            Arc::clone(self.project.as_ref().context("no project is open")?);
-                        let agent = Arc::new(Agent::new(codex, ProjectHost::new(project, cpu)?)?);
-                        self.agent_instance = Some((cpu, Arc::clone(&agent)));
-                        agent
-                    }
-                };
-                let run = RunId::new();
-                let control = Control::default();
-                let task_control = control.clone();
                 let output = self.output.clone();
-                let task = tokio::spawn(async move {
-                    let _ = agent
-                        .run(run, prompt, task_control, |event| {
-                            let _ =
-                                output.send(json!({"event": "agent", "run": run, "value": event}));
-                        })
-                        .await;
-                });
-                self.agent = Some(ActiveAgent { run, control, task });
+                let run = self.editor.run_agent(
+                    &prompt,
+                    Arc::new(move |event| {
+                        let value = json!(event);
+                        let run = value.get("run").cloned().unwrap_or(Value::Null);
+                        output
+                            .send(json!({"event": "agent", "run": run, "value": value}))
+                            .is_ok()
+                    }),
+                )?;
                 Ok(json!({"run": run}))
             }
             "agent.cancel" => {
                 let AgentCancel { run } = decode(value)?;
-                let agent = self.active_agent().context("no agent run is active")?;
-                if agent.run != run {
+                if self.editor.agent_run() != Some(run) {
                     bail!("agent run identifier does not match the active run");
                 }
-                agent.control.cancel();
+                self.editor.cancel_agent(run)?;
                 Ok(json!({"cancelled": true}))
             }
             "preferences.get" => {
@@ -302,7 +262,6 @@ impl Service {
                 let mut current = config.write()?;
                 *current = pipeline;
                 current.save()?;
-                self.library = None;
                 Ok(json!({"pipeline": config.read()?.clone()}))
             }
             "preferences.setProviders" => {
@@ -312,7 +271,6 @@ impl Service {
                 let mut current = config.write()?;
                 *current = providers;
                 current.save()?;
-                self.library = None;
                 Ok(json!({"providers": config.read()?.entries()}))
             }
             "preferences.setTypesetting" => {
@@ -321,8 +279,6 @@ impl Service {
                 let mut current = config.write()?;
                 *current = typesetting;
                 current.save()?;
-                self.library = None;
-                self.desktop = None;
                 Ok(json!({"typesetting": config.read()?.clone()}))
             }
             "preferences.setCredential" => {
@@ -347,146 +303,124 @@ impl Service {
                 } else {
                     bail!("credential value or clear must be provided");
                 }
-                self.library = None;
                 Ok(json!({"credential_configured": secrets::get(key)?.is_some()}))
             }
             "models.translation" => Ok(json!(Translator::models().await?)),
             "models.pipeline" => Ok(json!(PipelineConfig::model_catalog())),
             "resources.status" => {
-                let sample = self
-                    .library
-                    .as_ref()
-                    .map(|(_, library)| library.resource_snapshot());
+                let sample = self.editor.resources();
                 Ok(json!({
                     "store": crate::runtime::Store::root(),
-                    "device": koharu_ml::device(false),
+                    "device": koharu_ml::device(self.editor.cpu()),
                     "sample": sample.map(|sample| json!({
-                        "process_memory_bytes": sample.process_memory_bytes,
-                        "system_memory_bytes": sample.system_memory_bytes,
-                        "process_cpu_percent": sample.process_cpu_percent,
+                        "process_memory_bytes": sample.process_memory,
+                        "system_memory_bytes": sample.system_memory,
+                        "process_cpu_percent": sample.process_cpu,
                         "devices": sample.devices.into_iter().map(|device| json!({
                             "name": device.name,
                             "selected": device.selected,
-                            "memory_budget_bytes": device.memory_budget_bytes,
-                            "memory_used_bytes": device.memory_used_bytes,
-                            "utilization_percent": device.utilization_percent,
+                            "memory_budget_bytes": device.memory_budget,
+                            "memory_used_bytes": device.memory_used,
+                            "utilization_percent": device.utilization,
                         })).collect::<Vec<_>>(),
                     })),
                 }))
             }
-            "project.list" => Ok(json!(self.projects.list()?)),
+            "project.list" => Ok(json!(self.editor.list_projects()?)),
             "project.delete" => {
                 let Named { name } = decode(value)?;
-                if let Some(open) = &self.project
-                    && open.lock().await.info().name == name
+                if self
+                    .editor
+                    .project_info()
+                    .await
+                    .is_some_and(|open| open.name == name.trim())
                 {
                     bail!("close the project before deleting it");
                 }
-                self.projects.delete(&name)?;
+                self.editor.delete_project(&name).await?;
                 Ok(Value::Null)
             }
             "project.create" | "project.open" => {
                 let Named { name } = decode(value)?;
-                if self.project.is_some() {
+                if self.editor.project_info().await.is_some() {
                     bail!("close the current project first");
                 }
-                let project = if method == "project.create" {
-                    self.projects.create(&name).await?
+                let info = if method == "project.create" {
+                    self.editor.create_project(&name).await?
                 } else {
-                    self.projects.open(&name).await?
+                    self.editor.open_project(&name).await?
                 };
-                let info = project.info();
-                self.project = Some(Arc::new(Mutex::new(project)));
                 Ok(json!(info))
             }
             "project.close" => {
-                if self.active_agent().is_some() {
+                if self.editor.agent_run().is_some() {
                     bail!("cancel the active agent run before closing the project");
                 }
-                if self.active_pipeline().is_some() {
+                if self.processing() {
                     bail!("cancel the active pipeline job before closing the project");
                 }
-                self.project = None;
-                self.agent_instance = None;
-                self.desktop = None;
+                self.editor.close_project().await?;
                 Ok(Value::Null)
             }
-            "project.info" => Ok(json!(self.project().await?.info())),
-            "project.pages" => {
-                let snapshot = self.project().await?.snapshot();
-                Ok(json!(Project::pages(&snapshot)?))
-            }
+            "project.info" => self.info().await,
+            "project.pages" => Ok(json!(self.editor.pages().await?)),
             "project.page" => {
                 let PageId { page } = decode(value)?;
-                let snapshot = self.project().await?.snapshot();
-                Ok(json!(Project::page(&snapshot, page)?))
+                Ok(json!(self.editor.page(page).await?))
             }
             "project.selectPage" => {
                 let PageId { page } = decode(value)?;
-                let mut project = self.project().await?;
-                project.select_page(page)?;
-                Ok(json!(project.info()))
+                Ok(json!(self.editor.select_page(page).await?.project))
             }
             "project.importPaths" => {
                 let Paths { paths } = decode(value)?;
-                let mut project = self.project().await?;
-                let (_, pages) = project.import_paths(paths).await?;
-                Ok(json!({"pages": pages, "project": project.info()}))
+                let pages = self.editor.import_files(paths).await?;
+                Ok(json!({"pages": pages, "project": self.info().await?}))
             }
             "page.rename" => {
                 let Rename { page, label } = decode(value)?;
-                let mut project = self.project().await?;
-                project.rename_page(page, label).await?;
-                Ok(json!(project.info()))
+                self.editor.rename_page(page, label).await?;
+                self.info().await
             }
             "page.delete" => {
                 let Pages { pages } = decode(value)?;
-                let mut project = self.project().await?;
-                project.delete_pages(pages).await?;
-                project.reconcile_page();
-                Ok(json!(project.info()))
+                self.editor.delete_pages(pages).await?;
+                self.info().await
             }
             "page.move" => {
                 let MovePage { page, index } = decode(value)?;
-                let mut project = self.project().await?;
-                project.move_page(page, index).await?;
-                Ok(json!(project.info()))
+                self.editor.move_page(page, index).await?;
+                self.info().await
             }
             "text.addPoint" => {
                 let AddPoint { page, point } = decode(value)?;
-                let mut project = self.project().await?;
-                let (_, layer) = project.add_point_text(page, point).await?;
-                Ok(json!({"layer": layer, "project": project.info()}))
+                let commit = self.editor.add_point_text(Some(page), point).await?;
+                Ok(json!({"layer": commit.layer, "project": self.info().await?}))
             }
             "text.addBox" => {
                 let AddBox { page, frame } = decode(value)?;
-                let mut project = self.project().await?;
-                let (_, layer) = project.add_text_box(page, frame).await?;
-                Ok(json!({"layer": layer, "project": project.info()}))
+                let commit = self.editor.add_text_box(Some(page), frame).await?;
+                Ok(json!({"layer": commit.layer, "project": self.info().await?}))
             }
             "text.setSource" => {
                 let SetText { layer, text } = decode(value)?;
-                let mut project = self.project().await?;
-                project.set_source_text(layer, text).await?;
-                Ok(json!(project.info()))
+                self.editor.set_source_text(layer, text).await?;
+                self.info().await
             }
             "text.setTranslation" => {
                 let SetTranslation { layer, text } = decode(value)?;
-                let mut project = self.project().await?;
-                project.set_translation(layer, text).await?;
-                Ok(json!(project.info()))
+                self.editor.set_translation(layer, text).await?;
+                self.info().await
             }
             "text.setTypography" => {
                 let Updates { updates }: Updates<TypographyUpdate> = decode(value)?;
-                let mut project = self.project().await?;
-                project.set_typography(updates).await?;
-                Ok(json!(project.info()))
+                self.editor.set_typography(updates).await?;
+                self.info().await
             }
             "layer.setGeometry" => {
                 let Updates { updates }: Updates<GeometryUpdate> = decode(value)?;
-                let mut project = self.project().await?;
-                project.set_geometry(updates).await?;
-                Ok(json!(project.info()))
+                self.editor.set_geometry(updates).await?;
+                self.info().await
             }
             "layer.setVisibility" => {
                 let Visibility {
@@ -494,15 +428,13 @@ impl Service {
                     visible,
                     opacity,
                 } = decode(value)?;
-                let mut project = self.project().await?;
-                project.set_visibility(layers, visible, opacity).await?;
-                Ok(json!(project.info()))
+                self.editor.set_visibility(layers, visible, opacity).await?;
+                self.info().await
             }
             "layer.delete" => {
                 let Layers { layers } = decode(value)?;
-                let mut project = self.project().await?;
-                project.delete_layers(layers).await?;
-                Ok(json!(project.info()))
+                self.editor.delete_layers(layers).await?;
+                self.info().await
             }
             "layer.move" => {
                 let MoveLayer {
@@ -510,9 +442,8 @@ impl Service {
                     parent,
                     index,
                 } = decode(value)?;
-                let mut project = self.project().await?;
-                project.move_layer(layer, parent, index).await?;
-                Ok(json!(project.info()))
+                self.editor.move_layer(layer, parent, index).await?;
+                self.info().await
             }
             "raster.stroke" => {
                 let RasterStroke {
@@ -528,76 +459,50 @@ impl Service {
                     "erase" => RasterStrokeMode::Erase,
                     _ => bail!("raster mode must be paint or erase"),
                 };
-                let mut project = self.project().await?;
-                let (_, layer) = project
-                    .apply_raster_stroke(
-                        page,
-                        layer,
-                        mode,
-                        color,
-                        diameter,
-                        points
-                            .into_iter()
-                            .map(|point| koharu_scene::Point {
-                                x: point.x,
-                                y: point.y,
-                            })
-                            .collect(),
-                    )
+                let commit = self
+                    .editor
+                    .raster_stroke(None, Some(page), layer, mode, color, diameter, points)
                     .await?;
-                Ok(json!({"layer": layer, "project": project.info()}))
+                Ok(json!({"layer": commit.layer, "project": self.info().await?}))
             }
-            "project.undo" | "project.redo" => {
-                let mut project = self.project().await?;
-                if method == "project.undo" {
-                    project.undo().await?;
-                } else {
-                    project.redo().await?;
-                }
-                project.reconcile_page();
-                Ok(json!(project.info()))
+            "project.undo" => {
+                self.editor.undo().await?;
+                self.info().await
+            }
+            "project.redo" => {
+                self.editor.redo().await?;
+                self.info().await
             }
             "page.result" => {
                 let PageId { page } = decode(value)?;
-                Ok(json!(self.project().await?.page_result(page).await?))
+                Ok(json!(self.editor.page_result(page).await?))
             }
             "page.sourceSha256" => {
                 let PageId { page } = decode(value)?;
-                let sha256 = self.project().await?.source_sha256(page).await?;
-                Ok(json!({"sha256": sha256}))
+                Ok(json!({"sha256": self.editor.page_source_sha256(page).await?}))
             }
             "pipeline.run" => {
-                if self.active_agent().is_some() || self.active_pipeline().is_some() {
-                    bail!("another processing job is active");
-                }
                 let RunPipeline {
                     operation,
                     scope,
                     cpu,
                 } = decode(value)?;
-                let cpu = cpu.unwrap_or(false);
-                self.library(cpu).await?;
-                let mut project = self.project().await?;
-                let library = &self.library.as_ref().expect("library initialized").1;
-                let report = library
-                    .process_project(
-                        &mut project,
-                        Request {
-                            operation: operation.unwrap_or_default(),
-                            scope: scope.unwrap_or_default(),
-                            ..Request::default()
-                        },
+                self.check_device(cpu)?;
+                if self.editor.agent_run().is_some() || self.processing() {
+                    bail!("another processing job is active");
+                }
+                let report = self
+                    .editor
+                    .run(
+                        scope.unwrap_or_default(),
+                        operation.unwrap_or_default(),
+                        StopToken::default(),
+                        None,
                     )
                     .await?;
-                Ok(json!({
-                    "status": format!("{:?}", report.status).to_lowercase(),
-                    "base": report.base,
-                    "finalRevision": report.final_revision,
-                    "completed": report.completed,
-                    "total": report.total,
-                    "elapsedMs": report.elapsed.as_millis(),
-                    "project": project.info(),
-                }))
+                let mut value = report_value(&report);
+                value["project"] = self.info().await?;
+                Ok(value)
             }
             "pipeline.status" => Ok(json!({
                 "running": self.active_pipeline().map(|job| job.job),
@@ -608,64 +513,52 @@ impl Service {
                     scope,
                     cpu,
                 } = decode(value)?;
-                if self.active_agent().is_some() || self.active_pipeline().is_some() {
+                self.check_device(cpu)?;
+                if self.editor.agent_run().is_some() || self.processing() {
                     bail!("another processing job is active");
                 }
-                let project = Arc::clone(self.project.as_ref().context("no project is open")?);
+                if self.editor.project_info().await.is_none() {
+                    bail!("no project is open");
+                }
                 self.next_job = self
                     .next_job
                     .checked_add(1)
                     .context("pipeline job ID overflow")?;
                 let job = self.next_job;
                 let stop = StopToken::default();
-                let task_stop = stop.clone();
+                let editor = self.editor.clone();
                 let output = self.output.clone();
+                let task_stop = stop.clone();
                 let task = tokio::spawn(async move {
                     let _ = output
                         .send(json!({"event": "pipeline", "job": job, "value": {"type": "started"}}));
-                    let result: Result<Value> = async {
-                        let pipeline = PipelineConfig::load()?.read()?.clone();
-                        let providers = ProvidersConfig::load()?.read()?.clone();
-                        let library =
-                            Library::initialize(pipeline, providers, cpu.unwrap_or(false)).await?;
-                        if task_stop.stopped() {
-                            return Ok(json!({"type": "stopped"}));
-                        }
-                        let progress_output = output.clone();
-                        let progress = Arc::new(move |event: Progress| {
-                            let _ = progress_output.send(json!({
-                                "event": "pipeline",
-                                "job": job,
-                                "value": progress_value(event)
-                            }));
-                        });
-                        let mut project = project.lock().await;
-                        let report = library
-                            .process_project(
-                                &mut project,
-                                Request {
-                                    operation: operation.unwrap_or_default(),
-                                    scope: scope.unwrap_or_default(),
-                                    stop: task_stop.clone(),
-                                    progress: Some(progress),
-                                    ..Request::default()
-                                },
-                            )
-                            .await?;
-                        Ok(json!({
-                            "type": if report.status == RunStatus::Stopped { "stopped" } else { "completed" },
-                            "status": format!("{:?}", report.status).to_lowercase(),
-                            "base": report.base,
-                            "finalRevision": report.final_revision,
-                            "completed": report.completed,
-                            "total": report.total,
-                            "elapsedMs": report.elapsed.as_millis(),
-                            "project": project.info(),
-                        }))
-                    }
-                    .await;
+                    let progress_output = output.clone();
+                    let progress = Arc::new(move |event: Progress| {
+                        let _ = progress_output.send(json!({
+                            "event": "pipeline",
+                            "job": job,
+                            "value": progress_value(event),
+                        }));
+                    });
+                    let result = editor
+                        .run(
+                            scope.unwrap_or_default(),
+                            operation.unwrap_or_default(),
+                            task_stop,
+                            Some(progress),
+                        )
+                        .await;
                     let value = match result {
-                        Ok(value) => value,
+                        Ok(report) => {
+                            let mut value = report_value(&report);
+                            value["type"] = json!(if report.status == RunStatus::Stopped {
+                                "stopped"
+                            } else {
+                                "completed"
+                            });
+                            value["project"] = json!(editor.project_info().await);
+                            value
+                        }
                         Err(error) => json!({"type": "failed", "message": format!("{error:#}")}),
                     };
                     let _ = output.send(json!({"event": "pipeline", "job": job, "value": value}));
@@ -686,40 +579,36 @@ impl Service {
             }
             "page.exportPng" | "page.exportPsd" => {
                 let Export { page, path } = decode(value)?;
-                let snapshot = self.project().await?.snapshot();
-                let cpu = self.library.as_ref().is_some_and(|(cpu, _)| *cpu);
-                let library = self.library(cpu).await?;
-                let bytes = if method == "page.exportPng" {
-                    library.export_png_snapshot(&snapshot, page).await?
+                let format = if method == "page.exportPng" {
+                    PageFormat::Png
                 } else {
-                    library
-                        .export_psd_snapshot(&snapshot, page, &Default::default())
-                        .await?
+                    PageFormat::Psd
                 };
+                let bytes = self.editor.export_page(page, format).await?;
                 tokio::fs::write(&path, &bytes).await?;
                 Ok(json!({"path": path, "bytes": bytes.len()}))
             }
             "canvas.preparePage" => {
                 let PageId { page } = decode(value)?;
-                let snapshot = self.project().await?.snapshot();
-                let prepared = self.desktop()?.prepare_page(&snapshot, page).await?;
-                Ok(json!({"prepared": prepared, "revision": snapshot.revision()}))
+                let revision = self.editor.snapshot().await?.revision();
+                let prepared = self.editor.prepare_canvas_page(page).await?;
+                Ok(json!({
+                    "prepared": prepared.is_some(),
+                    "revision": prepared.map_or(revision, |prepared| prepared.revision),
+                }))
             }
             "canvas.manifest" => {
                 let PageId { page } = decode(value)?;
-                let snapshot = self.project().await?.snapshot();
-                let bytes = self
-                    .desktop()?
-                    .page_manifest_bytes(page, snapshot.revision())?;
+                let revision = self.editor.snapshot().await?.revision();
+                let bytes = self.editor.canvas_page_manifest(page, revision)?;
                 Ok(json!({"base64": STANDARD.encode(bytes)}))
             }
             "canvas.resource" => {
                 let CanvasResource { page, resource } = decode(value)?;
-                let snapshot = self.project().await?.snapshot();
-                let resource: ResourceId = resource.parse()?;
-                let bytes =
-                    self.desktop()?
-                        .page_resource_bytes(page, snapshot.revision(), resource)?;
+                let revision = self.editor.snapshot().await?.revision();
+                let bytes = self
+                    .editor
+                    .canvas_page_resource(page, revision, &resource)?;
                 Ok(json!({"base64": STANDARD.encode(bytes)}))
             }
             _ => bail!("unknown SDK method: {method}"),
@@ -729,6 +618,17 @@ impl Service {
 
 fn decode<T: DeserializeOwned>(value: Value) -> Result<T> {
     serde_json::from_value(value).context("invalid method parameters")
+}
+
+fn report_value(report: &Report) -> Value {
+    json!({
+        "status": format!("{:?}", report.status).to_lowercase(),
+        "base": report.base,
+        "finalRevision": report.final_revision,
+        "completed": report.completed,
+        "total": report.total,
+        "elapsedMs": report.elapsed.as_millis(),
+    })
 }
 
 fn progress_value(progress: Progress) -> Value {
@@ -794,7 +694,7 @@ struct AddPoint {
 #[derive(Deserialize)]
 struct AddBox {
     page: EntityId,
-    frame: koharu_desktop::Frame,
+    frame: Frame,
 }
 #[derive(Deserialize)]
 struct SetText {

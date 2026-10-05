@@ -1,19 +1,35 @@
 # koharu-library
 
-`koharu-library` is the Tauri-free Rust entry point for Koharu projects. It owns
-project creation, persisted pages, import, scene editing, undo/redo, processing,
-rendering and PNG/PSD export. It also exposes the underlying scene, storage,
-config, pipeline, translator, ML, runtime, renderer, rasterizer, PSD, desktop
-preparation, secrets and agent crates. `agent_host::ProjectHost` implements the
-existing agent tools against a headless project. `canvas` is a target-gated
-reexport of the browser WASM crate.
+`koharu-library` is the Koharu engine of Shenron Studio and its only owner. `editor::Editor`
+holds the editor state (open project, canvas presentation, processing jobs, Codex agent,
+settings) behind the editor commands; `koharu-app` (Tauri, in the Shenron Studio process),
+`koharu-sdk` (JSON Lines) and `Service` (headless methods) are thin bindings over it.
+`Library` and `Document` run the pipeline on in-memory or stored documents without an editor
+(batch scanlation of `shenron-manga`). It owns project creation, persisted pages, import,
+scene editing, undo/redo, processing, rendering and PNG/PSD/CBZ export, and exposes the
+underlying scene, storage, config, pipeline, translator, ML, runtime, renderer, rasterizer,
+PSD, desktop preparation, secrets and agent crates.
 
-The native `koharu-sdk` executable provides JSON Lines over stdin/stdout for
-Bun or another process. Launch it with `--root <absolute-directory>` to choose
-a project collection, or omit the flag for Koharu's Documents directory. Each
-input is `{ "id": 1, "method": "project.list", "params": {} }`; each response
-is `{ "id": 1, "result": ... }` or `{ "id": 1, "error": "..." }`. Errors do not
-claim success. One project can be open per process.
+Storage (`home`): projects under `$SHENRON_HOME/data/koharu/projects` (the upstream
+`Documents/Koharu` stays readable), packages and model weights under
+`$SHENRON_HOME/cache/koharu/packages` (an upstream store is reused until the new one exists).
+
+The `koharu-sdk` executable speaks JSON Lines over stdin/stdout for Bun and
+`shenron-server`. `--root <absolute-directory>` picks a project collection (default: the
+projects of Shenron's home), `--cpu` pins the models to the CPU and `--shenron-url <url>`
+lets the agent search the local Shenron corpus. The `desktop` feature adds native file
+pickers (`import`, `export`) and opens the Codex sign-in page.
+
+Editor commands, as `@shenron/koharu/protocol` names them, run concurrently:
+`{ "id": 1, "command": "get_project", "args": {} }` → `{ "id": 1, "result": ... }`; a byte
+result is `{ "result": { "$bytes": "<base64>" } }`; channel arguments are IPC tokens
+(`"__CHANNEL__:7"`) whose values arrive as `{ "channel": 7, "message": ... }`, then
+`{ "channel": 7, "end": true }`.
+
+Headless methods run in order: each input is
+`{ "id": 1, "method": "project.list", "params": {} }`; each response is
+`{ "id": 1, "result": ... }` or `{ "id": 1, "error": "..." }`. Errors do not claim success.
+One project is open per process, shared with the editor commands.
 
 Methods currently available:
 

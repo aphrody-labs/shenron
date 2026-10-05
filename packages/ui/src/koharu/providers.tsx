@@ -1,7 +1,6 @@
 "use client";
 
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Channel } from "@aphrody/api/core";
 import { useEffect, useRef, type ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 
@@ -19,6 +18,7 @@ import {
   useKoharuStore,
 } from "./lib/store";
 import {
+  Channel,
   commands,
   type CanvasState,
   type Download,

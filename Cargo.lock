@@ -5189,53 +5189,22 @@ dependencies = [
 name = "koharu-app"
 version = "0.83.5"
 dependencies = [
- "alphanumeric-sort",
  "anyhow",
  "aphrody-tauri",
- "aphrody-tauri-plugin-log",
- "aphrody-tauri-plugin-opener",
- "aphrody-tauri-plugin-process",
- "aphrody-tauri-plugin-single-instance",
- "aphrody-tauri-plugin-window-state",
  "aphrody-tauri-specta",
- "async-trait",
- "base64 0.23.1",
- "dirs 7.0.0",
- "futures",
- "hayro",
- "image",
  "koharu-agent",
  "koharu-desktop",
  "koharu-library",
- "koharu-metrics",
- "koharu-ml",
  "koharu-pipeline",
- "koharu-psd",
- "koharu-rasterizer",
  "koharu-renderer",
- "koharu-runtime",
  "koharu-scene",
- "koharu-secrets",
  "koharu-translator",
  "open",
- "parking_lot",
- "rars",
- "rayon",
  "rfd",
- "schemars 1.2.2",
  "serde",
- "serde_json",
  "specta",
  "specta-typescript",
- "strum",
- "tempfile",
- "tokio",
- "tokio-rayon",
  "tracing",
- "uuid",
- "walkdir",
- "webp",
- "zip",
 ]
 
 [[package]]
@@ -5329,10 +5298,10 @@ dependencies = [
  "base64 0.23.1",
  "clap",
  "dirs 7.0.0",
+ "futures",
  "hayro",
  "image",
  "koharu-agent",
- "koharu-canvas",
  "koharu-config",
  "koharu-desktop",
  "koharu-diffusion",
@@ -5348,16 +5317,25 @@ dependencies = [
  "koharu-storage",
  "koharu-torch",
  "koharu-translator",
+ "open",
+ "parking_lot",
  "rars",
  "rayon",
+ "reqwest",
+ "rfd",
  "schemars 1.2.2",
  "serde",
  "serde_json",
  "sha2 0.11.0",
  "specta",
  "strum",
+ "tempfile",
  "tokio",
+ "tokio-rayon",
  "tracing",
+ "uuid",
+ "walkdir",
+ "webp",
  "zip",
 ]
 
@@ -5385,26 +5363,6 @@ dependencies = [
  "koharu-bindgen",
  "libc",
  "libloading 0.9.0",
-]
-
-[[package]]
-name = "koharu-metrics"
-version = "0.83.5"
-dependencies = [
- "anyhow",
- "blake3",
- "libc",
- "parking_lot",
- "reqwest",
- "serde_json",
- "strum",
- "sys-locale",
- "sysinfo 0.39.6",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "url",
- "windows 0.62.2",
 ]
 
 [[package]]
@@ -9235,6 +9193,7 @@ dependencies = [
  "aphrody-tauri-plugin-window-state",
  "aphrody-tauri-runtime-wry",
  "koharu-app",
+ "koharu-library",
  "log",
  "serde_json",
  "shenron-studio",
@@ -9317,7 +9276,6 @@ version = "1.1.0"
 dependencies = [
  "aphrody-llama-server",
  "aphrody-tauri",
- "koharu-library",
  "reqwest",
  "serde",
  "serde_json",
@@ -9817,15 +9775,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 3.0.6",
-]
-
-[[package]]
-name = "sys-locale"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8eab9a99a024a169fe8a903cf9d4a3b3601109bcc13bd9e3c6fff259138626c4"
-dependencies = [
- "libc",
 ]
 
 [[package]]

@@ -2,7 +2,7 @@
 name = "koharu-library"
 version = "0.83.5"
 edition = "2024"
-description = "Headless Koharu SDK for projects, editing, processing, rendering, and agent tools"
+description = "The Koharu engine of Shenron: editor state, projects, processing, rendering, export, agent tools and the koharu-sdk JSON Lines host"
 license = "MIT OR Apache-2.0"
 authors = ["Mayo Takanashi <mayo@linux.com>", "Wangchong Zhou <fffonion@gmail.com>"]
 readme = "README.md"
@@ -10,6 +10,11 @@ homepage = "https://koharu.rs"
 repository = "https://github.com/koharu-rs/koharu"
 keywords = ["manga", "ocr", "translation", "deep_learning", "computer_vision"]
 publish = false
+
+[features]
+# Native file pickers of koharu-sdk (`import`, `export`) and the browser opened for the Codex sign-in.
+desktop = ["dep:open", "dep:rfd"]
+
 [dependencies]
 alphanumeric-sort = { workspace = true }
 anyhow = { workspace = true }
@@ -17,6 +22,7 @@ async-trait = { workspace = true }
 base64 = { workspace = true }
 clap = { workspace = true }
 dirs = { workspace = true }
+futures = { workspace = true }
 hayro = { workspace = true }
 image = { workspace = true }
 koharu-config = { workspace = true }
@@ -31,21 +37,27 @@ koharu-scene = { workspace = true }
 koharu-secrets = { workspace = true }
 koharu-storage = { workspace = true }
 koharu-translator = { workspace = true }
+open = { workspace = true, optional = true }
+parking_lot = { workspace = true }
 koharu-runtime = { workspace = true }
 koharu-diffusion = { workspace = true }
 koharu-llama = { workspace = true }
 koharu-torch = { workspace = true }
 rars = { workspace = true }
 rayon = { workspace = true }
+reqwest = { workspace = true }
+rfd = { workspace = true, optional = true }
 schemars = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
 specta = { workspace = true }
 strum = { workspace = true }
+tempfile = { workspace = true }
 tokio = { workspace = true }
+tokio-rayon = { workspace = true }
 tracing = { workspace = true }
+uuid = { workspace = true }
+walkdir = { workspace = true }
+webp = { workspace = true }
 zip = { workspace = true }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-koharu-canvas = { workspace = true }

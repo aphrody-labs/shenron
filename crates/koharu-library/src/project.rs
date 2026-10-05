@@ -184,17 +184,26 @@ pub struct Typography {
     pub writing_mode: Option<koharu_scene::WritingMode>,
 }
 
+/// Named projects under one root (`<name>.khrproj`), plus a read-only fallback root kept from
+/// the upstream location (`Documents/Koharu`): its projects are listed, opened and deleted in
+/// place, and new projects never go there.
 #[derive(Clone)]
 pub struct ProjectLibrary {
     root: PathBuf,
+    legacy: Option<PathBuf>,
 }
 
 impl ProjectLibrary {
+    /// The library of Shenron's home (`crate::home::Roots::from_env`).
     pub fn new() -> Result<Self> {
-        let root = dirs::document_dir()
-            .context("the Documents directory is unavailable")?
-            .join("Koharu");
-        Self::at(root)
+        Self::from_roots(&crate::home::Roots::from_env()?)
+    }
+
+    /// The library of explicit storage roots, upstream projects included.
+    pub fn from_roots(roots: &crate::home::Roots) -> Result<Self> {
+        let mut library = Self::at(roots.projects.clone())?;
+        library.legacy = roots.legacy_projects.clone();
+        Ok(library)
     }
 
     /// Opens a caller-owned project directory instead of the desktop default.
@@ -202,22 +211,41 @@ impl ProjectLibrary {
         ensure!(root.is_absolute(), "project root must be an absolute path");
         std::fs::create_dir_all(&root)
             .with_context(|| format!("failed to create {}", root.display()))?;
-        Ok(Self { root })
+        Ok(Self { root, legacy: None })
+    }
+
+    /// Root of new projects.
+    #[must_use]
+    pub fn root(&self) -> &std::path::Path {
+        &self.root
     }
 
     pub fn list(&self) -> Result<Vec<ProjectSummary>> {
-        let mut projects = std::fs::read_dir(&self.root)
-            .with_context(|| format!("failed to read {}", self.root.display()))?
+        let mut projects = Self::scan(&self.root)
+            .with_context(|| format!("failed to read {}", self.root.display()))?;
+        if let Some(legacy) = &self.legacy {
+            // An unreadable upstream folder hides its projects, never the new ones.
+            for project in Self::scan(legacy).unwrap_or_default() {
+                if !projects.iter().any(|(_, known)| known.name == project.1.name) {
+                    projects.push(project);
+                }
+            }
+        }
+        projects.sort_unstable_by(|(left_used, left), (right_used, right)| {
+            right_used
+                .cmp(left_used)
+                .then_with(|| left.name.to_lowercase().cmp(&right.name.to_lowercase()))
+        });
+        Ok(projects.into_iter().map(|(_, project)| project).collect())
+    }
+
+    fn scan(root: &std::path::Path) -> Result<Vec<(std::time::SystemTime, ProjectSummary)>> {
+        Ok(std::fs::read_dir(root)?
             .filter_map(|entry| entry.ok())
             .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_dir()))
             .filter_map(|entry| {
                 let path = entry.path();
-                let is_project_directory = path
-                    .extension()
-                    .and_then(|extension| extension.to_str())
-                    .is_some_and(|extension| extension.eq_ignore_ascii_case("khrproj"))
-                    && (path.join("state-a.khr").is_file() || path.join("state-b.khr").is_file());
-                if !is_project_directory {
+                if !crate::home::is_project(&path) {
                     return None;
                 }
                 let last_used = ["state-a.khr", "state-b.khr"]
@@ -232,27 +260,26 @@ impl ProjectLibrary {
                     },
                 ))
             })
-            .collect::<Vec<_>>();
-        projects.sort_unstable_by(|(left_used, left), (right_used, right)| {
-            right_used
-                .cmp(left_used)
-                .then_with(|| left.name.to_lowercase().cmp(&right.name.to_lowercase()))
-        });
-        Ok(projects.into_iter().map(|(_, project)| project).collect())
+            .collect())
     }
 
     pub async fn create(&self, name: &str) -> Result<Project> {
         let (name, path) = self.resolve(name)?;
+        if path.exists() || self.legacy_path(&name).is_some() {
+            bail!("project {name:?} already exists");
+        }
         Project::create(name, path).await
     }
 
     pub async fn open(&self, name: &str) -> Result<Project> {
         let (name, path) = self.resolve(name)?;
+        let path = self.legacy_path(&name).filter(|_| !path.exists()).unwrap_or(path);
         Project::open(name, path).await
     }
 
     pub fn delete(&self, name: &str) -> Result<()> {
-        let (_, path) = self.resolve(name)?;
+        let (name, path) = self.resolve(name)?;
+        let path = self.legacy_path(&name).filter(|_| !path.is_dir()).unwrap_or(path);
         if !path.is_dir() {
             bail!("project {name:?} does not exist");
         }
@@ -263,6 +290,14 @@ impl ProjectLibrary {
     fn resolve(&self, name: &str) -> Result<(String, PathBuf)> {
         let name = validate_project_name(name)?;
         Ok((name.clone(), self.root.join(format!("{name}.khrproj"))))
+    }
+
+    /// The upstream project of that (validated) name, when it exists.
+    fn legacy_path(&self, name: &str) -> Option<PathBuf> {
+        self.legacy
+            .as_ref()
+            .map(|legacy| legacy.join(format!("{name}.khrproj")))
+            .filter(|path| crate::home::is_project(path))
     }
 }
 

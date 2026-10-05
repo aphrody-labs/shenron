@@ -15,7 +15,7 @@
     "test": "bun test",
     "lint": "oxlint -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
     "build:wasm": "bun scripts/build-wasm.ts",
-    "protocol": "cargo run -p koharu-app --bin generate"
+    "protocol": "cargo run -p koharu-app --example protocol"
   },
   "dependencies": {
     "@aphrody/api": "3.0.0-alpha.2"

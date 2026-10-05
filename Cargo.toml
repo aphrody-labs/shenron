@@ -80,13 +80,11 @@ image = "0.25.10"
 js-sys = "0.3.105"
 koharu-agent = { path = "crates/koharu-agent", version = "0.83.5" }
 koharu-app = { path = "crates/koharu-app", version = "0.83.5" }
-koharu-canvas = { path = "crates/koharu-canvas", version = "0.83.5" }
 koharu-config = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
 koharu-desktop = { path = "crates/koharu-desktop", version = "0.83.5" }
 koharu-diffusion = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
 koharu-library = { path = "crates/koharu-library", version = "0.83.5" }
 koharu-llama = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-metrics = { path = "crates/koharu-metrics", version = "0.83.5" }
 koharu-ml = { path = "crates/koharu-ml", version = "0.83.5" }
 koharu-pipeline = { path = "crates/koharu-pipeline", version = "0.83.5" }
 koharu-psd = { path = "crates/koharu-psd", version = "0.83.5" }
@@ -98,7 +96,6 @@ koharu-secrets = { path = "crates/koharu-secrets", version = "0.83.5" }
 koharu-storage = { path = "crates/koharu-storage", version = "0.83.5" }
 koharu-torch = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
 koharu-translator = { path = "crates/koharu-translator", version = "0.83.5" }
-libc = "0.2.189"
 llguidance = "1.8.0"
 log = "0.4.34"
 memmap2 = "0.9.11"
@@ -128,7 +125,6 @@ skrifa = "0.47.0"
 specta = { version = "=2.0.0-rc.25", features = ["derive", "url", "uuid"] }
 specta-typescript = "=0.0.12"
 strum = { version = "0.28.0", features = ["derive"] }
-sys-locale = "0.3.2"
 sysinfo = { version = "0.39.6", features = ["system", "disk"], default-features = false }
 tauri = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", package = "aphrody-tauri", version = "=3.0.0-alpha.4", default-features = false, features = ["compression"] }
 tauri-build = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", package = "aphrody-tauri-build", version = "=3.0.0-alpha.3" }

@@ -6,9 +6,10 @@ use koharu_scene::{
     RasterLayer, RasterLayerKind, Region, Snapshot, SourceText, Translation,
 };
 use serde::{Deserialize, Serialize};
+use specta::Type;
 
 /// One page's source dimensions, detected regions, and optional cleanup overlay.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Type)]
 pub struct PageResult {
     pub page: EntityId,
     pub width: f64,
@@ -20,11 +21,13 @@ pub struct PageResult {
 }
 
 /// A scene region with original polygon and its linked recognized text.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Type)]
 pub struct RegionResult {
     pub id: EntityId,
     pub kind: String,
     pub label: Option<String>,
+    /// Same shape as the project `Point` the editor exports (one name per type for Specta).
+    #[specta(type = Vec<crate::project::Point>)]
     pub polygon: Vec<Point>,
     /// Minimum x/y and maximum x/y in source page coordinates.
     pub bounds: [f64; 4],
@@ -35,9 +38,10 @@ pub struct RegionResult {
 }
 
 /// Semantic text linked to a detected region through `RecognizedFrom`.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Type)]
 pub struct TextResult {
     pub id: EntityId,
+    #[specta(type = Option<f64>)]
     pub reading_order: Option<usize>,
     pub source: Option<String>,
     pub source_language: Option<String>,
@@ -49,7 +53,7 @@ pub struct TextResult {
 }
 
 /// Provenance recorded on a generated scene component.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Type)]
 pub struct GenerationInfo {
     pub producer: String,
     pub model: Option<String>,

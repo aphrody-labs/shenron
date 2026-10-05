@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-// Export native Koharu page results to Shenron as unreviewed manga candidates.
+// Export the open project's page results to Shenron as unreviewed manga candidates, through
+// the editor commands (`get_pages`, `get_page_result`, `get_page_source_sha256`) of the
+// engine the editor runs on (Tauri IPC or the local bridge).
 import { useEffect, useState } from "react";
+import { commands, type PageSummary } from "@shenron/koharu/protocol";
 import {
   mapNativeKoharuPageResult,
   toMangaReviewCandidateInput,
@@ -8,15 +11,10 @@ import {
   type MangaCandidateBinding,
 } from "@shenron/pipeline/koharu";
 
+/** @deprecated Ignored: the panel speaks the editor commands. Kept while hosts still pass it. */
 export interface ShenronExportHost {
   isTauri(): boolean;
   invoke<T>(command: string, args: Record<string, unknown>): Promise<T | null>;
-}
-
-interface PageSummary {
-  id: string;
-  label: string;
-  size: { width: number; height: number };
 }
 
 interface Binding {
@@ -62,7 +60,7 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
   return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export function ShenronExportPanel({ host }: { host: ShenronExportHost }) {
+export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   const [settings, setSettings] = useState(loadSettings);
   const [pages, setPages] = useState<PageSummary[]>([]);
   const [bindings, setBindings] = useState<Record<string, Binding>>({});
@@ -70,17 +68,10 @@ export function ShenronExportPanel({ host }: { host: ShenronExportHost }) {
   const [error, setError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
 
-  const rpc = async <T,>(method: string, params: Record<string, unknown>): Promise<T> => {
-    if (!host.isTauri()) throw new Error("L’export Shenron nécessite l’application Aphrody.");
-    const result = await host.invoke<T>("koharu_rpc", { method, params });
-    if (result === null) throw new Error("Le service natif Koharu est indisponible.");
-    return result;
-  };
-
   const refresh = async () => {
     setError(null);
     try {
-      setPages(await rpc<PageSummary[]>("project.pages", {}));
+      setPages(await commands.getPages());
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     }
@@ -105,8 +96,8 @@ export function ShenronExportPanel({ host }: { host: ShenronExportHost }) {
     }));
 
   const exportPage = async (page: PageSummary, binding: Binding) => {
-    const result = await rpc<Record<string, unknown>>("page.result", { page: page.id });
-    const { sha256 } = await rpc<{ sha256: string }>("page.sourceSha256", { page: page.id });
+    const result = await commands.getPageResult(page.id);
+    const sha256 = await commands.getPageSourceSha256(page.id);
     const manifest: MangaCandidateBinding = {
       id: binding.mangaPageId.trim(),
       sourceSha256: binding.sourceSha256.trim().toLowerCase(),

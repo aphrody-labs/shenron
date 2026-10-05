@@ -83,3 +83,13 @@ pub trait Host: Send + Sync + 'static {
 
     async fn invoke(&self, call: ToolCall, control: &Control) -> Result<Invocation>;
 }
+
+/// Tools a host offers beside its own (knowledge sources, for example). The host lists them
+/// with its tools and hands them every call it does not answer itself.
+#[async_trait]
+pub trait Toolbox: Send + Sync + 'static {
+    fn tools(&self) -> Vec<Tool>;
+
+    /// Run `call` when it names one of these tools; `None` otherwise.
+    async fn invoke(&self, call: &ToolCall, control: &Control) -> Option<Result<Invocation>>;
+}

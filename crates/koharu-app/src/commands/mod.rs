@@ -1,14 +1,17 @@
+//! The Koharu editor commands: Tauri (Specta) signatures over [`koharu_library::Editor`].
+//! Their names, arguments and results are the frontend contract
+//! (`packages/koharu/src/protocol.ts`); `koharu_library::editor::dispatch` answers the same
+//! commands outside Tauri.
+
 pub(crate) mod agent;
 pub(crate) mod canvas;
 pub(crate) mod editing;
-pub(crate) mod fonts;
 pub(crate) mod lifecycle;
 pub(crate) mod output;
-pub(crate) mod preferences;
-pub(crate) mod processing;
-pub(crate) mod project;
 
-use parking_lot::Mutex;
+use std::sync::Arc;
+
+use koharu_library::editor::Sink;
 use serde::Serialize;
 use specta::Type;
 use tauri::ipc::{Channel, IpcResponse};
@@ -35,21 +38,37 @@ impl Serialize for Error {
     }
 }
 
-pub(crate) trait ChannelExt<T> {
-    fn publish(&self, value: T);
+pub(crate) type Result<T> = std::result::Result<T, Error>;
+
+/// An editor receiver over a Tauri channel.
+pub(crate) fn sink<T: IpcResponse + Send + Sync + 'static>(channel: Channel<T>) -> Sink<T> {
+    Arc::new(move |value| channel.send(value).is_ok())
 }
 
-impl<T: IpcResponse> ChannelExt<T> for Mutex<Option<Channel<T>>> {
-    fn publish(&self, value: T) {
-        let mut channel = self.lock();
-        if channel
-            .as_ref()
-            .is_some_and(|channel| channel.send(value).is_err())
-        {
-            channel.take();
+/// Raw bytes answered as an `ArrayBuffer` (typed `number[]` by Specta).
+macro_rules! byte_responses {
+    ($($(#[$meta:meta])* $name:ident),* $(,)?) => {$(
+        $(#[$meta])*
+        #[derive(Type)]
+        #[specta(transparent)]
+        pub(crate) struct $name(#[specta(type = Vec<u8>)] pub(crate) Vec<u8>);
+
+        impl IpcResponse for $name {
+            fn body(self) -> tauri::Result<tauri::ipc::InvokeResponseBody> {
+                Ok(self.0.into())
+            }
         }
-    }
+    )*};
 }
+
+byte_responses![
+    /// Prepared canvas manifest or resource packet.
+    CanvasBytes,
+    /// WebP thumbnail of a page source.
+    ThumbnailBytes,
+    /// Rendered font sample.
+    FontPreviewBytes,
+];
 
 /// Defines the Koharu command list once: [`COMMAND_NAMES`], the [`bindings`] a host app
 /// (the Shenron desktop app, dynamic runtime) mounts.
@@ -73,53 +92,70 @@ macro_rules! koharu_commands {
 }
 
 koharu_commands![
-            agent::get_agent_status<Rt>,
-            agent::login_agent<Rt>,
-            agent::logout_agent<Rt>,
-            agent::save_agent_config<Rt>,
-            agent::run_agent<Rt>,
-            agent::cancel_agent<Rt>,
-            lifecycle::subscribe<Rt>,
-            lifecycle::get_project,
-            lifecycle::get_pages,
-            lifecycle::get_page,
-            lifecycle::list_projects,
-            lifecycle::create_project<Rt>,
-            lifecycle::open_project<Rt>,
-            lifecycle::delete_project<Rt>,
-            lifecycle::close_project<Rt>,
-            lifecycle::import<Rt>,
-            lifecycle::select_page,
-            editing::rename_page,
-            editing::delete_pages,
-            editing::move_page,
-            editing::set_source_text,
-            editing::set_translation,
-            editing::set_typography,
-            editing::set_geometry,
-            editing::set_visibility,
-            editing::delete_layers,
-            editing::move_layer,
-            editing::undo,
-            editing::redo,
-            processing::process<Rt>,
-            processing::stop_job,
-            output::export<Rt>,
-            output::get_thumbnail,
-            fonts::get_fonts,
-            fonts::get_font_preview,
-            preferences::save_preferences,
-            preferences::get_preferences,
-            preferences::get_translation_models,
-            canvas::get_canvas_manifest,
-            canvas::get_canvas_resource,
-            canvas::prepare_canvas_page,
-            canvas::get_canvas_page_manifest,
-            canvas::get_canvas_page_resource,
-            canvas::add_point_text,
-            canvas::add_text_box,
-            canvas::commit_paint,
-            canvas::commit_erase,
-            canvas::commit_transform,
-            canvas::commit_inpaint<Rt>,
+    agent::get_agent_status,
+    agent::login_agent,
+    agent::logout_agent,
+    agent::save_agent_config,
+    agent::run_agent,
+    agent::cancel_agent,
+    lifecycle::subscribe,
+    lifecycle::get_project,
+    lifecycle::get_pages,
+    lifecycle::get_page,
+    lifecycle::list_projects,
+    lifecycle::create_project,
+    lifecycle::open_project,
+    lifecycle::delete_project,
+    lifecycle::close_project,
+    lifecycle::import<Rt>,
+    lifecycle::select_page,
+    editing::rename_page,
+    editing::delete_pages,
+    editing::move_page,
+    editing::set_source_text,
+    editing::set_translation,
+    editing::set_typography,
+    editing::set_geometry,
+    editing::set_visibility,
+    editing::delete_layers,
+    editing::move_layer,
+    editing::undo,
+    editing::redo,
+    editing::process,
+    editing::stop_job,
+    output::export<Rt>,
+    output::get_thumbnail,
+    output::get_page_result,
+    output::get_page_source_sha256,
+    output::get_fonts,
+    output::get_font_preview,
+    output::save_preferences,
+    output::get_preferences,
+    output::get_translation_models,
+    canvas::get_canvas_manifest,
+    canvas::get_canvas_resource,
+    canvas::prepare_canvas_page,
+    canvas::get_canvas_page_manifest,
+    canvas::get_canvas_page_resource,
+    canvas::add_point_text,
+    canvas::add_text_box,
+    canvas::commit_paint,
+    canvas::commit_erase,
+    canvas::commit_transform,
+    canvas::commit_inpaint,
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::COMMAND_NAMES;
+
+    /// The Tauri commands and the commands answered outside Tauri are the same set.
+    #[test]
+    fn every_command_is_dispatched_outside_tauri() {
+        let mut tauri = COMMAND_NAMES.to_vec();
+        let mut dispatched = koharu_library::editor::dispatch::COMMANDS.to_vec();
+        tauri.sort_unstable();
+        dispatched.sort_unstable();
+        assert_eq!(tauri, dispatched);
+    }
+}

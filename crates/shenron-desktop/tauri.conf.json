@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-v3.0.0-alpha.4/crates/tauri-schema-generator/schemas/config.schema.json",
-  "productName": "Shenron",
+  "productName": "Shenron Studio",
   "identifier": "com.dragonballfr.shenron",
   "build": {
     "frontendDist": "splash"
@@ -26,8 +26,8 @@
     "publisher": "Dragon Ball FR",
     "homepage": "https://dragonballfr.com",
     "category": "Entertainment",
-    "shortDescription": "Shenron : le site Dragon Ball FR, l’éditeur de traduction manga et le studio, en local.",
-    "longDescription": "Shenron réunit dans une fenêtre native le site dragonballfr.com servi en local, l’éditeur de traduction manga Koharu, le studio et la recherche RAG locale sur le corpus Dragon Ball.",
+    "shortDescription": "Shenron Studio : le site Dragon Ball FR, l’éditeur de traduction manga et le studio, en local.",
+    "longDescription": "Shenron Studio réunit dans une seule fenêtre native le site dragonballfr.com servi en local, l’éditeur de traduction manga, le studio, le pilotage et la recherche RAG locale sur le corpus Dragon Ball.",
     "copyright": "© Dragon Ball FR. Dragon Ball © Bird Studio/Shueisha, Toei Animation.",
     "license": "Apache-2.0",
     "icon": [

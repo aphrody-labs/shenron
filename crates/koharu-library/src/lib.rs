@@ -1,8 +1,11 @@
-//! Koharu's native SDK for projects, models, agents, rendering, and page export.
+//! The Koharu engine of Shenron: projects, models, agent, rendering and page export.
 //!
-//! This crate owns the headless document workflow. The public modules expose the
-//! individual engines for callers needing finer control. Desktop presentation
-//! is native, while the interactive canvas is available on `wasm32` only.
+//! [`editor::Editor`] is the single owner of the editor state (open project, canvas
+//! presentation, processing jobs, agent, settings); `koharu-app` (Tauri), `koharu-sdk`
+//! (JSON Lines) and [`Service`] are thin bindings over it. [`Library`] and [`Document`]
+//! run the pipeline on in-memory or stored documents without an editor (batch scanlation).
+//! Storage lives under Shenron's home ([`home`]). The public modules expose the individual
+//! engines for callers needing finer control; the browser canvas is `koharu-canvas` (WASM).
 
 use std::{
     collections::BTreeMap,
@@ -24,19 +27,18 @@ use koharu_scene::{
 };
 use tokio::sync::OnceCell;
 
-pub mod import;
 pub mod agent_tools;
-pub mod agent_host;
+pub mod editor;
+pub mod home;
+pub mod import;
 pub mod project;
 pub mod service;
 mod result;
 
+pub use editor::Editor;
 pub use service::Service;
 
-
 pub use koharu_agent as agent;
-#[cfg(target_arch = "wasm32")]
-pub use koharu_canvas as canvas;
 pub use koharu_config as config;
 pub use koharu_desktop as desktop;
 pub use koharu_diffusion as diffusion;
@@ -70,13 +72,17 @@ pub struct Library {
 }
 
 impl Library {
-    /// Initializes the native model runtimes and constructs an in-memory configuration.
+    /// Initializes the native model runtimes (package store of Shenron's home, unless the
+    /// process already chose one) and constructs an in-memory configuration.
     /// The selected CPU/GPU device is shared by the pipeline's model stages.
     pub async fn initialize(
         config: PipelineConfig,
         providers: ProvidersConfig,
         cpu: bool,
     ) -> Result<Self> {
+        if let Ok(roots) = home::Roots::from_env() {
+            roots.configure_store();
+        }
         koharu_ml::init().await?;
         Self::from_config(config, providers, koharu_ml::device(cpu))
     }

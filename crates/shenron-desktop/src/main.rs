@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Shenron desktop: one native window on the Shenron front app (site, Koharu editor,
-//! studio and admin) served on loopback by the Shenron Bun server.
+//! Shenron Studio (`shenron-desktop`), the only desktop app: one native window on the Shenron
+//! front app (site, manga translation editor, studio and admin) served on loopback by the
+//! `shenron-server` sidecar. The editor engine (`koharu-library`) runs in this process behind
+//! the `koharu-app` command layer: no second app, binary or inter-process bridge.
 //!
 //! Start-up: the window opens on the bundled splash (`frontendDist`), the server
 //! starts (or `SHENRON_DESKTOP_URL` names one already running), and the window
@@ -11,6 +13,11 @@
 
 mod server;
 
+#[cfg(feature = "koharu")]
+use std::sync::Arc;
+
+#[cfg(feature = "koharu")]
+use koharu_library::editor::knowledge::ShenronKnowledge;
 use tauri::{Manager as _, WebviewUrl};
 
 /// Public site shown when no local server can be started.
@@ -58,26 +65,40 @@ fn main() {
         .manage(server::LocalServer::default())
         .setup(|app| {
             let window = tauri::WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
-                .title("Shenron")
+                .title("Shenron Studio")
                 .inner_size(1280.0, 860.0)
                 .min_inner_size(900.0, 600.0)
                 .center()
                 .build()?;
+            // The Koharu editor engine (koharu-library) runs in this process behind koharu-app's
+            // commands, its projects and models under the same home as the local server. Its
+            // failure (no usable renderer) leaves the site, studio and local APIs running: the
+            // editor reports itself unavailable.
             #[cfg(feature = "koharu")]
-            {
-                app.manage(shenron_studio::koharu::KoharuBroker::new(app.handle().clone()));
-                // The Koharu editor runs on koharu-app's commands and state, in this process. Its
-                // failure (no usable renderer) leaves the site, studio and local APIs running:
-                // the editor reports itself unavailable.
-                if let Err(error) = koharu_app::setup(app, false) {
+            let home = app.path().app_data_dir().ok();
+            #[cfg(feature = "koharu")]
+            let editor = match koharu_app::setup(
+                app,
+                koharu_app::Options { home, toolbox: Some(Arc::new(ShenronKnowledge::new(None))) },
+            ) {
+                Ok(editor) => Some(editor),
+                Err(error) => {
                     log::error!("Koharu editor unavailable: {error:#}");
-                }
-            }
+                    None
+                },
+            };
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 let target = match server::start(&handle).await {
                     // The desktop start page works offline (local corpus, editor, studio).
-                    Ok(url) => format!("{url}/bureau"),
+                    Ok(url) => {
+                        // The editor's agent searches the local corpus of this server.
+                        #[cfg(feature = "koharu")]
+                        if let Some(editor) = &editor {
+                            editor.set_toolbox(Some(Arc::new(ShenronKnowledge::new(Some(url.clone())))));
+                        }
+                        format!("{url}/bureau")
+                    },
                     Err(error) => {
                         log::error!("local Shenron server unavailable: {error}");
                         PUBLIC_SITE.to_owned()
@@ -120,8 +141,6 @@ fn main() {
                 shenron_studio::studio::studio_corpus_info,
                 shenron_studio::studio::studio_corpus_search,
                 shenron_studio::studio::studio_corpus_ask,
-                shenron_studio::koharu::koharu_rpc,
-                shenron_studio::koharu::koharu_rpc_batch,
                 shenron_studio::shenron::shenron_chat,
             ]);
         // Koharu editor commands keep their own names (packages/koharu/src/protocol.ts).
