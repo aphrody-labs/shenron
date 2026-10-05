@@ -12,7 +12,7 @@ import { Badge } from "@aphrody/m3-primitives";
 import { Button } from "../../../components/button";
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuPopup,
   DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -21,7 +21,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "../../internal/components/dropdown-menu";
+} from "../../../components/dropdown-menu";
 import { Empty, EmptyTitle } from "../../internal/components/empty";
 import {
   InputGroup,
@@ -29,7 +29,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "../../internal/components/input-group";
-import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
+import { Popover, PopoverPopup, PopoverTrigger } from "../../../components/popover";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import { Separator } from "../../../components/separator";
 import { cn } from "../../../lib/utils";
@@ -144,7 +144,7 @@ export function FontPicker({
         )}
         <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
       </PopoverTrigger>
-      <PopoverContent
+      <PopoverPopup
         align="start"
         className="w-(--anchor-width) min-w-44 gap-0 overflow-hidden rounded-lg p-0"
         initialFocus={input}
@@ -194,7 +194,7 @@ export function FontPicker({
             }}
           />
         )}
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }
@@ -232,7 +232,7 @@ function FontFilterMenu({
           <Badge className="h-3.5 min-w-3.5 px-1 text-[8px]">{activeFilterCount}</Badge>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={6} className="w-40">
+      <DropdownMenuPopup align="end" sideOffset={6} className="w-40">
         <FilterSubmenu
           label={t("fontPicker.source")}
           allLabel={t("fontPicker.allSources")}
@@ -273,7 +273,7 @@ function FontFilterMenu({
         >
           {t("fontPicker.clearFilters")}
         </DropdownMenuItem>
-      </DropdownMenuContent>
+      </DropdownMenuPopup>
     </DropdownMenu>
   );
 }

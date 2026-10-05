@@ -6,11 +6,11 @@ import { useTranslation } from "react-i18next";
 
 import {
   Dialog,
-  DialogContent,
+  DialogPopup,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../../internal/components/dialog";
+} from "../../../components/dialog";
 
 const author = "Mayo Takanashi";
 
@@ -41,7 +41,7 @@ export function AboutDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xs gap-4 p-5">
+      <DialogPopup className="max-w-xs gap-4 p-5">
         <div className="flex items-center gap-3">
           <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10">
             <img src="/icon.png" alt="" width={30} height={30} />
@@ -58,7 +58,7 @@ export function AboutDialog({
           <dt className="text-muted-foreground">{t("about.author")}</dt>
           <dd className="text-right font-medium">{author}</dd>
         </dl>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

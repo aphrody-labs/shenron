@@ -12,17 +12,17 @@ import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
-  AlertDialogContent,
+  AlertDialogPopup,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogMedia,
   AlertDialogTitle,
-} from "../../internal/components/alert-dialog";
+} from "../../../components/alert-dialog";
 import { Button } from "../../../components/button";
-import { Input } from "@aphrody/m3-primitives";
+import { Input } from "../../../components/input";
 import { ScrollArea } from "../../internal/components/scroll-area";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../internal/components/tooltip";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "../../../components/tooltip";
 
 export function StartView() {
   const { t } = useTranslation();
@@ -120,7 +120,7 @@ export function StartView() {
                 >
                   <Settings className="size-4" />
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{t("menu.settings")}</TooltipContent>
+                <TooltipPopup side="bottom">{t("menu.settings")}</TooltipPopup>
               </Tooltip>
             </header>
 
@@ -250,7 +250,7 @@ export function StartView() {
         </ScrollArea>
       </main>
 
-      <AlertDialogContent>
+      <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogMedia className="bg-destructive/10 text-destructive">
             <Trash2 className="size-5" />
@@ -271,7 +271,7 @@ export function StartView() {
             {busy !== null ? t("start.deleting") : t("start.deleteAction")}
           </AlertDialogAction>
         </AlertDialogFooter>
-      </AlertDialogContent>
+      </AlertDialogPopup>
     </AlertDialog>
   );
 }

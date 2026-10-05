@@ -21,11 +21,11 @@ import { Button } from "../../../components/button";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import {
   Select,
-  SelectContent,
+  SelectPopup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../internal/components/select";
+} from "../../../components/select";
 import { Textarea } from "../../../components/textarea";
 
 interface ConversationMessage {
@@ -135,14 +135,14 @@ export function AgentPanel() {
             <SelectTrigger size="sm" className="w-full min-w-0" aria-label={t("agent.model")}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent align="start">
+            <SelectPopup align="start">
               <SelectItem value="automatic">{t("agent.automatic")}</SelectItem>
               {status.models.map((model) => (
                 <SelectItem key={model.id} value={model.id}>
                   {model.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
           <Select
             value={status.config.reasoning}
@@ -153,13 +153,13 @@ export function AgentPanel() {
             <SelectTrigger size="sm" className="w-full min-w-0" aria-label={t("agent.reasoning")}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent align="end">
+            <SelectPopup align="end">
               {(selectedModel?.reasoning ?? [status.config.reasoning]).map((reasoning) => (
                 <SelectItem key={reasoning} value={reasoning}>
                   {t(`agent.reasoningLevels.${reasoning}`)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         </div>
       </div>

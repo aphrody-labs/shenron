@@ -40,22 +40,22 @@ import {
 import { Button } from "../../../components/button";
 import {
   Dialog,
-  DialogContent,
+  DialogPopup,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../../internal/components/dialog";
+} from "../../../components/dialog";
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuPopup,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../internal/components/dropdown-menu";
-import { Input } from "@aphrody/m3-primitives";
+} from "../../../components/dropdown-menu";
+import { Input } from "../../../components/input";
 import { ScrollArea } from "../../internal/components/scroll-area";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../internal/components/tooltip";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "../../../components/tooltip";
 import { cn } from "../../../lib/utils";
 
 const emptyPages: PageSummary[] = [];
@@ -341,7 +341,7 @@ export function PageRail() {
             >
               <Settings className="size-4" />
             </TooltipTrigger>
-            <TooltipContent side="right">{t("menu.settings")}</TooltipContent>
+            <TooltipPopup side="right">{t("menu.settings")}</TooltipPopup>
           </Tooltip>
           <ResourceMonitor />
         </div>
@@ -353,7 +353,7 @@ export function PageRail() {
           if (!open) closeRename();
         }}
       >
-        <DialogContent className="sm:max-w-md">
+        <DialogPopup className="sm:max-w-md">
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -379,7 +379,7 @@ export function PageRail() {
               </Button>
             </DialogFooter>
           </form>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
     </>
   );
@@ -415,7 +415,7 @@ function PageImportMenu({
         {icon}
         {importing ? t("navigator.importingAction") : t("navigator.importAction")}
       </DropdownMenuTrigger>
-      <DropdownMenuContent
+      <DropdownMenuPopup
         align="start"
         className="w-auto min-w-20 border border-border/50 p-0.5 shadow-sm ring-0"
       >
@@ -435,7 +435,7 @@ function PageImportMenu({
           <FolderOpen />
           {t("navigator.importFolder")}
         </DropdownMenuItem>
-      </DropdownMenuContent>
+      </DropdownMenuPopup>
     </DropdownMenu>
   );
 }
@@ -519,13 +519,13 @@ function PageItem({
             >
               <MoreHorizontal />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuPopup align="end">
               <DropdownMenuItem onClick={onRename}>{t("navigator.rename")}</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onClick={onDelete}>
                 <Trash2 /> {t("navigator.delete")}
               </DropdownMenuItem>
-            </DropdownMenuContent>
+            </DropdownMenuPopup>
           </DropdownMenu>
         </div>
         <p className="mt-1 text-[9px] leading-3.5 text-muted-foreground">

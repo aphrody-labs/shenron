@@ -30,14 +30,9 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from "../../internal/components/number-field";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTitle,
-  PopoverTrigger,
-} from "../../internal/components/popover";
-import { Slider } from "../../internal/components/slider";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../internal/components/tooltip";
+import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "../../../components/popover";
+import { Slider } from "../../../components/slider";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "../../../components/tooltip";
 
 const tools = [
   ["select", MousePointer2],
@@ -82,10 +77,10 @@ export function ToolBar() {
               >
                 <Icon className="size-4" />
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipPopup side="right">
                 {t(`tools.${tool}`)}
                 <span className="ml-2 opacity-60">{shortcuts[tool].toUpperCase()}</span>
-              </TooltipContent>
+              </TooltipPopup>
             </Tooltip>
           </div>
         ))}
@@ -130,11 +125,11 @@ function BrushSize({ value, onChange }: { value: number; onChange: (value: numbe
             </TooltipTrigger>
           }
         />
-        <TooltipContent side="right">
+        <TooltipPopup side="right">
           {t("tools.brushSizeShort", { size: roundedValue })}
-        </TooltipContent>
+        </TooltipPopup>
       </Tooltip>
-      <PopoverContent
+      <PopoverPopup
         side="right"
         align="center"
         sideOffset={8}
@@ -172,7 +167,7 @@ function BrushSize({ value, onChange }: { value: number; onChange: (value: numbe
           className="py-1 [&_[data-slot=slider-thumb]]:size-2.5"
           onValueChange={onChange}
         />
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }

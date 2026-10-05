@@ -1,64 +1,67 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// The editor composes the shared @shenron/ui primitives: these tests pin the hooks its
-// stylesheet targets (`data-slot`, `data-koharu-ui-layer`) and the keyboard behaviour.
+// The editor imports the shared @shenron/ui kit directly under its planche scope: these tests
+// pin the hooks its stylesheet targets (`data-slot`, `data-koharu-ui-layer`), the semantic
+// surface it paints on the host M3 roles, and the keyboard behaviour.
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "bun:test";
 import { Toaster, TooltipProvider } from "@aphrody/m3-primitives";
+import type { ReactNode } from "react";
 
-import { Button } from "@shenron/ui/button";
-import { receiveError } from "@shenron/ui/koharu/lib/store";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
-  AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogPopup,
   AlertDialogTitle,
-} from "../../../src/koharu/internal/components/alert-dialog";
+} from "@shenron/ui/alert-dialog";
+import { Button } from "@shenron/ui/button";
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogPopup,
   DialogTitle,
-} from "../../../src/koharu/internal/components/dialog";
+} from "@shenron/ui/dialog";
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPopup,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "../../../src/koharu/internal/components/dropdown-menu";
+} from "@shenron/ui/dropdown-menu";
+import { Input } from "@shenron/ui/input";
+import { receiveError } from "@shenron/ui/koharu/lib/store";
+import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@shenron/ui/popover";
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@shenron/ui/select";
+import { Slider } from "@shenron/ui/slider";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "@shenron/ui/tooltip";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "../../../src/koharu/internal/components/input-group";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTitle,
-  PopoverTrigger,
-} from "../../../src/koharu/internal/components/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../src/koharu/internal/components/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../../src/koharu/internal/components/tooltip";
+import { KoharuSurface } from "../../../src/koharu/internal/surface";
+
+/** Renders inside the scope `KoharuApp` puts around the whole editor. */
+function renderInEditor(ui: ReactNode) {
+  return render(<KoharuSurface>{ui}</KoharuSurface>);
+}
+
+/** The decorative band the site's toriyama popups paint; the editor never shows it. */
+const band = (popup: HTMLElement) => popup.querySelector(":scope > .bg-gradient-to-r");
 
 describe("shared field primitives in the editor", () => {
   it("keeps the slots the editor stylesheet targets", () => {
-    render(
+    renderInEditor(
       <>
         <Button>Run</Button>
         <InputGroup>
@@ -76,10 +79,19 @@ describe("shared field primitives in the editor", () => {
     expect(search).not.toHaveClass("text-gray-100");
   });
 
+  it("paints the one editor input on the host roles", () => {
+    renderInEditor(<Input aria-label="Credential" />);
+
+    const input = screen.getByRole("textbox", { name: "Credential" });
+    expect(input).toHaveAttribute("data-slot", "input");
+    expect(input).toHaveClass("bg-transparent", "border-input", "text-foreground");
+    expect(input).not.toHaveClass("bg-[#121218]");
+  });
+
   it("activates a button with Enter and Space", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
-    render(<Button onClick={onClick}>Run</Button>);
+    renderInEditor(<Button onClick={onClick}>Run</Button>);
 
     await user.tab();
     expect(screen.getByRole("button", { name: "Run" })).toHaveFocus();
@@ -90,7 +102,7 @@ describe("shared field primitives in the editor", () => {
 
   it("focuses the grouped input when its addon is clicked", async () => {
     const user = userEvent.setup();
-    render(
+    renderInEditor(
       <InputGroup>
         <InputGroupAddon>Find</InputGroupAddon>
         <InputGroupInput aria-label="Search" />
@@ -100,21 +112,49 @@ describe("shared field primitives in the editor", () => {
     await user.click(screen.getByText("Find"));
     expect(screen.getByRole("textbox", { name: "Search" })).toHaveFocus();
   });
+
+  it("moves a slider with the arrow keys and keeps its thumb hook", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn((value: number) => value);
+    renderInEditor(
+      <Slider
+        aria-label="Opacity"
+        min={0}
+        max={100}
+        step={1}
+        defaultValue={40}
+        className="[&_[data-slot=slider-thumb]]:size-2"
+        onValueChange={onValueChange}
+      />,
+    );
+
+    const thumb = document.querySelector("[data-slot=slider-thumb]");
+    expect(thumb).toHaveClass("bg-background");
+    expect(document.querySelector("[data-slot=slider-track]")).toHaveClass("bg-muted");
+    // The edge-aligned thumb stays hidden until a real layout measures the track.
+    const slider = screen.getByRole("slider", { hidden: true });
+    expect(slider).toHaveAttribute("aria-label", "Opacity");
+    act(() => slider.focus());
+    expect(slider).toHaveFocus();
+    await user.keyboard("{ArrowRight}");
+    await waitFor(() => expect(onValueChange).toHaveBeenCalled());
+    expect(onValueChange.mock.calls.at(-1)?.[0]).toBe(41);
+  });
 });
 
 describe("shared dialogs in the editor", () => {
   it("opens the dialog in the editor layer and closes it with Escape", async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
-    render(
+    renderInEditor(
       <Dialog open onOpenChange={onOpenChange}>
-        <DialogContent>
+        <DialogPopup>
           <DialogHeader>
             <DialogTitle>Rename page</DialogTitle>
             <DialogDescription>Choose a new name.</DialogDescription>
           </DialogHeader>
           <input aria-label="Page name" />
-        </DialogContent>
+        </DialogPopup>
       </Dialog>,
     );
 
@@ -122,6 +162,9 @@ describe("shared dialogs in the editor", () => {
     expect(dialog).toHaveAttribute("data-koharu-ui-layer");
     expect(dialog).toHaveAttribute("data-slot", "dialog-content");
     expect(dialog).toHaveClass("bg-popover", "text-popover-foreground");
+    expect(band(dialog)).toBeNull();
+    expect(screen.getByText("Rename page")).toHaveAttribute("data-slot", "dialog-title");
+    expect(screen.getByText("Rename page")).not.toHaveClass("uppercase");
     expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
 
@@ -134,10 +177,11 @@ describe("shared dialogs in the editor", () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
     const onConfirm = vi.fn();
-    render(
+    renderInEditor(
       <AlertDialog open onOpenChange={onOpenChange}>
-        <AlertDialogContent>
+        <AlertDialogPopup>
           <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive">!</AlertDialogMedia>
             <AlertDialogTitle>Delete project?</AlertDialogTitle>
             <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
@@ -147,13 +191,16 @@ describe("shared dialogs in the editor", () => {
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogPopup>
       </AlertDialog>,
     );
 
     const dialog = await screen.findByRole("alertdialog", { name: "Delete project?" });
     expect(dialog).toHaveAttribute("data-koharu-ui-layer");
     expect(dialog).toHaveAttribute("data-slot", "alert-dialog-content");
+    expect(dialog).toHaveClass("bg-popover");
+    expect(screen.getByText("!")).toHaveAttribute("data-slot", "alert-dialog-media");
+    expect(screen.getByText("!")).toHaveClass("bg-destructive/10", "text-destructive");
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
 
     await user.click(screen.getByRole("button", { name: "Delete" }));
@@ -168,13 +215,13 @@ describe("shared dialogs in the editor", () => {
 describe("shared overlays in the editor", () => {
   it("opens a positioned popover and returns focus on Escape", async () => {
     const user = userEvent.setup();
-    render(
+    renderInEditor(
       <Popover>
         <PopoverTrigger render={<Button />}>Brush size</PopoverTrigger>
-        <PopoverContent side="right" align="start">
+        <PopoverPopup side="right" align="start">
           <PopoverTitle>Brush</PopoverTitle>
           <input aria-label="Diameter" />
-        </PopoverContent>
+        </PopoverPopup>
       </Popover>,
     );
 
@@ -186,6 +233,8 @@ describe("shared overlays in the editor", () => {
     expect(content).toHaveAttribute("data-slot", "popover-content");
     expect(content).toHaveAttribute("data-side", "right");
     expect(content).toHaveAttribute("data-align", "start");
+    expect(content).toHaveClass("bg-popover", "text-popover-foreground");
+    expect(band(content)).toBeNull();
 
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
@@ -194,11 +243,11 @@ describe("shared overlays in the editor", () => {
 
   it("shows a tooltip on keyboard focus on the requested side", async () => {
     const user = userEvent.setup();
-    render(
+    renderInEditor(
       <TooltipProvider delay={0}>
         <Tooltip>
           <TooltipTrigger render={<Button aria-label="Settings" />}>S</TooltipTrigger>
-          <TooltipContent side="right">Open settings</TooltipContent>
+          <TooltipPopup side="right">Open settings</TooltipPopup>
         </Tooltip>
       </TooltipProvider>,
     );
@@ -212,20 +261,21 @@ describe("shared overlays in the editor", () => {
     expect(tip).toHaveAttribute("data-slot", "tooltip-content");
     expect(tip).toHaveAttribute("data-side", "right");
     expect(tip).toHaveAttribute("data-koharu-ui-layer");
+    expect(tip).toHaveClass("bg-foreground", "text-background");
   });
 
   it("picks a radio item of a dropdown menu from the keyboard", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(
+    renderInEditor(
       <DropdownMenu>
         <DropdownMenuTrigger render={<Button />}>Font size</DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuPopup align="end">
           <DropdownMenuRadioGroup value="12" onValueChange={onValueChange}>
             <DropdownMenuRadioItem value="12">12</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="14">14</DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
-        </DropdownMenuContent>
+        </DropdownMenuPopup>
       </DropdownMenu>,
     );
 
@@ -235,7 +285,11 @@ describe("shared overlays in the editor", () => {
     await user.keyboard("{Enter}");
     const menu = await screen.findByRole("menu");
     expect(menu).toHaveAttribute("data-koharu-ui-layer");
+    expect(menu).toHaveAttribute("data-slot", "dropdown-menu-content");
     expect(menu).toHaveAttribute("data-align", "end");
+    expect(screen.getByRole("menuitemradio", { name: "14" })).toHaveClass(
+      "data-[highlighted]:bg-accent",
+    );
 
     await user.keyboard("{ArrowDown}");
     await waitFor(() =>
@@ -246,27 +300,60 @@ describe("shared overlays in the editor", () => {
     expect(onValueChange.mock.calls[0]?.[0]).toBe("14");
   });
 
+  it("opens a submenu in the editor layer from the keyboard", async () => {
+    const user = userEvent.setup();
+    renderInEditor(
+      <DropdownMenu>
+        <DropdownMenuTrigger render={<Button />}>Filter fonts</DropdownMenuTrigger>
+        <DropdownMenuPopup align="end">
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Source</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem>Bundled</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </DropdownMenuPopup>
+      </DropdownMenu>,
+    );
+
+    screen.getByRole("button", { name: "Filter fonts" }).focus();
+    await user.keyboard("{Enter}");
+    await screen.findByRole("menu");
+    await user.keyboard("{ArrowDown}");
+    await waitFor(() =>
+      expect(screen.getByRole("menuitem", { name: "Source" })).toHaveAttribute("data-highlighted"),
+    );
+    await user.keyboard("{ArrowRight}");
+    const item = await screen.findByRole("menuitem", { name: "Bundled" });
+    const submenu = item.closest("[data-slot=dropdown-menu-sub-content]");
+    expect(submenu).toHaveAttribute("data-koharu-ui-layer");
+  });
+
   it("chooses a select option and keeps the trigger hooks", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(
+    renderInEditor(
       <Select defaultValue="Auto" onValueChange={onValueChange}>
         <SelectTrigger size="sm" aria-label="Text direction">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectPopup>
           <SelectItem value="Auto">Auto</SelectItem>
           <SelectItem value="Vertical">Vertical</SelectItem>
-        </SelectContent>
+        </SelectPopup>
       </Select>,
     );
 
     const trigger = screen.getByRole("combobox", { name: "Text direction" });
     expect(trigger).toHaveAttribute("data-slot", "select-trigger");
     expect(trigger).toHaveAttribute("data-size", "sm");
+    expect(trigger).toHaveClass("h-7", "border-input");
+    expect(trigger).not.toHaveClass("bg-[#121218]");
     await user.click(trigger);
     const list = await screen.findByRole("listbox");
-    expect(list.closest("[data-slot=select-content]")).toHaveAttribute("data-koharu-ui-layer");
+    const popup = list.closest("[data-slot=select-content]");
+    expect(popup).toHaveAttribute("data-koharu-ui-layer");
+    expect(popup).toHaveClass("bg-popover");
 
     await user.click(screen.getByRole("option", { name: "Vertical" }));
     await waitFor(() => expect(onValueChange).toHaveBeenCalled());

@@ -23,11 +23,11 @@ import {
 import type { PipelineConfig } from "@shenron/koharu/protocol";
 import {
   Select,
-  SelectContent,
+  SelectPopup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../internal/components/select";
+} from "../../../components/select";
 
 const stages = [
   ["detection", Search],
@@ -79,13 +79,13 @@ export function PipelinePreferences({
                     >
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectPopup>
                       {modelOptions[stage].map((name) => (
                         <SelectItem key={name} value={name}>
                           {modelNames[name]}
                         </SelectItem>
                       ))}
-                    </SelectContent>
+                    </SelectPopup>
                   </Select>
                 </div>
                 <ModelOptions

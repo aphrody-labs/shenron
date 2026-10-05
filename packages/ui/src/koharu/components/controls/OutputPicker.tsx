@@ -9,11 +9,11 @@ import type { LanguageChoice } from "@shenron/koharu/protocol";
 import { Button } from "../../../components/button";
 import {
   Select,
-  SelectContent,
+  SelectPopup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../internal/components/select";
+} from "../../../components/select";
 import { Textarea } from "../../../components/textarea";
 
 export type OutputDraft = {
@@ -136,13 +136,13 @@ export function OutputPicker({
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {languageChoices.map((language) => (
                 <SelectItem key={language.tag} value={language.tag}>
                   {language.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         </label>
 

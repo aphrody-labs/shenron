@@ -9,6 +9,7 @@ import { SettingsPage } from "../preferences/SettingsPage";
 import { StartView } from "../start/StartView";
 import { useProject } from "../../lib/queries";
 import { useKoharuStore } from "../../lib/store";
+import { KoharuSurface } from "../../internal/surface";
 import { cn } from "../../../lib/utils";
 
 /** `embedded`: hosted inside another app (Aphrody Studio) — fills its container, no window controls. */
@@ -30,29 +31,31 @@ export function KoharuApp({ embedded = false }: { embedded?: boolean } = {}) {
   }, [activePage, projectLoaded, selectLayers, selectPages, selectedPages.length]);
 
   return (
-    <div
-      data-koharu-ui
-      className={cn(
-        "relative flex flex-col overflow-hidden text-foreground",
-        embedded ? "h-full w-full" : "h-screen w-screen",
-        editorOpen ? "bg-transparent" : "bg-[var(--surface-titlebar)]",
-      )}
-    >
-      <TitleBar windowControls={!embedded} />
-      {settingsOpen ? (
-        <SettingsPage />
-      ) : project === undefined ? (
-        <main className="grid min-h-0 flex-1 place-items-center bg-[var(--surface-canvas)]">
-          <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
-            <span className="size-2 rounded-full bg-primary" />
-            {t("startup.opening")}
-          </div>
-        </main>
-      ) : project === null ? (
-        <StartView />
-      ) : (
-        <Editor />
-      )}
-    </div>
+    <KoharuSurface>
+      <div
+        data-koharu-ui
+        className={cn(
+          "relative flex flex-col overflow-hidden text-foreground",
+          embedded ? "h-full w-full" : "h-screen w-screen",
+          editorOpen ? "bg-transparent" : "bg-[var(--surface-titlebar)]",
+        )}
+      >
+        <TitleBar windowControls={!embedded} />
+        {settingsOpen ? (
+          <SettingsPage />
+        ) : project === undefined ? (
+          <main className="grid min-h-0 flex-1 place-items-center bg-[var(--surface-canvas)]">
+            <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
+              <span className="size-2 rounded-full bg-primary" />
+              {t("startup.opening")}
+            </div>
+          </main>
+        ) : project === null ? (
+          <StartView />
+        ) : (
+          <Editor />
+        )}
+      </div>
+    </KoharuSurface>
   );
 }

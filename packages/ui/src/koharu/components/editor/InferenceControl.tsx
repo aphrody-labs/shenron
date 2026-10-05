@@ -32,7 +32,7 @@ import {
   type Stage,
 } from "@shenron/koharu/protocol";
 import { Button } from "../../../components/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
+import { Popover, PopoverPopup, PopoverTrigger } from "../../../components/popover";
 import { cn } from "../../../lib/utils";
 
 type SelectorView = "root" | "model" | "scope" | "stages" | "output";
@@ -212,7 +212,7 @@ function RuntimeSelector({
         <ChevronDown className="size-3 shrink-0" />
       </PopoverTrigger>
 
-      <PopoverContent
+      <PopoverPopup
         align="start"
         sideOffset={4}
         className="w-64 min-w-0 gap-0 overflow-hidden rounded-xl border border-border/50 p-1 shadow-sm ring-0"
@@ -347,7 +347,7 @@ function RuntimeSelector({
             onChange={saveOutput}
           />
         )}
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }

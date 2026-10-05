@@ -15,14 +15,14 @@ import type {
   TranslationConfig as TranslationSettings,
 } from "@shenron/koharu/protocol";
 import { Badge } from "@aphrody/m3-primitives";
-import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
+import { Popover, PopoverPopup, PopoverTrigger } from "../../../components/popover";
 import {
   Select,
-  SelectContent,
+  SelectPopup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../internal/components/select";
+} from "../../../components/select";
 import { Textarea } from "../../../components/textarea";
 
 export function TranslationPreferences({
@@ -83,7 +83,7 @@ export function TranslationPreferences({
               </span>
               <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
             </PopoverTrigger>
-            <PopoverContent
+            <PopoverPopup
               align="start"
               sideOffset={4}
               className="w-(--anchor-width) min-w-64 gap-0 overflow-hidden rounded-xl border border-border/50 p-1 shadow-sm ring-0"
@@ -101,7 +101,7 @@ export function TranslationPreferences({
                   setModelOpen(false);
                 }}
               />
-            </PopoverContent>
+            </PopoverPopup>
           </Popover>
         </PreferenceRow>
       </PreferenceSection>
@@ -131,13 +131,13 @@ export function TranslationPreferences({
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {languageChoices.map((language) => (
                 <SelectItem key={language.tag} value={language.tag}>
                   {language.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         </PreferenceRow>
         <PreferenceRow

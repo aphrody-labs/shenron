@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { usePage } from "../../lib/queries";
 import { useKoharuStore } from "../../lib/store";
-import { Slider } from "../../internal/components/slider";
+import { Slider } from "../../../components/slider";
 
 interface StatusBarProps {
   onZoomChange: (zoom: number) => void;

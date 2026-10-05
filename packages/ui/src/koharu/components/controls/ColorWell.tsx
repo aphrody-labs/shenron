@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import { useColorSampling } from "./ColorSampling";
 import { Button } from "../../../components/button";
-import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
+import { Popover, PopoverPopup, PopoverTrigger } from "../../../components/popover";
 import { cn } from "../../../lib/utils";
 
 type ColorWellProps = {
@@ -84,7 +84,7 @@ export function ColorWell(props: ColorWellProps) {
           />
         )}
       </PopoverTrigger>
-      <PopoverContent side="right" align="start" className="w-60 rounded-xl p-3">
+      <PopoverPopup side="right" align="start" className="w-60 rounded-xl p-3">
         <div>
           <HexColorPicker
             color={draft}
@@ -126,7 +126,7 @@ export function ColorWell(props: ColorWellProps) {
             {t("colorPicker.transparent")}
           </Button>
         )}
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }

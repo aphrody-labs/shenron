@@ -6,12 +6,12 @@ import { useTranslation } from "react-i18next";
 import { useKoharuStore } from "../../lib/store";
 import {
   Popover,
-  PopoverContent,
+  PopoverPopup,
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-} from "../../internal/components/popover";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../internal/components/tooltip";
+} from "../../../components/popover";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "../../../components/tooltip";
 
 /** Native telemetry for the Koharu process and the accelerator used by models. */
 export function ResourceMonitor() {
@@ -57,11 +57,11 @@ export function ResourceMonitor() {
               </TooltipTrigger>
             }
           />
-          <TooltipContent side="top">
+          <TooltipPopup side="top">
             {t("resources.tooltip", { ramUsed, ramTotal, cpu })}
-          </TooltipContent>
+          </TooltipPopup>
         </Tooltip>
-        <PopoverContent
+        <PopoverPopup
           align="end"
           side="top"
           className="w-72 gap-0 overflow-hidden rounded-xl border-0 bg-[var(--surface-floating)] p-0 shadow-[var(--shadow-panel)] ring-1 ring-foreground/[0.06]"
@@ -96,7 +96,7 @@ export function ResourceMonitor() {
               />
             )}
           </div>
-        </PopoverContent>
+        </PopoverPopup>
       </Popover>
     </div>
   );
@@ -121,9 +121,9 @@ function ResourceRow({
           <span className="block truncate text-foreground">{label}</span>
           <span className="block truncate text-[9px] text-muted-foreground">{detail}</span>
         </TooltipTrigger>
-        <TooltipContent side="left">
+        <TooltipPopup side="left">
           {label}: {detail}
-        </TooltipContent>
+        </TooltipPopup>
       </Tooltip>
       <span className="text-right font-medium text-foreground tabular-nums">{value}</span>
     </div>

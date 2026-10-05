@@ -14,7 +14,8 @@ import type {
   StartupState,
   ModelResources,
 } from "@shenron/koharu/protocol";
-import { toast } from "../internal/components/toast";
+// The editor mounts the @aphrody/m3-primitives Toaster (providers.tsx): notices go straight to it.
+import { toast } from "@aphrody/m3-primitives";
 
 export type CanvasTool = "select" | "text" | "draw" | "eraser" | "color_picker" | "remove" | "pan";
 export const MIN_BRUSH_DIAMETER = 1;
@@ -171,7 +172,7 @@ export function receiveResources(resources: ModelResources): void {
 }
 
 export function receiveError(message: string): void {
-  toast.add({ type: "error", title: "Could not complete that action", description: message });
+  toast.error({ title: "Could not complete that action", body: message });
 }
 
 function canvasSnapshot(canvas: CanvasState) {

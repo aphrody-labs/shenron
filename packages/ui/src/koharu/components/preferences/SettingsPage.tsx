@@ -21,15 +21,15 @@ import {
   type TypesettingConfig,
 } from "@shenron/koharu/protocol";
 import { Button } from "../../../components/button";
-import { Input } from "@aphrody/m3-primitives";
+import { Input } from "../../../components/input";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import {
   Select,
-  SelectContent,
+  SelectPopup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../internal/components/select";
+} from "../../../components/select";
 
 export function SettingsPage() {
   const { t } = useTranslation();
@@ -262,13 +262,13 @@ function AppearancePreferences() {
             <SelectTrigger className="h-8 w-full text-[11px]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {supportedLanguages.map((language) => (
                 <SelectItem key={language} value={language}>
                   {t(`languages.${language}`)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         </PreferenceRow>
       </PreferenceSection>

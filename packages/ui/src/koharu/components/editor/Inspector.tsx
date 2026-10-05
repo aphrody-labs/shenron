@@ -51,11 +51,11 @@ import {
 import { Button } from "../../../components/button";
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuPopup,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "../../internal/components/dropdown-menu";
+} from "../../../components/dropdown-menu";
 import {
   NumberField,
   NumberFieldDecrement,
@@ -66,13 +66,13 @@ import {
 import { ScrollArea } from "../../internal/components/scroll-area";
 import {
   Select,
-  SelectContent,
+  SelectPopup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../internal/components/select";
-import { Slider } from "../../internal/components/slider";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../internal/components/tooltip";
+} from "../../../components/select";
+import { Slider } from "../../../components/slider";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "../../../components/tooltip";
 
 const defaultFont: FontFamily = {
   name: "CCWildWords",
@@ -263,13 +263,13 @@ function TypeInspector() {
               >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 {weights.map((value) => (
                   <SelectItem key={value} value={String(value)}>
                     {value}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </InspectorField>
           <InspectorField label={t("inspector.style")}>
@@ -293,13 +293,13 @@ function TypeInspector() {
               >
                 <SelectValue>{t(`inspector.fontStyles.${style}`)}</SelectValue>
               </SelectTrigger>
-              <SelectContent align="end">
+              <SelectPopup align="end">
                 {styles.map((value) => (
                   <SelectItem key={value} value={value}>
                     {t(`inspector.fontStyles.${value}`)}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </InspectorField>
         </div>
@@ -364,11 +364,11 @@ function TypeInspector() {
               <SelectTrigger size="sm" aria-label={t("inspector.textDirection")} className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 <SelectItem value="Auto">{t("inspector.auto")}</SelectItem>
                 <SelectItem value="Horizontal">{t("inspector.horizontal")}</SelectItem>
                 <SelectItem value="Vertical">{t("inspector.vertical")}</SelectItem>
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </InspectorField>
         </div>
@@ -739,7 +739,7 @@ function LayerRow({
               >
                 <Lock className="size-3.5" />
               </TooltipTrigger>
-              <TooltipContent side="left">{t("layers.locked")}</TooltipContent>
+              <TooltipPopup side="left">{t("layers.locked")}</TooltipPopup>
             </Tooltip>
           ) : (
             <button
@@ -835,7 +835,7 @@ function LayerEditor({ layer, onDelete }: { layer: Layer; onDelete?: () => void 
             >
               <Trash2 className="size-3" />
             </TooltipTrigger>
-            <TooltipContent side="left">{t("layers.delete", { name })}</TooltipContent>
+            <TooltipPopup side="left">{t("layers.delete", { name })}</TooltipPopup>
           </Tooltip>
         )}
       </div>
@@ -869,7 +869,7 @@ function LayerEditor({ layer, onDelete }: { layer: Layer; onDelete?: () => void 
                   <RotateCcw className="size-3" />
                   {t("common.reset")}
                 </TooltipTrigger>
-                <TooltipContent side="left">{t("inspector.resetAutoFit")}</TooltipContent>
+                <TooltipPopup side="left">{t("inspector.resetAutoFit")}</TooltipPopup>
               </Tooltip>
             )}
           </div>
@@ -990,7 +990,7 @@ function FontSizeField({
           >
             <ChevronDown className="size-3" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent
+          <DropdownMenuPopup
             align="end"
             className="w-28 min-w-28 border border-border/50 p-0.5 shadow-sm ring-0"
           >
@@ -1008,7 +1008,7 @@ function FontSizeField({
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
+          </DropdownMenuPopup>
         </DropdownMenu>
       </NumberFieldGroup>
     </NumberField>

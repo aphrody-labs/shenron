@@ -3,7 +3,7 @@
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Input } from "@aphrody/m3-primitives";
+import { Input } from "../../../components/input";
 
 export function PreferencePage({
   title,

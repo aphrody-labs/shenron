@@ -7,7 +7,7 @@ import { Menubar as MenubarPrimitive } from "@base-ui/react/menubar";
 import { cn } from "../../../lib/utils";
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuPopup,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -19,7 +19,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
+} from "../../../components/dropdown-menu";
 import { CheckIcon } from "lucide-react";
 
 function Menubar({ className, ...props }: MenubarPrimitive.Props) {
@@ -63,9 +63,9 @@ function MenubarContent({
   alignOffset = -4,
   sideOffset = 8,
   ...props
-}: React.ComponentProps<typeof DropdownMenuContent>) {
+}: React.ComponentProps<typeof DropdownMenuPopup>) {
   return (
-    <DropdownMenuContent
+    <DropdownMenuPopup
       data-slot="menubar-content"
       align={align}
       alignOffset={alignOffset}
@@ -88,7 +88,7 @@ function MenubarItem({
   return (
     <DropdownMenuItem
       data-slot="menubar-item"
-      data-inset={inset}
+      data-inset={inset || undefined}
       data-variant={variant}
       className={cn(
         "group/menubar-item min-h-10 gap-2 rounded-md px-2.5 py-2 text-[13px] focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive!",
@@ -111,7 +111,7 @@ function MenubarCheckboxItem({
   return (
     <MenuPrimitive.CheckboxItem
       data-slot="menubar-checkbox-item"
-      data-inset={inset}
+      data-inset={inset || undefined}
       className={cn(
         "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-1.5 pl-7 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
@@ -144,7 +144,7 @@ function MenubarRadioItem({
   return (
     <MenuPrimitive.RadioItem
       data-slot="menubar-radio-item"
-      data-inset={inset}
+      data-inset={inset || undefined}
       className={cn(
         "relative flex min-h-10 cursor-default items-center gap-2 rounded-md py-2 pr-2.5 pl-8 text-[13px] outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
@@ -171,7 +171,7 @@ function MenubarLabel({
   return (
     <DropdownMenuLabel
       data-slot="menubar-label"
-      data-inset={inset}
+      data-inset={inset || undefined}
       className={cn("px-1.5 py-1 text-sm font-medium data-inset:pl-7", className)}
       {...props}
     />
@@ -221,7 +221,7 @@ function MenubarSubTrigger({
   return (
     <DropdownMenuSubTrigger
       data-slot="menubar-sub-trigger"
-      data-inset={inset}
+      data-inset={inset || undefined}
       className={cn(
         "min-h-10 gap-2 rounded-md px-2.5 py-2 text-[13px] focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-open:bg-accent data-open:text-accent-foreground [&_svg:not([class*='size-'])]:size-4",
         className,
