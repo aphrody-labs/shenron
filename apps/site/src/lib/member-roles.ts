@@ -16,9 +16,11 @@
  *     transformerait une panne du bot en ouverture publique de pages privées.
  */
 import "server-only";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 import { API_URL } from "@/lib/config";
 
-const TOKEN = process.env.SHENRON_ADMIN_TOKEN ?? "";
+/** `SHENRON_ADMIN_TOKEN` (alias `API_ADMIN_TOKEN`), blanc = absent. */
+const TOKEN = envFirst(process.env, ENV_ALIASES.adminToken)?.value ?? "";
 const TTL_MS = 60_000;
 /** Au-delà, on vide : le cache sert le trafic chaud, pas un annuaire complet. */
 const MAX_ENTRIES = 2_000;

@@ -14,9 +14,11 @@
  */
 import "server-only";
 import { createShenronApiClient, type ApiResult } from "@shenron/api/client";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 import { API_URL as API, botApiBaseUrl } from "@/lib/config";
 
-const TOKEN = process.env.SHENRON_ADMIN_TOKEN ?? "";
+/** `SHENRON_ADMIN_TOKEN` (alias `API_ADMIN_TOKEN`), blanc = absent. */
+const TOKEN = envFirst(process.env, ENV_ALIASES.adminToken)?.value ?? "";
 
 /** Base serveur du bot (`BOT_INTERNAL_URL` d'abord, cf. `botApiBaseUrl`). */
 const BOT_BASE = botApiBaseUrl();
