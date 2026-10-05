@@ -60,12 +60,24 @@ mkdirSync(binaries, { recursive: true });
 copyFileSync(server, join(binaries, `shenron-server-${SPEC.triple}${SPEC.exe}`));
 
 // 1b. MCP sidecar of the same target (cargo, or cargo-xwin for MSVC from Linux, via the runner).
+// The desktop ships the Koharu engine, so its sidecar registers the scanlation tools (`koharu`).
 const withMcp = !args.includes("--skip-mcp");
 const mcpSidecar = join(binaries, `shenron-mcp-${SPEC.triple}${SPEC.exe}`);
 rmSync(mcpSidecar, { force: true });
 if (withMcp) {
   await run(
-    [process.execPath, runner, "build", "--release", "-p", "shenron-mcp", "--target", SPEC.triple],
+    [
+      process.execPath,
+      runner,
+      "build",
+      "--release",
+      "-p",
+      "shenron-mcp",
+      "--features",
+      "koharu",
+      "--target",
+      SPEC.triple,
+    ],
     ROOT,
     env,
   );

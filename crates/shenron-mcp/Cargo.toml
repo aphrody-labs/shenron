@@ -20,6 +20,12 @@ path = "src/main.rs"
 [lints]
 workspace = true
 
+[features]
+default = []
+# Scanlation tools (dragonball.manga_scanlate, dragonball.databooks_scanlate): pulls the Koharu
+# engine. Without it the two tools are neither listed nor callable.
+koharu = ["shenron-manga/koharu"]
+
 [dependencies]
 axum = { workspace = true }
 reqwest = { workspace = true }

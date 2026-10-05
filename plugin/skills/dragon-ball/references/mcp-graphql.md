@@ -21,7 +21,8 @@ sources le 2026-10-01) :
 - **32 outils publics** pour RAG, sources, couverture, wiki, manga, databooks,
   canon, chronologie, bot, actualités et A2A. La plupart consultent des données ;
   `a2a_send` dépose une tâche et a donc un effet externe ; `manga_scanlate` et
-  `databooks_scanlate` exigent la fonctionnalité Koharu et ses modèles.
+  `databooks_scanlate` n'existent que dans le sidecar du bureau (construit avec
+  `--features koharu`) et exigent les modèles Koharu ; le serveur public ne les liste pas.
 - **5 outils admin** : dépôt databooks, lecture du catalogue des commandes bot,
   exécution de commande, catalogue et actions de service. Ils appellent les API
   d'administration Shenron avec leurs secrets d'hôte ; le transport stdio ne

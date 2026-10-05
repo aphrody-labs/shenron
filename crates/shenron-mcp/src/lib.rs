@@ -28,6 +28,10 @@ pub struct ShenronMcp {
     public: bool,
 }
 
+/// Tools backed by the Koharu engine (heavy compute, elevated only).
+#[cfg(not(feature = "koharu"))]
+const SCANLATION_TOOLS: [&str; 2] = ["dragonball.manga_scanlate", "dragonball.databooks_scanlate"];
+
 /// Read tools that use a server-side credential or expose non-public data: elevated only, even
 /// though they do not write.
 const ELEVATED_READS: [&str; 4] = [
@@ -68,12 +72,17 @@ impl ShenronMcp {
         Self { public: true }
     }
 
-    /// Every tool of the full server.
+    /// Every tool of the full server. The scanlation tools exist only in builds with the
+    /// `koharu` feature: without the engine they could only fail, so they are not registered.
     #[must_use]
     pub fn all_tools() -> ToolRouter<Self> {
         let mut router = Self::dbfr_router();
         router += Self::dragonball_router();
         router += Self::site_router();
+        #[cfg(not(feature = "koharu"))]
+        for name in SCANLATION_TOOLS {
+            router.remove_route(name);
+        }
         router
     }
 
@@ -490,7 +499,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.manga_scanlate",
-        description = "Elevated only. Analyses a manga page through the CDN and Koharu: detected regions, OCR, translation, cleaning layer and PSD export. Needs the Koharu feature and its models.",
+        description = "Elevated only. Analyses a manga page through the CDN and Koharu: detected regions, OCR, translation, cleaning layer and PSD export. Only registered in builds with the koharu feature; needs the Koharu models.",
         annotations(
             title = "Manga page scanlation",
             read_only_hint = false,
@@ -664,7 +673,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.databooks_scanlate",
-        description = "Elevated only. Analyses a databook plate through the CDN and Koharu: detected regions, OCR, translation, cleaning layer and PSD export. Needs the Koharu feature and its models.",
+        description = "Elevated only. Analyses a databook plate through the CDN and Koharu: detected regions, OCR, translation, cleaning layer and PSD export. Only registered in builds with the koharu feature; needs the Koharu models.",
         annotations(
             title = "Databook plate scanlation",
             read_only_hint = false,
@@ -1404,6 +1413,10 @@ impl ShenronMcp {
 mod tests {
     use super::ShenronMcp;
 
+    /// Tools backed by the Koharu engine.
+    const SCANLATION_TOOLS: [&str; 2] =
+        ["dragonball.manga_scanlate", "dragonball.databooks_scanlate"];
+
     /// Site read tools served to anonymous callers.
     const SITE_PUBLIC_TOOLS: [&str; 9] = [
         "dragonball.search",
@@ -1506,8 +1519,6 @@ mod tests {
             "dragonball.admin_bot_commands",
             "dragonball.admin_services",
             "dragonball.a2a_send",
-            "dragonball.manga_scanlate",
-            "dragonball.databooks_scanlate",
         ] {
             assert!(full.get(name).is_some(), "full tool missing: {name}");
             assert!(public.get(name).is_none(), "private tool exposed publicly: {name}");
@@ -1516,6 +1527,17 @@ mod tests {
             let destructive =
                 tool.annotations.as_ref().and_then(|a| a.destructive_hint).unwrap_or(false);
             assert!(!destructive, "destructive tool in the public server: {}", tool.name);
+        }
+    }
+
+    /// Scanlation needs the Koharu engine: registered with the feature, absent without it.
+    #[test]
+    fn scanlation_tools_follow_the_koharu_feature() {
+        let full = ShenronMcp::all_tools();
+        let public = ShenronMcp::public_tools();
+        for name in SCANLATION_TOOLS {
+            assert_eq!(full.get(name).is_some(), cfg!(feature = "koharu"), "full: {name}");
+            assert!(public.get(name).is_none(), "scanlation exposed publicly: {name}");
         }
     }
 
@@ -1543,7 +1565,6 @@ mod tests {
                 "dragonball.manga_chapitre",
                 "dragonball.manga_planche",
                 "dragonball.manga_recherche",
-                "dragonball.manga_scanlate",
                 "dragonball.chronologie",
                 "dragonball.bot_stats",
                 "dragonball.bot_personas",
@@ -1553,7 +1574,6 @@ mod tests {
                 "dragonball.databooks_search",
                 "dragonball.databooks_planches",
                 "dragonball.databooks_get",
-                "dragonball.databooks_scanlate",
                 "dragonball.canon_check",
                 "dragonball.canon_references",
                 "dragonball.a2a_send",
@@ -1573,7 +1593,10 @@ mod tests {
                 router.list_all().iter().filter(|t| t.name.starts_with("dragonball.")).count();
             assert_eq!(
                 count,
-                names.len() + SITE_PUBLIC_TOOLS.len() + SITE_ELEVATED_TOOLS.len(),
+                names.len()
+                    + SITE_PUBLIC_TOOLS.len()
+                    + SITE_ELEVATED_TOOLS.len()
+                    + if cfg!(feature = "koharu") { SCANLATION_TOOLS.len() } else { 0 },
                 "unexpected dragonball.* tool count"
             );
 
