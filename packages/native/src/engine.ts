@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Bun `bun:ffi` binding for the Shenron native library (crate `shenron-ffi`): the `shenron`
-// command surface, Shenron RAG/persona helpers and the Koharu manga pipeline, in process.
+// command surface, Shenron RAG/persona helpers, in process.
 //
 // Set SHENRON_FFI_LIB to the library path; otherwise it is resolved from `native/` beside this
 // package, then (with SHENRON_FFI_DEV=1) from the repository Cargo target directory. A host that
@@ -12,7 +12,6 @@ import { existsSync } from "node:fs";
 import { isAbsolute, join, resolve } from "node:path";
 
 export const EXPECTED_SHENRON_ABI_VERSION = 1;
-export const EXPECTED_MANGA_ABI_VERSION = 1;
 
 const SYMBOLS = {
   shenron_abi_version: { args: [], returns: FFIType.u32 },
@@ -35,23 +34,6 @@ const SYMBOLS = {
   shenron_auth_status: { args: [], returns: FFIType.ptr },
   shenron_persona_prompt: { args: [], returns: FFIType.cstring },
   shenron_persona_ask: { args: [FFIType.cstring], returns: FFIType.ptr },
-  manga_abi_version: { args: [], returns: FFIType.u32 },
-  manga_detect_bubbles: { args: [FFIType.ptr, "usize"], returns: FFIType.ptr },
-  manga_typeset_fit: {
-    args: [FFIType.cstring, FFIType.f32, FFIType.f32, FFIType.f32, FFIType.f32, FFIType.i32],
-    returns: FFIType.ptr,
-  },
-  manga_pipeline_run: { args: [FFIType.ptr, "usize", FFIType.cstring], returns: FFIType.ptr },
-  manga_scanlate_cdn: { args: [FFIType.cstring, FFIType.cstring], returns: FFIType.ptr },
-  manga_scanlate_databook: {
-    args: [FFIType.u64, FFIType.u32, FFIType.cstring],
-    returns: FFIType.ptr,
-  },
-  manga_scanlate_chapter: {
-    args: [FFIType.u64, FFIType.u32, FFIType.cstring],
-    returns: FFIType.ptr,
-  },
-  manga_string_free: { args: [FFIType.ptr], returns: FFIType.void },
 } as const;
 
 type NativeLibrary = ReturnType<typeof dlopen<typeof SYMBOLS>>;
@@ -114,14 +96,12 @@ export function loadLib(explicitPath?: string): NativeLibrary {
   } catch (error) {
     throw new Error(`Unable to load shenron-ffi at ${path}: ${String(error)}`, { cause: error });
   }
-  for (const [name, actual, expected] of [
-    ["Shenron", loaded.symbols.shenron_abi_version(), EXPECTED_SHENRON_ABI_VERSION],
-    ["Manga", loaded.symbols.manga_abi_version(), EXPECTED_MANGA_ABI_VERSION],
-  ] as const) {
-    if (actual !== expected) {
-      loaded.close();
-      throw new Error(`${name} ABI mismatch at ${path}: expected ${expected}, found ${actual}`);
-    }
+  const actual = loaded.symbols.shenron_abi_version();
+  if (actual !== EXPECTED_SHENRON_ABI_VERSION) {
+    loaded.close();
+    throw new Error(
+      `Shenron ABI mismatch at ${path}: expected ${EXPECTED_SHENRON_ABI_VERSION}, found ${actual}`,
+    );
   }
   library = loaded;
   libraryPath = path;

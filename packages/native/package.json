@@ -2,21 +2,17 @@
   "name": "@shenron/native",
   "version": "0.2.0",
   "private": true,
-  "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers and the Koharu manga pipeline.",
+  "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers.",
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
     "./shenron": "./src/shenron.ts",
-    "./manga": "./src/manga.ts",
     "./engine": "./src/engine.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json src test",
     "test": "bun test",
     "typecheck": "tsc --noEmit -p ."
-  },
-  "dependencies": {
-    "@shenron/media": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
@@ -25,7 +21,6 @@
   "shenron": {
     "runtime": {
       "./shenron": "bun",
-      "./manga": "bun",
       "./engine": "bun"
     }
   }

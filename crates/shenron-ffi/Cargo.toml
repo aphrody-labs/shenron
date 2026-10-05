@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 [package]
 name = "shenron-ffi"
-description = "C ABI of Shenron (shenron_* and manga_*): the shenron command, RAG chunking and search, persona, manga detection, typesetting and PSD export for bun:ffi and C hosts."
+description = "C ABI of Shenron (shenron_*): the shenron command, RAG chunking and search, persona and the local corpus for bun:ffi and C hosts."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -21,10 +21,8 @@ workspace = true
 aphrody-agent-home = { workspace = true }
 aphrody-rag-core = { workspace = true }
 aphrody-stdio-capture = { workspace = true }
-base64 = { workspace = true }
 serde_json = { workspace = true }
 shenron-cli = { workspace = true }
-shenron-manga = { workspace = true }
 shenron-rag = { workspace = true }
 tokio = { workspace = true }
 
