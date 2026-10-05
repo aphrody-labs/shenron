@@ -47,3 +47,53 @@ export function ensureWikiVisibility(sqlite: Database): WikiVisibilityTable[] {
   }
   return added;
 }
+
+/**
+ * Dérive entre les migrations SQL du bot et le schéma Drizzle (`schema.ts`) :
+ * `db_episodes.video_url` et la table `db_tools` (avec `archived`, `pushed_at`,
+ * `checked_at`) figurent dans le schéma, mais aucune migration SQL ne les crée.
+ * Les bases existantes les ont (reverse-sync) ; une base neuve ne les avait pas,
+ * et ses lectures publiques échouaient. Complément idempotent, appelé par `src/index.ts`
+ * après les migrations (jamais avant : une base vide doit rester vide).
+ */
+export function ensureWikiReplicaSchema(sqlite: Database): void {
+  const columns = (table: string) =>
+    sqlite
+      .query<{ name: string }, [string]>("SELECT name FROM pragma_table_info(?)")
+      .all(table)
+      .map((c) => c.name);
+  sqlite.exec(`CREATE TABLE IF NOT EXISTS db_tools (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    slug TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    url TEXT NOT NULL,
+    author TEXT,
+    language TEXT,
+    category TEXT,
+    target_game_id INTEGER,
+    stars INTEGER DEFAULT 0,
+    visible INTEGER DEFAULT true NOT NULL,
+    archived INTEGER DEFAULT false NOT NULL,
+    pushed_at INTEGER,
+    checked_at INTEGER
+  )`);
+  for (const [table, column, type] of REPLICA_COLUMNS) {
+    const present = columns(table);
+    if (present.length > 0 && !present.includes(column)) {
+      sqlite.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
+    }
+  }
+  sqlite.exec(`CREATE UNIQUE INDEX IF NOT EXISTS db_tools_slug_unique ON db_tools (slug);
+  CREATE INDEX IF NOT EXISTS idx_db_tools_game ON db_tools (target_game_id);`);
+}
+
+/** Colonnes du schéma Drizzle absentes des migrations SQL (`visible` a sa propre garantie). */
+const REPLICA_COLUMNS = [
+  ["db_episodes", "video_url", "TEXT"],
+  ["db_tools", "target_game_id", "INTEGER"],
+  ["db_tools", "stars", "INTEGER DEFAULT 0"],
+  ["db_tools", "archived", "INTEGER DEFAULT false NOT NULL"],
+  ["db_tools", "pushed_at", "INTEGER"],
+  ["db_tools", "checked_at", "INTEGER"],
+] as const;

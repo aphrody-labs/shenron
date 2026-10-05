@@ -16,7 +16,7 @@ import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { env } from "./lib/env";
 import { logger } from "./lib/logger";
 import { DatabaseService } from "./db/index";
-import { ensureWikiVisibility } from "./db/wiki-visibility";
+import { ensureWikiReplicaSchema, ensureWikiVisibility } from "./db/wiki-visibility";
 import { loadRaceLevelRoles } from "./lib/race-levels";
 import { loadLevelThresholds } from "./lib/level-thresholds";
 import { runBootAudit } from "./lib/boot-audit";
@@ -42,6 +42,7 @@ if (existsSync("./src/db/migrations")) {
 }
 // Visibilité éditoriale du réplica wiki (SH-P0-004) : les migrations viennent
 // de créer les tables d'une base neuve, la colonne `visible` doit les suivre.
+ensureWikiReplicaSchema(dbService.sqlite);
 const visibilityAdded = ensureWikiVisibility(dbService.sqlite);
 if (visibilityAdded.length > 0) {
   logger.info({ tables: visibilityAdded }, "✓ wiki replica visibility column added");
