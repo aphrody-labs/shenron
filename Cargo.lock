@@ -883,30 +883,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "aphrody-translate"
-version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
-dependencies = [
- "anyhow",
- "clap",
- "dashmap",
- "hex",
- "ignore",
- "regex",
- "reqwest",
- "rustls",
- "serde",
- "serde_json",
- "sha2 0.11.0",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "urlencoding",
- "wasm-bindgen",
- "wasm-bindgen-futures",
-]
-
-[[package]]
 name = "aphrody-wry"
 version = "0.57.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
@@ -2582,20 +2558,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dashmap"
-version = "6.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6361d5c062261c78a176addb82d4c821ae42bed6089de0e12603cd25de2059c"
-dependencies = [
- "cfg-if",
- "crossbeam-utils",
- "hashbrown 0.14.5",
- "lock_api",
- "once_cell",
- "parking_lot_core",
-]
-
-[[package]]
 name = "deadpool"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4079,12 +4041,6 @@ name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
-
-[[package]]
-name = "hashbrown"
-version = "0.14.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
 
 [[package]]
 name = "hashbrown"
@@ -9254,7 +9210,6 @@ dependencies = [
  "assert_cmd",
  "clap",
  "dirs 7.0.0",
- "image",
  "miette",
  "predicates",
  "reqwest",
@@ -9293,10 +9248,8 @@ dependencies = [
  "aphrody-agent-home",
  "aphrody-rag-core",
  "aphrody-stdio-capture",
- "base64 0.23.1",
  "serde_json",
  "shenron-cli",
- "shenron-manga",
  "shenron-rag",
  "tempfile",
  "tokio",
@@ -9371,17 +9324,6 @@ dependencies = [
  "shenron-cli",
  "shenron-rag",
  "tokio",
-]
-
-[[package]]
-name = "shenron-translate"
-version = "1.1.0"
-dependencies = [
- "anyhow",
- "aphrody-translate",
- "serde",
- "tokio",
- "tracing",
 ]
 
 [[package]]
