@@ -157,6 +157,13 @@ const home = join(repo, ".cache", "next-build", "home");
 const temporary = join(repo, ".cache", "next-build", "tmp");
 await mkdir(home, { recursive: true, mode: 0o700 });
 await mkdir(temporary, { recursive: true, mode: 0o700 });
+// Compilateur de Next : `node22` (défaut, image Node 22) ou `bun` (le binaire Bun de l'hôte
+// monté en lecture seule dans la même image bornée, `bun --bun next build`), choisi par
+// `SHENRON_NEXT_RUNTIME` ou `next.runtime` de l'usine. Mesure avant d'en changer le défaut
+// (var/reports/turbopack-swc-bun-2026-10-05.md, §8).
+const runtime = (process.env.SHENRON_NEXT_RUNTIME ?? factory.next?.runtime ?? "node22") as string;
+if (runtime !== "node22" && runtime !== "bun")
+  throw new Error("SHENRON_NEXT_RUNTIME : node22 | bun");
 const compilerEnvironment = {
   ...buildEnv,
   NODE_ENV: "production",
@@ -165,9 +172,10 @@ const compilerEnvironment = {
   NEXT_DIST_DIR: ".next-build",
   DATABASE_URL: databaseUrl,
   TURBOPACK: "1",
-  TURBO_ENGINE_GC: "1",
-  TURBO_ENGINE_EVICT_MIN_BYTES: "33554432",
-  NODE_OPTIONS: `--max-old-space-size=${memoryMiB}`,
+  // Sous Node seulement : Bun n'a pas de tas V8 à borner (la limite reste celle du conteneur).
+  ...(runtime === "node22" ? { NODE_OPTIONS: `--max-old-space-size=${memoryMiB}` } : {}),
+  // Le chargeur natif SWC refuse un cache dont un parent est accessible en écriture au groupe.
+  SWC_NATIVE_BINDING_CACHE: join(temporary, "swc-native"),
   HOME: home,
   TMPDIR: temporary,
   BUILD_CPUS: process.env.BUILD_CPUS ?? "4",
@@ -180,7 +188,7 @@ const uid = process.getuid?.();
 const gid = process.getgid?.();
 if (uid === undefined || gid === undefined)
   throw new Error("Next factory compiler requires a Linux owner");
-console.log(`▶ Cached Next compiler: ${nodeImage} ${imageId}`);
+console.log(`▶ Cached Next compiler: ${nodeImage} ${imageId} (${runtime})`);
 const buildProc = Bun.spawn(
   [
     "docker",
@@ -199,9 +207,10 @@ const buildProc = Bun.spawn(
     `${repo}:${repo}`,
     "--workdir",
     siteDir,
+    ...(runtime === "bun" ? ["--volume", `${process.execPath}:/usr/local/bin/bun:ro`] : []),
     ...dockerEnvironment,
     imageId,
-    "node",
+    ...(runtime === "bun" ? ["/usr/local/bin/bun", "--bun"] : ["node"]),
     resolvedNext,
     "build",
     "--turbopack",
@@ -231,7 +240,7 @@ await Bun.write(
       sourceRevision: sha,
       image: nodeImage,
       imageId,
-      runtime: "node22",
+      runtime: runtime === "bun" ? `bun-${Bun.version}+${Bun.revision}` : "node22",
       bundler: "turbopack",
       limits: { cpus, memoryMiB: containerMemoryMiB, maxOldSpaceSizeMiB: memoryMiB },
     },

@@ -9,10 +9,10 @@
   },
   "scripts": {
     "predev": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
-    "dev": "NEXT_DIST_DIR=.next-dev next dev --turbopack",
+    "dev": "NEXT_DIST_DIR=.next-dev NEXT_TELEMETRY_DISABLED=1 bun --bun next dev --turbopack",
     "prebuild": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
-    "build": "NEXT_DIST_DIR=.next-build next build --turbopack",
-    "start": "next start",
+    "build": "NEXT_DIST_DIR=.next-build NEXT_TELEMETRY_DISABLED=1 bun --bun next build --turbopack",
+    "start": "NEXT_TELEMETRY_DISABLED=1 bun --bun next start",
     "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
     "type-check:tests": "tsc --noEmit -p tsconfig.tests.json",

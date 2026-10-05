@@ -39,6 +39,10 @@ minimumReleaseAgeExcludes = [
   "undici",
 ]
 
+[run]
+# `bun run` exécute toujours Bun, même quand un script ou un binaire déclare un shebang `node`.
+bun = true
+
 [jsx]
 runtime = "automatic"
 importSource = "react"
