@@ -1,6 +1,8 @@
 import "server-only";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { discordFetch, DiscordRESTError } from "@aphrody/discord-kit/rest";
+import { ChannelError, DiscordChannel } from "@aphrody/messaging";
 
 const ADMIN_LAB_CHANNEL_ID = process.env.ADMIN_LAB_CHANNEL_ID ?? "1548677623935139901";
 
@@ -53,6 +55,85 @@ export interface AdminLabMessageOptions {
   channelId?: string;
 }
 
+/**
+ * `fetch` des transports Discord. Quand l'environnement impose un proxy dont Bun ne parle pas
+ * le protocole (ex. `socks5h://`), l'hôte visé passe dans `NO_PROXY` et la requête repart en
+ * direct : c'est ce que faisait l'ancien repli `curl` sans proxy, pour tous les appels suivants.
+ */
+const fetchDiscord = (async (input: string | URL | Request, init?: RequestInit) => {
+  try {
+    return await fetch(input, init);
+  } catch (e: any) {
+    const proxyRefuse =
+      e?.code === "UnsupportedProxyProtocol" ||
+      String(e?.message ?? "").includes("UnsupportedProxyProtocol");
+    if (!proxyRefuse) throw e;
+    const hote = new URL(input instanceof Request ? input.url : String(input)).hostname;
+    const actuel = process.env.NO_PROXY ?? process.env.no_proxy;
+    process.env.NO_PROXY = actuel ? `${actuel},${hote}` : hote;
+    return fetch(input, init);
+  }
+}) as typeof fetch;
+
+/**
+ * Un canal par jeton, réutilisé : le `REST` de `@discordjs/rest` sous `DiscordChannel` garde
+ * ses seaux de rate-limit et arme deux minuteries de balayage à chaque construction.
+ */
+const canaux = new Map<string, DiscordChannel>();
+function canal(token: string, transport: typeof fetch): DiscordChannel {
+  if (transport !== fetchDiscord) return new DiscordChannel({ token, fetch: transport });
+  let existant = canaux.get(token);
+  if (!existant) {
+    existant = new DiscordChannel({ token, fetch: fetchDiscord });
+    canaux.set(token, existant);
+  }
+  return existant;
+}
+
+/** Erreur HTTP Discord des deux transports, au format historique du module. */
+function erreurAdminLab(action: string, e: unknown): unknown {
+  const status =
+    e instanceof DiscordRESTError
+      ? e.status
+      : e instanceof ChannelError
+        ? ((e.cause as { status?: number } | undefined)?.status ?? e.code)
+        : undefined;
+  if (status === undefined) return e;
+  return new Error(`[AdminLab] Erreur ${action} (${status}): ${(e as Error).message}`, {
+    cause: e,
+  });
+}
+
+/**
+ * Poste un message dans un salon. Texte seul : canal de messagerie d'Aphrody
+ * (`@aphrody/messaging`, `@discordjs/rest` : seaux de rate-limit, reprises). Avec embeds :
+ * client REST de `@aphrody/discord-kit`, car `DiscordChannel` 0.1.0 n'envoie que du texte
+ * ou un fichier. `transport` remplace `fetch` (tests).
+ */
+async function postAdminLabMessage(
+  token: string,
+  channelId: string,
+  payload: Pick<AdminLabMessageOptions, "content" | "embeds">,
+  transport: typeof fetch = fetchDiscord,
+): Promise<{ id: string }> {
+  if (payload.content && !payload.embeds?.length) {
+    const sent = await canal(token, transport).sendText(channelId, payload.content);
+    return { id: sent.id };
+  }
+  const { data } = await discordFetch<{ id: string }>(`/channels/${channelId}/messages`, {
+    mode: "Bot",
+    token,
+    method: "POST",
+    body: { content: payload.content, embeds: payload.embeds },
+    fetch: transport,
+  });
+  return { id: data.id };
+}
+
+/**
+ * Envoie un message au salon réservé aux administrateurs.
+ * Utilisable par n'importe quel script, tâche cron ou sous-agent du monorepo.
+ */
 export async function sendAdminLabMessage(
   options: AdminLabMessageOptions | string,
 ): Promise<{ id: string; ok: boolean }> {
@@ -63,73 +144,18 @@ export async function sendAdminLabMessage(
   const token = await getDiscordBotToken();
   const payload = typeof options === "string" ? { content: options } : options;
   const channelId = payload.channelId ?? ADMIN_LAB_CHANNEL_ID;
-
-  const bodyStr = JSON.stringify({
-    content: payload.content,
-    embeds: payload.embeds,
-  });
-
   try {
-    const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bot ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: bodyStr,
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`[AdminLab] Erreur d'envoi (${res.status}): ${err}`);
-    }
-
-    const data = (await res.json()) as { id: string };
-    return { id: data.id, ok: true };
-  } catch (e: any) {
-    if (
-      e?.code === "UnsupportedProxyProtocol" ||
-      e?.message?.includes("UnsupportedProxyProtocol")
-    ) {
-      const proc = Bun.spawnSync(
-        [
-          "curl",
-          "-s",
-          "-X",
-          "POST",
-          `https://discord.com/api/v10/channels/${channelId}/messages`,
-          "-H",
-          `Authorization: Bot ${token}`,
-          "-H",
-          "Content-Type: application/json",
-          "-d",
-          bodyStr,
-        ],
-        {
-          env: {
-            ...process.env,
-            http_proxy: "",
-            https_proxy: "",
-            all_proxy: "",
-            HTTP_PROXY: "",
-            HTTPS_PROXY: "",
-            ALL_PROXY: "",
-          },
-        },
-      );
-
-      if (proc.exitCode === 0) {
-        try {
-          const parsed = JSON.parse(proc.stdout.toString());
-          if (parsed.id) return { id: parsed.id, ok: true };
-        } catch {}
-      }
-    }
-    throw e;
+    const { id } = await postAdminLabMessage(token, channelId, payload);
+    return { id, ok: true };
+  } catch (e) {
+    throw erreurAdminLab("d'envoi", e);
   }
 }
 
+/**
+ * Récupère les derniers messages du salon admin pour permettre aux agents
+ * de lire les requêtes et instructions des administrateurs.
+ */
 export async function getAdminLabRecentMessages(
   limit = 10,
   channelId = ADMIN_LAB_CHANNEL_ID,
@@ -139,57 +165,14 @@ export async function getAdminLabRecentMessages(
   }
 
   const token = await getDiscordBotToken();
-
   try {
-    const res = await fetch(
-      `https://discord.com/api/v10/channels/${channelId}/messages?limit=${limit}`,
-      {
-        headers: {
-          Authorization: `Bot ${token}`,
-        },
-        signal: AbortSignal.timeout(8000),
-      },
-    );
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`[AdminLab] Erreur de lecture (${res.status}): ${err}`);
-    }
-
-    return (await res.json()) as any[];
-  } catch (e: any) {
-    if (
-      e?.code === "UnsupportedProxyProtocol" ||
-      e?.message?.includes("UnsupportedProxyProtocol")
-    ) {
-      const proc = Bun.spawnSync(
-        [
-          "curl",
-          "-s",
-          `https://discord.com/api/v10/channels/${channelId}/messages?limit=${limit}`,
-          "-H",
-          `Authorization: Bot ${token}`,
-        ],
-        {
-          env: {
-            ...process.env,
-            http_proxy: "",
-            https_proxy: "",
-            all_proxy: "",
-            HTTP_PROXY: "",
-            HTTPS_PROXY: "",
-            ALL_PROXY: "",
-          },
-        },
-      );
-
-      if (proc.exitCode === 0) {
-        try {
-          const parsed = JSON.parse(proc.stdout.toString());
-          if (Array.isArray(parsed)) return parsed;
-        } catch {}
-      }
-    }
-    throw e;
+    const { data } = await discordFetch<any[]>(`/channels/${channelId}/messages?limit=${limit}`, {
+      mode: "Bot",
+      token,
+      fetch: fetchDiscord,
+    });
+    return data;
+  } catch (e) {
+    throw erreurAdminLab("de lecture", e);
   }
 }
