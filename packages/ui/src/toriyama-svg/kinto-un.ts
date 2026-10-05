@@ -17,7 +17,11 @@
  * Deux dessins : l'ILLUSTRATION (1200 × 676, queue courte finie en volute) et
  * l'ICÔNE (512 × 512, cinq gros lobes sur pastille sombre, lisible à 16 px).
  */
-export type Point = readonly [number, number];
+import { arcs, roundTo as r1, volute, type Point } from "./geometry";
+
+// Primitives réexportées : `apps/site/src/lib/kinto-un.ts` et les scripts de
+// génération lisent encore `arcs`/`volute`/`Point` depuis ce module.
+export { arcs, volute, type Point };
 
 /** Couleurs mesurées sur le manga couleur (t901 pl. 81) ; pastille = fond du site. */
 export const KINTO_UN_COULEURS = {
@@ -26,58 +30,6 @@ export const KINTO_UN_COULEURS = {
 	encre: "#1A1A1A",
 	pastille: "#0a0a0a",
 } as const;
-
-const r1 = (v: number) => Math.round(v * 10) / 10;
-
-/**
- * Chaîne d'arcs circulaires entre points successifs. `fleches[i]` est la hauteur
- * de l'arc i : positive elle bombe vers l'extérieur (lobe), négative elle creuse.
- * Une flèche supérieure à la moitié de la corde donne le lobe « pincé ».
- */
-export function arcs(pts: readonly Point[], fleches: readonly number[], ferme = true): string {
-	const n = pts.length;
-	const fin = ferme ? n : n - 1;
-	let d = `M${r1(pts[0][0])} ${r1(pts[0][1])}`;
-	for (let i = 0; i < fin; i++) {
-		const [x1, y1] = pts[i];
-		const [x2, y2] = pts[(i + 1) % n];
-		const corde = Math.hypot(x2 - x1, y2 - y1);
-		const h = fleches[i % fleches.length];
-		const a = Math.max(1, Math.abs(h));
-		const r = (corde * corde) / 4 / (2 * a) + a / 2;
-		d += `A${r1(r)} ${r1(r)} 0 ${a > corde / 2 ? 1 : 0} ${h < 0 ? 0 : 1} ${r1(x2)} ${r1(y2)}`;
-	}
-	return ferme ? `${d}Z` : d;
-}
-
-/**
- * Volute : spirale rentrante qui part du creux `depart` vers l'intérieur du
- * nuage (`vers`), rayon extérieur `r`, `tours` tours, rayon final à 15 %.
- * Tracée en segments courts — 12 par tour suffisent à l'œil, même à 1200 px.
- */
-export function volute(
-	depart: Point,
-	vers: Point,
-	r: number,
-	tours = 1.2,
-	sens: 1 | -1 = 1
-): string {
-	const dx = vers[0] - depart[0];
-	const dy = vers[1] - depart[1];
-	const l = Math.hypot(dx, dy) || 1;
-	const cx = depart[0] + (dx / l) * r;
-	const cy = depart[1] + (dy / l) * r;
-	const a0 = Math.atan2(depart[1] - cy, depart[0] - cx);
-	const pas = Math.ceil(tours * 12);
-	let d = `M${r1(depart[0])} ${r1(depart[1])}`;
-	for (let i = 1; i <= pas; i++) {
-		const t = i / pas;
-		const a = a0 + sens * t * Math.PI * 2 * tours;
-		const rr = r * (1 - 0.85 * t);
-		d += `L${r1(cx + rr * Math.cos(a))} ${r1(cy + rr * Math.sin(a))}`;
-	}
-	return d;
-}
 
 /** Rayon du lobe (arc) tendu sur la corde `corde` avec la flèche `h`. */
 const rayonLobe = (corde: number, h: number) => (corde * corde) / (8 * h) + h / 2;

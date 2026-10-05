@@ -51,123 +51,19 @@
  * (cf. `docs/reference/couverture-analyse-visuelle.md`).
  */
 
-export type DragonBallStars = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+import {
+	SPHERE_DEGRADE,
+	SPHERE_ENCRE,
+	SPHERE_FOYER,
+	SPHERE_R_EXT,
+	SPHERE_R_INT,
+	SPHERE_ROUGE_ETOILE,
+	etoilesSphere,
+	nombreEtoiles,
+	type DragonBallStars,
+} from "../toriyama-svg/sphere";
 
-/** viewBox 512 : le cerne d'encre vaut 4,5 % du diamètre. */
-const R_EXT = 256;
-const CERNE = Math.round(0.045 * 512); // 23
-const R_INT = R_EXT - CERNE; // 233
-
-/**
- * Foyer du dégradé, en unités du viewBox. Relevé à (−0,30 ; −0,39) du rayon,
- * c'est-à-dire en haut à gauche : la boule est éclairée d'en haut, comme toute
- * sphère. Le rendu précédent la faisait luire par en dessous.
- */
-const FOYER_X = R_EXT - 0.3 * R_INT; // 186
-const FOYER_Y = R_EXT - 0.39 * R_INT; // 165
-
-/**
- * Le profil, échantillonné au paramétrage EXACT d'un `radialGradient` à foyer :
- * pour chaque rayon partant du foyer, la couleur à la fraction `offset` de la
- * distance foyer → bord du disque, médiane sur 180 rayons. C'est la définition
- * même de l'`offset` d'un arrêt SVG, donc les nombres se recopient tels quels.
- */
-const DEGRADE: ReadonlyArray<readonly [number, string]> = [
-	[0, "#fdffea"],
-	[0.1, "#fdfcca"],
-	[0.2, "#fef6bb"],
-	[0.3, "#fce7a6"],
-	[0.4, "#fcdc93"],
-	[0.5, "#fdcd7f"],
-	[0.6, "#fcc06a"],
-	[0.7, "#fcb455"],
-	[0.8, "#fba740"],
-	[0.9, "#f29d32"],
-	[1, "#ef9a2b"],
-];
-
-const ROUGE_ETOILE = "#e81f23";
-
-// Positions normalisées des étoiles (0 = centre ; unité = fraction du viewBox 512).
-const STAR_LAYOUT: Record<number, ReadonlyArray<readonly [number, number]>> = {
-	1: [[0, 0]],
-	2: [
-		[-0.22, 0],
-		[0.22, 0],
-	],
-	3: [
-		[0, -0.24],
-		[-0.21, 0.13],
-		[0.21, 0.13],
-	],
-	4: [
-		[-0.2, -0.2],
-		[0.2, -0.2],
-		[-0.2, 0.2],
-		[0.2, 0.2],
-	],
-	5: [
-		[-0.22, -0.2],
-		[0.22, -0.2],
-		[0, 0],
-		[-0.22, 0.2],
-		[0.22, 0.2],
-	],
-	6: [
-		[-0.22, -0.22],
-		[0.22, -0.22],
-		[-0.22, 0],
-		[0.22, 0],
-		[-0.22, 0.22],
-		[0.22, 0.22],
-	],
-	7: [
-		[0, -0.26],
-		[-0.22, -0.11],
-		[0.22, -0.11],
-		[0, 0.04],
-		[-0.22, 0.2],
-		[0.22, 0.2],
-		[0, 0.28],
-	],
-};
-
-/**
- * Rayon d'étoile, en fraction du rayon intérieur du disque. La boule à UNE
- * étoile est la seule qu'on ait pu mesurer — c'est celle du logo — et elle
- * donne 0,412. Les autres décroissent pour tenir dans le disque sans se
- * toucher, en gardant la même graisse d'aplat.
- */
-const R_ETOILE: Record<number, number> = {
-	1: 0.412,
-	2: 0.3,
-	3: 0.26,
-	4: 0.25,
-	5: 0.21,
-	6: 0.2,
-	7: 0.185,
-};
-
-/**
- * Points d'une étoile à 5 branches centrée en (cx,cy), rayon externe `outer`,
- * pointe en haut — l'orientation relevée sur la couverture (sommets à 54°,
- * 126°, 198°, 270° et 342°).
- *
- * Rayon interne à 0,45 : mesuré 0,479 sur la boule du tome 1, 0,45 sur celle de
- * la couverture DBS et 0,45 sur l'étoile de la ligne de titre. Le pentagramme
- * régulier, lui, donnerait 0,382 et une étoile maigre qui se réduit à une tache
- * en puce de liste.
- */
-function starPoints(cx: number, cy: number, outer: number): string {
-	const inner = outer * 0.45;
-	const pts: string[] = [];
-	for (let i = 0; i < 10; i++) {
-		const rad = i % 2 === 0 ? outer : inner;
-		const ang = -Math.PI / 2 + (i * Math.PI) / 5;
-		pts.push(`${(cx + rad * Math.cos(ang)).toFixed(1)},${(cy + rad * Math.sin(ang)).toFixed(1)}`);
-	}
-	return pts.join(" ");
-}
+export type { DragonBallStars };
 
 export function DragonBall({
 	stars = 4,
@@ -192,9 +88,7 @@ export function DragonBall({
 	 */
 	decorative?: boolean;
 }) {
-	const n = Math.min(7, Math.max(1, Math.round(stars)));
-	const layout = STAR_LAYOUT[n] ?? STAR_LAYOUT[4];
-	const starR = (R_ETOILE[n] ?? 0.25) * R_INT;
+	const n = nombreEtoiles(stars);
 	const a11y = decorative
 		? { "aria-hidden": true as const }
 		: { role: "img" as const, "aria-label": title ?? `Dragon Ball à ${n} étoile${n > 1 ? "s" : ""}` };
@@ -219,29 +113,25 @@ export function DragonBall({
 				<radialGradient
 					id={gid}
 					gradientUnits="userSpaceOnUse"
-					cx={R_EXT}
-					cy={R_EXT}
-					r={R_INT}
-					fx={FOYER_X}
-					fy={FOYER_Y}
+					cx={SPHERE_R_EXT}
+					cy={SPHERE_R_EXT}
+					r={SPHERE_R_INT}
+					fx={SPHERE_FOYER.x}
+					fy={SPHERE_FOYER.y}
 				>
-					{DEGRADE.map(([offset, couleur]) => (
+					{SPHERE_DEGRADE.map(([offset, couleur]) => (
 						<stop key={offset} offset={offset} stopColor={couleur} />
 					))}
 				</radialGradient>
 			</defs>
 			{/* Cerne d'encre : un disque noir plein, le dégradé par-dessus. Un
 			    `stroke` centré sur le cercle déborderait du viewBox. */}
-			<circle cx={R_EXT} cy={R_EXT} r={R_EXT} fill="#000" />
-			<circle cx={R_EXT} cy={R_EXT} r={R_INT} fill={`url(#${gid})`} />
+			<circle cx={SPHERE_R_EXT} cy={SPHERE_R_EXT} r={SPHERE_R_EXT} fill={SPHERE_ENCRE} />
+			<circle cx={SPHERE_R_EXT} cy={SPHERE_R_EXT} r={SPHERE_R_INT} fill={`url(#${gid})`} />
 			{/* Étoiles rouges (1 à 7), aplat franc sans contour — la couverture n'en
 			    pose aucun autour d'elles. */}
-			{layout.map(([nx, ny], i) => (
-				<polygon
-					key={i}
-					points={starPoints(R_EXT + nx * 512, R_EXT + ny * 512, starR)}
-					fill={ROUGE_ETOILE}
-				/>
+			{etoilesSphere(n).map((points, i) => (
+				<polygon key={i} points={points} fill={SPHERE_ROUGE_ETOILE} />
 			))}
 		</svg>
 	);

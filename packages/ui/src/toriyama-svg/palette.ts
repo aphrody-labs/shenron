@@ -1,9 +1,12 @@
 /**
  * Toriyama SVG Engine — Official Color Palette Tokens.
  *
- * Measured from Akira Toriyama original color tankobon covers, artbooks (Daizenshuu),
- * and official production model sheets.
+ * Seules les entrées `dragonBall` (couverture du tome 1, cf. `./sphere`) et le
+ * Kinto-Un (`./kinto-un`, `KINTO_UN_COULEURS`) sont mesurées et documentées dans
+ * `docs/reference/*-analyse-visuelle.md`. Les autres valeurs n'ont pas de relevé
+ * consigné : à mesurer sur l'édition couleur avant tout nouvel usage.
  */
+import { SPHERE_DEGRADE, SPHERE_ENCRE, SPHERE_ROUGE_ETOILE } from "./sphere";
 
 export const TORIYAMA_PALETTE = {
 	/** Goku Gi signature colors */
@@ -63,13 +66,13 @@ export const TORIYAMA_PALETTE = {
 		auraPink: "#f72585",
 	},
 
-	/** Dragon Ball crystal sphere amber gradient & stars */
+	/** Boule de cristal : lue dans la source unique `./sphere` (mesurée). */
 	dragonBall: {
-		amberLight: "#fdffea",
-		amberMid: "#fce7a6",
-		amberDeep: "#ef9a2b",
-		starRed: "#e81f23",
-		inkRing: "#000000",
+		amberLight: SPHERE_DEGRADE[0][1],
+		amberMid: SPHERE_DEGRADE[3][1],
+		amberDeep: SPHERE_DEGRADE[SPHERE_DEGRADE.length - 1][1],
+		starRed: SPHERE_ROUGE_ETOILE,
+		inkRing: SPHERE_ENCRE,
 	},
 
 	/** Dragon Radar */

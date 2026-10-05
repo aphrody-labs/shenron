@@ -23,9 +23,7 @@
  * implémentation pour tout le dessin vectoriel du site, sinon les deux
  * divergent au premier ajustement.
  */
-import { arcs, volute, type Point } from "./kinto-un";
-
-const r1 = (v: number) => Math.round(v * 10) / 10;
+import { arcs, roundTo as r1, volute, type Point } from "./geometry";
 
 // ─────────────────────────── 1. Cadre de case ───────────────────────────────
 

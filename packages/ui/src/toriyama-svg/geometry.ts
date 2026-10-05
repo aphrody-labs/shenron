@@ -19,63 +19,57 @@ export const roundTo = (val: number, decimals = 1): number => {
 };
 
 /**
- * Sequence of circular arcs between consecutive points.
- * sagittas[i] is the height of arc i (sagitta):
- * - Positive value curves outward (lobe).
- * - Negative value indents inward.
- * - Sagitta greater than half chord length yields the pinched lobe characteristic of Toriyama art.
+ * Chaîne d'arcs circulaires entre points successifs — l'implémentation UNIQUE
+ * (Kinto-Un, nuages de couverture, mèches ; `kinto-un.ts` la réexporte).
+ * `fleches[i]` est la hauteur de l'arc i : positive elle bombe vers l'extérieur
+ * (lobe), négative elle creuse. Une flèche supérieure à la moitié de la corde
+ * donne le lobe « pincé » de Toriyama. Flèche plancher à 1 unité, sortie
+ * compacte au dixième : `assets/dbz/*.svg` en dépend octet pour octet.
  */
-export function arcs(pts: readonly Point[], sagittas: readonly number[], closed = true): string {
+export function arcs(pts: readonly Point[], fleches: readonly number[], ferme = true): string {
 	const n = pts.length;
 	if (n === 0) return "";
-	const end = closed ? n : n - 1;
-	let path = `M${roundTo(pts[0][0])} ${roundTo(pts[0][1])}`;
-
-	for (let i = 0; i < end; i++) {
+	const fin = ferme ? n : n - 1;
+	let d = `M${roundTo(pts[0][0])} ${roundTo(pts[0][1])}`;
+	for (let i = 0; i < fin; i++) {
 		const [x1, y1] = pts[i];
 		const [x2, y2] = pts[(i + 1) % n];
-		const chord = Math.hypot(x2 - x1, y2 - y1);
-		if (chord === 0) continue;
-
-		const h = sagittas[i % sagittas.length];
-		const absH = Math.max(0.5, Math.abs(h));
-		const radius = (chord * chord) / (8 * absH) + absH / 2;
-		const largeArcFlag = absH > chord / 2 ? 1 : 0;
-		const sweepFlag = h < 0 ? 0 : 1;
-
-		path += ` A${roundTo(radius)} ${roundTo(radius)} 0 ${largeArcFlag} ${sweepFlag} ${roundTo(x2)} ${roundTo(y2)}`;
+		const corde = Math.hypot(x2 - x1, y2 - y1);
+		const h = fleches[i % fleches.length];
+		const a = Math.max(1, Math.abs(h));
+		const r = (corde * corde) / 4 / (2 * a) + a / 2;
+		d += `A${roundTo(r)} ${roundTo(r)} 0 ${a > corde / 2 ? 1 : 0} ${h < 0 ? 0 : 1} ${roundTo(x2)} ${roundTo(y2)}`;
 	}
-
-	return closed ? `${path}Z` : path;
+	return ferme ? `${d}Z` : d;
 }
 
 /**
- * Toriyama Inward Spiral Volute:
- * Terminal flourish for Kinto-Un lobes, dust clouds, and Ki vortexes.
+ * Volute : spirale rentrante qui part du creux `depart` vers l'intérieur du
+ * nuage (`vers`), rayon extérieur `r`, `tours` tours, rayon final à 15 %.
+ * Tracée en segments courts — 12 par tour suffisent à l'œil, même à 1200 px.
  */
 export function volute(
-	start: Point,
-	centerDir: Point,
+	depart: Point,
+	vers: Point,
 	r: number,
-	turns = 1.2,
-	direction: 1 | -1 = 1
+	tours = 1.2,
+	sens: 1 | -1 = 1
 ): string {
-	const dx = centerDir[0] - start[0];
-	const dy = centerDir[1] - start[1];
-	const len = Math.hypot(dx, dy) || 1;
-	const cx = start[0] + (dx / len) * r;
-	const cy = start[1] + (dy / len) * r;
-	const a0 = Math.atan2(start[1] - cy, start[0] - cx);
-	const steps = Math.ceil(turns * 12);
-	let path = `M${roundTo(start[0])} ${roundTo(start[1])}`;
-
-	for (let i = 1; i <= steps; i++) {
-		const t = i / steps;
-		const angle = a0 + direction * t * Math.PI * 2 * turns;
-		const currentR = r * (1 - 0.85 * t);
-		path += ` L${roundTo(cx + currentR * Math.cos(angle))} ${roundTo(cy + currentR * Math.sin(angle))}`;
+	const dx = vers[0] - depart[0];
+	const dy = vers[1] - depart[1];
+	const l = Math.hypot(dx, dy) || 1;
+	const cx = depart[0] + (dx / l) * r;
+	const cy = depart[1] + (dy / l) * r;
+	const a0 = Math.atan2(depart[1] - cy, depart[0] - cx);
+	const pas = Math.ceil(tours * 12);
+	let d = `M${roundTo(depart[0])} ${roundTo(depart[1])}`;
+	for (let i = 1; i <= pas; i++) {
+		const t = i / pas;
+		const a = a0 + sens * t * Math.PI * 2 * tours;
+		const rr = r * (1 - 0.85 * t);
+		d += `L${roundTo(cx + rr * Math.cos(a))} ${roundTo(cy + rr * Math.sin(a))}`;
 	}
-	return path;
+	return d;
 }
 
 /**
