@@ -61,6 +61,8 @@ for (const [name, author] of [
   const rendered = renderCorpusDocs(docs, author);
   if (rendered.refusedFandom > 0)
     console.warn(`⚠ ${name}: ${rendered.refusedFandom} Fandom documents excluded`);
+  if (rendered.refusedNoUrl > 0)
+    console.warn(`⚠ ${name}: ${rendered.refusedNoUrl} documents without a source URL excluded`);
   for (const passage of rendered.passages) {
     const group = corpusGroups.get(passage.sourceId) ?? [];
     group.push(passage);

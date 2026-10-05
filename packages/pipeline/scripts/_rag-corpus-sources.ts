@@ -57,16 +57,41 @@ export function corpusSourceId(docId: string): string {
   return docId;
 }
 
+/**
+ * Aphrody refuses an ingestion body over 512 KiB (HTTP 413) and E5 reads the first 512 tokens
+ * only: a passage the chunker could not cut (one endless line) is cut here, never sent whole.
+ */
+export const MAX_PASSAGE_CHARS = 8_000;
+
+export function splitPassage(content: string, max = MAX_PASSAGE_CHARS): string[] {
+  if (content.length <= max) return [content];
+  const parts: string[] = [];
+  for (let start = 0; start < content.length;) {
+    let end = Math.min(content.length, start + max);
+    // Never split a surrogate pair.
+    if (end < content.length && /[\uD800-\uDBFF]/.test(content[end - 1]!)) end--;
+    parts.push(content.slice(start, end));
+    start = end;
+  }
+  return parts;
+}
+
 export function renderCorpusDocs(
   docs: CorpusDoc[],
   author = false,
-): { passages: CorpusPassage[]; refusedFandom: number } {
+): { passages: CorpusPassage[]; refusedFandom: number; refusedNoUrl: number } {
   const passages: CorpusPassage[] = [];
   let refusedFandom = 0;
+  let refusedNoUrl = 0;
   for (const doc of docs) {
     if (!author && doc.id.startsWith("manga-")) continue;
     if (isFandom(doc)) {
       refusedFandom++;
+      continue;
+    }
+    // A passage without a source URL cannot be cited: it is not indexed.
+    if (!doc.url?.trim()) {
+      refusedNoUrl++;
       continue;
     }
     const markdown = author
@@ -77,18 +102,22 @@ export function renderCorpusDocs(
     for (const chunk of chunkDocument(markdown, 1400, 0.15)) {
       const content = chunk.content.replace(/\s+/g, " ").trim();
       if (content.length < 12) continue;
-      passages.push({
-        sourceId,
-        kind: author ? "author" : "source",
-        title: doc.name,
-        url: doc.url,
-        content,
-        lang,
-        entity: resolveEntity(chunk.section) || resolveEntity(doc.name) || resolveEntity(content),
-      });
+      const entity =
+        resolveEntity(chunk.section) || resolveEntity(doc.name) || resolveEntity(content);
+      for (const part of splitPassage(content)) {
+        passages.push({
+          sourceId,
+          kind: author ? "author" : "source",
+          title: doc.name,
+          url: doc.url,
+          content: part,
+          lang,
+          entity,
+        });
+      }
     }
   }
-  return { passages, refusedFandom };
+  return { passages, refusedFandom, refusedNoUrl };
 }
 
 export function loadCorpusDocs(path: string): CorpusDoc[] | null {
