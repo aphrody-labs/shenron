@@ -158,25 +158,29 @@ Autres variables Aphrody :
 | `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN` | API web/crawl d'Aphrody. |
 | `APHRODY_BIN` | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`. |
 
-## Traduction manga (Koharu) — `crates/koharu-translator`, `crates/shenron-manga`
+## Traduction manga (Shenron Studio) — `crates/koharu-translator`, `crates/shenron-manga`
 
 Le glossaire protège les termes canoniques pendant la traduction : chaque terme source reconnu
 (le plus long d'abord, sans chevauchement) devient un jeton numéroté (`Zeta001`) que le moteur
 recopie, puis la forme officielle le remplace ; un jeton que la table ne connaît pas fait
-échouer la requête (`GlossaryTokens`) au lieu d'atteindre la planche. Entrées
-`{ "source", "target" }`, alias `ja`/`fr` acceptés : le lexique canonique
-`data/lexique-db-canonique.json` se charge tel quel.
+échouer la requête (`GlossaryTokens`) au lieu d'atteindre la planche. Le lexique canonique
+(`data/lexicon/terms.json`, crate `shenron-lexicon`, paquet `@shenron/lexicon`) est embarqué
+dans les binaires et sert le français et l'anglais ; `docs/architecture/lexicon.md` décrit le
+format et la fin de vie de `data/lexique-db-canonique.json`, désormais un fichier dérivé.
 
 | Variable | Rôle |
 | --- | --- |
-| `KOHARU_GLOSSARY` | Chemin d'un glossaire JSON lu par `Translator::from_config` (`Glossary::from_env`, `crates/koharu-translator/src/glossary.rs`). Un fichier posé mais illisible ou invalide est une erreur : un glossaire mal configuré ne traduit pas sans protection. Posée, même vide, elle écarte le lexique Shenron ; vide, elle ne charge aucun glossaire. |
-| `KOHARU_GLOSSARY_TARGET` | Langue cible du glossaire de `KOHARU_GLOSSARY` (par exemple `fr`) ; une langue inconnue est une erreur. Défaut : toutes les langues cibles. |
-| `SHENRON_LEXIQUE` | Chemin du lexique canonique installé comme glossaire par défaut de Koharu pour la traduction vers le français (`crates/shenron-manga`, fonctionnalité `koharu` de `shenron-mcp` et `shenron-cli`). Premier fichier existant : `SHENRON_LEXIQUE`, puis `$SHENRON_HOME/data/lexique-db-canonique.json`, puis `./data/lexique-db-canonique.json` (dossier courant) ; aucun fichier, aucun glossaire. Sans effet quand `KOHARU_GLOSSARY` est posée ou que la cible n'est pas le français ; un fichier invalide est ignoré avec un avertissement. |
+| `KOHARU_GLOSSARY` | Chemin d'un glossaire JSON lu par `Translator::from_config` (`Glossary::from_env`, `crates/koharu-translator/src/glossary.rs`) : ancien tableau `{ "source", "target" }` ou format du lexique. Un fichier posé mais illisible ou invalide est une erreur. Posée, elle remplace le lexique embarqué ; vide, elle ne retire pas le lexique Shenron. |
+| `KOHARU_GLOSSARY_TARGET` | Langue cible du glossaire de `KOHARU_GLOSSARY` (`fr` ou `en`) ; une langue inconnue est une erreur. Défaut : toutes les langues cibles. |
+| `SHENRON_LEXIQUE` | Chemin d'un lexique remplaçant celui qui est embarqué (`crates/shenron-manga`, fonctionnalité `koharu` de `shenron-mcp` et `shenron-cli`). L'ancien format ne s'applique qu'au français ; un fichier invalide est ignoré avec un avertissement. `shenron-server` le pose vers le fichier du payload quand il est absent. |
+| `SHENRON_KOHARU_SDK_BIN` | Chemin explicite de `koharu-sdk` pour `shenron-server` (pont `/api/local/koharu` de l'éditeur en navigateur local). Défaut : le binaire voisin du serveur. |
+| `KOHARU_SHENRON_URL` | URL de l'API Shenron utilisée par `koharu-sdk` (équivalent de son option `--shenron-url`). |
 
-Le build de `shenron-server` (`scripts/build/server.ts`) embarque le lexique dans son payload
-(`data/lexique-db-canonique.json`, extrait sous `$SHENRON_HOME/cache/payload-<id>/data/`). Le
-serveur ne pose pas encore `SHENRON_LEXIQUE` vers ce fichier : sur le bureau, le glossaire n'est
-actif qu'avec `SHENRON_LEXIQUE` ou `$SHENRON_HOME/data/lexique-db-canonique.json`.
+Le build de `shenron-server` (`scripts/build/server.ts`) embarque `data/lexique-db-canonique.json`
+dans son payload (extrait sous `$SHENRON_HOME/cache/payload-<id>/data/`). Les projets de l'éditeur
+vivent sous `$SHENRON_HOME/data/koharu/projects`, ses modèles sous
+`$SHENRON_HOME/cache/koharu/packages` ; les réglages restent dans `~/.koharu/config.toml`
+(`koharu-config`, Aphrody, n'accepte pas d'autre emplacement).
 
 ## Bot Discord — `apps/bot/src/lib/env.ts`
 
