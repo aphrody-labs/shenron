@@ -12,6 +12,8 @@ et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot 
 auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
 Sessions cloud et locales : aucun outil n'est interdit (Cargo, Git, Bun, Python via `uv`, utilitaires shell), sans hook ni confirmation ; depuis WSL, le Cargo lourd passe par le VPS. Les règles de données (`db:push`, sources éditoriales) restent en vigueur.
 
+Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) indexe le code localement, sans LLM (`.graphifyignore`). `graphify update .` construit ou rafraîchit le graphe ; préférer `graphify query "<question>"`, `graphify explain` ou `graphify path` aux greps larges quand `graphify-out/graph.json` existe (sortie locale, ignorée par Git).
+
 ## Langues et noms
 
 - Code (identifiants, commentaires nouveaux), slugs, segments de routes, chemins et champs d'API,
