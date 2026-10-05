@@ -39,6 +39,7 @@ import {
   DropdownMenuTrigger,
 } from "@shenron/ui/dropdown-menu";
 import { Input } from "@shenron/ui/input";
+import i18n, { resources } from "@shenron/ui/koharu/lib/i18n";
 import { receiveError } from "@shenron/ui/koharu/lib/store";
 import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@shenron/ui/popover";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@shenron/ui/select";
@@ -364,10 +365,34 @@ describe("shared overlays in the editor", () => {
 
 describe("editor notices", () => {
   it("shows store errors in the toaster the editor mounts", async () => {
+    await i18n.changeLanguage("en-US");
     render(<Toaster />);
     act(() => receiveError("Disk full"));
 
-    expect(await screen.findByText("Could not complete that action")).toBeInTheDocument();
+    expect(
+      await screen.findByText(resources["en-US"].translation.errors.actionFailed),
+    ).toBeInTheDocument();
     expect(screen.getByText("Disk full")).toBeInTheDocument();
+  });
+
+  it("titles store errors with the language of the editor, French by default", async () => {
+    const titles = Object.fromEntries(
+      Object.entries(resources).map(([language, resource]) => [
+        language,
+        resource.translation.errors.actionFailed,
+      ]),
+    );
+    expect(titles["fr-FR"]).toBe("Impossible de terminer cette action");
+    expect(titles["ja-JP"]).toBeTruthy();
+
+    const previous = i18n.language;
+    try {
+      await i18n.changeLanguage("ja-JP");
+      render(<Toaster />);
+      act(() => receiveError("Disk full"));
+      expect(await screen.findByText(titles["ja-JP"] as string)).toBeInTheDocument();
+    } finally {
+      await i18n.changeLanguage(previous);
+    }
   });
 });

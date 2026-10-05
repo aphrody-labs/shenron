@@ -13,6 +13,7 @@ import { StrictMode, type ReactNode } from "react";
 import { describe, expect, it, vi, mock } from "bun:test";
 import { hoisted } from "../hoisted";
 
+import { DEFAULT_DISCORD_INVITE, DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { TitleBar } from "@shenron/ui/koharu/components/app/TitleBar";
 import { WindowControls } from "@shenron/ui/koharu/components/app/WindowChrome";
 import { ActivityCenter } from "@shenron/ui/koharu/components/editor/ActivityCenter";
@@ -422,18 +423,23 @@ describe("greenfield editor", () => {
     },
   );
 
-  it("opens community links through the Tauri opener plugin", async () => {
+  it("opens the Shenron links of the Help menu through the Tauri opener plugin", async () => {
     nativeOpenUrl.mockClear();
     const user = userEvent.setup();
     render(<TitleBar />);
 
     await user.click(screen.getByRole("menuitem", { name: "Help" }));
     fireEvent.click(await screen.findByRole("menuitem", { name: "Discord" }));
-    expect(nativeOpenUrl).toHaveBeenLastCalledWith("https://discord.gg/mHvHkxGnUY");
+    expect(nativeOpenUrl).toHaveBeenLastCalledWith(DEFAULT_DISCORD_INVITE);
 
     await user.click(screen.getByRole("menuitem", { name: "Help" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: "GitHub" }));
-    expect(nativeOpenUrl).toHaveBeenLastCalledWith("https://github.com/koharu-rs/koharu");
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Shenron website" }));
+    expect(nativeOpenUrl).toHaveBeenLastCalledWith(DEFAULT_PUBLIC_ORIGINS.site);
+
+    // The upstream editor links are gone.
+    await user.click(screen.getByRole("menuitem", { name: "Help" }));
+    expect(await screen.findByRole("menuitem", { name: "About" })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "GitHub" })).not.toBeInTheDocument();
   });
 
   it("shows the current version and author in About", async () => {

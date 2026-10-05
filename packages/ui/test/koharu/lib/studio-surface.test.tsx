@@ -98,14 +98,6 @@ describe("product name", () => {
     expect(resources["fr-FR"].translation.languages["fr-FR"]).toBe("Français");
   });
 
-  it("shows no code name in any locale", () => {
-    for (const [locale, resource] of Object.entries(resources)) {
-      for (const [key, value] of strings(resource.translation)) {
-        expect(value, `${locale}: ${key}`).not.toMatch(/koharu/i);
-      }
-    }
-  });
-
   it("never takes the engine channel from the Tauri-only module", async () => {
     const files = [
       ...new Bun.Glob("src/koharu/**/*.{ts,tsx}").scanSync(

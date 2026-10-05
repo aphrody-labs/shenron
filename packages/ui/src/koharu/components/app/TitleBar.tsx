@@ -1,6 +1,7 @@
 "use client";
 
 import { openUrl } from "@aphrody/plugin-opener";
+import { DEFAULT_DISCORD_INVITE, DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { FilePlus2, FolderOpen, LoaderCircle, Settings } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
@@ -244,16 +245,14 @@ export function TitleBar({ windowControls = true }: { windowControls?: boolean }
             <MenubarTrigger>{t(titleBarMenuSections.help)}</MenubarTrigger>
             <MenubarContent>
               <MenubarItem
-                onClick={() => void openUrl("https://discord.gg/mHvHkxGnUY").catch(() => undefined)}
+                onClick={() => void openUrl(DEFAULT_PUBLIC_ORIGINS.site).catch(() => undefined)}
               >
-                {t("menu.discord")}
+                {t("menu.website")}
               </MenubarItem>
               <MenubarItem
-                onClick={() =>
-                  void openUrl("https://github.com/koharu-rs/koharu").catch(() => undefined)
-                }
+                onClick={() => void openUrl(DEFAULT_DISCORD_INVITE).catch(() => undefined)}
               >
-                {t("menu.github")}
+                {t("menu.discord")}
               </MenubarItem>
               <MenubarSeparator />
               <MenubarItem onClick={() => setAboutOpen(true)}>{t("menu.about")}</MenubarItem>

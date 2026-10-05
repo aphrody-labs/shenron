@@ -44,4 +44,35 @@ describe("interface language persistence", () => {
     expect(i18n.resolvedLanguage).toBe("ja-JP");
     expect(window.localStorage.getItem("i18nextLng")).toBe("ja-JP");
   });
+
+  it("falls back to French when no detected language is one the editor speaks", async () => {
+    const languages = Object.getOwnPropertyDescriptor(navigator, "languages");
+    const language = Object.getOwnPropertyDescriptor(navigator, "language");
+    Object.defineProperty(navigator, "languages", { configurable: true, value: ["de-DE"] });
+    Object.defineProperty(navigator, "language", { configurable: true, value: "de-DE" });
+    try {
+      for (const stale of ["ko-KR", "zh-TW", "es-ES", "de-DE"]) {
+        window.localStorage.setItem("i18nextLng", stale);
+        const { default: i18n } = await freshI18n();
+        expect(i18n.resolvedLanguage, stale).toBe("fr-FR");
+      }
+    } finally {
+      if (languages) Object.defineProperty(navigator, "languages", languages);
+      else Reflect.deleteProperty(navigator, "languages");
+      if (language) Object.defineProperty(navigator, "language", language);
+      else Reflect.deleteProperty(navigator, "language");
+    }
+  });
+
+  it("maps a regional or bare browser language to the editor language of its site locale", async () => {
+    for (const [stored, expected] of [
+      ["en-GB", "en-US"],
+      ["ja", "ja-JP"],
+      ["fr-CA", "fr-FR"],
+    ] as const) {
+      window.localStorage.setItem("i18nextLng", stored);
+      const { default: i18n } = await freshI18n();
+      expect(i18n.resolvedLanguage, stored).toBe(expected);
+    }
+  });
 });

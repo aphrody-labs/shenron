@@ -27,7 +27,7 @@ page explique où le trouver.
 
 `./koharu` (barrel), `./koharu/providers` (état et requêtes React), `./koharu/navigation`
 (onglets des réglages, panneaux latéraux, menus), `./koharu/components/*`, `./koharu/lib/*`,
-`./koharu/locales/*` (neuf dictionnaires) et `./koharu.css`. Les réglages du moteur passent par
+`./koharu/locales/*` (trois dictionnaires : `fr-FR` de référence, `en-US`, `ja-JP`) et `./koharu.css`. Les réglages du moteur passent par
 `components/preferences/SettingsPage.tsx` ; les primitives propres à l'éditeur restent
 internes (`internal/`).
 

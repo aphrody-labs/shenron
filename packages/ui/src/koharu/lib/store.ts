@@ -17,6 +17,8 @@ import type {
 // The editor mounts the @aphrody/m3-primitives Toaster (providers.tsx): notices go straight to it.
 import { toast } from "@aphrody/m3-primitives";
 
+import i18n from "./i18n";
+
 export type CanvasTool = "select" | "text" | "draw" | "eraser" | "color_picker" | "remove" | "pan";
 export const MIN_BRUSH_DIAMETER = 1;
 export const MAX_BRUSH_DIAMETER = 128;
@@ -172,7 +174,7 @@ export function receiveResources(resources: ModelResources): void {
 }
 
 export function receiveError(message: string): void {
-  toast.error({ title: "Could not complete that action", body: message });
+  toast.error({ title: i18n.t("errors.actionFailed"), body: message });
 }
 
 function canvasSnapshot(canvas: CanvasState) {

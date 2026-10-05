@@ -76,6 +76,7 @@
     "reset": "リセット"
   },
   "errors": {
+    "actionFailed": "この操作を完了できませんでした",
     "fatalTitle": "Shenron Studioを続行できませんでした",
     "tryAgain": "再試行"
   },
@@ -206,15 +207,8 @@
   },
   "languages": {
     "en-US": "English",
-    "es-ES": "Español",
     "fr-FR": "Français",
-    "ja-JP": "日本語",
-    "ko-KR": "한국어",
-    "pt-BR": "Português brasileiro",
-    "ru-RU": "Русский",
-    "tr-TR": "Türkçe",
-    "zh-CN": "简体中文",
-    "zh-TW": "繁體中文"
+    "ja-JP": "日本語"
   },
   "layers": {
     "delete": "{{name}}を削除",
@@ -253,7 +247,6 @@
     "export": "プロジェクトを書き出す",
     "file": "ファイル",
     "fit": "ウィンドウに合わせる",
-    "github": "GitHub",
     "help": "ヘルプ",
     "import": "ページを読み込む",
     "process": "処理",
@@ -265,7 +258,8 @@
     "selectAllLayers": "すべてのレイヤーを選択",
     "settings": "設定",
     "undo": "元に戻す",
-    "view": "表示"
+    "view": "表示",
+    "website": "Shenronのウェブサイト"
   },
   "model": {
     "baseUrl": "ベース URL",
