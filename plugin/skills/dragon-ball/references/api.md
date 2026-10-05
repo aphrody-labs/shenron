@@ -35,7 +35,12 @@ curl -s -X POST "https://bot.dragonballfr.com/api/public/rag/chat" \
   -H 'content-type: application/json' -d '{"q":"qui est Vegeta ?"}' | jq '.hits'
 ```
 
-> `rag/chat` renvoie aussi un champ `answer`, rédigé par le LLM à partir des
+> La réponse de `rag/chat` porte `answer`, `citations` (passages cités par `[n]` dans la réponse :
+> `{n, id, title, url, sourceId?, kind?}`, toujours issus de `hits`), `refusal` (`true` quand aucune
+> source n'établit la réponse : « Non établi dans les sources », aucune invention), `lang` (`fr`, `en` ou
+> `ja`), `hits` et `mode`.
+>
+> `rag/chat` rédige `answer` par le LLM à partir des
 > `hits` (backend choisi par `RAG_BACKEND` côté bot). Si le LLM est
 > indisponible, la route répond avec `error: "llm_unavailable"` (code dans
 > `apps/bot/src/api/server.ts`) : un texte de repli n'est jamais servi
@@ -80,13 +85,13 @@ curl -s "https://bot.dragonballfr.com/api/public/wiki/search?q=kamehameha&limit=
 
 ## Manga
 
-| Chemin                                                          | Paramètres   | Renvoie                                                                                      |
-| --------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------- |
-| `GET /api/public/manga/tomes`                                   | —            | `volumes[]` : `series`, `volume`, `pages`, `lines`, `pagesWithJa`, `pageRange`            |
-| `GET /api/public/manga/tomes/{series}/{volume}`                 | path         | détail d'un volume : `pageCount`, `pages[]` (`page`, `lang`, `lines`, `text`)             |
-| `GET /api/public/manga/page/{series}/{volume}/{page}`           | path         | métadonnées d'une page : `volume`, `page`, `lang`, `lines`, `text`                         |
-| `GET /api/public/manga/search`                                  | `q`, `limit` | recherche texte (OCR) : `results[]` (`series`, `volume`, `page`, `snippet`)                  |
-| `GET /api/public/manga/color/{channelId}/{attachmentId}/{file}` | path         | redirection 302 vers l'image « Full Color » (ancien chemin `couleur` encore servi)          |
+| Chemin                                                          | Paramètres   | Renvoie                                                                            |
+| --------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------- |
+| `GET /api/public/manga/tomes`                                   | —            | `volumes[]` : `series`, `volume`, `pages`, `lines`, `pagesWithJa`, `pageRange`     |
+| `GET /api/public/manga/tomes/{series}/{volume}`                 | path         | détail d'un volume : `pageCount`, `pages[]` (`page`, `lang`, `lines`, `text`)      |
+| `GET /api/public/manga/page/{series}/{volume}/{page}`           | path         | métadonnées d'une page : `volume`, `page`, `lang`, `lines`, `text`                 |
+| `GET /api/public/manga/search`                                  | `q`, `limit` | recherche texte (OCR) : `results[]` (`series`, `volume`, `page`, `snippet`)        |
+| `GET /api/public/manga/color/{channelId}/{attachmentId}/{file}` | path         | redirection 302 vers l'image « Full Color » (ancien chemin `couleur` encore servi) |
 
 Les anciens noms de champs (`tomes`, `tome`, `planche`, `planches`, `planchesWithJa`,
 `plancheRange`) restent servis en doublon déprécié jusqu'à la version 1.4.0.
