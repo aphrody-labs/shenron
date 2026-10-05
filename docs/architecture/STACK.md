@@ -15,36 +15,34 @@ données, authentification, IA, API et interface de Shenron. Il fixe les
 paquets, leurs frontières, leurs API publiques, l'ordre de migration et les
 gates. Le découpage exécutable de la Phase 1 (une vague par ligne, un agent par
 paquet, chemins possédés disjoints) était généré dans
-`var/stack-research/work-breakdown.json` (not in repo); cet artefact de recherche n'est pas versionné.
-Le registre courant est [`PLAN.md`](../../../PLAN.md).
+un artefact de recherche local, non versionné.
+Le registre courant est [PLAN.md](../reference/root/PLAN.md).
 
 Il complète :
 
 - [`APHRODY-ECOSYSTEM.md`](APHRODY-ECOSYSTEM.md) : ce que Shenron confie à
   l'écosystème Rust d'Aphrody et par quelles frontières ;
-- [`APHRODY-OFFLOAD.md`](../../operations/shenron/APHRODY-OFFLOAD.md) : état et preuves du déport RAG ;
-- [`INFRA-DELEGATION.md`](../../operations/shenron/INFRA-DELEGATION.md) : frontière d'exploitation avec
+- [`INFRA-DELEGATION.md`](../operations/INFRA-DELEGATION.md) : frontière d'exploitation avec
   l'Infra du monorepo ;
-- `PLAN.md` : registre des décisions, invariants et journal de validation.
+- [PLAN.md](../reference/root/PLAN.md) : registre des décisions, invariants et journal de validation.
 
 État relevé le 2026-09-24 (HEAD `1be3116a`) sur le poste Windows de développement : Bun 1.4.2,
 TypeScript 7.0.2 (tsc natif, sans API JavaScript), Next 16.3.5, React 19.3.0,
 drizzle-orm 0.45.3, better-auth 1.7.5, hono 4.13.2, @hono/zod-openapi 1.6.3
 (zod-to-openapi 9.1.0), zod 4.6.5, ai 7.0.107, @ai-sdk/openai-compatible 3.0.53,
-@ai-sdk/provider 4.0.17, @base-ui/react 1.8.0, oxlint 1.81.0. Sources de
-recherche : `var/stack-research/*` (cartes par surface, critique de
-complétude, scans Aphrody, verdicts).
+@ai-sdk/provider 4.0.17, @base-ui/react 1.8.0, oxlint 1.81.0. Les sources de
+recherche (cartes par surface, critique de complétude, scans Aphrody,
+verdicts) sont locales et non versionnées.
 
 **Mise à jour du 2026-09-26.** Ce document garde son journal de conception
-daté du 24 septembre ; ses mentions de `shenron-mcp` sont historiques. Le
-serveur Bun et l'unité séparée ont été retirés : les outils Dragon Ball sont
-dans `aphrody-ai/crates/aphrody-mcp` (`dragonball.*`). La carte actuelle est
-[`APHRODY-ECOSYSTEM.md`](APHRODY-ECOSYSTEM.md), les outils exacts sont dans le
-catalogue `docs/ecosystem/MCP-TOOLS.md`.
+daté du 24 septembre. Les outils Dragon Ball (`dragonball.*`) sont servis par
+le crate `crates/shenron-mcp` ; la carte actuelle est
+[`APHRODY-ECOSYSTEM.md`](APHRODY-ECOSYSTEM.md), les processus sont dans
+[`RUNTIME.md`](RUNTIME.md) et les outils exacts se lisent par `tools/list`.
 
 **Convention.** Ce document ne contient ni hôte, ni IP, ni port, ni chemin
-absolu d'hôte. Un service est désigné par son identifiant dans
-`config/service-catalog.json` (`shenron-bot`, `shenron-site`,
+absolu d'hôte. Un service est désigné par son identifiant dans le
+catalogue de services d'`aphrody-infra` (`shenron-bot`, `shenron-site`,
 `aphrody-ai-http`, `aphrody-shenron-embed`, `aphrody-web-api`,
 `shenron-pg-tunnel`…), et un client le trouve par une variable
 d'environnement provisionnée par l'Infra du monorepo. Les hôtes publics sont
@@ -171,8 +169,8 @@ Drizzle et le SQL brut. La racine
 `@shenron/db` garde sa réexportation historique de `createDb` jusqu'à une
 vague ultérieure verte. Les relations restent sur l'API v1 `relations()`.
 
-**D5. Aucune migration déplacée ni rejournalisée en Phase 1.** Le déploiement
-l'Infra du monorepo exécute `bun run site:migrate` (`drizzle-kit migrate`) : journaliser
+**D5. Aucune migration déplacée ni rejournalisée en Phase 1.** Le runbook de
+migration d'`aphrody-infra` applique `drizzle-kit migrate` : journaliser
 les 8 fichiers non journalisés (0007–0011, 0015, 0018, 0019) ou scinder le DDL
 `bot.*` appliquerait du DDL en production à la release suivante. La Phase 1
 livre un audit hors ligne (`packages/db/scripts/migration-audit.ts`) et un
@@ -289,13 +287,13 @@ centralise la priorité des variables (`RAG_GOLD_PATH`/`RAG_GOLD`,
 un chemin hérité (relatif à la release) est signalé une fois. Les lectures,
 dont celle du jeu d'or livré dans la release, ne deviennent pas bloquantes
 avant INFRA-1. Seul le gel databooks devient fermé par défaut en production
-(S11), conformément à `PLAN.md` (`freeze.databooks = true`).
+(S11), conformément au [plan](../reference/root/PLAN.md) (`freeze.databooks = true`).
 
 **D16. Contrat d'environnement par noms.** Aucune URL, hôte ni port par défaut,
 façades `@shenron/pipeline/aphrody/{compute,embeddings}` comprises depuis le contrat IA v1
-de l'Infra du monorepo (`config/local-ai.json`, 2026-09-25) : le résolveur unique
+d'`aphrody-infra` (`local-ai.json`, 2026-09-25) : le résolveur unique
 `@shenron/pipeline/ai/config` lit d'abord les noms canoniques `APHRODY_AI_*`, puis les alias
-hérités dans l'ordre du contrat (voir [`ENV.md`](../../operations/shenron/ENV.md)). Les paires de noms
+hérités dans l'ordre du contrat (voir [`ENV.md`](../operations/ENV.md)). Les paires de noms
 historiques (`SHENRON_ADMIN_TOKEN`/`API_ADMIN_TOKEN`,
 `SHENRON_USER_SECRET`/`API_USER_SECRET`) sont déclarées dans `ENV_ALIASES` et
 vérifiées égales, sans jamais afficher de valeur. `EMBED_URL` est un alias de
@@ -326,11 +324,11 @@ retour arrière par `git revert`.
 | S8 | Les 401 anonymes de l'API agents n'écrivent plus de ligne `agent_audit` (compteur échantillonné en mémoire). | Trafic anonyme → écritures SQL | V3 |
 | S9 | `/graphql` passe par le limiteur public (60/min/IP). | Travail SQLite et embeddings non mesuré | V4 |
 | S10 | Repli de la clé HMAC héritée sur `API_ADMIN_TOKEN` : **avertissement seul** en Phase 1. | Réutilisation de secret | V1 ; bascule en Phase 2 après confirmation de `SESSION_SECRET` (INFRA-2) |
-| S11 | Gel databooks fermé par défaut en production quand `DATABOOKS_FREEZE_FILE` est absente. Échappatoire : faire pointer la variable vers un fichier absent ou contenant `{"frozen": false}`. Code de sortie 3 conservé. | `PLAN.md` déclare le gel ; `.coord/` n'est jamais livré | V3 ; INFRA-1 fournit le chemin |
+| S11 | Gel databooks fermé par défaut en production quand `DATABOOKS_FREEZE_FILE` est absente. Échappatoire : faire pointer la variable vers un fichier absent ou contenant `{"frozen": false}`. Code de sortie 3 conservé. | le plan déclare le gel ; `.coord/` n'est jamais livré | V3 ; INFRA-1 fournit le chemin |
 | B1 | `wiki-databooks-indexer.ts getDbUrl` prend la **dernière** ligne active `DATABASE_URL=` (via `loadDatabaseUrl`). | L'URL Neon retirée précède l'URL vivante | V3 |
-| B2 | Pools PostgreSQL du bot unifiés par un `PgService` paresseux et nullable (`BxcBridgeService` passe de 10 connexions à celles du pool partagé), `application_name` fixé. | Politique de pool (défaut 4) | V3 |
+| B2 | Pools PostgreSQL du bot unifiés par un `PgService` paresseux et nullable (l'ancien `BxcBridgeService`, retiré depuis, passait de 10 connexions à celles du pool partagé), `application_name` fixé. | Politique de pool (défaut 4) | V3 |
 | B3 | Clients d'embeddings construits paresseusement : une mauvaise URL dégrade en recherche lexicale au lieu de planter à l'import. | Dégradation documentée (`rag.ts:826-875`) | V3 |
-| B4 | `bin/shenron.ts --mode` devient effectif (effet de B3). | Variables mutées après import | V3 |
+| B4 | Le mode de l'ancien point d'entrée bin/shenron (retiré depuis) devient effectif (effet de B3). | Variables mutées après import | V3 |
 | B5 | `packages/pipeline/src/workflows.ts` injecte réellement ses citations. | Réponses non ancrées | V3 |
 | B6 | `rag-lexique.ts` écrit dans `apps/bot/data/rag/` (not in repo) via `fileURLToPath`. | Chemin dérivé ; `.pathname` faux sous Windows | V4 |
 | B7 | Espace de noms du cache sémantique `v2 → v3`, portée incluant `PROMPT_VERSION` ; cache froid une fois. | Pas de réponse en cache à travers un changement de prompt | V3 |
@@ -361,7 +359,7 @@ retour arrière par `git revert`.
 ## 3. Carte des paquets
 
 La configuration et les opérations du gestionnaire de paquets Bun sont
-documentées dans [`BUN-PACKAGE-MANAGER.md`](../../operations/shenron/BUN-PACKAGE-MANAGER.md).
+documentées dans [`BUN-PACKAGE-MANAGER.md`](../operations/BUN-PACKAGE-MANAGER.md).
 
 ### 3.0 Règles communes
 
@@ -373,7 +371,7 @@ documentées dans [`BUN-PACKAGE-MANAGER.md`](../../operations/shenron/BUN-PACKAG
   "sideEffects": false,                            // ui : ["*.css"]
   "exports": { "./<sub>": "./src/<sub>.ts" },      // sous-chemins explicites ; "." seulement pour une racine héritée
   "shenron": { "runtime": { "./<sub>": "pure" } }, // classe par entrée (tableau ci-dessous)
-  "scripts": { "type-check": "tsc --noEmit", "lint": "oxlint", "test": "bun test" },
+  "scripts": { "typecheck": "tsc --noEmit", "lint": "oxlint", "test": "bun test" },
   "dependencies": { "<npm>": "catalog:", "@shenron/<x>": "workspace:*" },
   "peerDependencies": {},                          // better-auth, hono, next, react selon le paquet
   "devDependencies": { "@types/bun": "catalog:", "typescript": "catalog:" }
@@ -397,7 +395,7 @@ l'orchestrateur.
 // packages/config/tsconfig/react.json
 { "extends": "./bun.json", "compilerOptions": { "jsx": "react-jsx", "lib": ["ESNext", "DOM", "DOM.Iterable"] } }
 // packages/<pkg>/tsconfig.json
-{ "extends": "./config/tsconfig/bun.json", "include": ["src/**/*", "test/**/*", "scripts/**/*"] }
+{ "extends": "../config/tsconfig/bun.json", "include": ["src/**/*", "test/**/*", "scripts/**/*"] }
 ```
 
 **Classes d'exécution.**
@@ -879,7 +877,7 @@ export function aphrodyGitInspect(o: { bin: string; path: string; timeoutMs?: nu
 Dépendances : `@shenron/config`, `@shenron/pipeline/ai` (façades, vague 3),
 `@shenron/db` (`./env`, pour les sondes A2A). `sharp` quitte le paquet avec
 `measureInkStroke` (`@shenron/images/ink-stroke`). Interdit : `bun:ffi`,
-`bun:sqlite` statique, l'import relatif de `apps/bot/src/lib/admin-lab` (not in repo)
+`bun:sqlite` statique, l'import relatif de l'ancien `admin-lab` du bot
 (`a2a.ts:22`). Les défauts littéraux des sondes A2A restent jusqu'au retrait
 du hub TypeScript (ticket SH-A2A).
 
@@ -1100,7 +1098,7 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 | `apps/site` (serveur, `bun --bun next`) | oui | `<repo>`, `./postgres-js`, `./schema`, `./bot-schema`, `./guards`, `./repos/*`, `./constants` | tout sauf `./hono` | `<repo>`, `./a2a` ; jamais `./cli` | oui (serveur) | `./contract`, `./client`, `./server`, `./next` | oui |
 | `apps/site` (client) | `./net` | `./constants`, `./types` | `./client`, `./policy`, `./staff` | non | non | `./contract` | composants, `./lib/*`, `./styles.css` |
 | `apps/bot` (Bun) | oui | `./bun-sql`, `./sql`, `./redis`, `./constants`, `./repos/*`, `./types` | tout sauf `./next`, `./client` | `<repo>` ; jamais `./cli` | oui | `./contract`, `./http`, `./server` | `./lib/utils`, `./styles.css` |
-| `packages/pipeline`, `scripts/**`, `scripts/tools/shenron/cli.ts` | oui | `./sql`, `./bun-sql`, `./env`, `./guards` | non | `<repo>`, `./web`, `./cli` | oui | `./client` | non |
+| `packages/pipeline`, `scripts/**` | oui | `./sql`, `./bun-sql`, `./env`, `./guards` | non | `<repo>`, `./web`, `./cli` | oui | `./client` | non |
 | `aphrody-ai/crates/aphrody-mcp` (`dragonball.*`) | — | — | — | — | — | client des routes Shenron ; catalogue MCP propre à Aphrody AI | — |
 
 Arêtes interdites contrôlées : paquet → `apps/*` ; module `"use client"` →
@@ -1116,7 +1114,7 @@ depuis les manifestes et depuis les imports réels, puis vérifie :
 
 1. cibles `exports` existantes (un joker doit correspondre à au moins un
    fichier) et classe `shenron.runtime` pour chaque entrée ;
-2. scripts `type-check`, `lint`, `test` présents, `private: true`, ni `dist`
+2. scripts `typecheck`, `lint`, `test` présents, `private: true`, ni `dist`
    ni `main`/`module`/`files`/tsup pour les sept paquets ;
 3. tsconfig étendant `../config/tsconfig/*.json`, sans `baseUrl`, `paths`,
    `ignoreDeprecations` ni `moduleResolution` node/node10/classic ;
@@ -1166,7 +1164,7 @@ d'environnement, §6 manques). Ce qui s'applique à la pile :
 | Indexation RAG | `rag/ingest`, `rag/sync/finish` | scripts du pipeline via la façade | inchangé | APH-1 |
 | Évaluation RAG | `aphrody-rag-eval --target mcp` | `@shenron/pipeline/ai/eval` | métriques partagées bot/site/pipeline | APH-11 (cible `http` avec Bearer) |
 | OCR, vision | `aphrody-ai-http` `ocr`, `vision/structured` | `@shenron/pipeline/ai/aphrody` | client livré (ppocr par défaut) | SH-AI-2 (retrait du service Python `relecture-ocr`) |
-| Traduction | `scripts/tools/shenron/scripts/ops/translate-databooks-session.ts` + Aphrody `ja→fr` + replis | `@shenron/pipeline/translation` | supervisée Bun, dépôt PostgreSQL, preuve sous `var/runs/`, RAG rejouable ; canon/wiki restent séparés | APH-9, OS-5 |
+| Traduction | `scripts/ops/translate-databooks-session.ts` + Aphrody `ja→fr` + replis | `@shenron/pipeline/translation` | supervisée Bun, dépôt PostgreSQL, preuve sous `var/runs/`, RAG rejouable ; canon/wiki restent séparés | APH-9, OS-5 |
 | Crawl, scrape | `aphrody-web-api` | `@shenron/pipeline/aphrody/web` | inchangé | OS-4, P2-BXC |
 | Transformations d'image | à créer | `@shenron/images` | sharp inchangé | OS-2 (port `ImageOps`) |
 | Rendu 2D des cartes | npm préconstruit | `@aphrody/canvas` | façade 1.0.9-aphrody.2 livrée (D13), shim hors cibles préconstruites | CI-2 (preuve Linux), OS-3 (rendu hors processus) |
@@ -1188,11 +1186,9 @@ Phase 1.
 | `apps/site/src/lib/databooks-freeze.ts` (+ ≈ 13 scripts) | `createDatabooksFreezeGate` ; `DATABOOKS_FREEZE_FILE` via `resolveDataPath` ; S11 | V3 | F (mêmes exports) |
 | `apps/site/drizzle.config.bot.ts` | refuse `push`/`migrate` avant toute connexion | V3 | — |
 | `apps/site/package.json` `db:push` | refus explicite (orchestrateur) | préparation | — |
-| `scripts/tools/shenron/cli.ts` | `loadDatabaseUrl` ; `db migrate site` refuse `push` et renvoie au runbook ; `db sync` mort supprimé ; chemin personnel absolu supprimé | V3 | — |
-| `apps/bot/src/services/{EpisodesService,BxcBridgeService}.ts` | `PgService` (`apps/bot/src/db/pg.ts`, paresseux, nullable, un seul pool `createBunDb` partagé entre Drizzle et SQL brut) — B2 | V3 | — |
+| `apps/bot/src/services/EpisodesService.ts` (et l'ancien `BxcBridgeService`, retiré) | `PgService` (`apps/bot/src/db/pg.ts`, paresseux, nullable, un seul pool `createBunDb` partagé entre Drizzle et SQL brut) — B2 | V3 | — |
 | `apps/bot/src/workers/indexer.ts` | `createResilientRedis` — B8 | V3 | — |
 | `apps/site/scripts/_databooks-base.ts urlBase` (40 importateurs, `sql.json`) | `loadDatabaseUrl` (mêmes fichiers de repli, même ordre) + `createSql` | V3 | F (nom conservé) |
-| `scripts/ops/wiki-databooks-indexer.ts getDbUrl` (12) | `loadDatabaseUrl` — B1 | V3 | F |
 | `packages/pipeline/scripts/_rag-sources-pg.ts urlPostgres` | `loadDatabaseUrl` (repli personnel conservé jusqu'à INFRA-3) | V3 | F |
 | `packages/pipeline/src/aphrody/a2a-probes.ts` | `loadDatabaseUrl` avec la liste actuelle | V3 | — |
 | ≈ 200 scripts feuilles | lots mécaniques + cliquet | Phase 2 (SH-DB-3) | — |
@@ -1227,8 +1223,8 @@ Phase 1.
 | `apps/bot/src/lib/{semantic-cache,rag-eval}.ts`, `apps/bot/src/services/TrainingService.ts` | paresseux ; B18 ; métriques partagées ; `resolveDataPath("ragGold", { legacyDefault })` | V3 | F |
 | `apps/site/src/lib/{site-rag,ia-cockpit}.ts` | `generateText` via le fournisseur, `instructions`, garde partagée ; métriques réexportées | V3 | F |
 | `packages/pipeline/src/workflows.ts` | `generateGroundedAnswer` (B5) | V3 | — |
-| `packages/pipeline/scripts/{rag-build,rag-embed-vectors,rag-eval,rag-lexique,rag-resync-entites,ingest-aphrody-rag,rag-status}.ts`, `scripts/tools/shenron/scripts/ops/eval-aphrody-rag.ts` | imports cassés réparés, `SHENRON_E5`, `@shenron/pipeline/ai/eval`, B6, B13 ; `tsconfig.scripts.json` avec cliquet | V4 | — |
-| `packages/pipeline/src/{translation/index,cli,index}.ts` | B12 | V4 | façade unifiée vers le superviseur databooks |
+| `packages/pipeline/scripts/{rag-build,rag-embed-vectors,rag-lexique,rag-resync-entites,ingest-aphrody-rag,rag-status}.ts`, `apps/bot/scripts/rag-eval.ts`, `scripts/ops/eval-aphrody-rag.ts` | imports cassés réparés, `SHENRON_E5`, `@shenron/pipeline/ai/eval`, B6, B13 ; `tsconfig.scripts.json` avec cliquet | V4 | — |
+| `packages/pipeline/src/{cli,index}.ts` | B12 | V4 | façade unifiée vers le superviseur databooks |
 | `apps/bot/src/services/TranslateService.ts` | inchangé (façade) | Phase 2 (SH-AI-2) | — |
 
 ### 6.4 API
@@ -1249,13 +1245,11 @@ Phase 1.
 | Consommateur | Cible | Vague | F |
 | --- | --- | --- | --- |
 | `apps/site/src/lib/utils.ts` (35 importateurs) | `export { cn } from "@shenron/ui/lib/utils"` | V1 | F |
-| `apps/bot/src/dashboard/lib/utils.ts` | réexporte `cn`, **garde** `formatBytes`, `formatDuration`, `formatRelative` | V1 | F |
 | `apps/site/src/app/globals.css` | `@import "@shenron/ui/styles.css";` après `tailwindcss`, `@source` ; `--shell-*`, `[data-wiki-surface]` et doublons non en couche restent | V1 | — |
-| `apps/site/tests/site-theme.test.ts` | lit `globals.css` et `m3/packages/shenron-ui/src/styles.css` | V1 | — |
+| `apps/site/tests/site-theme.test.ts` | lit `globals.css` et `packages/ui/src/styles.css` | V1 | — |
 | `components/ui/Pagination.tsx`, `kit/LinkPager.tsx` | alias de `pageWindow` (V1) ; composant à libellés en props (V3) | V1, V3 | F |
 | 10 wrappers (`accordion`, `badge`, `button`, `card`, `input`, `label`, `radio-group`, `switch`, `tabs`, `toggle`) + `index.ts` | réexportations d'une ligne ; B15 | V2 | F |
 | `components/icones/*`, `lib/icones.ts` (102 importateurs), `apps/site/scripts/rend-icones.ts` | `@shenron/ui/icones` | V3 | F |
-| `apps/bot/src/dashboard/styles.css` | `@import` + `@source` + surcharge qui garde la palette bleue et le rayon 0 | V4 | — |
 
 ### 6.6 Façades conservées après la Phase 1
 
@@ -1278,9 +1272,8 @@ site, monolithe `server.ts` (203 `container.resolve`), importateurs externes.
 - **Fichiers réservés à l'orchestrateur** : `package.json` racine (catalogue,
   scripts), `bun.lock`, `bunfig.toml`, tous les `apps/*/package.json`, les blocs
   de dépendances de `packages/*/package.json`,
-  `packages/config/tsconfig/*.json` (figés en vague 1), `PLAN.md`,
-  `CHANGELOG.md`, `CLAUDE.md`, `AGENTS.md`, `m3/packages/material-web/docs/STACK.md`,
-  `var/stack-research/**`.
+  `packages/config/tsconfig/*.json` (figés en vague 1), le plan, `AGENTS.md`
+  (et son lien `CLAUDE.md`), ce document et les artefacts de recherche.
 - **Un agent ne doit jamais** : lancer `bun install`/`add`/`remove`, `git add`,
   `commit`, `stash`, `reset`, `checkout -- <chemin>`, `rebase` ; formater tout
   le dépôt (seulement `oxfmt <fichiers possédés>`) ; lire ou écrire un
@@ -1288,7 +1281,7 @@ site, monolithe `server.ts` (203 `container.resolve`), importateurs externes.
   `drizzle-kit push|migrate|generate` ; lancer `rag:build` ou un script du
   pipeline contre une base ; toucher un fichier hors de ses chemins possédés
   et partagés. Après modification d'une commande, d'un événement ou d'une
-  garde du bot : `bun run gen:entries` (règle 7).
+  garde du bot : `bun --filter @shenron/bot gen:entries` (règle 7).
 - **Rapport d'agent** : fichiers modifiés (sous-ensemble des chemins
   possédés), gates exécutés avec codes de sortie et décomptes
   réussite/échec/ignoré, identifiants S/B utilisés, points ouverts.
@@ -1297,7 +1290,7 @@ site, monolithe `server.ts` (203 `container.resolve`), importateurs externes.
   gate global (§8.1) ; commiter tranche par tranche, fichier par fichier, en
   français sur une ligne avec l'identifiant S/B (règle 6) ;
   `git pull --rebase origin main && git push` (règle 13) ; ajouter une ligne
-  au journal de `PLAN.md` avec les décomptes réels.
+  au journal de [PLAN.md](../reference/root/PLAN.md) avec les décomptes réels.
 - **Retour arrière** : `git revert` de la bascule, puis du commit de paquet,
   dans l'ordre inverse des dépendances. Jamais `reset --hard`, jamais de push
   forcé.
@@ -1311,13 +1304,13 @@ site, monolithe `server.ts` (203 `container.resolve`), importateurs externes.
 Manifestes : `packages/config` créé avec ses presets ; dépendances de
 travail ajoutées (bot → `config`, `db`, `ai`, `api`, `ui` ; `better-auth` en
 pair de `auth` ; `api` sans `ai` ; `aphrody` sans `sharp` ni tsup) ; scripts
-`lint` et `db:push` du site ; script racine `check:packages`. Un seul
+`lint` et `db:push` du site ; script racine d’audit des paquets (`scripts/audit/check-workspace-packages.ts`). Un seul
 `bun install` ; le diff de `bun.lock` ne doit contenir que des retraits et les
 liens d'espace de travail : aucune résolution neuve.
 
 | Vague | Flux (un agent chacun) | Contenu | Sortie |
 | --- | --- | --- | --- |
-| **1 — gates et sécurité** | `tooling` | `@shenron/config`, oxlint pour le site, TS2345, `turbo.json` (`transit`, entrées explicites), POLICY de `test-all` (paquets neufs, suites du site depuis la racine par liste d'exclusion à cliquet), `check-workspace-packages`, graines réelles `ai` et `api`, `useTypeScriptCli` explicite | CI réparable : type-check, lint et tests stricts verts |
+| **1 — gates et sécurité** | `tooling` | `@shenron/config`, oxlint pour le site, TS2345, Turbo (retiré depuis), POLICY de l'ancien `test-all` (paquets neufs, suites du site depuis la racine par liste d'exclusion à cliquet), `check-workspace-packages`, graines réelles `ai` et `api`, `useTypeScriptCli` explicite | CI réparable : typecheck, lint et tests stricts verts |
 | | `auth` | S1, S2, S3, S4, S5, S6, S10 en place | tests de régression de chaque S |
 | | `ui` | `cn`, `styles.css`, `tokens.ts`, `pageWindow`, façades `cn` | équivalence CSS prouvée |
 | **2 — paquets** | `db` | sous-chemins, clients bruts, constantes, dépôts, gel, Redis | tests L0 hors connexion |
@@ -1325,30 +1318,30 @@ liens d'espace de travail : aucune résolution neuve.
 | | `ai` | config, miroirs, client, embeddings (D10), chat, fournisseur, prompts, génération, évaluation | corps de requête exacts, parité des métriques |
 | | `aphrody` | source seule, racine réduite, `./cli`, notificateur injecté, sous-chemin A2A pour le site (simulations repointées) ; B16 | racine sans `bun:ffi` |
 | | `ui` | 10 wrappers et correctifs 1.8 ; B15 | tests de sélecteurs |
-| **3 — bascules** | `db` | façades du site, gel S11, garde `drizzle.config.bot.ts`, `scripts/tools/shenron/cli.ts`, audit des migrations, `PgService` (B2), Redis de l'indexeur, résolveurs partagés (B1) | le bot démarre sans PostgreSQL |
+| **3 — bascules** | `db` | façades du site, gel S11, garde `drizzle.config.bot.ts`, ancien CLI racine, audit des migrations, `PgService` (B2), Redis de l'indexeur, résolveurs partagés (B1) | le bot démarre sans PostgreSQL |
 | | `auth` | façades site et bot, preset Discord (B10), S7 côté bot, S8, conformance des ports | instantanés et vecteurs verts |
 | | `ai` | façades de calcul, consommateurs du bot, du site et du pipeline (B3, B4, B5, B7, B8, B17, B18) | `rag.ts` n'importe plus `llm.ts` |
 | | `api` | contrat, client, http, serveur, adaptateur Next, OpenAPI généré | conformance `satisfies WikiReadPort` |
 | | `ui` | `./icones`, composant `Pagination` à libellés | tests de chemins du site verts |
 | **4 — montages et nettoyage** | `api` | montages bot et site (B14), S9, client admin validé (B11), cockpit sur le client typé, tests de dérive externes | routes historiques prioritaires, nouvelles routes servies |
 | | `auth` | 15 routes via `admin-guard.ts`, S7 côté site, proxy | instantané statut/corps inchangé |
-| | `ai` | scripts du pipeline (B6, B12, B13), gate de type-check des scripts | cliquet des exclusions |
+| | `ai` | scripts du pipeline (B6, B12, B13), gate de typecheck des scripts | cliquet des exclusions |
 | | `ui` | styles du tableau de bord du bot | CSS compilée équivalente |
-| **5 — clôture** | `tooling` | cliquet `transitional` vidé, gates de CI ajoutés, test de pureté des modules client, démarrage du bot sans services, docs d'infra ; seul, après la vague 4 | `check:packages --strict` vert |
+| **5 — clôture** | `tooling` | cliquet `transitional` vidé, gates de CI ajoutés, test de pureté des modules client, démarrage du bot sans services, docs d'infra ; seul, après la vague 4 | `check-workspace-packages.ts --strict` vert |
 
 Le détail exécutable (chemins possédés, tâches, critères, tests, commandes)
-est tenu dans [`PLAN.md`](../../../PLAN.md); le fichier de recherche
-`var/stack-research/work-breakdown.json` (not in repo) n'est pas versionné.
+est tenu dans [PLAN.md](../reference/root/PLAN.md) ; le découpage de
+recherche est local et non versionné.
 
 **Critères de sortie de la Phase 1** (L0/L1 sur le poste local) :
 
-1. Gate global vert (§8.1), dont `check:packages --strict`.
+1. Gate global vert (§8.1), dont `check-workspace-packages.ts --strict`.
 2. `git grep` des imports `bun:ffi` dans `apps/` et `packages/` : zéro ; paquet
    de la racine `@shenron/pipeline/aphrody` sans `bun:ffi`, `bun:sqlite` ni `sharp`.
 3. Instantané OpenAPI, routes lues par `aphrody-mcp`, dérive des documents du plugin et
    de `llms.txt` verts.
 4. Équivalence CSS du site et du tableau de bord du bot.
-5. Chaque élément S/B a son test et son commit ; journal de `PLAN.md` à jour
+5. Chaque élément S/B a son test et son commit ; journal de [PLAN.md](../reference/root/PLAN.md) à jour
    avec les décomptes réels.
 6. **Explicitement non revendiqué** : `next build` complet (L3), binaire
    canvas Linux (L3), tout état de production (L4), exactitude des données
@@ -1372,11 +1365,11 @@ est tenu dans [`PLAN.md`](../../../PLAN.md); le fichier de recherche
 | SH-SESSION | S10 : la clé HMAC héritée ne se replie plus sur `API_ADMIN_TOKEN` | dépend d'INFRA-2 |
 | SH-UI-2 | Primitives toriyama, sort des 14 wrappers inutilisés, extraction optionnelle du cœur du kit derrière une prop de lien, cliquet de la règle 10, retrait de `shadcn/tailwind.css` | dépend d'OWN-7 |
 | SH-SITE-REDIS | Façades Redis du site (`memory-rate-limit.ts`, `databooks-redis.ts`) sur `createResilientRedis` | — |
-| SH-AI-2 | Retrait de `RERANK_URL`, `apps/bot/src/lib/embeddings.ts` (not in repo), NLLB, LibreTranslate, service Python `relecture-ocr` ; OCR du bot sur ppocr ; lexique unique | dépend d'APH-2, APH-5, APH-9 |
+| SH-AI-2 | Retrait de `RERANK_URL`, l'ancien `embeddings.ts` du bot (transformers.js), NLLB, LibreTranslate, service Python `relecture-ocr` ; OCR du bot sur ppocr ; lexique unique | dépend d'APH-2, APH-5, APH-9 |
 | SH-ID | Unification d'identité : purge d'un compte dans tous les magasins, avenir du silo du bot | dépend de DB-P3 et d'INFRA-2 |
 | SH-SOFTDEL | Suppression logique pour `WikiCategory`/`WikiPage` et les posts | dépend de DB-P3 |
 | P2-BXC | `@shenron/pipeline/bxc` en source seule, chemins absolus retirés | — |
-| SH-TOOLING-P3 | Scripts racine `manga:ocr:*` repointés vers `@shenron/pipeline`, builds `@aphrody/*` hors `turbo build` | — |
+| SH-TOOLING-P3 | Scripts racine `manga:ocr:*` repointés vers `@shenron/pipeline`, builds `@aphrody/*` hors Turbo (retiré depuis) | — |
 
 **`aphrody`**
 
@@ -1396,7 +1389,7 @@ est tenu dans [`PLAN.md`](../../../PLAN.md); le fichier de recherche
 | MCP-1 | **Clos / remplacé (2026-09-26)** : outils `dragonball.*` portés dans `aphrody-mcp`; le MCP local ne transporte pas `SHENRON_A2A_TOKEN` vers le hub. Vérifier et provisionner l'auth A2A via le contrat infra avant d'activer `SHENRON_A2A_ENFORCE`. |
 
 **`aphrody-os`** (scindé le 2026-09-25 : OS-1 et OS-3 relèvent désormais
-d'`aphrody-ui`, OS-4 d'`aphrody-web` (`apps/bxc` (not in repo)), OS-5 d'`aphrody-ai`)
+d'`aphrody-ui`, OS-4 d'`aphrody-web` (BXC), OS-5 d'`aphrody-ai`)
 
 | Ticket | Contenu |
 | --- | --- |
@@ -1434,25 +1427,26 @@ d'`aphrody-ui`, OS-4 d'`aphrody-web` (`apps/bxc` (not in repo)), OS-5 d'`aphrody
 
 ## 8. Tests et gates
 
-### 8.1 Gate global (orchestrateur, après chaque vague)
+### 8.1 Gate global
+
+Commandes courantes (référence : `AGENTS.md`) :
 
 ```sh
 bun install --frozen-lockfile
-bun run check:catalog
-bun scripts/audit/check-workspace-packages.ts # --strict à la sortie de la Phase 1
-bun run type-check                           # turbo → tsc 7.0.2 natif (+ tsconfig.tests.json du site)
-bun run lint                                 # oxlint partout
-bun run test:ci                              # scripts/test-all.ts --strict
-bun run audit:architecture && bun run audit:scripts
-bun packages/api/scripts/openapi.ts --check  # à partir de la vague 3
-bun m3/packages/scripts/generate-tokens.ts --check && bun m3/packages/scripts/check-css-equivalence.ts
+bun scripts/audit/check-workspace-catalog.ts
+bun scripts/audit/check-workspace-packages.ts --strict
+bun run typecheck                            # tsc 7.0.2 natif dans chaque paquet
+bun run lint                                 # oxlint
+bun run test                                 # bun test de chaque paquet, *.live.test.ts exclus
+bun run test:scripts                         # tests de scripts/
+bun packages/api/scripts/openapi.ts --check
+bun packages/ui/scripts/generate-tokens.ts --check
 bun packages/pipeline/scripts/ai/check-contracts.ts   # ignoré avec raison sans le dépôt voisin
-oxfmt --check <fichiers modifiés>
+bun run format:check
 git diff --check
 ```
 
-Le workflow `aphrody-ci` (réutilisable, épinglé) exécute `bun run test`
-(`turbo run test`) : chaque paquet garde au moins un test.
+Chaque paquet garde au moins un test ; la CI (`.github/workflows/ci.yml`) couvre Bun.
 
 ### 8.2 Conformance des paquets
 
@@ -1487,17 +1481,12 @@ qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
 | Jetons, CSS | `tokens.ts` = génération depuis `styles.css` ; équivalence de la CSS compilée (site, tableau de bord) |
 | Migrations | `migration-audit --check` reproduit l'instantané commité (tout déplacement ou rejournalisation accidentel échoue) |
 
-### 8.5 Paliers de `scripts/audit/shenron/scripts/test-all.ts`
+### 8.5 Paliers de tests
 
-- `unit` : les sept paquets, le bot (préparation `gen:entries`, précharge),
-  le site lancé depuis la racine avec `--isolate` sur toutes les suites
-  d'`apps/site/tests` sauf celles listées avec raison dans
-  `scripts/test-all.site-baseline.json` (not in repo) (liste qui ne peut que rétrécir ;
-  une nouvelle suite est incluse d'office), plus les tests de `scripts/ops/`
-  et `apps/site/src/**/*.test.ts` jamais collectés aujourd'hui.
-- `live` : `no-404` du site, `@shenron/pipeline/bxc`.
-- `l2` : requêtes PostgreSQL et Redis réels, seulement avec `--l2` et des
-  variables `SHENRON_TEST_*` valides.
+- `unit` : `bun run test` (chaque paquet ; sites et bot avec `--isolate`) et
+  `bun run test:scripts`.
+- `live` : `bun run test:live` et les suites `*.live.test.ts`, seulement avec
+  `SHENRON_LIVE=1` et les services réels.
 
 ---
 
@@ -1508,8 +1497,8 @@ qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
 | Manque | Traitement | Risque résiduel |
 | --- | --- | --- |
 | `server-only` et l'environnement t3 font planter les paquets hors Next | règles du §3.0 appliquées mécaniquement ; façades du site conservées ; import à environnement vide | faible |
-| Écritures dans la release immuable (jeu d'or, `GOALS.md`, `.coord`) | `resolveDataPath` avec défaut hérité et avertissement en production ; aucun écrivain ne passe dans un paquet sans chemin injecté ; INFRA-1 puis SH-PATHS | jusqu'à INFRA-1, la production se comporte comme aujourd'hui (écriture probablement refusée) : signalé, pas corrigé |
-| Gel databooks inactif en production | `@shenron/db/guards`, fermé par défaut en production (S11) | écritures databooks refusées en production tant qu'INFRA-1 ne fournit pas le chemin : voulu par `PLAN.md` |
+| Écritures dans la release immuable (jeu d'or, registres GOALS et ADMIN-REPORTS, `.coord`) | `resolveDataPath` avec défaut hérité et avertissement en production ; aucun écrivain ne passe dans un paquet sans chemin injecté ; INFRA-1 puis SH-PATHS | jusqu'à INFRA-1, la production se comporte comme aujourd'hui (écriture probablement refusée) : signalé, pas corrigé |
+| Gel databooks inactif en production | `@shenron/db/guards`, fermé par défaut en production (S11) | écritures databooks refusées en production tant qu'INFRA-1 ne fournit pas le chemin : voulu par le plan |
 | Cockpit : lecture PostgreSQL, écriture SQLite, aucune synchro | aucun magasin ne change en Phase 1 ; aucune route neuve ne lit un magasin et écrit dans l'autre | affichage du cockpit toujours en retard (OPS-3) |
 | API autonome en conflit avec l'infra et la passerelle Discord | montage dans les processus existants ; routes liées à la passerelle restent dans le bot | aucun |
 
@@ -1524,7 +1513,7 @@ qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
 | Jeu d'or : 5 résolveurs | `resolveDataPath("ragGold")` et `@shenron/pipeline/ai/eval` comme analyseur unique |
 | Consommateurs externes non inventoriés | tests de dérive du §8.4 ; GraphQL conservé |
 | Suppression de compte incomplète | silos non fusionnés ; SH-ID |
-| Pas de contrat d'environnement partagé | `@shenron/config/env`, `ENV_ALIASES`, `DATABASE_POOL_MAX` dans l'environnement de build de turbo |
+| Pas de contrat d'environnement partagé | `@shenron/config/env`, `ENV_ALIASES`, `DATABASE_POOL_MAX` dans l'environnement de build |
 
 ### 9.3 Risques d'implémentation
 
@@ -1549,7 +1538,7 @@ qui appelle `checkPackageRuntimes`, `checkNoEscapingImports` et
 
 ### 9.4 Décisions ouvertes : valeurs retenues pour ne pas bloquer
 
-Toutes réversibles et consignées dans `PLAN.md` :
+Toutes réversibles et consignées dans [PLAN.md](../reference/root/PLAN.md) :
 
 1. L'alias Vercel nommé reste ; seul le motif générique part (S2). Réponse
    finale : INFRA-4.
