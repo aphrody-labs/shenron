@@ -197,7 +197,7 @@ export function SagaBestOf({
               {saga.seriesLabel}
               {saga.years ? `, ${saga.years}` : ""}
             </p>
-            <h3 className="font-serif text-2xl font-semibold leading-tight text-white sm:text-3xl">
+            <h3 className="font-title text-2xl leading-tight text-white sm:text-3xl">
               {saga.name}
             </h3>
             <p className="font-display text-base font-semibold text-dbz-orange">{saga.tagline}</p>

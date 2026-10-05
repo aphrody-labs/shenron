@@ -40,7 +40,7 @@ export function ContributeRail({
     >
       <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
         <div className="min-w-0">
-          <h2 className="font-serif text-[1.1875rem] font-semibold leading-snug text-white sm:text-[1.375rem]">
+          <h2 className="font-title text-[1.1875rem] leading-snug text-white sm:text-[1.375rem]">
             {t("kit.contribute.title", { quoi: t(quoiKey) })}
           </h2>
           <p className="mt-1.5 max-w-[52ch] text-[0.9375rem] leading-relaxed text-white/60">

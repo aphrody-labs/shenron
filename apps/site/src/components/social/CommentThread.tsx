@@ -221,7 +221,7 @@ export function CommentThread({
           <p className="font-display text-[0.6875rem] font-bold uppercase tracking-[0.18em] text-dbz-orange">
             Participer
           </p>
-          <h2 className="mt-1.5 font-serif text-[clamp(1.375rem,1.2rem+1vw,1.75rem)] font-semibold tracking-[-0.015em] text-white">
+          <h2 className="mt-1.5 font-title text-[clamp(1.375rem,1.2rem+1vw,1.75rem)] text-white">
             {title} <span className="text-white/40">· {total}</span>
           </h2>
         </div>

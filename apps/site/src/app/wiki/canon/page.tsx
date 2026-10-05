@@ -404,7 +404,7 @@ async function Resultat({ question }: { question: string }) {
             </p>
           )}
         </div>
-        <p className="mt-3 font-serif text-2xl sm:text-3xl leading-snug text-white font-medium">
+        <p className="mt-3 text-2xl sm:text-3xl leading-snug text-white font-semibold">
           {verdict.verdict}
         </p>
         <p className="mt-4 text-base leading-relaxed text-white/85">{verdict.explanation}</p>

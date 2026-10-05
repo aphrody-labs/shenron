@@ -6,8 +6,8 @@ import { HeroTitles } from "./HeroTitles";
  * là où `PageHero` (bandeau pleine largeur) ne peut pas aller : jeux, boutique,
  * classements, commandes, tierlists, statistiques, bureau.
  *
- * Il partage la grammaire de `PageHero` via `<HeroTitles>` : accent orange, serif
- * d'affichage, alignement à gauche, filet de séparation. Le shell porte le fil
+ * Il partage la grammaire de `PageHero` via `<HeroTitles>` : accent orange, titre
+ * `font-title`, alignement à gauche, filet de séparation. Le shell porte le fil
  * d'Ariane et la navigation globale : l'en-tête ne porte que le titre, son chapô
  * et, à droite sur desktop (dessous sur mobile), les actions propres à la page.
  */

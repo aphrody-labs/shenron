@@ -249,9 +249,7 @@ export default async function ToriyamaPage() {
               <span>鳥山明 · 1955-2024</span>
             </div>
 
-            <h1 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-5xl">
-              Akira Toriyama
-            </h1>
+            <h1 className="font-title text-3xl text-white sm:text-5xl">Akira Toriyama</h1>
 
             <p className="max-w-2xl text-[1.0625rem] leading-relaxed text-white/75 sm:text-[1.125rem]">
               <T k="wiki.toriyama.standfirst" />
@@ -392,7 +390,7 @@ export default async function ToriyamaPage() {
                         </span>
                       </div>
 
-                      <h3 className="mt-1.5 font-serif text-[1.125rem] font-bold text-white">
+                      <h3 className="mt-1.5 font-title text-[1.125rem] text-white">
                         {o.href ? (
                           <Link href={o.href} className="underline-offset-4 hover:underline">
                             <T k={`wiki.toriyama.work.${o.key}Title`} />
@@ -457,7 +455,7 @@ export default async function ToriyamaPage() {
                         <ToriyamaEmblem name={emblemSymbol} size={24} />
                       </div>
                       <div>
-                        <h3 className="font-serif text-[1.25rem] font-semibold text-white">
+                        <h3 className="font-title text-[1.25rem] text-white">
                           <T k={`wiki.toriyama.theme.${theme.id}Title`} />
                         </h3>
                         <p className="text-[0.875rem] text-white/55">
@@ -552,7 +550,7 @@ export default async function ToriyamaPage() {
                         )}
                         <h3
                           id={`src-${slugifyAnchor(group.documentKey)}`}
-                          className="font-serif text-[1.25rem] font-bold text-white"
+                          className="font-title text-[1.25rem] text-white"
                         >
                           {group.document}
                         </h3>
@@ -627,9 +625,7 @@ function WordCard({
 }) {
   return (
     <li className="rounded-xl border border-white/[0.08] bg-dbz-card/80 p-5 transition-colors hover:border-dbz-gold/60">
-      {word.subject && (
-        <h4 className="font-serif text-[1.0625rem] font-semibold text-white">{word.subject}</h4>
-      )}
+      {word.subject && <h4 className="font-title text-[1.0625rem] text-white">{word.subject}</h4>}
 
       {word.lang === "ja" ? (
         <div className="mt-3 space-y-3">

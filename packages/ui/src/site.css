@@ -141,18 +141,20 @@ main:focus {
   h4,
   h5,
   h6 {
-    /* h1/h2 en Newsreader (serif éditoriale), h3→h6 en sans : deux registres
-       suffisent, et les niveaux profonds servent surtout à structurer de
-       l'interface. 600 et non 700 — le contraste serif/sans porte déjà la
-       hiérarchie, un gras plein alourdit la page. SaiyanSans reste dispo via
-       `.font-saiyan` pour les accents de marque. */
+    /* h3→h6 structurent l'interface : sans, 600. h1/h2 portent le titre (ci-dessous) :
+       la même famille poussée par ses axes (« Planche couleur »), sans serif. */
     @apply font-display font-semibold;
     letter-spacing: -0.015em;
     color: #f0f0ff;
   }
   h1,
   h2 {
-    @apply font-serif;
+    /* = `font-title` (styles.css) */
+    font-family: var(--font-sans);
+    font-weight: 850;
+    font-variation-settings:
+      "ROND" 100,
+      "opsz" 144;
     letter-spacing: -0.02em;
   }
   ::selection {
@@ -1502,12 +1504,14 @@ main:focus {
 .wiki-content p {
   margin: 0 0 1.1em;
 }
-/* Hiérarchie : h1/h2 en serif (la voix de l'article), h3/h4 en sans (le
-   repérage). Deux registres suffisent — empiler quatre tailles de la même
-   police ne se lit pas, alterner les familles se lit d'un coup d'œil. */
+/* Hiérarchie : h1/h2 en titre « Planche couleur » (corps à wght 850, ROND 100), h3/h4
+   en sans 600 (le repérage). La serif reste aux citations (blockquote ci-dessous). */
 .wiki-content :is(h1, h2) {
-  font-family: var(--font-serif-src), Georgia, serif;
-  font-weight: 600;
+  font-family: var(--font-sans);
+  font-weight: 850;
+  font-variation-settings:
+    "ROND" 100,
+    "opsz" 144;
   letter-spacing: -0.02em;
   color: #fff;
   line-height: 1.18;

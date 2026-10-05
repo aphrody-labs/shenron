@@ -37,8 +37,8 @@ export function SectionHeading({
   id?: string;
 }) {
   const Tag = (level === 2 ? "h2" : "h3") as "h2" | "h3";
-  // Les sous-sections gardent la MÊME famille que le titre de page (serif
-  // d'affichage, casse normale) d'une taille en dessous : c'est ce qui fait lire
+  // Les sous-sections gardent la MÊME famille que le titre de page (`font-title`,
+  // casse normale) d'une taille en dessous : c'est ce qui fait lire
   // une page comme un document, et non comme trois blocs empilés.
   const size =
     level === 2
@@ -62,9 +62,7 @@ export function SectionHeading({
                   {kicker}
                 </p>
               )}
-              <Tag
-                className={`${size} mt-1.5 font-serif font-semibold leading-[1.12] tracking-[-0.015em] text-balance text-white`}
-              >
+              <Tag className={`${size} mt-1.5 font-title leading-[1.12] text-balance text-white`}>
                 {title}
               </Tag>
             </>

@@ -57,7 +57,7 @@ export function StaffRoutes() {
           <p className="font-display text-[0.6875rem] font-bold uppercase tracking-[0.18em] text-dbz-orange">
             Staff
           </p>
-          <h2 className="mt-1.5 font-serif text-[clamp(1.375rem,1.2rem+1vw,1.75rem)] font-semibold text-white">
+          <h2 className="mt-1.5 font-title text-[clamp(1.375rem,1.2rem+1vw,1.75rem)] text-white">
             API du bot
           </h2>
           <p className="mt-2 max-w-[56ch] text-[0.9375rem] text-white/60">

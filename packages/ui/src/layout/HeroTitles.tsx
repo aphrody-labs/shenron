@@ -5,13 +5,13 @@ import type { ReactNode } from "react";
  *
  * `PageHero` (bandeau pleine largeur, encyclopédie) et `PageHeader` (en-tête
  * interne, rubriques communautaires) rendaient jusqu'ici deux typographies
- * sans rapport : d'un côté l'accent orange + serif d'affichage des couvertures
+ * sans rapport : d'un côté l'accent orange + titre d'affichage des couvertures
  * Daizenshuu, de l'autre un titre jaune centré avec ombre portée décalée de
  * 4 px et halo bleu — le style des habillages de fan-site des années 2000.
  * Deux identités sur un même site, c'est zéro identité.
  *
  * Trois régimes, et un seul choix à faire à l'appel :
- *  - `plain` — serif d'affichage, casse normale, blanc. Le régime par défaut.
+ *  - `plain` — `font-title` (corps à wght 850, ROND 100), casse normale, blanc. Le régime par défaut.
  *  - `image` — capitales dorées : elles ne servent qu'à tenir la lisibilité
  *    par-dessus une photo. Hors de ce cas, elles ne font que crier.
  *  - `compact` — même grammaire, une taille en dessous (pages de jeu, vues
@@ -46,8 +46,8 @@ export function HeroTitles({
           regime === "image"
             ? "font-saiyan font-bold uppercase text-[clamp(2.125rem,1.5rem+3.2vw,3.625rem)] leading-[1.02] tracking-[0.01em] title-gold mb-3 text-balance"
             : regime === "compact"
-              ? "font-serif font-semibold text-[clamp(1.625rem,1.3rem+1.6vw,2.375rem)] leading-[1.1] tracking-[-0.015em] text-white mb-2 text-balance"
-              : "font-serif font-semibold text-[clamp(2rem,1.35rem+3.2vw,3.5rem)] leading-[1.05] tracking-[-0.02em] text-white mb-3 text-balance break-words"
+              ? "font-title text-[clamp(1.625rem,1.3rem+1.6vw,2.375rem)] leading-[1.1] text-white mb-2 text-balance"
+              : "font-title text-[clamp(2rem,1.35rem+3.2vw,3.5rem)] leading-[1.05] text-white mb-3 text-balance break-words"
         }
       >
         {title}

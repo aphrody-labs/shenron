@@ -437,9 +437,7 @@ export default async function WikiIndex() {
         )}
 
         <section className="rounded-xl border border-white/[0.08] p-8 lg:p-10">
-          <h2 className="font-serif text-[26px] font-semibold tracking-tight text-white">
-            Ce wiki n'est pas fini
-          </h2>
+          <h2 className="font-title text-[26px] text-white">Ce wiki n'est pas fini</h2>
           {/* Le circuit interne (« vous modifiez le texte, un relecteur publie,
 					    la modification garde votre nom ») a été retiré le 2026-09-12 : ce
 					    qu'un lecteur a besoin de savoir, c'est d'où vient le contenu et où
