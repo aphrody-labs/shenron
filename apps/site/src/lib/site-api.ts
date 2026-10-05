@@ -3,7 +3,7 @@
  * mêmes routes additives que le bot (`/api/public/wiki/categories`,
  * `/api/public/wiki/{category}[/{idOrSlug}]`, `/api/public/openapi.json`),
  * servies par le catch-all `app/api/public/[...route]/route.ts` sur la base
- * PostgreSQL du site. Pas de catch-all `/api` racine : les routes existantes
+ * PostgreSQL du site, plus le plugin « shenron » (`/api/public/plugin*`). Pas de catch-all `/api` racine : les routes existantes
  * du site gardent leur priorité (un segment statique prime sur `[...route]`).
  *
  * L'application est construite paresseusement à la première requête : aucun
@@ -17,6 +17,7 @@ import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "@s
 import type { FetchableApi } from "@shenron/api/next";
 import { createShenronApi, type ShenronApi, type WikiReadPort } from "@shenron/api/server";
 import { SITE_HOST, SITE_URL } from "@/lib/config";
+import { sitePluginPort } from "@/lib/plugin";
 
 /** Origines CORS du site : l'URL configurée, le domaine canonique et son `www`. */
 const SITE_PUBLIC_CORS_ORIGINS: readonly string[] = [
@@ -28,6 +29,8 @@ function createSiteShenronApi(wiki: WikiReadPort | null): ShenronApi {
   return createShenronApi(
     {
       wiki,
+      // Le plugin « shenron » relu depuis `plugin/` : `/api/public/plugin*` (cf. `@/lib/plugin`).
+      plugin: sitePluginPort(),
       rateLimit: createMemoryRateLimiter(),
       publicCache: createPublicCache(),
       invalidation: noopInvalidation,

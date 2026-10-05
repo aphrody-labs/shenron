@@ -1,7 +1,6 @@
 {
   "name": "shenron",
   "private": true,
-  "type": "module",
   "description": "Shenron (dragonballfr.com): Dragon Ball site, Discord bot, editorial pipeline, Koharu manga translation and the Shenron agent tooling, built on published Aphrody packages.",
   "workspaces": {
     "packages": [
@@ -117,6 +116,7 @@
       "zustand": "^5.0.15"
     }
   },
+  "type": "module",
   "scripts": {
     "typecheck": "bun run --filter '*' typecheck && bun run typecheck:scripts",
     "typecheck:scripts": "tsc --noEmit -p scripts",
@@ -131,7 +131,8 @@
     "test:rust": "cargo test -p shenron-rag -p shenron-translate -p shenron-manga -p shenron-cli -p shenron-mcp -p shenron-ffi -p shenron-studio",
     "test:live": "bun run --filter @shenron/pipeline rag:test",
     "audit:assets": "bun scripts/audit/assets-dedup.ts",
-    "test:scripts": "bun test ./scripts"
+    "test:scripts": "bun test ./scripts",
+    "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts"
   },
   "devDependencies": {
     "@shenron/pipeline": "workspace:*",
