@@ -25,7 +25,9 @@ auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
 
 - Produit : `apps/site` (application frontale unique), `apps/bot`, `apps/server`
   (`shenron-server`), `packages/ui` (couche UI unique), `crates/shenron-*`, `crates/koharu-*`,
-  `plugin/` (plugin Claude Code « shenron »).
+  `plugin/` (plugin Claude Code « shenron », version dans `plugin/.claude-plugin/plugin.json` ;
+  installation : `claude plugin marketplace add <dépôt>` puis `claude plugin install shenron@shenron`,
+  le dépôt déclare la marketplace dans `.claude-plugin/marketplace.json`).
 - Aphrody fournit les capacités (socle ML `koharu-{llama,torch,diffusion,runtime,config}`,
   `aphrody-rag`, `aphrody-ocr`, `aphrody-models`, `aphrody-translate`, Tauri 3
   `aphrody-tauri*`, paquets npm `@aphrody/*`) : on les consomme, on ne les copie pas.

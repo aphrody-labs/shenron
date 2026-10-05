@@ -1,0 +1,17 @@
+{
+  "name": "shenron",
+  "owner": {
+    "name": "aphrody-dev",
+    "email": "contact@aphrody.com"
+  },
+  "metadata": {
+    "description": "Plugin Claude Code « shenron » livré par ce dépôt (plugin/)."
+  },
+  "plugins": [
+    {
+      "name": "shenron",
+      "source": "./plugin",
+      "description": "Dragon Ball universe plugin, offline first: sourced facts, canonicity engine, Japanese lexicon, databooks OCR, Toriyama measured SVG, and Shenron administration requests."
+    }
+  ]
+}
