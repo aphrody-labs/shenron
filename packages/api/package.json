@@ -12,6 +12,7 @@
     "./next": "./src/next.ts",
     "./chat": "./src/chat/index.ts",
     "./host": "./src/host/index.ts",
+    "./plugin": "./src/plugin/index.ts",
     "./openapi.json": "./openapi/public.json"
   },
   "scripts": {
@@ -44,6 +45,7 @@
       "./next": "server",
       "./chat": "bun",
       "./host": "bun",
+      "./plugin": "server",
       "./openapi.json": "json"
     }
   }

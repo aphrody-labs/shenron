@@ -8,6 +8,12 @@
 import { z } from "zod";
 import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
 import {
+  PluginExportParams,
+  PluginExportQuery,
+  PluginFileQuery,
+  PluginIndexResponse,
+} from "./plugin";
+import {
   ConversationDetail,
   ConversationListResponse,
   SyncPullQuery,
@@ -105,6 +111,38 @@ export const endpoints = {
     auth: "public",
     response: z.looseObject({ openapi: z.string() }).meta({ id: "OpenApiDocument" }),
     cache: { maxAgeSeconds: 3600 },
+    native: true,
+  },
+  pluginIndex: {
+    id: "pluginIndex",
+    method: "get",
+    path: "/api/public/plugin",
+    auth: "public",
+    response: PluginIndexResponse,
+    cache: { maxAgeSeconds: 60 },
+    native: true,
+  },
+  pluginExport: {
+    id: "pluginExport",
+    method: "get",
+    path: "/api/public/plugin/export/{format}",
+    auth: "public",
+    params: PluginExportParams,
+    query: PluginExportQuery,
+    response: z.string().meta({ id: "PluginExport" }),
+    cache: { maxAgeSeconds: 60 },
+    binary: true,
+    native: true,
+  },
+  pluginFile: {
+    id: "pluginFile",
+    method: "get",
+    path: "/api/public/plugin/file",
+    auth: "public",
+    query: PluginFileQuery,
+    response: z.string().meta({ id: "PluginFile" }),
+    cache: { maxAgeSeconds: 60 },
+    binary: true,
     native: true,
   },
   chat: {

@@ -86,11 +86,31 @@ un chemin encore issu du défaut est signalé une fois par processus.
 | `AgentKey` (table PG) | Jetons d'agents autonomes (`dbfr_agent_...`) avec portées explicites (`moderate`, `write:articles`, etc.) acceptés par le proxy et `getCurrentUser()`. |
 
 
-## Serveur MCP public — `apps/site/src/lib/ai-access.ts`
+## Serveur MCP — `apps/site/src/lib/ai-access.ts` et `crates/shenron-mcp`
+
+`shenron-mcp --http <adresse> --public` sert deux paliers sur `/mcp` : les appelants anonymes ne voient et n'appellent que les outils en lecture seule ; un appelant **élevé** reçoit tous les outils (lecture, écriture, admin). Est élevé : un `Authorization: Bearer <jeton>` accepté, ou une IP cliente de `SHENRON_MCP_ALLOWED_IPS`. Un jeton présent mais inconnu donne `401` avec `WWW-Authenticate: Bearer` (jamais de repli silencieux en anonyme, même depuis une IP autorisée). Une session ouverte avec élévation exige ses identifiants à chaque requête (`401` sinon). La carte `/.well-known/mcp.json` annonce `authentication: { read: "none", write: "bearer token or allow-listed IP" }`, les outils publics (`tools`) et les outils élevés (`elevatedTools`, `elevatedToolCount`).
 
 | Variable | Rôle |
 | --- | --- |
-| `SHENRON_MCP_URL` | Origine HTTP(S) du serveur `shenron-mcp --http <adresse> --public` (lecture seule), lue côté serveur seulement (validée par `apps/site/src/lib/env.ts`). Le site relaie `/mcp` vers `<origine>/mcp`. **Aucun défaut** : sans valeur (ou avec une URL invalide), `/mcp` répond 503 et ni `llms.txt` ni `/.well-known/mcp.json` n'annoncent le serveur. |
+| `SHENRON_MCP_URL` | Origine HTTP(S) du serveur `shenron-mcp --http <adresse> --public`, lue côté serveur seulement (validée par `apps/site/src/lib/env.ts`). Le site relaie `/mcp` vers `<origine>/mcp` en transmettant `Authorization`, `X-Forwarded-For` et `X-Real-IP`. **Aucun défaut** : sans valeur (ou avec une URL invalide), `/mcp` répond 503 et ni `llms.txt` ni `/.well-known/mcp.json` n'annoncent le serveur. |
+| `SHENRON_MCP_TOKENS` | Jetons porteurs acceptés (liste séparée par des virgules, 16 octets minimum chacun, comparaison à durée constante). Process `shenron-mcp`. |
+| `SHENRON_API_ADMIN_TOKEN`, `DBFR_TOKEN` | Acceptés aussi comme jetons porteurs d'élévation quand ils sont posés (16 octets minimum). Ce sont également les jetons que les outils d'écriture envoient aux API : voir ci-dessous. |
+| `SHENRON_MCP_ALLOWED_IPS` | IP ou CIDR (v4 et v6, séparés par des virgules) élevés sans jeton. Entrée invalide ignorée (journalisée). Défaut : aucune. |
+| `SHENRON_MCP_TRUSTED_PROXIES` | IP/CIDR des proxys dont les en-têtes `X-Forwarded-For` (entrée la plus à droite non fiable) puis `X-Real-IP` sont crus. Défaut : `127.0.0.0/8, ::1`. Un pair non listé ne peut pas usurper une IP autorisée : ses en-têtes sont ignorés. Le proxy frontal (nginx) doit **écraser** ces en-têtes, pas relayer ceux du client. Sans en-tête, l'IP cliente est celle du proxy : n'autorisez pas `127.0.0.1` derrière le site. |
+| `SHENRON_MCP_ALLOWED_HOSTS` | En-têtes `Host` acceptés (anti DNS rebinding). Défaut : loopback, `dragonballfr.com`, `mcp.dragonballfr.com`. |
+| `SHENRON_MCP_LOG` | Filtre de journal (`tracing`) du processus, sur stderr. Défaut : `warn`. |
+
+### Jetons des outils d'écriture (environnement du processus `shenron-mcp`)
+
+Quand le serveur est élevé, les outils appellent les API avec les variables du processus ; le palier anonyme ne les utilise jamais (les outils concernés ne lui sont pas exposés, et `dbfr_*` n'attache plus de jeton à une lecture anonyme).
+
+| Variable | Utilisée par |
+| --- | --- |
+| `DBFR_TOKEN` (repli `SHENRON_ADMIN_TOKEN`) | `dbfr_databooks` (`include_hidden`), `dbfr_deposit` |
+| `SHENRON_DATABOOKS_API_TOKEN` (repli `DATABOOKS_API_TOKEN`, `SHENRON_ADMIN_TOKEN`, `DBFR_TOKEN`) | `dragonball.admin_databooks_deposit`, `databook_create/update/delete/page_edit/anomalies/relecture_ocr`, `site_config_get/put`, `reports_list/update` (jeton porteur du site, `apps/site/src/lib/api-token.ts`) |
+| `SHENRON_API_ADMIN_TOKEN` | `dragonball.admin_bot_*`, `admin_services`, `admin_service_action` (API bot) |
+| `SHENRON_AGENT_API_KEY` | `dragonball.agent_*` (`/api/agent/v1/*`) : clé `dbfr_agent_...` créée dans `/admin/agents`, ses portées (`read`, `write:articles`, `publish:articles`, `comment`, `moderate`, `contribute`) décident ce qui est permis. |
+| `SHENRON_API_URL`, `SHENRON_SITE_API_URL`, `SHENRON_SITE_URL`, `DBFR_BASE_URL` | Cibles des appels (défauts : bot et site publics). |
 
 ## IA Aphrody — `@shenron/pipeline/ai/config` (contrat `aphrody-infra`)
 

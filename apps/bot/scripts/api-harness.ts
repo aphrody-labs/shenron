@@ -13,7 +13,7 @@
  * n'ont pas les services du bot (SQLite, Discord) et ne servent qu'à prouver
  * qu'elles gardent la priorité sur le routeur natif de @shenron/api.
  */
-import type { WikiReadPort } from "@shenron/api/server";
+import type { PluginPort, WikiReadPort } from "@shenron/api/server";
 import {
   createBotShenronApi,
   createPublicFallback,
@@ -52,6 +52,8 @@ export const LEGACY_WIKI_ROUTES = [
 
 export interface HarnessOptions {
   wiki?: WikiReadPort | null;
+  /** Plugin servi par `/api/public/plugin*` ; absent : `plugin/` du dépôt. */
+  plugin?: PluginPort | null;
   pg?: PgSource | null;
   graphql?: (request: Request) => Response | Promise<Response>;
   buckets?: PublicRateBuckets;
@@ -81,6 +83,7 @@ export function startHarness(o: HarnessOptions = {}) {
   const fallback = createPublicFallback({
     api: createBotShenronApi({
       ...(o.wiki !== undefined ? { wiki: o.wiki } : {}),
+      ...(o.plugin !== undefined ? { plugin: o.plugin } : {}),
       pg: o.pg ?? null,
       buckets,
       remoteAddress: (request) => remoteAddresses.lookup(request),

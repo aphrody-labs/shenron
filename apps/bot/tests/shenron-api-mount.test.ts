@@ -25,7 +25,8 @@ const fakeWiki: WikiReadPort = {
 };
 
 const withPg = startHarness({ wiki: fakeWiki });
-const withoutPg = startHarness({ wiki: null });
+// Sans PostgreSQL ni plugin : aucun groupe, donc aucun chemin `@shenron/api` revendiqué.
+const withoutPg = startHarness({ wiki: null, plugin: null });
 afterAll(async () => {
   await withPg.stop(true);
   await withoutPg.stop(true);

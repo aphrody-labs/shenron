@@ -35,6 +35,14 @@ import {
   type PublicCachePort,
   type RateLimitPort,
 } from "../http";
+import {
+  findPluginFile,
+  pluginIndex,
+  renderPluginExport,
+  renderPluginFile,
+  type PluginFormat,
+  type PluginPort,
+} from "../plugin";
 import { buildOpenApiDocument } from "./openapi";
 import { Router, SSE_HEADERS, SSE_KEEPALIVE, sseFrame } from "./router";
 import { ChatStreams } from "./streams";
@@ -113,6 +121,8 @@ export interface ShenronApiPorts {
   ocr?: OcrPort | null;
   auth?: AuthPort | null;
   mcp?: McpProxyPort | null;
+  /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@shenron/api/plugin`). */
+  plugin?: PluginPort | null;
   rateLimit: RateLimitPort;
   publicCache: PublicCachePort;
   invalidation: InvalidationPort;
@@ -320,10 +330,56 @@ export function createShenronApi(
     ports.vfs,
     ports.ocr,
     ports.mcp,
+    ports.plugin,
   ].some((port) => port != null);
   add(endpoints.health, anyGroup, async () => json({ status: "ok" }, 200));
   add(endpoints.apiHealth, anyGroup, async () => json({ status: "ok" }, 200));
   add(endpoints.openApi, anyGroup, async () => json(openApiDocument(), 200));
+
+  // ── Plugin ────────────────────────────────────────────────────────────────
+  // Le plugin tel qu'il est déployé, pour tout type de LLM : index JSON, export complet
+  // (Markdown, texte, HTML, JSON) et fichiers un par un. L'ETag suit l'empreinte du plugin.
+  const plugin = ports.plugin ?? null;
+  const pluginText = (
+    ctx: Ctx,
+    etag: string,
+    render: () => { body: string; contentType: string },
+  ): Response => {
+    const headers: Record<string, string> = {
+      ...ctx.cors,
+      ...publicCacheHeaders(60),
+      ETag: etag,
+    };
+    if (ctx.request.headers.get("if-none-match") === etag)
+      return new Response(null, { status: 304, headers });
+    const out = render();
+    return new Response(out.body, {
+      status: 200,
+      headers: { ...headers, "Content-Type": out.contentType },
+    });
+  };
+  add(endpoints.pluginIndex, plugin !== null, async (ctx) => {
+    const bundle = await fromPort(() => plugin!.load());
+    return json(pluginIndex(bundle, ctx.url.origin), 200);
+  });
+  add(endpoints.pluginExport, plugin !== null, async (ctx) => {
+    const format = ctx.params.format as PluginFormat;
+    const full = (ctx.query as { full?: boolean }).full === true;
+    const bundle = await fromPort(() => plugin!.load());
+    return pluginText(ctx, `"${bundle.sha256}-${format}${full ? "-full" : ""}"`, () =>
+      renderPluginExport(bundle, format, { origin: ctx.url.origin, full }),
+    );
+  });
+  add(endpoints.pluginFile, plugin !== null, async (ctx) => {
+    const query = ctx.query as { path: string; format?: PluginFormat | "raw" };
+    const bundle = await fromPort(() => plugin!.load());
+    const file = findPluginFile(bundle, query.path);
+    if (!file) return json(NOT_FOUND, 404);
+    const format = query.format ?? "raw";
+    return pluginText(ctx, `"${file.sha256}-${format}"`, () =>
+      renderPluginFile(file, format, ctx.url.origin),
+    );
+  });
 
   // ── Wiki ──────────────────────────────────────────────────────────────────
   const wiki = ports.wiki ?? null;
@@ -950,3 +1006,4 @@ export function createShenronApi(
 }
 
 export { buildOpenApiDocument } from "./openapi";
+export type { PluginPort } from "../plugin";

@@ -44,6 +44,7 @@ import { createChatEngine } from "../chat/engine";
 import { agentHomeFromDir, agentHomeFromVfs } from "../chat/home";
 import { backendsFromEnv, geminiCookieCandidates, type LlmBackend } from "../chat/llm";
 import { createStdioMcpClient } from "../chat/mcp";
+import { createPluginPort, resolvePluginRoot } from "../plugin";
 import { createCliOcr } from "../chat/ocr";
 import type { LocalApiGroups, LocalApiGroupStatus } from "../contract/local";
 import type { RagHit, RagSearchQuery } from "../contract/schemas";
@@ -443,6 +444,10 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const wiki = opened && options.wiki !== false ? opened.wiki : null;
   const assetsDir = envString(env, "SHENRON_ASSETS_DIR") ?? null;
   const mcpUrl = envString(env, "SHENRON_MCP_URL");
+  // Le binaire autonome ne sert le plugin que si `SHENRON_PLUGIN_DIR` le désigne.
+  const pluginDir = envString(env, "SHENRON_PLUGIN_DIR");
+  const pluginRoot = pluginDir ? resolvePluginRoot({ SHENRON_PLUGIN_DIR: pluginDir }) : null;
+  const pluginPort = pluginRoot ? createPluginPort(pluginRoot) : null;
   const api = createShenronApi(
     {
       wiki,
@@ -453,6 +458,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       ocr: ocrPort,
       auth: createEnvAuth(env, isLoopback),
       mcp: mcpUrl ? { url: mcpUrl } : null,
+      // `/api/public/plugin*` quand `SHENRON_PLUGIN_DIR` désigne un plugin lisible.
+      plugin: pluginPort,
       rateLimit: createMemoryRateLimiter(),
       publicCache: createPublicCache(),
       invalidation: noopInvalidation,

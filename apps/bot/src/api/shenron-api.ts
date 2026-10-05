@@ -29,7 +29,13 @@ import {
   PUBLIC_RATE_LIMIT,
   type RateLimitPort,
 } from "@shenron/api/http";
-import { createShenronApi, type ShenronApi, type WikiReadPort } from "@shenron/api/server";
+import { createPluginPort, resolvePluginRoot } from "@shenron/api/plugin";
+import {
+  createShenronApi,
+  type PluginPort,
+  type ShenronApi,
+  type WikiReadPort,
+} from "@shenron/api/server";
 import type { Database } from "bun:sqlite";
 import {
   MANGA_CANDIDATE_STATUSES,
@@ -117,6 +123,11 @@ export interface BotShenronApiOptions {
   pg?: PgSource | null;
   /** Port wiki explicite (tests) ; prioritaire sur `pg`. */
   wiki?: WikiReadPort | null;
+  /**
+   * Plugin « shenron » (`/api/public/plugin*`). Absent : `plugin/` du dépôt s'il est trouvé
+   * depuis le dossier courant (`SHENRON_PLUGIN_DIR` sinon) ; `null` le désactive.
+   */
+  plugin?: PluginPort | null;
   buckets: PublicRateBuckets;
   corsOrigins?: readonly string[];
   /** Adresse de socket de la requête (`server.requestIP(req)?.address`). */
@@ -134,12 +145,19 @@ function wikiPortFrom(o: BotShenronApiOptions): WikiReadPort | null {
   ) as WikiReadPort;
 }
 
+function pluginPortFrom(o: BotShenronApiOptions): PluginPort | null {
+  if (o.plugin !== undefined) return o.plugin;
+  const root = resolvePluginRoot(process.env);
+  return root ? createPluginPort(root) : null;
+}
+
 /** Application `@shenron/api` du bot. */
 export function createBotShenronApi(o: BotShenronApiOptions): ShenronApi {
   const remote = o.remoteAddress ?? (() => null);
   return createShenronApi(
     {
       wiki: wikiPortFrom(o),
+      plugin: pluginPortFrom(o),
       rateLimit: bucketRateLimiter(o.buckets, o.now),
       publicCache: createPublicCache(),
       invalidation: noopInvalidation,
