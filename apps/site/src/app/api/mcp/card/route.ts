@@ -8,7 +8,9 @@ import { SITE_URL } from "@/lib/config";
 import { mcpUpstream } from "@/lib/ai-access";
 
 export const runtime = "nodejs";
-export const revalidate = 600;
+// Rendue à la requête : `SHENRON_MCP_URL` n'existe qu'au runtime, un pré-rendu de build
+// figerait un 404. Le cache vit dans `cache-control` (CDN), pas dans l'ISR.
+export const dynamic = "force-dynamic";
 
 interface UpstreamCard {
   tools?: string[];

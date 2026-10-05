@@ -55,7 +55,9 @@ const JOURNEY_EN: Record<Journey, { label: string; blurb: string }> = {
 };
 
 export const runtime = "nodejs";
-export const revalidate = 3600;
+// Rendue à la requête : la section MCP dépend de `SHENRON_MCP_URL`, absente au build ; le
+// cache vit dans `Cache-Control` (s-maxage 3600) côté CDN.
+export const dynamic = "force-dynamic";
 
 export async function GET(): Promise<Response> {
   const cfg = await getLaunchConfig().catch(() => null);
