@@ -1,4 +1,5 @@
-import { GamePageLayout } from "@/components/GamePageLayout";
+import { GamePage } from "@/components/games/GamePage";
+import { T } from "@/components/T";
 import { BingoGame } from "./BingoGame";
 import type { Metadata } from "next";
 
@@ -12,12 +13,12 @@ export const dynamic = "force-dynamic";
 
 export default function BingoPlayPage() {
   return (
-    <GamePageLayout
+    <GamePage
       path="/jeux/bingo"
       title="Bingo du Ki"
-      subtitle={(u) => `${u} ❯ Devine 1-100 en 10 essais`}
+      lead={(name) => <T k="communaute.jeux.bingo.lead" values={{ name }} />}
     >
       <BingoGame />
-    </GamePageLayout>
+    </GamePage>
   );
 }

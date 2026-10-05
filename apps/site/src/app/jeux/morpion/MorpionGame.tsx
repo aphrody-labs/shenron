@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition, type KeyboardEvent } from "react";
 import { sfx } from "@/lib/sfx";
 import { KiShock } from "@/components/games/KiFx";
+import { BTN_PRIMARY, BTN_SECONDARY, FOCUS, INPUT, PANEL } from "@/components/games/planche";
 import fx from "@/components/games/games.module.css";
+import { nextGridIndex } from "@/components/games/grid-nav";
+import { useT } from "@/components/T";
 
 type Cell = "." | "X" | "O";
 type Outcome =
@@ -24,57 +27,74 @@ type ApiState = {
 
 type ApiError = { error: string };
 
-const OUTCOME_LABEL: Record<string, { label: string; color: string }> = {
-  "won-X": { label: "VICTOIRE", color: "text-green-400" },
-  "won-O": { label: "DÉFAITE", color: "text-red-400" },
-  draw: { label: "ÉGALITÉ", color: "text-dbz-yellow" },
+// Écaille pour la victoire, rouge étoile pour la défaite, os pour l'égalité.
+const OUTCOME_LABEL: Record<string, { label: string; color: string; border: string }> = {
+  "won-X": { label: "Victoire", color: "text-dbz-green", border: "border-l-dbz-green" },
+  "won-O": { label: "Défaite", color: "text-dbz-red", border: "border-l-dbz-red" },
+  draw: { label: "Égalité", color: "text-white", border: "border-l-white/40" },
 };
 
+/**
+ * Case du plateau. Une case jouée ou une partie finie est `aria-disabled` et
+ * non `disabled` : un bouton désactivé sort de l'ordre de focus, et la
+ * navigation aux flèches (tabIndex tournant) butait sur chaque case remplie.
+ */
 function CellButton({
   value,
   highlighted,
   disabled,
+  label,
+  focusable,
   onClick,
+  onKeyDown,
+  onFocus,
+  buttonRef,
 }: {
   value: Cell;
   highlighted: boolean;
   disabled: boolean;
+  label: string;
+  focusable: boolean;
   onClick: () => void;
+  onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => void;
+  onFocus: () => void;
+  buttonRef: (el: HTMLButtonElement | null) => void;
 }) {
   const empty = value === ".";
+  const inert = disabled || !empty;
   return (
     <button
+      ref={buttonRef}
       type="button"
-      onClick={onClick}
-      disabled={disabled || !empty}
-      style={{
-        boxShadow: highlighted
-          ? "0 0 18px rgba(74,222,128,0.7), inset 0 0 12px rgba(74,222,128,0.4)"
-          : value === "X"
-            ? "inset 0 0 14px color-mix(in srgb, var(--color-dbz-ki) 35%, transparent)"
-            : value === "O"
-              ? "inset 0 0 14px rgba(255,178,0,0.3)"
-              : undefined,
+      onClick={() => {
+        if (!inert) onClick();
       }}
-      className={`aspect-square flex items-center justify-center text-5xl font-saiyan border-2 transition-all ${
+      onKeyDown={onKeyDown}
+      onFocus={onFocus}
+      tabIndex={focusable ? 0 : -1}
+      aria-disabled={inert}
+      aria-label={label}
+      className={`flex aspect-square min-h-11 items-center justify-center rounded-lg border text-5xl font-bold transition-colors ${FOCUS} ${
         highlighted
-          ? "border-green-400 bg-green-400/10 text-green-400 ki-pulse"
+          ? "border-dbz-green bg-dbz-green/15 text-dbz-green"
           : empty
-            ? "border-dbz-border hover:border-dbz-orange hover:bg-dbz-orange/10 text-dbz-orange hover:scale-[1.03]"
+            ? "border-white/12 text-dbz-orange hover:border-dbz-orange/70"
             : value === "X"
-              ? "border-dbz-blue-light bg-dbz-blue-light/10 text-dbz-blue-light"
+              ? "border-dbz-blue-light/60 bg-dbz-blue-light/10 text-dbz-blue-light"
               : "border-dbz-orange/60 bg-dbz-orange/10 text-dbz-orange"
-      } disabled:cursor-not-allowed`}
+      } aria-disabled:cursor-not-allowed`}
     >
-      <span className={empty ? "" : "drop-shadow-[0_0_8px_currentColor]"}>
-        {empty ? "" : value}
-      </span>
+      <span aria-hidden>{empty ? "" : value}</span>
     </button>
   );
 }
 
 export function MorpionGame() {
+  const t = useT();
   const [state, setState] = useState<ApiState | null>(null);
+  // Case qui porte l'unique arrêt de tabulation du plateau.
+  const [focusCell, setFocusCell] = useState(4);
+  const cells = useRef<Array<HTMLButtonElement | null>>([]);
   const [stake, setStake] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [endPulse, setEndPulse] = useState(0);
@@ -102,7 +122,7 @@ export function MorpionGame() {
   function startNew() {
     const parsedStake = stake ? Number(stake) : undefined;
     if (parsedStake !== undefined && (!Number.isFinite(parsedStake) || parsedStake < 1)) {
-      setError("Mise invalide");
+      setError("Mise refusée : entre un nombre entier de Zénis, 1 au minimum.");
       return;
     }
     startTransition(async () => {
@@ -135,6 +155,21 @@ export function MorpionGame() {
     });
   }
 
+  function onCellKeyDown(e: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const next = nextGridIndex(index, e.key);
+    if (next === null) return;
+    e.preventDefault();
+    setFocusCell(next);
+    cells.current[next]?.focus();
+  }
+
+  const cellLabel = (v: Cell, i: number) =>
+    t("communaute.jeux.morpion.cell", {
+      row: Math.floor(i / 3) + 1,
+      col: (i % 3) + 1,
+      state: v === "." ? t("communaute.jeux.morpion.empty") : v,
+    });
+
   const winLine = state?.outcome.kind === "won" ? state.outcome.line : [];
   const finishedKey =
     state?.outcome.kind === "won"
@@ -146,22 +181,21 @@ export function MorpionGame() {
   return (
     <div className="space-y-6">
       {!state && (
-        <div className="dbz-panel p-6 space-y-4 hud-frame">
-          <p className="text-center font-scouter text-[10px] tracking-[0.3em] text-dbz-blue-light/70 uppercase">
-            Duel de Ki · ton aura (X) contre le bot (O)
-          </p>
+        <div className={`${PANEL} space-y-4 p-5 sm:p-6`}>
+          <p className="text-sm text-white/75">Tu joues les X, le bot les O. Tu commences.</p>
           <label className="block">
-            <span className="font-saiyan uppercase tracking-widest text-sm text-dbz-yellow">
-              Mise (optionnelle, en zénis)
+            <span className="text-sm font-semibold text-white/85">
+              Mise (optionnelle, en Zénis)
             </span>
             <input
               type="number"
+              inputMode="numeric"
               min={1}
               max={1_000_000}
               value={stake}
               onChange={(e) => setStake(e.target.value)}
-              placeholder="défaut : 100 z win / 50 z loss"
-              className="mt-2 w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 font-mono"
+              placeholder="Par défaut : +100 en cas de victoire, −50 en cas de défaite"
+              className={`${INPUT} mt-2 tabular-nums`}
               disabled={pending}
             />
           </label>
@@ -169,32 +203,21 @@ export function MorpionGame() {
             type="button"
             onClick={startNew}
             disabled={pending}
-            className="dbz-button w-full disabled:opacity-40"
+            className={`${BTN_PRIMARY} w-full`}
           >
-            {pending ? "…" : "NOUVELLE PARTIE"}
+            {pending ? "Préparation…" : "Nouvelle partie"}
           </button>
         </div>
       )}
 
       {state && (
         <>
-          <div className="dbz-panel p-6 relative overflow-hidden hud-frame hud-scanlines">
-            {/* Légende des combattants (auras Ki) */}
-            <div className="flex items-center justify-between mb-3 font-scouter text-[10px] tracking-widest uppercase">
-              <span className="text-dbz-blue-light flex items-center gap-1">
-                <span className="text-dbz-blue-light text-lg drop-shadow-[0_0_6px_currentColor]">
-                  X
-                </span>
-                Ki Saiyan
-              </span>
-              <span className="text-dbz-orange flex items-center gap-1">
-                Ki Bot
-                <span className="text-dbz-orange text-lg drop-shadow-[0_0_6px_currentColor]">
-                  O
-                </span>
-              </span>
+          <div className={`${PANEL} relative overflow-hidden p-5 sm:p-6`}>
+            <div className="mb-3 flex items-center justify-between text-sm font-semibold">
+              <span className="text-dbz-blue-light">X : toi</span>
+              <span className="text-dbz-orange">O : le bot</span>
             </div>
-            {/* Onde de choc + flash quand le duel se résout */}
+            {/* Onde de choc + flash quand le duel se résout : réponse au dernier coup. */}
             <KiShock
               trigger={endPulse || null}
               color={
@@ -206,14 +229,25 @@ export function MorpionGame() {
               }
               flash={state.outcome.kind === "won" && state.outcome.mark === "X"}
             />
-            <div className="grid grid-cols-3 gap-2 relative z-10">
+            <div
+              role="group"
+              aria-label={t("communaute.jeux.morpion.board")}
+              className="relative z-10 grid grid-cols-3 gap-2"
+            >
               {state.board.map((v, i) => (
                 <CellButton
                   key={i}
                   value={v}
+                  label={cellLabel(v, i)}
                   highlighted={winLine.includes(i)}
                   disabled={pending || state.outcome.kind !== "playing"}
+                  focusable={focusCell === i}
                   onClick={() => play(i)}
+                  onKeyDown={(e) => onCellKeyDown(e, i)}
+                  onFocus={() => setFocusCell(i)}
+                  buttonRef={(el) => {
+                    cells.current[i] = el;
+                  }}
                 />
               ))}
             </div>
@@ -221,34 +255,37 @@ export function MorpionGame() {
 
           {finishedKey && (
             <div
-              className={`dbz-panel p-5 border-l-8 border-dbz-yellow ${
+              role="status"
+              className={`${PANEL} border-l-4 p-5 sm:p-6 ${OUTCOME_LABEL[finishedKey].border} ${
                 finishedKey === "won-O" ? fx.shake : ""
               }`}
             >
-              <div className="flex items-baseline justify-between mb-2">
-                <span className={`font-saiyan text-3xl ${OUTCOME_LABEL[finishedKey].color}`}>
+              <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+                <span
+                  className={`font-display text-3xl font-bold ${OUTCOME_LABEL[finishedKey].color}`}
+                >
                   {OUTCOME_LABEL[finishedKey].label}
                 </span>
                 {state.balance !== undefined && (
-                  <span className="font-scouter text-xs tracking-widest text-dbz-blue-light">
-                    Solde : {state.balance} z
+                  <span className="text-sm tabular-nums text-white/70">
+                    Solde : {state.balance} Ƶ
                   </span>
                 )}
               </div>
               {state.delta !== undefined && state.delta !== 0 && (
                 <p
-                  className={`font-saiyan text-xl ${state.delta > 0 ? "text-green-400" : "text-red-400"}`}
+                  className={`text-xl font-bold tabular-nums ${state.delta > 0 ? "text-dbz-green" : "text-dbz-red"}`}
                 >
                   {state.delta > 0 ? "+" : ""}
-                  {state.delta} z
+                  {state.delta} Ƶ
                 </p>
               )}
               <button
                 type="button"
                 onClick={() => setState(null)}
-                className="dbz-button mt-4 !text-sm"
+                className={`${BTN_SECONDARY} mt-4`}
               >
-                REJOUER
+                Rejouer
               </button>
             </div>
           )}
@@ -256,9 +293,9 @@ export function MorpionGame() {
       )}
 
       {error && (
-        <div className="dbz-panel p-4 border-l-8 border-red-400">
-          <span className="font-scouter text-xs tracking-widest text-red-400">✗ {error}</span>
-        </div>
+        <p role="alert" className={`${PANEL} border-l-4 border-l-dbz-red p-4 text-sm text-white`}>
+          {error}
+        </p>
       )}
     </div>
   );

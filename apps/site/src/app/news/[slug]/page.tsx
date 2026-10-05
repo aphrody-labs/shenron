@@ -21,8 +21,25 @@ import { headingsFromHtml, publicPostFilter } from "@/lib/posts";
 import { listComments, reactionState } from "@/lib/social";
 import { CommentThread } from "@/components/social/CommentThread";
 import { LikeButton } from "@/components/social/LikeButton";
-import { DomainBar, PageShell } from "@/components/kit";
+import { DomainBar } from "@/components/kit";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { ArticleTocDisclosure, ArticleTocRail } from "./ArticleToc";
 import { ReadingProgress } from "./ReadingProgress";
+
+/** Anneau de focus kinto, 2 px — le même sur chaque lien de la page. */
+const FOCUS =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
+
+/**
+ * Corps de l'article : les règles `.ed-prose` (mesure, filets, listes,
+ * tableaux contenus) dans la famille et la taille du corps du site ; les
+ * citations gardent la serif, filet écaille à gauche.
+ */
+const PROSE =
+  "ed-prose text-base! leading-[1.55]! lg:text-[1.0625rem]! [&_blockquote]:border-s-dbz-green! [&_blockquote]:font-serif!";
+
+/** Page d'un thème du journal (URL toujours en minuscules). */
+const tagHref = (tag: string) => `/news/theme/${encodeURIComponent(tag.toLowerCase())}`;
 
 export const revalidate = 300;
 
@@ -117,6 +134,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   if (!post) notFound();
 
   const headings = post.contentHtml ? headingsFromHtml(post.contentHtml) : [];
+  // Un sommaire d'une seule entrée n'aide personne : il n'apparaît qu'à partir de deux.
+  const hasToc = headings.length > 1;
+  const firstTag = post.tags?.[0] ?? null;
   const url = `${SITE_URL}/news/${post.slug}`;
 
   // Fil de discussion et compteur de « j'aime » rendus côté serveur : données
@@ -187,201 +207,216 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <ReadingProgress />
 
       {/* Même colonne et même rythme vertical que le reste du site
-			    (`PageShell`) : l'article gardait sa largeur et ses marges propres,
-			    et le contenu sautait de quelques dizaines de pixels en passant de
-			    l'index à la fiche. */}
-      <PageShell rhythm="default">
+			    (`PageShell`). Mobile d'abord : une seule colonne de lecture, le
+			    sommaire repliable au-dessus du corps ; à partir de `lg`, la colonne
+			    de texte et le sommaire collant côte à côte (liste-détail).
+
+			    Typographie : la famille du corps (`font-sans`) l'emporte sur la serif
+			    du contexte `.editorial` ; 16 px sur mobile, 17 px sur desktop,
+			    interlignage 1,55, colonne de 38rem (≤ 72 signes). La serif ne reste
+			    qu'aux citations, filet écaille à gauche : le style signale la source. */}
+      <PageShell rhythm="tight" className="font-sans">
         {/* Pont staff → édition de CET article, sans repasser par la sidebar. */}
         <DomainBar
           domain="news"
-          className="ed-no-print mb-8"
+          className="ed-no-print mb-6"
           actions={[{ href: `/admin/posts/${post.id}`, label: "Éditer cet article" }]}
         />
 
         <Breadcrumbs
-          className="ed-no-print mb-10"
+          className="ed-no-print mb-8"
           items={[
             { label: "Actualités", href: "/news" },
-            ...(post.tags?.length
-              ? [
-                  {
-                    label: post.tags[0],
-                    href: `/news/theme/${encodeURIComponent(post.tags[0].toLowerCase())}`,
-                  },
-                ]
-              : []),
+            ...(firstTag ? [{ label: firstTag, href: tagHref(firstTag) }] : []),
             { label: post.title },
           ]}
         />
 
-        {/* ---- Titraille ------------------------------------------------- */}
-        <header className="mx-auto max-w-[46rem]">
-          {post.tags?.length > 0 && (
-            <p className="ed-kicker">
-              <Link
-                href={`/news/theme/${encodeURIComponent(post.tags[0].toLowerCase())}`}
-                className="hover:underline"
-              >
-                {post.tags[0]}
-              </Link>
-            </p>
-          )}
-          <h1 className="ed-title mt-3">{post.title}</h1>
-          {post.excerpt && <p className="ed-standfirst mt-5">{post.excerpt}</p>}
+        <div
+          className={
+            hasToc
+              ? "lg:grid lg:grid-cols-[minmax(0,38rem)_15rem] lg:justify-center lg:gap-x-16"
+              : ""
+          }
+        >
+          <div className="mx-auto min-w-0 max-w-[38rem] lg:mx-0">
+            {/* ---- Titraille ------------------------------------------------- */}
+            <header>
+              <h1 className="text-[clamp(2rem,1.3rem+3.4vw,3.5rem)] font-[850] leading-[1.05] tracking-[-0.02em] text-balance text-[color:var(--ed-ink)]">
+                {post.title}
+              </h1>
+              {post.excerpt && (
+                <p className="mt-5 text-[1.125rem] leading-[1.55] text-pretty text-[color:var(--ed-ink-soft)] lg:text-[1.25rem]">
+                  {post.excerpt}
+                </p>
+              )}
 
-          <div className="ed-meta mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-[color:var(--ed-rule)] py-4">
-            {post.author?.username && <span>Par {post.author.username}</span>}
-            {post.publishedAt && (
-              <time dateTime={post.publishedAt.toISOString()}>{dateLongue(post.publishedAt)}</time>
-            )}
-            <span aria-hidden>·</span>
-            <span>{post.readingMinutes} min de lecture</span>
-          </div>
-        </header>
-
-        {/* ---- Couverture -------------------------------------------------- */}
-        {coverUrl && (
-          <figure className="mx-auto mt-10 max-w-[62rem]">
-            <div className="relative aspect-[16/9] overflow-hidden rounded-sm bg-[color:var(--ed-paper-sunken)]">
-              <Image
-                src={coverUrl}
-                alt={post.coverAlt ?? ""}
-                fill
-                sizes="(max-width: 1024px) 100vw, 992px"
-                className="object-cover"
-                priority
-              />
-            </div>
-            {post.coverCaption && (
-              <figcaption className="ed-meta mt-3 normal-case tracking-normal">
-                {post.coverCaption}
-              </figcaption>
-            )}
-          </figure>
-        )}
-
-        {/* ---- Corps + sommaire -------------------------------------------- */}
-        <div className="mt-14 grid gap-12 lg:grid-cols-[minmax(0,46rem)_1fr] lg:justify-center">
-          <article className="min-w-0">
-            {post.contentHtml ? (
-              // HTML régénéré côté serveur depuis le document Tiptap
-              // (`lib/posts.ts`) — jamais du balisage venu du navigateur.
-              <div className="ed-prose" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
-            ) : (
-              // Repli : articles antérieurs à l'éditeur riche, encore en Markdown.
-              <div className="ed-prose">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
-              </div>
-            )}
-
-            {/* Annonce native en fin de lecture — après le corps de l'article,
-						    jamais insérée au milieu du texte (règle AdSense : l'annonce ne
-						    doit pas être confondue avec le contenu éditorial). */}
-            <AdUnit placement="article" className="mt-12" />
-
-            {post.tags?.length > 0 && (
-              <div className="ed-no-print mt-14 flex flex-wrap items-center gap-2 border-t border-[color:var(--ed-rule)] pt-6">
-                <span className="ed-meta">Thèmes</span>
-                {post.tags.map((tag) => (
+              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-[color:var(--ed-rule)] py-3 text-[0.875rem] tabular-nums text-[color:var(--ed-ink-muted)]">
+                {firstTag && (
                   <Link
-                    key={tag}
-                    href={`/news/theme/${encodeURIComponent(tag.toLowerCase())}`}
-                    className="rounded-full border border-[color:var(--ed-rule-strong)] px-3 py-1 text-[0.8125rem] transition-colors hover:border-[color:var(--ed-accent)] hover:text-[color:var(--ed-accent)]"
+                    href={tagHref(firstTag)}
+                    className={`inline-flex min-h-11 items-center rounded-full border border-white/12 px-4 text-[color:var(--ed-ink)] hover:border-dbz-orange ${FOCUS}`}
                   >
-                    {tag}
+                    {firstTag}
                   </Link>
-                ))}
+                )}
+                {post.author?.username && <span>Par {post.author.username}</span>}
+                {post.publishedAt && (
+                  <time dateTime={post.publishedAt.toISOString()}>
+                    {dateLongue(post.publishedAt)}
+                  </time>
+                )}
+                <span>{post.readingMinutes} min de lecture</span>
               </div>
+            </header>
+
+            {/* ---- Couverture -------------------------------------------------- */}
+            {coverUrl && (
+              <figure className="mt-8">
+                <div className="relative -mx-[var(--shell-pad,1.5rem)] aspect-[16/9] overflow-hidden bg-[color:var(--ed-paper-sunken)] sm:mx-0 sm:rounded-lg">
+                  <Image
+                    src={coverUrl}
+                    alt={post.coverAlt ?? ""}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 608px"
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+                {post.coverCaption && (
+                  <figcaption className="mt-3 text-[0.8125rem] leading-normal text-[color:var(--ed-ink-muted)]">
+                    {post.coverCaption}
+                  </figcaption>
+                )}
+              </figure>
             )}
 
-            {/* ---- Participer : j'aime + discussion ---------------------- */}
-            {/* Le fil est rendu ici avec sa PREMIÈRE PAGE déjà remplie côté
-						    serveur (`initial`) : les commentaires restent indexables et la
-						    page ne saute pas à l'hydratation. Tout le reste (tri, page 2,
-						    droits du lecteur) passe par `/api/social/*`, ce qui laisse la
-						    page statique/ISR cacheable par le CDN. */}
-            <div className="ed-no-print mt-16 flex flex-wrap items-center gap-4 border-t border-[color:var(--ed-rule)] pt-8">
-              <LikeButton
-                target={`post:${post.id}`}
-                initialLikes={likes}
-                callbackURL={`/news/${post.slug}`}
-                label="J'aime cet article"
-              />
-              <span className="text-[0.8125rem] text-[color:var(--ed-ink-muted)]">
-                {thread.total > 0
-                  ? `${thread.total} message${thread.total > 1 ? "s" : ""} dans la discussion`
-                  : "Aucun message pour l'instant"}
-              </span>
-            </div>
+            {/* ---- Corps -------------------------------------------------------- */}
+            <article className="mt-10">
+              {hasToc && <ArticleTocDisclosure headings={headings} />}
 
-            <CommentThread
-              className="mt-10"
-              target={`post:${post.id}`}
-              initial={thread}
-              callbackURL={`/news/${post.slug}`}
-              title="Discussion"
-            />
-          </article>
+              {post.contentHtml ? (
+                // HTML régénéré côté serveur depuis le document Tiptap
+                // (`lib/posts.ts`) — jamais du balisage venu du navigateur.
+                <div className={PROSE} dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+              ) : (
+                // Repli : articles antérieurs à l'éditeur riche, encore en Markdown.
+                <div className={PROSE}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
+                </div>
+              )}
 
-          {/* ---- Sommaire collant -------------------------------------------- */}
-          {headings.length > 1 && (
-            <aside className="ed-no-print hidden lg:block">
-              <div className="sticky top-24">
-                <p className="ed-meta border-b border-[color:var(--ed-rule)] pb-2">Sommaire</p>
-                <nav className="mt-3">
-                  <ol className="space-y-2">
-                    {headings.map((h) => (
-                      <li key={h.id} style={{ paddingInlineStart: `${(h.level - 2) * 0.85}rem` }}>
-                        <a
-                          href={`#${h.id}`}
-                          className="block text-[0.875rem] leading-snug text-[color:var(--ed-ink-muted)] transition-colors hover:text-[color:var(--ed-accent)]"
+              {/* Annonce native en fin de lecture — après le corps de l'article,
+							    jamais insérée au milieu du texte (règle AdSense : l'annonce ne
+							    doit pas être confondue avec le contenu éditorial). */}
+              <AdUnit placement="article" className="mt-12" />
+
+              {post.tags?.length > 0 && (
+                <div className="ed-no-print mt-12 border-t border-[color:var(--ed-rule)] pt-6">
+                  <h2 className="text-[0.9375rem] font-semibold text-[color:var(--ed-ink)]">
+                    Thèmes
+                  </h2>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {post.tags.map((tag) => (
+                      <li key={tag}>
+                        <Link
+                          href={tagHref(tag)}
+                          className={`inline-flex min-h-11 items-center rounded-full border border-white/12 px-4 text-[0.875rem] hover:border-dbz-orange hover:text-dbz-orange ${FOCUS}`}
                         >
-                          {h.text}
-                        </a>
+                          {tag}
+                        </Link>
                       </li>
                     ))}
-                  </ol>
-                </nav>
+                  </ul>
+                </div>
+              )}
+
+              {/* ---- Participer : j'aime + discussion ---------------------- */}
+              {/* Le fil est rendu ici avec sa PREMIÈRE PAGE déjà remplie côté
+							    serveur (`initial`) : les commentaires restent indexables et la
+							    page ne saute pas à l'hydratation. Tout le reste (tri, page 2,
+							    droits du lecteur) passe par `/api/social/*`, ce qui laisse la
+							    page statique/ISR cacheable par le CDN. */}
+              <div className="ed-no-print mt-12 flex flex-wrap items-center gap-4 border-t border-[color:var(--ed-rule)] pt-8">
+                <LikeButton
+                  target={`post:${post.id}`}
+                  initialLikes={likes}
+                  callbackURL={`/news/${post.slug}`}
+                  label="J'aime cet article"
+                />
+                <span className="text-[0.875rem] tabular-nums text-[color:var(--ed-ink-muted)]">
+                  {thread.total > 0
+                    ? `${thread.total} message${thread.total > 1 ? "s" : ""} dans la discussion`
+                    : "Aucun message pour l'instant : lance la discussion ci-dessous."}
+                </span>
               </div>
-            </aside>
-          )}
+
+              <CommentThread
+                className="mt-10"
+                target={`post:${post.id}`}
+                initial={thread}
+                callbackURL={`/news/${post.slug}`}
+                title="Discussion"
+              />
+            </article>
+          </div>
+
+          {/* ---- Sommaire collant (desktop) ------------------------------------ */}
+          {hasToc && <ArticleTocRail headings={headings} />}
         </div>
 
         {/* ---- À lire ensuite ---------------------------------------------- */}
         {related.length > 0 && (
-          <section className="ed-no-print mt-24 border-t-2 border-[color:var(--ed-ink)] pt-8">
-            <h2 className="ed-kicker">À lire ensuite</h2>
-            <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+          <section
+            aria-labelledby="a-lire-ensuite"
+            className="ed-no-print mt-20 border-t border-[color:var(--ed-rule-strong)] pt-8"
+          >
+            <h2
+              id="a-lire-ensuite"
+              className="text-[1.375rem] font-[850] tracking-[-0.02em] text-[color:var(--ed-ink)]"
+            >
+              À lire ensuite
+            </h2>
+            <ul className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
-                <article key={p.id}>
+                <li key={p.id}>
                   {p.cover && (
+                    // Vignette décorative : le titre porte déjà le même lien,
+                    // un seul arrêt de tabulation par article.
                     <Link
                       href={`/news/${p.slug}`}
-                      className="group relative mb-3 block aspect-[16/10] overflow-hidden rounded-sm bg-[color:var(--ed-paper-sunken)]"
+                      tabIndex={-1}
+                      aria-hidden
+                      className="relative mb-3 block aspect-[16/10] overflow-hidden rounded-lg border border-white/12 bg-[color:var(--ed-paper-sunken)]"
                     >
                       <Image
                         src={assetUrl(p.cover)}
-                        alt={p.coverAlt ?? ""}
+                        alt=""
                         fill
-                        sizes="(max-width: 640px) 100vw, 340px"
-                        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 340px"
+                        className="object-cover"
                       />
                     </Link>
                   )}
-                  <h3 className="text-[1.125rem] font-semibold leading-snug tracking-[-0.01em]">
+                  <h3 className="text-[1.0625rem] font-semibold leading-snug">
                     <Link
                       href={`/news/${p.slug}`}
-                      className="transition-colors hover:text-[color:var(--ed-accent)]"
+                      className={`rounded-sm hover:text-dbz-orange ${FOCUS}`}
                     >
                       {p.title}
                     </Link>
                   </h3>
-                  <p className="ed-meta mt-2">
-                    {p.publishedAt && dateCourte(p.publishedAt)} · {p.readingMinutes} min
+                  <p className="mt-2 flex flex-wrap gap-x-4 text-[0.8125rem] tabular-nums text-[color:var(--ed-ink-muted)]">
+                    {p.publishedAt && (
+                      <time dateTime={p.publishedAt.toISOString()}>
+                        {dateCourte(p.publishedAt)}
+                      </time>
+                    )}
+                    <span>{p.readingMinutes} min de lecture</span>
                   </p>
-                </article>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
         )}
 

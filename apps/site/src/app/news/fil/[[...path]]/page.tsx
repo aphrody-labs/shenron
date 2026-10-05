@@ -21,14 +21,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FeedStream } from "@/components/feed/FeedStream";
-import {
-  EmptyState,
-  LinkPager,
-  PageShell,
-  SectionHeading,
-  StatTiles,
-  TabNav,
-} from "@/components/kit";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { EmptyState, LinkPager, StatTiles, TabNav } from "@/components/kit";
 import { DISCORD_INVITE } from "@/lib/config";
 import {
   FEED_FILTERS,
@@ -112,7 +107,7 @@ export default async function FeedPage({ params }: { params: Promise<{ path?: st
   }));
 
   return (
-    <PageShell rhythm="loose">
+    <PageShell rhythm="tight">
       <Breadcrumbs
         className="mb-8"
         items={[
@@ -125,7 +120,6 @@ export default async function FeedPage({ params }: { params: Promise<{ path?: st
 
       <SectionHeading
         level={1}
-        kicker="Dragon Ball France"
         title="Le fil"
         standfirst="Les parutions de la rédaction et les discussions de la communauté, dans l'ordre où elles arrivent."
         actions={

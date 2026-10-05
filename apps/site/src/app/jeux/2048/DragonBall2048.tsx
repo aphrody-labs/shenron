@@ -1,10 +1,22 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useId,
+  useRef,
+  type KeyboardEvent,
+  type PointerEvent,
+} from "react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import { DBZ_TILES } from "./tiles";
+import { directionFromKey, directionFromSwipe, type Direction } from "./controls";
 import { assetUrl } from "@/lib/assets";
 import { sfx } from "@/lib/sfx";
 import { KiShock, PowerLevel } from "@/components/games/KiFx";
+import { BTN_PRIMARY } from "@/components/games/planche";
+import { useT } from "@/components/T";
 import fx from "@/components/games/games.module.css";
 
 type Tile = {
@@ -22,7 +34,17 @@ function generateId() {
   return Math.random() * 1000000;
 }
 
+/** Boutons directionnels : repli tactile et clavier du balayage. */
+const PAD: ReadonlyArray<{ dir: Direction; key: string; Icon: typeof ChevronUp; cell: string }> = [
+  { dir: "UP", key: "communaute.jeux.2048.up", Icon: ChevronUp, cell: "col-start-2" },
+  { dir: "LEFT", key: "communaute.jeux.2048.left", Icon: ChevronLeft, cell: "col-start-1" },
+  { dir: "DOWN", key: "communaute.jeux.2048.down", Icon: ChevronDown, cell: "col-start-2" },
+  { dir: "RIGHT", key: "communaute.jeux.2048.right", Icon: ChevronRight, cell: "col-start-3" },
+];
+
 export default function DragonBall2048() {
+  const t = useT();
+  const helpId = useId();
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -62,7 +84,7 @@ export default function DragonBall2048() {
 
   // Basic 2048 logic
   const move = useCallback(
-    (direction: "UP" | "DOWN" | "LEFT" | "RIGHT") => {
+    (direction: Direction) => {
       if (gameOver) return;
 
       setTiles((prevTiles) => {
@@ -174,52 +196,51 @@ export default function DragonBall2048() {
     [gameOver, score],
   );
 
+  // Flèches du clavier quand AUCUN élément n'a le focus (page fraîchement
+  // ouverte) : on joue sans devoir d'abord cliquer le plateau. Dès qu'un champ,
+  // un lien ou un bouton a le focus, les flèches lui reviennent — l'écoute sur
+  // `window` confisquait sinon le curseur de tout champ de saisie de la page.
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) return;
-      // L'écoute est posée sur `window` : sans ce filtre, le jeu confisquait les
-      // flèches à tout champ de saisie de la page (et les raccourcis du
-      // navigateur), curseur bloqué au milieu d'un mot.
-      if (e.altKey || e.ctrlKey || e.metaKey) return;
-      const cible = e.target as HTMLElement | null;
-      if (cible?.isContentEditable) return;
-      if (cible && ["INPUT", "TEXTAREA", "SELECT"].includes(cible.tagName)) return;
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (document.activeElement && document.activeElement !== document.body) return;
+      const direction = directionFromKey(e.key);
+      if (!direction) return;
       e.preventDefault();
-      if (e.key === "ArrowUp") move("UP");
-      if (e.key === "ArrowDown") move("DOWN");
-      if (e.key === "ArrowLeft") move("LEFT");
-      if (e.key === "ArrowRight") move("RIGHT");
+      move(direction);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [move]);
 
-  // Touch/Swipe support
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+  // Plateau focalisé : les flèches jouent, sans faire défiler la page.
+  const onBoardKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const direction = directionFromKey(e.key);
+    if (!direction) return;
+    e.preventDefault();
+    move(direction);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart) return;
-    const touchEnd = {
-      x: e.changedTouches[0].clientX,
-      y: e.changedTouches[0].clientY,
-    };
-    const dx = touchEnd.x - touchStart.x;
-    const dy = touchEnd.y - touchStart.y;
-    const absDx = Math.abs(dx);
-    const absDy = Math.abs(dy);
-
-    if (Math.max(absDx, absDy) > 30) {
-      if (absDx > absDy) {
-        move(dx > 0 ? "RIGHT" : "LEFT");
-      } else {
-        move(dy > 0 ? "DOWN" : "UP");
-      }
-    }
-    setTouchStart(null);
+  // Balayage en Pointer Events (doigt, souris, stylet), écouté SUR le plateau
+  // seulement : posé sur l'enveloppe, un simple défilement de la page jouait un
+  // coup. `touch-action: none` (plateau seul) évite que le même geste fasse
+  // défiler la page ET joue le coup.
+  const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (!e.isPrimary) return;
+    swipe.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
+    const start = swipe.current;
+    swipe.current = null;
+    if (!start || start.id !== e.pointerId) return;
+    const direction = directionFromSwipe(e.clientX - start.x, e.clientY - start.y);
+    if (direction) move(direction);
+  };
+  const onPointerCancel = () => {
+    swipe.current = null;
   };
 
   // Simple check for game over
@@ -243,34 +264,45 @@ export default function DragonBall2048() {
 
   // Tuile la plus puissante du plateau (pour l'aura de Ki renforcée).
   const maxValue = tiles.reduce((m, t) => Math.max(m, t.value), 0);
+  const scoreText = score.toLocaleString("fr-FR");
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-white font-sans">
-      <div className="flex items-center justify-between w-full max-w-md mb-8">
-        <h1 className="text-5xl font-saiyan text-dbz-yellow tracking-widest drop-shadow-lg">
-          DBZ 2048
-        </h1>
+    <div className="flex flex-col items-center text-white">
+      <div className="mb-5 flex w-full max-w-md items-center justify-between gap-4">
+        <p id={helpId} className="text-[0.8125rem] leading-snug text-white/60">
+          {t("communaute.jeux.2048.help")}
+        </p>
         <PowerLevel
           value={score}
           label="Ki total"
-          className="dbz-panel border border-dbz-orange/50"
+          className="dbz-panel shrink-0 border border-dbz-orange/50"
         />
       </div>
 
-      {/* Le balayage n'est écouté que SUR le plateau : posé sur l'enveloppe (haute
-			    de 60vh, titre et consignes compris), un simple défilement de la page vers
-			    le bas jouait un coup. `touch-action: none` évite en plus que le même
-			    geste fasse défiler la page ET joue le coup. */}
+      {/* Annonce du score et de la fin de partie aux lecteurs d'écran : le
+			    plateau est une grille d'images, rien n'y dit que le coup a compté. */}
+      <p className="sr-only" aria-live="polite">
+        {gameOver
+          ? t("communaute.jeux.2048.gameOver", { score: scoreText })
+          : t("communaute.jeux.2048.score", { score: scoreText })}
+      </p>
+
       <div
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        tabIndex={0}
+        role="group"
+        aria-label={t("communaute.jeux.2048.board")}
+        aria-describedby={helpId}
+        onKeyDown={onBoardKeyDown}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         style={{ touchAction: "none" }}
-        className="relative bg-zinc-900/80 p-3 rounded-xl border-4 border-dbz-border shadow-2xl backdrop-blur-sm w-full max-w-md aspect-square hud-frame"
+        className="relative aspect-square w-full max-w-md select-none rounded-xl border-4 border-dbz-border bg-zinc-900/80 p-3 outline-none hud-frame focus-visible:ring-4 focus-visible:ring-dbz-orange/70"
       >
         {/* Speed-lines d'énergie quand une nouvelle transformation est atteinte */}
         {showSpeed && (
           <div
-            className="absolute inset-0 speed-lines z-30 pointer-events-none rounded-lg"
+            className="absolute inset-0 speed-lines z-30 pointer-events-none rounded-lg motion-reduce:hidden"
             aria-hidden
           />
         )}
@@ -278,9 +310,9 @@ export default function DragonBall2048() {
         <KiShock trigger={mergePulse || null} color="yellow" />
         {ascendFlash > 0 && <KiShock trigger={ascendFlash} color="yellow" flash />}
 
-        <div className="grid grid-cols-4 grid-rows-4 gap-3 w-full h-full">
+        <div className="grid grid-cols-4 grid-rows-4 gap-3 w-full h-full" aria-hidden>
           {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, i) => (
-            <div key={i} className="w-full h-full bg-zinc-800/50 rounded-lg shadow-inner" />
+            <div key={i} className="w-full h-full bg-zinc-800/50 rounded-lg" />
           ))}
         </div>
 
@@ -296,7 +328,7 @@ export default function DragonBall2048() {
           return (
             <div
               key={tile.id}
-              className="absolute transition-all duration-150 ease-in-out"
+              className="absolute motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-in-out"
               style={{
                 width: "calc((100% - 2.25rem) / 4)",
                 height: "calc((100% - 2.25rem) / 4)",
@@ -311,16 +343,11 @@ export default function DragonBall2048() {
 							    l'emporte sur l'attribut `style` (cascade CSS) : posées sur la
 							    même boîte que `transform: translate(...)`, `reveal-scale` et
 							    `ki-pulse` — qui écrivent toutes deux `transform: scale(...)` —
-							    EFFAÇAIENT le placement. Mesuré au navigateur : une boîte à
-							    `translate(200%, 100%)` était rendue à x=8 au lieu de x=208.
-							    Conséquences : la tuile qui venait d'apparaître se dessinait sur
-							    la case du coin haut-gauche et y restait (`forwards`) jusqu'au
-							    coup suivant, une fusion y sautait 300 ms, et la tuile la plus
-							    forte (`ki-pulse` infini) y était collée toute la partie. */}
+							    EFFAÇAIENT le placement. */}
               <div
                 className={`w-full h-full rounded-lg flex flex-col items-center justify-center ${
-                  tile.isNew ? "animate-[reveal-scale_0.2s_ease-out]" : ""
-                } ${tile.isMerged ? "animate-[ki-pulse_0.3s_ease-out]" : ""} ${
+                  tile.isNew ? "motion-safe:animate-[reveal-scale_0.2s_ease-out]" : ""
+                } ${tile.isMerged ? "motion-safe:animate-[ki-pulse_0.3s_ease-out]" : ""} ${
                   isTop ? "ki-pulse" : ""
                 }`}
                 style={{
@@ -329,22 +356,26 @@ export default function DragonBall2048() {
                   boxShadow: glow,
                 }}
               >
-                <div className="relative w-full h-full p-1 overflow-hidden group">
+                <div className="relative w-full h-full p-1 overflow-hidden">
                   <img
                     src={assetUrl(tileInfo.image)}
-                    alt={tileInfo.name}
-                    className="w-full h-full object-contain drop-shadow-md z-10 relative opacity-90"
+                    alt={`${tileInfo.name} (${tile.value})`}
+                    draggable={false}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-contain z-10 relative opacity-90"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-black/60 z-20">
                     <p
-                      className="text-[9px] sm:text-[11px] font-bold text-center text-white truncate px-1 font-display uppercase tracking-wider"
+                      className="text-[9px] sm:text-[11px] font-bold text-center text-white truncate px-1 font-display tracking-wide"
                       style={{ color: tileInfo.color }}
+                      aria-hidden
                     >
                       {tileInfo.name}
                     </p>
                   </div>
                   {/* Power level scouter (la valeur = niveau de puissance) */}
-                  <div className="absolute top-1 left-1 bg-black/80 px-1 rounded z-20">
+                  <div className="absolute top-1 left-1 bg-black/80 px-1 rounded z-20" aria-hidden>
                     <p className="scouter-text text-[10px]">{tile.value}</p>
                   </div>
                 </div>
@@ -355,32 +386,43 @@ export default function DragonBall2048() {
 
         {gameOver && (
           <div
-            className={`absolute inset-0 bg-black/85 backdrop-blur-md rounded-lg flex flex-col items-center justify-center z-50 ${fx.shake}`}
+            role="status"
+            className={`absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-dbz-bg/95 ${fx.shake}`}
           >
-            <div className="font-scouter text-[10px] tracking-[0.35em] text-red-400/80 uppercase mb-1">
-              Signal de Ki perdu
-            </div>
-            <h2 className="text-6xl font-saiyan text-red-500 mb-2 tracking-widest drop-shadow-[0_0_15px_rgba(255,0,0,0.5)]">
-              K.O.
-            </h2>
-            <p className="text-zinc-300 font-display mb-2">Tu as été vaincu !</p>
-            <p className="scouter-text text-lg mb-6">Ki final : {score.toLocaleString("fr-FR")}</p>
-            <button onClick={initializeGame} className="dbz-button">
-              Renaître
+            <p className="mb-2 font-display text-5xl font-bold text-dbz-red">K.O.</p>
+            <p className="mb-2 text-white/85">Plus aucun coup possible.</p>
+            <p className="mb-6 text-lg font-bold tabular-nums text-white">Ki final : {scoreText}</p>
+            <button type="button" onClick={initializeGame} className={BTN_PRIMARY}>
+              Rejouer
             </button>
           </div>
         )}
       </div>
 
-      <div className="mt-8 text-center text-zinc-400 text-sm font-display max-w-md">
-        <p>
-          Utilise les <strong>flèches directionnelles</strong> pour fusionner les personnages et
-          augmenter leur niveau de puissance.
-        </p>
-        <p className="mt-2 text-dbz-orange/80">
-          Fusionne deux personnages identiques pour évoluer vers la transformation suivante !
-        </p>
+      {/* Pavé directionnel : repli tactile (balayage difficile) et clavier
+			    (Tab puis Entrée), cibles de 48 px. */}
+      <div
+        role="group"
+        aria-label={t("communaute.jeux.2048.controls")}
+        className="mt-6 grid grid-cols-3 grid-rows-2 gap-2"
+      >
+        {PAD.map(({ dir, key, Icon, cell }) => (
+          <button
+            key={dir}
+            type="button"
+            onClick={() => move(dir)}
+            disabled={gameOver}
+            aria-label={t(key)}
+            className={`${cell} ${dir === "UP" ? "row-start-1" : "row-start-2"} grid min-h-12 min-w-12 place-items-center rounded-xl border border-dbz-border bg-dbz-card text-dbz-orange transition-colors hover:border-dbz-orange focus-visible:outline-2 focus-visible:outline-dbz-orange disabled:opacity-40`}
+          >
+            <Icon className="h-5 w-5" aria-hidden />
+          </button>
+        ))}
       </div>
+
+      <p className="mt-6 max-w-md text-center text-sm text-dbz-orange/80">
+        Fusionne deux personnages identiques pour évoluer vers la transformation suivante !
+      </p>
     </div>
   );
 }

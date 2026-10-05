@@ -13,7 +13,7 @@ import { Avatar } from "@/components/Avatar";
 import { useCallback, useEffect, useId, useState } from "react";
 import { Bulle, Chargement, ChevronBas, Corbeille, Etoile } from "@shenron/ui/icones";
 import { useMe } from "@/lib/use-me";
-import { RatingBadge, Stars } from "./Stars";
+import { RatingBadge, Stars } from "@shenron/ui/public/Stars";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { PlainField } from "@/components/editor/PlainField";
 
@@ -196,17 +196,17 @@ export function EntityRatingSummary({
   return (
     <a
       href={`#${ANCHOR_ID}`}
-      className={`group inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 transition-colors hover:border-dbz-orange/50 hover:bg-dbz-orange/10 ${className}`}
+      className={`group inline-flex min-h-11 items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 transition-colors hover:border-dbz-orange/50 hover:bg-dbz-orange/10 ${className}`}
       title="Voir les notes et avis"
     >
       {summary.count > 0 ? (
         <>
           <Stars value={summary.average} size="sm" label="Moyenne" />
-          <span className="font-display text-sm font-bold tabular-nums text-white">
+          <span className="text-sm font-bold tabular-nums text-white">
             {summary.average.toFixed(1)}
           </span>
-          <span className="text-[11px] text-white/50">
-            · {summary.count} note{summary.count > 1 ? "s" : ""}
+          <span className="text-[0.75rem] tabular-nums text-white/60">
+            {summary.count} note{summary.count > 1 ? "s" : ""}
           </span>
         </>
       ) : (
@@ -214,7 +214,7 @@ export function EntityRatingSummary({
           <span className="text-dbz-orange/70" aria-hidden>
             ★
           </span>
-          <span className="text-[12px] font-display font-semibold tracking-wide text-white/55 group-hover:text-dbz-orange">
+          <span className="text-[0.8125rem] font-semibold text-white/65 group-hover:text-dbz-orange">
             Noter
           </span>
         </>
@@ -355,8 +355,8 @@ export function EntityRating({
   const reviewCount = comments.length;
 
   const tabBtn =
-    "inline-flex items-center gap-1.5 rounded-t-lg border border-b-0 px-4 py-2 text-sm font-semibold transition-colors";
-  const tabActive = "border-dbz-orange/50 bg-dbz-card text-white";
+    "inline-flex min-h-11 items-center gap-1.5 rounded-t-lg border border-b-0 px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
+  const tabActive = "border-dbz-green bg-dbz-card text-white";
   const tabIdle = "border-transparent bg-transparent text-white/50 hover:text-white/80";
 
   return (
@@ -442,9 +442,7 @@ export function EntityRating({
             ) : canRate ? (
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-[11px] font-display font-semibold uppercase tracking-[0.12em] text-white/50">
-                    Ta note
-                  </span>
+                  <span className="text-[0.8125rem] font-semibold text-white/65">Ta note</span>
                   <Stars
                     value={draftScore}
                     size="lg"
@@ -465,10 +463,9 @@ export function EntityRating({
                 <div>
                   <label
                     htmlFor={`rating-comment-${id}`}
-                    className="mb-1.5 block text-[11px] font-display font-semibold uppercase tracking-[0.12em] text-white/50"
+                    className="mb-1.5 block text-[0.8125rem] font-semibold text-white/65"
                   >
-                    Commentaire{" "}
-                    <span className="normal-case tracking-normal text-white/50">(optionnel)</span>
+                    Commentaire <span className="font-normal text-white/50">(optionnel)</span>
                   </label>
                   <PlainField
                     id={`rating-comment-${id}`}
@@ -503,7 +500,7 @@ export function EntityRating({
                     type="button"
                     disabled={saving || draftScore < 1}
                     onClick={() => void submit(draftScore, draftComment)}
-                    className="inline-flex h-9 items-center rounded-full bg-dbz-orange px-4 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-black transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-40"
+                    className="inline-flex min-h-11 items-center rounded-full bg-dbz-orange px-5 font-display text-[0.8125rem] font-bold text-black transition-colors hover:bg-white disabled:pointer-events-none disabled:opacity-40"
                   >
                     {saving ? (
                       <>
@@ -527,7 +524,7 @@ export function EntityRating({
                 </p>
                 <Link
                   href={`/signin?callbackURL=${encodeURIComponent(signinCallback)}`}
-                  className="inline-flex h-9 items-center whitespace-nowrap rounded-full bg-dbz-orange px-4 font-display text-[11px] font-bold uppercase tracking-[0.1em] text-black transition-colors hover:bg-white"
+                  className="inline-flex min-h-11 items-center whitespace-nowrap rounded-full bg-dbz-orange px-5 font-display text-[0.8125rem] font-bold text-black transition-colors hover:bg-white"
                 >
                   Connexion Discord
                 </Link>
@@ -569,6 +566,9 @@ export function EntityRating({
                           <button
                             type="button"
                             title={me?.isAdmin ? "Supprimer la note (admin)" : "Supprimer mon avis"}
+                            aria-label={
+                              me?.isAdmin ? "Supprimer la note (admin)" : "Supprimer mon avis"
+                            }
                             onClick={() => void remove(c.id, "full")}
                             disabled={deletingId === c.id}
                             // 28 px au dessin : `.cible-44` porte la zone tactile à
@@ -602,7 +602,7 @@ export function EntityRating({
                 <button
                   type="button"
                   onClick={() => setTab("rate")}
-                  className="font-semibold text-dbz-orange hover:underline"
+                  className="cible-44 font-semibold text-dbz-orange hover:underline"
                 >
                   Noter
                 </button>{" "}

@@ -1,4 +1,5 @@
-import { GamePageLayout } from "@/components/GamePageLayout";
+import { GamePage } from "@/components/games/GamePage";
+import { T } from "@/components/T";
 import { MorpionGame } from "./MorpionGame";
 import type { Metadata } from "next";
 
@@ -12,8 +13,12 @@ export const dynamic = "force-dynamic";
 
 export default function MorpionPlayPage() {
   return (
-    <GamePageLayout path="/jeux/morpion" title="Morpion" subtitle={(u) => `${u} (X) ❯ VS BOT (O)`}>
+    <GamePage
+      path="/jeux/morpion"
+      title="Morpion"
+      lead={(name) => <T k="communaute.jeux.morpion.lead" values={{ name }} />}
+    >
       <MorpionGame />
-    </GamePageLayout>
+    </GamePage>
   );
 }

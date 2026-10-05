@@ -3,53 +3,61 @@
  * « plus grand nombre de Zénis ». Composant de présentation pur — les deux
  * jeux de données sont chargés par la page (`/classements`) pour qu'un échec
  * de l'API du bot ne prive pas le site du classement des noteurs.
+ *
+ * Les deux tableaux écrivaient chacun leur ligne de rang ; ils passent
+ * désormais par `RankTable` (cartes sur mobile, tableau sur desktop), comme le
+ * top 100 de `/leaderboard`.
  */
-import Link from "next/link";
+import type { ReactNode } from "react";
 import type { ContributorRow } from "@/lib/contributors";
 import type { LeaderboardEntry } from "@/lib/shenron";
 import { formatZeni } from "@/lib/zeni";
-import { Avatar } from "@/components/Avatar";
+import { T } from "@/components/T";
+import { RankTable } from "./RankTable";
 
 const fmt = (n: number) => n.toLocaleString("fr-FR");
-
-const RANK_TONE = ["text-amber-300", "text-slate-200", "text-orange-400", "text-white/45"] as const;
-const rankTone = (rank: number) => RANK_TONE[Math.min(rank, 4) - 1];
 
 function Panel({
   id,
   kanji,
-  eyebrow,
   title,
   subtitle,
   children,
 }: {
   id: string;
   kanji: string;
-  eyebrow: string;
   title: string;
   subtitle: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section
       id={id}
-      className="toriyama-card scroll-mt-24 overflow-hidden rounded-2xl border-2 border-black bg-black/40 p-4 shadow-[6px_6px_0px_#000] sm:p-6"
+      aria-labelledby={`${id}-titre`}
+      className="scroll-mt-24 rounded-lg border border-white/12 p-4 sm:p-6"
     >
-      <div className="border-b border-white/10 pb-4">
-        <span className="rounded border border-black bg-black px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400 shadow-[1px_1px_0px_#000]">
-          {eyebrow}
-        </span>
-        <h3 className="mt-2 flex items-center gap-2.5 font-saiyan text-xl uppercase leading-none text-white sm:text-2xl">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-amber-400 font-saiyan text-sm font-bold text-black shadow-[2px_2px_0px_#000]">
+      <div className="border-b border-white/12 pb-4">
+        <h3
+          id={`${id}-titre`}
+          className="flex items-center gap-2.5 text-[clamp(1.125rem,1rem+0.6vw,1.375rem)] font-[850] leading-tight tracking-[-0.02em] text-white"
+        >
+          <span
+            aria-hidden
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 font-jp text-sm font-bold text-black"
+          >
             {kanji}
           </span>
           {title}
         </h3>
-        <p className="mt-1.5 text-sm text-white/60">{subtitle}</p>
+        <p className="mt-1.5 text-sm text-white/65">{subtitle}</p>
       </div>
       {children}
     </section>
   );
+}
+
+function EmptyBoard({ children }: { children: ReactNode }) {
+  return <p className="py-8 text-center text-sm text-white/60">{children}</p>;
 }
 
 /** Classement des membres qui ont déposé le plus de notes. */
@@ -58,42 +66,34 @@ export function TopRatersBoard({ rows }: { rows: ContributorRow[] }) {
     <Panel
       id="noteurs"
       kanji="評"
-      eyebrow="Concours notes"
       title="Top noteurs du site"
       subtitle="Notes déposées sur les fiches épisodes, films, jeux et arcs. Départage aux avis rédigés."
     >
       {rows.length === 0 ? (
-        <p className="py-8 text-center font-saiyan text-lg uppercase text-amber-400">
-          Aucune note enregistrée pour l&apos;instant — sois le premier.
-        </p>
+        <EmptyBoard>Aucune note enregistrée pour l&apos;instant — sois le premier.</EmptyBoard>
       ) : (
-        <ul className="mt-4 divide-y divide-white/5">
-          {rows.map((r) => (
-            <li key={r.userId} className="flex items-center gap-3 py-2.5">
-              <span className={`w-10 shrink-0 font-saiyan text-lg ${rankTone(r.rank)}`}>
-                #{r.rank}
-              </span>
-              <Avatar
-                src={r.avatar}
-                userId={r.discordId}
-                size={32}
-                className="border border-dbz-border bg-black/60"
-              />
-              <Link
-                href={`/profil/${r.discordId}`}
-                className="min-w-0 flex-1 truncate text-sm font-semibold text-white/85 transition-colors hover:text-amber-300"
-              >
-                {r.username}
-              </Link>
-              <span className="hidden shrink-0 text-right text-xs text-white/45 sm:block">
-                {fmt(r.ratingComments)} avis · {fmt(r.comments)} comm.
-              </span>
-              <span className="w-20 shrink-0 text-right font-mono text-sm font-bold text-amber-300">
-                {fmt(r.ratings)} ★
-              </span>
-            </li>
-          ))}
-        </ul>
+        <RankTable
+          className="mt-3"
+          caption="Top noteurs du site"
+          metrics={[
+            { key: "reviews", label: <T k="communaute.classements.reviewsCol" /> },
+            { key: "comments", label: <T k="communaute.classements.commentsCol" /> },
+            { key: "ratings", label: <T k="communaute.classements.ratingsCol" />, primary: true },
+          ]}
+          rows={rows.map((r) => ({
+            id: r.userId,
+            rank: r.rank,
+            href: `/profil/${r.discordId}`,
+            name: r.username,
+            avatar: r.avatar,
+            discordId: r.discordId,
+            values: {
+              reviews: fmt(r.ratingComments),
+              comments: fmt(r.comments),
+              ratings: `${fmt(r.ratings)} ★`,
+            },
+          }))}
+        />
       )}
     </Panel>
   );
@@ -105,42 +105,29 @@ export function TopZeniBoard({ rows }: { rows: LeaderboardEntry[] }) {
     <Panel
       id="zeni"
       kanji="銭"
-      eyebrow="Économie DBFR"
       title="Top fortunes en Zénis"
       subtitle="Les plus riches du serveur Discord. Les Zénis se gagnent en activité, jeux et boutique."
     >
       {rows.length === 0 ? (
-        <p className="py-8 text-center font-saiyan text-lg uppercase text-amber-400">
-          Le coffre est vide : le bot n&apos;a rien renvoyé.
-        </p>
+        <EmptyBoard>Le coffre est vide : le bot n&apos;a rien renvoyé.</EmptyBoard>
       ) : (
-        <ul className="mt-4 divide-y divide-white/5">
-          {rows.map((e, i) => (
-            <li key={e.discordId} className="flex items-center gap-3 py-2.5">
-              <span className={`w-10 shrink-0 font-saiyan text-lg ${rankTone(e.rank || i + 1)}`}>
-                #{e.rank || i + 1}
-              </span>
-              <Avatar
-                src={e.avatarUrl}
-                userId={e.discordId}
-                size={32}
-                className="border border-dbz-border bg-black/60"
-              />
-              <Link
-                href={`/profil/${e.discordId}`}
-                className="min-w-0 flex-1 truncate text-sm font-semibold text-white/85 transition-colors hover:text-amber-300"
-              >
-                {e.username ?? `Guerrier #${e.discordId.slice(-4)}`}
-              </Link>
-              <span className="hidden shrink-0 text-right text-xs text-white/45 sm:block">
-                Niv. {e.level}
-              </span>
-              <span className="w-24 shrink-0 text-right font-mono text-sm font-bold text-amber-300">
-                {formatZeni(e.zeni)}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <RankTable
+          className="mt-3"
+          caption="Top fortunes en Zénis"
+          metrics={[
+            { key: "level", label: <T k="communaute.classements.levelCol" /> },
+            { key: "zeni", label: <T k="communaute.classements.zeniCol" />, primary: true },
+          ]}
+          rows={rows.map((e, i) => ({
+            id: e.discordId,
+            rank: e.rank || i + 1,
+            href: `/profil/${e.discordId}`,
+            name: e.username ?? `Guerrier #${e.discordId.slice(-4)}`,
+            avatar: e.avatarUrl,
+            discordId: e.discordId,
+            values: { level: e.level, zeni: formatZeni(e.zeni) },
+          }))}
+        />
       )}
     </Panel>
   );

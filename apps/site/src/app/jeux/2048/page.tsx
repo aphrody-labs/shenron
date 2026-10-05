@@ -1,6 +1,6 @@
 import DragonBall2048 from "./DragonBall2048";
-import { PageHero } from "@/components/PageHero";
-import { GAMES_HERO } from "@/lib/db-banners";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,19 +10,21 @@ export const metadata: Metadata = {
   alternates: { canonical: "/jeux/2048" },
 };
 
+/**
+ * Le 2048 se joue sans compte : pas de bandeau pleine largeur, la colonne
+ * `prose` garde le plateau entier à l'écran d'un téléphone et le centre sur
+ * desktop. Un seul titre de page — le composant de jeu n'en rend plus.
+ */
 export default function Page2048() {
   return (
-    <div>
-      <PageHero
-        eyebrow="Mini-jeu"
-        title="DBZ 2048: Ki Merge"
-        lead="Le célèbre jeu de réflexion revisité à la sauce Dragon Ball. Fusionnez les guerriers de même puissance pour débloquer les niveaux supérieurs !"
-        image={GAMES_HERO}
-        imageAlt="Dragon Ball Z 2048"
+    <PageShell width="prose" rhythm="tight">
+      <PageHeader
+        title="DBZ 2048 : Ki Merge"
+        size="md"
+        className="mb-8"
+        subtitle="Le célèbre jeu de réflexion revisité à la sauce Dragon Ball. Fusionne les guerriers de même puissance pour débloquer les niveaux supérieurs."
       />
-      <div className="container mx-auto py-12">
-        <DragonBall2048 />
-      </div>
-    </div>
+      <DragonBall2048 />
+    </PageShell>
   );
 }

@@ -3,8 +3,12 @@ import Link from "next/link";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { ExternalLink } from "@shenron/ui/external";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { PageShell } from "@/components/kit";
+import { LinkPager } from "@/components/kit";
+import { T } from "@/components/T";
 import { SITE_URL } from "@/lib/config";
 import {
   EXTERNAL_SOURCE_KINDS,
@@ -171,6 +175,16 @@ export default async function DragonBallSourcesPage({
     0,
   );
   const feed = await readDataset("shenron_feed_actu.json");
+  const pageCount = Math.max(1, Math.ceil(bxcCatalog.total / pageSize));
+  // URL d’une page de résultats, filtres conservés (page 1 = URL sans `page`).
+  const pageHref = (p: number) => {
+    const qs = new URLSearchParams({
+      ...(q ? { q } : {}),
+      ...(kind ? { kind } : {}),
+      ...(p > 1 ? { page: String(p) } : {}),
+    }).toString();
+    return qs ? `/sources/dragon-ball?${qs}` : "/sources/dragon-ball";
+  };
   const totalRows =
     datasets.reduce((sum, item) => sum + countRows(item.data), 0) +
     toeiCount -
@@ -190,221 +204,210 @@ export default async function DragonBallSourcesPage({
   };
 
   return (
-    <PageShell rhythm="loose">
+    <PageShell rhythm="tight">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <Breadcrumbs
-        className="mb-8"
+        className="mb-6"
         items={[{ label: "Sources Dragon Ball", display: "Sources BXC × Shenron" }]}
       />
-      <header className="mb-10 max-w-3xl">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-dbz-orange">
-          Collecte attribuée · BXC
-        </p>
-        <h1 className="font-display text-3xl font-bold text-white sm:text-5xl">
-          Les sources qui nourrissent Shenron
-        </h1>
-        <p className="mt-4 text-base leading-7 text-white/65">
-          Toutes les sources BXC sont indexées et classifiées ici : publications, références,
-          archives, encyclopédies, statistiques et médias. Les textes restent attribués à leur
-          origine ; le canon est un jugement séparé, jamais un filtre de recherche.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3 text-xs text-white/55">
-          <span className="rounded-full border border-white/10 px-3 py-1">
-            {totalRows.toLocaleString("fr-FR")} entrées collectées
-          </span>
-          <span className="rounded-full border border-white/10 px-3 py-1">
-            BXC · profil HTTP / statique
-          </span>
-          {bxcCatalog.total > 0 && (
-            <span className="rounded-full border border-dbz-orange/30 bg-dbz-orange/10 px-3 py-1 text-dbz-orange">
-              {bxcCatalog.total.toLocaleString("fr-FR")} documents synchronisés
-            </span>
-          )}
-          {Array.isArray(feed) && (
-            <span className="rounded-full border border-white/10 px-3 py-1">
-              {feed.length} actus prêtes à publier
-            </span>
-          )}
-        </div>
-      </header>
 
-      <section className="grid gap-5 md:grid-cols-2" aria-label="Sources Dragon Ball">
-        {datasets.map(({ source, data }) => {
-          const count = source.key === "toei" ? toeiCount : countRows(data);
-          return (
-            <article key={source.key} className={`rounded-2xl border p-5 ${source.accent}`}>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/50">
-                    {source.kind}
-                  </p>
-                  <h2 className="mt-2 text-xl font-bold text-white">{source.label}</h2>
-                </div>
-                <span className="rounded-full bg-black/25 px-3 py-1 text-sm font-semibold text-white">
-                  {count.toLocaleString("fr-FR")}
-                </span>
-              </div>
-              <p className="mt-4 min-h-10 text-sm text-white/65">
-                {firstTitle(data) ?? "Données collectées et vérifiées par le pipeline BXC."}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3 text-xs">
-                <Link
-                  href={source.href}
-                  className="rounded-lg bg-white/10 px-3 py-2 font-semibold text-white hover:bg-white/20"
-                >
-                  Ouvrir la page Shenron →
-                </Link>
-                <a
-                  href={source.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg border border-white/15 px-3 py-2 text-white/70 hover:text-white"
-                >
-                  Source première ↗
-                </a>
-              </div>
-            </article>
-          );
-        })}
-      </section>
+      <SectionHeading
+        level={1}
+        kicker="Collecte attribuée · BXC"
+        title="Les sources qui nourrissent Shenron"
+        standfirst="Toutes les sources BXC sont indexées et classifiées ici : publications, références, archives, encyclopédies, statistiques et médias. Les textes restent attribués à leur origine ; le canon est un jugement séparé, jamais un filtre de recherche."
+      />
+      <ul className="mt-5 flex flex-wrap gap-2 text-xs text-white/55" aria-label="Volume collecté">
+        <li className="rounded-full border border-white/10 px-3 py-1">
+          {totalRows.toLocaleString("fr-FR")} entrées collectées
+        </li>
+        <li className="rounded-full border border-white/10 px-3 py-1">
+          BXC · profil HTTP / statique
+        </li>
+        {bxcCatalog.total > 0 && (
+          <li className="rounded-full border border-dbz-orange/30 bg-dbz-orange/10 px-3 py-1 text-dbz-orange">
+            {bxcCatalog.total.toLocaleString("fr-FR")} documents synchronisés
+          </li>
+        )}
+        {Array.isArray(feed) && (
+          <li className="rounded-full border border-white/10 px-3 py-1">
+            {feed.length} actus prêtes à publier
+          </li>
+        )}
+      </ul>
 
-      <section className="mt-10" aria-labelledby="bxc-live-title">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dbz-orange">
-              Moteur BXC
-            </p>
-            <h2 id="bxc-live-title" className="mt-2 text-2xl font-bold text-white">
-              Rechercher dans toutes les collectes
-            </h2>
-          </div>
-          <p className="max-w-lg text-sm leading-6 text-white/55">
-            Chaque résultat garde sa classification et son lien d’origine. Aucune source n’est
-            écartée du moteur.
-          </p>
-        </div>
-        <form
-          method="GET"
-          className="mt-5 grid gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 md:grid-cols-[1fr_12rem_auto]"
-        >
-          <label className="sr-only" htmlFor="bxc-query">
-            Rechercher dans les sources BXC
-          </label>
-          <input
-            id="bxc-query"
-            type="search"
-            name="q"
-            defaultValue={q}
-            placeholder="Goku, Daima, Toriyama, tournoi…"
-            className="min-h-11 w-full rounded-lg border border-white/15 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-dbz-orange"
-          />
-          <select
-            name="kind"
-            defaultValue={kind}
-            aria-label="Classification de source"
-            className="min-h-11 rounded-lg border border-white/15 bg-black/20 px-3 text-sm text-white outline-none focus:border-dbz-orange"
+      {/* Mobile : les sources premières, puis le moteur. Desktop large : les
+          sources en colonne de gauche, le moteur et ses résultats à droite —
+          la largeur sert à garder les deux sous les yeux. */}
+      <div className="mt-10 grid gap-10 xl:grid-cols-[20rem_minmax(0,1fr)] xl:items-start">
+        <section aria-labelledby="sources-premieres" className="min-w-0">
+          <h2
+            id="sources-premieres"
+            className="mb-4 font-display text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-white/50"
           >
-            <option value="">Toutes les classifications</option>
-            {EXTERNAL_SOURCE_KINDS.map((value) => (
-              <option key={value} value={value}>
-                {KIND_LABEL[value] ?? value}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            className="min-h-11 rounded-lg bg-dbz-orange px-5 text-sm font-bold text-black transition hover:bg-dbz-yellow"
-          >
-            Rechercher
-          </button>
-        </form>
-        {bxcCatalog.records.length > 0 ? (
-          <ul className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {bxcCatalog.records.map((record) => (
-              <li
-                key={record.url}
-                className="rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-dbz-orange/45"
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-dbz-orange">
-                  {sourceHost(record.url)} · {KIND_LABEL[record.kind] ?? record.kind}
-                </p>
-                <h3 className="mt-2 line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-white">
-                  <Link href={externalSourceHref(record.url)} className="hover:text-dbz-orange">
-                    {record.title}
-                  </Link>
-                </h3>
-                {record.excerpt ? (
-                  <p className="mt-2 line-clamp-3 text-xs leading-5 text-white/55">
-                    {record.excerpt}
+            Sources premières
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+            {datasets.map(({ source, data }) => {
+              const count = source.key === "toei" ? toeiCount : countRows(data);
+              return (
+                <article key={source.key} className={`rounded-xl border p-5 ${source.accent}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/50">
+                        {source.kind}
+                      </p>
+                      <h3 className="mt-2 text-lg font-bold text-white">{source.label}</h3>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-black/25 px-3 py-1 text-sm font-semibold tabular-nums text-white">
+                      {count.toLocaleString("fr-FR")}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm text-white/65">
+                    {firstTitle(data) ?? "Données collectées et vérifiées par le pipeline BXC."}
                   </p>
-                ) : null}
-                {provenanceLabel(record.provenance) ? (
-                  <p className="mt-2 truncate text-[11px] text-white/40">
-                    Collecte : {provenanceLabel(record.provenance)}
-                  </p>
-                ) : null}
-                <div className="mt-3 flex items-center justify-between gap-2 text-xs text-white/45">
-                  <span>Relevée le {formatFetchedAt(record.fetchedAt)}</span>
-                  <span className="flex shrink-0 gap-3">
+                  <div className="mt-4 flex flex-wrap gap-2 text-xs">
                     <Link
-                      href={externalSourceHref(record.url)}
-                      className="font-semibold text-white/70 hover:text-dbz-orange"
+                      href={source.href}
+                      className="inline-flex min-h-11 items-center rounded-lg bg-white/10 px-3 font-semibold text-white hover:bg-white/20"
                     >
-                      Fiche ↗
+                      Ouvrir la page Shenron
                     </Link>
-                    {safeExternalUrl(record.url) ? (
-                      <a
-                        href={safeExternalUrl(record.url)!}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-semibold text-white/70 hover:text-dbz-orange"
-                      >
-                        Original ↗
-                      </a>
-                    ) : null}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-5 text-sm leading-6 text-white/60">
-            {q || kind
-              ? "Aucune source ne correspond à ces filtres."
-              : "La synchronisation BXC est en cours. Les données apparaîtront ici dès leur ingestion."}
-          </p>
-        )}
-        {bxcCatalog.total > pageSize && (
-          <nav
-            className="mt-5 flex items-center justify-center gap-3 text-sm"
-            aria-label="Pagination des sources BXC"
-          >
-            {page > 1 ? (
-              <Link
-                href={`/sources/dragon-ball?${new URLSearchParams({ ...(q ? { q } : {}), ...(kind ? { kind } : {}), page: String(page - 1) })}`}
-                className="rounded-lg border border-white/15 px-4 py-2 text-white/70 hover:border-dbz-orange hover:text-white"
-              >
-                Précédent
-              </Link>
-            ) : null}
-            <span className="text-white/55">
-              Page {page} · {bxcCatalog.total.toLocaleString("fr-FR")} résultats
-            </span>
-            {page * pageSize < bxcCatalog.total ? (
-              <Link
-                href={`/sources/dragon-ball?${new URLSearchParams({ ...(q ? { q } : {}), ...(kind ? { kind } : {}), page: String(page + 1) })}`}
-                className="rounded-lg border border-white/15 px-4 py-2 text-white/70 hover:border-dbz-orange hover:text-white"
-              >
-                Suivant
-              </Link>
-            ) : null}
-          </nav>
-        )}
-      </section>
+                    <ExternalLink
+                      href={source.url}
+                      newTabHint={<T k="communaute.sources.newTab" />}
+                      className="inline-flex min-h-11 items-center rounded-lg border border-white/15 px-3 text-white/70 hover:text-white"
+                    >
+                      Source première ↗
+                    </ExternalLink>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
-      <section className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-sm text-white/65">
+        <section aria-labelledby="bxc-live-title" className="min-w-0">
+          <SectionHeading
+            id="bxc-live-title"
+            kicker="Moteur BXC"
+            title="Rechercher dans toutes les collectes"
+            standfirst="Chaque résultat garde sa classification et son lien d’origine. Aucune source n’est écartée du moteur."
+          />
+          <form
+            method="GET"
+            className="mt-5 grid gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:grid-cols-[1fr_12rem] lg:grid-cols-[1fr_12rem_auto]"
+          >
+            <label className="sr-only" htmlFor="bxc-query">
+              Rechercher dans les sources BXC
+            </label>
+            <input
+              id="bxc-query"
+              type="search"
+              name="q"
+              defaultValue={q}
+              placeholder="Goku, Daima, Toriyama, tournoi…"
+              className="min-h-11 w-full rounded-lg border border-white/15 bg-black/20 px-3 text-base text-white outline-none placeholder:text-white/35 focus:border-dbz-orange sm:text-sm"
+            />
+            <select
+              name="kind"
+              defaultValue={kind}
+              aria-label="Classification de source"
+              className="min-h-11 rounded-lg border border-white/15 bg-black/20 px-3 text-base text-white outline-none focus:border-dbz-orange sm:text-sm"
+            >
+              <option value="">Toutes les classifications</option>
+              {EXTERNAL_SOURCE_KINDS.map((value) => (
+                <option key={value} value={value}>
+                  {KIND_LABEL[value] ?? value}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="min-h-11 rounded-lg bg-dbz-orange px-5 text-sm font-bold text-black transition hover:bg-dbz-yellow sm:col-span-2 lg:col-span-1"
+            >
+              Rechercher
+            </button>
+          </form>
+          {bxcCatalog.records.length > 0 ? (
+            <ul className="mt-5 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
+              {bxcCatalog.records.map((record) => {
+                const original = safeExternalUrl(record.url);
+                const collecte = provenanceLabel(record.provenance);
+                return (
+                  <li
+                    key={record.url}
+                    className="flex flex-col rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-dbz-orange/45"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-dbz-orange">
+                      {sourceHost(record.url)} · {KIND_LABEL[record.kind] ?? record.kind}
+                    </p>
+                    <h3 className="mt-2 line-clamp-2 text-sm font-semibold leading-5 text-white">
+                      <Link href={externalSourceHref(record.url)} className="hover:text-dbz-orange">
+                        {record.title}
+                      </Link>
+                    </h3>
+                    {record.excerpt ? (
+                      <p className="mt-2 line-clamp-3 text-xs leading-5 text-white/55">
+                        {record.excerpt}
+                      </p>
+                    ) : null}
+                    {collecte ? (
+                      <p className="mt-2 truncate text-[11px] text-white/40">
+                        Collecte : {collecte}
+                      </p>
+                    ) : null}
+                    <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 pt-3 text-xs text-white/45">
+                      <span>Relevée le {formatFetchedAt(record.fetchedAt)}</span>
+                      <span className="flex shrink-0 gap-1">
+                        <Link
+                          href={externalSourceHref(record.url)}
+                          className="inline-flex min-h-11 items-center px-2 font-semibold text-white/70 hover:text-dbz-orange"
+                        >
+                          Fiche
+                        </Link>
+                        {original ? (
+                          <ExternalLink
+                            href={original}
+                            newTabHint={<T k="communaute.sources.newTab" />}
+                            className="inline-flex min-h-11 items-center px-2 font-semibold text-white/70 hover:text-dbz-orange"
+                          >
+                            Original ↗
+                          </ExternalLink>
+                        ) : null}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-5 text-sm leading-6 text-white/60">
+              {q || kind
+                ? "Aucune source ne correspond à ces filtres."
+                : "La synchronisation BXC est en cours. Les données apparaîtront ici dès leur ingestion."}
+            </p>
+          )}
+          {bxcCatalog.total > pageSize && (
+            <>
+              <p className="mt-5 text-sm text-white/55">
+                {bxcCatalog.total.toLocaleString("fr-FR")} résultats
+              </p>
+              <LinkPager
+                className="mt-3"
+                page={page}
+                pages={pageCount}
+                href={pageHref}
+                ariaLabel="Pagination des sources BXC"
+              />
+            </>
+          )}
+        </section>
+      </div>
+
+      <section className="mt-10 rounded-xl border border-white/10 bg-white/[0.03] p-5 text-sm text-white/65">
         <h2 className="font-semibold text-white">Méthode et provenance</h2>
-        <p className="mt-2 leading-6">
+        <p className="mt-2 max-w-[70ch] leading-6">
           Chaque document est relié à son URL d’origine et à sa collecte. Les synopsis,
           statistiques, archives et pages externes restent des documents attribués ; le canon est
           une information éditoriale séparée, sans effet sur leur présence dans le moteur.

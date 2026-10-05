@@ -2,7 +2,7 @@
  * Corps partagé de la page Actualités — rendu par `/news` (page 1) ET par
  * `/news/page/[n]` (pages suivantes).
  *
- * Deux décisions structurent ce fichier :
+ * Trois décisions structurent ce fichier :
  *
  *  1. **Une seule page d'actualité.** Les parutions de la rédaction tiennent la
  *     tête de page — ce sont elles qui se lisent — et les dernières discussions
@@ -16,10 +16,20 @@
  *     crawlée après la home — était donc recalculé à chaque visite et jamais mis
  *     en cache CDN. Segmenter la pagination en routes statiques rend les deux
  *     prérendables.
+ *
+ *  3. **Mobile d'abord, la largeur ensuite.** Sur téléphone, une seule colonne :
+ *     la une, puis les cartes, puis le fil en lignes pleine largeur. Sur un grand
+ *     écran (`xl`), le fil passe en colonne latérale à côté des articles au lieu
+ *     d'attendre sous la pagination : la largeur sert à lire les deux à la fois.
+ *     Un seul titre de page (`h1`) : la bannière éditable de `/admin/banners`
+ *     reste une image d'en-tête dans la colonne, plus un second bandeau-titre.
  */
+import Image from "next/image";
 import Link from "next/link";
-import { cache } from "react";
+import { cache, type ReactNode } from "react";
 import { desc } from "drizzle-orm";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
 import { dateCourte, dateLongue } from "@/lib/dates";
 import { db } from "@/lib/db";
 import { posts as postsTable } from "@/db/schema";
@@ -39,15 +49,12 @@ import {
   LinkPager,
   MangaCard,
   SocialCounts,
-  PageShell,
-  SectionHeading,
-  Stack,
   TabNav,
 } from "@/components/kit";
 import { T } from "@/components/T";
 
 const POSTS_PER_PAGE = 12;
-/** Événements du fil montrés en bas de l'index (aperçu, pas la liste complète). */
+/** Événements du fil montrés à côté de l'index (aperçu, pas la liste complète). */
 const FEED_PREVIEW = 8;
 
 /** URL canonique d'une page du journal (page 1 = la racine, jamais `/page/1`). */
@@ -66,7 +73,17 @@ export async function journalPageCount(): Promise<number> {
   return Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
 }
 
-export async function JournalIndex({ page }: { page: number }) {
+export async function JournalIndex({
+  page,
+  banner,
+  intro,
+}: {
+  page: number;
+  /** Bannière éditable (`pageHero("news")`), affichée en page 1 seulement. */
+  banner?: string | null;
+  /** Bloc d'information sous le titre (page 1). */
+  intro?: ReactNode;
+}) {
   const offset = (page - 1) * POSTS_PER_PAGE;
   const visible = publicPostFilter();
 
@@ -125,10 +142,12 @@ export async function JournalIndex({ page }: { page: number }) {
   }
   const topTags = [...tagCounts.entries()].toSorted((a, b) => b[1] - a[1]).slice(0, 10);
 
+  const hasFeed = Boolean(feed && feed.entries.length > 0);
+
   return (
-    <PageShell rhythm="loose">
+    <PageShell rhythm="tight">
       <Breadcrumbs
-        className="mb-8"
+        className="mb-6"
         items={[
           { label: "Actualités", href: "/news" },
           ...(page > 1 ? [{ label: `Page ${page}` }] : []),
@@ -139,13 +158,30 @@ export async function JournalIndex({ page }: { page: number }) {
 			    de gestion sans repasser par la sidebar d'administration. */}
       <DomainBar
         domain="news"
-        className="mb-8"
+        className="mb-6"
         actions={[{ href: "/admin/posts/new", label: "Écrire un article" }]}
       />
 
+      {/* Bannière de rubrique : une image d'en-tête DANS la colonne, décorative
+			    (le titre de page reste le `h1` ci-dessous, un seul par page). */}
+      {page === 1 && banner && (
+        <div
+          aria-hidden
+          className="relative mb-8 aspect-[3/1] overflow-hidden rounded-lg border border-white/12 bg-dbz-card sm:aspect-[4/1] lg:aspect-[5/1]"
+        >
+          <Image
+            src={banner}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 1180px) 100vw, 1180px"
+            className="object-cover"
+          />
+        </div>
+      )}
+
       <SectionHeading
         level={1}
-        kicker={<T k="communaute.news.kicker" />}
         title={<T k="communaute.news.title" />}
         standfirst={<T k="communaute.news.standfirst" />}
         actions={
@@ -160,21 +196,29 @@ export async function JournalIndex({ page }: { page: number }) {
         }
       />
 
-      <p className="mt-4 font-display text-[0.6875rem] uppercase tracking-[0.12em] text-white/40">
+      <p className="mt-4 text-sm tabular-nums text-white/55">
         {totalCount} article{totalCount > 1 ? "s" : ""} publié{totalCount > 1 ? "s" : ""}
       </p>
+
+      {intro && <div className="mt-6">{intro}</div>}
 
       {topTags.length > 0 && (
         <ChipRow className="mt-6">
           {topTags.map(([tag, count]) => (
-            <Chip key={tag} href={`/news/theme/${encodeURIComponent(tag.toLowerCase())}`}>
+            <Chip
+              key={tag}
+              href={`/news/theme/${encodeURIComponent(tag.toLowerCase())}`}
+              className="min-h-11!"
+            >
               {tag} <span className="opacity-50">{count}</span>
             </Chip>
           ))}
         </ChipRow>
       )}
 
-      <Stack className="mt-12">
+      <div
+        className={`mt-10 grid gap-12 ${hasFeed ? "xl:grid-cols-[minmax(0,1fr)_20rem] xl:gap-10" : ""}`}
+      >
         {/* État vide sans onomatopée décorative : il dit ce qui manque et où
 				    aller, il ne le meuble pas. */}
         {rows.length === 0 ? (
@@ -188,7 +232,7 @@ export async function JournalIndex({ page }: { page: number }) {
             ]}
           />
         ) : (
-          <section>
+          <section aria-label="Articles" className="min-w-0">
             {lead && (
               <LeadArticle
                 post={lead}
@@ -198,7 +242,9 @@ export async function JournalIndex({ page }: { page: number }) {
             )}
 
             {rest.length > 0 && (
-              <CardGrid className={lead ? "mt-10" : ""}>
+              // Avec le fil en colonne latérale (xl), deux cartes par ligne
+              // gardent des vignettes lisibles ; sans lui, trois.
+              <CardGrid columns={hasFeed ? 2 : 3} className={lead ? "mt-8 sm:mt-10" : ""}>
                 {rest.map((post) => (
                   <MangaCard
                     key={post.id}
@@ -209,6 +255,7 @@ export async function JournalIndex({ page }: { page: number }) {
                     image={post.cover}
                     imageAlt={post.coverAlt}
                     ratio="wide"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 380px"
                     meta={
                       <>
                         {post.publishedAt && (
@@ -216,7 +263,6 @@ export async function JournalIndex({ page }: { page: number }) {
                             {dateCourte(post.publishedAt)}
                           </time>
                         )}
-                        <span aria-hidden>·</span>
                         <span>{post.readingMinutes} min</span>
                       </>
                     }
@@ -239,22 +285,21 @@ export async function JournalIndex({ page }: { page: number }) {
           </section>
         )}
 
-        {/* ---- Le fil unifié ------------------------------------------------- */}
-        {feed && feed.entries.length > 0 && (
-          <section aria-labelledby="fil-actualite">
+        {/* ---- Le fil unifié : sous les articles sur mobile, à côté sur xl ---- */}
+        {feed && hasFeed && (
+          <section aria-labelledby="fil-actualite" className="min-w-0">
             <SectionHeading
               id="fil-actualite"
-              kicker="En direct"
               title="Les dernières discussions"
               standfirst="Les dernières discussions de la communauté. Le fil complet vit sur sa propre page."
               actions={
                 <Link href={feedHref("tout")} className="toriyama-btn-secondary !text-[0.75rem]">
-                  Tout le fil →
+                  <T k="communaute.news.viewFeed" />
                 </Link>
               }
             />
             <TabNav
-              className="mt-6"
+              className="mt-6 xl:mx-0 xl:px-0"
               items={FEED_FILTERS.map((f) => ({
                 href: feedHref(f),
                 label: FEED_FILTER_LABELS[f],
@@ -262,12 +307,14 @@ export async function JournalIndex({ page }: { page: number }) {
               active="/news"
               ariaLabel="Onglets du fil"
             />
+            {/* Lignes compactes : toute la ligne est la cible tactile, et elles
+						    tiennent dans la colonne latérale sans vignette écrasée. */}
             <div className="mt-6">
-              <FeedStream entries={feed.entries} />
+              <FeedStream entries={feed.entries} compact />
             </div>
           </section>
         )}
-      </Stack>
+      </div>
     </PageShell>
   );
 }
@@ -328,7 +375,6 @@ function LeadArticle({
           {post.publishedAt && (
             <time dateTime={post.publishedAt.toISOString()}>{dateLongue(post.publishedAt)}</time>
           )}
-          <span aria-hidden>·</span>
           <span>{post.readingMinutes} min</span>
         </>
       }

@@ -1,4 +1,5 @@
-import { GamePageLayout } from "@/components/GamePageLayout";
+import { GamePage } from "@/components/games/GamePage";
+import { T } from "@/components/T";
 import { PfcGame } from "./PfcGame";
 import type { Metadata } from "next";
 
@@ -13,13 +14,12 @@ export const dynamic = "force-dynamic";
 
 export default function PfcPlayPage() {
   return (
-    <GamePageLayout
+    <GamePage
       path="/jeux/pfc"
       title="Pierre · Feuille · Ciseaux"
-      maxWidth="max-w-2xl"
-      subtitle={(u) => `${u} ❯ VS BOT ❯ MÊMES RÈGLES /pfc`}
+      lead={(name) => <T k="communaute.jeux.pfc.lead" values={{ name }} />}
     >
       <PfcGame />
-    </GamePageLayout>
+    </GamePage>
   );
 }

@@ -1,6 +1,8 @@
 import { requireUser } from "@/lib/session";
 import AccountSettings from "./AccountSettings";
 import { UserNav } from "@/components/user/UserNav";
+import { T } from "@/components/T";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import { PageShell } from "@shenron/ui/layout/PageShell";
 
 export const dynamic = "force-dynamic";
@@ -11,17 +13,21 @@ export const metadata = { title: "Paramètres", robots: { index: false, follow: 
 export default async function ParametresPage() {
   const me = await requireUser("/parametres");
   return (
-    <PageShell width="narrow" rhythm="tight">
-      <div>
-        <UserNav />
-        <AccountSettings
-          initial={{
-            name: me.user?.username ?? "",
-            image: me.user?.avatar ?? "",
-            discordId: me.discordId,
-          }}
-        />
-      </div>
+    <PageShell rhythm="tight">
+      <UserNav />
+      <PageHeader
+        eyebrow={<T k="settings.eyebrow" />}
+        title={<T k="settings.title" />}
+        subtitle={<T k="settings.lead" />}
+        className="mb-8"
+      />
+      <AccountSettings
+        initial={{
+          name: me.user?.username ?? "",
+          image: me.user?.avatar ?? "",
+          discordId: me.discordId,
+        }}
+      />
     </PageShell>
   );
 }

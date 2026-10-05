@@ -9,6 +9,7 @@
  * accuser un membre sur la page que tout le monde lit.
  */
 import Link from "next/link";
+import { Stars } from "@shenron/ui/public/Stars";
 import { T } from "@/components/T";
 import type { CheatSignal, MemberContributions } from "@/lib/contributors";
 
@@ -42,11 +43,41 @@ const KIND_LABEL: Record<string, string> = {
   comment: "Réponse",
 };
 
-function Stars({ score }: { score: number }) {
+/** Note d’une ligne : les étoiles du site, et le chiffre écrit à côté. */
+function Score({ score }: { score: number }) {
   return (
-    <span className="font-mono text-sm font-bold text-dbz-orange" aria-label={`${score} sur 5`}>
-      {score}/5
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+      <Stars value={score} size="sm" label="Note" />
+      <span aria-hidden className="text-[0.75rem] font-bold tabular-nums text-white/70">
+        {score}/5
+      </span>
     </span>
+  );
+}
+
+function TargetLabel({ type }: { type: string }) {
+  return (
+    <span className="mr-2 rounded border border-white/15 px-1.5 py-0.5 text-[0.6875rem] text-white/55">
+      <T k={TARGET_KEY[type] ?? "profile.target.other"} />
+    </span>
+  );
+}
+
+function TargetLink({
+  href,
+  title,
+  targetId,
+}: {
+  href: string | null;
+  title: string | null;
+  targetId: string;
+}) {
+  return href ? (
+    <Link href={href} className="font-medium text-white/85 hover:text-dbz-orange">
+      {title ?? `#${targetId}`}
+    </Link>
+  ) : (
+    <span className="text-white/50">{title ?? `#${targetId}`}</span>
   );
 }
 
@@ -81,21 +112,29 @@ export function MemberLedger({
   return (
     <section
       aria-labelledby="ledger-title"
-      className="mt-8 rounded-3xl border border-white/10 bg-[#141311] p-5 md:p-7"
+      className="mt-8 rounded-lg border border-white/12 p-4 sm:p-6"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 id="ledger-title" className="font-saiyan text-3xl text-dbz-orange">
+          <h2
+            id="ledger-title"
+            className="text-[clamp(1.5rem,1.2rem+1.2vw,2rem)] font-[850] leading-tight tracking-[-0.02em] text-white"
+          >
             <T k="profile.ledgerTitle" />
           </h2>
-          <p className="mt-1 max-w-2xl text-sm text-white/45">
+          <p className="mt-1 max-w-2xl text-sm text-white/60">
             <T k="profile.ledgerLead" />
           </p>
         </div>
-        <p className="font-mono text-sm text-white/55">
-          {counts.ratings} ★ · {counts.ratingComments} <T k="profile.ledgerWritten" /> ·{" "}
-          <T k="profile.ledgerAverage" /> {counts.averageScore}/5
-        </p>
+        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm tabular-nums text-white/65">
+          <li>{counts.ratings} ★</li>
+          <li>
+            {counts.ratingComments} <T k="profile.ledgerWritten" />
+          </li>
+          <li>
+            <T k="profile.ledgerAverage" /> {counts.averageScore}/5
+          </li>
+        </ul>
       </div>
 
       {showSignals && (
@@ -112,20 +151,41 @@ export function MemberLedger({
           <T k="profile.ledgerEmpty" />
         </p>
       ) : (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[38rem] border-collapse text-sm">
+        <div className="mt-6">
+          {/* Mobile : une carte par note. Le tableau à quatre colonnes imposait un
+					    défilement horizontal de 38rem sur un écran de 360 px. */}
+          <ul className="divide-y divide-white/[0.06] md:hidden">
+            {ratings.map((r) => (
+              <li key={r.id} className="py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="min-w-0 text-sm">
+                    <TargetLabel type={r.targetType} />
+                    <TargetLink href={r.href} title={r.title} targetId={r.targetId} />
+                  </p>
+                  <Score score={r.score} />
+                </div>
+                {(r.comment ?? "").trim() && (
+                  <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-white/70">
+                    {r.comment}
+                  </p>
+                )}
+                <p className="mt-1 text-[0.75rem] text-white/45">{dateFmt(r.updatedAt)}</p>
+              </li>
+            ))}
+          </ul>
+          <table className="hidden w-full border-collapse text-sm md:table">
             <thead>
-              <tr className="border-b border-white/10 text-left text-xs uppercase tracking-widest text-white/40">
-                <th className="py-2 pr-3 font-semibold">
+              <tr className="border-b border-white/10 text-left text-[0.75rem] text-white/50">
+                <th scope="col" className="py-2 pr-3 font-semibold">
                   <T k="profile.ledgerColTarget" />
                 </th>
-                <th className="py-2 pr-3 font-semibold">
+                <th scope="col" className="py-2 pr-3 font-semibold">
                   <T k="profile.ledgerColScore" />
                 </th>
-                <th className="py-2 pr-3 font-semibold">
+                <th scope="col" className="py-2 pr-3 font-semibold">
                   <T k="profile.ledgerColComment" />
                 </th>
-                <th className="py-2 font-semibold">
+                <th scope="col" className="py-2 font-semibold">
                   <T k="profile.ledgerColDate" />
                 </th>
               </tr>
@@ -134,27 +194,16 @@ export function MemberLedger({
               {ratings.map((r) => (
                 <tr key={r.id} className="align-top">
                   <td className="py-2.5 pr-3">
-                    <span className="mr-2 rounded border border-white/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-white/50">
-                      <T k={TARGET_KEY[r.targetType] ?? "profile.target.other"} />
-                    </span>
-                    {r.href ? (
-                      <Link
-                        href={r.href}
-                        className="font-medium text-white/85 hover:text-dbz-orange"
-                      >
-                        {r.title ?? `#${r.targetId}`}
-                      </Link>
-                    ) : (
-                      <span className="text-white/50">{r.title ?? `#${r.targetId}`}</span>
-                    )}
+                    <TargetLabel type={r.targetType} />
+                    <TargetLink href={r.href} title={r.title} targetId={r.targetId} />
                   </td>
-                  <td className="py-2.5 pr-3 whitespace-nowrap">
-                    <Stars score={r.score} />
+                  <td className="py-2.5 pr-3">
+                    <Score score={r.score} />
                   </td>
                   <td className="max-w-[24rem] py-2.5 pr-3 text-white/65">
                     {(r.comment ?? "").trim() || <span className="text-white/25">—</span>}
                   </td>
-                  <td className="py-2.5 whitespace-nowrap text-xs text-white/40">
+                  <td className="whitespace-nowrap py-2.5 text-xs text-white/45">
                     {dateFmt(r.updatedAt)}
                   </td>
                 </tr>
@@ -162,7 +211,7 @@ export function MemberLedger({
             </tbody>
           </table>
           {data.truncated && (
-            <p className="mt-3 text-xs text-white/40">
+            <p className="mt-3 text-xs text-white/45">
               <T k="profile.ledgerTruncated" />
             </p>
           )}
@@ -178,7 +227,7 @@ export function MemberLedger({
             {comments.map((c) => (
               <li key={c.id} className="py-2.5">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-white/40">
-                  <span className="rounded border border-white/15 px-1.5 py-0.5 uppercase tracking-wider">
+                  <span className="rounded border border-white/15 px-1.5 py-0.5">
                     {KIND_LABEL[c.kind] ?? c.kind}
                   </span>
                   <span>{dateFmt(c.createdAt)}</span>

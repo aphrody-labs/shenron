@@ -11,7 +11,9 @@ import type { Metadata } from "next";
 
 import { publicPostFilter } from "@/lib/posts";
 import { countCommentsBatch, reactionCounts } from "@/lib/social";
-import { CardGrid, MangaCard, PageShell, SectionHeading, SocialCounts } from "@/components/kit";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { CardGrid, MangaCard, SocialCounts } from "@/components/kit";
 
 export const revalidate = 300;
 
@@ -123,7 +125,7 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
   ]);
 
   return (
-    <PageShell rhythm="loose">
+    <PageShell rhythm="tight">
       <Breadcrumbs
         className="mb-8"
         items={[
@@ -137,7 +139,6 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
 			    catégorie d'articles n'est pas un parent pauvre de l'encyclopédie. */}
       <SectionHeading
         level={1}
-        kicker="Thème"
         title={label}
         standfirst={`Tous les articles classés sous « ${label} », du plus récent au plus ancien.`}
         actions={
@@ -147,7 +148,7 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
         }
       />
 
-      <p className="mt-4 font-display text-[0.6875rem] uppercase tracking-[0.12em] text-white/40">
+      <p className="mt-4 text-sm tabular-nums text-white/55">
         {rows.length} article{rows.length > 1 ? "s" : ""}
       </p>
 
@@ -169,7 +170,6 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
                     {dateCourte(post.publishedAt)}
                   </time>
                 )}
-                <span aria-hidden>·</span>
                 <span>{post.readingMinutes} min</span>
               </>
             }

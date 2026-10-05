@@ -1,58 +1,36 @@
 "use client";
 
 /**
- * Primitives FX Dragon Ball partagées par les mini-jeux du site.
- * Réutilise les classes globales (dbz-panel, scouter-text, speed-lines…) et
- * ajoute les effets propres au jeu via games.module.css (aura, onde de choc,
- * flash, tremblement, charge de power level). Aucun style global redéfini.
+ * Effets des mini-jeux du site. Seuls restent ceux qui RÉPONDENT à un coup joué
+ * (onde de choc d'une fusion ou d'un duel, flash de victoire, pop du compteur qui
+ * monte) : les auras qui respiraient en boucle et le réacteur décoratif ont été
+ * retirés avec la direction artistique « Planche couleur » — aucune animation
+ * non déclenchée par le joueur. Tout est neutralisé sous `prefers-reduced-motion`
+ * (cf. games.module.css).
  */
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import styles from "./games.module.css";
 
-type AuraColor = "orange" | "yellow" | "blue" | "red" | "green" | "purple";
+type ShockColor = "orange" | "yellow" | "blue" | "red" | "green" | "purple";
 
-const AURA_RGBA: Record<AuraColor, string> = {
-  orange: "rgba(255, 178, 0, 0.55)",
-  yellow: "color-mix(in srgb, var(--color-dbz-amber) 60%, transparent)",
-  blue: "color-mix(in srgb, var(--color-dbz-ki) 55%, transparent)",
-  red: "rgba(255, 60, 60, 0.55)",
-  green: "rgba(74, 222, 128, 0.5)",
-  purple: "rgba(192, 132, 252, 0.5)",
+const SHOCK_RGBA: Record<ShockColor, string> = {
+  orange: "rgba(231, 130, 32, 0.6)",
+  yellow: "rgba(252, 240, 58, 0.6)",
+  blue: "rgba(75, 168, 255, 0.55)",
+  red: "rgba(186, 21, 28, 0.6)",
+  green: "rgba(46, 155, 65, 0.6)",
+  purple: "rgba(168, 85, 247, 0.5)",
 };
 
-const FLASH_RGBA: Record<AuraColor, string> = {
-  orange: "rgba(255, 178, 0, 0.85)",
-  yellow: "rgba(255, 240, 180, 0.9)",
-  blue: "rgba(120, 190, 255, 0.85)",
-  red: "rgba(255, 80, 80, 0.85)",
-  green: "rgba(150, 255, 180, 0.85)",
-  purple: "rgba(210, 160, 255, 0.85)",
+const FLASH_RGBA: Record<ShockColor, string> = {
+  orange: "rgba(231, 130, 32, 0.8)",
+  yellow: "rgba(252, 240, 58, 0.8)",
+  blue: "rgba(120, 190, 255, 0.8)",
+  red: "rgba(186, 21, 28, 0.8)",
+  green: "rgba(66, 177, 71, 0.8)",
+  purple: "rgba(210, 160, 255, 0.8)",
 };
-
-/** Aura de Ki pulsée autour d'un élément (boutons, tuiles, cellules actives). */
-export function KiAura({
-  color = "orange",
-  strong = false,
-  className = "",
-  style,
-  children,
-}: {
-  color?: AuraColor;
-  strong?: boolean;
-  className?: string;
-  style?: CSSProperties;
-  children: ReactNode;
-}) {
-  return (
-    <div
-      className={`${styles.aura} ${strong ? styles.auraStrong : ""} ${className}`}
-      style={{ "--aura": AURA_RGBA[color], ...style } as CSSProperties}
-    >
-      {children}
-    </div>
-  );
-}
 
 /** Onde de choc + flash déclenchés par changement de `trigger` (clé unique). */
 export function KiShock({
@@ -61,7 +39,7 @@ export function KiShock({
   flash = false,
 }: {
   trigger: number | string | null;
-  color?: AuraColor;
+  color?: ShockColor;
   flash?: boolean;
 }) {
   if (trigger === null) return null;
@@ -70,7 +48,7 @@ export function KiShock({
       <span
         key={`shock-${trigger}`}
         className={styles.shockwave}
-        style={{ "--shock": AURA_RGBA[color] } as CSSProperties}
+        style={{ "--shock": SHOCK_RGBA[color] } as CSSProperties}
         aria-hidden
       />
       {flash && (
@@ -86,8 +64,9 @@ export function KiShock({
 }
 
 /**
- * Compteur "power level" type scouter : anime un comptage rapide vers `value`
- * et déclenche un pop de charge à chaque hausse.
+ * Compteur de puissance : anime un comptage rapide vers `value` et marque d'un
+ * pop chaque hausse. Chiffres tabulaires dans la famille du corps (la police
+ * « scouter » rendait des glyphes illisibles).
  */
 export function PowerLevel({
   value,
@@ -107,7 +86,12 @@ export function PowerLevel({
     const from = prev.current;
     const to = value;
     prev.current = value;
-    if (from === to) {
+    // Pas de décompte animé pour qui a demandé moins de mouvement : la valeur
+    // finale s'affiche d'emblée (le pop `.charge` est neutralisé par le CSS).
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+    if (from === to || reduce) {
       setDisplay(to);
       return;
     }
@@ -133,46 +117,13 @@ export function PowerLevel({
   }, [value]);
 
   return (
-    <div className={`hud-frame px-4 py-2 text-center ${className}`}>
-      <p className="font-scouter text-[9px] tracking-[0.3em] text-dbz-orange uppercase mb-0.5">
-        {label}
-      </p>
+    <div className={`px-4 py-2 ${className}`}>
+      <p className="mb-0.5 text-[0.75rem] text-white/60">{label}</p>
       <p
-        className={`scouter-text text-2xl leading-none tabular-nums ${charging ? styles.charge : ""}`}
+        className={`text-2xl font-bold leading-none tabular-nums text-white ${charging ? styles.charge : ""}`}
       >
         {display.toLocaleString("fr-FR")}
       </p>
-    </div>
-  );
-}
-
-/** Anneau réacteur de Ki (capteur). Décor pur. */
-export function KiReactor({
-  color = "orange",
-  active = false,
-  className = "",
-}: {
-  color?: AuraColor;
-  active?: boolean;
-  className?: string;
-}) {
-  return (
-    <div className={`relative grid place-items-center ${className}`} aria-hidden>
-      <div
-        className={`absolute inset-0 rounded-full speed-lines ${active ? styles.kiSpin : ""}`}
-        style={{ opacity: active ? 0.8 : 0.35 }}
-      />
-      <KiAura color={color} strong={active}>
-        <div
-          className="rounded-full border-2"
-          style={{
-            width: "1.5rem",
-            height: "1.5rem",
-            borderColor: AURA_RGBA[color].replace("0.5", "0.9"),
-            background: `radial-gradient(circle, ${AURA_RGBA[color]}, transparent 70%)`,
-          }}
-        />
-      </KiAura>
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { sfx } from "@/lib/sfx";
-import { KiShock, KiReactor } from "@/components/games/KiFx";
+import { KiShock } from "@/components/games/KiFx";
+import { BTN_PRIMARY, BTN_SECONDARY, INPUT, PANEL } from "@/components/games/planche";
 import fx from "@/components/games/games.module.css";
 
 type SessionStart = {
@@ -33,12 +34,13 @@ type Attempt = {
   hint: "higher" | "lower" | "match" | "lost";
 };
 
-// Capteur de Ki : "plus haut" = la cible a un Ki supérieur (signal monte).
+// Capteur de Ki : « plus haut » = la cible a un Ki supérieur (le signal monte).
+// Écaille pour la cible trouvée, rouge étoile pour la partie perdue.
 const HINT_LABEL = {
-  higher: { txt: "↑ KI SUPÉRIEUR", color: "text-cyan-400" },
-  lower: { txt: "↓ KI INFÉRIEUR", color: "text-purple-400" },
-  match: { txt: "🎯 KI VERROUILLÉ", color: "text-green-400" },
-  lost: { txt: "✗ HORS PORTÉE", color: "text-red-400" },
+  higher: { txt: "Ki supérieur", color: "text-white" },
+  lower: { txt: "Ki inférieur", color: "text-white" },
+  match: { txt: "Ki verrouillé", color: "text-dbz-green" },
+  lost: { txt: "Hors de portée", color: "text-dbz-red" },
 } as const;
 
 export function BingoGame() {
@@ -71,7 +73,7 @@ export function BingoGame() {
   function startNew() {
     const parsedStake = stake ? Number(stake) : undefined;
     if (parsedStake !== undefined && (!Number.isFinite(parsedStake) || parsedStake < 1)) {
-      setError("Mise invalide");
+      setError("Mise refusée : entre un nombre entier de Zénis, 1 au minimum.");
       return;
     }
     startTransition(async () => {
@@ -91,7 +93,7 @@ export function BingoGame() {
     if (!token) return;
     const g = Number(guess);
     if (!Number.isInteger(g) || g < 1 || g > 100) {
-      setError("Entre 1 et 100");
+      setError("Propose une puissance entière entre 1 et 100.");
       return;
     }
     sfx.click();
@@ -119,29 +121,29 @@ export function BingoGame() {
     });
   }
 
-  // Dernier signal capté → couleur du réacteur de Ki.
   const lastHint = attempts[attempts.length - 1]?.hint;
-  const reactorColor = lastHint === "higher" ? "blue" : lastHint === "lower" ? "purple" : "orange";
+  const shockColor = lastHint === "higher" ? "blue" : lastHint === "lower" ? "purple" : "orange";
 
   return (
     <div className="space-y-6">
       {!token && !ended && (
-        <div className="dbz-panel p-6 space-y-4 hud-frame">
-          <p className="text-center font-scouter text-[10px] tracking-[0.3em] text-dbz-blue-light/70 uppercase">
-            Capteur de Ki · localise une puissance cachée (1-100)
+        <div className={`${PANEL} space-y-4 p-5 sm:p-6`}>
+          <p className="text-sm text-white/75">
+            Le bot cache une puissance entre 1 et 100. Tu as dix scans pour la trouver.
           </p>
           <label className="block">
-            <span className="font-saiyan uppercase tracking-widest text-sm text-dbz-yellow">
-              Mise (optionnelle, en zénis)
+            <span className="text-sm font-semibold text-white/85">
+              Mise (optionnelle, en Zénis)
             </span>
             <input
               type="number"
+              inputMode="numeric"
               min={1}
               max={1_000_000}
               value={stake}
               onChange={(e) => setStake(e.target.value)}
-              placeholder="défaut : 100 z win / 50 z loss"
-              className="mt-2 w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 font-mono"
+              placeholder="Par défaut : +100 en cas de victoire, −50 en cas de défaite"
+              className={`${INPUT} mt-2 tabular-nums`}
               disabled={pending}
             />
           </label>
@@ -149,42 +151,38 @@ export function BingoGame() {
             type="button"
             onClick={startNew}
             disabled={pending}
-            className="dbz-button w-full disabled:opacity-40"
+            className={`${BTN_PRIMARY} w-full`}
           >
-            {pending ? "…" : "CALIBRER LE CAPTEUR"}
+            {pending ? "Calibrage…" : "Lancer la partie"}
           </button>
         </div>
       )}
 
       {token && !ended && (
-        <div
-          className={`dbz-panel p-6 space-y-4 relative overflow-hidden hud-frame ${fx.scanSweep}`}
-        >
-          {/* Onde de scan à chaque mesure de Ki */}
-          <KiShock trigger={scanPulse || null} color={reactorColor} />
-          <div className="flex items-center justify-center gap-4">
-            <KiReactor color={reactorColor} active={pending} className="w-12 h-12" />
-            <div className="text-center">
-              <div className="font-scouter text-xs tracking-widest text-dbz-blue-light/70 mb-0.5">
-                SCANS // {attempts.length} / 10
-              </div>
-              <div className="font-scouter text-[10px] tracking-widest uppercase">
-                {lastHint ? (
-                  <span className={HINT_LABEL[lastHint].color}>{HINT_LABEL[lastHint].txt}</span>
-                ) : (
-                  <span className="text-dbz-orange/70">Aucun signal · lance un scan</span>
-                )}
-              </div>
-            </div>
+        <div className={`${PANEL} relative space-y-4 overflow-hidden p-5 sm:p-6`}>
+          {/* Onde de scan : réponse à chaque mesure envoyée. */}
+          <KiShock trigger={scanPulse || null} color={shockColor} />
+          <div className="relative z-10 flex flex-wrap items-baseline justify-between gap-2">
+            <p className="text-sm tabular-nums text-white/70">Scans : {attempts.length} sur 10</p>
+            <p className="text-sm font-semibold" aria-live="polite">
+              {lastHint ? (
+                <span className={HINT_LABEL[lastHint].color}>{HINT_LABEL[lastHint].txt}</span>
+              ) : (
+                <span className="text-white/70">Aucun signal, lance un premier scan.</span>
+              )}
+            </p>
           </div>
-          <div className="flex justify-center gap-1">
+          <div
+            className="relative z-10 flex gap-1"
+            role="img"
+            aria-label={`Scans : ${attempts.length} sur 10`}
+          >
             {Array.from({ length: 10 }, (_, i) => (
               <div
                 key={i}
-                className={`w-4 h-4 border transition-all ${
-                  i < attempts.length
-                    ? "border-dbz-orange bg-dbz-orange shadow-[0_0_8px_var(--color-dbz-orange)]"
-                    : "border-dbz-border"
+                aria-hidden
+                className={`h-2 flex-1 rounded-full border ${
+                  i < attempts.length ? "border-dbz-orange bg-dbz-orange" : "border-white/12"
                 }`}
               />
             ))}
@@ -194,26 +192,22 @@ export function BingoGame() {
               e.preventDefault();
               submitGuess();
             }}
-            className="flex gap-2 relative z-10"
+            className="relative z-10 flex gap-2"
           >
             <input
               type="number"
+              inputMode="numeric"
               min={1}
               max={100}
               value={guess}
               onChange={(e) => setGuess(e.target.value)}
-
               aria-label="Puissance estimée, de 1 à 100"
-              placeholder="Puissance estimée 1-100"
-              className="flex-1 bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-3 font-mono text-xl text-center"
+              placeholder="De 1 à 100"
+              className={`${INPUT} flex-1 text-center text-xl tabular-nums`}
               disabled={pending}
             />
-            <button
-              type="submit"
-              disabled={pending || !guess}
-              className="dbz-button !text-base disabled:opacity-40"
-            >
-              SCAN
+            <button type="submit" disabled={pending || !guess} className={BTN_PRIMARY}>
+              Scanner
             </button>
           </form>
         </div>
@@ -221,65 +215,65 @@ export function BingoGame() {
 
       {ended && (
         <div
-          className={`dbz-panel p-5 border-l-8 relative overflow-hidden ${ended.hint === "match" ? "border-green-400" : `border-red-400 ${fx.shake}`}`}
+          role="status"
+          className={`${PANEL} relative overflow-hidden border-l-4 p-5 sm:p-6 ${
+            ended.hint === "match" ? "border-l-dbz-green" : `border-l-dbz-red ${fx.shake}`
+          }`}
         >
-          {/* Verrouillage de Ki réussi → flash vert ; signal perdu → shake */}
+          {/* Ki verrouillé → flash écaille ; signal perdu → tremblement. */}
           <KiShock
             trigger={ended.hint === "match" ? `win-${ended.target}` : null}
             color="green"
             flash
           />
-          <div className="flex items-baseline justify-between mb-2 relative z-10">
+          <div className="relative z-10 mb-2 flex flex-wrap items-baseline justify-between gap-2">
             <span
-              className={`font-saiyan text-3xl ${ended.hint === "match" ? "text-green-400" : "text-red-400"}`}
+              className={`font-display text-3xl font-bold ${ended.hint === "match" ? "text-dbz-green" : "text-dbz-red"}`}
             >
-              {ended.hint === "match" ? "KI VERROUILLÉ" : "SIGNAL PERDU"}
+              {ended.hint === "match" ? "Ki verrouillé" : "Signal perdu"}
             </span>
-            <span className="font-scouter text-xs tracking-widest text-dbz-blue-light">
-              Solde : {ended.balance} z
-            </span>
+            <span className="text-sm tabular-nums text-white/70">Solde : {ended.balance} Ƶ</span>
           </div>
-          <p className="font-mono text-sm text-dbz-blue-light relative z-10">
+          <p className="relative z-10 text-sm text-white/80">
             Puissance cible :{" "}
-            <span className="text-dbz-yellow font-bold text-lg">{ended.target}</span> · localisée en{" "}
-            {ended.attempts} scan
-            {ended.attempts > 1 ? "s" : ""}
+            <span className="text-lg font-bold tabular-nums text-white">{ended.target}</span>
+          </p>
+          <p className="relative z-10 text-sm tabular-nums text-white/70">
+            {ended.attempts} scan{ended.attempts > 1 ? "s" : ""} joué{ended.attempts > 1 ? "s" : ""}
           </p>
           {ended.delta !== 0 && (
             <p
-              className={`font-saiyan text-xl mt-2 relative z-10 ${ended.delta > 0 ? "text-green-400" : "text-red-400"}`}
+              className={`relative z-10 mt-2 text-xl font-bold tabular-nums ${ended.delta > 0 ? "text-dbz-green" : "text-dbz-red"}`}
             >
               {ended.delta > 0 ? "+" : ""}
-              {ended.delta} z
+              {ended.delta} Ƶ
             </p>
           )}
-          <button type="button" onClick={reset} className="dbz-button mt-4 !text-sm relative z-10">
-            REJOUER
+          <button type="button" onClick={reset} className={`${BTN_SECONDARY} relative z-10 mt-4`}>
+            Rejouer
           </button>
         </div>
       )}
 
       {attempts.length > 0 && (
-        <div className="dbz-panel p-4">
-          <h3 className="font-saiyan text-sm text-dbz-blue-light mb-2 uppercase tracking-widest">
-            Journal des scans
-          </h3>
-          <ul className="text-xs font-mono space-y-1 max-h-40 overflow-y-auto">
+        <div className={`${PANEL} p-4`}>
+          <h3 className="mb-2 text-sm font-semibold text-white/85">Journal des scans</h3>
+          <ol className="max-h-40 space-y-1 overflow-y-auto text-sm tabular-nums">
             {attempts.map((a, i) => (
-              <li key={i} className="flex gap-3 items-center">
-                <span className="text-dbz-blue-light/70 w-6">#{i + 1}</span>
-                <span className="text-dbz-yellow font-bold w-10 text-right">{a.guess}</span>
+              <li key={i} className="flex items-center gap-3">
+                <span className="w-6 text-white/60">{i + 1}</span>
+                <span className="w-10 text-right font-bold text-white">{a.guess}</span>
                 <span className={HINT_LABEL[a.hint].color}>{HINT_LABEL[a.hint].txt}</span>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       )}
 
       {error && (
-        <div className="dbz-panel p-4 border-l-8 border-red-400">
-          <span className="font-scouter text-xs tracking-widest text-red-400">✗ {error}</span>
-        </div>
+        <p role="alert" className={`${PANEL} border-l-4 border-l-dbz-red p-4 text-sm text-white`}>
+          {error}
+        </p>
       )}
     </div>
   );
