@@ -1004,9 +1004,9 @@ export const dbUniverse = {
         voiceActors: botVoiceActors,
         soundtracks: botSoundtracks,
       } satisfies Record<string, PgTable>;
-      // Seules les tables « parcourables » portent la colonne `visible` : on
-      // compte alors uniquement les entités visibles (cohérent avec les index
-      // publics). `news`/`tools` n'ont pas de visibilité → compte brut.
+      // Toutes ces tables portent `visible` (suppression logique) sauf `news` :
+      // on compte uniquement les entités visibles, comme les index publics ;
+      // `news` n'a pas de visibilité → compte brut.
       const withVisibility = new Set<PgTable>([
         botCharacters,
         botPlanets,
@@ -1021,6 +1021,7 @@ export const dbUniverse = {
         botMangaVolumes,
         botMangaChapters,
         botDatabooks,
+        botTools,
         botBattles,
         botTimelineEvents,
         botPowerLevels,
@@ -1850,7 +1851,12 @@ export const dbUniverse = {
 
   tool: (slug: string) =>
     safe(async () => {
-      const [t] = await db.select().from(botTools).where(eq(botTools.slug, slug)).limit(1);
+      // Même filtre que la liste : un dépôt masqué n'a plus de fiche publique.
+      const [t] = await db
+        .select()
+        .from(botTools)
+        .where(and(eq(botTools.slug, slug), eq(botTools.visible, true)))
+        .limit(1);
       return t ? toTool(t) : null;
     }),
 
