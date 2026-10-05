@@ -19,13 +19,17 @@ import {
   Search,
 } from "lucide-react";
 import type {
-  TranscriptionsOverview,
   DefectivePlateItem,
   GpuBatchItem,
   LexiconOverviewItem,
 } from "@/lib/transcriptions-admin";
+import type { TranscriptionsOverviewView } from "@/lib/admin-status-view";
 
-export function TranscriptionsDashboard({ initialData }: { initialData: TranscriptionsOverview }) {
+export function TranscriptionsDashboard({
+  initialData,
+}: {
+  initialData: TranscriptionsOverviewView;
+}) {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<
     "vue-globale" | "databooks" | "manga" | "arbitrage" | "lots-gpu" | "traduction-vps" | "lexique"
@@ -37,7 +41,7 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
   const [lexiconKind, setLexiconKind] = useState("all");
 
   // Live overview query
-  const { data: overview, isFetching: isFetchingOverview } = useQuery<TranscriptionsOverview>({
+  const { data: overview, isFetching: isFetchingOverview } = useQuery<TranscriptionsOverviewView>({
     queryKey: ["admin", "transcriptions", "overview"],
     queryFn: async () => {
       const res = await fetch("/api/admin/transcriptions?mode=overview");
@@ -475,12 +479,12 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
 
           <div className="grid gap-4 sm:grid-cols-3">
             {manga.seriesBreakdown.map((s) => (
-              <div key={s.serie} className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <div className="text-xs font-bold uppercase text-dbz-orange">{s.serie}</div>
+              <div key={s.series} className="rounded-lg border border-white/10 bg-white/5 p-4">
+                <div className="text-xs font-bold uppercase text-dbz-orange">{s.series}</div>
                 <div className="mt-2 text-2xl font-bold text-white">
-                  {s.planches.toLocaleString("fr-FR")}
+                  {s.pages.toLocaleString("fr-FR")}
                 </div>
-                <div className="text-xs text-white/50">planches dans {s.chapitres} chapitres</div>
+                <div className="text-xs text-white/50">planches dans {s.chapters} chapitres</div>
               </div>
             ))}
           </div>

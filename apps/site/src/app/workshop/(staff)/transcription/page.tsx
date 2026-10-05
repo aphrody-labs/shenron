@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LibraryNav, WorkshopNav } from "@/components/library/LibraryNav";
 import { TranscriptionsDashboard } from "@/components/admin/TranscriptionsDashboard";
 import { T } from "@/components/T";
+import { overviewView } from "@/lib/admin-status-view";
 import { requireAdmin } from "@/lib/session";
 import { getTranscriptionsOverview } from "@/lib/transcriptions-admin";
 
@@ -15,7 +16,7 @@ export const metadata: Metadata = { title: "Transcription · Atelier" };
 /** Supervision du corpus manga et databooks : arbitrage des défauts OCR et relecture. */
 export default async function WorkshopTranscriptionPage() {
   await requireAdmin();
-  const initialData = await getTranscriptionsOverview();
+  const initialData = overviewView(await getTranscriptionsOverview());
 
   return (
     <PageShell width="wide" rhythm="tight">

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isCurrentUserAdmin } from "@/lib/session";
+import { overviewView } from "@/lib/admin-status-view";
 import {
   getTranscriptionsOverview,
   getDefectivePlates,
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     }
 
     const overview = await getTranscriptionsOverview();
-    return NextResponse.json(overview, {
+    return NextResponse.json(overviewView(overview), {
       headers: { "Cache-Control": "private, no-store, max-age=0" },
     });
   } catch (error) {

@@ -78,7 +78,7 @@ interface TestPromptResult {
     verdict: string;
     nature: string;
     toriyamaQuote?: { text: string; source: string; year?: number };
-    preuves?: unknown;
+    evidence?: unknown;
   } | null;
   manga: SourceReport<MangaHit[]>;
 }
@@ -1755,8 +1755,8 @@ interface CorpusTranscription {
 }
 
 interface CorpusPipeline {
-  databooks?: { etat?: string };
-  manga?: { etat?: string };
+  databooks?: { state?: string };
+  manga?: { state?: string };
 }
 
 interface CorpusLive {
@@ -1837,7 +1837,7 @@ function CorpusLiveStatus() {
             />
             <LiveMetric
               label="Pipeline OCR"
-              value={pipeline?.databooks?.etat ?? pipeline?.manga?.etat ?? "—"}
+              value={pipeline?.databooks?.state ?? pipeline?.manga?.state ?? "—"}
             />
           </div>
         )}
