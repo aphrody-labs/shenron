@@ -72,8 +72,8 @@ export function PowerLevelsTable({
             <div className="text-lg font-extrabold text-white mt-1">Multiplicateur ×2 à ×20</div>
           </div>
           <p className="text-[11px] text-white/50 mt-2 leading-relaxed">
-            Multiplie directement le ki de base. Poussé jusqu&apos;au Kaioken ×20 sur Namek (Goku
-            3M → 60M face à Freeza).
+            Multiplie directement le ki de base. Poussé jusqu&apos;au Kaioken ×20 sur Namek (Goku 3M
+            → 60M face à Freeza).
           </p>
         </div>
 

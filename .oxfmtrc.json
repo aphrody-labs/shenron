@@ -11,6 +11,7 @@
     "packages/koharu/src/wasm/**",
     "packages/koharu/src/protocol.ts",
     "plugin/references/**",
-    "packages/ui/src/tokens.ts"
+    "packages/ui/src/tokens.ts",
+    "packages/api/openapi/public.json"
   ]
 }
