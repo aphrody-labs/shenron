@@ -1383,5 +1383,36 @@
         "description": "Sign in with a token, without Discord."
       }
     }
+  },
+  "accueil": {
+    "hero": {
+      "title": "Dragon Ball, in French and sourced"
+    },
+    "search": {
+      "label": "Search the encyclopedia",
+      "placeholder": "A character, a technique, a chapter…",
+      "submit": "Search",
+      "canon": "Check if it's canon"
+    },
+    "quick": {
+      "title": "Sections"
+    },
+    "live": {
+      "title": "The server, live"
+    },
+    "more": "See all",
+    "games": {
+      "title": "Mini-games",
+      "subtitle": "Challenge the bot and win Zeni: +100 when you win, −50 when you lose.",
+      "all": "All games",
+      "play": "Play",
+      "discord": "Hangman and member challenges are played on the Discord server.",
+      "items": {
+        "2048": "Merge warriors up to Whis and push your Ki higher.",
+        "pfc": "Rock, paper, scissors with Ki techniques.",
+        "morpion": "Line up three X before the bot does.",
+        "bingo": "Find the hidden power level in ten scans."
+      }
+    }
   }
 }

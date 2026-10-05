@@ -1,146 +1,72 @@
 import Image from "next/image";
-import { FlecheCoin } from "@shenron/ui/icones";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { assetUrl } from "@/lib/assets";
 import type { HomeJourneyConfig } from "@/lib/home-scenes";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
+import { HomeSection } from "./HomeSection";
 
 /**
- * Atlas des destinations non-média. Les quatre supports ont leurs vrais rails
- * juste au-dessus ; chaque autre page du menu reçoit ici son propre panneau.
+ * « Explorer aussi » — les destinations du menu qu'aucun bloc de l'accueil
+ * n'ouvre déjà (`covered`). Les cartes s'éditent dans `/admin/home`.
+ *
+ * Sur téléphone, une liste de rangées image + texte (toute la rangée est la
+ * cible) ; sur grand écran, une grille de cartes à image 16:9.
  */
 export function HomeMenuJourney({
   access,
   config,
   covered = [],
+  className = "",
 }: {
-  access: AccessSnapshot;
+  access: AccessSnapshot | null;
   config: HomeJourneyConfig;
-  /** Destinations déjà présentées plus haut (sections du deck, rails du catalogue). */
+  /** Destinations déjà présentées plus haut (sections, accès rapide). */
   covered?: readonly string[];
+  className?: string;
 }) {
   const skip = new Set(covered);
-  const kept = config.destinations.filter(
+  const destinations = config.destinations.filter(
     (destination) => destination.enabled && !skip.has(destination.href),
-  );
-  // La grille fait deux colonnes : un nombre IMPAIR de cartes normales laisse un
-  // trou en fin de ligne — visible dès qu'une carte est retirée pour doublon.
-  // La première carte passe alors pleine largeur et referme la composition.
-  const oddNarrow = kept.filter((destination) => !destination.wide).length % 2 === 1;
-  const destinations = kept.map((destination, index) =>
-    oddNarrow && index === 0 && !destination.wide
-      ? Object.assign(destination, { wide: true })
-      : destination,
   );
   if (!config.enabled || destinations.length === 0) return null;
 
   return (
-    <section
-      aria-labelledby="menu-complet-title"
-      className="home-menu-journey w-full border-t border-white/10 bg-[#080808] py-16 text-white md:py-24"
+    <HomeSection
+      id="explorer"
+      title={config.title}
+      subtitle={config.subtitle}
+      className={className}
     >
-      <div className="page-shell">
-        <header className="mb-9 max-w-3xl lg:mb-12">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-dbz-orange">
-            {config.eyebrow}
-          </p>
-          <h2
-            id="menu-complet-title"
-            className="mt-3 text-balance font-saiyan text-4xl sm:text-6xl"
-          >
-            {config.title}
-          </h2>
-          <p className="mt-4 max-w-2xl text-pretty text-sm leading-6 text-white/60 sm:text-base">
-            {config.subtitle}
-          </p>
-        </header>
-        <div className="home-menu-grid">
-          {destinations.map((destination, index) => {
-            return (
-              <HomeDestinationPanel
-                key={destination.href}
-                access={access}
-                href={destination.href}
-                label={destination.label}
-                note={destination.note}
-                image={destination.image}
-                kanji={destination.kanji}
-                kicker={destination.kicker}
-                accent={destination.accent}
-                cta={destination.cta}
-                index={index + 1}
-                wide={destination.wide}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function HomeDestinationPanel({
-  access,
-  href,
-  label,
-  note,
-  image,
-  kanji,
-  kicker,
-  accent,
-  cta,
-  index,
-  wide = false,
-}: {
-  access: AccessSnapshot;
-  href: string;
-  label: string;
-  note: string;
-  image: string;
-  kanji: string;
-  kicker: string;
-  accent: string;
-  cta: string;
-  index: number;
-  wide?: boolean;
-}) {
-  return (
-    <section
-      aria-labelledby={`destination-${index}`}
-      className={`home-menu-card ${wide ? "home-menu-card--wide" : ""}`}
-      style={{ ["--panel-accent" as string]: accent }}
-    >
-      <div className="home-menu-card__media" aria-hidden>
-        <Image
-          src={assetUrl(image)}
-          alt=""
-          fill
-          sizes={wide ? "(min-width: 1024px) 70vw, 100vw" : "(min-width: 1024px) 45vw, 100vw"}
-          quality={70}
-          className="object-cover object-[center_25%]"
-        />
-        <div className="home-menu-card__wash" />
-      </div>
-      <span className="home-menu-card__kanji" aria-hidden>
-        {kanji}
-      </span>
-      <div className="home-menu-card__copy">
-        <p className="home-menu-card__kicker">
-          <span>{String(index).padStart(2, "0")}</span> {kicker}
-        </p>
-        <h3 id={`destination-${index}`} className="home-menu-card__title">
-          {label}
-        </h3>
-        <p className="home-menu-card__note">{note}</p>
-        <ClientGatedWrap
-          access={access}
-          href={href}
-          className="home-menu-card__cta"
-          aria-label={`${cta} — ${label}`}
-        >
-          {cta} <FlecheCoin size={16} aria-hidden />
-        </ClientGatedWrap>
-      </div>
-    </section>
+      <ul className="grid gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4">
+        {destinations.map((destination) => (
+          <li key={destination.href}>
+            <ClientGatedWrap
+              access={access}
+              href={destination.href}
+              className="group flex h-full items-center gap-3 overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 p-2 transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange sm:flex-col sm:items-stretch sm:p-0"
+            >
+              <span className="relative size-20 shrink-0 overflow-hidden rounded-lg bg-dbz-bg sm:aspect-video sm:size-auto sm:w-full sm:rounded-none">
+                <Image
+                  src={assetUrl(destination.image)}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 80px"
+                  quality={70}
+                  className="object-cover object-[center_25%]"
+                />
+              </span>
+              <span className="flex min-w-0 flex-col gap-1 sm:p-4">
+                <span className="font-display text-[0.9375rem] font-bold text-white transition-colors group-hover:text-dbz-gold">
+                  {destination.label}
+                </span>
+                <span className="line-clamp-2 text-xs leading-relaxed text-white/60 sm:text-sm">
+                  {destination.note}
+                </span>
+              </span>
+            </ClientGatedWrap>
+          </li>
+        ))}
+      </ul>
+    </HomeSection>
   );
 }

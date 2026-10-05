@@ -1383,5 +1383,36 @@
         "description": "Connexion par jeton, sans passer par Discord."
       }
     }
+  },
+  "accueil": {
+    "hero": {
+      "title": "Dragon Ball, en français et sourcé"
+    },
+    "search": {
+      "label": "Rechercher dans l'encyclopédie",
+      "placeholder": "Un personnage, une technique, un chapitre…",
+      "submit": "Chercher",
+      "canon": "Vérifier si c'est canon"
+    },
+    "quick": {
+      "title": "Rubriques"
+    },
+    "live": {
+      "title": "Le serveur en direct"
+    },
+    "more": "Tout voir",
+    "games": {
+      "title": "Mini-jeux",
+      "subtitle": "Défie le bot et gagne des Zénis : +100 en cas de victoire, −50 en cas de défaite.",
+      "all": "Tous les jeux",
+      "play": "Jouer",
+      "discord": "Le pendu et les défis entre membres se jouent sur le serveur Discord.",
+      "items": {
+        "2048": "Fusionne les guerriers jusqu'à Whis et fais grimper ton Ki.",
+        "pfc": "Pierre, feuille, ciseaux à coups de techniques de Ki.",
+        "morpion": "Aligne trois X avant le bot.",
+        "bingo": "Trouve la puissance cachée en dix scans."
+      }
+    }
   }
 }

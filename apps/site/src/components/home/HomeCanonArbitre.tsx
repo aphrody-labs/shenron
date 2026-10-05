@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { HomeCanonConfig } from "@/lib/home-scenes";
 import type { CanonConfig } from "@/lib/canon-engine";
 import { T } from "@/components/T";
+import { HomeSection } from "./HomeSection";
 
 /**
  * L'arbitre de canonicité sur l'accueil.
@@ -17,11 +18,13 @@ export function HomeCanonArbitre({
   config,
   doctrine,
   references,
+  className = "",
 }: {
   config: HomeCanonConfig;
   doctrine: CanonConfig;
   /** Nombre de preuves du corpus ingéré (table `canon_references`). */
   references: number;
+  className?: string;
 }) {
   if (!config.enabled) return null;
   const rangs = doctrine.tiers;
@@ -29,29 +32,21 @@ export function HomeCanonArbitre({
   const placeholder = doctrine.placeholder?.trim() || config.placeholder;
 
   return (
-    <section
-      aria-labelledby="canon-title"
-      className="home-discovery-section w-full border-t border-white/10 bg-[radial-gradient(circle_at_85%_0%,rgba(98,200,255,.12),transparent_32%),#0a0908] py-16 text-white md:py-24"
+    <HomeSection
+      id="canon"
+      title={config.title}
+      subtitle={config.subtitle}
+      moreHref="/wiki/canon"
+      moreLabel={<T k="home.canon.readDoctrine" />}
+      className={className}
     >
-      <div className="page-shell">
-        <header className="max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#62c8ff]">
-            {config.eyebrow}
-          </p>
-          <h2 id="canon-title" className="mt-3 text-balance font-saiyan text-4xl sm:text-6xl">
-            {config.title}
-          </h2>
-          <p className="mt-4 max-w-2xl text-pretty text-sm leading-6 text-white/60 sm:text-base">
-            {config.subtitle}
-          </p>
-        </header>
-
+      <div className="rounded-xl border border-white/[0.08] bg-dbz-card/80 p-4 sm:p-5">
         <form
           action="/wiki/canon"
           method="get"
           role="search"
           aria-labelledby="home-canon-form-label"
-          className="mt-8 flex max-w-3xl flex-col gap-3 sm:flex-row"
+          className="flex flex-col gap-2 sm:flex-row"
         >
           {/* Un composant serveur ne sait pas remplir un `aria-label` depuis le
 					    dictionnaire — il n'a pas de contexte de langue. L'étiquette est
@@ -71,11 +66,12 @@ export function HomeCanonArbitre({
             maxLength={400}
             placeholder={placeholder}
             autoComplete="off"
-            className="min-w-0 flex-1 rounded-full border border-white/15 bg-white/5 px-5 py-3.5 text-base text-white placeholder:text-white/35 focus:border-[#62c8ff] focus:outline-none focus:ring-2 focus:ring-[#62c8ff]/40"
+            enterKeyHint="search"
+            className="min-h-12 min-w-0 flex-1 rounded-lg border border-white/15 bg-dbz-bg/80 px-4 text-base text-white placeholder:text-white/45 focus:border-dbz-orange focus:outline-none"
           />
           <button
             type="submit"
-            className="rounded-full bg-[#62c8ff] px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-[#0a0908] transition hover:bg-white"
+            className="min-h-12 rounded-lg bg-dbz-orange px-5 font-display text-sm font-bold text-dbz-bg transition-colors hover:bg-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
           >
             <T k="home.canon.submit" />
           </button>
@@ -84,12 +80,11 @@ export function HomeCanonArbitre({
         <p id="home-canon-rangs" className="sr-only">
           <T k="home.canon.tiersLabel" />
         </p>
-        <ul className="mt-8 flex flex-wrap gap-2" aria-labelledby="home-canon-rangs">
+        <ul className="mt-4 flex flex-wrap gap-1.5" aria-labelledby="home-canon-rangs">
           {rangs.map((rang) => (
             <li
               key={rang.id}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-white/75"
-              title={rang.definition}
+              className="flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 text-xs text-white/80"
             >
               <span
                 aria-hidden
@@ -102,32 +97,33 @@ export function HomeCanonArbitre({
         </ul>
 
         {sujets.length > 0 && (
-          <div className="mt-10">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">
+          <div className="mt-5">
+            <p className="text-sm font-semibold text-white/70">
               <T k="home.canon.settled" />
             </p>
-            <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-2 divide-y divide-white/[0.06]">
               {sujets.map((sujet) => {
                 const rang = rangs.find((t) => t.id === sujet.tier);
                 return (
                   <li key={sujet.id}>
                     <Link
                       href={`/wiki/canon?q=${encodeURIComponent(sujet.title)}`}
-                      className="group flex h-full flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/25 hover:bg-white/[0.06]"
+                      className="group flex min-h-12 items-center gap-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
                     >
-                      <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white/55">
-                        <span
-                          aria-hidden
-                          className="inline-block size-2 rounded-full"
-                          style={{ backgroundColor: rang?.couleur ?? "#9ca3af" }}
-                        />
-                        {rang?.court ?? sujet.tier}
-                      </span>
-                      <span className="font-semibold text-white group-hover:text-[#62c8ff]">
-                        {sujet.title}
-                      </span>
-                      <span className="line-clamp-2 text-sm leading-5 text-white/55">
-                        {sujet.verdict}
+                      <span
+                        aria-hidden
+                        className="inline-block size-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: rang?.couleur ?? "#9ca3af" }}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold text-white transition-colors group-hover:text-dbz-gold">
+                          {sujet.title}
+                        </span>
+                        <span className="block truncate text-xs text-white/55">
+                          {rang?.court ?? sujet.tier}
+                          {" — "}
+                          {sujet.verdict}
+                        </span>
                       </span>
                     </Link>
                   </li>
@@ -137,13 +133,10 @@ export function HomeCanonArbitre({
           </div>
         )}
 
-        <p className="mt-8 text-xs text-white/40">
-          <T k="home.canon.counts" values={{ sujets: doctrine.entries.length, references }} /> ·{" "}
-          <Link href="/wiki/canon" className="underline decoration-white/30 hover:text-white">
-            <T k="home.canon.readDoctrine" />
-          </Link>
+        <p className="mt-4 text-xs text-white/50">
+          <T k="home.canon.counts" values={{ sujets: doctrine.entries.length, references }} />
         </p>
       </div>
-    </section>
+    </HomeSection>
   );
 }

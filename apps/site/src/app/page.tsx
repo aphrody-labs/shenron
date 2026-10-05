@@ -6,9 +6,7 @@ import {
   getShenronLeaderboard,
   getShenronPresence,
 } from "@/lib/shenron";
-import { HomeExperience } from "@/components/home/HomeExperience";
-import { HomeMenuJourney } from "@/components/home/HomeMenuJourney";
-import { HomeCanonArbitre } from "@/components/home/HomeCanonArbitre";
+import { HomeView } from "@/components/home/HomeView";
 import { getCanonConfig, getCanonReferences } from "@/lib/canon-config";
 import { getHomeConfig } from "@/lib/home-config";
 import { getSagaBestOf } from "@/lib/home-bestof-data";
@@ -23,11 +21,10 @@ import {
   botDatabooks,
 } from "@/db/bot-schema";
 import { and, asc, eq, isNotNull, ne, sql } from "drizzle-orm";
-import { publicPostFilter } from "@/lib/posts";
+import { listFeed } from "@/lib/feed";
 import { ogMeta } from "@/lib/og";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { readMediaCatalog } from "@/lib/media-catalog";
-import { SECTION_DESTINATIONS, type HomeSectionId } from "@/lib/home-scenes";
 
 /**
  * 15 minutes, et non 2.
@@ -59,15 +56,19 @@ export const metadata: Metadata = {
   }),
 };
 
-function getLatestPosts() {
-  return db.query.posts.findMany({
-    // Règle de visibilité unique du site : `published` seul laisserait remonter
-    // en home les articles programmés avant leur date de parution.
-    where: publicPostFilter(),
-    orderBy: (p, { desc }) => desc(p.publishedAt),
-    limit: 3,
-    with: { author: true },
-  });
+/**
+ * Le fil de l'accueil : la manchette et les dernières entrées du fil unifié
+ * (`lib/feed` : articles publiés et discussions publiques, même règle de
+ * visibilité que `/news/fil`). Une source en panne rend un fil vide, pas une
+ * page en erreur.
+ */
+async function getHomeFeed() {
+  try {
+    return (await listFeed({ filter: "tout", perPage: 7 })).entries;
+  } catch (e) {
+    console.error("Failed to fetch home feed:", e);
+    return [];
+  }
 }
 
 /**
@@ -178,7 +179,7 @@ async function getSagas() {
 
 export default async function Home() {
   const [
-    posts,
+    feed,
     personas,
     stats,
     wikiCounts,
@@ -194,7 +195,7 @@ export default async function Home() {
     canonDoctrine,
     canonReferences,
   ] = await Promise.all([
-    getLatestPosts().catch(() => [] as Awaited<ReturnType<typeof getLatestPosts>>),
+    getHomeFeed(),
     getShenronPersonas(900).catch(() => []),
     // 15 min : ces valeurs ne servent qu'à peupler le premier rendu, le suivi
     // temps réel les remplace dès l'hydratation.
@@ -207,9 +208,9 @@ export default async function Home() {
     getShenronLeaderboard(12, true, 900).catch(() => []),
     getShenronPresence(900).catch(() => ({ total: 0, online: 0, members: [] })),
     getHomeConfig(),
-    // Instantané de la configuration de lancement : le deck est un composant
-    // client et ne peut pas le lire. Sans lui, l'accueil publie des liens vers
-    // des rubriques fermées dès que la section correspondante est activée.
+    // Instantané de la configuration de lancement : les îlots client ne peuvent
+    // pas le lire. Sans lui, l'accueil publie des liens vers des rubriques
+    // fermées dès que la section correspondante est activée.
     getLaunchConfig().catch(() => null),
     readMediaCatalog().catch(() => null),
     // L'arbitre de canonicité : doctrine (rangs, sujets tranchés) et taille du
@@ -219,91 +220,47 @@ export default async function Home() {
     getCanonReferences(),
   ]);
 
-  // Anti-doublon : une destination déjà ouverte par une section du deck ou par
-  // un rail du catalogue ne reçoit pas, en plus, sa carte dans l'atlas du menu.
-  // Les conditions d'affichage recopient celles de `HomeExperience` (une section
-  // activée mais sans données ne s'affiche pas, donc ne couvre rien).
-  const covered = new Set<string>();
-  for (const section of config.sections) {
-    if (!section.enabled) continue;
-    if (section.id === "news" && posts.length === 0) continue;
-    if (section.id === "bestof" && bestof.length === 0) continue;
-    if (section.id === "tops" && communityTops == null) continue;
-    for (const href of SECTION_DESTINATIONS[section.id as HomeSectionId] ?? []) covered.add(href);
-  }
-  if (config.catalogue.enabled) {
-    for (const destination of config.catalogue.destinations) {
-      if (destination.enabled) covered.add(destination.href);
-    }
-  }
-  if (config.canon.enabled) covered.add("/wiki/canon");
-
   return (
-    <>
-      <HomeExperience
-        config={config}
-        access={access}
-        stats={stats}
-        personas={personas.map((p) => ({
-          id: p.id,
-          name: p.name,
-          avatar: p.avatar,
-          online: p.online,
-        }))}
-        wikiCounts={wikiCounts}
-        characters={characters.map((c) => ({
-          id: c.id,
-          name: c.name,
-          nameJa: c.nameJa,
-          race: c.race,
-          ki: c.ki,
-          image: c.image,
-        }))}
-        sagas={sagas.map((s) => ({
-          id: s.id,
-          slug: s.slug,
-          name: s.name,
-          series: s.series,
-          description: s.description,
-        }))}
-        bestof={bestof}
-        communityTops={communityTops}
-        posts={posts.map((p) => ({
-          id: p.id,
-          slug: p.slug,
-          title: p.title,
-          excerpt: p.excerpt,
-          cover: p.cover,
-          createdAt: p.createdAt,
-          author: {
-            username: p.author.username,
-            avatar: p.author.avatar,
-          },
-        }))}
-        topMembers={topMembers.map((m) => ({
-          rank: m.rank,
-          discordId: m.discordId,
-          username: m.username,
-          avatarUrl: m.avatarUrl,
-          xp: m.xp,
-          level: m.level,
-        }))}
-        presence={presence}
-        catalog={catalog}
-      />
-      {config.canon.enabled && (
-        <HomeCanonArbitre
-          config={config.canon}
-          doctrine={canonDoctrine}
-          references={canonReferences.length}
-        />
-      )}
-      {/* Le drapeau est testé ICI et pas seulement dans le composant : sinon la
-			    configuration des destinations part quand même dans la charge RSC,
-			    pour un composant qui rend `null`. */}
-      {access && config.journey.enabled && (
-        <HomeMenuJourney access={access} config={config.journey} covered={[...covered]} />
-      )}
-    </>
+    <HomeView
+      config={config}
+      access={access}
+      stats={stats}
+      personas={personas.map((p) => ({
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        online: p.online,
+      }))}
+      wikiCounts={wikiCounts}
+      characters={characters.map((c) => ({
+        id: c.id,
+        name: c.name,
+        nameJa: c.nameJa,
+        race: c.race,
+        ki: c.ki,
+        image: c.image,
+      }))}
+      sagas={sagas.map((s) => ({
+        id: s.id,
+        slug: s.slug,
+        name: s.name,
+        series: s.series,
+        description: s.description,
+      }))}
+      bestof={bestof}
+      communityTops={communityTops}
+      feed={feed}
+      topMembers={topMembers.map((m) => ({
+        rank: m.rank,
+        discordId: m.discordId,
+        username: m.username,
+        avatarUrl: m.avatarUrl,
+        xp: m.xp,
+        level: m.level,
+      }))}
+      presence={presence}
+      catalog={catalog}
+      canon={{ doctrine: canonDoctrine, references: canonReferences.length }}
+    />
   );
 }

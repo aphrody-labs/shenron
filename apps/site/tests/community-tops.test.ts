@@ -75,7 +75,7 @@ describe("source features", () => {
 
   test("home section tops branchée", async () => {
     const home = await Bun.file(
-      new URL("../src/components/home/HomeExperience.tsx", import.meta.url),
+      new URL("../src/components/home/HomeView.tsx", import.meta.url),
     ).text();
     expect(home).toContain('case "tops"');
     expect(home).toContain("communityTops");

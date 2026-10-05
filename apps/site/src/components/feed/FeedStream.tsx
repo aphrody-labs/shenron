@@ -10,6 +10,12 @@
  * visuelle** (badge de nature + titre + acteur + date), et seul l'article gagne
  * une vignette et un chapô.
  *
+ * Trois usages, un seul composant :
+ *  - `FeedStream` — le fil du journal (`/news`, `/news/fil`) ;
+ *  - `FeedStream compact` — la colonne « nouveautés » de l'accueil : une ligne
+ *    par événement, toute la ligne cliquable (cible tactile pleine largeur) ;
+ *  - `FeedLead` — l'article mis en avant en tête de l'accueil.
+ *
  * Server component : aucune interaction, donc aucun JavaScript envoyé.
  */
 import Image from "next/image";
@@ -43,15 +49,36 @@ const KIND_ACCENT: Record<FeedKind, string> = {
   discussion: "border-l-white/30",
 };
 
-export function FeedStream({ entries }: { entries: readonly FeedEntry[] }) {
+export function FeedStream({
+  entries,
+  compact = false,
+}: {
+  entries: readonly FeedEntry[];
+  /** Une ligne par événement, sans chapô ni étiquettes (colonne de l'accueil). */
+  compact?: boolean;
+}) {
   return (
-    <ol className="space-y-4">
+    <ol className={compact ? "space-y-2" : "space-y-4"}>
       {entries.map((entry) => (
-        <li key={entry.id}>
-          <FeedRow entry={entry} />
-        </li>
+        <li key={entry.id}>{compact ? <FeedLine entry={entry} /> : <FeedRow entry={entry} />}</li>
       ))}
     </ol>
+  );
+}
+
+/** En-tête commun : nature, acteur, date, temps de lecture. */
+function FeedMeta({ entry }: { entry: FeedEntry }) {
+  return (
+    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-display text-[0.625rem] font-bold uppercase tracking-[0.12em]">
+      <span className="text-dbz-orange">{entry.badge}</span>
+      {entry.actor && <span className="text-white/50">{entry.actor}</span>}
+      <time dateTime={entry.at} className="text-white/45">
+        {when(entry.at)}
+      </time>
+      {entry.readingMinutes !== null && (
+        <span className="text-white/45">{entry.readingMinutes} min</span>
+      )}
+    </p>
   );
 }
 
@@ -67,7 +94,7 @@ function FeedRow({ entry }: { entry: FeedEntry }) {
 
   return (
     <article
-      className={`flex gap-4 rounded-xl border border-white/[0.08] border-l-[3px] bg-dbz-card/80 p-4 transition-colors hover:border-dbz-orange/40 sm:gap-5 sm:p-5 ${KIND_ACCENT[entry.kind]}`}
+      className={`flex gap-4 rounded-xl border border-white/[0.08] border-l-[3px] bg-dbz-card/80 p-4 transition-colors hover:border-dbz-gold/50 sm:gap-5 sm:p-5 ${KIND_ACCENT[entry.kind]}`}
     >
       {/* La vignette n'apparaît que pour l'éditorial : une révision de fiche n'a
 			    pas d'image propre, et en inventer une serait décoratif. */}
@@ -84,22 +111,14 @@ function FeedRow({ entry }: { entry: FeedEntry }) {
             width={160}
             height={100}
             sizes="160px"
+            quality={70}
             className="h-full w-full object-cover"
           />
         </Link>
       )}
 
       <div className="min-w-0 flex-1">
-        <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-display text-[0.625rem] font-bold uppercase tracking-[0.12em]">
-          <span className="text-dbz-orange">{entry.badge}</span>
-          {entry.actor && <span className="text-white/45">{entry.actor}</span>}
-          <time dateTime={entry.at} className="text-white/35">
-            {when(entry.at)}
-          </time>
-          {entry.readingMinutes !== null && (
-            <span className="text-white/35">{entry.readingMinutes} min</span>
-          )}
-        </p>
+        <FeedMeta entry={entry} />
 
         <h3
           className={`mt-1.5 font-display font-bold leading-[1.22] tracking-[-0.012em] text-white ${
@@ -141,5 +160,72 @@ function FeedRow({ entry }: { entry: FeedEntry }) {
         <SocialCounts className="mt-2.5" likes={entry.likes} comments={entry.comments} />
       </div>
     </article>
+  );
+}
+
+/**
+ * Une ligne de fil : toute la carte est la cible (lien étiré sur le titre),
+ * aucun autre élément interactif dedans — donc rien à rater au pouce.
+ */
+function FeedLine({ entry }: { entry: FeedEntry }) {
+  return (
+    <article
+      className={`relative min-h-14 rounded-xl border border-white/[0.08] border-l-[3px] bg-dbz-card/80 px-3.5 py-2.5 transition-colors focus-within:border-dbz-gold hover:border-dbz-gold/60 ${KIND_ACCENT[entry.kind]}`}
+    >
+      <FeedMeta entry={entry} />
+      <h3 className="mt-1 line-clamp-2 font-display text-[0.9375rem] font-bold leading-snug text-white">
+        {entry.href ? (
+          <Link
+            href={entry.href}
+            className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-dbz-orange"
+          >
+            {entry.title}
+          </Link>
+        ) : (
+          entry.title
+        )}
+      </h3>
+    </article>
+  );
+}
+
+/** L'article mis en avant : image 16:9, titre, chapô. */
+export function FeedLead({ entry, priority = false }: { entry: FeedEntry; priority?: boolean }) {
+  const body = (
+    <>
+      {entry.image && (
+        <span className="relative block aspect-video overflow-hidden bg-dbz-bg">
+          <Image
+            src={entry.image}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 100vw"
+            quality={70}
+            priority={priority}
+            className="object-cover"
+          />
+        </span>
+      )}
+      <span className="block p-4 sm:p-5">
+        <FeedMeta entry={entry} />
+        <span className="mt-1.5 block font-display text-[1.125rem] font-bold leading-snug text-white transition-colors group-hover:text-dbz-gold sm:text-[1.3125rem]">
+          {entry.title}
+        </span>
+        {entry.summary && (
+          <span className="mt-2 line-clamp-3 block text-sm leading-relaxed text-white/65">
+            {entry.summary}
+          </span>
+        )}
+      </span>
+    </>
+  );
+  const frame =
+    "group block h-full overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
+  return entry.href ? (
+    <Link href={entry.href} className={frame}>
+      {body}
+    </Link>
+  ) : (
+    <article className={frame}>{body}</article>
   );
 }

@@ -32,18 +32,19 @@ describe("accueil et menu complet", () => {
    * présentes sur toutes les pages.
    */
   test("chaque destination du menu est atteignable (accueil ou carte du site)", async () => {
-    const [page, catalog, journey, config] = await Promise.all([
+    const [page, catalog, journey, view, config] = await Promise.all([
       source("../src/app/page.tsx"),
       source("../src/components/stream/MediaCatalogRails.tsx"),
       source("../src/components/home/HomeMenuJourney.tsx"),
+      source("../src/components/home/HomeView.tsx"),
       source("../src/lib/home-scenes.ts"),
     ]);
-    const homepageSources = `${page}\n${catalog}\n${journey}\n${config}`;
+    const homepageSources = `${page}\n${catalog}\n${journey}\n${view}\n${config}`;
     const mapped = new Set(SITE_DESTINATIONS.map((d) => d.href));
 
     for (const destination of MOBILE_MENU_DESTINATIONS) {
       if (destination.href === "/") {
-        expect(page).toContain("<HomeExperience");
+        expect(page).toContain("<HomeView");
         continue;
       }
       const onHomepage = homepageSources.includes(`"${destination.href}"`);
@@ -73,9 +74,13 @@ describe("accueil et menu complet", () => {
     }
   });
 
-  test("la barre mobile consomme le registre partagé", async () => {
-    const navigation = await source("../src/components/BarreNavMobile.tsx");
-    expect(navigation).toContain("MOBILE_PRIMARY_DESTINATIONS.map");
-    expect(navigation).toContain("MOBILE_MORE_DESTINATIONS");
+  test("le shell consomme le registre partagé et la carte du site", async () => {
+    // Onglets mobiles : le registre des destinations principales. Barre latérale et
+    // feuille « Plus » : la carte du site filtrée par la configuration de lancement.
+    const client = await source("../src/components/SiteShellClient.tsx");
+    expect(client).toContain("MOBILE_PRIMARY_DESTINATIONS.map");
+    const shell = await source("../src/components/SiteShell.tsx");
+    expect(shell).toContain("buildSiteMap");
+    expect(shell).toContain("isPathPublic");
   });
 });
