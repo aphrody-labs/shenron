@@ -27,10 +27,5 @@ pub enum Stage {
 }
 
 impl Stage {
-    pub const ALL: [Self; 4] = [
-        Self::Detection,
-        Self::Ocr,
-        Self::Translation,
-        Self::Inpainting,
-    ];
+    pub const ALL: [Self; 4] = [Self::Detection, Self::Ocr, Self::Translation, Self::Inpainting];
 }

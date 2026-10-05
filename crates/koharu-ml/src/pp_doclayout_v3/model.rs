@@ -48,12 +48,7 @@ impl Model {
         let logits = outputs.intermediate_logits.select(1, -1);
         let order_logits = outputs.out_order_logits.select(1, -1);
         let out_masks = outputs.out_masks.select(1, -1);
-        Output {
-            logits,
-            pred_boxes,
-            order_logits,
-            out_masks,
-        }
+        Output { logits, pred_boxes, order_logits, out_masks }
     }
 }
 
@@ -97,11 +92,7 @@ impl PPDocLayoutV3Model {
             .map(|spatial_shapes| {
                 let (anchors, valid_mask) =
                     generate_anchors(&spatial_shapes, path.device(), path.kind());
-                AnchorCache {
-                    spatial_shapes,
-                    anchors,
-                    valid_mask,
-                }
+                AnchorCache { spatial_shapes, anchors, valid_mask }
             });
         let backbone =
             HGNetV2Backbone::new(&(path / "backbone" / "model"), &config.backbone_config);
@@ -143,11 +134,8 @@ impl PPDocLayoutV3Model {
             None
         };
 
-        let enc_output = LinearNormSeq::new(
-            &(path / "enc_output"),
-            config.d_model,
-            config.layer_norm_eps,
-        );
+        let enc_output =
+            LinearNormSeq::new(&(path / "enc_output"), config.d_model, config.layer_norm_eps);
         let enc_score_head = nn::linear(
             path / "enc_score_head",
             config.d_model,
@@ -207,10 +195,7 @@ impl PPDocLayoutV3Model {
         let decoder_norm = nn::layer_norm(
             path / "decoder_norm",
             vec![config.d_model],
-            nn::LayerNormConfig {
-                eps: config.layer_norm_eps,
-                ..Default::default()
-            },
+            nn::LayerNormConfig { eps: config.layer_norm_eps, ..Default::default() },
         );
         let mask_query_head = PPDocLayoutV3MLPPredictionHead::new(
             &(path / "mask_query_head"),
@@ -258,22 +243,14 @@ impl PPDocLayoutV3Model {
         if self.config.num_feature_levels > sources.len() {
             let base_len = sources.len();
             sources.push(
-                self.decoder_input_proj[base_len].forward(
-                    encoder_outputs
-                        .last_hidden_state
-                        .last()
-                        .expect("encoder output"),
-                ),
+                self.decoder_input_proj[base_len]
+                    .forward(encoder_outputs.last_hidden_state.last().expect("encoder output")),
             );
             for idx in base_len + 1..self.config.num_feature_levels {
-                sources.push(
-                    self.decoder_input_proj[idx].forward(
-                        encoder_outputs
-                            .last_hidden_state
-                            .last()
-                            .expect("encoder output"),
-                    ),
-                );
+                sources
+                    .push(self.decoder_input_proj[idx].forward(
+                        encoder_outputs.last_hidden_state.last().expect("encoder output"),
+                    ));
             }
         }
 
@@ -293,18 +270,9 @@ impl PPDocLayoutV3Model {
             .anchor_cache
             .as_ref()
             .filter(|cache| cache.spatial_shapes == spatial_shapes)
-            .map(|cache| {
-                (
-                    cache.anchors.shallow_clone(),
-                    cache.valid_mask.shallow_clone(),
-                )
-            })
+            .map(|cache| (cache.anchors.shallow_clone(), cache.valid_mask.shallow_clone()))
             .unwrap_or_else(|| {
-                generate_anchors(
-                    &spatial_shapes,
-                    source_flatten.device(),
-                    source_flatten.kind(),
-                )
+                generate_anchors(&spatial_shapes, source_flatten.device(), source_flatten.kind())
             });
 
         let memory = valid_mask.to_kind(source_flatten.kind()) * &source_flatten;
@@ -313,31 +281,21 @@ impl PPDocLayoutV3Model {
         let enc_outputs_coord_logits = self.enc_bbox_head.forward(&output_memory) + &anchors;
 
         let (_, topk_ind) =
-            enc_outputs_class
-                .max_dim(-1, false)
-                .0
-                .topk(self.config.num_queries, 1, true, true);
+            enc_outputs_class.max_dim(-1, false).0.topk(self.config.num_queries, 1, true, true);
         let reference_points_unact = enc_outputs_coord_logits.gather(
             1,
-            &topk_ind
-                .unsqueeze(-1)
-                .repeat([1, 1, enc_outputs_coord_logits.size()[2]]),
+            &topk_ind.unsqueeze(-1).repeat([1, 1, enc_outputs_coord_logits.size()[2]]),
             false,
         );
         let target = output_memory.gather(
             1,
-            &topk_ind
-                .unsqueeze(-1)
-                .repeat([1, 1, output_memory.size()[2]]),
+            &topk_ind.unsqueeze(-1).repeat([1, 1, output_memory.size()[2]]),
             false,
         );
         let out_query = self.decoder_norm.forward(&target);
         let mask_query_embed = self.mask_query_head.forward(&out_query);
         let target = if let Some(weight_embedding) = &self.weight_embedding {
-            weight_embedding
-                .ws
-                .unsqueeze(0)
-                .repeat([source_flatten.size()[0], 1, 1])
+            weight_embedding.ws.unsqueeze(0).repeat([source_flatten.size()[0], 1, 1])
         } else {
             target.detach()
         };
@@ -401,11 +359,7 @@ impl HGNetV2Backbone {
     fn new(path: &nn::Path<'_>, config: &HGNetV2Config) -> Self {
         let embedder = HGNetV2Embeddings::new(&(path / "embedder"), config);
         let encoder = HGNetV2Encoder::new(&(path / "encoder"), config);
-        Self {
-            config: config.clone(),
-            embedder,
-            encoder,
-        }
+        Self { config: config.clone(), embedder, encoder }
     }
 
     fn forward(&self, pixel_values: &Tensor) -> Vec<Tensor> {
@@ -494,14 +448,8 @@ impl HGNetV2Embeddings {
     }
 
     fn forward(&self, pixel_values: &Tensor) -> Tensor {
-        let embedding = self
-            .stem1
-            .forward(pixel_values)
-            .constant_pad_nd([0, 1, 0, 1]);
-        let stem_2a = self
-            .stem2a
-            .forward(&embedding)
-            .constant_pad_nd([0, 1, 0, 1]);
+        let embedding = self.stem1.forward(pixel_values).constant_pad_nd([0, 1, 0, 1]);
+        let stem_2a = self.stem2a.forward(&embedding).constant_pad_nd([0, 1, 0, 1]);
         let stem_2a = self.stem2b.forward(&stem_2a);
         let pooled = embedding.max_pool2d([2, 2], [1, 1], [0, 0], [1, 1], true);
         let embedding = Tensor::cat(&[pooled, stem_2a], 1);
@@ -610,11 +558,7 @@ impl HGNetV2BasicLayer {
     ) -> Self {
         let layers = (0..layer_num)
             .map(|idx| {
-                let in_c = if idx == 0 {
-                    in_channels
-                } else {
-                    middle_channels
-                };
+                let in_c = if idx == 0 { in_channels } else { middle_channels };
                 if light_block {
                     HGNetV2Block::Light(Box::new(HGNetV2ConvLayerLight::new(
                         &(path / "layers" / idx),
@@ -660,11 +604,7 @@ impl HGNetV2BasicLayer {
                 use_learnable_affine_block,
             ),
         ];
-        Self {
-            residual,
-            layers,
-            aggregation,
-        }
+        Self { residual, layers, aggregation }
     }
 
     fn forward(&self, hidden_state: &Tensor) -> Tensor {
@@ -679,11 +619,7 @@ impl HGNetV2BasicLayer {
         for layer in &self.aggregation {
             hidden_state = layer.forward(&hidden_state);
         }
-        if self.residual {
-            hidden_state + identity
-        } else {
-            hidden_state
-        }
+        if self.residual { hidden_state + identity } else { hidden_state }
     }
 }
 
@@ -783,23 +719,13 @@ impl HGNetV2ConvLayer {
             nn::batch_norm2d(path / "normalization", out_channels, Default::default());
         let lab = (activation != Activation::None && use_learnable_affine_block)
             .then(|| HGNetV2LearnableAffineBlock::new(&(path / "lab")));
-        Self {
-            convolution,
-            normalization,
-            activation,
-            lab,
-        }
+        Self { convolution, normalization, activation, lab }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        let hidden_state = input
-            .apply(&self.convolution)
-            .apply_t(&self.normalization, false);
+        let hidden_state = input.apply(&self.convolution).apply_t(&self.normalization, false);
         let hidden_state = self.activation.apply(hidden_state);
-        self.lab
-            .as_ref()
-            .map(|lab| lab.forward(&hidden_state))
-            .unwrap_or(hidden_state)
+        self.lab.as_ref().map(|lab| lab.forward(&hidden_state)).unwrap_or(hidden_state)
     }
 }
 
@@ -958,10 +884,7 @@ impl PPDocLayoutV3HybridEncoder {
         mask_feat += self.encoder_mask_lateral.forward(&x4_feat[0]);
         mask_feat = self.encoder_mask_output.forward(&mask_feat);
 
-        PPDocLayoutV3HybridEncoderOutput {
-            last_hidden_state: pan_feature_maps,
-            mask_feat,
-        }
+        PPDocLayoutV3HybridEncoderOutput { last_hidden_state: pan_feature_maps, mask_feat }
     }
 }
 
@@ -1139,9 +1062,12 @@ impl PPDocLayoutV3Decoder {
             let out_query = args.norm.forward(&hidden_states);
             let mask_query_embed = args.mask_query_head.forward(&out_query);
             let size = args.mask_feat.size();
-            let out_mask = mask_query_embed
-                .bmm(&args.mask_feat.flatten(2, -1))
-                .reshape([size[0], mask_query_embed.size()[1], size[2], size[3]]);
+            let out_mask = mask_query_embed.bmm(&args.mask_feat.flatten(2, -1)).reshape([
+                size[0],
+                mask_query_embed.size()[1],
+                size[2],
+                size[3],
+            ]);
             decoder_out_masks.push(out_mask);
 
             intermediate_logits.push(args.class_embed.forward(&out_query));
@@ -1229,13 +1155,10 @@ impl PPDocLayoutV3DecoderLayer {
 
     fn forward(&self, args: DecoderLayerArgs<'_>) -> Tensor {
         let residual = args.hidden_states.shallow_clone();
-        let hidden_states = self.self_attn.forward(
-            args.hidden_states,
-            Some(args.object_queries_position_embeddings),
-        );
         let hidden_states = self
-            .self_attn_layer_norm
-            .forward(&(residual + hidden_states));
+            .self_attn
+            .forward(args.hidden_states, Some(args.object_queries_position_embeddings));
+        let hidden_states = self.self_attn_layer_norm.forward(&(residual + hidden_states));
 
         let residual = hidden_states.shallow_clone();
         let hidden_states = self.encoder_attn.forward(MultiscaleAttentionArgs {
@@ -1247,12 +1170,9 @@ impl PPDocLayoutV3DecoderLayer {
             spatial_shapes_list: args.spatial_shapes_list,
             level_start_index: args.level_start_index,
         });
-        let hidden_states = self
-            .encoder_attn_layer_norm
-            .forward(&(residual + hidden_states));
+        let hidden_states = self.encoder_attn_layer_norm.forward(&(residual + hidden_states));
         let residual = hidden_states.shallow_clone();
-        self.final_layer_norm
-            .forward(&(residual.shallow_clone() + self.mlp.forward(&residual)))
+        self.final_layer_norm.forward(&(residual.shallow_clone() + self.mlp.forward(&residual)))
     }
 }
 
@@ -1289,30 +1209,10 @@ impl PPDocLayoutV3SelfAttention {
             head_dim,
             num_heads,
             scaling: (head_dim as f64).powf(-0.5),
-            k_proj: nn::linear(
-                path / "k_proj",
-                hidden_size,
-                hidden_size,
-                Default::default(),
-            ),
-            v_proj: nn::linear(
-                path / "v_proj",
-                hidden_size,
-                hidden_size,
-                Default::default(),
-            ),
-            q_proj: nn::linear(
-                path / "q_proj",
-                hidden_size,
-                hidden_size,
-                Default::default(),
-            ),
-            out_proj: nn::linear(
-                path / "out_proj",
-                hidden_size,
-                hidden_size,
-                Default::default(),
-            ),
+            k_proj: nn::linear(path / "k_proj", hidden_size, hidden_size, Default::default()),
+            v_proj: nn::linear(path / "v_proj", hidden_size, hidden_size, Default::default()),
+            q_proj: nn::linear(path / "q_proj", hidden_size, hidden_size, Default::default()),
+            out_proj: nn::linear(path / "out_proj", hidden_size, hidden_size, Default::default()),
         }
     }
 
@@ -1340,10 +1240,7 @@ impl PPDocLayoutV3SelfAttention {
             .transpose(1, 2);
         let attn_weights = query_states.matmul(&key_states.transpose(2, 3)) * self.scaling;
         let attn_weights = attn_weights.softmax(-1, None::<Kind>);
-        let attn_output = attn_weights
-            .matmul(&value_states)
-            .transpose(1, 2)
-            .contiguous();
+        let attn_output = attn_weights.matmul(&value_states).transpose(1, 2).contiguous();
         self.out_proj.forward(&attn_output.reshape([
             batch_size,
             sequence_length,
@@ -1427,49 +1324,22 @@ impl PPDocLayoutV3MultiscaleDeformableAttention {
         let attention_weights = self
             .attention_weights
             .forward(&hidden_states)
-            .view([
-                batch_size,
-                num_queries,
-                self.n_heads,
-                self.n_levels * self.n_points,
-            ])
+            .view([batch_size, num_queries, self.n_heads, self.n_levels * self.n_points])
             .softmax(-1, None::<Kind>)
-            .view([
-                batch_size,
-                num_queries,
-                self.n_heads,
-                self.n_levels,
-                self.n_points,
-            ]);
+            .view([batch_size, num_queries, self.n_heads, self.n_levels, self.n_points]);
 
         let sampling_locations = if args.reference_points.size().last().copied() == Some(4) {
-            let ref_xy = args
-                .reference_points
-                .slice(-1, 0, 2, 1)
-                .unsqueeze(2)
-                .unsqueeze(4);
-            let ref_wh = args
-                .reference_points
-                .slice(-1, 2, 4, 1)
-                .unsqueeze(2)
-                .unsqueeze(4);
+            let ref_xy = args.reference_points.slice(-1, 0, 2, 1).unsqueeze(2).unsqueeze(4);
+            let ref_wh = args.reference_points.slice(-1, 2, 4, 1).unsqueeze(2).unsqueeze(4);
             ref_xy + sampling_offsets / self.n_points as f64 * ref_wh * 0.5
         } else {
             let normalizer = Tensor::stack(
-                &[
-                    args.spatial_shapes.i((.., 1)),
-                    args.spatial_shapes.i((.., 0)),
-                ],
+                &[args.spatial_shapes.i((.., 1)), args.spatial_shapes.i((.., 0))],
                 -1,
             )
             .to_kind(value.kind());
             args.reference_points.unsqueeze(2).unsqueeze(4)
-                + sampling_offsets
-                    / normalizer
-                        .unsqueeze(0)
-                        .unsqueeze(0)
-                        .unsqueeze(0)
-                        .unsqueeze(4)
+                + sampling_offsets / normalizer.unsqueeze(0).unsqueeze(0).unsqueeze(0).unsqueeze(4)
         };
 
         let output = multiscale_deformable_attention(
@@ -1517,19 +1387,14 @@ impl PPDocLayoutV3GlobalPointer {
         let batch_size = size[0];
         let sequence_length = size[1];
         let query_key_projection =
-            self.dense
-                .forward(inputs)
-                .reshape([batch_size, sequence_length, 2, self.head_size]);
+            self.dense.forward(inputs).reshape([batch_size, sequence_length, 2, self.head_size]);
         let parts = query_key_projection.unbind(2);
         let queries = &parts[0];
         let keys = &parts[1];
         let logits = queries.matmul(&keys.transpose(-2, -1)) / (self.head_size as f64).sqrt();
-        let mask = Tensor::ones(
-            [sequence_length, sequence_length],
-            (Kind::Bool, logits.device()),
-        )
-        .tril(0)
-        .unsqueeze(0);
+        let mask = Tensor::ones([sequence_length, sequence_length], (Kind::Bool, logits.device()))
+            .tril(0)
+            .unsqueeze(0);
         logits.masked_fill(&mask, -1e4)
     }
 }
@@ -1549,18 +1414,8 @@ impl PPDocLayoutV3MLP {
         activation: Activation,
     ) -> Self {
         Self {
-            fc1: nn::linear(
-                path / "fc1",
-                hidden_size,
-                intermediate_size,
-                Default::default(),
-            ),
-            fc2: nn::linear(
-                path / "fc2",
-                intermediate_size,
-                hidden_size,
-                Default::default(),
-            ),
+            fc1: nn::linear(path / "fc1", hidden_size, intermediate_size, Default::default()),
+            fc2: nn::linear(path / "fc2", intermediate_size, hidden_size, Default::default()),
             activation,
         }
     }
@@ -1592,12 +1447,7 @@ impl PPDocLayoutV3MLPPredictionHead {
         dims.push(output_dim);
         let layers = (0..num_layers)
             .map(|idx| {
-                nn::linear(
-                    path / "layers" / idx,
-                    dims[idx],
-                    dims[idx + 1],
-                    Default::default(),
-                )
+                nn::linear(path / "layers" / idx, dims[idx], dims[idx + 1], Default::default())
             })
             .collect();
         Self { layers }
@@ -1626,10 +1476,7 @@ impl PPDocLayoutV3MaskFeatFPN {
     fn new(path: &nn::Path<'_>, config: &PPDocLayoutV3Config) -> Self {
         let mut order = (0..config.feat_strides.len()).collect::<Vec<_>>();
         order.sort_by_key(|&idx| config.feat_strides[idx]);
-        let fpn_strides = order
-            .iter()
-            .map(|&idx| config.feat_strides[idx])
-            .collect::<Vec<_>>();
+        let fpn_strides = order.iter().map(|&idx| config.feat_strides[idx]).collect::<Vec<_>>();
         let base_stride = fpn_strides[0];
         let scale_heads = order
             .iter()
@@ -1692,11 +1539,7 @@ impl PPDocLayoutV3ScaleHead {
         let mut layers = Vec::new();
         let mut module_idx = 0;
         for idx in 0..head_length {
-            let in_c = if idx == 0 {
-                in_channels
-            } else {
-                feature_channels
-            };
+            let in_c = if idx == 0 { in_channels } else { feature_channels };
             layers.push(ScaleHeadLayer::Conv(Box::new(PPDocLayoutV3ConvLayer::new(
                 &(path / "layers" / module_idx),
                 in_c,
@@ -1728,7 +1571,7 @@ impl PPDocLayoutV3ScaleHead {
                         None::<f64>,
                         None::<f64>,
                     )
-                }
+                },
             }
         }
         x
@@ -1759,13 +1602,7 @@ impl PPDocLayoutV3EncoderMaskOutput {
                 Activation::Silu,
                 eps,
             ),
-            conv: nn::conv2d(
-                path / "conv",
-                in_channels,
-                num_prototypes,
-                1,
-                Default::default(),
-            ),
+            conv: nn::conv2d(path / "conv", in_channels, num_prototypes, 1, Default::default()),
         }
     }
 
@@ -1833,10 +1670,7 @@ impl PPDocLayoutV3CSPRepLayer {
         }
         let hidden_state_2 = self.conv2.forward(hidden_state);
         let out = hidden_state_1 + hidden_state_2;
-        self.conv3
-            .as_ref()
-            .map(|conv3| conv3.forward(&out))
-            .unwrap_or(out)
+        self.conv3.as_ref().map(|conv3| conv3.forward(&out)).unwrap_or(out)
     }
 }
 
@@ -1876,8 +1710,7 @@ impl PPDocLayoutV3RepVggBlock {
     }
 
     fn forward(&self, x: &Tensor) -> Tensor {
-        self.activation
-            .apply(self.conv1.forward(x) + self.conv2.forward(x))
+        self.activation.apply(self.conv1.forward(x) + self.conv2.forward(x))
     }
 }
 
@@ -1916,18 +1749,14 @@ impl PPDocLayoutV3ConvNormLayer {
             norm: nn::batch_norm2d(
                 path / "norm",
                 out_channels,
-                nn::BatchNormConfig {
-                    eps,
-                    ..Default::default()
-                },
+                nn::BatchNormConfig { eps, ..Default::default() },
             ),
             activation,
         }
     }
 
     fn forward(&self, hidden_state: &Tensor) -> Tensor {
-        self.activation
-            .apply(hidden_state.apply(&self.conv).apply_t(&self.norm, false))
+        self.activation.apply(hidden_state.apply(&self.conv).apply_t(&self.norm, false))
     }
 }
 
@@ -1964,21 +1793,14 @@ impl PPDocLayoutV3ConvLayer {
             normalization: nn::batch_norm2d(
                 path / "normalization",
                 out_channels,
-                nn::BatchNormConfig {
-                    eps,
-                    ..Default::default()
-                },
+                nn::BatchNormConfig { eps, ..Default::default() },
             ),
             activation,
         }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        self.activation.apply(
-            input
-                .apply(&self.convolution)
-                .apply_t(&self.normalization, false),
-        )
+        self.activation.apply(input.apply(&self.convolution).apply_t(&self.normalization, false))
     }
 }
 
@@ -2006,21 +1828,12 @@ impl ConvBnSeq {
                 in_channels,
                 out_channels,
                 kernel_size,
-                nn::ConvConfig {
-                    stride,
-                    padding,
-                    groups,
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::ConvConfig { stride, padding, groups, bias: false, ..Default::default() },
             ),
             bn: nn::batch_norm2d(
                 path / 1,
                 out_channels,
-                nn::BatchNormConfig {
-                    eps,
-                    ..Default::default()
-                },
+                nn::BatchNormConfig { eps, ..Default::default() },
             ),
         }
     }
@@ -2100,14 +1913,7 @@ impl Activation {
 }
 
 fn layer_norm(path: &nn::Path<'_>, hidden_dim: i64, eps: f64) -> nn::LayerNorm {
-    nn::layer_norm(
-        path,
-        vec![hidden_dim],
-        nn::LayerNormConfig {
-            eps,
-            ..Default::default()
-        },
-    )
+    nn::layer_norm(path, vec![hidden_dim], nn::LayerNormConfig { eps, ..Default::default() })
 }
 
 fn multiscale_deformable_attention(
@@ -2121,10 +1927,8 @@ fn multiscale_deformable_attention(
     let num_heads = size[2];
     let hidden_dim = size[3];
     let num_queries = sampling_locations.size()[1];
-    let split_sizes = spatial_shapes_list
-        .iter()
-        .map(|(height, width)| height * width)
-        .collect::<Vec<_>>();
+    let split_sizes =
+        spatial_shapes_list.iter().map(|(height, width)| height * width).collect::<Vec<_>>();
     let value_list = value.split_with_sizes(split_sizes, 1);
     let sampling_grids = sampling_locations * 2.0 - 1.0;
 
@@ -2136,10 +1940,8 @@ fn multiscale_deformable_attention(
             height,
             width,
         ]);
-        let sampling_grid_l = sampling_grids
-            .i((.., .., .., level as i64))
-            .transpose(1, 2)
-            .flatten(0, 1);
+        let sampling_grid_l =
+            sampling_grids.i((.., .., .., level as i64)).transpose(1, 2).flatten(0, 1);
         sampling_values.push(value_l.grid_sampler_2d(&sampling_grid_l, 0, 0, false));
     }
 
@@ -2173,13 +1975,8 @@ fn generate_anchors(spatial_shapes: &[(i64, i64)], device: Device, kind: Kind) -
         }
     }
     let total = valid.len() as i64;
-    let anchors = Tensor::from_slice(&anchors)
-        .view([1, total, 4])
-        .to_device(device)
-        .to_kind(kind);
-    let valid_mask = Tensor::from_slice(&valid)
-        .view([1, total, 1])
-        .to_device(device);
+    let anchors = Tensor::from_slice(&anchors).view([1, total, 4]).to_device(device).to_kind(kind);
+    let valid_mask = Tensor::from_slice(&valid).view([1, total, 1]).to_device(device);
     let one_minus_anchors = anchors.ones_like() - &anchors;
     let logit = (&anchors / one_minus_anchors).log();
     let max = Tensor::full([1, total, 4], 1.0e20, (kind, device));
@@ -2226,23 +2023,12 @@ fn mask_to_box_coordinate(mask: &Tensor, kind: Kind) -> Tensor {
     let big = Tensor::full([batch_size, queries, height, width], 1.0e20, (kind, device));
 
     let x_max = (&x_coords * &mask_f).flatten(-2, -1).max_dim(-1, false).0 + 1.0;
-    let x_min = x_coords
-        .where_self(&mask, &big)
-        .flatten(-2, -1)
-        .min_dim(-1, false)
-        .0;
+    let x_min = x_coords.where_self(&mask, &big).flatten(-2, -1).min_dim(-1, false).0;
     let y_max = (&y_coords * &mask_f).flatten(-2, -1).max_dim(-1, false).0 + 1.0;
-    let y_min = y_coords
-        .where_self(&mask, &big)
-        .flatten(-2, -1)
-        .min_dim(-1, false)
-        .0;
+    let y_min = y_coords.where_self(&mask, &big).flatten(-2, -1).min_dim(-1, false).0;
 
     let unnormalized_bbox = Tensor::stack(&[x_min, y_min, x_max, y_max], -1);
-    let is_non_empty = mask
-        .any_dims(&[-2i64, -1][..], false)
-        .unsqueeze(-1)
-        .to_kind(kind);
+    let is_non_empty = mask.any_dims(&[-2i64, -1][..], false).unsqueeze(-1).to_kind(kind);
     let norm = Tensor::from_slice(&[width as f32, height as f32, width as f32, height as f32])
         .to_kind(kind)
         .to_device(device)
@@ -2267,13 +2053,8 @@ fn inverse_sigmoid(x: &Tensor) -> Tensor {
 }
 
 fn spatial_shapes_tensor(spatial_shapes: &[(i64, i64)], device: Device) -> Tensor {
-    let values = spatial_shapes
-        .iter()
-        .flat_map(|(h, w)| [*h, *w])
-        .collect::<Vec<_>>();
-    Tensor::from_slice(&values)
-        .view([spatial_shapes.len() as i64, 2])
-        .to_device(device)
+    let values = spatial_shapes.iter().flat_map(|(h, w)| [*h, *w]).collect::<Vec<_>>();
+    Tensor::from_slice(&values).view([spatial_shapes.len() as i64, 2]).to_device(device)
 }
 
 fn level_start_index_tensor(spatial_shapes: &[(i64, i64)], device: Device) -> Tensor {

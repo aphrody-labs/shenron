@@ -34,19 +34,13 @@ impl Model {
             context.supports_image_generation(),
             "the loaded RORem mixed context does not support image generation"
         );
-        Ok(Self {
-            context: Mutex::new(context),
-        })
+        Ok(Self { context: Mutex::new(context) })
     }
 
     pub(super) fn forward(&self, params: &ImageGenerationParams) -> Result<Vec<RgbImage>> {
-        let mut context = self
-            .context
-            .lock()
-            .map_err(|_| anyhow!("RORem mixed context lock was poisoned"))?;
-        context
-            .generate_image(params)
-            .context("RORem mixed inference failed")
+        let mut context =
+            self.context.lock().map_err(|_| anyhow!("RORem mixed context lock was poisoned"))?;
+        context.generate_image(params).context("RORem mixed inference failed")
     }
 }
 

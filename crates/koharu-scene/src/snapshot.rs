@@ -35,11 +35,7 @@ impl Snapshot {
     }
 
     pub fn pages(&self) -> impl ExactSizeIterator<Item = PageRef<'_>> {
-        self.state
-            .page_order
-            .iter()
-            .copied()
-            .map(|id| PageRef { snapshot: self, id })
+        self.state.page_order.iter().copied().map(|id| PageRef { snapshot: self, id })
     }
 
     pub fn entities(&self) -> impl ExactSizeIterator<Item = EntityRef<'_>> {
@@ -105,9 +101,7 @@ impl Snapshot {
         }
         let page = self.state.page(page_id)?;
         let key = page.key(id)?;
-        Ok(page.entities[key]
-            .parent
-            .map(|parent| page.entities[parent].id))
+        Ok(page.entities[key].parent.map(|parent| page.entities[parent].id))
     }
 
     pub fn children(&self, id: EntityId) -> Result<impl ExactSizeIterator<Item = EntityId> + '_> {
@@ -127,9 +121,7 @@ impl Snapshot {
     }
 
     pub fn asset(&self, entity: EntityId, role: &AssetRole) -> Result<Option<Asset>> {
-        Ok(self
-            .component::<Assets>(entity)?
-            .and_then(|assets| assets.values.get(role).cloned()))
+        Ok(self.component::<Assets>(entity)?.and_then(|assets| assets.values.get(role).cloned()))
     }
 
     fn relation_component<T: Component>(&self, relation: RelationId) -> Result<Option<T>> {
@@ -182,8 +174,7 @@ impl Snapshot {
         entity: EntityId,
     ) -> impl Iterator<Item = RelationRef<'_>> {
         let kind = R::kind();
-        self.relations_from(entity, None)
-            .filter(move |relation| relation.value().kind == kind)
+        self.relations_from(entity, None).filter(move |relation| relation.value().kind == kind)
     }
 
     pub fn relations_to_as<R: RelationSpec>(
@@ -191,8 +182,7 @@ impl Snapshot {
         entity: EntityId,
     ) -> impl Iterator<Item = RelationRef<'_>> {
         let kind = R::kind();
-        self.relations_to(entity, None)
-            .filter(move |relation| relation.value().kind == kind)
+        self.relations_to(entity, None).filter(move |relation| relation.value().kind == kind)
     }
 
     pub fn relation_from<R: FunctionalRelation>(
@@ -283,17 +273,12 @@ impl<'snapshot> PageRef<'snapshot> {
     }
 
     pub fn page(self) -> Result<crate::Page> {
-        self.snapshot
-            .component(self.id)?
-            .ok_or_else(|| Error::invalid("page component is missing"))
+        self.snapshot.component(self.id)?.ok_or_else(|| Error::invalid("page component is missing"))
     }
 
     #[must_use]
     pub fn entity(self) -> EntityRef<'snapshot> {
-        EntityRef {
-            snapshot: self.snapshot,
-            id: self.id,
-        }
+        EntityRef { snapshot: self.snapshot, id: self.id }
     }
 }
 

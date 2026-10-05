@@ -85,10 +85,7 @@ struct StdioBridge {
 impl Bridge for StdioBridge {
     fn channel(&self, token: &str) -> Result<Sink<Value>> {
         let id = channel_id(token)?;
-        let end = ChannelEnd {
-            id,
-            output: self.output.clone(),
-        };
+        let end = ChannelEnd { id, output: self.output.clone() };
         Ok(Arc::new(move |message: Value| {
             open_verification_page(&message);
             end.output.send(json!({"channel": end.id, "message": message}))
@@ -135,16 +132,13 @@ mod pickers {
         let dialog =
             rfd::AsyncFileDialog::new().add_filter("Images, archives, and PDF", extensions);
         Ok(match source {
-            PageImportSource::Files => dialog.pick_files().await.map(|files| {
-                files
-                    .into_iter()
-                    .map(|file| file.path().to_owned())
-                    .collect()
-            }),
-            PageImportSource::Folder => dialog
-                .pick_folder()
+            PageImportSource::Files => dialog
+                .pick_files()
                 .await
-                .map(|folder| vec![folder.path().to_owned()]),
+                .map(|files| files.into_iter().map(|file| file.path().to_owned()).collect()),
+            PageImportSource::Folder => {
+                dialog.pick_folder().await.map(|folder| vec![folder.path().to_owned()])
+            },
         })
     }
 
@@ -158,7 +152,7 @@ mod pickers {
                     .set_file_name(format!("{project}.cbz"))
                     .save_file()
                     .await
-            }
+            },
         };
         Ok(picked.map(|picked| picked.path().to_owned()))
     }
@@ -191,7 +185,7 @@ async fn command(editor: Editor, bridge: Arc<StdioBridge>, id: Value, request: V
         Ok(Reply::Json(result)) => json!({"id": id, "result": result}),
         Ok(Reply::Bytes(bytes)) => {
             json!({"id": id, "result": {"$bytes": STANDARD.encode(bytes)}})
-        }
+        },
         Err(error) => json!({"id": id, "error": format!("{error:#}")}),
     };
     bridge.output.send(response);
@@ -205,9 +199,7 @@ async fn main() -> Result<()> {
     let writer = tokio::spawn(async move {
         let mut stdout = tokio::io::stdout();
         while let Some(value) = outgoing.recv().await {
-            stdout
-                .write_all(serde_json::to_string(&value)?.as_bytes())
-                .await?;
+            stdout.write_all(serde_json::to_string(&value)?.as_bytes()).await?;
             stdout.write_all(b"\n").await?;
             stdout.flush().await?;
         }
@@ -219,9 +211,7 @@ async fn main() -> Result<()> {
         None => Editor::from_roots(&Roots::from_env()?, args.cpu)?,
     };
     editor.set_toolbox(Some(Arc::new(ShenronKnowledge::new(args.shenron_url))));
-    let bridge = Arc::new(StdioBridge {
-        output: output.clone(),
-    });
+    let bridge = Arc::new(StdioBridge { output: output.clone() });
     let mut service = Service::new(editor.clone(), output.0.clone());
 
     let mut lines = BufReader::new(tokio::io::stdin()).lines();
@@ -241,7 +231,7 @@ async fn main() -> Result<()> {
             Err(error) => {
                 output.send(json!({"id": id, "error": format!("invalid JSON: {error}")}));
                 continue;
-            }
+            },
         };
         if request.get("command").is_some_and(Value::is_string) {
             tokio::spawn(command(editor.clone(), Arc::clone(&bridge), id, request));
@@ -249,10 +239,7 @@ async fn main() -> Result<()> {
         }
         let response = match request.get("method").and_then(Value::as_str) {
             Some(method) => match service
-                .call(
-                    method,
-                    request.get("params").cloned().unwrap_or_else(|| json!({})),
-                )
+                .call(method, request.get("params").cloned().unwrap_or_else(|| json!({})))
                 .await
             {
                 Ok(result) => json!({"id": id, "result": result}),

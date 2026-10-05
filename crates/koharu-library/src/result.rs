@@ -93,14 +93,11 @@ pub(super) async fn extract(snapshot: &Snapshot, page: EntityId) -> Result<PageR
             .with_context(|| format!("region {id} has no geometry"))?;
         let bounds = bounds(&geometry)?;
         let detection = snapshot.component::<koharu_scene::DetectionAnalysis>(id)?;
-        let detection_provenance = detection
-            .as_ref()
-            .and_then(|analysis| GenerationInfo::from_origin(&analysis.origin));
+        let detection_provenance =
+            detection.as_ref().and_then(|analysis| GenerationInfo::from_origin(&analysis.origin));
         let detection_labels = detection.map_or_else(Vec::new, |analysis| analysis.labels);
-        let confidence = detection_labels
-            .iter()
-            .find(|label| label.kind == kind)
-            .map(|label| label.confidence);
+        let confidence =
+            detection_labels.iter().find(|label| label.kind == kind).map(|label| label.confidence);
         let ocr = snapshot.component::<OcrAnalysis>(id)?;
         let mut texts = Vec::new();
         for relation in snapshot.relations_to_as::<koharu_scene::RecognizedFrom>(id) {
@@ -120,8 +117,7 @@ pub(super) async fn extract(snapshot: &Snapshot, page: EntityId) -> Result<PageR
                     .as_ref()
                     .and_then(|value| GenerationInfo::from_origin(&value.text.origin))
                     .or_else(|| {
-                        ocr.as_ref()
-                            .and_then(|value| GenerationInfo::from_origin(&value.origin))
+                        ocr.as_ref().and_then(|value| GenerationInfo::from_origin(&value.origin))
                     }),
                 translation: translation.as_ref().map(|value| value.text.value.clone()),
                 target_language: translation

@@ -61,18 +61,9 @@ impl Default for FFCResNetGeneratorConfig {
             n_downsampling: 3,
             n_blocks: 18,
             max_features: 1024,
-            init_conv_kwargs: FFCConfig {
-                ratio_gin: 0.0,
-                ratio_gout: 0.0,
-            },
-            downsample_conv_kwargs: FFCConfig {
-                ratio_gin: 0.0,
-                ratio_gout: 0.0,
-            },
-            resnet_conv_kwargs: FFCConfig {
-                ratio_gin: 0.75,
-                ratio_gout: 0.75,
-            },
+            init_conv_kwargs: FFCConfig { ratio_gin: 0.0, ratio_gout: 0.0 },
+            downsample_conv_kwargs: FFCConfig { ratio_gin: 0.0, ratio_gout: 0.0 },
+            resnet_conv_kwargs: FFCConfig { ratio_gin: 0.75, ratio_gout: 0.75 },
         }
     }
 }

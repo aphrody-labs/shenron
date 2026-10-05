@@ -10,17 +10,13 @@ use koharu_scene::{
 fn png(width: u32, height: u32, color: [u8; 4]) -> Arc<[u8]> {
     let image = image::RgbaImage::from_pixel(width, height, image::Rgba(color));
     let mut bytes = Cursor::new(Vec::new());
-    image::DynamicImage::ImageRgba8(image)
-        .write_to(&mut bytes, image::ImageFormat::Png)
-        .unwrap();
+    image::DynamicImage::ImageRgba8(image).write_to(&mut bytes, image::ImageFormat::Png).unwrap();
     bytes.into_inner().into()
 }
 
 fn png_image(image: image::RgbaImage) -> Arc<[u8]> {
     let mut bytes = Cursor::new(Vec::new());
-    image::DynamicImage::ImageRgba8(image)
-        .write_to(&mut bytes, image::ImageFormat::Png)
-        .unwrap();
+    image::DynamicImage::ImageRgba8(image).write_to(&mut bytes, image::ImageFormat::Png).unwrap();
     bytes.into_inner().into()
 }
 
@@ -85,11 +81,7 @@ async fn native_rasterization_preserves_pixels_across_prepared_tile_edges() {
         })
         .unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
-    let frame = Renderer::new()
-        .unwrap()
-        .render(&snapshot, page.unwrap())
-        .await
-        .unwrap();
+    let frame = Renderer::new().unwrap().render(&snapshot, page.unwrap()).await.unwrap();
     let manifest = frame.prepared().manifest().unwrap();
     assert_eq!(manifest.resources.len(), 1);
     let koharu_rasterizer::PreparedContent::Raster(prepared) = &manifest.frame.layers[0].content
@@ -123,11 +115,7 @@ async fn discarded_image_nodes_are_rebuilt_for_a_reopened_presentation() {
                 AssetInput::new(
                     png(4, 4, color),
                     "image/png",
-                    AssetMetadata {
-                        width: Some(4),
-                        height: Some(4),
-                        attributes: BTreeMap::new(),
-                    },
+                    AssetMetadata { width: Some(4), height: Some(4), attributes: BTreeMap::new() },
                 ),
             )?;
             page = Some(created);
@@ -167,11 +155,7 @@ async fn rasterized_png_contains_source_and_cleanup_pixels() {
                 AssetInput::new(
                     png(4, 4, [10, 20, 200, 255]),
                     "image/png",
-                    AssetMetadata {
-                        width: Some(4),
-                        height: Some(4),
-                        attributes: BTreeMap::new(),
-                    },
+                    AssetMetadata { width: Some(4), height: Some(4), attributes: BTreeMap::new() },
                 ),
             )?;
             let cleanup_layer = edit.add_entity(created, At::Start)?;
@@ -189,11 +173,7 @@ async fn rasterized_png_contains_source_and_cleanup_pixels() {
                 AssetInput::new(
                     png_image(cleanup),
                     "image/png",
-                    AssetMetadata {
-                        width: Some(4),
-                        height: Some(4),
-                        attributes: BTreeMap::new(),
-                    },
+                    AssetMetadata { width: Some(4), height: Some(4), attributes: BTreeMap::new() },
                 ),
             )?;
             page = Some(created);
@@ -222,8 +202,6 @@ async fn rasterized_png_contains_source_and_cleanup_pixels() {
 
 #[test]
 fn public_layer_kinds_remain_export_metadata() {
-    let _ = LayerKind::Image(koharu_renderer::ImageMetadata {
-        name: None,
-        kind: ImageKind::Source,
-    });
+    let _ =
+        LayerKind::Image(koharu_renderer::ImageMetadata { name: None, kind: ImageKind::Source });
 }

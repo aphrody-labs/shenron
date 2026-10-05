@@ -89,15 +89,11 @@ impl Model {
         let visual_feature = self.feature_extraction.forward(&image);
         let visual_feature = if self.two_dimensional {
             let size = visual_feature.size();
-            visual_feature
-                .view([size[0], size[1], -1])
-                .permute([0, 2, 1])
+            visual_feature.view([size[0], size[1], -1]).permute([0, 2, 1])
         } else {
             let visual_feature = visual_feature.permute([0, 3, 1, 2]);
             let channels = visual_feature.size()[2];
-            visual_feature
-                .adaptive_avg_pool2d([channels, 1])
-                .squeeze_dim(3)
+            visual_feature.adaptive_avg_pool2d([channels, 1]).squeeze_dim(3)
         };
         let contextual_feature = self
             .sequence_modeling
@@ -202,28 +198,17 @@ impl LocalizationNetwork {
     fn forward(&self, input: &Tensor) -> Tensor {
         let mut hidden_states = self.bn1.forward_t(&self.conv1.forward(input), false).relu();
         hidden_states = hidden_states.max_pool2d([2, 2], [2, 2], [0, 0], [1, 1], false);
-        hidden_states = self
-            .bn2
-            .forward_t(&self.conv2.forward(&hidden_states), false)
-            .relu();
+        hidden_states = self.bn2.forward_t(&self.conv2.forward(&hidden_states), false).relu();
         hidden_states = hidden_states.max_pool2d([2, 2], [2, 2], [0, 0], [1, 1], false);
-        hidden_states = self
-            .bn3
-            .forward_t(&self.conv3.forward(&hidden_states), false)
-            .relu();
+        hidden_states = self.bn3.forward_t(&self.conv3.forward(&hidden_states), false).relu();
         hidden_states = hidden_states.max_pool2d([2, 2], [2, 2], [0, 0], [1, 1], false);
         hidden_states = self
             .bn4
             .forward_t(&self.conv4.forward(&hidden_states), false)
             .relu()
             .adaptive_avg_pool2d([1, 1]);
-        let hidden_states = self
-            .localization_fc1
-            .forward(&hidden_states.flatten(1, -1))
-            .relu();
-        self.localization_fc2
-            .forward(&hidden_states)
-            .view([input.size()[0], self.num_fiducial, 2])
+        let hidden_states = self.localization_fc1.forward(&hidden_states.flatten(1, -1)).relu();
+        self.localization_fc2.forward(&hidden_states).view([input.size()[0], self.num_fiducial, 2])
     }
 }
 
@@ -264,27 +249,13 @@ impl GridGenerator {
                 let dy =
                     control_points[(i * 2 + 1) as usize] - control_points[(j * 2 + 1) as usize];
                 let radius = (dx * dx + dy * dy).sqrt();
-                let value = if i == j {
-                    0.0
-                } else {
-                    radius * radius * radius.ln()
-                };
+                let value = if i == j { 0.0 } else { radius * radius * radius.ln() };
                 set(&mut delta_c, i, j + 3, value);
             }
         }
         for i in 0..num_fiducial {
-            set(
-                &mut delta_c,
-                num_fiducial,
-                i + 3,
-                control_points[(i * 2) as usize],
-            );
-            set(
-                &mut delta_c,
-                num_fiducial + 1,
-                i + 3,
-                control_points[(i * 2 + 1) as usize],
-            );
+            set(&mut delta_c, num_fiducial, i + 3, control_points[(i * 2) as usize]);
+            set(&mut delta_c, num_fiducial + 1, i + 3, control_points[(i * 2 + 1) as usize]);
             set(&mut delta_c, num_fiducial + 2, i + 3, 1.0);
         }
         let inverse_delta_c = Tensor::from_slice(&delta_c)
@@ -311,28 +282,17 @@ impl GridGenerator {
             .view([image_height * image_width, delta_size])
             .to_kind(kind)
             .to_device(device);
-        Self {
-            inverse_delta_c,
-            p_hat,
-        }
+        Self { inverse_delta_c, p_hat }
     }
 
     fn forward(&self, control_points: &Tensor) -> Tensor {
         let batch_size = control_points.size()[0];
-        let zeros = Tensor::zeros(
-            [batch_size, 3, 2],
-            (control_points.kind(), control_points.device()),
-        );
+        let zeros =
+            Tensor::zeros([batch_size, 3, 2], (control_points.kind(), control_points.device()));
         let control_points = Tensor::cat(&[control_points.shallow_clone(), zeros], 1);
-        let transform = self
-            .inverse_delta_c
-            .unsqueeze(0)
-            .repeat([batch_size, 1, 1])
-            .bmm(&control_points);
-        self.p_hat
-            .unsqueeze(0)
-            .repeat([batch_size, 1, 1])
-            .bmm(&transform)
+        let transform =
+            self.inverse_delta_c.unsqueeze(0).repeat([batch_size, 1, 1]).bmm(&control_points);
+        self.p_hat.unsqueeze(0).repeat([batch_size, 1, 1]).bmm(&transform)
     }
 }
 
@@ -414,15 +374,7 @@ impl ResNet {
             ),
             bn2: batch_norm(&(path / "bn2"), output_channels / 2),
             layer3: ResNetLayer::new(&(path / "layer3"), output_channels / 2, output_channels, 5),
-            conv3: conv2d(
-                &(path / "conv3"),
-                output_channels,
-                output_channels,
-                3,
-                1,
-                1,
-                false,
-            ),
+            conv3: conv2d(&(path / "conv3"), output_channels, output_channels, 3, 1, 1, false),
             bn3: batch_norm(&(path / "bn3"), output_channels),
             layer4: ResNetLayer::new(&(path / "layer4"), output_channels, output_channels, 3),
             conv4_1: conv2d_nd(
@@ -435,54 +387,26 @@ impl ResNet {
                 false,
             ),
             bn4_1: batch_norm(&(path / "bn4_1"), output_channels),
-            conv4_2: conv2d(
-                &(path / "conv4_2"),
-                output_channels,
-                output_channels,
-                2,
-                1,
-                0,
-                false,
-            ),
+            conv4_2: conv2d(&(path / "conv4_2"), output_channels, output_channels, 2, 1, 0, false),
             bn4_2: batch_norm(&(path / "bn4_2"), output_channels),
         }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        let mut hidden_states = self
-            .bn0_1
-            .forward_t(&self.conv0_1.forward(input), false)
-            .relu();
-        hidden_states = self
-            .bn0_2
-            .forward_t(&self.conv0_2.forward(&hidden_states), false)
-            .relu();
+        let mut hidden_states = self.bn0_1.forward_t(&self.conv0_1.forward(input), false).relu();
+        hidden_states = self.bn0_2.forward_t(&self.conv0_2.forward(&hidden_states), false).relu();
         hidden_states = hidden_states.max_pool2d([2, 2], [2, 2], [0, 0], [1, 1], false);
         hidden_states = self.layer1.forward(&hidden_states);
-        hidden_states = self
-            .bn1
-            .forward_t(&self.conv1.forward(&hidden_states), false)
-            .relu();
+        hidden_states = self.bn1.forward_t(&self.conv1.forward(&hidden_states), false).relu();
         hidden_states = hidden_states.max_pool2d([2, 2], [2, 2], [0, 0], [1, 1], false);
         hidden_states = self.layer2.forward(&hidden_states);
-        hidden_states = self
-            .bn2
-            .forward_t(&self.conv2.forward(&hidden_states), false)
-            .relu();
+        hidden_states = self.bn2.forward_t(&self.conv2.forward(&hidden_states), false).relu();
         hidden_states = hidden_states.max_pool2d([2, 2], [2, 1], [0, 1], [1, 1], false);
         hidden_states = self.layer3.forward(&hidden_states);
-        hidden_states = self
-            .bn3
-            .forward_t(&self.conv3.forward(&hidden_states), false)
-            .relu();
+        hidden_states = self.bn3.forward_t(&self.conv3.forward(&hidden_states), false).relu();
         hidden_states = self.layer4.forward(&hidden_states);
-        hidden_states = self
-            .bn4_1
-            .forward_t(&self.conv4_1.forward(&hidden_states), false)
-            .relu();
-        self.bn4_2
-            .forward_t(&self.conv4_2.forward(&hidden_states), false)
-            .relu()
+        hidden_states = self.bn4_1.forward_t(&self.conv4_1.forward(&hidden_states), false).relu();
+        self.bn4_2.forward_t(&self.conv4_2.forward(&hidden_states), false).relu()
     }
 }
 
@@ -496,11 +420,7 @@ impl ResNetLayer {
                 .map(|index| {
                     BasicBlock::new(
                         &(path / index),
-                        if index == 0 {
-                            input_channels
-                        } else {
-                            output_channels
-                        },
+                        if index == 0 { input_channels } else { output_channels },
                         output_channels,
                     )
                 })
@@ -509,9 +429,7 @@ impl ResNetLayer {
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        self.0
-            .iter()
-            .fold(input.shallow_clone(), |input, block| block.forward(&input))
+        self.0.iter().fold(input.shallow_clone(), |input, block| block.forward(&input))
     }
 }
 
@@ -527,25 +445,9 @@ struct BasicBlock {
 impl BasicBlock {
     fn new(path: &nn::Path<'_>, input_channels: i64, output_channels: i64) -> Self {
         Self {
-            conv1: conv2d(
-                &(path / "conv1"),
-                input_channels,
-                output_channels,
-                3,
-                1,
-                1,
-                false,
-            ),
+            conv1: conv2d(&(path / "conv1"), input_channels, output_channels, 3, 1, 1, false),
             bn1: batch_norm(&(path / "bn1"), output_channels),
-            conv2: conv2d(
-                &(path / "conv2"),
-                output_channels,
-                output_channels,
-                3,
-                1,
-                1,
-                false,
-            ),
+            conv2: conv2d(&(path / "conv2"), output_channels, output_channels, 3, 1, 1, false),
             bn2: batch_norm(&(path / "bn2"), output_channels),
             downsample: (input_channels != output_channels).then(|| {
                 (
@@ -566,9 +468,7 @@ impl BasicBlock {
 
     fn forward(&self, input: &Tensor) -> Tensor {
         let hidden_states = self.bn1.forward_t(&self.conv1.forward(input), false).relu();
-        let hidden_states = self
-            .bn2
-            .forward_t(&self.conv2.forward(&hidden_states), false);
+        let hidden_states = self.bn2.forward_t(&self.conv2.forward(&hidden_states), false);
         let residual = match &self.downsample {
             Some((conv, norm)) => norm.forward_t(&conv.forward(input), false),
             None => input.shallow_clone(),
@@ -590,18 +490,9 @@ impl BidirectionalLstm {
                 path / "rnn",
                 input_size,
                 hidden_size,
-                nn::RNNConfig {
-                    bidirectional: true,
-                    train: false,
-                    ..Default::default()
-                },
+                nn::RNNConfig { bidirectional: true, train: false, ..Default::default() },
             ),
-            linear: nn::linear(
-                path / "linear",
-                hidden_size * 2,
-                output_size,
-                Default::default(),
-            ),
+            linear: nn::linear(path / "linear", hidden_size * 2, output_size, Default::default()),
         }
     }
 
@@ -635,12 +526,7 @@ impl Attention {
                 hidden_size,
                 256,
             ),
-            generator: nn::linear(
-                path / "generator",
-                hidden_size,
-                num_classes,
-                Default::default(),
-            ),
+            generator: nn::linear(path / "generator", hidden_size, num_classes, Default::default()),
             char_embeddings: nn::embedding(
                 path / "char_embeddings",
                 num_classes,
@@ -654,18 +540,14 @@ impl Attention {
 
     fn forward(&self, batch_h: &Tensor) -> Tensor {
         let batch_size = batch_h.size()[0];
-        let mut hidden = Tensor::zeros(
-            [batch_size, self.hidden_size],
-            (batch_h.kind(), batch_h.device()),
-        );
+        let mut hidden =
+            Tensor::zeros([batch_size, self.hidden_size], (batch_h.kind(), batch_h.device()));
         let mut cell = hidden.shallow_clone();
         let mut targets = Tensor::full([batch_size], 2, (Kind::Int64, batch_h.device()));
         let mut probabilities = Vec::with_capacity(self.num_steps as usize);
         for _ in 0..self.num_steps {
             let embeddings = self.char_embeddings.forward(&targets);
-            (hidden, cell) = self
-                .attention_cell
-                .forward(&hidden, &cell, batch_h, &embeddings);
+            (hidden, cell) = self.attention_cell.forward(&hidden, &cell, batch_h, &embeddings);
             let step = self.generator.forward(&hidden);
             targets = step.argmax(-1, false);
             probabilities.push(step);
@@ -693,20 +575,14 @@ impl AttentionCell {
                 path / "i2h",
                 input_size,
                 hidden_size,
-                nn::LinearConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::LinearConfig { bias: false, ..Default::default() },
             ),
             h2h: nn::linear(path / "h2h", hidden_size, hidden_size, Default::default()),
             score: nn::linear(
                 path / "score",
                 hidden_size,
                 1,
-                nn::LinearConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::LinearConfig { bias: false, ..Default::default() },
             ),
             rnn_weight_ih: rnn.var(
                 "weight_ih",
@@ -732,9 +608,7 @@ impl AttentionCell {
     ) -> (Tensor, Tensor) {
         let batch_h_projection = self.i2h.forward(batch_h);
         let previous_hidden_projection = self.h2h.forward(previous_hidden).unsqueeze(1);
-        let energy = self
-            .score
-            .forward(&(batch_h_projection + previous_hidden_projection).tanh());
+        let energy = self.score.forward(&(batch_h_projection + previous_hidden_projection).tanh());
         let alpha = energy.softmax(1, Kind::Float).to_kind(batch_h.kind());
         let context = alpha.permute([0, 2, 1]).bmm(batch_h).squeeze_dim(1);
         let input = Tensor::cat(&[context, char_embeddings.shallow_clone()], 1);
@@ -762,12 +636,7 @@ fn conv2d(
         input_channels,
         output_channels,
         kernel_size,
-        nn::ConvConfig {
-            stride,
-            padding,
-            bias,
-            ..Default::default()
-        },
+        nn::ConvConfig { stride, padding, bias, ..Default::default() },
     )
 }
 
@@ -785,12 +654,7 @@ fn conv2d_nd(
         input_channels,
         output_channels,
         kernel_size,
-        nn::ConvConfigND {
-            stride,
-            padding,
-            bias,
-            ..Default::default()
-        },
+        nn::ConvConfigND { stride, padding, bias, ..Default::default() },
     )
 }
 
@@ -820,14 +684,8 @@ mod tests {
             variables["module.SequenceModeling.0.rnn.weight_ih_l0_reverse"].size(),
             [1024, 512]
         );
-        assert_eq!(
-            variables["module.Prediction.attention_cell.rnn.weight_ih"].size(),
-            [1024, 512]
-        );
-        assert_eq!(
-            variables["module.Prediction.generator.weight"].size(),
-            [187, 256]
-        );
+        assert_eq!(variables["module.Prediction.attention_cell.rnn.weight_ih"].size(), [1024, 512]);
+        assert_eq!(variables["module.Prediction.generator.weight"].size(), [187, 256]);
         Ok(())
     }
 }

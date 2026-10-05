@@ -25,9 +25,8 @@ async fn main() -> Result<()> {
 
     criterion.bench_function("comic_text_detector/inference/770x1080", |bencher| {
         bencher.iter(|| {
-            let detection = model
-                .inference(black_box(&image))
-                .expect("Comic Text Detector inference failed");
+            let detection =
+                model.inference(black_box(&image)).expect("Comic Text Detector inference failed");
             black_box(detection);
         });
     });

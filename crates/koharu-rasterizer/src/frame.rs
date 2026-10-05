@@ -75,10 +75,7 @@ impl Frame {
 
     #[must_use]
     pub fn layer(&self, id: LayerId) -> Option<&Layer> {
-        self.0
-            .layer_index
-            .get(&id)
-            .map(|index| &self.0.layers[*index])
+        self.0.layer_index.get(&id).map(|index| &self.0.layers[*index])
     }
 
     /// Builds the ordered composition used by native headless rasterization.
@@ -311,10 +308,8 @@ impl PreparedFrameBundle {
     ) -> Result<Frame> {
         self.validate()?;
         let Self { frame, resources } = self;
-        let resources = resources
-            .iter()
-            .map(|resource| (resource.id(), resource))
-            .collect::<HashMap<_, _>>();
+        let resources =
+            resources.iter().map(|resource| (resource.id(), resource)).collect::<HashMap<_, _>>();
         compile_frame(frame, &resources, Some(raster_sources))
     }
 }
@@ -326,10 +321,7 @@ pub(crate) fn compile_manifest(
     let mut resources = HashMap::with_capacity(manifest.resources.len());
     for expected in manifest.required_resources() {
         let packet = store.get(expected.id).ok_or_else(|| {
-            Error::invalid(format!(
-                "prepared resource {} is not installed",
-                expected.id
-            ))
+            Error::invalid(format!("prepared resource {} is not installed", expected.id))
         })?;
         if packet.resource().reference() != *expected {
             return Err(Error::invalid(format!(
@@ -408,11 +400,10 @@ fn compile_frame(
                         pixels,
                     }),
                 )
-            }
-            PreparedContent::Vector(prepared_scene) => (
-                compile_scene(prepared_scene, resources, &mut font_blobs)?,
-                None,
-            ),
+            },
+            PreparedContent::Vector(prepared_scene) => {
+                (compile_scene(prepared_scene, resources, &mut font_blobs)?, None)
+            },
         };
         let layer = Layer(Arc::new(LayerData {
             id: prepared.id,
@@ -453,9 +444,7 @@ fn compile_scene(
                 let Some(PreparedResource::Font { bytes, .. }) =
                     resources.get(&prepared.font).copied()
                 else {
-                    return Err(Error::invalid(
-                        "glyph run references a missing font resource",
-                    ));
+                    return Err(Error::invalid("glyph run references a missing font resource"));
                 };
                 let blob = font_blobs
                     .entry(prepared.font)
@@ -490,7 +479,7 @@ fn compile_scene(
                     y: glyph.y,
                 });
                 run.brush(rgba(prepared.color)).draw(Fill::NonZero, glyphs);
-            }
+            },
             PreparedSceneCommand::FillPath(prepared) => {
                 let path = compile_path(prepared);
                 scene.fill(
@@ -503,7 +492,7 @@ fn compile_scene(
                     None,
                     &path,
                 );
-            }
+            },
         }
     }
     Ok(scene)
@@ -518,7 +507,7 @@ fn compile_path(prepared: &PreparedPath) -> BezPath {
             PathElement::QuadTo([x1, y1, x2, y2]) => path.quad_to((x1, y1), (x2, y2)),
             PathElement::CurveTo([x1, y1, x2, y2, x3, y3]) => {
                 path.curve_to((x1, y1), (x2, y2), (x3, y3));
-            }
+            },
             PathElement::Close => path.close_path(),
         }
     }
@@ -539,13 +528,7 @@ mod tests {
         let resource =
             PreparedResource::encoded_raster(1, 1, "image/png", Arc::from(&b"png"[..])).unwrap();
         let source_id = resource.id();
-        let prepared_tile = PreparedRasterTile {
-            x: 0,
-            y: 0,
-            width: 1,
-            height: 1,
-            gutter: [0; 4],
-        };
+        let prepared_tile = PreparedRasterTile { x: 0, y: 0, width: 1, height: 1, gutter: [0; 4] };
         let bundle = PreparedFrameBundle {
             frame: PreparedFrame {
                 revision: Revision::new(3),
@@ -561,22 +544,9 @@ mod tests {
                         Point { x: 1.0, y: 0.0 },
                         Point { x: 0.0, y: 1.0 },
                     ],
-                    bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 1.0,
-                        height: 1.0,
-                    },
-                    local_bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 1.0,
-                        height: 1.0,
-                    },
-                    presentation: Presentation {
-                        visible: true,
-                        opacity: 0.5,
-                    },
+                    bounds: Bounds { x: 0.0, y: 0.0, width: 1.0, height: 1.0 },
+                    local_bounds: Bounds { x: 0.0, y: 0.0, width: 1.0, height: 1.0 },
+                    presentation: Presentation { visible: true, opacity: 0.5 },
                     kind: LayerKind::Raster,
                     placement: [1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
                     content: PreparedContent::Raster(PreparedRaster {
@@ -603,12 +573,7 @@ mod tests {
             prepared_tile.id(source_id)
         );
         assert_eq!(
-            frame.layers()[0]
-                .raster_image()
-                .unwrap()
-                .pixels()
-                .unwrap()
-                .as_ref(),
+            frame.layers()[0].raster_image().unwrap().pixels().unwrap().as_ref(),
             &[1, 2, 3, 4]
         );
     }

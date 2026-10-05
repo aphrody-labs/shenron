@@ -35,18 +35,12 @@ impl Processor {
             original.dimensions(),
             mask.dimensions()
         );
-        ensure!(
-            original.width() > 0 && original.height() > 0,
-            "image dimensions must be non-zero"
-        );
+        ensure!(original.width() > 0 && original.height() > 0, "image dimensions must be non-zero");
 
         let original_mask = GrayImage::from_raw(
             mask.width(),
             mask.height(),
-            mask.as_raw()
-                .iter()
-                .map(|&value| u8::from(value >= 127))
-                .collect(),
+            mask.as_raw().iter().map(|&value| u8::from(value >= 127)).collect(),
         )
         .context("failed to binarize AOT compositing mask")?;
 
@@ -85,14 +79,9 @@ impl Processor {
         let output_height = output.size()[2] - i64::from(pad_bottom);
         let output_width = output.size()[3] - i64::from(pad_right);
         if output_height <= 0 || output_width <= 0 {
-            bail!(
-                "AOT output is too small after removing padding: {:?}",
-                output.size()
-            );
+            bail!("AOT output is too small after removing padding: {:?}", output.size());
         }
-        let output = output
-            .narrow(2, 0, output_height)
-            .narrow(3, 0, output_width);
+        let output = output.narrow(2, 0, output_height).narrow(3, 0, output_width);
         let mut output = tensor_to_rgb(&output, output_width as u32, output_height as u32)?;
         if output.dimensions() != original.dimensions() {
             output = resize_rgb(&output, original.width(), original.height())?;
@@ -160,23 +149,13 @@ fn pad_bottom_right_reflect(tensor: Tensor, pad_bottom: u32, pad_right: u32) -> 
         .map(|index| i64::from(symmetric_index(index, width)))
         .collect::<Vec<_>>();
     tensor
-        .index_select(
-            2,
-            &Tensor::from_slice(&height_indices).to_device(tensor.device()),
-        )
-        .index_select(
-            3,
-            &Tensor::from_slice(&width_indices).to_device(tensor.device()),
-        )
+        .index_select(2, &Tensor::from_slice(&height_indices).to_device(tensor.device()))
+        .index_select(3, &Tensor::from_slice(&width_indices).to_device(tensor.device()))
 }
 
 fn symmetric_index(index: u32, length: u32) -> u32 {
     let index = index % (length * 2);
-    if index < length {
-        index
-    } else {
-        length * 2 - index - 1
-    }
+    if index < length { index } else { length * 2 - index - 1 }
 }
 
 fn tensor_to_rgb(tensor: &Tensor, width: u32, height: u32) -> Result<RgbImage> {
@@ -197,11 +176,7 @@ fn python_round(value: f64) -> i64 {
     let floor = value.floor();
     let fraction = value - floor;
     if (fraction - 0.5).abs() < f64::EPSILON {
-        if floor as i64 % 2 == 0 {
-            floor as i64
-        } else {
-            floor as i64 + 1
-        }
+        if floor as i64 % 2 == 0 { floor as i64 } else { floor as i64 + 1 }
     } else {
         value.round() as i64
     }

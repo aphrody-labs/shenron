@@ -8,9 +8,7 @@ pub(crate) struct ModelCell<M> {
 
 impl<M> ModelCell<M> {
     pub(crate) fn new() -> Self {
-        Self {
-            model: tokio::sync::Mutex::new(None),
-        }
+        Self { model: tokio::sync::Mutex::new(None) }
     }
 
     pub(crate) async fn ensure<F, Fut>(&self, load: F) -> Result<()>
@@ -31,10 +29,7 @@ impl<M> ModelCell<M> {
     }
 
     pub(crate) fn unload(&self) -> bool {
-        self.model
-            .try_lock()
-            .map(|mut model| model.take().is_some())
-            .unwrap_or(false)
+        self.model.try_lock().map(|mut model| model.take().is_some()).unwrap_or(false)
     }
 }
 

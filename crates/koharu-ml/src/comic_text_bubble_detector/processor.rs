@@ -33,10 +33,7 @@ impl Default for RTDetrImageProcessor {
     fn default() -> Self {
         Self {
             do_resize: true,
-            size: SizeDict {
-                height: 640,
-                width: 640,
-            },
+            size: SizeDict { height: 640, width: 640 },
             resample: 2,
             do_rescale: true,
             rescale_factor: 1.0 / 255.0,
@@ -135,17 +132,11 @@ impl RTDetrImageProcessor {
         let num_classes = logits.size()[2];
         let (scores, labels, boxes) = if use_focal_loss {
             let (scores, index) =
-                logits
-                    .sigmoid()
-                    .flatten(1, -1)
-                    .topk(num_top_queries, -1, true, true);
+                logits.sigmoid().flatten(1, -1).topk(num_top_queries, -1, true, true);
             let labels = index.remainder(num_classes);
             let index = index.floor_divide_scalar(num_classes);
-            let boxes = boxes.gather(
-                1,
-                &index.unsqueeze(-1).repeat([1, 1, boxes.size()[2]]),
-                false,
-            );
+            let boxes =
+                boxes.gather(1, &index.unsqueeze(-1).repeat([1, 1, boxes.size()[2]]), false);
             (scores, labels, boxes)
         } else {
             let probabilities = logits.softmax(-1, None::<Kind>);
@@ -189,10 +180,7 @@ pub struct SizeDict {
 
 impl Default for SizeDict {
     fn default() -> Self {
-        Self {
-            height: 640,
-            width: 640,
-        }
+        Self { height: 640, width: 640 }
     }
 }
 
@@ -257,12 +245,7 @@ impl ImageSlicer {
         {
             num_slices -= 1;
         }
-        (
-            slice_width,
-            slice_height,
-            effective_slice_height,
-            num_slices,
-        )
+        (slice_width, slice_height, effective_slice_height, num_slices)
     }
 
     fn get_slice(
@@ -278,11 +261,7 @@ impl ImageSlicer {
         } else {
             (start_y + slice_height).min(image.height())
         };
-        (
-            image.crop_imm(0, start_y, image.width(), end_y - start_y),
-            start_y,
-            end_y,
-        )
+        (image.crop_imm(0, start_y, image.width(), end_y - start_y), start_y, end_y)
     }
 
     fn adjust_box_coordinates(&self, boxes: &mut [[f32; 4]], start_y: u32) {
@@ -438,17 +417,11 @@ pub(super) fn create_text_blocks(
 fn center_to_corners_format(boxes: &Tensor) -> Tensor {
     let centers = boxes.slice(-1, 0, 2, 1);
     let dimensions = boxes.slice(-1, 2, 4, 1);
-    Tensor::cat(
-        &[&centers - &dimensions * 0.5, centers + dimensions * 0.5],
-        -1,
-    )
+    Tensor::cat(&[&centers - &dimensions * 0.5, centers + dimensions * 0.5], -1)
 }
 
 fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
-    let tensor = tensor
-        .to_device(Device::Cpu)
-        .to_kind(Kind::Float)
-        .contiguous();
+    let tensor = tensor.to_device(Device::Cpu).to_kind(Kind::Float).contiguous();
     let mut values = vec![0.0; tensor.numel()];
     let len = values.len();
     tensor.f_copy_data(&mut values, len)?;
@@ -456,10 +429,7 @@ fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
 }
 
 fn tensor_to_vec_i64(tensor: &Tensor) -> Result<Vec<i64>> {
-    let tensor = tensor
-        .to_device(Device::Cpu)
-        .to_kind(Kind::Int64)
-        .contiguous();
+    let tensor = tensor.to_device(Device::Cpu).to_kind(Kind::Int64).contiguous();
     let mut values = vec![0; tensor.numel()];
     let len = values.len();
     tensor.f_copy_data(&mut values, len)?;
@@ -516,12 +486,7 @@ fn is_mostly_contained(outer: [f32; 4], inner: [f32; 4], threshold: f32) -> bool
 }
 
 fn merge_boxes(box1: [f32; 4], box2: [f32; 4]) -> [f32; 4] {
-    [
-        box1[0].min(box2[0]),
-        box1[1].min(box2[1]),
-        box1[2].max(box2[2]),
-        box1[3].max(box2[3]),
-    ]
+    [box1[0].min(box2[0]), box1[1].min(box2[1]), box1[2].max(box2[2]), box1[3].max(box2[3])]
 }
 
 fn box_area(bbox: [f32; 4]) -> f32 {
@@ -536,11 +501,7 @@ fn intersection_area(box1: [f32; 4], box2: [f32; 4]) -> f32 {
 fn calculate_iou(box1: [f32; 4], box2: [f32; 4]) -> f32 {
     let intersection = intersection_area(box1, box2);
     let union = box_area(box1) + box_area(box2) - intersection;
-    if union == 0.0 {
-        0.0
-    } else {
-        intersection / union
-    }
+    if union == 0.0 { 0.0 } else { intersection / union }
 }
 
 fn does_rectangle_fit(bigger: [f32; 4], smaller: [f32; 4]) -> bool {

@@ -26,9 +26,8 @@ async fn main() -> Result<()> {
 
     criterion.bench_function("speech_bubble_yolo11n/inference/770x1080", |bencher| {
         bencher.iter(|| {
-            let result = model
-                .inference(black_box(&image))
-                .expect("YOLO11n speech bubble inference failed");
+            let result =
+                model.inference(black_box(&image)).expect("YOLO11n speech bubble inference failed");
             black_box(result);
         });
     });

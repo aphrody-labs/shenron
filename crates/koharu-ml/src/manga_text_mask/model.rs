@@ -33,12 +33,7 @@ impl Model {
         let decoder = UnetPlusPlusDecoder::new(&(&root / "decoder"));
         let segmentation_head = conv2d(&(&root / "segmentation_head" / 0), 16, 1, 3, 1, 1, true);
         vs.freeze();
-        Self {
-            vs,
-            encoder,
-            decoder,
-            segmentation_head,
-        }
+        Self { vs, encoder, decoder, segmentation_head }
     }
 
     pub(super) fn load(&mut self, path: impl AsRef<Path>) -> Result<()> {
@@ -49,8 +44,7 @@ impl Model {
 
     pub(super) fn forward(&self, input: &Tensor) -> Tensor {
         let features = self.encoder.forward(&input.to_kind(self.vs.kind()));
-        self.segmentation_head
-            .forward(&self.decoder.forward(&features))
+        self.segmentation_head.forward(&self.decoder.forward(&features))
     }
 }
 
@@ -84,11 +78,7 @@ impl EfficientNetEncoder {
             .map(|(stage_index, stage)| stage.build(&(path / "blocks" / stage_index)))
             .collect();
 
-        Self {
-            conv_stem,
-            bn1,
-            blocks,
-        }
+        Self { conv_stem, bn1, blocks }
     }
 
     fn forward(&self, input: &Tensor) -> EncoderFeatures {
@@ -144,14 +134,7 @@ impl Stage {
         stride: i64,
         expansion: i64,
     ) -> Self {
-        Self {
-            kind: StageKind::Edge,
-            repeats,
-            input_channels,
-            output_channels,
-            stride,
-            expansion,
-        }
+        Self { kind: StageKind::Edge, repeats, input_channels, output_channels, stride, expansion }
     }
 
     const fn inverted(
@@ -178,11 +161,7 @@ impl Stage {
                     .map(|index| {
                         EdgeResidual::new(
                             &(path / index),
-                            if index == 0 {
-                                self.input_channels
-                            } else {
-                                self.output_channels
-                            },
+                            if index == 0 { self.input_channels } else { self.output_channels },
                             self.output_channels,
                             if index == 0 { self.stride } else { 1 },
                             self.expansion,
@@ -195,11 +174,7 @@ impl Stage {
                     .map(|index| {
                         InvertedResidual::new(
                             &(path / index),
-                            if index == 0 {
-                                self.input_channels
-                            } else {
-                                self.output_channels
-                            },
+                            if index == 0 { self.input_channels } else { self.output_channels },
                             self.output_channels,
                             if index == 0 { self.stride } else { 1 },
                             self.expansion,
@@ -220,12 +195,10 @@ enum EfficientNetStage {
 impl EfficientNetStage {
     fn forward(&self, input: Tensor) -> Tensor {
         match self {
-            Self::Edge(blocks) => blocks
-                .iter()
-                .fold(input, |input, block| block.forward(&input)),
-            Self::Inverted(blocks) => blocks
-                .iter()
-                .fold(input, |input, block| block.forward(&input)),
+            Self::Edge(blocks) => blocks.iter().fold(input, |input, block| block.forward(&input)),
+            Self::Inverted(blocks) => {
+                blocks.iter().fold(input, |input, block| block.forward(&input))
+            },
         }
     }
 }
@@ -277,14 +250,8 @@ impl EdgeResidual {
 
     fn forward(&self, input: &Tensor) -> Tensor {
         let hidden_states = silu(self.bn1.forward_t(&self.conv_exp.forward(input), false));
-        let hidden_states = self
-            .bn2
-            .forward_t(&self.conv_pwl.forward(&hidden_states), false);
-        if self.has_skip {
-            hidden_states + input
-        } else {
-            hidden_states
-        }
+        let hidden_states = self.bn2.forward_t(&self.conv_pwl.forward(&hidden_states), false);
+        if self.has_skip { hidden_states + input } else { hidden_states }
     }
 }
 
@@ -312,15 +279,7 @@ impl InvertedResidual {
     ) -> Self {
         let expanded_channels = input_channels * expansion;
         Self {
-            conv_pw: conv2d(
-                &(path / "conv_pw"),
-                input_channels,
-                expanded_channels,
-                1,
-                1,
-                0,
-                false,
-            ),
+            conv_pw: conv2d(&(path / "conv_pw"), input_channels, expanded_channels, 1, 1, 0, false),
             bn1: batch_norm(&(path / "bn1"), expanded_channels),
             conv_dw: nn::conv2d(
                 path / "conv_dw",
@@ -354,19 +313,10 @@ impl InvertedResidual {
 
     fn forward(&self, input: &Tensor) -> Tensor {
         let hidden_states = silu(self.bn1.forward_t(&self.conv_pw.forward(input), false));
-        let hidden_states = silu(
-            self.bn2
-                .forward_t(&self.conv_dw.forward(&hidden_states), false),
-        );
+        let hidden_states = silu(self.bn2.forward_t(&self.conv_dw.forward(&hidden_states), false));
         let hidden_states = self.se.forward(&hidden_states);
-        let hidden_states = self
-            .bn3
-            .forward_t(&self.conv_pwl.forward(&hidden_states), false);
-        if self.has_skip {
-            hidden_states + input
-        } else {
-            hidden_states
-        }
+        let hidden_states = self.bn3.forward_t(&self.conv_pwl.forward(&hidden_states), false);
+        if self.has_skip { hidden_states + input } else { hidden_states }
     }
 }
 
@@ -454,20 +404,12 @@ impl UnetPlusPlusDecoder {
         let x_2_3 = self.x_2_3.forward(&x_2_2, Some(&skip));
 
         let skip = Tensor::cat(
-            &[
-                x_1_2.shallow_clone(),
-                x_2_2.shallow_clone(),
-                features.stage1.shallow_clone(),
-            ],
+            &[x_1_2.shallow_clone(), x_2_2.shallow_clone(), features.stage1.shallow_clone()],
             1,
         );
         let x_0_2 = self.x_0_2.forward(&x_0_1, Some(&skip));
         let skip = Tensor::cat(
-            &[
-                x_2_3.shallow_clone(),
-                x_3_3.shallow_clone(),
-                features.stage0.shallow_clone(),
-            ],
+            &[x_2_3.shallow_clone(), x_3_3.shallow_clone(), features.stage0.shallow_clone()],
             1,
         );
         let x_1_3 = self.x_1_3.forward(&x_1_2, Some(&skip));
@@ -507,9 +449,8 @@ impl DecoderBlock {
         let mut hidden_states =
             input.upsample_nearest2d([size[2] * 2, size[3] * 2], None::<f64>, None::<f64>);
         if let Some(skip) = skip {
-            hidden_states = self
-                .attention1
-                .forward(&Tensor::cat(&[hidden_states, skip.shallow_clone()], 1));
+            hidden_states =
+                self.attention1.forward(&Tensor::cat(&[hidden_states, skip.shallow_clone()], 1));
         }
         let hidden_states = self.conv1.forward(&hidden_states);
         let hidden_states = self.conv2.forward(&hidden_states);
@@ -579,12 +520,7 @@ fn conv2d(
         input_channels,
         output_channels,
         kernel_size,
-        nn::ConvConfig {
-            stride,
-            padding,
-            bias,
-            ..Default::default()
-        },
+        nn::ConvConfig { stride, padding, bias, ..Default::default() },
     )
 }
 
@@ -607,26 +543,17 @@ mod tests {
         let model = Model::new(koharu_torch::Device::Cpu);
         let variables = model.vs.variables();
 
-        assert_eq!(
-            variables["encoder.model.conv_stem.weight"].size(),
-            [32, 3, 3, 3]
-        );
+        assert_eq!(variables["encoder.model.conv_stem.weight"].size(), [32, 3, 3, 3]);
         assert_eq!(
             variables["encoder.model.blocks.5.23.se.conv_reduce.weight"].size(),
             [82, 1968, 1, 1]
         );
-        assert_eq!(
-            variables["decoder.blocks.x_0_0.conv1.0.weight"].size(),
-            [256, 520, 3, 3]
-        );
+        assert_eq!(variables["decoder.blocks.x_0_0.conv1.0.weight"].size(), [256, 520, 3, 3]);
         assert_eq!(
             variables["decoder.blocks.x_0_4.attention2.attention.cSE.1.weight"].size(),
             [1, 16, 1, 1]
         );
-        assert_eq!(
-            variables["segmentation_head.0.weight"].size(),
-            [1, 16, 3, 3]
-        );
+        assert_eq!(variables["segmentation_head.0.weight"].size(), [1, 16, 3, 3]);
         Ok(())
     }
 }

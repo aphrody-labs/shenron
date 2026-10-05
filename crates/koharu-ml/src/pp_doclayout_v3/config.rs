@@ -116,26 +116,19 @@ impl PPDocLayoutV3Config {
         let json = fs::read_to_string(path)?;
         let mut config: Self = serde_json::from_str(&json)?;
         if config.backbone_config.out_features.is_empty() {
-            config.backbone_config.out_features = vec![
-                "stage1".into(),
-                "stage2".into(),
-                "stage3".into(),
-                "stage4".into(),
-            ];
+            config.backbone_config.out_features =
+                vec!["stage1".into(), "stage2".into(), "stage3".into(), "stage4".into()];
         }
         Ok(config)
     }
 
     pub fn num_labels(&self) -> i64 {
-        self.num_labels
-            .unwrap_or_else(|| self.id2label.len().max(2) as i64)
+        self.num_labels.unwrap_or_else(|| self.id2label.len().max(2) as i64)
     }
 
     pub fn labels(&self) -> Vec<String> {
         if self.id2label.is_empty() {
-            return (0..self.num_labels())
-                .map(|idx| format!("LABEL_{idx}"))
-                .collect();
+            return (0..self.num_labels()).map(|idx| format!("LABEL_{idx}")).collect();
         }
         let mut labels = self
             .id2label
@@ -200,12 +193,7 @@ impl Default for HGNetV2Config {
 impl HGNetV2Config {
     fn default_for_pp_doclayout() -> Self {
         Self {
-            out_features: vec![
-                "stage1".into(),
-                "stage2".into(),
-                "stage3".into(),
-                "stage4".into(),
-            ],
+            out_features: vec!["stage1".into(), "stage2".into(), "stage3".into(), "stage4".into()],
             ..Self::default()
         }
     }

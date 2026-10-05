@@ -76,21 +76,13 @@ pub struct PageDraft {
 impl PageDraft {
     #[must_use]
     pub fn new(label: impl Into<String>, width: f64, height: f64) -> Self {
-        Self {
-            label: label.into(),
-            width,
-            height,
-        }
+        Self { label: label.into(), width, height }
     }
 }
 
 impl From<PageDraft> for Page {
     fn from(value: PageDraft) -> Self {
-        Self {
-            label: value.label,
-            width: value.width,
-            height: value.height,
-        }
+        Self { label: value.label, width: value.width, height: value.height }
     }
 }
 

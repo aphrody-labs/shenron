@@ -30,15 +30,7 @@ pub enum PageFormat {
 impl Editor {
     /// The open project's name, for an export file name.
     pub async fn project_name(&self) -> Result<String> {
-        Ok(self
-            .inner
-            .project
-            .lock()
-            .await
-            .as_ref()
-            .context("no project is open")?
-            .name
-            .clone())
+        Ok(self.inner.project.lock().await.as_ref().context("no project is open")?.name.clone())
     }
 
     /// Export every page: one file per page in the `destination` folder (PNG, PSD), or one
@@ -69,32 +61,30 @@ impl Editor {
                 })
                 .await?;
                 ("png", images)
-            }
+            },
             ExportFormat::Psd => {
                 let options = PsdExportOptions::default();
-                let images = try_join_all(frames.iter().map(|frame| {
-                    export_page(Arc::clone(&rasterizer), &snapshot, frame, &options)
-                }))
-                .await?;
+                let images =
+                    try_join_all(frames.iter().map(|frame| {
+                        export_page(Arc::clone(&rasterizer), &snapshot, frame, &options)
+                    }))
+                    .await?;
                 ("psd", images)
-            }
+            },
         };
         tokio_rayon::spawn(move || -> Result<()> {
             let mut archive = if matches!(format, ExportFormat::Cbz) {
                 let directory = destination.parent().context("archive path has no parent")?;
-                Some(zip::ZipWriter::new(tempfile::NamedTempFile::new_in(
-                    directory,
-                )?))
+                Some(zip::ZipWriter::new(tempfile::NamedTempFile::new_in(directory)?))
             } else {
                 None
             };
             let width = pages.len().to_string().len().max(4);
             for (index, (page_id, bytes)) in pages.into_iter().zip(images).enumerate() {
                 let page = snapshot.page(page_id)?.page()?;
-                let name = page
-                    .label
-                    .trim()
-                    .trim_end_matches(|character: char| character == '.' || character.is_whitespace());
+                let name = page.label.trim().trim_end_matches(|character: char| {
+                    character == '.' || character.is_whitespace()
+                });
                 let name = name
                     .rsplit_once('.')
                     .map_or(name, |(stem, _)| stem)
@@ -138,12 +128,12 @@ impl Editor {
                     encode_png(&rasterizer.rasterize(&raster, RasterOptions::default())?.image)
                 })
                 .await
-            }
+            },
             PageFormat::Psd => {
                 export_page(rasterizer, &snapshot, &frame, &PsdExportOptions::default())
                     .await
                     .map_err(Into::into)
-            }
+            },
         }
     }
 
@@ -195,11 +185,7 @@ impl Editor {
     /// SHA-256 of the encoded source image bytes persisted for a page.
     pub async fn page_source_sha256(&self, page: EntityId) -> Result<String> {
         let current = self.inner.project.lock().await;
-        current
-            .as_ref()
-            .context("no project is open")?
-            .source_sha256(page)
-            .await
+        current.as_ref().context("no project is open")?.source_sha256(page).await
     }
 }
 
@@ -227,11 +213,6 @@ pub(super) async fn rendered_preview(
 fn encode_png(image: &RgbaImage) -> Result<Vec<u8>> {
     let mut bytes = Vec::new();
     PngEncoder::new_with_quality(&mut bytes, CompressionType::Best, FilterType::Adaptive)
-        .write_image(
-            image.as_raw(),
-            image.width(),
-            image.height(),
-            ExtendedColorType::Rgba8,
-        )?;
+        .write_image(image.as_raw(), image.width(), image.height(), ExtendedColorType::Rgba8)?;
     Ok(bytes)
 }

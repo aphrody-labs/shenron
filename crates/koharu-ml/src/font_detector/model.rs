@@ -30,10 +30,7 @@ impl Model {
             OUTPUT_DIM,
         );
         vs.freeze();
-        Self {
-            vs,
-            model: Box::new(model),
-        }
+        Self { vs, model: Box::new(model) }
     }
 
     pub fn load(&mut self, path: impl AsRef<Path>) -> Result<()> {
@@ -43,9 +40,7 @@ impl Model {
     }
 
     pub fn forward(&self, pixel_values: &Tensor) -> Tensor {
-        let output = self
-            .model
-            .forward_t(&pixel_values.to_kind(self.vs.kind()), false);
+        let output = self.model.forward_t(&pixel_values.to_kind(self.vs.kind()), false);
         // Upstream leaves classification logits untouched and applies sigmoid
         // only to the ten regression values.
         let classification = output.narrow(-1, 0, FONT_COUNT + 2);

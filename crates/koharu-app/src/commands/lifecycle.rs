@@ -2,8 +2,7 @@ use koharu_desktop::CanvasState;
 use koharu_library::{
     Editor,
     editor::{
-        Download, Job, ModelResources, PageImportSource, PageSelection, StartupState,
-        Subscription,
+        Download, Job, ModelResources, PageImportSource, PageSelection, StartupState, Subscription,
     },
     project::{Page, PageSummary, ProjectInfo, ProjectSummary},
 };
@@ -97,16 +96,13 @@ pub(crate) async fn import<R: tauri::Runtime>(
         .add_filter("Images, archives, and PDF", &Editor::import_extensions())
         .set_parent(&window);
     let files = match source {
-        PageImportSource::Files => dialog.pick_files().await.map(|files| {
-            files
-                .into_iter()
-                .map(|file| file.path().to_owned())
-                .collect::<Vec<_>>()
-        }),
-        PageImportSource::Folder => dialog
-            .pick_folder()
+        PageImportSource::Files => dialog
+            .pick_files()
             .await
-            .map(|folder| Editor::importable_files(folder.path())),
+            .map(|files| files.into_iter().map(|file| file.path().to_owned()).collect::<Vec<_>>()),
+        PageImportSource::Folder => {
+            dialog.pick_folder().await.map(|folder| Editor::importable_files(folder.path()))
+        },
     };
     if let Some(files) = files {
         editor.import_files(files).await?;

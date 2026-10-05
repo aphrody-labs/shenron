@@ -13,10 +13,7 @@ pub(super) fn extract(path: &Path) -> Result<Vec<EncodedPage>> {
 
     for index in 0..archive.len() {
         let mut member = archive.by_index(index).with_context(|| {
-            format!(
-                "failed to read member {index} from ZIP/CBZ container {}",
-                path.display()
-            )
+            format!("failed to read member {index} from ZIP/CBZ container {}", path.display())
         })?;
         if member.is_dir() {
             continue;
@@ -27,21 +24,19 @@ pub(super) fn extract(path: &Path) -> Result<Vec<EncodedPage>> {
             .extension()
             .and_then(|extension| extension.to_str())
             .is_some_and(|extension| matches!(extension.parse(), Ok(Format::Raster)));
-        let metadata = member_path
-            .file_name()
-            .and_then(|file_name| file_name.to_str())
-            .is_none_or(|file_name| {
+        let metadata = member_path.file_name().and_then(|file_name| file_name.to_str()).is_none_or(
+            |file_name| {
                 file_name.starts_with("._")
                     || [".ds_store", "thumbs.db", "desktop.ini"]
                         .iter()
                         .any(|candidate| file_name.eq_ignore_ascii_case(candidate))
-            })
-            || member_path.components().any(|component| {
-                component
-                    .as_os_str()
-                    .to_str()
-                    .is_some_and(|component| component.eq_ignore_ascii_case("__macosx"))
-            });
+            },
+        ) || member_path.components().any(|component| {
+            component
+                .as_os_str()
+                .to_str()
+                .is_some_and(|component| component.eq_ignore_ascii_case("__macosx"))
+        });
         if !supported || metadata {
             continue;
         }
@@ -59,10 +54,7 @@ pub(super) fn extract(path: &Path) -> Result<Vec<EncodedPage>> {
         std::ffi::OsStr::new(&image.name)
     });
     if images.is_empty() {
-        bail!(
-            "ZIP/CBZ container {} contains no supported raster images",
-            path.display()
-        );
+        bail!("ZIP/CBZ container {} contains no supported raster images", path.display());
     }
     Ok(images)
 }
@@ -87,14 +79,10 @@ mod tests {
     }
 
     fn archive_path(suffix: &str) -> PathBuf {
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock after epoch")
-            .as_nanos();
-        std::env::temp_dir().join(format!(
-            "koharu-import-{}-{timestamp}.{suffix}",
-            std::process::id()
-        ))
+        let timestamp =
+            SystemTime::now().duration_since(UNIX_EPOCH).expect("clock after epoch").as_nanos();
+        std::env::temp_dir()
+            .join(format!("koharu-import-{}-{timestamp}.{suffix}", std::process::id()))
     }
 
     fn write_archive(entries: &[(&str, &[u8])]) -> PathBuf {
@@ -122,10 +110,7 @@ mod tests {
         let images = extract(&path).expect("read archive");
         std::fs::remove_file(&path).expect("remove archive");
         assert_eq!(
-            images
-                .iter()
-                .map(|image| image.name.as_str())
-                .collect::<Vec<_>>(),
+            images.iter().map(|image| image.name.as_str()).collect::<Vec<_>>(),
             ["pages/page2.png", "pages/page10.png"]
         );
     }

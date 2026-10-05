@@ -19,9 +19,7 @@ struct Fixture {
 fn png(width: u32, height: u32, color: [u8; 4]) -> Arc<[u8]> {
     let image = image::RgbaImage::from_pixel(width, height, image::Rgba(color));
     let mut bytes = Cursor::new(Vec::new());
-    image::DynamicImage::ImageRgba8(image)
-        .write_to(&mut bytes, image::ImageFormat::Png)
-        .unwrap();
+    image::DynamicImage::ImageRgba8(image).write_to(&mut bytes, image::ImageFormat::Png).unwrap();
     bytes.into_inner().into()
 }
 
@@ -73,14 +71,7 @@ async fn fixture() -> Fixture {
         .patch(|edit| edit.set(overlay, &Geometry::rectangle(48.0, 64.0, 256.0, 384.0)))
         .unwrap();
     let commit = session.commit(placement).await.unwrap();
-    Fixture {
-        renderer,
-        page,
-        snapshot,
-        moved: commit.snapshot,
-        change: commit.changes,
-        frame,
-    }
+    Fixture { renderer, page, snapshot, moved: commit.snapshot, change: commit.changes, frame }
 }
 
 fn rendering_benchmark(c: &mut Criterion) {

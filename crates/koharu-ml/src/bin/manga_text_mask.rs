@@ -45,10 +45,7 @@ async fn main() -> Result<()> {
         model.inference(&image)?
     };
     segmentation
-        .process(&MangaTextMaskCleaningOptions {
-            threshold: cli.threshold,
-            ..Default::default()
-        })?
+        .process(&MangaTextMaskCleaningOptions { threshold: cli.threshold, ..Default::default() })?
         .save(cli.output)?;
     Ok(())
 }

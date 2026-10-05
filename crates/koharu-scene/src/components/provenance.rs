@@ -14,19 +14,12 @@ pub struct Generation {
 
 impl Generation {
     pub fn new(producer: ProducerId) -> Self {
-        Self {
-            producer,
-            model: None,
-            confidence: None,
-        }
+        Self { producer, model: None, confidence: None }
     }
 
     pub(crate) fn validate(&self) -> Result<()> {
         self.producer.validate()?;
-        if self
-            .model
-            .as_ref()
-            .is_some_and(|model| model.len() > 4096 || model.contains('\0'))
+        if self.model.as_ref().is_some_and(|model| model.len() > 4096 || model.contains('\0'))
             || self
                 .confidence
                 .is_some_and(|value| !value.is_finite() || !(0.0..=1.0).contains(&value))
@@ -63,18 +56,12 @@ pub struct Authored<T> {
 impl<T> Authored<T> {
     #[must_use]
     pub fn user(value: T) -> Self {
-        Self {
-            value,
-            origin: Origin::User,
-        }
+        Self { value, origin: Origin::User }
     }
 
     #[must_use]
     pub fn generated(value: T, generation: Generation) -> Self {
-        Self {
-            value,
-            origin: Origin::Generated(generation),
-        }
+        Self { value, origin: Origin::Generated(generation) }
     }
 }
 

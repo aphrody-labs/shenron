@@ -88,9 +88,6 @@ impl From<RenderFontFamily> for FontFamily {
 
 impl From<RenderFontRange> for FontRange {
     fn from(value: RenderFontRange) -> Self {
-        Self {
-            minimum: value.minimum,
-            maximum: value.maximum,
-        }
+        Self { minimum: value.minimum, maximum: value.maximum }
     }
 }

@@ -43,11 +43,7 @@ pub struct PPOCRV6MediumDetConfig {
 impl Default for PPOCRV6MediumDetConfig {
     fn default() -> Self {
         let conv = |kernel, stride, padding| {
-            vec![
-                Spatial::Pair(kernel),
-                Spatial::Pair(stride),
-                Spatial::Pair(padding),
-            ]
+            vec![Spatial::Pair(kernel), Spatial::Pair(stride), Spatial::Pair(padding)]
         };
         Self {
             interpolate_mode: "nearest".into(),

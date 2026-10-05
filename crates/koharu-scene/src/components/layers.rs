@@ -134,20 +134,11 @@ impl Component for Typography {
     const KIND: &'static str = "dev.koharu.text.typography";
 
     fn validate(&self, _context: &ValidationContext<'_>) -> Result<()> {
-        if self
-            .preferred_font
-            .as_ref()
-            .is_some_and(|font| font.len() > 4096)
-            || self
-                .font_weight
-                .is_some_and(|weight| !(1..=1000).contains(&weight))
-            || self
-                .size
-                .is_some_and(|size| !size.is_finite() || size <= 0.0)
+        if self.preferred_font.as_ref().is_some_and(|font| font.len() > 4096)
+            || self.font_weight.is_some_and(|weight| !(1..=1000).contains(&weight))
+            || self.size.is_some_and(|size| !size.is_finite() || size <= 0.0)
             || (!self.auto_fit && self.size.is_none())
-            || self
-                .stroke_width
-                .is_some_and(|width| !width.is_finite() || width < 0.0)
+            || self.stroke_width.is_some_and(|width| !width.is_finite() || width < 0.0)
         {
             return Err(Error::invalid("typography intent is invalid"));
         }

@@ -61,11 +61,7 @@ pub fn encode_engine_data(spec: &TextEngineSpec) -> Vec<u8> {
     let paragraph_properties = paragraph_properties(spec.justification);
     let base_style_sheet = base_style_sheet(font_index);
     let style_run_sheet = style_run_sheet(spec, font_index);
-    let font_set = spec
-        .font_set
-        .iter()
-        .map(|name| font_descriptor(name))
-        .collect::<Vec<_>>();
+    let font_set = spec.font_set.iter().map(|name| font_descriptor(name)).collect::<Vec<_>>();
 
     let root = EngineValue::Dict(vec![
         (
@@ -160,11 +156,7 @@ pub fn encode_engine_data(spec: &TextEngineSpec) -> Vec<u8> {
                         (
                             "RunLengthArray".to_string(),
                             EngineValue::Array(
-                                paragraph_lengths
-                                    .iter()
-                                    .copied()
-                                    .map(EngineValue::Int)
-                                    .collect(),
+                                paragraph_lengths.iter().copied().map(EngineValue::Int).collect(),
                             ),
                         ),
                         ("IsJoinable".to_string(), EngineValue::Int(1)),
@@ -215,17 +207,11 @@ pub fn encode_engine_data(spec: &TextEngineSpec) -> Vec<u8> {
                             "GridLeadingFillColor".to_string(),
                             EngineValue::Dict(color_type_values([0, 0, 255, 255])),
                         ),
-                        (
-                            "AlignLineHeightToGridFlags".to_string(),
-                            EngineValue::Bool(false),
-                        ),
+                        ("AlignLineHeightToGridFlags".to_string(), EngineValue::Bool(false)),
                     ]),
                 ),
                 ("AntiAlias".to_string(), EngineValue::Int(4)),
-                (
-                    "UseFractionalGlyphWidths".to_string(),
-                    EngineValue::Bool(true),
-                ),
+                ("UseFractionalGlyphWidths".to_string(), EngineValue::Bool(true)),
                 (
                     "Rendered".to_string(),
                     EngineValue::Dict(vec![
@@ -321,11 +307,7 @@ pub fn encode_engine_data(spec: &TextEngineSpec) -> Vec<u8> {
         ),
         (
             "DocumentResources".to_string(),
-            EngineValue::Dict(resource_dict(
-                font_set,
-                paragraph_properties,
-                base_style_sheet,
-            )),
+            EngineValue::Dict(resource_dict(font_set, paragraph_properties, base_style_sheet)),
         ),
     ]);
 
@@ -336,17 +318,12 @@ pub fn encode_engine_data(spec: &TextEngineSpec) -> Vec<u8> {
 }
 
 fn normalize_text(text: &str) -> String {
-    let normalized = text
-        .replace("\r\n", "\n")
-        .replace('\r', "\n")
-        .replace('\n', "\r");
+    let normalized = text.replace("\r\n", "\n").replace('\r', "\n").replace('\n', "\r");
     format!("{normalized}\r")
 }
 
 fn paragraph_run_lengths(text: &str) -> Vec<i32> {
-    text.split_inclusive('\r')
-        .map(|run| utf16_len(run) as i32)
-        .collect()
+    text.split_inclusive('\r').map(|run| utf16_len(run) as i32).collect()
 }
 
 fn utf16_len(text: &str) -> usize {
@@ -432,14 +409,8 @@ fn base_style_sheet(font_index: i32) -> Vec<(String, EngineValue)> {
         ("StyleRunAlignment".to_string(), EngineValue::Int(2)),
         ("Language".to_string(), EngineValue::Int(0)),
         ("NoBreak".to_string(), EngineValue::Bool(false)),
-        (
-            "FillColor".to_string(),
-            EngineValue::Dict(color_type_values([0, 0, 0, 255])),
-        ),
-        (
-            "StrokeColor".to_string(),
-            EngineValue::Dict(color_type_values([0, 0, 0, 255])),
-        ),
+        ("FillColor".to_string(), EngineValue::Dict(color_type_values([0, 0, 0, 255]))),
+        ("StrokeColor".to_string(), EngineValue::Dict(color_type_values([0, 0, 0, 255]))),
         ("FillFlag".to_string(), EngineValue::Bool(true)),
         ("StrokeFlag".to_string(), EngineValue::Bool(false)),
         ("FillFirst".to_string(), EngineValue::Bool(true)),
@@ -457,16 +428,10 @@ fn style_run_sheet(spec: &TextEngineSpec, font_index: i32) -> Vec<(String, Engin
         ("Font".to_string(), EngineValue::Int(font_index)),
         ("FontSize".to_string(), EngineValue::Float(spec.font_size)),
         ("FauxBold".to_string(), EngineValue::Bool(spec.faux_bold)),
-        (
-            "FauxItalic".to_string(),
-            EngineValue::Bool(spec.faux_italic),
-        ),
+        ("FauxItalic".to_string(), EngineValue::Bool(spec.faux_italic)),
         ("AutoKerning".to_string(), EngineValue::Bool(true)),
         ("Kerning".to_string(), EngineValue::Int(0)),
-        (
-            "FillColor".to_string(),
-            EngineValue::Dict(color_type_values(spec.color)),
-        ),
+        ("FillColor".to_string(), EngineValue::Dict(color_type_values(spec.color))),
     ]
 }
 
@@ -624,15 +589,15 @@ fn write_value(
         EngineValue::Int(number) => {
             write_prefix(out, indent, in_property);
             out.extend_from_slice(number.to_string().as_bytes());
-        }
+        },
         EngineValue::Float(number) => {
             write_prefix(out, indent, in_property);
             out.extend_from_slice(serialize_float(*number, key).as_bytes());
-        }
+        },
         EngineValue::Bool(flag) => {
             write_prefix(out, indent, in_property);
             out.extend_from_slice(if *flag { b"true" } else { b"false" });
-        }
+        },
         EngineValue::String(text) => {
             write_prefix(out, indent, in_property);
             out.push(b'(');
@@ -643,7 +608,7 @@ fn write_value(
                 write_escaped_byte(out, unit as u8);
             }
             out.push(b')');
-        }
+        },
         EngineValue::Array(items) => {
             write_prefix(out, indent, in_property);
             if items.iter().all(is_scalar) {
@@ -662,7 +627,7 @@ fn write_value(
                 write_indent(out, indent);
                 out.extend_from_slice(b"]");
             }
-        }
+        },
         EngineValue::Dict(entries) => {
             if in_property {
                 out.push(b'\n');
@@ -679,7 +644,7 @@ fn write_value(
             }
             write_indent(out, indent);
             out.extend_from_slice(b">>");
-        }
+        },
     }
 }
 
@@ -688,7 +653,7 @@ fn write_inline_value(out: &mut Vec<u8>, value: &EngineValue, key: Option<&str>)
         EngineValue::Int(number) => out.extend_from_slice(number.to_string().as_bytes()),
         EngineValue::Float(number) => {
             out.extend_from_slice(serialize_float(*number, key).as_bytes())
-        }
+        },
         EngineValue::Bool(flag) => out.extend_from_slice(if *flag { b"true" } else { b"false" }),
         _ => write_value(out, value, 0, false, key),
     }
@@ -789,21 +754,9 @@ mod tests {
             box_height: 32.0,
         });
 
-        assert!(
-            bytes
-                .windows("/EngineDict".len())
-                .any(|window| window == b"/EngineDict")
-        );
-        assert!(
-            bytes
-                .windows("/FontSet".len())
-                .any(|window| window == b"/FontSet")
-        );
-        assert!(
-            bytes
-                .windows("/RunLengthArray".len())
-                .any(|window| window == b"/RunLengthArray")
-        );
+        assert!(bytes.windows("/EngineDict".len()).any(|window| window == b"/EngineDict"));
+        assert!(bytes.windows("/FontSet".len()).any(|window| window == b"/FontSet"));
+        assert!(bytes.windows("/RunLengthArray".len()).any(|window| window == b"/RunLengthArray"));
         assert!(bytes.windows(2).any(|window| window == [0xFE, 0xFF]));
     }
 
@@ -823,15 +776,9 @@ mod tests {
             box_height: 32.0,
         });
 
+        assert!(bytes.windows("/FontSize 14.0".len()).any(|w| w == b"/FontSize 14.0"));
         assert!(
-            bytes
-                .windows("/FontSize 14.0".len())
-                .any(|w| w == b"/FontSize 14.0")
-        );
-        assert!(
-            bytes
-                .windows("/Axis [ 1.0 0.0 1.0 ]".len())
-                .any(|w| w == b"/Axis [ 1.0 0.0 1.0 ]")
+            bytes.windows("/Axis [ 1.0 0.0 1.0 ]".len()).any(|w| w == b"/Axis [ 1.0 0.0 1.0 ]")
         );
     }
 }

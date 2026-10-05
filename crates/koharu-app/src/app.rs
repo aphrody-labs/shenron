@@ -17,7 +17,10 @@ pub struct Options {
 /// Manage the Koharu [`Editor`] on `application` and start its model runtime in the
 /// background. The commands of [`crate::bindings`] run on it; the returned handle is the
 /// same editor.
-pub fn setup<R: tauri::Runtime>(application: &mut tauri::App<R>, options: Options) -> Result<Editor> {
+pub fn setup<R: tauri::Runtime>(
+    application: &mut tauri::App<R>,
+    options: Options,
+) -> Result<Editor> {
     let roots = match options.home {
         Some(home) => Roots::in_home(home),
         None => Roots::from_env()?,
@@ -36,10 +39,8 @@ pub fn setup<R: tauri::Runtime>(application: &mut tauri::App<R>, options: Option
 
 /// Stop Koharu's jobs and agent work when the window closes.
 pub fn on_window_event<R: tauri::Runtime>(window: &tauri::Window<R>, event: &WindowEvent) {
-    if matches!(
-        event,
-        WindowEvent::CloseRequested { .. } | WindowEvent::Destroyed
-    ) && let Some(editor) = window.try_state::<Editor>()
+    if matches!(event, WindowEvent::CloseRequested { .. } | WindowEvent::Destroyed)
+        && let Some(editor) = window.try_state::<Editor>()
     {
         editor.cancel_work();
     }

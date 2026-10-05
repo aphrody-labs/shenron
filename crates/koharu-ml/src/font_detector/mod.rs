@@ -35,22 +35,14 @@ impl FontDetector {
             .resolve()
             .await
             .context("failed to resolve YuzuMarker font detector weights")?;
-        let labels_path = LABELS
-            .resolve()
-            .await
-            .context("failed to resolve YuzuMarker font labels")?;
+        let labels_path =
+            LABELS.resolve().await.context("failed to resolve YuzuMarker font labels")?;
 
         let mut model = Model::new(device);
-        model
-            .load(&weights_path)
-            .context("failed to load YuzuMarker font detector weights")?;
+        model.load(&weights_path).context("failed to load YuzuMarker font detector weights")?;
         let processor = Processor::from_path(&labels_path)?;
 
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(&self, images: &[DynamicImage], top_k: usize) -> Result<Vec<FontPrediction>> {
@@ -83,18 +75,11 @@ mod tests {
         let prediction = &predictions[0];
 
         assert_eq!(
-            prediction
-                .top_fonts
-                .iter()
-                .map(|font| font.index)
-                .collect::<Vec<_>>(),
+            prediction.top_fonts.iter().map(|font| font.index).collect::<Vec<_>>(),
             [3708, 3, 20]
         );
         for (font, expected) in
-            prediction
-                .top_fonts
-                .iter()
-                .zip([0.733_454, 0.256_713, 0.003_229_57])
+            prediction.top_fonts.iter().zip([0.733_454, 0.256_713, 0.003_229_57])
         {
             assert!((font.score - expected).abs() < 1e-4);
         }

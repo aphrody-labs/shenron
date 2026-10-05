@@ -30,11 +30,7 @@ async fn main() -> Result<()> {
         .warm_up_time(Duration::from_secs(3))
         .measurement_time(Duration::from_secs(10))
         .configure_from_args();
-    let benchmark = format!(
-        "paddle_ocr_vl/inference/ocr/{}x{}",
-        image.width(),
-        image.height()
-    );
+    let benchmark = format!("paddle_ocr_vl/inference/ocr/{}x{}", image.width(), image.height());
 
     criterion.bench_function(&benchmark, |bencher| {
         bencher.iter(|| {

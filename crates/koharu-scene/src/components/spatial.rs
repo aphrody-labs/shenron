@@ -31,10 +31,7 @@ impl Geometry {
             points: vec![
                 Point { x, y },
                 Point { x: x + width, y },
-                Point {
-                    x: x + width,
-                    y: y + height,
-                },
+                Point { x: x + width, y: y + height },
                 Point { x, y: y + height },
             ],
         }
@@ -47,16 +44,11 @@ impl Component for Geometry {
     fn validate(&self, _context: &ValidationContext<'_>) -> Result<()> {
         self.origin.validate()?;
         if (3..=1_000_000).contains(&self.points.len())
-            && self
-                .points
-                .iter()
-                .all(|point| point.x.is_finite() && point.y.is_finite())
+            && self.points.iter().all(|point| point.x.is_finite() && point.y.is_finite())
         {
             Ok(())
         } else {
-            Err(Error::invalid(
-                "geometry must contain finite polygon points",
-            ))
+            Err(Error::invalid("geometry must contain finite polygon points"))
         }
     }
 
@@ -86,9 +78,7 @@ impl Component for Visibility {
         if self.opacity.is_finite() && (0.0..=1.0).contains(&self.opacity) {
             Ok(())
         } else {
-            Err(Error::invalid(
-                "opacity must be finite and between zero and one",
-            ))
+            Err(Error::invalid("opacity must be finite and between zero and one"))
         }
     }
 

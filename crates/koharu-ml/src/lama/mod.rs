@@ -26,18 +26,10 @@ pub struct LaMa {
 impl LaMa {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve LaMa weights")?;
+        let weights_path = WEIGHTS.resolve().await.context("failed to resolve LaMa weights")?;
         let mut model = Model::new(&FFCResNetGeneratorConfig::default(), device);
-        model
-            .load(&weights_path)
-            .context("failed to load LaMa safetensors")?;
-        Ok(Self {
-            model,
-            processor: InpaintModel::new(device),
-        })
+        model.load(&weights_path).context("failed to load LaMa safetensors")?;
+        Ok(Self { model, processor: InpaintModel::new(device) })
     }
 
     pub fn inference(

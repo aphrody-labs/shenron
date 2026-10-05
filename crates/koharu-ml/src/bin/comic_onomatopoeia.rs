@@ -59,10 +59,7 @@ struct Region {
 async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
     let cli = Cli::parse();
-    ensure!(
-        cli.font_size.is_finite() && cli.font_size > 0.0,
-        "font size must be positive"
-    );
+    ensure!(cli.font_size.is_finite() && cli.font_size > 0.0, "font size must be positive");
     ensure!(
         (0.0..=1.0).contains(&cli.detection_threshold)
             && (0.0..=1.0).contains(&cli.recognition_threshold),
@@ -91,11 +88,7 @@ async fn main() -> Result<()> {
             let recognition = recognizer.inference(&crop)?;
             let accepted = detection.score >= cli.detection_threshold
                 && recognition.confidence >= cli.recognition_threshold;
-            Ok(Region {
-                detection,
-                recognition,
-                accepted,
-            })
+            Ok(Region { detection, recognition, accepted })
         })
         .collect::<Result<Vec<_>>>()?;
 
@@ -107,18 +100,12 @@ async fn main() -> Result<()> {
 }
 
 fn save_marked(image: RgbaImage, path: &Path) -> Result<()> {
-    let is_jpeg = path
-        .extension()
-        .and_then(|extension| extension.to_str())
-        .is_some_and(|extension| {
+    let is_jpeg =
+        path.extension().and_then(|extension| extension.to_str()).is_some_and(|extension| {
             extension.eq_ignore_ascii_case("jpg") || extension.eq_ignore_ascii_case("jpeg")
         });
-    if is_jpeg {
-        DynamicImage::ImageRgba8(image).to_rgb8().save(path)
-    } else {
-        image.save(path)
-    }
-    .with_context(|| format!("failed to save {}", path.display()))
+    if is_jpeg { DynamicImage::ImageRgba8(image).to_rgb8().save(path) } else { image.save(path) }
+        .with_context(|| format!("failed to save {}", path.display()))
 }
 
 fn load_font(path: &Path) -> Result<FontArc> {
@@ -132,12 +119,7 @@ fn load_font(path: &Path) -> Result<FontArc> {
 // https://github.com/ku21fan/COO-Comic-Onomatopoeia/blob/d8028f015b8ce99a4dd798427342f97087529357/COO-data/data_for_TRBA.ipynb
 fn crop_detection(image: &DynamicImage, detection: &Detection) -> Result<DynamicImage> {
     let bounds = detection.polygon.iter().fold(
-        [
-            f32::INFINITY,
-            f32::INFINITY,
-            f32::NEG_INFINITY,
-            f32::NEG_INFINITY,
-        ],
+        [f32::INFINITY, f32::INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY],
         |mut bounds, point| {
             bounds[0] = bounds[0].min(point[0]);
             bounds[1] = bounds[1].min(point[1]);
@@ -161,11 +143,8 @@ fn draw_regions(image: &mut RgbaImage, regions: &[Region], font: &FontArc, font_
     let label_color = Rgba([255, 255, 255, 255]);
     let label_background = Rgba([0, 0, 0, 220]);
     for (index, region) in regions.iter().enumerate() {
-        let polygon_color = if region.accepted {
-            Rgba([48, 220, 96, 255])
-        } else {
-            Rgba([255, 128, 32, 255])
-        };
+        let polygon_color =
+            if region.accepted { Rgba([48, 220, 96, 255]) } else { Rgba([255, 128, 32, 255]) };
         draw_polygon(image, &region.detection.polygon, polygon_color);
 
         let label = format!(

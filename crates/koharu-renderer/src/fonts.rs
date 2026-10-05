@@ -53,10 +53,7 @@ const SYMBOL_FALLBACK_FAMILIES: &[&str] = &[
 
 fn symbol_fallback_families() -> &'static [String] {
     static FAMILIES: LazyLock<Vec<String>> = LazyLock::new(|| {
-        SYMBOL_FALLBACK_FAMILIES
-            .iter()
-            .map(|family| (*family).to_owned())
-            .collect()
+        SYMBOL_FALLBACK_FAMILIES.iter().map(|family| (*family).to_owned()).collect()
     });
     &FAMILIES
 }
@@ -108,19 +105,13 @@ impl Font {
         let shaper_instance = ShaperInstance::from_variations(&harfrust_font, &variations);
         let skrifa_font = skrifa::FontRef::from_index(font.blob.as_ref(), font.index)
             .context("failed to create Skrifa font reference")?;
-        let location = skrifa_font
-            .axes()
-            .location(variations.iter().map(|variation| {
-                (
-                    skrifa::Tag::new(&variation.tag.into_bytes()),
-                    variation.value,
-                )
-            }));
+        let location = skrifa_font.axes().location(
+            variations
+                .iter()
+                .map(|variation| (skrifa::Tag::new(&variation.tag.into_bytes()), variation.value)),
+        );
         let normalized_coords = location.coords().to_vec();
-        let vello_coords = normalized_coords
-            .iter()
-            .map(|coord| coord.to_bits())
-            .collect();
+        let vello_coords = normalized_coords.iter().map(|coord| coord.to_bits()).collect();
         let font_name = skrifa_font
             .localized_strings(StringId::new(4))
             .english_or_first()
@@ -151,9 +142,7 @@ impl Font {
     }
 
     pub(crate) fn bytes(&self) -> &[u8] {
-        self.bytes
-            .get_or_init(|| Arc::from(self.data.as_ref()))
-            .as_ref()
+        self.bytes.get_or_init(|| Arc::from(self.data.as_ref())).as_ref()
     }
 
     pub(crate) fn shared_bytes(&self) -> Arc<[u8]> {
@@ -199,14 +188,8 @@ impl Font {
             return plan;
         }
 
-        let shaper = self
-            .shaper_data
-            .shaper(font)
-            .instance(Some(&self.shaper_instance))
-            .build();
-        let plan = Arc::new(ShapePlan::new(
-            &shaper, direction, script, language, features,
-        ));
+        let shaper = self.shaper_data.shaper(font).instance(Some(&self.shaper_instance)).build();
+        let plan = Arc::new(ShapePlan::new(&shaper, direction, script, language, features));
         if plans.len() == SHAPE_PLAN_CACHE_CAPACITY {
             plans.pop_front();
         }
@@ -234,8 +217,7 @@ impl Font {
 
     #[cfg(test)]
     pub fn has_glyph(&self, character: char) -> bool {
-        self.skrifa_ref()
-            .is_ok_and(|font| font.charmap().map(character).is_some())
+        self.skrifa_ref().is_ok_and(|font| font.charmap().map(character).is_some())
     }
 
     pub(crate) fn covers(&self, text: &str) -> bool {
@@ -276,9 +258,7 @@ impl Font {
         let mut rendered = false;
 
         for glyph in shaped.glyph_infos() {
-            let character = text
-                .get(glyph.cluster as usize..)
-                .and_then(|tail| tail.chars().next());
+            let character = text.get(glyph.cluster as usize..).and_then(|tail| tail.chars().next());
             if character.is_some_and(|character| {
                 character.is_control()
                     || character.is_whitespace()
@@ -297,9 +277,7 @@ impl Font {
             if glyph.glyph_id == 0
                 || bounds.x_min >= bounds.x_max
                 || bounds.y_min >= bounds.y_max
-                || outline
-                    .draw(DrawSettings::unhinted(size, self.location()), &mut pen)
-                    .is_err()
+                || outline.draw(DrawSettings::unhinted(size, self.location()), &mut pen).is_err()
                 || !pen.has_ink
             {
                 return false;
@@ -420,11 +398,8 @@ impl FontSystem {
         language: Option<&str>,
     ) -> Result<Vec<Font>> {
         let language = language.and_then(|tag| Language::parse(tag).ok());
-        let scripts = if scripts.is_empty() {
-            &[Script::from_bytes(*b"Latn")][..]
-        } else {
-            scripts
-        };
+        let scripts =
+            if scripts.is_empty() { &[Script::from_bytes(*b"Latn")][..] } else { scripts };
         let style = match attributes.style {
             FontStyle::Normal => (0, 0),
             FontStyle::Italic => (1, 0),
@@ -437,9 +412,7 @@ impl FontSystem {
             weight: attributes.weight.value().to_bits(),
             style,
             scripts: scripts.iter().map(|script| script.to_bytes()).collect(),
-            language: language
-                .as_ref()
-                .map(|language| language.as_str().to_owned()),
+            language: language.as_ref().map(|language| language.as_str().to_owned()),
         };
         if let Some(fonts) = self.resolved.get(&key) {
             return Ok(fonts.clone());
@@ -455,9 +428,7 @@ impl FontSystem {
                     query.set_families([QueryFamily::Generic(GenericFamily::SansSerif)]);
                 } else {
                     query.set_families(
-                        families
-                            .iter()
-                            .map(|family| QueryFamily::Named(family.as_str())),
+                        families.iter().map(|family| QueryFamily::Named(family.as_str())),
                     );
                 }
                 query.set_attributes(attributes);
@@ -471,18 +442,14 @@ impl FontSystem {
             // candidates. Query them separately so a missing requested family
             // still falls back to the platform's script-appropriate text font.
             if fallback_families.iter().any(|fallback| {
-                !families
-                    .iter()
-                    .any(|family| family.eq_ignore_ascii_case(fallback))
+                !families.iter().any(|family| family.eq_ignore_ascii_case(fallback))
             }) {
                 let mut query = self.collection.query(&mut self.sources);
                 query.set_families(
                     fallback_families
                         .iter()
                         .filter(|fallback| {
-                            !families
-                                .iter()
-                                .any(|family| family.eq_ignore_ascii_case(fallback))
+                            !families.iter().any(|family| family.eq_ignore_ascii_case(fallback))
                         })
                         .map(|family| QueryFamily::Named(family.as_str())),
                 );
@@ -497,11 +464,8 @@ impl FontSystem {
                 if !seen.insert((candidate.blob.id(), candidate.index)) {
                     continue;
                 }
-                let family_name = self
-                    .collection
-                    .family_name(candidate.family.0)
-                    .unwrap_or("Unknown")
-                    .to_owned();
+                let family_name =
+                    self.collection.family_name(candidate.family.0).unwrap_or("Unknown").to_owned();
                 resolved.push(Font::from_query(candidate, family_name)?);
             }
         }
@@ -539,15 +503,10 @@ impl FontSystem {
 
     #[cfg(test)]
     pub fn first_font(&mut self) -> Result<Font> {
-        self.resolve(
-            &[],
-            Attributes::default(),
-            &[Script::from_bytes(*b"Latn")],
-            None,
-        )?
-        .into_iter()
-        .next()
-        .context("no usable fonts are installed")
+        self.resolve(&[], Attributes::default(), &[Script::from_bytes(*b"Latn")], None)?
+            .into_iter()
+            .next()
+            .context("no usable fonts are installed")
     }
 
     fn system_faces(&mut self) -> Vec<SystemFace> {
@@ -708,17 +667,11 @@ impl Fonts {
             families.push(preferred.to_owned());
         }
         for family in theme_families {
-            if !families
-                .iter()
-                .any(|value| value.eq_ignore_ascii_case(family))
-            {
+            if !families.iter().any(|value| value.eq_ignore_ascii_case(family)) {
                 families.push(family.clone());
             }
         }
-        if !families
-            .iter()
-            .any(|family| family.eq_ignore_ascii_case("Arial"))
-        {
+        if !families.iter().any(|family| family.eq_ignore_ascii_case("Arial")) {
             families.push("Arial".to_owned());
         }
 
@@ -734,10 +687,7 @@ impl Fonts {
             };
         }
 
-        let system = self
-            .system
-            .get()
-            .context("font system was not prepared before shaping")?;
+        let system = self.system.get().context("font system was not prepared before shaping")?;
         let bundled = if let Some(family) = families
             .first()
             .filter(|family| system.lock().collection.family_by_name(family).is_none())
@@ -783,13 +733,7 @@ impl Fonts {
         }
         tokio_rayon::spawn({
             let family_name = family_name.to_owned();
-            move || {
-                system
-                    .lock()
-                    .query_family(&family_name)
-                    .map(Box::new)
-                    .map(FontPreview::System)
-            }
+            move || system.lock().query_family(&family_name).map(Box::new).map(FontPreview::System)
         })
         .await
     }
@@ -850,10 +794,7 @@ impl Fonts {
                     let index: CatalogIndex =
                         serde_json::from_slice(&bytes).context("invalid bundled font index")?;
                     if index.schema_version != FONT_INDEX_SCHEMA {
-                        bail!(
-                            "unsupported bundled font index schema {}",
-                            index.schema_version
-                        );
+                        bail!("unsupported bundled font index schema {}", index.schema_version);
                     }
                     Ok(Arc::new(FontCatalog::from_index(index)))
                 })
@@ -889,18 +830,13 @@ impl Fonts {
             )
         })
         .await?;
-        self.cache
-            .lock()
-            .insert(face.post_script_name.clone(), font.clone());
+        self.cache.lock().insert(face.post_script_name.clone(), font.clone());
         Ok(font)
     }
 }
 
 fn font_from_blob(blob: Blob<u8>, face: &BundledFace, attributes: Attributes) -> Result<Font> {
-    let mut collection = Collection::new(CollectionOptions {
-        shared: false,
-        system_fonts: false,
-    });
+    let mut collection = Collection::new(CollectionOptions { shared: false, system_fonts: false });
     // The catalog owns the public family name. CJK fonts often expose a different
     // localized name in their internal records, so register the face under the
     // catalog name before querying it.
@@ -928,10 +864,7 @@ fn font_from_blob(blob: Blob<u8>, face: &BundledFace, attributes: Attributes) ->
     let mut fallback = None;
     for candidate in candidates {
         let font = Font::from_query(candidate, face.family_name.clone())?;
-        if font
-            .post_script_name()
-            .eq_ignore_ascii_case(&face.post_script_name)
-        {
+        if font.post_script_name().eq_ignore_ascii_case(&face.post_script_name) {
             return Ok(font);
         }
         fallback.get_or_insert(font);
@@ -975,21 +908,14 @@ impl FontCatalog {
                     languages: family.languages,
                     category: family.category,
                     classifications: family.classifications,
-                    use_cases: family
-                        .use_cases
-                        .into_iter()
-                        .map(|value| value.name)
-                        .collect(),
+                    use_cases: family.use_cases.into_iter().map(|value| value.name).collect(),
                 },
                 faces,
             });
             family_names.insert(normalize(&family.family_name), family.clone());
             families.push(family);
         }
-        Self {
-            families,
-            family_names,
-        }
+        Self { families, family_names }
     }
 
     fn select(&self, name: &str, attributes: Attributes) -> Option<Arc<BundledFace>> {
@@ -1005,11 +931,8 @@ impl FontCatalog {
                 };
                 let weight =
                     axis_distance(attributes.weight.value(), face.weight, face.weight_range);
-                let stretch = axis_distance(
-                    attributes.width.percentage(),
-                    face.stretch,
-                    face.stretch_range,
-                );
+                let stretch =
+                    axis_distance(attributes.width.percentage(), face.stretch, face.stretch_range);
                 style + weight + stretch
             })
             .cloned()
@@ -1066,12 +989,7 @@ struct FontCache {
 
 impl FontCache {
     fn new(max_bytes: usize) -> Self {
-        Self {
-            entries: HashMap::new(),
-            max_bytes,
-            bytes: 0,
-            clock: 0,
-        }
+        Self { entries: HashMap::new(), max_bytes, bytes: 0, clock: 0 }
     }
 
     fn get(&mut self, key: &str) -> Option<Font> {
@@ -1104,14 +1022,7 @@ impl FontCache {
         }
         self.clock = self.clock.wrapping_add(1);
         self.bytes += data_bytes;
-        self.entries.insert(
-            key,
-            CachedFont {
-                font,
-                bytes: data_bytes,
-                last_used: self.clock,
-            },
-        );
+        self.entries.insert(key, CachedFont { font, bytes: data_bytes, last_used: self.clock });
     }
 }
 
@@ -1280,19 +1191,7 @@ mod tests {
         assert_eq!(family.metadata.use_cases, ["comic-dialogue"]);
         let face = &family.faces[0];
         assert_eq!(face.preview_file, "previews/ExampleSans.ttf.webp");
-        assert_eq!(
-            face.weight_range,
-            Some(FontRange {
-                minimum: 300,
-                maximum: 700
-            })
-        );
-        assert_eq!(
-            face.stretch_range,
-            Some(FontRange {
-                minimum: 75,
-                maximum: 100
-            })
-        );
+        assert_eq!(face.weight_range, Some(FontRange { minimum: 300, maximum: 700 }));
+        assert_eq!(face.stretch_range, Some(FontRange { minimum: 75, maximum: 100 }));
     }
 }

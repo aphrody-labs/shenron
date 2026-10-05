@@ -61,15 +61,7 @@ pub fn preprocess(image: &DynamicImage, device: Device) -> Result<(Tensor, [u32;
     image::imageops::replace(&mut letterboxed, &resized, 0, 0);
     let pixel_values = image_to_tensor(&DynamicImage::ImageRgb8(letterboxed), device)?;
 
-    Ok((
-        pixel_values,
-        [
-            original_width,
-            original_height,
-            resized_width,
-            resized_height,
-        ],
-    ))
+    Ok((pixel_values, [original_width, original_height, resized_width, resized_height]))
 }
 
 pub fn postprocess(
@@ -77,12 +69,7 @@ pub fn postprocess(
     dimensions: [u32; 4],
     source: &DynamicImage,
 ) -> Result<(GrayImage, Vec<TextBlock>)> {
-    let [
-        original_width,
-        original_height,
-        resized_width,
-        resized_height,
-    ] = dimensions;
+    let [original_width, original_height, resized_width, resized_height] = dimensions;
     let maps = Tensor::cat(&[outputs.mask, outputs.line_maps], 1)
         .narrow(2, 0, resized_height as i64)
         .narrow(3, 0, resized_width as i64);
@@ -126,11 +113,8 @@ where
     }
 
     let transposed = source_height < source_width;
-    let (width, height) = if transposed {
-        (source_height, source_width)
-    } else {
-        (source_width, source_height)
-    };
+    let (width, height) =
+        if transposed { (source_height, source_width) } else { (source_width, source_height) };
     let aspect_ratio = height as f32 / width as f32;
     let downscale_ratio = height as f32 / 1280.0;
     if downscale_ratio <= 2.5 || aspect_ratio <= 3.0 {
@@ -148,14 +132,9 @@ where
         .checked_mul(strips_per_composite as u32)
         .context("comic text detector rearranged patch is too large")?;
     let patch_count = height.div_ceil(patch_height) as usize;
-    let patch_step = if patch_count > 1 {
-        (height - patch_height) / (patch_count as u32 - 1)
-    } else {
-        0
-    };
-    let patch_starts = (0..patch_count)
-        .map(|index| index as u32 * patch_step)
-        .collect::<Vec<_>>();
+    let patch_step =
+        if patch_count > 1 { (height - patch_height) / (patch_count as u32 - 1) } else { 0 };
+    let patch_starts = (0..patch_count).map(|index| index as u32 * patch_step).collect::<Vec<_>>();
     let composite_count = patch_count.div_ceil(strips_per_composite);
     let pad_count = composite_count * strips_per_composite - patch_count;
     let mut composite_maps = Vec::with_capacity(composite_count);
@@ -343,20 +322,12 @@ fn image_to_tensor(image: &DynamicImage, device: Device) -> Result<Tensor> {
 
 fn tensor_to_u8_vec(tensor: Tensor) -> Result<Vec<u8>> {
     let tensor = tensor.clamp(0.0, 1.0) * 255.0;
-    let tensor = tensor
-        .to_kind(Kind::Uint8)
-        .to_device(Device::Cpu)
-        .contiguous()
-        .view([-1]);
+    let tensor = tensor.to_kind(Kind::Uint8).to_device(Device::Cpu).contiguous().view([-1]);
     Ok(Vec::<u8>::try_from(&tensor)?)
 }
 
 fn tensor_to_f32_vec(tensor: Tensor) -> Result<Vec<f32>> {
-    let tensor = tensor
-        .to_kind(Kind::Float)
-        .to_device(Device::Cpu)
-        .contiguous()
-        .view([-1]);
+    let tensor = tensor.to_kind(Kind::Float).to_device(Device::Cpu).contiguous().view([-1]);
     Ok(Vec::<f32>::try_from(&tensor)?)
 }
 
@@ -403,13 +374,11 @@ fn extract_line_polygons(
     dest_height: u32,
 ) -> Vec<ModelQuad> {
     let bitmap = GrayImage::from_fn(map_width, map_height, |x, y| {
-        Luma([
-            if map[y as usize * map_width as usize + x as usize] > DBNET_BINARY_THRESHOLD {
-                255
-            } else {
-                0
-            },
-        ])
+        Luma([if map[y as usize * map_width as usize + x as usize] > DBNET_BINARY_THRESHOLD {
+            255
+        } else {
+            0
+        }])
     });
     find_contours_with_threshold::<i32>(&bitmap, 0)
         .into_iter()
@@ -480,24 +449,15 @@ fn minimum_area_rect(points: &[Point<i32>]) -> Option<RotatedRect> {
         let area = (max_x - min_x) * (max_y - min_y);
         if area < best_area {
             best_area = area;
-            best = Some(RotatedRect {
-                min_x,
-                min_y,
-                max_x,
-                max_y,
-                cos,
-                sin,
-            });
+            best = Some(RotatedRect { min_x, min_y, max_x, max_y, cos, sin });
         }
     }
     best
 }
 
 fn convex_hull(points: &[Point<i32>]) -> Vec<[f32; 2]> {
-    let mut points = points
-        .iter()
-        .map(|point| [point.x as f32, point.y as f32])
-        .collect::<Vec<_>>();
+    let mut points =
+        points.iter().map(|point| [point.x as f32, point.y as f32]).collect::<Vec<_>>();
     points.sort_unstable_by(|a, b| a[0].total_cmp(&b[0]).then_with(|| a[1].total_cmp(&b[1])));
     points.dedup();
     if points.len() <= 2 {
@@ -533,18 +493,8 @@ fn cross(origin: [f32; 2], a: [f32; 2], b: [f32; 2]) -> f32 {
 }
 
 fn polygon_score(map: &[f32], map_width: u32, map_height: u32, polygon: &[Point<i32>]) -> f32 {
-    let min_x = polygon
-        .iter()
-        .map(|point| point.x)
-        .min()
-        .unwrap_or(0)
-        .max(0) as u32;
-    let min_y = polygon
-        .iter()
-        .map(|point| point.y)
-        .min()
-        .unwrap_or(0)
-        .max(0) as u32;
+    let min_x = polygon.iter().map(|point| point.x).min().unwrap_or(0).max(0) as u32;
+    let min_y = polygon.iter().map(|point| point.y).min().unwrap_or(0).max(0) as u32;
     let max_x = polygon
         .iter()
         .map(|point| point.x)
@@ -557,10 +507,7 @@ fn polygon_score(map: &[f32], map_width: u32, map_height: u32, polygon: &[Point<
         .max()
         .unwrap_or(0)
         .clamp(0, map_height.saturating_sub(1) as i32) as u32;
-    let polygon = polygon
-        .iter()
-        .map(|point| [point.x as f32, point.y as f32])
-        .collect::<Vec<_>>();
+    let polygon = polygon.iter().map(|point| [point.x as f32, point.y as f32]).collect::<Vec<_>>();
     let mut sum = 0.0f64;
     let mut count = 0u64;
     for y in min_y..=max_y {
@@ -571,11 +518,7 @@ fn polygon_score(map: &[f32], map_width: u32, map_height: u32, polygon: &[Point<
             }
         }
     }
-    if count == 0 {
-        0.0
-    } else {
-        (sum / count as f64) as f32
-    }
+    if count == 0 { 0.0 } else { (sum / count as f64) as f32 }
 }
 
 fn point_in_polygon(point: [f32; 2], polygon: &[[f32; 2]]) -> bool {
@@ -635,10 +578,7 @@ impl WorkingBlock {
     }
 
     fn center(&self) -> [f32; 2] {
-        [
-            (self.bbox[0] + self.bbox[2]) * 0.5,
-            (self.bbox[1] + self.bbox[3]) * 0.5,
-        ]
+        [(self.bbox[0] + self.bbox[2]) * 0.5, (self.bbox[1] + self.bbox[3]) * 0.5]
     }
 
     fn recalculate(&mut self) {
@@ -661,19 +601,12 @@ impl WorkingBlock {
             self.vector = vertical_vector;
             self.norm = vertical_norm;
             self.font_size = (horizontal_norm / self.lines.len() as f32).round();
-            self.angle = vertical_vector[1]
-                .atan2(vertical_vector[0])
-                .to_degrees()
-                .trunc()
-                - 90.0;
+            self.angle = vertical_vector[1].atan2(vertical_vector[0]).to_degrees().trunc() - 90.0;
         } else {
             self.vector = horizontal_vector;
             self.norm = horizontal_norm;
             self.font_size = (vertical_norm / self.lines.len() as f32).round();
-            self.angle = horizontal_vector[1]
-                .atan2(horizontal_vector[0])
-                .to_degrees()
-                .trunc();
+            self.angle = horizontal_vector[1].atan2(horizontal_vector[0]).to_degrees().trunc();
         }
         if self.angle.abs() < 3.0 {
             self.angle = 0.0;
@@ -720,9 +653,8 @@ fn group_text_lines(lines: &[ModelQuad], mask: &GrayImage) -> Vec<TextBlock> {
     let mut kept: Vec<WorkingBlock> = Vec::with_capacity(grouped.len());
     for block in grouped.drain(..) {
         let area = bbox_area(block.bbox).max(f32::EPSILON);
-        let contained = kept
-            .iter()
-            .any(|existing| bbox_intersection(block.bbox, existing.bbox) / area > 0.9);
+        let contained =
+            kept.iter().any(|existing| bbox_intersection(block.bbox, existing.bbox) / area > 0.9);
         if !contained {
             kept.push(block);
         }
@@ -763,10 +695,7 @@ fn try_merge_text_line(
         + other.font_size * other_count as f32)
         / (first_count + other_count) as f32;
     let cosine = dot(block.vector, other.vector) / (block.norm * other.norm).max(f32::EPSILON);
-    let vector_sum = [
-        block.vector[0] + other.vector[0],
-        block.vector[1] + other.vector[1],
-    ];
+    let vector_sum = [block.vector[0] + other.vector[0], block.vector[1] + other.vector[1]];
     let first_bbox = quad_bbox(block.lines.last().expect("block contains a line"));
     let other_bbox = quad_bbox(&other.lines[0]);
     let distance_x = first_bbox[0].max(other_bbox[0]) - first_bbox[2].min(other_bbox[2]);
@@ -961,12 +890,7 @@ fn enlarge_window(bbox: [f32; 4], image_width: u32, image_height: u32, ratio: f3
     let requested = (root * 0.5).round().max(0.0) as i32;
     let delta_x = requested.min(x1).min(image_width as i32 - x2).max(0);
     let delta_y = requested.min(y1).min(image_height as i32 - y2).max(0);
-    [
-        (x1 - delta_x) as u32,
-        (y1 - delta_y) as u32,
-        (x2 + delta_x) as u32,
-        (y2 + delta_y) as u32,
-    ]
+    [(x1 - delta_x) as u32, (y1 - delta_y) as u32, (x2 + delta_x) as u32, (y2 + delta_y) as u32]
 }
 
 struct MaskCandidate {
@@ -983,11 +907,7 @@ fn mask_candidates(image: &RgbImage, predicted: &GrayImage) -> Vec<MaskCandidate
             });
             let level = otsu_level(&channel);
             let thresholded = GrayImage::from_fn(channel.width(), channel.height(), |x, y| {
-                Luma([if channel.get_pixel(x, y)[0] > level {
-                    255
-                } else {
-                    0
-                }])
+                Luma([if channel.get_pixel(x, y)[0] > level { 255 } else { 0 }])
             });
             best_polarity(thresholded, predicted)
         })
@@ -1029,10 +949,7 @@ fn top_color_masks(image: &RgbImage, predicted: &GrayImage) -> Vec<MaskCandidate
     let mut selected = Vec::new();
     for index in colors {
         let color = minimum + index as f32 * bin_width;
-        if selected
-            .iter()
-            .all(|selected: &f32| (*selected - color).abs() > 10.0)
-        {
+        if selected.iter().all(|selected: &f32| (*selected - color).abs() > 10.0) {
             selected.push(color);
         }
         if selected.len() >= 3 || (histogram[index] as f32) < tolerance {
@@ -1046,11 +963,7 @@ fn top_color_masks(image: &RgbImage, predicted: &GrayImage) -> Vec<MaskCandidate
             let bottom = top - 60.0;
             let thresholded = GrayImage::from_fn(gray.width(), gray.height(), |x, y| {
                 let value = gray.get_pixel(x, y)[0] as f32;
-                Luma([if value >= bottom && value <= top {
-                    255
-                } else {
-                    0
-                }])
+                Luma([if value >= bottom && value <= top { 255 } else { 0 }])
             });
             best_polarity(thresholded, predicted)
         })
@@ -1064,15 +977,9 @@ fn best_polarity(mask: GrayImage, predicted: &GrayImage) -> MaskCandidate {
     });
     let inverted_xor = xor_sum(&inverted, predicted);
     if inverted_xor < normal_xor {
-        MaskCandidate {
-            mask: inverted,
-            xor: inverted_xor,
-        }
+        MaskCandidate { mask: inverted, xor: inverted_xor }
     } else {
-        MaskCandidate {
-            mask,
-            xor: normal_xor,
-        }
+        MaskCandidate { mask, xor: normal_xor }
     }
 }
 
@@ -1080,11 +987,7 @@ fn merge_mask_candidates(mut candidates: Vec<MaskCandidate>, predicted: &GrayIma
     candidates.sort_unstable_by_key(|candidate| candidate.xor);
     let predicted = erode_gray(predicted, 1, MorphShape::Ellipse);
     let predicted = GrayImage::from_fn(predicted.width(), predicted.height(), |x, y| {
-        Luma([if predicted.get_pixel(x, y)[0] > 60 {
-            255
-        } else {
-            0
-        }])
+        Luma([if predicted.get_pixel(x, y)[0] > 60 { 255 } else { 0 }])
     });
     let mut merged = GrayImage::new(predicted.width(), predicted.height());
     for candidate in candidates {
@@ -1099,16 +1002,10 @@ fn merge_mask_candidates(mut candidates: Vec<MaskCandidate>, predicted: &GrayIma
     merged = dilate_binary(&merged, 2, MorphShape::Square);
 
     let holes = connected_components(&merged, false, true);
-    let mut areas = holes
-        .iter()
-        .map(|component| component.pixels.len())
-        .collect::<Vec<_>>();
+    let mut areas = holes.iter().map(|component| component.pixels.len()).collect::<Vec<_>>();
     areas.sort_unstable();
-    let area_threshold = if areas.len() > 1 {
-        areas[areas.len() - 2]
-    } else {
-        areas.last().copied().unwrap_or(0)
-    };
+    let area_threshold =
+        if areas.len() > 1 { areas[areas.len() - 2] } else { areas.last().copied().unwrap_or(0) };
     for component in holes {
         if component.pixels.len() < area_threshold {
             accept_component(&mut merged, &predicted, &component);
@@ -1176,13 +1073,7 @@ fn connected_components(
                     }
                 }
             }
-            components.push(Component {
-                pixels,
-                min_x,
-                min_y,
-                max_x,
-                max_y,
-            });
+            components.push(Component { pixels, min_x, min_y, max_x, max_y });
         }
     }
     components
@@ -1283,7 +1174,7 @@ fn kernel_offsets(radius: u32, shape: MorphShape) -> Vec<(i32, i32)> {
                             .round() as i32
                     };
                     dx.abs() <= horizontal
-                }
+                },
             };
             if inside {
                 output.push((dx, dy));
@@ -1294,11 +1185,7 @@ fn kernel_offsets(radius: u32, shape: MorphShape) -> Vec<(i32, i32)> {
 }
 
 fn xor_sum(a: &GrayImage, b: &GrayImage) -> u64 {
-    a.as_raw()
-        .iter()
-        .zip(b.as_raw())
-        .map(|(a, b)| (a ^ b) as u64)
-        .sum()
+    a.as_raw().iter().zip(b.as_raw()).map(|(a, b)| (a ^ b) as u64).sum()
 }
 
 fn midpoint(a: [f32; 2], b: [f32; 2]) -> [f32; 2] {
@@ -1319,12 +1206,7 @@ fn vector_norm(vector: [f32; 2]) -> f32 {
 
 fn quad_bbox(quad: &ModelQuad) -> [f32; 4] {
     quad.iter().fold(
-        [
-            f32::INFINITY,
-            f32::INFINITY,
-            f32::NEG_INFINITY,
-            f32::NEG_INFINITY,
-        ],
+        [f32::INFINITY, f32::INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY],
         |bbox, point| {
             [
                 bbox[0].min(point[0]),
@@ -1338,20 +1220,10 @@ fn quad_bbox(quad: &ModelQuad) -> [f32; 4] {
 
 fn lines_bbox(lines: &[ModelQuad]) -> [f32; 4] {
     lines.iter().fold(
-        [
-            f32::INFINITY,
-            f32::INFINITY,
-            f32::NEG_INFINITY,
-            f32::NEG_INFINITY,
-        ],
+        [f32::INFINITY, f32::INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY],
         |bbox, line| {
             let line = quad_bbox(line);
-            [
-                bbox[0].min(line[0]),
-                bbox[1].min(line[1]),
-                bbox[2].max(line[2]),
-                bbox[3].max(line[3]),
-            ]
+            [bbox[0].min(line[0]), bbox[1].min(line[1]), bbox[2].max(line[2]), bbox[3].max(line[3])]
         },
     )
 }

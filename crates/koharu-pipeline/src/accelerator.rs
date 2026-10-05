@@ -29,10 +29,7 @@ impl AcceleratorGate {
             return AcceleratorPermit::cpu();
         };
         AcceleratorPermit::accelerator(
-            lane.clone()
-                .acquire_owned()
-                .await
-                .expect("accelerator lane is never closed"),
+            lane.clone().acquire_owned().await.expect("accelerator lane is never closed"),
         )
     }
 

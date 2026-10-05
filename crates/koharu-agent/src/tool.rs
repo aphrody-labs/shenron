@@ -50,27 +50,16 @@ pub struct Invocation {
 
 impl Invocation {
     pub fn read(value: impl Serialize) -> Result<Self> {
-        Ok(Self {
-            value: serde_json::to_value(value)?,
-            changed: false,
-            images: Vec::new(),
-        })
+        Ok(Self { value: serde_json::to_value(value)?, changed: false, images: Vec::new() })
     }
 
     pub fn changed(value: impl Serialize) -> Result<Self> {
-        Ok(Self {
-            value: serde_json::to_value(value)?,
-            changed: true,
-            images: Vec::new(),
-        })
+        Ok(Self { value: serde_json::to_value(value)?, changed: true, images: Vec::new() })
     }
 
     #[must_use]
     pub fn with_image(mut self, label: impl Into<String>, data_url: impl Into<String>) -> Self {
-        self.images.push(ToolImage {
-            label: label.into(),
-            data_url: data_url.into(),
-        });
+        self.images.push(ToolImage { label: label.into(), data_url: data_url.into() });
         self
     }
 }

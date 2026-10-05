@@ -111,7 +111,7 @@ fn typed<T: Serialize + 'static>(sink: Sink<Value>) -> Sink<T> {
         Err(error) => {
             tracing::warn!(%error, "channel value is not JSON");
             true
-        }
+        },
     })
 }
 
@@ -337,21 +337,21 @@ pub async fn dispatch(
         "login_agent" => {
             let OnEvent { on_event } = decode(command, args)?;
             json(editor.login_agent(typed(bridge.channel(&on_event)?)).await?)
-        }
+        },
         "logout_agent" => json(editor.logout_agent().await?),
         "save_agent_config" => {
             let Config { config } = decode(command, args)?;
             json(editor.save_agent_config(config)?)
-        }
+        },
         "run_agent" => {
             let RunAgent { prompt, on_event } = decode(command, args)?;
             json(editor.run_agent(&prompt, typed(bridge.channel(&on_event)?))?)
-        }
+        },
         "cancel_agent" => {
             let Run { run } = decode(command, args)?;
             editor.cancel_agent(run)?;
             done()
-        }
+        },
         "subscribe" => {
             let channels: Subscribe = decode(command, args)?;
             let subscription = Subscription {
@@ -362,7 +362,7 @@ pub async fn dispatch(
                 project: typed(bridge.channel(&channels.on_project)?),
             };
             json(editor.subscribe(subscription).await?)
-        }
+        },
         "get_project" => json(editor.project_info().await),
         "get_pages" => json(editor.pages().await?),
         "get_page" => json(editor.active_page().await?),
@@ -371,120 +371,109 @@ pub async fn dispatch(
             let Name { name } = decode(command, args)?;
             editor.create_project(&name).await?;
             done()
-        }
+        },
         "open_project" => {
             let Name { name } = decode(command, args)?;
             editor.open_project(&name).await?;
             done()
-        }
+        },
         "delete_project" => {
             let Name { name } = decode(command, args)?;
             editor.delete_project(&name).await?;
             done()
-        }
+        },
         "close_project" => {
             editor.close_project().await?;
             done()
-        }
+        },
         "import" => {
             let Source { source } = decode(command, args)?;
             if editor.busy() {
                 bail!("pages cannot be imported while processing is running");
             }
-            let Some(picked) = bridge
-                .pick_import(source, &Editor::import_extensions())
-                .await?
+            let Some(picked) = bridge.pick_import(source, &Editor::import_extensions()).await?
             else {
                 return done();
             };
             let files = match source {
                 PageImportSource::Files => picked,
-                PageImportSource::Folder => picked
-                    .iter()
-                    .flat_map(|folder| Editor::importable_files(folder))
-                    .collect(),
+                PageImportSource::Folder => {
+                    picked.iter().flat_map(|folder| Editor::importable_files(folder)).collect()
+                },
             };
             editor.import_files(files).await?;
             done()
-        }
+        },
         "select_page" => {
             let PageArg { page } = decode(command, args)?;
             json(editor.select_page(page).await?)
-        }
+        },
         "rename_page" => {
             let RenamePage { page, label } = decode(command, args)?;
             editor.rename_page(page, label).await?;
             done()
-        }
+        },
         "delete_pages" => {
             let Pages { pages } = decode(command, args)?;
             editor.delete_pages(pages).await?;
             done()
-        }
+        },
         "move_page" => {
             let MovePage { page, index } = decode(command, args)?;
             editor.move_page(page, index as usize).await?;
             done()
-        }
+        },
         "set_source_text" => {
             let SourceText { layer, text } = decode(command, args)?;
             editor.set_source_text(layer, text).await?;
             done()
-        }
+        },
         "set_translation" => {
             let Translation { layer, text } = decode(command, args)?;
             editor.set_translation(layer, text).await?;
             done()
-        }
+        },
         "set_typography" => {
             let Updates { updates }: Updates<TypographyUpdate> = decode(command, args)?;
             editor.set_typography(updates).await?;
             done()
-        }
+        },
         "set_geometry" => {
             let Updates { updates }: Updates<GeometryUpdate> = decode(command, args)?;
             editor.set_geometry(updates).await?;
             done()
-        }
+        },
         "set_visibility" => {
-            let Visibility {
-                layers,
-                visible,
-                opacity,
-            } = decode(command, args)?;
+            let Visibility { layers, visible, opacity } = decode(command, args)?;
             editor.set_visibility(layers, visible, opacity).await?;
             done()
-        }
+        },
         "delete_layers" => {
             let Layers { layers } = decode(command, args)?;
             editor.delete_layers(layers).await?;
             done()
-        }
+        },
         "move_layer" => {
-            let MoveLayer {
-                layer,
-                parent,
-                index,
-            } = decode(command, args)?;
+            let MoveLayer { layer, parent, index } = decode(command, args)?;
             json(editor.move_layer(layer, parent, index as usize).await?)
-        }
+        },
         "undo" => {
             editor.undo().await?;
             done()
-        }
+        },
         "redo" => {
             editor.redo().await?;
             done()
-        }
+        },
         "process" => {
             let Process { scope, operation } = decode(command, args)?;
             json(editor.process(scope, operation).await?)
-        }
+        },
         "stop_job" => {
             let Job { job } = decode(command, args)?;
             editor.stop_job(job)?;
             done()
-        }
+        },
         "export" => {
             let Export { format } = decode(command, args)?;
             let project = editor.project_name().await?;
@@ -496,116 +485,74 @@ pub async fn dispatch(
             };
             editor.export(format, destination).await?;
             done()
-        }
+        },
         "get_thumbnail" => {
             let PageArg { page } = decode(command, args)?;
             Ok(Reply::Bytes(editor.thumbnail(page).await?))
-        }
+        },
         "get_page_result" => {
             let PageArg { page } = decode(command, args)?;
             json(editor.page_result(page).await?)
-        }
+        },
         "get_page_source_sha256" => {
             let PageArg { page } = decode(command, args)?;
             json(editor.page_source_sha256(page).await?)
-        }
+        },
         "get_fonts" => json(editor.fonts().await?),
         "get_font_preview" => {
             let FontPreview { family_name } = decode(command, args)?;
             Ok(Reply::Bytes(editor.font_preview(&family_name).await?))
-        }
+        },
         "save_preferences" => {
-            let SavePreferences {
-                pipeline,
-                providers,
-                typesetting,
-            } = decode(command, args)?;
+            let SavePreferences { pipeline, providers, typesetting } = decode(command, args)?;
             json(editor.save_preferences(pipeline, providers, typesetting)?)
-        }
+        },
         "get_preferences" => json(editor.preferences()?),
         "get_translation_models" => json(editor.translation_models().await?),
         "get_canvas_manifest" => {
             let Generation { generation } = decode(command, args)?;
             Ok(Reply::Bytes(editor.canvas_manifest(generation)?))
-        }
+        },
         "get_canvas_resource" => {
-            let GenerationResource {
-                generation,
-                resource,
-            } = decode(command, args)?;
+            let GenerationResource { generation, resource } = decode(command, args)?;
             Ok(Reply::Bytes(editor.canvas_resource(generation, &resource)?))
-        }
+        },
         "prepare_canvas_page" => {
             let PageArg { page } = decode(command, args)?;
             json(editor.prepare_canvas_page(page).await?)
-        }
+        },
         "get_canvas_page_manifest" => {
             let PageRevision { page, revision } = decode(command, args)?;
             Ok(Reply::Bytes(editor.canvas_page_manifest(page, revision)?))
-        }
+        },
         "get_canvas_page_resource" => {
-            let PageRevisionResource {
-                page,
-                revision,
-                resource,
-            } = decode(command, args)?;
-            Ok(Reply::Bytes(
-                editor.canvas_page_resource(page, revision, &resource)?,
-            ))
-        }
+            let PageRevisionResource { page, revision, resource } = decode(command, args)?;
+            Ok(Reply::Bytes(editor.canvas_page_resource(page, revision, &resource)?))
+        },
         "add_point_text" => {
             let PointArg { point } = decode(command, args)?;
             json(editor.add_point_text(None, point).await?)
-        }
+        },
         "add_text_box" => {
             let FrameArg { frame } = decode(command, args)?;
             json(editor.add_text_box(None, frame).await?)
-        }
+        },
         "commit_paint" => {
-            let Paint {
-                expected_revision,
-                layer,
-                points,
-                brush,
-            } = decode(command, args)?;
-            json(
-                editor
-                    .commit_paint(expected_revision, layer, points, brush)
-                    .await?,
-            )
-        }
+            let Paint { expected_revision, layer, points, brush } = decode(command, args)?;
+            json(editor.commit_paint(expected_revision, layer, points, brush).await?)
+        },
         "commit_erase" => {
-            let Erase {
-                expected_revision,
-                layer,
-                points,
-                diameter,
-            } = decode(command, args)?;
-            json(
-                editor
-                    .commit_erase(expected_revision, layer, points, diameter)
-                    .await?,
-            )
-        }
+            let Erase { expected_revision, layer, points, diameter } = decode(command, args)?;
+            json(editor.commit_erase(expected_revision, layer, points, diameter).await?)
+        },
         "commit_transform" => {
-            let Transform {
-                expected_revision,
-                elements,
-            } = decode(command, args)?;
+            let Transform { expected_revision, elements } = decode(command, args)?;
             json(editor.commit_transform(expected_revision, elements).await?)
-        }
+        },
         "commit_inpaint" => {
-            let Inpaint {
-                expected_revision,
-                points,
-                diameter,
-            } = decode(command, args)?;
-            json(
-                editor
-                    .commit_inpaint(expected_revision, points, diameter)
-                    .await?,
-            )
-        }
+            let Inpaint { expected_revision, points, diameter } = decode(command, args)?;
+            json(editor.commit_inpaint(expected_revision, points, diameter).await?)
+        },
         _ => bail!("unknown Koharu command: {command}"),
     }
 }

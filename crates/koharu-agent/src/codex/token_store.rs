@@ -40,11 +40,7 @@ impl TokenStore {
         let generation = Uuid::new_v4().simple().to_string();
         self.set_field(&generation, "access", &tokens.access)?;
         self.set_field(&generation, "refresh", &tokens.refresh)?;
-        self.set_field(
-            &generation,
-            "expires_at_ms",
-            &tokens.expires_at_ms.to_string(),
-        )?;
+        self.set_field(&generation, "expires_at_ms", &tokens.expires_at_ms.to_string())?;
         if let Some(id) = tokens.id.as_deref() {
             self.set_field(&generation, "id", id)?;
         }

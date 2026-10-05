@@ -91,12 +91,7 @@ impl State {
     ) -> Result<Self> {
         let referenced = referenced.into_iter().collect::<BTreeSet<_>>();
         let blobs = self.blobs.derive(referenced, available)?;
-        Ok(Self {
-            document: self.document,
-            revision,
-            payload,
-            blobs,
-        })
+        Ok(Self { document: self.document, revision, payload, blobs })
     }
 }
 
@@ -130,12 +125,7 @@ impl Session {
     pub async fn memory(document: DocumentId, payload: Bytes) -> Result<Self> {
         tokio::task::spawn_blocking(move || {
             let temporary = tempfile::tempdir()?;
-            create_project(
-                temporary.path().to_owned(),
-                document,
-                payload,
-                Some(temporary),
-            )
+            create_project(temporary.path().to_owned(), document, payload, Some(temporary))
         })
         .await
         .context("temporary project creation task failed")?
@@ -207,20 +197,9 @@ impl Session {
         .await
         .context("project save task failed")??;
 
-        self.inner.head.write().clone_from(&Head {
-            slot,
-            stored: Arc::new(stored),
-        });
-        let durable = self
-            .inner
-            .blobs
-            .scope(state.blobs.ids().collect(), BTreeMap::new())?;
-        Ok(State {
-            document,
-            revision,
-            payload: state.payload.clone(),
-            blobs: durable,
-        })
+        self.inner.head.write().clone_from(&Head { slot, stored: Arc::new(stored) });
+        let durable = self.inner.blobs.scope(state.blobs.ids().collect(), BTreeMap::new())?;
+        Ok(State { document, revision, payload: state.payload.clone(), blobs: durable })
     }
 
     #[tracing::instrument(level = "info", skip_all)]
@@ -265,10 +244,7 @@ fn create_project(
         inner: Arc::new(Inner {
             blobs: Arc::new(BlobStore::new(root.clone(), lock, temporary)),
             root,
-            head: RwLock::new(Head {
-                slot: Slot::A,
-                stored: Arc::new(stored),
-            }),
+            head: RwLock::new(Head { slot: Slot::A, stored: Arc::new(stored) }),
             writer: Mutex::new(()),
         }),
     })
@@ -285,10 +261,10 @@ fn open_project(root: PathBuf, temporary: Option<TempDir>) -> Result<Session> {
     for slot in [Slot::A, Slot::B] {
         match format::load(&root, slot) {
             Ok(Some(state)) => candidates.push((slot, state)),
-            Ok(None) => {}
+            Ok(None) => {},
             Err(error) => {
                 first_error.get_or_insert(error);
-            }
+            },
         }
     }
     candidates.sort_by_key(|(_, state)| std::cmp::Reverse(state.revision));
@@ -305,10 +281,7 @@ fn open_project(root: PathBuf, temporary: Option<TempDir>) -> Result<Session> {
         inner: Arc::new(Inner {
             root,
             blobs: store,
-            head: RwLock::new(Head {
-                slot,
-                stored: Arc::new(stored),
-            }),
+            head: RwLock::new(Head { slot, stored: Arc::new(stored) }),
             writer: Mutex::new(()),
         }),
     })

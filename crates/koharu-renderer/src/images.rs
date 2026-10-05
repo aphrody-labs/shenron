@@ -35,20 +35,12 @@ pub(crate) struct ImageCache {
 
 impl ImageCache {
     pub(crate) fn new() -> Self {
-        Self {
-            entries: HashMap::new(),
-            max_bytes: DEFAULT_IMAGE_CACHE_BYTES,
-            bytes: 0,
-            clock: 0,
-        }
+        Self { entries: HashMap::new(), max_bytes: DEFAULT_IMAGE_CACHE_BYTES, bytes: 0, clock: 0 }
     }
 
     #[cfg(test)]
     fn with_limit(max_bytes: usize) -> Self {
-        Self {
-            max_bytes,
-            ..Self::new()
-        }
+        Self { max_bytes, ..Self::new() }
     }
 
     pub(crate) fn get(&mut self, blob: BlobId) -> Option<Arc<DecodedImage>> {
@@ -67,19 +59,10 @@ impl ImageCache {
             return;
         }
         self.bytes = self.bytes.saturating_add(image.byte_len());
-        self.entries.insert(
-            blob,
-            CachedImage {
-                image,
-                last_used: self.clock,
-            },
-        );
+        self.entries.insert(blob, CachedImage { image, last_used: self.clock });
         while self.bytes > self.max_bytes {
-            let Some(oldest) = self
-                .entries
-                .iter()
-                .min_by_key(|(_, entry)| entry.last_used)
-                .map(|(blob, _)| *blob)
+            let Some(oldest) =
+                self.entries.iter().min_by_key(|(_, entry)| entry.last_used).map(|(blob, _)| *blob)
             else {
                 break;
             };

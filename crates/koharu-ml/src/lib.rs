@@ -47,10 +47,7 @@ pub async fn init() -> anyhow::Result<()> {
     READY
         .get_or_try_init(|| async {
             let runtime = Runtime::discover([Feature::Torch, Feature::Llama, Feature::Diffusion])?;
-            let device = runtime
-                .initialize()
-                .await
-                .context("failed to initialize runtimes")?;
+            let device = runtime.initialize().await.context("failed to initialize runtimes")?;
 
             LLAMA
                 .get_or_try_init(|| async {

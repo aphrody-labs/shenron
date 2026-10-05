@@ -81,11 +81,7 @@ impl Conv {
         let bn = nn::batch_norm2d(
             path / "bn",
             c2,
-            nn::BatchNormConfig {
-                eps: 1e-3,
-                momentum: 0.03,
-                ..Default::default()
-            },
+            nn::BatchNormConfig { eps: 1e-3, momentum: 0.03, ..Default::default() },
         );
         Self { conv, bn, activate }
     }
@@ -153,8 +149,7 @@ impl C3k {
         for module in &self.m {
             left = module.forward(&left);
         }
-        self.cv3
-            .forward(&Tensor::cat(&[left, self.cv2.forward(xs)], 1))
+        self.cv3.forward(&Tensor::cat(&[left, self.cv2.forward(xs)], 1))
     }
 }
 
@@ -191,22 +186,13 @@ impl Attention {
         let qkv = self
             .qkv
             .forward(xs)
-            .view([
-                batch,
-                self.num_heads,
-                self.key_dim * 2 + self.head_dim,
-                height * width,
-            ])
+            .view([batch, self.num_heads, self.key_dim * 2 + self.head_dim, height * width])
             .split_with_sizes([self.key_dim, self.key_dim, self.head_dim], 2);
         let attention =
             (qkv[0].transpose(-2, -1).matmul(&qkv[1]) * self.scale).softmax(-1, None::<Kind>);
         let value = &qkv[2];
-        let xs = value
-            .matmul(&attention.transpose(-2, -1))
-            .view([batch, channels, height, width])
-            + self
-                .pe
-                .forward(&value.reshape([batch, channels, height, width]));
+        let xs = value.matmul(&attention.transpose(-2, -1)).view([batch, channels, height, width])
+            + self.pe.forward(&value.reshape([batch, channels, height, width]));
         self.proj.forward(&xs)
     }
 }
@@ -358,9 +344,7 @@ impl C2Psa {
         Self {
             cv1: Conv::silu(&(path / "cv1"), channels, channels, 1, 1),
             cv2: Conv::silu(&(path / "cv2"), channels, channels, 1, 1),
-            m: (0..n)
-                .map(|index| PsaBlock::load(&(path / "m" / index), channels / 2))
-                .collect(),
+            m: (0..n).map(|index| PsaBlock::load(&(path / "m" / index), channels / 2)).collect(),
         }
     }
 
@@ -392,19 +376,12 @@ impl HeadBranch {
         Self {
             block0: Conv::silu(&(path / 0), in_channels, hidden_channels, 3, 1),
             block1: Conv::silu(&(path / 1), hidden_channels, hidden_channels, 3, 1),
-            conv: nn::conv2d(
-                path / 2,
-                hidden_channels,
-                out_channels,
-                1,
-                Default::default(),
-            ),
+            conv: nn::conv2d(path / 2, hidden_channels, out_channels, 1, Default::default()),
         }
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        self.conv
-            .forward(&self.block1.forward(&self.block0.forward(xs)))
+        self.conv.forward(&self.block1.forward(&self.block0.forward(xs)))
     }
 }
 
@@ -444,19 +421,12 @@ impl ClassHeadBranch {
         Self {
             block0: DepthwisePointwise::load(&(path / 0), in_channels, hidden_channels),
             block1: DepthwisePointwise::load(&(path / 1), hidden_channels, hidden_channels),
-            conv: nn::conv2d(
-                path / 2,
-                hidden_channels,
-                out_channels,
-                1,
-                Default::default(),
-            ),
+            conv: nn::conv2d(path / 2, hidden_channels, out_channels, 1, Default::default()),
         }
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        self.conv
-            .forward(&self.block1.forward(&self.block0.forward(xs)))
+        self.conv.forward(&self.block1.forward(&self.block0.forward(xs)))
     }
 }
 
@@ -477,10 +447,7 @@ impl Proto {
                 channels,
                 channels,
                 2,
-                nn::ConvTransposeConfig {
-                    stride: 2,
-                    ..Default::default()
-                },
+                nn::ConvTransposeConfig { stride: 2, ..Default::default() },
             ),
             cv2: Conv::silu(&(path / "cv2"), channels, channels, 3, 1),
             cv3: Conv::silu(&(path / "cv3"), channels, num_masks, 1, 1),
@@ -488,11 +455,7 @@ impl Proto {
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        self.cv3.forward(
-            &self
-                .cv2
-                .forward(&self.upsample.forward(&self.cv1.forward(xs))),
-        )
+        self.cv3.forward(&self.cv2.forward(&self.upsample.forward(&self.cv1.forward(xs))))
     }
 }
 
@@ -568,19 +531,13 @@ fn make_anchors(xs: [&Tensor; 3], strides: [i64; 3]) -> (Tensor, Tensor) {
         let size = xs.size();
         let height = size[2];
         let width = size[3];
-        let sx = (Tensor::arange(width, (kind, device)) + 0.5)
-            .view([1, width])
-            .repeat([height, 1]);
-        let sy = (Tensor::arange(height, (kind, device)) + 0.5)
-            .view([height, 1])
-            .repeat([1, width]);
+        let sx = (Tensor::arange(width, (kind, device)) + 0.5).view([1, width]).repeat([height, 1]);
+        let sy =
+            (Tensor::arange(height, (kind, device)) + 0.5).view([height, 1]).repeat([1, width]);
         anchor_points.push(Tensor::stack(&[sx, sy], -1).view([-1, 2]));
         stride_tensors.push(Tensor::full([height * width, 1], stride, (kind, device)));
     }
-    (
-        Tensor::cat(&anchor_points, 0),
-        Tensor::cat(&stride_tensors, 0),
-    )
+    (Tensor::cat(&anchor_points, 0), Tensor::cat(&stride_tensors, 0))
 }
 
 fn dist2bbox(distance: &Tensor, anchor_points: &Tensor) -> Tensor {
@@ -657,32 +614,20 @@ impl Segment26 {
 
         // This is Detect.get_topk_index followed by Segment.postprocess. The
         // two top-k stages are the NMS-free YOLO26 end-to-end prediction path.
-        let anchor_index = scores
-            .max_dim(-1, false)
-            .0
-            .topk(k, 1, true, true)
-            .1
-            .unsqueeze(-1);
+        let anchor_index = scores.max_dim(-1, false).0.topk(k, 1, true, true).1.unsqueeze(-1);
         let shortlisted = scores.gather(1, &anchor_index.repeat([1, 1, self.num_classes]), false);
         let (scores, flat_index) = shortlisted.flatten(1, -1).topk(k, 1, true, true);
         let class_index = flat_index.remainder(self.num_classes).unsqueeze(-1);
         let selected_anchor = anchor_index.gather(
             1,
-            &flat_index
-                .floor_divide_scalar(self.num_classes)
-                .view([batch, k, 1]),
+            &flat_index.floor_divide_scalar(self.num_classes).view([batch, k, 1]),
             false,
         );
         let boxes = boxes.gather(1, &selected_anchor.repeat([1, 1, 4]), false);
         let coefficients =
             coefficients.gather(1, &selected_anchor.repeat([1, 1, self.num_masks]), false);
         Tensor::cat(
-            &[
-                boxes,
-                scores.unsqueeze(-1),
-                class_index.to_kind(Kind::Float),
-                coefficients,
-            ],
+            &[boxes, scores.unsqueeze(-1), class_index.to_kind(Kind::Float), coefficients],
             -1,
         )
     }
@@ -762,11 +707,7 @@ impl Yolo26Seg {
             "unsupported library {:?}",
             config.library_name
         );
-        ensure!(
-            config.task == "instance-segmentation",
-            "unsupported task {:?}",
-            config.task
-        );
+        ensure!(config.task == "instance-segmentation", "unsupported task {:?}", config.task);
         ensure!(config.image_size > 0, "image_size must be positive");
         ensure!(
             config.num_classes == 3,
@@ -775,10 +716,7 @@ impl Yolo26Seg {
         );
         let class_names = config.class_names()?;
         ensure!(
-            class_names
-                .iter()
-                .map(String::as_str)
-                .eq(["frame", "text", "balloon"]),
+            class_names.iter().map(String::as_str).eq(["frame", "text", "balloon"]),
             "comic-layout-yolo26s expects labels [frame, text, balloon], got {class_names:?}"
         );
         Ok(Self {
@@ -820,18 +758,10 @@ impl Yolo26Seg {
         let x8 = self.layer8.forward(&x7);
         let x9 = self.layer9.forward(&x8);
         let x10 = self.layer10.forward(&x9);
-        let x13 = self
-            .layer13
-            .forward(&Tensor::cat(&[Self::upsample(&x10), x6], 1));
-        let x16 = self
-            .layer16
-            .forward(&Tensor::cat(&[Self::upsample(&x13), x4], 1));
-        let x19 = self
-            .layer19
-            .forward(&Tensor::cat(&[self.layer17.forward(&x16), x13], 1));
-        let x22 = self
-            .layer22
-            .forward(&Tensor::cat(&[self.layer20.forward(&x19), x10], 1));
+        let x13 = self.layer13.forward(&Tensor::cat(&[Self::upsample(&x10), x6], 1));
+        let x16 = self.layer16.forward(&Tensor::cat(&[Self::upsample(&x13), x4], 1));
+        let x19 = self.layer19.forward(&Tensor::cat(&[self.layer17.forward(&x16), x13], 1));
+        let x22 = self.layer22.forward(&Tensor::cat(&[self.layer20.forward(&x19), x10], 1));
         self.layer23.forward(&x16, &x19, &x22)
     }
 }

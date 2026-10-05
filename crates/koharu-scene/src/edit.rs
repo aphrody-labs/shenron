@@ -77,9 +77,7 @@ impl Edit {
         let position = resolve_position(&self.state.page_order, at, None)?;
         let components = self.entity_components([
             self.encoded(&Page::from(page))?,
-            self.encoded(&EntityOrigin {
-                origin: self.lifecycle_origin(),
-            })?,
+            self.encoded(&EntityOrigin { origin: self.lifecycle_origin() })?,
         ]);
         let stored = store_components(&components);
         self.state.insert_page(id, position, components)?;
@@ -104,12 +102,10 @@ impl Edit {
             .collect::<Vec<_>>();
         let position = resolve_position(&siblings, at, None)?;
         let id = EntityId::new();
-        let components = self.entity_components([self.encoded(&EntityOrigin {
-            origin: self.lifecycle_origin(),
-        })?]);
+        let components = self
+            .entity_components([self.encoded(&EntityOrigin { origin: self.lifecycle_origin() })?]);
         let stored = store_components(&components);
-        self.state
-            .insert_entity(page, id, parent, position, components)?;
+        self.state.insert_entity(page, id, parent, position, components)?;
         self.operations.push(Operation::InsertEntity {
             page,
             id,
@@ -159,13 +155,7 @@ impl Edit {
 
         let parent = parent.ok_or_else(|| Error::invalid("only pages may use the project root"))?;
         let target_page = self.state.page_for(parent)?;
-        if target_page == page
-            && self
-                .state
-                .page(page)?
-                .descendants(entity)?
-                .contains(&parent)
-        {
+        if target_page == page && self.state.page(page)?.descendants(entity)?.contains(&parent) {
             return Err(Error::HierarchyCycle);
         }
         let (before_parent, before_position) = self.state.parent_and_position(entity)?;
@@ -185,8 +175,7 @@ impl Edit {
         self.observe_children_write(before_parent)?;
         self.observe_children_write(parent)?;
         self.state.move_entity(entity, parent, position)?;
-        self.validate_entities
-            .extend([entity, before_parent, parent]);
+        self.validate_entities.extend([entity, before_parent, parent]);
         self.operations.push(Operation::MoveEntity {
             id: entity,
             before_page: page,
@@ -201,12 +190,7 @@ impl Edit {
 
     pub fn remove_entity(&mut self, entity: EntityId, policy: RemovePolicy) -> Result<()> {
         let page = self.state.page_for(entity)?;
-        if entity != page
-            && self
-                .state
-                .component(entity, &key::<TextGroup>()?)?
-                .is_some()
-        {
+        if entity != page && self.state.component(entity, &key::<TextGroup>()?)?.is_some() {
             return Err(Error::invalid("the page text group cannot be removed"));
         }
         self.observe_page_write(page);
@@ -231,10 +215,8 @@ impl Edit {
         if policy == RemovePolicy::PromoteChildren && entity == page && !children.is_empty() {
             return Err(Error::invalid("page children cannot be promoted"));
         }
-        let incident = subtree
-            .iter()
-            .flat_map(|id| self.incident_relations(*id))
-            .collect::<BTreeSet<_>>();
+        let incident =
+            subtree.iter().flat_map(|id| self.incident_relations(*id)).collect::<BTreeSet<_>>();
         if policy != RemovePolicy::Cascade && !incident.is_empty() {
             return Err(Error::IncidentRelations(entity));
         }
@@ -255,7 +237,7 @@ impl Edit {
                     self.move_to_position(child, parent, position + offset)?;
                 }
                 self.remove_leaf(entity)
-            }
+            },
             RemovePolicy::Cascade => {
                 for relation in incident {
                     self.remove_relation(relation)?;
@@ -264,7 +246,7 @@ impl Edit {
                     self.remove_leaf(id)?;
                 }
                 Ok(())
-            }
+            },
         }
     }
 
@@ -277,9 +259,7 @@ impl Edit {
         self.replace_component(
             ComponentOwner::Entity(entity),
             key::<EntityOrigin>()?,
-            Some(self.encode_value(&EntityOrigin {
-                origin: Origin::User,
-            })?),
+            Some(self.encode_value(&EntityOrigin { origin: Origin::User })?),
         )
     }
 
@@ -287,13 +267,8 @@ impl Edit {
         if !self.state.contains_entity(entity) {
             return Err(Error::EntityNotFound(entity));
         }
-        if matches!(
-            T::KIND,
-            Relation::KIND | Page::KIND | EntityOrigin::KIND | TextGroup::KIND
-        ) {
-            return Err(Error::invalid(
-                "structural components use dedicated scene methods",
-            ));
+        if matches!(T::KIND, Relation::KIND | Page::KIND | EntityOrigin::KIND | TextGroup::KIND) {
+            return Err(Error::invalid("structural components use dedicated scene methods"));
         }
         let value = self.prepare_value(ComponentOwner::Entity(entity), value)?;
         self.replace_component(
@@ -326,13 +301,8 @@ impl Edit {
     }
 
     pub fn remove<T: Component>(&mut self, entity: EntityId) -> Result<()> {
-        if matches!(
-            T::KIND,
-            Relation::KIND | Page::KIND | EntityOrigin::KIND | TextGroup::KIND
-        ) {
-            return Err(Error::invalid(
-                "required structural component cannot be removed",
-            ));
+        if matches!(T::KIND, Relation::KIND | Page::KIND | EntityOrigin::KIND | TextGroup::KIND) {
+            return Err(Error::invalid("required structural component cannot be removed"));
         }
         self.validate_removal_authorship::<T>(ComponentOwner::Entity(entity))?;
         self.replace_component(ComponentOwner::Entity(entity), key::<T>()?, None)?;
@@ -418,12 +388,7 @@ impl Edit {
             return Err(Error::EntityNotFound(target));
         }
         let id = RelationId::new();
-        let value = Relation {
-            origin: self.lifecycle_origin(),
-            kind,
-            source,
-            target,
-        };
+        let value = Relation { origin: self.lifecycle_origin(), kind, source, target };
         let record_exists = |id| self.state.contains_entity(id);
         let blob_exists = |id| {
             self.attachments.iter().any(|(blob, _)| *blob == id)
@@ -435,11 +400,7 @@ impl Edit {
             &ValidationContext::new(&record_exists, &blob_exists),
         )?;
         self.state.insert_relation(id, value.clone())?;
-        self.operations.push(Operation::InsertRelation {
-            id,
-            value,
-            components: Vec::new(),
-        });
+        self.operations.push(Operation::InsertRelation { id, value, components: Vec::new() });
         Ok(id)
     }
 
@@ -452,21 +413,12 @@ impl Edit {
     }
 
     pub fn remove_relation(&mut self, id: RelationId) -> Result<()> {
-        let relation = self
-            .state
-            .relations
-            .get(&id)
-            .cloned()
-            .ok_or(Error::RelationNotFound(id))?;
+        let relation = self.state.relations.get(&id).cloned().ok_or(Error::RelationNotFound(id))?;
         self.validate_origin_removal(Some(&relation.value.origin))?;
         let components = store_components(&relation.components);
         let value = relation.value.clone();
         self.state.remove_relation(id)?;
-        self.operations.push(Operation::RemoveRelation {
-            id,
-            value,
-            components,
-        });
+        self.operations.push(Operation::RemoveRelation { id, value, components });
         Ok(())
     }
 
@@ -476,20 +428,11 @@ impl Edit {
                 "pipeline edits cannot claim user relation ownership".to_owned(),
             ));
         }
-        let before = self
-            .state
-            .relations
-            .get(&id)
-            .ok_or(Error::RelationNotFound(id))?
-            .value
-            .clone();
-        let after = Relation {
-            origin: Origin::User,
-            ..before.clone()
-        };
+        let before =
+            self.state.relations.get(&id).ok_or(Error::RelationNotFound(id))?.value.clone();
+        let after = Relation { origin: Origin::User, ..before.clone() };
         self.state.set_relation_value(id, after.clone())?;
-        self.operations
-            .push(Operation::ReplaceRelation { id, before, after });
+        self.operations.push(Operation::ReplaceRelation { id, before, after });
         Ok(())
     }
 
@@ -501,9 +444,7 @@ impl Edit {
             T::KIND,
             Relation::KIND | Page::KIND | EntityOrigin::KIND | Group::KIND | TextGroup::KIND
         ) {
-            return Err(Error::invalid(
-                "relation structural component is managed directly",
-            ));
+            return Err(Error::invalid("relation structural component is managed directly"));
         }
         let owner = ComponentOwner::Relation(relation);
         let value = self.prepare_value(owner, value)?;
@@ -622,22 +563,22 @@ impl Edit {
         match (owner, after.clone()) {
             (ComponentOwner::Project, Some(value)) => {
                 self.state.set_project_component(key.clone(), value);
-            }
+            },
             (ComponentOwner::Project, None) => {
                 self.state.remove_project_component(&key);
-            }
+            },
             (ComponentOwner::Entity(id), Some(value)) => {
                 self.state.set_entity_component(id, key.clone(), value)?;
-            }
+            },
             (ComponentOwner::Entity(id), None) => {
                 self.state.remove_entity_component(id, &key)?;
-            }
+            },
             (ComponentOwner::Relation(id), Some(value)) => {
                 self.state.set_relation_component(id, key.clone(), value)?;
-            }
+            },
             (ComponentOwner::Relation(id), None) => {
                 self.state.remove_relation_component(id, &key)?;
-            }
+            },
         }
         self.operations.push(Operation::ReplaceComponent {
             owner,
@@ -664,28 +605,18 @@ impl Edit {
     /// this edit are already ordered by `operations` and must not become competing observations.
     fn observe_component(&mut self, owner: ComponentOwner, key: ComponentKey) -> Result<()> {
         let fingerprint = match owner {
-            ComponentOwner::Project => self
-                .base
-                .state
-                .project_component(&key)
-                .map(ComponentRecord::fingerprint),
-            ComponentOwner::Entity(id) if self.base.state.contains_entity(id) => self
-                .base
-                .state
-                .component(id, &key)?
-                .map(ComponentRecord::fingerprint),
-            ComponentOwner::Relation(id) if self.base.state.relations.contains_key(&id) => self
-                .base
-                .state
-                .relation_component(id, &key)?
-                .map(ComponentRecord::fingerprint),
+            ComponentOwner::Project => {
+                self.base.state.project_component(&key).map(ComponentRecord::fingerprint)
+            },
+            ComponentOwner::Entity(id) if self.base.state.contains_entity(id) => {
+                self.base.state.component(id, &key)?.map(ComponentRecord::fingerprint)
+            },
+            ComponentOwner::Relation(id) if self.base.state.relations.contains_key(&id) => {
+                self.base.state.relation_component(id, &key)?.map(ComponentRecord::fingerprint)
+            },
             ComponentOwner::Entity(_) | ComponentOwner::Relation(_) => return Ok(()),
         };
-        self.observations.insert(Observation::Component {
-            owner,
-            key,
-            fingerprint,
-        });
+        self.observations.insert(Observation::Component { owner, key, fingerprint });
         Ok(())
     }
 
@@ -716,26 +647,16 @@ impl Edit {
                     self.promote_entity_to_user(*group)?;
                 }
                 return Ok(*group);
-            }
-            [] => {}
+            },
+            [] => {},
             _ => return Err(Error::invalid("page contains multiple text groups")),
         }
 
         let group = self.add_entity(page, At::End)?;
+        self.set(group, &Group { origin: self.lifecycle_origin(), name: "Text".to_owned() })?;
         self.set(
             group,
-            &Group {
-                origin: self.lifecycle_origin(),
-                name: "Text".to_owned(),
-            },
-        )?;
-        self.set(
-            group,
-            &Visibility {
-                origin: self.lifecycle_origin(),
-                visible: true,
-                opacity: 1.0,
-            },
+            &Visibility { origin: self.lifecycle_origin(), visible: true, opacity: 1.0 },
         )?;
         self.replace_component(
             ComponentOwner::Entity(group),
@@ -775,14 +696,14 @@ impl Edit {
                         T::KIND
                     )));
                 }
-            }
+            },
             None if value.origin().is_some() && !value.set_origin(Origin::User) => {
                 return Err(Error::Authorship(format!(
                     "component {} reports ownership but cannot be stamped",
                     T::KIND
                 )));
-            }
-            None => {}
+            },
+            None => {},
         }
         Ok(value)
     }
@@ -808,7 +729,7 @@ impl Edit {
                     )));
                 }
                 self.validate_origin_removal(value.origin())
-            }
+            },
         }
     }
 
@@ -828,22 +749,17 @@ impl Edit {
                     "producer {} owns this component, not {}",
                     actual.producer, expected.producer
                 )))
-            }
+            },
             Origin::Generated(_) => Ok(()),
         }
     }
 
     fn lifecycle_origin(&self) -> Origin {
-        self.generation
-            .clone()
-            .map_or(Origin::User, Origin::Generated)
+        self.generation.clone().map_or(Origin::User, Origin::Generated)
     }
 
     fn validate_lifecycle_removal(&self, entity: EntityId) -> Result<()> {
-        let Some(producer) = self
-            .generation
-            .as_ref()
-            .map(|generation| generation.producer.clone())
+        let Some(producer) = self.generation.as_ref().map(|generation| generation.producer.clone())
         else {
             return Ok(());
         };
@@ -862,9 +778,9 @@ impl Edit {
                 "producer {} owns entity {entity}, not {}",
                 owner.producer, producer
             ))),
-            Origin::User => Err(Error::Authorship(format!(
-                "pipeline cannot remove user-owned entity {entity}"
-            ))),
+            Origin::User => {
+                Err(Error::Authorship(format!("pipeline cannot remove user-owned entity {entity}")))
+            },
         }
     }
 
@@ -879,9 +795,8 @@ impl Edit {
     }
 
     fn observe_page_order_write(&mut self) {
-        self.observations.insert(Observation::ProjectHierarchy {
-            epoch: self.base.state.page_order_epoch,
-        });
+        self.observations
+            .insert(Observation::ProjectHierarchy { epoch: self.base.state.page_order_epoch });
     }
 
     fn observe_page_write(&mut self, page: EntityId) {
@@ -905,11 +820,8 @@ impl Edit {
 }
 
 fn resolve_position(values: &[EntityId], at: At, moving: Option<EntityId>) -> Result<usize> {
-    let filtered = values
-        .iter()
-        .copied()
-        .filter(|value| Some(*value) != moving)
-        .collect::<Vec<_>>();
+    let filtered =
+        values.iter().copied().filter(|value| Some(*value) != moving).collect::<Vec<_>>();
     match at {
         At::Start => Ok(0),
         At::End => Ok(filtered.len()),

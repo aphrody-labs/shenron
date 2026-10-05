@@ -3,9 +3,8 @@ use std::{fs, io::Write, path::Path};
 use crate::Result;
 
 pub(crate) fn publish(target: &Path, bytes: &[u8]) -> Result<()> {
-    let parent = target
-        .parent()
-        .ok_or_else(|| crate::Error::invalid("published path has no parent"))?;
+    let parent =
+        target.parent().ok_or_else(|| crate::Error::invalid("published path has no parent"))?;
     fs::create_dir_all(parent)?;
     let mut file = tempfile::NamedTempFile::new_in(parent)?;
     file.write_all(bytes)?;

@@ -33,22 +33,9 @@ fn linear_filtering_does_not_add_borders_to_any_raster_layer() {
                         Point { x: 3.0, y: 1.0 },
                         Point { x: 0.0, y: 1.0 },
                     ],
-                    bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 3.0,
-                        height: 1.0,
-                    },
-                    local_bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 3.0,
-                        height: 1.0,
-                    },
-                    presentation: Presentation {
-                        visible: true,
-                        opacity: 1.0,
-                    },
+                    bounds: Bounds { x: 0.0, y: 0.0, width: 3.0, height: 1.0 },
+                    local_bounds: Bounds { x: 0.0, y: 0.0, width: 3.0, height: 1.0 },
+                    presentation: Presentation { visible: true, opacity: 1.0 },
                     kind: LayerKind::Raster,
                     placement: [1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
                     content: PreparedContent::Raster(PreparedRaster {
@@ -73,22 +60,9 @@ fn linear_filtering_does_not_add_borders_to_any_raster_layer() {
                         Point { x: 2.5, y: 1.0 },
                         Point { x: 0.5, y: 1.0 },
                     ],
-                    bounds: Bounds {
-                        x: 0.5,
-                        y: 0.0,
-                        width: 2.0,
-                        height: 1.0,
-                    },
-                    local_bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 2.0,
-                        height: 1.0,
-                    },
-                    presentation: Presentation {
-                        visible: true,
-                        opacity: 1.0,
-                    },
+                    bounds: Bounds { x: 0.5, y: 0.0, width: 2.0, height: 1.0 },
+                    local_bounds: Bounds { x: 0.0, y: 0.0, width: 2.0, height: 1.0 },
+                    presentation: Presentation { visible: true, opacity: 1.0 },
                     kind: LayerKind::Raster,
                     placement: [1.0, 0.0, 0.0, 1.0, 0.5, 0.0],
                     content: PreparedContent::Raster(PreparedRaster {
@@ -115,10 +89,7 @@ fn linear_filtering_does_not_add_borders_to_any_raster_layer() {
     ]))
     .unwrap();
 
-    let raster = Rasterizer::new()
-        .unwrap()
-        .rasterize(&frame, RasterOptions::default())
-        .unwrap();
+    let raster = Rasterizer::new().unwrap().rasterize(&frame, RasterOptions::default()).unwrap();
 
     let edge = raster.image.get_pixel(1, 0).0;
     assert_eq!(edge[0], u8::MAX);

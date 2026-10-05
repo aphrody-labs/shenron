@@ -34,10 +34,7 @@ pub struct PPDocLayoutV3ImageProcessor {
 impl Default for PPDocLayoutV3ImageProcessor {
     fn default() -> Self {
         Self {
-            size: SizeDict {
-                height: 800,
-                width: 800,
-            },
+            size: SizeDict { height: 800, width: 800 },
             do_resize: true,
             resample: 3,
             do_rescale: true,
@@ -166,9 +163,7 @@ impl PPDocLayoutV3ImageProcessor {
 
         let boxes = pred_boxes.gather(
             1,
-            &query_index
-                .unsqueeze(-1)
-                .repeat([1, 1, pred_boxes.size()[2]]),
+            &query_index.unsqueeze(-1).repeat([1, 1, pred_boxes.size()[2]]),
             false,
         );
 
@@ -191,12 +186,8 @@ impl PPDocLayoutV3ImageProcessor {
                 let score = scores[query];
                 if score >= threshold {
                     let offset = query * 4;
-                    let bbox = [
-                        boxes[offset],
-                        boxes[offset + 1],
-                        boxes[offset + 2],
-                        boxes[offset + 3],
-                    ];
+                    let bbox =
+                        [boxes[offset], boxes[offset + 1], boxes[offset + 2], boxes[offset + 3]];
                     candidates.push(CandidateRegion {
                         query: query_indices[query].max(0) as usize,
                         order_seq: orders[query],
@@ -208,10 +199,8 @@ impl PPDocLayoutV3ImageProcessor {
             }
 
             candidates.sort_by_key(|candidate| candidate.order_seq);
-            let selected_queries = candidates
-                .iter()
-                .map(|candidate| candidate.query as i64)
-                .collect::<Vec<_>>();
+            let selected_queries =
+                candidates.iter().map(|candidate| candidate.query as i64).collect::<Vec<_>>();
             let masks = if selected_queries.is_empty() {
                 Vec::new()
             } else {
@@ -271,10 +260,7 @@ pub struct SizeDict {
 
 impl Default for SizeDict {
     fn default() -> Self {
-        Self {
-            height: 800,
-            width: 800,
-        }
+        Self { height: 800, width: 800 }
     }
 }
 
@@ -316,13 +302,13 @@ fn get_order_seq(order_logits: &Tensor) -> Tensor {
     let batch_size = size[0];
     let sequence_length = size[1];
 
-    let upper_votes = order_scores
-        .triu(1)
-        .sum_dim_intlist(&[1i64][..], false, None::<Kind>);
+    let upper_votes = order_scores.triu(1).sum_dim_intlist(&[1i64][..], false, None::<Kind>);
     let transposed_scores = order_scores.transpose(1, 2);
-    let lower_votes = (transposed_scores.ones_like() - transposed_scores)
-        .tril(-1)
-        .sum_dim_intlist(&[1i64][..], false, None::<Kind>);
+    let lower_votes = (transposed_scores.ones_like() - transposed_scores).tril(-1).sum_dim_intlist(
+        &[1i64][..],
+        false,
+        None::<Kind>,
+    );
     let order_votes = upper_votes + lower_votes;
     let order_pointers = order_votes.argsort(1, false);
     let ranks = Tensor::arange(sequence_length, (Kind::Int64, order_logits.device()))
@@ -332,10 +318,7 @@ fn get_order_seq(order_logits: &Tensor) -> Tensor {
 }
 
 fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
-    let tensor = tensor
-        .to_kind(Kind::Float)
-        .contiguous()
-        .to_device(Device::Cpu);
+    let tensor = tensor.to_kind(Kind::Float).contiguous().to_device(Device::Cpu);
     let mut values = vec![0f32; tensor.numel()];
     let len = values.len();
     tensor.f_copy_data(&mut values, len)?;
@@ -343,10 +326,7 @@ fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
 }
 
 fn tensor_to_vec_i64(tensor: &Tensor) -> Result<Vec<i64>> {
-    let tensor = tensor
-        .to_kind(Kind::Int64)
-        .contiguous()
-        .to_device(Device::Cpu);
+    let tensor = tensor.to_kind(Kind::Int64).contiguous().to_device(Device::Cpu);
     let mut values = vec![0i64; tensor.numel()];
     let len = values.len();
     tensor.f_copy_data(&mut values, len)?;
@@ -354,10 +334,7 @@ fn tensor_to_vec_i64(tensor: &Tensor) -> Result<Vec<i64>> {
 }
 
 fn tensor_to_vec_u8(tensor: &Tensor) -> Result<Vec<u8>> {
-    let tensor = tensor
-        .to_kind(Kind::Uint8)
-        .contiguous()
-        .to_device(Device::Cpu);
+    let tensor = tensor.to_kind(Kind::Uint8).contiguous().to_device(Device::Cpu);
     let mut values = vec![0u8; tensor.numel()];
     let len = values.len();
     tensor.f_copy_data(&mut values, len)?;
@@ -404,11 +381,7 @@ fn polygon_from_mask(
 
     let mut resized = GrayImage::new(box_width as u32, box_height as u32);
     Resizer::new()
-        .resize(
-            &crop,
-            &mut resized,
-            &ResizeOptions::new().resize_alg(ResizeAlg::Nearest),
-        )
+        .resize(&crop, &mut resized, &ResizeOptions::new().resize_alg(ResizeAlg::Nearest))
         .expect("source and destination masks have the same pixel type");
     let mut polygon = mask_to_polygon(&resized)?;
     if polygon.len() < 4 {
@@ -519,11 +492,7 @@ fn python_round(value: f32) -> i32 {
     let floor = value.floor();
     let fraction = value - floor;
     let rounded = if (fraction - 0.5).abs() < f64::EPSILON {
-        if floor as i64 % 2 == 0 {
-            floor
-        } else {
-            floor + 1.0
-        }
+        if floor as i64 % 2 == 0 { floor } else { floor + 1.0 }
     } else {
         value.round()
     };

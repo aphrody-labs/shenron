@@ -44,10 +44,7 @@ impl Processor {
         negative_prompt: &str,
         options: &RoremMixedOptions,
     ) -> Result<()> {
-        ensure!(
-            image.width() > 0 && image.height() > 0,
-            "image dimensions must be non-zero"
-        );
+        ensure!(image.width() > 0 && image.height() > 0, "image dimensions must be non-zero");
         ensure!(
             image.dimensions() == mask.dimensions(),
             "image and mask dimensions differ: image={:?}, mask={:?}",
@@ -58,10 +55,7 @@ impl Processor {
             matches!(options.resolution, 512 | 1024),
             "RORem mixed resolution must be 512 or 1024"
         );
-        ensure!(
-            options.num_inference_steps > 0,
-            "num_inference_steps must be greater than zero"
-        );
+        ensure!(options.num_inference_steps > 0, "num_inference_steps must be greater than zero");
         ensure!(
             options.guidance_scale.is_finite() && options.guidance_scale > 0.0,
             "guidance_scale must be finite and greater than zero"
@@ -70,14 +64,8 @@ impl Processor {
             options.strength.is_finite() && options.strength > 0.0 && options.strength < 1.0,
             "RORem mixed strength must be finite, greater than zero, and less than one"
         );
-        ensure!(
-            !prompt.contains('\0'),
-            "prompt contains an interior NUL byte"
-        );
-        ensure!(
-            !negative_prompt.contains('\0'),
-            "negative prompt contains an interior NUL byte"
-        );
+        ensure!(!prompt.contains('\0'), "prompt contains an interior NUL byte");
+        ensure!(!negative_prompt.contains('\0'), "negative prompt contains an interior NUL byte");
         Ok(())
     }
 
@@ -112,9 +100,7 @@ impl Processor {
             Resizer::new().resize(
                 &binary,
                 &mut output,
-                &ResizeOptions::new()
-                    .resize_alg(ResizeAlg::Nearest)
-                    .use_alpha(false),
+                &ResizeOptions::new().resize_alg(ResizeAlg::Nearest).use_alpha(false),
             )?;
             output
         };
@@ -168,9 +154,7 @@ impl Processor {
         Resizer::new().resize(
             image,
             &mut output,
-            &ResizeOptions::new()
-                .resize_alg(ResizeAlg::Nearest)
-                .use_alpha(false),
+            &ResizeOptions::new().resize_alg(ResizeAlg::Nearest).use_alpha(false),
         )?;
         Ok(output)
     }
@@ -215,12 +199,7 @@ mod tests {
         let original = RgbImage::from_pixel(3840, 2160, Rgb([10, 20, 30]));
         let generated = RgbImage::from_pixel(512, 512, Rgb([200, 210, 220]));
         let mut mask = GrayImage::new(512, 512);
-        imageops::replace(
-            &mut mask,
-            &GrayImage::from_pixel(256, 512, Luma([255])),
-            256,
-            0,
-        );
+        imageops::replace(&mut mask, &GrayImage::from_pixel(256, 512, Luma([255])), 256, 0);
 
         let output = Processor::composite(&original, &mask, &generated).unwrap();
 

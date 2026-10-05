@@ -36,10 +36,7 @@ pub(crate) fn contour(geometry: &Geometry, frame: GeometryFrame) -> Vec<(f32, f3
         .map(|point| {
             let x = point.x as f32 - center_x;
             let y = point.y as f32 - center_y;
-            (
-                x * cos - y * sin + center_x - bounds.x,
-                x * sin + y * cos + center_y - bounds.y,
-            )
+            (x * cos - y * sin + center_x - bounds.x, x * sin + y * cos + center_y - bounds.y)
         })
         .collect()
 }
@@ -51,10 +48,7 @@ pub(crate) fn point_in_frame(frame: GeometryFrame, x: f32, y: f32) -> (f32, f32)
     let (sin, cos) = (-frame.angle_degrees.to_radians()).sin_cos();
     let x = x - center_x;
     let y = y - center_y;
-    (
-        x * cos - y * sin + center_x - bounds.x,
-        x * sin + y * cos + center_y - bounds.y,
-    )
+    (x * cos - y * sin + center_x - bounds.x, x * sin + y * cos + center_y - bounds.y)
 }
 
 /// Divides a joined balloon into one non-overlapping polygon per text flow.
@@ -87,10 +81,7 @@ fn topological_flow_cells(
 ) -> Option<Vec<Vec<(f32, f32)>>> {
     if contour.len() < 4
         || contour.len() > MAX_CONTOUR_POINTS
-        || contour
-            .iter()
-            .chain(anchors)
-            .any(|(x, y)| !x.is_finite() || !y.is_finite())
+        || contour.iter().chain(anchors).any(|(x, y)| !x.is_finite() || !y.is_finite())
     {
         return None;
     }
@@ -129,12 +120,7 @@ fn decompose_lobes(
     if orientation == 0.0 {
         return None;
     }
-    let hull = convex_hull(
-        &simplified
-            .iter()
-            .map(|&index| polygon[index])
-            .collect::<Vec<_>>(),
-    );
+    let hull = convex_hull(&simplified.iter().map(|&index| polygon[index]).collect::<Vec<_>>());
     let minimum_reflex_cross = tolerance * tolerance * 0.05;
     let reflex = (0..simplified.len())
         .filter_map(|index| {
@@ -185,7 +171,7 @@ fn decompose_lobes(
                     _ => {
                         assigns_cleanly = false;
                         break;
-                    }
+                    },
                 }
             }
             if !assigns_cleanly || first_anchors.is_empty() || second_anchors.is_empty() {
@@ -231,11 +217,8 @@ fn decompose_lobes(
 
 fn convex_hull(points: &[(f32, f32)]) -> Vec<(f32, f32)> {
     let mut points = points.to_vec();
-    points.sort_by(|left, right| {
-        left.0
-            .total_cmp(&right.0)
-            .then_with(|| left.1.total_cmp(&right.1))
-    });
+    points
+        .sort_by(|left, right| left.0.total_cmp(&right.0).then_with(|| left.1.total_cmp(&right.1)));
     points.dedup();
     if points.len() <= 2 {
         return points;
@@ -285,19 +268,13 @@ fn simplify_closed_indices(polygon: &[(f32, f32)], tolerance: f32) -> Vec<usize>
         return (0..polygon.len()).collect();
     }
     let first_chain = (0..=split).collect::<Vec<_>>();
-    let second_chain = (split..polygon.len())
-        .chain(std::iter::once(0))
-        .collect::<Vec<_>>();
+    let second_chain = (split..polygon.len()).chain(std::iter::once(0)).collect::<Vec<_>>();
     let mut first = simplify_chain_indices(polygon, &first_chain, tolerance);
     let mut second = simplify_chain_indices(polygon, &second_chain, tolerance);
     first.pop();
     second.pop();
     first.extend(second);
-    if first.len() >= 3 {
-        first
-    } else {
-        (0..polygon.len()).collect()
-    }
+    if first.len() >= 3 { first } else { (0..polygon.len()).collect() }
 }
 
 fn simplify_chain_indices(polygon: &[(f32, f32)], chain: &[usize], tolerance: f32) -> Vec<usize> {
@@ -346,27 +323,16 @@ fn valid_diagonal(polygon: &[(f32, f32)], first: usize, second: usize, tolerance
     [0.2, 0.5, 0.8].into_iter().all(|fraction| {
         point_in_polygon(
             polygon,
-            (
-                start.0 + (end.0 - start.0) * fraction,
-                start.1 + (end.1 - start.1) * fraction,
-            ),
+            (start.0 + (end.0 - start.0) * fraction, start.1 + (end.1 - start.1) * fraction),
             epsilon,
         )
     })
 }
 
 fn split_polygon(polygon: &[(f32, f32)], first: usize, second: usize) -> (Polygon, Polygon) {
-    let (first, second) = if first <= second {
-        (first, second)
-    } else {
-        (second, first)
-    };
+    let (first, second) = if first <= second { (first, second) } else { (second, first) };
     let first_part = polygon[first..=second].to_vec();
-    let second_part = polygon[second..]
-        .iter()
-        .chain(&polygon[..=first])
-        .copied()
-        .collect();
+    let second_part = polygon[second..].iter().chain(&polygon[..=first]).copied().collect();
     (first_part, second_part)
 }
 
@@ -419,35 +385,19 @@ fn anchor_flow_cells(
             continue;
         }
         let (min_x, max_x, min_y, max_y) = cell.iter().fold(
-            (
-                f32::INFINITY,
-                f32::NEG_INFINITY,
-                f32::INFINITY,
-                f32::NEG_INFINITY,
-            ),
+            (f32::INFINITY, f32::NEG_INFINITY, f32::INFINITY, f32::NEG_INFINITY),
             |(min_x, max_x, min_y, max_y), &(x, y)| {
                 (min_x.min(x), max_x.max(x), min_y.min(y), max_y.max(y))
             },
         );
         let horizontal = max_x - min_x >= max_y - min_y;
-        let (minimum, maximum) = if horizontal {
-            (min_x, max_x)
-        } else {
-            (min_y, max_y)
-        };
+        let (minimum, maximum) = if horizontal { (min_x, max_x) } else { (min_y, max_y) };
         let step = (maximum - minimum) / indices.len() as f32;
         for (order, &index) in indices.iter().enumerate() {
             let lower = minimum + step * order as f32;
-            let upper = if order + 1 == indices.len() {
-                maximum
-            } else {
-                lower + step
-            };
-            let (lower_normal, upper_normal) = if horizontal {
-                ((-1.0, 0.0), (1.0, 0.0))
-            } else {
-                ((0.0, -1.0), (0.0, 1.0))
-            };
+            let upper = if order + 1 == indices.len() { maximum } else { lower + step };
+            let (lower_normal, upper_normal) =
+                if horizontal { ((-1.0, 0.0), (1.0, 0.0)) } else { ((0.0, -1.0), (0.0, 1.0)) };
             let strip = clip_half_plane(&cell, lower_normal, -lower);
             cells[index] = clip_half_plane(&strip, upper_normal, upper);
         }
@@ -557,14 +507,7 @@ fn point_segment_distance(point: (f32, f32), start: (f32, f32), end: (f32, f32))
     let fraction = (((point.0 - start.0) * segment.0 + (point.1 - start.1) * segment.1)
         / length_squared)
         .clamp(0.0, 1.0);
-    distance_squared(
-        point,
-        (
-            start.0 + segment.0 * fraction,
-            start.1 + segment.1 * fraction,
-        ),
-    )
-    .sqrt()
+    distance_squared(point, (start.0 + segment.0 * fraction, start.1 + segment.1 * fraction)).sqrt()
 }
 
 fn distance_squared(first: (f32, f32), second: (f32, f32)) -> f32 {
@@ -603,11 +546,7 @@ fn clip_half_plane(polygon: &[(f32, f32)], normal: (f32, f32), offset: f32) -> V
 }
 
 pub(crate) fn geometry_bounds(geometry: &Geometry) -> Option<LayoutBox> {
-    if geometry
-        .points
-        .iter()
-        .any(|point| !point.x.is_finite() || !point.y.is_finite())
-    {
+    if geometry.points.iter().any(|point| !point.x.is_finite() || !point.y.is_finite()) {
         return None;
     }
     let first = geometry.points.first()?;
@@ -632,12 +571,7 @@ pub(crate) fn geometry_bounds(geometry: &Geometry) -> Option<LayoutBox> {
     {
         return None;
     }
-    Some(LayoutBox {
-        x,
-        y,
-        width,
-        height,
-    })
+    Some(LayoutBox { x, y, width, height })
 }
 
 pub(crate) fn geometry_frame(
@@ -674,28 +608,18 @@ pub(crate) fn geometry_frame(
             width: width as f32,
             height: height as f32,
         };
-        return ([bounds.x, bounds.y, bounds.width, bounds.height]
-            .into_iter()
-            .all(f32::is_finite)
+        return ([bounds.x, bounds.y, bounds.width, bounds.height].into_iter().all(f32::is_finite)
             && bounds.width > 0.0
             && bounds.height > 0.0)
-            .then_some(GeometryFrame {
-                bounds,
-                angle_degrees,
-            });
+            .then_some(GeometryFrame { bounds, angle_degrees });
     }
     let [top_left, top_right, bottom_right, bottom_left] = geometry.points.as_slice() else {
-        return geometry_bounds(geometry).map(|bounds| GeometryFrame {
-            bounds,
-            angle_degrees: 0.0,
-        });
+        return geometry_bounds(geometry)
+            .map(|bounds| GeometryFrame { bounds, angle_degrees: 0.0 });
     };
     let top = (top_right.x - top_left.x, top_right.y - top_left.y);
     let right = (bottom_right.x - top_right.x, bottom_right.y - top_right.y);
-    let bottom = (
-        bottom_left.x - bottom_right.x,
-        bottom_left.y - bottom_right.y,
-    );
+    let bottom = (bottom_left.x - bottom_right.x, bottom_left.y - bottom_right.y);
     let left = (top_left.x - bottom_left.x, top_left.y - bottom_left.y);
     let width = top.0.hypot(top.1);
     let height = right.0.hypot(right.1);
@@ -714,10 +638,8 @@ pub(crate) fn geometry_frame(
         && ((top_left.y + bottom_right.y) - (top_right.y + bottom_left.y)).abs()
             <= length_tolerance;
     if !opposite_lengths_match || !perpendicular || !diagonals_bisect {
-        return geometry_bounds(geometry).map(|bounds| GeometryFrame {
-            bounds,
-            angle_degrees: 0.0,
-        });
+        return geometry_bounds(geometry)
+            .map(|bounds| GeometryFrame { bounds, angle_degrees: 0.0 });
     }
 
     let center_x = (top_left.x + top_right.x + bottom_right.x + bottom_left.x) * 0.25;
@@ -753,12 +675,7 @@ mod tests {
 
         assert_eq!(
             geometry_bounds(&geometry),
-            Some(LayoutBox {
-                x: 20.0,
-                y: 30.0,
-                width: 60.0,
-                height: 60.0,
-            })
+            Some(LayoutBox { x: 20.0, y: 30.0, width: 60.0, height: 60.0 })
         );
     }
 
@@ -768,10 +685,7 @@ mod tests {
         let geometry = Geometry {
             origin: Origin::User,
             points: [(-40.0, -15.0), (40.0, -15.0), (40.0, 15.0), (-40.0, 15.0)]
-                .map(|(x, y)| Point {
-                    x: 100.0 + x * cos - y * sin,
-                    y: 80.0 + x * sin + y * cos,
-                })
+                .map(|(x, y)| Point { x: 100.0 + x * cos - y * sin, y: 80.0 + x * sin + y * cos })
                 .into(),
         };
 
@@ -796,25 +710,14 @@ mod tests {
     #[test]
     fn flow_cells_split_the_frame_between_source_anchors() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 100.0,
-                height: 80.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 100.0, height: 80.0 },
             angle_degrees: 0.0,
         };
         let contour = vec![(0.0, 0.0), (100.0, 0.0), (100.0, 80.0), (0.0, 80.0)];
         let cells = flow_cells(frame, &contour, &[(25.0, 40.0), (75.0, 40.0)]);
         assert_eq!(cells.len(), 2);
-        let first_right = cells[0]
-            .iter()
-            .map(|(x, _)| *x)
-            .fold(f32::NEG_INFINITY, f32::max);
-        let second_left = cells[1]
-            .iter()
-            .map(|(x, _)| *x)
-            .fold(f32::INFINITY, f32::min);
+        let first_right = cells[0].iter().map(|(x, _)| *x).fold(f32::NEG_INFINITY, f32::max);
+        let second_left = cells[1].iter().map(|(x, _)| *x).fold(f32::INFINITY, f32::min);
         assert!((first_right - 50.0).abs() < 2.0);
         assert!((first_right - second_left).abs() < 1e-4);
     }
@@ -822,22 +725,14 @@ mod tests {
     #[test]
     fn flow_cells_fallback_preserves_the_physical_contour() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 100.0,
-                height: 100.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 100.0, height: 100.0 },
             angle_degrees: 0.0,
         };
         let contour = [(0.0, 0.0), (100.0, 0.0), (50.0, 100.0)];
         let cells = flow_cells(frame, &contour, &[(25.0, 25.0), (75.0, 25.0)]);
         assert_eq!(cells.len(), 2);
         for cell in &cells {
-            assert!(
-                cell.iter()
-                    .all(|&point| point_in_polygon(&contour, point, 1e-4))
-            );
+            assert!(cell.iter().all(|&point| point_in_polygon(&contour, point, 1e-4)));
             assert!((polygon_area(cell).abs() - 2_500.0).abs() < 1e-4);
         }
         assert!(cells[0].iter().all(|&(x, _)| x <= 50.0));
@@ -847,12 +742,7 @@ mod tests {
     #[test]
     fn flow_cells_cut_the_contour_neck_before_using_anchor_bisectors() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 100.0,
-                height: 100.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 100.0, height: 100.0 },
             angle_degrees: 0.0,
         };
         let contour = vec![
@@ -881,12 +771,7 @@ mod tests {
     #[test]
     fn flow_cells_ignore_edge_noise_when_splitting_overlapping_boxes() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 167.0,
-                height: 311.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 167.0, height: 311.0 },
             angle_degrees: 0.0,
         };
         let contour = vec![
@@ -944,12 +829,7 @@ mod tests {
     #[test]
     fn flow_cells_keep_the_short_neck_between_rounded_lobes() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 91.0,
-                height: 181.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 91.0, height: 181.0 },
             angle_degrees: 0.0,
         };
         let contour = vec![
@@ -1050,12 +930,7 @@ mod tests {
     #[test]
     fn flow_cells_use_the_overlap_junctions_of_uneven_rounded_lobes() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 186.0,
-                height: 313.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 186.0, height: 313.0 },
             angle_degrees: 0.0,
         };
         let contour = vec![
@@ -1133,12 +1008,7 @@ mod tests {
     #[test]
     fn flow_cells_recursively_decompose_a_three_lobe_contour() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 100.0,
-                height: 140.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 100.0, height: 140.0 },
             angle_degrees: 0.0,
         };
         let contour = vec![
@@ -1179,10 +1049,7 @@ mod tests {
             );
         }
         assert!(
-            (cells
-                .iter()
-                .map(|cell| polygon_area(cell).abs())
-                .sum::<f32>()
+            (cells.iter().map(|cell| polygon_area(cell).abs()).sum::<f32>()
                 - polygon_area(&contour).abs())
             .abs()
                 < 0.01
@@ -1192,12 +1059,7 @@ mod tests {
     #[test]
     fn flow_cells_disambiguate_coincident_source_anchors() {
         let frame = GeometryFrame {
-            bounds: LayoutBox {
-                x: 0.0,
-                y: 0.0,
-                width: 100.0,
-                height: 80.0,
-            },
+            bounds: LayoutBox { x: 0.0, y: 0.0, width: 100.0, height: 80.0 },
             angle_degrees: 0.0,
         };
         let contour = vec![(0.0, 0.0), (100.0, 0.0), (100.0, 80.0), (0.0, 80.0)];
@@ -1207,10 +1069,10 @@ mod tests {
         let bounds = cells
             .iter()
             .map(|cell| {
-                cell.iter().fold(
-                    (f32::INFINITY, f32::NEG_INFINITY),
-                    |(minimum, maximum), &(x, _)| (minimum.min(x), maximum.max(x)),
-                )
+                cell.iter()
+                    .fold((f32::INFINITY, f32::NEG_INFINITY), |(minimum, maximum), &(x, _)| {
+                        (minimum.min(x), maximum.max(x))
+                    })
             })
             .collect::<Vec<_>>();
         assert!(bounds[0].1 <= bounds[1].0 + 1e-4);

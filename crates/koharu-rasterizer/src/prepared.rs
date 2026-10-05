@@ -202,11 +202,7 @@ impl PreparedFrameBundle {
     pub fn manifest(&self) -> Result<PreparedFrameManifest> {
         let manifest = PreparedFrameManifest {
             frame: self.frame.clone(),
-            resources: self
-                .resources
-                .iter()
-                .map(PreparedResource::reference)
-                .collect(),
+            resources: self.resources.iter().map(PreparedResource::reference).collect(),
         };
         manifest.validate()?;
         Ok(manifest)
@@ -244,9 +240,7 @@ impl PreparedFrameManifest {
     pub fn decode(bytes: &[u8]) -> Result<Self> {
         let packet: ManifestPacket = postcard::from_bytes(bytes).map_err(Error::Decode)?;
         if packet.magic != MANIFEST_MAGIC {
-            return Err(Error::invalid(
-                "prepared frame manifest magic does not match",
-            ));
+            return Err(Error::invalid("prepared frame manifest magic does not match"));
         }
         if packet.version != PREPARED_FRAME_MANIFEST_VERSION {
             return Err(Error::UnsupportedManifestVersion(packet.version));
@@ -325,9 +319,7 @@ impl PreparedResourceStore {
     pub fn insert(&mut self, packet: PreparedResourcePacket) -> Option<PreparedResourcePacket> {
         let id = packet.id();
         let previous = self.resources.insert(id, packet);
-        self.total_bytes = self
-            .total_bytes
-            .saturating_add(self.resources[&id].byte_len());
+        self.total_bytes = self.total_bytes.saturating_add(self.resources[&id].byte_len());
         if let Some(previous) = &previous {
             self.total_bytes = self.total_bytes.saturating_sub(previous.byte_len());
         }
@@ -420,10 +412,7 @@ impl PreparedLayer {
         referenced: &mut HashSet<ResourceId>,
     ) -> Result<()> {
         if self.geometry.len() < 3
-            || self
-                .geometry
-                .iter()
-                .any(|point| !point.x.is_finite() || !point.y.is_finite())
+            || self.geometry.iter().any(|point| !point.x.is_finite() || !point.y.is_finite())
         {
             return Err(Error::invalid("layer geometry is invalid"));
         }
@@ -441,15 +430,13 @@ impl PreparedLayer {
         match (&self.kind, &self.content) {
             (LayerKind::Raster, PreparedContent::Raster(raster)) => {
                 raster.validate(resources, referenced)?;
-            }
+            },
             (LayerKind::Text, PreparedContent::Vector(scene)) => {
                 scene.validate(resources, referenced)?;
-            }
+            },
             _ => {
-                return Err(Error::invalid(
-                    "prepared layer kind and content do not match",
-                ));
-            }
+                return Err(Error::invalid("prepared layer kind and content do not match"));
+            },
         }
         Ok(())
     }
@@ -523,22 +510,14 @@ impl PreparedRaster {
     ) -> Result<()> {
         validate_surface(self.width, self.height)?;
         let Some(PreparedResourceRef {
-            kind:
-                PreparedResourceKind::EncodedRaster {
-                    width: source_width,
-                    height: source_height,
-                },
+            kind: PreparedResourceKind::EncodedRaster { width: source_width, height: source_height },
             ..
         }) = resources.get(&self.source).copied()
         else {
-            return Err(Error::invalid(
-                "raster references a missing encoded source resource",
-            ));
+            return Err(Error::invalid("raster references a missing encoded source resource"));
         };
         if (*source_width, *source_height) != (self.width, self.height) {
-            return Err(Error::invalid(
-                "encoded raster source dimensions do not match the raster",
-            ));
+            return Err(Error::invalid("encoded raster source dimensions do not match the raster"));
         }
         referenced.insert(self.source);
         let columns = self.width.div_ceil(PREPARED_RASTER_TILE_DIMENSION);
@@ -615,18 +594,14 @@ impl PreparedScene {
         for command in &self.commands {
             match command {
                 PreparedSceneCommand::GlyphRun(run) => {
-                    let Some(PreparedResourceRef {
-                        kind: PreparedResourceKind::Font,
-                        ..
-                    }) = resources.get(&run.font).copied()
+                    let Some(PreparedResourceRef { kind: PreparedResourceKind::Font, .. }) =
+                        resources.get(&run.font).copied()
                     else {
-                        return Err(Error::invalid(
-                            "glyph run references a missing font resource",
-                        ));
+                        return Err(Error::invalid("glyph run references a missing font resource"));
                     };
                     referenced.insert(run.font);
                     run.validate()?;
-                }
+                },
                 PreparedSceneCommand::FillPath(path) => path.validate()?,
             }
         }
@@ -663,18 +638,10 @@ impl PreparedGlyphRun {
         if let Some(transform) = self.glyph_transform {
             finite_affine(transform, "glyph transform")?;
         }
-        if self
-            .embolden
-            .iter()
-            .any(|strength| !strength.is_finite() || *strength < 0.0)
-        {
+        if self.embolden.iter().any(|strength| !strength.is_finite() || *strength < 0.0) {
             return Err(Error::invalid("glyph embolden strength is invalid"));
         }
-        if self
-            .glyphs
-            .iter()
-            .any(|glyph| !glyph.x.is_finite() || !glyph.y.is_finite())
-        {
+        if self.glyphs.iter().any(|glyph| !glyph.x.is_finite() || !glyph.y.is_finite()) {
             return Err(Error::invalid("glyph run contains a non-finite position"));
         }
         Ok(())
@@ -706,7 +673,7 @@ impl PreparedPath {
             let finite = match element {
                 PathElement::MoveTo(values) | PathElement::LineTo(values) => {
                     values.iter().all(|value| value.is_finite())
-                }
+                },
                 PathElement::QuadTo(values) => values.iter().all(|value| value.is_finite()),
                 PathElement::CurveTo(values) => values.iter().all(|value| value.is_finite()),
                 PathElement::Close => true,
@@ -752,7 +719,7 @@ impl PreparedResourceRef {
         match self.kind {
             PreparedResourceKind::Font if self.byte_len == 0 => {
                 Err(Error::invalid("font resource reference is empty"))
-            }
+            },
             PreparedResourceKind::Font => Ok(()),
             PreparedResourceKind::EncodedRaster { width, height } => {
                 validate_surface(width, height)?;
@@ -761,24 +728,15 @@ impl PreparedResourceRef {
                 } else {
                     Ok(())
                 }
-            }
+            },
         }
     }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum PreparedResource {
-    Font {
-        id: ResourceId,
-        bytes: Arc<[u8]>,
-    },
-    EncodedRaster {
-        id: ResourceId,
-        width: u32,
-        height: u32,
-        media_type: String,
-        bytes: Arc<[u8]>,
-    },
+    Font { id: ResourceId, bytes: Arc<[u8]> },
+    EncodedRaster { id: ResourceId, width: u32, height: u32, media_type: String, bytes: Arc<[u8]> },
 }
 
 impl PreparedResource {
@@ -793,9 +751,8 @@ impl PreparedResource {
     pub const fn kind(&self) -> PreparedResourceKind {
         match self {
             Self::Font { .. } => PreparedResourceKind::Font,
-            Self::EncodedRaster { width, height, .. } => PreparedResourceKind::EncodedRaster {
-                width: *width,
-                height: *height,
+            Self::EncodedRaster { width, height, .. } => {
+                PreparedResourceKind::EncodedRaster { width: *width, height: *height }
             },
         }
     }
@@ -811,11 +768,7 @@ impl PreparedResource {
 
     #[must_use]
     pub fn reference(&self) -> PreparedResourceRef {
-        PreparedResourceRef {
-            id: self.id(),
-            kind: self.kind(),
-            byte_len: self.byte_len(),
-        }
+        PreparedResourceRef { id: self.id(), kind: self.kind(), byte_len: self.byte_len() }
     }
 
     #[must_use]
@@ -825,10 +778,7 @@ impl PreparedResource {
 
     #[must_use]
     pub fn font_shared(bytes: Arc<[u8]>) -> Self {
-        Self::Font {
-            id: ResourceId::for_font(&bytes),
-            bytes,
-        }
+        Self::Font { id: ResourceId::for_font(&bytes), bytes }
     }
 
     pub fn encoded_raster(
@@ -858,14 +808,8 @@ impl PreparedResource {
                 if *id != ResourceId::for_font(bytes) {
                     return Err(Error::invalid("font resource content id does not match"));
                 }
-            }
-            Self::EncodedRaster {
-                id,
-                width,
-                height,
-                media_type,
-                bytes,
-            } => {
+            },
+            Self::EncodedRaster { id, width, height, media_type, bytes } => {
                 validate_surface(*width, *height)?;
                 if bytes.is_empty() {
                     return Err(Error::invalid("encoded raster resource is empty"));
@@ -882,7 +826,7 @@ impl PreparedResource {
                         "encoded raster resource content id does not match",
                     ));
                 }
-            }
+            },
         }
         Ok(())
     }
@@ -895,9 +839,7 @@ fn validate_frame(frame: &PreparedFrame, resource_refs: &[PreparedResourceRef]) 
     for resource in resource_refs {
         resource.validate()?;
         if resources.insert(resource.id, resource).is_some() {
-            return Err(Error::invalid(
-                "prepared frame manifest repeats a resource id",
-            ));
+            return Err(Error::invalid("prepared frame manifest repeats a resource id"));
         }
     }
     let mut layers = HashSet::with_capacity(frame.layers.len());
@@ -909,9 +851,7 @@ fn validate_frame(frame: &PreparedFrame, resource_refs: &[PreparedResourceRef]) 
         layer.validate(&resources, &mut referenced)?;
     }
     if referenced.len() != resources.len() {
-        return Err(Error::invalid(
-            "prepared frame manifest contains unreferenced resources",
-        ));
+        return Err(Error::invalid("prepared frame manifest contains unreferenced resources"));
     }
     Ok(())
 }
@@ -921,9 +861,7 @@ fn hex_nibble(byte: u8) -> Result<u8> {
         b'0'..=b'9' => Ok(byte - b'0'),
         b'a'..=b'f' => Ok(byte - b'a' + 10),
         b'A'..=b'F' => Ok(byte - b'A' + 10),
-        _ => Err(Error::invalid(
-            "resource id contains a non-hexadecimal character",
-        )),
+        _ => Err(Error::invalid("resource id contains a non-hexadecimal character")),
     }
 }
 
@@ -934,17 +872,13 @@ fn validate_surface(width: u32, height: u32) -> Result<()> {
         || height > MAX_SURFACE_DIMENSION
         || u64::from(width) * u64::from(height) > MAX_SURFACE_PIXELS
     {
-        return Err(Error::invalid(format!(
-            "invalid prepared surface {width}x{height}"
-        )));
+        return Err(Error::invalid(format!("invalid prepared surface {width}x{height}")));
     }
     Ok(())
 }
 
 fn finite_bounds(bounds: Bounds, label: &str) -> Result<()> {
-    if [bounds.x, bounds.y, bounds.width, bounds.height]
-        .into_iter()
-        .all(f32::is_finite)
+    if [bounds.x, bounds.y, bounds.width, bounds.height].into_iter().all(f32::is_finite)
         && bounds.width >= 0.0
         && bounds.height >= 0.0
     {
@@ -958,9 +892,7 @@ fn finite_affine(affine: [f64; 6], label: &str) -> Result<()> {
     if affine.into_iter().all(f64::is_finite) {
         Ok(())
     } else {
-        Err(Error::invalid(format!(
-            "{label} contains a non-finite value"
-        )))
+        Err(Error::invalid(format!("{label} contains a non-finite value")))
     }
 }
 
@@ -988,22 +920,9 @@ mod tests {
                         Point { x: 1.0, y: 1.0 },
                         Point { x: 0.0, y: 1.0 },
                     ],
-                    bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 1.0,
-                        height: 1.0,
-                    },
-                    local_bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 1.0,
-                        height: 1.0,
-                    },
-                    presentation: Presentation {
-                        visible: true,
-                        opacity: 1.0,
-                    },
+                    bounds: Bounds { x: 0.0, y: 0.0, width: 1.0, height: 1.0 },
+                    local_bounds: Bounds { x: 0.0, y: 0.0, width: 1.0, height: 1.0 },
+                    presentation: Presentation { visible: true, opacity: 1.0 },
                     kind: LayerKind::Raster,
                     placement: [1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
                     content: PreparedContent::Raster(PreparedRaster {
@@ -1046,29 +965,17 @@ mod tests {
         assert!(manifest.missing_resources(&store).is_empty());
         assert_eq!(store.total_bytes(), 3);
         let frame = manifest.compile(&store).unwrap();
-        assert_eq!(
-            frame.layers()[0].raster_image().unwrap().source(),
-            resource_id
-        );
+        assert_eq!(frame.layers()[0].raster_image().unwrap().source(), resource_id);
         assert_eq!(
             frame.layers()[0].raster_image().unwrap().tiles()[0].id(),
-            PreparedRasterTile {
-                x: 0,
-                y: 0,
-                width: 1,
-                height: 1,
-                gutter: [0; 4],
-            }
-            .id(resource_id)
+            PreparedRasterTile { x: 0, y: 0, width: 1, height: 1, gutter: [0; 4] }.id(resource_id)
         );
     }
 
     #[test]
     fn resource_packet_checks_content_id_once_at_decode_boundary() {
         let mut resource = bundle().resources.remove(0);
-        let PreparedResource::EncodedRaster { bytes, .. } = &mut resource else {
-            unreachable!()
-        };
+        let PreparedResource::EncodedRaster { bytes, .. } = &mut resource else { unreachable!() };
         Arc::make_mut(bytes)[0] = 0;
         let bytes = postcard::to_stdvec(&ResourcePacket {
             magic: RESOURCE_MAGIC,
@@ -1076,10 +983,7 @@ mod tests {
             resource,
         })
         .unwrap();
-        assert!(matches!(
-            PreparedResourcePacket::decode(&bytes),
-            Err(Error::Invalid(_))
-        ));
+        assert!(matches!(PreparedResourcePacket::decode(&bytes), Err(Error::Invalid(_))));
     }
 
     #[test]

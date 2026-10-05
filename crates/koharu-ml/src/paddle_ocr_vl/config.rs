@@ -51,10 +51,7 @@ pub struct RopeScaling {
 
 impl Default for RopeScaling {
     fn default() -> Self {
-        Self {
-            mrope_section: vec![16, 24, 24],
-            rope_type: "default".to_owned(),
-        }
+        Self { mrope_section: vec![16, 24, 24], rope_type: "default".to_owned() }
     }
 }
 

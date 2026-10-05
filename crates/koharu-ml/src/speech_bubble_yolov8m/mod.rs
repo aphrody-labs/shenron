@@ -49,12 +49,7 @@ impl YoloV8mSpeechBubbleSegmenter {
         model
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
-        Ok(Self {
-            device,
-            config,
-            model,
-            processor,
-        })
+        Ok(Self { device, config, model, processor })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<YoloV8mSpeechBubbleInstances> {
@@ -74,8 +69,7 @@ impl YoloV8mSpeechBubbleSegmenter {
         koharu_torch::no_grad(|| {
             let (pixel_values, letterbox) = self.processor.preprocess(image, self.device)?;
             let outputs = self.model.forward(&pixel_values);
-            self.processor
-                .postprocess(&outputs, &letterbox, confidence_threshold, nms_threshold)
+            self.processor.postprocess(&outputs, &letterbox, confidence_threshold, nms_threshold)
         })
     }
 }

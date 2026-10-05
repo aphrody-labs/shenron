@@ -71,11 +71,7 @@ impl AssetInput {
         media_type: impl Into<String>,
         metadata: AssetMetadata,
     ) -> Self {
-        Self {
-            bytes: bytes.into(),
-            media_type: media_type.into(),
-            metadata,
-        }
+        Self { bytes: bytes.into(), media_type: media_type.into(), metadata }
     }
 }
 

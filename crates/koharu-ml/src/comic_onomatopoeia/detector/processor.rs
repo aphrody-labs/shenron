@@ -43,10 +43,7 @@ impl Processor {
         image: &DynamicImage,
         device: Device,
     ) -> Result<(Tensor, ImageSize)> {
-        ensure!(
-            image.width() > 0 && image.height() > 0,
-            "MTSv3 input image is empty"
-        );
+        ensure!(image.width() > 0 && image.height() > 0, "MTSv3 input image is empty");
         let (resized_width, resized_height) = resize_dimensions(
             image.width(),
             image.height(),
@@ -110,22 +107,13 @@ impl Processor {
             "MTSv3 expects a [1, 1, H, W] segmentation map, got {:?}",
             prediction.size()
         );
-        let map = prediction
-            .squeeze_dim(0)
-            .squeeze_dim(0)
-            .to_device(Device::Cpu);
+        let map = prediction.squeeze_dim(0).squeeze_dim(0).to_device(Device::Cpu);
         let rows: Vec<Vec<f32>> = Vec::<Vec<f32>>::try_from(&map)
             .context("failed to copy MTSv3 segmentation map to CPU")?;
         let height = rows.len() as u32;
         let width = rows.first().map_or(0, Vec::len) as u32;
         let values = rows.into_iter().flatten().collect::<Vec<_>>();
-        Ok(detections_from_bitmap(
-            &values,
-            width,
-            height,
-            size,
-            &self.config,
-        ))
+        Ok(detections_from_bitmap(&values, width, height, size, &self.config))
     }
 }
 
@@ -137,15 +125,9 @@ fn resize_dimensions(width: u32, height: u32, min_size: u32, max_size: u32) -> (
         target = (max_size as f64 * minimum / maximum).round();
     }
     if width < height {
-        (
-            target as u32,
-            (target * height as f64 / width as f64) as u32,
-        )
+        (target as u32, (target * height as f64 / width as f64) as u32)
     } else {
-        (
-            (target * width as f64 / height as f64) as u32,
-            target as u32,
-        )
+        ((target * width as f64 / height as f64) as u32, target as u32)
     }
 }
 
@@ -165,11 +147,7 @@ fn detections_from_bitmap(
             return Luma([0]);
         }
         let value = prediction[(y as usize - 1) * width as usize + x as usize - 1];
-        Luma([if value > config.binary_threshold {
-            255
-        } else {
-            0
-        }])
+        Luma([if value > config.binary_threshold { 255 } else { 0 }])
     });
     let x_scale = size.original_width as f32 / size.resized_width as f32;
     let y_scale = size.original_height as f32 / size.resized_height as f32;
@@ -209,12 +187,7 @@ fn detections_from_bitmap(
                 point[1] = point[1].round().clamp(0.0, size.resized_height as f32) * y_scale;
             }
             let bounding_box = rotated_box.iter().fold(
-                [
-                    f32::INFINITY,
-                    f32::INFINITY,
-                    f32::NEG_INFINITY,
-                    f32::NEG_INFINITY,
-                ],
+                [f32::INFINITY, f32::INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY],
                 |mut bounds, point| {
                     bounds[0] = bounds[0].min(point[0]);
                     bounds[1] = bounds[1].min(point[1]);
@@ -223,12 +196,7 @@ fn detections_from_bitmap(
                     bounds
                 },
             );
-            Some(Detection {
-                polygon,
-                rotated_box,
-                bounding_box,
-                score,
-            })
+            Some(Detection { polygon, rotated_box, bounding_box, score })
         })
         .take(config.top_n)
         .collect()
@@ -265,12 +233,7 @@ fn approximate_closed_polygon(points: &[[f32; 2]], epsilon: f32) -> Vec<[f32; 2]
     let second = approximate_open_polyline(&second, epsilon);
     first
         .into_iter()
-        .chain(
-            second
-                .into_iter()
-                .skip(1)
-                .take_while(|point| *point != points[0]),
-        )
+        .chain(second.into_iter().skip(1).take_while(|point| *point != points[0]))
         .collect()
 }
 
@@ -331,23 +294,10 @@ fn mini_box(points: &[[f32; 2]]) -> Option<([[f32; 2]; 4], f32)> {
     let rect = minimum_area_rect(points)?;
     let mut points = rect.corners().to_vec();
     points.sort_by(|a, b| a[0].total_cmp(&b[0]).then_with(|| a[1].total_cmp(&b[1])));
-    let (index_1, index_4) = if points[1][1] > points[0][1] {
-        (0, 1)
-    } else {
-        (1, 0)
-    };
-    let (index_2, index_3) = if points[3][1] > points[2][1] {
-        (2, 3)
-    } else {
-        (3, 2)
-    };
+    let (index_1, index_4) = if points[1][1] > points[0][1] { (0, 1) } else { (1, 0) };
+    let (index_2, index_3) = if points[3][1] > points[2][1] { (2, 3) } else { (3, 2) };
     Some((
-        [
-            points[index_1],
-            points[index_2],
-            points[index_3],
-            points[index_4],
-        ],
+        [points[index_1], points[index_2], points[index_3], points[index_4]],
         (rect.max_x - rect.min_x).min(rect.max_y - rect.min_y),
     ))
 }
@@ -383,14 +333,7 @@ fn minimum_area_rect(points: &[[f32; 2]]) -> Option<RotatedRect> {
         let area = (max_x - min_x) * (max_y - min_y);
         if area < best_area {
             best_area = area;
-            best = Some(RotatedRect {
-                min_x,
-                min_y,
-                max_x,
-                max_y,
-                cos,
-                sin,
-            });
+            best = Some(RotatedRect { min_x, min_y, max_x, max_y, cos, sin });
         }
     }
     best
@@ -432,10 +375,8 @@ fn cross(origin: [f32; 2], a: [f32; 2], b: [f32; 2]) -> f32 {
 }
 
 fn polygon_score(map: &[f32], width: u32, height: u32, polygon: &[[f32; 2]]) -> f32 {
-    let polygon = polygon
-        .iter()
-        .map(|point| [point[0] as i32, point[1] as i32])
-        .collect::<Vec<_>>();
+    let polygon =
+        polygon.iter().map(|point| [point[0] as i32, point[1] as i32]).collect::<Vec<_>>();
     let min_x = polygon
         .iter()
         .map(|point| point[0])
@@ -463,10 +404,8 @@ fn polygon_score(map: &[f32], width: u32, height: u32, polygon: &[[f32; 2]]) -> 
     if min_x > max_x || min_y > max_y {
         return 0.0;
     }
-    let local = polygon
-        .iter()
-        .map(|point| [point[0] - min_x, point[1] - min_y])
-        .collect::<Vec<_>>();
+    let local =
+        polygon.iter().map(|point| [point[0] - min_x, point[1] - min_y]).collect::<Vec<_>>();
     let mask_width = (max_x - min_x + 1) as usize;
     let mask_height = (max_y - min_y + 1) as usize;
     let mask = fill_polygon(mask_width, mask_height, &local);
@@ -480,11 +419,7 @@ fn polygon_score(map: &[f32], width: u32, height: u32, polygon: &[[f32; 2]]) -> 
             }
         }
     }
-    if count == 0 {
-        0.0
-    } else {
-        (sum / count as f64) as f32
-    }
+    if count == 0 { 0.0 } else { (sum / count as f64) as f32 }
 }
 
 #[derive(Clone, Copy)]
@@ -635,10 +570,7 @@ fn unclip(polygon: &[[f32; 2]], ratio: f32) -> Option<Vec<[f32; 2]>> {
         };
         directions.push(direction);
         normals.push(normal);
-        shifted.push([
-            current[0] + distance * normal[0],
-            current[1] + distance * normal[1],
-        ]);
+        shifted.push([current[0] + distance * normal[0], current[1] + distance * normal[1]]);
     }
     let mut result = Vec::with_capacity(polygon.len());
     for index in 0..polygon.len() {
@@ -654,10 +586,8 @@ fn unclip(polygon: &[[f32; 2]], ratio: f32) -> Option<Vec<[f32; 2]>> {
             ]);
             continue;
         }
-        let vector = [
-            shifted[index][0] - shifted[previous][0],
-            shifted[index][1] - shifted[previous][1],
-        ];
+        let vector =
+            [shifted[index][0] - shifted[previous][0], shifted[index][1] - shifted[previous][1]];
         let parameter = (vector[0] * direction[1] - vector[1] * direction[0]) / denominator;
         result.push([
             shifted[previous][0] + previous_direction[0] * parameter,

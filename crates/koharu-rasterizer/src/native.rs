@@ -52,10 +52,7 @@ pub struct RasterOptions {
 impl RasterOptions {
     #[must_use]
     pub fn supersampled(factor: u32) -> Self {
-        Self {
-            supersampling_factor: factor,
-            ..Default::default()
-        }
+        Self { supersampling_factor: factor, ..Default::default() }
     }
 
     fn scale(self) -> u32 {
@@ -65,10 +62,7 @@ impl RasterOptions {
 
 impl Default for RasterOptions {
     fn default() -> Self {
-        Self {
-            supersampling_factor: 1,
-            downsample_filter: DownsampleFilter::Lanczos3,
-        }
+        Self { supersampling_factor: 1, downsample_filter: DownsampleFilter::Lanczos3 }
     }
 }
 
@@ -112,10 +106,7 @@ impl Rasterizer {
             .context("no WGPU adapter supports Vello's required features")?;
         let renderer = vello::Renderer::new(
             &context.devices[device_id].device,
-            RendererOptions {
-                antialiasing_support: AaSupport::area_only(),
-                ..Default::default()
-            },
+            RendererOptions { antialiasing_support: AaSupport::area_only(), ..Default::default() },
         )
         .map_err(|error| anyhow!("failed to create Vello renderer: {error:?}"))?;
         let compositor = GpuCompositor::new(&context.devices[device_id].device);
@@ -133,9 +124,8 @@ impl Rasterizer {
     pub fn rasterize(&self, frame: &Frame, options: RasterOptions) -> Result<Raster> {
         let (width, height) = frame.size();
         let (left, top) = frame.origin();
-        let image = self
-            .rasterize_frame_inner(frame, width, height, options)
-            .map_err(Error::backend)?;
+        let image =
+            self.rasterize_frame_inner(frame, width, height, options).map_err(Error::backend)?;
         Ok(Raster { image, left, top })
     }
 
@@ -148,12 +138,10 @@ impl Rasterizer {
     ) -> AnyResult<RgbaImage> {
         checked_surface(width, height)?;
         let scale = options.scale();
-        let raster_width = width
-            .checked_mul(scale)
-            .context("supersampled render surface width overflow")?;
-        let raster_height = height
-            .checked_mul(scale)
-            .context("supersampled render surface height overflow")?;
+        let raster_width =
+            width.checked_mul(scale).context("supersampled render surface width overflow")?;
+        let raster_height =
+            height.checked_mul(scale).context("supersampled render surface height overflow")?;
         let commands = frame.composition_commands(scale);
         let pixels = self.readback_commands(&commands, raster_width, raster_height)?;
         finish_raster(pixels, raster_width, raster_height, width, height, options)
@@ -166,8 +154,7 @@ impl Rasterizer {
         height: u32,
         options: RasterOptions,
     ) -> Result<RgbaImage> {
-        self.rasterize_commands_inner(commands, width, height, options)
-            .map_err(Error::backend)
+        self.rasterize_commands_inner(commands, width, height, options).map_err(Error::backend)
     }
 
     fn rasterize_commands_inner(
@@ -179,12 +166,10 @@ impl Rasterizer {
     ) -> AnyResult<RgbaImage> {
         checked_surface(width, height)?;
         let scale = options.scale();
-        let raster_width = width
-            .checked_mul(scale)
-            .context("supersampled render surface width overflow")?;
-        let raster_height = height
-            .checked_mul(scale)
-            .context("supersampled render surface height overflow")?;
+        let raster_width =
+            width.checked_mul(scale).context("supersampled render surface width overflow")?;
+        let raster_height =
+            height.checked_mul(scale).context("supersampled render surface height overflow")?;
         let scaled;
         let commands = if scale == 1 {
             commands
@@ -203,7 +188,7 @@ impl Rasterizer {
                         let mut scaled = Scene::new();
                         scaled.append(scene, Some(transform));
                         CompositionCommand::Vector(Box::new(scaled))
-                    }
+                    },
                 })
                 .collect::<Vec<_>>();
             &scaled
@@ -234,12 +219,10 @@ impl Rasterizer {
     ) -> AnyResult<RgbaImage> {
         checked_surface(width, height)?;
         let scale = options.scale();
-        let raster_width = width
-            .checked_mul(scale)
-            .context("supersampled render surface width overflow")?;
-        let raster_height = height
-            .checked_mul(scale)
-            .context("supersampled render surface height overflow")?;
+        let raster_width =
+            width.checked_mul(scale).context("supersampled render surface width overflow")?;
+        let raster_height =
+            height.checked_mul(scale).context("supersampled render surface height overflow")?;
         let scaled;
         let scene = if scale == 1 {
             scene
@@ -261,20 +244,10 @@ impl Rasterizer {
         width: u32,
         height: u32,
     ) -> AnyResult<Vec<u8>> {
-        let size = Extent3d {
-            width,
-            height,
-            depth_or_array_layers: 1,
-        };
+        let size = Extent3d { width, height, depth_or_array_layers: 1 };
         let (device, submission, target) = {
             let mut gpu = self.gpu.lock();
-            let GpuState {
-                context,
-                device_id,
-                renderer,
-                compositor,
-                targets,
-            } = &mut *gpu;
+            let GpuState { context, device_id, renderer, compositor, targets } = &mut *gpu;
             let device = context.devices[*device_id].device.clone();
             let queue = &context.devices[*device_id].queue;
             check_device_limit(&device, width, height)?;
@@ -320,20 +293,10 @@ impl Rasterizer {
         height: u32,
         background: [u8; 4],
     ) -> AnyResult<Vec<u8>> {
-        let size = Extent3d {
-            width,
-            height,
-            depth_or_array_layers: 1,
-        };
+        let size = Extent3d { width, height, depth_or_array_layers: 1 };
         let (device, submission, target) = {
             let mut gpu = self.gpu.lock();
-            let GpuState {
-                context,
-                device_id,
-                renderer,
-                compositor: _,
-                targets,
-            } = &mut *gpu;
+            let GpuState { context, device_id, renderer, compositor: _, targets } = &mut *gpu;
             let device = context.devices[*device_id].device.clone();
             let queue = &context.devices[*device_id].queue;
             check_device_limit(&device, width, height)?;
@@ -387,10 +350,7 @@ impl Rasterizer {
             let _ = sender.send(result);
         });
         device
-            .poll(wgpu::PollType::Wait {
-                submission_index: Some(submission),
-                timeout: None,
-            })
+            .poll(wgpu::PollType::Wait { submission_index: Some(submission), timeout: None })
             .map_err(|error| anyhow!("WGPU device polling failed: {error:?}"))?;
         receiver
             .recv()
@@ -399,10 +359,7 @@ impl Rasterizer {
         let mapped = slice.get_mapped_range();
         let row_len = (width * 4) as usize;
         let mut pixels = Vec::with_capacity(row_len * height as usize);
-        for row in mapped
-            .chunks_exact(target.padded_width as usize)
-            .take(height as usize)
-        {
+        for row in mapped.chunks_exact(target.padded_width as usize).take(height as usize) {
             pixels.extend_from_slice(&row[..row_len]);
         }
         drop(mapped);
@@ -445,11 +402,7 @@ fn take_target(
 
 impl RenderTarget {
     fn new(device: &wgpu::Device, width: u32, height: u32) -> AnyResult<Self> {
-        let size = Extent3d {
-            width,
-            height,
-            depth_or_array_layers: 1,
-        };
+        let size = Extent3d { width, height, depth_or_array_layers: 1 };
         let texture = device.create_texture(&TextureDescriptor {
             label: Some("koharu rasterizer target"),
             size,
@@ -464,9 +417,7 @@ impl RenderTarget {
             view_formats: &[],
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
-        let row_bytes = width
-            .checked_mul(4)
-            .context("render target row size overflow")?;
+        let row_bytes = width.checked_mul(4).context("render target row size overflow")?;
         let padded_width = row_bytes.next_multiple_of(wgpu::COPY_BYTES_PER_ROW_ALIGNMENT);
         let buffer_size = u64::from(padded_width)
             .checked_mul(u64::from(height))
@@ -477,14 +428,7 @@ impl RenderTarget {
             usage: BufferUsages::MAP_READ | BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
-        Ok(Self {
-            width,
-            height,
-            padded_width,
-            texture,
-            view,
-            readback,
-        })
+        Ok(Self { width, height, padded_width, texture, view, readback })
     }
 }
 
@@ -502,9 +446,8 @@ fn finish_raster(
         return Ok(image);
     }
     let mut downsampled = RgbaImage::new(width, height);
-    let resize_options = ResizeOptions::new()
-        .resize_alg(options.downsample_filter.into())
-        .use_alpha(true);
+    let resize_options =
+        ResizeOptions::new().resize_alg(options.downsample_filter.into()).use_alpha(true);
     Resizer::new()
         .resize(&image, &mut downsampled, &resize_options)
         .context("failed to downsample WGPU render")?;

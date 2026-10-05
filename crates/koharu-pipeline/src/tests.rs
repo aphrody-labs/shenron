@@ -11,18 +11,11 @@ async fn stop_is_a_successful_partial_result() {
     let pipeline = pipeline(Default::default());
     let stop = StopToken::default();
     stop.stop();
-    let request = Request {
-        stop,
-        ..Request::default()
-    };
+    let request = Request { stop, ..Request::default() };
     let mut committer = RejectCommitter;
 
     let report = pipeline
-        .execute(
-            koharu_scene::Session::memory().await.unwrap().snapshot(),
-            request,
-            &mut committer,
-        )
+        .execute(koharu_scene::Session::memory().await.unwrap().snapshot(), request, &mut committer)
         .await
         .unwrap();
 
@@ -47,14 +40,8 @@ async fn stop_after_a_page_keeps_completed_progress() {
     let patch = session
         .snapshot()
         .patch(|edit| {
-            edit.add_page(
-                koharu_scene::PageDraft::new("one", 1.0, 1.0),
-                koharu_scene::At::End,
-            )?;
-            edit.add_page(
-                koharu_scene::PageDraft::new("two", 1.0, 1.0),
-                koharu_scene::At::End,
-            )?;
+            edit.add_page(koharu_scene::PageDraft::new("one", 1.0, 1.0), koharu_scene::At::End)?;
+            edit.add_page(koharu_scene::PageDraft::new("two", 1.0, 1.0), koharu_scene::At::End)?;
             Ok(())
         })
         .unwrap();
@@ -62,9 +49,7 @@ async fn stop_after_a_page_keeps_completed_progress() {
     let stop = StopToken::default();
     let progress_stop = stop.clone();
     let request = Request {
-        operation: Operation::Only {
-            stage: Stage::Translation,
-        },
+        operation: Operation::Only { stage: Stage::Translation },
         stop,
         progress: Some(std::sync::Arc::new(move |event| {
             if matches!(event, Progress::Skipped { .. }) {
@@ -75,10 +60,7 @@ async fn stop_after_a_page_keeps_completed_progress() {
     };
     let mut committer = RejectCommitter;
 
-    let report = pipeline
-        .execute(session.snapshot(), request, &mut committer)
-        .await
-        .unwrap();
+    let report = pipeline.execute(session.snapshot(), request, &mut committer).await.unwrap();
 
     assert_eq!(report.status, RunStatus::Stopped);
     assert_eq!(report.completed, 1);
@@ -88,10 +70,7 @@ async fn stop_after_a_page_keeps_completed_progress() {
 struct RejectCommitter;
 
 fn pipeline(translation: TranslationConfig) -> Pipeline {
-    let config = PipelineConfig {
-        translation,
-        ..PipelineConfig::default()
-    };
+    let config = PipelineConfig { translation, ..PipelineConfig::default() };
     Pipeline::from_config(
         koharu_config::Config::memory(config),
         koharu_config::Config::memory(koharu_translator::ProvidersConfig::default()),
@@ -110,27 +89,15 @@ impl Committer for RejectCommitter {
 #[test]
 fn operations_expand_to_the_supported_workflows() {
     assert_eq!(
-        Operation::Through {
-            stage: Stage::Translation,
-        }
-        .stages()
-        .unwrap(),
+        Operation::Through { stage: Stage::Translation }.stages().unwrap(),
         vec![Stage::Detection, Stage::Ocr, Stage::Translation],
     );
     assert_eq!(
-        Operation::Through {
-            stage: Stage::Inpainting,
-        }
-        .stages()
-        .unwrap(),
+        Operation::Through { stage: Stage::Inpainting }.stages().unwrap(),
         vec![Stage::Detection, Stage::Inpainting],
     );
     assert_eq!(
-        Operation::Only {
-            stage: Stage::Translation,
-        }
-        .stages()
-        .unwrap(),
+        Operation::Only { stage: Stage::Translation }.stages().unwrap(),
         vec![Stage::Translation],
     );
     assert_eq!(

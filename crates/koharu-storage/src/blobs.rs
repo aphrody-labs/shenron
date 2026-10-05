@@ -24,12 +24,7 @@ pub(crate) struct BlobStore {
 
 impl BlobStore {
     pub(crate) fn new(root: PathBuf, lock: File, temporary: Option<TempDir>) -> Self {
-        Self {
-            root,
-            _lock: lock,
-            _temporary: temporary,
-            leases: Mutex::new(Vec::new()),
-        }
+        Self { root, _lock: lock, _temporary: temporary, leases: Mutex::new(Vec::new()) }
     }
 
     pub(crate) fn scope(
@@ -73,11 +68,7 @@ impl BlobStore {
             if target.try_exists()? {
                 continue;
             }
-            let bytes = blobs
-                .inner
-                .available
-                .get(&id)
-                .ok_or(Error::BlobNotFound(id))?;
+            let bytes = blobs.inner.available.get(&id).ok_or(Error::BlobNotFound(id))?;
             durability::publish(&target, bytes)?;
         }
         Ok(())

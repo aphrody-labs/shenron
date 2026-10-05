@@ -128,9 +128,8 @@ impl Desktop {
         if cached.is_some() {
             return Ok(true);
         }
-        let Some(frame) = self
-            .await_preparation(request, self.renderer.render(snapshot, page))
-            .await
+        let Some(frame) =
+            self.await_preparation(request, self.renderer.render(snapshot, page)).await
         else {
             return Ok(false);
         };
@@ -143,11 +142,7 @@ impl Desktop {
     }
 
     pub fn page_manifest_bytes(&self, page: EntityId, revision: Revision) -> Result<Vec<u8>> {
-        self.page_frame(page, revision)?
-            .prepared()
-            .manifest()?
-            .encode()
-            .map_err(Into::into)
+        self.page_frame(page, revision)?.prepared().manifest()?.encode().map_err(Into::into)
     }
 
     pub fn page_resource_bytes(
@@ -171,11 +166,7 @@ impl Desktop {
                 presentation.generation
             );
         }
-        Ok(presentation
-            .frame
-            .as_ref()
-            .context("there is no prepared canvas frame")?
-            .clone())
+        Ok(presentation.frame.as_ref().context("there is no prepared canvas frame")?.clone())
     }
 
     fn page_frame(&self, page: EntityId, revision: Revision) -> Result<RenderedFrame> {
@@ -235,10 +226,7 @@ impl Desktop {
         elements: &[TransformFrame],
     ) -> Result<Vec<(EntityId, Geometry, f32)>> {
         let presentation = self.presentation.read();
-        let rendered = presentation
-            .frame
-            .as_ref()
-            .context("there is no prepared canvas frame")?;
+        let rendered = presentation.frame.as_ref().context("there is no prepared canvas frame")?;
         if rendered.revision() != expected_revision {
             bail!(
                 "canvas transform expected revision {expected_revision}, but the prepared frame is at {}",
@@ -255,24 +243,17 @@ impl Desktop {
                 bail!("canvas transform frame must be finite and non-empty");
             }
             let layer = rendered.layer(element.element).with_context(|| {
-                format!(
-                    "canvas transform element {} is not rendered",
-                    element.element
-                )
+                format!("canvas transform element {} is not rendered", element.element)
             })?;
             let layer_presentation = layer.presentation();
             if !layer_presentation.visible
                 || layer_presentation.opacity <= 0.0
                 || !matches!(layer.kind(), LayerKind::Text(_))
             {
-                bail!(
-                    "canvas transform element {} is not selectable",
-                    element.element
-                );
+                bail!("canvas transform element {} is not selectable", element.element);
             }
-            let original = layer
-                .element_frame()
-                .context("canvas transform element has no control frame")?;
+            let original =
+                layer.element_frame().context("canvas transform element has no control frame")?;
             let original = Frame {
                 x: original.x,
                 y: original.y,
@@ -314,11 +295,7 @@ impl Desktop {
         let (current_page, revision, previous) = {
             let presentation = self.presentation.read();
             let frame = presentation.frame.as_ref();
-            (
-                frame.map(RenderedFrame::page),
-                frame.map(RenderedFrame::revision),
-                frame.cloned(),
-            )
+            (frame.map(RenderedFrame::page), frame.map(RenderedFrame::revision), frame.cloned())
         };
         if current_page != page {
             return self.show_page_locked(snapshot, page, request).await;
@@ -342,8 +319,7 @@ impl Desktop {
             )
             .await
         } else {
-            self.await_preparation(request, self.renderer.render(snapshot, page))
-                .await
+            self.await_preparation(request, self.renderer.render(snapshot, page)).await
         };
         let Some(rendered) = rendered else {
             return Ok(false);
@@ -396,9 +372,8 @@ impl Desktop {
         if let Some(frame) = cached {
             return Ok(self.replace_frame_if_current(request, Some(frame)));
         }
-        let Some(frame) = self
-            .await_preparation(request, self.renderer.render(snapshot, page))
-            .await
+        let Some(frame) =
+            self.await_preparation(request, self.renderer.render(snapshot, page)).await
         else {
             return Ok(false);
         };
@@ -534,10 +509,7 @@ fn frame_transform(original: Frame, preview: Frame) -> [f64; 6] {
 }
 
 fn transform_point([a, b, c, d, e, f]: [f64; 6], point: &Point) -> Point {
-    Point {
-        x: a * point.x + c * point.y + e,
-        y: b * point.x + d * point.y + f,
-    }
+    Point { x: a * point.x + c * point.y + e, y: b * point.x + d * point.y + f }
 }
 
 #[cfg(test)]
@@ -559,9 +531,7 @@ mod tests {
             tokio::spawn(async move {
                 let _preparation = desktop.preparation.lock().await;
                 started.notify_one();
-                desktop
-                    .await_preparation(first_request, pending::<()>())
-                    .await
+                desktop.await_preparation(first_request, pending::<()>()).await
             })
         };
         started.notified().await;
@@ -571,12 +541,7 @@ mod tests {
             .await
             .expect("the obsolete preparation must release ownership");
         assert!(first.await.unwrap().is_none());
-        assert_eq!(
-            desktop
-                .await_preparation(latest_request, std::future::ready(7))
-                .await,
-            Some(7)
-        );
+        assert_eq!(desktop.await_preparation(latest_request, std::future::ready(7)).await, Some(7));
     }
 
     #[tokio::test]

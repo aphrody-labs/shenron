@@ -23,15 +23,11 @@ struct PageWork {
 
 impl PageWork {
     fn started(&self) -> bool {
-        self.stages
-            .iter()
-            .any(|work| work.state != WorkState::Pending)
+        self.stages.iter().any(|work| work.state != WorkState::Pending)
     }
 
     fn finished(&self) -> bool {
-        self.stages
-            .iter()
-            .all(|work| work.state == WorkState::Finished)
+        self.stages.iter().all(|work| work.state == WorkState::Finished)
     }
 
     fn ready(&self, index: usize) -> bool {
@@ -62,20 +58,13 @@ impl Scheduler {
                 page: *page,
                 stages: stages
                     .iter()
-                    .map(|stage| StageWork {
-                        stage: *stage,
-                        state: WorkState::Pending,
-                    })
+                    .map(|stage| StageWork { stage: *stage, state: WorkState::Pending })
                     .collect(),
             })
             .collect::<Vec<_>>();
         let total = pages.len().saturating_mul(stages.len());
         Self {
-            page_index: pages
-                .iter()
-                .enumerate()
-                .map(|(index, page)| (page.page, index))
-                .collect(),
+            page_index: pages.iter().enumerate().map(|(index, page)| (page.page, index)).collect(),
             pages,
             page_window: stages.len().max(1),
             active_pages: 0,
@@ -98,16 +87,12 @@ impl Scheduler {
                 break;
             }
             let stage_index =
-                self.pages[page_index]
-                    .stages
-                    .iter()
-                    .enumerate()
-                    .find_map(|(index, work)| {
-                        (work.state == WorkState::Pending
-                            && !busy_stages.contains(&work.stage)
-                            && self.pages[page_index].ready(index))
-                        .then_some(index)
-                    });
+                self.pages[page_index].stages.iter().enumerate().find_map(|(index, work)| {
+                    (work.state == WorkState::Pending
+                        && !busy_stages.contains(&work.stage)
+                        && self.pages[page_index].ready(index))
+                    .then_some(index)
+                });
             let Some(stage_index) = stage_index else {
                 continue;
             };
@@ -196,10 +181,7 @@ mod tests {
         let mut scheduler = Scheduler::new(&pages, &stages);
         let mut busy = BTreeSet::new();
 
-        assert_eq!(
-            scheduler.start_next(&busy),
-            Some((pages[0], Stage::Detection))
-        );
+        assert_eq!(scheduler.start_next(&busy), Some((pages[0], Stage::Detection)));
         assert!(!scheduler.complete_stage(pages[0], Stage::Detection));
         let ocr = scheduler.start_next(&busy).unwrap();
         busy.insert(ocr.1);

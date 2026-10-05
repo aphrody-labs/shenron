@@ -50,10 +50,7 @@ async fn request(client: &Client, session: &super::auth::Session) -> Result<reqw
 }
 
 fn parse(value: &Value) -> Option<CodexModel> {
-    let visibility = value
-        .get("visibility")
-        .and_then(Value::as_str)
-        .unwrap_or("list");
+    let visibility = value.get("visibility").and_then(Value::as_str).unwrap_or("list");
     if !visibility.eq_ignore_ascii_case("list")
         || value
             .get("show_in_picker")
@@ -63,11 +60,7 @@ fn parse(value: &Value) -> Option<CodexModel> {
     {
         return None;
     }
-    let id = value
-        .get("slug")
-        .or_else(|| value.get("id"))?
-        .as_str()?
-        .trim();
+    let id = value.get("slug").or_else(|| value.get("id"))?.as_str()?.trim();
     if id.is_empty() {
         return None;
     }
@@ -78,18 +71,15 @@ fn parse(value: &Value) -> Option<CodexModel> {
         .into_iter()
         .flatten()
         .filter_map(|level| {
-            level
-                .as_str()
-                .or_else(|| level.get("effort")?.as_str())
-                .and_then(|level| match level {
-                    "low" => Some(Reasoning::Low),
-                    "medium" => Some(Reasoning::Medium),
-                    "high" => Some(Reasoning::High),
-                    "xhigh" => Some(Reasoning::Xhigh),
-                    "max" => Some(Reasoning::Max),
-                    "ultra" => Some(Reasoning::Ultra),
-                    _ => None,
-                })
+            level.as_str().or_else(|| level.get("effort")?.as_str()).and_then(|level| match level {
+                "low" => Some(Reasoning::Low),
+                "medium" => Some(Reasoning::Medium),
+                "high" => Some(Reasoning::High),
+                "xhigh" => Some(Reasoning::Xhigh),
+                "max" => Some(Reasoning::Max),
+                "ultra" => Some(Reasoning::Ultra),
+                _ => None,
+            })
         })
         .fold(Vec::new(), |mut levels, level| {
             if !levels.contains(&level) {

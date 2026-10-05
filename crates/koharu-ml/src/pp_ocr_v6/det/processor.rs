@@ -99,12 +99,8 @@ impl PPOCRV6MediumDetImageProcessor {
             if self.image_mean.len() != 3 || self.image_std.len() != 3 {
                 bail!("PP-OCRv6 detection image_mean and image_std must contain three values");
             }
-            let mean = Tensor::from_slice(&self.image_mean)
-                .view([1, 3, 1, 1])
-                .to_device(device);
-            let std = Tensor::from_slice(&self.image_std)
-                .view([1, 3, 1, 1])
-                .to_device(device);
+            let mean = Tensor::from_slice(&self.image_mean).view([1, 3, 1, 1]).to_device(device);
+            let std = Tensor::from_slice(&self.image_std).view([1, 3, 1, 1]).to_device(device);
             pixel_values = (pixel_values - mean) / std;
         }
         // This channel reversal is performed after normalization in the Transformers processor.
@@ -138,11 +134,7 @@ impl PPOCRV6MediumDetImageProcessor {
         let map_width = size[3] as u32;
         let map_height = size[2] as u32;
         let values = Vec::<f32>::try_from(
-            &output
-                .to_device(Device::Cpu)
-                .to_kind(Kind::Float)
-                .contiguous()
-                .view([-1]),
+            &output.to_device(Device::Cpu).to_kind(Kind::Float).contiguous().view([-1]),
         )?;
         let (dest_width, dest_height) = image.dimensions();
         Ok(TextDetections {
@@ -165,10 +157,10 @@ impl PPOCRV6MediumDetImageProcessor {
         let mut ratio = match self.limit_type.as_str() {
             "max" if height.max(width) > self.limit_side_len => {
                 self.limit_side_len as f64 / height.max(width) as f64
-            }
+            },
             "min" if height.min(width) < self.limit_side_len => {
                 self.limit_side_len as f64 / height.min(width) as f64
-            }
+            },
             "resize_long" => self.limit_side_len as f64 / height.max(width) as f64,
             "max" | "min" => 1.0,
             other => bail!("unsupported PP-OCRv6 detection limit type {other:?}"),
@@ -275,23 +267,10 @@ fn mini_box(points: &[[f32; 2]]) -> Option<([[f32; 2]; 4], f32)> {
     let rect = minimum_area_rect(points)?;
     let mut points = rect.corners().to_vec();
     points.sort_by(|a, b| a[0].total_cmp(&b[0]).then_with(|| a[1].total_cmp(&b[1])));
-    let (index_1, index_4) = if points[1][1] > points[0][1] {
-        (0, 1)
-    } else {
-        (1, 0)
-    };
-    let (index_2, index_3) = if points[3][1] > points[2][1] {
-        (2, 3)
-    } else {
-        (3, 2)
-    };
+    let (index_1, index_4) = if points[1][1] > points[0][1] { (0, 1) } else { (1, 0) };
+    let (index_2, index_3) = if points[3][1] > points[2][1] { (2, 3) } else { (3, 2) };
     Some((
-        [
-            points[index_1],
-            points[index_2],
-            points[index_3],
-            points[index_4],
-        ],
+        [points[index_1], points[index_2], points[index_3], points[index_4]],
         (rect.max_x - rect.min_x).min(rect.max_y - rect.min_y),
     ))
 }
@@ -327,14 +306,7 @@ fn minimum_area_rect(points: &[[f32; 2]]) -> Option<RotatedRect> {
         let area = (max_x - min_x) * (max_y - min_y);
         if area < best_area {
             best_area = area;
-            best = Some(RotatedRect {
-                min_x,
-                min_y,
-                max_x,
-                max_y,
-                cos,
-                sin,
-            });
+            best = Some(RotatedRect { min_x, min_y, max_x, max_y, cos, sin });
         }
     }
     best
@@ -377,10 +349,8 @@ fn cross(origin: [f32; 2], a: [f32; 2], b: [f32; 2]) -> f32 {
 
 fn polygon_score(map: &[f32], width: u32, height: u32, polygon: &[[f32; 2]]) -> f32 {
     // Transformers passes an int32 copy of the rotated box to cv2.fillPoly.
-    let polygon = polygon
-        .iter()
-        .map(|point| [point[0] as i32, point[1] as i32])
-        .collect::<Vec<_>>();
+    let polygon =
+        polygon.iter().map(|point| [point[0] as i32, point[1] as i32]).collect::<Vec<_>>();
     let min_x = polygon
         .iter()
         .map(|point| point[0])
@@ -411,10 +381,8 @@ fn polygon_score(map: &[f32], width: u32, height: u32, polygon: &[[f32; 2]]) -> 
 
     let mask_width = (max_x - min_x + 1) as usize;
     let mask_height = (max_y - min_y + 1) as usize;
-    let local_polygon = polygon
-        .iter()
-        .map(|point| [point[0] - min_x, point[1] - min_y])
-        .collect::<Vec<_>>();
+    let local_polygon =
+        polygon.iter().map(|point| [point[0] - min_x, point[1] - min_y]).collect::<Vec<_>>();
     let mask = opencv_fill_polygon(mask_width, mask_height, &local_polygon);
     let mut sum = 0.0f64;
     let mut count = 0usize;
@@ -428,11 +396,7 @@ fn polygon_score(map: &[f32], width: u32, height: u32, polygon: &[[f32; 2]]) -> 
             }
         }
     }
-    if count == 0 {
-        0.0
-    } else {
-        (sum / count as f64) as f32
-    }
+    if count == 0 { 0.0 } else { (sum / count as f64) as f32 }
 }
 
 #[derive(Clone, Copy)]
@@ -586,10 +550,7 @@ fn unclip(polygon: &[[f32; 2]], ratio: f32) -> Option<Vec<[f32; 2]>> {
         };
         directions.push(direction);
         normals.push(normal);
-        shifted.push([
-            current[0] + distance * normal[0],
-            current[1] + distance * normal[1],
-        ]);
+        shifted.push([current[0] + distance * normal[0], current[1] + distance * normal[1]]);
     }
     let mut result = Vec::with_capacity(polygon.len());
     for index in 0..polygon.len() {
@@ -605,10 +566,8 @@ fn unclip(polygon: &[[f32; 2]], ratio: f32) -> Option<Vec<[f32; 2]>> {
             ]);
             continue;
         }
-        let vector = [
-            shifted[index][0] - shifted[previous][0],
-            shifted[index][1] - shifted[previous][1],
-        ];
+        let vector =
+            [shifted[index][0] - shifted[previous][0], shifted[index][1] - shifted[previous][1]];
         let parameter = (vector[0] * direction[1] - vector[1] * direction[0]) / cross_product;
         result.push([
             shifted[previous][0] + previous_direction[0] * parameter,

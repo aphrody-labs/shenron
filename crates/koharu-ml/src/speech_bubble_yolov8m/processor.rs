@@ -73,20 +73,10 @@ impl YoloV8mSegImageProcessor {
             letterbox.output_height,
             Rgb([self.letterbox_color; 3]),
         );
-        imageops::replace(
-            &mut padded,
-            &resized,
-            letterbox.pad_x as i64,
-            letterbox.pad_y as i64,
-        );
+        imageops::replace(&mut padded, &resized, letterbox.pad_x as i64, letterbox.pad_y as i64);
 
         let pixel_values = Tensor::from_slice(padded.as_raw())
-            .view([
-                1,
-                letterbox.output_height as i64,
-                letterbox.output_width as i64,
-                3,
-            ])
+            .view([1, letterbox.output_height as i64, letterbox.output_width as i64, 3])
             .permute([0, 3, 1, 2])
             .to_device(device)
             .to_kind(Kind::Float)
@@ -123,18 +113,11 @@ impl YoloV8mSegImageProcessor {
             });
         }
 
-        let selected = candidates
-            .iter()
-            .map(|candidate| candidate.anchor)
-            .collect::<Vec<_>>();
+        let selected = candidates.iter().map(|candidate| candidate.anchor).collect::<Vec<_>>();
         let selected = Tensor::from_slice(&selected).to_device(outputs.pred.device());
         let mask_coefficients = outputs
             .pred
-            .i((
-                0,
-                4 + self.num_classes..4 + self.num_classes + self.num_masks,
-                ..,
-            ))
+            .i((0, 4 + self.num_classes..4 + self.num_classes + self.num_masks, ..))
             .transpose(0, 1)
             .index_select(0, &selected)
             .to_kind(Kind::Float);
@@ -144,14 +127,14 @@ impl YoloV8mSegImageProcessor {
         if proto_size.len() != 3 || proto_size[0] != self.num_masks {
             bail!("unexpected YOLOv8 prototype shape {:?}", proto_size);
         }
-        let masks = mask_coefficients
-            .matmul(&proto.view([self.num_masks, -1]))
-            .view([candidates.len() as i64, 1, proto_size[1], proto_size[2]]);
-        let masks = scale_masks(
-            &masks,
-            (letterbox.original_height, letterbox.original_width),
-        )
-        .sigmoid();
+        let masks = mask_coefficients.matmul(&proto.view([self.num_masks, -1])).view([
+            candidates.len() as i64,
+            1,
+            proto_size[1],
+            proto_size[2],
+        ]);
+        let masks =
+            scale_masks(&masks, (letterbox.original_height, letterbox.original_width)).sigmoid();
 
         let mut instances = Vec::with_capacity(candidates.len());
         for (index, candidate) in candidates.into_iter().enumerate() {
@@ -164,9 +147,7 @@ impl YoloV8mSegImageProcessor {
                 continue;
             }
 
-            let mask = masks
-                .i((index as i64, 0, y1..y2, x1..x2))
-                .gt(self.mask_threshold as f64);
+            let mask = masks.i((index as i64, 0, y1..y2, x1..x2)).gt(self.mask_threshold as f64);
             let pixels = tensor_to_vec_u8(&mask)?;
             let area = pixels.iter().map(|&value| u32::from(value != 0)).sum();
             if area == 0 {
@@ -177,10 +158,8 @@ impl YoloV8mSegImageProcessor {
                 );
                 continue;
             }
-            let pixels = pixels
-                .into_iter()
-                .map(|value| if value == 0 { 0 } else { u8::MAX })
-                .collect();
+            let pixels =
+                pixels.into_iter().map(|value| if value == 0 { 0 } else { u8::MAX }).collect();
             instances.push(YoloV8mSpeechBubbleInstance {
                 label_id: candidate.label_id,
                 label: self.class_names[candidate.label_id].clone(),
@@ -282,13 +261,7 @@ pub struct YoloV8mSpeechBubbleMask {
 impl YoloV8mSpeechBubbleMask {
     #[must_use]
     pub fn empty(x: u32, y: u32) -> Self {
-        Self {
-            x,
-            y,
-            width: 0,
-            height: 0,
-            pixels: Vec::new(),
-        }
+        Self { x, y, width: 0, height: 0, pixels: Vec::new() }
     }
 
     #[must_use]
@@ -325,9 +298,7 @@ fn non_max_suppression(
     }
     let anchors = size[2] as usize;
     let values = tensor_to_vec_f32(&pred.i(0))?;
-    let mut grouped = (0..num_classes)
-        .map(|_| Vec::<Candidate>::new())
-        .collect::<Vec<_>>();
+    let mut grouped = (0..num_classes).map(|_| Vec::<Candidate>::new()).collect::<Vec<_>>();
 
     for anchor in 0..anchors {
         let mut label_id = 0;
@@ -408,15 +379,12 @@ fn scale_masks(masks: &Tensor, shape: (u32, u32)) -> Tensor {
     let left = (pad_width as i64).clamp(0, input_width);
     let bottom = ((input_height as f64 - pad_height) as i64).clamp(top + 1, input_height);
     let right = ((input_width as f64 - pad_width) as i64).clamp(left + 1, input_width);
-    masks
-        .slice(2, top, bottom, 1)
-        .slice(3, left, right, 1)
-        .upsample_bilinear2d(
-            [output_height, output_width],
-            false,
-            None::<f64>,
-            None::<f64>,
-        )
+    masks.slice(2, top, bottom, 1).slice(3, left, right, 1).upsample_bilinear2d(
+        [output_height, output_width],
+        false,
+        None::<f64>,
+        None::<f64>,
+    )
 }
 
 fn box_iou(left: [f32; 4], right: [f32; 4]) -> f32 {
@@ -436,21 +404,14 @@ fn python_round(value: f32) -> i64 {
     let floor = value.floor();
     let fraction = value - floor;
     if (fraction - 0.5).abs() < f64::EPSILON {
-        if floor as i64 % 2 == 0 {
-            floor as i64
-        } else {
-            floor as i64 + 1
-        }
+        if floor as i64 % 2 == 0 { floor as i64 } else { floor as i64 + 1 }
     } else {
         value.round() as i64
     }
 }
 
 fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
-    let tensor = tensor
-        .to_kind(Kind::Float)
-        .contiguous()
-        .to_device(Device::Cpu);
+    let tensor = tensor.to_kind(Kind::Float).contiguous().to_device(Device::Cpu);
     let mut values = vec![0.0f32; tensor.numel()];
     let length = values.len();
     tensor.f_copy_data(&mut values, length)?;
@@ -458,10 +419,7 @@ fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
 }
 
 fn tensor_to_vec_u8(tensor: &Tensor) -> Result<Vec<u8>> {
-    let tensor = tensor
-        .to_kind(Kind::Uint8)
-        .contiguous()
-        .to_device(Device::Cpu);
+    let tensor = tensor.to_kind(Kind::Uint8).contiguous().to_device(Device::Cpu);
     let mut values = vec![0u8; tensor.numel()];
     let length = values.len();
     tensor.f_copy_data(&mut values, length)?;
@@ -479,10 +437,7 @@ mod tests {
         assert_eq!(letterbox.resized_height, 320);
         assert_eq!(letterbox.pad_x, 0);
         assert_eq!(letterbox.pad_y, 0);
-        assert_eq!(
-            (letterbox.output_width, letterbox.output_height),
-            (640, 320)
-        );
+        assert_eq!((letterbox.output_width, letterbox.output_height), (640, 320));
         let bbox = scale_boxes([100.0, 40.0, 540.0, 280.0], &letterbox);
         assert!((bbox[0] - 156.25).abs() < 1e-3);
         assert!((bbox[1] - 62.5).abs() < 1e-3);

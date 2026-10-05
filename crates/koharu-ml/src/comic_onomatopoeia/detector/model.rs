@@ -28,11 +28,7 @@ impl Model {
         let backbone = Backbone::new(&(&root / "backbone"));
         let proposal = SegmentationHead::new(&(&root / "proposal" / "head"));
         vs.freeze();
-        Self {
-            vs,
-            backbone,
-            proposal,
-        }
+        Self { vs, backbone, proposal }
     }
 
     pub(super) fn load(&mut self, path: impl AsRef<Path>) -> Result<()> {
@@ -109,10 +105,13 @@ impl Stem {
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        self.bn1
-            .forward(&self.conv1.forward(input))
-            .relu()
-            .max_pool2d([3, 3], [2, 2], [1, 1], [1, 1], false)
+        self.bn1.forward(&self.conv1.forward(input)).relu().max_pool2d(
+            [3, 3],
+            [2, 2],
+            [1, 1],
+            [1, 1],
+            false,
+        )
     }
 }
 
@@ -134,11 +133,7 @@ impl ResNetLayer {
                 .map(|index| {
                     Bottleneck::new(
                         &(path / index),
-                        if index == 0 {
-                            input_channels
-                        } else {
-                            output_channels
-                        },
+                        if index == 0 { input_channels } else { output_channels },
                         bottleneck_channels,
                         output_channels,
                         if index == 0 { first_stride } else { 1 },
@@ -149,9 +144,7 @@ impl ResNetLayer {
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        self.0
-            .iter()
-            .fold(input.shallow_clone(), |input, block| block.forward(&input))
+        self.0.iter().fold(input.shallow_clone(), |input, block| block.forward(&input))
     }
 }
 
@@ -195,15 +188,7 @@ impl Bottleneck {
                 false,
             ),
             bn2: FrozenBatchNorm2d::new(&(path / "bn2"), bottleneck_channels),
-            conv3: conv2d(
-                &(path / "conv3"),
-                bottleneck_channels,
-                output_channels,
-                1,
-                1,
-                0,
-                false,
-            ),
+            conv3: conv2d(&(path / "conv3"), bottleneck_channels, output_channels, 1, 1, 0, false),
             bn3: FrozenBatchNorm2d::new(&(path / "bn3"), output_channels),
             downsample: (input_channels != output_channels).then(|| {
                 (
@@ -275,15 +260,7 @@ impl FeaturePyramidNetwork {
                 conv2d(&(path / "fpn_inner4"), 2048, 256, 1, 1, 0, true),
             ],
             layer: std::array::from_fn(|index| {
-                conv2d(
-                    &(path / format!("fpn_layer{}", index + 1)),
-                    256,
-                    256,
-                    3,
-                    1,
-                    1,
-                    true,
-                )
+                conv2d(&(path / format!("fpn_layer{}", index + 1)), 256, 256, 3, 1, 1, true)
             }),
         }
     }
@@ -331,10 +308,7 @@ impl SegmentationHead {
                 64,
                 64,
                 2,
-                nn::ConvTransposeConfig {
-                    stride: 2,
-                    ..Default::default()
-                },
+                nn::ConvTransposeConfig { stride: 2, ..Default::default() },
             ),
             seg_bn2: nn::batch_norm2d(path / "seg_out" / 2, 64, Default::default()),
             seg_deconv2: nn::conv_transpose2d(
@@ -342,10 +316,7 @@ impl SegmentationHead {
                 64,
                 1,
                 2,
-                nn::ConvTransposeConfig {
-                    stride: 2,
-                    ..Default::default()
-                },
+                nn::ConvTransposeConfig { stride: 2, ..Default::default() },
             ),
         }
     }
@@ -360,14 +331,9 @@ impl SegmentationHead {
         let p3 = resize(self.fpn_out3.forward(&features[1]), 2);
         let p2 = self.fpn_out2.forward(&features[0]);
         let fused = Tensor::cat(&[p5, p4, p3, p2], 1);
-        let hidden_states = self
-            .seg_bn1
-            .forward_t(&self.seg_conv.forward(&fused), false)
-            .relu();
-        let hidden_states = self
-            .seg_bn2
-            .forward_t(&self.seg_deconv1.forward(&hidden_states), false)
-            .relu();
+        let hidden_states = self.seg_bn1.forward_t(&self.seg_conv.forward(&fused), false).relu();
+        let hidden_states =
+            self.seg_bn2.forward_t(&self.seg_deconv1.forward(&hidden_states), false).relu();
         self.seg_deconv2.forward(&hidden_states).sigmoid()
     }
 }
@@ -386,12 +352,7 @@ fn conv2d(
         input_channels,
         output_channels,
         kernel_size,
-        nn::ConvConfig {
-            stride,
-            padding,
-            bias,
-            ..Default::default()
-        },
+        nn::ConvConfig { stride, padding, bias, ..Default::default() },
     )
 }
 
@@ -405,22 +366,13 @@ mod tests {
         crate::init().await?;
         let model = Model::new(Device::Cpu);
         let variables = model.vs.variables();
-        assert_eq!(
-            variables["module.backbone.body.stem.conv1.weight"].size(),
-            [64, 3, 7, 7]
-        );
+        assert_eq!(variables["module.backbone.body.stem.conv1.weight"].size(), [64, 3, 7, 7]);
         assert_eq!(
             variables["module.backbone.body.layer3.5.conv3.weight"].size(),
             [1024, 256, 1, 1]
         );
-        assert_eq!(
-            variables["module.backbone.fpn.fpn_inner4.weight"].size(),
-            [256, 2048, 1, 1]
-        );
-        assert_eq!(
-            variables["module.proposal.head.seg_out.4.weight"].size(),
-            [64, 1, 2, 2]
-        );
+        assert_eq!(variables["module.backbone.fpn.fpn_inner4.weight"].size(), [256, 2048, 1, 1]);
+        assert_eq!(variables["module.proposal.head.seg_out.4.weight"].size(), [64, 1, 2, 2]);
         Ok(())
     }
 }

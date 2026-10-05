@@ -129,11 +129,7 @@ impl ScratchTarget {
             view_formats: &[],
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
-        Self {
-            size,
-            _texture: texture,
-            view,
-        }
+        Self { size, _texture: texture, view }
     }
 }
 
@@ -293,9 +289,7 @@ impl GpuCompositor {
                 )));
             }
             if x.saturating_add(width) > source_size.0 || y.saturating_add(height) > source_size.1 {
-                return Err(Error::invalid(
-                    "raster tile crop exceeds its encoded source",
-                ));
+                return Err(Error::invalid("raster tile crop exceeds its encoded source"));
             }
             self.image_clock = self.image_clock.wrapping_add(1);
             if let Some(cached) = self.images.get_mut(&id) {
@@ -323,19 +317,14 @@ impl GpuCompositor {
                     color_space: wgpu::PredefinedColorSpace::Srgb,
                     premultiplied_alpha: true,
                 },
-                wgpu::Extent3d {
-                    width,
-                    height,
-                    depth_or_array_layers: 1,
-                },
+                wgpu::Extent3d { width, height, depth_or_array_layers: 1 },
             );
             texture.last_used = self.image_clock;
             if let Some(previous) = self.images.insert(id, texture) {
                 self.image_bytes = self.image_bytes.saturating_sub(previous.byte_len);
             }
-            self.image_bytes = self
-                .image_bytes
-                .saturating_add(u64::from(width) * u64::from(height) * 4);
+            self.image_bytes =
+                self.image_bytes.saturating_add(u64::from(width) * u64::from(height) * 4);
         }
         Ok(())
     }
@@ -401,13 +390,8 @@ impl GpuCompositor {
         if size.0 == 0 || size.1 == 0 {
             return Ok(());
         }
-        if commands
-            .iter()
-            .any(|command| matches!(command, CompositionCommand::Vector(_)))
-            && self
-                .overlay
-                .as_ref()
-                .is_none_or(|target| target.size != size)
+        if commands.iter().any(|command| matches!(command, CompositionCommand::Vector(_)))
+            && self.overlay.as_ref().is_none_or(|target| target.size != size)
         {
             self.overlay = Some(ScratchTarget::new(device, "koharu vector overlay", size));
         }
@@ -417,12 +401,9 @@ impl GpuCompositor {
         let active = commands
             .iter()
             .flat_map(|command| match command {
-                CompositionCommand::Raster(draw) => draw
-                    .image
-                    .tiles()
-                    .iter()
-                    .map(|tile| tile.id())
-                    .collect::<Vec<_>>(),
+                CompositionCommand::Raster(draw) => {
+                    draw.image.tiles().iter().map(|tile| tile.id()).collect::<Vec<_>>()
+                },
                 CompositionCommand::Vector(_) => Vec::new(),
             })
             .collect::<HashSet<_>>();
@@ -437,11 +418,7 @@ impl GpuCompositor {
                 device,
                 queue,
                 mask,
-                &self
-                    .erase
-                    .as_ref()
-                    .expect("erase target created above")
-                    .view,
+                &self.erase.as_ref().expect("erase target created above").view,
                 size,
             )?;
         }
@@ -455,11 +432,7 @@ impl GpuCompositor {
             match command {
                 CompositionCommand::Raster(draw) => {
                     let erase = if draw.erase && erase_mask.is_some() {
-                        &self
-                            .erase
-                            .as_ref()
-                            .expect("erase target created above")
-                            .view
+                        &self.erase.as_ref().expect("erase target created above").view
                     } else {
                         &self.empty_mask.view
                     };
@@ -484,13 +457,9 @@ impl GpuCompositor {
                             clip,
                         );
                     }
-                }
+                },
                 CompositionCommand::Vector(scene) => {
-                    let overlay = &self
-                        .overlay
-                        .as_ref()
-                        .expect("vector target created above")
-                        .view;
+                    let overlay = &self.overlay.as_ref().expect("vector target created above").view;
                     render_vello(vello, device, queue, scene, overlay, size)?;
                     self.draw(
                         device,
@@ -507,7 +476,7 @@ impl GpuCompositor {
                         false,
                         clip,
                     );
-                }
+                },
             }
         }
         // The budget is soft for the current frame: inactive least-recently-used
@@ -530,10 +499,7 @@ impl GpuCompositor {
                 continue;
             }
             let pixels = image.pixels().ok_or_else(|| {
-                Error::invalid(format!(
-                    "raster tile {} is not resident on the GPU",
-                    tile.id()
-                ))
+                Error::invalid(format!("raster tile {} is not resident on the GPU", tile.id()))
             })?;
             self.upload_native_tile(device, queue, image, tile, pixels)?;
         }
@@ -595,20 +561,15 @@ impl GpuCompositor {
                 bytes_per_row: Some(bytes_per_row),
                 rows_per_image: Some(height),
             },
-            wgpu::Extent3d {
-                width,
-                height,
-                depth_or_array_layers: 1,
-            },
+            wgpu::Extent3d { width, height, depth_or_array_layers: 1 },
         );
         texture.byte_len = u64::try_from(expected).unwrap_or(u64::MAX);
         texture.last_used = self.image_clock;
         if let Some(previous) = self.images.insert(id, texture) {
             self.image_bytes = self.image_bytes.saturating_sub(previous.byte_len);
         }
-        self.image_bytes = self
-            .image_bytes
-            .saturating_add(u64::try_from(expected).unwrap_or(u64::MAX));
+        self.image_bytes =
+            self.image_bytes.saturating_add(u64::try_from(expected).unwrap_or(u64::MAX));
         Ok(())
     }
 
@@ -654,10 +615,7 @@ impl GpuCompositor {
             resource_size.0 as f32,
             resource_size.1 as f32,
         ];
-        let bytes = values
-            .iter()
-            .flat_map(|value| value.to_ne_bytes())
-            .collect::<Vec<_>>();
+        let bytes = values.iter().flat_map(|value| value.to_ne_bytes()).collect::<Vec<_>>();
         let uniforms = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("koharu raster compositor uniforms"),
             contents: &bytes,
@@ -679,10 +637,7 @@ impl GpuCompositor {
                     binding: 2,
                     resource: wgpu::BindingResource::Sampler(&self.sampler),
                 },
-                wgpu::BindGroupEntry {
-                    binding: 3,
-                    resource: uniforms.as_entire_binding(),
-                },
+                wgpu::BindGroupEntry { binding: 3, resource: uniforms.as_entire_binding() },
             ],
         });
         let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -695,10 +650,7 @@ impl GpuCompositor {
                     view: target,
                     depth_slice: None,
                     resolve_target: None,
-                    ops: wgpu::Operations {
-                        load: wgpu::LoadOp::Load,
-                        store: wgpu::StoreOp::Store,
-                    },
+                    ops: wgpu::Operations { load: wgpu::LoadOp::Load, store: wgpu::StoreOp::Store },
                 })],
                 depth_stencil_attachment: None,
                 timestamp_writes: None,
@@ -736,11 +688,7 @@ fn create_texture(
 ) -> CachedTexture {
     let texture = device.create_texture(&wgpu::TextureDescriptor {
         label: Some(label),
-        size: wgpu::Extent3d {
-            width,
-            height,
-            depth_or_array_layers: 1,
-        },
+        size: wgpu::Extent3d { width, height, depth_or_array_layers: 1 },
         mip_level_count: 1,
         sample_count: 1,
         dimension: wgpu::TextureDimension::D2,
@@ -880,10 +828,5 @@ fn clear_target(
 fn clipped_rect([x, y, width, height]: [u32; 4], size: (u32, u32)) -> [u32; 4] {
     let x = x.min(size.0);
     let y = y.min(size.1);
-    [
-        x,
-        y,
-        width.min(size.0.saturating_sub(x)),
-        height.min(size.1.saturating_sub(y)),
-    ]
+    [x, y, width.min(size.0.saturating_sub(x)), height.min(size.1.saturating_sub(y))]
 }

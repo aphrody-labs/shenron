@@ -43,14 +43,7 @@ impl Flux2Klein {
             VAE_WEIGHTS.resolve(),
         )
         .context("failed to resolve FLUX.2 Klein model assets")?;
-        let model = Model::new(
-            &device,
-            ModelPaths {
-                transformer,
-                text_encoder,
-                vae,
-            },
-        )?;
+        let model = Model::new(&device, ModelPaths { transformer, text_encoder, vae })?;
         Ok(Self { model })
     }
 
@@ -60,14 +53,8 @@ impl Flux2Klein {
         prompt: &str,
         options: &Flux2KleinOptions,
     ) -> Result<Vec<RgbImage>> {
-        ensure!(
-            !prompt.contains('\0'),
-            "prompt contains an interior NUL byte"
-        );
-        ensure!(
-            options.num_inference_steps > 0,
-            "num_inference_steps must be greater than zero"
-        );
+        ensure!(!prompt.contains('\0'), "prompt contains an interior NUL byte");
+        ensure!(options.num_inference_steps > 0, "num_inference_steps must be greater than zero");
         ensure!(
             options.num_images_per_prompt > 0,
             "num_images_per_prompt must be greater than zero"
@@ -91,10 +78,8 @@ impl Flux2Klein {
             .height
             .or_else(|| condition_images.first().map(RgbImage::height))
             .unwrap_or(1024);
-        let width = options
-            .width
-            .or_else(|| condition_images.first().map(RgbImage::width))
-            .unwrap_or(1024);
+        let width =
+            options.width.or_else(|| condition_images.first().map(RgbImage::width)).unwrap_or(1024);
         let height = (height / 16) * 16;
         let width = (width / 16) * 16;
         ensure!(width > 0 && height > 0);
@@ -106,10 +91,7 @@ impl Flux2Klein {
             reference_images: condition_images,
             reference_image_args: Some("resize_before_vae=0".into()),
             sample: SampleParams {
-                guidance: GuidanceParams {
-                    text_cfg: 1.0,
-                    ..GuidanceParams::default()
-                },
+                guidance: GuidanceParams { text_cfg: 1.0, ..GuidanceParams::default() },
                 scheduler: Scheduler::Flux2,
                 sample_method: SampleMethod::Euler,
                 sample_steps: options.num_inference_steps,
@@ -135,14 +117,7 @@ impl Flux2KleinInpaint {
             VAE_WEIGHTS.resolve(),
         )
         .context("failed to resolve FLUX.2 Klein model assets")?;
-        let model = Model::new(
-            &device,
-            ModelPaths {
-                transformer,
-                text_encoder,
-                vae,
-            },
-        )?;
+        let model = Model::new(&device, ModelPaths { transformer, text_encoder, vae })?;
         Ok(Self { model })
     }
 
@@ -162,18 +137,12 @@ impl Flux2KleinInpaint {
             mask_image.width(),
             mask_image.height()
         );
-        ensure!(
-            !prompt.contains('\0'),
-            "prompt contains an interior NUL byte"
-        );
+        ensure!(!prompt.contains('\0'), "prompt contains an interior NUL byte");
         ensure!(
             options.strength > 0.0 && options.strength <= 1.0,
             "FLUX.2 inpaint strength must be greater than zero and at most one"
         );
-        ensure!(
-            options.num_inference_steps > 0,
-            "num_inference_steps must be greater than zero"
-        );
+        ensure!(options.num_inference_steps > 0, "num_inference_steps must be greater than zero");
 
         let mut image = image.clone();
         if u64::from(image.width()) * u64::from(image.height()) > 1024 * 1024 {
@@ -266,10 +235,7 @@ impl Flux2KleinInpaint {
                 reference_image_args: Some("resize_before_vae=0".into()),
                 mask_image: Some(native_mask),
                 sample: SampleParams {
-                    guidance: GuidanceParams {
-                        text_cfg: 1.0,
-                        ..GuidanceParams::default()
-                    },
+                    guidance: GuidanceParams { text_cfg: 1.0, ..GuidanceParams::default() },
                     scheduler: Scheduler::Flux2,
                     sample_method: SampleMethod::Euler,
                     sample_steps: i32::try_from(options.num_inference_steps)?,

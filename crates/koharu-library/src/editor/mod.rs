@@ -39,8 +39,8 @@ use tokio::sync::{Mutex, OnceCell};
 
 pub use agent::AgentStatus;
 pub use fonts::{FontFace, FontFamily, FontMetadata, FontRange, FontSource};
-pub use output::PageFormat;
 pub use koharu_agent::Toolbox;
+pub use output::PageFormat;
 pub use preferences::{
     CredentialInput, LanguageChoice, Preferences, ProviderPreference, ProviderPreferences,
 };
@@ -89,8 +89,7 @@ impl<T> Slot<T> {
     }
 }
 
-type Change<'project, T> =
-    Pin<Box<dyn Future<Output = Result<(Commit, T)>> + Send + 'project>>;
+type Change<'project, T> = Pin<Box<dyn Future<Output = Result<(Commit, T)>> + Send + 'project>>;
 
 struct Inner {
     projects: ProjectLibrary,
@@ -162,10 +161,7 @@ impl Editor {
     }
 
     fn agent(&self) -> &agent::AgentState {
-        self.inner
-            .agent
-            .get()
-            .expect("the agent state is set at construction")
+        self.inner.agent.get().expect("the agent state is set at construction")
     }
 
     /// Start the model runtime now instead of on first use.
@@ -179,9 +175,7 @@ impl Editor {
         let pipeline = inner
             .pipeline
             .get_or_try_init(|| async {
-                koharu_ml::init()
-                    .await
-                    .context("failed to initialize the ML runtime")?;
+                koharu_ml::init().await.context("failed to initialize the ML runtime")?;
                 let device = koharu_ml::device(inner.cpu);
                 tracing::info!(
                     backend = %device.backend,
@@ -204,7 +198,7 @@ impl Editor {
                 match current {
                     Some((snapshot, page)) => {
                         inner.desktop.show_page(&snapshot, page).await?;
-                    }
+                    },
                     None => inner.desktop.clear().await,
                 }
                 Ok::<_, anyhow::Error>(pipeline)
@@ -237,10 +231,7 @@ impl Editor {
 
     /// Present `commit` on the canvas and publish the new canvas state.
     async fn synchronize(&self, commit: &Commit, page: Option<EntityId>) -> Result<()> {
-        self.inner
-            .desktop
-            .synchronize(&commit.snapshot, page, commit)
-            .await?;
+        self.inner.desktop.synchronize(&commit.snapshot, page, commit).await?;
         self.publish_canvas();
         Ok(())
     }
@@ -268,14 +259,7 @@ impl Editor {
 
     /// The open project's current snapshot.
     pub async fn snapshot(&self) -> Result<Snapshot> {
-        Ok(self
-            .inner
-            .project
-            .lock()
-            .await
-            .as_ref()
-            .context("no project is open")?
-            .snapshot())
+        Ok(self.inner.project.lock().await.as_ref().context("no project is open")?.snapshot())
     }
 
     pub async fn pages(&self) -> Result<Vec<PageSummary>> {
@@ -286,9 +270,7 @@ impl Editor {
     pub async fn active_page(&self) -> Result<Option<Page>> {
         let current = {
             let project = self.inner.project.lock().await;
-            project
-                .as_ref()
-                .map(|project| (project.snapshot(), project.active_page()))
+            project.as_ref().map(|project| (project.snapshot(), project.active_page()))
         };
         current
             .and_then(|(snapshot, page)| page.map(|page| (snapshot, page)))
@@ -372,19 +354,13 @@ impl Editor {
         if self.inner.desktop.show_page(&snapshot, Some(page)).await? {
             self.publish_canvas();
         }
-        Ok(PageSelection {
-            project,
-            page: selected,
-        })
+        Ok(PageSelection { project, page: selected })
     }
 
     /// File extensions the importer reads (images, archives, PDF).
     #[must_use]
     pub fn import_extensions() -> Vec<&'static str> {
-        import::Format::iter()
-            .flat_map(|format| format.get_serializations())
-            .copied()
-            .collect()
+        import::Format::iter().flat_map(|format| format.get_serializations()).copied().collect()
     }
 
     /// The importable files below `folder`, symbolic links not followed.
@@ -399,7 +375,7 @@ impl Editor {
                 Err(error) => {
                     tracing::warn!(%error, "could not inspect an import directory entry");
                     None
-                }
+                },
             })
             .filter(|path| {
                 path.extension()
@@ -513,7 +489,10 @@ impl Editor {
         Ok(commit)
     }
 
-    pub async fn set_geometry(&self, updates: Vec<crate::project::GeometryUpdate>) -> Result<Commit> {
+    pub async fn set_geometry(
+        &self,
+        updates: Vec<crate::project::GeometryUpdate>,
+    ) -> Result<Commit> {
         let (commit, ()) = self
             .mutate(true, false, |project| {
                 Box::pin(async move { Ok((project.set_geometry(updates).await?, ())) })
@@ -548,7 +527,12 @@ impl Editor {
     }
 
     /// Move a layer under `parent` at `index`; returns the active page after the move.
-    pub async fn move_layer(&self, layer: EntityId, parent: EntityId, index: usize) -> Result<Page> {
+    pub async fn move_layer(
+        &self,
+        layer: EntityId,
+        parent: EntityId,
+        index: usize,
+    ) -> Result<Page> {
         let (commit, ()) = self
             .mutate(true, false, |project| {
                 Box::pin(async move { Ok((project.move_layer(layer, parent, index).await?, ())) })
@@ -567,18 +551,14 @@ impl Editor {
 
     pub async fn undo(&self) -> Result<Commit> {
         let (commit, ()) = self
-            .mutate(false, true, |project| {
-                Box::pin(async move { Ok((project.undo().await?, ())) })
-            })
+            .mutate(false, true, |project| Box::pin(async move { Ok((project.undo().await?, ())) }))
             .await?;
         Ok(commit)
     }
 
     pub async fn redo(&self) -> Result<Commit> {
         let (commit, ()) = self
-            .mutate(false, true, |project| {
-                Box::pin(async move { Ok((project.redo().await?, ())) })
-            })
+            .mutate(false, true, |project| Box::pin(async move { Ok((project.redo().await?, ())) }))
             .await?;
         Ok(commit)
     }
@@ -628,13 +608,7 @@ impl Editor {
             .execute(
                 &pipeline,
                 snapshot,
-                Request {
-                    operation,
-                    scope,
-                    stop,
-                    progress,
-                    inpainting_mask: None,
-                },
+                Request { operation, scope, stop, progress, inpainting_mask: None },
             )
             .await;
         self.end_job(job);
@@ -647,9 +621,7 @@ impl Editor {
         snapshot: Snapshot,
         request: Request,
     ) -> std::result::Result<Report, PipelineError> {
-        let mut committer = EditorCommitter {
-            editor: self.clone(),
-        };
+        let mut committer = EditorCommitter { editor: self.clone() };
         let report = pipeline.execute(snapshot, request, &mut committer).await;
         if let Ok(report) = &report {
             tracing::info!(
@@ -705,7 +677,7 @@ impl Editor {
                 Err(error) => {
                     tracing::error!(stage = ?error.stage, %error, "processing failed");
                     (false, Some(format!("{error:#}")))
-                }
+                },
             };
             editor.end_job(id);
             let job = editor.inner.jobs.lock().remove(&id).map(|mut job| {
@@ -733,17 +705,12 @@ impl Editor {
                 let mut counts = counts.lock();
                 *counts = (0, pages.len().saturating_mul(stages.len()));
                 Some((0, counts.1, None, None, None))
-            }
+            },
             Progress::Loading { page, stage, model } => {
                 let counts = counts.lock();
                 Some((counts.0, counts.1, Some(page), Some(stage), Some(model)))
-            }
-            Progress::Finished {
-                page,
-                stage,
-                model,
-                elapsed,
-            } => {
+            },
+            Progress::Finished { page, stage, model, elapsed } => {
                 tracing::info!(
                     stage = %stage,
                     model,
@@ -753,12 +720,12 @@ impl Editor {
                 let mut counts = counts.lock();
                 counts.0 = counts.0.saturating_add(1).min(counts.1);
                 Some((counts.0, counts.1, Some(page), Some(stage), Some(model)))
-            }
+            },
             Progress::Skipped { page, stage } => {
                 let mut counts = counts.lock();
                 counts.0 = counts.0.saturating_add(1).min(counts.1);
                 Some((counts.0, counts.1, Some(page), Some(stage), None))
-            }
+            },
             Progress::Running { .. } => None,
         };
         let Some((completed, total, page, stage, model)) = update else {
@@ -813,7 +780,10 @@ impl Editor {
     }
 
     /// Run the device sign-in to Codex; returns once it completes, fails or is cancelled.
-    pub async fn login_agent(&self, on_event: Sink<koharu_agent::LoginEvent>) -> Result<AgentStatus> {
+    pub async fn login_agent(
+        &self,
+        on_event: Sink<koharu_agent::LoginEvent>,
+    ) -> Result<AgentStatus> {
         self.agent().login(on_event).await
     }
 
@@ -921,7 +891,7 @@ async fn relay_downloads(inner: Weak<Inner>) {
             Err(RecvError::Lagged(skipped)) => {
                 tracing::warn!(skipped, "download channel fell behind");
                 continue;
-            }
+            },
             Err(RecvError::Closed) => break,
         };
         let download = match event {
@@ -933,12 +903,7 @@ async fn relay_downloads(inner: Weak<Inner>) {
                 total: 0,
                 error: None,
             },
-            Event::Progress {
-                id,
-                name,
-                completed,
-                total,
-            } => Download {
+            Event::Progress { id, name, completed, total } => Download {
                 id,
                 state: DownloadState::Running,
                 name: Some(name),
@@ -964,7 +929,7 @@ async fn relay_downloads(inner: Weak<Inner>) {
                     total: 0,
                     error: Some(error),
                 }
-            }
+            },
         };
         let Some(inner) = inner.upgrade() else { break };
         inner.download.publish(download);

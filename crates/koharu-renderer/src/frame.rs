@@ -79,10 +79,7 @@ impl Frame {
 
     #[must_use]
     pub fn layer(&self, entity: EntityId) -> Option<&Layer> {
-        self.0
-            .layer_index
-            .get(&entity)
-            .map(|index| &self.0.layers[*index])
+        self.0.layer_index.get(&entity).map(|index| &self.0.layers[*index])
     }
 
     #[must_use]
@@ -130,9 +127,7 @@ impl Frame {
             return Ok(None);
         };
         let bounds = layer.bounds();
-        if ![bounds.x, bounds.y, bounds.width, bounds.height]
-            .into_iter()
-            .all(f32::is_finite)
+        if ![bounds.x, bounds.y, bounds.width, bounds.height].into_iter().all(f32::is_finite)
             || bounds.width < 0.0
             || bounds.height < 0.0
         {
@@ -165,10 +160,7 @@ impl Frame {
             )));
         }
         let isolated = Layer(Arc::new(LayerData {
-            presentation: Presentation {
-                visible: true,
-                opacity: 1.0,
-            },
+            presentation: Presentation { visible: true, opacity: 1.0 },
             ..layer.0.clone_for_frame()
         }));
         let layers: Arc<[Layer]> = vec![isolated].into();
@@ -429,12 +421,7 @@ pub struct RenderBounds {
 
 impl From<crate::bubble::LayoutBox> for RenderBounds {
     fn from(value: crate::bubble::LayoutBox) -> Self {
-        Self {
-            x: value.x,
-            y: value.y,
-            width: value.width,
-            height: value.height,
-        }
+        Self { x: value.x, y: value.y, width: value.width, height: value.height }
     }
 }
 
@@ -490,17 +477,11 @@ pub(crate) fn prepare_frame(
             )
         } else if matches!(layer.kind(), LayerKind::Text(_)) {
             for resource in layer.0.node.resources.iter() {
-                if !resources
-                    .iter()
-                    .any(|candidate| candidate.id() == resource.id())
-                {
+                if !resources.iter().any(|candidate| candidate.id() == resource.id()) {
                     resources.push(resource.clone());
                 }
             }
-            (
-                PreparedLayerKind::Text,
-                PreparedContent::Vector(layer.0.node.scene.as_ref().clone()),
-            )
+            (PreparedLayerKind::Text, PreparedContent::Vector(layer.0.node.scene.as_ref().clone()))
         } else {
             // Missing raster assets remain in native diagnostics and metadata but
             // contribute no visual command to the portable frame.
@@ -512,10 +493,7 @@ pub(crate) fn prepare_frame(
                 .geometry()
                 .points
                 .iter()
-                .map(|point| PreparedPoint {
-                    x: point.x,
-                    y: point.y,
-                })
+                .map(|point| PreparedPoint { x: point.x, y: point.y })
                 .collect(),
             bounds: prepared_bounds(layer.bounds()),
             local_bounds: prepared_bounds(layer.0.node.local_bounds),
@@ -569,21 +547,10 @@ fn prepare_raster_tiles(
                 u32::from(x + width < image.width),
                 u32::from(y + height < image.height),
             ];
-            tiles.push(PreparedRasterTile {
-                x,
-                y,
-                width,
-                height,
-                gutter,
-            });
+            tiles.push(PreparedRasterTile { x, y, width, height, gutter });
         }
     }
-    Ok(PreparedRaster {
-        source,
-        width: image.width,
-        height: image.height,
-        tiles,
-    })
+    Ok(PreparedRaster { source, width: image.width, height: image.height, tiles })
 }
 
 fn layer_id(entity: EntityId) -> LayerId {
@@ -591,12 +558,7 @@ fn layer_id(entity: EntityId) -> LayerId {
 }
 
 fn prepared_bounds(bounds: RenderBounds) -> PreparedBounds {
-    PreparedBounds {
-        x: bounds.x,
-        y: bounds.y,
-        width: bounds.width,
-        height: bounds.height,
-    }
+    PreparedBounds { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }
 }
 
 fn element_frame(layer: &Layer) -> Option<PreparedElementFrame> {
@@ -618,10 +580,7 @@ fn element_frame(layer: &Layer) -> Option<PreparedElementFrame> {
 
 fn geometry_frame(geometry: &Geometry) -> Option<PreparedElementFrame> {
     let points = &geometry.points;
-    if points.is_empty()
-        || points
-            .iter()
-            .any(|point| !point.x.is_finite() || !point.y.is_finite())
+    if points.is_empty() || points.iter().any(|point| !point.x.is_finite() || !point.y.is_finite())
     {
         return None;
     }
@@ -694,13 +653,7 @@ mod tests {
         assert_eq!(raster.tiles[1].gutter, [1, 0, 0, 0]);
         assert_eq!(raster.tiles[0].resource_size(), (1_025, 1));
         assert_eq!(raster.tiles[1].resource_size(), (2, 1));
-        let PreparedResource::EncodedRaster {
-            width,
-            height,
-            bytes,
-            ..
-        } = &resources[0]
-        else {
+        let PreparedResource::EncodedRaster { width, height, bytes, .. } = &resources[0] else {
             unreachable!();
         };
         assert_eq!((*width, *height), (PREPARED_RASTER_TILE_DIMENSION + 1, 1));

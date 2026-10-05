@@ -60,11 +60,7 @@ impl Pipeline {
                     }
                 }
             });
-        Ok(Self {
-            current,
-            resources,
-            execution: Arc::new(tokio::sync::Mutex::new(())),
-        })
+        Ok(Self { current, resources, execution: Arc::new(tokio::sync::Mutex::new(())) })
     }
 
     pub fn subscribe_resources(&self) -> tokio::sync::watch::Receiver<ResourceSnapshot> {

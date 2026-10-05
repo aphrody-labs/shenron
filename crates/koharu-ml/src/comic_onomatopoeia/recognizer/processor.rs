@@ -31,16 +31,9 @@ pub(super) struct Processor {
 
 impl Processor {
     pub(super) fn new(character_set: &str, config: &Config) -> Result<Self> {
-        let mut tokens = SPECIAL_TOKENS
-            .iter()
-            .map(ToString::to_string)
-            .collect::<Vec<_>>();
+        let mut tokens = SPECIAL_TOKENS.iter().map(ToString::to_string).collect::<Vec<_>>();
         tokens.extend(
-            character_set
-                .trim_start_matches('\u{feff}')
-                .trim()
-                .chars()
-                .map(|c| c.to_string()),
+            character_set.trim_start_matches('\u{feff}').trim().chars().map(|c| c.to_string()),
         );
         ensure!(
             tokens.len() == config.num_classes as usize,
@@ -91,10 +84,8 @@ impl Processor {
             .zip(&maximum_probabilities)
             .enumerate()
             .map(|(rotation, (indices, probabilities))| {
-                let end = indices
-                    .iter()
-                    .position(|&index| index == EOS_INDEX)
-                    .unwrap_or(indices.len());
+                let end =
+                    indices.iter().position(|&index| index == EOS_INDEX).unwrap_or(indices.len());
                 // Upstream catches the empty cumprod indexing error and assigns zero.
                 let confidence = if end == 0 {
                     0.0
@@ -110,11 +101,7 @@ impl Processor {
                             .with_context(|| format!("COO decoder emitted token index {index}"))
                     })
                     .collect::<Result<String>>()?;
-                Ok(Recognition {
-                    text,
-                    confidence,
-                    rotation_degrees: [0, 90, 270][rotation],
-                })
+                Ok(Recognition { text, confidence, rotation_degrees: [0, 90, 270][rotation] })
             })
             .collect::<Result<Vec<_>>>()?;
 
@@ -145,9 +132,7 @@ fn resize_normalize(image: &image::RgbImage, width: u32, height: u32) -> Result<
         .flat_map(|pixel| pixel.0)
         .map(|value| value as f32 / 127.5 - 1.0)
         .collect::<Vec<_>>();
-    Ok(Tensor::from_slice(&values)
-        .view([height as i64, width as i64, 3])
-        .permute([2, 0, 1]))
+    Ok(Tensor::from_slice(&values).view([height as i64, width as i64, 3]).permute([2, 0, 1]))
 }
 
 #[cfg(test)]

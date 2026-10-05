@@ -11,8 +11,8 @@ use anyhow::{Context as _, Result, anyhow, bail};
 use async_trait::async_trait;
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use koharu_agent::{
-    Account, Agent, Codex, CodexModel, Config, Control, Event, Host, Invocation, LoginEvent,
-    RunId, Tool, ToolCall, Toolbox,
+    Account, Agent, Codex, CodexModel, Config, Control, Event, Host, Invocation, LoginEvent, RunId,
+    Tool, ToolCall, Toolbox,
 };
 use koharu_desktop::Frame;
 use koharu_pipeline::StopToken;
@@ -77,17 +77,12 @@ impl AgentState {
                     }
                     self.agent.clear().await;
                     Vec::new()
-                }
+                },
             }
         } else {
             Vec::new()
         };
-        Ok(AgentStatus {
-            account,
-            models,
-            config: self.agent.config()?,
-            running: self.running(),
-        })
+        Ok(AgentStatus { account, models, config: self.agent.config()?, running: self.running() })
     }
 
     pub(super) async fn models(&self) -> Result<Vec<CodexModel>> {
@@ -161,11 +156,7 @@ impl AgentState {
     }
 
     pub(super) fn cancel_login(&self) -> Result<()> {
-        self.login
-            .lock()
-            .as_ref()
-            .context("no agent login is active")?
-            .cancel();
+        self.login.lock().as_ref().context("no agent login is active")?.cancel();
         Ok(())
     }
 
@@ -239,17 +230,11 @@ pub(super) struct EditorHost {
 
 impl EditorHost {
     pub(super) fn new(inner: Weak<Inner>) -> Self {
-        Self {
-            inner,
-            toolbox: Arc::new(RwLock::new(None)),
-        }
+        Self { inner, toolbox: Arc::new(RwLock::new(None)) }
     }
 
     fn editor(&self) -> Result<Editor> {
-        self.inner
-            .upgrade()
-            .map(Editor::from_inner)
-            .context("the Koharu editor is closed")
+        self.inner.upgrade().map(Editor::from_inner).context("the Koharu editor is closed")
     }
 
     fn toolbox(&self) -> Option<Arc<dyn Toolbox>> {
@@ -327,9 +312,7 @@ impl EditorHost {
                 stop.stop();
             }
         });
-        let result = editor
-            .run(scope, arguments.operation.into(), stop, None)
-            .await;
+        let result = editor.run(scope, arguments.operation.into(), stop, None).await;
         watcher.abort();
         let report = result?;
         if report.status == koharu_pipeline::RunStatus::Stopped {
@@ -365,21 +348,20 @@ impl Host for EditorHost {
             "inspect_project" => {
                 let _: InspectProject = arguments(&call)?;
                 Invocation::read(self.project_context().await?)
-            }
+            },
             "view_page" => {
                 let arguments: ViewPage = arguments(&call)?;
                 let page = entity(&arguments.page)?;
                 let editor = self.editor()?;
                 let snapshot = editor.snapshot().await?;
                 let label = snapshot.page(page)?.page()?.label;
-                let bytes = output::rendered_preview(&editor.inner.desktop, &snapshot, page).await?;
-                Ok(
-                    Invocation::read(json!({ "page": page, "label": label }))?.with_image(
-                        format!("Rendered page {label} ({page})"),
-                        format!("data:image/webp;base64,{}", STANDARD.encode(bytes)),
-                    ),
-                )
-            }
+                let bytes =
+                    output::rendered_preview(&editor.inner.desktop, &snapshot, page).await?;
+                Ok(Invocation::read(json!({ "page": page, "label": label }))?.with_image(
+                    format!("Rendered page {label} ({page})"),
+                    format!("data:image/webp;base64,{}", STANDARD.encode(bytes)),
+                ))
+            },
             "rename_page" => {
                 let arguments: RenamePage = arguments(&call)?;
                 let page = entity(&arguments.page)?;
@@ -392,7 +374,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "move_page" => {
                 let arguments: MovePage = arguments(&call)?;
                 let page = entity(&arguments.page)?;
@@ -405,20 +387,17 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "delete_pages" => {
                 let arguments: DeletePages = arguments(&call)?;
                 let pages = entities(&arguments.pages)?;
                 self.mutate(|project| {
                     Box::pin(async move {
-                        Ok((
-                            project.delete_pages(pages.clone()).await?,
-                            json!({ "pages": pages }),
-                        ))
+                        Ok((project.delete_pages(pages.clone()).await?, json!({ "pages": pages })))
                     })
                 })
                 .await
-            }
+            },
             "add_text_box" => {
                 let arguments: AddTextBox = arguments(&call)?;
                 let page = entity(&arguments.page)?;
@@ -436,7 +415,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "set_source_text" => {
                 let arguments: SetText = arguments(&call)?;
                 let element = entity(&arguments.element)?;
@@ -449,7 +428,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "set_translation" => {
                 let arguments: SetTranslation = arguments(&call)?;
                 let element = entity(&arguments.element)?;
@@ -462,7 +441,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "set_typography" => {
                 let arguments: SetTypography = arguments(&call)?;
                 let element = entity(&arguments.element)?;
@@ -492,17 +471,14 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "set_geometry" => {
                 let arguments: SetGeometry = arguments(&call)?;
                 let element = entity(&arguments.element)?;
                 let points = arguments
                     .points
                     .into_iter()
-                    .map(|point| Point {
-                        x: point.x,
-                        y: point.y,
-                    })
+                    .map(|point| Point { x: point.x, y: point.y })
                     .collect();
                 self.mutate(|project| {
                     Box::pin(async move {
@@ -518,7 +494,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "set_visibility" => {
                 let arguments: SetVisibility = arguments(&call)?;
                 let elements = entities(&arguments.elements)?;
@@ -537,7 +513,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "delete_elements" => {
                 let arguments: DeleteElements = arguments(&call)?;
                 let elements = entities(&arguments.elements)?;
@@ -550,7 +526,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "move_element" => {
                 let arguments: MoveElement = arguments(&call)?;
                 let element = entity(&arguments.element)?;
@@ -564,7 +540,7 @@ impl Host for EditorHost {
                     })
                 })
                 .await
-            }
+            },
             "run_pipeline" => self.run_pipeline(arguments(&call)?, control).await,
             name => match self.toolbox() {
                 Some(toolbox) => toolbox

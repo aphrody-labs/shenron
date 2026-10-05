@@ -31,17 +31,11 @@ impl Model {
             GatedWSConvPadded::new(&(&root / "head" / 2), 32, 64, 4, 2, 1),
             GatedWSConvPadded::new(&(&root / "head" / 4), 64, 128, 4, 2, 1),
         ];
-        let body_conv = (0..10)
-            .map(|index| AOTBlock::new(&(&root / "body_conv" / index), 128))
-            .collect();
+        let body_conv =
+            (0..10).map(|index| AOTBlock::new(&(&root / "body_conv" / index), 128)).collect();
         let tail = Tail::new(&(&root / "tail"));
         vs.freeze();
-        Self {
-            vs,
-            head,
-            body_conv,
-            tail,
-        }
+        Self { vs, head, body_conv, tail }
     }
 
     pub(super) fn load(&mut self, path: impl AsRef<Path>) -> Result<()> {
@@ -86,19 +80,10 @@ impl ScaledWSConv2d {
             in_channels,
             out_channels,
             kernel_size,
-            nn::ConvConfig {
-                stride,
-                dilation,
-                ..Default::default()
-            },
+            nn::ConvConfig { stride, dilation, ..Default::default() },
         );
         let gain = path.var("gain", &[out_channels, 1, 1, 1], nn::Init::Const(1.0));
-        Self {
-            conv,
-            gain,
-            stride,
-            dilation,
-        }
+        Self { conv, gain, stride, dilation }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
@@ -135,19 +120,10 @@ impl ScaledWSTransposeConv2d {
             in_channels,
             out_channels,
             kernel_size,
-            nn::ConvTransposeConfig {
-                stride,
-                padding,
-                ..Default::default()
-            },
+            nn::ConvTransposeConfig { stride, padding, ..Default::default() },
         );
         let gain = path.var("gain", &[in_channels, 1, 1, 1], nn::Init::Const(1.0));
-        Self {
-            conv,
-            gain,
-            stride,
-            padding,
-        }
+        Self { conv, gain, stride, padding }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
@@ -258,10 +234,7 @@ impl PaddedConvRelu {
                 channels,
                 channels / 4,
                 3,
-                nn::ConvConfig {
-                    dilation,
-                    ..Default::default()
-                },
+                nn::ConvConfig { dilation, ..Default::default() },
             ),
             padding: dilation,
         }
@@ -286,9 +259,7 @@ struct PaddedConv {
 
 impl PaddedConv {
     fn new(path: &nn::Path<'_>, channels: i64) -> Self {
-        Self {
-            conv: nn::conv2d(path, channels, channels, 3, Default::default()),
-        }
+        Self { conv: nn::conv2d(path, channels, channels, 3, Default::default()) }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
@@ -320,11 +291,7 @@ impl AOTBlock {
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        let branches = self
-            .blocks
-            .iter()
-            .map(|block| block.forward(input))
-            .collect::<Vec<_>>();
+        let branches = self.blocks.iter().map(|block| block.forward(input)).collect::<Vec<_>>();
         let fused = self.fuse.forward(&Tensor::cat(&branches, 1));
         let mask = my_layer_norm(&self.gate.forward(input)).sigmoid();
         input * (mask.ones_like() - &mask) + fused * mask
@@ -363,10 +330,7 @@ impl Tail {
 fn standardized_weight(weight: &Tensor, gain: &Tensor) -> Tensor {
     let (variance, mean) = weight.var_mean_dim([1_i64, 2, 3].as_slice(), true, true);
     let fan_in = weight.size()[1..].iter().product::<i64>() as f64;
-    let scale = (variance * fan_in)
-        .clamp_min(WEIGHT_STANDARDIZATION_EPS)
-        .rsqrt()
-        * gain;
+    let scale = (variance * fan_in).clamp_min(WEIGHT_STANDARDIZATION_EPS).rsqrt() * gain;
     weight * &scale - mean * scale
 }
 

@@ -69,9 +69,7 @@ pub(crate) struct NormalizedScope {
 impl NormalizedScope {
     pub(crate) fn new(snapshot: &Snapshot, scope: &Scope, stages: &[Stage]) -> Result<Self> {
         if matches!(scope, Scope::Entities(_))
-            && stages
-                .iter()
-                .any(|stage| matches!(stage, Stage::Detection | Stage::Inpainting))
+            && stages.iter().any(|stage| matches!(stage, Stage::Detection | Stage::Inpainting))
         {
             bail!("detection and inpainting do not support entity-only scope");
         }
@@ -95,12 +93,8 @@ impl NormalizedScope {
                     .map(|page| page.id())
                     .filter(|id| requested.contains(id))
                     .collect::<Arc<[_]>>();
-                Ok(Self {
-                    pages,
-                    entities: None,
-                    region: None,
-                })
-            }
+                Ok(Self { pages, entities: None, region: None })
+            },
             Scope::Region { page, bounds } => {
                 snapshot.page(*page)?;
                 bounds.validate()?;
@@ -109,7 +103,7 @@ impl NormalizedScope {
                     entities: None,
                     region: Some((*page, *bounds)),
                 })
-            }
+            },
             Scope::Entities(requested) => {
                 if requested.is_empty() {
                     bail!("entity scope is empty");
@@ -130,12 +124,8 @@ impl NormalizedScope {
                     .map(|page| page.id())
                     .filter(|id| page_set.contains(id))
                     .collect::<Arc<[_]>>();
-                Ok(Self {
-                    pages,
-                    entities: Some(Arc::new(entities)),
-                    region: None,
-                })
-            }
+                Ok(Self { pages, entities: Some(Arc::new(entities)), region: None })
+            },
         }
     }
 
@@ -149,27 +139,19 @@ impl NormalizedScope {
 
     pub(crate) fn region(&self, page: EntityId) -> Option<Bounds> {
         debug_assert!(self.pages.contains(&page));
-        self.region
-            .and_then(|(candidate, bounds)| (candidate == page).then_some(bounds))
+        self.region.and_then(|(candidate, bounds)| (candidate == page).then_some(bounds))
     }
 }
 
 fn semantic_closure(snapshot: &Snapshot, mut entities: BTreeSet<EntityId>) -> BTreeSet<EntityId> {
     let mut pending = entities.iter().copied().collect::<VecDeque<_>>();
     while let Some(entity) = pending.pop_front() {
-        for relation in snapshot
-            .relations_from(entity, None)
-            .chain(snapshot.relations_to(entity, None))
+        for relation in
+            snapshot.relations_from(entity, None).chain(snapshot.relations_to(entity, None))
         {
             let value = relation.value();
-            if ![
-                Presents::KIND,
-                RecognizedFrom::KIND,
-                FitsTo::KIND,
-                FlowsIn::KIND,
-                Inside::KIND,
-            ]
-            .contains(&value.kind.as_str())
+            if ![Presents::KIND, RecognizedFrom::KIND, FitsTo::KIND, FlowsIn::KIND, Inside::KIND]
+                .contains(&value.kind.as_str())
             {
                 continue;
             }
@@ -199,9 +181,7 @@ pub(crate) fn contains_entity(
     let Some(bounds) = region else {
         return Ok(true);
     };
-    Ok(snapshot
-        .component::<Geometry>(entity)?
-        .is_some_and(|geometry| bounds.intersects(&geometry)))
+    Ok(snapshot.component::<Geometry>(entity)?.is_some_and(|geometry| bounds.intersects(&geometry)))
 }
 
 fn containing_page(snapshot: &Snapshot, mut entity: EntityId) -> Result<EntityId> {

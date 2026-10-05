@@ -75,20 +75,10 @@ pub(crate) enum Operation {
 impl Operation {
     pub(crate) fn apply(&self, state: &mut State) -> Result<()> {
         match self {
-            Self::InsertPage {
-                id,
-                position,
-                components,
-            } => state.insert_page(
-                *id,
-                *position as usize,
-                load_components(components.clone())?,
-            ),
-            Self::RemovePage {
-                id,
-                position,
-                components,
-            } => {
+            Self::InsertPage { id, position, components } => {
+                state.insert_page(*id, *position as usize, load_components(components.clone())?)
+            },
+            Self::RemovePage { id, position, components } => {
                 let (parent, actual) = state.parent_and_position(*id)?;
                 if parent.is_some() || actual != *position as usize {
                     return Err(Error::PatchConflict("page position changed".to_owned()));
@@ -99,34 +89,22 @@ impl Operation {
                     return Err(Error::PatchConflict("page components changed".to_owned()));
                 }
                 state.remove_page(*id).map(|_| ())
-            }
+            },
             Self::MovePage { id, before, after } => {
                 let (parent, actual) = state.parent_and_position(*id)?;
                 if parent.is_some() || actual != *before as usize {
                     return Err(Error::PatchConflict("page position changed".to_owned()));
                 }
                 state.move_page(*id, *after as usize)
-            }
-            Self::InsertEntity {
-                page,
-                id,
-                parent,
-                position,
-                components,
-            } => state.insert_entity(
+            },
+            Self::InsertEntity { page, id, parent, position, components } => state.insert_entity(
                 *page,
                 *id,
                 *parent,
                 *position as usize,
                 load_components(components.clone())?,
             ),
-            Self::RemoveEntity {
-                page,
-                id,
-                parent,
-                position,
-                components,
-            } => {
+            Self::RemoveEntity { page, id, parent, position, components } => {
                 if state.page_for(*id)? != *page {
                     return Err(Error::PatchConflict("entity changed pages".to_owned()));
                 }
@@ -139,7 +117,7 @@ impl Operation {
                     return Err(Error::PatchConflict("entity components changed".to_owned()));
                 }
                 state.remove_leaf(*id).map(|_| ())
-            }
+            },
             Self::MoveEntity {
                 id,
                 before_page,
@@ -160,27 +138,15 @@ impl Operation {
                     return Err(Error::PatchConflict("entity position changed".to_owned()));
                 }
                 state.move_entity(*id, *after_parent, *after_position as usize)
-            }
-            Self::ReplaceComponent {
-                owner,
-                key,
-                before,
-                after,
-            } => {
+            },
+            Self::ReplaceComponent { owner, key, before, after } => {
                 let current = component(state, *owner, key)?.map(|value| value.to_stored());
                 if current != *before {
-                    return Err(Error::PatchConflict(format!(
-                        "component {} changed",
-                        key.kind
-                    )));
+                    return Err(Error::PatchConflict(format!("component {} changed", key.kind)));
                 }
                 replace_component(state, *owner, key.clone(), after.clone()).map(|_| ())
-            }
-            Self::InsertRelation {
-                id,
-                value,
-                components,
-            } => {
+            },
+            Self::InsertRelation { id, value, components } => {
                 state.insert_relation(*id, value.clone())?;
                 for entry in components {
                     state.set_relation_component(
@@ -190,81 +156,42 @@ impl Operation {
                     )?;
                 }
                 Ok(())
-            }
-            Self::RemoveRelation {
-                id,
-                value,
-                components,
-            } => {
-                let current = state
-                    .relations
-                    .get(id)
-                    .ok_or(Error::RelationNotFound(*id))?;
+            },
+            Self::RemoveRelation { id, value, components } => {
+                let current = state.relations.get(id).ok_or(Error::RelationNotFound(*id))?;
                 if current.value != *value || store_components(&current.components) != *components {
                     return Err(Error::PatchConflict("relation changed".to_owned()));
                 }
                 state.remove_relation(*id).map(|_| ())
-            }
+            },
             Self::ReplaceRelation { id, before, after } => {
-                if state
-                    .relations
-                    .get(id)
-                    .ok_or(Error::RelationNotFound(*id))?
-                    .value
-                    != *before
-                {
+                if state.relations.get(id).ok_or(Error::RelationNotFound(*id))?.value != *before {
                     return Err(Error::PatchConflict("relation changed".to_owned()));
                 }
                 state.set_relation_value(*id, after.clone()).map(|_| ())
-            }
+            },
         }
     }
 
     pub(crate) fn reversed(&self) -> Self {
         match self {
-            Self::InsertPage {
-                id,
-                position,
-                components,
-            } => Self::RemovePage {
-                id: *id,
-                position: *position,
-                components: components.clone(),
+            Self::InsertPage { id, position, components } => {
+                Self::RemovePage { id: *id, position: *position, components: components.clone() }
             },
-            Self::RemovePage {
-                id,
-                position,
-                components,
-            } => Self::InsertPage {
-                id: *id,
-                position: *position,
-                components: components.clone(),
+            Self::RemovePage { id, position, components } => {
+                Self::InsertPage { id: *id, position: *position, components: components.clone() }
             },
-            Self::MovePage { id, before, after } => Self::MovePage {
-                id: *id,
-                before: *after,
-                after: *before,
+            Self::MovePage { id, before, after } => {
+                Self::MovePage { id: *id, before: *after, after: *before }
             },
-            Self::InsertEntity {
-                page,
-                id,
-                parent,
-                position,
-                components,
-            } => Self::RemoveEntity {
+            Self::InsertEntity { page, id, parent, position, components } => Self::RemoveEntity {
                 page: *page,
                 id: *id,
                 parent: *parent,
                 position: *position,
                 components: components.clone(),
             },
-            Self::RemoveEntity {
-                page,
-                id,
-                parent,
-                position,
-                components,
-            } => Self::InsertEntity {
+            Self::RemoveEntity { page, id, parent, position, components } => Self::InsertEntity {
                 page: *page,
                 id: *id,
                 parent: *parent,
@@ -288,39 +215,24 @@ impl Operation {
                 after_parent: *before_parent,
                 after_position: *before_position,
             },
-            Self::ReplaceComponent {
-                owner,
-                key,
-                before,
-                after,
-            } => Self::ReplaceComponent {
+            Self::ReplaceComponent { owner, key, before, after } => Self::ReplaceComponent {
                 owner: *owner,
                 key: key.clone(),
                 before: after.clone(),
                 after: before.clone(),
             },
-            Self::InsertRelation {
-                id,
-                value,
-                components,
-            } => Self::RemoveRelation {
+            Self::InsertRelation { id, value, components } => Self::RemoveRelation {
                 id: *id,
                 value: value.clone(),
                 components: components.clone(),
             },
-            Self::RemoveRelation {
-                id,
-                value,
-                components,
-            } => Self::InsertRelation {
+            Self::RemoveRelation { id, value, components } => Self::InsertRelation {
                 id: *id,
                 value: value.clone(),
                 components: components.clone(),
             },
-            Self::ReplaceRelation { id, before, after } => Self::ReplaceRelation {
-                id: *id,
-                before: after.clone(),
-                after: before.clone(),
+            Self::ReplaceRelation { id, before, after } => {
+                Self::ReplaceRelation { id: *id, before: after.clone(), after: before.clone() }
             },
         }
     }
@@ -329,22 +241,10 @@ impl Operation {
 #[revisioned(revision = 1)]
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub(crate) enum Observation {
-    ProjectHierarchy {
-        epoch: u64,
-    },
-    Page {
-        page: EntityId,
-        epoch: Option<u64>,
-    },
-    Children {
-        parent: EntityId,
-        children: Vec<EntityId>,
-    },
-    Component {
-        owner: ComponentOwner,
-        key: ComponentKey,
-        fingerprint: Option<[u8; 32]>,
-    },
+    ProjectHierarchy { epoch: u64 },
+    Page { page: EntityId, epoch: Option<u64> },
+    Children { parent: EntityId, children: Vec<EntityId> },
+    Component { owner: ComponentOwner, key: ComponentKey, fingerprint: Option<[u8; 32]> },
 }
 
 impl Observation {
@@ -356,26 +256,20 @@ impl Observation {
                         "observed project page order changed".to_owned(),
                     ));
                 }
-            }
+            },
             Self::Page { page, epoch } => {
                 if state.pages.get(page).map(|page| page.epoch) != *epoch {
-                    return Err(Error::PatchConflict(format!(
-                        "observed page {page} changed"
-                    )));
+                    return Err(Error::PatchConflict(format!("observed page {page} changed")));
                 }
-            }
+            },
             Self::Children { parent, children } => {
                 if !state.contains_entity(*parent) || state.child_ids(*parent)? != *children {
                     return Err(Error::PatchConflict(format!(
                         "children of entity {parent} changed"
                     )));
                 }
-            }
-            Self::Component {
-                owner,
-                key,
-                fingerprint,
-            } => {
+            },
+            Self::Component { owner, key, fingerprint } => {
                 let current = component(state, *owner, key)?.map(|value| value.fingerprint());
                 if current != *fingerprint {
                     return Err(Error::PatchConflict(format!(
@@ -383,7 +277,7 @@ impl Observation {
                         key.kind
                     )));
                 }
-            }
+            },
         }
         Ok(())
     }
@@ -540,9 +434,7 @@ fn replace_component(
     key: ComponentKey,
     value: Option<StoredComponent>,
 ) -> Result<Option<crate::component::ComponentRecord>> {
-    let value = value
-        .map(crate::component::ComponentRecord::from_stored)
-        .transpose()?;
+    let value = value.map(crate::component::ComponentRecord::from_stored).transpose()?;
     match (owner, value) {
         (ComponentOwner::Project, Some(value)) => Ok(state.set_project_component(key, value)),
         (ComponentOwner::Project, None) => Ok(state.remove_project_component(&key)),

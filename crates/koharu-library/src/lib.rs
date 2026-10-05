@@ -32,8 +32,8 @@ pub mod editor;
 pub mod home;
 pub mod import;
 pub mod project;
-pub mod service;
 mod result;
+pub mod service;
 
 pub use editor::Editor;
 pub use service::Service;
@@ -119,9 +119,7 @@ impl Library {
     ) -> std::result::Result<Report, PipelineError> {
         let snapshot = document.snapshot();
         let mut committer = SessionCommitter(&mut document.session);
-        self.pipeline
-            .execute(snapshot, request, &mut committer)
-            .await
+        self.pipeline.execute(snapshot, request, &mut committer).await
     }
 
     /// Runs model stages against a named, persistent project and records every
@@ -142,10 +140,7 @@ impl Library {
     }
 
     pub async fn render_snapshot(&self, snapshot: &Snapshot, page: EntityId) -> Result<Frame> {
-        self.renderer
-            .render(snapshot, page)
-            .await
-            .map_err(Into::into)
+        self.renderer.render(snapshot, page).await.map_err(Into::into)
     }
 
     /// Exports a page as PNG after compositing its current scene on the native GPU.
@@ -153,7 +148,11 @@ impl Library {
         self.export_png_snapshot(&document.snapshot(), page).await
     }
 
-    pub async fn export_png_snapshot(&self, snapshot: &Snapshot, page: EntityId) -> Result<Vec<u8>> {
+    pub async fn export_png_snapshot(
+        &self,
+        snapshot: &Snapshot,
+        page: EntityId,
+    ) -> Result<Vec<u8>> {
         let frame = self.render_snapshot(snapshot, page).await?;
         let rasterizer = self.rasterizer().await?;
         let raster = rasterizer.rasterize(&frame.raster_frame()?, RasterOptions::default())?;
@@ -185,16 +184,12 @@ impl Library {
         options: &PsdExportOptions,
     ) -> Result<Vec<u8>> {
         let frame = self.renderer.render(snapshot, page).await?;
-        export_page(self.rasterizer().await?, snapshot, &frame, options)
-            .await
-            .map_err(Into::into)
+        export_page(self.rasterizer().await?, snapshot, &frame, options).await.map_err(Into::into)
     }
 
     async fn rasterizer(&self) -> Result<Arc<Rasterizer>> {
-        let rasterizer = self
-            .rasterizer
-            .get_or_try_init(|| async { Rasterizer::new().map(Arc::new) })
-            .await?;
+        let rasterizer =
+            self.rasterizer.get_or_try_init(|| async { Rasterizer::new().map(Arc::new) }).await?;
         Ok(Arc::clone(rasterizer))
     }
 }
@@ -206,21 +201,15 @@ pub struct Document {
 
 impl Document {
     pub async fn memory() -> Result<Self> {
-        Ok(Self {
-            session: Session::memory().await?,
-        })
+        Ok(Self { session: Session::memory().await? })
     }
 
     pub async fn create(path: impl AsRef<Path>) -> Result<Self> {
-        Ok(Self {
-            session: Session::create(path).await?,
-        })
+        Ok(Self { session: Session::create(path).await? })
     }
 
     pub async fn open(path: impl AsRef<Path>) -> Result<Self> {
-        Ok(Self {
-            session: Session::open(path).await?,
-        })
+        Ok(Self { session: Session::open(path).await? })
     }
 
     pub fn snapshot(&self) -> Snapshot {
@@ -245,7 +234,10 @@ impl Document {
     }
 
     /// Applies a patch created from this document's current snapshot.
-    pub async fn commit_patch(&mut self, patch: koharu_scene::Patch) -> Result<koharu_scene::Commit> {
+    pub async fn commit_patch(
+        &mut self,
+        patch: koharu_scene::Patch,
+    ) -> Result<koharu_scene::Commit> {
         self.session.commit(patch).await.map_err(Into::into)
     }
 

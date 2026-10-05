@@ -46,41 +46,18 @@ impl BaberuOcr {
             vision_config_path,
             vision_processor_path,
         ) = tokio::try_join!(
-            async {
-                CONFIG
-                    .resolve()
-                    .await
-                    .context("failed to resolve Baberu OCR config")
-            },
+            async { CONFIG.resolve().await.context("failed to resolve Baberu OCR config") },
             async {
                 GENERATION_CONFIG
                     .resolve()
                     .await
                     .context("failed to resolve Baberu OCR generation config")
             },
+            async { WEIGHTS.resolve().await.context("failed to resolve Baberu OCR weights") },
+            async { VOCABULARY.resolve().await.context("failed to resolve Baberu OCR vocabulary") },
+            async { VISION_CONFIG.resolve().await.context("failed to resolve DINOv2 config") },
             async {
-                WEIGHTS
-                    .resolve()
-                    .await
-                    .context("failed to resolve Baberu OCR weights")
-            },
-            async {
-                VOCABULARY
-                    .resolve()
-                    .await
-                    .context("failed to resolve Baberu OCR vocabulary")
-            },
-            async {
-                VISION_CONFIG
-                    .resolve()
-                    .await
-                    .context("failed to resolve DINOv2 config")
-            },
-            async {
-                VISION_PROCESSOR
-                    .resolve()
-                    .await
-                    .context("failed to resolve DINOv2 image processor")
+                VISION_PROCESSOR.resolve().await.context("failed to resolve DINOv2 image processor")
             },
         )?;
 
@@ -115,12 +92,7 @@ impl BaberuOcr {
             .load(&weights_path, config.vision_image_size)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
 
-        Ok(Self {
-            model,
-            processor,
-            tokenizer,
-            generation,
-        })
+        Ok(Self { model, processor, tokenizer, generation })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<String> {

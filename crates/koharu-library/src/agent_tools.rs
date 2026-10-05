@@ -17,20 +17,38 @@ pub fn definition<T: JsonSchema>(name: &str, description: &str) -> Tool {
 /// Project tools shared by the Tauri and headless agent hosts.
 pub fn definitions() -> Vec<Tool> {
     vec![
-        definition::<InspectProject>("inspect_project", "Read the latest semantic project state without page images."),
+        definition::<InspectProject>(
+            "inspect_project",
+            "Read the latest semantic project state without page images.",
+        ),
         definition::<ViewPage>("view_page", "Render and inspect one page image."),
         definition::<RenamePage>("rename_page", "Rename a project page."),
         definition::<MovePage>("move_page", "Move a page to a zero-based project index."),
         definition::<DeletePages>("delete_pages", "Delete pages and their contents."),
         definition::<AddTextBox>("add_text_box", "Add a paragraph text box to a page."),
         definition::<SetText>("set_source_text", "Replace an element's source text."),
-        definition::<SetTranslation>("set_translation", "Set an element's translation, or pass null to remove it."),
+        definition::<SetTranslation>(
+            "set_translation",
+            "Set an element's translation, or pass null to remove it.",
+        ),
         definition::<SetTypography>("set_typography", "Replace an element's typography settings."),
-        definition::<SetGeometry>("set_geometry", "Replace an element's page-space polygon geometry."),
-        definition::<SetVisibility>("set_visibility", "Change visibility and/or opacity for elements."),
+        definition::<SetGeometry>(
+            "set_geometry",
+            "Replace an element's page-space polygon geometry.",
+        ),
+        definition::<SetVisibility>(
+            "set_visibility",
+            "Change visibility and/or opacity for elements.",
+        ),
         definition::<DeleteElements>("delete_elements", "Delete elements and descendants."),
-        definition::<MoveElement>("move_element", "Move an element under a page or element at a zero-based index."),
-        definition::<RunPipeline>("run_pipeline", "Run the configured pipeline for the project, selected pages, or selected text elements."),
+        definition::<MoveElement>(
+            "move_element",
+            "Move an element under a page or element at a zero-based index.",
+        ),
+        definition::<RunPipeline>(
+            "run_pipeline",
+            "Run the configured pipeline for the project, selected pages, or selected text elements.",
+        ),
     ]
 }
 
@@ -210,16 +228,10 @@ impl From<AgentPipelineOperation> for Operation {
     fn from(value: AgentPipelineOperation) -> Self {
         match value {
             AgentPipelineOperation::Full => Self::Full,
-            AgentPipelineOperation::Detection => Self::Only {
-                stage: Stage::Detection,
-            },
+            AgentPipelineOperation::Detection => Self::Only { stage: Stage::Detection },
             AgentPipelineOperation::Ocr => Self::Only { stage: Stage::Ocr },
-            AgentPipelineOperation::Translation => Self::Only {
-                stage: Stage::Translation,
-            },
-            AgentPipelineOperation::Inpainting => Self::Only {
-                stage: Stage::Inpainting,
-            },
+            AgentPipelineOperation::Translation => Self::Only { stage: Stage::Translation },
+            AgentPipelineOperation::Inpainting => Self::Only { stage: Stage::Inpainting },
         }
     }
 }

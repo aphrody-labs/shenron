@@ -37,9 +37,7 @@ pub struct Flux2KleinConfig {
 
 impl Default for Flux2KleinConfig {
     fn default() -> Self {
-        Self {
-            prompt: "Remove the text and reconstruct the background.".to_owned(),
-        }
+        Self { prompt: "Remove the text and reconstruct the background.".to_owned() }
     }
 }
 
@@ -68,26 +66,19 @@ pub(super) struct Processor {
 impl Processor {
     pub(super) fn new(config: InpaintingModel, device: koharu_ml::Device) -> Result<Self> {
         match &config {
-            InpaintingModel::LaMa {} | InpaintingModel::AotInpainting {} => {}
+            InpaintingModel::LaMa {} | InpaintingModel::AotInpainting {} => {},
             InpaintingModel::Flux2Klein(settings) => {
-                ensure!(
-                    !settings.prompt.contains('\0'),
-                    "FLUX.2 prompt contains NUL"
-                );
-            }
+                ensure!(!settings.prompt.contains('\0'), "FLUX.2 prompt contains NUL");
+            },
             InpaintingModel::RoremMixed(settings) => {
                 ensure!(
                     !settings.prompt.contains('\0') && !settings.negative_prompt.contains('\0'),
                     "RORem prompt contains NUL"
                 );
-            }
+            },
         }
 
-        Ok(Self {
-            config,
-            device,
-            model: ModelCell::new(),
-        })
+        Ok(Self { config, device, model: ModelCell::new() })
     }
 }
 
@@ -125,9 +116,7 @@ impl StageProcessor for Processor {
     }
 
     async fn load(&self) -> Result<()> {
-        self.model
-            .ensure(|| Model::load(self.device.clone(), &self.config))
-            .await
+        self.model.ensure(|| Model::load(self.device.clone(), &self.config)).await
     }
 
     async fn process(&self, input: StageInput) -> Result<koharu_scene::Patch> {
@@ -144,14 +133,8 @@ impl StageProcessor for Processor {
 enum Model {
     LaMa(Arc<Mutex<LaMa>>),
     Aot(Arc<Mutex<AotInpainting>>),
-    Flux {
-        model: Arc<Mutex<Flux2KleinInpaint>>,
-        config: Flux2KleinConfig,
-    },
-    Rorem {
-        model: Arc<Mutex<RoremMixed>>,
-        config: RoremMixedConfig,
-    },
+    Flux { model: Arc<Mutex<Flux2KleinInpaint>>, config: Flux2KleinConfig },
+    Rorem { model: Arc<Mutex<RoremMixed>>, config: RoremMixedConfig },
 }
 
 impl Model {
@@ -159,10 +142,10 @@ impl Model {
         match config {
             InpaintingModel::LaMa {} => {
                 Ok(Self::LaMa(Arc::new(Mutex::new(LaMa::load(device).await?))))
-            }
-            InpaintingModel::AotInpainting {} => Ok(Self::Aot(Arc::new(Mutex::new(
-                AotInpainting::load(device).await?,
-            )))),
+            },
+            InpaintingModel::AotInpainting {} => {
+                Ok(Self::Aot(Arc::new(Mutex::new(AotInpainting::load(device).await?))))
+            },
             InpaintingModel::Flux2Klein(config) => Ok(Self::Flux {
                 model: Arc::new(Mutex::new(Flux2KleinInpaint::load(device).await?)),
                 config: config.clone(),
@@ -189,9 +172,8 @@ impl Model {
                 (
                     "lama",
                     tokio_rayon::spawn(move || -> Result<DynamicImage> {
-                        let model = model
-                            .lock()
-                            .map_err(|_| anyhow!("LaMa model lock is poisoned"))?;
+                        let model =
+                            model.lock().map_err(|_| anyhow!("LaMa model lock is poisoned"))?;
                         inpaint_tiled(
                             &prepared.image,
                             &prepared.mask,
@@ -208,15 +190,14 @@ impl Model {
                     })
                     .await?,
                 )
-            }
+            },
             Self::Aot(model) => {
                 let model = model.clone();
                 (
                     "aot-inpainting",
                     tokio_rayon::spawn(move || -> Result<DynamicImage> {
-                        let model = model
-                            .lock()
-                            .map_err(|_| anyhow!("AOT model lock is poisoned"))?;
+                        let model =
+                            model.lock().map_err(|_| anyhow!("AOT model lock is poisoned"))?;
                         inpaint_tiled(
                             &prepared.image,
                             &prepared.mask,
@@ -229,16 +210,15 @@ impl Model {
                     })
                     .await?,
                 )
-            }
+            },
             Self::Flux { model, config } => {
                 let model = model.clone();
                 let config = config.clone();
                 (
                     "flux2-klein",
                     tokio_rayon::spawn(move || -> Result<DynamicImage> {
-                        let model = model
-                            .lock()
-                            .map_err(|_| anyhow!("FLUX model lock is poisoned"))?;
+                        let model =
+                            model.lock().map_err(|_| anyhow!("FLUX model lock is poisoned"))?;
                         inpaint_tiled(
                             &prepared.image,
                             &prepared.mask,
@@ -257,16 +237,15 @@ impl Model {
                     })
                     .await?,
                 )
-            }
+            },
             Self::Rorem { model, config } => {
                 let model = model.clone();
                 let config = config.clone();
                 (
                     "rorem-mixed",
                     tokio_rayon::spawn(move || -> Result<DynamicImage> {
-                        let model = model
-                            .lock()
-                            .map_err(|_| anyhow!("RORem model lock is poisoned"))?;
+                        let model =
+                            model.lock().map_err(|_| anyhow!("RORem model lock is poisoned"))?;
                         inpaint_tiled(
                             &prepared.image,
                             &prepared.mask,
@@ -285,7 +264,7 @@ impl Model {
                     })
                     .await?,
                 )
-            }
+            },
         };
         let page = input.page;
         let manual = input.inpainting_mask.is_some();
@@ -443,18 +422,11 @@ async fn prepare(input: &StageInput) -> Result<InpaintInput> {
             .is_some_and(|layer| layer.kind == RasterLayerKind::Cleanup)
     });
     let cleanup = if let Some(entity) = cleanup_entity {
-        input
-            .images
-            .get(&input.scene, entity, "source")
-            .await?
-            .map(|image| image.to_rgba8())
+        input.images.get(&input.scene, entity, "source").await?.map(|image| image.to_rgba8())
     } else {
         None
     };
-    if cleanup
-        .as_ref()
-        .is_some_and(|image| image.dimensions() != original.dimensions())
-    {
+    if cleanup.as_ref().is_some_and(|image| image.dimensions() != original.dimensions()) {
         bail!("cleanup layer dimensions do not match page {page}");
     }
     let source = if input.inpainting_mask.is_some() {
@@ -572,11 +544,7 @@ fn inpaint_tiled(
             generated.to_rgb8()
         } else {
             generated
-                .resize_exact(
-                    crop_width,
-                    crop_height,
-                    image::imageops::FilterType::Lanczos3,
-                )
+                .resize_exact(crop_width, crop_height, image::imageops::FilterType::Lanczos3)
                 .to_rgb8()
         };
         composite_generated(&mut output, &component_labels, tile, &generated);
@@ -701,22 +669,14 @@ fn mask_components(mask: &GrayImage) -> (ImageBuffer<Luma<u32>, Vec<u32>>, Vec<M
         .enumerate()
         .skip(1)
         .filter_map(|(label, bounds)| {
-            bounds.map(|bounds| MaskComponent {
-                label: label as u32,
-                bounds,
-            })
+            bounds.map(|bounds| MaskComponent { label: label as u32, bounds })
         })
         .collect();
     (labels, components)
 }
 
 fn union_bounds(left: [u32; 4], right: [u32; 4]) -> [u32; 4] {
-    [
-        left[0].min(right[0]),
-        left[1].min(right[1]),
-        left[2].max(right[2]),
-        left[3].max(right[3]),
-    ]
+    [left[0].min(right[0]), left[1].min(right[1]), left[2].max(right[2]), left[3].max(right[3])]
 }
 
 fn bounds_area([left, top, right, bottom]: [u32; 4]) -> u64 {
@@ -799,12 +759,10 @@ fn uniform_region_color(
         standard_deviation(&channels[channel], f64::from(medians[channel]))
     });
     let mean_deviation = deviations.iter().sum::<f64>() / deviations.len() as f64;
-    let channel_spread = (deviations
-        .iter()
-        .map(|deviation| (deviation - mean_deviation).powi(2))
-        .sum::<f64>()
-        / deviations.len() as f64)
-        .sqrt();
+    let channel_spread =
+        (deviations.iter().map(|deviation| (deviation - mean_deviation).powi(2)).sum::<f64>()
+            / deviations.len() as f64)
+            .sqrt();
     let threshold = if channel_spread > 1.0 { 7.0 } else { 10.0 };
     (deviations.iter().copied().fold(0.0, f64::max) < threshold).then_some(Rgb(medians))
 }
@@ -838,10 +796,7 @@ fn polygon_edge_distance_squared(point: (f32, f32), polygon: &[(f32, f32)]) -> f
             0.0
         }
         .clamp(0.0, 1.0);
-        let closest = (
-            start.0 + segment.0 * projection,
-            start.1 + segment.1 * projection,
-        );
+        let closest = (start.0 + segment.0 * projection, start.1 + segment.1 * projection);
         let dx = point.0 - closest.0;
         let dy = point.1 - closest.1;
         minimum = minimum.min(dx * dx + dy * dy);
@@ -861,10 +816,7 @@ fn median(values: &mut [u8]) -> u8 {
 }
 
 fn standard_deviation(values: &[u8], center: f64) -> f64 {
-    (values
-        .iter()
-        .map(|value| (f64::from(*value) - center).powi(2))
-        .sum::<f64>()
+    (values.iter().map(|value| (f64::from(*value) - center).powi(2)).sum::<f64>()
         / values.len() as f64)
         .sqrt()
 }
@@ -879,11 +831,7 @@ fn composite_generated(
     let [core_left, core_top, core_right, core_bottom] = tile.core;
     for y in core_top..core_bottom {
         for x in core_left..core_right {
-            if tile
-                .components
-                .binary_search(&labels.get_pixel(x, y)[0])
-                .is_ok()
-            {
+            if tile.components.binary_search(&labels.get_pixel(x, y)[0]).is_ok() {
                 output.put_pixel(x, y, *generated.get_pixel(x - left, y - top));
             }
         }
@@ -941,10 +889,7 @@ mod tests {
             None,
             None,
             Arc::new(crate::ImageCache::default()),
-            Some(crate::InpaintingMask {
-                page,
-                png: encode(&DynamicImage::ImageLuma8(transient)),
-            }),
+            Some(crate::InpaintingMask { page, png: encode(&DynamicImage::ImageLuma8(transient)) }),
         );
 
         let prepared = prepare(&input).await.unwrap();
@@ -1006,10 +951,7 @@ mod tests {
             None,
             None,
             Arc::new(crate::ImageCache::default()),
-            Some(crate::InpaintingMask {
-                page,
-                png: Arc::<[u8]>::from([]),
-            }),
+            Some(crate::InpaintingMask { page, png: Arc::<[u8]>::from([]) }),
         );
         let processor = Processor::new(InpaintingModel::LaMa {}, koharu_ml::Device::cpu()).unwrap();
 
@@ -1062,11 +1004,8 @@ mod tests {
     fn uniform_bubbles_are_filled_independently_inside_one_textured_tile() {
         let mut image = RgbImage::new(200, 100);
         for (x, y, pixel) in image.enumerate_pixels_mut() {
-            *pixel = if (x + y).is_multiple_of(2) {
-                Rgb([20, 80, 140])
-            } else {
-                Rgb([220, 80, 120])
-            };
+            *pixel =
+                if (x + y).is_multiple_of(2) { Rgb([20, 80, 140]) } else { Rgb([220, 80, 120]) };
         }
         for y in 10..90 {
             for x in 10..90 {
@@ -1093,10 +1032,7 @@ mod tests {
             &DynamicImage::ImageRgb8(image),
             &mask,
             &mask,
-            &[
-                rectangle_region([10, 10, 90, 90]),
-                rectangle_region([110, 10, 190, 90]),
-            ],
+            &[rectangle_region([10, 10, 90, 90]), rectangle_region([110, 10, 190, 90])],
             |_, _| {
                 calls += 1;
                 Ok(DynamicImage::new_rgb8(1, 1))
@@ -1121,26 +1057,18 @@ mod tests {
         }
         let mut calls = 0;
 
-        let output = inpaint_tiled(
-            &DynamicImage::ImageRgb8(image),
-            &mask,
-            &mask,
-            &[],
-            |tile, tile_mask| {
+        let output =
+            inpaint_tiled(&DynamicImage::ImageRgb8(image), &mask, &mask, &[], |tile, tile_mask| {
                 calls += 1;
-                assert_eq!(
-                    tile_mask.pixels().filter(|pixel| pixel[0] >= 127).count(),
-                    25 * 25
-                );
+                assert_eq!(tile_mask.pixels().filter(|pixel| pixel[0] >= 127).count(), 25 * 25);
                 Ok(DynamicImage::ImageRgb8(RgbImage::from_pixel(
                     tile.width(),
                     tile.height(),
                     Rgb([1, 2, 3]),
                 )))
-            },
-        )
-        .unwrap()
-        .to_rgb8();
+            })
+            .unwrap()
+            .to_rgb8();
 
         assert_eq!(calls, 1);
         assert_eq!(output.get_pixel(500, 500), &Rgb([1, 2, 3]));
@@ -1173,10 +1101,8 @@ mod tests {
                     }
                 }
             }
-            let masked = crop_tile_mask(&mask, tile)
-                .pixels()
-                .filter(|pixel| pixel[0] >= 127)
-                .count();
+            let masked =
+                crop_tile_mask(&mask, tile).pixels().filter(|pixel| pixel[0] >= 127).count();
             assert!(masked > owned);
         }
     }
@@ -1185,11 +1111,8 @@ mod tests {
     fn textured_mask_regions_are_inferred_as_bounded_tiles() {
         let mut image = RgbImage::new(1200, 700);
         for (x, y, pixel) in image.enumerate_pixels_mut() {
-            *pixel = if (x + y).is_multiple_of(2) {
-                Rgb([0, 40, 80])
-            } else {
-                Rgb([255, 215, 175])
-            };
+            *pixel =
+                if (x + y).is_multiple_of(2) { Rgb([0, 40, 80]) } else { Rgb([255, 215, 175]) };
         }
         let original = image.clone();
         let mut mask = GrayImage::new(1200, 700);
@@ -1197,12 +1120,8 @@ mod tests {
         mask.put_pixel(1100, 600, Luma([u8::MAX]));
         let mut calls = 0;
 
-        let output = inpaint_tiled(
-            &DynamicImage::ImageRgb8(image),
-            &mask,
-            &mask,
-            &[],
-            |tile, _| {
+        let output =
+            inpaint_tiled(&DynamicImage::ImageRgb8(image), &mask, &mask, &[], |tile, _| {
                 calls += 1;
                 assert!(tile.width() <= TILE_CONTEXT * 2 + 1);
                 assert!(tile.height() <= TILE_CONTEXT * 2 + 1);
@@ -1211,10 +1130,9 @@ mod tests {
                     tile.height(),
                     Rgb([1, 2, 3]),
                 )))
-            },
-        )
-        .unwrap()
-        .to_rgb8();
+            })
+            .unwrap()
+            .to_rgb8();
 
         assert_eq!(calls, 2);
         assert_eq!(output.get_pixel(10, 10), &Rgb([1, 2, 3]));

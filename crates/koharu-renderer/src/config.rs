@@ -9,9 +9,7 @@ pub struct TypesettingConfig {
 
 impl Default for TypesettingConfig {
     fn default() -> Self {
-        Self {
-            font_families: vec!["CCWildWords".to_owned(), "Adobe 黑体 Std".to_owned()],
-        }
+        Self { font_families: vec!["CCWildWords".to_owned(), "Adobe 黑体 Std".to_owned()] }
     }
 }
 

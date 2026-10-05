@@ -6,10 +6,8 @@ use koharu_ml::flux2_klein::{Flux2KleinInpaint, Flux2KleinInpaintOptions};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("benches")
-        .join("fixtures")
-        .join("inpaint");
+    let fixtures =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("benches").join("fixtures").join("inpaint");
     let image = image::open(fixtures.join("image_4k.jpg"))?;
     let mask = image::open(fixtures.join("mask_4k.png"))?;
     let options = Flux2KleinInpaintOptions::default();
@@ -31,23 +29,20 @@ async fn main() -> Result<()> {
         .measurement_time(Duration::from_secs(10))
         .configure_from_args();
 
-    criterion.bench_function(
-        "flux2_klein/inpaint/3840x2074/max_pixels_1048576",
-        |bencher| {
-            bencher.iter(|| {
-                let output = model
-                    .inference(
-                        black_box("Remove the masked content."),
-                        black_box(&image),
-                        None,
-                        black_box(&mask),
-                        black_box(&options),
-                    )
-                    .expect("FLUX.2 Klein inference failed");
-                black_box(output);
-            });
-        },
-    );
+    criterion.bench_function("flux2_klein/inpaint/3840x2074/max_pixels_1048576", |bencher| {
+        bencher.iter(|| {
+            let output = model
+                .inference(
+                    black_box("Remove the masked content."),
+                    black_box(&image),
+                    None,
+                    black_box(&mask),
+                    black_box(&options),
+                )
+                .expect("FLUX.2 Klein inference failed");
+            black_box(output);
+        });
+    });
     criterion.final_summary();
 
     Ok(())

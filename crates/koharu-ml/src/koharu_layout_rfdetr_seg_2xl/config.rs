@@ -26,13 +26,7 @@ pub struct KoharuLayoutThresholds {
 
 impl KoharuLayoutThresholds {
     pub(super) fn with_background(self) -> [f32; 5] {
-        [
-            self.text,
-            self.onomatopoeia,
-            self.bubble,
-            self.panel,
-            f32::INFINITY,
-        ]
+        [self.text, self.onomatopoeia, self.bubble, self.panel, f32::INFINITY]
     }
 }
 
@@ -46,9 +40,7 @@ impl KoharuLayoutRFDetrSeg2XLConfig {
     }
 
     pub fn class_names(&self) -> Vec<String> {
-        (0..self.classes.len())
-            .map(|index| self.classes[&index.to_string()].clone())
-            .collect()
+        (0..self.classes.len()).map(|index| self.classes[&index.to_string()].clone()).collect()
     }
 }
 
@@ -58,16 +50,9 @@ mod tests {
 
     #[test]
     fn class_threshold_order_matches_checkpoint_labels() {
-        let thresholds = KoharuLayoutThresholds {
-            text: 0.1,
-            onomatopoeia: 0.2,
-            bubble: 0.3,
-            panel: 0.4,
-        };
+        let thresholds =
+            KoharuLayoutThresholds { text: 0.1, onomatopoeia: 0.2, bubble: 0.3, panel: 0.4 };
 
-        assert_eq!(
-            thresholds.with_background(),
-            [0.1, 0.2, 0.3, 0.4, f32::INFINITY]
-        );
+        assert_eq!(thresholds.with_background(), [0.1, 0.2, 0.3, 0.4, f32::INFINITY]);
     }
 }

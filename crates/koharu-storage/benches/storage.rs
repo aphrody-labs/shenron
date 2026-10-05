@@ -39,23 +39,12 @@ fn storage_benchmarks(criterion: &mut Criterion) {
     let bytes = Bytes::from(vec![11; 4 * 1024 * 1024]);
     let blob = BlobId::for_bytes(&bytes);
     let next = current
-        .update(
-            current.revision().next().unwrap(),
-            Bytes::new(),
-            [blob],
-            [(blob, bytes)],
-        )
+        .update(current.revision().next().unwrap(), Bytes::new(), [blob], [(blob, bytes)])
         .expect("derive blob state");
-    let durable = runtime
-        .block_on(session.save(&next))
-        .expect("publish benchmark blob");
+    let durable = runtime.block_on(session.save(&next)).expect("publish benchmark blob");
     criterion.bench_function("storage/mmap_blob_4m", |bencher| {
         bencher.iter(|| {
-            black_box(
-                runtime
-                    .block_on(durable.blobs().get(black_box(blob)))
-                    .expect("map blob"),
-            )
+            black_box(runtime.block_on(durable.blobs().get(black_box(blob))).expect("map blob"))
         });
     });
 }

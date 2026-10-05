@@ -80,25 +80,13 @@ async fn components_on_new_entities_do_not_observe_missing_base_state() {
         .patch(|edit| {
             let page = edit.add_page(page(), At::End)?;
             let id = edit.add_entity(page, At::End)?;
-            edit.set(
-                id,
-                &Visibility {
-                    origin: Origin::User,
-                    visible: true,
-                    opacity: 1.0,
-                },
-            )?;
+            edit.set(id, &Visibility { origin: Origin::User, visible: true, opacity: 1.0 })?;
             entity = Some(id);
             Ok(())
         })
         .unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
-    assert!(
-        snapshot
-            .component::<Visibility>(entity.unwrap())
-            .unwrap()
-            .is_some()
-    );
+    assert!(snapshot.component::<Visibility>(entity.unwrap()).unwrap().is_some());
 }
 
 #[tokio::test]
@@ -196,10 +184,7 @@ async fn revision_one_project_components_upgrade_when_their_schema_evolves() {
                 let id = edit.add_entity(page, At::End)?;
                 edit.set(
                     id,
-                    &EvolvingComponentV1 {
-                        title: "revision one".to_owned(),
-                        legacy_count: 7,
-                    },
+                    &EvolvingComponentV1 { title: "revision one".to_owned(), legacy_count: 7 },
                 )?;
                 created = Some(id);
                 Ok(())
@@ -210,11 +195,7 @@ async fn revision_one_project_components_upgrade_when_their_schema_evolves() {
     }
 
     let mut session = Session::open(&path).await.unwrap();
-    let upgraded = session
-        .snapshot()
-        .component::<EvolvingComponentV2>(entity)
-        .unwrap()
-        .unwrap();
+    let upgraded = session.snapshot().component::<EvolvingComponentV2>(entity).unwrap().unwrap();
     assert_eq!(
         upgraded,
         EvolvingComponentV2 {
@@ -224,19 +205,13 @@ async fn revision_one_project_components_upgrade_when_their_schema_evolves() {
         }
     );
 
-    let patch = session
-        .snapshot()
-        .patch(|edit| edit.set(entity, &upgraded))
-        .unwrap();
+    let patch = session.snapshot().patch(|edit| edit.set(entity, &upgraded)).unwrap();
     session.commit(patch).await.unwrap();
     drop(session);
 
     let reopened = Session::open(&path).await.unwrap();
     assert_eq!(
-        reopened
-            .snapshot()
-            .component::<EvolvingComponentV2>(entity)
-            .unwrap(),
+        reopened.snapshot().component::<EvolvingComponentV2>(entity).unwrap(),
         Some(upgraded)
     );
 }
@@ -263,40 +238,24 @@ async fn revision_one_text_layout_opens_without_an_angle() {
         let content = edit.add_text_content(page, At::End).unwrap();
         let group = edit.ensure_text_group(page).unwrap();
         layer = edit.add_entity(group, At::End).unwrap();
-        edit.set(
-            layer,
-            &TextLayoutV1 {
-                origin: Origin::User,
-                kind: TextLayoutKind::Paragraph,
-            },
-        )
-        .unwrap();
+        edit.set(layer, &TextLayoutV1 { origin: Origin::User, kind: TextLayoutKind::Paragraph })
+            .unwrap();
         edit.relate::<Presents>(layer, content).unwrap();
         session.commit(edit.finish().unwrap()).await.unwrap();
     }
 
     let mut session = Session::open(&path).await.unwrap();
-    let mut layout = session
-        .snapshot()
-        .component::<TextLayout>(layer)
-        .unwrap()
-        .unwrap();
+    let mut layout = session.snapshot().component::<TextLayout>(layer).unwrap().unwrap();
     assert_eq!(layout.origin, Origin::User);
     assert_eq!(layout.kind, TextLayoutKind::Paragraph);
     assert_eq!(layout.angle_degrees, None);
     layout.angle_degrees = Some(27.0);
-    let patch = session
-        .snapshot()
-        .patch(|edit| edit.set(layer, &layout))
-        .unwrap();
+    let patch = session.snapshot().patch(|edit| edit.set(layer, &layout)).unwrap();
     session.commit(patch).await.unwrap();
     drop(session);
 
     let reopened = Session::open(&path).await.unwrap();
-    assert_eq!(
-        reopened.snapshot().component::<TextLayout>(layer).unwrap(),
-        Some(layout)
-    );
+    assert_eq!(reopened.snapshot().component::<TextLayout>(layer).unwrap(), Some(layout));
 }
 
 #[tokio::test]
@@ -307,31 +266,21 @@ async fn stale_disjoint_patches_can_rebase_without_hiding_conflicts() {
         .snapshot()
         .patch(|edit| {
             let page = edit.add_page(page(), At::End)?;
-            entities = Some((
-                edit.add_entity(page, At::End)?,
-                edit.add_entity(page, At::End)?,
-            ));
+            entities = Some((edit.add_entity(page, At::End)?, edit.add_entity(page, At::End)?));
             Ok(())
         })
         .unwrap();
     let base = session.commit(create).await.unwrap().snapshot;
     let (left, right) = entities.unwrap();
-    let left_patch = base
-        .patch(|edit| edit.set(left, &Geometry::rectangle(0.0, 0.0, 10.0, 10.0)))
-        .unwrap();
-    let right_patch = base
-        .patch(|edit| edit.set(right, &Geometry::rectangle(1.0, 1.0, 10.0, 10.0)))
-        .unwrap();
-    let conflicting = base
-        .patch(|edit| edit.set(left, &Geometry::rectangle(2.0, 2.0, 10.0, 10.0)))
-        .unwrap();
+    let left_patch =
+        base.patch(|edit| edit.set(left, &Geometry::rectangle(0.0, 0.0, 10.0, 10.0))).unwrap();
+    let right_patch =
+        base.patch(|edit| edit.set(right, &Geometry::rectangle(1.0, 1.0, 10.0, 10.0))).unwrap();
+    let conflicting =
+        base.patch(|edit| edit.set(left, &Geometry::rectangle(2.0, 2.0, 10.0, 10.0))).unwrap();
 
     let current = session.commit(left_patch).await.unwrap().snapshot;
-    let current = session
-        .commit(right_patch.rebase_on(&current).unwrap())
-        .await
-        .unwrap()
-        .snapshot;
+    let current = session.commit(right_patch.rebase_on(&current).unwrap()).await.unwrap().snapshot;
     assert!(conflicting.rebase_on(&current).is_err());
 }
 
@@ -357,9 +306,7 @@ async fn hierarchy_insertion_rebases_across_component_edits_but_not_sibling_chan
             Ok(())
         })
         .unwrap();
-    let component_edit = base
-        .patch(|edit| edit.set(content, &source("translated")))
-        .unwrap();
+    let component_edit = base.patch(|edit| edit.set(content, &source("translated"))).unwrap();
     let current = base.preview([&component_edit]).unwrap();
     assert!(insert.rebase_on(&current).is_ok());
 
@@ -434,11 +381,7 @@ async fn project_and_relation_metadata_use_typed_components() {
             let id = edit.add_relation(kind, left, right)?;
             edit.set_relation(
                 id,
-                &Visibility {
-                    origin: Origin::User,
-                    visible: true,
-                    opacity: 0.5,
-                },
+                &Visibility { origin: Origin::User, visible: true, opacity: 0.5 },
             )?;
             relation = Some(id);
             Ok(())
@@ -455,10 +398,7 @@ async fn project_and_relation_metadata_use_typed_components() {
         change.owner == ComponentOwner::Relation(relation.unwrap())
             && change.kind == Visibility::KIND
     }));
-    assert_eq!(
-        snapshot.project_component::<Project>().unwrap(),
-        Some(settings)
-    );
+    assert_eq!(snapshot.project_component::<Project>().unwrap(), Some(settings));
     assert_eq!(
         snapshot
             .relation(relation.unwrap())
@@ -491,30 +431,16 @@ async fn producer_reruns_respect_component_ownership() {
     let producer = ProducerId::new("dev.koharu.pipeline.ocr").unwrap();
     let generation = Generation::new(producer.clone());
     let mut edit = snapshot.edit_as(generation.clone());
-    assert!(matches!(
-        edit.set(user, &source("overwrite")),
-        Err(Error::Authorship(_))
-    ));
+    assert!(matches!(edit.set(user, &source("overwrite")), Err(Error::Authorship(_))));
     edit.set(generated, &source("generated")).unwrap();
-    let snapshot = session
-        .commit(edit.finish().unwrap())
-        .await
-        .unwrap()
-        .snapshot;
+    let snapshot = session.commit(edit.finish().unwrap()).await.unwrap().snapshot;
 
     let mut rerun = snapshot.edit_as(generation);
     rerun.set(generated, &source("generated again")).unwrap();
-    let snapshot = session
-        .commit(rerun.finish().unwrap())
-        .await
-        .unwrap()
-        .snapshot;
+    let snapshot = session.commit(rerun.finish().unwrap()).await.unwrap().snapshot;
     let other = Generation::new(ProducerId::new("dev.koharu.pipeline.other-ocr").unwrap());
     let mut other_edit = snapshot.edit_as(other);
-    assert!(matches!(
-        other_edit.set(generated, &source("wrong owner")),
-        Err(Error::Authorship(_))
-    ));
+    assert!(matches!(other_edit.set(generated, &source("wrong owner")), Err(Error::Authorship(_))));
 }
 
 #[tokio::test]
@@ -533,29 +459,18 @@ async fn pipeline_removal_respects_entity_lifecycle_owner() {
     let owner = Generation::new(ProducerId::new("dev.koharu.pipeline.detector").unwrap());
     let mut edit = snapshot.edit_as(owner.clone());
     let generated = edit.add_entity(page, At::End).unwrap();
-    let snapshot = session
-        .commit(edit.finish().unwrap())
-        .await
-        .unwrap()
-        .snapshot;
+    let snapshot = session.commit(edit.finish().unwrap()).await.unwrap().snapshot;
 
-    let mut other = snapshot.edit_as(Generation::new(
-        ProducerId::new("dev.koharu.pipeline.other-detector").unwrap(),
-    ));
+    let mut other = snapshot
+        .edit_as(Generation::new(ProducerId::new("dev.koharu.pipeline.other-detector").unwrap()));
     assert!(matches!(
         other.remove_entity(generated, RemovePolicy::Cascade),
         Err(Error::Authorship(_))
     ));
 
     let mut owner_edit = snapshot.edit_as(owner);
-    owner_edit
-        .remove_entity(generated, RemovePolicy::Cascade)
-        .unwrap();
-    let snapshot = session
-        .commit(owner_edit.finish().unwrap())
-        .await
-        .unwrap()
-        .snapshot;
+    owner_edit.remove_entity(generated, RemovePolicy::Cascade).unwrap();
+    let snapshot = session.commit(owner_edit.finish().unwrap()).await.unwrap().snapshot;
     assert!(snapshot.entity(generated).is_err());
 }
 
@@ -576,13 +491,7 @@ async fn typed_page_entity_and_components_round_trip() {
     assert_eq!(page.page().unwrap().label, "page");
     let text = commit.snapshot.children(page.id()).unwrap().next().unwrap();
     assert_eq!(
-        commit
-            .snapshot
-            .component::<SourceText>(text)
-            .unwrap()
-            .unwrap()
-            .text
-            .value,
+        commit.snapshot.component::<SourceText>(text).unwrap().unwrap().text.value,
         "こんにちは"
     );
 }
@@ -621,15 +530,7 @@ async fn text_analysis_content_and_presentation_have_distinct_ownership() {
         .unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
     let (content, layer) = ids.unwrap();
-    assert_eq!(
-        snapshot
-            .relation_from::<Presents>(layer)
-            .unwrap()
-            .unwrap()
-            .value()
-            .target,
-        content
-    );
+    assert_eq!(snapshot.relation_from::<Presents>(layer).unwrap().unwrap().value().target, content);
     assert!(matches!(
         snapshot.patch(|edit| edit.set(content, &Geometry::rectangle(0.0, 0.0, 10.0, 10.0))),
         Err(Error::Invalid(_))
@@ -674,17 +575,12 @@ async fn text_group_owns_the_canonical_text_order() {
     let (page, first, second) = ids.unwrap();
     let group = snapshot.page(page).unwrap().text_group().unwrap().unwrap();
     assert_eq!(
-        group
-            .text_layers()
-            .unwrap()
-            .map(TextLayerRef::id)
-            .collect::<Vec<_>>(),
+        group.text_layers().unwrap().map(TextLayerRef::id).collect::<Vec<_>>(),
         vec![first, second]
     );
 
-    let patch = snapshot
-        .patch(|edit| edit.move_entity(second, Some(group.id()), At::Start))
-        .unwrap();
+    let patch =
+        snapshot.patch(|edit| edit.move_entity(second, Some(group.id()), At::Start)).unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
     assert_eq!(
         snapshot
@@ -876,15 +772,9 @@ async fn hierarchy_move_and_promote_are_ordered() {
         })
         .unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
-    assert_eq!(
-        snapshot.children(page).unwrap().collect::<Vec<_>>(),
-        vec![sibling, child]
-    );
+    assert_eq!(snapshot.children(page).unwrap().collect::<Vec<_>>(), vec![sibling, child]);
     assert_eq!(snapshot.parent(child).unwrap(), Some(page));
-    assert!(matches!(
-        snapshot.entity(group),
-        Err(Error::EntityNotFound(_))
-    ));
+    assert!(matches!(snapshot.entity(group), Err(Error::EntityNotFound(_))));
 }
 
 #[tokio::test]
@@ -913,30 +803,14 @@ async fn cross_page_subtree_move_preserves_identity_components_relations_and_und
         .patch(|edit| edit.move_entity(group, Some(target_page), At::End))
         .unwrap();
     let commit = session.commit(moved).await.unwrap();
-    assert!(
-        commit
-            .snapshot
-            .children(source_page)
-            .unwrap()
-            .next()
-            .is_none()
-    );
+    assert!(commit.snapshot.children(source_page).unwrap().next().is_none());
     assert_eq!(commit.snapshot.parent(group).unwrap(), Some(target_page));
     assert_eq!(commit.snapshot.parent(child).unwrap(), Some(group));
     assert_eq!(
-        commit
-            .snapshot
-            .component::<SourceText>(child)
-            .unwrap()
-            .unwrap()
-            .text
-            .value,
+        commit.snapshot.component::<SourceText>(child).unwrap().unwrap().text.value,
         "stable"
     );
-    assert_eq!(
-        commit.snapshot.relation(relation).unwrap().value().source,
-        child
-    );
+    assert_eq!(commit.snapshot.relation(relation).unwrap().value().source, child);
 
     let undone = session.undo(commit.revision).await.unwrap().snapshot;
     assert_eq!(undone.parent(group).unwrap(), Some(source_page));
@@ -962,30 +836,13 @@ async fn relations_are_records_with_typed_adjacency() {
         .unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
     let (first, second, relation) = ids.unwrap();
-    assert_eq!(
-        snapshot
-            .relations_from(first, Some(&kind))
-            .next()
-            .unwrap()
-            .id(),
-        relation
-    );
-    assert_eq!(
-        snapshot
-            .relations_to(second, None)
-            .next()
-            .unwrap()
-            .value()
-            .source,
-        first
-    );
+    assert_eq!(snapshot.relations_from(first, Some(&kind)).next().unwrap().id(), relation);
+    assert_eq!(snapshot.relations_to(second, None).next().unwrap().value().source, first);
     assert!(matches!(
         snapshot.patch(|edit| edit.remove_entity(first, RemovePolicy::RejectNonEmpty)),
         Err(Error::IncidentRelations(id)) if id == first
     ));
-    let patch = snapshot
-        .patch(|edit| edit.remove_entity(first, RemovePolicy::Cascade))
-        .unwrap();
+    let patch = snapshot.patch(|edit| edit.remove_entity(first, RemovePolicy::Cascade)).unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
     assert!(snapshot.relation(relation).is_err());
 }
@@ -1086,12 +943,7 @@ async fn independent_pipeline_components_rebase() {
     let current = session.commit(translation).await.unwrap().snapshot;
     let typography = typography.rebase_on(&current).unwrap();
     let snapshot = session.commit(typography).await.unwrap().snapshot;
-    assert!(
-        snapshot
-            .component::<Translation>(content)
-            .unwrap()
-            .is_some()
-    );
+    assert!(snapshot.component::<Translation>(content).unwrap().is_some());
     assert!(snapshot.component::<Typography>(layer).unwrap().is_some());
 }
 
@@ -1143,10 +995,7 @@ async fn assets_attach_bytes_without_decoding() {
         .unwrap();
     let snapshot = session.commit(patch).await.unwrap().snapshot;
     let asset = snapshot.asset(entity.unwrap(), &role).unwrap().unwrap();
-    assert_eq!(
-        snapshot.read_blob(asset.blob).await.unwrap().as_ref(),
-        b"encoded image"
-    );
+    assert_eq!(snapshot.read_blob(asset.blob).await.unwrap().as_ref(), b"encoded image");
 }
 
 #[tokio::test]
@@ -1174,11 +1023,7 @@ async fn repeated_asset_writes_rebase_over_an_unrelated_page_edit() {
                     AssetInput::new(
                         Arc::<[u8]>::from(role.as_bytes()),
                         "image/test",
-                        AssetMetadata {
-                            width: None,
-                            height: None,
-                            attributes: BTreeMap::new(),
-                        },
+                        AssetMetadata { width: None, height: None, attributes: BTreeMap::new() },
                     ),
                 )?;
             }
@@ -1193,11 +1038,7 @@ async fn repeated_asset_writes_rebase_over_an_unrelated_page_edit() {
                 AssetInput::new(
                     Arc::<[u8]>::from(&b"source"[..]),
                     "image/test",
-                    AssetMetadata {
-                        width: None,
-                        height: None,
-                        attributes: BTreeMap::new(),
-                    },
+                    AssetMetadata { width: None, height: None, attributes: BTreeMap::new() },
                 ),
             )
         })
@@ -1207,12 +1048,7 @@ async fn repeated_asset_writes_rebase_over_an_unrelated_page_edit() {
     let assets = assets.rebase_on(&current).unwrap();
     let snapshot = session.commit(assets).await.unwrap().snapshot;
     for role in ["text-mask", "bubble-mask"] {
-        assert!(
-            snapshot
-                .asset(second_page, &AssetRole::new(role).unwrap())
-                .unwrap()
-                .is_some()
-        );
+        assert!(snapshot.asset(second_page, &AssetRole::new(role).unwrap()).unwrap().is_some());
     }
 }
 
@@ -1222,10 +1058,8 @@ async fn disk_scene_reopens_and_validates() {
     let path = directory.path().join("scene.khrproj");
     {
         let mut session = Session::create(&path).await.unwrap();
-        let patch = session
-            .snapshot()
-            .patch(|edit| edit.add_page(page(), At::End).map(|_| ()))
-            .unwrap();
+        let patch =
+            session.snapshot().patch(|edit| edit.add_page(page(), At::End).map(|_| ())).unwrap();
         session.commit(patch).await.unwrap();
     }
     let session = Session::open(&path).await.unwrap();
@@ -1249,24 +1083,13 @@ async fn reopen_updates_page_local_component_queries() {
     writer.commit(create).await.unwrap();
     let entity = entity.unwrap();
 
-    let update = writer
-        .snapshot()
-        .patch(|edit| edit.set(entity, &source("refreshed")))
-        .unwrap();
+    let update = writer.snapshot().patch(|edit| edit.set(entity, &source("refreshed"))).unwrap();
     writer.commit(update).await.unwrap();
     drop(writer);
 
     let reader = Session::open(&path).await.unwrap();
     let snapshot = reader.snapshot();
-    assert_eq!(
-        snapshot
-            .component::<SourceText>(entity)
-            .unwrap()
-            .unwrap()
-            .text
-            .value,
-        "refreshed"
-    );
+    assert_eq!(snapshot.component::<SourceText>(entity).unwrap().unwrap().text.value, "refreshed");
 }
 
 #[tokio::test]
@@ -1286,11 +1109,7 @@ async fn pipeline_component_removal_and_relation_lifecycle_respect_ownership() {
             edit.set(analysis, &Geometry::rectangle(0.0, 0.0, 10.0, 10.0))?;
             edit.set(
                 analysis,
-                &Region {
-                    origin: Origin::User,
-                    kind: TextRegion::kind(),
-                    label: None,
-                },
+                &Region { origin: Origin::User, kind: TextRegion::kind(), label: None },
             )?;
             edit.set_asset(
                 left,
@@ -1298,11 +1117,7 @@ async fn pipeline_component_removal_and_relation_lifecycle_respect_ownership() {
                 AssetInput::new(
                     Arc::<[u8]>::from(&b"user asset"[..]),
                     "image/test",
-                    AssetMetadata {
-                        width: Some(1),
-                        height: Some(1),
-                        attributes: BTreeMap::new(),
-                    },
+                    AssetMetadata { width: Some(1), height: Some(1), attributes: BTreeMap::new() },
                 ),
             )?;
             let relation = edit.add_relation(relation_kind.clone(), left, right)?;
@@ -1314,18 +1129,9 @@ async fn pipeline_component_removal_and_relation_lifecycle_respect_ownership() {
     let (entity, analysis_entity, relation) = ids.unwrap();
     let generation = Generation::new(ProducerId::new("dev.koharu.pipeline.detector").unwrap());
     let mut pipeline = snapshot.edit_as(generation.clone());
-    assert!(matches!(
-        pipeline.remove::<SourceText>(entity),
-        Err(Error::Authorship(_))
-    ));
-    assert!(matches!(
-        pipeline.remove_asset(entity, &role),
-        Err(Error::Authorship(_))
-    ));
-    assert!(matches!(
-        pipeline.remove_relation(relation),
-        Err(Error::Authorship(_))
-    ));
+    assert!(matches!(pipeline.remove::<SourceText>(entity), Err(Error::Authorship(_))));
+    assert!(matches!(pipeline.remove_asset(entity, &role), Err(Error::Authorship(_))));
+    assert!(matches!(pipeline.remove_relation(relation), Err(Error::Authorship(_))));
 
     let analysis = DetectionAnalysis {
         origin: Origin::User,
@@ -1337,24 +1143,13 @@ async fn pipeline_component_removal_and_relation_lifecycle_respect_ownership() {
     pipeline
         .set(analysis_entity, &analysis)
         .expect("new pipeline analysis is stamped by the edit context");
-    let snapshot = session
-        .commit(pipeline.finish().unwrap())
-        .await
-        .unwrap()
-        .snapshot;
-    let stored = snapshot
-        .component::<DetectionAnalysis>(analysis_entity)
-        .unwrap()
-        .unwrap();
+    let snapshot = session.commit(pipeline.finish().unwrap()).await.unwrap().snapshot;
+    let stored = snapshot.component::<DetectionAnalysis>(analysis_entity).unwrap().unwrap();
     assert!(matches!(stored.origin, Origin::Generated(_)));
 
-    let mut other = snapshot.edit_as(Generation::new(
-        ProducerId::new("dev.koharu.pipeline.other-detector").unwrap(),
-    ));
-    assert!(matches!(
-        other.set(analysis_entity, &analysis),
-        Err(Error::Authorship(_))
-    ));
+    let mut other = snapshot
+        .edit_as(Generation::new(ProducerId::new("dev.koharu.pipeline.other-detector").unwrap()));
+    assert!(matches!(other.set(analysis_entity, &analysis), Err(Error::Authorship(_))));
     assert!(matches!(
         other.remove::<DetectionAnalysis>(analysis_entity),
         Err(Error::Authorship(_))
@@ -1377,11 +1172,7 @@ async fn pipeline_queries_and_analysis_components_are_semantic_and_ordered() {
             edit.set(second, &Geometry::rectangle(0.0, 0.0, 10.0, 10.0))?;
             edit.set(
                 second,
-                &Region {
-                    origin: Origin::User,
-                    kind: TextRegion::kind(),
-                    label: None,
-                },
+                &Region { origin: Origin::User, kind: TextRegion::kind(), label: None },
             )?;
             ids = Some((page, first, nested, second));
             Ok(())
@@ -1394,27 +1185,15 @@ async fn pipeline_queries_and_analysis_components_are_semantic_and_ordered() {
         vec![page, first, nested, second]
     );
     assert_eq!(
-        snapshot
-            .entities_with::<SourceText>()
-            .unwrap()
-            .map(EntityRef::id)
-            .collect::<Vec<_>>(),
+        snapshot.entities_with::<SourceText>().unwrap().map(EntityRef::id).collect::<Vec<_>>(),
         vec![first, nested]
     );
     assert_eq!(
-        snapshot
-            .subtree(first)
-            .unwrap()
-            .map(EntityRef::id)
-            .collect::<Vec<_>>(),
+        snapshot.subtree(first).unwrap().map(EntityRef::id).collect::<Vec<_>>(),
         vec![first, nested]
     );
     assert_eq!(
-        snapshot
-            .descendants(first)
-            .unwrap()
-            .map(EntityRef::id)
-            .collect::<Vec<_>>(),
+        snapshot.descendants(first).unwrap().map(EntityRef::id).collect::<Vec<_>>(),
         vec![nested]
     );
 
@@ -1435,17 +1214,9 @@ async fn pipeline_queries_and_analysis_components_are_semantic_and_ordered() {
         },
     )
     .unwrap();
-    let snapshot = session
-        .commit(edit.finish().unwrap())
-        .await
-        .unwrap()
-        .snapshot;
+    let snapshot = session.commit(edit.finish().unwrap()).await.unwrap().snapshot;
     assert!(matches!(
-        snapshot
-            .component::<OcrAnalysis>(second)
-            .unwrap()
-            .unwrap()
-            .origin,
+        snapshot.component::<OcrAnalysis>(second).unwrap().unwrap().origin,
         Origin::Generated(_)
     ));
 }
@@ -1464,18 +1235,13 @@ async fn scene_patch_exposes_stable_identity_and_base() {
         .unwrap();
     let base = session.commit(create).await.unwrap().snapshot;
     let entity = entity.unwrap();
-    let patch = base
-        .patch(|edit| edit.set(entity, &source("identity")))
-        .unwrap();
+    let patch = base.patch(|edit| edit.set(entity, &source("identity"))).unwrap();
     assert_eq!(patch.project_id(), base.project_id());
     assert_eq!(patch.base_revision(), base.revision());
     assert_eq!(patch.fingerprint(), patch.clone().fingerprint());
     assert_ne!(
         patch.fingerprint(),
-        patch
-            .clone()
-            .with_label("different commit label")
-            .fingerprint()
+        patch.clone().with_label("different commit label").fingerprint()
     );
 }
 
@@ -1496,9 +1262,7 @@ async fn component_snapshots_clone_only_the_touched_page() {
     let page = base.state.page_for(entity).unwrap();
     let base_page = base.state.pages[&page].clone();
 
-    let patch = base
-        .patch(|edit| edit.set(entity, &source("cached")))
-        .unwrap();
+    let patch = base.patch(|edit| edit.set(entity, &source("cached"))).unwrap();
     let preview = base.preview([&patch]).unwrap();
     assert!(!Arc::ptr_eq(&preview.state.pages[&page], &base_page));
     assert_eq!(preview.entities_with::<SourceText>().unwrap().len(), 1);
@@ -1529,17 +1293,9 @@ async fn user_promotion_protects_generated_entity_and_relation_lifecycle() {
     let mut generated = snapshot.edit_as(generation.clone());
     let entity = generated.add_entity(left, At::End).unwrap();
     let relation = generated
-        .add_relation(
-            RelationKind::new("dev.koharu.test.generated-link").unwrap(),
-            entity,
-            right,
-        )
+        .add_relation(RelationKind::new("dev.koharu.test.generated-link").unwrap(), entity, right)
         .unwrap();
-    let snapshot = session
-        .commit(generated.finish().unwrap())
-        .await
-        .unwrap()
-        .snapshot;
+    let snapshot = session.commit(generated.finish().unwrap()).await.unwrap().snapshot;
 
     let promoted = snapshot
         .patch(|edit| {
@@ -1549,10 +1305,7 @@ async fn user_promotion_protects_generated_entity_and_relation_lifecycle() {
         .unwrap();
     let snapshot = session.commit(promoted).await.unwrap().snapshot;
     let mut rerun = snapshot.edit_as(generation);
-    assert!(matches!(
-        rerun.remove_relation(relation),
-        Err(Error::Authorship(_))
-    ));
+    assert!(matches!(rerun.remove_relation(relation), Err(Error::Authorship(_))));
     assert!(matches!(
         rerun.remove_entity(entity, RemovePolicy::Cascade),
         Err(Error::Authorship(_))

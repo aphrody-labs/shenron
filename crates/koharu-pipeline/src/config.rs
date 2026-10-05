@@ -30,16 +30,10 @@ struct PipelineFile {
 impl Default for PipelineFile {
     fn default() -> Self {
         Self {
-            detection: ModelSelection {
-                model: "koharu-layout-rfdetr-seg-2xl".to_owned(),
-            },
-            ocr: ModelSelection {
-                model: "paddleocr-vl-1.6".to_owned(),
-            },
+            detection: ModelSelection { model: "koharu-layout-rfdetr-seg-2xl".to_owned() },
+            ocr: ModelSelection { model: "paddleocr-vl-1.6".to_owned() },
             translation: TranslationConfig::default(),
-            inpainting: ModelSelection {
-                model: "lama".to_owned(),
-            },
+            inpainting: ModelSelection { model: "lama".to_owned() },
             processor: ProcessorConfig::default(),
         }
     }
@@ -73,29 +67,21 @@ impl Serialize for PipelineConfig {
         };
         let mut processor = self.processor.clone();
         let DetectionModel::KoharuLayoutRFDetrSeg2XL(config) = &self.detection;
-        processor
-            .koharu_layout_rfdetr_seg_2xl
-            .get_or_insert_with(|| config.clone());
+        processor.koharu_layout_rfdetr_seg_2xl.get_or_insert_with(|| config.clone());
         match &self.inpainting {
             InpaintingModel::Flux2Klein(config) => {
                 processor.flux2_klein.get_or_insert_with(|| config.clone());
-            }
+            },
             InpaintingModel::RoremMixed(config) => {
                 processor.rorem_mixed.get_or_insert_with(|| config.clone());
-            }
-            InpaintingModel::LaMa {} | InpaintingModel::AotInpainting {} => {}
+            },
+            InpaintingModel::LaMa {} | InpaintingModel::AotInpainting {} => {},
         }
         PipelineFile {
-            detection: ModelSelection {
-                model: detection.to_owned(),
-            },
-            ocr: ModelSelection {
-                model: ocr.to_owned(),
-            },
+            detection: ModelSelection { model: detection.to_owned() },
+            ocr: ModelSelection { model: ocr.to_owned() },
             translation: self.translation.clone(),
-            inpainting: ModelSelection {
-                model: inpainting.to_owned(),
-            },
+            inpainting: ModelSelection { model: inpainting.to_owned() },
             processor,
         }
         .serialize(serializer)
@@ -110,16 +96,13 @@ impl<'de> Deserialize<'de> for PipelineConfig {
         let file = PipelineFile::deserialize(deserializer)?;
         let detection = match file.detection.model.as_str() {
             "koharu-layout-rfdetr-seg-2xl" => DetectionModel::KoharuLayoutRFDetrSeg2XL(
-                file.processor
-                    .koharu_layout_rfdetr_seg_2xl
-                    .clone()
-                    .unwrap_or_default(),
+                file.processor.koharu_layout_rfdetr_seg_2xl.clone().unwrap_or_default(),
             ),
             model => {
                 return Err(serde::de::Error::custom(format!(
                     "unsupported detection model {model}"
                 )));
-            }
+            },
         };
         let ocr = match file.ocr.model.as_str() {
             "paddleocr-vl-1.6" => OcrModel::PaddleOcrVl1_6,
@@ -127,25 +110,23 @@ impl<'de> Deserialize<'de> for PipelineConfig {
             "baberu-ocr" => OcrModel::BaberuOcr,
             "hayai-ocr" => OcrModel::HayaiOcr,
             model => {
-                return Err(serde::de::Error::custom(format!(
-                    "unsupported OCR model {model}"
-                )));
-            }
+                return Err(serde::de::Error::custom(format!("unsupported OCR model {model}")));
+            },
         };
         let inpainting = match file.inpainting.model.as_str() {
             "lama" => InpaintingModel::LaMa {},
             "aot-inpainting" => InpaintingModel::AotInpainting {},
             "flux2-klein" => {
                 InpaintingModel::Flux2Klein(file.processor.flux2_klein.clone().unwrap_or_default())
-            }
+            },
             "rorem-mixed" => {
                 InpaintingModel::RoremMixed(file.processor.rorem_mixed.clone().unwrap_or_default())
-            }
+            },
             model => {
                 return Err(serde::de::Error::custom(format!(
                     "unsupported inpainting model {model}"
                 )));
-            }
+            },
         };
         Ok(Self {
             detection,
@@ -226,7 +207,7 @@ impl PipelineConfig {
                         .clone()
                         .unwrap_or_else(|| config.clone()),
                 ))
-            }
+            },
         }
     }
 
@@ -235,16 +216,10 @@ impl PipelineConfig {
             InpaintingModel::LaMa {} => Ok(InpaintingModel::LaMa {}),
             InpaintingModel::AotInpainting {} => Ok(InpaintingModel::AotInpainting {}),
             InpaintingModel::Flux2Klein(config) => Ok(InpaintingModel::Flux2Klein(
-                self.processor
-                    .flux2_klein
-                    .clone()
-                    .unwrap_or_else(|| config.clone()),
+                self.processor.flux2_klein.clone().unwrap_or_else(|| config.clone()),
             )),
             InpaintingModel::RoremMixed(config) => Ok(InpaintingModel::RoremMixed(
-                self.processor
-                    .rorem_mixed
-                    .clone()
-                    .unwrap_or_else(|| config.clone()),
+                self.processor.rorem_mixed.clone().unwrap_or_else(|| config.clone()),
             )),
         }
     }
@@ -325,10 +300,7 @@ mod tests {
     fn defaults_select_one_processor_for_each_phase() {
         let config = PipelineConfig::default();
 
-        assert!(matches!(
-            config.detection,
-            DetectionModel::KoharuLayoutRFDetrSeg2XL(_)
-        ));
+        assert!(matches!(config.detection, DetectionModel::KoharuLayoutRFDetrSeg2XL(_)));
         assert!(matches!(config.ocr, OcrModel::PaddleOcrVl1_6));
         assert!(matches!(config.inpainting, InpaintingModel::LaMa {}));
     }
@@ -353,10 +325,7 @@ mod tests {
         )
         .unwrap();
 
-        assert!(matches!(
-            config.detection,
-            DetectionModel::KoharuLayoutRFDetrSeg2XL(_)
-        ));
+        assert!(matches!(config.detection, DetectionModel::KoharuLayoutRFDetrSeg2XL(_)));
         assert!(matches!(config.ocr, OcrModel::BaberuOcr));
         assert!(matches!(
             config.inpainting(),
@@ -392,10 +361,7 @@ mod tests {
         )
         .unwrap();
 
-        assert!(matches!(
-            config.detection,
-            DetectionModel::KoharuLayoutRFDetrSeg2XL(_)
-        ));
+        assert!(matches!(config.detection, DetectionModel::KoharuLayoutRFDetrSeg2XL(_)));
         assert!(matches!(config.ocr, OcrModel::PaddleOcrVl1_6));
         assert!(matches!(config.inpainting(), Ok(InpaintingModel::LaMa {})));
     }

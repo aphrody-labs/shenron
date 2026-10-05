@@ -100,11 +100,6 @@ fn draw_quad(image: &mut RgbaImage, quad: &Quad, color: Rgba<u8>) {
     for index in 0..4 {
         let a = quad[index];
         let b = quad[(index + 1) % 4];
-        draw_line_segment_mut(
-            image,
-            (a[0] as f32, a[1] as f32),
-            (b[0] as f32, b[1] as f32),
-            color,
-        );
+        draw_line_segment_mut(image, (a[0] as f32, a[1] as f32), (b[0] as f32, b[1] as f32), color);
     }
 }

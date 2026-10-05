@@ -73,12 +73,9 @@ struct TemplateMessage<'a> {
 
 impl ChatTemplate {
     fn from_model(model: &LlamaModel, eos_token: LlamaToken) -> Result<Self> {
-        let template = model
-            .chat_template(None)
-            .context("GGUF model does not contain a chat template")?;
-        let source = template
-            .to_string()
-            .context("GGUF chat template is not valid UTF-8")?;
+        let template =
+            model.chat_template(None).context("GGUF model does not contain a chat template")?;
+        let source = template.to_string().context("GGUF chat template is not valid UTF-8")?;
         let mut environment = Environment::new();
         minijinja_contrib::add_to_environment(&mut environment);
         environment
@@ -126,10 +123,7 @@ impl ChatTemplate {
 }
 
 fn raise_template_exception(message: String) -> std::result::Result<String, TemplateError> {
-    Err(TemplateError::new(
-        TemplateErrorKind::InvalidOperation,
-        message,
-    ))
+    Err(TemplateError::new(TemplateErrorKind::InvalidOperation, message))
 }
 
 impl Model {
@@ -143,24 +137,16 @@ impl Model {
         let params = model_params(backend, device, &options)?;
         let model = LlamaModel::load_from_file(backend, &model_path, &params)
             .with_context(|| format!("failed to load GGUF model {}", model_path.display()))?;
-        ensure!(
-            model.has_decoder(),
-            "GGUF model does not advertise a decoder graph"
-        );
+        ensure!(model.has_decoder(), "GGUF model does not advertise a decoder graph");
 
-        let eos_token = options
-            .eos_token_id
-            .map_or_else(|| model.token_eos(), LlamaToken::new);
+        let eos_token = options.eos_token_id.map_or_else(|| model.token_eos(), LlamaToken::new);
         let chat_template = ChatTemplate::from_model(&model, eos_token)?;
         let (mtmd, capabilities) = match options.mtmd {
             Some(options) => {
                 ensure_file(&options.projector_path, "MTMD projector")?;
                 validate_image_token_range(options.image_min_tokens, options.image_max_tokens)?;
                 let projector_path = options.projector_path.to_str().with_context(|| {
-                    format!(
-                        "invalid MTMD projector path {}",
-                        options.projector_path.display()
-                    )
+                    format!("invalid MTMD projector path {}", options.projector_path.display())
                 })?;
                 let mtmd = MtmdContext::init_from_file(
                     projector_path,
@@ -185,7 +171,7 @@ impl Model {
                     "MTMD projector advertises neither vision nor audio support"
                 );
                 (Some(Mutex::new(mtmd)), capabilities)
-            }
+            },
             None => (None, Capabilities::default()),
         };
 
@@ -312,12 +298,8 @@ impl Model {
             batch
                 .add(next_token, position, &[0], true)
                 .context("failed to build generated-token batch")?;
-            context
-                .decode(&mut batch)
-                .context("failed to decode generated token")?;
-            position = position
-                .checked_add(1)
-                .context("generated position exceeds i32")?;
+            context.decode(&mut batch).context("failed to decode generated token")?;
+            position = position.checked_add(1).context("generated position exceeds i32")?;
             // llama_sampler_sample applies the chain and accepts the selected token.
             next_token = sampler.sample(&context, -1);
         }
@@ -343,11 +325,7 @@ impl Model {
                 .model
                 .str_to_token(
                     input.prompt(),
-                    if add_special {
-                        AddBos::Always
-                    } else {
-                        AddBos::Never
-                    },
+                    if add_special { AddBos::Always } else { AddBos::Never },
                 )
                 .context("failed to tokenize prompt")?;
             ensure!(!tokens.is_empty(), "prompt produced no tokens");
@@ -366,10 +344,7 @@ impl Model {
         for media in input.media() {
             bitmaps.push(match media {
                 Media::Image(image) => {
-                    ensure!(
-                        self.capabilities.vision,
-                        "MTMD projector does not support images"
-                    );
+                    ensure!(self.capabilities.vision, "MTMD projector does not support images");
                     ensure!(
                         image.width() > 0 && image.height() > 0,
                         "image dimensions must be non-zero"
@@ -378,33 +353,23 @@ impl Model {
                     let (width, height) = rgb.dimensions();
                     MtmdBitmap::from_image_data(width, height, &rgb.into_raw())
                         .context("failed to create MTMD image bitmap")?
-                }
+                },
                 Media::Audio(samples) => {
-                    ensure!(
-                        self.capabilities.audio,
-                        "MTMD projector does not support audio"
-                    );
+                    ensure!(self.capabilities.audio, "MTMD projector does not support audio");
                     ensure!(!samples.is_empty(), "audio input must not be empty");
                     MtmdBitmap::from_audio_data(samples)
                         .context("failed to create MTMD audio bitmap")?
-                }
+                },
             });
         }
         let bitmap_refs = bitmaps.iter().collect::<Vec<_>>();
         let chunks = mtmd
             .tokenize(
-                MtmdInputText {
-                    text: input.prompt().to_owned(),
-                    add_special,
-                    parse_special: true,
-                },
+                MtmdInputText { text: input.prompt().to_owned(), add_special, parse_special: true },
                 &bitmap_refs,
             )
             .context("failed to tokenize multimodal input")?;
-        ensure!(
-            !chunks.is_empty(),
-            "multimodal tokenization produced no chunks"
-        );
+        ensure!(!chunks.is_empty(), "multimodal tokenization produced no chunks");
 
         let prompt_positions = usize::try_from(chunks.total_positions())
             .context("multimodal prompt positions overflow usize")?;
@@ -412,10 +377,7 @@ impl Model {
         let batch_tokens = max_chunk_tokens(&chunks).max(1);
         let history_tokens = text_chunk_tokens(&chunks);
         Ok(PreparedPrompt {
-            kind: PreparedPromptKind::Multimodal {
-                chunks,
-                _bitmaps: bitmaps,
-            },
+            kind: PreparedPromptKind::Multimodal { chunks, _bitmaps: bitmaps },
             history_tokens,
             prompt_positions,
             prompt_tokens,
@@ -435,22 +397,16 @@ impl Model {
         match &prepared.kind {
             PreparedPromptKind::Text(tokens) => {
                 let mut batch = LlamaBatch::new(tokens.len(), 1);
-                batch
-                    .add_sequence(tokens, 0, false)
-                    .context("failed to build prompt batch")?;
+                batch.add_sequence(tokens, 0, false).context("failed to build prompt batch")?;
                 if self.model.has_encoder() {
-                    context
-                        .encode(&mut batch)
-                        .context("failed to encode prompt batch")?;
+                    context.encode(&mut batch).context("failed to encode prompt batch")?;
                     self.start_decoder(context, sampler)
                 } else {
-                    context
-                        .decode(&mut batch)
-                        .context("failed to decode prompt batch")?;
+                    context.decode(&mut batch).context("failed to decode prompt batch")?;
                     let position = i32::try_from(tokens.len()).context("prompt is too long")?;
                     Ok((sampler.sample(context, -1), position))
                 }
-            }
+            },
             PreparedPromptKind::Multimodal { chunks, .. } => {
                 let mtmd = mtmd.context("multimodal prompt requires an MTMD projector")?;
                 let past = chunks
@@ -468,7 +424,7 @@ impl Model {
                 } else {
                     Ok((sampler.sample(context, -1), past))
                 }
-            }
+            },
         }
     }
 
@@ -478,22 +434,12 @@ impl Model {
         sampler: &mut LlamaSampler,
     ) -> Result<(LlamaToken, i32)> {
         let decoder_start = self.model.decode_start_token();
-        let decoder_start = if decoder_start.0 >= 0 {
-            decoder_start
-        } else {
-            self.model.token_bos()
-        };
-        ensure!(
-            decoder_start.0 >= 0,
-            "encoder-decoder model has no decoder start or BOS token"
-        );
+        let decoder_start =
+            if decoder_start.0 >= 0 { decoder_start } else { self.model.token_bos() };
+        ensure!(decoder_start.0 >= 0, "encoder-decoder model has no decoder start or BOS token");
         let mut batch = LlamaBatch::new(1, 1);
-        batch
-            .add(decoder_start, 0, &[0], true)
-            .context("failed to build decoder start batch")?;
-        context
-            .decode(&mut batch)
-            .context("failed to decode model start token")?;
+        batch.add(decoder_start, 0, &[0], true).context("failed to build decoder start batch")?;
+        context.decode(&mut batch).context("failed to decode model start token")?;
         Ok((sampler.sample(context, -1), 1))
     }
 
@@ -543,11 +489,7 @@ impl Model {
             let mut penalties = LlamaSampler::penalties(
                 &self.model,
                 options.repeat_last_n,
-                if has_repeat {
-                    options.repeat_penalty
-                } else {
-                    1.0
-                },
+                if has_repeat { options.repeat_penalty } else { 1.0 },
                 options.frequency_penalty,
                 options.presence_penalty,
             );
@@ -560,9 +502,7 @@ impl Model {
             return Ok(LlamaSampler::chain_simple(samplers));
         }
         if let Some(top_k) = options.top_k.filter(|value| *value > 0) {
-            samplers.push(LlamaSampler::top_k(
-                i32::try_from(top_k).unwrap_or(i32::MAX),
-            ));
+            samplers.push(LlamaSampler::top_k(i32::try_from(top_k).unwrap_or(i32::MAX)));
         }
         if let Some(top_p) = options.top_p {
             samplers.push(LlamaSampler::top_p(top_p, 1));
@@ -591,10 +531,7 @@ struct PreparedPrompt {
 
 enum PreparedPromptKind {
     Text(Vec<LlamaToken>),
-    Multimodal {
-        chunks: MtmdInputChunks,
-        _bitmaps: Vec<MtmdBitmap>,
-    },
+    Multimodal { chunks: MtmdInputChunks, _bitmaps: Vec<MtmdBitmap> },
 }
 
 struct ContextConfig {
@@ -612,9 +549,8 @@ fn model_params(
     } else {
         options.gpu_layers
     };
-    let mut params = LlamaModelParams::default()
-        .with_n_gpu_layers(gpu_layers)
-        .with_load_mode(options.load_mode);
+    let mut params =
+        LlamaModelParams::default().with_n_gpu_layers(gpu_layers).with_load_mode(options.load_mode);
     if gpu_layers > 0 {
         params = params
             .with_devices(&[device.index])
@@ -638,10 +574,7 @@ fn context_config(prepared: &PreparedPrompt, options: &GenerationOptions) -> Res
     if let Some(n_threads_batch) = options.n_threads_batch {
         params = params.with_n_threads_batch(n_threads_batch);
     }
-    Ok(ContextConfig {
-        params,
-        n_batch: values.n_batch,
-    })
+    Ok(ContextConfig { params, n_batch: values.n_batch })
 }
 
 struct ContextValues {
@@ -655,12 +588,7 @@ fn context_values(prepared: &PreparedPrompt, options: &GenerationOptions) -> Res
         .prompt_positions
         .saturating_add(options.max_tokens)
         .saturating_add(1)
-        .max(
-            prepared
-                .prompt_tokens
-                .saturating_add(options.max_tokens)
-                .saturating_add(1),
-        )
+        .max(prepared.prompt_tokens.saturating_add(options.max_tokens).saturating_add(1))
         .max(prepared.batch_tokens.saturating_add(1));
     let n_ctx = match options.n_ctx {
         Some(n_ctx) if usize::try_from(n_ctx.get()).unwrap_or(usize::MAX) >= required => n_ctx,
@@ -681,19 +609,12 @@ fn context_values(prepared: &PreparedPrompt, options: &GenerationOptions) -> Res
     let n_ubatch = if prepared.non_causal {
         n_batch
     } else {
-        let n_ubatch = options
-            .n_ubatch
-            .unwrap_or_else(|| n_batch.min(DEFAULT_MAX_UBATCH))
-            .max(1);
+        let n_ubatch = options.n_ubatch.unwrap_or_else(|| n_batch.min(DEFAULT_MAX_UBATCH)).max(1);
         ensure!(n_ubatch <= n_batch, "n_ubatch must not exceed n_batch");
         n_ubatch
     };
 
-    Ok(ContextValues {
-        n_ctx,
-        n_batch,
-        n_ubatch,
-    })
+    Ok(ContextValues { n_ctx, n_batch, n_ubatch })
 }
 
 fn validate_generation_options(options: &GenerationOptions) -> Result<()> {
@@ -702,33 +623,18 @@ fn validate_generation_options(options: &GenerationOptions) -> Result<()> {
         "temperature must be finite and non-negative"
     );
     if let Some(top_p) = options.top_p {
-        ensure!(
-            top_p.is_finite() && (0.0..=1.0).contains(&top_p),
-            "top_p must be between 0 and 1"
-        );
+        ensure!(top_p.is_finite() && (0.0..=1.0).contains(&top_p), "top_p must be between 0 and 1");
     }
     if let Some(min_p) = options.min_p {
-        ensure!(
-            min_p.is_finite() && (0.0..=1.0).contains(&min_p),
-            "min_p must be between 0 and 1"
-        );
+        ensure!(min_p.is_finite() && (0.0..=1.0).contains(&min_p), "min_p must be between 0 and 1");
     }
     ensure!(
         options.repeat_penalty.is_finite() && options.repeat_penalty > 0.0,
         "repeat_penalty must be finite and positive"
     );
-    ensure!(
-        options.frequency_penalty.is_finite(),
-        "frequency_penalty must be finite"
-    );
-    ensure!(
-        options.presence_penalty.is_finite(),
-        "presence_penalty must be finite"
-    );
-    ensure!(
-        options.repeat_last_n >= 0,
-        "repeat_last_n must be non-negative"
-    );
+    ensure!(options.frequency_penalty.is_finite(), "frequency_penalty must be finite");
+    ensure!(options.presence_penalty.is_finite(), "presence_penalty must be finite");
+    ensure!(options.repeat_last_n >= 0, "repeat_last_n must be non-negative");
     if let Some(n_threads) = options.n_threads {
         ensure!(n_threads > 0, "n_threads must be positive");
     }
@@ -760,22 +666,12 @@ fn text_chunk_tokens(chunks: &MtmdInputChunks) -> Vec<LlamaToken> {
 
 fn token_text(model: &LlamaModel, token: LlamaToken) -> Result<String> {
     let mut decoder = encoding_rs::UTF_8.new_decoder();
-    model
-        .token_to_piece(token, &mut decoder, true, None)
-        .map_err(Into::into)
+    model.token_to_piece(token, &mut decoder, true, None).map_err(Into::into)
 }
 
 fn ensure_file(path: &Path, description: &str) -> Result<()> {
-    ensure!(
-        path.exists(),
-        "{description} does not exist: {}",
-        path.display()
-    );
-    ensure!(
-        path.is_file(),
-        "{description} is not a file: {}",
-        path.display()
-    );
+    ensure!(path.exists(), "{description} does not exist: {}", path.display());
+    ensure!(path.is_file(), "{description} is not a file: {}", path.display());
     Ok(())
 }
 
@@ -783,10 +679,7 @@ fn validate_image_token_range(min: i32, max: i32) -> Result<()> {
     ensure!(min >= -1, "image_min_tokens must be -1 or non-negative");
     ensure!(max >= -1, "image_max_tokens must be -1 or non-negative");
     if min >= 0 && max >= 0 {
-        ensure!(
-            min <= max,
-            "image_min_tokens must not exceed image_max_tokens"
-        );
+        ensure!(min <= max, "image_min_tokens must not exceed image_max_tokens");
     }
     Ok(())
 }
@@ -815,10 +708,7 @@ mod tests {
 
     #[test]
     fn context_includes_prompt_and_generation() {
-        let options = GenerationOptions {
-            max_tokens: 10,
-            ..Default::default()
-        };
+        let options = GenerationOptions { max_tokens: 10, ..Default::default() };
         let config = context_values(&prepared(5, false), &options).unwrap();
         assert_eq!(config.n_ctx, NonZeroU32::new(16).unwrap());
         assert_eq!(config.n_batch, 5);
@@ -839,11 +729,7 @@ mod tests {
     fn non_causal_context_uses_full_ubatch() {
         let config = context_values(
             &prepared(1024, true),
-            &GenerationOptions {
-                max_tokens: 1,
-                n_ubatch: Some(32),
-                ..Default::default()
-            },
+            &GenerationOptions { max_tokens: 1, n_ubatch: Some(32), ..Default::default() },
         )
         .unwrap();
         assert_eq!(config.n_ubatch, 1024);

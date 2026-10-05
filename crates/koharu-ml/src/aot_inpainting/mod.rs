@@ -24,18 +24,13 @@ pub struct AotInpainting {
 impl AotInpainting {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve AOT inpainting weights")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve AOT inpainting weights")?;
         let mut model = Model::new(device);
         model
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
-        Ok(Self {
-            model,
-            processor: Processor::new(device),
-        })
+        Ok(Self { model, processor: Processor::new(device) })
     }
 
     pub fn inference(&self, image: &DynamicImage, mask: &GrayImage) -> Result<RgbImage> {

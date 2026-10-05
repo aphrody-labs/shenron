@@ -38,22 +38,16 @@ pub struct PaddleOCRVL {
 impl PaddleOCRVL {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let config_path = CONFIG
-            .resolve()
-            .await
-            .context("failed to resolve PaddleOCR-VL-1.6 config")?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve PaddleOCR-VL-1.6 weights")?;
+        let config_path =
+            CONFIG.resolve().await.context("failed to resolve PaddleOCR-VL-1.6 config")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve PaddleOCR-VL-1.6 weights")?;
         let processor_path = PROCESSOR
             .resolve()
             .await
             .context("failed to resolve PaddleOCR-VL-1.6 image processor")?;
-        let tokenizer_path = TOKENIZER
-            .resolve()
-            .await
-            .context("failed to resolve PaddleOCR-VL-1.6 tokenizer")?;
+        let tokenizer_path =
+            TOKENIZER.resolve().await.context("failed to resolve PaddleOCR-VL-1.6 tokenizer")?;
 
         let config = PaddleOCRVLConfig::from_file(&config_path)
             .with_context(|| format!("failed to read {}", config_path.display()))?;
@@ -64,11 +58,7 @@ impl PaddleOCRVL {
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
 
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(

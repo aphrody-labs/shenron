@@ -25,10 +25,8 @@ impl Model {
     pub(crate) fn new(config: &PPOCRV6MediumRecConfig, device: koharu_torch::Device) -> Self {
         let mut vs = nn::VarStore::new(device);
         crate::backend::set_precision(&mut vs);
-        let backbone = PPLCNetV4Backbone::new(
-            &(&vs.root() / "model" / "backbone"),
-            &config.backbone_config,
-        );
+        let backbone =
+            PPLCNetV4Backbone::new(&(&vs.root() / "model" / "backbone"), &config.backbone_config);
         let head = Head::new(&(&vs.root() / "head"), config);
         vs.freeze();
         Self { vs, backbone, head }
@@ -122,10 +120,7 @@ impl Attention {
                 path / "qkv",
                 config.hidden_size,
                 config.hidden_size * 3,
-                nn::LinearConfig {
-                    bias: config.qkv_bias,
-                    ..Default::default()
-                },
+                nn::LinearConfig { bias: config.qkv_bias, ..Default::default() },
             ),
             projection: nn::linear(
                 path / "projection",
@@ -145,13 +140,7 @@ impl Attention {
         let mixed_qkv = self
             .qkv
             .forward(hidden_states)
-            .view([
-                batch_size,
-                sequence_length,
-                3,
-                self.num_heads,
-                self.head_dim,
-            ])
+            .view([batch_size, sequence_length, 3, self.num_heads, self.head_dim])
             .permute([2, 0, 3, 1, 4]);
         let query = mixed_qkv.get(0);
         let key = mixed_qkv.get(1);
@@ -177,18 +166,8 @@ impl Mlp {
     fn new(path: &nn::Path<'_>, config: &PPOCRV6MediumRecConfig) -> Self {
         let hidden_features = (config.hidden_size as f64 * config.mlp_ratio) as i64;
         Self {
-            fc1: nn::linear(
-                path / "fc1",
-                config.hidden_size,
-                hidden_features,
-                Default::default(),
-            ),
-            fc2: nn::linear(
-                path / "fc2",
-                hidden_features,
-                config.hidden_size,
-                Default::default(),
-            ),
+            fc1: nn::linear(path / "fc1", config.hidden_size, hidden_features, Default::default()),
+            fc2: nn::linear(path / "fc2", hidden_features, config.hidden_size, Default::default()),
             activation: config.hidden_act.clone(),
         }
     }
@@ -209,10 +188,7 @@ struct Block {
 
 impl Block {
     fn new(path: &nn::Path<'_>, config: &PPOCRV6MediumRecConfig) -> Self {
-        let norm_config = nn::LayerNormConfig {
-            eps: config.layer_norm_eps,
-            ..Default::default()
-        };
+        let norm_config = nn::LayerNormConfig { eps: config.layer_norm_eps, ..Default::default() };
         Self {
             self_attn: Attention::new(&(path / "self_attn"), config),
             layer_norm1: nn::layer_norm(
@@ -230,10 +206,8 @@ impl Block {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        let hidden_states = hidden_states
-            + self
-                .self_attn
-                .forward(&self.layer_norm1.forward(hidden_states));
+        let hidden_states =
+            hidden_states + self.self_attn.forward(&self.layer_norm1.forward(hidden_states));
         &hidden_states + self.mlp.forward(&self.layer_norm2.forward(&hidden_states))
     }
 }
@@ -289,10 +263,7 @@ impl EncoderWithSvtr {
             norm: nn::layer_norm(
                 path / "norm",
                 vec![hidden_size],
-                nn::LayerNormConfig {
-                    eps: config.layer_norm_eps,
-                    ..Default::default()
-                },
+                nn::LayerNormConfig { eps: config.layer_norm_eps, ..Default::default() },
             ),
         }
     }
@@ -309,9 +280,8 @@ impl EncoderWithSvtr {
             hidden_states = block.forward(&hidden_states);
         }
         hidden_states = self.norm.forward(&hidden_states);
-        hidden_states = hidden_states
-            .view([batch_size, height, width, channels])
-            .permute([0, 3, 1, 2]);
+        hidden_states =
+            hidden_states.view([batch_size, height, width, channels]).permute([0, 3, 1, 2]);
         (hidden_states + residual).squeeze_dim(2).transpose(1, 2)
     }
 }
@@ -336,9 +306,7 @@ impl Head {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.head
-            .forward(&self.encoder.forward(hidden_states))
-            .softmax(2, Some(Kind::Float))
+        self.head.forward(&self.encoder.forward(hidden_states)).softmax(2, Some(Kind::Float))
     }
 }
 
@@ -350,11 +318,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads and loads the LibTorch runtime"]
     async fn medium_recognizer_tree_matches_checkpoint() {
-        Runtime::discover([Feature::Torch])
-            .unwrap()
-            .initialize()
-            .await
-            .unwrap();
+        Runtime::discover([Feature::Torch]).unwrap().initialize().await.unwrap();
         let config: PPOCRV6MediumRecConfig = serde_json::from_str(
             r#"{
                 "backbone_config": {
@@ -378,9 +342,6 @@ mod tests {
         let model = Model::new(&config, koharu_torch::Device::Cpu);
         let variables = model.vs.variables();
         assert_eq!(variables.len(), 269);
-        assert_eq!(
-            variables.values().map(Tensor::numel).sum::<usize>(),
-            19_176_118
-        );
+        assert_eq!(variables.values().map(Tensor::numel).sum::<usize>(), 19_176_118);
     }
 }

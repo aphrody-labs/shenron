@@ -17,10 +17,7 @@ impl Monitor {
     pub(super) fn new() -> Result<Self, String> {
         let factory = unsafe { CreateDXGIFactory1::<IDXGIFactory6>() }
             .map_err(|error| format!("failed to create DXGI factory: {error}"))?;
-        Ok(Self {
-            factory,
-            nvml: Nvml::init().ok(),
-        })
+        Ok(Self { factory, nvml: Nvml::init().ok() })
     }
 
     pub(super) fn sample(&mut self) -> Result<Vec<Sample>, String> {
@@ -78,18 +75,12 @@ fn apply_nvml_utilization(samples: &mut [Sample], nvml: &Nvml) {
     let devices = (0..count)
         .filter_map(|index| {
             let device = nvml.device_by_index(index).ok()?;
-            Some((
-                device.name().ok()?,
-                device.utilization_rates().ok()?.gpu as f32,
-            ))
+            Some((device.name().ok()?, device.utilization_rates().ok()?.gpu as f32))
         })
         .collect::<Vec<_>>();
 
     let mut unmatched = devices.iter().collect::<Vec<_>>();
-    for sample in samples
-        .iter_mut()
-        .filter(|sample| sample.vendor == Vendor::Nvidia)
-    {
+    for sample in samples.iter_mut().filter(|sample| sample.vendor == Vendor::Nvidia) {
         let position = unmatched
             .iter()
             .position(|(name, _)| names_match(&sample.name, name))
@@ -110,10 +101,7 @@ fn names_match(left: &str, right: &str) -> bool {
 }
 
 fn utf16_name(value: &[u16]) -> String {
-    let end = value
-        .iter()
-        .position(|unit| *unit == 0)
-        .unwrap_or(value.len());
+    let end = value.iter().position(|unit| *unit == 0).unwrap_or(value.len());
     String::from_utf16_lossy(&value[..end])
 }
 
@@ -132,10 +120,7 @@ mod tests {
 
     #[test]
     fn nvml_and_dxgi_names_match_without_case_sensitivity() {
-        assert!(names_match(
-            "NVIDIA GeForce RTX 5090",
-            "nvidia geforce rtx 5090"
-        ));
+        assert!(names_match("NVIDIA GeForce RTX 5090", "nvidia geforce rtx 5090"));
         assert!(names_match("GeForce RTX 5090", "NVIDIA GeForce RTX 5090"));
         assert!(!names_match("NVIDIA RTX 5090", "AMD Radeon"));
         assert!(!names_match("", ""));

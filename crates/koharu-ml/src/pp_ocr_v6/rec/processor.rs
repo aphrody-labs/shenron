@@ -37,14 +37,8 @@ pub struct SizeDict {
 impl Default for PPOCRV6MediumRecImageProcessor {
     fn default() -> Self {
         Self {
-            size: SizeDict {
-                height: 48,
-                width: 320,
-            },
-            pad_size: SizeDict {
-                height: 48,
-                width: 320,
-            },
+            size: SizeDict { height: 48, width: 320 },
+            pad_size: SizeDict { height: 48, width: 320 },
             do_resize: true,
             do_rescale: true,
             do_convert_rgb: true,
@@ -118,12 +112,8 @@ impl PPOCRV6MediumRecImageProcessor {
             if self.image_mean.len() != 3 || self.image_std.len() != 3 {
                 bail!("PP-OCRv6 recognition image_mean and image_std must contain three values");
             }
-            let mean = Tensor::from_slice(&self.image_mean)
-                .view([1, 3, 1, 1])
-                .to_device(device);
-            let std = Tensor::from_slice(&self.image_std)
-                .view([1, 3, 1, 1])
-                .to_device(device);
+            let mean = Tensor::from_slice(&self.image_mean).view([1, 3, 1, 1]).to_device(device);
+            let std = Tensor::from_slice(&self.image_std).view([1, 3, 1, 1]).to_device(device);
             pixel_values = (pixel_values - mean) / std;
         }
         if self.do_pad && target_width < self.pad_size.width {
@@ -139,12 +129,8 @@ impl PPOCRV6MediumRecImageProcessor {
             bail!("expected PP-OCRv6 recognition output [1, T, C], got {size:?}");
         }
         let (scores, indices) = probabilities.max_dim(-1, false);
-        let scores = Vec::<f32>::try_from(
-            &scores
-                .to_device(Device::Cpu)
-                .to_kind(Kind::Float)
-                .view([-1]),
-        )?;
+        let scores =
+            Vec::<f32>::try_from(&scores.to_device(Device::Cpu).to_kind(Kind::Float).view([-1]))?;
         let indices = Vec::<i64>::try_from(&indices.to_device(Device::Cpu).view([-1]))?;
         let mut text = String::new();
         let mut selected_scores = Vec::new();

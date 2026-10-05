@@ -33,18 +33,11 @@ pub enum DescriptorValue {
 
 impl DescriptorObject {
     pub fn new(name: impl Into<String>, class_id: impl Into<String>) -> Self {
-        Self {
-            name: name.into(),
-            class_id: class_id.into(),
-            items: Vec::new(),
-        }
+        Self { name: name.into(), class_id: class_id.into(), items: Vec::new() }
     }
 
     pub fn with_item(mut self, key: impl Into<String>, value: DescriptorValue) -> Self {
-        self.items.push(DescriptorItem {
-            key: key.into(),
-            value,
-        });
+        self.items.push(DescriptorItem { key: key.into(), value });
         self
     }
 }
@@ -97,36 +90,36 @@ fn write_descriptor_value(
         DescriptorValue::Text(text) => {
             writer.write_signature("TEXT");
             writer.write_unicode_string_with_padding(text);
-        }
+        },
         DescriptorValue::Enum { type_id, value } => {
             validate_descriptor_id(type_id)?;
             validate_descriptor_id(value)?;
             writer.write_signature("enum");
             writer.write_ascii_or_class_id(type_id);
             writer.write_ascii_or_class_id(value);
-        }
+        },
         DescriptorValue::Integer(number) => {
             writer.write_signature("long");
             writer.write_i32(*number);
-        }
+        },
         DescriptorValue::Double(number) => {
             writer.write_signature("doub");
             writer.write_f64(*number);
-        }
+        },
         DescriptorValue::UnitPixels(number) => {
             writer.write_signature("UntF");
             writer.write_signature("#Pxl");
             writer.write_f64(*number);
-        }
+        },
         DescriptorValue::Raw(bytes) => {
             writer.write_signature("tdta");
             writer.write_u32(bytes.len() as u32);
             writer.write_bytes(bytes);
-        }
+        },
         DescriptorValue::Object(object) => {
             writer.write_signature("Objc");
             write_descriptor_object(writer, object)?;
-        }
+        },
     }
 
     Ok(())
@@ -163,10 +156,7 @@ mod tests {
             .with_item("Txt ", DescriptorValue::Text("HELLO".to_string()))
             .with_item(
                 "Ornt",
-                DescriptorValue::Enum {
-                    type_id: "Ornt".to_string(),
-                    value: "Hrzn".to_string(),
-                },
+                DescriptorValue::Enum { type_id: "Ornt".to_string(), value: "Hrzn".to_string() },
             )
             .with_item("TextIndex", DescriptorValue::Integer(1))
             .with_item(

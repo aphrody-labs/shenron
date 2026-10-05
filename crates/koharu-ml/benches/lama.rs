@@ -6,10 +6,8 @@ use koharu_ml::lama::{InpaintRequest, LaMa};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("benches")
-        .join("fixtures")
-        .join("inpaint");
+    let fixtures =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("benches").join("fixtures").join("inpaint");
     let image_path = fixtures.join("image_4k.jpg");
     let mask_path = fixtures.join("mask_4k.png");
 

@@ -253,12 +253,7 @@ impl ProjectLibrary {
                     .filter_map(|file| std::fs::metadata(path.join(file)).ok()?.modified().ok())
                     .max()
                     .unwrap_or(std::time::UNIX_EPOCH);
-                Some((
-                    last_used,
-                    ProjectSummary {
-                        name: path.file_stem()?.to_str()?.to_owned(),
-                    },
-                ))
+                Some((last_used, ProjectSummary { name: path.file_stem()?.to_str()?.to_owned() }))
             })
             .collect())
     }
@@ -326,13 +321,7 @@ impl Project {
 
     fn new(session: Session, name: String) -> Self {
         let active_page = session.snapshot().pages().next().map(|page| page.id());
-        Self {
-            session,
-            name,
-            active_page,
-            undo: Vec::new(),
-            redo: Vec::new(),
-        }
+        Self { session, name, active_page, undo: Vec::new(), redo: Vec::new() }
     }
 
     pub fn snapshot(&self) -> Snapshot {
@@ -417,10 +406,7 @@ impl Project {
 
     pub fn reconcile_page(&mut self) {
         let snapshot = self.snapshot();
-        if self
-            .active_page
-            .is_none_or(|page| snapshot.page(page).is_err())
-        {
+        if self.active_page.is_none_or(|page| snapshot.page(page).is_err()) {
             self.active_page = snapshot.pages().next().map(|page| page.id());
         }
     }
@@ -452,10 +438,7 @@ impl Project {
                 Ok(PageSummary {
                     id: page.id(),
                     label: value.label,
-                    size: PageSize {
-                        width: value.width,
-                        height: value.height,
-                    },
+                    size: PageSize { width: value.width, height: value.height },
                     source_asset,
                     layer_count,
                 })
@@ -539,10 +522,7 @@ impl Project {
             let content = edit.add_text_content(page, At::End)?;
             edit.set(
                 content,
-                &SceneSourceText {
-                    text: Authored::user(String::new()),
-                    language: None,
-                },
+                &SceneSourceText { text: Authored::user(String::new()), language: None },
             )?;
             let added_layer = edit.add_text_layer(
                 page,
@@ -587,19 +567,12 @@ impl Project {
     pub async fn set_source_text(&mut self, layer: EntityId, text: String) -> Result<Commit> {
         let snapshot = self.snapshot();
         let content = Self::text_content(&snapshot, layer)?;
-        let language = snapshot
-            .component::<SceneSourceText>(content)?
-            .and_then(|source| source.language);
+        let language =
+            snapshot.component::<SceneSourceText>(content)?.and_then(|source| source.language);
         let patch = snapshot.patch(|edit| {
             edit.promote_entity_to_user(layer)?;
             edit.promote_entity_to_user(content)?;
-            edit.set(
-                content,
-                &SceneSourceText {
-                    text: Authored::user(text),
-                    language,
-                },
-            )
+            edit.set(content, &SceneSourceText { text: Authored::user(text), language })
         })?;
         self.commit(patch).await
     }
@@ -618,13 +591,9 @@ impl Project {
             edit.promote_entity_to_user(layer)?;
             edit.promote_entity_to_user(content)?;
             match text {
-                Some(text) => edit.set(
-                    content,
-                    &SceneTranslation {
-                        text: Authored::user(text),
-                        language,
-                    },
-                ),
+                Some(text) => {
+                    edit.set(content, &SceneTranslation { text: Authored::user(text), language })
+                },
                 None => edit.remove::<SceneTranslation>(content),
             }
         })?;
@@ -677,10 +646,7 @@ impl Project {
                     .context("only text layers can change geometry")?;
                 let content = Self::text_content(&snapshot, update.layer)?;
                 if update.points.is_none()
-                    && snapshot
-                        .text_layer(update.layer)?
-                        .automatic_target()?
-                        .is_none()
+                    && snapshot.text_layer(update.layer)?.automatic_target()?.is_none()
                 {
                     bail!("only automatically placed text can reset its geometry");
                 }
@@ -701,10 +667,7 @@ impl Project {
                             origin: Origin::User,
                             points: points
                                 .into_iter()
-                                .map(|point| ScenePoint {
-                                    x: point.x,
-                                    y: point.y,
-                                })
+                                .map(|point| ScenePoint { x: point.x, y: point.y })
                                 .collect(),
                         },
                     )?,
@@ -726,13 +689,11 @@ impl Project {
         let patch = snapshot.patch(|edit| {
             for layer in layers {
                 let mut value =
-                    snapshot
-                        .component::<SceneVisibility>(layer)?
-                        .unwrap_or(SceneVisibility {
-                            origin: Origin::User,
-                            visible: true,
-                            opacity: 1.0,
-                        });
+                    snapshot.component::<SceneVisibility>(layer)?.unwrap_or(SceneVisibility {
+                        origin: Origin::User,
+                        visible: true,
+                        opacity: 1.0,
+                    });
                 if let Some(visible) = visible {
                     value.visible = visible;
                 }
@@ -855,10 +816,7 @@ impl Project {
         if !diameter.is_finite() || diameter <= 0.0 || points.is_empty() {
             bail!("a raster stroke requires a positive diameter and at least one point");
         }
-        if points
-            .iter()
-            .any(|point| !point.x.is_finite() || !point.y.is_finite())
-        {
+        if points.iter().any(|point| !point.x.is_finite() || !point.y.is_finite()) {
             bail!("raster stroke points must be finite");
         }
         let snapshot = self.snapshot();
@@ -886,7 +844,7 @@ impl Project {
                 Some(asset) => {
                     let bytes = snapshot.read_blob(asset.blob).await?;
                     image::load_from_memory(&bytes)?.to_rgba8()
-                }
+                },
                 None => RgbaImage::new(width, height),
             }
         } else {
@@ -936,11 +894,7 @@ impl Project {
                 let layer = edit.add_entity(page, at)?;
                 edit.set(
                     layer,
-                    &SceneRasterLayer {
-                        origin: Origin::User,
-                        name,
-                        kind: RasterLayerKind::Paint,
-                    },
+                    &SceneRasterLayer { origin: Origin::User, name, kind: RasterLayerKind::Paint },
                 )?;
                 committed_layer = Some(layer);
                 layer
@@ -972,7 +926,7 @@ impl Project {
             Err(error) => {
                 self.undo.push(revisions);
                 return Err(error.into());
-            }
+            },
         };
         self.redo.push(vec![commit.revision]);
         Ok(commit)
@@ -985,7 +939,7 @@ impl Project {
             Err(error) => {
                 self.redo.push(revisions);
                 return Err(error.into());
-            }
+            },
         };
         self.undo.push(vec![commit.revision]);
         Ok(commit)
@@ -1015,7 +969,7 @@ impl Project {
             ) => {
                 tracing::debug!(%error, "pipeline output was superseded by a document edit");
                 return Ok(None);
-            }
+            },
             Err(error) => return Err(error.into()),
         };
         if patch.is_empty() {
@@ -1042,24 +996,12 @@ impl Project {
                     geometry: Geometry {
                         points: vec![
                             Point { x: 0.0, y: 0.0 },
-                            Point {
-                                x: value.width,
-                                y: 0.0,
-                            },
-                            Point {
-                                x: value.width,
-                                y: value.height,
-                            },
-                            Point {
-                                x: 0.0,
-                                y: value.height,
-                            },
+                            Point { x: value.width, y: 0.0 },
+                            Point { x: value.width, y: value.height },
+                            Point { x: 0.0, y: value.height },
                         ],
                     },
-                    visibility: LayerVisibility {
-                        visible: true,
-                        opacity: 1.0,
-                    },
+                    visibility: LayerVisibility { visible: true, opacity: 1.0 },
                     image,
                 },
             );
@@ -1080,10 +1022,7 @@ impl Project {
         Ok(Page {
             id: page,
             label: value.label,
-            size: PageSize {
-                width: value.width,
-                height: value.height,
-            },
+            size: PageSize { width: value.width, height: value.height },
             layers,
             regions,
         })
@@ -1098,9 +1037,7 @@ impl Project {
                 parent,
                 visibility,
                 name: group.name,
-                role: snapshot
-                    .component::<SceneTextGroup>(layer)?
-                    .map(|_| GroupRole::Text),
+                role: snapshot.component::<SceneTextGroup>(layer)?.map(|_| GroupRole::Text),
             });
         }
         if let Some(layout) = snapshot.component::<SceneTextLayout>(layer)? {
@@ -1121,9 +1058,7 @@ impl Project {
             return Ok(Layer::Text {
                 id: layer,
                 parent,
-                geometry: snapshot
-                    .component::<SceneGeometry>(layer)?
-                    .map(Self::geometry_view),
+                geometry: snapshot.component::<SceneGeometry>(layer)?.map(Self::geometry_view),
                 angle_degrees: layout.angle_degrees,
                 visibility,
                 content: Box::new(TextContent {
@@ -1154,13 +1089,7 @@ impl Project {
             .context("image layer has no geometry")?;
         let image = Self::asset_id(snapshot, layer, "source")?
             .context("image layer has no source asset")?;
-        Ok(Layer::Image {
-            id: layer,
-            parent,
-            geometry,
-            visibility,
-            image,
-        })
+        Ok(Layer::Image { id: layer, parent, geometry, visibility, image })
     }
 
     fn analysis_region(
@@ -1183,10 +1112,7 @@ impl Project {
 
     fn layer_visibility(snapshot: &Snapshot, layer: EntityId) -> Result<LayerVisibility> {
         Ok(snapshot.component::<SceneVisibility>(layer)?.map_or(
-            LayerVisibility {
-                visible: true,
-                opacity: 1.0,
-            },
+            LayerVisibility { visible: true, opacity: 1.0 },
             |visibility| LayerVisibility {
                 visible: visibility.visible,
                 opacity: visibility.opacity,
@@ -1195,11 +1121,8 @@ impl Project {
     }
 
     fn typography_view(typography: SceneTypography) -> Typography {
-        let writing_mode = if matches!(&typography.origin, Origin::User) {
-            typography.writing_mode
-        } else {
-            None
-        };
+        let writing_mode =
+            if matches!(&typography.origin, Origin::User) { typography.writing_mode } else { None };
         Typography {
             preferred_font: typography.preferred_font,
             font_weight: typography.font_weight,
@@ -1219,18 +1142,13 @@ impl Project {
             points: geometry
                 .points
                 .into_iter()
-                .map(|point| Point {
-                    x: point.x,
-                    y: point.y,
-                })
+                .map(|point| Point { x: point.x, y: point.y })
                 .collect(),
         }
     }
 
     fn asset_id(snapshot: &Snapshot, entity: EntityId, role: &str) -> Result<Option<String>> {
-        Ok(snapshot
-            .asset(entity, &AssetRole::new(role)?)?
-            .map(|asset| asset.blob.to_string()))
+        Ok(snapshot.asset(entity, &AssetRole::new(role)?)?.map(|asset| asset.blob.to_string()))
     }
 
     fn is_layer(snapshot: &Snapshot, entity: EntityId) -> Result<bool> {
@@ -1238,16 +1156,11 @@ impl Project {
             || snapshot.component::<SceneTextLayout>(entity)?.is_some()
             || snapshot.component::<SceneRasterLayer>(entity)?.is_some()
             || (snapshot.component::<SceneGeometry>(entity)?.is_some()
-                && snapshot
-                    .asset(entity, &AssetRole::new("source")?)?
-                    .is_some()))
+                && snapshot.asset(entity, &AssetRole::new("source")?)?.is_some()))
     }
 
     fn is_content_layer(snapshot: &Snapshot, entity: EntityId) -> Result<bool> {
-        Ok(
-            snapshot.component::<SceneGroup>(entity)?.is_none()
-                && Self::is_layer(snapshot, entity)?,
-        )
+        Ok(snapshot.component::<SceneGroup>(entity)?.is_none() && Self::is_layer(snapshot, entity)?)
     }
 
     fn collect_layer_views(
@@ -1269,11 +1182,7 @@ impl Project {
     }
 
     fn text_content(snapshot: &Snapshot, layer: EntityId) -> Result<EntityId> {
-        snapshot
-            .text_layer(layer)?
-            .content()
-            .map(|content| content.id())
-            .map_err(Into::into)
+        snapshot.text_layer(layer)?.content().map(|content| content.id()).map_err(Into::into)
     }
 
     fn placement(siblings: &[EntityId], moving: EntityId, index: usize) -> At {
@@ -1353,12 +1262,9 @@ fn validate_project_name(name: &str) -> Result<String> {
     }
     let stem = name.split('.').next().unwrap_or(name).to_ascii_uppercase();
     if matches!(stem.as_str(), "CON" | "PRN" | "AUX" | "NUL")
-        || stem
-            .strip_prefix("COM")
-            .or_else(|| stem.strip_prefix("LPT"))
-            .is_some_and(|number| {
-                matches!(number, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")
-            })
+        || stem.strip_prefix("COM").or_else(|| stem.strip_prefix("LPT")).is_some_and(|number| {
+            matches!(number, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")
+        })
     {
         bail!("project name is reserved by Windows");
     }
@@ -1373,19 +1279,14 @@ fn rasterize_stroke(
     points: &[ScenePoint],
 ) {
     let radius = f64::from(diameter) * 0.5;
-    for (start, end) in points
-        .iter()
-        .zip(points.iter().skip(1))
-        .chain(points.last().map(|point| (point, point)))
+    for (start, end) in
+        points.iter().zip(points.iter().skip(1)).chain(points.last().map(|point| (point, point)))
     {
         let left = (start.x.min(end.x) - radius - 0.5).floor().max(0.0) as u32;
         let top = (start.y.min(end.y) - radius - 0.5).floor().max(0.0) as u32;
-        let right = (start.x.max(end.x) + radius + 0.5)
-            .ceil()
-            .min(f64::from(image.width())) as u32;
-        let bottom = (start.y.max(end.y) + radius + 0.5)
-            .ceil()
-            .min(f64::from(image.height())) as u32;
+        let right = (start.x.max(end.x) + radius + 0.5).ceil().min(f64::from(image.width())) as u32;
+        let bottom =
+            (start.y.max(end.y) + radius + 0.5).ceil().min(f64::from(image.height())) as u32;
         let dx = end.x - start.x;
         let dy = end.y - start.y;
         let length_squared = dx * dx + dy * dy;
@@ -1422,10 +1323,10 @@ fn rasterize_stroke(
                             }
                         }
                         pixel[3] = (output_alpha * 255.0).round() as u8;
-                    }
+                    },
                     RasterStrokeMode::Erase => {
                         pixel[3] = (f32::from(pixel[3]) * (1.0 - coverage)).round() as u8;
-                    }
+                    },
                 }
             }
         }
@@ -1457,37 +1358,25 @@ mod tests {
             extensions: Default::default(),
         };
 
-        assert_eq!(
-            Project::typography_view(typography.clone()).writing_mode,
-            None
-        );
+        assert_eq!(Project::typography_view(typography.clone()).writing_mode, None);
         typography.origin = Origin::User;
-        assert_eq!(
-            Project::typography_view(typography).writing_mode,
-            Some(WritingMode::Vertical)
-        );
+        assert_eq!(Project::typography_view(typography).writing_mode, Some(WritingMode::Vertical));
     }
 
     #[tokio::test]
     async fn pipeline_commit_rebases_or_yields_to_the_manual_edit() {
         let mut session = Session::memory().await.unwrap();
         let mut setup = session.snapshot().edit();
-        let pipeline_page = setup
-            .add_page(PageDraft::new("pipeline", 100.0, 100.0), At::End)
-            .unwrap();
-        let manual_page = setup
-            .add_page(PageDraft::new("manual", 100.0, 100.0), At::End)
-            .unwrap();
+        let pipeline_page =
+            setup.add_page(PageDraft::new("pipeline", 100.0, 100.0), At::End).unwrap();
+        let manual_page = setup.add_page(PageDraft::new("manual", 100.0, 100.0), At::End).unwrap();
         session.commit(setup.finish().unwrap()).await.unwrap();
         let mut project = Project::new(session, "test".to_owned());
 
         let base = project.snapshot();
         let pipeline = base
             .patch(|edit| {
-                edit.set_page(
-                    pipeline_page,
-                    PageDraft::new("pipeline result", 100.0, 100.0),
-                )
+                edit.set_page(pipeline_page, PageDraft::new("pipeline result", 100.0, 100.0))
             })
             .unwrap();
         let manual = base
@@ -1497,33 +1386,15 @@ mod tests {
 
         let commit = project.commit_rebased(pipeline).await.unwrap().unwrap();
         assert_eq!(
-            commit
-                .snapshot
-                .page(pipeline_page)
-                .unwrap()
-                .page()
-                .unwrap()
-                .label,
+            commit.snapshot.page(pipeline_page).unwrap().page().unwrap().label,
             "pipeline result"
         );
-        assert_eq!(
-            commit
-                .snapshot
-                .page(manual_page)
-                .unwrap()
-                .page()
-                .unwrap()
-                .label,
-            "manual edit"
-        );
+        assert_eq!(commit.snapshot.page(manual_page).unwrap().page().unwrap().label, "manual edit");
 
         let base = project.snapshot();
         let pipeline = base
             .patch(|edit| {
-                edit.set_page(
-                    pipeline_page,
-                    PageDraft::new("stale pipeline", 100.0, 100.0),
-                )
+                edit.set_page(pipeline_page, PageDraft::new("stale pipeline", 100.0, 100.0))
             })
             .unwrap();
         let manual = base
@@ -1535,13 +1406,7 @@ mod tests {
 
         assert!(project.commit_rebased(pipeline).await.unwrap().is_none());
         assert_eq!(
-            project
-                .snapshot()
-                .page(pipeline_page)
-                .unwrap()
-                .page()
-                .unwrap()
-                .label,
+            project.snapshot().page(pipeline_page).unwrap().page().unwrap().label,
             "latest manual"
         );
     }
@@ -1549,17 +1414,8 @@ mod tests {
     #[test]
     fn raster_strokes_are_continuous_and_erasable() {
         let mut image = RgbaImage::new(32, 16);
-        let points = [
-            ScenePoint { x: 4.0, y: 8.0 },
-            ScenePoint { x: 28.0, y: 8.0 },
-        ];
-        rasterize_stroke(
-            &mut image,
-            RasterStrokeMode::Paint,
-            [210, 40, 20, 255],
-            5.0,
-            &points,
-        );
+        let points = [ScenePoint { x: 4.0, y: 8.0 }, ScenePoint { x: 28.0, y: 8.0 }];
+        rasterize_stroke(&mut image, RasterStrokeMode::Paint, [210, 40, 20, 255], 5.0, &points);
         for x in 4..28 {
             assert_eq!(image.get_pixel(x, 8).0, [210, 40, 20, 255]);
         }

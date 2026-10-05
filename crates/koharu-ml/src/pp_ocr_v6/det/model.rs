@@ -26,19 +26,12 @@ impl Model {
     pub(crate) fn new(config: &PPOCRV6MediumDetConfig, device: Device) -> Self {
         let mut vs = nn::VarStore::new(device);
         crate::backend::set_precision(&mut vs);
-        let backbone = PPLCNetV4Backbone::new(
-            &(&vs.root() / "model" / "backbone"),
-            &config.backbone_config,
-        );
+        let backbone =
+            PPLCNetV4Backbone::new(&(&vs.root() / "model" / "backbone"), &config.backbone_config);
         let neck = Neck::new(&(&vs.root() / "model" / "neck"), config);
         let head = Head::new(&(&vs.root() / "head"), config);
         vs.freeze();
-        Self {
-            vs,
-            backbone,
-            neck,
-            head,
-        }
+        Self { vs, backbone, neck, head }
     }
 
     pub(crate) fn load(&mut self, path: impl AsRef<Path>) -> Result<()> {
@@ -76,12 +69,7 @@ fn conv2d(
         in_channels,
         out_channels,
         kernel_size,
-        nn::ConvConfigND {
-            stride,
-            padding,
-            bias,
-            ..Default::default()
-        },
+        nn::ConvConfigND { stride, padding, bias, ..Default::default() },
     )
 }
 
@@ -111,21 +99,14 @@ impl ConvBatchnormLayer {
                 in_channels,
                 out_channels,
                 kernel_size,
-                nn::ConvConfig {
-                    stride,
-                    padding,
-                    bias,
-                    ..Default::default()
-                },
+                nn::ConvConfig { stride, padding, bias, ..Default::default() },
             ),
             norm: nn::batch_norm2d(path / "norm", out_channels, Default::default()),
         }
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.norm
-            .forward_t(&self.convolution.forward(hidden_states), false)
-            .relu()
+        self.norm.forward_t(&self.convolution.forward(hidden_states), false).relu()
     }
 }
 
@@ -231,26 +212,14 @@ impl IntraclassBlock {
         let residual = hidden_states;
         let hidden_states = self.conv_reduce_channel.forward(hidden_states);
         let hidden_states = self.symmetric_conv_long_longratio.forward(&hidden_states)
-            + self
-                .vertical_long_to_small_conv_longratio
-                .forward(&hidden_states)
-            + self
-                .horizontal_small_to_long_conv_longratio
-                .forward(&hidden_states);
+            + self.vertical_long_to_small_conv_longratio.forward(&hidden_states)
+            + self.horizontal_small_to_long_conv_longratio.forward(&hidden_states);
         let hidden_states = self.symmetric_conv_long_midratio.forward(&hidden_states)
-            + self
-                .vertical_long_to_small_conv_midratio
-                .forward(&hidden_states)
-            + self
-                .horizontal_small_to_long_conv_midratio
-                .forward(&hidden_states);
+            + self.vertical_long_to_small_conv_midratio.forward(&hidden_states)
+            + self.horizontal_small_to_long_conv_midratio.forward(&hidden_states);
         let hidden_states = self.symmetric_conv_long_shortratio.forward(&hidden_states)
-            + self
-                .vertical_long_to_small_conv_shortratio
-                .forward(&hidden_states)
-            + self
-                .horizontal_small_to_long_conv_shortratio
-                .forward(&hidden_states);
+            + self.vertical_long_to_small_conv_shortratio.forward(&hidden_states)
+            + self.horizontal_small_to_long_conv_shortratio.forward(&hidden_states);
         residual + self.conv_final.forward(&hidden_states)
     }
 }
@@ -279,20 +248,14 @@ impl Neck {
                 channels,
                 config.neck_out_channels,
                 1,
-                nn::ConvConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::ConvConfig { bias: false, ..Default::default() },
             ));
             input_feature_projection_convolution.push(nn::conv2d(
                 path / "input_feature_projection_convolution" / index,
                 config.neck_out_channels,
                 config.neck_out_channels / 4,
                 9,
-                nn::ConvConfig {
-                    padding: 4,
-                    ..Default::default()
-                },
+                nn::ConvConfig { padding: 4, ..Default::default() },
             ));
             if index > 0 {
                 path_aggregation_head_convolution.push(nn::conv2d(
@@ -300,12 +263,7 @@ impl Neck {
                     config.neck_out_channels / 4,
                     config.neck_out_channels / 4,
                     3,
-                    nn::ConvConfig {
-                        stride: 2,
-                        padding: 1,
-                        bias: false,
-                        ..Default::default()
-                    },
+                    nn::ConvConfig { stride: 2, padding: 1, bias: false, ..Default::default() },
                 ));
             }
             path_aggregation_lateral_convolution.push(nn::conv2d(
@@ -313,10 +271,7 @@ impl Neck {
                 config.neck_out_channels / 4,
                 config.neck_out_channels / 4,
                 9,
-                nn::ConvConfig {
-                    padding: 4,
-                    ..Default::default()
-                },
+                nn::ConvConfig { padding: 4, ..Default::default() },
             ));
         }
         let intraclass_blocks = (0..config.intraclass_block_number)
@@ -346,10 +301,7 @@ impl Neck {
             .map(|(feature, convolution)| convolution.forward(feature))
             .collect::<Vec<_>>();
 
-        let mut top_down = channel_adjusted
-            .iter()
-            .map(Tensor::shallow_clone)
-            .collect::<Vec<_>>();
+        let mut top_down = channel_adjusted.iter().map(Tensor::shallow_clone).collect::<Vec<_>>();
         for index in (0..top_down.len() - 1).rev() {
             top_down[index] = &channel_adjusted[index] + upsample_nearest(&top_down[index + 1], 2);
         }
@@ -358,19 +310,13 @@ impl Neck {
             .iter()
             .enumerate()
             .map(|(index, feature)| {
-                let feature = if index + 1 == top_down.len() {
-                    &channel_adjusted[index]
-                } else {
-                    feature
-                };
+                let feature =
+                    if index + 1 == top_down.len() { &channel_adjusted[index] } else { feature };
                 self.input_feature_projection_convolution[index].forward(feature)
             })
             .collect::<Vec<_>>();
 
-        let mut bottom_up = projected
-            .iter()
-            .map(Tensor::shallow_clone)
-            .collect::<Vec<_>>();
+        let mut bottom_up = projected.iter().map(Tensor::shallow_clone).collect::<Vec<_>>();
         for index in 1..bottom_up.len() {
             bottom_up[index] = &projected[index]
                 + self.path_aggregation_head_convolution[index - 1].forward(&bottom_up[index - 1]);
@@ -378,11 +324,7 @@ impl Neck {
 
         let lateral_refined = (0..projected.len())
             .map(|index| {
-                let feature = if index == 0 {
-                    &projected[0]
-                } else {
-                    &bottom_up[index]
-                };
+                let feature = if index == 0 { &projected[0] } else { &bottom_up[index] };
                 self.path_aggregation_lateral_convolution[index].forward(feature)
             })
             .collect::<Vec<_>>();
@@ -391,17 +333,18 @@ impl Neck {
             .zip(&self.intraclass_blocks)
             .map(|(feature, block)| block.forward(feature))
             .collect::<Vec<_>>();
-        let mut upsampled = intraclass_refined
-            .iter()
-            .zip(&self.scale_factor_list)
-            .map(|(feature, &scale)| {
-                if scale > 1 {
-                    upsample_nearest(feature, scale)
-                } else {
-                    feature.shallow_clone()
-                }
-            })
-            .collect::<Vec<_>>();
+        let mut upsampled =
+            intraclass_refined
+                .iter()
+                .zip(&self.scale_factor_list)
+                .map(|(feature, &scale)| {
+                    if scale > 1 {
+                        upsample_nearest(feature, scale)
+                    } else {
+                        feature.shallow_clone()
+                    }
+                })
+                .collect::<Vec<_>>();
         upsampled.reverse();
         Tensor::cat(&upsampled, 1)
     }
@@ -433,10 +376,7 @@ impl Head {
                 in_channels / 4,
                 in_channels / 4,
                 config.kernel_list[1],
-                nn::ConvTransposeConfig {
-                    stride: 2,
-                    ..Default::default()
-                },
+                nn::ConvTransposeConfig { stride: 2, ..Default::default() },
             ),
             conv_up_norm: nn::batch_norm2d(
                 path / "conv_up" / "norm",
@@ -448,10 +388,7 @@ impl Head {
                 in_channels / 4,
                 1,
                 config.kernel_list[2],
-                nn::ConvTransposeConfig {
-                    stride: 2,
-                    ..Default::default()
-                },
+                nn::ConvTransposeConfig { stride: 2, ..Default::default() },
             ),
         }
     }
@@ -472,11 +409,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads and loads the LibTorch runtime"]
     async fn medium_detector_tree_matches_checkpoint() {
-        Runtime::discover([Feature::Torch])
-            .unwrap()
-            .initialize()
-            .await
-            .unwrap();
+        Runtime::discover([Feature::Torch]).unwrap().initialize().await.unwrap();
         let config: PPOCRV6MediumDetConfig = serde_json::from_str(
             r#"{
                 "backbone_config": {
@@ -495,9 +428,6 @@ mod tests {
         let model = Model::new(&config, Device::Cpu);
         let variables = model.vs.variables();
         assert_eq!(variables.len(), 350);
-        assert_eq!(
-            variables.values().map(Tensor::numel).sum::<usize>(),
-            21_993_025
-        );
+        assert_eq!(variables.values().map(Tensor::numel).sum::<usize>(), 21_993_025);
     }
 }

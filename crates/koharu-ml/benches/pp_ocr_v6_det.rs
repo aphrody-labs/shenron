@@ -24,17 +24,12 @@ async fn main() -> Result<()> {
         .warm_up_time(Duration::from_secs(3))
         .measurement_time(Duration::from_secs(10))
         .configure_from_args();
-    let benchmark = format!(
-        "pp_ocr_v6/det/inference/{}x{}",
-        image.width(),
-        image.height()
-    );
+    let benchmark = format!("pp_ocr_v6/det/inference/{}x{}", image.width(), image.height());
 
     criterion.bench_function(&benchmark, |bencher| {
         bencher.iter(|| {
-            let detections = model
-                .inference(black_box(&image))
-                .expect("PP-OCRv6 detector inference failed");
+            let detections =
+                model.inference(black_box(&image)).expect("PP-OCRv6 detector inference failed");
             black_box(detections);
         });
     });

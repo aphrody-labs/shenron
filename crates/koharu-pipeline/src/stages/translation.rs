@@ -62,10 +62,8 @@ impl StageProcessor for Processor {
         {
             request = request.with_image(image);
         }
-        let (provider, translated) = self
-            .translator
-            .translate(&self.config.model, self.config.generation, request)
-            .await?;
+        let (provider, translated) =
+            self.translator.translate(&self.config.model, self.config.generation, request).await?;
         let language = LanguageTag::new(self.config.target_language.tag())?;
         let generated = generation(PRODUCER, provider)?;
         let mut edit = input.scene.edit_as(generated.clone());
@@ -81,11 +79,7 @@ impl StageProcessor for Processor {
             {
                 continue;
             }
-            let text = if source.trim() == "\u{2026}" {
-                "\u{2026}".to_owned()
-            } else {
-                text
-            };
+            let text = if source.trim() == "\u{2026}" { "\u{2026}".to_owned() } else { text };
             edit.set(
                 entity,
                 &Translation {

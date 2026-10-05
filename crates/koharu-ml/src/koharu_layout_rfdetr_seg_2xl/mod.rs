@@ -44,21 +44,15 @@ impl KoharuLayoutRFDetrSeg2XL {
             .resolve()
             .await
             .context("failed to resolve KoharuLayout RF-DETR inference config")?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve KoharuLayout RF-DETR weights")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve KoharuLayout RF-DETR weights")?;
         let config = KoharuLayoutRFDetrSeg2XLConfig::from_file(&config_path)?;
         let processor = KoharuLayoutRFDetrImageProcessor::new(&config)?;
         let mut model = Model::new(device);
         model
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<KoharuLayoutDetections> {
@@ -73,8 +67,7 @@ impl KoharuLayoutRFDetrSeg2XL {
         koharu_torch::no_grad(|| {
             let pixel_values = self.processor.preprocess(image, self.device)?;
             let output = self.model.forward(&pixel_values);
-            self.processor
-                .postprocess(&output, image.width(), image.height(), thresholds)
+            self.processor.postprocess(&output, image.width(), image.height(), thresholds)
         })
     }
 
@@ -108,10 +101,8 @@ mod tests {
         let best = &result.detections[0];
         assert_eq!(best.label, "bubble");
         assert!((best.score - 0.968_856_2).abs() < 0.01);
-        for (actual, expected) in best
-            .bbox
-            .into_iter()
-            .zip([566.220_7, 550.019_5, 691.044_9, 724.043])
+        for (actual, expected) in
+            best.bbox.into_iter().zip([566.220_7, 550.019_5, 691.044_9, 724.043])
         {
             assert!((actual - expected).abs() < 6.0);
         }
@@ -129,17 +120,13 @@ mod tests {
                 detection.label == "panel" && detection.bbox[1] > 500.0 && detection.bbox[1] < 700.0
             })
             .expect("middle page panel");
-        for (actual, expected) in lower_panel
-            .bbox
-            .into_iter()
-            .zip([69.179_69, 799.453_1, 700.820_3, 1_006.171_9])
+        for (actual, expected) in
+            lower_panel.bbox.into_iter().zip([69.179_69, 799.453_1, 700.820_3, 1_006.171_9])
         {
             assert!((actual - expected).abs() < 7.0);
         }
-        for (actual, expected) in middle_panel
-            .bbox
-            .into_iter()
-            .zip([70.683_59, 550.546_9, 699.316_4, 782.578_1])
+        for (actual, expected) in
+            middle_panel.bbox.into_iter().zip([70.683_59, 550.546_9, 699.316_4, 782.578_1])
         {
             assert!((actual - expected).abs() < 3.0);
         }

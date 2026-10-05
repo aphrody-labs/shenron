@@ -41,13 +41,7 @@ impl<'de> Deserialize<'de> for BlockConfig {
     {
         let (kernel_size, in_channels, out_channels, stride, use_squeeze_excitation) =
             <(i64, i64, i64, Spatial, bool)>::deserialize(deserializer)?;
-        Ok(Self {
-            kernel_size,
-            in_channels,
-            out_channels,
-            stride,
-            use_squeeze_excitation,
-        })
+        Ok(Self { kernel_size, in_channels, out_channels, stride, use_squeeze_excitation })
     }
 }
 
@@ -134,7 +128,7 @@ impl<'de> Deserialize<'de> for PPLCNetV4Config {
                 }
                 config.out_features = features;
                 config.out_indices = indices;
-            }
+            },
             (Some(features), None) => {
                 config.out_indices = features
                     .iter()
@@ -142,7 +136,7 @@ impl<'de> Deserialize<'de> for PPLCNetV4Config {
                     .collect::<Option<Vec<_>>>()
                     .ok_or_else(|| serde::de::Error::custom("invalid PP-LCNetV4 out_features"))?;
                 config.out_features = features;
-            }
+            },
             (None, Some(indices)) => {
                 config.out_features = indices
                     .iter()
@@ -150,8 +144,8 @@ impl<'de> Deserialize<'de> for PPLCNetV4Config {
                     .collect::<Option<Vec<_>>>()
                     .ok_or_else(|| serde::de::Error::custom("invalid PP-LCNetV4 out_indices"))?;
                 config.out_indices = indices;
-            }
-            (None, None) => {}
+            },
+            (None, None) => {},
         }
         Ok(config)
     }
@@ -178,10 +172,7 @@ impl Default for PPLCNetV4Config {
     fn default() -> Self {
         let block_configs = vec![
             vec![(3, 96, 96, Spatial::Scalar(1), true)],
-            vec![
-                (3, 96, 96, Spatial::Scalar(1), false),
-                (3, 96, 96, Spatial::Scalar(1), false),
-            ],
+            vec![(3, 96, 96, Spatial::Scalar(1), false), (3, 96, 96, Spatial::Scalar(1), false)],
             vec![
                 (3, 96, 192, Spatial::Pair([2, 1]), false),
                 (3, 192, 192, Spatial::Scalar(1), true),
@@ -201,17 +192,15 @@ impl Default for PPLCNetV4Config {
         .map(|stage| {
             stage
                 .into_iter()
-                .map(
-                    |(kernel_size, in_channels, out_channels, stride, use_squeeze_excitation)| {
-                        BlockConfig {
-                            kernel_size,
-                            in_channels,
-                            out_channels,
-                            stride,
-                            use_squeeze_excitation,
-                        }
-                    },
-                )
+                .map(|(kernel_size, in_channels, out_channels, stride, use_squeeze_excitation)| {
+                    BlockConfig {
+                        kernel_size,
+                        in_channels,
+                        out_channels,
+                        stride,
+                        use_squeeze_excitation,
+                    }
+                })
                 .collect()
         })
         .collect();
@@ -462,11 +451,7 @@ impl DepthwiseSeparableConvLayer {
         let residual = hidden_states.shallow_clone();
         hidden_states = self.channel_conv1.forward(&hidden_states).gelu("none");
         hidden_states = self.channel_conv2.forward(&hidden_states);
-        if self.has_residual {
-            hidden_states + residual
-        } else {
-            hidden_states
-        }
+        if self.has_residual { hidden_states + residual } else { hidden_states }
     }
 }
 
@@ -582,8 +567,7 @@ impl SmallStem {
     }
 
     fn forward(&self, pixel_values: &Tensor) -> Tensor {
-        self.conv2
-            .forward(&self.conv1.forward(pixel_values).gelu("none"))
+        self.conv2.forward(&self.conv1.forward(pixel_values).gelu("none"))
     }
 }
 

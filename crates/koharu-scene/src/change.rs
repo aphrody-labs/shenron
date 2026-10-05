@@ -71,36 +71,30 @@ impl Change {
         for operation in operations {
             match operation {
                 Operation::InsertPage { id, .. } => {
-                    entities
-                        .entry(*id)
-                        .and_modify(|state| state.1 = true)
-                        .or_insert((false, true));
+                    entities.entry(*id).and_modify(|state| state.1 = true).or_insert((false, true));
                     hierarchy.insert(*id);
-                }
+                },
                 Operation::InsertEntity { page, id, .. } => {
-                    entities
-                        .entry(*id)
-                        .and_modify(|state| state.1 = true)
-                        .or_insert((false, true));
+                    entities.entry(*id).and_modify(|state| state.1 = true).or_insert((false, true));
                     hierarchy.extend([*page, *id]);
-                }
+                },
                 Operation::RemovePage { id, .. } => {
                     entities
                         .entry(*id)
                         .and_modify(|state| state.1 = false)
                         .or_insert((true, false));
                     hierarchy.insert(*id);
-                }
+                },
                 Operation::RemoveEntity { page, id, .. } => {
                     entities
                         .entry(*id)
                         .and_modify(|state| state.1 = false)
                         .or_insert((true, false));
                     hierarchy.extend([*page, *id]);
-                }
+                },
                 Operation::MovePage { id, .. } => {
                     hierarchy.insert(*id);
-                }
+                },
                 Operation::MoveEntity {
                     id,
                     before_page,
@@ -116,13 +110,8 @@ impl Change {
                         *after_page,
                         *after_parent,
                     ]);
-                }
-                Operation::ReplaceComponent {
-                    owner,
-                    key,
-                    before,
-                    after,
-                } => {
+                },
+                Operation::ReplaceComponent { owner, key, before, after } => {
                     let change = match (before, after) {
                         (None, Some(_)) => ValueChangeKind::Inserted,
                         (Some(_), None) => ValueChangeKind::Removed,
@@ -130,22 +119,18 @@ impl Change {
                     };
                     components.insert(
                         (*owner, key.kind.clone()),
-                        ComponentChange {
-                            owner: *owner,
-                            kind: key.kind.clone(),
-                            change,
-                        },
+                        ComponentChange { owner: *owner, kind: key.kind.clone(), change },
                     );
-                }
+                },
                 Operation::InsertRelation { id, .. } => {
                     relations.insert(*id, RelationChange::Inserted(*id));
-                }
+                },
                 Operation::RemoveRelation { id, .. } => {
                     relations.insert(*id, RelationChange::Removed(*id));
-                }
+                },
                 Operation::ReplaceRelation { id, .. } => {
                     relations.entry(*id).or_insert(RelationChange::Changed(*id));
-                }
+                },
             }
         }
 

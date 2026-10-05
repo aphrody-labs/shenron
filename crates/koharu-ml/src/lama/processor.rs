@@ -39,10 +39,7 @@ impl InpaintModel {
             image.dimensions(),
             mask.dimensions()
         );
-        ensure!(
-            image.width() > 0 && image.height() > 0,
-            "image dimensions must be non-zero"
-        );
+        ensure!(image.width() > 0 && image.height() > 0, "image dimensions must be non-zero");
 
         match config.hd_strategy {
             HDStrategy::Crop
@@ -75,7 +72,7 @@ impl InpaintModel {
                     image::imageops::replace(&mut result, &crop_result, left.into(), top.into());
                 }
                 Ok(result)
-            }
+            },
             HDStrategy::Resize
                 if image.width().max(image.height()) > config.hd_strategy_resize_limit =>
             {
@@ -97,7 +94,7 @@ impl InpaintModel {
                     }
                 }
                 Ok(result)
-            }
+            },
             _ => self.pad_forward(model, &image, mask, config),
         }
     }
@@ -146,10 +143,7 @@ impl InpaintModel {
 
 fn resize_dimensions(width: u32, height: u32, size_limit: u32) -> (u32, u32) {
     let ratio = size_limit as f64 / width.max(height) as f64;
-    (
-        (width as f64 * ratio + 0.5) as u32,
-        (height as f64 * ratio + 0.5) as u32,
-    )
+    ((width as f64 * ratio + 0.5) as u32, (height as f64 * ratio + 0.5) as u32)
 }
 
 fn resize_rgb(image: &RgbImage, width: u32, height: u32) -> Result<RgbImage> {
@@ -187,10 +181,8 @@ fn boxes_from_mask(mask: &GrayImage) -> Vec<[u32; 4]> {
         let Some(row_left) = row.iter().position(|value| *value > 127) else {
             continue;
         };
-        let row_right = row
-            .iter()
-            .rposition(|value| *value > 127)
-            .expect("masked row must have a right edge");
+        let row_right =
+            row.iter().rposition(|value| *value > 127).expect("masked row must have a right edge");
         left = left.min(row_left as u32);
         top = top.min(y);
         right = right.max(row_right as u32 + 1);
@@ -283,12 +275,8 @@ fn crop_box(
 }
 
 fn post_process(tensor: &Tensor, width: u32, height: u32) -> Result<RgbImage> {
-    let tensor = tensor
-        .squeeze_dim(0)
-        .permute([1, 2, 0])
-        .contiguous()
-        .to_device(Device::Cpu)
-        .view([-1]);
+    let tensor =
+        tensor.squeeze_dim(0).permute([1, 2, 0]).contiguous().to_device(Device::Cpu).view([-1]);
     let rgb = Vec::<u8>::try_from(&tensor)?;
     RgbImage::from_raw(width, height, rgb).context("failed to convert LaMa tensor to RGB image")
 }
@@ -300,17 +288,11 @@ fn pad_img_to_modulo(tensor: Tensor, modulo: u32) -> Tensor {
     let out_width = ceil_modulo(width, modulo);
     let height_indices = symmetric_indices(height, out_height, tensor.device());
     let width_indices = symmetric_indices(width, out_width, tensor.device());
-    tensor
-        .index_select(2, &height_indices)
-        .index_select(3, &width_indices)
+    tensor.index_select(2, &height_indices).index_select(3, &width_indices)
 }
 
 fn ceil_modulo(value: u32, modulo: u32) -> u32 {
-    if value.is_multiple_of(modulo) {
-        value
-    } else {
-        (value / modulo + 1) * modulo
-    }
+    if value.is_multiple_of(modulo) { value } else { (value / modulo + 1) * modulo }
 }
 
 fn symmetric_indices(length: u32, output_length: u32, device: Device) -> Tensor {
@@ -329,9 +311,5 @@ fn symmetric_indices(length: u32, output_length: u32, device: Device) -> Tensor 
 
 fn symmetric_index(index: u32, length: u32) -> u32 {
     let index = index % (length * 2);
-    if index < length {
-        index
-    } else {
-        length * 2 - index - 1
-    }
+    if index < length { index } else { length * 2 - index - 1 }
 }

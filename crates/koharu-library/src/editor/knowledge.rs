@@ -73,10 +73,8 @@ impl ShenronKnowledge {
             .await
             .context("the local Shenron server did not answer")?;
         let status = response.status();
-        let value: Value = response
-            .json()
-            .await
-            .context("the local Shenron search returned no JSON")?;
+        let value: Value =
+            response.json().await.context("the local Shenron search returned no JSON")?;
         if !status.is_success() {
             bail!(
                 "the local Shenron search failed ({status}): {}",
@@ -125,12 +123,12 @@ impl Toolbox for ShenronKnowledge {
                 let entries = lookup(lexicon()?, &request.term);
                 Invocation::read(json!({ "term": request.term, "entries": entries }))
             })),
-            "search_dragon_ball" if self.server.is_some() => Some(
-                match arguments::<SearchDragonBall>(call) {
+            "search_dragon_ball" if self.server.is_some() => {
+                Some(match arguments::<SearchDragonBall>(call) {
                     Ok(request) => self.search(request).await.and_then(Invocation::read),
                     Err(error) => Err(error),
-                },
-            ),
+                })
+            },
             _ => None,
         }
     }
@@ -170,11 +168,7 @@ fn lookup<'a>(entries: &'a [LexiconEntry], term: &str) -> Vec<&'a LexiconEntry> 
         })
         .collect::<Vec<_>>();
     found.sort_by_key(|(inexact, length, _)| (*inexact, *length));
-    found
-        .into_iter()
-        .take(MAX_LEXICON_ENTRIES)
-        .map(|(_, _, entry)| entry)
-        .collect()
+    found.into_iter().take(MAX_LEXICON_ENTRIES).map(|(_, _, entry)| entry).collect()
 }
 
 #[cfg(test)]

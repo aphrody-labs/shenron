@@ -34,14 +34,9 @@ impl ImageCache {
                 let bytes = scene.read_blob(asset.blob).await?;
                 let role = role.clone();
                 tokio_rayon::spawn(move || {
-                    image::load_from_memory(&bytes)
-                        .map(Arc::new)
-                        .with_context(|| {
-                            format!(
-                                "failed to decode {} image for entity {entity}",
-                                role.as_str()
-                            )
-                        })
+                    image::load_from_memory(&bytes).map(Arc::new).with_context(|| {
+                        format!("failed to decode {} image for entity {entity}", role.as_str())
+                    })
                 })
                 .await
             })

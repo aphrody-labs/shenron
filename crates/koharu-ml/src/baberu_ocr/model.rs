@@ -64,8 +64,7 @@ impl Model {
         self.model.set_kind(self.vs.kind());
         // The processor always emits one fixed 224x224 crop, so cache the exact
         // DINOv2 bicubic position interpolation instead of repeating it per crop.
-        self.vision_encoder
-            .cache_position_embeddings(image_size, image_size);
+        self.vision_encoder.cache_position_embeddings(image_size, image_size);
         Ok(())
     }
 
@@ -88,11 +87,9 @@ impl Model {
         let pixel_values = pixel_values.to_kind(self.vs.kind());
         let vision_hidden_states = self.vision_encoder.forward(&pixel_values);
         let vision_embeds =
-            self.projector
-                .forward(&vision_hidden_states.narrow(1, 1, self.vision_num_tokens));
-        let bos = Tensor::from_slice(&[self.bos_token_id])
-            .view([1, 1])
-            .to_device(pixel_values.device());
+            self.projector.forward(&vision_hidden_states.narrow(1, 1, self.vision_num_tokens));
+        let bos =
+            Tensor::from_slice(&[self.bos_token_id]).view([1, 1]).to_device(pixel_values.device());
         let text_embeds = self.model.embed_tokens.forward(&bos);
         let inputs_embeds = Tensor::cat(&[vision_embeds, text_embeds], 1);
         let (hidden_states, mut cache) = self.model.forward(inputs_embeds, None);
@@ -108,16 +105,11 @@ impl Model {
                 logits = apply_repetition_penalty(&logits, &seen_ids, repetition_penalty);
             }
             if max_content_run != 0
-                && tokens
-                    .last()
-                    .is_some_and(|token_id| tokenizer.is_content(*token_id))
+                && tokens.last().is_some_and(|token_id| tokenizer.is_content(*token_id))
             {
                 let token_id = *tokens.last().expect("last token was checked");
-                let run = tokens
-                    .iter()
-                    .rev()
-                    .take_while(|candidate| **candidate == token_id)
-                    .count();
+                let run =
+                    tokens.iter().rev().take_while(|candidate| **candidate == token_id).count();
                 if run >= max_content_run {
                     logits = logits.scatter_value(
                         1,
@@ -136,9 +128,8 @@ impl Model {
                 break;
             }
 
-            let next_id = Tensor::from_slice(&[next_token])
-                .view([1, 1])
-                .to_device(pixel_values.device());
+            let next_id =
+                Tensor::from_slice(&[next_token]).view([1, 1]).to_device(pixel_values.device());
             if unique_tokens.insert(next_token) {
                 seen_ids = Tensor::cat(&[seen_ids, next_id.shallow_clone()], 1);
             }
@@ -156,11 +147,7 @@ impl Model {
         // that row avoids materializing 256 unused vision-prefix logit rows.
         let last_hidden_state = hidden_states.select(1, hidden_states.size()[1] - 1);
         let logits = last_hidden_state.linear(&self.model.embed_tokens.ws, None::<&Tensor>);
-        if let Some(cap) = self.final_logit_softcap {
-            (logits / cap).tanh() * cap
-        } else {
-            logits
-        }
+        if let Some(cap) = self.final_logit_softcap { (logits / cap).tanh() * cap } else { logits }
     }
 }
 
@@ -184,11 +171,7 @@ impl Dinov2Model {
         Self {
             embeddings: Dinov2Embeddings::new(&(path / "embeddings"), config),
             encoder: Dinov2Encoder::new(&(path / "encoder"), config),
-            layernorm: layer_norm(
-                &(path / "layernorm"),
-                config.hidden_size,
-                config.layer_norm_eps,
-            ),
+            layernorm: layer_norm(&(path / "layernorm"), config.hidden_size, config.layer_norm_eps),
         }
     }
 
@@ -216,20 +199,12 @@ impl Dinov2Embeddings {
     fn new(path: &nn::Path<'_>, config: &Dinov2Config) -> Self {
         let patches_per_side = config.image_size / config.patch_size;
         Self {
-            cls_token: path.var(
-                "cls_token",
-                &[1, 1, config.hidden_size],
-                nn::Init::Const(0.0),
-            ),
+            cls_token: path.var("cls_token", &[1, 1, config.hidden_size], nn::Init::Const(0.0)),
             _mask_token: path.var("mask_token", &[1, config.hidden_size], nn::Init::Const(0.0)),
             patch_embeddings: Dinov2PatchEmbeddings::new(&(path / "patch_embeddings"), config),
             position_embeddings: path.var(
                 "position_embeddings",
-                &[
-                    1,
-                    patches_per_side * patches_per_side + 1,
-                    config.hidden_size,
-                ],
+                &[1, patches_per_side * patches_per_side + 1, config.hidden_size],
                 nn::Init::Const(0.0),
             ),
             interpolated_position_embeddings: None,
@@ -289,20 +264,13 @@ impl Dinov2PatchEmbeddings {
                 config.num_channels,
                 config.hidden_size,
                 config.patch_size,
-                nn::ConvConfig {
-                    stride: config.patch_size,
-                    bias: true,
-                    ..Default::default()
-                },
+                nn::ConvConfig { stride: config.patch_size, bias: true, ..Default::default() },
             ),
         }
     }
 
     fn forward(&self, pixel_values: &Tensor) -> Tensor {
-        self.projection
-            .forward(pixel_values)
-            .flatten(2, -1)
-            .transpose(1, 2)
+        self.projection.forward(pixel_values).flatten(2, -1).transpose(1, 2)
     }
 }
 
@@ -364,9 +332,7 @@ impl Dinov2Layer {
                 .layer_scale1
                 .forward(&self.attention.forward(&self.norm1.forward(hidden_states)));
         &hidden_states
-            + self
-                .layer_scale2
-                .forward(&self.mlp.forward(&self.norm2.forward(&hidden_states)))
+            + self.layer_scale2.forward(&self.mlp.forward(&self.norm2.forward(&hidden_states)))
     }
 }
 
@@ -400,10 +366,7 @@ struct Dinov2SelfAttention {
 
 impl Dinov2SelfAttention {
     fn new(path: &nn::Path<'_>, config: &Dinov2Config) -> Self {
-        let linear_config = nn::LinearConfig {
-            bias: config.qkv_bias,
-            ..Default::default()
-        };
+        let linear_config = nn::LinearConfig { bias: config.qkv_bias, ..Default::default() };
         Self {
             query: nn::linear(
                 path / "query",
@@ -411,12 +374,7 @@ impl Dinov2SelfAttention {
                 config.hidden_size,
                 linear_config,
             ),
-            key: nn::linear(
-                path / "key",
-                config.hidden_size,
-                config.hidden_size,
-                linear_config,
-            ),
+            key: nn::linear(path / "key", config.hidden_size, config.hidden_size, linear_config),
             value: nn::linear(
                 path / "value",
                 config.hidden_size,
@@ -433,17 +391,9 @@ impl Dinov2SelfAttention {
         let batch_size = size[0];
         let sequence_length = size[1];
         let shape = [batch_size, sequence_length, self.num_heads, self.head_dim];
-        let query = self
-            .query
-            .forward(hidden_states)
-            .view(shape)
-            .transpose(1, 2);
+        let query = self.query.forward(hidden_states).view(shape).transpose(1, 2);
         let key = self.key.forward(hidden_states).view(shape).transpose(1, 2);
-        let value = self
-            .value
-            .forward(hidden_states)
-            .view(shape)
-            .transpose(1, 2);
+        let value = self.value.forward(hidden_states).view(shape).transpose(1, 2);
         Tensor::scaled_dot_product_attention(
             &query,
             &key,
@@ -489,9 +439,7 @@ struct Dinov2LayerScale {
 
 impl Dinov2LayerScale {
     fn new(path: &nn::Path<'_>, hidden_size: i64, value: f64) -> Self {
-        Self {
-            lambda1: path.var("lambda1", &[hidden_size], nn::Init::Const(value)),
-        }
+        Self { lambda1: path.var("lambda1", &[hidden_size], nn::Init::Const(value)) }
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
@@ -524,8 +472,7 @@ impl Dinov2Mlp {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.fc2
-            .forward(&self.fc1.forward(hidden_states).gelu("none"))
+        self.fc2.forward(&self.fc1.forward(hidden_states).gelu("none"))
     }
 }
 
@@ -554,8 +501,7 @@ impl BaberuVisionProjector {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.linear2
-            .forward(&self.linear1.forward(hidden_states).gelu("none"))
+        self.linear2.forward(&self.linear1.forward(hidden_states).gelu("none"))
     }
 }
 
@@ -575,10 +521,7 @@ impl BaberuModel {
                 path / "embed_tokens",
                 config.vocab_size,
                 config.hidden_size,
-                nn::EmbeddingConfig {
-                    padding_idx: config.pad_token_id,
-                    ..Default::default()
-                },
+                nn::EmbeddingConfig { padding_idx: config.pad_token_id, ..Default::default() },
             ),
             layers: (0..config.num_hidden_layers)
                 .map(|index| BaberuDecoderLayer::new(&(path / "layers" / index), config))
@@ -604,18 +547,12 @@ impl BaberuModel {
         past_key_values: Option<&[LayerCache]>,
     ) -> (Tensor, Vec<LayerCache>) {
         let q_len = hidden_states.size()[1];
-        let past_len = past_key_values
-            .and_then(|cache| cache.first())
-            .map_or(0, |cache| cache.key.size()[2]);
+        let past_len =
+            past_key_values.and_then(|cache| cache.first()).map_or(0, |cache| cache.key.size()[2]);
         let (cos, sin) = self.rotary_emb.forward(past_len, q_len);
         let attention_mask = (self.attn_logit_softcap.is_some() || (past_len != 0 && q_len != 1))
             .then(|| {
-                causal_mask(
-                    q_len,
-                    past_len + q_len,
-                    hidden_states.kind(),
-                    hidden_states.device(),
-                )
+                causal_mask(q_len, past_len + q_len, hidden_states.kind(), hidden_states.device())
             });
         let mut next_cache = Vec::with_capacity(self.layers.len());
         for (index, layer) in self.layers.iter().enumerate() {
@@ -691,18 +628,11 @@ impl BaberuDecoderLayer {
             past_key_value,
             past_len,
         );
-        let attention = if self.sandwich {
-            self.post_attn_norm.forward(&attention)
-        } else {
-            attention
-        };
+        let attention =
+            if self.sandwich { self.post_attn_norm.forward(&attention) } else { attention };
         let hidden_states = hidden_states + attention;
         let mlp = self.mlp.forward(&self.pre_ffn_norm.forward(&hidden_states));
-        let mlp = if self.sandwich {
-            self.post_ffn_norm.forward(&mlp)
-        } else {
-            mlp
-        };
+        let mlp = if self.sandwich { self.post_ffn_norm.forward(&mlp) } else { mlp };
         (hidden_states + mlp, present)
     }
 }
@@ -721,10 +651,7 @@ struct BaberuAttention {
 
 impl BaberuAttention {
     fn new(path: &nn::Path<'_>, config: &BaberuOcrConfig) -> Self {
-        let no_bias = nn::LinearConfig {
-            bias: false,
-            ..Default::default()
-        };
+        let no_bias = nn::LinearConfig { bias: false, ..Default::default() };
         Self {
             q_proj: nn::linear(
                 path / "q_proj",
@@ -789,10 +716,7 @@ impl BaberuAttention {
             key = Tensor::cat(&[cache.key.shallow_clone(), key], 2);
             value = Tensor::cat(&[cache.value.shallow_clone(), value], 2);
         }
-        let present = LayerCache {
-            key: key.shallow_clone(),
-            value: value.shallow_clone(),
-        };
+        let present = LayerCache { key: key.shallow_clone(), value: value.shallow_clone() };
 
         let attention = if let Some(cap) = self.attn_softcap {
             let repeats = self.num_heads / self.num_kv_heads;
@@ -804,10 +728,7 @@ impl BaberuAttention {
             if let Some(mask) = attention_mask {
                 scores += mask;
             }
-            scores
-                .softmax(-1, Some(Kind::Float))
-                .to_kind(query.kind())
-                .matmul(&expanded_value)
+            scores.softmax(-1, Some(Kind::Float)).to_kind(query.kind()).matmul(&expanded_value)
         } else {
             // Native GQA avoids physically repeating K/V heads and lets CUDA
             // select flash or memory-efficient SDPA kernels.
@@ -846,10 +767,7 @@ struct BaberuMlp {
 
 impl BaberuMlp {
     fn new(path: &nn::Path<'_>, config: &BaberuOcrConfig) -> Self {
-        let no_bias = nn::LinearConfig {
-            bias: false,
-            ..Default::default()
-        };
+        let no_bias = nn::LinearConfig { bias: false, ..Default::default() };
         Self {
             gate_proj: nn::linear(
                 path / "gate_proj",
@@ -887,19 +805,14 @@ struct BaberuRmsNorm {
 
 impl BaberuRmsNorm {
     fn new(path: &nn::Path<'_>, hidden_size: i64, eps: f64) -> Self {
-        Self {
-            weight: path.var("weight", &[hidden_size], nn::Init::Const(1.0)),
-            eps,
-        }
+        Self { weight: path.var("weight", &[hidden_size], nn::Init::Const(1.0)), eps }
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
         let input_kind = hidden_states.kind();
         let hidden_states = hidden_states.to_kind(Kind::Float);
         let variance =
-            hidden_states
-                .pow_tensor_scalar(2.0)
-                .mean_dim(&[-1i64][..], true, Some(Kind::Float));
+            hidden_states.pow_tensor_scalar(2.0).mean_dim(&[-1i64][..], true, Some(Kind::Float));
         (&self.weight * hidden_states * (variance + self.eps).rsqrt()).to_kind(input_kind)
     }
 }
@@ -917,10 +830,7 @@ impl BaberuRotaryEmbedding {
         let inv_freq = (dimensions / dim as f64 * theta.ln()).exp().reciprocal();
         let frequencies = positions.matmul(&inv_freq.unsqueeze(0));
         let embeddings = Tensor::cat(&[frequencies.shallow_clone(), frequencies], 1);
-        Self {
-            cos: embeddings.cos(),
-            sin: embeddings.sin(),
-        }
+        Self { cos: embeddings.cos(), sin: embeddings.sin() }
     }
 
     fn set_kind(&mut self, kind: Kind) {
@@ -944,21 +854,12 @@ fn apply_rotary_pos_emb(
 ) -> (Tensor, Tensor) {
     let cos = cos.unsqueeze(1);
     let sin = sin.unsqueeze(1);
-    (
-        query * &cos + rotate_half(query) * &sin,
-        key * cos + rotate_half(key) * sin,
-    )
+    (query * &cos + rotate_half(query) * &sin, key * cos + rotate_half(key) * sin)
 }
 
 fn rotate_half(hidden_states: &Tensor) -> Tensor {
     let half = hidden_states.size()[hidden_states.dim() - 1] / 2;
-    Tensor::cat(
-        &[
-            -hidden_states.narrow(-1, half, half),
-            hidden_states.narrow(-1, 0, half),
-        ],
-        -1,
-    )
+    Tensor::cat(&[-hidden_states.narrow(-1, half, half), hidden_states.narrow(-1, 0, half)], -1)
 }
 
 fn causal_mask(q_len: i64, kv_len: i64, kind: Kind, device: Device) -> Tensor {
@@ -969,12 +870,5 @@ fn causal_mask(q_len: i64, kv_len: i64, kind: Kind, device: Device) -> Tensor {
 }
 
 fn layer_norm(path: &nn::Path<'_>, hidden_size: i64, eps: f64) -> nn::LayerNorm {
-    nn::layer_norm(
-        path,
-        vec![hidden_size],
-        nn::LayerNormConfig {
-            eps,
-            ..Default::default()
-        },
-    )
+    nn::layer_norm(path, vec![hidden_size], nn::LayerNormConfig { eps, ..Default::default() })
 }

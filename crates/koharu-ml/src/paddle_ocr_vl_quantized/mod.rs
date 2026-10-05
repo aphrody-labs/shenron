@@ -28,17 +28,11 @@ impl PaddleOCRVLQuantized {
         let model = Llm::load_with_options(
             device,
             model_path,
-            LoadOptions {
-                mtmd: Some(MtmdOptions::new(projector_path)),
-                ..LoadOptions::default()
-            },
+            LoadOptions { mtmd: Some(MtmdOptions::new(projector_path)), ..LoadOptions::default() },
         )
         .await
         .context("failed to load quantized PaddleOCR-VL-1.6")?;
-        ensure!(
-            model.capabilities().vision,
-            "PaddleOCR-VL-1.6 projector does not support images"
-        );
+        ensure!(model.capabilities().vision, "PaddleOCR-VL-1.6 projector does not support images");
         Ok(Self { model })
     }
 
@@ -63,8 +57,6 @@ impl PaddleOCRVLQuantized {
                 ..GenerationOptions::default()
             },
         )?;
-        Ok(PaddleOCRVLResult {
-            text: generation.text,
-        })
+        Ok(PaddleOCRVLResult { text: generation.text })
     }
 }

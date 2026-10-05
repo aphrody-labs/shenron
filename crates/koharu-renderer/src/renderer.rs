@@ -90,7 +90,7 @@ impl Renderer {
                     match config.read() {
                         Ok(config) => {
                             watched.store(Arc::new(config.clone()));
-                        }
+                        },
                         Err(error) => tracing::error!(%error, "failed to reload typesetting"),
                     }
                 }
@@ -150,16 +150,11 @@ impl Renderer {
             ));
         }
         let compiled = self.compile(snapshot, previous.page())?;
-        self.finish(snapshot, compiled, Some(previous), Some(&affected))
-            .await
+        self.finish(snapshot, compiled, Some(previous), Some(&affected)).await
     }
 
     pub async fn available_fonts(&self) -> Result<Vec<FontFamily>> {
-        self.inner
-            .fonts
-            .families()
-            .await
-            .map_err(Error::FontResource)
+        self.inner.fonts.families().await.map_err(Error::FontResource)
     }
 
     pub async fn font_preview(
@@ -170,13 +165,7 @@ impl Renderer {
         const FONT_SIZE: f32 = 24.0;
         const PREVIEW_HEIGHT: u32 = 96;
 
-        let font = match self
-            .inner
-            .fonts
-            .preview(family_name)
-            .await
-            .map_err(Error::FontResource)?
-        {
+        let font = match self.inner.fonts.preview(family_name).await.map_err(Error::FontResource)? {
             FontPreview::Webp(bytes) => return Ok(bytes),
             FontPreview::System(font) => *font,
         };
@@ -255,9 +244,7 @@ impl Renderer {
 
             for (index, draft) in compiled.layers.iter().enumerate() {
                 let candidate = previous.is_none()
-                    || previous
-                        .and_then(|frame| frame.layer(draft.entity))
-                        .is_none()
+                    || previous.and_then(|frame| frame.layer(draft.entity)).is_none()
                     || affected.is_some_and(|affected| affected.intersects(&draft.dependencies));
                 candidates += usize::from(candidate);
                 let previous_node = previous
@@ -282,11 +269,7 @@ impl Renderer {
         };
 
         let font_requests = font_requests(&pending);
-        self.inner
-            .fonts
-            .prepare(&font_requests)
-            .await
-            .map_err(Error::FontResource)?;
+        self.inner.fonts.prepare(&font_requests).await.map_err(Error::FontResource)?;
         let image_ids = pending
             .iter()
             .filter_map(|(_, descriptor)| match descriptor {
@@ -330,18 +313,14 @@ impl Renderer {
             rebuilt_layers: rebuilt,
         };
         let workers = self.workers()?;
-        workers
-            .spawn_async(move || assemble_frame(compiled, nodes, stats))
-            .await
+        workers.spawn_async(move || assemble_frame(compiled, nodes, stats)).await
     }
 
     fn workers(&self) -> Result<Arc<rayon::ThreadPool>> {
         if let Some(workers) = self.inner.workers.get() {
             return Ok(workers.clone());
         }
-        let threads = std::thread::available_parallelism()
-            .map_or(2, usize::from)
-            .clamp(2, 8);
+        let threads = std::thread::available_parallelism().map_or(2, usize::from).clamp(2, 8);
         let workers = Arc::new(
             rayon::ThreadPoolBuilder::new()
                 .num_threads(threads)
@@ -350,12 +329,7 @@ impl Renderer {
                 .map_err(|source| Error::Backend(anyhow!(source)))?,
         );
         let _ = self.inner.workers.set(workers);
-        Ok(self
-            .inner
-            .workers
-            .get()
-            .expect("renderer worker pool was initialized")
-            .clone())
+        Ok(self.inner.workers.get().expect("renderer worker pool was initialized").clone())
     }
 
     async fn load_images(
@@ -431,10 +405,7 @@ impl Renderer {
     fn release_image_load(&self, id: BlobId, load: &Arc<ImageLoad>) {
         if Arc::strong_count(load) == 1 {
             let mut loads = self.inner.image_loads.lock();
-            if loads
-                .get(&id)
-                .is_some_and(|current| current.ptr_eq(&Arc::downgrade(load)))
-            {
+            if loads.get(&id).is_some_and(|current| current.ptr_eq(&Arc::downgrade(load))) {
                 loads.remove(&id);
             }
         }
@@ -506,10 +477,7 @@ impl Renderer {
                 RenderDependency::Entity(page),
                 RenderDependency::Hierarchy(page),
                 component_dependency::<Page>(page),
-                RenderDependency::Component {
-                    entity: page,
-                    kind: ASSETS_KIND.to_owned(),
-                },
+                RenderDependency::Component { entity: page, kind: ASSETS_KIND.to_owned() },
             ]),
             diagnostics: Vec::new(),
         };
@@ -519,10 +487,7 @@ impl Renderer {
             let mut dependencies = BTreeSet::from([
                 RenderDependency::Entity(page),
                 component_dependency::<Page>(page),
-                RenderDependency::Component {
-                    entity: page,
-                    kind: ASSETS_KIND.to_owned(),
-                },
+                RenderDependency::Component { entity: page, kind: ASSETS_KIND.to_owned() },
                 RenderDependency::Blob(asset.blob),
             ]);
             traversal.dependencies.extend(dependencies.iter().cloned());
@@ -530,14 +495,8 @@ impl Renderer {
                 page,
                 geometry,
                 ImageNodeDescriptor::from_asset(asset, Some((width, height))),
-                ImageMetadata {
-                    name: None,
-                    kind: ImageKind::Source,
-                },
-                Presentation {
-                    visible: true,
-                    opacity: 1.0,
-                },
+                ImageMetadata { name: None, kind: ImageKind::Source },
+                Presentation { visible: true, opacity: 1.0 },
                 Arc::from([]),
                 &mut dependencies,
             )?);
@@ -547,14 +506,7 @@ impl Renderer {
                 role: source_role.as_str().to_owned(),
             });
         }
-        traversal.visit_children(
-            page,
-            Presentation {
-                visible: true,
-                opacity: 1.0,
-            },
-            &[],
-        )?;
+        traversal.visit_children(page, Presentation { visible: true, opacity: 1.0 }, &[])?;
         Ok(CompiledPage {
             revision: snapshot.revision(),
             page,
@@ -587,8 +539,7 @@ impl Traversal<'_> {
         inherited: Presentation,
         ancestry: &[EntityId],
     ) -> Result<()> {
-        self.dependencies
-            .insert(RenderDependency::Hierarchy(parent));
+        self.dependencies.insert(RenderDependency::Hierarchy(parent));
         let children = self.snapshot.children(parent)?.collect::<Vec<_>>();
         for entity in children {
             let mut common = BTreeSet::from([
@@ -597,14 +548,11 @@ impl Traversal<'_> {
                 RenderDependency::Hierarchy(entity),
                 component_dependency::<Visibility>(entity),
             ]);
-            let visibility = self
-                .snapshot
-                .component::<Visibility>(entity)?
-                .unwrap_or(Visibility {
-                    origin: Origin::User,
-                    visible: true,
-                    opacity: 1.0,
-                });
+            let visibility = self.snapshot.component::<Visibility>(entity)?.unwrap_or(Visibility {
+                origin: Origin::User,
+                visible: true,
+                opacity: 1.0,
+            });
             let presentation = Presentation {
                 visible: inherited.visible && visibility.visible,
                 opacity: inherited.opacity * visibility.opacity,
@@ -620,10 +568,7 @@ impl Traversal<'_> {
             }
             if let Some(raster) = self.snapshot.component::<RasterLayer>(entity)? {
                 common.insert(component_dependency::<RasterLayer>(entity));
-                common.insert(RenderDependency::Component {
-                    entity,
-                    kind: ASSETS_KIND.to_owned(),
-                });
+                common.insert(RenderDependency::Component { entity, kind: ASSETS_KIND.to_owned() });
                 if let Some(asset) = self.snapshot.asset(entity, self.source_role)? {
                     common.insert(RenderDependency::Blob(asset.blob));
                     let geometry = Geometry::rectangle(
@@ -640,10 +585,7 @@ impl Traversal<'_> {
                         entity,
                         geometry,
                         ImageNodeDescriptor::from_asset(asset, None),
-                        ImageMetadata {
-                            name: Some(raster.name),
-                            kind,
-                        },
+                        ImageMetadata { name: Some(raster.name), kind },
                         presentation,
                         Arc::from(ancestry),
                         &mut common,
@@ -667,13 +609,9 @@ impl Traversal<'_> {
                         kind: kind.to_owned(),
                     });
                 }
-                if let Some(draft) = self.text_draft(
-                    entity,
-                    layout,
-                    presentation,
-                    Arc::from(ancestry),
-                    &mut common,
-                )? {
+                if let Some(draft) =
+                    self.text_draft(entity, layout, presentation, Arc::from(ancestry), &mut common)?
+                {
                     self.layers.push(draft);
                 }
                 self.dependencies.extend(common);
@@ -685,10 +623,7 @@ impl Traversal<'_> {
                 continue;
             }
             common.insert(component_dependency::<Geometry>(entity));
-            common.insert(RenderDependency::Component {
-                entity,
-                kind: ASSETS_KIND.to_owned(),
-            });
+            common.insert(RenderDependency::Component { entity, kind: ASSETS_KIND.to_owned() });
             let geometry = self.snapshot.component::<Geometry>(entity)?;
             let asset = self.snapshot.asset(entity, self.source_role)?;
             if let (Some(geometry), Some(asset)) = (geometry, asset) {
@@ -697,10 +632,7 @@ impl Traversal<'_> {
                     entity,
                     geometry,
                     ImageNodeDescriptor::from_asset(asset, None),
-                    ImageMetadata {
-                        name: None,
-                        kind: ImageKind::Embedded,
-                    },
+                    ImageMetadata { name: None, kind: ImageKind::Embedded },
                     presentation,
                     Arc::from(ancestry),
                     &mut common,
@@ -759,22 +691,15 @@ impl Traversal<'_> {
             let Some(placement) = placement else {
                 return Ok(None);
             };
-            (
-                placement.geometry,
-                placement.frame,
-                placement.balloon_contour,
-            )
+            (placement.geometry, placement.frame, placement.balloon_contour)
         };
         let typography = self.snapshot.component::<Typography>(entity)?;
         let analysis =
             if let Some(recognized) = self.snapshot.relation_from::<RecognizedFrom>(content)? {
                 dependencies.insert(RenderDependency::Relation(recognized.id()));
                 dependencies.insert(RenderDependency::Entity(recognized.value().target));
-                dependencies.insert(component_dependency::<OcrAnalysis>(
-                    recognized.value().target,
-                ));
-                self.snapshot
-                    .component::<OcrAnalysis>(recognized.value().target)?
+                dependencies.insert(component_dependency::<OcrAnalysis>(recognized.value().target));
+                self.snapshot.component::<OcrAnalysis>(recognized.value().target)?
             } else {
                 None
             };
@@ -786,9 +711,7 @@ impl Traversal<'_> {
             writing_mode,
             direction == harfrust::Direction::RightToLeft,
         );
-        let preferred_font = typography
-            .as_ref()
-            .and_then(|value| value.preferred_font.clone());
+        let preferred_font = typography.as_ref().and_then(|value| value.preferred_font.clone());
         let font_families = self.font_families.to_vec();
         for family in preferred_font.iter().chain(font_families.iter()) {
             dependencies.insert(RenderDependency::Font(family.clone()));
@@ -804,10 +727,7 @@ impl Traversal<'_> {
             preferred_font,
             font_families,
             font_weight: typography.as_ref().and_then(|value| value.font_weight),
-            font_style: typography
-                .as_ref()
-                .and_then(|value| value.font_style)
-                .map(Into::into),
+            font_style: typography.as_ref().and_then(|value| value.font_style).map(Into::into),
             font_size: typography.as_ref().and_then(|value| value.size),
             minimum_font_size: MINIMUM_FONT_SIZE,
             auto_fit: typography.as_ref().is_none_or(|value| value.auto_fit),
@@ -933,10 +853,7 @@ fn resolve_balloon_flows(snapshot: &Snapshot, page: EntityId) -> Result<BalloonF
             let mut dependencies = BTreeSet::from([
                 RenderDependency::Entity(entity),
                 RenderDependency::Relation(relation.id()),
-                RenderDependency::RelationQuery {
-                    source: entity,
-                    kind: FlowsIn::KIND.to_owned(),
-                },
+                RenderDependency::RelationQuery { source: entity, kind: FlowsIn::KIND.to_owned() },
             ]);
             let Some(presents) = snapshot.relation_from::<Presents>(entity)? else {
                 continue;
@@ -985,14 +902,9 @@ fn resolve_balloon_flows(snapshot: &Snapshot, page: EntityId) -> Result<BalloonF
         for seed in &seeds {
             dependencies.extend(seed.dependencies.iter().cloned());
         }
-        let center = (
-            frame.bounds.x + frame.bounds.width * 0.5,
-            frame.bounds.y + frame.bounds.height * 0.5,
-        );
-        let anchors = seeds
-            .iter()
-            .map(|seed| seed.anchor.unwrap_or(center))
-            .collect::<Vec<_>>();
+        let center =
+            (frame.bounds.x + frame.bounds.width * 0.5, frame.bounds.y + frame.bounds.height * 0.5);
+        let anchors = seeds.iter().map(|seed| seed.anchor.unwrap_or(center)).collect::<Vec<_>>();
         let cells = (seeds.len() > 1).then(|| flow_cells(frame, &balloon_contour, &anchors));
         let dependencies: Arc<[RenderDependency]> = dependencies.iter().cloned().collect();
         for (index, seed) in seeds.into_iter().enumerate() {
@@ -1034,10 +946,7 @@ fn resolve_balloon_flows(snapshot: &Snapshot, page: EntityId) -> Result<BalloonF
         }
         all_dependencies.extend(dependencies.iter().cloned());
     }
-    Ok(BalloonFlowPlan {
-        placements,
-        dependencies: all_dependencies,
-    })
+    Ok(BalloonFlowPlan { placements, dependencies: all_dependencies })
 }
 
 fn flow_anchor(
@@ -1055,12 +964,8 @@ fn flow_anchor(
     let Some(geometry) = snapshot.component::<Geometry>(region)? else {
         return Ok(None);
     };
-    Ok(geometry_bounds(&geometry).map(|bounds| {
-        (
-            bounds.x + bounds.width * 0.5,
-            bounds.y + bounds.height * 0.5,
-        )
-    }))
+    Ok(geometry_bounds(&geometry)
+        .map(|bounds| (bounds.x + bounds.width * 0.5, bounds.y + bounds.height * 0.5)))
 }
 
 impl ImageNodeDescriptor {
@@ -1084,10 +989,7 @@ fn image_draft(
     dependencies: &mut BTreeSet<RenderDependency>,
 ) -> Result<LayerDraft> {
     let frame = geometry_bounds(&geometry)
-        .map(|bounds| GeometryFrame {
-            bounds,
-            angle_degrees: 0.0,
-        })
+        .map(|bounds| GeometryFrame { bounds, angle_degrees: 0.0 })
         .ok_or_else(|| Error::invalid(format!("invalid image geometry for entity {entity}")))?;
     dependencies.insert(RenderDependency::Blob(descriptor.blob));
     Ok(LayerDraft {
@@ -1112,19 +1014,13 @@ fn build_node(
             let decoded = images.get(&image.blob).ok_or_else(|| {
                 Error::invalid(format!("image blob {} was not loaded", image.blob))
             })?;
-            if image
-                .expected_size
-                .is_some_and(|size| size != (decoded.width, decoded.height))
-            {
+            if image.expected_size.is_some_and(|size| size != (decoded.width, decoded.height)) {
                 return Err(Error::invalid(format!(
                     "blob {} decoded as {}x{}, expected {:?}",
                     image.blob, decoded.width, decoded.height, image.expected_size
                 )));
             }
-            if image
-                .require_size
-                .is_some_and(|size| size != (decoded.width, decoded.height))
-            {
+            if image.require_size.is_some_and(|size| size != (decoded.width, decoded.height)) {
                 return Err(Error::invalid(format!(
                     "base image blob {} is {}x{}, expected {:?}",
                     image.blob, decoded.width, decoded.height, image.require_size
@@ -1158,7 +1054,7 @@ fn build_node(
                 text: None,
                 diagnostics: Arc::from([]),
             })
-        }
+        },
         NodeDescriptor::Text(text) => {
             let rendered = TextRenderer::new().render_descriptor(text, fonts)?;
             Ok(RetainedNode {
@@ -1176,7 +1072,7 @@ fn build_node(
                 }),
                 diagnostics: rendered.diagnostics.into(),
             })
-        }
+        },
     }
 }
 
@@ -1192,17 +1088,9 @@ fn assemble_frame(
         let bounds = transform_bounds(node.local_bounds, placement);
         let kind = match draft.metadata {
             DraftMetadata::Image(metadata) => LayerKind::Image(metadata),
-            DraftMetadata::Text {
-                text,
-                language,
-                alignment,
-                writing_mode,
-                angle_degrees,
-            } => {
-                let metadata = node
-                    .text
-                    .as_ref()
-                    .expect("text descriptor must build text metadata");
+            DraftMetadata::Text { text, language, alignment, writing_mode, angle_degrees } => {
+                let metadata =
+                    node.text.as_ref().expect("text descriptor must build text metadata");
                 LayerKind::Text(TextMetadata {
                     text,
                     language,
@@ -1215,7 +1103,7 @@ fn assemble_frame(
                     writing_mode,
                     angle_degrees,
                 })
-            }
+            },
         };
         diagnostics.extend(
             node.diagnostics
@@ -1236,11 +1124,8 @@ fn assemble_frame(
         })));
     }
     let layers: Arc<[Layer]> = layers.into();
-    let layer_index = layers
-        .iter()
-        .enumerate()
-        .map(|(index, layer)| (layer.entity(), index))
-        .collect();
+    let layer_index =
+        layers.iter().enumerate().map(|(index, layer)| (layer.entity(), index)).collect();
     let prepared = prepare_frame(
         compiled.revision,
         compiled.page,
@@ -1282,11 +1167,8 @@ fn placement(draft: &LayerDraft, node: &RetainedNode) -> Affine {
                 f64::from(frame.x + frame.width * 0.5),
                 f64::from(frame.y + frame.height * 0.5),
             )) * Affine::rotate(f64::from(draft.frame.angle_degrees).to_radians())
-                * Affine::translate((
-                    -f64::from(frame.width * 0.5),
-                    -f64::from(frame.height * 0.5),
-                ))
-        }
+                * Affine::translate((-f64::from(frame.width * 0.5), -f64::from(frame.height * 0.5)))
+        },
     }
 }
 
@@ -1331,12 +1213,7 @@ fn font_requests(pending: &[(usize, NodeDescriptor)]) -> Vec<FontRequest> {
         let NodeDescriptor::Text(text) = descriptor else {
             continue;
         };
-        for family in text
-            .preferred_font
-            .iter()
-            .chain(text.font_families.first())
-            .take(1)
-        {
+        for family in text.preferred_font.iter().chain(text.font_families.first()).take(1) {
             let style = match text.font_style.unwrap_or(FontStyle::Normal) {
                 FontStyle::Normal => 0,
                 FontStyle::Italic => 1,
@@ -1355,10 +1232,7 @@ fn font_requests(pending: &[(usize, NodeDescriptor)]) -> Vec<FontRequest> {
 }
 
 fn component_dependency<T: Component>(entity: EntityId) -> RenderDependency {
-    RenderDependency::Component {
-        entity,
-        kind: T::KIND.to_owned(),
-    }
+    RenderDependency::Component { entity, kind: T::KIND.to_owned() }
 }
 
 fn belongs_to_page(snapshot: &Snapshot, mut entity: EntityId, page: EntityId) -> Result<bool> {
@@ -1379,9 +1253,7 @@ fn surface_size(page: &Page) -> Result<(u32, u32)> {
         || page.width <= 0.0
         || page.height <= 0.0
     {
-        return Err(Error::invalid(
-            "page dimensions must be finite and positive",
-        ));
+        return Err(Error::invalid("page dimensions must be finite and positive"));
     }
     let width = page.width.ceil();
     let height = page.height.ceil();
@@ -1406,12 +1278,10 @@ fn resolve_writing_mode(
     typography: Option<&Typography>,
     analysis: Option<&OcrAnalysis>,
 ) -> WritingMode {
-    let typography_mode = typography
-        .and_then(|value| value.writing_mode)
-        .map(|mode| match mode {
-            koharu_scene::WritingMode::Horizontal => WritingMode::Horizontal,
-            koharu_scene::WritingMode::Vertical => WritingMode::VerticalRl,
-        });
+    let typography_mode = typography.and_then(|value| value.writing_mode).map(|mode| match mode {
+        koharu_scene::WritingMode::Horizontal => WritingMode::Horizontal,
+        koharu_scene::WritingMode::Vertical => WritingMode::VerticalRl,
+    });
     if typography.is_some_and(|value| matches!(&value.origin, Origin::User))
         && let Some(mode) = typography_mode
     {
@@ -1456,10 +1326,7 @@ fn resolve_alignment(
 fn resolve_stroke(typography: Option<&Typography>) -> Option<StrokeOptions> {
     let typography = typography?;
     let width_px = typography.stroke_width.filter(|width| *width > 0.0)?;
-    Some(StrokeOptions {
-        color: typography.stroke_color.unwrap_or([u8::MAX; 4]),
-        width_px,
-    })
+    Some(StrokeOptions { color: typography.stroke_color.unwrap_or([u8::MAX; 4]), width_px })
 }
 
 struct CachedNode {
@@ -1475,11 +1342,7 @@ struct NodeCache {
 
 impl NodeCache {
     fn new(capacity: usize) -> Self {
-        Self {
-            entries: HashMap::new(),
-            capacity,
-            clock: 0,
-        }
+        Self { entries: HashMap::new(), capacity, clock: 0 }
     }
 
     fn next_clock(&mut self) -> u64 {
@@ -1505,19 +1368,10 @@ impl NodeCache {
         if self.capacity == 0 {
             return;
         }
-        self.entries.insert(
-            key,
-            CachedNode {
-                node,
-                last_used: clock,
-            },
-        );
+        self.entries.insert(key, CachedNode { node, last_used: clock });
         while self.entries.len() > self.capacity {
-            let Some(oldest) = self
-                .entries
-                .iter()
-                .min_by_key(|(_, entry)| entry.last_used)
-                .map(|(key, _)| *key)
+            let Some(oldest) =
+                self.entries.iter().min_by_key(|(_, entry)| entry.last_used).map(|(key, _)| *key)
             else {
                 break;
             };
@@ -1552,15 +1406,12 @@ impl AffectedDependencies {
         for change in &change.components {
             match change.owner {
                 ComponentOwner::Entity(entity) => {
-                    components
-                        .entry(entity)
-                        .or_default()
-                        .insert(change.kind.clone());
-                }
+                    components.entry(entity).or_default().insert(change.kind.clone());
+                },
                 ComponentOwner::Project => project_component_changed = true,
                 ComponentOwner::Relation(relation) => {
                     relations.insert(relation);
-                }
+                },
             }
         }
         let mut relation_queries = HashMap::<EntityId, HashSet<String>>::new();
@@ -1600,15 +1451,13 @@ impl AffectedDependencies {
             || dependencies.iter().any(|dependency| match dependency {
                 RenderDependency::Entity(entity) => self.entities.contains(entity),
                 RenderDependency::Hierarchy(entity) => self.hierarchy.contains(entity),
-                RenderDependency::Component { entity, kind } => self
-                    .components
-                    .get(entity)
-                    .is_some_and(|kinds| kinds.contains(kind)),
+                RenderDependency::Component { entity, kind } => {
+                    self.components.get(entity).is_some_and(|kinds| kinds.contains(kind))
+                },
                 RenderDependency::Relation(relation) => self.relations.contains(relation),
-                RenderDependency::RelationQuery { source, kind } => self
-                    .relation_queries
-                    .get(source)
-                    .is_some_and(|kinds| kinds.contains(kind)),
+                RenderDependency::RelationQuery { source, kind } => {
+                    self.relation_queries.get(source).is_some_and(|kinds| kinds.contains(kind))
+                },
                 RenderDependency::RelationTargetQuery { target, kind } => self
                     .relation_target_queries
                     .get(target)
@@ -1657,10 +1506,7 @@ impl OutlinePen for PreviewOutline<'_> {
     }
 
     fn quad_to(&mut self, cx0: f32, cy0: f32, x: f32, y: f32) {
-        self.0.quad_to(
-            (f64::from(cx0), f64::from(cy0)),
-            (f64::from(x), f64::from(y)),
-        );
+        self.0.quad_to((f64::from(cx0), f64::from(cy0)), (f64::from(x), f64::from(y)));
     }
 
     fn curve_to(&mut self, cx0: f32, cy0: f32, cx1: f32, cy1: f32, x: f32, y: f32) {
@@ -1689,10 +1535,7 @@ mod tests {
 
     #[test]
     fn vertical_alignment_defaults_to_start_and_uses_the_inline_axis() {
-        assert_eq!(
-            resolve_alignment(None, WritingMode::VerticalRl, false),
-            TextAlign::Left
-        );
+        assert_eq!(resolve_alignment(None, WritingMode::VerticalRl, false), TextAlign::Left);
         assert_eq!(
             resolve_alignment(Some(TextAlignment::Start), WritingMode::VerticalRl, true,),
             TextAlign::Left
@@ -1701,10 +1544,7 @@ mod tests {
             resolve_alignment(Some(TextAlignment::End), WritingMode::VerticalRl, false,),
             TextAlign::Right
         );
-        assert_eq!(
-            resolve_alignment(None, WritingMode::Horizontal, false),
-            TextAlign::Center
-        );
+        assert_eq!(resolve_alignment(None, WritingMode::Horizontal, false), TextAlign::Center);
     }
 
     #[test]
@@ -1723,12 +1563,7 @@ mod tests {
             writing_mode: Some(koharu_scene::WritingMode::Vertical),
             extensions: BTreeMap::new(),
         };
-        let bounds = LayoutBox {
-            x: 0.0,
-            y: 0.0,
-            width: 100.0,
-            height: 200.0,
-        };
+        let bounds = LayoutBox { x: 0.0, y: 0.0, width: 100.0, height: 200.0 };
 
         assert_eq!(
             resolve_writing_mode("rokuna", bounds, Some(&typography), None),
@@ -1759,12 +1594,7 @@ mod tests {
             writing_mode: Some(koharu_scene::WritingMode::Vertical),
             extensions: BTreeMap::new(),
         };
-        let bounds = LayoutBox {
-            x: 0.0,
-            y: 0.0,
-            width: 100.0,
-            height: 200.0,
-        };
+        let bounds = LayoutBox { x: 0.0, y: 0.0, width: 100.0, height: 200.0 };
 
         assert_eq!(
             resolve_writing_mode("rokuna", bounds, Some(&typography), None),
@@ -1789,11 +1619,7 @@ mod tests {
         AssetInput::new(
             bytes,
             "image/png",
-            AssetMetadata {
-                width: Some(width),
-                height: Some(height),
-                attributes: BTreeMap::new(),
-            },
+            AssetMetadata { width: Some(width), height: Some(height), attributes: BTreeMap::new() },
         )
     }
 
@@ -1903,17 +1729,11 @@ mod tests {
                 let first_content = edit.add_text_content(page, At::End)?;
                 edit.set(
                     first_content,
-                    &SourceText {
-                        text: Authored::user("source one".to_owned()),
-                        language: None,
-                    },
+                    &SourceText { text: Authored::user("source one".to_owned()), language: None },
                 )?;
                 edit.set(
                     first_content,
-                    &Translation {
-                        text: Authored::user("first".to_owned()),
-                        language: None,
-                    },
+                    &Translation { text: Authored::user("first".to_owned()), language: None },
                 )?;
                 let first = edit.add_text_layer(
                     page,
@@ -1929,17 +1749,11 @@ mod tests {
                 let second_content = edit.add_text_content(page, At::End)?;
                 edit.set(
                     second_content,
-                    &SourceText {
-                        text: Authored::user("source two".to_owned()),
-                        language: None,
-                    },
+                    &SourceText { text: Authored::user("source two".to_owned()), language: None },
                 )?;
                 edit.set(
                     second_content,
-                    &Translation {
-                        text: Authored::user("second".to_owned()),
-                        language: None,
-                    },
+                    &Translation { text: Authored::user("second".to_owned()), language: None },
                 )?;
                 let second = edit.add_text_layer(
                     page,
@@ -1960,22 +1774,12 @@ mod tests {
         let (page, target, first, second) = ids.unwrap();
         let renderer = Renderer::default();
         let base_compiled = renderer.compile(&base, page).unwrap();
-        let first_dependencies = &base_compiled
-            .layers
-            .iter()
-            .find(|layer| layer.entity == first)
-            .unwrap()
-            .dependencies;
-        let second_dependencies = &base_compiled
-            .layers
-            .iter()
-            .find(|layer| layer.entity == second)
-            .unwrap()
-            .dependencies;
+        let first_dependencies =
+            &base_compiled.layers.iter().find(|layer| layer.entity == first).unwrap().dependencies;
+        let second_dependencies =
+            &base_compiled.layers.iter().find(|layer| layer.entity == second).unwrap().dependencies;
 
-        let add_fit = base
-            .patch(|edit| edit.relate::<FitsTo>(first, target).map(|_| ()))
-            .unwrap();
+        let add_fit = base.patch(|edit| edit.relate::<FitsTo>(first, target).map(|_| ())).unwrap();
         let fitted = session.commit(add_fit).await.unwrap();
         let affected = AffectedDependencies::new(&fitted.snapshot, &fitted.changes).unwrap();
         assert!(affected.intersects(first_dependencies));
@@ -1988,16 +1792,8 @@ mod tests {
             .find(|layer| layer.entity == first)
             .unwrap()
             .dependencies;
-        let relation = fitted
-            .snapshot
-            .relation_from::<FitsTo>(first)
-            .unwrap()
-            .unwrap()
-            .id();
-        let remove_fit = fitted
-            .snapshot
-            .patch(|edit| edit.remove_relation(relation))
-            .unwrap();
+        let relation = fitted.snapshot.relation_from::<FitsTo>(first).unwrap().unwrap().id();
+        let remove_fit = fitted.snapshot.patch(|edit| edit.remove_relation(relation)).unwrap();
         let removed = session.commit(remove_fit).await.unwrap();
         let affected = AffectedDependencies::new(&removed.snapshot, &removed.changes).unwrap();
         assert!(affected.intersects(first_dependencies));
@@ -2019,12 +1815,10 @@ mod tests {
                     None,
                 )?;
                 let mut layers = Vec::new();
-                for (index, (x, source, translation)) in [
-                    (35.0, "source one", "First flow"),
-                    (95.0, "source two", "Second flow"),
-                ]
-                .into_iter()
-                .enumerate()
+                for (index, (x, source, translation)) in
+                    [(35.0, "source one", "First flow"), (95.0, "source two", "Second flow")]
+                        .into_iter()
+                        .enumerate()
                 {
                     let region = edit.add_analysis_region::<koharu_scene::TextRegion>(
                         page,
@@ -2035,10 +1829,7 @@ mod tests {
                     let content = edit.add_text_content(page, At::End)?;
                     edit.set(
                         content,
-                        &SourceText {
-                            text: Authored::user(source.to_owned()),
-                            language: None,
-                        },
+                        &SourceText { text: Authored::user(source.to_owned()), language: None },
                     )?;
                     edit.set(
                         content,
@@ -2074,19 +1865,11 @@ mod tests {
             font_families: vec![font.family_name().to_owned()],
         });
         let base_compiled = renderer.compile(&base, page).unwrap();
-        let first = base_compiled
-            .layers
-            .iter()
-            .find(|layer| layer.entity == layers[0])
-            .unwrap();
-        assert_eq!(
-            first.geometry,
-            base.analysis_region(bubble).unwrap().geometry().unwrap()
-        );
+        let first = base_compiled.layers.iter().find(|layer| layer.entity == layers[0]).unwrap();
+        assert_eq!(first.geometry, base.analysis_region(bubble).unwrap().geometry().unwrap());
 
-        let add_sibling = base
-            .patch(|edit| edit.relate::<FlowsIn>(layers[1], bubble).map(|_| ()))
-            .unwrap();
+        let add_sibling =
+            base.patch(|edit| edit.relate::<FlowsIn>(layers[1], bubble).map(|_| ())).unwrap();
         let joined = session.commit(add_sibling).await.unwrap();
         let affected = AffectedDependencies::new(&joined.snapshot, &joined.changes).unwrap();
         assert!(affected.intersects(&first.dependencies));
@@ -2095,11 +1878,7 @@ mod tests {
         let bounds = layers
             .iter()
             .map(|entity| {
-                let layer = compiled
-                    .layers
-                    .iter()
-                    .find(|layer| layer.entity == *entity)
-                    .unwrap();
+                let layer = compiled.layers.iter().find(|layer| layer.entity == *entity).unwrap();
                 layer.frame.bounds
             })
             .collect::<Vec<_>>();
@@ -2114,18 +1893,10 @@ mod tests {
             point.x += 1.0;
         }
         let moved = session
-            .commit(
-                joined
-                    .snapshot
-                    .patch(|edit| edit.set(layers[0], &geometry))
-                    .unwrap(),
-            )
+            .commit(joined.snapshot.patch(|edit| edit.set(layers[0], &geometry)).unwrap())
             .await
             .unwrap();
-        let updated = renderer
-            .update(&original, &moved.snapshot, &moved.changes)
-            .await
-            .unwrap();
+        let updated = renderer.update(&original, &moved.snapshot, &moved.changes).await.unwrap();
         let fresh = renderer.render(&moved.snapshot, page).await.unwrap();
         for frame in [&updated, &fresh] {
             let LayerKind::Text(before) = original.layer(layers[0]).unwrap().kind() else {
@@ -2169,16 +1940,9 @@ mod tests {
             snapshot = session.commit(patch).await.unwrap().snapshot;
             let transformed = renderer.compile(&snapshot, page).unwrap();
             for (index, entity) in layers.iter().enumerate() {
-                let before = compiled
-                    .layers
-                    .iter()
-                    .find(|layer| layer.entity == *entity)
-                    .unwrap();
-                let after = transformed
-                    .layers
-                    .iter()
-                    .find(|layer| layer.entity == *entity)
-                    .unwrap();
+                let before = compiled.layers.iter().find(|layer| layer.entity == *entity).unwrap();
+                let after =
+                    transformed.layers.iter().find(|layer| layer.entity == *entity).unwrap();
                 if index == 1 {
                     assert_eq!(after.geometry, before.geometry);
                     assert_eq!(after.descriptor, before.descriptor);
@@ -2229,22 +1993,12 @@ mod tests {
                 let page = edit.add_page(PageDraft::new("page", 4.0, 4.0), At::End)?;
                 edit.set_asset(page, &source, asset(png(4, 4, [1, 2, 3, 255]), 4, 4))?;
                 let group = edit.add_entity(page, At::End)?;
-                edit.set(
-                    group,
-                    &Group {
-                        origin: Origin::User,
-                        name: "nested".to_owned(),
-                    },
-                )?;
+                edit.set(group, &Group { origin: Origin::User, name: "nested".to_owned() })?;
                 let image = edit.add_entity(group, At::End)?;
                 edit.set(image, &Geometry::rectangle(0.0, 0.0, 2.0, 2.0))?;
                 edit.set(
                     image,
-                    &Visibility {
-                        origin: Origin::User,
-                        visible: false,
-                        opacity: 0.3,
-                    },
+                    &Visibility { origin: Origin::User, visible: false, opacity: 0.3 },
                 )?;
                 edit.set_asset(image, &source, asset(png(2, 2, [9, 8, 7, 255]), 2, 2))?;
                 ids = Some((page, group, image));
@@ -2260,20 +2014,14 @@ mod tests {
         assert_eq!(first.layer(image).unwrap().ancestry(), &[group]);
         assert_eq!(
             first.layer(image).unwrap().presentation(),
-            Presentation {
-                visible: false,
-                opacity: 0.3,
-            }
+            Presentation { visible: false, opacity: 0.3 }
         );
 
         let move_image = snapshot
             .patch(|edit| edit.set(image, &Geometry::rectangle(1.0, 1.0, 2.0, 2.0)))
             .unwrap();
         let commit = session.commit(move_image).await.unwrap();
-        let updated = renderer
-            .update(&first, &commit.snapshot, &commit.changes)
-            .await
-            .unwrap();
+        let updated = renderer.update(&first, &commit.snapshot, &commit.changes).await.unwrap();
         assert_eq!(updated.stats().candidate_layers, 1);
         assert_eq!(updated.stats().reused_layers, 2);
         assert_eq!(updated.stats().rebuilt_layers, 0);
@@ -2287,10 +2035,7 @@ mod tests {
         assert_eq!(cropped.size(), (2, 2));
         assert_eq!(
             cropped.layer(image).unwrap().presentation(),
-            Presentation {
-                visible: true,
-                opacity: 1.0,
-            }
+            Presentation { visible: true, opacity: 1.0 }
         );
     }
 
@@ -2312,21 +2057,12 @@ mod tests {
         let change = first_commit
             .snapshot
             .patch(|edit| {
-                edit.set(
-                    page,
-                    &Visibility {
-                        origin: Origin::User,
-                        visible: true,
-                        opacity: 0.5,
-                    },
-                )
+                edit.set(page, &Visibility { origin: Origin::User, visible: true, opacity: 0.5 })
             })
             .unwrap();
         let second = session.commit(change).await.unwrap();
-        let error = renderer
-            .update(&frame, &first_commit.snapshot, &second.changes)
-            .await
-            .unwrap_err();
+        let error =
+            renderer.update(&frame, &first_commit.snapshot, &second.changes).await.unwrap_err();
         assert!(error.to_string().contains("not contiguous"));
     }
 }

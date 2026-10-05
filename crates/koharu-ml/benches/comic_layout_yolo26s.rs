@@ -26,9 +26,8 @@ async fn main() -> Result<()> {
 
     criterion.bench_function("comic_layout_yolo26s/inference/770x1080", |bencher| {
         bencher.iter(|| {
-            let result = model
-                .inference(black_box(&image))
-                .expect("comic-layout-yolo26s inference failed");
+            let result =
+                model.inference(black_box(&image)).expect("comic-layout-yolo26s inference failed");
             black_box(result);
         });
     });

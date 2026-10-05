@@ -87,18 +87,11 @@ struct TokenResponse {
 
 impl Auth {
     pub(super) fn new(client: Client) -> Self {
-        Self {
-            client,
-            store: TokenStore,
-            refresh: Arc::new(Mutex::new(())),
-        }
+        Self { client, store: TokenStore, refresh: Arc::new(Mutex::new(())) }
     }
 
     pub(super) fn account(&self) -> Result<Option<Account>> {
-        self.store
-            .load()?
-            .map(|tokens| account(&tokens))
-            .transpose()
+        self.store.load()?.map(|tokens| account(&tokens)).transpose()
     }
 
     pub(super) async fn session(&self) -> Result<Session> {
@@ -106,20 +99,14 @@ impl Auth {
         if tokens.expires_at_ms <= now_ms().saturating_add(60_000) {
             return self.refresh().await;
         }
-        Ok(Session {
-            account: account(&tokens)?,
-            access: tokens.access,
-        })
+        Ok(Session { account: account(&tokens)?, access: tokens.access })
     }
 
     pub(super) async fn refresh(&self) -> Result<Session> {
         let _refresh = self.refresh.lock().await;
         let current = self.store.load()?.context("Codex is not signed in")?;
         if current.expires_at_ms > now_ms().saturating_add(60_000) {
-            return Ok(Session {
-                account: account(&current)?,
-                access: current.access,
-            });
+            return Ok(Session { account: account(&current)?, access: current.access });
         }
         self.refresh_tokens(current).await
     }
@@ -146,25 +133,18 @@ impl Auth {
             self.store.delete()?;
         }
         let response = success(response).await?;
-        let body: TokenResponse = response
-            .json()
-            .await
-            .context("invalid Codex OAuth refresh response")?;
+        let body: TokenResponse =
+            response.json().await.context("invalid Codex OAuth refresh response")?;
         let tokens = tokens(body)?;
         self.store.store(&tokens)?;
-        Ok(Session {
-            account: account(&tokens)?,
-            access: tokens.access,
-        })
+        Ok(Session { account: account(&tokens)?, access: tokens.access })
     }
 
     pub(super) async fn login_device<F>(&self, control: &Control, mut publish: F) -> Result<Account>
     where
         F: FnMut(LoginEvent),
     {
-        publish(LoginEvent::Progress {
-            message: "Requesting a Codex device code".to_owned(),
-        });
+        publish(LoginEvent::Progress { message: "Requesting a Codex device code".to_owned() });
         let response = self
             .client
             .post(format!("{AUTH_BASE}/api/accounts/deviceauth/usercode"))
@@ -185,9 +165,7 @@ impl Auth {
                 value
                     .get("interval")
                     .and_then(|value| {
-                        value
-                            .as_u64()
-                            .or_else(|| value.as_str()?.parse::<u64>().ok())
+                        value.as_u64().or_else(|| value.as_str()?.parse::<u64>().ok())
                     })
                     .unwrap_or(5)
                     .max(1),
@@ -222,14 +200,9 @@ impl Auth {
             }
             let response = success(response).await?;
             let value: Value = response.json().await?;
-            break (
-                string(&value, "authorization_code")?,
-                string(&value, "code_verifier")?,
-            );
+            break (string(&value, "authorization_code")?, string(&value, "code_verifier")?);
         };
-        publish(LoginEvent::Progress {
-            message: "Completing Codex sign-in".to_owned(),
-        });
+        publish(LoginEvent::Progress { message: "Completing Codex sign-in".to_owned() });
         let response = self
             .client
             .post(format!("{AUTH_BASE}/oauth/token"))
@@ -292,10 +265,7 @@ fn account(tokens: &Tokens) -> Result<Account> {
             .and_then(|profile| profile.get("email"))
             .and_then(Value::as_str)
             .map(ToOwned::to_owned),
-        plan: auth
-            .get("chatgpt_plan_type")
-            .and_then(Value::as_str)
-            .map(ToOwned::to_owned),
+        plan: auth.get("chatgpt_plan_type").and_then(Value::as_str).map(ToOwned::to_owned),
     })
 }
 

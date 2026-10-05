@@ -158,10 +158,7 @@ impl Processor {
         let top_k = top_k.min(FONT_COUNT as usize) as i64;
         let probabilities = output.narrow(-1, 0, FONT_COUNT).softmax(-1, None::<Kind>);
         let (scores, indices) = probabilities.topk(top_k, -1, true, true);
-        let directions = output
-            .narrow(-1, FONT_COUNT, 2)
-            .argmax(-1, false)
-            .unsqueeze(-1);
+        let directions = output.narrow(-1, FONT_COUNT, 2).argmax(-1, false).unsqueeze(-1);
         let regression = output.narrow(-1, FONT_COUNT + 2, REGRESSION_DIM);
 
         // Copy only top-k scores and the compact style output. Grouping the
@@ -178,10 +175,7 @@ impl Processor {
             .zip(image_widths)
             .map(|((floats, integers), &image_width)| {
                 let top_fonts = (0..top_k as usize)
-                    .map(|rank| TopFont {
-                        index: integers[rank] as usize,
-                        score: floats[rank],
-                    })
+                    .map(|rank| TopFont { index: integers[rank] as usize, score: floats[rank] })
                     .collect::<Vec<_>>();
                 let named_fonts = top_fonts
                     .iter()
@@ -244,11 +238,7 @@ mod tests {
     use koharu_runtime::{Feature, Runtime};
 
     async fn preload_libtorch() {
-        Runtime::discover([Feature::Torch])
-            .unwrap()
-            .initialize()
-            .await
-            .unwrap();
+        Runtime::discover([Feature::Torch]).unwrap().initialize().await.unwrap();
     }
 
     fn processor() -> Processor {
@@ -276,14 +266,7 @@ mod tests {
 
         let predictions = processor().postprocess(&output, &[200], 2).unwrap();
         let prediction = &predictions[0];
-        assert_eq!(
-            prediction
-                .top_fonts
-                .iter()
-                .map(|font| font.index)
-                .collect::<Vec<_>>(),
-            [3, 7]
-        );
+        assert_eq!(prediction.top_fonts.iter().map(|font| font.index).collect::<Vec<_>>(), [3, 7]);
         assert_eq!(prediction.named_fonts[0].name, "font-3");
         assert_eq!(prediction.direction, TextDirection::Vertical);
         assert_eq!(prediction.text_color, [64, 128, 191]);
@@ -306,13 +289,7 @@ mod tests {
         assert_eq!(pixels.size(), [2, 3, 512, 512]);
         assert_eq!(pixels.kind(), Kind::Float);
         assert_eq!(widths, [2, 4]);
-        assert_eq!(
-            f32::try_from(pixels.get(0).get(0).get(0).get(0)).unwrap(),
-            1.0
-        );
-        assert_eq!(
-            f32::try_from(pixels.get(1).get(1).get(0).get(0)).unwrap(),
-            1.0
-        );
+        assert_eq!(f32::try_from(pixels.get(0).get(0).get(0).get(0)).unwrap(), 1.0);
+        assert_eq!(f32::try_from(pixels.get(1).get(1).get(0).get(0)).unwrap(), 1.0);
     }
 }

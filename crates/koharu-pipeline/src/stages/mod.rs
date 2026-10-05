@@ -33,14 +33,7 @@ impl StageInput {
         images: Arc<ImageCache>,
         inpainting_mask: Option<InpaintingMask>,
     ) -> Self {
-        Self {
-            scene,
-            page,
-            entities,
-            region,
-            images,
-            inpainting_mask,
-        }
+        Self { scene, page, entities, region, images, inpainting_mask }
     }
 
     pub(crate) fn page(&self) -> EntityId {
@@ -153,21 +146,12 @@ mod tests {
             koharu_config::Config::memory(koharu_translator::ProvidersConfig::default()),
         )
         .unwrap();
-        let stages = Stages::new(
-            &PipelineConfig::default(),
-            translator,
-            &koharu_ml::Device::cpu(),
-        )
-        .unwrap();
+        let stages =
+            Stages::new(&PipelineConfig::default(), translator, &koharu_ml::Device::cpu()).unwrap();
 
         assert_eq!(
             Stage::ALL.map(|stage| stages.model(stage)),
-            [
-                "koharu-layout-rfdetr-seg-2xl",
-                "paddleocr-vl-1.6",
-                "local",
-                "lama",
-            ]
+            ["koharu-layout-rfdetr-seg-2xl", "paddleocr-vl-1.6", "local", "lama",]
         );
     }
 
@@ -176,10 +160,7 @@ mod tests {
         let mut session = koharu_scene::Session::memory().await.unwrap();
         let mut setup = session.snapshot().edit();
         let page = setup
-            .add_page(
-                koharu_scene::PageDraft::new("page", 1.0, 1.0),
-                koharu_scene::At::End,
-            )
+            .add_page(koharu_scene::PageDraft::new("page", 1.0, 1.0), koharu_scene::At::End)
             .unwrap();
         let text = setup.add_text_content(page, koharu_scene::At::End).unwrap();
         setup
@@ -192,20 +173,14 @@ mod tests {
             )
             .unwrap();
         setup
-            .set_asset(
-                page,
-                &koharu_scene::AssetRole::new("source").unwrap(),
-                asset(b"source"),
-            )
+            .set_asset(page, &koharu_scene::AssetRole::new("source").unwrap(), asset(b"source"))
             .unwrap();
         session.commit(setup.finish().unwrap()).await.unwrap();
         let base = session.snapshot();
 
         let mut text_edit = base.edit();
         text_edit.observe::<koharu_scene::SourceText>(text).unwrap();
-        text_edit
-            .observe::<koharu_scene::Translation>(text)
-            .unwrap();
+        text_edit.observe::<koharu_scene::Translation>(text).unwrap();
         text_edit
             .set(
                 text,
@@ -219,9 +194,7 @@ mod tests {
 
         let mut image_edit = base.edit();
         image_edit.observe_assets(page).unwrap();
-        let cleanup = image_edit
-            .add_entity(page, koharu_scene::At::Start)
-            .unwrap();
+        let cleanup = image_edit.add_entity(page, koharu_scene::At::Start).unwrap();
         image_edit
             .set(
                 cleanup,
@@ -233,11 +206,7 @@ mod tests {
             )
             .unwrap();
         image_edit
-            .set_asset(
-                cleanup,
-                &koharu_scene::AssetRole::new("source").unwrap(),
-                asset(b"clean"),
-            )
+            .set_asset(cleanup, &koharu_scene::AssetRole::new("source").unwrap(), asset(b"clean"))
             .unwrap();
         let image_patch = image_edit.finish().unwrap();
 

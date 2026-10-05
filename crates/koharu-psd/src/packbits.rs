@@ -79,10 +79,7 @@ pub fn encode_image_rle(
             out.extend_from_slice(&length.to_be_bytes());
         }
         out.extend_from_slice(&data);
-        encoded.push(EncodedChannel {
-            channel_id: channel.psd_id(),
-            data: out,
-        });
+        encoded.push(EncodedChannel { channel_id: channel.psd_id(), data: out });
     }
 
     Ok(encoded)

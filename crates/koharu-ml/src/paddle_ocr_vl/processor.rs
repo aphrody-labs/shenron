@@ -98,11 +98,7 @@ impl Processor {
         let tokenizer = Tokenizer::from_file(tokenizer_path)
             .map_err(|error| anyhow::anyhow!(error.to_string()))
             .with_context(|| format!("failed to parse {}", tokenizer_path.display()))?;
-        Ok(Self {
-            image_processor,
-            tokenizer,
-            image_token_id,
-        })
+        Ok(Self { image_processor, tokenizer, image_token_id })
     }
 
     pub(crate) fn preprocess(
@@ -111,10 +107,7 @@ impl Processor {
         task: PaddleOCRVLTask,
         device: Device,
     ) -> Result<(Tensor, [i64; 3])> {
-        ensure!(
-            image.width() > 0 && image.height() > 0,
-            "image dimensions must be non-zero"
-        );
+        ensure!(image.width() > 0 && image.height() > 0, "image dimensions must be non-zero");
         let image =
             if task == PaddleOCRVLTask::Spotting && image.width() < 1500 && image.height() < 1500 {
                 image.resize_exact(
@@ -202,15 +195,9 @@ impl Processor {
             .tokenizer
             .encode(prompt, false)
             .map_err(|error| anyhow::anyhow!(error.to_string()))?;
-        let input_ids = encoding
-            .get_ids()
-            .iter()
-            .map(|&id| i64::from(id))
-            .collect::<Vec<_>>();
-        let mm_token_type_ids = input_ids
-            .iter()
-            .map(|&id| i64::from(id == self.image_token_id))
-            .collect();
+        let input_ids = encoding.get_ids().iter().map(|&id| i64::from(id)).collect::<Vec<_>>();
+        let mm_token_type_ids =
+            input_ids.iter().map(|&id| i64::from(id == self.image_token_id)).collect();
         Ok((input_ids, mm_token_type_ids))
     }
 
@@ -276,10 +263,7 @@ mod tests {
             ((54, 204), (196, 672)),
         ];
         for ((height, width), expected) in cases {
-            assert_eq!(
-                smart_resize(height, width, 28, 112_896, 1_003_520)?,
-                expected
-            );
+            assert_eq!(smart_resize(height, width, 28, 112_896, 1_003_520)?, expected);
         }
         Ok(())
     }

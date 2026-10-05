@@ -80,13 +80,9 @@ fn process_directory(cli: &Cli, model: &ComicLayoutYolo26sSegmenter) -> Result<(
         cli.annotated_output.is_some() || cli.mask_output.is_some() || cli.output.is_some(),
         "directory input requires at least one output directory"
     );
-    for directory in [
-        cli.annotated_output.as_ref(),
-        cli.mask_output.as_ref(),
-        cli.output.as_ref(),
-    ]
-    .into_iter()
-    .flatten()
+    for directory in [cli.annotated_output.as_ref(), cli.mask_output.as_ref(), cli.output.as_ref()]
+        .into_iter()
+        .flatten()
     {
         std::fs::create_dir_all(directory)?;
     }
@@ -96,11 +92,7 @@ fn process_directory(cli: &Cli, model: &ComicLayoutYolo26sSegmenter) -> Result<(
         .filter(|path| path.is_file() && is_supported_image(path))
         .collect::<Vec<_>>();
     inputs.sort();
-    ensure!(
-        !inputs.is_empty(),
-        "no supported images found in {}",
-        cli.input.display()
-    );
+    ensure!(!inputs.is_empty(), "no supported images found in {}", cli.input.display());
 
     for (index, input) in inputs.iter().enumerate() {
         let image =
@@ -136,27 +128,19 @@ fn process_directory(cli: &Cli, model: &ComicLayoutYolo26sSegmenter) -> Result<(
 }
 
 fn is_supported_image(path: &std::path::Path) -> bool {
-    path.extension()
-        .and_then(|extension| extension.to_str())
-        .is_some_and(|extension| {
-            matches!(
-                extension.to_ascii_lowercase().as_str(),
-                "jpg" | "jpeg" | "png" | "webp" | "bmp" | "tif" | "tiff"
-            )
-        })
+    path.extension().and_then(|extension| extension.to_str()).is_some_and(|extension| {
+        matches!(
+            extension.to_ascii_lowercase().as_str(),
+            "jpg" | "jpeg" | "png" | "webp" | "bmp" | "tif" | "tiff"
+        )
+    })
 }
 
 fn mask_image(width: u32, height: u32, instances: &[ComicLayoutYolo26sInstance]) -> GrayImage {
     let mut image = GrayImage::new(width, height);
     for instance in instances {
-        let max_y = instance
-            .mask
-            .height
-            .min(height.saturating_sub(instance.mask.y));
-        let max_x = instance
-            .mask
-            .width
-            .min(width.saturating_sub(instance.mask.x));
+        let max_y = instance.mask.height.min(height.saturating_sub(instance.mask.y));
+        let max_x = instance.mask.width.min(width.saturating_sub(instance.mask.x));
         for y in 0..max_y {
             let offset = y as usize * instance.mask.width as usize;
             for x in 0..max_x {
@@ -182,19 +166,10 @@ fn annotated_image(
     let mut image = image.to_rgba8();
     for instance in instances {
         let color = colors[instance.label_id % colors.len()];
-        let (color_weight, denominator) = if instance.label_id == 0 {
-            (1u16, 8u16)
-        } else {
-            (3u16, 10u16)
-        };
-        let max_y = instance
-            .mask
-            .height
-            .min(image.height().saturating_sub(instance.mask.y));
-        let max_x = instance
-            .mask
-            .width
-            .min(image.width().saturating_sub(instance.mask.x));
+        let (color_weight, denominator) =
+            if instance.label_id == 0 { (1u16, 8u16) } else { (3u16, 10u16) };
+        let max_y = instance.mask.height.min(image.height().saturating_sub(instance.mask.y));
+        let max_x = instance.mask.width.min(image.width().saturating_sub(instance.mask.x));
         for y in 0..max_y {
             let offset = y as usize * instance.mask.width as usize;
             for x in 0..max_x {

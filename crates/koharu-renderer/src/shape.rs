@@ -77,18 +77,10 @@ impl TextShaper {
         let direction = buffer.direction();
         let script = Some(buffer.script());
         let language = buffer.language();
-        let plan = font.shape_plan(
-            &font_ref,
-            direction,
-            script,
-            language.as_ref(),
-            options.features,
-        );
-        let shaper = font
-            .shaper_data()
-            .shaper(&font_ref)
-            .instance(Some(font.shaper_instance()))
-            .build();
+        let plan =
+            font.shape_plan(&font_ref, direction, script, language.as_ref(), options.features);
+        let shaper =
+            font.shaper_data().shaper(&font_ref).instance(Some(font.shaper_instance())).build();
         let output = shaper.shape(
             buffer,
             ShapeOptions::new()
@@ -119,14 +111,8 @@ impl TextShaper {
 
         Ok(ShapedRun {
             glyphs: positioned_glyphs,
-            x_advance: glyph_positions
-                .iter()
-                .map(|p| (p.x_advance as f32) * scale)
-                .sum(),
-            y_advance: glyph_positions
-                .iter()
-                .map(|p| (p.y_advance as f32) * scale)
-                .sum(),
+            x_advance: glyph_positions.iter().map(|p| (p.x_advance as f32) * scale).sum(),
+            y_advance: glyph_positions.iter().map(|p| (p.y_advance as f32) * scale).sum(),
         })
     }
 }
@@ -171,11 +157,7 @@ pub(crate) fn shape_script_runs<'a>(
         let mut run_opts = options.clone();
         run_opts.script = crate::script::harfrust_script(script);
 
-        if let Some(font) = fonts
-            .first()
-            .copied()
-            .filter(|font| font.covers(script_run_text))
-        {
+        if let Some(font) = fonts.first().copied().filter(|font| font.covers(script_run_text)) {
             push_font_run(shaper, script_run_text, font, &run_opts, start, &mut runs)?;
             continue;
         }
@@ -183,17 +165,13 @@ pub(crate) fn shape_script_runs<'a>(
         // If no single face covers the script run, preserve extended grapheme
         // clusters. This keeps combining marks, variation selectors, and emoji
         // ZWJ sequences together instead of falling back per Unicode scalar.
-        let boundaries = GraphemeClusterSegmenter::new()
-            .segment_str(script_run_text)
-            .collect::<Vec<_>>();
+        let boundaries =
+            GraphemeClusterSegmenter::new().segment_str(script_run_text).collect::<Vec<_>>();
         let mut group_start = 0;
         let mut group_font = 0;
         for pair in boundaries.windows(2) {
             let cluster = &script_run_text[pair[0]..pair[1]];
-            let font = fonts
-                .iter()
-                .position(|font| font.covers(cluster))
-                .unwrap_or(0);
+            let font = fonts.iter().position(|font| font.covers(cluster)).unwrap_or(0);
             if pair[0] == 0 {
                 group_font = font;
                 continue;
@@ -322,11 +300,7 @@ mod tests {
 
         let glyph_count: usize = runs.iter().map(|r| r.glyphs.len()).sum();
         assert!(glyph_count >= 3);
-        assert!(
-            runs.iter()
-                .flat_map(|run| &run.glyphs)
-                .all(|glyph| glyph.glyph_id != 0)
-        );
+        assert!(runs.iter().flat_map(|run| &run.glyphs).all(|glyph| glyph.glyph_id != 0));
         assert!(
             runs.iter()
                 .flat_map(|run| &run.glyphs)
@@ -368,12 +342,7 @@ mod tests {
         assert!(!shaped.is_empty());
         // Verify it used a consistent font for the whole run to ensure joining.
         let font_at_start = shaped[0].glyphs[0].font;
-        assert!(
-            shaped[0]
-                .glyphs
-                .iter()
-                .all(|g| std::ptr::eq(g.font, font_at_start))
-        );
+        assert!(shaped[0].glyphs.iter().all(|g| std::ptr::eq(g.font, font_at_start)));
 
         Ok(())
     }

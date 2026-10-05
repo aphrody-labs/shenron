@@ -19,14 +19,15 @@ impl Editor {
     }
 
     pub fn canvas_resource(&self, generation: u64, resource: &str) -> Result<Vec<u8>> {
-        let resource = resource
-            .parse::<ResourceId>()
-            .context("canvas resource id is invalid")?;
+        let resource = resource.parse::<ResourceId>().context("canvas resource id is invalid")?;
         self.inner.desktop.frame_resource_bytes(generation, resource)
     }
 
     /// Prepare a page's frame at the current revision; `None` when it is already prepared.
-    pub async fn prepare_canvas_page(&self, page: EntityId) -> Result<Option<CanvasPagePreparation>> {
+    pub async fn prepare_canvas_page(
+        &self,
+        page: EntityId,
+    ) -> Result<Option<CanvasPagePreparation>> {
         let snapshot = self.snapshot().await?;
         let prepared_page = Project::page(&snapshot, page)?;
         let revision = snapshot.revision();
@@ -35,10 +36,7 @@ impl Editor {
             .desktop
             .prepare_page(&snapshot, page)
             .await?
-            .then_some(CanvasPagePreparation {
-                revision,
-                page: prepared_page,
-            }))
+            .then_some(CanvasPagePreparation { revision, page: prepared_page }))
     }
 
     pub fn canvas_page_manifest(&self, page: EntityId, revision: Revision) -> Result<Vec<u8>> {
@@ -51,16 +49,16 @@ impl Editor {
         revision: Revision,
         resource: &str,
     ) -> Result<Vec<u8>> {
-        let resource = resource
-            .parse::<ResourceId>()
-            .context("canvas resource id is invalid")?;
-        self.inner
-            .desktop
-            .page_resource_bytes(page, revision, resource)
+        let resource = resource.parse::<ResourceId>().context("canvas resource id is invalid")?;
+        self.inner.desktop.page_resource_bytes(page, revision, resource)
     }
 
     /// Add a point text on `page` (the active page when `None`).
-    pub async fn add_point_text(&self, page: Option<EntityId>, point: Point) -> Result<LayerCommit> {
+    pub async fn add_point_text(
+        &self,
+        page: Option<EntityId>,
+        point: Point,
+    ) -> Result<LayerCommit> {
         let (commit, layer) = self
             .mutate(true, false, |project| {
                 Box::pin(async move {
@@ -69,10 +67,7 @@ impl Editor {
                 })
             })
             .await?;
-        Ok(LayerCommit {
-            revision: commit.revision,
-            layer,
-        })
+        Ok(LayerCommit { revision: commit.revision, layer })
     }
 
     /// Add a paragraph text box on `page` (the active page when `None`).
@@ -85,10 +80,7 @@ impl Editor {
                 })
             })
             .await?;
-        Ok(LayerCommit {
-            revision: commit.revision,
-            layer,
-        })
+        Ok(LayerCommit { revision: commit.revision, layer })
     }
 
     pub async fn commit_paint(
@@ -158,20 +150,14 @@ impl Editor {
                             diameter,
                             points
                                 .into_iter()
-                                .map(|point| koharu_scene::Point {
-                                    x: point.x,
-                                    y: point.y,
-                                })
+                                .map(|point| koharu_scene::Point { x: point.x, y: point.y })
                                 .collect(),
                         )
                         .await
                 })
             })
             .await?;
-        Ok(LayerCommit {
-            revision: commit.revision,
-            layer,
-        })
+        Ok(LayerCommit { revision: commit.revision, layer })
     }
 
     /// Move or resize elements drawn on `expected_revision`; `None` when nothing changed.
@@ -180,10 +166,7 @@ impl Editor {
         expected_revision: Revision,
         elements: Vec<TransformFrame>,
     ) -> Result<Option<Revision>> {
-        let geometries = self
-            .inner
-            .desktop
-            .transform_geometries(expected_revision, &elements)?;
+        let geometries = self.inner.desktop.transform_geometries(expected_revision, &elements)?;
         if geometries.is_empty() {
             return Ok(None);
         }
@@ -209,10 +192,7 @@ impl Editor {
         if !diameter.is_finite() || diameter <= 0.0 || points.is_empty() {
             bail!("an inpaint stroke requires a positive diameter and at least one point");
         }
-        if points
-            .iter()
-            .any(|point| !point.x.is_finite() || !point.y.is_finite())
-        {
+        if points.iter().any(|point| !point.x.is_finite() || !point.y.is_finite()) {
             bail!("inpaint stroke points must be finite");
         }
         let (page, width, height) = {
@@ -220,28 +200,18 @@ impl Editor {
             let project = current.as_ref().context("no project is open")?;
             let snapshot = project.snapshot();
             ensure_revision(snapshot.revision(), expected_revision)?;
-            let page = project
-                .active_page()
-                .context("the project has no active page")?;
+            let page = project.active_page().context("the project has no active page")?;
             let page_value = snapshot.page(page)?.page()?;
-            (
-                page,
-                page_value.width.round() as u32,
-                page_value.height.round() as u32,
-            )
+            (page, page_value.width.round() as u32, page_value.height.round() as u32)
         };
         let (png, bounds) =
             tokio_rayon::spawn(move || encode_mask(width, height, &points, diameter)).await?;
-        *self.inner.inpainting_mask.lock() = Some(koharu_pipeline::InpaintingMask {
-            page,
-            png: Arc::from(png),
-        });
+        *self.inner.inpainting_mask.lock() =
+            Some(koharu_pipeline::InpaintingMask { page, png: Arc::from(png) });
         Ok(Some(
             self.process(
                 koharu_pipeline::Scope::Region { page, bounds },
-                koharu_pipeline::Operation::Only {
-                    stage: koharu_pipeline::Stage::Inpainting,
-                },
+                koharu_pipeline::Operation::Only { stage: koharu_pipeline::Stage::Inpainting },
             )
             .await?,
         ))
@@ -249,8 +219,7 @@ impl Editor {
 }
 
 fn page_or_active(project: &Project, page: Option<EntityId>) -> Result<EntityId> {
-    page.or_else(|| project.active_page())
-        .context("the project has no active page")
+    page.or_else(|| project.active_page()).context("the project has no active page")
 }
 
 fn ensure_revision(actual: Revision, expected: Revision) -> Result<()> {
@@ -272,19 +241,13 @@ fn encode_mask(
     let mut image = GrayImage::new(width, height);
     let radius = f64::from(diameter) * 0.5;
     let mut dirty = None::<[u32; 4]>;
-    for (start, end) in points
-        .iter()
-        .zip(points.iter().skip(1))
-        .chain(points.last().map(|point| (point, point)))
+    for (start, end) in
+        points.iter().zip(points.iter().skip(1)).chain(points.last().map(|point| (point, point)))
     {
         let left = (start.x.min(end.x) - radius - 0.5).floor().max(0.0) as u32;
         let top = (start.y.min(end.y) - radius - 0.5).floor().max(0.0) as u32;
-        let right = (start.x.max(end.x) + radius + 0.5)
-            .ceil()
-            .min(f64::from(width)) as u32;
-        let bottom = (start.y.max(end.y) + radius + 0.5)
-            .ceil()
-            .min(f64::from(height)) as u32;
+        let right = (start.x.max(end.x) + radius + 0.5).ceil().min(f64::from(width)) as u32;
+        let bottom = (start.y.max(end.y) + radius + 0.5).ceil().min(f64::from(height)) as u32;
         let dx = end.x - start.x;
         let dy = end.y - start.y;
         let length_squared = dx.mul_add(dx, dy * dy);
@@ -309,13 +272,14 @@ fn encode_mask(
                 dirty = Some(match dirty {
                     Some([min_x, min_y, max_x, max_y]) => {
                         [min_x.min(x), min_y.min(y), max_x.max(x), max_y.max(y)]
-                    }
+                    },
                     None => [x, y, x, y],
                 });
             }
         }
     }
-    let [left, top, right, bottom] = dirty.ok_or_else(|| anyhow!("inpaint stroke does not intersect the page"))?;
+    let [left, top, right, bottom] =
+        dirty.ok_or_else(|| anyhow!("inpaint stroke does not intersect the page"))?;
     let mut png = Vec::new();
     PngEncoder::new(&mut png).write_image(
         image.as_raw(),
@@ -340,13 +304,9 @@ mod tests {
 
     #[test]
     fn a_stroke_mask_covers_the_stroke_and_reports_its_bounds() {
-        let (png, bounds) = encode_mask(
-            32,
-            16,
-            &[Point { x: 4.0, y: 8.0 }, Point { x: 20.0, y: 8.0 }],
-            4.0,
-        )
-        .unwrap();
+        let (png, bounds) =
+            encode_mask(32, 16, &[Point { x: 4.0, y: 8.0 }, Point { x: 20.0, y: 8.0 }], 4.0)
+                .unwrap();
         assert!(png.starts_with(b"\x89PNG"));
         assert!(bounds.x <= 2.0 && bounds.x + bounds.width >= 22.0);
         assert!(bounds.y <= 6.0 && bounds.y + bounds.height >= 10.0);

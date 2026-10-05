@@ -89,14 +89,14 @@ impl ResourceMonitor {
                     Ok(devices) => {
                         vram_unavailable = false;
                         devices
-                    }
+                    },
                     Err(error) => {
                         if !vram_unavailable {
                             tracing::debug!(%error, "accelerator memory telemetry is unavailable");
                             vram_unavailable = true;
                         }
                         vram::unavailable(&device)
-                    }
+                    },
                 };
                 monitor.changed.send_replace(ResourceSnapshot {
                     process_memory_bytes: process.map_or(0, sysinfo::Process::memory),

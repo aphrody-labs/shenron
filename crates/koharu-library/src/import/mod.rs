@@ -17,12 +17,7 @@ mod zip;
 #[derive(Clone, Copy, EnumIter, EnumMessage, EnumString)]
 #[strum(ascii_case_insensitive)]
 pub enum Format {
-    #[strum(
-        serialize = "png",
-        serialize = "jpg",
-        serialize = "jpeg",
-        serialize = "webp"
-    )]
+    #[strum(serialize = "png", serialize = "jpg", serialize = "jpeg", serialize = "webp")]
     Raster,
     #[strum(serialize = "cbz", serialize = "zip")]
     Zip,
@@ -58,10 +53,7 @@ impl Page {
         let name = name.into();
         let format = image::guess_format(&bytes)
             .with_context(|| format!("failed to identify imported image {name}"))?;
-        if !matches!(
-            format,
-            ImageFormat::Png | ImageFormat::Jpeg | ImageFormat::WebP
-        ) {
+        if !matches!(format, ImageFormat::Png | ImageFormat::Jpeg | ImageFormat::WebP) {
             bail!("unsupported page image format: {format:?}");
         }
         let (width, height) = ImageReader::with_format(Cursor::new(bytes.as_ref()), format)
@@ -70,13 +62,7 @@ impl Page {
         if width == 0 || height == 0 {
             bail!("page image dimensions must be nonzero");
         }
-        Ok(Self {
-            name,
-            bytes,
-            format,
-            width,
-            height,
-        })
+        Ok(Self { name, bytes, format, width, height })
     }
 }
 
@@ -105,10 +91,7 @@ pub fn import(mut paths: Vec<PathBuf>) -> Result<Vec<Page>> {
                 Some(Format::Pdf) => pdf::render(&path)?,
                 None => bail!("unsupported page import path {}", path.display()),
             };
-            encoded
-                .into_iter()
-                .map(|source| decode(&path, source))
-                .collect()
+            encoded.into_iter().map(|source| decode(&path, source)).collect()
         })
         .collect::<Result<Vec<_>>>()?;
     let page_count = groups.iter().map(Vec::len).sum();
@@ -129,10 +112,8 @@ mod tests {
             .duration_since(std::time::UNIX_EPOCH)
             .expect("clock after epoch")
             .as_nanos();
-        let directory = std::env::temp_dir().join(format!(
-            "koharu-import-order-{}-{timestamp}",
-            std::process::id()
-        ));
+        let directory = std::env::temp_dir()
+            .join(format!("koharu-import-order-{}-{timestamp}", std::process::id()));
         fs::create_dir(&directory).expect("create fixture directory");
         let image = image::RgbaImage::from_pixel(1, 1, image::Rgba([0, 0, 0, 255]));
         let mut encoded = Cursor::new(Vec::new());
@@ -147,10 +128,7 @@ mod tests {
         let pages = import(paths.into()).expect("import fixtures");
         fs::remove_dir_all(&directory).expect("remove fixture directory");
         assert_eq!(
-            pages
-                .iter()
-                .map(|page| page.name.as_str())
-                .collect::<Vec<_>>(),
+            pages.iter().map(|page| page.name.as_str()).collect::<Vec<_>>(),
             ["page1.png", "page2.png", "page10.PNG"]
         );
     }

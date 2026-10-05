@@ -34,14 +34,10 @@ impl PPDocLayoutV3 {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
 
-        let config_path = CONFIG
-            .resolve()
-            .await
-            .context("failed to resolve PP-DocLayout-V3 config")?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve PP-DocLayout-V3 weights")?;
+        let config_path =
+            CONFIG.resolve().await.context("failed to resolve PP-DocLayout-V3 config")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve PP-DocLayout-V3 weights")?;
         let processor_path = PROCESSOR
             .resolve()
             .await
@@ -63,11 +59,7 @@ impl PPDocLayoutV3 {
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
 
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(

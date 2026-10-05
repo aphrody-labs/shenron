@@ -28,10 +28,8 @@ pub struct ComicOnomatopoeiaRecognizer {
 
 impl ComicOnomatopoeiaRecognizer {
     pub async fn load(device: crate::Device) -> Result<Self> {
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve COO TRBA+2D weights")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve COO TRBA+2D weights")?;
         Self::load_from_path(device, weights_path)
     }
 
@@ -43,11 +41,7 @@ impl ComicOnomatopoeiaRecognizer {
         model
             .load(path.as_ref())
             .with_context(|| format!("failed to load {}", path.as_ref().display()))?;
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<Recognition> {

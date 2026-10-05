@@ -45,8 +45,7 @@ impl BaberuOcrConfig {
     }
 
     pub(crate) fn head_dim(&self) -> i64 {
-        self.head_dim
-            .unwrap_or(self.hidden_size / self.num_attention_heads)
+        self.head_dim.unwrap_or(self.hidden_size / self.num_attention_heads)
     }
 
     pub(crate) fn validate(&self, vision: &Dinov2Config) -> Result<()> {
@@ -55,22 +54,15 @@ impl BaberuOcrConfig {
             "unsupported Baberu OCR vision model {:?}",
             self.vision_model_name
         );
-        ensure!(
-            self.projector_act == "gelu",
-            "unsupported projector activation"
-        );
+        ensure!(self.projector_act == "gelu", "unsupported projector activation");
         ensure!(self.hidden_act == "silu", "unsupported decoder activation");
         ensure!(
             self.tie_word_embeddings,
             "the released Baberu OCR checkpoint requires tied word embeddings"
         );
         ensure!(
-            [
-                self.pad_token_id,
-                self.bos_token_id,
-                self.eos_token_id,
-                self.unk_token_id
-            ] == [0, 1, 2, 3],
+            [self.pad_token_id, self.bos_token_id, self.eos_token_id, self.unk_token_id]
+                == [0, 1, 2, 3],
             "unsupported Baberu OCR special-token layout"
         );
         ensure!(
@@ -103,10 +95,7 @@ impl BaberuOcrConfig {
         );
         ensure!(vision.hidden_act == "gelu", "unsupported DINOv2 activation");
         ensure!(!vision.use_swiglu_ffn, "DINOv2 SwiGLU is not supported");
-        ensure!(
-            vision.use_mask_token,
-            "the DINOv2 checkpoint contains a mask token"
-        );
+        ensure!(vision.use_mask_token, "the DINOv2 checkpoint contains a mask token");
         ensure!(
             self.max_position_embeddings > self.vision_num_tokens,
             "decoder position table cannot contain the vision prefix"
@@ -130,22 +119,10 @@ impl BaberuGenerationConfig {
     }
 
     pub(crate) fn validate(&self, model: &BaberuOcrConfig) -> Result<()> {
-        ensure!(
-            self.bos_token_id == model.bos_token_id,
-            "BOS token IDs differ"
-        );
-        ensure!(
-            self.eos_token_id == model.eos_token_id,
-            "EOS token IDs differ"
-        );
-        ensure!(
-            self.pad_token_id == model.pad_token_id,
-            "pad token IDs differ"
-        );
-        ensure!(
-            self.repetition_penalty > 0.0,
-            "repetition penalty must be positive"
-        );
+        ensure!(self.bos_token_id == model.bos_token_id, "BOS token IDs differ");
+        ensure!(self.eos_token_id == model.eos_token_id, "EOS token IDs differ");
+        ensure!(self.pad_token_id == model.pad_token_id, "pad token IDs differ");
+        ensure!(self.repetition_penalty > 0.0, "repetition penalty must be positive");
         ensure!(
             model.vision_num_tokens + 1 + self.max_new_tokens as i64
                 <= model.max_position_embeddings,

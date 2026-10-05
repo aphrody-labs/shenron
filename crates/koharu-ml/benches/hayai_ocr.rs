@@ -29,9 +29,7 @@ async fn main() -> Result<()> {
 
     criterion.bench_function(&benchmark, |bencher| {
         bencher.iter(|| {
-            let text = model
-                .inference(black_box(&image))
-                .expect("Hayai OCR inference failed");
+            let text = model.inference(black_box(&image)).expect("Hayai OCR inference failed");
             black_box(text);
         });
     });

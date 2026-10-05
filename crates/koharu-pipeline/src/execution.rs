@@ -66,10 +66,7 @@ impl<'a> Execution<'a> {
         }
         progress::emit(
             request.progress.as_ref(),
-            Progress::Started {
-                pages: pages.clone(),
-                stages: stages.clone(),
-            },
+            Progress::Started { pages: pages.clone(), stages: stages.clone() },
         );
 
         Ok(Self {
@@ -127,11 +124,8 @@ impl<'a> Execution<'a> {
         }
         let (page, stage) = self.scheduler.start_next(&self.busy_stages)?;
         self.busy_stages.insert(stage);
-        let images = self
-            .images
-            .entry(page)
-            .or_insert_with(|| Arc::new(ImageCache::default()))
-            .clone();
+        let images =
+            self.images.entry(page).or_insert_with(|| Arc::new(ImageCache::default())).clone();
         Some(StageJob::new(
             stage,
             StageInput::new(
@@ -154,19 +148,13 @@ impl<'a> Execution<'a> {
         &mut self,
         completion: StageCompletion,
     ) -> std::result::Result<(), PipelineError> {
-        let StageCompletion {
-            page,
-            stage,
-            model,
-            elapsed,
-            outcome,
-        } = completion;
+        let StageCompletion { page, stage, model, elapsed, outcome } = completion;
         match outcome? {
-            StageOutcome::Stopped => {}
+            StageOutcome::Stopped => {},
             StageOutcome::Skipped => {
                 self.mark_complete(page, stage);
                 progress::emit(self.progress.as_ref(), Progress::Skipped { page, stage });
-            }
+            },
             StageOutcome::Patch(patch) => {
                 if !self.commit_patch(page, stage, patch).await? {
                     return Ok(());
@@ -174,14 +162,9 @@ impl<'a> Execution<'a> {
                 self.mark_complete(page, stage);
                 progress::emit(
                     self.progress.as_ref(),
-                    Progress::Finished {
-                        page,
-                        stage,
-                        model,
-                        elapsed,
-                    },
+                    Progress::Finished { page, stage, model, elapsed },
                 );
-            }
+            },
         }
         Ok(())
     }
@@ -242,11 +225,7 @@ impl<'a> Execution<'a> {
                 ),
             ));
         }
-        let status = if self.stopped() {
-            RunStatus::Stopped
-        } else {
-            RunStatus::Completed
-        };
+        let status = if self.stopped() { RunStatus::Stopped } else { RunStatus::Completed };
         Ok(self.report(status))
     }
 
@@ -267,9 +246,6 @@ fn validate_commit(previous: &Snapshot, next: &Snapshot) -> Result<()> {
         previous.project_id() == next.project_id(),
         "committer returned a snapshot from another project"
     );
-    ensure!(
-        next.revision() > previous.revision(),
-        "committer did not advance the scene revision"
-    );
+    ensure!(next.revision() > previous.revision(), "committer did not advance the scene revision");
     Ok(())
 }

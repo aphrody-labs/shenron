@@ -38,13 +38,7 @@ impl StageRunner {
         let page = job.input.page();
         let model = self.stages.model(job.stage).to_owned();
         let outcome = self.run_with_recovery(&job, &model).await;
-        StageCompletion {
-            page,
-            stage: job.stage,
-            model,
-            elapsed: started.elapsed(),
-            outcome,
-        }
+        StageCompletion { page, stage: job.stage, model, elapsed: started.elapsed(), outcome }
     }
 
     async fn run_with_recovery(
@@ -59,10 +53,7 @@ impl StageRunner {
             self.stage_error(
                 job.stage,
                 model,
-                AttemptFailure {
-                    kind: ErrorKind::Processing,
-                    error,
-                },
+                AttemptFailure { kind: ErrorKind::Processing, error },
             )
         })?;
         if skip {
@@ -99,44 +90,32 @@ impl StageRunner {
     ) -> std::result::Result<StageOutcome, AttemptFailure> {
         progress::emit(
             job.progress.as_ref(),
-            Progress::Loading {
-                page: job.input.page(),
-                stage: job.stage,
-                model: model.to_owned(),
-            },
+            Progress::Loading { page: job.input.page(), stage: job.stage, model: model.to_owned() },
         );
         self.stages
             .load(job.stage)
             .await
-            .map_err(|error| AttemptFailure {
-                kind: ErrorKind::ModelLoad,
-                error,
-            })?;
+            .map_err(|error| AttemptFailure { kind: ErrorKind::ModelLoad, error })?;
         if job.stop.stopped() {
             return Ok(StageOutcome::Stopped);
         }
         progress::emit(
             job.progress.as_ref(),
-            Progress::Running {
-                page: job.input.page(),
-                stage: job.stage,
-                model: model.to_owned(),
-            },
+            Progress::Running { page: job.input.page(), stage: job.stage, model: model.to_owned() },
         );
         self.stages
             .process(job.stage, job.input.clone())
             .await
-            .map(|patch| {
-                if patch.is_empty() {
-                    StageOutcome::Skipped
-                } else {
-                    StageOutcome::Patch(patch)
-                }
-            })
-            .map_err(|error| AttemptFailure {
-                kind: ErrorKind::Processing,
-                error,
-            })
+            .map(
+                |patch| {
+                    if patch.is_empty() {
+                        StageOutcome::Skipped
+                    } else {
+                        StageOutcome::Patch(patch)
+                    }
+                },
+            )
+            .map_err(|error| AttemptFailure { kind: ErrorKind::Processing, error })
     }
 
     fn stage_error(&self, stage: Stage, model: &str, failure: AttemptFailure) -> PipelineError {
@@ -177,12 +156,7 @@ impl StageJob {
         stop: StopToken,
         progress: Option<ProgressSink>,
     ) -> Self {
-        Self {
-            stage,
-            input,
-            stop,
-            progress,
-        }
+        Self { stage, input, stop, progress }
     }
 }
 

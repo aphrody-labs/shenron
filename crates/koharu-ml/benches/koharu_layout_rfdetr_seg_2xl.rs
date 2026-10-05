@@ -23,9 +23,8 @@ async fn main() -> Result<()> {
         .configure_from_args();
     criterion.bench_function("koharu_layout_rfdetr_seg_2xl/inference", |bencher| {
         bencher.iter(|| {
-            let detections = model
-                .inference(black_box(&image))
-                .expect("KoharuLayout RF-DETR inference failed");
+            let detections =
+                model.inference(black_box(&image)).expect("KoharuLayout RF-DETR inference failed");
             black_box(detections);
         });
     });

@@ -39,21 +39,9 @@ impl Model {
             PaddleOCRVisionModel::new(&(&root / "visual" / "vision_model"), &config.vision_config);
         let projector = PaddleOCRProjector::new(&(&root / "mlp_AR"), &config);
         let language_model = PaddleOCRTextModel::new(&(&root / "model"), &config);
-        let lm_head = linear(
-            &(&root / "lm_head"),
-            config.hidden_size,
-            config.vocab_size,
-            false,
-        );
+        let lm_head = linear(&(&root / "lm_head"), config.hidden_size, config.vocab_size, false);
         vs.freeze();
-        Self {
-            vs,
-            visual,
-            projector,
-            language_model,
-            lm_head,
-            config,
-        }
+        Self { vs, visual, projector, language_model, lm_head, config }
     }
 
     pub(super) fn load(&mut self, path: impl AsRef<Path>) -> Result<()> {
@@ -75,21 +63,14 @@ impl Model {
             "input_ids and mm_token_type_ids must have equal lengths"
         );
         let device = self.vs.device();
-        let ids = Tensor::from_slice(input_ids)
-            .view([1, input_ids.len() as i64])
-            .to_device(device);
+        let ids = Tensor::from_slice(input_ids).view([1, input_ids.len() as i64]).to_device(device);
         let mut inputs_embeds = self.language_model.embed_tokens(&ids);
 
         let image_features =
             self.get_image_features(&pixel_values.to_kind(self.vs.kind()), image_grid_thw);
-        let image_mask = ids
-            .eq(self.config.image_token_id)
-            .unsqueeze(-1)
-            .expand_as(&inputs_embeds);
-        let expected = input_ids
-            .iter()
-            .filter(|&&id| id == self.config.image_token_id)
-            .count() as i64;
+        let image_mask = ids.eq(self.config.image_token_id).unsqueeze(-1).expand_as(&inputs_embeds);
+        let expected =
+            input_ids.iter().filter(|&&id| id == self.config.image_token_id).count() as i64;
         ensure!(
             image_features.size()[0] == expected,
             "image features and image tokens do not match: tokens={expected}, features={}",
@@ -131,8 +112,7 @@ impl Model {
             .map(|_| None)
             .collect::<Vec<Option<(Tensor, Tensor)>>>();
         let hidden_states =
-            self.language_model
-                .forward(inputs_embeds, position_ids, true, &mut cache);
+            self.language_model.forward(inputs_embeds, position_ids, true, &mut cache);
         let last_index = hidden_states.size()[1] - 1;
         let mut logits = self.lm_head.forward(&hidden_states.select(1, last_index));
 
@@ -149,9 +129,7 @@ impl Model {
                 break;
             }
 
-            let next_ids = Tensor::from_slice(&[next_token])
-                .view([1, 1])
-                .to_device(device);
+            let next_ids = Tensor::from_slice(&[next_token]).view([1, 1]).to_device(device);
             if unique_tokens.insert(next_token) {
                 seen_ids = Some(match seen_ids {
                     Some(seen_ids) => Tensor::cat(&[seen_ids, next_ids.shallow_clone()], 1),
@@ -204,25 +182,18 @@ impl Model {
                 break;
             }
 
-            let next_ids = Tensor::from_slice(&[next_token])
-                .view([1, 1])
-                .to_device(device);
+            let next_ids = Tensor::from_slice(&[next_token]).view([1, 1]).to_device(device);
             if unique_tokens.insert(next_token) {
                 seen_ids = Some(match seen_ids {
                     Some(seen_ids) => Tensor::cat(&[seen_ids, next_ids.shallow_clone()], 1),
                     None => next_ids.shallow_clone(),
                 });
             }
-            inputs_embeds = Tensor::cat(
-                &[inputs_embeds, self.language_model.embed_tokens(&next_ids)],
-                1,
-            );
+            inputs_embeds =
+                Tensor::cat(&[inputs_embeds, self.language_model.embed_tokens(&next_ids)], 1);
             let position = input_length + step as i64 + rope_delta;
             position_ids = Tensor::cat(
-                &[
-                    position_ids,
-                    Tensor::full([3, 1, 1], position, (Kind::Int64, device)),
-                ],
+                &[position_ids, Tensor::full([3, 1, 1], position, (Kind::Int64, device))],
                 2,
             );
         }
@@ -260,10 +231,7 @@ impl Model {
                 }
                 current_position += (end - offset) as i64;
             } else if modality == 1 {
-                ensure!(
-                    !consumed_image,
-                    "only one image is supported per inference call"
-                );
+                ensure!(!consumed_image, "only one image is supported per inference call");
                 consumed_image = true;
                 let height = grid_thw[1] / self.config.vision_config.spatial_merge_size;
                 let width = grid_thw[2] / self.config.vision_config.spatial_merge_size;
@@ -287,16 +255,8 @@ impl Model {
             offset = end;
         }
 
-        ensure!(
-            consumed_image,
-            "PaddleOCR-VL prompt contains no image tokens"
-        );
-        let maximum = positions
-            .iter()
-            .flat_map(|axis| axis.iter())
-            .copied()
-            .max()
-            .unwrap_or(0);
+        ensure!(consumed_image, "PaddleOCR-VL prompt contains no image tokens");
+        let maximum = positions.iter().flat_map(|axis| axis.iter()).copied().max().unwrap_or(0);
         let rope_delta = maximum + 1 - input_ids.len() as i64;
         let position_ids = Tensor::stack(
             &positions
@@ -341,18 +301,10 @@ impl PaddleOCRProjector {
             pre_norm: nn::layer_norm(
                 path / "pre_norm",
                 vec![vision_hidden],
-                nn::LayerNormConfig {
-                    eps: 1e-5,
-                    ..Default::default()
-                },
+                nn::LayerNormConfig { eps: 1e-5, ..Default::default() },
             ),
             linear_1: linear(&(path / "linear_1"), merged_hidden, merged_hidden, true),
-            linear_2: linear(
-                &(path / "linear_2"),
-                merged_hidden,
-                config.hidden_size,
-                true,
-            ),
+            linear_2: linear(&(path / "linear_2"), merged_hidden, config.hidden_size, true),
             spatial_merge_size: merge,
         }
     }
@@ -363,21 +315,10 @@ impl PaddleOCRProjector {
         let hidden = image_features.size()[1];
         let image_features = self.pre_norm.forward(image_features);
         let image_features = image_features
-            .reshape([
-                temporal,
-                height / merge,
-                merge,
-                width / merge,
-                merge,
-                hidden,
-            ])
+            .reshape([temporal, height / merge, merge, width / merge, merge, hidden])
             .transpose(2, 3)
-            .reshape([
-                temporal * (height / merge) * (width / merge),
-                merge * merge * hidden,
-            ]);
-        self.linear_2
-            .forward(&self.linear_1.forward(&image_features).gelu("none"))
+            .reshape([temporal * (height / merge) * (width / merge), merge * merge * hidden]);
+        self.linear_2.forward(&self.linear_1.forward(&image_features).gelu("none"))
     }
 }
 
@@ -396,18 +337,14 @@ impl PaddleOCRVisionModel {
             post_layernorm: nn::layer_norm(
                 path / "post_layernorm",
                 vec![config.hidden_size],
-                nn::LayerNormConfig {
-                    eps: config.layer_norm_eps,
-                    ..Default::default()
-                },
+                nn::LayerNormConfig { eps: config.layer_norm_eps, ..Default::default() },
             ),
         }
     }
 
     fn forward(&self, pixel_values: &Tensor, grid_thw: [i64; 3]) -> Tensor {
         let hidden_states = self.embeddings.forward(pixel_values, grid_thw);
-        self.post_layernorm
-            .forward(&self.encoder.forward(hidden_states, grid_thw))
+        self.post_layernorm.forward(&self.encoder.forward(hidden_states, grid_thw))
     }
 }
 
@@ -425,10 +362,7 @@ impl PaddleOCRVisionEmbeddings {
             config.num_channels,
             config.hidden_size,
             config.patch_size,
-            nn::ConvConfig {
-                stride: config.patch_size,
-                ..Default::default()
-            },
+            nn::ConvConfig { stride: config.patch_size, ..Default::default() },
         );
         let num_grid_per_side = config.image_size / config.patch_size;
         let position_embedding = nn::embedding(
@@ -437,11 +371,7 @@ impl PaddleOCRVisionEmbeddings {
             config.hidden_size,
             Default::default(),
         );
-        Self {
-            patch_embedding,
-            position_embedding,
-            num_grid_per_side,
-        }
+        Self { patch_embedding, position_embedding, num_grid_per_side }
     }
 
     fn forward(&self, pixel_values: &Tensor, grid_thw: [i64; 3]) -> Tensor {
@@ -512,10 +442,7 @@ struct PaddleOCRVisionEncoderLayer {
 
 impl PaddleOCRVisionEncoderLayer {
     fn new(path: &nn::Path<'_>, config: &PaddleOCRVisionConfig) -> Self {
-        let norm_config = nn::LayerNormConfig {
-            eps: config.layer_norm_eps,
-            ..Default::default()
-        };
+        let norm_config = nn::LayerNormConfig { eps: config.layer_norm_eps, ..Default::default() };
         Self {
             layer_norm1: nn::layer_norm(
                 path / "layer_norm1",
@@ -534,10 +461,8 @@ impl PaddleOCRVisionEncoderLayer {
 
     fn forward(&self, hidden_states: Tensor, cos: &Tensor, sin: &Tensor) -> Tensor {
         let residual = hidden_states.shallow_clone();
-        let hidden_states = residual
-            + self
-                .self_attn
-                .forward(&self.layer_norm1.forward(&hidden_states), cos, sin);
+        let hidden_states =
+            residual + self.self_attn.forward(&self.layer_norm1.forward(&hidden_states), cos, sin);
         let residual = hidden_states.shallow_clone();
         residual + self.mlp.forward(&self.layer_norm2.forward(&hidden_states))
     }
@@ -607,24 +532,13 @@ struct PaddleOCRVisionMLP {
 impl PaddleOCRVisionMLP {
     fn new(path: &nn::Path<'_>, config: &PaddleOCRVisionConfig) -> Self {
         Self {
-            fc1: linear(
-                &(path / "fc1"),
-                config.hidden_size,
-                config.intermediate_size,
-                true,
-            ),
-            fc2: linear(
-                &(path / "fc2"),
-                config.intermediate_size,
-                config.hidden_size,
-                true,
-            ),
+            fc1: linear(&(path / "fc1"), config.hidden_size, config.intermediate_size, true),
+            fc2: linear(&(path / "fc2"), config.intermediate_size, config.hidden_size, true),
         }
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.fc2
-            .forward(&self.fc1.forward(hidden_states).gelu("tanh"))
+        self.fc2.forward(&self.fc1.forward(hidden_states).gelu("tanh"))
     }
 }
 
@@ -643,10 +557,7 @@ impl PaddleOCRTextModel {
             path / "embed_tokens",
             config.vocab_size,
             config.hidden_size,
-            nn::EmbeddingConfig {
-                padding_idx: config.pad_token_id,
-                ..Default::default()
-            },
+            nn::EmbeddingConfig { padding_idx: config.pad_token_id, ..Default::default() },
         );
         let layers = (0..config.num_hidden_layers)
             .map(|index| PaddleOCRDecoderLayer::new(&(path / "layers" / index), config))
@@ -677,20 +588,11 @@ impl PaddleOCRTextModel {
         let cos = embeddings.cos().to_kind(hidden_states.kind());
         let sin = embeddings.sin().to_kind(hidden_states.kind());
         let attention_mask = causal.then(|| {
-            causal_mask(
-                hidden_states.size()[1],
-                hidden_states.device(),
-                hidden_states.kind(),
-            )
+            causal_mask(hidden_states.size()[1], hidden_states.device(), hidden_states.kind())
         });
         for (layer, layer_cache) in self.layers.iter().zip(cache.iter_mut()) {
-            hidden_states = layer.forward(
-                hidden_states,
-                attention_mask.as_ref(),
-                &cos,
-                &sin,
-                layer_cache,
-            );
+            hidden_states =
+                layer.forward(hidden_states, attention_mask.as_ref(), &cos, &sin, layer_cache);
         }
         self.norm.forward(&hidden_states)
     }
@@ -740,10 +642,7 @@ impl PaddleOCRDecoderLayer {
                 cache,
             );
         let residual = hidden_states.shallow_clone();
-        residual
-            + self
-                .mlp
-                .forward(&self.post_attention_layernorm.forward(&hidden_states))
+        residual + self.mlp.forward(&self.post_attention_layernorm.forward(&hidden_states))
     }
 }
 
@@ -812,22 +711,12 @@ impl PaddleOCRAttention {
         let key = self
             .k_proj
             .forward(hidden_states)
-            .view([
-                batch,
-                sequence_length,
-                self.num_key_value_heads,
-                self.head_dim,
-            ])
+            .view([batch, sequence_length, self.num_key_value_heads, self.head_dim])
             .transpose(1, 2);
         let value = self
             .v_proj
             .forward(hidden_states)
-            .view([
-                batch,
-                sequence_length,
-                self.num_key_value_heads,
-                self.head_dim,
-            ])
+            .view([batch, sequence_length, self.num_key_value_heads, self.head_dim])
             .transpose(1, 2);
         let (query, mut key) = apply_multimodal_rotary(query, key, cos, sin, &self.mrope_section);
         let mut value = value;
@@ -899,33 +788,20 @@ struct PaddleOCRRMSNorm {
 
 impl PaddleOCRRMSNorm {
     fn new(path: &nn::Path<'_>, hidden_size: i64, eps: f64) -> Self {
-        Self {
-            weight: path.var("weight", &[hidden_size], nn::Init::Const(1.0)),
-            eps,
-        }
+        Self { weight: path.var("weight", &[hidden_size], nn::Init::Const(1.0)), eps }
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
         let input_kind = hidden_states.kind();
         let hidden_states = hidden_states.to_kind(Kind::Float);
         let variance =
-            hidden_states
-                .pow_tensor_scalar(2.0)
-                .mean_dim(&[-1i64][..], true, None::<Kind>);
+            hidden_states.pow_tensor_scalar(2.0).mean_dim(&[-1i64][..], true, None::<Kind>);
         &self.weight * (hidden_states * (variance + self.eps).rsqrt()).to_kind(input_kind)
     }
 }
 
 fn linear(path: &nn::Path<'_>, input: i64, output: i64, bias: bool) -> nn::Linear {
-    nn::linear(
-        path,
-        input,
-        output,
-        nn::LinearConfig {
-            bias,
-            ..Default::default()
-        },
-    )
+    nn::linear(path, input, output, nn::LinearConfig { bias, ..Default::default() })
 }
 
 fn rotary_inv_freq(dim: i64, theta: f64, device: Device) -> Tensor {
@@ -935,10 +811,7 @@ fn rotary_inv_freq(dim: i64, theta: f64, device: Device) -> Tensor {
 
 fn rotate_half(tensor: &Tensor) -> Tensor {
     let half = tensor.size().last().copied().unwrap() / 2;
-    Tensor::cat(
-        &[-tensor.narrow(-1, half, half), tensor.narrow(-1, 0, half)],
-        -1,
-    )
+    Tensor::cat(&[-tensor.narrow(-1, half, half), tensor.narrow(-1, 0, half)], -1)
 }
 
 fn apply_vision_rotary(query: Tensor, key: Tensor, cos: &Tensor, sin: &Tensor) -> (Tensor, Tensor) {
@@ -950,10 +823,7 @@ fn apply_vision_rotary(query: Tensor, key: Tensor, cos: &Tensor, sin: &Tensor) -
     let key = key.to_kind(Kind::Float);
     let query_rotated = &query * &cos + rotate_half(&query) * &sin;
     let key_rotated = &key * &cos + rotate_half(&key) * &sin;
-    (
-        query_rotated.to_kind(query_kind),
-        key_rotated.to_kind(key_kind),
-    )
+    (query_rotated.to_kind(query_kind), key_rotated.to_kind(key_kind))
 }
 
 fn apply_multimodal_rotary(

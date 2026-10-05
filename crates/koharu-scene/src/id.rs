@@ -110,9 +110,5 @@ pub(crate) fn validate_namespaced(value: &str, what: &str) -> Result<()> {
                     .bytes()
                     .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
         });
-    if valid {
-        Ok(())
-    } else {
-        Err(Error::invalid(format!("invalid {what}: {value}")))
-    }
+    if valid { Ok(()) } else { Err(Error::invalid(format!("invalid {what}: {value}"))) }
 }

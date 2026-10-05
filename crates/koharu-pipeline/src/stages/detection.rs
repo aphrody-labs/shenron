@@ -85,11 +85,7 @@ impl Processor {
             }
         }
 
-        Self {
-            config,
-            device,
-            model: ModelCell::new(),
-        }
+        Self { config, device, model: ModelCell::new() }
     }
 }
 
@@ -118,9 +114,7 @@ impl StageProcessor for Processor {
     }
 
     async fn load(&self) -> Result<()> {
-        self.model
-            .ensure(|| Model::load(self.device.clone(), &self.config))
-            .await
+        self.model.ensure(|| Model::load(self.device.clone(), &self.config)).await
     }
 
     async fn process(&self, input: StageInput) -> Result<koharu_scene::Patch> {
@@ -147,10 +141,7 @@ impl Model {
         thresholds.text = config.text_threshold.unwrap_or(thresholds.text);
         thresholds.bubble = config.bubble_threshold.unwrap_or(thresholds.bubble);
         thresholds.panel = config.panel_threshold.unwrap_or(thresholds.panel);
-        Ok(Self {
-            network: Arc::new(Mutex::new(network)),
-            thresholds,
-        })
+        Ok(Self { network: Arc::new(Mutex::new(network)), thresholds })
     }
 
     async fn run(&self, input: StageInput) -> Result<koharu_scene::Patch> {
@@ -168,9 +159,7 @@ impl Model {
         let network = self.network.clone();
         let thresholds = self.thresholds;
         tokio_rayon::spawn(move || {
-            let network = network
-                .lock()
-                .map_err(|_| anyhow!("layout model lock is poisoned"))?;
+            let network = network.lock().map_err(|_| anyhow!("layout model lock is poisoned"))?;
             network.inference_with_thresholds(&image, thresholds)
         })
         .await
@@ -263,15 +252,8 @@ async fn write_page(
     output: KoharuLayoutDetections,
     generation: &Generation,
 ) -> Result<()> {
-    let KoharuLayoutDetections {
-        mut detections,
-        image_width,
-        image_height,
-    } = output;
-    let size = ImageSize {
-        width: image_width,
-        height: image_height,
-    };
+    let KoharuLayoutDetections { mut detections, image_width, image_height } = output;
+    let size = ImageSize { width: image_width, height: image_height };
     if let Some(region) = input.region {
         detections.retain(|detection| intersects(detection.bbox, region));
     }
@@ -300,9 +282,7 @@ fn write_regions<'a>(
     let inferred = detections
         .par_iter()
         .map(|detection| {
-            (detection.label == "text")
-                .then(|| infer_typography(image, detection))
-                .flatten()
+            (detection.label == "text").then(|| infer_typography(image, detection)).flatten()
         })
         .collect::<Vec<_>>();
     let text_group = snapshot.page(page)?.text_group()?;
@@ -325,8 +305,8 @@ fn write_regions<'a>(
                         .context("failed to place the detected text layer in its group")?;
                 }
                 regions.texts.push(text);
-            }
-            RegionOutput::Other => {}
+            },
+            RegionOutput::Other => {},
         }
     }
     Ok(regions)
@@ -339,9 +319,7 @@ fn write_region<'a>(
     inferred: Option<InferredTypography>,
     generation: &Generation,
 ) -> Result<RegionOutput<'a>> {
-    let entity = edit
-        .add_entity(page, At::End)
-        .context("failed to create a detected region")?;
+    let entity = edit.add_entity(page, At::End).context("failed to create a detected region")?;
     let kind = region_kind(&detection.label)?;
     let geometry = if detection.label == "bubble" {
         mask_geometry(&detection.mask).unwrap_or_else(|| rectangle_geometry(detection.bbox))
@@ -353,8 +331,7 @@ fn write_region<'a>(
     } else {
         rectangle_geometry(detection.bbox)
     };
-    edit.set(entity, &geometry)
-        .context("failed to set detected region geometry")?;
+    edit.set(entity, &geometry).context("failed to set detected region geometry")?;
     edit.set(
         entity,
         &Region {
@@ -368,10 +345,7 @@ fn write_region<'a>(
         entity,
         &DetectionAnalysis {
             origin: Origin::Generated(generation.clone()),
-            labels: vec![DetectionLabel {
-                kind,
-                confidence: detection.score,
-            }],
+            labels: vec![DetectionLabel { kind, confidence: detection.score }],
         },
     )
     .context("failed to set detection analysis")?;
@@ -471,10 +445,7 @@ fn write_text_role(
 ) -> Result<()> {
     edit.set(
         entity,
-        &TextRole {
-            origin: Origin::Generated(generation.clone()),
-            role: role.to_owned(),
-        },
+        &TextRole { origin: Origin::Generated(generation.clone()), role: role.to_owned() },
     )?;
     Ok(())
 }
@@ -538,17 +509,9 @@ fn infer_typography(
             let local_y = y - top + 1;
             let color = image.get_pixel(x, y).0;
             let inside_mask = mask.contains(x, y);
-            pixels.push(MaskPixel {
-                x: local_x,
-                y: local_y,
-                color,
-                inside_mask,
-            });
+            pixels.push(MaskPixel { x: local_x, y: local_y, color, inside_mask });
             if inside_mask {
-                points.push(MaskPoint {
-                    x: f64::from(x) + 0.5,
-                    y: f64::from(y) + 0.5,
-                });
+                points.push(MaskPoint { x: f64::from(x) + 0.5, y: f64::from(y) + 0.5 });
             }
             if x < left + background_margin
                 || x + background_margin >= right
@@ -563,11 +526,8 @@ fn infer_typography(
         return None;
     }
 
-    let background = if background.is_empty() {
-        median_pixel_color(&pixels)
-    } else {
-        median_color(&background)
-    };
+    let background =
+        if background.is_empty() { median_pixel_color(&pixels) } else { median_color(&background) };
     let (angle_degrees, vertical) = mask_angle(&points, detection.bbox);
     let (color, stroke_color, stroke_width) =
         infer_text_paint(&pixels, background, local_width, local_height);
@@ -576,11 +536,7 @@ fn infer_typography(
         stroke_color,
         stroke_width,
         angle_degrees,
-        writing_mode: if vertical {
-            WritingMode::Vertical
-        } else {
-            WritingMode::Horizontal
-        },
+        writing_mode: if vertical { WritingMode::Vertical } else { WritingMode::Horizontal },
     })
 }
 
@@ -600,12 +556,7 @@ fn mask_angle(points: &[MaskPoint], [left, top, right, bottom]: [f32; 4]) -> (f3
     let bounds = points[1..].iter().fold(
         [first.x, first.y, first.x, first.y],
         |[left, top, right, bottom], point| {
-            [
-                left.min(point.x),
-                top.min(point.y),
-                right.max(point.x),
-                bottom.max(point.y),
-            ]
+            [left.min(point.x), top.min(point.y), right.max(point.x), bottom.max(point.y)]
         },
     );
     let mut horizontal = (f64::NEG_INFINITY, 0.0);
@@ -623,16 +574,9 @@ fn mask_angle(points: &[MaskPoint], [left, top, right, bottom]: [f32; 4]) -> (f3
     }
     let maximum_score = horizontal.0.max(vertical.0);
     let scores_are_close = (horizontal.0 - vertical.0).abs() <= maximum_score * 0.02;
-    let is_vertical = if scores_are_close {
-        bottom - top > right - left
-    } else {
-        vertical.0 > horizontal.0
-    };
-    let mut angle = if is_vertical {
-        vertical.1
-    } else {
-        horizontal.1
-    } as f32;
+    let is_vertical =
+        if scores_are_close { bottom - top > right - left } else { vertical.0 > horizontal.0 };
+    let mut angle = if is_vertical { vertical.1 } else { horizontal.1 } as f32;
     if angle.abs() < ANGLE_SNAP_DEGREES {
         angle = 0.0;
     }
@@ -712,11 +656,7 @@ fn infer_text_paint(
 ) -> ([u8; 3], Option<[u8; 3]>, Option<f32>) {
     let clusters = color_clusters(pixels, background_seed);
     if let Some(outline) = infer_outline(&clusters, background_seed, width, height) {
-        return (
-            outline.fill_color,
-            Some(outline.stroke_color),
-            Some(outline.stroke_width),
-        );
+        return (outline.fill_color, Some(outline.stroke_color), Some(outline.stroke_width));
     }
 
     let nonempty = clusters
@@ -726,11 +666,7 @@ fn infer_text_paint(
         .map(|(index, _)| index)
         .collect::<Vec<_>>();
     if nonempty.len() == 1 {
-        return (
-            normalize_text_color(clusters[nonempty[0]].color),
-            None,
-            None,
-        );
+        return (normalize_text_color(clusters[nonempty[0]].color), None, None);
     }
 
     let background_index = nonempty
@@ -831,10 +767,7 @@ fn infer_outline(
             else {
                 continue;
             };
-            let inside_fill = enclosed_fill
-                .iter()
-                .filter(|pixel| pixel.inside_mask)
-                .count();
+            let inside_fill = enclosed_fill.iter().filter(|pixel| pixel.inside_mask).count();
             let evidence = enclosed_fill.len() + inside_fill;
             let candidate = OutlinePaint {
                 fill_color: normalized_fill,
@@ -859,89 +792,25 @@ fn reachable_without_cluster(
     let mut reachable = vec![false; assignments.len()];
     let mut queue = VecDeque::new();
     for x in 0..width {
-        push_reachable(
-            &mut reachable,
-            &mut queue,
-            assignments,
-            barrier,
-            x,
-            0,
-            width,
-        );
-        push_reachable(
-            &mut reachable,
-            &mut queue,
-            assignments,
-            barrier,
-            x,
-            height - 1,
-            width,
-        );
+        push_reachable(&mut reachable, &mut queue, assignments, barrier, x, 0, width);
+        push_reachable(&mut reachable, &mut queue, assignments, barrier, x, height - 1, width);
     }
     for y in 0..height {
-        push_reachable(
-            &mut reachable,
-            &mut queue,
-            assignments,
-            barrier,
-            0,
-            y,
-            width,
-        );
-        push_reachable(
-            &mut reachable,
-            &mut queue,
-            assignments,
-            barrier,
-            width - 1,
-            y,
-            width,
-        );
+        push_reachable(&mut reachable, &mut queue, assignments, barrier, 0, y, width);
+        push_reachable(&mut reachable, &mut queue, assignments, barrier, width - 1, y, width);
     }
     while let Some((x, y)) = queue.pop_front() {
         if x > 0 {
-            push_reachable(
-                &mut reachable,
-                &mut queue,
-                assignments,
-                barrier,
-                x - 1,
-                y,
-                width,
-            );
+            push_reachable(&mut reachable, &mut queue, assignments, barrier, x - 1, y, width);
         }
         if x + 1 < width {
-            push_reachable(
-                &mut reachable,
-                &mut queue,
-                assignments,
-                barrier,
-                x + 1,
-                y,
-                width,
-            );
+            push_reachable(&mut reachable, &mut queue, assignments, barrier, x + 1, y, width);
         }
         if y > 0 {
-            push_reachable(
-                &mut reachable,
-                &mut queue,
-                assignments,
-                barrier,
-                x,
-                y - 1,
-                width,
-            );
+            push_reachable(&mut reachable, &mut queue, assignments, barrier, x, y - 1, width);
         }
         if y + 1 < height {
-            push_reachable(
-                &mut reachable,
-                &mut queue,
-                assignments,
-                barrier,
-                x,
-                y + 1,
-                width,
-            );
+            push_reachable(&mut reachable, &mut queue, assignments, barrier, x, y + 1, width);
         }
     }
     reachable
@@ -1003,26 +872,14 @@ fn enclosing_cluster_pixels(
 }
 
 fn cluster_ink_score(cluster: &ColorCluster, background: [u8; 3]) -> u64 {
-    let inside = cluster
-        .pixels
-        .iter()
-        .filter(|pixel| pixel.inside_mask)
-        .count();
-    let evidence = if inside >= 8 {
-        inside + cluster.pixels.len()
-    } else {
-        cluster.pixels.len()
-    };
+    let inside = cluster.pixels.iter().filter(|pixel| pixel.inside_mask).count();
+    let evidence = if inside >= 8 { inside + cluster.pixels.len() } else { cluster.pixels.len() };
     u64::from(color_distance_squared(cluster.color, background)) * evidence.min(4096) as u64
 }
 
 fn representative_ink_color(cluster: &ColorCluster) -> [u8; 3] {
-    let inside = cluster
-        .pixels
-        .iter()
-        .copied()
-        .filter(|pixel| pixel.inside_mask)
-        .collect::<Vec<_>>();
+    let inside =
+        cluster.pixels.iter().copied().filter(|pixel| pixel.inside_mask).collect::<Vec<_>>();
     if inside.len() >= 8 {
         median_pixel_color(&inside)
     } else {
@@ -1080,19 +937,15 @@ fn color_clusters(
 
 fn extreme_palette_color(palette: &[ColorBin], darkest: bool) -> [u8; 3] {
     let select = |significant_only: bool| {
-        let candidates = palette
-            .iter()
-            .filter(|bin| !significant_only || bin.count >= MIN_EXTREME_COLOR_PIXELS);
+        let candidates =
+            palette.iter().filter(|bin| !significant_only || bin.count >= MIN_EXTREME_COLOR_PIXELS);
         if darkest {
             candidates.min_by_key(|bin| color_luminance(bin.color()))
         } else {
             candidates.max_by_key(|bin| color_luminance(bin.color()))
         }
     };
-    select(true)
-        .or_else(|| select(false))
-        .map(ColorBin::color)
-        .unwrap_or_default()
+    select(true).or_else(|| select(false)).map(ColorBin::color).unwrap_or_default()
 }
 
 #[derive(Clone, Copy, Default)]
@@ -1160,11 +1013,7 @@ fn distant_palette_color(palette: &[ColorBin], centers: &[[u8; 3]]) -> [u8; 3] {
 }
 
 fn minimum_color_distance(color: [u8; 3], centers: &[[u8; 3]]) -> u32 {
-    centers
-        .iter()
-        .map(|center| color_distance_squared(color, *center))
-        .min()
-        .unwrap_or_default()
+    centers.iter().map(|center| color_distance_squared(color, *center)).min().unwrap_or_default()
 }
 
 fn median_pixel_color(pixels: &[MaskPixel]) -> [u8; 3] {
@@ -1314,10 +1163,7 @@ fn rotated_rectangle_geometry(
             (width * 0.5, height * 0.5),
             (-width * 0.5, height * 0.5),
         ]
-        .map(|(x, y)| Point {
-            x: center_x + x * cos - y * sin,
-            y: center_y + x * sin + y * cos,
-        })
+        .map(|(x, y)| Point { x: center_x + x * cos - y * sin, y: center_y + x * sin + y * cos })
         .into(),
     }
 }
@@ -1348,10 +1194,7 @@ fn mask_geometry(mask: &KoharuLayoutMask) -> Option<Geometry> {
             y: f64::from(point.y - 1) + f64::from(origin.1),
         })
         .collect::<Vec<_>>();
-    (points.len() >= 3).then_some(Geometry {
-        origin: Origin::User,
-        points,
-    })
+    (points.len() >= 3).then_some(Geometry { origin: Origin::User, points })
 }
 
 async fn write_masks(
@@ -1374,9 +1217,8 @@ async fn write_mask(
     size: ImageSize,
 ) -> Result<()> {
     let mut mask = if size.width > 0 && size.height > 0 {
-        let radius = ((size.width.max(size.height) as f32 / 1024.0) * 6.0)
-            .round()
-            .clamp(1.0, 255.0) as u8;
+        let radius =
+            ((size.width.max(size.height) as f32 / 1024.0) * 6.0).round().clamp(1.0, 255.0) as u8;
         closed_mask_for(detections, "text", size, radius)
     } else {
         mask_for(detections, "text", size)
@@ -1386,12 +1228,7 @@ async fn write_mask(
     }
     let mut bytes = Cursor::new(Vec::new());
     PngEncoder::new_with_quality(&mut bytes, CompressionType::Fast, FilterType::NoFilter)
-        .write_image(
-            mask.as_raw(),
-            mask.width(),
-            mask.height(),
-            ExtendedColorType::L8,
-        )?;
+        .write_image(mask.as_raw(), mask.width(), mask.height(), ExtendedColorType::L8)?;
     edit.set_asset(
         page,
         &AssetRole::new("text-mask")?,
@@ -1415,15 +1252,8 @@ async fn preserve_mask_outside_region(
     bounds: crate::Bounds,
     mask: &mut GrayImage,
 ) -> Result<()> {
-    let previous = input
-        .images
-        .get(&input.scene, page, role)
-        .await?
-        .map(|image| image.to_luma8());
-    if previous
-        .as_ref()
-        .is_some_and(|image| image.dimensions() != mask.dimensions())
-    {
+    let previous = input.images.get(&input.scene, page, role).await?.map(|image| image.to_luma8());
+    if previous.as_ref().is_some_and(|image| image.dimensions() != mask.dimensions()) {
         bail!("existing {role} dimensions do not match page {page}");
     }
     for (x, y, pixel) in mask.enumerate_pixels_mut() {
@@ -1432,9 +1262,7 @@ async fn preserve_mask_outside_region(
             || f64::from(x) >= bounds.x + bounds.width
             || f64::from(y) >= bounds.y + bounds.height
         {
-            *pixel = previous
-                .as_ref()
-                .map_or(Luma([0]), |image| *image.get_pixel(x, y));
+            *pixel = previous.as_ref().map_or(Luma([0]), |image| *image.get_pixel(x, y));
         }
     }
     Ok(())
@@ -1530,9 +1358,7 @@ fn closed_mask_for(
 }
 
 fn valid_mask(mask: &KoharuLayoutMask) -> bool {
-    mask.width
-        .checked_mul(mask.height)
-        .and_then(|count| usize::try_from(count).ok())
+    mask.width.checked_mul(mask.height).and_then(|count| usize::try_from(count).ok())
         == Some(mask.pixels.len())
 }
 
@@ -1588,12 +1414,7 @@ fn expand_bounds([left, top, right, bottom]: [u32; 4], radius: u32, size: ImageS
 }
 
 fn union_bounds(left: [u32; 4], right: [u32; 4]) -> [u32; 4] {
-    [
-        left[0].min(right[0]),
-        left[1].min(right[1]),
-        left[2].max(right[2]),
-        left[3].max(right[3]),
-    ]
+    [left[0].min(right[0]), left[1].min(right[1]), left[2].max(right[2]), left[3].max(right[3])]
 }
 
 fn rectangles_touch(left: [u32; 4], right: [u32; 4]) -> bool {
@@ -1632,10 +1453,7 @@ fn detection_order(left: &KoharuLayoutDetection, right: &KoharuLayoutDetection) 
 
 fn non_maximum_suppression(detections: &mut Vec<KoharuLayoutDetection>, threshold: f32) {
     detections.sort_by(|left, right| {
-        right
-            .score
-            .total_cmp(&left.score)
-            .then_with(|| detection_order(left, right))
+        right.score.total_cmp(&left.score).then_with(|| detection_order(left, right))
     });
     let mut kept = Vec::with_capacity(detections.len());
     for candidate in detections.drain(..) {
@@ -1652,17 +1470,10 @@ fn non_maximum_suppression(detections: &mut Vec<KoharuLayoutDetection>, threshol
 
 fn sort_by_layout(detections: &mut Vec<KoharuLayoutDetection>) {
     let order = layout_order(detections);
-    let mut values = std::mem::take(detections)
-        .into_iter()
-        .map(Some)
-        .collect::<Vec<_>>();
+    let mut values = std::mem::take(detections).into_iter().map(Some).collect::<Vec<_>>();
     *detections = order
         .into_iter()
-        .map(|index| {
-            values[index]
-                .take()
-                .expect("layout order contains each detection once")
-        })
+        .map(|index| values[index].take().expect("layout order contains each detection once"))
         .collect();
 }
 
@@ -1776,19 +1587,10 @@ fn mask_containment(
     }
     let value_right = value.x.saturating_add(value.width);
     let value_bottom = value.y.saturating_add(value.height);
-    let left = bounds[0]
-        .floor()
-        .max(value.x as f32)
-        .min(value_right as f32) as u32;
-    let top = bounds[1]
-        .floor()
-        .max(value.y as f32)
-        .min(value_bottom as f32) as u32;
+    let left = bounds[0].floor().max(value.x as f32).min(value_right as f32) as u32;
+    let top = bounds[1].floor().max(value.y as f32).min(value_bottom as f32) as u32;
     let right = bounds[2].ceil().max(value.x as f32).min(value_right as f32) as u32;
-    let bottom = bounds[3]
-        .ceil()
-        .max(value.y as f32)
-        .min(value_bottom as f32) as u32;
+    let bottom = bounds[3].ceil().max(value.y as f32).min(value_bottom as f32) as u32;
     if left >= right || top >= bottom {
         return 0.0;
     }
@@ -1804,21 +1606,13 @@ fn mask_containment(
             intersection += usize::from(container.contains(x, y));
         }
     }
-    if value_area == 0 {
-        0.0
-    } else {
-        intersection as f32 / value_area as f32
-    }
+    if value_area == 0 { 0.0 } else { intersection as f32 / value_area as f32 }
 }
 
 fn intersection_over_union(left: [f32; 4], right: [f32; 4]) -> f32 {
     let intersection = intersection_area(left, right);
     let union = area(left) + area(right) - intersection;
-    if union <= 0.0 {
-        0.0
-    } else {
-        intersection / union
-    }
+    if union <= 0.0 { 0.0 } else { intersection / union }
 }
 
 fn intersection_area(left: [f32; 4], right: [f32; 4]) -> f32 {
@@ -1907,13 +1701,8 @@ mod tests {
     #[tokio::test]
     async fn joined_text_uses_balloon_flow_semantics() {
         let mut session = Session::memory().await.unwrap();
-        let bubble_mask = KoharuLayoutMask {
-            x: 0,
-            y: 0,
-            width: 1,
-            height: 1,
-            pixels: vec![u8::MAX],
-        };
+        let bubble_mask =
+            KoharuLayoutMask { x: 0, y: 0, width: 1, height: 1, pixels: vec![u8::MAX] };
         let text_mask = bubble_mask.clone();
         let generation = generation(super::PRODUCER, super::MODEL_ID).unwrap();
         let mut ids = None;
@@ -1971,22 +1760,12 @@ mod tests {
         let (bubble, region, layer) = ids.unwrap();
 
         assert_eq!(
-            snapshot
-                .relation_from::<FlowsIn>(layer)
-                .unwrap()
-                .unwrap()
-                .value()
-                .target,
+            snapshot.relation_from::<FlowsIn>(layer).unwrap().unwrap().value().target,
             bubble
         );
         assert!(snapshot.relation_from::<FitsTo>(layer).unwrap().is_none());
         assert_eq!(
-            snapshot
-                .relations_from_as::<Inside>(region)
-                .next()
-                .unwrap()
-                .value()
-                .target,
+            snapshot.relations_from_as::<Inside>(region).next().unwrap().value().target,
             bubble
         );
     }
@@ -1998,13 +1777,7 @@ mod tests {
             score,
             bbox,
             area: 0,
-            mask: KoharuLayoutMask {
-                x: 0,
-                y: 0,
-                width: 1,
-                height: 1,
-                pixels: vec![0],
-            },
+            mask: KoharuLayoutMask { x: 0, y: 0, width: 1, height: 1, pixels: vec![0] },
         }
     }
 
@@ -2031,18 +1804,8 @@ mod tests {
         .unwrap();
 
         assert!(geometry.points.len() >= 4);
-        assert!(
-            geometry
-                .points
-                .iter()
-                .all(|point| !(point.x == 10.0 && point.y == 20.0))
-        );
-        assert!(
-            geometry
-                .points
-                .iter()
-                .any(|point| point.x == 14.0 && point.y == 20.0)
-        );
+        assert!(geometry.points.iter().all(|point| !(point.x == 10.0 && point.y == 20.0)));
+        assert!(geometry.points.iter().any(|point| point.x == 14.0 && point.y == 20.0));
     }
 
     fn masked_text(
@@ -2078,13 +1841,7 @@ mod tests {
                 score: 1.0,
                 bbox: [0.0, 0.0, width as f32, height as f32],
                 area: pixels.iter().filter(|value| **value != 0).count() as u32,
-                mask: KoharuLayoutMask {
-                    x: 0,
-                    y: 0,
-                    width,
-                    height,
-                    pixels,
-                },
+                mask: KoharuLayoutMask { x: 0, y: 0, width, height, pixels },
             },
         )
     }
@@ -2126,13 +1883,7 @@ mod tests {
                 score: 1.0,
                 bbox: [left as f32, top as f32, right as f32, bottom as f32],
                 area: pixels.iter().filter(|value| **value != 0).count() as u32,
-                mask: KoharuLayoutMask {
-                    x: 0,
-                    y: 0,
-                    width,
-                    height,
-                    pixels,
-                },
+                mask: KoharuLayoutMask { x: 0, y: 0, width, height, pixels },
             },
         )
     }
@@ -2163,13 +1914,7 @@ mod tests {
                 score: 1.0,
                 bbox: [left as f32, top as f32, right as f32, bottom as f32],
                 area: pixels.iter().filter(|value| **value != 0).count() as u32,
-                mask: KoharuLayoutMask {
-                    x: 0,
-                    y: 0,
-                    width,
-                    height,
-                    pixels,
-                },
+                mask: KoharuLayoutMask { x: 0, y: 0, width, height, pixels },
             },
         )
     }
@@ -2199,11 +1944,7 @@ mod tests {
                     image.put_pixel(
                         x,
                         y,
-                        if is_fill {
-                            Rgb([0, 0, 0])
-                        } else {
-                            Rgb([255, 255, 255])
-                        },
+                        if is_fill { Rgb([0, 0, 0]) } else { Rgb([255, 255, 255]) },
                     );
                 }
             }
@@ -2216,13 +1957,7 @@ mod tests {
                 score: 1.0,
                 bbox: [left as f32, top as f32, right as f32, bottom as f32],
                 area: pixels.iter().filter(|value| **value != 0).count() as u32,
-                mask: KoharuLayoutMask {
-                    x: 0,
-                    y: 0,
-                    width,
-                    height,
-                    pixels,
-                },
+                mask: KoharuLayoutMask { x: 0, y: 0, width, height, pixels },
             },
         )
     }
@@ -2255,10 +1990,7 @@ mod tests {
             })
             .unwrap();
         let snapshot = session.commit(patch).await.unwrap().snapshot;
-        let typography = snapshot
-            .component::<Typography>(layer.unwrap())
-            .unwrap()
-            .unwrap();
+        let typography = snapshot.component::<Typography>(layer.unwrap()).unwrap().unwrap();
 
         assert_eq!(typography.color, Some([0, 0, 0, 255]));
         assert_eq!(typography.stroke_color, Some([255, 255, 255, 255]));
@@ -2283,11 +2015,7 @@ mod tests {
             .map(|detection| detection.score)
             .collect::<Vec<_>>();
         assert_eq!(text_scores, [0.9, 0.6, 0.5]);
-        assert!(
-            detections
-                .iter()
-                .any(|detection| detection.label == "bubble")
-        );
+        assert!(detections.iter().any(|detection| detection.label == "bubble"));
     }
 
     #[test]
@@ -2298,13 +2026,7 @@ mod tests {
             score: 1.0,
             bbox: [x as f32, 0.0, x as f32 + 1.0, 1.0],
             area: u32::from(value != 0),
-            mask: KoharuLayoutMask {
-                x,
-                y: 0,
-                width: 1,
-                height: 1,
-                pixels: vec![value],
-            },
+            mask: KoharuLayoutMask { x, y: 0, width: 1, height: 1, pixels: vec![value] },
         };
         let detections = vec![
             detection("bubble", 0, 0),
@@ -2313,27 +2035,14 @@ mod tests {
             detection("onomatopoeia", 3, 255),
         ];
 
-        let mask = mask_for(
-            &detections,
-            "text",
-            ImageSize {
-                width: 4,
-                height: 1,
-            },
-        );
+        let mask = mask_for(&detections, "text", ImageSize { width: 4, height: 1 });
 
         assert_eq!(mask.as_raw(), &[0, 255, 0, 0]);
     }
 
     #[test]
     fn bubble_membership_uses_detected_ink_instead_of_text_box_corners() {
-        let mask = |pixels| KoharuLayoutMask {
-            x: 0,
-            y: 0,
-            width: 5,
-            height: 5,
-            pixels,
-        };
+        let mask = |pixels| KoharuLayoutMask { x: 0, y: 0, width: 5, height: 5, pixels };
         let bubble = mask(vec![
             0, 0, 1, 0, 0, //
             0, 1, 1, 1, 0, //
@@ -2363,27 +2072,9 @@ mod tests {
 
     #[test]
     fn mask_containment_accepts_independent_local_extents() {
-        let valid = KoharuLayoutMask {
-            x: 5,
-            y: 5,
-            width: 2,
-            height: 2,
-            pixels: vec![1; 4],
-        };
-        let malformed = KoharuLayoutMask {
-            x: 5,
-            y: 5,
-            width: 2,
-            height: 2,
-            pixels: vec![1; 3],
-        };
-        let different_size = KoharuLayoutMask {
-            x: 5,
-            y: 5,
-            width: 1,
-            height: 1,
-            pixels: vec![1],
-        };
+        let valid = KoharuLayoutMask { x: 5, y: 5, width: 2, height: 2, pixels: vec![1; 4] };
+        let malformed = KoharuLayoutMask { x: 5, y: 5, width: 2, height: 2, pixels: vec![1; 3] };
+        let different_size = KoharuLayoutMask { x: 5, y: 5, width: 1, height: 1, pixels: vec![1] };
 
         let bounds = [5.0, 5.0, 7.0, 7.0];
         assert_eq!(mask_containment(&valid, &malformed, bounds), 0.0);
@@ -2392,23 +2083,14 @@ mod tests {
 
     #[test]
     fn local_mask_morphology_matches_the_full_page_operation() {
-        let size = ImageSize {
-            width: 64,
-            height: 48,
-        };
+        let size = ImageSize { width: 64, height: 48 };
         let local = |x, y, width, height, pixels: Vec<u8>| KoharuLayoutDetection {
             label_id: 0,
             label: "text".to_owned(),
             score: 1.0,
             bbox: [x as f32, y as f32, (x + width) as f32, (y + height) as f32],
             area: pixels.iter().filter(|value| **value != 0).count() as u32,
-            mask: KoharuLayoutMask {
-                x,
-                y,
-                width,
-                height,
-                pixels,
-            },
+            mask: KoharuLayoutMask { x, y, width, height, pixels },
         };
         let detections = vec![
             local(0, 0, 4, 4, vec![255; 16]),
@@ -2425,10 +2107,7 @@ mod tests {
 
     #[test]
     fn local_mask_morphology_matches_varied_sparse_instances() {
-        let size = ImageSize {
-            width: 64,
-            height: 48,
-        };
+        let size = ImageSize { width: 64, height: 48 };
         let mut state = 0x7f4a_7c15_u32;
         let mut next = || {
             state = state.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
@@ -2450,13 +2129,7 @@ mod tests {
                     score: 1.0,
                     bbox: [x as f32, y as f32, (x + width) as f32, (y + height) as f32],
                     area: pixels.iter().filter(|pixel| **pixel != 0).count() as u32,
-                    mask: KoharuLayoutMask {
-                        x,
-                        y,
-                        width,
-                        height,
-                        pixels,
-                    },
+                    mask: KoharuLayoutMask { x, y, width, height, pixels },
                 });
             }
             let radius = (case % 5 + 1) as u8;
@@ -2565,13 +2238,7 @@ mod tests {
             score: 1.0,
             bbox: [0.0, 0.0, width as f32, height as f32],
             area: pixels.iter().filter(|value| **value != 0).count() as u32,
-            mask: KoharuLayoutMask {
-                x: 0,
-                y: 0,
-                width,
-                height,
-                pixels,
-            },
+            mask: KoharuLayoutMask { x: 0, y: 0, width, height, pixels },
         };
 
         let inferred = infer_typography(&image, &detection).unwrap();
@@ -2703,11 +2370,7 @@ mod tests {
             .map(|index| MaskPixel {
                 x: 0,
                 y: 0,
-                color: [
-                    index as u8,
-                    (index >> 8) as u8,
-                    index.wrapping_mul(31) as u8,
-                ],
+                color: [index as u8, (index >> 8) as u8, index.wrapping_mul(31) as u8],
                 inside_mask: true,
             })
             .collect::<Vec<_>>();

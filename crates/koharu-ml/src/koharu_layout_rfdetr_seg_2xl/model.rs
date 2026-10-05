@@ -92,10 +92,7 @@ impl Model {
     pub fn forward(&self, pixel_values: &Tensor) -> Output {
         let pixel_values = pixel_values.to_kind(self.var_store.kind());
         let features = self.backbone.forward(&pixel_values);
-        let position_embeddings = features
-            .iter()
-            .map(sine_position_embedding)
-            .collect::<Vec<_>>();
+        let position_embeddings = features.iter().map(sine_position_embedding).collect::<Vec<_>>();
         let transformer_output = self.transformer.forward(
             &features,
             &position_embeddings,
@@ -117,13 +114,8 @@ impl Model {
         .i(-1);
         let pred_logits = self.class_embed.forward(&hs).i(-1);
         let pred_masks =
-            self.segmentation_head
-                .forward(&features[0], &hs.i(-1), (RESOLUTION, RESOLUTION));
-        Output {
-            pred_logits,
-            pred_boxes,
-            pred_masks,
-        }
+            self.segmentation_head.forward(&features[0], &hs.i(-1), (RESOLUTION, RESOLUTION));
+        Output { pred_logits, pred_boxes, pred_masks }
     }
 }
 
@@ -235,10 +227,7 @@ impl DinoEmbeddings {
                 3,
                 DINO_DIM,
                 PATCH_SIZE,
-                nn::ConvConfig {
-                    stride: PATCH_SIZE,
-                    ..Default::default()
-                },
+                nn::ConvConfig { stride: PATCH_SIZE, ..Default::default() },
             ),
         }
     }
@@ -248,18 +237,10 @@ impl DinoEmbeddings {
         assert_eq!(size[2], RESOLUTION);
         assert_eq!(size[3], RESOLUTION);
         let batch_size = size[0];
-        let embeddings = self
-            .projection
-            .forward(pixel_values)
-            .flatten(2, -1)
-            .transpose(1, 2);
-        let embeddings = Tensor::cat(
-            &[
-                self.cls_token.expand([batch_size, -1, -1], false),
-                embeddings,
-            ],
-            1,
-        ) + &self.position_embeddings;
+        let embeddings = self.projection.forward(pixel_values).flatten(2, -1).transpose(1, 2);
+        let embeddings =
+            Tensor::cat(&[self.cls_token.expand([batch_size, -1, -1], false), embeddings], 1)
+                + &self.position_embeddings;
 
         let height = RESOLUTION / PATCH_SIZE;
         let width = RESOLUTION / PATCH_SIZE;
@@ -320,9 +301,7 @@ impl DinoLayer {
         } else {
             hidden_states.shallow_clone()
         };
-        let mut attention = self
-            .attention
-            .forward(&self.norm1.forward(&attention_input));
+        let mut attention = self.attention.forward(&self.norm1.forward(&attention_input));
         if run_full_attention {
             let size = attention.size();
             attention = attention.view([
@@ -348,30 +327,10 @@ struct DinoAttention {
 impl DinoAttention {
     fn new(path: &nn::Path<'_>) -> Self {
         Self {
-            query: nn::linear(
-                path / "attention" / "query",
-                DINO_DIM,
-                DINO_DIM,
-                Default::default(),
-            ),
-            key: nn::linear(
-                path / "attention" / "key",
-                DINO_DIM,
-                DINO_DIM,
-                Default::default(),
-            ),
-            value: nn::linear(
-                path / "attention" / "value",
-                DINO_DIM,
-                DINO_DIM,
-                Default::default(),
-            ),
-            dense: nn::linear(
-                path / "output" / "dense",
-                DINO_DIM,
-                DINO_DIM,
-                Default::default(),
-            ),
+            query: nn::linear(path / "attention" / "query", DINO_DIM, DINO_DIM, Default::default()),
+            key: nn::linear(path / "attention" / "key", DINO_DIM, DINO_DIM, Default::default()),
+            value: nn::linear(path / "attention" / "value", DINO_DIM, DINO_DIM, Default::default()),
+            dense: nn::linear(path / "output" / "dense", DINO_DIM, DINO_DIM, Default::default()),
         }
     }
 
@@ -414,8 +373,7 @@ impl DinoMlp {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.fc2
-            .forward(&self.fc1.forward(hidden_states).gelu("none"))
+        self.fc2.forward(&self.fc1.forward(hidden_states).gelu("none"))
     }
 }
 
@@ -435,10 +393,7 @@ impl MultiScaleProjector {
     }
 
     fn forward(&self, features: &[Tensor]) -> Vec<Tensor> {
-        vec![
-            self.norm
-                .forward(&self.stage.forward(&Tensor::cat(features, 1))),
-        ]
+        vec![self.norm.forward(&self.stage.forward(&Tensor::cat(features, 1)))]
     }
 }
 
@@ -464,10 +419,8 @@ impl C2f {
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        let split = self
-            .cv1
-            .forward(xs)
-            .split_with_sizes([self.hidden_channels, self.hidden_channels], 1);
+        let split =
+            self.cv1.forward(xs).split_with_sizes([self.hidden_channels, self.hidden_channels], 1);
         let mut values = vec![split[0].shallow_clone(), split[1].shallow_clone()];
         for bottleneck in &self.bottlenecks {
             values.push(bottleneck.forward(values.last().unwrap()));
@@ -509,11 +462,7 @@ impl ConvX {
                 input_channels,
                 output_channels,
                 kernel,
-                nn::ConvConfig {
-                    padding: kernel / 2,
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::ConvConfig { padding: kernel / 2, bias: false, ..Default::default() },
             ),
             bn: ChannelLayerNorm::new(&(path / "bn"), output_channels, 1e-6),
         }
@@ -533,9 +482,7 @@ impl ChannelLayerNorm {
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        self.0
-            .forward(&xs.permute([0, 2, 3, 1]))
-            .permute([0, 3, 1, 2])
+        self.0.forward(&xs.permute([0, 2, 3, 1])).permute([0, 3, 1, 2])
     }
 }
 
@@ -556,9 +503,7 @@ impl Transformer {
     fn new(path: &nn::Path<'_>) -> Self {
         Self {
             decoder: TransformerDecoder::new(&(path / "decoder")),
-            encoder_groups: (0..GROUP_DETR)
-                .map(|index| EncoderGroup::new(path, index))
-                .collect(),
+            encoder_groups: (0..GROUP_DETR).map(|index| EncoderGroup::new(path, index)).collect(),
         }
     }
 
@@ -578,16 +523,9 @@ impl Transformer {
         let (output_memory, output_proposals) =
             generate_encoder_output_proposals(&memory, height, width);
         let encoder = &self.encoder_groups[0];
-        let encoded_memory = encoder
-            .output_norm
-            .forward(&encoder.output.forward(&output_memory));
+        let encoded_memory = encoder.output_norm.forward(&encoder.output.forward(&output_memory));
         let encoder_class = encoder.class_embed.forward(&encoded_memory);
-        let topk = encoder_class
-            .max_dim(-1, false)
-            .0
-            .topk(NUM_QUERIES, 1, true, true)
-            .1
-            .i(0);
+        let topk = encoder_class.max_dim(-1, false).0.topk(NUM_QUERIES, 1, true, true).1.i(0);
         let selected_memory = encoded_memory.i(0).index_select(0, &topk).unsqueeze(0);
         let selected_proposals = output_proposals.i(0).index_select(0, &topk).unsqueeze(0);
         // The encoder box MLP is token-pointwise. Latest upstream gathers ranked
@@ -612,13 +550,8 @@ impl Transformer {
             -1,
         );
         let target = query_feat.unsqueeze(0);
-        let hs = self
-            .decoder
-            .forward(&target, &memory, &position, &references, (height, width));
-        TransformerOutput {
-            hs,
-            references: references.unsqueeze(0),
-        }
+        let hs = self.decoder.forward(&target, &memory, &position, &references, (height, width));
+        TransformerOutput { hs, references: references.unsqueeze(0) }
     }
 }
 
@@ -794,9 +727,7 @@ impl MultiheadAttention {
         let key = query_key.linear(&weights[1], Some(&biases[1]));
         let value = value.linear(&weights[2], Some(&biases[2]));
         let reshape = |tensor: &Tensor| {
-            tensor
-                .view([batch_size, sequence_length, self.num_heads, head_dim])
-                .transpose(1, 2)
+            tensor.view([batch_size, sequence_length, self.num_heads, head_dim]).transpose(1, 2)
         };
         let query = reshape(&query);
         let key = reshape(&key);
@@ -835,12 +766,7 @@ impl MultiscaleDeformableAttention {
                 16 * 2,
                 Default::default(),
             ),
-            value_proj: nn::linear(
-                path / "value_proj",
-                HIDDEN_DIM,
-                HIDDEN_DIM,
-                Default::default(),
-            ),
+            value_proj: nn::linear(path / "value_proj", HIDDEN_DIM, HIDDEN_DIM, Default::default()),
             output_proj: nn::linear(
                 path / "output_proj",
                 HIDDEN_DIM,
@@ -877,36 +803,18 @@ impl MultiscaleDeformableAttention {
             .view([batch_size, num_queries, num_heads, num_points])
             .softmax(-1, None::<Kind>)
             .unsqueeze(3);
-        let locations = reference_points
-            .i((.., .., .., 0..2))
-            .unsqueeze(2)
-            .unsqueeze(4)
+        let locations = reference_points.i((.., .., .., 0..2)).unsqueeze(2).unsqueeze(4)
             + offsets / num_points as f64
-                * reference_points
-                    .i((.., .., .., 2..4))
-                    .unsqueeze(2)
-                    .unsqueeze(4)
+                * reference_points.i((.., .., .., 2..4)).unsqueeze(2).unsqueeze(4)
                 * 0.5;
 
-        let value = value
-            .transpose(1, 2)
-            .contiguous()
-            .view([batch_size, num_heads, head_dim, -1]);
-        let value = value.view([
-            batch_size * num_heads,
-            head_dim,
-            spatial_shape.0,
-            spatial_shape.1,
-        ]);
-        let grid = (locations * 2.0 - 1.0)
-            .i((.., .., .., 0))
-            .transpose(1, 2)
-            .flatten(0, 1);
+        let value = value.transpose(1, 2).contiguous().view([batch_size, num_heads, head_dim, -1]);
+        let value =
+            value.view([batch_size * num_heads, head_dim, spatial_shape.0, spatial_shape.1]);
+        let grid = (locations * 2.0 - 1.0).i((.., .., .., 0)).transpose(1, 2).flatten(0, 1);
         let sampled = value.grid_sampler_2d(&grid, 0, 0, false);
         let weights =
-            weights
-                .transpose(1, 2)
-                .reshape([batch_size * num_heads, 1, num_queries, num_points]);
+            weights.transpose(1, 2).reshape([batch_size * num_heads, 1, num_queries, num_points]);
         let output = (sampled * weights)
             .sum_dim_intlist(&[-1i64][..], false, None::<Kind>)
             .view([batch_size, HIDDEN_DIM, num_queries])
@@ -929,10 +837,7 @@ fn generate_encoder_output_proposals(memory: &Tensor, height: i64, width: i64) -
     let grid = (grid.unsqueeze(0) + 0.5) / scale;
     let wh = Tensor::ones_like(&grid) * 0.05;
     let proposals = Tensor::cat(&[grid, wh], -1).reshape([memory.size()[0], height * width, 4]);
-    let valid = proposals
-        .gt(0.01)
-        .logical_and(&proposals.lt(0.99))
-        .all_dim(-1, true);
+    let valid = proposals.gt(0.01).logical_and(&proposals.lt(0.99)).all_dim(-1, true);
     (
         memory.masked_fill(&valid.logical_not(), 0.0),
         proposals.masked_fill(&valid.logical_not(), 0.0),
@@ -948,10 +853,7 @@ fn gen_sineembed_for_position(position: &Tensor) -> Tensor {
         let embedded =
             position.i((.., .., index)).unsqueeze(-1) * (2.0 * std::f64::consts::PI) / &dim_t;
         Tensor::stack(
-            &[
-                embedded.slice(-1, 0, dim, 2).sin(),
-                embedded.slice(-1, 1, dim, 2).cos(),
-            ],
+            &[embedded.slice(-1, 0, dim, 2).sin(), embedded.slice(-1, 1, dim, 2).cos()],
             3,
         )
         .flatten(2, 3)
@@ -989,9 +891,7 @@ fn sine_position_embedding(feature: &Tensor) -> Tensor {
         )
         .flatten(3, 4)
     };
-    Tensor::cat(&[encode(y), encode(x)], 3)
-        .permute([0, 3, 1, 2])
-        .to_kind(feature.kind())
+    Tensor::cat(&[encode(y), encode(x)], 3).permute([0, 3, 1, 2]).to_kind(feature.kind())
 }
 
 // https://github.com/roboflow/rf-detr/blob/4ab7c18729de9d02ffd0495795d0831b5630f01b/src/rfdetr/models/heads/segmentation.py
@@ -1047,18 +947,14 @@ impl SegmentationHead {
             spatial_features = block.forward(&spatial_features);
         }
         let spatial_features = self.spatial_features_proj.forward(&spatial_features);
-        let query_features = self
-            .query_features_proj
-            .forward(&self.query_features_block.forward(query_features));
-        query_features
-            .matmul(&spatial_features.flatten(2, -1))
-            .view([
-                spatial_features.size()[0],
-                query_features.size()[1],
-                image_size.0 / 4,
-                image_size.1 / 4,
-            ])
-            + &self.bias
+        let query_features =
+            self.query_features_proj.forward(&self.query_features_block.forward(query_features));
+        query_features.matmul(&spatial_features.flatten(2, -1)).view([
+            spatial_features.size()[0],
+            query_features.size()[1],
+            image_size.0 / 4,
+            image_size.1 / 4,
+        ]) + &self.bias
     }
 }
 
@@ -1077,11 +973,7 @@ impl DepthwiseConvBlock {
                 HIDDEN_DIM,
                 HIDDEN_DIM,
                 3,
-                nn::ConvConfig {
-                    padding: 1,
-                    groups: HIDDEN_DIM,
-                    ..Default::default()
-                },
+                nn::ConvConfig { padding: 1, groups: HIDDEN_DIM, ..Default::default() },
             ),
             norm: layer_norm(&(path / "norm"), HIDDEN_DIM, 1e-6),
             pwconv1: nn::linear(path / "pwconv1", HIDDEN_DIM, HIDDEN_DIM, Default::default()),
@@ -1090,9 +982,7 @@ impl DepthwiseConvBlock {
 
     fn forward(&self, xs: &Tensor) -> Tensor {
         let residual = xs;
-        let xs = self
-            .norm
-            .forward(&self.dwconv.forward(xs).permute([0, 2, 3, 1]));
+        let xs = self.norm.forward(&self.dwconv.forward(xs).permute([0, 2, 3, 1]));
         residual + self.pwconv1.forward(&xs).gelu("none").permute([0, 3, 1, 2])
     }
 }
@@ -1108,25 +998,13 @@ impl QueryMlpBlock {
     fn new(path: &nn::Path<'_>) -> Self {
         Self {
             norm_in: layer_norm(&(path / "norm_in"), HIDDEN_DIM, 1e-5),
-            first: nn::linear(
-                path / "layers" / 0,
-                HIDDEN_DIM,
-                HIDDEN_DIM * 4,
-                Default::default(),
-            ),
-            second: nn::linear(
-                path / "layers" / 2,
-                HIDDEN_DIM * 4,
-                HIDDEN_DIM,
-                Default::default(),
-            ),
+            first: nn::linear(path / "layers" / 0, HIDDEN_DIM, HIDDEN_DIM * 4, Default::default()),
+            second: nn::linear(path / "layers" / 2, HIDDEN_DIM * 4, HIDDEN_DIM, Default::default()),
         }
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        xs + self
-            .second
-            .forward(&self.first.forward(&self.norm_in.forward(xs)).gelu("none"))
+        xs + self.second.forward(&self.first.forward(&self.norm_in.forward(xs)).gelu("none"))
     }
 }
 
@@ -1146,17 +1024,8 @@ impl Mlp {
         let mut layers = Vec::with_capacity(num_layers);
         for index in 0..num_layers {
             let in_dim = if index == 0 { input_dim } else { hidden_dim };
-            let out_dim = if index + 1 == num_layers {
-                output_dim
-            } else {
-                hidden_dim
-            };
-            layers.push(nn::linear(
-                path / "layers" / index,
-                in_dim,
-                out_dim,
-                Default::default(),
-            ));
+            let out_dim = if index + 1 == num_layers { output_dim } else { hidden_dim };
+            layers.push(nn::linear(path / "layers" / index, in_dim, out_dim, Default::default()));
         }
         Self { layers }
     }
@@ -1174,14 +1043,7 @@ impl Mlp {
 }
 
 fn layer_norm(path: &nn::Path<'_>, hidden_dim: i64, eps: f64) -> nn::LayerNorm {
-    nn::layer_norm(
-        path,
-        vec![hidden_dim],
-        nn::LayerNormConfig {
-            eps,
-            ..Default::default()
-        },
-    )
+    nn::layer_norm(path, vec![hidden_dim], nn::LayerNormConfig { eps, ..Default::default() })
 }
 
 #[cfg(test)]

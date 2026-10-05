@@ -99,11 +99,7 @@ fn fragment(input: VertexOutput) -> @location(0) vec4<f32> {
             multiview_mask: None,
             cache: None,
         });
-        Self {
-            pipeline,
-            bind_group_layout,
-            sampler,
-        }
+        Self { pipeline, bind_group_layout, sampler }
     }
 
     pub(crate) fn copy(

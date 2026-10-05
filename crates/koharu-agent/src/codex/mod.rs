@@ -28,13 +28,8 @@ pub struct CodexModel {
 #[derive(Clone, Debug, Serialize, Type)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum LoginEvent {
-    Progress {
-        message: String,
-    },
-    DeviceCode {
-        verification_url: String,
-        user_code: String,
-    },
+    Progress { message: String },
+    DeviceCode { verification_url: String, user_code: String },
 }
 
 #[derive(Clone, Debug)]
@@ -46,10 +41,7 @@ pub struct Codex {
 impl Codex {
     pub fn new() -> Result<Self> {
         let client = koharu_runtime::http_client()?;
-        Ok(Self {
-            auth: Auth::new(client.clone()),
-            client,
-        })
+        Ok(Self { auth: Auth::new(client.clone()), client })
     }
 
     pub fn account(&self) -> Result<Option<Account>> {

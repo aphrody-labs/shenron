@@ -74,10 +74,8 @@ pub(crate) fn validate_components(
 
 pub(crate) fn validate_entity(state: &State, id: EntityId) -> Result<()> {
     let entity = state.entity(id)?;
-    let kinds = entity
-        .components
-        .iter()
-        .fold(0, |kinds, (key, _)| kinds | component_mask(&key.kind));
+    let kinds =
+        entity.components.iter().fold(0, |kinds, (key, _)| kinds | component_mask(&key.kind));
     let has = |component| kinds & component != 0;
     let has_source = has(SOURCE_TEXT);
     let has_content = has(TEXT_CONTENT);
@@ -95,10 +93,7 @@ pub(crate) fn validate_entity(state: &State, id: EntityId) -> Result<()> {
     let parent = state.parent_and_position(id)?.0;
     let parent_is_text_group = parent.is_some_and(|parent| {
         state.entity(parent).is_ok_and(|entity| {
-            entity
-                .components
-                .iter()
-                .any(|(key, _)| component_mask(&key.kind) == TEXT_GROUP)
+            entity.components.iter().any(|(key, _)| component_mask(&key.kind) == TEXT_GROUP)
         })
     });
 
@@ -107,13 +102,9 @@ pub(crate) fn validate_entity(state: &State, id: EntityId) -> Result<()> {
             "entity {id} carries text content data but is not text content"
         )))
     } else if has_translation && !has_source {
-        Err(Error::invalid(format!(
-            "entity {id} has a translation but no source text"
-        )))
+        Err(Error::invalid(format!("entity {id} has a translation but no source text")))
     } else if has_text_group && !has_group {
-        Err(Error::invalid(format!(
-            "text group {id} does not carry the group component"
-        )))
+        Err(Error::invalid(format!("text group {id} does not carry the group component")))
     } else if has_group
         && (has(PAGE)
             || has_content
@@ -144,13 +135,9 @@ pub(crate) fn validate_entity(state: &State, id: EntityId) -> Result<()> {
         }
         Ok(())
     } else if parent_is_text_group && !has_layout {
-        Err(Error::invalid(format!(
-            "text group child {id} is not a text layer"
-        )))
+        Err(Error::invalid(format!("text group child {id} is not a text layer")))
     } else if has_layout && !parent_is_text_group {
-        Err(Error::invalid(format!(
-            "text layer {id} is not contained by the page text group"
-        )))
+        Err(Error::invalid(format!("text layer {id} is not contained by the page text group")))
     } else if has_content
         && (has_region || has_geometry || has_layout || has_typography || has_detection || has_ocr)
     {
@@ -162,23 +149,15 @@ pub(crate) fn validate_entity(state: &State, id: EntityId) -> Result<()> {
             "analysis region {id} also carries text presentation or content components"
         )))
     } else if has_region && !has_geometry {
-        Err(Error::invalid(format!(
-            "analysis region {id} has no geometry"
-        )))
+        Err(Error::invalid(format!("analysis region {id} has no geometry")))
     } else if has_layout
         && (has_source || has_translation || has_region || has_detection || has_ocr)
     {
-        Err(Error::invalid(format!(
-            "text layer {id} also carries content or analysis components"
-        )))
+        Err(Error::invalid(format!("text layer {id} also carries content or analysis components")))
     } else if has_typography && !has_layout {
-        Err(Error::invalid(format!(
-            "entity {id} has typography but is not a text layer"
-        )))
+        Err(Error::invalid(format!("entity {id} has typography but is not a text layer")))
     } else if (has_detection || has_ocr) && !has_region {
-        Err(Error::invalid(format!(
-            "entity {id} has analysis results but is not a region"
-        )))
+        Err(Error::invalid(format!("entity {id} has analysis results but is not a region")))
     } else {
         Ok(())
     }
@@ -251,34 +230,33 @@ fn validate_relation_endpoints(
             .components
             .iter()
             .find_map(|(key, raw)| (key.kind == Region::KIND).then_some(raw));
-        raw.map(|raw| decode::<Region>(raw, context).map(|region| region.kind))
-            .transpose()
+        raw.map(|raw| decode::<Region>(raw, context).map(|region| region.kind)).transpose()
     };
     let valid = match relation.kind.as_str() {
         <crate::Presents as crate::RelationSpec>::KIND => {
             has(relation.source, TextLayout::KIND) && has(relation.target, TextContent::KIND)
-        }
+        },
         <crate::RecognizedFrom as crate::RelationSpec>::KIND => {
             has(relation.source, TextContent::KIND) && has(relation.target, Region::KIND)
-        }
+        },
         <crate::FitsTo as crate::RelationSpec>::KIND => {
             has(relation.source, TextLayout::KIND)
                 && has(relation.target, Region::KIND)
                 && has(relation.target, Geometry::KIND)
                 && region_kind(relation.target)?.is_some_and(|kind| kind == TextRegion::kind())
-        }
+        },
         <crate::FlowsIn as crate::RelationSpec>::KIND => {
             has(relation.source, TextLayout::KIND)
                 && has(relation.target, Region::KIND)
                 && has(relation.target, Geometry::KIND)
                 && region_kind(relation.target)?.is_some_and(|kind| kind == BubbleRegion::kind())
-        }
+        },
         <crate::Inside as crate::RelationSpec>::KIND => {
             has(relation.source, Region::KIND)
                 && has(relation.target, Region::KIND)
                 && has(relation.source, Geometry::KIND)
                 && has(relation.target, Geometry::KIND)
-        }
+        },
         _ => true,
     };
     if !valid {
@@ -305,10 +283,10 @@ fn validate_automatic_placement(state: &State, relation: &Relation) -> Result<()
     let other = match relation.kind.as_str() {
         <crate::FitsTo as crate::RelationSpec>::KIND => {
             Some(<crate::FlowsIn as crate::RelationSpec>::KIND)
-        }
+        },
         <crate::FlowsIn as crate::RelationSpec>::KIND => {
             Some(<crate::FitsTo as crate::RelationSpec>::KIND)
-        }
+        },
         _ => None,
     };
     let Some(other) = other else {

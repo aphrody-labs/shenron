@@ -6,10 +6,8 @@ use koharu_ml::aot_inpainting::AotInpainting;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("benches")
-        .join("fixtures")
-        .join("inpaint");
+    let fixtures =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("benches").join("fixtures").join("inpaint");
     let image = image::open(fixtures.join("image_4k.jpg"))?;
     let mask = image::open(fixtures.join("mask_4k.png"))?.to_luma8();
 

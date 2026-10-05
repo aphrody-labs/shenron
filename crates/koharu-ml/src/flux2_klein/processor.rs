@@ -37,12 +37,7 @@ pub struct Flux2KleinInpaintOptions {
 
 impl Default for Flux2KleinInpaintOptions {
     fn default() -> Self {
-        Self {
-            padding_mask_crop: None,
-            strength: 0.8,
-            num_inference_steps: 4,
-            seed: -1,
-        }
+        Self { padding_mask_crop: None, strength: 0.8, num_inference_steps: 4, seed: -1 }
     }
 }
 
@@ -165,16 +160,10 @@ impl Flux2ImageProcessor {
     pub(super) fn _resize_and_fill(image: &DynamicImage, width: u32, height: u32) -> DynamicImage {
         let ratio = f64::from(width) / f64::from(height);
         let source_ratio = f64::from(image.width()) / f64::from(image.height());
-        let resized_width = if ratio > source_ratio {
-            width
-        } else {
-            image.width() * height / image.height()
-        };
-        let resized_height = if ratio <= source_ratio {
-            height
-        } else {
-            image.height() * width / image.width()
-        };
+        let resized_width =
+            if ratio > source_ratio { width } else { image.width() * height / image.height() };
+        let resized_height =
+            if ratio <= source_ratio { height } else { image.height() * width / image.width() };
         let source = image.to_rgb8();
         let mut resized = RgbImage::new(resized_width, resized_height);
         Resizer::new()

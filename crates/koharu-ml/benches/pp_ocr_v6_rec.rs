@@ -25,16 +25,11 @@ async fn main() -> Result<()> {
         .measurement_time(Duration::from_secs(10))
         .configure_from_args();
 
-    let benchmark = format!(
-        "pp_ocr_v6/rec/inference/{}x{}",
-        image.width(),
-        image.height()
-    );
+    let benchmark = format!("pp_ocr_v6/rec/inference/{}x{}", image.width(), image.height());
     criterion.bench_function(&benchmark, |bencher| {
         bencher.iter(|| {
-            let recognition = model
-                .inference(black_box(&image))
-                .expect("PP-OCRv6 recognizer inference failed");
+            let recognition =
+                model.inference(black_box(&image)).expect("PP-OCRv6 recognizer inference failed");
             black_box(recognition);
         });
     });

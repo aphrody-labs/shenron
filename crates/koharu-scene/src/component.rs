@@ -17,10 +17,7 @@ impl<'a> ValidationContext<'a> {
         record_exists: &'a dyn Fn(EntityId) -> bool,
         blob_exists: &'a dyn Fn(BlobId) -> bool,
     ) -> Self {
-        Self {
-            record_exists,
-            blob_exists,
-        }
+        Self { record_exists, blob_exists }
     }
 
     #[must_use]
@@ -101,12 +98,7 @@ impl ComponentRecord {
         stored.record_refs.dedup();
         stored.blob_refs.sort_unstable();
         stored.blob_refs.dedup();
-        Self::new(
-            stored.schema,
-            stored.payload,
-            stored.record_refs,
-            stored.blob_refs,
-        )
+        Self::new(stored.schema, stored.payload, stored.record_refs, stored.blob_refs)
     }
 
     pub(crate) fn new(
@@ -182,11 +174,7 @@ pub(crate) fn decode<T: Component>(
     record: &ComponentRecord,
     context: &ValidationContext<'_>,
 ) -> Result<T> {
-    if let Some(value) = record
-        .decoded
-        .get()
-        .and_then(|value| value.downcast_ref::<T>())
-    {
+    if let Some(value) = record.decoded.get().and_then(|value| value.downcast_ref::<T>()) {
         return Ok(value.clone());
     }
     let current = u32::from(<T as revision::Revisioned>::revision());

@@ -24,11 +24,7 @@ impl PipelineError {
         stage: Option<Stage>,
         source: impl Into<anyhow::Error>,
     ) -> Self {
-        Self {
-            stage,
-            kind,
-            source: source.into(),
-        }
+        Self { stage, kind, source: source.into() }
     }
 }
 
@@ -37,11 +33,11 @@ impl fmt::Display for PipelineError {
         match self.stage {
             Some(stage) if formatter.alternate() => {
                 write!(formatter, "pipeline {stage} failed: {:#}", self.source)
-            }
+            },
             Some(stage) => write!(formatter, "pipeline {stage} failed: {}", self.source),
             None if formatter.alternate() => {
                 write!(formatter, "pipeline failed: {:#}", self.source)
-            }
+            },
             None => write!(formatter, "pipeline failed: {}", self.source),
         }
     }

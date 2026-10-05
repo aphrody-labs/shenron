@@ -50,9 +50,7 @@ async fn main() -> Result<()> {
     koharu_ml::init().await?;
 
     let output = if let Some(mask) = mask.as_ref() {
-        let input = input
-            .as_ref()
-            .context("--input is required when --mask is provided")?;
+        let input = input.as_ref().context("--input is required when --mask is provided")?;
         let pipeline = Flux2KleinInpaint::load(koharu_ml::device(cli.cpu)).await?;
         let options = Flux2KleinInpaintOptions {
             num_inference_steps: cli.steps,

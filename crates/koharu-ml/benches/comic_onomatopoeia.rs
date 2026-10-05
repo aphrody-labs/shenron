@@ -24,9 +24,8 @@ async fn main() -> Result<()> {
         .configure_from_args();
     criterion.bench_function("comic_onomatopoeia/mtsv3/inference", |bencher| {
         bencher.iter(|| {
-            let detections = detector
-                .inference(black_box(&detector_image))
-                .expect("COO MTSv3 inference failed");
+            let detections =
+                detector.inference(black_box(&detector_image)).expect("COO MTSv3 inference failed");
             black_box(detections);
         });
     });

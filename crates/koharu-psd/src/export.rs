@@ -33,14 +33,9 @@ pub async fn export_page(
     frame: &Frame,
     options: &PsdExportOptions,
 ) -> Result<Vec<u8>, PsdExportError> {
-    let document = crate::document::build(
-        snapshot,
-        frame,
-        rasterizer,
-        RasterOptions::default(),
-        options,
-    )
-    .await?;
+    let document =
+        crate::document::build(snapshot, frame, rasterizer, RasterOptions::default(), options)
+            .await?;
     tokio_rayon::spawn(move || serialize(&document)).await
 }
 
@@ -89,12 +84,7 @@ fn build_layer_and_mask_info(
         // GIMP writes alpha first for layer channel data, followed by color channels.
         let channels = encode_image_rle(
             &layer.pixels,
-            &[
-                ChannelId::Alpha,
-                ChannelId::Red,
-                ChannelId::Green,
-                ChannelId::Blue,
-            ],
+            &[ChannelId::Alpha, ChannelId::Red, ChannelId::Green, ChannelId::Blue],
             &layer.name,
         )?;
         encoded_layers.push(channels);
@@ -116,24 +106,12 @@ fn build_layer_and_mask_info(
                 height: i32::MAX,
             }
         })?;
-        let right =
-            layer
-                .left
-                .checked_add(width)
-                .ok_or_else(|| PsdExportError::InvalidLayerBounds {
-                    layer: layer.name.clone(),
-                    width,
-                    height,
-                })?;
-        let bottom =
-            layer
-                .top
-                .checked_add(height)
-                .ok_or_else(|| PsdExportError::InvalidLayerBounds {
-                    layer: layer.name.clone(),
-                    width,
-                    height,
-                })?;
+        let right = layer.left.checked_add(width).ok_or_else(|| {
+            PsdExportError::InvalidLayerBounds { layer: layer.name.clone(), width, height }
+        })?;
+        let bottom = layer.top.checked_add(height).ok_or_else(|| {
+            PsdExportError::InvalidLayerBounds { layer: layer.name.clone(), width, height }
+        })?;
 
         layer_info.write_i32(layer.top);
         layer_info.write_i32(layer.left);
@@ -220,13 +198,8 @@ fn tysh_body(text: &TextMetadata) -> Result<Vec<u8>, PsdExportError> {
         box_width: text.box_width,
         box_height: text.box_height,
     });
-    let bounds = bounds_descriptor(
-        "bounds",
-        text.bounds[0],
-        text.bounds[1],
-        text.bounds[2],
-        text.bounds[3],
-    );
+    let bounds =
+        bounds_descriptor("bounds", text.bounds[0], text.bounds[1], text.bounds[2], text.bounds[3]);
     let bounding_box = bounds_descriptor(
         "boundingBox",
         text.bounds[0],
@@ -238,10 +211,7 @@ fn tysh_body(text: &TextMetadata) -> Result<Vec<u8>, PsdExportError> {
         .with_item("Txt ", DescriptorValue::Text(text.text.clone()))
         .with_item(
             "textGridding",
-            DescriptorValue::Enum {
-                type_id: "textGridding".to_owned(),
-                value: "None".to_owned(),
-            },
+            DescriptorValue::Enum { type_id: "textGridding".to_owned(), value: "None".to_owned() },
         )
         .with_item(
             "Ornt",
@@ -264,10 +234,7 @@ fn tysh_body(text: &TextMetadata) -> Result<Vec<u8>, PsdExportError> {
     let warp_descriptor = DescriptorObject::new("", "warp")
         .with_item(
             "warpStyle",
-            DescriptorValue::Enum {
-                type_id: "warpStyle".to_owned(),
-                value: "warpNone".to_owned(),
-            },
+            DescriptorValue::Enum { type_id: "warpStyle".to_owned(), value: "warpNone".to_owned() },
         )
         .with_item("warpValue", DescriptorValue::Double(0.0))
         .with_item("warpPerspective", DescriptorValue::Double(0.0))
@@ -416,14 +383,10 @@ mod tests {
             .expect("visible layer info");
         let hidden =
             build_layer_and_mask_info(&[layer("hidden", true)], true).expect("hidden layer info");
-        let visible_blend = visible
-            .windows(8)
-            .position(|bytes| bytes == b"8BIMnorm")
-            .expect("blend signature");
-        let hidden_blend = hidden
-            .windows(8)
-            .position(|bytes| bytes == b"8BIMnorm")
-            .expect("blend signature");
+        let visible_blend =
+            visible.windows(8).position(|bytes| bytes == b"8BIMnorm").expect("blend signature");
+        let hidden_blend =
+            hidden.windows(8).position(|bytes| bytes == b"8BIMnorm").expect("blend signature");
         assert_eq!(visible[visible_blend + 10], 0);
         assert_eq!(hidden[hidden_blend + 10], 2);
     }
@@ -483,10 +446,7 @@ mod tests {
     #[test]
     fn unicode_layer_name_is_limited_and_even_padded_like_gimp() {
         let body = luni_body(&"x".repeat(300));
-        assert_eq!(
-            u32::from_be_bytes(body[..4].try_into().expect("length")),
-            255
-        );
+        assert_eq!(u32::from_be_bytes(body[..4].try_into().expect("length")), 255);
         assert_eq!(body.len(), 4 + 256 * 2);
     }
 }

@@ -10,17 +10,12 @@ pub(super) struct Monitor {
 
 impl Monitor {
     pub(super) fn new() -> Result<Self, String> {
-        Ok(Self {
-            nvml: Nvml::init().ok(),
-        })
+        Ok(Self { nvml: Nvml::init().ok() })
     }
 
     pub(super) fn sample(&mut self) -> Result<Vec<Sample>, String> {
-        let mut samples = self
-            .nvml
-            .as_ref()
-            .and_then(|nvml| sample_nvml(nvml).ok())
-            .unwrap_or_default();
+        let mut samples =
+            self.nvml.as_ref().and_then(|nvml| sample_nvml(nvml).ok()).unwrap_or_default();
         let has_nvidia = samples.iter().any(|sample| sample.vendor == Vendor::Nvidia);
         samples.extend(sample_drm(has_nvidia));
         (!samples.is_empty())
@@ -30,9 +25,8 @@ impl Monitor {
 }
 
 fn sample_nvml(nvml: &Nvml) -> Result<Vec<Sample>, String> {
-    let count = nvml
-        .device_count()
-        .map_err(|error| format!("NVML device enumeration failed: {error}"))?;
+    let count =
+        nvml.device_count().map_err(|error| format!("NVML device enumeration failed: {error}"))?;
     let mut samples = Vec::with_capacity(count as usize);
     let mut first_error = None;
     for index in 0..count {
@@ -40,7 +34,7 @@ fn sample_nvml(nvml: &Nvml) -> Result<Vec<Sample>, String> {
             Ok(sample) => samples.push(sample),
             Err(error) => {
                 first_error.get_or_insert(error);
-            }
+            },
         };
     }
     if samples.is_empty()
@@ -55,9 +49,8 @@ fn sample_nvml_device(nvml: &Nvml, index: u32) -> Result<Sample, String> {
     let device = nvml
         .device_by_index(index)
         .map_err(|error| format!("NVML device {index} lookup failed: {error}"))?;
-    let name = device
-        .name()
-        .map_err(|error| format!("NVML device {index} name query failed: {error}"))?;
+    let name =
+        device.name().map_err(|error| format!("NVML device {index} name query failed: {error}"))?;
     let memory = device
         .memory_info()
         .map_err(|error| format!("NVML device {index} memory query failed: {error}"))?;
@@ -67,10 +60,7 @@ fn sample_nvml_device(nvml: &Nvml, index: u32) -> Result<Sample, String> {
         vendor: Vendor::Nvidia,
         budget_bytes: memory.total,
         used_bytes: memory.used,
-        utilization_percent: device
-            .utilization_rates()
-            .ok()
-            .map(|rates| rates.gpu as f32),
+        utilization_percent: device.utilization_rates().ok().map(|rates| rates.gpu as f32),
     })
 }
 
@@ -120,10 +110,7 @@ fn read_memory_pair(device: &Path) -> Option<(u64, u64)> {
         ("tile0/vram0/total_bytes", "tile0/vram0/used_bytes"),
     ];
     pairs.into_iter().find_map(|(total, used)| {
-        Some((
-            read_number(device.join(total))?,
-            read_number(device.join(used))?,
-        ))
+        Some((read_number(device.join(total))?, read_number(device.join(used))?))
     })
 }
 

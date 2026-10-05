@@ -55,10 +55,7 @@ impl HayaiConfig {
     }
 
     pub(crate) fn validate(&self) -> Result<()> {
-        ensure!(
-            self.vocab_size > 0,
-            "Hayai OCR vocabulary size must be positive"
-        );
+        ensure!(self.vocab_size > 0, "Hayai OCR vocabulary size must be positive");
         ensure!(
             self.d_vision == siglip2::HIDDEN_SIZE,
             "Hayai OCR expects the SigLIP2 NaFlex {}-dimensional vision encoder",

@@ -24,12 +24,10 @@ pub(super) struct Processor {
 
 impl Processor {
     pub(super) fn new(device: Device) -> Self {
-        let mean = Tensor::from_slice(&[0.485f32, 0.456, 0.406])
-            .view([1, 3, 1, 1])
-            .to_device(device);
-        let std = Tensor::from_slice(&[0.229f32, 0.224, 0.225])
-            .view([1, 3, 1, 1])
-            .to_device(device);
+        let mean =
+            Tensor::from_slice(&[0.485f32, 0.456, 0.406]).view([1, 3, 1, 1]).to_device(device);
+        let std =
+            Tensor::from_slice(&[0.229f32, 0.224, 0.225]).view([1, 3, 1, 1]).to_device(device);
         Self { device, mean, std }
     }
 
@@ -65,21 +63,15 @@ impl Processor {
             // Keep the probability resize on the target device and transfer only
             // the final caller-facing map. The default path never enters here.
             probabilities = probabilities.upsample_bilinear2d(
-                [
-                    i64::from(geometry.original_height),
-                    i64::from(geometry.original_width),
-                ],
+                [i64::from(geometry.original_height), i64::from(geometry.original_width)],
                 false,
                 None::<f64>,
                 None::<f64>,
             );
         }
 
-        let probabilities = probabilities
-            .to_kind(Kind::Float)
-            .contiguous()
-            .to_device(Device::Cpu)
-            .view([-1]);
+        let probabilities =
+            probabilities.to_kind(Kind::Float).contiguous().to_device(Device::Cpu).view([-1]);
         let probabilities = Vec::<f32>::try_from(&probabilities)?;
         Ok(MangaTextMask {
             width: geometry.original_width,
@@ -102,10 +94,7 @@ impl Processor {
 
         let mut image = image.to_rgb8();
         if let Some(max_side) = max_side {
-            ensure!(
-                max_side > 0,
-                "manga text segmentation max side must be positive"
-            );
+            ensure!(max_side > 0, "manga text segmentation max side must be positive");
             if original_width.max(original_height) > max_side {
                 let (width, height) = resize_dimensions(original_width, original_height, max_side);
                 image = resize_rgb(&image, width, height)?;
@@ -132,15 +121,7 @@ impl Processor {
             input.constant_pad_nd([0, i64::from(pad_width), 0, i64::from(pad_height)])
         };
 
-        Ok((
-            input,
-            InputGeometry {
-                original_width,
-                original_height,
-                input_width,
-                input_height,
-            },
-        ))
+        Ok((input, InputGeometry { original_width, original_height, input_width, input_height }))
     }
 }
 
@@ -237,12 +218,7 @@ pub struct MangaTextMaskCleaningOptions {
 
 impl Default for MangaTextMaskCleaningOptions {
     fn default() -> Self {
-        Self {
-            threshold: 0.5,
-            padding_iterations: 2,
-            fill_holes: true,
-            close_gaps_kernel: 2,
-        }
+        Self { threshold: 0.5, padding_iterations: 2, fill_holes: true, close_gaps_kernel: 2 }
     }
 }
 
@@ -269,11 +245,7 @@ fn resize_rgb(image: &RgbImage, width: u32, height: u32) -> Result<RgbImage> {
 fn opencv_ellipse(kernel_size: u8) -> Mask {
     let mut image = GrayImage::new(u32::from(kernel_size), u32::from(kernel_size));
     let radius = i32::from(kernel_size / 2);
-    let inverse_radius_squared = if radius == 0 {
-        0.0
-    } else {
-        1.0 / f64::from(radius * radius)
-    };
+    let inverse_radius_squared = if radius == 0 { 0.0 } else { 1.0 / f64::from(radius * radius) };
     for y in 0..i32::from(kernel_size) {
         let dy = y - radius;
         if dy.abs() > radius {
@@ -351,11 +323,7 @@ mod tests {
 
     #[test]
     fn threshold_is_strictly_greater_than() -> anyhow::Result<()> {
-        let output = MangaTextMask {
-            width: 3,
-            height: 1,
-            probabilities: vec![0.49, 0.5, 0.51],
-        };
+        let output = MangaTextMask { width: 3, height: 1, probabilities: vec![0.49, 0.5, 0.51] };
         assert_eq!(output.binary_mask(0.5)?.as_raw(), &[0, 0, 255]);
         Ok(())
     }
@@ -372,13 +340,8 @@ mod tests {
 
     #[test]
     fn ellipse_matches_opencv_five_by_five_shape() {
-        let source = GrayImage::from_fn(5, 5, |x, y| {
-            if x == 2 && y == 2 {
-                Luma([255])
-            } else {
-                Luma([0])
-            }
-        });
+        let source =
+            GrayImage::from_fn(5, 5, |x, y| if x == 2 && y == 2 { Luma([255]) } else { Luma([0]) });
         let dilated = imageproc::morphology::grayscale_dilate(&source, &opencv_ellipse(5));
         let rows = dilated
             .as_raw()

@@ -60,11 +60,7 @@ impl PPOCRV6MediumRec {
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
 
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<TextRecognition> {
@@ -85,11 +81,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads the checkpoint and LibTorch runtime"]
     async fn loads_medium_recognizer_checkpoint() {
-        Runtime::discover([Feature::Torch])
-            .unwrap()
-            .initialize()
-            .await
-            .unwrap();
+        Runtime::discover([Feature::Torch]).unwrap().initialize().await.unwrap();
         let model = PPOCRV6MediumRec::load(crate::Device::cpu()).await.unwrap();
         model.inference(&DynamicImage::new_rgb8(128, 32)).unwrap();
     }

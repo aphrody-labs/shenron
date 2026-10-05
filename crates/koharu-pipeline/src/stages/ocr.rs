@@ -24,11 +24,7 @@ pub(super) struct Processor {
 
 impl Processor {
     pub(super) fn new(config: OcrModel, device: koharu_ml::Device) -> Self {
-        Self {
-            config,
-            device,
-            model: ModelCell::new(),
-        }
+        Self { config, device, model: ModelCell::new() }
     }
 }
 
@@ -48,9 +44,7 @@ impl StageProcessor for Processor {
     }
 
     async fn load(&self) -> Result<()> {
-        self.model
-            .ensure(|| Model::load(self.device.clone(), &self.config))
-            .await
+        self.model.ensure(|| Model::load(self.device.clone(), &self.config)).await
     }
 
     async fn process(&self, input: StageInput) -> Result<koharu_scene::Patch> {
@@ -74,18 +68,18 @@ enum Model {
 impl Model {
     async fn load(device: koharu_ml::Device, config: &OcrModel) -> Result<Self> {
         match config {
-            OcrModel::MangaOcr => Ok(Self::Manga(Arc::new(Mutex::new(
-                MangaOcr::load(device).await?,
-            )))),
-            OcrModel::BaberuOcr => Ok(Self::Baberu(Arc::new(Mutex::new(
-                BaberuOcr::load(device).await?,
-            )))),
-            OcrModel::HayaiOcr => Ok(Self::Hayai(Arc::new(Mutex::new(
-                HayaiOcr::load(device).await?,
-            )))),
-            OcrModel::PaddleOcrVl1_6 => Ok(Self::Paddle(Arc::new(Mutex::new(
-                PaddleOCRVLQuantized::load(device).await?,
-            )))),
+            OcrModel::MangaOcr => {
+                Ok(Self::Manga(Arc::new(Mutex::new(MangaOcr::load(device).await?))))
+            },
+            OcrModel::BaberuOcr => {
+                Ok(Self::Baberu(Arc::new(Mutex::new(BaberuOcr::load(device).await?))))
+            },
+            OcrModel::HayaiOcr => {
+                Ok(Self::Hayai(Arc::new(Mutex::new(HayaiOcr::load(device).await?))))
+            },
+            OcrModel::PaddleOcrVl1_6 => {
+                Ok(Self::Paddle(Arc::new(Mutex::new(PaddleOCRVLQuantized::load(device).await?))))
+            },
         }
     }
 
@@ -124,9 +118,7 @@ impl Model {
             for relation in input.scene.relations_to_as::<RecognizedFrom>(region) {
                 let content = relation.value().source;
                 let previous = input.scene.component::<SourceText>(content)?;
-                if previous
-                    .as_ref()
-                    .is_some_and(|value| matches!(value.text.origin, Origin::User))
+                if previous.as_ref().is_some_and(|value| matches!(value.text.origin, Origin::User))
                 {
                     continue;
                 }
@@ -142,29 +134,20 @@ impl Model {
 
         let results = match self {
             Self::Manga(model) => {
-                infer_text(model.clone(), targets, |model, image| {
-                    model.inference(image)
-                })
-                .await?
-            }
+                infer_text(model.clone(), targets, |model, image| model.inference(image)).await?
+            },
             Self::Baberu(model) => {
-                infer_text(model.clone(), targets, |model, image| {
-                    model.inference(image)
-                })
-                .await?
-            }
+                infer_text(model.clone(), targets, |model, image| model.inference(image)).await?
+            },
             Self::Hayai(model) => {
-                infer_text(model.clone(), targets, |model, image| {
-                    model.inference(image)
-                })
-                .await?
-            }
+                infer_text(model.clone(), targets, |model, image| model.inference(image)).await?
+            },
             Self::Paddle(model) => {
                 infer_text(model.clone(), targets, |model, image| {
                     Ok(model.inference(image, PaddleOCRVLTask::Ocr)?.text)
                 })
                 .await?
-            }
+            },
         };
 
         let generation = generation(PRODUCER, model_name)?;
@@ -229,9 +212,7 @@ async fn infer_text<M: Send + 'static>(
     inference: impl Fn(&M, &DynamicImage) -> Result<String> + Send + Sync + 'static,
 ) -> Result<Vec<OcrResult>> {
     tokio_rayon::spawn(move || {
-        let model = model
-            .lock()
-            .map_err(|_| anyhow!("OCR model lock is poisoned"))?;
+        let model = model.lock().map_err(|_| anyhow!("OCR model lock is poisoned"))?;
         targets
             .into_iter()
             .map(|target| {
@@ -251,14 +232,9 @@ async fn infer_text<M: Send + 'static>(
 // Manga OCR can emit replacement-box glyphs for an isolated Japanese ellipsis.
 // Normalize only an all-placeholder sequence so ordinary OCR output is preserved.
 fn normalize_ocr_text(text: String) -> String {
-    let visible = text
-        .chars()
-        .filter(|character| !character.is_whitespace())
-        .collect::<Vec<_>>();
+    let visible = text.chars().filter(|character| !character.is_whitespace()).collect::<Vec<_>>();
     if visible.len() >= 2
-        && visible
-            .iter()
-            .all(|character| matches!(character, '☐' | '□' | '▢' | '▣' | '�'))
+        && visible.iter().all(|character| matches!(character, '☐' | '□' | '▢' | '▣' | '�'))
     {
         "…".to_owned()
     } else {

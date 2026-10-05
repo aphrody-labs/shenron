@@ -33,10 +33,7 @@ impl ViTImageProcessor {
             bail!("cannot recognize an empty image");
         }
         if self.resample != 2 {
-            bail!(
-                "unsupported Manga OCR PIL resampling filter {}",
-                self.resample
-            );
+            bail!("unsupported Manga OCR PIL resampling filter {}", self.resample);
         }
 
         // `MangaOcr.__call__` uses Pillow's ITU-R 601-2 L conversion, then RGB.
@@ -56,12 +53,8 @@ impl ViTImageProcessor {
             .to_kind(Kind::Float)
             / 255.0;
         if self.do_normalize {
-            let mean = Tensor::from_slice(&self.image_mean)
-                .view([1, 3, 1, 1])
-                .to_device(device);
-            let std = Tensor::from_slice(&self.image_std)
-                .view([1, 3, 1, 1])
-                .to_device(device);
+            let mean = Tensor::from_slice(&self.image_mean).view([1, 3, 1, 1]).to_device(device);
+            let std = Tensor::from_slice(&self.image_std).view([1, 3, 1, 1]).to_device(device);
             pixel_values = (pixel_values - mean) / std;
         }
         Ok(pixel_values)
@@ -103,10 +96,7 @@ pub(crate) struct Tokenizer {
 
 impl Tokenizer {
     pub(crate) fn from_file(path: impl AsRef<Path>) -> Result<Self> {
-        let vocabulary = fs::read_to_string(path)?
-            .lines()
-            .map(str::to_owned)
-            .collect::<Vec<_>>();
+        let vocabulary = fs::read_to_string(path)?.lines().map(str::to_owned).collect::<Vec<_>>();
         if vocabulary.is_empty() {
             bail!("Manga OCR vocabulary is empty");
         }
@@ -137,10 +127,7 @@ impl Tokenizer {
 }
 
 fn post_process(text: &str) -> String {
-    let text = text
-        .chars()
-        .filter(|c| !c.is_whitespace())
-        .collect::<String>();
+    let text = text.chars().filter(|c| !c.is_whitespace()).collect::<String>();
     let text = text.replace('\u{2026}', "...");
     let mut dots = String::with_capacity(text.len());
     let mut dot_run = Vec::new();
@@ -173,7 +160,7 @@ fn halfwidth_to_fullwidth(text: &str) -> String {
         match character {
             '!'..='~' => {
                 output.push(char::from_u32(character as u32 + 0xfee0).unwrap_or(character))
-            }
+            },
             ' ' => output.push('\u{3000}'),
             '\u{ff9e}' | '\u{ff9f}' => {
                 let previous = output.pop();
@@ -184,7 +171,7 @@ fn halfwidth_to_fullwidth(text: &str) -> String {
                     output.extend(previous);
                     output.push(character);
                 }
-            }
+            },
             '\u{ff61}'..='\u{ff9d}' => output.push_str(halfwidth_katakana(character)),
             _ => output.push(character),
         }
@@ -230,9 +217,7 @@ mod tests {
         let image = RgbImage::from_raw(
             3,
             2,
-            vec![
-                255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 128, 64, 32,
-            ],
+            vec![255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 128, 64, 32],
         )
         .unwrap();
         let grayscale = pillow_grayscale(&DynamicImage::ImageRgb8(image));
@@ -241,11 +226,7 @@ mod tests {
             [76, 150, 29, 255, 0, 79].map(|value| Rgb([value; 3]))
         );
         assert_eq!(
-            resize_bilinear(&grayscale, 2, 2)
-                .unwrap()
-                .pixels()
-                .copied()
-                .collect::<Vec<_>>(),
+            resize_bilinear(&grayscale, 2, 2).unwrap().pixels().copied().collect::<Vec<_>>(),
             [104, 74, 159, 49].map(|value| Rgb([value; 3]))
         );
     }

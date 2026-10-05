@@ -24,18 +24,13 @@ pub struct MangaTextMaskGenerator {
 impl MangaTextMaskGenerator {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve manga text segmentation weights")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve manga text segmentation weights")?;
         let mut model = Model::new(device);
         model
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
-        Ok(Self {
-            model,
-            processor: Processor::new(device),
-        })
+        Ok(Self { model, processor: Processor::new(device) })
     }
 
     /// Runs the original full-resolution inference path without test-time augmentation.
@@ -73,8 +68,7 @@ impl MangaTextMaskGenerator {
         max_side: Option<u32>,
     ) -> Result<MangaTextMask> {
         koharu_torch::no_grad(|| {
-            self.processor
-                .call(&self.model, image, horizontal_flip, vertical_flip, max_side)
+            self.processor.call(&self.model, image, horizontal_flip, vertical_flip, max_side)
         })
     }
 }
@@ -100,12 +94,7 @@ mod tests {
         let output = model.inference(&image)?;
         assert_eq!((output.width(), output.height()), (96, 64));
         assert_eq!(output.probabilities().len(), 96 * 64);
-        assert!(
-            output
-                .probabilities()
-                .iter()
-                .all(|probability| (0.0..=1.0).contains(probability))
-        );
+        assert!(output.probabilities().iter().all(|probability| (0.0..=1.0).contains(probability)));
 
         // Reference values from the commit-pinned Python implementation on CPU.
         let expected = [

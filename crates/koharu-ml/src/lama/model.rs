@@ -88,9 +88,8 @@ impl FFCResNetGenerator {
                 )
             })
             .collect();
-        let bottleneck_channels = config
-            .max_features
-            .min(config.ngf * (1_i64 << config.n_downsampling));
+        let bottleneck_channels =
+            config.max_features.min(config.ngf * (1_i64 << config.n_downsampling));
         let blocks = (0..config.n_blocks)
             .map(|idx| {
                 FFCResnetBlock::new(
@@ -136,20 +135,10 @@ impl FFCResNetGenerator {
             config.ngf,
             config.output_nc,
             7,
-            nn::ConvConfig {
-                bias: true,
-                ..Default::default()
-            },
+            nn::ConvConfig { bias: true, ..Default::default() },
         );
 
-        Self {
-            initial,
-            downsample,
-            blocks,
-            concat_tuple: ConcatTupleLayer,
-            upsample,
-            final_conv,
-        }
+        Self { initial, downsample, blocks, concat_tuple: ConcatTupleLayer, upsample, final_conv }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
@@ -164,9 +153,7 @@ impl FFCResNetGenerator {
 
         let x = self.concat_tuple.forward(pair);
         let x = self.upsample.forward_t(&x, false);
-        self.final_conv
-            .forward(&x.reflection_pad2d([3, 3, 3, 3]))
-            .sigmoid()
+        self.final_conv.forward(&x.reflection_pad2d([3, 3, 3, 3])).sigmoid()
     }
 }
 
@@ -256,29 +243,19 @@ impl FFC_BN_ACT {
             .then(|| nn::batch_norm2d(&(path / "bn_l"), local_channels, Default::default()));
         let bn_g = (ratio_gout != 0.0)
             .then(|| nn::batch_norm2d(&(path / "bn_g"), global_channels, Default::default()));
-        Self {
-            ffc,
-            bn_l,
-            bn_g,
-            act_l: ratio_gout != 1.0,
-            act_g: ratio_gout != 0.0,
-        }
+        Self { ffc, bn_l, bn_g, act_l: ratio_gout != 1.0, act_g: ratio_gout != 0.0 }
     }
 
     fn forward(&self, input: (Tensor, Option<Tensor>)) -> (Tensor, Option<Tensor>) {
         let output = self.ffc.forward(input);
-        let local = self
-            .bn_l
-            .as_ref()
-            .map(|bn| bn.forward_t(&output.0, false))
-            .unwrap_or(output.0);
+        let local = self.bn_l.as_ref().map(|bn| bn.forward_t(&output.0, false)).unwrap_or(output.0);
         let local = if self.act_l { local.relu() } else { local };
 
         let global = match (output.1, self.bn_g.as_ref()) {
             (Some(global), Some(bn)) => {
                 let global = bn.forward_t(&global, false);
                 Some(if self.act_g { global.relu() } else { global })
-            }
+            },
             (Some(global), None) => Some(global),
             (None, _) => None,
         };
@@ -320,42 +297,16 @@ impl FFC {
             ..Default::default()
         };
 
-        let convl2l = (in_cl != 0 && out_cl != 0).then(|| {
-            nn::conv2d(
-                &(path / "convl2l"),
-                in_cl,
-                out_cl,
-                kernel,
-                convolution_config,
-            )
-        });
-        let convl2g = (in_cl != 0 && out_cg != 0).then(|| {
-            nn::conv2d(
-                &(path / "convl2g"),
-                in_cl,
-                out_cg,
-                kernel,
-                convolution_config,
-            )
-        });
-        let convg2l = (in_cg != 0 && out_cl != 0).then(|| {
-            nn::conv2d(
-                &(path / "convg2l"),
-                in_cg,
-                out_cl,
-                kernel,
-                convolution_config,
-            )
-        });
+        let convl2l = (in_cl != 0 && out_cl != 0)
+            .then(|| nn::conv2d(&(path / "convl2l"), in_cl, out_cl, kernel, convolution_config));
+        let convl2g = (in_cl != 0 && out_cg != 0)
+            .then(|| nn::conv2d(&(path / "convl2g"), in_cl, out_cg, kernel, convolution_config));
+        let convg2l = (in_cg != 0 && out_cl != 0)
+            .then(|| nn::conv2d(&(path / "convg2l"), in_cg, out_cl, kernel, convolution_config));
         let convg2g = (in_cg != 0 && out_cg != 0)
             .then(|| SpectralTransform::new(&(path / "convg2g"), in_cg, out_cg, stride));
 
-        Self {
-            convl2l,
-            convl2g,
-            convg2l,
-            convg2g,
-        }
+        Self { convl2l, convl2g, convg2l, convg2g }
     }
 
     fn forward(&self, input: (Tensor, Option<Tensor>)) -> (Tensor, Option<Tensor>) {
@@ -403,10 +354,7 @@ impl SpectralTransform {
                 in_channels,
                 hidden_channels,
                 1,
-                nn::ConvConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::ConvConfig { bias: false, ..Default::default() },
             ),
             bn1: nn::batch_norm2d(&(path / "conv1" / 1), hidden_channels, Default::default()),
             fu: FourierUnit::new(&(path / "fu"), hidden_channels, hidden_channels),
@@ -415,10 +363,7 @@ impl SpectralTransform {
                 hidden_channels,
                 out_channels,
                 1,
-                nn::ConvConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::ConvConfig { bias: false, ..Default::default() },
             ),
         }
     }
@@ -429,10 +374,7 @@ impl SpectralTransform {
         } else {
             input.shallow_clone()
         };
-        let x = self
-            .bn1
-            .forward_t(&self.conv1.forward(&input), false)
-            .relu();
+        let x = self.bn1.forward_t(&self.conv1.forward(&input), false).relu();
         let output = self.fu.forward(&x);
         self.conv2.forward(&(x + output))
     }
@@ -452,10 +394,7 @@ impl FourierUnit {
                 in_channels * 2,
                 out_channels * 2,
                 1,
-                nn::ConvConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::ConvConfig { bias: false, ..Default::default() },
             ),
             bn: nn::batch_norm2d(&(path / "bn"), out_channels * 2, Default::default()),
         }
@@ -474,9 +413,7 @@ impl FourierUnit {
         let fft_dims = [-2, -1];
         // torch.fft does not support BF16. Keep only the FFT boundary in FP32;
         // the learned convolution and batch normalization remain in the model dtype.
-        let ffted = input
-            .to_kind(Kind::Float)
-            .fft_rfftn(None::<&[i64]>, &fft_dims[..], "ortho");
+        let ffted = input.to_kind(Kind::Float).fft_rfftn(None::<&[i64]>, &fft_dims[..], "ortho");
         let ffted = Tensor::stack(&[ffted.real(), ffted.imag()], -1)
             .permute([0, 1, 4, 2, 3])
             .contiguous()
@@ -484,10 +421,7 @@ impl FourierUnit {
         let ffted_size = ffted.size();
         let ffted = ffted.view([batch, -1, ffted_size[3], ffted_size[4]]);
 
-        let ffted = self
-            .bn
-            .forward_t(&self.conv_layer.forward(&ffted), false)
-            .relu();
+        let ffted = self.bn.forward_t(&self.conv_layer.forward(&ffted), false).relu();
         let ffted_size = ffted.size();
         let ffted = ffted
             .view([batch, -1, 2, ffted_size[2], ffted_size[3]])
@@ -496,9 +430,7 @@ impl FourierUnit {
         let ffted = ffted.to_kind(Kind::Float);
         let ffted = Tensor::complex(&ffted.select(-1, 0), &ffted.select(-1, 1));
         let output_size = [height, width];
-        ffted
-            .fft_irfftn(&output_size[..], &fft_dims[..], "ortho")
-            .to_kind(model_kind)
+        ffted.fft_irfftn(&output_size[..], &fft_dims[..], "ortho").to_kind(model_kind)
     }
 }
 

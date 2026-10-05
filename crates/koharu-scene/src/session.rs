@@ -112,18 +112,10 @@ impl Session {
         )?;
         let stored = self.storage.save(&proposed).await?;
 
-        let inverse = patch
-            .operations
-            .iter()
-            .rev()
-            .map(Operation::reversed)
-            .collect::<Vec<_>>();
+        let inverse = patch.operations.iter().rev().map(Operation::reversed).collect::<Vec<_>>();
         self.history.insert(
             next_revision,
-            HistoryEntry {
-                inverse: inverse.into(),
-                _blobs: self.current.storage.blobs().clone(),
-            },
+            HistoryEntry { inverse: inverse.into(), _blobs: self.current.storage.blobs().clone() },
         );
 
         let state = Arc::new(state);
@@ -131,11 +123,7 @@ impl Session {
         let changes =
             Change::from_operations(patch.base_revision, next_revision, &patch.operations);
         self.current = snapshot.clone();
-        Ok(Commit {
-            revision: next_revision,
-            changes,
-            snapshot,
-        })
+        Ok(Commit { revision: next_revision, changes, snapshot })
     }
 
     pub async fn undo(&mut self, revision: crate::Revision) -> Result<Commit> {
@@ -156,9 +144,7 @@ impl Session {
         let mut operations = Vec::new();
         for revision in &revisions {
             let entry = self.history.get(revision).ok_or_else(|| {
-                Error::invalid(format!(
-                    "revision {revision} is not undoable in this session"
-                ))
+                Error::invalid(format!("revision {revision} is not undoable in this session"))
             })?;
             operations.extend(entry.inverse.iter().cloned());
         }
@@ -168,14 +154,8 @@ impl Session {
         } else {
             format!("Undo {} revisions", revisions.len()).into()
         };
-        let patch = Patch::new(
-            &self.current,
-            state,
-            Vec::new(),
-            operations,
-            Vec::new(),
-            Some(label),
-        )?;
+        let patch =
+            Patch::new(&self.current, state, Vec::new(), operations, Vec::new(), Some(label))?;
         self.commit(patch).await
     }
 
@@ -186,11 +166,7 @@ impl Session {
     async fn assemble(storage: koharu_storage::Session, state: State) -> Result<Self> {
         let stored = storage.load().await?;
         let current = Snapshot::new(Arc::new(state), stored)?;
-        Ok(Self {
-            storage,
-            current,
-            history: BTreeMap::new(),
-        })
+        Ok(Self { storage, current, history: BTreeMap::new() })
     }
 
     async fn recover(storage: koharu_storage::Session) -> Result<Self> {
@@ -199,11 +175,7 @@ impl Session {
         let state = State::from_checkpoint(stored.document_id(), stored.revision(), checkpoint)?;
         state.validate()?;
         let current = Snapshot::new(Arc::new(state), stored)?;
-        Ok(Self {
-            storage,
-            current,
-            history: BTreeMap::new(),
-        })
+        Ok(Self { storage, current, history: BTreeMap::new() })
     }
 }
 

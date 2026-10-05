@@ -75,12 +75,9 @@ impl<'a> TextLayerRef<'a> {
     }
 
     pub fn content(self) -> Result<TextContentRef<'a>> {
-        let relation = self
-            .snapshot
-            .relation_from::<Presents>(self.id)?
-            .ok_or_else(|| {
-                crate::Error::invalid(format!("text layer {} has no content", self.id))
-            })?;
+        let relation = self.snapshot.relation_from::<Presents>(self.id)?.ok_or_else(|| {
+            crate::Error::invalid(format!("text layer {} has no content", self.id))
+        })?;
         self.snapshot.text_content(relation.value().target)
     }
 
@@ -110,9 +107,7 @@ impl<'a> TextLayerRef<'a> {
         if let Some(frame) = self.snapshot.component(self.id)? {
             return Ok(Some(frame));
         }
-        self.automatic_target()?
-            .map(AnalysisRegionRef::geometry)
-            .transpose()
+        self.automatic_target()?.map(AnalysisRegionRef::geometry).transpose()
     }
 }
 
@@ -201,10 +196,7 @@ impl Snapshot {
     pub fn text_layers(&self) -> Result<impl ExactSizeIterator<Item = TextLayerRef<'_>>> {
         Ok(self
             .entities_with::<TextLayout>()?
-            .map(|entity| TextLayerRef {
-                snapshot: self,
-                id: entity.id(),
-            }))
+            .map(|entity| TextLayerRef { snapshot: self, id: entity.id() }))
     }
 }
 
@@ -230,12 +222,7 @@ impl<'a> PageRef<'a> {
 impl Edit {
     pub fn add_text_content(&mut self, parent: EntityId, at: At) -> Result<EntityId> {
         let entity = self.add_entity(parent, at)?;
-        self.set(
-            entity,
-            &TextContent {
-                origin: Origin::User,
-            },
-        )?;
+        self.set(entity, &TextContent { origin: Origin::User })?;
         Ok(entity)
     }
 
@@ -262,14 +249,7 @@ impl Edit {
     ) -> Result<EntityId> {
         let entity = self.add_entity(parent, at)?;
         self.set(entity, geometry)?;
-        self.set(
-            entity,
-            &Region {
-                origin: Origin::User,
-                kind: R::kind(),
-                label,
-            },
-        )?;
+        self.set(entity, &Region { origin: Origin::User, kind: R::kind(), label })?;
         Ok(entity)
     }
 }

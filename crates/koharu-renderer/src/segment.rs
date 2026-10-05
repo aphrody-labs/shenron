@@ -65,12 +65,7 @@ impl HyphenationOptions {
     #[must_use]
     pub fn new(language: Lang, minimum_word_length: usize) -> Self {
         let (minimum_prefix_length, minimum_suffix_length) = language.bounds();
-        Self {
-            language,
-            minimum_word_length,
-            minimum_prefix_length,
-            minimum_suffix_length,
-        }
+        Self { language, minimum_word_length, minimum_prefix_length, minimum_suffix_length }
     }
 
     #[must_use]
@@ -128,11 +123,8 @@ impl LineBreaker {
 
     /// Returns a vector of line break opportunities in the given text.
     pub fn line_break_opportunities(&self, text: &str) -> Vec<LineBreakOpportunity> {
-        let segmenter = if contains_korean(text) {
-            &self.korean_segmenter
-        } else {
-            &self.segmenter
-        };
+        let segmenter =
+            if contains_korean(text) { &self.korean_segmenter } else { &self.segmenter };
         let opportunities = segmenter
             .segment_str(text)
             .map(|break_pos| LineBreakOpportunity {
@@ -165,11 +157,8 @@ impl LineBreaker {
                 let start = window[0].offset;
                 let end = window[1].offset;
                 let is_mandatory = window[1].is_mandatory;
-                let segment_end = if is_mandatory {
-                    trim_mandatory_break_suffix(text, start, end)
-                } else {
-                    end
-                };
+                let segment_end =
+                    if is_mandatory { trim_mandatory_break_suffix(text, start, end) } else { end };
                 let segment = LineSegment {
                     range: start..segment_end,
                     next_offset: end,
@@ -245,10 +234,7 @@ impl Default for LineBreaker {
 
 pub fn hyphenation_lang_from_tag(value: &str) -> Option<Lang> {
     let lower = value.trim().to_ascii_lowercase();
-    let primary = lower
-        .split(['-', '_'])
-        .next()
-        .filter(|part| part.len() == 2)?;
+    let primary = lower.split(['-', '_']).next().filter(|part| part.len() == 2)?;
     Lang::from_iso(primary.as_bytes().try_into().ok()?)
 }
 
@@ -289,8 +275,7 @@ fn chinese_word_ranges(text: &str) -> Vec<Range<usize>> {
 
 fn contains_korean(text: &str) -> bool {
     let script_map = CodePointMapData::<IcuScript>::new();
-    text.chars()
-        .any(|ch| script_map.get(ch) == IcuScript::Hangul)
+    text.chars().any(|ch| script_map.get(ch) == IcuScript::Hangul)
 }
 
 fn contains_chinese(text: &str) -> bool {
@@ -317,9 +302,7 @@ fn hyphenatable_word_bounds(text: &str) -> Option<(usize, usize)> {
     }
 
     let core = &text[start..end];
-    core.chars()
-        .all(|ch| ch.is_alphabetic())
-        .then_some((start, end))
+    core.chars().all(|ch| ch.is_alphabetic()).then_some((start, end))
 }
 
 #[cfg(test)]
@@ -331,13 +314,10 @@ mod tests {
         let text = "The quick brown fox jumps over the lazy dog.";
         let linebreaker = LineBreaker::new();
         let breaks = linebreaker.line_break_opportunities(text);
-        let segments: Vec<&str> = breaks
-            .windows(2)
-            .map(|w| &text[w[0].offset..w[1].offset])
-            .collect();
-        let expected = vec![
-            "The ", "quick ", "brown ", "fox ", "jumps ", "over ", "the ", "lazy ", "dog.",
-        ];
+        let segments: Vec<&str> =
+            breaks.windows(2).map(|w| &text[w[0].offset..w[1].offset]).collect();
+        let expected =
+            vec!["The ", "quick ", "brown ", "fox ", "jumps ", "over ", "the ", "lazy ", "dog."];
         assert_eq!(segments, expected);
     }
 
@@ -347,18 +327,9 @@ mod tests {
         let linebreaker = LineBreaker::new();
         let breaks = linebreaker.line_break_opportunities(text);
         let expected = vec![
-            LineBreakOpportunity {
-                offset: 0,
-                is_mandatory: false,
-            },
-            LineBreakOpportunity {
-                offset: 8,
-                is_mandatory: true,
-            },
-            LineBreakOpportunity {
-                offset: 14,
-                is_mandatory: false,
-            },
+            LineBreakOpportunity { offset: 0, is_mandatory: false },
+            LineBreakOpportunity { offset: 8, is_mandatory: true },
+            LineBreakOpportunity { offset: 14, is_mandatory: false },
         ];
         assert_eq!(breaks, expected);
     }
@@ -390,13 +361,7 @@ mod tests {
             .map(|segment| &text[segment.range.clone()])
             .collect();
 
-        assert_eq!(
-            segments,
-            vec![
-                "\u{5357}\u{4eac}\u{5e02}",
-                "\u{957f}\u{6c5f}\u{5927}\u{6865}",
-            ]
-        );
+        assert_eq!(segments, vec!["\u{5357}\u{4eac}\u{5e02}", "\u{957f}\u{6c5f}\u{5927}\u{6865}",]);
     }
 
     #[test]
@@ -409,10 +374,7 @@ mod tests {
             .map(|segment| &text[segment.range.clone()])
             .collect();
 
-        assert_eq!(
-            segments,
-            vec!["\u{5c0f}\u{8bf4}\u{ff0c}", "\u{4f60}\u{597d}",]
-        );
+        assert_eq!(segments, vec!["\u{5c0f}\u{8bf4}\u{ff0c}", "\u{4f60}\u{597d}",]);
     }
 
     #[test]
@@ -425,10 +387,7 @@ mod tests {
             .map(|segment| &text[segment.range.clone()])
             .collect();
 
-        assert_eq!(
-            segments,
-            vec!["\u{543e}", "\u{8f29}", "\u{306f}", "\u{732b}",]
-        );
+        assert_eq!(segments, vec!["\u{543e}", "\u{8f29}", "\u{306f}", "\u{732b}",]);
     }
 
     #[test]
@@ -440,10 +399,7 @@ mod tests {
             .map(|segment| &text[segment.range.clone()])
             .collect::<Vec<_>>();
 
-        assert_eq!(
-            segments,
-            vec!["B6층 ", "모험가들이 ", "돌아갔으니까 ", "청소 ", "부탁해"]
-        );
+        assert_eq!(segments, vec!["B6층 ", "모험가들이 ", "돌아갔으니까 ", "청소 ", "부탁해"]);
     }
 
     #[test]
@@ -463,10 +419,8 @@ mod tests {
         }
         assert_eq!(segments.last().unwrap().break_suffix, None);
 
-        let rebuilt = segments
-            .iter()
-            .map(|segment| &text[segment.range.clone()])
-            .collect::<String>();
+        let rebuilt =
+            segments.iter().map(|segment| &text[segment.range.clone()]).collect::<String>();
         assert_eq!(rebuilt, text);
     }
 
@@ -488,10 +442,8 @@ mod tests {
         let segments = LineBreaker::new()
             .with_hyphenation(HyphenationOptions::new(Lang::English, 5).with_fragment_bounds(2, 2))
             .line_segments(text);
-        let pieces = segments
-            .iter()
-            .map(|segment| &text[segment.range.clone()])
-            .collect::<Vec<_>>();
+        let pieces =
+            segments.iter().map(|segment| &text[segment.range.clone()]).collect::<Vec<_>>();
 
         assert_eq!(pieces, ["tow", "er ", "with", "in"]);
         assert_eq!(segments[0].break_suffix, Some(LineBreakSuffix::Hyphen));
@@ -572,10 +524,8 @@ mod tests {
             segments.len() > 1,
             "expected unicode word to be split into hyphenation segments, got {segments:?}"
         );
-        let rebuilt = segments
-            .iter()
-            .map(|segment| &text[segment.range.clone()])
-            .collect::<String>();
+        let rebuilt =
+            segments.iter().map(|segment| &text[segment.range.clone()]).collect::<String>();
         assert_eq!(rebuilt, text);
     }
 
@@ -584,10 +534,8 @@ mod tests {
         let text = "吾輩は猫である。名前はまだない。";
         let linebreaker = LineBreaker::new();
         let breaks = linebreaker.line_break_opportunities(text);
-        let segments: Vec<&str> = breaks
-            .windows(2)
-            .map(|w| &text[w[0].offset..w[1].offset])
-            .collect();
+        let segments: Vec<&str> =
+            breaks.windows(2).map(|w| &text[w[0].offset..w[1].offset]).collect();
         let expected = vec![
             "吾", "輩", "は", "猫", "で", "あ", "る。", "名", "前", "は", "ま", "だ", "な", "い。",
         ];
@@ -599,10 +547,8 @@ mod tests {
         let text = "『シャイニング』（The Shining）は、スタンリー・キューブリックが製作・監督し、小説家のダイアン・ジョンソンと共同脚本を務めた、1980年公開のサイコロジカルホラー映画。";
         let linebreaker = LineBreaker::new();
         let breaks = linebreaker.line_break_opportunities(text);
-        let segments: Vec<&str> = breaks
-            .windows(2)
-            .map(|w| &text[w[0].offset..w[1].offset])
-            .collect();
+        let segments: Vec<&str> =
+            breaks.windows(2).map(|w| &text[w[0].offset..w[1].offset]).collect();
         #[rustfmt::skip]
         let expected = vec![
             "『シャ", "イ", "ニ", "ン", "グ』", "（The ", "Shining）", "は、", "ス", "タ", "ン", "リー・", "キュー", "ブ", "リッ", "ク", "が", "製", "作・", "監", "督", "し、", "小", "説", "家", "の", "ダ", "イ", "ア", "ン・", "ジョ", "ン", "ソ", "ン", "と", "共", "同", "脚", "本", "を", "務", "め", "た、", "1980", "年", "公", "開", "の", "サ", "イ", "コ", "ロ", "ジ", "カ", "ル", "ホ", "ラー", "映", "画。"
@@ -615,10 +561,8 @@ mod tests {
         let text = "《我是猫》是日本作家夏目漱石创作的长篇小说，也是其代表作，它确立了夏目漱石在文学史上的地位。作品淋漓尽致地反映了二十世纪初，日本中小资产阶级的思想和生活，尖锐地揭露和批判了明治“文明开化”的资本主义社会。小说采用幽默、讽刺、滑稽的手法，借助一只猫的视觉、听觉、感觉，嘲笑了明治时代知识分子空虚的精神生活，小说构思奇巧，描写夸张，结构灵活，具有鲜明的艺术特色。";
         let linebreaker = LineBreaker::new();
         let breaks = linebreaker.line_break_opportunities(text);
-        let segments: Vec<&str> = breaks
-            .windows(2)
-            .map(|w| &text[w[0].offset..w[1].offset])
-            .collect();
+        let segments: Vec<&str> =
+            breaks.windows(2).map(|w| &text[w[0].offset..w[1].offset]).collect();
         #[rustfmt::skip]
         let expected = vec![
             "《我", "是", "猫》", "是", "日本", "作家", "夏目漱石", "创作", "的", "长篇小说，", "也", "是", "其", "代表作，", "它", "确立", "了", "夏目漱石", "在", "文学史", "上", "的", "地位。", "作品", "淋漓尽致", "地", "反映", "了", "二十世纪", "初，", "日本", "中小", "资产阶级", "的", "思想", "和", "生活，", "尖锐", "地", "揭露", "和", "批判", "了", "明治“文明", "开化”的", "资本主义", "社会。", "小说", "采用", "幽默、", "讽刺、", "滑稽", "的", "手法，", "借助", "一只", "猫", "的", "视觉、", "听觉、", "感觉，", "嘲笑", "了", "明治", "时代", "知识分子", "空虚", "的", "精神", "生活，", "小说", "构思", "奇巧，", "描写", "夸张，", "结构", "灵活，", "具有", "鲜明", "的", "艺术", "特色。"

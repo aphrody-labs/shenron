@@ -42,10 +42,7 @@ impl KoharuLayoutRFDetrImageProcessor {
     }
 
     pub(super) fn preprocess(&self, image: &DynamicImage, device: Device) -> Result<Tensor> {
-        ensure!(
-            image.width() > 0 && image.height() > 0,
-            "cannot segment an empty image"
-        );
+        ensure!(image.width() > 0 && image.height() > 0, "cannot segment an empty image");
         let image = image.to_rgb8();
         let mut pixel_values = Tensor::from_slice(image.as_raw())
             .view([1, i64::from(image.height()), i64::from(image.width()), 3])
@@ -63,12 +60,10 @@ impl KoharuLayoutRFDetrImageProcessor {
                 None,
             );
         }
-        let mean = Tensor::from_slice(&[0.485f32, 0.456, 0.406])
-            .view([1, 3, 1, 1])
-            .to_device(device);
-        let std = Tensor::from_slice(&[0.229f32, 0.224, 0.225])
-            .view([1, 3, 1, 1])
-            .to_device(device);
+        let mean =
+            Tensor::from_slice(&[0.485f32, 0.456, 0.406]).view([1, 3, 1, 1]).to_device(device);
+        let std =
+            Tensor::from_slice(&[0.229f32, 0.224, 0.225]).view([1, 3, 1, 1]).to_device(device);
         Ok((pixel_values - mean) / std)
     }
 
@@ -81,10 +76,7 @@ impl KoharuLayoutRFDetrImageProcessor {
     ) -> Result<KoharuLayoutDetections> {
         validate_thresholds(thresholds)?;
         let logits_size = output.pred_logits.size();
-        ensure!(
-            logits_size == [1, 300, 5],
-            "unexpected RF-DETR logits shape {logits_size:?}"
-        );
+        ensure!(logits_size == [1, 300, 5], "unexpected RF-DETR logits shape {logits_size:?}");
         ensure!(
             output.pred_boxes.size() == [1, 300, 4],
             "unexpected RF-DETR box shape {:?}",
@@ -99,11 +91,7 @@ impl KoharuLayoutRFDetrImageProcessor {
         // PostProcess ranks every query/class pair, including the checkpoint's
         // fifth background logit slot, before applying the caller threshold.
         let (scores, indexes) =
-            output
-                .pred_logits
-                .sigmoid()
-                .view([1, -1])
-                .topk(self.num_select, 1, true, true);
+            output.pred_logits.sigmoid().view([1, -1]).topk(self.num_select, 1, true, true);
         let scores = scores.i(0);
         let indexes = indexes.i(0);
         let query_indexes = indexes.floor_divide_scalar(5);
@@ -163,14 +151,9 @@ impl KoharuLayoutRFDetrImageProcessor {
                 )
                 .gt(0.0)
                 .to_kind(Kind::Uint8);
-            let rows = mask
-                .count_nonzero_dim_intlist(&[0i64, 1, 3][..])
-                .gt(0)
-                .to_kind(Kind::Int64);
-            let columns = mask
-                .count_nonzero_dim_intlist(&[0i64, 1, 2][..])
-                .gt(0)
-                .to_kind(Kind::Int64);
+            let rows = mask.count_nonzero_dim_intlist(&[0i64, 1, 3][..]).gt(0).to_kind(Kind::Int64);
+            let columns =
+                mask.count_nonzero_dim_intlist(&[0i64, 1, 2][..]).gt(0).to_kind(Kind::Int64);
             let occupied = Tensor::stack(
                 &[
                     mask.count_nonzero(None),
@@ -186,12 +169,7 @@ impl KoharuLayoutRFDetrImageProcessor {
             let (x, y, right, bottom) = if area == 0 {
                 (0, 0, 0, 0)
             } else {
-                (
-                    occupied[1] as u32,
-                    occupied[2] as u32,
-                    occupied[3] as u32,
-                    occupied[4] as u32,
-                )
+                (occupied[1] as u32, occupied[2] as u32, occupied[3] as u32, occupied[4] as u32)
             };
             let width = right.saturating_sub(x);
             let height = bottom.saturating_sub(y);
@@ -218,21 +196,11 @@ impl KoharuLayoutRFDetrImageProcessor {
                 score: floats[index * 5],
                 bbox: floats[index * 5 + 1..index * 5 + 5].try_into().unwrap(),
                 area,
-                mask: KoharuLayoutMask {
-                    x,
-                    y,
-                    width,
-                    height,
-                    pixels,
-                },
+                mask: KoharuLayoutMask { x, y, width, height, pixels },
             });
         }
 
-        Ok(KoharuLayoutDetections {
-            image_width,
-            image_height,
-            detections,
-        })
+        Ok(KoharuLayoutDetections { image_width, image_height, detections })
     }
 }
 
@@ -297,10 +265,7 @@ impl KoharuLayoutMask {
 }
 
 fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
-    let tensor = tensor
-        .to_device(Device::Cpu)
-        .to_kind(Kind::Float)
-        .contiguous();
+    let tensor = tensor.to_device(Device::Cpu).to_kind(Kind::Float).contiguous();
     let length = tensor.numel();
     let mut values = vec![0.0; length];
     tensor.f_copy_data(&mut values, length)?;
@@ -308,10 +273,7 @@ fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
 }
 
 fn tensor_to_vec_i64(tensor: &Tensor) -> Result<Vec<i64>> {
-    let tensor = tensor
-        .to_device(Device::Cpu)
-        .to_kind(Kind::Int64)
-        .contiguous();
+    let tensor = tensor.to_device(Device::Cpu).to_kind(Kind::Int64).contiguous();
     let length = tensor.numel();
     let mut values = vec![0; length];
     tensor.f_copy_data(&mut values, length)?;
@@ -319,10 +281,7 @@ fn tensor_to_vec_i64(tensor: &Tensor) -> Result<Vec<i64>> {
 }
 
 fn tensor_to_vec_u8(tensor: &Tensor) -> Result<Vec<u8>> {
-    let tensor = tensor
-        .to_device(Device::Cpu)
-        .to_kind(Kind::Uint8)
-        .contiguous();
+    let tensor = tensor.to_device(Device::Cpu).to_kind(Kind::Uint8).contiguous();
     let length = tensor.numel();
     let mut values = vec![0; length];
     tensor.f_copy_data(&mut values, length)?;
@@ -335,12 +294,8 @@ mod tests {
 
     #[test]
     fn class_thresholds_must_be_probabilities() {
-        let thresholds = KoharuLayoutThresholds {
-            text: 0.25,
-            onomatopoeia: 1.1,
-            bubble: 0.5,
-            panel: 0.5,
-        };
+        let thresholds =
+            KoharuLayoutThresholds { text: 0.25, onomatopoeia: 1.1, bubble: 0.5, panel: 0.5 };
 
         let error = validate_thresholds(thresholds).unwrap_err();
         assert!(error.to_string().contains("onomatopoeia"));

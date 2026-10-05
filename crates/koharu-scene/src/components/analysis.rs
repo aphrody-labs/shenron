@@ -35,9 +35,7 @@ impl Component for OcrAnalysis {
 
     fn validate(&self, _context: &ValidationContext<'_>) -> Result<()> {
         self.origin.validate()?;
-        if self
-            .confidence
-            .is_some_and(|value| !value.is_finite() || !(0.0..=1.0).contains(&value))
+        if self.confidence.is_some_and(|value| !value.is_finite() || !(0.0..=1.0).contains(&value))
             || self.line_boundaries.len() > 1_000_000
             || self
                 .line_boundaries
@@ -105,11 +103,7 @@ impl Component for Region {
     fn validate(&self, _context: &ValidationContext<'_>) -> Result<()> {
         self.origin.validate()?;
         self.kind.validate()?;
-        if self
-            .label
-            .as_ref()
-            .is_some_and(|label| label.len() > 4096 || label.contains('\0'))
-        {
+        if self.label.as_ref().is_some_and(|label| label.len() > 4096 || label.contains('\0')) {
             Err(Error::invalid("region label is invalid"))
         } else {
             Ok(())

@@ -99,11 +99,7 @@ impl ProviderPreferences {
                     let key: &'static str = provider.into();
                     Some(CredentialInput::load(key)?)
                 };
-                Ok(ProviderPreference {
-                    name: provider.name().to_owned(),
-                    config,
-                    credential,
-                })
+                Ok(ProviderPreference { name: provider.name().to_owned(), config, credential })
             })
             .collect::<Result<Vec<_>>>()?;
         Ok(Self { entries })
@@ -115,11 +111,11 @@ impl ProviderPreferences {
         for entry in self.entries {
             let provider = entry.config.provider();
             match entry.credential {
-                None if provider == Provider::Local => {}
+                None if provider == Provider::Local => {},
                 Some(credential) if provider != Provider::Local => {
                     let key: &'static str = provider.into();
                     credentials.push((key, credential));
-                }
+                },
                 None => anyhow::bail!("missing credential input for {provider}"),
                 Some(_) => anyhow::bail!("local translation does not accept credentials"),
             }

@@ -22,11 +22,7 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
     koharu_ml::init().await?;
 
-    let images = cli
-        .input
-        .iter()
-        .map(image::open)
-        .collect::<Result<Vec<_>, _>>()?;
+    let images = cli.input.iter().map(image::open).collect::<Result<Vec<_>, _>>()?;
     let model = FontDetector::load(koharu_ml::device(cli.cpu)).await?;
     let predictions = model.inference(&images, cli.top_k)?;
     println!("{}", serde_json::to_string_pretty(&predictions)?);

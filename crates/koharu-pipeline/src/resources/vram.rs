@@ -145,10 +145,7 @@ fn select_sample(target: &Device, samples: &[Sample]) -> Option<usize> {
         })
         .map(|(index, _)| *index)
         .or_else(|| {
-            candidates
-                .iter()
-                .find(|(_, sample)| sample.id == target.index)
-                .map(|(index, _)| *index)
+            candidates.iter().find(|(_, sample)| sample.id == target.index).map(|(index, _)| *index)
         })
         .or_else(|| candidates.get(target.index).map(|(index, _)| *index))
         .or_else(|| candidates.first().map(|(index, _)| *index))

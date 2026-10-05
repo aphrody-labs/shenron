@@ -93,20 +93,13 @@ impl Model {
         // rows still produce outputs that remain part of the visual prefix.
         let key_mask = additive_mask(&input.attention_mask, kind);
         let visual_features =
-            self.vision_encoder
-                .forward(&pixel_values, patch_height, patch_width, Some(&key_mask));
+            self.vision_encoder.forward(&pixel_values, patch_height, patch_width, Some(&key_mask));
         let vision_embeddings = self.decoder.projector.forward(&visual_features);
 
-        let bos = Tensor::from_slice(&[self.bos_token_id])
-            .view([1, 1])
-            .to_device(pixel_values.device());
-        let mut hidden = Tensor::cat(
-            &[
-                vision_embeddings,
-                self.decoder.token_embeddings.forward(&bos),
-            ],
-            1,
-        );
+        let bos =
+            Tensor::from_slice(&[self.bos_token_id]).view([1, 1]).to_device(pixel_values.device());
+        let mut hidden =
+            Tensor::cat(&[vision_embeddings, self.decoder.token_embeddings.forward(&bos)], 1);
 
         let m_vision = hidden.size()[1] - 1;
         let total_length = m_vision + 1;
@@ -119,15 +112,10 @@ impl Model {
             ],
             0,
         );
-        let prefill_mask = Tensor::cat(
-            &[
-                Tensor::zeros([total_length, m_vision], (kind, device)),
-                text_future,
-            ],
-            1,
-        )
-        .unsqueeze(0)
-        .unsqueeze(0);
+        let prefill_mask =
+            Tensor::cat(&[Tensor::zeros([total_length, m_vision], (kind, device)), text_future], 1)
+                .unsqueeze(0)
+                .unsqueeze(0);
 
         let (visual_cos, visual_sin) = self.visual_rope(patch_height, patch_width);
         // Rows of the visual prefix beyond this image's patch grid are padded
@@ -179,9 +167,8 @@ impl Model {
         for step in 1..MAX_NEW_TOKENS {
             let current_input = *tokens.last().expect("a token was generated");
             seen_ids.push(current_input);
-            let current_input = Tensor::from_slice(&[current_input])
-                .view([1, 1])
-                .to_device(pixel_values.device());
+            let current_input =
+                Tensor::from_slice(&[current_input]).view([1, 1]).to_device(pixel_values.device());
             let embedding = self.decoder.token_embeddings.forward(&current_input);
             let cos_step = self.text_rope_cos.narrow(0, step, 1).unsqueeze(0);
             let sin_step = self.text_rope_sin.narrow(0, step, 1).unsqueeze(0);
@@ -247,9 +234,7 @@ fn apply_rotary_emb(x: &Tensor, angles_cos: &Tensor, angles_sin: &Tensor) -> Ten
     let odd = pairs.select(-1, 1);
     let rotated_even = &even * &cos - &odd * &sin;
     let rotated_odd = &even * &sin + &odd * &cos;
-    Tensor::stack(&[rotated_even, rotated_odd], -1)
-        .reshape(&original_size)
-        .to_kind(original_kind)
+    Tensor::stack(&[rotated_even, rotated_odd], -1).reshape(&original_size).to_kind(original_kind)
 }
 
 fn apply_repetition_penalty(logits: &Tensor, seen_ids: &[i64], penalty: f64) -> Tensor {
@@ -267,10 +252,7 @@ fn apply_repetition_penalty(logits: &Tensor, seen_ids: &[i64], penalty: f64) -> 
 /// Converts a padding mask into an additive SDPA bias where `0` entries become
 /// forbidden keys.
 fn additive_mask(mask: &Tensor, kind: Kind) -> Tensor {
-    (mask.lt(0.5).to_kind(Kind::Float) * f32::MIN as f64)
-        .to_kind(kind)
-        .unsqueeze(0)
-        .unsqueeze(0)
+    (mask.lt(0.5).to_kind(Kind::Float) * f32::MIN as f64).to_kind(kind).unsqueeze(0).unsqueeze(0)
 }
 
 #[derive(Debug)]
@@ -290,10 +272,7 @@ impl Siglip2VisionModel {
             post_layernorm: nn::layer_norm(
                 path / "post_layernorm",
                 vec![siglip2::HIDDEN_SIZE],
-                nn::LayerNormConfig {
-                    eps: siglip2::LAYER_NORM_EPS,
-                    ..Default::default()
-                },
+                nn::LayerNormConfig { eps: siglip2::LAYER_NORM_EPS, ..Default::default() },
             ),
         }
     }
@@ -305,9 +284,7 @@ impl Siglip2VisionModel {
         patch_width: i64,
         attention_mask: Option<&Tensor>,
     ) -> Tensor {
-        let mut hidden_states = self
-            .embeddings
-            .forward(pixel_values, patch_height, patch_width);
+        let mut hidden_states = self.embeddings.forward(pixel_values, patch_height, patch_width);
         for layer in &self.layers {
             hidden_states = layer.forward(&hidden_states, attention_mask);
         }
@@ -366,10 +343,7 @@ impl VisionEmbeddings {
         let position_embeddings = if num_patches < max_patches {
             let first_row = position_embeddings.select(0, 0).unsqueeze(0);
             Tensor::cat(
-                &[
-                    position_embeddings,
-                    first_row.expand([max_patches - num_patches, -1], false),
-                ],
+                &[position_embeddings, first_row.expand([max_patches - num_patches, -1], false)],
                 0,
             )
         } else {
@@ -393,28 +367,21 @@ impl VisionEncoderLayer {
             layer_norm1: nn::layer_norm(
                 path / "layer_norm1",
                 vec![siglip2::HIDDEN_SIZE],
-                nn::LayerNormConfig {
-                    eps: siglip2::LAYER_NORM_EPS,
-                    ..Default::default()
-                },
+                nn::LayerNormConfig { eps: siglip2::LAYER_NORM_EPS, ..Default::default() },
             ),
             attention: VisionAttention::new(&(path / "self_attn")),
             layer_norm2: nn::layer_norm(
                 path / "layer_norm2",
                 vec![siglip2::HIDDEN_SIZE],
-                nn::LayerNormConfig {
-                    eps: siglip2::LAYER_NORM_EPS,
-                    ..Default::default()
-                },
+                nn::LayerNormConfig { eps: siglip2::LAYER_NORM_EPS, ..Default::default() },
             ),
             mlp: VisionMlp::new(&(path / "mlp")),
         }
     }
 
     fn forward(&self, hidden_states: &Tensor, attention_mask: Option<&Tensor>) -> Tensor {
-        let attended = self
-            .attention
-            .forward(&self.layer_norm1.forward(hidden_states), attention_mask);
+        let attended =
+            self.attention.forward(&self.layer_norm1.forward(hidden_states), attention_mask);
         let hidden_states = hidden_states + attended;
         &hidden_states + self.mlp.forward(&self.layer_norm2.forward(&hidden_states))
     }
@@ -466,17 +433,9 @@ impl VisionAttention {
         let size = hidden_states.size();
         let [batch_size, sequence_length] = [size[0], size[1]];
         let shape = [batch_size, sequence_length, self.num_heads, self.head_dim];
-        let query = self
-            .query
-            .forward(hidden_states)
-            .view(shape)
-            .transpose(1, 2);
+        let query = self.query.forward(hidden_states).view(shape).transpose(1, 2);
         let key = self.key.forward(hidden_states).view(shape).transpose(1, 2);
-        let value = self
-            .value
-            .forward(hidden_states)
-            .view(shape)
-            .transpose(1, 2);
+        let value = self.value.forward(hidden_states).view(shape).transpose(1, 2);
         let attended = Tensor::scaled_dot_product_attention(
             &query,
             &key,
@@ -520,8 +479,7 @@ impl VisionMlp {
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
         // Upstream activation is `gelu_pytorch_tanh`.
-        self.fc2
-            .forward(&self.fc1.forward(hidden_states).gelu("tanh"))
+        self.fc2.forward(&self.fc1.forward(hidden_states).gelu("tanh"))
     }
 }
 
@@ -554,10 +512,7 @@ impl Decoder {
                 path / "output_head",
                 config.d_model,
                 config.vocab_size,
-                nn::LinearConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::LinearConfig { bias: false, ..Default::default() },
             ),
         }
     }
@@ -565,9 +520,7 @@ impl Decoder {
     /// Logits of the final sequence position; generation consumes nothing else.
     fn logits(&self, hidden_states: &Tensor) -> Result<Tensor> {
         let last_hidden_state = hidden_states.select(1, hidden_states.size()[1] - 1);
-        Ok(self
-            .output_head
-            .forward(&self.final_norm.forward(&last_hidden_state)))
+        Ok(self.output_head.forward(&self.final_norm.forward(&last_hidden_state)))
     }
 }
 
@@ -586,8 +539,7 @@ impl Projector {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.linear2
-            .forward(&self.linear1.forward(hidden_states).gelu("none"))
+        self.linear2.forward(&self.linear1.forward(hidden_states).gelu("none"))
     }
 }
 
@@ -622,8 +574,7 @@ impl DecoderLayer {
     ) -> (Tensor, LayerCache) {
         let normalized = self.attn_norm.forward(hidden_states);
         let (attention, present) =
-            self.attn
-                .forward(&normalized, attention_mask, rope, past_key_value);
+            self.attn.forward(&normalized, attention_mask, rope, past_key_value);
         let hidden_states = hidden_states + &self.attn_res_scale * attention;
         let ffn = self.ffn.forward(&self.ffn_norm.forward(&hidden_states));
         (&hidden_states + &self.ffn_res_scale * ffn, present)
@@ -645,10 +596,7 @@ struct GroupedQueryAttention {
 
 impl GroupedQueryAttention {
     fn new(path: &nn::Path<'_>, d_model: i64) -> Self {
-        let no_bias = nn::LinearConfig {
-            bias: false,
-            ..Default::default()
-        };
+        let no_bias = nn::LinearConfig { bias: false, ..Default::default() };
         Self {
             w_q: nn::linear(
                 path / "w_q",
@@ -692,33 +640,20 @@ impl GroupedQueryAttention {
         let size = hidden_states.size();
         let [batch_size, sequence_length] = [size[0], size[1]];
         let query_shape = [batch_size, sequence_length, self.query_heads, self.head_dim];
-        let kv_shape = [
-            batch_size,
-            sequence_length,
-            self.key_value_heads,
-            self.head_dim,
-        ];
+        let kv_shape = [batch_size, sequence_length, self.key_value_heads, self.head_dim];
         let query = apply_rotary_emb(
-            &self
-                .q_norm
-                .forward(&self.w_q.forward(hidden_states).view(query_shape)),
+            &self.q_norm.forward(&self.w_q.forward(hidden_states).view(query_shape)),
             cos,
             sin,
         )
         .transpose(1, 2);
         let key = apply_rotary_emb(
-            &self
-                .k_norm
-                .forward(&self.w_k.forward(hidden_states).view(kv_shape)),
+            &self.k_norm.forward(&self.w_k.forward(hidden_states).view(kv_shape)),
             cos,
             sin,
         )
         .transpose(1, 2);
-        let value = self
-            .w_v
-            .forward(hidden_states)
-            .view(kv_shape)
-            .transpose(1, 2);
+        let value = self.w_v.forward(hidden_states).view(kv_shape).transpose(1, 2);
 
         let (key, value) = match past_key_value {
             Some(cache) => (
@@ -727,10 +662,7 @@ impl GroupedQueryAttention {
             ),
             None => (key, value),
         };
-        let present = LayerCache {
-            key: key.shallow_clone(),
-            value: value.shallow_clone(),
-        };
+        let present = LayerCache { key: key.shallow_clone(), value: value.shallow_clone() };
 
         // Native GQA lets CUDA select flash or memory-efficient SDPA kernels
         // instead of physically repeating K/V heads like the reference code.
@@ -746,11 +678,7 @@ impl GroupedQueryAttention {
         )
         .transpose(1, 2)
         .contiguous()
-        .reshape([
-            batch_size,
-            sequence_length,
-            self.query_heads * self.head_dim,
-        ]);
+        .reshape([batch_size, sequence_length, self.query_heads * self.head_dim]);
         (self.w_o.forward(&attention), present)
     }
 }
@@ -770,10 +698,7 @@ struct SwiGlu {
 
 impl SwiGlu {
     fn new(path: &nn::Path<'_>, d_model: i64, d_ffn: i64) -> Self {
-        let no_bias = nn::LinearConfig {
-            bias: false,
-            ..Default::default()
-        };
+        let no_bias = nn::LinearConfig { bias: false, ..Default::default() };
         Self {
             w_gate: nn::linear(path / "w_gate", d_model, d_ffn, no_bias),
             w_up: nn::linear(path / "w_up", d_model, d_ffn, no_bias),
@@ -795,18 +720,14 @@ struct RmsNorm {
 
 impl RmsNorm {
     fn new(path: &nn::Path<'_>, dim: i64) -> Self {
-        Self {
-            weight: path.var("weight", &[dim], nn::Init::Const(1.0)),
-        }
+        Self { weight: path.var("weight", &[dim], nn::Init::Const(1.0)) }
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
         let input_kind = hidden_states.kind();
         let hidden_states = hidden_states.to_kind(Kind::Float);
         let variance =
-            hidden_states
-                .pow_tensor_scalar(2.0)
-                .mean_dim(&[-1i64][..], true, Some(Kind::Float));
+            hidden_states.pow_tensor_scalar(2.0).mean_dim(&[-1i64][..], true, Some(Kind::Float));
         (&self.weight * hidden_states * (variance + RMS_NORM_EPS).rsqrt()).to_kind(input_kind)
     }
 }

@@ -58,40 +58,14 @@ pub struct Message {
 #[derive(Clone, Debug, Serialize, Type)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Event {
-    Started {
-        run: RunId,
-    },
-    TextDelta {
-        run: RunId,
-        delta: String,
-    },
-    ReasoningDelta {
-        run: RunId,
-        delta: String,
-    },
-    ToolStarted {
-        run: RunId,
-        call_id: String,
-        name: String,
-    },
-    ToolFinished {
-        run: RunId,
-        call_id: String,
-        name: String,
-        changed: bool,
-        output: String,
-    },
-    Completed {
-        run: RunId,
-        message: String,
-    },
-    Failed {
-        run: RunId,
-        message: String,
-    },
-    Cancelled {
-        run: RunId,
-    },
+    Started { run: RunId },
+    TextDelta { run: RunId, delta: String },
+    ReasoningDelta { run: RunId, delta: String },
+    ToolStarted { run: RunId, call_id: String, name: String },
+    ToolFinished { run: RunId, call_id: String, name: String, changed: bool, output: String },
+    Completed { run: RunId, message: String },
+    Failed { run: RunId, message: String },
+    Cancelled { run: RunId },
 }
 
 #[derive(Clone, Debug, Serialize, Type)]
@@ -161,15 +135,9 @@ where
         publish(Event::Started { run });
         let result = self.run_inner(run, prompt, &control, &mut publish).await;
         match &result {
-            Ok(result) => publish(Event::Completed {
-                run,
-                message: result.message.clone(),
-            }),
+            Ok(result) => publish(Event::Completed { run, message: result.message.clone() }),
             Err(_) if control.is_cancelled() => publish(Event::Cancelled { run }),
-            Err(error) => publish(Event::Failed {
-                run,
-                message: format!("{error:#}"),
-            }),
+            Err(error) => publish(Event::Failed { run, message: format!("{error:#}") }),
         }
         result
     }
@@ -193,9 +161,7 @@ where
                 .iter()
                 .find(|model| model.id == selected)
                 .with_context(|| format!("configured Codex model {selected} is not available"))?,
-            None => models
-                .first()
-                .context("Codex returned no available model")?,
+            None => models.first().context("Codex returned no available model")?,
         };
         let reasoning = if model.reasoning.is_empty() || model.reasoning.contains(&config.reasoning)
         {
@@ -236,10 +202,7 @@ where
 
             if turn.calls.is_empty() {
                 *self.history.lock().await = persisted;
-                return Ok(RunResult {
-                    run,
-                    message: turn.text,
-                });
+                return Ok(RunResult { run, message: turn.text });
             }
 
             for call in turn.calls {
@@ -266,11 +229,9 @@ where
                         invocation.changed,
                         invocation.images,
                     ),
-                    Err(error) => (
-                        json!({ "ok": false, "error": format!("{error:#}") }),
-                        false,
-                        Vec::new(),
-                    ),
+                    Err(error) => {
+                        (json!({ "ok": false, "error": format!("{error:#}") }), false, Vec::new())
+                    },
                 };
                 publish(Event::ToolFinished {
                     run,

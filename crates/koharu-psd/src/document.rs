@@ -99,10 +99,7 @@ pub(crate) async fn build(
 
     let source = read_image(snapshot, frame.page(), SOURCE_ROLE).await?;
     if options.include_source && source.is_none() {
-        return Err(PsdExportError::MissingAsset {
-            page: frame.page(),
-            role: SOURCE_ROLE,
-        });
+        return Err(PsdExportError::MissingAsset { page: frame.page(), role: SOURCE_ROLE });
     }
     let has_raster_layers = frame.layers().iter().any(|layer| {
         matches!(
@@ -126,12 +123,7 @@ pub(crate) async fn build(
             read_image(snapshot, frame.page(), COO_MASK_ROLE).await?,
         )?;
         if let Some(mask) = mask {
-            push_raster_layer(
-                &mut layers,
-                "Text Removal Mask",
-                grayscale_mask_rgba(&mask),
-                true,
-            )?;
+            push_raster_layer(&mut layers, "Text Removal Mask", grayscale_mask_rgba(&mask), true)?;
         }
     }
     let text_entities = frame
@@ -213,12 +205,7 @@ pub(crate) async fn build(
             i32::try_from(offset + 1).map_err(|_| PsdExportError::TooManyLayers(layer_count))?;
     }
 
-    Ok(Document {
-        width,
-        height,
-        merged: merged.image,
-        layers,
-    })
+    Ok(Document { width, height, merged: merged.image, layers })
 }
 
 async fn rasterize(
@@ -248,9 +235,7 @@ async fn read_image(
         return Ok(None);
     };
     let bytes = snapshot.read_blob(asset.blob).await?;
-    Ok(Some(
-        tokio_rayon::spawn(move || image::load_from_memory(&bytes)).await?,
-    ))
+    Ok(Some(tokio_rayon::spawn(move || image::load_from_memory(&bytes)).await?))
 }
 
 fn combine_masks(
@@ -275,7 +260,7 @@ fn combine_masks(
                 target.0[0] = target.0[0].max(source.0[0]);
             }
             Some(DynamicImage::ImageLuma8(left))
-        }
+        },
     };
     Ok(result)
 }
@@ -312,11 +297,7 @@ fn validate_pixels(layer: &str, pixels: &RgbaImage) -> Result<(), PsdExportError
     let width = pixels.width() as i32;
     let height = pixels.height() as i32;
     if width <= 0 || height <= 0 {
-        return Err(PsdExportError::InvalidLayerBounds {
-            layer: layer.to_owned(),
-            width,
-            height,
-        });
+        return Err(PsdExportError::InvalidLayerBounds { layer: layer.to_owned(), width, height });
     }
     Ok(())
 }
@@ -383,18 +364,8 @@ mod tests {
         RenderedText {
             text: "Hello".to_owned(),
             language: None,
-            rendered_bounds: RenderBounds {
-                x: 10.0,
-                y: 20.0,
-                width: 80.0,
-                height: 24.0,
-            },
-            layout_bounds: RenderBounds {
-                x: 10.0,
-                y: 20.0,
-                width: 100.0,
-                height: 40.0,
-            },
+            rendered_bounds: RenderBounds { x: 10.0, y: 20.0, width: 80.0, height: 24.0 },
+            layout_bounds: RenderBounds { x: 10.0, y: 20.0, width: 100.0, height: 40.0 },
             post_script_fonts: fonts.iter().map(|font| (*font).to_owned()).collect(),
             font_size: 24.0,
             color: [1, 2, 3, 255],
@@ -408,10 +379,7 @@ mod tests {
     fn fonts_keep_first_resolved_order_without_duplicates() {
         let first = rendered_text(&["Primary", "Fallback"]);
         let second = rendered_text(&["Fallback", "Other"]);
-        assert_eq!(
-            collect_fonts([&first, &second].into_iter()),
-            ["Primary", "Fallback", "Other"]
-        );
+        assert_eq!(collect_fonts([&first, &second].into_iter()), ["Primary", "Fallback", "Other"]);
     }
 
     #[test]
@@ -435,9 +403,6 @@ mod tests {
             Some(DynamicImage::ImageLuma8(GrayImage::new(3, 2))),
         )
         .expect_err("mismatched masks must fail");
-        assert!(matches!(
-            error,
-            PsdExportError::MismatchedMaskDimensions { .. }
-        ));
+        assert!(matches!(error, PsdExportError::MismatchedMaskDimensions { .. }));
     }
 }

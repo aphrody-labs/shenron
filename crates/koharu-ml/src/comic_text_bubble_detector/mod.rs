@@ -74,13 +74,7 @@ impl RTDetrV2Detection {
             .load(&weights_path)
             .context("failed to load comic text/bubble detector safetensors")?;
 
-        Ok(Self {
-            device,
-            config,
-            processor,
-            image_slicer: ImageSlicer::default(),
-            model,
-        })
+        Ok(Self { device, config, processor, image_slicer: ImageSlicer::default(), model })
     }
 
     pub fn inference(
@@ -89,9 +83,8 @@ impl RTDetrV2Detection {
         confidence_threshold: f32,
     ) -> Result<Vec<TextBlock>> {
         koharu_torch::no_grad(|| {
-            let (bubble_boxes, text_boxes) = self
-                .image_slicer
-                .process_slices_for_detection(image, |slice| {
+            let (bubble_boxes, text_boxes) =
+                self.image_slicer.process_slices_for_detection(image, |slice| {
                     self.detect_single_image(slice, confidence_threshold)
                 })?;
             Ok(create_text_blocks(image, text_boxes, bubble_boxes))
@@ -112,24 +105,19 @@ impl RTDetrV2Detection {
             &[(image.height(), image.width())],
             self.config.use_focal_loss,
         )?;
-        let result = results
-            .into_iter()
-            .next()
-            .context("missing comic text/bubble detector result")?;
+        let result =
+            results.into_iter().next().context("missing comic text/bubble detector result")?;
 
         let mut bubble_boxes = Vec::new();
         let mut text_boxes = Vec::new();
-        for ((bbox, _score), label) in result
-            .boxes
-            .into_iter()
-            .zip(result.scores)
-            .zip(result.labels)
+        for ((bbox, _score), label) in
+            result.boxes.into_iter().zip(result.scores).zip(result.labels)
         {
             let bbox = bbox.map(|value| value as i32 as f32);
             match label {
                 0 => bubble_boxes.push(bbox),
                 1 | 2 => text_boxes.push(bbox),
-                _ => {}
+                _ => {},
             }
         }
         Ok((bubble_boxes, text_boxes))

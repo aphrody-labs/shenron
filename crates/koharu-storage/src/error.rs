@@ -15,17 +15,11 @@ pub enum Error {
     #[error("unsupported Koharu project format {0}")]
     UnsupportedFormat(u32),
     #[error("state belongs to document {state}, not {session}")]
-    DocumentMismatch {
-        state: DocumentId,
-        session: DocumentId,
-    },
+    DocumentMismatch { state: DocumentId, session: DocumentId },
     #[error("blob {0} was not found")]
     BlobNotFound(BlobId),
     #[error("state generation conflict: expected newer than {current}, got {proposed}")]
-    RevisionConflict {
-        current: Revision,
-        proposed: Revision,
-    },
+    RevisionConflict { current: Revision, proposed: Revision },
     #[error(transparent)]
     Task(#[from] anyhow::Error),
     #[error("invalid storage data: {0}")]

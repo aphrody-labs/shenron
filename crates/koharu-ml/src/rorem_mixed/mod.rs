@@ -51,13 +51,7 @@ impl RoremMixed {
         .context("failed to resolve RORem mixed model assets")?;
         let model = Model::new(
             &device,
-            ModelPaths {
-                diffusion_model,
-                version_marker,
-                vae,
-                clip_l,
-                clip_g,
-            },
+            ModelPaths { diffusion_model, version_marker, vae, clip_l, clip_g },
         )?;
         Ok(Self { model })
     }

@@ -24,14 +24,8 @@ pub struct ComicLayoutYolo26sImageProcessor {
 impl ComicLayoutYolo26sImageProcessor {
     pub fn new(config: &ComicLayoutYolo26sConfig) -> Result<Self> {
         ensure!(config.image_size > 0, "YOLO26 image_size must be positive");
-        ensure!(
-            config.image_size % 32 == 0,
-            "YOLO26 image_size must be divisible by 32"
-        );
-        ensure!(
-            config.num_classes > 0,
-            "YOLO26 num_classes must be positive"
-        );
+        ensure!(config.image_size % 32 == 0, "YOLO26 image_size must be divisible by 32");
+        ensure!(config.num_classes > 0, "YOLO26 num_classes must be positive");
         let class_names = config.class_names()?;
         ensure!(
             class_names.len() == config.num_classes as usize,
@@ -39,11 +33,7 @@ impl ComicLayoutYolo26sImageProcessor {
             class_names.len(),
             config.num_classes
         );
-        Ok(Self {
-            input_size: config.image_size,
-            num_classes: config.num_classes,
-            class_names,
-        })
+        Ok(Self { input_size: config.image_size, num_classes: config.num_classes, class_names })
     }
 
     pub fn preprocess(&self, image: &DynamicImage, device: Device) -> Result<(Tensor, LetterBox)> {
@@ -65,11 +55,8 @@ impl ComicLayoutYolo26sImageProcessor {
             resized
         };
 
-        let mut padded = RgbImage::from_pixel(
-            letterbox.output_width,
-            letterbox.output_height,
-            Rgb([114; 3]),
-        );
+        let mut padded =
+            RgbImage::from_pixel(letterbox.output_width, letterbox.output_height, Rgb([114; 3]));
         imageops::replace(
             &mut padded,
             &resized,
@@ -78,12 +65,7 @@ impl ComicLayoutYolo26sImageProcessor {
         );
 
         let pixel_values = Tensor::from_slice(padded.as_raw())
-            .view([
-                1,
-                i64::from(letterbox.output_height),
-                i64::from(letterbox.output_width),
-                3,
-            ])
+            .view([1, i64::from(letterbox.output_height), i64::from(letterbox.output_width), 3])
             .permute([0, 3, 1, 2])
             .to_device(device)
             .to_kind(Kind::Float)
@@ -111,16 +93,10 @@ impl ComicLayoutYolo26sImageProcessor {
             });
         }
 
-        let selected = candidates
-            .iter()
-            .map(|candidate| candidate.row)
-            .collect::<Vec<_>>();
+        let selected = candidates.iter().map(|candidate| candidate.row).collect::<Vec<_>>();
         let selected = Tensor::from_slice(&selected).to_device(output.pred.device());
-        let mask_coefficients = output
-            .pred
-            .i((0, .., 6..38))
-            .index_select(0, &selected)
-            .to_kind(Kind::Float);
+        let mask_coefficients =
+            output.pred.i((0, .., 6..38)).index_select(0, &selected).to_kind(Kind::Float);
 
         let proto = output.proto.i(0).to_kind(Kind::Float);
         let proto_size = proto.size();
@@ -136,10 +112,7 @@ impl ComicLayoutYolo26sImageProcessor {
         ]);
         // Public masks use the original image resolution, matching
         // `retina_masks=True` and `process_mask_native` in Ultralytics.
-        let masks = scale_masks(
-            &masks,
-            (letterbox.original_height, letterbox.original_width),
-        );
+        let masks = scale_masks(&masks, (letterbox.original_height, letterbox.original_width));
 
         let mut instances = Vec::with_capacity(candidates.len());
         for (index, candidate) in candidates.into_iter().enumerate() {
@@ -160,10 +133,8 @@ impl ComicLayoutYolo26sImageProcessor {
             if area == 0 {
                 continue;
             }
-            let pixels = pixels
-                .into_iter()
-                .map(|value| if value == 0 { 0 } else { u8::MAX })
-                .collect();
+            let pixels =
+                pixels.into_iter().map(|value| if value == 0 { 0 } else { u8::MAX }).collect();
             instances.push(ComicLayoutYolo26sInstance {
                 label_id: candidate.label_id,
                 label: self.class_names[candidate.label_id].clone(),
@@ -283,11 +254,7 @@ fn filter_end_to_end_predictions(
     if size.len() != 3 || size[0] != 1 {
         bail!("expected a single YOLO26 prediction batch, got {size:?}");
     }
-    ensure!(
-        size[2] == 38,
-        "unexpected YOLO26 prediction channel count {}, expected 38",
-        size[2]
-    );
+    ensure!(size[2] == 38, "unexpected YOLO26 prediction channel count {}, expected 38", size[2]);
     let rows = size[1] as usize;
     let values = tensor_to_vec_f32(&pred.i(0))?;
     let mut candidates = Vec::new();
@@ -298,20 +265,12 @@ fn filter_end_to_end_predictions(
             continue;
         }
         let label_id = values[offset + 5] as usize;
-        ensure!(
-            label_id < num_classes as usize,
-            "YOLO26 returned out-of-range label {label_id}"
-        );
+        ensure!(label_id < num_classes as usize, "YOLO26 returned out-of-range label {label_id}");
         candidates.push(Candidate {
             row: row as i64,
             label_id,
             score,
-            bbox: [
-                values[offset],
-                values[offset + 1],
-                values[offset + 2],
-                values[offset + 3],
-            ],
+            bbox: [values[offset], values[offset + 1], values[offset + 2], values[offset + 3]],
         });
     }
     Ok(candidates)
@@ -358,36 +317,26 @@ fn scale_masks(masks: &Tensor, shape: (u32, u32)) -> Tensor {
     let left = python_round(pad_width - 0.1).clamp(0, input_width);
     let bottom = (input_height - python_round(pad_height + 0.1)).clamp(top + 1, input_height);
     let right = (input_width - python_round(pad_width + 0.1)).clamp(left + 1, input_width);
-    masks
-        .slice(2, top, bottom, 1)
-        .slice(3, left, right, 1)
-        .upsample_bilinear2d(
-            [output_height, output_width],
-            false,
-            None::<f64>,
-            None::<f64>,
-        )
+    masks.slice(2, top, bottom, 1).slice(3, left, right, 1).upsample_bilinear2d(
+        [output_height, output_width],
+        false,
+        None::<f64>,
+        None::<f64>,
+    )
 }
 
 fn python_round(value: f64) -> i64 {
     let floor = value.floor();
     let fraction = value - floor;
     if (fraction - 0.5).abs() < f64::EPSILON {
-        if floor as i64 % 2 == 0 {
-            floor as i64
-        } else {
-            floor as i64 + 1
-        }
+        if floor as i64 % 2 == 0 { floor as i64 } else { floor as i64 + 1 }
     } else {
         value.round() as i64
     }
 }
 
 fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
-    let tensor = tensor
-        .to_kind(Kind::Float)
-        .contiguous()
-        .to_device(Device::Cpu);
+    let tensor = tensor.to_kind(Kind::Float).contiguous().to_device(Device::Cpu);
     let mut values = vec![0.0f32; tensor.numel()];
     let length = values.len();
     tensor.f_copy_data(&mut values, length)?;
@@ -395,10 +344,7 @@ fn tensor_to_vec_f32(tensor: &Tensor) -> Result<Vec<f32>> {
 }
 
 fn tensor_to_vec_u8(tensor: &Tensor) -> Result<Vec<u8>> {
-    let tensor = tensor
-        .to_kind(Kind::Uint8)
-        .contiguous()
-        .to_device(Device::Cpu);
+    let tensor = tensor.to_kind(Kind::Uint8).contiguous().to_device(Device::Cpu);
     let mut values = vec![0u8; tensor.numel()];
     let length = values.len();
     tensor.f_copy_data(&mut values, length)?;
@@ -412,14 +358,8 @@ mod tests {
     #[test]
     fn letterbox_matches_ultralytics_rectangular_prediction() -> anyhow::Result<()> {
         let letterbox = LetterBox::new(770, 1080, 1280)?;
-        assert_eq!(
-            (letterbox.resized_width, letterbox.resized_height),
-            (913, 1280)
-        );
-        assert_eq!(
-            (letterbox.output_width, letterbox.output_height),
-            (928, 1280)
-        );
+        assert_eq!((letterbox.resized_width, letterbox.resized_height), (913, 1280));
+        assert_eq!((letterbox.output_width, letterbox.output_height), (928, 1280));
         assert_eq!((letterbox.pad_x, letterbox.pad_y), (7, 0));
         Ok(())
     }

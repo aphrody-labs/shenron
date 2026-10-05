@@ -42,20 +42,13 @@ impl BaberuImageProcessor {
     pub(crate) fn from_file(path: impl AsRef<Path>, size: i64, device: Device) -> Result<Self> {
         let config: BitImageProcessorConfig = serde_json::from_str(&fs::read_to_string(path)?)?;
         ensure!(config.do_convert_rgb, "Baberu OCR requires RGB conversion");
-        ensure!(
-            size > 0 && size <= u32::MAX.into(),
-            "invalid image size {size}"
-        );
+        ensure!(size > 0 && size <= u32::MAX.into(), "invalid image size {size}");
         ensure!(
             config.image_std.iter().all(|value| *value != 0.0),
             "Baberu OCR image standard deviation contains zero"
         );
-        let mean = Tensor::from_slice(&config.image_mean)
-            .view([1, 3, 1, 1])
-            .to_device(device);
-        let std = Tensor::from_slice(&config.image_std)
-            .view([1, 3, 1, 1])
-            .to_device(device);
+        let mean = Tensor::from_slice(&config.image_mean).view([1, 3, 1, 1]).to_device(device);
+        let std = Tensor::from_slice(&config.image_std).view([1, 3, 1, 1]).to_device(device);
         Ok(Self {
             size: size as u32,
             do_normalize: config.do_normalize,
@@ -125,12 +118,8 @@ pub(crate) struct Tokenizer {
 impl Tokenizer {
     pub(crate) fn from_file(path: impl AsRef<Path>) -> Result<Self> {
         let charset: Vec<String> = serde_json::from_str(&fs::read_to_string(path)?)?;
-        let mut vocabulary = vec![
-            "<pad>".to_owned(),
-            "<bos>".to_owned(),
-            "<eos>".to_owned(),
-            "<unk>".to_owned(),
-        ];
+        let mut vocabulary =
+            vec!["<pad>".to_owned(), "<bos>".to_owned(), "<eos>".to_owned(), "<unk>".to_owned()];
         let mut seen = vocabulary.iter().cloned().collect::<HashSet<_>>();
         for character in charset {
             if seen.insert(character.clone()) {
@@ -155,10 +144,7 @@ impl Tokenizer {
                 .then_some(token_id as i64)
             })
             .collect();
-        Ok(Self {
-            vocabulary,
-            content_ids,
-        })
+        Ok(Self { vocabulary, content_ids })
     }
 
     pub(crate) fn len(&self) -> usize {
@@ -210,8 +196,7 @@ mod tests {
     #[test]
     fn tokenizer_matches_upstream_special_tokens_and_content_categories() {
         let mut file = tempfile::NamedTempFile::new().unwrap();
-        file.write_all(r#"["A","7","。","ー","猫","<pad>"]"#.as_bytes())
-            .unwrap();
+        file.write_all(r#"["A","7","。","ー","猫","<pad>"]"#.as_bytes()).unwrap();
         let tokenizer = Tokenizer::from_file(file.path()).unwrap();
 
         assert_eq!(tokenizer.len(), 9);

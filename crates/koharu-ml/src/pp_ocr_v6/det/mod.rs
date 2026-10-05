@@ -31,10 +31,8 @@ pub struct PPOCRV6MediumDet {
 impl PPOCRV6MediumDet {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let config_path = CONFIG
-            .resolve()
-            .await
-            .context("failed to resolve PP-OCRv6 medium detection config")?;
+        let config_path =
+            CONFIG.resolve().await.context("failed to resolve PP-OCRv6 medium detection config")?;
         let weights_path = WEIGHTS
             .resolve()
             .await
@@ -53,11 +51,7 @@ impl PPOCRV6MediumDet {
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
 
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<TextDetections> {
@@ -78,11 +72,7 @@ mod tests {
     #[tokio::test]
     #[ignore = "downloads the checkpoint and LibTorch runtime"]
     async fn loads_medium_detector_checkpoint() {
-        Runtime::discover([Feature::Torch])
-            .unwrap()
-            .initialize()
-            .await
-            .unwrap();
+        Runtime::discover([Feature::Torch]).unwrap().initialize().await.unwrap();
         let model = PPOCRV6MediumDet::load(crate::Device::cpu()).await.unwrap();
         model.inference(&DynamicImage::new_rgb8(64, 64)).unwrap();
     }

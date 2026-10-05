@@ -30,7 +30,7 @@ pub(crate) async fn export<R: tauri::Runtime>(
                 .set_file_name(format!("{name}.cbz"))
                 .save_file()
                 .await
-        }
+        },
     };
     if let Some(destination) = destination {
         editor.export(format, destination.path().to_owned()).await?;
@@ -40,7 +40,10 @@ pub(crate) async fn export<R: tauri::Runtime>(
 
 #[tauri::command]
 #[specta::specta]
-pub(crate) async fn get_thumbnail(page: EntityId, editor: State<'_, Editor>) -> Result<ThumbnailBytes> {
+pub(crate) async fn get_thumbnail(
+    page: EntityId,
+    editor: State<'_, Editor>,
+) -> Result<ThumbnailBytes> {
     Ok(ThumbnailBytes(editor.thumbnail(page).await?))
 }
 
@@ -48,7 +51,10 @@ pub(crate) async fn get_thumbnail(page: EntityId, editor: State<'_, Editor>) -> 
 /// chain maps it into manga candidates.
 #[tauri::command]
 #[specta::specta]
-pub(crate) async fn get_page_result(page: EntityId, editor: State<'_, Editor>) -> Result<PageResult> {
+pub(crate) async fn get_page_result(
+    page: EntityId,
+    editor: State<'_, Editor>,
+) -> Result<PageResult> {
     Ok(editor.page_result(page).await?)
 }
 

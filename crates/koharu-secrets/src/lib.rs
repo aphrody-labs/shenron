@@ -95,7 +95,7 @@ pub fn delete(key: &str) -> anyhow::Result<()> {
 
 fn entry(key: &str) -> anyhow::Result<Entry> {
     match &*CREDENTIAL_STORE {
-        Ok(()) => {}
+        Ok(()) => {},
         Err(error) => anyhow::bail!("failed to initialize Linux Keyutils: {error}"),
     }
     #[cfg(target_os = "linux")]

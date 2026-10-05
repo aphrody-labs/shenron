@@ -101,9 +101,7 @@ impl Llm {
         options: &GenerationOptions,
         schema: &serde_json::Value,
     ) -> Result<Generation> {
-        self.model.inference(input, options, Some(schema), |_| {
-            Ok(GenerationControl::Continue)
-        })
+        self.model.inference(input, options, Some(schema), |_| Ok(GenerationControl::Continue))
     }
 
     /// Generates and deserializes JSON constrained to the schema of `T`.
@@ -161,11 +159,7 @@ pub struct MtmdOptions {
 impl MtmdOptions {
     #[must_use]
     pub fn new(projector_path: impl Into<PathBuf>) -> Self {
-        Self {
-            projector_path: projector_path.into(),
-            image_min_tokens: -1,
-            image_max_tokens: -1,
-        }
+        Self { projector_path: projector_path.into(), image_min_tokens: -1, image_max_tokens: -1 }
     }
 
     #[must_use]
@@ -202,10 +196,7 @@ pub struct Input<'a> {
 impl<'a> Input<'a> {
     #[must_use]
     pub fn new(prompt: &'a str) -> Self {
-        Self {
-            prompt,
-            media: Vec::new(),
-        }
+        Self { prompt, media: Vec::new() }
     }
 
     #[must_use]
@@ -358,10 +349,7 @@ pub struct ChatMessage {
 impl ChatMessage {
     #[must_use]
     pub fn new(role: ChatRole, content: impl Into<String>) -> Self {
-        Self {
-            role,
-            content: content.into(),
-        }
+        Self { role, content: content.into() }
     }
 
     #[must_use]
@@ -413,19 +401,12 @@ pub struct ChatTemplateOptions {
 
 impl Default for ChatTemplateOptions {
     fn default() -> Self {
-        Self {
-            add_generation_prompt: true,
-            enable_thinking: false,
-        }
+        Self { add_generation_prompt: true, enable_thinking: false }
     }
 }
 
 fn rate(tokens: usize, duration: Duration) -> f64 {
-    if duration.as_secs_f64() > 0.0 {
-        tokens as f64 / duration.as_secs_f64()
-    } else {
-        0.0
-    }
+    if duration.as_secs_f64() > 0.0 { tokens as f64 / duration.as_secs_f64() } else { 0.0 }
 }
 
 #[cfg(test)]

@@ -45,14 +45,7 @@ impl Model {
         let text_det = DBHead::new(&text_det_vs.root());
         text_det_vs.freeze();
 
-        Self {
-            blk_det_vs,
-            text_seg_vs,
-            text_det_vs,
-            blk_det,
-            text_seg,
-            text_det,
-        }
+        Self { blk_det_vs, text_seg_vs, text_det_vs, blk_det, text_seg, text_det }
     }
 
     pub fn load(
@@ -64,11 +57,7 @@ impl Model {
         self.blk_det_vs.load(yolo_path)?;
         self.text_seg_vs.load(unet_path)?;
         self.text_det_vs.load(dbnet_path)?;
-        for var_store in [
-            &mut self.blk_det_vs,
-            &mut self.text_seg_vs,
-            &mut self.text_det_vs,
-        ] {
+        for var_store in [&mut self.blk_det_vs, &mut self.text_seg_vs, &mut self.text_det_vs] {
             crate::backend::set_precision(var_store);
         }
         Ok(())
@@ -89,9 +78,7 @@ impl Model {
             &features[3],
             &features[4],
         );
-        let line_maps = self
-            .text_det
-            .forward(&db_features[0], &db_features[1], &db_features[2]);
+        let line_maps = self.text_det.forward(&db_features[0], &db_features[1], &db_features[2]);
         Output { mask, line_maps }
     }
 }
@@ -109,7 +96,7 @@ fn activate(input: Tensor, activation: Activation) -> Tensor {
         Activation::Leaky(slope) => {
             let positive = input.relu();
             positive - (-input).relu() * slope
-        }
+        },
         Activation::Relu => input.relu(),
     }
 }
@@ -133,28 +120,14 @@ impl ConvBnAct {
         eps: f64,
         activation: Activation,
     ) -> Self {
-        let conv = conv2d(
-            &(path / "conv"),
-            in_channels,
-            out_channels,
-            kernel,
-            stride,
-            padding,
-            false,
-        );
+        let conv =
+            conv2d(&(path / "conv"), in_channels, out_channels, kernel, stride, padding, false);
         let bn = batch_norm2d(&(path / "bn"), out_channels, eps);
-        Self {
-            conv,
-            bn,
-            activation,
-        }
+        Self { conv, bn, activation }
     }
 
     fn forward(&self, input: &Tensor) -> Tensor {
-        activate(
-            self.bn.forward_t(&self.conv.forward(input), false),
-            self.activation,
-        )
+        activate(self.bn.forward_t(&self.conv.forward(input), false), self.activation)
     }
 }
 
@@ -174,26 +147,8 @@ impl Bottleneck {
         activation: Activation,
     ) -> Self {
         Self {
-            cv1: ConvBnAct::new(
-                &(path / "cv1"),
-                channels,
-                channels,
-                1,
-                1,
-                0,
-                eps,
-                activation,
-            ),
-            cv2: ConvBnAct::new(
-                &(path / "cv2"),
-                channels,
-                channels,
-                3,
-                1,
-                1,
-                eps,
-                activation,
-            ),
+            cv1: ConvBnAct::new(&(path / "cv1"), channels, channels, 1, 1, 0, eps, activation),
+            cv2: ConvBnAct::new(&(path / "cv2"), channels, channels, 3, 1, 1, eps, activation),
             add: shortcut,
         }
     }
@@ -224,26 +179,8 @@ impl C3 {
     ) -> Self {
         let hidden = out_channels / 2;
         Self {
-            cv1: ConvBnAct::new(
-                &(path / "cv1"),
-                in_channels,
-                hidden,
-                1,
-                1,
-                0,
-                eps,
-                activation,
-            ),
-            cv2: ConvBnAct::new(
-                &(path / "cv2"),
-                in_channels,
-                hidden,
-                1,
-                1,
-                0,
-                eps,
-                activation,
-            ),
+            cv1: ConvBnAct::new(&(path / "cv1"), in_channels, hidden, 1, 1, 0, eps, activation),
+            cv2: ConvBnAct::new(&(path / "cv2"), in_channels, hidden, 1, 1, 0, eps, activation),
             cv3: ConvBnAct::new(
                 &(path / "cv3"),
                 hidden * 2,
@@ -361,159 +298,23 @@ impl YoloV5 {
         let model = path / "model";
         Self {
             l0: ConvBnAct::new(&(model.clone() / 0), 3, 32, 6, 2, 2, 1e-3, Activation::Silu),
-            l1: ConvBnAct::new(
-                &(model.clone() / 1),
-                32,
-                64,
-                3,
-                2,
-                1,
-                1e-3,
-                Activation::Silu,
-            ),
-            l2: C3::new(
-                &(model.clone() / 2),
-                64,
-                64,
-                1,
-                true,
-                1e-3,
-                Activation::Silu,
-            ),
-            l3: ConvBnAct::new(
-                &(model.clone() / 3),
-                64,
-                128,
-                3,
-                2,
-                1,
-                1e-3,
-                Activation::Silu,
-            ),
-            l4: C3::new(
-                &(model.clone() / 4),
-                128,
-                128,
-                2,
-                true,
-                1e-3,
-                Activation::Silu,
-            ),
-            l5: ConvBnAct::new(
-                &(model.clone() / 5),
-                128,
-                256,
-                3,
-                2,
-                1,
-                1e-3,
-                Activation::Silu,
-            ),
-            l6: C3::new(
-                &(model.clone() / 6),
-                256,
-                256,
-                3,
-                true,
-                1e-3,
-                Activation::Silu,
-            ),
-            l7: ConvBnAct::new(
-                &(model.clone() / 7),
-                256,
-                512,
-                3,
-                2,
-                1,
-                1e-3,
-                Activation::Silu,
-            ),
-            l8: C3::new(
-                &(model.clone() / 8),
-                512,
-                512,
-                1,
-                true,
-                1e-3,
-                Activation::Silu,
-            ),
+            l1: ConvBnAct::new(&(model.clone() / 1), 32, 64, 3, 2, 1, 1e-3, Activation::Silu),
+            l2: C3::new(&(model.clone() / 2), 64, 64, 1, true, 1e-3, Activation::Silu),
+            l3: ConvBnAct::new(&(model.clone() / 3), 64, 128, 3, 2, 1, 1e-3, Activation::Silu),
+            l4: C3::new(&(model.clone() / 4), 128, 128, 2, true, 1e-3, Activation::Silu),
+            l5: ConvBnAct::new(&(model.clone() / 5), 128, 256, 3, 2, 1, 1e-3, Activation::Silu),
+            l6: C3::new(&(model.clone() / 6), 256, 256, 3, true, 1e-3, Activation::Silu),
+            l7: ConvBnAct::new(&(model.clone() / 7), 256, 512, 3, 2, 1, 1e-3, Activation::Silu),
+            l8: C3::new(&(model.clone() / 8), 512, 512, 1, true, 1e-3, Activation::Silu),
             l9: Sppf::new(&(model.clone() / 9), 512, 512, 5),
-            l10: ConvBnAct::new(
-                &(model.clone() / 10),
-                512,
-                256,
-                1,
-                1,
-                0,
-                1e-3,
-                Activation::Silu,
-            ),
-            l13: C3::new(
-                &(model.clone() / 13),
-                512,
-                256,
-                1,
-                false,
-                1e-3,
-                Activation::Silu,
-            ),
-            l14: ConvBnAct::new(
-                &(model.clone() / 14),
-                256,
-                128,
-                1,
-                1,
-                0,
-                1e-3,
-                Activation::Silu,
-            ),
-            l17: C3::new(
-                &(model.clone() / 17),
-                256,
-                128,
-                1,
-                false,
-                1e-3,
-                Activation::Silu,
-            ),
-            l18: ConvBnAct::new(
-                &(model.clone() / 18),
-                128,
-                128,
-                3,
-                2,
-                1,
-                1e-3,
-                Activation::Silu,
-            ),
-            l20: C3::new(
-                &(model.clone() / 20),
-                256,
-                256,
-                1,
-                false,
-                1e-3,
-                Activation::Silu,
-            ),
-            l21: ConvBnAct::new(
-                &(model.clone() / 21),
-                256,
-                256,
-                3,
-                2,
-                1,
-                1e-3,
-                Activation::Silu,
-            ),
-            l23: C3::new(
-                &(model.clone() / 23),
-                512,
-                512,
-                1,
-                false,
-                1e-3,
-                Activation::Silu,
-            ),
+            l10: ConvBnAct::new(&(model.clone() / 10), 512, 256, 1, 1, 0, 1e-3, Activation::Silu),
+            l13: C3::new(&(model.clone() / 13), 512, 256, 1, false, 1e-3, Activation::Silu),
+            l14: ConvBnAct::new(&(model.clone() / 14), 256, 128, 1, 1, 0, 1e-3, Activation::Silu),
+            l17: C3::new(&(model.clone() / 17), 256, 128, 1, false, 1e-3, Activation::Silu),
+            l18: ConvBnAct::new(&(model.clone() / 18), 128, 128, 3, 2, 1, 1e-3, Activation::Silu),
+            l20: C3::new(&(model.clone() / 20), 256, 256, 1, false, 1e-3, Activation::Silu),
+            l21: ConvBnAct::new(&(model.clone() / 21), 256, 256, 3, 2, 1, 1e-3, Activation::Silu),
+            l23: C3::new(&(model.clone() / 23), 512, 512, 1, false, 1e-3, Activation::Silu),
             head: YoloHead::new(&(model / 24)),
         }
     }
@@ -541,10 +342,7 @@ struct YoloHead {
 
 impl YoloHead {
     fn new(path: &nn::Path<'_>) -> Self {
-        let conv_config = nn::ConvConfig {
-            bias: true,
-            ..Default::default()
-        };
+        let conv_config = nn::ConvConfig { bias: true, ..Default::default() };
         let convs = [
             nn::conv2d(path / "m" / 0, 128, 21, 1, conv_config),
             nn::conv2d(path / "m" / 1, 256, 21, 1, conv_config),
@@ -573,11 +371,8 @@ impl YoloHead {
             let grid = Tensor::stack(&[grid[0].shallow_clone(), grid[1].shallow_clone()], 2)
                 .view([1, 1, height, width, 2]);
             let stride = [8.0, 16.0, 32.0][index];
-            let anchor_grid = self
-                .anchors
-                .narrow(0, index as i64, 1)
-                .view([1, 3, 1, 1, 2])
-                * stride;
+            let anchor_grid =
+                self.anchors.narrow(0, index as i64, 1).view([1, 3, 1, 1, 2]) * stride;
             let xy = (prediction.narrow(4, 0, 2) * 2.0 - 0.5 + grid) * stride;
             let wh = (prediction.narrow(4, 2, 2) * 2.0).square() * anchor_grid;
             outputs
@@ -654,8 +449,7 @@ impl DoubleConvUpC3 {
 
     fn forward(&self, input: &Tensor) -> Tensor {
         activate(
-            self.bn
-                .forward_t(&self.deconv.forward(&self.c3.forward(input)), false),
+            self.bn.forward_t(&self.deconv.forward(&self.c3.forward(input)), false),
             Activation::Relu,
         )
     }
@@ -695,18 +489,11 @@ impl UnetHead {
     ) -> (Tensor, [Tensor; 3]) {
         let d10 = self.down_conv1.forward(f3);
         let u20 = self.upconv0.forward(&d10);
-        let u40 = self
-            .upconv2
-            .forward(&Tensor::cat(&[f20.shallow_clone(), u20], 1));
-        let u80 = self
-            .upconv3
-            .forward(&Tensor::cat(&[f40.shallow_clone(), u40.shallow_clone()], 1));
-        let u160 = self
-            .upconv4
-            .forward(&Tensor::cat(&[f80.shallow_clone(), u80], 1));
-        let u320 = self
-            .upconv5
-            .forward(&Tensor::cat(&[f160.shallow_clone(), u160], 1));
+        let u40 = self.upconv2.forward(&Tensor::cat(&[f20.shallow_clone(), u20], 1));
+        let u80 =
+            self.upconv3.forward(&Tensor::cat(&[f40.shallow_clone(), u40.shallow_clone()], 1));
+        let u160 = self.upconv4.forward(&Tensor::cat(&[f80.shallow_clone(), u80], 1));
+        let u320 = self.upconv5.forward(&Tensor::cat(&[f160.shallow_clone(), u160], 1));
         let mask = self.upconv6.forward(&u320).sigmoid();
         (mask, [f80.shallow_clone(), f40.shallow_clone(), u40])
     }
@@ -828,12 +615,9 @@ impl DBHead {
     }
 
     fn forward(&self, f80: &Tensor, f40: &Tensor, u40: &Tensor) -> Tensor {
-        let u80 = self
-            .upconv3
-            .forward(&Tensor::cat(&[f40.shallow_clone(), u40.shallow_clone()], 1));
-        let x = self
-            .upconv4
-            .forward(&Tensor::cat(&[f80.shallow_clone(), u80], 1));
+        let u80 =
+            self.upconv3.forward(&Tensor::cat(&[f40.shallow_clone(), u40.shallow_clone()], 1));
+        let x = self.upconv4.forward(&Tensor::cat(&[f80.shallow_clone(), u80], 1));
         let x = self.conv.forward(&x);
         let shrink = self.binarize.forward(&x);
         let thresh = self.thresh.forward(&x);
@@ -855,12 +639,7 @@ fn conv2d(
         in_channels,
         out_channels,
         kernel,
-        nn::ConvConfig {
-            stride,
-            padding,
-            bias,
-            ..Default::default()
-        },
+        nn::ConvConfig { stride, padding, bias, ..Default::default() },
     )
 }
 
@@ -880,23 +659,10 @@ fn conv_transpose2d(
         in_channels,
         out_channels,
         kernel,
-        nn::ConvTransposeConfig {
-            stride,
-            padding,
-            output_padding,
-            bias,
-            ..Default::default()
-        },
+        nn::ConvTransposeConfig { stride, padding, output_padding, bias, ..Default::default() },
     )
 }
 
 fn batch_norm2d(path: &nn::Path<'_>, channels: i64, eps: f64) -> nn::BatchNorm {
-    nn::batch_norm2d(
-        path,
-        channels,
-        nn::BatchNormConfig {
-            eps,
-            ..Default::default()
-        },
-    )
+    nn::batch_norm2d(path, channels, nn::BatchNormConfig { eps, ..Default::default() })
 }

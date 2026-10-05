@@ -37,24 +37,9 @@ impl HayaiOcr {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
         let (config_path, weights_path, tokenizer_path) = tokio::try_join!(
-            async {
-                CONFIG
-                    .resolve()
-                    .await
-                    .context("failed to resolve Hayai OCR config")
-            },
-            async {
-                WEIGHTS
-                    .resolve()
-                    .await
-                    .context("failed to resolve Hayai OCR weights")
-            },
-            async {
-                TOKENIZER
-                    .resolve()
-                    .await
-                    .context("failed to resolve Hayai OCR tokenizer")
-            },
+            async { CONFIG.resolve().await.context("failed to resolve Hayai OCR config") },
+            async { WEIGHTS.resolve().await.context("failed to resolve Hayai OCR weights") },
+            async { TOKENIZER.resolve().await.context("failed to resolve Hayai OCR tokenizer") },
         )?;
 
         let config = HayaiConfig::from_file(&config_path)
@@ -73,12 +58,7 @@ impl HayaiOcr {
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
         let processor = ImageProcessor::new(device)?;
 
-        Ok(Self {
-            model,
-            processor,
-            tokenizer,
-            device,
-        })
+        Ok(Self { model, processor, tokenizer, device })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<String> {

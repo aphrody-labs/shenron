@@ -58,17 +58,13 @@ impl Roots {
     ) -> Self {
         let projects = home.join("data").join("koharu").join("projects");
         let packages = home.join("cache").join("koharu").join("packages");
-        let legacy_projects = legacy_projects.filter(|legacy| legacy.is_dir() && *legacy != projects);
+        let legacy_projects =
+            legacy_projects.filter(|legacy| legacy.is_dir() && *legacy != projects);
         let packages = match legacy_packages {
             Some(legacy) if !packages.exists() && legacy.is_dir() => legacy,
             _ => packages,
         };
-        Self {
-            home,
-            projects,
-            legacy_projects,
-            packages,
-        }
+        Self { home, projects, legacy_projects, packages }
     }
 
     /// Select the package store before any runtime or model is resolved. A store already
@@ -135,11 +131,8 @@ mod tests {
         std::fs::create_dir_all(&projects).unwrap();
         std::fs::create_dir_all(&packages).unwrap();
 
-        let roots = Roots::resolve(
-            home.path().to_owned(),
-            Some(projects.clone()),
-            Some(packages.clone()),
-        );
+        let roots =
+            Roots::resolve(home.path().to_owned(), Some(projects.clone()), Some(packages.clone()));
         assert_eq!(roots.legacy_projects, Some(projects.clone()));
         assert_eq!(roots.packages, packages);
 

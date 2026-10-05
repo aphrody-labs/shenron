@@ -140,32 +140,20 @@ struct Camera {
 
 impl Default for Camera {
     fn default() -> Self {
-        Self {
-            zoom: 1.0,
-            translation: [0.0, 0.0],
-        }
+        Self { zoom: 1.0, translation: [0.0, 0.0] }
     }
 }
 
 impl Camera {
     fn new(zoom: f64, translation: [f64; 2]) -> Result<Self, JsValue> {
         if !zoom.is_finite() || zoom <= 0.0 || !translation.into_iter().all(f64::is_finite) {
-            return Err(js_message(
-                "camera values must be finite and zoom must be positive",
-            ));
+            return Err(js_message("camera values must be finite and zoom must be positive"));
         }
         Ok(Self { zoom, translation })
     }
 
     fn affine(self) -> Affine {
-        Affine::new([
-            self.zoom,
-            0.0,
-            0.0,
-            self.zoom,
-            self.translation[0],
-            self.translation[1],
-        ])
+        Affine::new([self.zoom, 0.0, 0.0, self.zoom, self.translation[0], self.translation[1]])
     }
 }
 
@@ -187,9 +175,7 @@ impl TransformEdit {
     }
 
     fn is_changed(&self) -> bool {
-        self.order
-            .iter()
-            .any(|id| self.originals[id] != self.previews[id])
+        self.order.iter().any(|id| self.originals[id] != self.previews[id])
     }
 }
 
@@ -244,11 +230,7 @@ impl RenderTarget {
             view_formats: &[],
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
-        Self {
-            requested,
-            texture,
-            view,
-        }
+        Self { requested, texture, view }
     }
 }
 
@@ -282,23 +264,12 @@ impl CanvasRenderer {
     ) -> Result<Self, JsValue> {
         let vello = vello::Renderer::new(
             &device,
-            RendererOptions {
-                antialiasing_support: AaSupport::area_only(),
-                ..Default::default()
-            },
+            RendererOptions { antialiasing_support: AaSupport::area_only(), ..Default::default() },
         )
         .map_err(js_error)?;
         let compositor = GpuCompositor::with_cache_budget(&device, u64::MAX);
         let target = RenderTarget::new(&device, size);
-        Ok(Self {
-            device,
-            queue,
-            vello,
-            compositor,
-            target,
-            sample: None,
-            wake,
-        })
+        Ok(Self { device, queue, vello, compositor, target, sample: None, wake })
     }
 
     fn resize(&mut self, size: PhysicalSize) {
@@ -353,11 +324,9 @@ impl CanvasRenderer {
             usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
             mapped_at_creation: false,
         });
-        let mut encoder = self
-            .device
-            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                label: Some("koharu browser color sample encoder"),
-            });
+        let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("koharu browser color sample encoder"),
+        });
         encoder.copy_texture_to_buffer(
             wgpu::TexelCopyTextureInfo {
                 texture: &self.target.texture,
@@ -373,29 +342,19 @@ impl CanvasRenderer {
                     rows_per_image: None,
                 },
             },
-            wgpu::Extent3d {
-                width: 1,
-                height: 1,
-                depth_or_array_layers: 1,
-            },
+            wgpu::Extent3d { width: 1, height: 1, depth_or_array_layers: 1 },
         );
         self.queue.submit([encoder.finish()]);
         let status = Arc::new(Mutex::new(SampleStatus::Pending));
         let callback_status = Arc::clone(&status);
         let wake = Arc::clone(&self.wake);
-        buffer
-            .slice(..)
-            .map_async(wgpu::MapMode::Read, move |result| {
-                *callback_status.lock().expect("sample state poisoned") = SampleStatus::Ready(
-                    result.map_err(|error| format!("failed to map color sample: {error}")),
-                );
-                wake.store(true, Ordering::Release);
-            });
-        self.sample = Some(PendingSample {
-            buffer,
-            status,
-            complete,
+        buffer.slice(..).map_async(wgpu::MapMode::Read, move |result| {
+            *callback_status.lock().expect("sample state poisoned") = SampleStatus::Ready(
+                result.map_err(|error| format!("failed to map color sample: {error}")),
+            );
+            wake.store(true, Ordering::Release);
         });
+        self.sample = Some(PendingSample { buffer, status, complete });
         Ok(())
     }
 
@@ -440,14 +399,7 @@ impl CanvasRenderer {
     ) -> Result<(), JsValue> {
         let image = wgpu::ExternalImageSource::ImageBitmap(bitmap.clone());
         self.compositor
-            .cache_external_raster(
-                &self.device,
-                &self.queue,
-                source,
-                source_size,
-                &image,
-                tiles,
-            )
+            .cache_external_raster(&self.device, &self.queue, source, source_size, &image, tiles)
             .map_err(js_error)
     }
 
@@ -516,19 +468,13 @@ impl CanvasState {
         }
         self.next_stage_token = self.next_stage_token.wrapping_add(1).max(1);
         let token = self.next_stage_token;
-        self.staged = Some(StagedFrame {
-            token,
-            manifest,
-            resources,
-        });
+        self.staged = Some(StagedFrame { token, manifest, resources });
         self.evict_resources();
         Ok(StagedManifestDto { token, missing })
     }
 
     fn wants_resource(&self, resource: ResourceId) -> bool {
-        self.staged
-            .as_ref()
-            .is_some_and(|staged| staged.resources.contains(&resource))
+        self.staged.as_ref().is_some_and(|staged| staged.resources.contains(&resource))
     }
 
     fn has_resource(&self, resource: ResourceId) -> bool {
@@ -550,47 +496,34 @@ impl CanvasState {
             .staged
             .as_ref()
             .and_then(|staged| {
-                staged
-                    .manifest
-                    .required_resources()
-                    .iter()
-                    .find(|resource| resource.id == expected)
+                staged.manifest.required_resources().iter().find(|resource| resource.id == expected)
             })
             .copied()
         else {
             return Ok(());
         };
         if resource.kind() != reference.kind || resource.byte_len() != reference.byte_len {
-            return Err(js_message(
-                "prepared resource packet does not match the staged manifest",
-            ));
+            return Err(js_message("prepared resource packet does not match the staged manifest"));
         }
         match resource.resource() {
             PreparedResource::Font { .. } => {
                 if bitmap.is_some() {
                     return Err(js_message("font resource unexpectedly has decoded pixels"));
                 }
-            }
+            },
             PreparedResource::EncodedRaster { width, height, .. } => {
                 let bitmap = bitmap.ok_or_else(|| {
                     js_message("encoded raster resource has not been decoded for the GPU")
                 })?;
                 let tiles = raster_tiles_for_source(
-                    &self
-                        .staged
-                        .as_ref()
-                        .expect("staged reference was resolved above")
-                        .manifest,
+                    &self.staged.as_ref().expect("staged reference was resolved above").manifest,
                     expected,
                 );
                 if tiles.is_empty() {
-                    return Err(js_message(
-                        "encoded raster resource has no staged tile crops",
-                    ));
+                    return Err(js_message("encoded raster resource has no staged tile crops"));
                 }
-                self.gpu
-                    .cache_external_raster(expected, (*width, *height), bitmap, &tiles)?;
-            }
+                self.gpu.cache_external_raster(expected, (*width, *height), bitmap, &tiles)?;
+            },
         }
         let _ = self.resources.insert(resource);
         self.resource_usage.insert(expected);
@@ -675,10 +608,8 @@ impl CanvasState {
         if frame.origin() != (0, 0) {
             return Err(js_message("canvas requires a complete frame at origin 0,0"));
         }
-        let page_changed = self
-            .frame
-            .as_ref()
-            .is_some_and(|current| current.page() != frame.page());
+        let page_changed =
+            self.frame.as_ref().is_some_and(|current| current.page() != frame.page());
         if self.frame.as_ref().is_some_and(|current| {
             current.page() == frame.page() && current.revision() > frame.revision()
         }) {
@@ -729,12 +660,7 @@ impl CanvasState {
             protected.extend(staged.resources.iter().copied());
         }
         for manifest in self.manifests.values() {
-            protected.extend(
-                manifest
-                    .required_resources()
-                    .iter()
-                    .map(|resource| resource.id),
-            );
+            protected.extend(manifest.required_resources().iter().map(|resource| resource.id));
         }
         while self
             .resources
@@ -754,8 +680,7 @@ impl CanvasState {
     }
 
     fn clear(&mut self) {
-        self.gpu
-            .cancel_sample("color sample was cancelled by clear");
+        self.gpu.cancel_sample("color sample was cancelled by clear");
         self.frame = None;
         self.staged = None;
         self.manifests.clear();
@@ -795,19 +720,12 @@ impl CanvasState {
         };
         let page_size = frame.size();
         let page_rect = Rect::new(0.0, 0.0, f64::from(page_size.0), f64::from(page_size.1));
-        let viewport_rect = Rect::new(
-            0.0,
-            0.0,
-            f64::from(self.size.width),
-            f64::from(self.size.height),
-        );
+        let viewport_rect =
+            Rect::new(0.0, 0.0, f64::from(self.size.width), f64::from(self.size.height));
         let camera = self.camera.affine();
         let normalize =
             Affine::translate((-f64::from(frame.origin().0), -f64::from(frame.origin().1)));
-        let erase = self
-            .stroke
-            .as_ref()
-            .filter(|stroke| stroke.kind == StrokeKind::Erase);
+        let erase = self.stroke.as_ref().filter(|stroke| stroke.kind == StrokeKind::Erase);
         let mut commands = Vec::new();
         let mut vectors = Scene::new();
         let mut vectors_pending = false;
@@ -820,10 +738,7 @@ impl CanvasState {
                     .unwrap_or(Affine::IDENTITY);
             let mut presentation = layer.presentation();
             if let Some(opacity) = self.opacity.get(&layer.id()) {
-                presentation = Presentation {
-                    opacity: *opacity,
-                    ..presentation
-                };
+                presentation = Presentation { opacity: *opacity, ..presentation };
             }
             if let Some(image) = layer.raster_image() {
                 flush_vectors(
@@ -852,10 +767,7 @@ impl CanvasState {
                     && presentation.opacity > 0.0;
             }
         }
-        if let Some(stroke) = self
-            .stroke
-            .as_ref()
-            .filter(|stroke| stroke.kind != StrokeKind::Erase)
+        if let Some(stroke) = self.stroke.as_ref().filter(|stroke| stroke.kind != StrokeKind::Erase)
         {
             let opacity = match stroke.kind {
                 StrokeKind::Paint => f32::from(stroke.color[3]) / 255.0,
@@ -917,10 +829,7 @@ async fn decode_encoded_raster(
     window: &Window,
     resource: &PreparedResource,
 ) -> Result<ImageBitmap, JsValue> {
-    let PreparedResource::EncodedRaster {
-        media_type, bytes, ..
-    } = resource
-    else {
+    let PreparedResource::EncodedRaster { media_type, bytes, .. } = resource else {
         return Err(js_message("prepared resource is not an encoded raster"));
     };
     let parts = Array::new();
@@ -981,26 +890,21 @@ impl BrowserGpu {
             wgpu::CurrentSurfaceTexture::Suboptimal(texture) => (texture, true),
             wgpu::CurrentSurfaceTexture::Timeout | wgpu::CurrentSurfaceTexture::Occluded => {
                 return Ok((generation, true));
-            }
+            },
             wgpu::CurrentSurfaceTexture::Lost | wgpu::CurrentSurfaceTexture::Outdated => {
                 self.surface.configure(&self.device, &self.config);
                 return Ok((generation, true));
-            }
+            },
             wgpu::CurrentSurfaceTexture::Validation => {
                 return Err(js_message("browser canvas surface validation failed"));
-            }
+            },
         };
-        let target = surface_texture
-            .texture
-            .create_view(&wgpu::TextureViewDescriptor::default());
-        let mut encoder = self
-            .device
-            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                label: Some("koharu browser present encoder"),
-            });
+        let target = surface_texture.texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("koharu browser present encoder"),
+        });
         let source = (!self.canvas.size.is_empty()).then_some(&self.canvas.gpu.target.view);
-        self.blitter
-            .copy(&self.device, &mut encoder, source, &target);
+        self.blitter.copy(&self.device, &mut encoder, source, &target);
         self.queue.submit([encoder.finish()]);
         surface_texture.present();
         if suboptimal {
@@ -1027,9 +931,7 @@ impl Shared {
         if self.disposed.get() || self.animation_frame.get().is_some() {
             return Ok(());
         }
-        let handle = self
-            .window
-            .request_animation_frame(self.callback.as_ref().unchecked_ref())?;
+        let handle = self.window.request_animation_frame(self.callback.as_ref().unchecked_ref())?;
         self.animation_frame.set(Some(handle));
         Ok(())
     }
@@ -1043,10 +945,7 @@ impl Shared {
         }
         let (generation, needs_redraw) = {
             let mut browser = self.browser.borrow_mut();
-            browser
-                .as_mut()
-                .ok_or_else(|| js_message("browser canvas is disposed"))?
-                .present()?
+            browser.as_mut().ok_or_else(|| js_message("browser canvas is disposed"))?.present()?
         };
         if needs_redraw || self.wake.swap(false, Ordering::AcqRel) {
             self.request_render()?;
@@ -1075,10 +974,7 @@ impl Shared {
             targets.borrow_mut().remove(&self.device_id);
         });
         if let Some(mut browser) = self.browser.borrow_mut().take() {
-            browser
-                .canvas
-                .gpu
-                .cancel_sample("color sample was cancelled by dispose");
+            browser.canvas.gpu.cancel_sample("color sample was cancelled by dispose");
         }
         self.device_lost_callback.borrow_mut().take();
     }
@@ -1098,9 +994,8 @@ pub async fn create_canvas(element: HtmlCanvasElement) -> Result<WebCanvas, JsVa
         backends: wgpu::Backends::BROWSER_WEBGPU,
         ..wgpu::InstanceDescriptor::new_without_display_handle()
     });
-    let surface = instance
-        .create_surface(wgpu::SurfaceTarget::Canvas(element.clone()))
-        .map_err(js_error)?;
+    let surface =
+        instance.create_surface(wgpu::SurfaceTarget::Canvas(element.clone())).map_err(js_error)?;
     let adapter = instance
         .request_adapter(&wgpu::RequestAdapterOptions {
             power_preference: wgpu::PowerPreference::HighPerformance,
@@ -1114,9 +1009,7 @@ pub async fn create_canvas(element: HtmlCanvasElement) -> Result<WebCanvas, JsVa
         .flags
         .contains(wgpu::DownlevelFlags::UNRESTRICTED_EXTERNAL_TEXTURE_COPIES)
     {
-        return Err(js_message(
-            "WebGPU adapter cannot upload premultiplied raster tile crops",
-        ));
+        return Err(js_message("WebGPU adapter cannot upload premultiplied raster tile crops"));
     }
     let (device, queue) = adapter
         .request_device(&wgpu::DeviceDescriptor {
@@ -1129,11 +1022,7 @@ pub async fn create_canvas(element: HtmlCanvasElement) -> Result<WebCanvas, JsVa
     let queue = Rc::new(queue);
     let initial_size = PhysicalSize::new(element.width(), element.height());
     let config = surface
-        .get_default_config(
-            &adapter,
-            initial_size.width.max(1),
-            initial_size.height.max(1),
-        )
+        .get_default_config(&adapter, initial_size.width.max(1), initial_size.height.max(1))
         .ok_or_else(|| js_message("WebGPU adapter cannot present to the canvas"))?;
     surface.configure(&device, &config);
     let wake = Arc::new(AtomicBool::new(false));
@@ -1179,9 +1068,7 @@ pub async fn create_canvas(element: HtmlCanvasElement) -> Result<WebCanvas, JsVa
         }
     });
     DEVICE_TARGETS.with(|targets| {
-        targets
-            .borrow_mut()
-            .insert(device_id, Rc::downgrade(&shared));
+        targets.borrow_mut().insert(device_id, Rc::downgrade(&shared));
     });
     device.set_device_lost_callback(move |reason, message| {
         let reason = if message.is_empty() {
@@ -1275,12 +1162,9 @@ impl WebCanvas {
             PreparedResource::Font { .. } => None,
             PreparedResource::EncodedRaster { .. } => {
                 Some(decode_encoded_raster(&self.shared.window, resource.resource()).await?)
-            }
+            },
         };
-        let result = self
-            .browser_mut()?
-            .canvas
-            .install_resource(id, resource, bitmap.as_ref());
+        let result = self.browser_mut()?.canvas.install_resource(id, resource, bitmap.as_ref());
         if let Some(bitmap) = bitmap {
             bitmap.close();
         }
@@ -1291,12 +1175,7 @@ impl WebCanvas {
     pub fn activate_frame(&self, token: u32) -> Result<bool, JsValue> {
         {
             let browser = self.browser_mut()?;
-            if browser
-                .canvas
-                .staged
-                .as_ref()
-                .is_none_or(|staged| staged.token != token)
-            {
+            if browser.canvas.staged.as_ref().is_none_or(|staged| staged.token != token) {
                 return Ok(false);
             }
         }
@@ -1310,10 +1189,8 @@ impl WebCanvas {
     #[wasm_bindgen(js_name = activatePage)]
     pub fn activate_page(&self, page: &str, expected_revision: u64) -> Result<bool, JsValue> {
         let page = parse_layer_id(page)?;
-        let activated = self
-            .browser_mut()?
-            .canvas
-            .activate_page(page, Revision::new(expected_revision))?;
+        let activated =
+            self.browser_mut()?.canvas.activate_page(page, Revision::new(expected_revision))?;
         if activated {
             self.shared.present()?;
         }
@@ -1353,7 +1230,7 @@ impl WebCanvas {
                 } else {
                     browser.canvas.opacity.insert(id, opacity) != Some(opacity)
                 }
-            }
+            },
             None => browser.canvas.opacity.remove(&id).is_some(),
         };
         browser.canvas.dirty |= changed;
@@ -1381,9 +1258,7 @@ impl WebCanvas {
         let mut originals = HashMap::with_capacity(requested.len());
         for element in requested {
             if !element.frame.is_valid() {
-                return Err(js_message(
-                    "transform control frame must be finite and non-empty",
-                ));
+                return Err(js_message("transform control frame must be finite and non-empty"));
             }
             let id = parse_layer_id(&element.element)?;
             if !originals.is_empty() && originals.contains_key(&id) {
@@ -1397,9 +1272,7 @@ impl WebCanvas {
                 || !presentation.visible
                 || presentation.opacity <= 0.0
             {
-                return Err(js_message(
-                    "transform element is not selectable and visible",
-                ));
+                return Err(js_message("transform element is not selectable and visible"));
             }
             let control = layer
                 .element_frame()
@@ -1440,10 +1313,7 @@ impl WebCanvas {
         if edit.pending {
             return Err(js_message("transform is waiting for its replacement frame"));
         }
-        if edit
-            .last_sequence
-            .is_some_and(|previous| sequence <= previous)
-        {
+        if edit.last_sequence.is_some_and(|previous| sequence <= previous) {
             return Ok(());
         }
         if supplied.len() != edit.order.len() {
@@ -1456,9 +1326,7 @@ impl WebCanvas {
             }
             let id = parse_layer_id(&element.element)?;
             if !edit.originals.contains_key(&id) || previews.insert(id, element.frame).is_some() {
-                return Err(js_message(
-                    "transform update has unknown or repeated elements",
-                ));
+                return Err(js_message("transform update has unknown or repeated elements"));
             }
         }
         edit.previews = previews;
@@ -1592,11 +1460,8 @@ impl WebCanvas {
             .ok_or_else(|| js_message("no prepared frame is installed"))?
             .size();
         let zoom = browser.canvas.camera.zoom.max(f64::EPSILON);
-        let stroke = browser
-            .canvas
-            .stroke
-            .as_mut()
-            .ok_or_else(|| js_message("no stroke is active"))?;
+        let stroke =
+            browser.canvas.stroke.as_mut().ok_or_else(|| js_message("no stroke is active"))?;
         if stroke.pending {
             return Err(js_message("stroke is waiting for its replacement frame"));
         }
@@ -1618,13 +1483,7 @@ impl WebCanvas {
                 StrokeKind::Inpaint => [168, 85, 247, 255],
                 StrokeKind::Paint => [stroke.color[0], stroke.color[1], stroke.color[2], 255],
             };
-            draw_segment(
-                &mut stroke.preview,
-                previous,
-                point,
-                stroke.diameter,
-                preview_color,
-            );
+            draw_segment(&mut stroke.preview, previous, point, stroke.diameter, preview_color);
             stroke.points.push(point);
             changed = true;
         }
@@ -1636,11 +1495,8 @@ impl WebCanvas {
     #[wasm_bindgen(js_name = finishStroke)]
     pub fn finish_stroke(&self) -> Result<JsValue, JsValue> {
         let mut browser = self.browser_mut()?;
-        let stroke = browser
-            .canvas
-            .stroke
-            .as_mut()
-            .ok_or_else(|| js_message("no stroke is active"))?;
+        let stroke =
+            browser.canvas.stroke.as_mut().ok_or_else(|| js_message("no stroke is active"))?;
         if stroke.pending {
             return Err(js_message("stroke is already waiting for replacement"));
         }
@@ -1785,24 +1641,15 @@ fn viewport_scene(page: &Scene, camera: Affine, page_rect: Rect, viewport_rect: 
 }
 
 fn page_clip(camera: Camera, page: (u32, u32), viewport: PhysicalSize) -> [u32; 4] {
-    let left = camera.translation[0]
-        .floor()
-        .clamp(0.0, f64::from(viewport.width)) as u32;
-    let top = camera.translation[1]
-        .floor()
-        .clamp(0.0, f64::from(viewport.height)) as u32;
+    let left = camera.translation[0].floor().clamp(0.0, f64::from(viewport.width)) as u32;
+    let top = camera.translation[1].floor().clamp(0.0, f64::from(viewport.height)) as u32;
     let right = (camera.translation[0] + f64::from(page.0) * camera.zoom)
         .ceil()
         .clamp(0.0, f64::from(viewport.width)) as u32;
     let bottom = (camera.translation[1] + f64::from(page.1) * camera.zoom)
         .ceil()
         .clamp(0.0, f64::from(viewport.height)) as u32;
-    [
-        left,
-        top,
-        right.saturating_sub(left),
-        bottom.saturating_sub(top),
-    ]
+    [left, top, right.saturating_sub(left), bottom.saturating_sub(top)]
 }
 
 fn draw_dot(scene: &mut Scene, point: Point, diameter: f32, color: [u8; 4]) {
@@ -1821,13 +1668,7 @@ fn draw_segment(scene: &mut Scene, from: Point, to: Point, diameter: f32, color:
     let mut path = BezPath::new();
     path.move_to((from.x, from.y));
     path.line_to((to.x, to.y));
-    scene.stroke(
-        &Stroke::new(f64::from(diameter)),
-        Affine::IDENTITY,
-        color,
-        None,
-        &path,
-    );
+    scene.stroke(&Stroke::new(f64::from(diameter)), Affine::IDENTITY, color, None, &path);
     scene.fill(
         Fill::NonZero,
         Affine::IDENTITY,
@@ -1866,9 +1707,7 @@ fn parse_layer_id(value: &str) -> Result<LayerId, JsValue> {
     let bytes_value = value.as_bytes();
     let valid_layout = bytes_value.len() == 32
         || (bytes_value.len() == 36
-            && [8, 13, 18, 23]
-                .into_iter()
-                .all(|index| bytes_value[index] == b'-'));
+            && [8, 13, 18, 23].into_iter().all(|index| bytes_value[index] == b'-'));
     if !valid_layout {
         return Err(js_message("layer id is not a UUID"));
     }
@@ -1899,9 +1738,7 @@ fn parse_layer_id(value: &str) -> Result<LayerId, JsValue> {
 }
 
 fn parse_resource_id(value: &str) -> Result<ResourceId, JsValue> {
-    value
-        .parse()
-        .map_err(|error| js_message(format!("invalid prepared resource id: {error}")))
+    value.parse().map_err(|error| js_message(format!("invalid prepared resource id: {error}")))
 }
 
 fn format_layer_id(id: LayerId) -> String {
@@ -1935,9 +1772,7 @@ fn validate_brush(diameter: f32) -> Result<(), JsValue> {
     if diameter.is_finite() && diameter > 0.0 && diameter <= MAX_BRUSH_DIAMETER {
         Ok(())
     } else {
-        Err(js_message(format!(
-            "brush diameter must be in (0, {MAX_BRUSH_DIAMETER}]"
-        )))
+        Err(js_message(format!("brush diameter must be in (0, {MAX_BRUSH_DIAMETER}]")))
     }
 }
 
@@ -1971,9 +1806,7 @@ fn rgba(value: &Uint8Array) -> Result<[u8; 4], JsValue> {
 fn sequence_number(value: f64) -> Result<u64, JsValue> {
     const MAX_SAFE_INTEGER: f64 = 9_007_199_254_740_991.0;
     if !value.is_finite() || value < 0.0 || value.fract() != 0.0 || value > MAX_SAFE_INTEGER {
-        return Err(js_message(
-            "transform sequence must be a non-negative safe integer",
-        ));
+        return Err(js_message("transform sequence must be a non-negative safe integer"));
     }
     Ok(value as u64)
 }
@@ -1990,9 +1823,7 @@ async fn next_animation_frame(window: &Window) -> Result<(), JsValue> {
         })
     };
     window.request_animation_frame(callback.as_ref().unchecked_ref())?;
-    receive
-        .await
-        .map_err(|_| js_message("animation frame was cancelled"))?;
+    receive.await.map_err(|_| js_message("animation frame was cancelled"))?;
     Ok(())
 }
 

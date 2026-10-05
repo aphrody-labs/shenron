@@ -68,16 +68,12 @@ async fn main() -> Result<()> {
     let detections = model.inference_with_thresholds(&image, thresholds)?;
 
     if let Some(path) = cli.annotated_output.as_deref() {
-        let font_path = cli
-            .font
-            .as_deref()
-            .context("--font is required when --annotated-output is used")?;
+        let font_path =
+            cli.font.as_deref().context("--font is required when --annotated-output is used")?;
         let font = load_font(font_path)?;
         let mut annotated = image.to_rgba8();
         draw_detections(&mut annotated, &detections, &font, cli.font_size);
-        annotated
-            .save(path)
-            .with_context(|| format!("failed to save {}", path.display()))?;
+        annotated.save(path).with_context(|| format!("failed to save {}", path.display()))?;
     }
 
     let json = serde_json::to_string_pretty(&detections)?;
@@ -158,24 +154,12 @@ fn draw_detections(
         let label = format!("{} {:.2}", detection.label, detection.score);
         let (text_width, text_height) = text_size(font_size, font, &label);
         let padding = 4;
-        let label_width = text_width
-            .saturating_add(padding * 2)
-            .min(image.width())
-            .max(1);
-        let label_height = text_height
-            .saturating_add(padding * 2)
-            .min(image.height())
-            .max(1);
-        let label_x = x1
-            .min(image.width().saturating_sub(label_width) as i32)
+        let label_width = text_width.saturating_add(padding * 2).min(image.width()).max(1);
+        let label_height = text_height.saturating_add(padding * 2).min(image.height()).max(1);
+        let label_x = x1.min(image.width().saturating_sub(label_width) as i32).max(0);
+        let label_y = if y1 >= label_height as i32 { y1 - label_height as i32 } else { y1 }
+            .min(image.height().saturating_sub(label_height) as i32)
             .max(0);
-        let label_y = if y1 >= label_height as i32 {
-            y1 - label_height as i32
-        } else {
-            y1
-        }
-        .min(image.height().saturating_sub(label_height) as i32)
-        .max(0);
         draw_filled_rect_mut(
             image,
             Rect::at(label_x, label_y).of_size(label_width, label_height),

@@ -20,9 +20,7 @@ pub(crate) async fn login_agent(
 ) -> Result<AgentStatus> {
     let channel = sink(on_event);
     let on_event = Arc::new(move |event: LoginEvent| {
-        if let LoginEvent::DeviceCode {
-            verification_url, ..
-        } = &event
+        if let LoginEvent::DeviceCode { verification_url, .. } = &event
             && let Err(error) = open::that(verification_url)
         {
             tracing::warn!(%error, "failed to open the Codex device sign-in page");

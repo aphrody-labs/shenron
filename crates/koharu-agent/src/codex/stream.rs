@@ -55,27 +55,24 @@ where
         }
         let value: Value =
             serde_json::from_str(&event.data).context("invalid JSON in Codex response stream")?;
-        let kind = value
-            .get("type")
-            .and_then(Value::as_str)
-            .unwrap_or_default();
+        let kind = value.get("type").and_then(Value::as_str).unwrap_or_default();
         match kind {
             "response.output_text.delta" => {
                 if let Some(delta) = value.get("delta").and_then(Value::as_str) {
                     text.push_str(delta);
                     publish(Delta::Text(delta.to_owned()));
                 }
-            }
+            },
             "response.reasoning_summary_text.delta" | "response.reasoning_text.delta" => {
                 if let Some(delta) = value.get("delta").and_then(Value::as_str) {
                     publish(Delta::Reasoning(delta.to_owned()));
                 }
-            }
+            },
             "response.output_item.done" => {
                 if let Some(item) = value.get("item") {
                     output.push(item.clone());
                 }
-            }
+            },
             "response.completed" | "response.done" => {
                 if output.is_empty()
                     && let Some(items) = value
@@ -87,15 +84,15 @@ where
                 }
                 completed = true;
                 break;
-            }
+            },
             "response.incomplete" => {
                 bail!("Codex response was incomplete: {}", provider_error(&value));
-            }
+            },
             "response.failed" => {
                 bail!("Codex response failed: {}", provider_error(&value));
-            }
+            },
             "error" => bail!("Codex returned an error: {}", provider_error(&value)),
-            _ => {}
+            _ => {},
         }
     }
     if !completed {
@@ -124,11 +121,7 @@ where
             })
         })
         .collect();
-    Ok(Turn {
-        output,
-        calls,
-        text,
-    })
+    Ok(Turn { output, calls, text })
 }
 
 fn output_text(output: &[Value]) -> String {

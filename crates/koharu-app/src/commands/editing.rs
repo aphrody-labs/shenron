@@ -10,7 +10,11 @@ use super::Result;
 
 #[tauri::command]
 #[specta::specta]
-pub(crate) async fn rename_page(page: EntityId, label: String, editor: State<'_, Editor>) -> Result<()> {
+pub(crate) async fn rename_page(
+    page: EntityId,
+    label: String,
+    editor: State<'_, Editor>,
+) -> Result<()> {
     editor.rename_page(page, label).await?;
     Ok(())
 }
@@ -63,7 +67,10 @@ pub(crate) async fn set_typography(
 
 #[tauri::command]
 #[specta::specta]
-pub(crate) async fn set_geometry(updates: Vec<GeometryUpdate>, editor: State<'_, Editor>) -> Result<()> {
+pub(crate) async fn set_geometry(
+    updates: Vec<GeometryUpdate>,
+    editor: State<'_, Editor>,
+) -> Result<()> {
     editor.set_geometry(updates).await?;
     Ok(())
 }

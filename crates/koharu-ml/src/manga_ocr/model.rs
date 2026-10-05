@@ -31,10 +31,7 @@ impl Model {
             "Manga OCR encoder and decoder hidden sizes must match"
         );
         ensure!(config.num_beams > 1, "Manga OCR requires beam search");
-        ensure!(
-            config.max_length > 1,
-            "Manga OCR max_length must exceed one"
-        );
+        ensure!(config.max_length > 1, "Manga OCR max_length must exceed one");
         ensure!(
             config.pad_token_id == config.decoder.pad_token_id,
             "Manga OCR model and decoder pad token IDs must match"
@@ -70,10 +67,7 @@ impl Model {
 
     pub(super) fn forward(&self, pixel_values: &Tensor) -> Result<Vec<i64>> {
         let size = pixel_values.size();
-        ensure!(
-            size.len() == 4 && size[0] == 1,
-            "Manga OCR expects one image"
-        );
+        ensure!(size.len() == 4 && size[0] == 1, "Manga OCR expects one image");
         let encoder_hidden_states = self.encoder.forward(&pixel_values.to_kind(self.vs.kind()));
         self.beam_search(&encoder_hidden_states)
     }
@@ -105,11 +99,9 @@ impl Model {
             // appending the token selected by this iteration.
             let current_length = sequences[0].len();
             let (logits, next_cache) =
-                self.decoder
-                    .forward(&input_ids, &encoder_hidden_states, cache.as_deref());
-            let mut next_token_scores = logits
-                .select(1, logits.size()[1] - 1)
-                .log_softmax(-1, Kind::Float);
+                self.decoder.forward(&input_ids, &encoder_hidden_states, cache.as_deref());
+            let mut next_token_scores =
+                logits.select(1, logits.size()[1] - 1).log_softmax(-1, Kind::Float);
             let banned = no_repeat_ngram_mask(
                 &sequences,
                 config.no_repeat_ngram_size,
@@ -117,9 +109,7 @@ impl Model {
                 device,
             );
             next_token_scores = next_token_scores.masked_fill(&banned, f64::NEG_INFINITY);
-            next_token_scores += Tensor::from_slice(&beam_scores)
-                .to_device(device)
-                .unsqueeze(1);
+            next_token_scores += Tensor::from_slice(&beam_scores).to_device(device).unsqueeze(1);
 
             let (candidate_scores, candidate_indices) = next_token_scores
                 .view([1, num_beams as i64 * config.vocab_size])
@@ -162,9 +152,8 @@ impl Model {
             beam_scores = next_scores;
             let beam_indices = Tensor::from_slice(&beam_indices).to_device(device);
             cache = Some(reorder_cache(next_cache, &beam_indices));
-            input_ids = Tensor::from_slice(&next_tokens)
-                .to_device(device)
-                .view([num_beams as i64, 1]);
+            input_ids =
+                Tensor::from_slice(&next_tokens).to_device(device).view([num_beams as i64, 1]);
 
             if hypotheses.is_done(beam_scores[0] as f64, current_length) {
                 break;
@@ -232,11 +221,8 @@ impl BeamHypotheses {
                     .unwrap();
                 self.beams.swap_remove(worst);
             }
-            self.worst_score = self
-                .beams
-                .iter()
-                .map(|(candidate, _)| *candidate)
-                .fold(f64::INFINITY, f64::min);
+            self.worst_score =
+                self.beams.iter().map(|(candidate, _)| *candidate).fold(f64::INFINITY, f64::min);
         }
     }
 
@@ -339,11 +325,7 @@ impl ViTModel {
         Self {
             embeddings: ViTEmbeddings::new(&(path / "embeddings"), config),
             encoder: ViTEncoder::new(&(path / "encoder"), config),
-            layernorm: layer_norm(
-                &(path / "layernorm"),
-                config.hidden_size,
-                config.layer_norm_eps,
-            ),
+            layernorm: layer_norm(&(path / "layernorm"), config.hidden_size, config.layer_norm_eps),
             pooler: ViTPooler::new(&(path / "pooler"), config),
         }
     }
@@ -368,11 +350,7 @@ impl ViTEmbeddings {
     fn new(path: &nn::Path<'_>, config: &ViTConfig) -> Self {
         let patches = (config.image_size / config.patch_size).pow(2);
         Self {
-            cls_token: path.var(
-                "cls_token",
-                &[1, 1, config.hidden_size],
-                nn::Init::Const(0.0),
-            ),
+            cls_token: path.var("cls_token", &[1, 1, config.hidden_size], nn::Init::Const(0.0)),
             position_embeddings: path.var(
                 "position_embeddings",
                 &[1, patches + 1, config.hidden_size],
@@ -404,24 +382,15 @@ impl PatchEmbeddings {
                 config.num_channels,
                 config.hidden_size,
                 config.patch_size,
-                nn::ConvConfig {
-                    stride: config.patch_size,
-                    ..Default::default()
-                },
+                nn::ConvConfig { stride: config.patch_size, ..Default::default() },
             ),
             image_size: config.image_size,
         }
     }
 
     fn forward(&self, pixel_values: &Tensor) -> Tensor {
-        assert_eq!(
-            &pixel_values.size()[2..],
-            &[self.image_size, self.image_size]
-        );
-        self.projection
-            .forward(pixel_values)
-            .flatten(2, 3)
-            .transpose(1, 2)
+        assert_eq!(&pixel_values.size()[2..], &[self.image_size, self.image_size]);
+        self.projection.forward(pixel_values).flatten(2, 3).transpose(1, 2)
     }
 }
 
@@ -442,9 +411,7 @@ impl ViTEncoder {
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
         self.layer
             .iter()
-            .fold(hidden_states.shallow_clone(), |hidden, layer| {
-                layer.forward(&hidden)
-            })
+            .fold(hidden_states.shallow_clone(), |hidden, layer| layer.forward(&hidden))
     }
 }
 
@@ -487,14 +454,10 @@ impl ViTLayer {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        let hidden_states = hidden_states
-            + self
-                .attention
-                .forward(&self.layernorm_before.forward(hidden_states));
-        let intermediate = self
-            .intermediate
-            .forward(&self.layernorm_after.forward(&hidden_states))
-            .gelu("none");
+        let hidden_states =
+            hidden_states + self.attention.forward(&self.layernorm_before.forward(hidden_states));
+        let intermediate =
+            self.intermediate.forward(&self.layernorm_after.forward(&hidden_states)).gelu("none");
         hidden_states + self.output.forward(&intermediate)
     }
 }
@@ -551,19 +514,17 @@ impl ViTAttention {
             .softmax(-1, Kind::Float)
             .to_kind(value.kind());
         let size = hidden_states.size();
-        let context = probabilities
-            .matmul(&value)
-            .transpose(1, 2)
-            .contiguous()
-            .view([size[0], size[1], self.num_heads * self.head_dim]);
+        let context = probabilities.matmul(&value).transpose(1, 2).contiguous().view([
+            size[0],
+            size[1],
+            self.num_heads * self.head_dim,
+        ]);
         self.output.forward(&context)
     }
 
     fn transpose_for_scores(&self, hidden_states: &Tensor) -> Tensor {
         let size = hidden_states.size();
-        hidden_states
-            .view([size[0], size[1], self.num_heads, self.head_dim])
-            .permute([0, 2, 1, 3])
+        hidden_states.view([size[0], size[1], self.num_heads, self.head_dim]).permute([0, 2, 1, 3])
     }
 }
 
@@ -574,14 +535,7 @@ struct ViTPooler {
 
 impl ViTPooler {
     fn new(path: &nn::Path<'_>, config: &ViTConfig) -> Self {
-        Self {
-            dense: linear(
-                &(path / "dense"),
-                config.hidden_size,
-                config.hidden_size,
-                true,
-            ),
-        }
+        Self { dense: linear(&(path / "dense"), config.hidden_size, config.hidden_size, true) }
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
@@ -636,8 +590,7 @@ impl BertModel {
     ) -> (Tensor, Vec<LayerCache>) {
         let past_length = cache.map_or(0, |cache| cache[0].self_key.size()[2]);
         let embeddings = self.embeddings.forward(input_ids, past_length);
-        self.encoder
-            .forward(&embeddings, encoder_hidden_states, cache)
+        self.encoder.forward(&embeddings, encoder_hidden_states, cache)
     }
 }
 
@@ -663,10 +616,7 @@ impl BertEmbeddings {
                 path / "word_embeddings",
                 config.vocab_size,
                 config.hidden_size,
-                nn::EmbeddingConfig {
-                    padding_idx: config.pad_token_id,
-                    ..Default::default()
-                },
+                nn::EmbeddingConfig { padding_idx: config.pad_token_id, ..Default::default() },
             ),
             position_embeddings: nn::embedding(
                 path / "position_embeddings",
@@ -798,15 +748,7 @@ impl BertLayer {
         let hidden_states = self
             .output_layer_norm
             .forward(&(self.output.forward(&intermediate) + attention_output));
-        (
-            hidden_states,
-            LayerCache {
-                self_key,
-                self_value,
-                cross_key,
-                cross_value,
-            },
-        )
+        (hidden_states, LayerCache { self_key, self_value, cross_key, cross_value })
     }
 }
 
@@ -842,11 +784,8 @@ impl BertAttention {
         past: Option<(&Tensor, &Tensor)>,
     ) -> (Tensor, Tensor, Tensor) {
         let (context, key, value) =
-            self.self_attention
-                .forward(hidden_states, key_value_states, past);
-        let output = self
-            .layer_norm
-            .forward(&(self.dense.forward(&context) + hidden_states));
+            self.self_attention.forward(hidden_states, key_value_states, past);
+        let output = self.layer_norm.forward(&(self.dense.forward(&context) + hidden_states));
         (output, key, value)
     }
 }
@@ -864,24 +803,9 @@ impl BertSelfAttention {
     fn new(path: &nn::Path<'_>, config: &BertConfig) -> Self {
         let head_dim = config.hidden_size / config.num_attention_heads;
         Self {
-            query: linear(
-                &(path / "query"),
-                config.hidden_size,
-                config.hidden_size,
-                true,
-            ),
-            key: linear(
-                &(path / "key"),
-                config.hidden_size,
-                config.hidden_size,
-                true,
-            ),
-            value: linear(
-                &(path / "value"),
-                config.hidden_size,
-                config.hidden_size,
-                true,
-            ),
+            query: linear(&(path / "query"), config.hidden_size, config.hidden_size, true),
+            key: linear(&(path / "key"), config.hidden_size, config.hidden_size, true),
+            value: linear(&(path / "value"), config.hidden_size, config.hidden_size, true),
             num_heads: config.num_attention_heads,
             head_dim,
         }
@@ -910,25 +834,23 @@ impl BertSelfAttention {
                 } else {
                     (key, value)
                 }
-            }
+            },
         };
         let probabilities = (query.matmul(&key.transpose(-1, -2)) / (self.head_dim as f64).sqrt())
             .softmax(-1, Kind::Float)
             .to_kind(value.kind());
         let size = hidden_states.size();
-        let context = probabilities
-            .matmul(&value)
-            .transpose(1, 2)
-            .contiguous()
-            .view([size[0], size[1], self.num_heads * self.head_dim]);
+        let context = probabilities.matmul(&value).transpose(1, 2).contiguous().view([
+            size[0],
+            size[1],
+            self.num_heads * self.head_dim,
+        ]);
         (context, key, value)
     }
 
     fn transpose_for_scores(&self, hidden_states: &Tensor) -> Tensor {
         let size = hidden_states.size();
-        hidden_states
-            .view([size[0], size[1], self.num_heads, self.head_dim])
-            .permute([0, 2, 1, 3])
+        hidden_states.view([size[0], size[1], self.num_heads, self.head_dim]).permute([0, 2, 1, 3])
     }
 }
 
@@ -972,12 +894,7 @@ struct BertPredictionHeadTransform {
 impl BertPredictionHeadTransform {
     fn new(path: &nn::Path<'_>, config: &BertConfig) -> Self {
         Self {
-            dense: linear(
-                &(path / "dense"),
-                config.hidden_size,
-                config.hidden_size,
-                true,
-            ),
+            dense: linear(&(path / "dense"), config.hidden_size, config.hidden_size, true),
             layer_norm: layer_norm(
                 &(path / "LayerNorm"),
                 config.hidden_size,
@@ -987,31 +904,19 @@ impl BertPredictionHeadTransform {
     }
 
     fn forward(&self, hidden_states: &Tensor) -> Tensor {
-        self.layer_norm
-            .forward(&self.dense.forward(hidden_states).gelu("none"))
+        self.layer_norm.forward(&self.dense.forward(hidden_states).gelu("none"))
     }
 }
 
 fn linear(path: &nn::Path<'_>, input: i64, output: i64, bias: bool) -> nn::Linear {
-    nn::linear(
-        path,
-        input,
-        output,
-        nn::LinearConfig {
-            bias,
-            ..Default::default()
-        },
-    )
+    nn::linear(path, input, output, nn::LinearConfig { bias, ..Default::default() })
 }
 
 fn layer_norm(path: &nn::Path<'_>, hidden_size: i64, epsilon: f64) -> nn::LayerNorm {
     nn::layer_norm(
         path,
         vec![hidden_size],
-        nn::LayerNormConfig {
-            eps: epsilon,
-            ..Default::default()
-        },
+        nn::LayerNormConfig { eps: epsilon, ..Default::default() },
     )
 }
 

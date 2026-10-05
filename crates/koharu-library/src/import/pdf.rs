@@ -48,10 +48,7 @@ pub(super) fn render(path: &Path) -> Result<Vec<EncodedPage>> {
             let bytes = render_page(page, &cache, &interpreter_settings, &render_settings)
                 .into_png()
                 .with_context(|| {
-                    format!(
-                        "failed to encode PDF page {page_number} of {} as PNG",
-                        path.display()
-                    )
+                    format!("failed to encode PDF page {page_number} of {} as PNG", path.display())
                 })?;
 
             Ok(EncodedPage {
@@ -112,14 +109,10 @@ mod tests {
 
     #[test]
     fn renders_pdf_pages_as_300_dpi_pngs() {
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock after epoch")
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!(
-            "koharu-import-pdf-{}-{timestamp}.pdf",
-            std::process::id()
-        ));
+        let timestamp =
+            SystemTime::now().duration_since(UNIX_EPOCH).expect("clock after epoch").as_nanos();
+        let path = std::env::temp_dir()
+            .join(format!("koharu-import-pdf-{}-{timestamp}.pdf", std::process::id()));
         fs::write(&path, single_page_pdf()).expect("write PDF fixture");
         let pages = render(&path).expect("render PDF");
         fs::remove_file(&path).expect("remove PDF fixture");

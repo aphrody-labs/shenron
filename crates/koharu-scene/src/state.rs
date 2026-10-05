@@ -53,15 +53,12 @@ impl EntityNode {
         key: ComponentKey,
         value: ComponentRecord,
     ) -> Option<ComponentRecord> {
-        match self
-            .components
-            .binary_search_by(|(candidate, _)| candidate.cmp(&key))
-        {
+        match self.components.binary_search_by(|(candidate, _)| candidate.cmp(&key)) {
             Ok(index) => Some(std::mem::replace(&mut self.components[index].1, value)),
             Err(index) => {
                 self.components.insert(index, (key, value));
                 None
-            }
+            },
         }
     }
 
@@ -85,12 +82,8 @@ pub(crate) struct PageState {
 impl PageState {
     fn new(id: EntityId, components: Components) -> Self {
         let mut entities = DenseSlotMap::with_key();
-        let root = entities.insert(EntityNode {
-            id,
-            parent: None,
-            children: Vec::new(),
-            components,
-        });
+        let root =
+            entities.insert(EntityNode { id, parent: None, children: Vec::new(), components });
         let mut page = Self {
             root,
             epoch: 0,
@@ -153,9 +146,7 @@ impl PageState {
         if !self.entities[key].children.is_empty() {
             return Err(Error::NonEmptyEntity(id));
         }
-        let parent = self.entities[key]
-            .parent
-            .expect("non-root entity has a parent");
+        let parent = self.entities[key].parent.expect("non-root entity has a parent");
         self.entities[parent].children.retain(|child| *child != key);
         self.unindex_entity(key);
         self.keys.remove(&id);
@@ -182,9 +173,7 @@ impl PageState {
             }
             cursor = self.entities[candidate].parent;
         }
-        let old_parent = self.entities[key]
-            .parent
-            .expect("non-root entity has a parent");
+        let old_parent = self.entities[key].parent.expect("non-root entity has a parent");
         let old_position = self.entities[old_parent]
             .children
             .iter()
@@ -206,9 +195,7 @@ impl PageState {
             return Err(Error::invalid("a page root cannot move into another page"));
         }
 
-        let parent = self.entities[root]
-            .parent
-            .expect("non-root entity has a parent");
+        let parent = self.entities[root].parent.expect("non-root entity has a parent");
         let position = self.entities[parent]
             .children
             .iter()
@@ -240,9 +227,7 @@ impl PageState {
             let entity = self.entities[key].id;
             self.unindex_entity(key);
             self.keys.remove(&entity);
-            self.entities
-                .remove(key)
-                .expect("collected subtree entity exists");
+            self.entities.remove(key).expect("collected subtree entity exists");
         }
         self.bump_epoch();
         Ok(DetachedSubtree { entities })
@@ -259,10 +244,7 @@ impl PageState {
             return Err(Error::invalid("entity move position is out of range"));
         }
         if subtree.entities.is_empty()
-            || subtree
-                .entities
-                .iter()
-                .any(|entity| self.keys.contains_key(&entity.id))
+            || subtree.entities.iter().any(|entity| self.keys.contains_key(&entity.id))
         {
             return Err(Error::invalid("invalid detached subtree"));
         }
@@ -279,7 +261,7 @@ impl PageState {
                 None if root.is_none() => {
                     root = Some(entity.id);
                     Some(parent)
-                }
+                },
                 None => return Err(Error::invalid("detached subtree has multiple roots")),
             };
             let key = self.entities.insert(EntityNode {
@@ -298,9 +280,7 @@ impl PageState {
             self.index_entity(key);
         }
         let root = root.expect("non-empty subtree has a root");
-        self.entities[parent]
-            .children
-            .insert(position, inserted[&root]);
+        self.entities[parent].children.insert(position, inserted[&root]);
         self.bump_epoch();
         Ok(())
     }
@@ -376,19 +356,13 @@ impl PageState {
 
     fn index_entity(&mut self, key: LocalEntityKey) {
         for (component, _) in &self.entities[key].components {
-            self.component_index
-                .entry(component.clone())
-                .or_default()
-                .insert(key);
+            self.component_index.entry(component.clone()).or_default().insert(key);
         }
     }
 
     fn unindex_entity(&mut self, key: LocalEntityKey) {
-        let components = self.entities[key]
-            .components
-            .iter()
-            .map(|(key, _)| key.clone())
-            .collect::<Vec<_>>();
+        let components =
+            self.entities[key].components.iter().map(|(key, _)| key.clone()).collect::<Vec<_>>();
         for component in components {
             if let Some(values) = self.component_index.get_mut(&component) {
                 values.remove(&key);
@@ -423,15 +397,12 @@ impl RelationState {
         key: ComponentKey,
         value: ComponentRecord,
     ) -> Option<ComponentRecord> {
-        match self
-            .components
-            .binary_search_by(|(candidate, _)| candidate.cmp(&key))
-        {
+        match self.components.binary_search_by(|(candidate, _)| candidate.cmp(&key)) {
             Ok(index) => Some(std::mem::replace(&mut self.components[index].1, value)),
             Err(index) => {
                 self.components.insert(index, (key, value));
                 None
-            }
+            },
         }
     }
 }
@@ -471,17 +442,11 @@ impl State {
     }
 
     pub(crate) fn page_for(&self, id: EntityId) -> Result<EntityId> {
-        self.entity_pages
-            .get(&id)
-            .copied()
-            .ok_or(Error::EntityNotFound(id))
+        self.entity_pages.get(&id).copied().ok_or(Error::EntityNotFound(id))
     }
 
     pub(crate) fn page(&self, id: EntityId) -> Result<&PageState> {
-        self.pages
-            .get(&id)
-            .map(AsRef::as_ref)
-            .ok_or(Error::EntityNotFound(id))
+        self.pages.get(&id).map(AsRef::as_ref).ok_or(Error::EntityNotFound(id))
     }
 
     pub(crate) fn page_containing(&self, id: EntityId) -> Result<&PageState> {
@@ -489,10 +454,7 @@ impl State {
     }
 
     pub(crate) fn page_mut(&mut self, page: EntityId) -> Result<&mut PageState> {
-        self.pages
-            .get_mut(&page)
-            .map(Arc::make_mut)
-            .ok_or(Error::EntityNotFound(page))
+        self.pages.get_mut(&page).map(Arc::make_mut).ok_or(Error::EntityNotFound(page))
     }
 
     pub(crate) fn entity(&self, id: EntityId) -> Result<&EntityNode> {
@@ -501,12 +463,7 @@ impl State {
 
     pub(crate) fn child_ids(&self, parent: EntityId) -> Result<Vec<EntityId>> {
         let page = self.page_containing(parent)?;
-        Ok(page
-            .entity(parent)?
-            .children
-            .iter()
-            .map(|child| page.entities[*child].id)
-            .collect())
+        Ok(page.entity(parent)?.children.iter().map(|child| page.entities[*child].id).collect())
     }
 
     pub(crate) fn component(
@@ -522,11 +479,7 @@ impl State {
         id: RelationId,
         key: &ComponentKey,
     ) -> Result<Option<&ComponentRecord>> {
-        Ok(self
-            .relations
-            .get(&id)
-            .ok_or(Error::RelationNotFound(id))?
-            .component(key))
+        Ok(self.relations.get(&id).ok_or(Error::RelationNotFound(id))?.component(key))
     }
 
     pub(crate) fn project_component(&self, key: &ComponentKey) -> Option<&ComponentRecord> {
@@ -547,7 +500,7 @@ impl State {
             Err(index) => {
                 components.insert(index, (key, value));
                 None
-            }
+            },
         }
     }
 
@@ -573,8 +526,7 @@ impl State {
         }
         Arc::make_mut(&mut self.page_order).insert(position, id);
         self.page_order_epoch = self.page_order_epoch.wrapping_add(1);
-        self.pages
-            .insert(id, Arc::new(PageState::new(id, components)));
+        self.pages.insert(id, Arc::new(PageState::new(id, components)));
         self.entity_pages.insert(id, id);
         Ok(())
     }
@@ -593,10 +545,8 @@ impl State {
 
     pub(crate) fn move_page(&mut self, id: EntityId, position: usize) -> Result<()> {
         let pages = Arc::make_mut(&mut self.page_order);
-        let old = pages
-            .iter()
-            .position(|candidate| *candidate == id)
-            .ok_or(Error::EntityNotFound(id))?;
+        let old =
+            pages.iter().position(|candidate| *candidate == id).ok_or(Error::EntityNotFound(id))?;
         pages.remove(old);
         if position > pages.len() {
             return Err(Error::invalid("page move position is out of range"));
@@ -617,8 +567,7 @@ impl State {
         if self.contains_entity(id) {
             return Err(Error::MultipleParents(id));
         }
-        self.page_mut(page)?
-            .insert_entity(id, parent, position, components)?;
+        self.page_mut(page)?.insert_entity(id, parent, position, components)?;
         self.entity_pages.insert(id, page);
         Ok(())
     }
@@ -639,9 +588,7 @@ impl State {
         let source_page = self.page_for(id)?;
         let target_page = self.page_for(parent)?;
         if source_page == target_page {
-            return self
-                .page_mut(source_page)?
-                .move_entity(id, parent, position);
+            return self.page_mut(source_page)?.move_entity(id, parent, position);
         }
 
         if id == source_page {
@@ -654,13 +601,8 @@ impl State {
         }
 
         let subtree = self.page_mut(source_page)?.detach_subtree(id)?;
-        let moved = subtree
-            .entities
-            .iter()
-            .map(|entity| entity.id)
-            .collect::<Vec<_>>();
-        self.page_mut(target_page)?
-            .attach_subtree(parent, position, subtree)?;
+        let moved = subtree.entities.iter().map(|entity| entity.id).collect::<Vec<_>>();
+        self.page_mut(target_page)?.attach_subtree(parent, position, subtree)?;
         for entity in moved {
             self.entity_pages.insert(entity, target_page);
         }
@@ -679,9 +621,7 @@ impl State {
         }
         let page = self.page(page_id)?;
         let key = page.key(id)?;
-        let parent = page.entities[key]
-            .parent
-            .expect("non-page entity has a parent");
+        let parent = page.entities[key].parent.expect("non-page entity has a parent");
         let position = page.entities[parent]
             .children
             .iter()
@@ -718,10 +658,7 @@ impl State {
         }
         self.relations.insert(
             id,
-            Arc::new(RelationState {
-                value: value.clone(),
-                components: SmallVec::new(),
-            }),
+            Arc::new(RelationState { value: value.clone(), components: SmallVec::new() }),
         );
         append_relation(&mut self.outgoing, value.source, id);
         append_relation(&mut self.incoming, value.target, id);
@@ -730,10 +667,7 @@ impl State {
     }
 
     pub(crate) fn remove_relation(&mut self, id: RelationId) -> Result<RelationState> {
-        let relation = self
-            .relations
-            .remove(&id)
-            .ok_or(Error::RelationNotFound(id))?;
+        let relation = self.relations.remove(&id).ok_or(Error::RelationNotFound(id))?;
         remove_relation_id(&mut self.outgoing, relation.value.source, id);
         remove_relation_id(&mut self.incoming, relation.value.target, id);
         self.bump_incident_pages(&relation.value);
@@ -745,12 +679,7 @@ impl State {
         id: RelationId,
         value: Relation,
     ) -> Result<Relation> {
-        let previous = self
-            .relations
-            .get(&id)
-            .ok_or(Error::RelationNotFound(id))?
-            .value
-            .clone();
+        let previous = self.relations.get(&id).ok_or(Error::RelationNotFound(id))?.value.clone();
         if previous.source != value.source || previous.target != value.target {
             remove_relation_id(&mut self.outgoing, previous.source, id);
             remove_relation_id(&mut self.incoming, previous.target, id);
@@ -768,11 +697,8 @@ impl State {
         key: ComponentKey,
         value: ComponentRecord,
     ) -> Result<Option<ComponentRecord>> {
-        let relation = self
-            .relations
-            .get_mut(&id)
-            .map(Arc::make_mut)
-            .ok_or(Error::RelationNotFound(id))?;
+        let relation =
+            self.relations.get_mut(&id).map(Arc::make_mut).ok_or(Error::RelationNotFound(id))?;
         let endpoints = relation.value.clone();
         let previous = relation.set_component(key, value);
         self.bump_incident_pages(&endpoints);
@@ -784,11 +710,8 @@ impl State {
         id: RelationId,
         key: &ComponentKey,
     ) -> Result<Option<ComponentRecord>> {
-        let relation = self
-            .relations
-            .get_mut(&id)
-            .map(Arc::make_mut)
-            .ok_or(Error::RelationNotFound(id))?;
+        let relation =
+            self.relations.get_mut(&id).map(Arc::make_mut).ok_or(Error::RelationNotFound(id))?;
         let endpoints = relation.value.clone();
         let result = relation
             .components
@@ -807,17 +730,11 @@ impl State {
             .flat_map(|(_, value)| value.blob_refs.iter().copied())
             .chain(self.pages.values().flat_map(|page| {
                 page.entities.values().flat_map(|entity| {
-                    entity
-                        .components
-                        .iter()
-                        .flat_map(|(_, value)| value.blob_refs.iter().copied())
+                    entity.components.iter().flat_map(|(_, value)| value.blob_refs.iter().copied())
                 })
             }))
             .chain(self.relations.values().flat_map(|relation| {
-                relation
-                    .components
-                    .iter()
-                    .flat_map(|(_, value)| value.blob_refs.iter().copied())
+                relation.components.iter().flat_map(|(_, value)| value.blob_refs.iter().copied())
             }))
             .collect()
     }
@@ -872,9 +789,8 @@ impl State {
         state.project_components = Arc::new(load_components(stored.project_components)?);
         for page in stored.pages {
             let mut entities = page.entities.into_iter();
-            let root = entities
-                .next()
-                .ok_or_else(|| Error::invalid("stored page has no root entity"))?;
+            let root =
+                entities.next().ok_or_else(|| Error::invalid("stored page has no root entity"))?;
             if root.id != page.id || root.parent.is_some() {
                 return Err(Error::invalid("stored page root is invalid"));
             }
@@ -884,9 +800,8 @@ impl State {
                 load_components(root.components)?,
             )?;
             for entity in entities {
-                let parent = entity
-                    .parent
-                    .ok_or_else(|| Error::invalid("stored child has no parent"))?;
+                let parent =
+                    entity.parent.ok_or_else(|| Error::invalid("stored child has no parent"))?;
                 let position = state.page(page.id)?.entity(parent)?.children.len();
                 state.insert_entity(
                     page.id,
@@ -902,10 +817,7 @@ impl State {
         for relation in stored.relations {
             state.insert_relation(relation.id, relation.value)?;
             Arc::make_mut(
-                state
-                    .relations
-                    .get_mut(&relation.id)
-                    .expect("inserted relation exists"),
+                state.relations.get_mut(&relation.id).expect("inserted relation exists"),
             )
             .components = load_components(relation.components)?;
         }
@@ -920,25 +832,15 @@ impl State {
         schema::validate_components(&self.project_components, &context)?;
         for page_id in self.page_order.iter().copied() {
             let page = self.page(page_id)?;
-            if page
-                .component(page_id, &crate::component::key::<Page>()?)?
-                .is_none()
-            {
+            if page.component(page_id, &crate::component::key::<Page>()?)?.is_none() {
                 return Err(Error::invalid("page marker is missing"));
             }
             for id in page.ordered_ids() {
                 let entity = page.entity(id)?;
-                if entity
-                    .component(&crate::component::key::<EntityOrigin>()?)
-                    .is_none()
-                {
+                if entity.component(&crate::component::key::<EntityOrigin>()?).is_none() {
                     return Err(Error::invalid("entity origin is missing"));
                 }
-                if id != page_id
-                    && entity
-                        .component(&crate::component::key::<Page>()?)
-                        .is_some()
-                {
+                if id != page_id && entity.component(&crate::component::key::<Page>()?).is_some() {
                     return Err(Error::invalid("nested entity carries a page marker"));
                 }
                 schema::validate_components(&entity.components, &context)?;
@@ -1009,10 +911,7 @@ pub(crate) struct StoredState {
 pub(crate) fn store_components(components: &Components) -> Vec<StoredComponentEntry> {
     components
         .iter()
-        .map(|(key, value)| StoredComponentEntry {
-            key: key.clone(),
-            value: value.to_stored(),
-        })
+        .map(|(key, value)| StoredComponentEntry { key: key.clone(), value: value.to_stored() })
         .collect()
 }
 
@@ -1034,12 +933,7 @@ fn validate_depth(page: &PageState) -> Result<()> {
         if depth > MAX_HIERARCHY_DEPTH {
             return Err(Error::invalid("project hierarchy exceeds maximum depth"));
         }
-        stack.extend(
-            page.entities[key]
-                .children
-                .iter()
-                .map(|child| (*child, depth + 1)),
-        );
+        stack.extend(page.entities[key].children.iter().map(|child| (*child, depth + 1)));
     }
     Ok(())
 }

@@ -54,43 +54,23 @@ struct Multiples {
 
 impl Multiples {
     fn n() -> Self {
-        Self {
-            depth: 0.33,
-            width: 0.25,
-            ratio: 2.0,
-        }
+        Self { depth: 0.33, width: 0.25, ratio: 2.0 }
     }
 
     fn s() -> Self {
-        Self {
-            depth: 0.33,
-            width: 0.50,
-            ratio: 2.0,
-        }
+        Self { depth: 0.33, width: 0.50, ratio: 2.0 }
     }
 
     fn m() -> Self {
-        Self {
-            depth: 0.67,
-            width: 0.75,
-            ratio: 1.5,
-        }
+        Self { depth: 0.67, width: 0.75, ratio: 1.5 }
     }
 
     fn l() -> Self {
-        Self {
-            depth: 1.00,
-            width: 1.00,
-            ratio: 1.0,
-        }
+        Self { depth: 1.00, width: 1.00, ratio: 1.0 }
     }
 
     fn x() -> Self {
-        Self {
-            depth: 1.00,
-            width: 1.25,
-            ratio: 1.0,
-        }
+        Self { depth: 1.00, width: 1.25, ratio: 1.0 }
     }
 
     fn from_variant(variant: &str) -> Result<Self> {
@@ -162,10 +142,7 @@ impl ConvBlock {
         let bn = nn::batch_norm2d(
             path / "bn",
             c2,
-            nn::BatchNormConfig {
-                eps: 1e-3,
-                ..Default::default()
-            },
+            nn::BatchNormConfig { eps: 1e-3, ..Default::default() },
         );
         Self { conv, bn }
     }
@@ -252,13 +229,7 @@ impl Sppf {
             self.kernel_size / 2,
             self.kernel_size / 2,
         ])
-        .max_pool2d(
-            [self.kernel_size, self.kernel_size],
-            [1, 1],
-            [0, 0],
-            [1, 1],
-            false,
-        )
+        .max_pool2d([self.kernel_size, self.kernel_size], [1, 1], [0, 0], [1, 1], false)
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
@@ -284,10 +255,7 @@ impl Dfl {
                 num_classes,
                 1,
                 1,
-                nn::ConvConfig {
-                    bias: false,
-                    ..Default::default()
-                },
+                nn::ConvConfig { bias: false, ..Default::default() },
             ),
             num_classes,
         }
@@ -382,20 +350,13 @@ impl DarkNet {
                 (3.0 * d).round() as usize,
                 true,
             ),
-            b5: Sppf::load(
-                &(path / 9),
-                (512.0 * w * r) as i64,
-                (512.0 * w * r) as i64,
-                5,
-            ),
+            b5: Sppf::load(&(path / 9), (512.0 * w * r) as i64, (512.0 * w * r) as i64, 5),
         }
     }
 
     fn forward(&self, xs: &Tensor) -> (Tensor, Tensor, Tensor) {
         let x1 = self.b1_1.forward(&self.b1_0.forward(xs));
-        let x2 = self
-            .b2_2
-            .forward(&self.b2_1.forward(&self.b2_0.forward(&x1)));
+        let x2 = self.b2_2.forward(&self.b2_1.forward(&self.b2_0.forward(&x1)));
         let x3 = self.b3_1.forward(&self.b3_0.forward(&x2));
         let x4 = self.b4_1.forward(&self.b4_0.forward(&x3));
         let x5 = self.b5.forward(&x4);
@@ -427,13 +388,7 @@ impl YoloV8Neck {
                 n,
                 false,
             ),
-            n2: C2f::load(
-                &(path / 15),
-                (768.0 * w) as i64,
-                (256.0 * w) as i64,
-                n,
-                false,
-            ),
+            n2: C2f::load(&(path / 15), (768.0 * w) as i64, (256.0 * w) as i64, n, false),
             n3: ConvBlock::load(
                 &(path / 16),
                 (256.0 * w) as i64,
@@ -442,13 +397,7 @@ impl YoloV8Neck {
                 2,
                 Some(1),
             ),
-            n4: C2f::load(
-                &(path / 18),
-                (768.0 * w) as i64,
-                (512.0 * w) as i64,
-                n,
-                false,
-            ),
+            n4: C2f::load(&(path / 18), (768.0 * w) as i64, (512.0 * w) as i64, n, false),
             n5: ConvBlock::load(
                 &(path / 19),
                 (512.0 * w) as i64,
@@ -468,19 +417,11 @@ impl YoloV8Neck {
     }
 
     fn forward(&self, p3: &Tensor, p4: &Tensor, p5: &Tensor) -> (Tensor, Tensor, Tensor) {
-        let x = self
-            .n1
-            .forward(&Tensor::cat(&[self.up.forward(p5), p4.shallow_clone()], 1));
-        let head_1 = self
-            .n2
-            .forward(&Tensor::cat(&[self.up.forward(&x), p3.shallow_clone()], 1));
-        let head_2 = self
-            .n4
-            .forward(&Tensor::cat(&[self.n3.forward(&head_1), x], 1));
-        let head_3 = self.n6.forward(&Tensor::cat(
-            &[self.n5.forward(&head_2), p5.shallow_clone()],
-            1,
-        ));
+        let x = self.n1.forward(&Tensor::cat(&[self.up.forward(p5), p4.shallow_clone()], 1));
+        let head_1 = self.n2.forward(&Tensor::cat(&[self.up.forward(&x), p3.shallow_clone()], 1));
+        let head_2 = self.n4.forward(&Tensor::cat(&[self.n3.forward(&head_1), x], 1));
+        let head_3 =
+            self.n6.forward(&Tensor::cat(&[self.n5.forward(&head_2), p5.shallow_clone()], 1));
         (head_1, head_2, head_3)
     }
 }
@@ -511,10 +452,7 @@ fn make_anchors(
         anchor_points.push(Tensor::stack(&[sx, sy], -1));
         stride_tensors.push(Tensor::full([height * width], stride, (kind, device)));
     }
-    (
-        Tensor::cat(&anchor_points, 0),
-        Tensor::cat(&stride_tensors, 0).unsqueeze(1),
-    )
+    (Tensor::cat(&anchor_points, 0), Tensor::cat(&stride_tensors, 0).unsqueeze(1))
 }
 
 fn dist2bbox(distance: &Tensor, anchor_points: &Tensor) -> Tensor {
@@ -543,19 +481,12 @@ impl HeadBranch {
         Self {
             block0: ConvBlock::load(&(path / 0), in_channels, hidden_channels, 3, 1, None),
             block1: ConvBlock::load(&(path / 1), hidden_channels, hidden_channels, 3, 1, None),
-            conv: nn::conv2d(
-                path / 2,
-                hidden_channels,
-                out_channels,
-                1,
-                Default::default(),
-            ),
+            conv: nn::conv2d(path / 2, hidden_channels, out_channels, 1, Default::default()),
         }
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        self.conv
-            .forward(&self.block1.forward(&self.block0.forward(xs)))
+        self.conv.forward(&self.block1.forward(&self.block0.forward(xs)))
     }
 }
 
@@ -576,10 +507,7 @@ impl Proto {
                 c_mid,
                 c_mid,
                 2,
-                nn::ConvTransposeConfig {
-                    stride: 2,
-                    ..Default::default()
-                },
+                nn::ConvTransposeConfig { stride: 2, ..Default::default() },
             ),
             cv2: ConvBlock::load(&(path / "cv2"), c_mid, c_mid, 3, 1, None),
             cv3: ConvBlock::load(&(path / "cv3"), c_mid, c2, 1, 1, None),
@@ -646,10 +574,7 @@ impl SegmentHead {
     }
 
     fn forward_cv2_cv3(&self, xs: &Tensor, index: usize) -> Tensor {
-        Tensor::cat(
-            &[self.cv2[index].forward(xs), self.cv3[index].forward(xs)],
-            1,
-        )
+        Tensor::cat(&[self.cv2[index].forward(xs), self.cv3[index].forward(xs)], 1)
     }
 
     fn forward_detection(&self, xs0: &Tensor, xs1: &Tensor, xs2: &Tensor) -> Tensor {
@@ -673,26 +598,17 @@ impl SegmentHead {
 
     fn forward_cv4(&self, xs: &Tensor, index: usize) -> Tensor {
         let size = xs.size();
-        self.cv4[index]
-            .forward(xs)
-            .view([size[0], self.num_masks, size[2] * size[3]])
+        self.cv4[index].forward(xs).view([size[0], self.num_masks, size[2] * size[3]])
     }
 
     fn forward(&self, xs0: &Tensor, xs1: &Tensor, xs2: &Tensor) -> Output {
         let pred = self.forward_detection(xs0, xs1, xs2);
         let proto = self.proto.forward(xs0);
         let mask_coefficients = Tensor::cat(
-            &[
-                self.forward_cv4(xs0, 0),
-                self.forward_cv4(xs1, 1),
-                self.forward_cv4(xs2, 2),
-            ],
+            &[self.forward_cv4(xs0, 0), self.forward_cv4(xs1, 1), self.forward_cv4(xs2, 2)],
             2,
         );
-        Output {
-            pred: Tensor::cat(&[pred, mask_coefficients], 1),
-            proto,
-        }
+        Output { pred: Tensor::cat(&[pred, mask_coefficients], 1), proto }
     }
 }
 

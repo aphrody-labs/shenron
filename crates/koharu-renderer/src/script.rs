@@ -14,18 +14,11 @@ pub(crate) fn shaping_direction_for_text(
     writing_mode: WritingMode,
 ) -> (Direction, Option<Script>) {
     if writing_mode.is_vertical() {
-        return (
-            Direction::TopToBottom,
-            dominant_script(text).and_then(harfrust_script),
-        );
+        return (Direction::TopToBottom, dominant_script(text).and_then(harfrust_script));
     }
 
     let bidi = BidiInfo::new(text, None);
-    let direction = if bidi
-        .paragraphs
-        .first()
-        .is_some_and(|paragraph| paragraph.level.is_rtl())
-    {
+    let direction = if bidi.paragraphs.first().is_some_and(|paragraph| paragraph.level.is_rtl()) {
         Direction::RightToLeft
     } else {
         Direction::LeftToRight
@@ -105,18 +98,9 @@ mod tests {
 
     #[test]
     fn fallback_scripts_preserve_cjk_locale_selection() {
-        assert_eq!(
-            fontique_scripts("日本語"),
-            [fontique::Script::from_bytes(*b"Hani")]
-        );
-        assert_eq!(
-            fontique_scripts("한국어"),
-            [fontique::Script::from_bytes(*b"Hang")]
-        );
-        assert_eq!(
-            fontique_scripts("مرحبا"),
-            [fontique::Script::from_bytes(*b"Arab")]
-        );
+        assert_eq!(fontique_scripts("日本語"), [fontique::Script::from_bytes(*b"Hani")]);
+        assert_eq!(fontique_scripts("한국어"), [fontique::Script::from_bytes(*b"Hang")]);
+        assert_eq!(fontique_scripts("مرحبا"), [fontique::Script::from_bytes(*b"Arab")]);
     }
 
     #[test]

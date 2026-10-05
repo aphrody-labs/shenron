@@ -61,9 +61,7 @@ pub(crate) async fn get_canvas_page_resource(
     resource: String,
     editor: State<'_, Editor>,
 ) -> Result<CanvasBytes> {
-    Ok(CanvasBytes(
-        editor.canvas_page_resource(page, revision, &resource)?,
-    ))
+    Ok(CanvasBytes(editor.canvas_page_resource(page, revision, &resource)?))
 }
 
 #[tauri::command]
@@ -87,9 +85,7 @@ pub(crate) async fn commit_paint(
     brush: PaintBrush,
     editor: State<'_, Editor>,
 ) -> Result<LayerCommit> {
-    Ok(editor
-        .commit_paint(expected_revision, layer, points, brush)
-        .await?)
+    Ok(editor.commit_paint(expected_revision, layer, points, brush).await?)
 }
 
 #[tauri::command]
@@ -101,9 +97,7 @@ pub(crate) async fn commit_erase(
     diameter: f32,
     editor: State<'_, Editor>,
 ) -> Result<LayerCommit> {
-    Ok(editor
-        .commit_erase(expected_revision, layer, points, diameter)
-        .await?)
+    Ok(editor.commit_erase(expected_revision, layer, points, diameter).await?)
 }
 
 #[tauri::command]
@@ -124,7 +118,5 @@ pub(crate) async fn commit_inpaint(
     diameter: f32,
     editor: State<'_, Editor>,
 ) -> Result<Option<JobId>> {
-    Ok(editor
-        .commit_inpaint(expected_revision, points, diameter)
-        .await?)
+    Ok(editor.commit_inpaint(expected_revision, points, diameter).await?)
 }

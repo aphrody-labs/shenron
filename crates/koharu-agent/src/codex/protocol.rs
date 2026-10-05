@@ -46,10 +46,7 @@ impl Request {
             tools,
             tool_choice: "auto",
             parallel_tool_calls: false,
-            reasoning: ReasoningOptions {
-                effort: reasoning.as_str(),
-                summary: "auto",
-            },
+            reasoning: ReasoningOptions { effort: reasoning.as_str(), summary: "auto" },
             text: TextOptions { verbosity: "low" },
             include: ["reasoning.encrypted_content"],
             stream: true,

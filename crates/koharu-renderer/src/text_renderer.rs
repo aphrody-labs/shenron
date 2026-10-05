@@ -114,9 +114,8 @@ impl TextRenderer {
         // `draw_layout`), then the ordinary fill is drawn on top in the foreground color. Unlike a
         // centered stroke, a dilation never grows inward, so it can't punch a hole through small
         // features (e.g. dots) once the border width exceeds their radius.
-        if let Some(stroke) = options
-            .stroke
-            .filter(|stroke| stroke.width_px > 0.0 && stroke.color[3] > 0)
+        if let Some(stroke) =
+            options.stroke.filter(|stroke| stroke.width_px > 0.0 && stroke.color[3] > 0)
         {
             draw_layout(
                 scene,
@@ -125,10 +124,7 @@ impl TextRenderer {
                 writing_mode,
                 options,
                 transform,
-                GlyphPaint {
-                    color: stroke.color,
-                    dilation_px: stroke.width_px,
-                },
+                GlyphPaint { color: stroke.color, dilation_px: stroke.width_px },
             );
         }
         draw_layout(
@@ -138,10 +134,7 @@ impl TextRenderer {
             writing_mode,
             options,
             transform,
-            GlyphPaint {
-                color: options.color,
-                dilation_px: 0.0,
-            },
+            GlyphPaint { color: options.color, dilation_px: 0.0 },
         );
     }
 
@@ -151,17 +144,9 @@ impl TextRenderer {
         fonts: &Fonts,
     ) -> RenderResult<RenderedTextNode> {
         let is_bubble_text = descriptor.balloon_contour.is_some();
-        let frame = LayoutBox {
-            x: 0.0,
-            y: 0.0,
-            width: descriptor.width,
-            height: descriptor.height,
-        };
-        let bounds = if is_bubble_text {
-            inset(frame, descriptor.text_inset)
-        } else {
-            frame
-        };
+        let frame =
+            LayoutBox { x: 0.0, y: 0.0, width: descriptor.width, height: descriptor.height };
+        let bounds = if is_bubble_text { inset(frame, descriptor.text_inset) } else { frame };
         if bounds.width <= 0.0 || bounds.height <= 0.0 {
             return Err(Error::invalid(format!(
                 "text inset leaves no layout area for entity {}",
@@ -175,15 +160,9 @@ impl TextRenderer {
                 descriptor.font_style,
                 &descriptor.font_families,
                 &descriptor.text,
-                descriptor
-                    .language
-                    .as_ref()
-                    .map(koharu_scene::LanguageTag::as_str),
+                descriptor.language.as_ref().map(koharu_scene::LanguageTag::as_str),
             )
-            .map_err(|source| Error::Font {
-                entity: descriptor.entity,
-                source,
-            })?;
+            .map_err(|source| Error::Font { entity: descriptor.entity, source })?;
         let automatic_maximum = || automatic_maximum(descriptor, bounds, is_bubble_text);
         let maximum = if descriptor.auto_fit {
             automatic_maximum()
@@ -205,9 +184,7 @@ impl TextRenderer {
                         .is_some_and(|language| is_chinese_or_japanese_language(language.as_str())),
             );
         if !descriptor.point_text {
-            layout = layout
-                .with_max_width(bounds.width)
-                .with_max_height(bounds.height);
+            layout = layout.with_max_width(bounds.width).with_max_height(bounds.height);
         }
         if let Some(contour) = &descriptor.balloon_contour {
             let [top, _, _, left] = descriptor.text_inset;
@@ -226,18 +203,13 @@ impl TextRenderer {
             layout = layout.with_hyphenation_policy(HyphenationPolicy::LastResort);
         }
         let layout = if descriptor.auto_fit && !descriptor.point_text {
-            layout
-                .with_max_font_size(maximum)
-                .with_min_font_size(minimum)
+            layout.with_max_font_size(maximum).with_min_font_size(minimum)
         } else {
             layout.with_font_size(descriptor.font_size.unwrap_or(maximum))
         };
         let layout = self
             .layout(&layout, &descriptor.text)
-            .map_err(|source| Error::Layout {
-                entity: descriptor.entity,
-                source,
-            })?;
+            .map_err(|source| Error::Layout { entity: descriptor.entity, source })?;
         let (mut x, mut y) = if descriptor.point_text {
             (bounds.x, bounds.y)
         } else {
@@ -247,11 +219,7 @@ impl TextRenderer {
         y += layout.placement_offset_y();
         let transform = Affine::translate((f64::from(x), f64::from(y)));
         let color = descriptor.foreground_color;
-        let mut options = TextRenderOptions {
-            color,
-            stroke: None,
-            ..TextRenderOptions::default()
-        };
+        let mut options = TextRenderOptions { color, stroke: None, ..TextRenderOptions::default() };
         let mut scene = PreparedScene::default();
         let mut resources = Vec::new();
         if let Some(stroke) = descriptor.stroke {
@@ -282,15 +250,8 @@ impl TextRenderer {
                 font_size: layout.font_size,
             });
         }
-        let rendered_bounds = RenderBounds {
-            x,
-            y,
-            width: layout.width,
-            height: layout.height,
-        };
-        let stroke_padding = descriptor
-            .stroke
-            .map_or(0.0, |stroke| stroke.width_px.max(0.0));
+        let rendered_bounds = RenderBounds { x, y, width: layout.width, height: layout.height };
+        let stroke_padding = descriptor.stroke.map_or(0.0, |stroke| stroke.width_px.max(0.0));
         Ok(RenderedTextNode {
             scene: Arc::new(scene),
             resources: resources.into(),
@@ -302,11 +263,7 @@ impl TextRenderer {
             },
             metadata: RenderedTextMetadata {
                 rendered_bounds,
-                layout_bounds: if descriptor.point_text {
-                    rendered_bounds
-                } else {
-                    bounds.into()
-                },
+                layout_bounds: if descriptor.point_text { rendered_bounds } else { bounds.into() },
                 post_script_fonts: fonts
                     .iter()
                     .map(|font| font.post_script_name().to_owned())
@@ -325,11 +282,7 @@ fn automatic_maximum(
     is_bubble_text: bool,
 ) -> f32 {
     if is_bubble_text {
-        if descriptor.writing_mode.is_vertical() {
-            bounds.height
-        } else {
-            bounds.width
-        }
+        if descriptor.writing_mode.is_vertical() { bounds.height } else { bounds.width }
     } else {
         24.0
     }
@@ -410,23 +363,21 @@ fn draw_layout(
                 .synthetic_skew()
                 .map(|angle| Affine::skew(-(angle.to_radians().tan() as f64), 0.0).as_coeffs());
             let synthetic_bold = if font.synthetic_bold() { 1.0 } else { 0.0 };
-            scene
-                .commands
-                .push(PreparedSceneCommand::GlyphRun(PreparedGlyphRun {
-                    font: font_id,
-                    font_index: font.index(),
-                    font_size: layout.font_size,
-                    normalized_coords: font.normalized_coords().to_vec(),
-                    transform: transform.as_coeffs(),
-                    glyph_transform,
-                    // Hinting folds a uniform zoom into `font_size` for crisp fill text, but a
-                    // border needs the real transform so its dilation amount stays proportional
-                    // to that same zoom instead of being rendered at a fixed pixel size.
-                    hint: options.hint_glyphs && paint.dilation_px == 0.0,
-                    embolden: [synthetic_bold + paint.dilation_px; 2],
-                    color: paint.color,
-                    glyphs,
-                }));
+            scene.commands.push(PreparedSceneCommand::GlyphRun(PreparedGlyphRun {
+                font: font_id,
+                font_index: font.index(),
+                font_size: layout.font_size,
+                normalized_coords: font.normalized_coords().to_vec(),
+                transform: transform.as_coeffs(),
+                glyph_transform,
+                // Hinting folds a uniform zoom into `font_size` for crisp fill text, but a
+                // border needs the real transform so its dilation amount stays proportional
+                // to that same zoom instead of being rendered at a fixed pixel size.
+                hint: options.hint_glyphs && paint.dilation_px == 0.0,
+                embolden: [synthetic_bold + paint.dilation_px; 2],
+                color: paint.color,
+                glyphs,
+            }));
             start = end;
         }
     }
@@ -470,12 +421,7 @@ mod tests {
             text_inset: [0.0; 4],
             point_text: false,
         };
-        let bounds = LayoutBox {
-            x: 0.0,
-            y: 0.0,
-            width: 240.0,
-            height: 120.0,
-        };
+        let bounds = LayoutBox { x: 0.0, y: 0.0, width: 240.0, height: 120.0 };
 
         assert_eq!(automatic_maximum(&descriptor, bounds, false), 24.0);
         assert_eq!(automatic_maximum(&descriptor, bounds, true), 240.0);
@@ -484,10 +430,7 @@ mod tests {
     #[test]
     fn rendered_text_survives_prepared_packet_round_trip() {
         let font = FontSystem::new().first_font().unwrap();
-        let layout = TextLayout::new(&font)
-            .with_font_size(24.0)
-            .run("Koharu")
-            .unwrap();
+        let layout = TextLayout::new(&font).with_font_size(24.0).run("Koharu").unwrap();
         let mut scene = PreparedScene::default();
         let mut resources = Vec::new();
         TextRenderer::new().render(
@@ -521,22 +464,9 @@ mod tests {
                         Point { x: 160.0, y: 48.0 },
                         Point { x: 0.0, y: 48.0 },
                     ],
-                    bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 160.0,
-                        height: 48.0,
-                    },
-                    local_bounds: Bounds {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 160.0,
-                        height: 48.0,
-                    },
-                    presentation: Presentation {
-                        visible: true,
-                        opacity: 1.0,
-                    },
+                    bounds: Bounds { x: 0.0, y: 0.0, width: 160.0, height: 48.0 },
+                    local_bounds: Bounds { x: 0.0, y: 0.0, width: 160.0, height: 48.0 },
+                    presentation: Presentation { visible: true, opacity: 1.0 },
                     kind: PreparedLayerKind::Text,
                     placement: Affine::IDENTITY.as_coeffs(),
                     content: PreparedContent::Vector(scene),
@@ -550,11 +480,7 @@ mod tests {
         let manifest = PreparedFrameManifest::decode(&encoded).unwrap();
         let mut resources = PreparedResourceStore::default();
         for reference in manifest.required_resources() {
-            let encoded = bundle
-                .resource_packet(reference.id)
-                .unwrap()
-                .encode()
-                .unwrap();
+            let encoded = bundle.resource_packet(reference.id).unwrap().encode().unwrap();
             resources.insert(PreparedResourcePacket::decode(&encoded).unwrap());
         }
         let compiled = manifest.compile(&resources).unwrap();

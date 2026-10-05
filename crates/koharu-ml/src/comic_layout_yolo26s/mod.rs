@@ -38,14 +38,10 @@ pub struct ComicLayoutYolo26sSegmenter {
 impl ComicLayoutYolo26sSegmenter {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let config_path = CONFIG
-            .resolve()
-            .await
-            .context("failed to resolve comic-layout-yolo26s config")?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve comic-layout-yolo26s weights")?;
+        let config_path =
+            CONFIG.resolve().await.context("failed to resolve comic-layout-yolo26s config")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve comic-layout-yolo26s weights")?;
         let config = ComicLayoutYolo26sConfig::from_file(&config_path)
             .with_context(|| format!("failed to read {}", config_path.display()))?;
         let processor = ComicLayoutYolo26sImageProcessor::new(&config)?;
@@ -53,11 +49,7 @@ impl ComicLayoutYolo26sSegmenter {
         model
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<ComicLayoutYolo26sInstances> {
@@ -72,8 +64,7 @@ impl ComicLayoutYolo26sSegmenter {
         koharu_torch::no_grad(|| {
             let (pixel_values, letterbox) = self.processor.preprocess(image, self.device)?;
             let output = self.model.forward(&pixel_values);
-            self.processor
-                .postprocess(&output, &letterbox, confidence_threshold)
+            self.processor.postprocess(&output, &letterbox, confidence_threshold)
         })
     }
 }

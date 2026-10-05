@@ -27,21 +27,15 @@ pub struct ComicOnomatopoeiaDetector {
 impl ComicOnomatopoeiaDetector {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve COO MTSv3 weights")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve COO MTSv3 weights")?;
         let config = Config::default();
         let processor = Processor::new(config);
         let mut model = Model::new(device);
         model
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
-        Ok(Self {
-            device,
-            model,
-            processor,
-        })
+        Ok(Self { device, model, processor })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<Vec<Detection>> {

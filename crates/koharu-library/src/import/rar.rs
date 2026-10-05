@@ -48,16 +48,15 @@ pub(super) fn extract(path: &Path) -> Result<Vec<EncodedPage>> {
                 .extension()
                 .and_then(|extension| extension.to_str())
                 .is_some_and(|extension| matches!(extension.parse(), Ok(Format::Raster)));
-            let metadata = member_path
-                .file_name()
-                .and_then(|file_name| file_name.to_str())
-                .is_none_or(|file_name| {
-                    file_name.starts_with("._")
-                        || [".ds_store", "thumbs.db", "desktop.ini"]
-                            .iter()
-                            .any(|candidate| file_name.eq_ignore_ascii_case(candidate))
-                })
-                || member_path.components().any(|component| {
+            let metadata =
+                member_path.file_name().and_then(|file_name| file_name.to_str()).is_none_or(
+                    |file_name| {
+                        file_name.starts_with("._")
+                            || [".ds_store", "thumbs.db", "desktop.ini"]
+                                .iter()
+                                .any(|candidate| file_name.eq_ignore_ascii_case(candidate))
+                    },
+                ) || member_path.components().any(|component| {
                     component
                         .as_os_str()
                         .to_str()
@@ -66,11 +65,7 @@ pub(super) fn extract(path: &Path) -> Result<Vec<EncodedPage>> {
             if entry.is_directory || !supported || metadata {
                 Ok(Box::new(io::sink()))
             } else {
-                Ok(Box::new(PageWriter {
-                    name,
-                    bytes: Vec::new(),
-                    images: Rc::clone(&images),
-                }))
+                Ok(Box::new(PageWriter { name, bytes: Vec::new(), images: Rc::clone(&images) }))
             }
         })
         .with_context(|| format!("failed to extract RAR archive {}", path.display()))?;
@@ -80,10 +75,7 @@ pub(super) fn extract(path: &Path) -> Result<Vec<EncodedPage>> {
         std::ffi::OsStr::new(&image.name)
     });
     if images.is_empty() {
-        bail!(
-            "RAR archive {} contains no supported raster images",
-            path.display()
-        );
+        bail!("RAR archive {} contains no supported raster images", path.display());
     }
     Ok(images)
 }
@@ -112,10 +104,7 @@ mod tests {
             .expect("encode PNG");
         let png = png.into_inner();
         let entries = [
-            ArchiveEntry::new(
-                "ComicInfo.xml",
-                EntrySource::from_bytes(&b"<ComicInfo />"[..]),
-            ),
+            ArchiveEntry::new("ComicInfo.xml", EntrySource::from_bytes(&b"<ComicInfo />"[..])),
             ArchiveEntry::new("pages/page10.png", EntrySource::from_bytes(png.clone())),
             ArchiveEntry::new("pages/page2.png", EntrySource::from_bytes(png.clone())),
             ArchiveEntry::new("__MACOSX/._page3.png", EntrySource::from_bytes(png)),
@@ -129,23 +118,16 @@ mod tests {
             &mut bytes,
         )
         .expect("encode RAR fixture");
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock after epoch")
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!(
-            "koharu-import-rar-{}-{timestamp}.rar",
-            std::process::id()
-        ));
+        let timestamp =
+            SystemTime::now().duration_since(UNIX_EPOCH).expect("clock after epoch").as_nanos();
+        let path = std::env::temp_dir()
+            .join(format!("koharu-import-rar-{}-{timestamp}.rar", std::process::id()));
         std::fs::write(&path, bytes).expect("write RAR fixture");
 
         let images = extract(&path).expect("extract RAR fixture");
         std::fs::remove_file(&path).expect("remove RAR fixture");
         assert_eq!(
-            images
-                .iter()
-                .map(|image| image.name.as_str())
-                .collect::<Vec<_>>(),
+            images.iter().map(|image| image.name.as_str()).collect::<Vec<_>>(),
             ["pages/page2.png", "pages/page10.png"]
         );
     }

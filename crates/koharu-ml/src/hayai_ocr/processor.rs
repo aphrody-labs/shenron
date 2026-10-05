@@ -41,12 +41,8 @@ pub(super) struct ImageInput {
 
 impl ImageProcessor {
     pub(super) fn new(device: Device) -> Result<Self> {
-        let mean = Tensor::from_slice(&IMAGE_MEAN)
-            .view([1, 3, 1, 1])
-            .to_device(device);
-        let std = Tensor::from_slice(&IMAGE_STD)
-            .view([1, 3, 1, 1])
-            .to_device(device);
+        let mean = Tensor::from_slice(&IMAGE_MEAN).view([1, 3, 1, 1]).to_device(device);
+        let std = Tensor::from_slice(&IMAGE_STD).view([1, 3, 1, 1]).to_device(device);
         Ok(Self { mean, std, device })
     }
 
@@ -157,10 +153,7 @@ fn get_image_size_for_max_num_patches(
         }
     }
     let scale = scale_min;
-    (
-        scaled_size(scale, image_height),
-        scaled_size(scale, image_width),
-    )
+    (scaled_size(scale, image_height), scaled_size(scale, image_width))
 }
 
 fn resize_bilinear(image: &RgbImage, width: u32, height: u32) -> Result<RgbImage> {
@@ -230,9 +223,7 @@ impl Tokenizer {
             .filter(|&id| id != self.eos_token_id && id != self.pad_token_id)
             .map(u32::try_from)
             .collect::<std::result::Result<Vec<_>, _>>()?;
-        self.inner
-            .decode(&token_ids, true)
-            .map_err(|error| anyhow::anyhow!(error.to_string()))
+        self.inner.decode(&token_ids, true).map_err(|error| anyhow::anyhow!(error.to_string()))
     }
 }
 
@@ -243,10 +234,7 @@ mod tests {
     #[test]
     fn resize_budget_matches_upstream_binary_search() {
         // A square image fills the 256-patch budget with a 16x16 patch grid.
-        assert_eq!(
-            get_image_size_for_max_num_patches(1024, 1024, 16, 256),
-            (256, 256)
-        );
+        assert_eq!(get_image_size_for_max_num_patches(1024, 1024, 16, 256), (256, 256));
         // A wide line keeps its rough aspect ratio while rounding up to patch
         // size and staying within the patch budget.
         let (height, width) = get_image_size_for_max_num_patches(120, 900, 16, 256);
@@ -259,9 +247,6 @@ mod tests {
 
     #[test]
     fn tiny_images_are_upscaled_to_fill_the_patch_budget() {
-        assert_eq!(
-            get_image_size_for_max_num_patches(4, 4, 16, 256),
-            (256, 256)
-        );
+        assert_eq!(get_image_size_for_max_num_patches(4, 4, 16, 256), (256, 256));
     }
 }

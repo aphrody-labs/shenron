@@ -80,7 +80,7 @@ impl Arguments {
                     DetectionModel::KoharuLayoutRFDetrSeg2XL(
                         KoharuLayoutRFDetrSeg2XLConfig::default(),
                     )
-                }
+                },
             },
             ocr: match self.ocr {
                 OcrChoice::PaddleOcrVl1_6 => OcrModel::PaddleOcrVl1_6,
@@ -105,10 +105,10 @@ impl Arguments {
                 InpaintingChoice::AotInpainting => InpaintingModel::AotInpainting {},
                 InpaintingChoice::Flux2Klein => {
                     InpaintingModel::Flux2Klein(Flux2KleinConfig::default())
-                }
+                },
                 InpaintingChoice::RoremMixed => {
                     InpaintingModel::RoremMixed(RoremMixedConfig::default())
-                }
+                },
             },
             processor: Default::default(),
         }
@@ -126,12 +126,9 @@ async fn main() -> Result<()> {
             .is_some_and(|extension| extension.eq_ignore_ascii_case("png")),
         "output must have a .png extension"
     );
-    let library = Library::initialize(
-        arguments.pipeline_config(),
-        ProvidersConfig::default(),
-        arguments.cpu,
-    )
-    .await?;
+    let library =
+        Library::initialize(arguments.pipeline_config(), ProvidersConfig::default(), arguments.cpu)
+            .await?;
     let mut document = Document::memory().await?;
     let pages = document.import_paths(vec![arguments.input.clone()]).await?;
     ensure!(pages.len() == 1, "input must contain exactly one page");

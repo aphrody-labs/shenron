@@ -30,22 +30,13 @@ pub struct MangaOcr {
 impl MangaOcr {
     pub async fn load(device: crate::Device) -> Result<Self> {
         let device: Device = device.try_into_device()?;
-        let config_path = CONFIG
-            .resolve()
-            .await
-            .context("failed to resolve Manga OCR config")?;
-        let weights_path = WEIGHTS
-            .resolve()
-            .await
-            .context("failed to resolve Manga OCR weights")?;
-        let processor_path = PROCESSOR
-            .resolve()
-            .await
-            .context("failed to resolve Manga OCR image processor")?;
-        let vocabulary_path = VOCABULARY
-            .resolve()
-            .await
-            .context("failed to resolve Manga OCR vocabulary")?;
+        let config_path = CONFIG.resolve().await.context("failed to resolve Manga OCR config")?;
+        let weights_path =
+            WEIGHTS.resolve().await.context("failed to resolve Manga OCR weights")?;
+        let processor_path =
+            PROCESSOR.resolve().await.context("failed to resolve Manga OCR image processor")?;
+        let vocabulary_path =
+            VOCABULARY.resolve().await.context("failed to resolve Manga OCR vocabulary")?;
 
         let config = MangaOcrConfig::from_file(&config_path)
             .with_context(|| format!("failed to read {}", config_path.display()))?;
@@ -66,12 +57,7 @@ impl MangaOcr {
             .load(&weights_path)
             .with_context(|| format!("failed to load {}", weights_path.display()))?;
 
-        Ok(Self {
-            device,
-            model,
-            processor,
-            tokenizer,
-        })
+        Ok(Self { device, model, processor, tokenizer })
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<String> {
