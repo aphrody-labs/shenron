@@ -7,8 +7,12 @@ peuvent consommer `@shenron/*` et les contrats HTTP Shenron. Le workspace
 Shenron n'importe aucun paquet de code `@aphrody/*` ni checkout frère
 `../aphrody-*`. Le catalogue de l'Infra du monorepo reste la source opérationnelle
 des ports et services pour les tunnels locaux.
-Le code Aphrody Discord appartient au monorepo ``, pas
-au workspace Shenron ; le bot consomme les paquets Discordx publiés.
+Le code Discord d'Aphrody reste dans le dépôt Aphrody : `apps/bot` et
+`apps/site/src/lib/admin-lab.ts` consomment les paquets publiés `@aphrody/discord-kit`
+(préflight des intents, cache, `safeExecuteInteraction`, `initApplicationCommandsSafe`,
+gardes `NotBot` et `createMonoGuildGuard`, `registerGracefulShutdown`, `isCompiledBinary`,
+`getBotRuntimeInfo`, REST `discordFetch`) et `@aphrody/messaging` (`DiscordChannel` : texte,
+ouverture de DM). Le binaire `shenron-bot` reste construit par `scripts/build/bot.ts`.
 
 Document d'architecture de référence pour l'unification des surfaces base de
 données, authentification, IA, API et interface de Shenron. Il fixe les

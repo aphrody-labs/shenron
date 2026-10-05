@@ -118,7 +118,11 @@ Lancer et construire :
   (`messages/{fr,en,ja}.json`). `/koharu`, `/studio`, `/bureau` montent `@shenron/ui`.
   `/mcp` relaie vers `shenron-mcp --http --public`.
 - **Bot** : discordx + tsyringe ; `entry-standalone.ts` (`--smoke`, `--dry-run`) puis
-  `index.ts` (migrations, base, `ApiServer`, Discord).
+  `index.ts` (migrations, base, `ApiServer`, Discord). Le socle Discord vient d'Aphrody :
+  `@aphrody/discord-kit` (intents, cache, interactions, commandes, gardes `NotBot` et
+  mono-guilde, arrêt propre, binaire compilé, REST `discordFetch`, aussi sous
+  `scripts/lib/discord-rest.ts`) et `@aphrody/messaging` (texte et DM hors gateway) ; les
+  gardes métier (owner, staff, salon, permissions) restent dans `src/guards/`.
 - **Binaire autonome** (`apps/server`) : un `Bun.serve` frontal sert `/api/local/*`
   (`bun:ffi` vers `libshenron_ffi`), les assets statiques, et relaie le reste vers le
   `server.js` standalone de Next lancé en processus enfant. `SHENRON_HOME` contient
