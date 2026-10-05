@@ -158,6 +158,26 @@ Autres variables Aphrody :
 | `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN` | API web/crawl d'Aphrody. |
 | `APHRODY_BIN` | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`. |
 
+## Traduction manga (Koharu) — `crates/koharu-translator`, `crates/shenron-manga`
+
+Le glossaire protège les termes canoniques pendant la traduction : chaque terme source reconnu
+(le plus long d'abord, sans chevauchement) devient un jeton numéroté (`Zeta001`) que le moteur
+recopie, puis la forme officielle le remplace ; un jeton que la table ne connaît pas fait
+échouer la requête (`GlossaryTokens`) au lieu d'atteindre la planche. Entrées
+`{ "source", "target" }`, alias `ja`/`fr` acceptés : le lexique canonique
+`data/lexique-db-canonique.json` se charge tel quel.
+
+| Variable | Rôle |
+| --- | --- |
+| `KOHARU_GLOSSARY` | Chemin d'un glossaire JSON lu par `Translator::from_config` (`Glossary::from_env`, `crates/koharu-translator/src/glossary.rs`). Un fichier posé mais illisible ou invalide est une erreur : un glossaire mal configuré ne traduit pas sans protection. Posée, même vide, elle écarte le lexique Shenron ; vide, elle ne charge aucun glossaire. |
+| `KOHARU_GLOSSARY_TARGET` | Langue cible du glossaire de `KOHARU_GLOSSARY` (par exemple `fr`) ; une langue inconnue est une erreur. Défaut : toutes les langues cibles. |
+| `SHENRON_LEXIQUE` | Chemin du lexique canonique installé comme glossaire par défaut de Koharu pour la traduction vers le français (`crates/shenron-manga`, fonctionnalité `koharu` de `shenron-mcp` et `shenron-cli`). Premier fichier existant : `SHENRON_LEXIQUE`, puis `$SHENRON_HOME/data/lexique-db-canonique.json`, puis `./data/lexique-db-canonique.json` (dossier courant) ; aucun fichier, aucun glossaire. Sans effet quand `KOHARU_GLOSSARY` est posée ou que la cible n'est pas le français ; un fichier invalide est ignoré avec un avertissement. |
+
+Le build de `shenron-server` (`scripts/build/server.ts`) embarque le lexique dans son payload
+(`data/lexique-db-canonique.json`, extrait sous `$SHENRON_HOME/cache/payload-<id>/data/`). Le
+serveur ne pose pas encore `SHENRON_LEXIQUE` vers ce fichier : sur le bureau, le glossaire n'est
+actif qu'avec `SHENRON_LEXIQUE` ou `$SHENRON_HOME/data/lexique-db-canonique.json`.
+
 ## Bot Discord — `apps/bot/src/lib/env.ts`
 
 Validées par zod ; un identifiant absent désactive la fonctionnalité concernée. Modèle commenté :
