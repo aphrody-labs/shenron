@@ -82,7 +82,8 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
     let data = app.path().app_data_dir().map_err(|error| error.to_string())?;
     std::fs::create_dir_all(&data).map_err(|error| error.to_string())?;
     let started = Instant::now();
-    let child = Command::new(&binary)
+    let mut command = Command::new(&binary);
+    command
         .args(["serve", "site"])
         .env("PORT", port.to_string())
         .env("HOSTNAME", "127.0.0.1")
@@ -91,9 +92,13 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
         .env("NODE_ENV", "production")
         .stdin(Stdio::null())
         .stdout(Stdio::null())
-        .stderr(Stdio::inherit())
-        .spawn()
-        .map_err(|error| format!("cannot start {}: {error}", binary.display()))?;
+        .stderr(Stdio::inherit());
+    // The server is a console executable: started from the GUI app it would open its own
+    // console window unless told not to (CREATE_NO_WINDOW).
+    #[cfg(windows)]
+    std::os::windows::process::CommandExt::creation_flags(&mut command, 0x0800_0000);
+    let child =
+        command.spawn().map_err(|error| format!("cannot start {}: {error}", binary.display()))?;
     let state = app.state::<LocalServer>();
     *state.child.lock().map_err(|e| e.to_string())? = Some(child);
     let url = format!("http://127.0.0.1:{port}");
