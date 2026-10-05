@@ -14,12 +14,13 @@ dbfr : PostgreSQL 18 (shenron_site) et Redis, joints par `shenron-data-tunnel` d
 
 ## Unités (WSL, `systemctl --user`)
 
-| Unité                        | Rôle                                                                                                                        |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `aphrody-ai-http`            | API Shenron du calcul (`aphrody-mcp http --bind 127.0.0.1:8789`), `EnvironmentFile=~/.aphrody/private/shenron/ai-http.env`. |
-| `aphrody-shenron-embed`      | Embeddings e5 (`aphrody-embed serve`, port 8085).                                                                           |
-| `aphrody-compute-vps-tunnel` | `ssh -R 127.0.0.1:8789:127.0.0.1:8789 vps`, relancé en continu.                                                             |
-| `shenron-data-tunnel`        | Accès privé à PostgreSQL (15433) et Redis (16379) de dbfr.                                                                  |
+| Unité                         | Rôle                                                                                                                                                                                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `aphrody-ai-http`             | API Shenron du calcul (`aphrody-mcp http --bind 127.0.0.1:8789`), `EnvironmentFile=~/.aphrody/private/shenron/ai-http.env`.                                                                                                                       |
+| `aphrody-shenron-embed`       | Embeddings e5 (`aphrody-embed serve`, port 8085).                                                                                                                                                                                                 |
+| `aphrody-compute-vps-tunnel`  | `ssh -R 127.0.0.1:8789:127.0.0.1:8789 vps`, relancé en continu ; connexion propre (`-oControlMaster=no -oControlPath=none`) : accrochée à la connexion maîtresse du poste, elle se terminait aussitôt et systemd la relançait toutes les 5 s.     |
+| `shenron-data-tunnel`         | Accès privé à PostgreSQL (15433) et Redis (16379) de dbfr.                                                                                                                                                                                        |
+| `shenron-rag-sync` (minuteur) | Rafraîchit le corpus éditorial depuis PostgreSQL (`rag-sync-aphrody.ts --toutes --appliquer`) ; son drop-in fixe `SHENRON_FFI_LIB` (la bibliothèque native refuse un chemin implicite), à reconstruire en release après un changement de version. |
 
 Le cluster `16/rag` (PostgreSQL 16, port 54322, démarrage automatique) porte la base du RAG :
 rôle `aphrody_ai_http`, schéma `aphrody_ai` (`aphrody_rag_documents`, `aphrody_shenron_vectors`
@@ -55,6 +56,13 @@ systemctl --user restart aphrody-ai-http             # le pool garde l'ancien se
 Contrôle : `GET /api/v1/shenron/health` annonce `rag: true` ; `rag/stats` donne environ
 254 000 documents et autant de vecteurs. `rag:build` ne tourne jamais au premier plan ni sur le
 bot de production.
+
+## Contrôle de la chaîne
+
+`bun scripts/ops/compute-doctor.ts` (`--local` sans le vps) vérifie les unités, le cluster, les liens d'unités
+morts, la santé et les statistiques du calcul, les bases de dbfr, le tunnel inverse, l'alignement du jeton
+(empreintes seulement) et la recherche RAG de production. À lancer après tout redémarrage de WSL ou
+changement d'Aphrody : un lien d'unité mort a déjà coupé le RAG pendant des heures sans alerte.
 
 ## Sondes
 
