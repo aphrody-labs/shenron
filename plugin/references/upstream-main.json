@@ -6,31 +6,28 @@
       "id": "aphrody-shenron",
       "url": "git@github-dev:aphrody-labs/aphrody.git",
       "branch": "main",
-      "revision": "ce9af5216ed5d706fcf854209c4b4866a0ab8db8",
+      "revision": "3f9f1cbe6a3ffa92239575caf8c8e7af7e254d81",
       "kind": "git",
       "artifacts": [
         {
           "path": "AGENTS.md",
-          "sha256": "d4e4a5395d6c05c4d01c2281d253ff3b119edcdb08c9d1f2fa912b8554681eb9",
+          "sha256": "c849904123a1bd535bed0f4ba19c655a93bcd3cce0596582cee66903a1462d4f",
           "snapshot": "references/upstream/aphrody-shenron/AGENTS.md.source"
         },
         {
-          "path": "config/shenron/package.json",
-          "sha256": "67a7179990216c31827d973fbd21f9d689597cdee7ae1a1bde544e69adbccd80",
-          "snapshot": "references/upstream/aphrody-shenron/config/shenron/package.json.source"
-        },
-        {
           "path": "apps/shenron/bot/package.json",
-          "sha256": "af51a5f2ba6570d5ac071835b67222581f44f7fc63932aec80b4dde8e5cdea7e",
+          "sha256": "69c8c35097f2ffc8a8db0d7492573d41e99fab4e3284325e8469cd80f51fbc55",
           "snapshot": "references/upstream/aphrody-shenron/apps/shenron/bot/package.json.source"
         },
         {
           "path": "packages/shenron/pipeline/package.json",
-          "sha256": "d1f5eed440e2d20d6ff6a24eb88d9fea45e4be12acb243d7e0fbcec0a7dce5d7",
+          "sha256": "f4d9edb12767b2f6778d31a4029143055ebc8df4f5e387a0e1fd0e8a22df93bb",
           "snapshot": "references/upstream/aphrody-shenron/packages/shenron/pipeline/package.json.source"
         }
       ],
-      "missing": [],
+      "missing": [
+        "config/shenron/package.json"
+      ],
       "documentation": []
     }
   ]

@@ -61,7 +61,8 @@
     "./aphrody": "./src/aphrody/index.ts",
     "./bxc": "./src/bxc/index.ts",
     "./aphrody/embeddings": "./src/aphrody/shenron-embeddings.ts",
-    "./testing/live-rag": "./src/testing/live-rag.ts"
+    "./testing/live-rag": "./src/testing/live-rag.ts",
+    "./ai/native": "./src/ai/native.ts"
   },
   "scripts": {
     "pipeline": "bun src/cli.ts",
@@ -75,16 +76,21 @@
   },
   "dependencies": {
     "@aphrody/paths": "workspace:*",
-    "@ai-sdk/openai-compatible": "^3.0.59",
-    "@ai-sdk/provider": "4.0.19",
+    "@ai-sdk/openai-compatible": "catalog:",
+    "@ai-sdk/provider": "catalog:",
     "@aphrody/bun": "workspace:*",
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
     "ai": "catalog:",
-    "postgres": "^3.4.9",
+    "postgres": "catalog:",
     "sharp": "catalog:",
-    "sqlite-vec": "^0.1.9",
-    "zod": "catalog:"
+    "sqlite-vec": "catalog:",
+    "zod": "catalog:",
+    "@aphrody/runtime-sdk": "workspace:*",
+    "@aphrody/http": "workspace:*",
+    "@aphrody/media": "workspace:*",
+    "@koharu/sdk": "workspace:*",
+    "@aphrody/inference": "workspace:*"
   },
   "engines": {
     "bun": ">=1.4.2"
@@ -141,7 +147,8 @@
       "./aphrody": "server",
       "./bxc": "bun",
       "./aphrody/embeddings": "server",
-      "./testing/live-rag": "bun"
+      "./testing/live-rag": "bun",
+      "./ai/native": "bun"
     }
   }
 }

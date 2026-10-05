@@ -6,7 +6,6 @@
       "evidence": [
         "references/upstream-main.json",
         "references/upstream/aphrody-shenron/AGENTS.md.source",
-        "references/upstream/aphrody-shenron/config/shenron/package.json.source",
         "references/upstream/aphrody-shenron/apps/shenron/bot/package.json.source",
         "references/upstream/aphrody-shenron/packages/shenron/pipeline/package.json.source"
       ]
@@ -15,7 +14,6 @@
       "root": "/home/aphro/aphrody",
       "evidence": [
         "AGENTS.md",
-        "config/shenron/package.json",
         "apps/shenron/bot/package.json",
         "packages/shenron/pipeline/package.json"
       ]

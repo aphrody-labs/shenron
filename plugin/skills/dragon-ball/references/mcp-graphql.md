@@ -4,9 +4,10 @@
 
 ## MCP Dragon Ball via Aphrody
 
-Le manifeste installé déclare `aphrody-mcp server` (stdio), vérifié dans
-`.mcp.json` et l'aide live le 2026-10-04. Le noyau peut également héberger la
-capacité, mais il n'est pas la commande de ce plugin. Les noms serveur sont
+Le serveur unique `aphrody-mcp server` (stdio) est déclaré par le plugin
+`aphrody` (serveur `aphrody`) depuis le 2026-10-05 ; ce plugin n'en déclare
+pas de second pour éviter un catalogue dupliqué. Le noyau peut également
+héberger la capacité. Les noms serveur sont
 `dragonball.*` ; les préfixes exposés dépendent du client. L'ancien endpoint
 public `mcp.dragonballfr.com` et le serveur Bun séparé `shenron-mcp` sont retirés.
 

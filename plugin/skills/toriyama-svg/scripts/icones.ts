@@ -77,28 +77,29 @@ const png = async (cote: number, { opaque = false, echelle = 1 } = {}) => {
 };
 
 /** ICO = en-tête (6 o) + une entrée de 16 o par image + les PNG bout à bout. */
-function ico(images: { cote: number; png: Buffer }[]): Buffer {
-  const tete = Buffer.alloc(6);
-  tete.writeUInt16LE(0, 0);
-  tete.writeUInt16LE(1, 2);
-  tete.writeUInt16LE(images.length, 4);
-  const entrees: Buffer[] = [];
-  let decalage = 6 + 16 * images.length;
-  for (const { cote, png } of images) {
-    const e = Buffer.alloc(16);
-    e.writeUInt8(cote >= 256 ? 0 : cote, 0);
-    e.writeUInt8(cote >= 256 ? 0 : cote, 1);
-    e.writeUInt16LE(1, 4); // plans
-    e.writeUInt16LE(32, 6); // bits par pixel
-    e.writeUInt32LE(png.length, 8);
-    e.writeUInt32LE(decalage, 12);
+function ico(images: { cote: number; png: Uint8Array }[]): Uint8Array {
+  const entetes = 6 + 16 * images.length;
+  const sortie = new Uint8Array(entetes + images.reduce((n, i) => n + i.png.length, 0));
+  const vue = new DataView(sortie.buffer);
+  vue.setUint16(0, 0, true);
+  vue.setUint16(2, 1, true);
+  vue.setUint16(4, images.length, true);
+  let decalage = entetes;
+  images.forEach(({ cote, png }, rang) => {
+    const e = 6 + 16 * rang;
+    vue.setUint8(e, cote >= 256 ? 0 : cote);
+    vue.setUint8(e + 1, cote >= 256 ? 0 : cote);
+    vue.setUint16(e + 4, 1, true); // plans
+    vue.setUint16(e + 6, 32, true); // bits par pixel
+    vue.setUint32(e + 8, png.length, true);
+    vue.setUint32(e + 12, decalage, true);
+    sortie.set(png, decalage);
     decalage += png.length;
-    entrees.push(e);
-  }
-  return Buffer.concat([tete, ...entrees, ...images.map((i) => i.png)]);
+  });
+  return sortie;
 }
 
-const fichiers: Record<string, Buffer> = {};
+const fichiers: Record<string, Uint8Array> = {};
 for (const cote of [16, 32, 48, 96]) fichiers[`favicon-${cote}.png`] = await png(cote);
 fichiers["favicon.ico"] = ico(
   [16, 32, 48].map((cote) => ({ cote, png: fichiers[`favicon-${cote}.png`] })),

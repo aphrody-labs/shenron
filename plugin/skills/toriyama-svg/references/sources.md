@@ -43,7 +43,7 @@ Avant d'aller sur le web, regarder ce qui est déjà hébergé :
 | Chapitres par identifiant  | `apps/shenron/bot/assets/manga/DB/regular/ch<N>/`                      |
 
 Pour retrouver la bonne planche sans ouvrir cinquante fichiers, passer par le
-MCP `dragonball` (`manga_search`, `manga_page`, `databooks_search`,
+MCP `aphrody` du plugin `aphrody` (`manga_search`, `manga_page`, `databooks_search`,
 `databooks_planches`) ou par le RAG (`rag_search`) — ils indexent le texte des
 planches, donc une réplique suffit à localiser la case.
 
