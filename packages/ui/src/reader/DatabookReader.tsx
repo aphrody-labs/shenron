@@ -8,7 +8,12 @@
  *  - Vertical (défaut) : défilement webtoon, image puis texte en dessous.
  *  - Paginé : une planche à la fois (Swiper). Sur grand écran, layout
  *    planche | texte côte à côte pour que les légendes longues ne mangent
- *    plus l'image. Clic sur la planche → lightbox plein écran.
+ *    plus l'image, ou double page (touche D) pour feuilleter les scans.
+ *    Clic sur la planche → lightbox plein écran : pincement, double tap,
+ *    glisser une planche agrandie, balayage pour tourner la page.
+ *
+ * Plein écran (touche F) : sous Tauri, la fenêtre native suit ; une WebView sans
+ * plein écran d'élément épingle le lecteur sur toute la fenêtre.
  *
  * Les pages sans image ni texte sont filtrées côté public (slots admin vides).
  * LTR par défaut. Affiche le `number` éditorial (pas seulement l'index).
@@ -23,11 +28,14 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  Columns2,
   Maximize2,
   Minimize2,
+  RotateCcw,
   ScrollText,
   X,
   ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel, Virtual, Zoom } from "swiper/modules";
@@ -40,13 +48,17 @@ import "swiper/css/zoom";
 import "swiper/css/virtual";
 
 import {
+  LARGE_SCREEN_QUERY,
   SHOW_STRIP_MAX,
   type ViewMode,
   useFullscreen,
+  useMediaQuery,
   useSwiperSync,
   useVerticalScrollSync,
   virtualRowStyle,
 } from "./use-reader-core";
+import { ZOOM_MAX, usePinchZoom } from "./use-pinch-zoom";
+import { isTauri } from "../studio/tauri-bridge";
 
 export type DatabookReaderPage = {
   /** Numéro affiché (auto 1…N, modifiable côté admin). */
@@ -202,7 +214,12 @@ export function DatabookReader({
 
   const [mode, setMode] = useState<ViewMode>("vertical");
   const [current, setCurrent] = useState(0);
-  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef);
+  const { isFullscreen, pseudoFullscreen, toggleFullscreen } = useFullscreen(containerRef);
+  /** Double page : seulement en paginé et à partir de `lg` (lisibilité mobile). */
+  const isLarge = useMediaQuery(LARGE_SCREEN_QUERY);
+  const [spread, setSpread] = useState(false);
+  const useSpread = spread && isLarge && mode === "paged";
+  const step = useSpread ? 2 : 1;
   const { swiperRef, handleSwiper, handleSlideChange } = useSwiperSync(setCurrent);
   /** Lightbox plein écran sur la planche courante (indépendant du mode). */
   const [lightbox, setLightbox] = useState(false);
@@ -233,13 +250,15 @@ export function DatabookReader({
     }
   }, [current, items, total]);
 
-  // Détection côté client uniquement (`document` absent au rendu serveur).
+  // Détection côté client uniquement (`document` absent au rendu serveur). Sous Tauri, le
+  // plein écran est toujours offert : la fenêtre native prend le relais de la WebView.
   const [fullscreenDispo, setFullscreenDispo] = useState(false);
   useEffect(() => {
     setFullscreenDispo(
-      typeof document !== "undefined" &&
-        document.fullscreenEnabled &&
-        typeof containerRef.current?.requestFullscreen === "function",
+      isTauri() ||
+        (typeof document !== "undefined" &&
+          document.fullscreenEnabled &&
+          typeof containerRef.current?.requestFullscreen === "function"),
     );
   }, []);
 
@@ -288,17 +307,21 @@ export function DatabookReader({
       const cible = e.target as HTMLElement | null;
       const tag = cible?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || cible?.isContentEditable) return;
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
       switch (e.key) {
         case "Escape":
-          if (lightbox) setLightbox(false);
+          if (lightbox) {
+            e.preventDefault();
+            setLightbox(false);
+          }
           return;
         case "ArrowLeft":
           e.preventDefault();
-          goTo(current - 1);
+          goTo(current - step);
           return;
         case "ArrowRight":
           e.preventDefault();
-          goTo(current + 1);
+          goTo(current + step);
           return;
         case "Home":
           e.preventDefault();
@@ -312,15 +335,41 @@ export function DatabookReader({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lightbox, mode, total, current, goTo]);
+  }, [lightbox, mode, total, current, goTo, step]);
+
+  // Raccourcis du lecteur (F : plein écran, D : double page), seulement quand le focus est
+  // dans le lecteur ou qu'il occupe l'écran : la lettre ne doit pas fuir vers la page.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.repeat) return;
+      const cible = e.target as HTMLElement | null;
+      const tag = cible?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || cible?.isContentEditable)
+        return;
+      // La cible de l'événement, pas l'élément actif : une touche frappée ailleurs dans
+      // la page ne bascule pas le lecteur, même s'il a gardé le focus auparavant.
+      const root = containerRef.current;
+      if (!isFullscreen && !(root && cible && root.contains(cible))) return;
+      const key = e.key.toLowerCase();
+      if (key === "f" && fullscreenDispo) {
+        e.preventDefault();
+        void toggleFullscreen();
+      } else if (key === "d" && isLarge && mode === "paged") {
+        e.preventDefault();
+        setSpread((s) => !s);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [fullscreenDispo, isFullscreen, isLarge, mode, toggleFullscreen]);
 
   const goPrevPage = useCallback(() => {
-    goTo(current - 1);
-  }, [current, goTo]);
+    goTo(current - step);
+  }, [current, goTo, step]);
 
   const goNextPage = useCallback(() => {
-    goTo(current + 1);
-  }, [current, goTo]);
+    goTo(current + step);
+  }, [current, goTo, step]);
 
   const openLightbox = useCallback(
     (idx?: number) => {
@@ -331,38 +380,34 @@ export function DatabookReader({
     [items, current],
   );
 
-  // `min-h-10`/`min-w-10` (40 px) : les commandes du lecteur mesuraient 28 à
-  // 30 px de haut, sous le seuil tactile. Le padding reste serré à partir de
-  // `sm`, où l'on pointe à la souris.
-  // Balayage horizontal dans la visionneuse : sur mobile elle n'offrait que deux
-  // flèches de 44 px posées sur l'image — le geste naturel (faire glisser la
-  // planche) ne faisait rien. Seuil de 48 px, et on ignore les gestes
-  // majoritairement verticaux pour ne pas voler un défilement.
-  const toucheRef = useRef<{ x: number; y: number } | null>(null);
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    const t = e.touches[0];
-    toucheRef.current = t ? { x: t.clientX, y: t.clientY } : null;
-  }, []);
-  const onTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      const depart = toucheRef.current;
-      toucheRef.current = null;
-      const t = e.changedTouches[0];
-      if (!depart || !t) return;
-      const dx = t.clientX - depart.x;
-      const dy = t.clientY - depart.y;
-      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
-      // `goTo` et non `setCurrent` : il fait suivre le Swiper sous-jacent,
-      // sans quoi refermer la visionneuse laisserait la planche paginée sur
-      // l'ancienne page.
-      goTo(dx < 0 ? current + 1 : current - 1);
-    },
-    [current, goTo],
-  );
+  // Visionneuse : pincement, double tap, glisser une planche agrandie, et balayage horizontal
+  // pour tourner la page (planche non agrandie). `goTo` et non `setCurrent` : il fait suivre
+  // le Swiper sous-jacent, sans quoi refermer la visionneuse laisserait la planche paginée sur
+  // l'ancienne page. Le zoom repart de 1× à chaque page.
+  const visionneuse = usePinchZoom({
+    onSwipe: (direction) => goTo(current + direction),
+    resetKey: lightbox ? current : -1,
+  });
+  const { zoomIn, zoomOut, reset: resetZoom } = visionneuse;
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === "+" || e.key === "=") zoomIn();
+      else if (e.key === "-" || e.key === "_") zoomOut();
+      else if (e.key === "0") resetZoom();
+      else return;
+      e.preventDefault();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightbox, zoomIn, zoomOut, resetZoom]);
 
   const currentItem = items[current];
   const currentNum = currentItem?.number ?? current + 1;
-  const counter = total ? `n°${currentNum} · ${Math.min(current + 1, total)}/${total}` : "0 / 0";
+  /** Position dans le lecteur, distincte du numéro éditorial de la planche. */
+  const position = total ? `${Math.min(current + 1, total)} / ${total}` : "0 / 0";
   const currentText = texteDe(currentItem);
   const currentImage = currentItem?.imageUrl ?? null;
 
@@ -375,10 +420,10 @@ export function DatabookReader({
   }
 
   const legendBlock = (
-    <div className="flex h-full min-h-0 flex-col p-4 bg-[var(--reader-surface)] border-t-2 lg:border-t-0 lg:border-l-2 border-[var(--reader-outline)]">
+    <div className="flex h-full min-h-0 flex-col p-4 bg-[var(--reader-surface)] border-t lg:border-t-0 lg:border-l border-[var(--reader-outline)]">
       <div className="mb-2 shrink-0 flex items-center justify-between">
-        <span className="m3-reader-badge bg-[var(--reader-accent)] text-[var(--reader-on-accent)] px-2 py-0.5 text-[18px] font-black">
-          <span>PLANCHE {currentNum}</span>
+        <span className="m3-reader-badge bg-[var(--reader-accent)] text-[var(--reader-on-accent)] px-3 py-0.5 text-[18px] font-bold tabular-nums">
+          <span>Planche {currentNum}</span>
         </span>
         <span className="text-[18px] font-bold tabular-nums text-[var(--reader-on-surface)]/60">
           {current + 1} / {total}
@@ -409,7 +454,9 @@ export function DatabookReader({
   return (
     <div
       ref={containerRef}
-      className="m3-reader m3-reader-container m3-reader-scroll flex h-[84svh] min-h-[460px] w-full min-w-0 flex-col overflow-hidden rounded-xl bg-[var(--reader-surface)] [contain:inline-size] [&:fullscreen]:h-screen [&:fullscreen]:min-h-screen [&:fullscreen]:rounded-none"
+      className="m3-reader m3-reader-container m3-reader-scroll flex h-[84svh] min-h-[460px] w-full min-w-0 flex-col overflow-hidden rounded-xl bg-[var(--reader-surface)] [contain:inline-size] [&:fullscreen]:h-screen [&:fullscreen]:min-h-screen [&:fullscreen]:rounded-none data-[pinned-fullscreen]:fixed data-[pinned-fullscreen]:inset-0 data-[pinned-fullscreen]:z-[90] data-[pinned-fullscreen]:h-dvh data-[pinned-fullscreen]:min-h-0 data-[pinned-fullscreen]:rounded-none"
+      data-pinned-fullscreen={pseudoFullscreen ? "" : undefined}
+      data-spread={useSpread ? "" : undefined}
       data-databook-reader
       data-m3-component="DatabookReader"
       data-testid="databook-reader"
@@ -418,11 +465,17 @@ export function DatabookReader({
     >
       {/* Barre de contrôles Toriyama HUD */}
       <div className="m3-reader-hud z-10 flex flex-nowrap items-center gap-2 px-3 py-2.5 sm:flex-wrap">
-        <span className="mr-1 hidden min-w-0 max-w-[40ch] truncate font-sans text-[18px] font-extrabold uppercase tracking-wide text-[var(--reader-on-surface)] drop-shadow-[1px_1px_0px_#000] sm:block">
+        <span className="mr-1 hidden min-w-0 max-w-[40ch] truncate text-[18px] font-semibold text-[var(--reader-on-surface)] sm:block">
           {title}
         </span>
-        <span className="m3-reader-badge bg-[var(--reader-accent)] text-[var(--reader-on-accent)] px-2 py-0.5 text-[18px] font-black sm:ml-auto">
-          <span>{counter}</span>
+        <span className="m3-reader-badge bg-[var(--reader-accent)] text-[var(--reader-on-accent)] px-3 py-0.5 text-[18px] font-bold tabular-nums sm:ml-auto">
+          <span>n° {currentNum}</span>
+        </span>
+        <span
+          className="text-[18px] tabular-nums text-[var(--reader-on-surface)]/70"
+          aria-label={`Planche ${Math.min(current + 1, total)} sur ${total}`}
+        >
+          {position}
         </span>
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:ml-0 sm:gap-2">
@@ -458,13 +511,28 @@ export function DatabookReader({
           >
             <ZoomIn size={14} aria-hidden />
           </button>
+          {isLarge && mode === "paged" && (
+            <button
+              type="button"
+              className={useSpread ? "m3-reader-btn-active" : "m3-reader-btn"}
+              onClick={() => setSpread((s) => !s)}
+              aria-pressed={useSpread}
+              aria-label="Double page"
+              aria-keyshortcuts="D"
+              title="Double page (D)"
+            >
+              <Columns2 size={14} aria-hidden />
+              <span className="hidden xl:inline">Double</span>
+            </button>
+          )}
           {fullscreenDispo && (
             <button
               type="button"
               className="m3-reader-btn"
               onClick={toggleFullscreen}
               aria-label={isFullscreen ? "Quitter le plein écran" : "Activer le plein écran"}
-              title={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+              aria-keyshortcuts="F"
+              title={isFullscreen ? "Quitter le plein écran (F)" : "Plein écran (F)"}
             >
               {isFullscreen ? (
                 <Minimize2 size={14} aria-hidden />
@@ -485,12 +553,15 @@ export function DatabookReader({
             {/* Zone planche */}
             <div className="relative min-h-[52%] min-w-0 flex-[1.6] lg:h-full lg:min-h-0 lg:flex-[1.15]">
               <Swiper
-                key="databook-ltr"
+                // Remonté au changement de double page : on repart de la planche courante.
+                key={useSpread ? "databook-ltr-spread" : "databook-ltr"}
                 initialSlide={current}
                 dir="ltr"
                 modules={[Zoom, Virtual, Mousewheel]}
                 className="h-full w-full"
-                slidesPerView={1}
+                slidesPerView={useSpread ? 2 : 1}
+                slidesPerGroup={useSpread ? 2 : 1}
+                spaceBetween={useSpread ? 8 : 0}
                 mousewheel={{ forceToAxis: true }}
                 zoom={{ maxRatio: 3, toggle: true }}
                 virtual
@@ -521,7 +592,7 @@ export function DatabookReader({
                             draggable={false}
                             className="max-h-full max-w-full object-contain transition-opacity group-hover:opacity-95"
                           />
-                          <span className="pointer-events-none absolute right-3 bottom-3 rounded-md border border-white/15 bg-[var(--reader-surface)]/60 px-2 py-1 text-[18px] font-bold uppercase tracking-wider text-[var(--reader-on-surface)]/70 opacity-0 transition-opacity group-hover:opacity-100">
+                          <span className="pointer-events-none absolute right-3 bottom-3 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)] px-3 py-1 text-[18px] font-semibold text-[var(--reader-on-surface)] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 pointer-coarse:opacity-100 motion-reduce:transition-none">
                             Agrandir
                           </span>
                         </button>
@@ -540,7 +611,7 @@ export function DatabookReader({
                 aria-label="Page précédente"
                 onClick={goPrevPage}
                 disabled={current <= 0}
-                className="absolute top-1/2 left-2 z-10 -translate-y-1/2 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)]/60 p-3 text-[var(--reader-on-surface)] transition-colors hover:border-[var(--reader-accent)] hover:text-[var(--reader-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-accent)] disabled:opacity-30"
+                className="absolute top-1/2 left-2 z-10 -translate-y-1/2 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)] p-3 text-[var(--reader-on-surface)] transition-colors hover:border-[var(--reader-accent)] hover:text-[var(--reader-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)] disabled:opacity-30"
               >
                 <ChevronLeft size={20} aria-hidden />
               </button>
@@ -549,14 +620,18 @@ export function DatabookReader({
                 aria-label="Page suivante"
                 onClick={goNextPage}
                 disabled={current >= total - 1}
-                className="absolute top-1/2 right-2 z-10 -translate-y-1/2 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)]/60 p-3 text-[var(--reader-on-surface)] transition-colors hover:border-[var(--reader-accent)] hover:text-[var(--reader-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-accent)] disabled:opacity-30"
+                className="absolute top-1/2 right-2 z-10 -translate-y-1/2 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)] p-3 text-[var(--reader-on-surface)] transition-colors hover:border-[var(--reader-accent)] hover:text-[var(--reader-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)] disabled:opacity-30"
               >
                 <ChevronRight size={20} aria-hidden />
               </button>
             </div>
 
-            {/* Légende — panneau scrollable indépendant (ne compresse plus l'image). */}
-            <div className="min-h-0 max-h-[38%] shrink-0 border-t border-[var(--reader-outline)] bg-[var(--reader-surface)]/90 px-3 py-2.5 sm:max-h-[48%] sm:px-5 sm:py-4 lg:max-h-none lg:w-[min(420px,38%)] lg:overflow-hidden lg:border-l lg:border-t-0">
+            {/* Légende — panneau scrollable indépendant (ne compresse plus l'image). La double
+						    page la replie : on feuillette les scans, le texte revient en simple page. */}
+            <div
+              hidden={useSpread}
+              className="min-h-0 max-h-[38%] shrink-0 border-t border-[var(--reader-outline)] bg-[var(--reader-surface)]/90 px-3 py-2.5 sm:max-h-[48%] sm:px-5 sm:py-4 lg:max-h-none lg:w-[min(420px,38%)] lg:overflow-hidden lg:border-l lg:border-t-0"
+            >
               {legendBlock}
             </div>
           </div>
@@ -580,7 +655,7 @@ export function DatabookReader({
             // route, hauteurs mesurées après coup), et une accroche
             // obligatoire se bat avec ces remesures — elle produit des sauts au
             // moment où une planche entre dans la fenêtre.
-            className="h-full w-full snap-y snap-proximity overflow-y-auto overflow-x-hidden overscroll-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--reader-accent)]"
+            className="h-full w-full snap-y snap-proximity overflow-y-auto overflow-x-hidden overscroll-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--reader-focus,#fcf03a)]"
             aria-label={`${title} — lecture verticale`}
           >
             <div
@@ -602,13 +677,13 @@ export function DatabookReader({
                     className="snap-start snap-always border-b border-white/5 px-2 py-4 sm:px-4 sm:py-6"
                   >
                     <div className="group/planche mx-auto flex w-full max-w-3xl flex-col gap-3">
-                      <span className="text-[18px] font-bold uppercase tracking-[0.2em] text-[var(--reader-accent)]/70">
+                      <span className="text-[18px] font-semibold tabular-nums text-[var(--reader-on-surface)]/70">
                         Page {item.number}
                       </span>
                       {item.imageUrl ? (
                         <button
                           type="button"
-                          className="group relative cursor-zoom-in border-0 bg-transparent p-0 text-left focus-visible:outline-none"
+                          className="group relative cursor-zoom-in rounded-sm border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)]"
                           onClick={() => openLightbox(vi.index)}
                           aria-label={`Ouvrir la page ${item.number} en plein écran`}
                         >
@@ -626,10 +701,10 @@ export function DatabookReader({
                             fetchPriority={vi.index === current ? "high" : "auto"}
                             decoding="async"
                             draggable={false}
-                            className="h-auto w-full rounded-sm bg-[var(--reader-surface)] object-contain shadow-[0_0_24px_rgba(0,0,0,0.45)] transition-[transform,box-shadow] duration-300 ease-out will-change-transform group-hover:scale-[1.015] group-hover:shadow-[0_0_60px_rgba(0,0,0,0.75)] group-focus-visible:scale-[1.015] motion-reduce:transform-none motion-reduce:transition-none"
+                            className="h-auto w-full rounded-sm border border-[var(--reader-outline)] bg-[var(--reader-surface)] object-contain"
                           />
-                          {/* Appel au plein écran, révélé au survol de la planche. */}
-                          <span className="pointer-events-none absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-[var(--reader-surface)]/70 px-2.5 py-1.5 text-[18px] font-bold uppercase tracking-wider text-[var(--reader-on-surface)]/80 opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                          {/* Appel au plein écran : au survol, au focus, et toujours au doigt. */}
+                          <span className="pointer-events-none absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)] px-3 py-1.5 text-[18px] font-semibold text-[var(--reader-on-surface)] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 pointer-coarse:opacity-100 motion-reduce:transition-none">
                             <ZoomIn size={12} aria-hidden />
                             Plein écran
                           </span>
@@ -666,10 +741,10 @@ export function DatabookReader({
                 key={`thumb-${item.number}-${idx}`}
                 type="button"
                 onClick={() => goTo(idx)}
-                className={`relative h-16 w-12 flex-shrink-0 overflow-hidden rounded border-2 transition-all ${
+                className={`relative h-16 w-12 flex-shrink-0 overflow-hidden rounded-md border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)] ${
                   current === idx
-                    ? "scale-105 border-[var(--reader-accent)] shadow-[0_0_10px_rgba(255,178,0,0.4)]"
-                    : "border-white/10 hover:border-white/30"
+                    ? "border-[var(--reader-focus,#fcf03a)]"
+                    : "border-[var(--reader-outline)] hover:border-[var(--reader-on-surface)]/40"
                 }`}
                 title={`Page ${item.number}`}
                 aria-label={`Aller à la page ${item.number}`}
@@ -685,11 +760,11 @@ export function DatabookReader({
                     loading="lazy"
                   />
                 ) : (
-                  <span className="flex h-full w-full items-center justify-center bg-zinc-900 text-[18px] text-[var(--reader-on-surface)]/50">
-                    txt
+                  <span className="flex h-full w-full items-center justify-center bg-[var(--reader-surface)] text-[18px] text-[var(--reader-on-surface)]/50">
+                    Texte
                   </span>
                 )}
-                <span className="absolute inset-x-0 bottom-0 bg-[var(--reader-surface)]/70 text-center font-mono text-[18px] font-bold text-[var(--reader-on-surface)]">
+                <span className="absolute inset-x-0 bottom-0 bg-[var(--reader-surface)] text-center text-[18px] font-semibold tabular-nums text-[var(--reader-on-surface)]">
                   {item.number}
                 </span>
               </button>
@@ -701,7 +776,7 @@ export function DatabookReader({
       {/* Saut direct pour les longs databooks. */}
       {mode === "paged" && total > SHOW_STRIP_MAX && (
         <form
-          className="z-10 flex items-center justify-center gap-3 border-t-2 border-[var(--reader-outline)] bg-[var(--reader-surface)] px-4 py-3"
+          className="z-10 flex items-center justify-center gap-3 border-t border-[var(--reader-outline)] bg-[var(--reader-surface)] px-4 py-3"
           onSubmit={(e) => {
             e.preventDefault();
             const field = e.currentTarget.elements.namedItem("goto") as HTMLInputElement | null;
@@ -715,9 +790,9 @@ export function DatabookReader({
         >
           <label
             htmlFor={`${baseId}-goto`}
-            className="text-[18px] font-black uppercase tracking-wider text-[var(--reader-on-surface)]"
+            className="text-[18px] font-semibold text-[var(--reader-on-surface)]"
           >
-            Aller à n°
+            Aller à la planche n°
           </label>
           <input
             id={`${baseId}-goto`}
@@ -725,10 +800,10 @@ export function DatabookReader({
             type="number"
             key={currentNum}
             defaultValue={currentNum}
-            className="w-20 rounded-md border-2 border-[var(--reader-outline)] bg-[var(--reader-surface)] px-2.5 py-1 text-center text-[18px] font-extrabold tabular-nums text-[var(--reader-accent)] shadow-[2px_2px_0px_#000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-accent)]"
+            className="min-h-11 w-20 rounded-lg border border-[var(--reader-outline)] bg-[var(--reader-surface)] px-2.5 py-1 text-center text-[18px] font-semibold tabular-nums text-[var(--reader-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)]"
           />
-          <button type="submit" className="m3-reader-btn-active !py-1 !px-3.5">
-            OK
+          <button type="submit" className="m3-reader-btn-active">
+            Aller
           </button>
         </form>
       )}
@@ -748,35 +823,84 @@ export function DatabookReader({
           className="fixed inset-0 z-[100] flex flex-col bg-[var(--reader-surface)]/95"
           onClick={() => setLightbox(false)}
         >
-          <div className="flex items-center gap-3 border-b-2 border-[var(--reader-outline)] bg-[var(--reader-surface)] px-4 py-3">
-            <span className="min-w-0 flex-1 truncate font-sans text-[18px] font-extrabold uppercase tracking-wide text-[var(--reader-on-surface)]">
+          <div className="flex items-center gap-3 border-b border-[var(--reader-outline)] bg-[var(--reader-surface)] px-4 py-3">
+            <span className="hidden min-w-0 flex-1 truncate text-[18px] font-semibold text-[var(--reader-on-surface)] sm:block">
               {title}
             </span>
-            <span className="m3-reader-badge bg-[var(--reader-accent)] text-[var(--reader-on-accent)] px-2 py-0.5 text-[18px] font-black">
-              <span>n°{currentNum}</span>
+            <span className="m3-reader-badge bg-[var(--reader-accent)] text-[var(--reader-on-accent)] px-3 py-0.5 text-[18px] font-bold tabular-nums">
+              <span>n° {currentNum}</span>
             </span>
-            <button
-              type="button"
-              className="m3-reader-btn ml-auto"
-              onClick={(e) => {
-                e.stopPropagation();
-                setLightbox(false);
-              }}
-              aria-label="Fermer"
+            <div
+              className="ml-auto flex items-center gap-1.5"
+              role="group"
+              aria-label="Zoom"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X size={16} aria-hidden />
-            </button>
+              <button
+                type="button"
+                className="m3-reader-btn"
+                onClick={zoomOut}
+                disabled={!visionneuse.zoomed}
+                aria-label="Dézoomer"
+                aria-keyshortcuts="-"
+                title="Dézoomer (−)"
+              >
+                <ZoomOut size={16} aria-hidden />
+              </button>
+              <output
+                className="hidden min-w-[4ch] text-center text-[18px] font-bold tabular-nums text-[var(--reader-on-surface)] sm:inline"
+                aria-live="polite"
+              >
+                {Math.round(visionneuse.zoom.scale * 100)} %
+              </output>
+              <button
+                type="button"
+                className="m3-reader-btn"
+                onClick={zoomIn}
+                disabled={visionneuse.zoom.scale >= ZOOM_MAX}
+                aria-label="Zoomer"
+                aria-keyshortcuts="+"
+                title="Zoomer (+)"
+              >
+                <ZoomIn size={16} aria-hidden />
+              </button>
+              <button
+                type="button"
+                className="m3-reader-btn"
+                onClick={resetZoom}
+                disabled={!visionneuse.zoomed}
+                aria-label="Taille réelle de l'écran"
+                aria-keyshortcuts="0"
+                title="Ajuster à l'écran (0)"
+              >
+                <RotateCcw size={16} aria-hidden />
+              </button>
+              <button
+                type="button"
+                className="m3-reader-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightbox(false);
+                }}
+                aria-label="Fermer"
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </div>
           </div>
           <div
-            className="relative flex min-h-0 flex-1 items-center justify-center p-2 sm:p-4"
+            ref={visionneuse.surfaceRef}
+            className={`relative flex min-h-0 flex-1 touch-none items-center justify-center overflow-hidden p-2 select-none sm:p-4 ${visionneuse.zoomed ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"}`}
+            data-zoomed={visionneuse.zoomed ? "" : undefined}
+            data-testid="databook-lightbox-surface"
             onClick={(e) => e.stopPropagation()}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
+            {...visionneuse.handlers}
           >
             <img
               src={currentImage}
               alt={`${title} — page ${currentNum}`}
-              className="max-h-full max-w-full object-contain"
+              className="max-h-full max-w-full object-contain will-change-transform motion-safe:transition-transform motion-safe:duration-75"
+              style={visionneuse.style}
               draggable={false}
             />
             <button
@@ -784,7 +908,7 @@ export function DatabookReader({
               aria-label="Page précédente"
               onClick={() => goTo(current - 1)}
               disabled={current <= 0}
-              className="absolute top-1/2 left-4 -translate-y-1/2 rounded-lg border-2 border-[var(--reader-outline)] bg-[var(--reader-surface)]/90 p-3 text-[var(--reader-accent)] shadow-[3px_3px_0px_#000] hover:bg-[var(--reader-accent)] hover:text-[var(--reader-on-accent)] transition-all disabled:opacity-30"
+              className="absolute top-1/2 left-2 sm:left-4 -translate-y-1/2 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)] p-3 text-[var(--reader-on-surface)] transition-colors hover:bg-[var(--reader-accent)] hover:text-[var(--reader-on-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)] disabled:opacity-30"
             >
               <ChevronLeft size={22} aria-hidden />
             </button>
@@ -793,7 +917,7 @@ export function DatabookReader({
               aria-label="Page suivante"
               onClick={() => goTo(current + 1)}
               disabled={current >= total - 1}
-              className="absolute top-1/2 right-4 -translate-y-1/2 rounded-lg border-2 border-[var(--reader-outline)] bg-[var(--reader-surface)]/90 p-3 text-[var(--reader-accent)] shadow-[3px_3px_0px_#000] hover:bg-[var(--reader-accent)] hover:text-[var(--reader-on-accent)] transition-all disabled:opacity-30"
+              className="absolute top-1/2 right-2 sm:right-4 -translate-y-1/2 rounded-full border border-[var(--reader-outline)] bg-[var(--reader-surface)] p-3 text-[var(--reader-on-surface)] transition-colors hover:bg-[var(--reader-accent)] hover:text-[var(--reader-on-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)] disabled:opacity-30"
             >
               <ChevronRight size={22} aria-hidden />
             </button>

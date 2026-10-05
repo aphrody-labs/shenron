@@ -1,13 +1,20 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Dragon Ball reader theme (copied from @aphrody/m3-reader@3.3.4 dragon-ball.css; owned by @shenron/ui). */
 /* Shenron's live --dbz-* palette drives the reader, including /admin/design overrides. */
+/*
+ * Direction « Planche couleur » : aplats francs, trait d'encre de 1 px (os à 12 %), papier os
+ * sur nuit d'invocation. Ni lueur, ni ombre portée, ni libellé en capitales espacées ; le focus
+ * est l'anneau kinto de 2 px ; l'action principale est le gi. Les règles du bas appliquent la
+ * même grammaire au lecteur M3 canonique sans le recopier.
+ */
 .m3-reader--dragon-ball.m3-reader,
 .m3-reader--dragon-ball .m3-reader {
-  --reader-surface: var(--dbz-bg, #0a0a0a);
-  --reader-on-surface: var(--dbz-blue-light, #cdcdcd);
+  --reader-surface: var(--dbz-bg, #0e1630);
+  --reader-on-surface: var(--dbz-os, #efe9d8);
   --reader-accent: var(--dbz-orange, #e78220);
-  --reader-on-accent: #0a0a0a;
-  --reader-outline: var(--dbz-border, #2a2a26);
+  --reader-on-accent: var(--dbz-encre, #131b08);
+  --reader-outline: color-mix(in srgb, var(--dbz-os, #efe9d8) 12%, transparent);
+  --reader-focus: var(--dbz-kinto-lumiere, #fcf03a);
   --reader-card: var(--dbz-card, #141410);
   --reader-accent-pressed: var(--dbz-orange-dark, #c46f1b);
   --reader-blue: var(--dbz-blue, #1e244d);
@@ -18,27 +25,25 @@
   --reader-amber: var(--dbz-amber, #ffd23f);
   color-scheme: dark;
   font-family: var(--font-sans, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
 }
 .m3-reader--dragon-ball .m3-reader-container,
 .m3-reader--dragon-ball .m3-reader-collection {
-  border: 2px solid var(--reader-outline);
-  box-shadow: 4px 4px 0 #000;
+  border: 1px solid var(--reader-outline);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: none;
 }
 .m3-reader--dragon-ball .m3-reader-hud {
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  box-shadow: 0 2px 0 #000;
+  border-bottom: 1px solid var(--reader-outline);
 }
 .m3-reader--dragon-ball .m3-reader-btn,
 .m3-reader--dragon-ball .m3-reader-btn-active {
-  border-radius: var(--radius, 0.5rem);
-  box-shadow: 2px 2px 0 #000;
-  text-transform: uppercase;
+  border-width: 1px;
+  border-radius: var(--radius-lg, 0.75rem);
+  font-weight: 600;
 }
-.m3-reader--dragon-ball .m3-reader-btn:active,
-.m3-reader--dragon-ball .m3-reader-btn-active:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #000;
+.m3-reader--dragon-ball .m3-reader-btn:hover {
+  border-color: var(--reader-on-surface);
 }
 .m3-reader--dragon-ball .m3-reader-btn-active:hover {
   background: var(--reader-accent-pressed);
@@ -47,21 +52,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transform: skewX(-12.3deg);
-  border: 2px solid #000;
-  border-radius: 0.25rem;
+  border-radius: 9999px;
   color: var(--reader-on-accent);
-  box-shadow: 2px 2px 0 #000;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
-.m3-reader--dragon-ball .m3-reader-badge > * {
-  transform: skewX(12.3deg);
+/* Focus visible : anneau kinto de 2 px, partout dans le lecteur. */
+.m3-reader--dragon-ball :is(button, a, input, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--reader-focus);
+  outline-offset: 2px;
 }
 .m3-reader--dragon-ball .m3-reader-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--reader-accent) #050505;
+  scrollbar-color: var(--reader-accent) var(--reader-surface);
 }
 .m3-reader--dragon-ball .m3-reader-scroll::-webkit-scrollbar {
   width: 6px;
@@ -69,9 +72,36 @@
 }
 .m3-reader--dragon-ball .m3-reader-scroll::-webkit-scrollbar-thumb {
   background: var(--reader-accent);
-  border: 1px solid #000;
-  border-radius: 2px;
+  border-radius: 9999px;
 }
-.m3-reader--dragon-ball .m3-reader-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--reader-yellow);
+
+/* Lecteur M3 canonique : sa grammaire de classes ramenée à la planche couleur. */
+.m3-reader--dragon-ball .m3-reader :is(.uppercase) {
+  text-transform: none;
+  letter-spacing: normal;
+}
+.m3-reader--dragon-ball .m3-reader :is([class*="tracking-"]) {
+  letter-spacing: normal;
+}
+.m3-reader--dragon-ball .m3-reader :is(.font-mono) {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.m3-reader--dragon-ball .m3-reader :is([class*="shadow"]) {
+  box-shadow: none;
+  filter: none;
+}
+.m3-reader--dragon-ball .m3-reader :is([class*="hover:scale"]):hover,
+.m3-reader--dragon-ball .m3-reader :is([class*="scale-105"]) {
+  scale: none;
+}
+
+/* Cibles tactiles : 44 px au doigt, y compris les liens du bandeau (API, chapitres). */
+@media (pointer: coarse) {
+  .m3-reader--dragon-ball .m3-reader-hud a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
