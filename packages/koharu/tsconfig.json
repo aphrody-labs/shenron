@@ -1,19 +1,10 @@
 {
+  "extends": "../config/tsconfig/bun.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "strict": true,
-    "noImplicitAny": false,
-    "noEmit": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "moduleDetection": "force",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
-    "allowJs": true,
-    "types": ["bun"],
-    "isolatedModules": true,
-    "skipLibCheck": true
+    "allowJs": true
   },
   "include": ["src/**/*.ts", "src/**/*.js", "test/**/*.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules"]
