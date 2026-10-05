@@ -145,16 +145,16 @@ export async function JournalIndex({ page }: { page: number }) {
 
       <SectionHeading
         level={1}
-        kicker={<T k="news.index.kicker" />}
-        title={<T k="news.index.title" />}
-        standfirst={<T k="news.index.standfirst" />}
+        kicker={<T k="communaute.news.kicker" />}
+        title={<T k="communaute.news.title" />}
+        standfirst={<T k="communaute.news.standfirst" />}
         actions={
           <>
             <Link href={feedHref("tout")} className="toriyama-btn !text-[0.75rem]">
-              <T k="news.index.viewFeed" />
+              <T k="communaute.news.viewFeed" />
             </Link>
             <a href="/news/rss.xml" className="toriyama-btn-secondary !text-[0.75rem]">
-              <T k="news.index.rss" />
+              <T k="communaute.news.rss" />
             </a>
           </>
         }

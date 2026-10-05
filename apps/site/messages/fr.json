@@ -952,5 +952,14 @@
     "totalResults": "résultats au total",
     "noResults": "Aucun résultat ne correspond à votre recherche",
     "readMore": "Lire la suite"
+  },
+  "communaute": {
+    "news": {
+      "kicker": "Le Journal",
+      "title": "Actualités",
+      "standfirst": "Sorties anime, chapitres du manga, films, événements et analyses de la communauté.",
+      "viewFeed": "Le fil",
+      "rss": "Flux RSS"
+    }
   }
 }

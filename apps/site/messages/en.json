@@ -952,5 +952,14 @@
     "totalResults": "total results",
     "noResults": "No results match your search query",
     "readMore": "Read more"
+  },
+  "communaute": {
+    "news": {
+      "kicker": "The Journal",
+      "title": "News",
+      "standfirst": "Anime releases, manga chapters, films, events and analysis from the community.",
+      "viewFeed": "The feed",
+      "rss": "RSS feed"
+    }
   }
 }

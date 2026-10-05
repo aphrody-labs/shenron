@@ -952,5 +952,14 @@
     "totalResults": "件の検索結果",
     "noResults": "該当する項目は見つかりませんでした",
     "readMore": "続きを読む"
+  },
+  "communaute": {
+    "news": {
+      "kicker": "ジャーナル",
+      "title": "ニュース",
+      "standfirst": "アニメの放送、漫画の新章、映画、イベント、そしてコミュニティによる分析。",
+      "viewFeed": "フィード",
+      "rss": "RSSフィード"
+    }
   }
 }
