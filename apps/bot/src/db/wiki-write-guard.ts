@@ -21,8 +21,13 @@
  * Le seed/ingest éditorial doit désormais cibler Neon, pas ce replica.
  */
 const entry = Bun.main ?? process.argv[1] ?? "";
-// Runtime du bot = .../src/index.ts → exempté (auto-seed légitime, idempotent).
-const isBotRuntime = /(?:^|\/)(?:src\/)?index\.ts$/.test(entry);
+// Exécutable `bun build --compile` (shenron-bot) : les modules vivent sous /$bunfs/ (Linux,
+// macOS) ou ~BUN (Windows) ; seul le runtime du bot y est compilé.
+const COMPILED = /^\/\$bunfs\/|~BUN/;
+const isCompiled = COMPILED.test(import.meta.path) || COMPILED.test(entry);
+// Runtime du bot = src/index.ts ou src/entry-standalone.ts → exempté (auto-seed légitime, idempotent).
+const isBotRuntime =
+  isCompiled || /(?:^|[\\/])(?:src[\\/])?(?:index|entry-standalone)\.ts$/.test(entry);
 
 if (!isBotRuntime && !Bun.env.ALLOW_SQLITE_WIKI_WRITE) {
   console.error(
