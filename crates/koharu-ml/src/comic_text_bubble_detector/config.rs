@@ -138,8 +138,11 @@ impl Default for RTDetrV2Config {
 
 impl RTDetrV2Config {
     pub fn num_labels(&self) -> i64 {
-        self.num_labels
-            .unwrap_or({ if self.id2label.is_empty() { 2 } else { self.id2label.len() as i64 } })
+        self.num_labels.unwrap_or(if self.id2label.is_empty() {
+            2
+        } else {
+            self.id2label.len() as i64
+        })
     }
 }
 
