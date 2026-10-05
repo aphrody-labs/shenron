@@ -5,8 +5,9 @@
  * `applyChronology`), pas un tri que l'on peut refaire chez soi : un agent qui
  * reconstruisait « l'ordre » à partir des dates de diffusion se trompait
  * systématiquement sur les films et sur GT. On rend donc l'ordre résolu,
- * numéroté, avec pour chaque entrée son URL de page — et, pour les tomes, son
- * API de lecture planche par planche.
+ * numéroté, avec pour chaque entrée son URL de page et son API : la fiche JSON
+ * (`/api/public/wiki/episodes|movies/{id}`) ou, pour les tomes, la lecture
+ * planche par planche.
  *
  * `?era=` filtre une ère (`DB`, `DBZ`, `GT`, `Super`, `Daima`, `Manga`),
  * `?kind=` une nature (`episode`, `movie`, `manga`).
@@ -54,12 +55,15 @@ export async function GET(req: Request) {
       numero: it.number,
       date: it.date ? new Date(it.date * 1000).toISOString().slice(0, 10) : null,
       href: `${SITE_URL}${it.href}`,
+      // Fiche JSON réelle : `/api/episodes/{id}` et `/api/movies/{id}` n'existent
+      // pas (seul `…/download` y est servi) ; le contrat `@shenron/api` sert la
+      // fiche (`visible = true`) sous `/api/public/wiki/{catégorie}/{id}`.
       api:
         it.kind === "manga"
           ? `${SITE_URL}/api/manga/volume/${it.id}`
           : it.kind === "episode"
-            ? `${SITE_URL}/api/episodes/${it.id}`
-            : `${SITE_URL}/api/movies/${it.id}`,
+            ? `${SITE_URL}/api/public/wiki/episodes/${it.id}`
+            : `${SITE_URL}/api/public/wiki/movies/${it.id}`,
     }))
     .filter((e) => (era ? e.ere.toLowerCase() === era.toLowerCase() : true))
     .filter((e) => (kind ? e.kind === kind : true));
