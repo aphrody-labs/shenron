@@ -6,6 +6,7 @@ import {
   generateAgentToken,
   hashAgentToken,
   hasScope,
+  isQuotaExemptMethod,
   parseScopes,
 } from "../src/agent-keys";
 
@@ -69,5 +70,12 @@ describe("decideWriteQuota", () => {
       allowed: false,
       retryAfterSeconds: 3600,
     });
+  });
+
+  test("only GET and HEAD are exempt, whatever the case", () => {
+    for (const m of ["GET", "get", "HEAD", "Head"]) expect(isQuotaExemptMethod(m)).toBe(true);
+    for (const m of ["POST", "PUT", "PATCH", "DELETE", "OPTIONS"]) {
+      expect(isQuotaExemptMethod(m)).toBe(false);
+    }
   });
 });

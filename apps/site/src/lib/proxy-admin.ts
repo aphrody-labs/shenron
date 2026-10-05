@@ -23,6 +23,8 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users } from "@/db/schema";
+import { getSessionSafe } from "@shenron/auth";
+import { looksLikeAgentToken } from "@shenron/auth/agent-keys";
 import { parseBearer } from "@shenron/auth/crypto";
 import { staffPolicyFromEnv } from "@shenron/auth/staff";
 import { createDiscordAccountLookup } from "@shenron/db/repos/accounts";
@@ -65,7 +67,7 @@ export async function resolveVisitor(request: NextRequest): Promise<Visitor> {
     if (verifyAdminTokenOrBearer(bearer)) {
       return { isAdmin: true, authenticated: true, discordId: null };
     }
-    if (bearer.startsWith("dbfr_agent_")) {
+    if (looksLikeAgentToken(bearer)) {
       const agent = await authenticateAgent(request).catch(() => null);
       if (
         agent &&
@@ -79,7 +81,7 @@ export async function resolveVisitor(request: NextRequest): Promise<Visitor> {
   }
 
   // 4) Session Discord (Better Auth) lue depuis les en-têtes de la requête.
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = await getSessionSafe<{ user: { id: string } }>(auth, request.headers);
   if (!session?.user) return { isAdmin: false, authenticated: false, discordId: null };
 
   // Discord ID lié (même lookup que `session.ts`) → clé du user métier et de

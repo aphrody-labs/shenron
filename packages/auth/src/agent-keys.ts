@@ -55,17 +55,22 @@ export function hasScope(scopes: readonly string[], needed: string): boolean {
   return scopes.includes(needed);
 }
 
+/** Reads (`GET`, `HEAD`, any case) are never counted nor limited by the write quota. */
+export function isQuotaExemptMethod(method: string): boolean {
+  const upper = method.toUpperCase();
+  return upper === "GET" || upper === "HEAD";
+}
+
 /**
- * Write quota: reads (`GET`, `HEAD`) are never counted nor limited; a write is
- * refused once `writesLastHour >= limit`.
+ * Write quota: reads are never counted nor limited ({@link isQuotaExemptMethod});
+ * a write is refused once `writesLastHour >= limit`.
  */
 export function decideWriteQuota(input: {
   method: string;
   writesLastHour: number;
   limit: number;
 }): { allowed: boolean; retryAfterSeconds?: number } {
-  const method = input.method.toUpperCase();
-  if (method === "GET" || method === "HEAD") return { allowed: true };
+  if (isQuotaExemptMethod(input.method)) return { allowed: true };
   if (input.writesLastHour >= input.limit) return { allowed: false, retryAfterSeconds: 3600 };
   return { allowed: true };
 }

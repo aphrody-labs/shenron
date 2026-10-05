@@ -14,6 +14,7 @@
  * Server-only.
  */
 import "server-only";
+import { decideWriteQuota, hasScope, isQuotaExemptMethod } from "@shenron/auth/agent-keys";
 import type { AgentScope } from "@/db/schema";
 import {
   agentCallsLastHour,
@@ -35,11 +36,15 @@ const ERRORS = {
 
 export type AgentErrorCode = keyof typeof ERRORS;
 
-export function agentError(code: AgentErrorCode, detail?: string): Response {
+export function agentError(
+  code: AgentErrorCode,
+  detail?: string,
+  headers?: Record<string, string>,
+): Response {
   const e = ERRORS[code];
   return Response.json(
     { ok: false, error: code, message: detail ? `${e.message} ${detail}` : e.message },
-    { status: e.status, headers: { "Cache-Control": "private, no-store" } },
+    { status: e.status, headers: { "Cache-Control": "private, no-store", ...headers } },
   );
 }
 
@@ -114,7 +119,7 @@ export async function withAgent(
     return agentError("auth_required");
   }
 
-  if (!agent.scopes.includes(scope)) {
+  if (!hasScope(agent.scopes, scope)) {
     await recordAgentCall({
       keyId: agent.keyId,
       keyName: agent.name,
@@ -129,9 +134,14 @@ export async function withAgent(
   // Le quota ne porte que sur les écritures : compter les lectures pénaliserait
   // un agent qui pagine un catalogue, sans rien protéger (la lecture est déjà
   // publique par ailleurs).
-  if (req.method !== "GET" && req.method !== "HEAD") {
+  if (!isQuotaExemptMethod(req.method)) {
     const used = await agentCallsLastHour(agent.keyId);
-    if (used >= agent.rateLimitPerHour) {
+    const quota = decideWriteQuota({
+      method: req.method,
+      writesLastHour: used,
+      limit: agent.rateLimitPerHour,
+    });
+    if (!quota.allowed) {
       await recordAgentCall({
         keyId: agent.keyId,
         keyName: agent.name,
@@ -140,7 +150,11 @@ export async function withAgent(
         status: 429,
         summary: `quota ${used}/${agent.rateLimitPerHour}`,
       });
-      return agentError("rate_limited");
+      return agentError(
+        "rate_limited",
+        undefined,
+        quota.retryAfterSeconds ? { "Retry-After": String(quota.retryAfterSeconds) } : undefined,
+      );
     }
   }
 
