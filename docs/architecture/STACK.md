@@ -1062,6 +1062,7 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 - `@shenron/koharu` : client du moteur Koharu, `./protocol` (généré par Specta depuis
   `koharu-app`), `./native` (transport `koharu-sdk` en JSON Lines, classe bun) et
   `./canvas` (WASM de `koharu-canvas`).
+- `@shenron/lexicon` : le lexique unique ja/fr/en (`data/lexicon/terms.json`), recherche, localisation et masquage, classe `pure` (`.` moteur, `./data` données embarquées), sans arête `@shenron/*` ; mêmes règles que le crate `shenron-lexicon` ([lexicon.md](lexicon.md)).
 - `@shenron/media` : aides OCR et manga, classe `pure` (SHA-256 en TypeScript), sans arête `@shenron/*`.
 - `@shenron/native` : liaison `bun:ffi` de `shenron-ffi` (classe bun).
 - `@aphrody/*` vendorisés : `dist` commité, hors du périmètre.
@@ -1073,8 +1074,8 @@ restent dans les applications ; les éléments visuels Toriyama sont dans le paq
 
 ### 4.1 Paquet vers paquet (acyclique)
 
-État au 2026-10-05 : neuf paquets audités, cinq paquets cadres (§3.1–3.7, `ai` et
-`aphrody` réunis depuis dans `@shenron/pipeline`) et quatre paquets consommateurs (§3.8).
+État au 2026-10-05 : dix paquets audités, cinq paquets cadres (§3.1–3.7, `ai` et
+`aphrody` réunis depuis dans `@shenron/pipeline`) et cinq paquets consommateurs (§3.8).
 Les arêtes ci-dessous sont celles du code ; `scripts/audit/check-workspace-packages.ts`
 (`ALLOWED_EDGES`, `EDGE_SUBPATHS`) les impose, y compris les sous-chemins.
 
@@ -1082,13 +1083,14 @@ Les arêtes ci-dessous sont celles du code ; `scripts/audit/check-workspace-pack
 @shenron/config     (feuille)
 @shenron/db       → config
 @shenron/auth     → config                                ⇢ db (dev)
-@shenron/api      → config, db, auth,
+@shenron/api      → config, db, auth, lexicon,
                     pipeline (./ai/prompts, ./agent-home)
 @shenron/ui       → config, koharu (./protocol, ./canvas),  ⇢ config (dev)
                     pipeline (./koharu)
 @shenron/pipeline → config, db (./sql, ./bun-sql, ./env, ./guards, ./redis),
-                    koharu (./native), media, native
+                    koharu (./native), lexicon, media, native
 @shenron/koharu   (feuille)
+@shenron/lexicon  (feuille)
 @shenron/media    (feuille)
 @shenron/native   (feuille)
 ```
@@ -1107,10 +1109,11 @@ Les arêtes ci-dessous sont celles du code ; `scripts/audit/check-workspace-pack
 | `pipeline → db` | oui, vers `./sql`, `./bun-sql`, `./env`, `./guards`, et `./redis` pour la qualification live (§4.2) | clients SQL des scripts et sondes ; durabilité Redis vérifiée par `./testing/live-rag` |
 | `pipeline → koharu` | oui, vers `./native` seulement | transport `koharu-sdk` des candidats |
 | `pipeline → media, native` | oui | OCR, manga, liaison `shenron-ffi` |
-| `koharu`, `media`, `native` | feuilles : aucune arête `@shenron/*` | clients et liaisons sans état partagé |
+| `api, pipeline → lexicon` | oui | route `/api/public/lexicon`, expansion des requêtes RAG |
+| `koharu`, `lexicon`, `media`, `native` | feuilles : aucune arête `@shenron/*` | clients et liaisons sans état partagé |
 | `config → *`, `db → auth/api/pipeline`, `auth → db` (exécution), `auth → api`, `pipeline → api/auth/ui`, `koharu/media/native → *`, tout paquet → `apps/*` | **interdit** | cycle ou inversion de couches |
 
-Les neuf paquets passent tous les contrôles du §4.3. Seul `@shenron/native`, liaison de
+Les dix paquets passent tous les contrôles du §4.3. Seul `@shenron/native`, liaison de
 `shenron-ffi`, peut charger du code natif (`bun:ffi`, `dlopen`).
 
 ### 4.2 Applications vers paquets

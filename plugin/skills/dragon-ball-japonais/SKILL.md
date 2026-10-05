@@ -16,17 +16,19 @@ d'IPADIC n'est pas une preuve de faute, l'absence du lexique non plus.
 Depuis le dossier de cette skill :
 
 ```bash
-bun scripts/lexique.js cherche ベジータ          # graphie → forme française du wiki
-bun scripts/lexique.js cherche "Kaiô-ken"       # forme française → graphie
+bun scripts/lexique.js cherche ベジータ          # graphie → formes française et anglaise
+bun scripts/lexique.js cherche "Kaiô-ken"       # forme française ou anglaise → graphie
 bun scripts/lexique.js termes "孫悟空は界王拳を使った"
-bun scripts/lexique.js masque "孫悟空は界王拳を使った" > masque.json
+bun scripts/lexique.js masque "孫悟空は界王拳を使った" > masque.json   # --en : formes anglaises
 bun scripts/lexique.js restaure "Zeta001 a utilisé le Zeta002." --table masque.json
 ```
 
 Le lexique (`references/lexique-canonique.json`, lisible dans
-[lexique-canonique.md](references/lexique-canonique.md)) est l'instantané des
-couples `name_ja` → `name` des fiches du wiki ; `lexique.js` applique les règles de
-masquage du site (le plus long d'abord, frontières de mot katakana, jetons `Zeta001`).
+[lexique-canonique.md](references/lexique-canonique.md)) est l'instantané du lexique
+unique de Shenron (`data/lexicon/terms.json` : japonais, français du wiki, anglais quand une
+source l'établit, alias) ; `lexique.js` applique les règles de `@shenron/lexicon`, les mêmes que
+le site, l'API et le traducteur de Shenron Studio (le plus long d'abord, frontières de mot
+katakana, jetons `Zeta001`). Une forme anglaise vide n'est pas établie : ne pas l'inventer.
 Graphies prouvées par une planche de databook : `bun ../dragon-ball/scripts/faits.ts
 section graphies_japonaises_prouvees` ; techniques avec lecture et premier chapitre :
 `section techniques`. Pièges de graphie et de translittération : [lexique](references/lexique.md).

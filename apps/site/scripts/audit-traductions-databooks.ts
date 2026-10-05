@@ -28,7 +28,7 @@
  *   bun scripts/audit-traductions-databooks.ts --ecrivain=shenron-massive-vps --details
  *   bun scripts/audit-traductions-databooks.ts --appliquer --json=/tmp/audit.json
  */
-import { join } from "node:path";
+import { lexicon } from "@shenron/lexicon/data";
 import {
   auditerPlanche,
   indexerEntites,
@@ -42,7 +42,6 @@ import {
   arretSiGel,
   chargeOuvrages,
   connecte,
-  RACINE_SITE,
   texteDePlanche,
   traductionDePlanche,
 } from "./_databooks-base";
@@ -98,9 +97,7 @@ const revisionId = () => {
   return Array.from(crypto.getRandomValues(new Uint8Array(24)), (o) => alphabet[o % 36]).join("");
 };
 
-const lexique = (await Bun.file(
-  join(RACINE_SITE, "..", "..", "data", "lexique-db-canonique.json"),
-).json()) as EntreeLexique[];
+const lexique: EntreeLexique[] = lexicon().legacyEntries();
 const index = indexerEntites(lexique);
 
 const sql = await connecte();
@@ -362,7 +359,7 @@ try {
           seuils: { suspect: SEUIL_SUSPECT, corrompu: SEUIL_CORROMPU },
           corpus: {
             planchesTraduitesAuditees: lignes.length,
-            baseLexique: "data/lexique-db-canonique.json",
+            baseLexique: "data/lexicon/terms.json",
             politique: "aucune traduction déduite; signaux déterministes seulement",
           },
           classements: { total: classements.length, parClasse, cas: classements },

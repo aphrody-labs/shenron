@@ -47,6 +47,7 @@ const PACKAGES: Readonly<Record<string, string>> = {
   "@shenron/ui": "packages/ui",
 
   "@shenron/koharu": "packages/koharu",
+  "@shenron/lexicon": "packages/lexicon",
   "@shenron/media": "packages/media",
   "@shenron/native": "packages/native",
   "@shenron/pipeline": "packages/pipeline",
@@ -71,7 +72,13 @@ const ALLOWED_EDGES: Readonly<
   "@shenron/auth": { runtime: ["@shenron/config"], dev: ["@shenron/db"] },
 
   "@shenron/api": {
-    runtime: ["@shenron/config", "@shenron/db", "@shenron/auth", "@shenron/pipeline"],
+    runtime: [
+      "@shenron/config",
+      "@shenron/db",
+      "@shenron/auth",
+      "@shenron/lexicon",
+      "@shenron/pipeline",
+    ],
     dev: [],
   },
   // The UI layer hosts the Koharu editor (protocol, canvas), the studio (config/admin) and the
@@ -83,6 +90,8 @@ const ALLOWED_EDGES: Readonly<
 
   // Leaves: the Koharu client, the media helpers and the shenron-ffi binding.
   "@shenron/koharu": { runtime: [], dev: [] },
+  // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.
+  "@shenron/lexicon": { runtime: [], dev: [] },
   "@shenron/media": { runtime: [], dev: [] },
   "@shenron/native": { runtime: [], dev: [] },
   // Compute clients and the editorial pipeline; never @shenron/api, @shenron/auth or @shenron/ui.
@@ -91,6 +100,7 @@ const ALLOWED_EDGES: Readonly<
       "@shenron/config",
       "@shenron/db",
       "@shenron/koharu",
+      "@shenron/lexicon",
       "@shenron/media",
       "@shenron/native",
     ],

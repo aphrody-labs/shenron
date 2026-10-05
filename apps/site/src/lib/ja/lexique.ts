@@ -1,7 +1,7 @@
 import "server-only";
 
 /**
- * Japonais — lexique du domaine, construit depuis le wiki.
+ * Japonais — lexique du domaine : le lexique canonique (`@shenron/lexicon`), complété par le wiki.
  *
  * Le vocabulaire de fiction (ベジータ, サイヤ人, ナメック星) n'est dans aucun
  * dictionnaire japonais : c'est le nôtre, et il est déjà en base — colonnes
@@ -18,6 +18,7 @@ import "server-only";
  * manquent entièrement (aucune n'a de `name_ja` renseigné), d'où l'absence de
  * かめはめ波 et de 界王拳 — c'est la première lacune à combler.
  */
+import { lexicon } from "@shenron/lexicon/data";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { contientJaponais } from "./normalisation";
@@ -47,8 +48,14 @@ export async function lexiqueDomaine(): Promise<TermeLexique[]> {
 		UNION ALL SELECT name_ja, name, 'technique' FROM bot.db_techniques  WHERE name_ja IS NOT NULL
 	`);
 
+  // Le lexique canonique (`@shenron/lexicon`, formes françaises relues) passe d'abord ; les
+  // fiches du wiki n'ajoutent que les graphies qu'il ne connaît pas encore.
   const vus = new Set<string>();
   const termes: TermeLexique[] = [];
+  for (const entry of lexicon().legacyEntries()) {
+    vus.add(entry.ja);
+    termes.push({ ja: entry.ja, fr: entry.fr, kind: entry.kind });
+  }
   for (const l of lignes) {
     for (const variante of String(l.ja).split(/[,、;]/)) {
       const ja = variante

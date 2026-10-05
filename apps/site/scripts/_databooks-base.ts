@@ -319,7 +319,7 @@ const DOUBLONS_LEGITIMES = new Set([
 const REDOUBLEMENT_SOURCE = /([ぁ-ゖァ-ヺー]{2,})[・･·\s]?\1|([一-鿿])\2|[一-鿿]々/u;
 
 /**
- * Noms officiels redoublés du lexique (`data/lexique-db-canonique.json`) :
+ * Noms officiels redoublés du lexique (`data/lexicon/terms.json`) :
  * « Tao Pai Pai » s'écrit 桃白白, sans kana à redoubler.
  */
 const NOMS_REDOUBLES = new Set([

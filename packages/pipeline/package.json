@@ -83,6 +83,7 @@
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
     "@shenron/koharu": "workspace:*",
+    "@shenron/lexicon": "workspace:*",
     "@shenron/media": "workspace:*",
     "@shenron/native": "workspace:*",
     "ai": "catalog:",

@@ -38,7 +38,7 @@ une écriture en base ; le propriétaire Shenron contrôle et dépose.
 
 ## Avec le dépôt Shenron (mainteneurs, facultatif)
 
-Les mêmes règles vivent dans `apps/site/src/lib/ja/traduction.ts` (`masquerTermes`,
-`restaurerJetons`, `segmentsTraduisibles`) et `apps/site/src/lib/ja/lexique-canonique.ts` ;
+Les mêmes règles vivent dans `@shenron/lexicon` (`packages/lexicon`, `maskText`,
+`restoreTokens`) et le crate Rust `shenron-lexicon`, sur `data/lexicon/terms.json` ;
 la boucle `bun apps/site/scripts/traduction-boucle.ts --lots 1 --moteur google` est
 en simulation, `--appliquer` exige l'autorité d'écriture et ses contrôles.

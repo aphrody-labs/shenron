@@ -239,8 +239,13 @@ export interface GpuBatchItem {
 }
 
 export interface LexiconOverviewItem {
+  /** Stable id of the term in `data/lexicon/terms.json`. */
+  id: string;
   ja: string;
   fr: string;
+  /** English form; empty while no source establishes it. */
+  en: string;
+  /** Legacy kind (`personnage`, `planete`…), as the dashboard filters it. */
   kind: string;
   length: number;
 }
@@ -334,7 +339,8 @@ export async function getBatchesOverview(): Promise<{
 }
 
 /**
- * Returns canonical lexicon items with optional search query and category filter.
+ * Canonical lexicon (`@shenron/lexicon`) rows, one per Japanese spelling, with an optional ranked
+ * search (any language) and a legacy kind filter.
  */
 export async function getCanonLexiconOverview(options?: {
   query?: string;
@@ -345,46 +351,31 @@ export async function getCanonLexiconOverview(options?: {
   total: number;
   stats: Record<string, number>;
 }> {
-  const { existsSync, readFileSync } = await import("node:fs");
-  const { join } = await import("node:path");
+  const { LEGACY_KIND, codePoints } = await import("@shenron/lexicon");
+  const { lexicon } = await import("@shenron/lexicon/data");
+  const lex = lexicon();
+  const rowsOf = (term: (typeof lex.terms)[number]): LexiconOverviewItem[] =>
+    [term.ja, ...(term.aliases?.ja ?? [])].map((ja) => ({
+      id: term.id,
+      ja,
+      fr: term.fr,
+      en: term.en,
+      kind: LEGACY_KIND[term.kind],
+      length: codePoints(ja),
+    }));
 
-  const paths = [
-    join(process.cwd(), "..", "..", "data", "lexique-db-canonique.json"),
-    join(process.cwd(), "data", "lexique-db-canonique.json"),
-  ];
-
-  let allEntries: LexiconOverviewItem[] = [];
-  for (const p of paths) {
-    if (existsSync(/* turbopackIgnore: true */ p)) {
-      try {
-        allEntries = JSON.parse(readFileSync(/* turbopackIgnore: true */ p, "utf-8"));
-        break;
-      } catch {
-        // skip
-      }
-    }
-  }
-
+  const all = lex.terms.flatMap(rowsOf);
   const stats: Record<string, number> = {};
-  for (const entry of allEntries) {
-    stats[entry.kind] = (stats[entry.kind] ?? 0) + 1;
-  }
+  for (const row of all) stats[row.kind] = (stats[row.kind] ?? 0) + 1;
 
-  let filtered = allEntries;
-  if (options?.kind && options.kind !== "all") {
-    filtered = filtered.filter((e) => e.kind === options.kind);
-  }
-  if (options?.query) {
-    const q = options.query.toLowerCase();
-    filtered = filtered.filter(
-      (e) => e.ja.toLowerCase().includes(q) || e.fr.toLowerCase().includes(q),
-    );
-  }
+  const kind = options?.kind && options.kind !== "all" ? options.kind : null;
+  const query = options?.query?.trim();
+  const filtered = (
+    query
+      ? lex.search(query, { limit: 100 }).flatMap((hit) => rowsOf(hit.term))
+      : all.toSorted((x, y) => y.length - x.length)
+  ).filter((row) => !kind || row.kind === kind);
 
   const limit = options?.limit ?? 50;
-  return {
-    items: filtered.slice(0, limit),
-    total: filtered.length,
-    stats,
-  };
+  return { items: filtered.slice(0, limit), total: filtered.length, stats };
 }

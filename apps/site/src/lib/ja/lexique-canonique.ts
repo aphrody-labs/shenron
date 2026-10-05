@@ -2,7 +2,8 @@
 /**
  * Moteur de masquage canonique et protection du vocabulaire Dragon Ball.
  *
- * Implémente la doctrine stricte définie dans `dragon-ball-japonais/SKILL.md` :
+ * Adaptateur historique de `@shenron/lexicon` (règles partagées avec le crate Rust
+ * `shenron-lexicon`). Implémente la doctrine de `dragon-ball-japonais/SKILL.md` :
  * 1. Détection des termes canoniques triés du plus long au plus court.
  * 2. Substitution par des marqueurs neutres latins (`Zeta001`, `Yuni002`...).
  * 3. Traduction par le modèle / agent.
@@ -10,25 +11,13 @@
  * 5. Contrôle qualité de conformité (anti-régression, seuil de japonais, absence de glose).
  */
 
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { LEGACY_KIND, type LegacyEntry, type Term } from "@shenron/lexicon";
+import { lexicon } from "@shenron/lexicon/data";
 import { intraduisible, refus } from "../databooks-traduction";
 import { masquerTermes, PREFIXE_JETON, restaurerJetons } from "./traduction";
 
-export interface LexiqueEntry {
-  ja: string;
-  fr: string;
-  kind:
-    | "personnage"
-    | "technique"
-    | "transformation"
-    | "planete"
-    | "race"
-    | "saga"
-    | "arc"
-    | "autre";
-  length: number;
-}
+/** Ligne du lexique historique (`data/lexique-db-canonique.json`, dérivé de `data/lexicon/terms.json`). */
+export type LexiqueEntry = LegacyEntry;
 
 export interface MasquageResult {
   texteMasque: string;
@@ -41,84 +30,21 @@ export interface MasquageResult {
   tokenMap: Map<string, { ja: string; fr: string; kind: string }>;
 }
 
-let cachedLexique: LexiqueEntry[] | null = null;
-
 /**
- * Charge le lexique canonique depuis data/lexique-db-canonique.json.
+ * Le lexique canonique (`@shenron/lexicon/data`) sous sa forme historique : une ligne par
+ * graphie japonaise, du plus long au plus court.
  */
 export function chargerLexiqueCanonique(): LexiqueEntry[] {
-  if (cachedLexique) return cachedLexique;
-
-  // Chemins possibles selon le contexte d'exécution (site ou racine monorepo)
-  const paths = [
-    join(process.cwd(), "data", "lexique-db-canonique.json"),
-    join(process.cwd(), "data", "lexique-db-canonique.json"),
-    join(process.cwd(), "..", "..", "..", "data", "lexique-db-canonique.json"),
-    join(process.cwd(), "..", "..", "..", "data", "lexique-db-canonique.json"),
-    join(process.cwd(), "..", "..", "data", "lexique-db-canonique.json"),
-    join(process.cwd(), "..", "..", "data", "lexique-db-canonique.json"),
-  ];
-
-  for (const p of paths) {
-    if (existsSync(p)) {
-      try {
-        const content = readFileSync(p, "utf-8");
-        const parsed = JSON.parse(content) as LexiqueEntry[];
-        // Toujours s'assurer du tri par longueur décroissante
-        cachedLexique = parsed.toSorted((a, b) => {
-          if (b.length !== a.length) return b.length - a.length;
-          return a.ja.localeCompare(b.ja);
-        });
-        return cachedLexique;
-      } catch (e) {
-        console.warn(`Impossible de lire le lexique depuis ${p}:`, e);
-      }
-    }
-  }
-
-  // Repli de sécurité minimal si le fichier n'est pas encore généré
-  const fallback: LexiqueEntry[] = (
-    [
-      {
-        ja: "超サイヤ人ゴッド超サイヤ人",
-        fr: "Super Saiyan Blue",
-        kind: "transformation",
-        length: 13,
-      },
-      { ja: "超かめはめ波", fr: "Super Kamehameha", kind: "technique", length: 6 },
-      { ja: "ドラゴンボール", fr: "Dragon Ball", kind: "autre", length: 7 },
-      { ja: "超サイヤ人", fr: "Super Saiyan", kind: "transformation", length: 5 },
-      { ja: "かめはめ波", fr: "Kamehameha", kind: "technique", length: 5 },
-      { ja: "サイヤ人", fr: "Saiyan", kind: "race", length: 4 },
-      { ja: "ベジータ", fr: "Vegeta", kind: "personnage", length: 4 },
-      { ja: "ピッコロ", fr: "Piccolo", kind: "personnage", length: 4 },
-      { ja: "フリーザ", fr: "Freezer", kind: "personnage", length: 4 },
-      { ja: "魔人ブウ", fr: "Majin Boo", kind: "personnage", length: 4 },
-      { ja: "クリリン", fr: "Krilin", kind: "personnage", length: 4 },
-      { ja: "元気玉", fr: "Genkidama", kind: "technique", length: 3 },
-      { ja: "界王拳", fr: "Kaioken", kind: "technique", length: 3 },
-      { ja: "孫悟空", fr: "Son Goku", kind: "personnage", length: 3 },
-      { ja: "セル", fr: "Cell", kind: "personnage", length: 2 },
-    ] as const as LexiqueEntry[]
-  )
-    .slice()
-    .toSorted((a, b) => {
-      if (b.length !== a.length) return b.length - a.length;
-      return a.ja.localeCompare(b.ja);
-    });
-
-  cachedLexique = fallback;
-  return fallback;
+  return lexicon().legacyEntries();
 }
 
+const asLegacy = (term: Term) => ({ ja: term.ja, fr: term.fr, kind: LEGACY_KIND[term.kind] });
+
 /**
- * Masque les entités Dragon Ball dans un texte japonais avec des tokens neutres.
- *
- * Règles (cf. `occurrencesDuLexique`) :
- * - le plus long d'abord, en une passe, sans chevauchement — indépendamment de
- *   l'ordre du lexique reçu ;
- * - aux frontières de mot pour le katakana : « セル » (Cell) ne mord plus dans
- *   « カプセルコーポレーション » (d'où les « Capsule Cell Corporation »).
+ * Masque les entités Dragon Ball dans un texte japonais avec des jetons neutres : le plus long
+ * d'abord, en une passe, sans chevauchement, aux frontières de mot pour le katakana (« セル » ne
+ * mord plus dans « カプセルコーポレーション »). Sans `lexique`, le lexique canonique entier
+ * (graphies et alias japonais) vers le français.
  */
 export function masquerVocabulaire(
   texteJa: string,
@@ -127,17 +53,21 @@ export function masquerVocabulaire(
     prefixeToken?: string;
   },
 ): MasquageResult {
-  const lexique = options?.lexique ?? chargerLexiqueCanonique();
   const prefixe = options?.prefixeToken ?? PREFIXE_JETON;
-  const { masque, jetons } = masquerTermes(texteJa, lexique, { prefixe });
-
-  const tokenMap = new Map<string, { ja: string; fr: string; kind: string }>();
-  const termesTrouves: MasquageResult["termesTrouves"] = [];
-  for (const [token, entry] of jetons) {
-    tokenMap.set(token, { ja: entry.ja, fr: entry.fr, kind: entry.kind });
-    termesTrouves.push({ token, ja: entry.ja, fr: entry.fr, kind: entry.kind });
+  const jetons = new Map<string, { ja: string; fr: string; kind: string }>();
+  let masque: string;
+  if (options?.lexique) {
+    const r = masquerTermes(texteJa, options.lexique, { prefixe });
+    masque = r.masque;
+    for (const [token, entry] of r.jetons)
+      jetons.set(token, { ja: entry.ja, fr: entry.fr, kind: entry.kind });
+  } else {
+    const r = lexicon().mask(texteJa, "fr", { prefix: prefixe });
+    masque = r.text;
+    for (const t of r.tokens) jetons.set(t.token, asLegacy(t.entry.value));
   }
-  return { texteMasque: masque, termesTrouves, tokenMap };
+  const termesTrouves = [...jetons].map(([token, e]) => ({ token, ...e }));
+  return { texteMasque: masque, termesTrouves, tokenMap: jetons };
 }
 
 /**

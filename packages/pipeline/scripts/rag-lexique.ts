@@ -10,9 +10,9 @@
  *
  * Sources, de la plus sûre à la moins sûre :
  *   1. PostgreSQL : `name` / `name_ja` / `name_romaji` des entités visibles ;
- *   2. `data/lexique-db-canonique.json` (japonais → forme française du wiki) ;
- *   3. les équivalences anglaises officielles listées ci-dessous (localisation
- *      Funimation/Viz ↔ AB Groupe/Glénat), qui n'existent dans aucune table.
+ *   2. le lexique canonique `@shenron/lexicon` (`data/lexicon/terms.json` : ja, fr, en,
+ *      romaji et alias) ;
+ *   3. les groupes de recherche ci-dessous, pour les entités que le lexique ne porte pas encore.
  *
  * Écrit `apps/bot/data/rag/lexique-requetes.json` (ou `RAG_LEXIQUE`) :
  * `{ generatedAt, groups: string[][] }`.
@@ -20,78 +20,30 @@
  * Usage : bun packages/pipeline/scripts/rag-lexique.ts
  */
 import postgres from "postgres";
-import { join } from "node:path";
+import { lexicon } from "@shenron/lexicon/data";
 import { urlPostgres } from "./_rag-sources-pg";
-import { repoRootFromScript, resolveLexiquePath } from "./lib/script-env";
+import { resolveLexiquePath } from "./lib/script-env";
 
 // B6 : chemins dérivés par fileURLToPath ; sortie = le fichier que lit apps/bot/src/lib/rag.ts
 // (apps/bot/data/rag/lexique-requetes.json), ou RAG_LEXIQUE.
 const OUT = resolveLexiquePath(import.meta.url, process.env);
-const LEXIQUE_CANONIQUE = join(
-  repoRootFromScript(import.meta.url),
-  "data",
-  "lexique-db-canonique.json",
-);
 
 /**
- * Localisations anglaises ↔ françaises. Chaque ligne est un groupe : la première
- * forme est celle du wiki, les suivantes des graphies rencontrées ailleurs.
+ * Groupes de recherche hors lexique : graphies équivalentes d'entités que le lexique canonique
+ * (`data/lexicon/terms.json`) ne porte pas encore. Les autres équivalences anglaises y vivent
+ * désormais (`en`, `aliases`, `romaji`). La première forme est celle du wiki.
  */
 const EQUIVALENCES: string[][] = [
-  ["Freezer", "Frieza", "Freeza", "フリーザ"],
-  ["Krilin", "Krillin", "クリリン"],
-  ["Tortue Géniale", "Master Roshi", "Muten Roshi", "Kame Sennin", "亀仙人"],
-  ["Tenshinhan", "Tien", "Tien Shinhan", "天津飯"],
-  ["Chaozu", "Chiaotzu", "餃子"],
-  ["Mr Satan", "Mr. Satan", "Hercule", "ミスター・サタン"],
-  ["Majin Boo", "Majin Buu", "Buu", "Boo", "魔人ブウ"],
   ["Kid Buu", "Boo originel", "Majin Buu pur"],
   ["C-17", "Android 17", "Cyborg 17", "人造人間17号"],
   ["C-18", "Android 18", "Cyborg 18", "人造人間18号"],
   ["C-16", "Android 16", "Cyborg 16", "人造人間16号"],
-  ["Dr Gero", "Dr. Gero", "Docteur Gero", "ドクター・ゲロ"],
-  ["Beerus", "Beerus", "Beerus", "Bills", "ビルス"],
-  ["Kaïoshin", "Supreme Kai", "Kaioshin", "界王神"],
-  ["Kaïo", "King Kai", "Kaio", "Kaiō", "界王"],
-  ["Dendé", "Dende", "デンデ"],
   ["Tout-Puissant", "Kami", "Kami-sama", "神様"],
-  ["Polunga", "Porunga", "ポルンガ"],
-  ["Shenron", "Shenlong", "Shen Long", "神龍"],
-  ["Kinto-Un", "Nimbus", "Flying Nimbus", "Kintoun", "筋斗雲"],
-  ["Senzu", "Senzu Bean", "haricot magique", "仙豆"],
-  ["Genkidama", "Spirit Bomb", "Genki Dama", "元気玉"],
-  ["Kamehameha", "Kaméhaméha", "かめはめ波"],
-  ["Kaioken", "Kaio-ken", "Kaiō-ken", "Kaiôken", "界王拳"],
-  ["Makankosappo", "Special Beam Cannon", "Makankōsappō", "魔貫光殺砲"],
-  ["Kienzan", "Destructo Disc", "気円斬"],
-  ["Taiyoken", "Solar Flare", "Taiyōken", "太陽拳"],
-  ["Canon Garric", "Galick Gun", "Garlic Gun", "ギャリック砲"],
-  ["Téléportation", "Instant Transmission", "Shunkan Idō", "瞬間移動"],
-  ["Tenkaichi Budokai", "World Martial Arts Tournament", "Tenkaichi Budōkai", "天下一武道会"],
   ["Tournoi du Pouvoir", "Tournament of Power", "力の大会"],
-  [
-    "Salle de l'Esprit et du Temps",
-    "Hyperbolic Time Chamber",
-    "Room of Spirit and Time",
-    "精神と時の部屋",
-  ],
-  ["Ultra Instinct", "Migatte no Gokui", "身勝手の極意"],
-  ["Super Saiyan", "Super Saiyen", "Super Saïyen", "超サイヤ人"],
-  ["Saiyan", "Saïyen", "Saiyen", "サイヤ人"],
-  ["Namek", "Namekian", "Namékien", "ナメック星人", "ナメック星"],
   ["Armée du Ruban Rouge", "Red Ribbon", "Red Ribbon Army", "レッドリボン軍"],
-  ["Commando Ginyu", "Ginyu Force", "ギニュー特戦隊"],
-  ["Dragon Radar", "Radar à Dragon Balls", "ドラゴンレーダー"],
   ["Capsule Corporation", "Capsule Corp", "カプセルコーポレーション"],
   ["Ôzaru", "Oozaru", "Great Ape", "singe géant", "大猿"],
-  ["Fusion Potara", "Potara", "ポタラ"],
   ["Fusion Métamol", "Fusion Dance", "Metamoru", "フュージョン"],
-  ["Hakaishin", "God of Destruction", "Dieu de la Destruction", "破壊神"],
-  ["Zeno", "Zen'ō", "Zeno-sama", "全王"],
-  ["Bardock", "Baddack", "バーダック"],
-  ["Son Goku", "Goku", "Kakarot", "Kakarotto", "孫悟空", "カカロット"],
-  ["Son Gohan", "Gohan", "孫悟飯"],
-  ["Piccolo Daimaô", "King Piccolo", "Piccolo Daimaō", "ピッコロ大魔王"],
   ["Daizenshuu", "Daizenshū", "大全集"],
   ["Chōzenshū", "Chozenshu", "超全集"],
 ];
@@ -140,11 +92,18 @@ try {
   await sql.end();
 }
 
-const canonique = (await Bun.file(LEXIQUE_CANONIQUE)
-  .json()
-  .catch(() => [])) as { ja: string; fr: string }[];
-for (const e of canonique) {
-  if (utile(e.ja) && utile(e.fr) && e.ja !== e.fr) groupes.push([e.fr, e.ja]);
+// Le lexique canonique : forme française, japonaise, anglaise, romaji et alias d'un terme.
+for (const term of lexicon().terms) {
+  const formes = [
+    term.fr,
+    term.ja,
+    term.en,
+    term.romaji ?? "",
+    ...(term.aliases?.ja ?? []),
+    ...(term.aliases?.fr ?? []),
+    ...(term.aliases?.en ?? []),
+  ].filter(utile);
+  if (new Set(formes).size >= 2) groupes.push([...new Set(formes)]);
 }
 for (const groupe of EQUIVALENCES) groupes.push([...new Set(groupe)]);
 

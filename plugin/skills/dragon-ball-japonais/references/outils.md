@@ -22,12 +22,12 @@ bun apps/site/scripts/ja-preparer.ts [--force]   # dans apps/site/.ja-data/
 | `normalisation.ts` | écritures, `normaliserJa`, katakana → hiragana, furigana | oui |
 | `anomalies.ts` | distance bornée, index du lexique, suggestion | oui |
 | `traduction.ts` | masquage des termes, jetons, segments traduisibles | oui |
-| `lexique-canonique.ts` | lexique `data/lexique-db-canonique.json`, contrôles de dépôt | fichiers |
+| `lexique-canonique.ts` | lexique canonique (`@shenron/lexicon`), contrôles de dépôt | oui |
 | `lexique.ts` | lexique du domaine depuis `bot.*` | `server-only` |
 | `dictionnaire.ts` | kuromoji + JMdict, chargement paresseux | fichiers |
 
-`scripts/lexique.js` du plugin est généré depuis `traduction.ts` et
-`normalisation.ts` par `bun scripts/plugin/build-references.ts`.
+`scripts/lexique.js` du plugin est généré depuis `@shenron/lexicon` (`packages/lexicon`) et
+`data/lexicon/terms.json` par `bun scripts/plugin/build-references.ts`.
 
 ## Scripts
 

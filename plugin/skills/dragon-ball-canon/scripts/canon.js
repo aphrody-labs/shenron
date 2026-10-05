@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : apps/site/src/lib/canon-engine.ts, scripts/plugin/src/canon.ts
-// Révision : 4241d5e+modifications (2026-10-05)
+// Révision : b8cef86 (2026-10-05)
 // apps/site/src/lib/canon-engine.ts
 var CANON_TIERS = [
   "CANON_ABSOLU",
@@ -2027,7 +2027,7 @@ var CATEGORIES = new Set([
 ]);
 
 // scripts/plugin/src/canon.ts
-var INSTANTANE = typeof { revision: "4241d5e+modifications", date: "2026-10-05", source: "apps/site/src/lib/canon-engine.ts" } === "undefined" ? { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" } : { revision: "4241d5e+modifications", date: "2026-10-05", source: "apps/site/src/lib/canon-engine.ts" };
+var INSTANTANE = typeof { revision: "b8cef86", date: "2026-10-05", source: "apps/site/src/lib/canon-engine.ts" } === "undefined" ? { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" } : { revision: "b8cef86", date: "2026-10-05", source: "apps/site/src/lib/canon-engine.ts" };
 var SITE = "https://dragonballfr.com";
 function statut(v) {
   const o = v.origine;

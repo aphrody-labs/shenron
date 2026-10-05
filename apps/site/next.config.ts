@@ -141,6 +141,7 @@ const nextConfig: NextConfig = {
     "@aphrody/runtime-sdk",
     "@aphrody/sql",
     "@shenron/koharu",
+    "@shenron/lexicon",
     "@shenron/media",
     "@shenron/images",
     "@shenron/db",

@@ -225,6 +225,7 @@ if (!skip.has("home")) {
 // ── Data files (tracked, public) ────────────────────────────────────────────
 if (!skip.has("data")) {
   const files = [
+    "data/lexicon/terms.json",
     "data/lexique-db-canonique.json",
     "data/doc-links.json",
     ...new Bun.Glob("data/ja-identities-*.json").scanSync({ cwd: ROOT }),

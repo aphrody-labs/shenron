@@ -7,7 +7,7 @@
  * dans `plugin/` ce que le code du dépôt sait déjà, sous une forme autonome :
  *
  *   - canon : `canon-engine.ts` empaqueté en `canon.js` + doctrine lisible ;
- *   - lexique : `data/lexique-db-canonique.json` + masquage du site (`lexique.js`) ;
+ *   - lexique : `data/lexicon/terms.json` + moteur `@shenron/lexicon` (`lexique.js`) ;
  *   - Toriyama : géométrie de `packages/ui/src/toriyama-svg/` (`toriyama.js`)
  *     et analyses visuelles de `docs/reference/*-analyse-visuelle.md` ;
  *   - faits : référence publique sourcée tirée des données embarquées du dépôt.
@@ -340,49 +340,55 @@ export function doctrineMarkdown(config: Config, c: Contexte): string {
 }
 
 const sectionLexique: Section = async (o, ctx) => {
-  const donnees = "data/lexique-db-canonique.json";
+  const donnees = "data/lexicon/terms.json";
   const c = await ctx([donnees]);
-  const termes = JSON.parse(await lire(donnees, o)) as {
-    ja: string;
-    fr: string;
-    kind: string;
-    length: number;
-  }[];
-  const tries = termes.toSorted(
-    (a, b) => b.length - a.length || comparer(a.ja, b.ja) || comparer(a.fr, b.fr),
-  );
+  const { terms } = JSON.parse(await lire(donnees, o)) as {
+    terms: { id: string; kind: string; ja: string; fr: string; en: string }[];
+  };
   const { texte, sources } = await empaqueter("scripts/plugin/src/lexique.ts", o);
-  const parType = new Map<string, typeof tries>();
-  for (const t of tries.toSorted(
+  const parType = new Map<string, typeof terms>();
+  for (const t of terms.toSorted(
     (a, b) => comparer(a.fr.toLowerCase(), b.fr.toLowerCase()) || comparer(a.ja, b.ja),
   )) {
     parType.set(t.kind, [...(parType.get(t.kind) ?? []), t]);
   }
+  const anglais = terms.filter((t) => t.en).length;
   const md: string[] = [
-    "# Lexique canonique japonais → français",
+    "# Lexique canonique japonais → français → anglais",
     "",
     enteteMarkdown({ ...c, sources: [donnees] }).trimEnd(),
     "",
-    `${tries.length} termes : graphie japonaise (\`name_ja\`) et forme française (\`name\`) des fiches du`,
-    "wiki dragonballfr.com, telles que le dépôt les a exportées. Source de chaque ligne : la fiche du",
-    "wiki de même nom. Le lexique sert au masquage avant traduction ; il n'est pas exhaustif et",
-    "l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun scripts/lexique.js`.",
+    `${terms.length} termes (${anglais} avec leur forme anglaise établie) : graphie japonaise, forme française`,
+    "du wiki dragonballfr.com et forme anglaise officielle quand une source du dépôt l'établit (« — » :",
+    "non établie, ne pas l'inventer). Le lexique sert au masquage avant traduction ; il n'est pas",
+    "exhaustif et l'absence d'un terme ne prouve aucune faute. Recherche et masquage :",
+    "`bun scripts/lexique.js`.",
     "",
   ];
   for (const [type, liste] of [...parType].toSorted(([a], [b]) => comparer(a, b))) {
-    md.push(`## ${type} (${liste.length})`, "", "| Japonais | Forme française |", "| --- | --- |");
-    for (const t of liste) md.push(`| ${cellule(t.ja)} | ${cellule(t.fr)} |`);
+    md.push(
+      `## ${type} (${liste.length})`,
+      "",
+      "| Japonais | Forme française | Forme anglaise |",
+      "| --- | --- | --- |",
+    );
+    for (const t of liste)
+      md.push(`| ${cellule(t.ja)} | ${cellule(t.fr)} | ${cellule(t.en || "—")} |`);
     md.push("");
   }
   return [
     {
       chemin: "plugin/skills/dragon-ball-japonais/references/lexique-canonique.json",
-      contenu: json({ ...c, sources: [donnees] }, tries, {
+      contenu: json({ ...c, sources: [donnees] }, terms, {
         champs: {
-          ja: "graphie japonaise (wiki name_ja)",
-          fr: "forme française (wiki name)",
-          kind: "type de fiche",
-          length: "longueur en caractères",
+          id: "identifiant stable (slug anglais)",
+          kind: "type de terme (character, technique, place…)",
+          ja: "graphie japonaise",
+          fr: "forme française (wiki)",
+          en: "forme anglaise officielle (vide : non établie)",
+          romaji: "romanisation Hepburn (facultative)",
+          aliases: "autres graphies attestées par langue",
+          sources: "provenance des champs",
         },
       }),
       donnees: [donnees],

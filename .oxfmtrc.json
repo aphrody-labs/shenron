@@ -13,6 +13,7 @@
     "packages/native/src/generated/**",
     "plugin/references/**",
     "packages/ui/src/tokens.ts",
+    "packages/lexicon/src/terms.generated.ts",
     "packages/api/openapi/public.json",
     "apps/site/src/app/fonts.css",
     "apps/site/scripts/fonts.lock.json"

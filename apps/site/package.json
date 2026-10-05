@@ -43,6 +43,7 @@
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
     "@shenron/images": "workspace:*",
+    "@shenron/lexicon": "workspace:*",
     "@shenron/pipeline": "workspace:*",
     "@shenron/ui": "workspace:*",
     "@t3-oss/env-nextjs": "catalog:",
