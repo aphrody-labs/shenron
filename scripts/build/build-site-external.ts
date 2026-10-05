@@ -20,8 +20,8 @@ if (releaseArgs.length && (releaseArgs.length !== 2 || releaseArgs[0] !== "--rel
   throw new Error("usage: build-site-external.ts [--release-dir RELATIVE_DIRECTORY]");
 }
 
-const repo = join(import.meta.dir, "..", "..", "..", "..", "..");
-const siteDir = join(repo, "apps", "shenron", "site");
+const repo = join(import.meta.dir, "..", "..");
+const siteDir = join(repo, "apps", "site");
 const buildDir = join(siteDir, ".next-build");
 // Bun's isolated linker owns Next at the site dependency boundary, not a hoisted root.
 let nextBin: string;

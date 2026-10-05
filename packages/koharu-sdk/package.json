@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@aphrody/koharu-bridge": "workspace:*",
-    "@aphrody/media": "0.1.0"
+    "@aphrody/media": "workspace:*"
   },
   "devDependencies": {
     "@aphrody/api": "3.0.0-alpha.2"

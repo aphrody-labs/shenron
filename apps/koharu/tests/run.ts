@@ -14,3 +14,5 @@ for (const file of files) {
 }
 console.log(`\n${files.length - failed}/${files.length} test files passed`)
 process.exit(failed ? 1 : 0)
+
+export {}

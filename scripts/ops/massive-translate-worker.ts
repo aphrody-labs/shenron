@@ -78,9 +78,9 @@ function appartientAuShard(databookId: number, pageNumber: number): boolean {
 async function getTranslateEngine() {
 	const paths = [
 		process.env.BXC_ROOT && join(process.env.BXC_ROOT, "src", "google", "translate", "index.ts"),
-		join(resolve(import.meta.dir, "..", "..", "..", "aphrody-web", "apps", "bxc"), "src", "google", "translate", "index.ts"),
+		join(resolve(import.meta.dir, "..", "aphrody-web", "apps", "bxc"), "src", "google", "translate", "index.ts"),
 		join(process.cwd(), "..", "aphrody-web", "apps", "bxc", "src", "google", "translate", "index.ts"),
-		join(resolve(import.meta.dir, "..", "..", "..", "bxc"), "src", "google", "translate", "index.ts"),
+		join(resolve(import.meta.dir, "..", "bxc"), "src", "google", "translate", "index.ts"),
 		join(process.cwd(), "..", "bxc", "src", "google", "translate", "index.ts"),
 	].filter((path): path is string => Boolean(path));
 

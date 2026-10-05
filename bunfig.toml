@@ -7,7 +7,6 @@ minimumReleaseAge = 259200
 # security fixes (next, nodemailer, undici) track upstream in real time.
 minimumReleaseAgeExcludes = [
   "@aphrody/api",
-  "@aphrody/bun",
   "@aphrody/bun-test-dom",
   "@aphrody/discord-kit",
   "@aphrody/http",
@@ -17,7 +16,6 @@ minimumReleaseAgeExcludes = [
   "@aphrody/m3-reader",
   "@aphrody/m3-theme",
   "@aphrody/m3-tokens",
-  "@aphrody/media",
   "@aphrody/paths",
   "@aphrody/plugin-opener",
   "@aphrody/runtime-sdk",

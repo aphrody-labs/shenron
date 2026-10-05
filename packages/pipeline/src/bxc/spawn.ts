@@ -67,7 +67,7 @@ export function resolveBxcCommand(bxcPath?: string): string[] {
 	const root =
 		process.env.BXC_ROOT?.trim() ||
 		process.env.BXC_DIR?.trim() ||
-		resolve(import.meta.dir, "..", "..", "..", "..", "..", "aphrody-web", "apps", "bxc");
+		resolve(import.meta.dir, "..", "..", "..", "..", "aphrody-web", "apps", "bxc");
 	const sourceEntry = join(root, "src", "cli", "index.ts");
 	if (!bxcPath && existsSync(sourceEntry)) return [process.execPath, sourceEntry];
 

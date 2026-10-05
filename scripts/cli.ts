@@ -27,7 +27,7 @@ const c = {
 };
 
 /** Racine du dépôt (ce fichier vit dans `scripts/`), jamais un chemin absolu codé en dur. */
-const ROOT = join(import.meta.dir, "..");
+const ROOT = join(import.meta.dir, ".");
 
 // Nettoyer les codes ANSI pour calculer la longueur réelle du texte
 function cleanAnsi(text: string): string {

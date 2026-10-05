@@ -284,7 +284,7 @@ async function main(): Promise<void> {
   const attestation = releasePath ? await prepareAttestation(releasePath) : undefined;
   const goldPath = resolveDataPath("ragGold", {
     env: process.env,
-    legacyDefault: join(REPO_ROOT, "apps", "shenron", "bot", "tests", "rag-gold.jsonl"),
+    legacyDefault: join(REPO_ROOT, "apps", "bot", "tests", "rag-gold.jsonl"),
   }).path;
   const goldText = await Bun.file(goldPath).text();
   if (attestation && goldText.trim() !== attestation.canonicalGold)

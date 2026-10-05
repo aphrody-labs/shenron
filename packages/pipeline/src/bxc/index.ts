@@ -41,7 +41,7 @@ export class BxcBridge {
     this.voiranime = new VoiranimeService(this.options);
     this.wiki = new WikiService(this.options);
     this.google = new GoogleTranslateService(this.options);
-    this.dragonballcn = new DragonballCnService(this.options);
+    this.dragonballcn = new DragonballCnService();
     this.frames = new FramesService(this.options);
     this.media = new MediaStreamService(this.options);
     this.db = new BxcDbBridge(this.options);

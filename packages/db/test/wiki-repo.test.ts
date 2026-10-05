@@ -10,7 +10,7 @@ import { createWikiReadRepository, escapeLike, toPublicRow, wikiQueries } from "
 import type { ShenronPgDatabase } from "../src/types";
 import { WIKI_REGISTRY } from "../src/wiki-registry";
 
-const NO_SLUG: WikiCategoryName[] = new Set([
+const NO_SLUG: ReadonlySet<WikiCategoryName> = new Set<WikiCategoryName>([
 	"characters",
 	"episodes",
 	"planets",

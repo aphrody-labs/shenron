@@ -10,10 +10,10 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ENDPOINTS, LEGACY_PUBLIC_PATHS } from "../src/contract/endpoints";
 
-const REPO = join(import.meta.dir, "..", "..", "..", "..");
-const LLMS_ROUTE = join(REPO, "apps", "shenron", "site", "src", "app", "llms.txt", "route.ts");
-const BOT_SERVER = join(REPO, "apps", "shenron", "bot", "src", "api", "server.ts");
-const SITE_APP = join(REPO, "apps", "shenron", "site", "src", "app");
+const REPO = join(import.meta.dir, "..", "..", "..");
+const LLMS_ROUTE = join(REPO, "apps", "site", "src", "app", "llms.txt", "route.ts");
+const BOT_SERVER = join(REPO, "apps", "bot", "src", "api", "server.ts");
+const SITE_APP = join(REPO, "apps", "site", "src", "app");
 
 const KNOWN: readonly string[] = [...ENDPOINTS.map((e) => e.path), ...LEGACY_PUBLIC_PATHS];
 

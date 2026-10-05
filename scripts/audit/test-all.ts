@@ -30,7 +30,7 @@ import { existsSync } from "node:fs";
 import { cpus } from "node:os";
 import { join, resolve } from "node:path";
 
-const ROOT = resolve(import.meta.dir, "..");
+const ROOT = resolve(import.meta.dir, "..", "..");
 
 // ── CLI ───────────────────────────────────────────────────────────────────────
 const argv = new Set(Bun.argv.slice(2));

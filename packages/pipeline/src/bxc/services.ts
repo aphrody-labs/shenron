@@ -552,7 +552,7 @@ export class BxcDbBridge {
   private readonly media: MediaStreamService;
 
   constructor(private readonly options: BxcSpawnOptions = {}) {
-    this.dragonballcn = new DragonballCnService(options);
+    this.dragonballcn = new DragonballCnService();
     this.frames = new FramesService(options);
     this.media = new MediaStreamService(options);
   }

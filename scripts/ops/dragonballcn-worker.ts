@@ -4,7 +4,7 @@
 import { join, resolve } from "node:path";
 import { DRAGONBALLCN_BASE_URL as BASE_URL, parseGalleryPages } from "../../packages/pipeline/src/dragonballcn-gallery.ts";
 
-const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "aphrody-web", "apps", "bxc");
+const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "aphrody-web", "apps", "bxc");
 const { ImpersonatedClient } = await import(join(bxcRoot, "src", "ffi", "curl-impersonate.ts"));
 
 let client: InstanceType<typeof ImpersonatedClient> | null = null;

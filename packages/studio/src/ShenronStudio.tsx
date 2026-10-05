@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "@aphrody/m3-primitives";
 import { StudioHeader } from "./StudioHeader";
 import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
-import { isTauri } from "../../tauri-bridge";
+import { isTauri } from "./tauri-bridge";
 import {
   shenron,
   type ShenronHealth,

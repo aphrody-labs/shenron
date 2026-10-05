@@ -70,7 +70,7 @@
     "sqlite-vec": "catalog:",
     "tsyringe": "catalog:",
     "zod": "catalog:",
-    "@aphrody/media": "0.1.0"
+    "@aphrody/media": "workspace:*"
   },
   "devDependencies": {
     "drizzle-kit": "catalog:"

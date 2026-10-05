@@ -11,7 +11,7 @@ import { dirname, join, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 
-const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "aphrody-web", "apps", "bxc");
+const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "aphrody-web", "apps", "bxc");
 const { ImpersonatedClient } = await import(join(bxcRoot, "src", "ffi", "curl-impersonate.ts"));
 
 let client: InstanceType<typeof ImpersonatedClient> | null = null;

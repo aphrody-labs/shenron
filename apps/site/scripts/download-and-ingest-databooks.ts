@@ -39,7 +39,7 @@ const MAX_BYTES = 25_000_000;
 const MIN_EDGE = 160;
 const MIN_FREE_DISK_BYTES = 5 * 1024 * 1024 * 1024; // 5 Go
 
-const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "..", "aphrody-web", "apps", "bxc");
+const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "aphrody-web", "apps", "bxc");
 const { ImpersonatedClient } = await import(join(bxcRoot, "src", "ffi", "curl-impersonate.ts"));
 
 const generateRevisionId = () =>

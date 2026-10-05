@@ -14,7 +14,7 @@ import { mkdir, stat } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { existsSync } from "node:fs";
 
-const ROOT = resolve(import.meta.dir, "..", "..", "..", "..");
+const ROOT = resolve(import.meta.dir, "..");
 
 const ASSETS_DIR = join(import.meta.dir, "..", "apps", "bot", "assets", "manga", "DBFC");
 const PG_URL = process.env.DATABASE_URL?.trim();
@@ -156,7 +156,7 @@ async function main() {
 		return;
 	}
 	console.log(`Syncing DBFC assets to ${peer}...`);
-	const assets = join(ROOT, "apps", "shenron", "bot", "assets", "manga", "DBFC");
+	const assets = join(ROOT, "apps", "bot", "assets", "manga", "DBFC");
 	const proc = Bun.spawn(["rsync", "-avz", `${assets}/`, `${peer}:shenron/apps/bot/assets/manga/DBFC/`]);
 	await proc.exited;
 	console.log("Assets sync complete.");

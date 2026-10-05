@@ -77,11 +77,11 @@
   "dependencies": {
     "@ai-sdk/openai-compatible": "catalog:",
     "@ai-sdk/provider": "catalog:",
-    "@aphrody/bun": "3.3.4",
+    "@shenron/native": "workspace:*",
     "@aphrody/http": "0.1.0",
     "@aphrody/inference": "0.1.0",
     "@aphrody/koharu-sdk": "workspace:*",
-    "@aphrody/media": "0.1.0",
+    "@aphrody/media": "workspace:*",
     "@aphrody/paths": "0.1.0",
     "@aphrody/runtime-sdk": "0.1.0",
     "@shenron/config": "workspace:*",

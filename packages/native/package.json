@@ -16,5 +16,8 @@
   "devDependencies": {
     "@types/bun": "catalog:",
     "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@aphrody/media": "workspace:*"
   }
 }

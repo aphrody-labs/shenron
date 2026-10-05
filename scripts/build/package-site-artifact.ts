@@ -7,8 +7,8 @@ import { join, relative as relativePath } from "node:path";
 
 import { artifactStore, artifactPath } from "./site-artifact-paths.ts";
 
-const repo = join(import.meta.dir, "..", "..", "..", "..", "..");
-const build = join(repo, "apps", "shenron", "site", ".next-build");
+const repo = join(import.meta.dir, "..", "..");
+const build = join(repo, "apps", "site", ".next-build");
 // Units and nginx fragments live in yolo (config/host); compose shared drop-ins/snippets inline.
 const yolo = process.env.YOLO_ROOT || join(homedir(), "yolo");
 const hostConfig = join(yolo, "config", "host");

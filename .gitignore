@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# Dependencies and build outputs
+node_modules/
+/target/
+**/*.rs.bk
+dist/
+.next/
+.next-build/
+.next-dev/
+out/
+coverage/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+.cache/
+playwright-report/
+test-results/
+
+# Native artifacts staged next to @shenron/native
+/packages/native/native/
+# wasm-pack output of koharu-canvas
+/packages/koharu-bridge/src/wasm/
+
+# Secrets and private state (credentials, trained weights, user data)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+/data/home/
+/apps/bot/data/*.db
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.dump
+!**/fixtures/**/*.db
+!**/fixtures/**/*.sqlite
+.coord/
+.aphrody-translate-cache.json
+.ja-data/
+
+# Generated corpus and live audits: retained in local stores
+/data/rag/massive-training-triplets-full.jsonl
+/data/ops/live-site-assets.json
+
+# Editor, OS and tool state
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vs/
+.serena/
+.claude/settings.local.json
+.claude/worktrees/
+*.log
+*.orig
+*.rej
+*.bak
+*.tmp
+__pycache__/
+*.py[cod]
+*.heapsnapshot
+*.cpuprofile
+*.tgz

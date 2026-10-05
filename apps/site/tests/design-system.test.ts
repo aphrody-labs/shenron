@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-const REPO_ROOT = join(import.meta.dir, "..", "..", "..", "..");
+const REPO_ROOT = join(import.meta.dir, "..", "..", "..");
 const APP_DIR = join(import.meta.dir, "..", "src", "app");
 const KIT_DIR = join(import.meta.dir, "..", "src", "components", "kit");
 /** Toutes les `page.tsx` sous `src/app`, en chemins relatifs à `src/app`. */

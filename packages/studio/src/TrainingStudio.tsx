@@ -3,7 +3,7 @@
 // the Python training process, so this UI does not expose that launch path.
 import { useEffect, useState } from "react";
 import { Button, Card } from "@aphrody/m3-primitives";
-import { isTauri } from "../../tauri-bridge";
+import { isTauri } from "./tauri-bridge";
 import { shenron, training, type ShenronTraining, type TrainEvent } from "./studio-bridge";
 
 export interface TrainingStudioBackend {

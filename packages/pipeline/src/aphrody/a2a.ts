@@ -123,8 +123,8 @@ export type A2ATaskStatus =
 
 export type HonestDeliveryVerdict = "FAIT" | "INCOMPLET" | "NON_FAIT";
 
-const VERDICTS: readonly HonestDeliveryVerdict[] = new Set(["FAIT", "INCOMPLET", "NON_FAIT"]);
-const TERMINAL_STATUSES: readonly A2ATaskStatus[] = new Set(["completed", "failed", "canceled"]);
+const VERDICTS: ReadonlySet<string> = new Set<HonestDeliveryVerdict>(["FAIT", "INCOMPLET", "NON_FAIT"]);
+const TERMINAL_STATUSES: ReadonlySet<string> = new Set<A2ATaskStatus>(["completed", "failed", "canceled"]);
 
 export interface A2ATextPart {
 	type: "text";

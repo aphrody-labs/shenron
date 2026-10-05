@@ -9,7 +9,7 @@ import {
   shenronRagStats,
   shenronAuthStatus,
   shenronPersonaPrompt,
-} from "@aphrody/bun/shenron";
+} from "@shenron/native/shenron";
 import type { AphrodyDoctorResult, CliResult } from "./cli";
 import { AphrodyComputeClient, type AphrodyRagHit, type AphrodyRagStats } from "./compute";
 

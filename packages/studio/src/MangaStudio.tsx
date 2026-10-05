@@ -3,7 +3,7 @@
 // Its commands and state are koharu-app's, hosted by crates/ui/app (no second engine).
 import KoharuProviders from "@aphrody/koharu-ui/providers";
 import { KoharuApp } from "@aphrody/koharu-ui/components/app/KoharuApp";
-import { isTauri } from "../../tauri-bridge";
+import { isTauri } from "./tauri-bridge";
 
 export function MangaStudio() {
   if (!isTauri()) {

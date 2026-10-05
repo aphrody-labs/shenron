@@ -13,7 +13,7 @@ test("native adapters preserve Shenron doctor routing and sanitized auth presenc
     import assert from "node:assert/strict";
     let status = {configured: true, admin_credentials_present: false};
     let args;
-    mock.module("@aphrody/bun/shenron", () => ({
+    mock.module("@shenron/native/shenron", () => ({
       EXPECTED_SHENRON_ABI_VERSION: 1,
       shenronAbiVersion: () => 1,
       shenronVersion: () => "fixture",

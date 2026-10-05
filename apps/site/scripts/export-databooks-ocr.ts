@@ -77,7 +77,7 @@ let bxcClient: BxcClient | null = null;
 
 async function getBxcClient(): Promise<BxcClient> {
 	if (bxcClient) return bxcClient;
-	const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "..", "aphrody-web", "apps", "bxc");
+	const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "aphrody-web", "apps", "bxc");
 	const modulePath = join(bxcRoot, "src", "ffi", "curl-impersonate.ts");
 	const { ImpersonatedClient } = await import(modulePath);
 	bxcClient = new ImpersonatedClient({

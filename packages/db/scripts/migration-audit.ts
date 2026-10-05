@@ -238,7 +238,7 @@ export async function main(argv: string[]): Promise<number> {
 		},
 		strict: true,
 	});
-	const root = resolve(values.root ?? join(import.meta.dir, "..", "..", "..", ".."));
+	const root = resolve(values.root ?? join(import.meta.dir, "..", "..", ".."));
 	const snapshotPath = resolve(values.snapshot ?? join(root, DEFAULT_SNAPSHOT));
 	const audit = collectAudit(root);
 

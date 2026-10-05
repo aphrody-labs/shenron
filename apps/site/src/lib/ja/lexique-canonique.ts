@@ -43,11 +43,11 @@ export function chargerLexiqueCanonique(): LexiqueEntry[] {
 
 	// Chemins possibles selon le contexte d'exécution (site ou racine monorepo)
 	const paths = [
-		join(process.cwd(), "data", "shenron", "lexique-db-canonique.json"),
 		join(process.cwd(), "data", "lexique-db-canonique.json"),
-		join(process.cwd(), "..", "..", "..", "data", "shenron", "lexique-db-canonique.json"),
+		join(process.cwd(), "data", "lexique-db-canonique.json"),
 		join(process.cwd(), "..", "..", "..", "data", "lexique-db-canonique.json"),
-		join(process.cwd(), "..", "..", "data", "shenron", "lexique-db-canonique.json"),
+		join(process.cwd(), "..", "..", "..", "data", "lexique-db-canonique.json"),
+		join(process.cwd(), "..", "..", "data", "lexique-db-canonique.json"),
 		join(process.cwd(), "..", "..", "data", "lexique-db-canonique.json"),
 	];
 

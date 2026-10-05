@@ -124,7 +124,7 @@ export function repoRootFromScript(moduleUrl: string, platform: PathPlatform = c
 
 /** SQLite database served by the bot (`apps/bot/data/bot.db`). */
 export function servedBotDbPath(repoRoot: string, platform: PathPlatform = currentPlatform()): string {
-	return pathApi(platform).join(repoRoot, "apps", "shenron", "bot", "data", "bot.db");
+	return pathApi(platform).join(repoRoot, "apps", "bot", "data", "bot.db");
 }
 
 /**
@@ -137,7 +137,7 @@ export function resolveLexiquePath(
 	platform: PathPlatform = currentPlatform()
 ): string {
 	const root = repoRootFromScript(moduleUrl, platform);
-	const legacyDefault = pathApi(platform).join(root, "apps", "shenron", "bot", "data", "rag", "lexique-requetes.json");
+	const legacyDefault = pathApi(platform).join(root, "apps", "bot", "data", "rag", "lexique-requetes.json");
 	return resolveDataPath("ragLexique", { env, legacyDefault }).path;
 }
 

@@ -1,0 +1,35 @@
+{
+  "name": "@shenron/studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shenron studio screens (Shenron RAG and training, databooks corpus, Koharu manga editor and settings, admin) for the Shenron desktop host.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.tsx",
+    "./studio-bridge": "./src/studio-bridge.ts",
+    "./tauri-bridge": "./src/tauri-bridge.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit -p .",
+    "test": "bun test src"
+  },
+  "dependencies": {
+    "@aphrody/api": "3.0.0-alpha.2",
+    "@aphrody/koharu-sdk": "workspace:*",
+    "@aphrody/koharu-ui": "workspace:*",
+    "@aphrody/m3-primitives": "3.3.4",
+    "@shenron/config": "workspace:*",
+    "@shenron/ui": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@aphrody/bun-test-dom": "0.1.0",
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}

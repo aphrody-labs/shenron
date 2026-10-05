@@ -2,8 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-const root = existsSync(join(import.meta.dir, "..", "..", "..", "..", "apps", "shenron"))
-	? join(import.meta.dir, "..", "..", "..", "..")
+const root = existsSync(join(import.meta.dir, "..", "..", "..", "apps", "shenron"))
+	? join(import.meta.dir, "..", "..", "..")
 	: join(import.meta.dir, "..", "..", "..");
 const migrations = [
 	"apps/site/src/db/migrations/0018_media_works_and_editions.sql",

@@ -11,8 +11,8 @@ import {
 } from "../src/constants";
 import * as schema from "../src/schema";
 
-const REPO_ROOT = join(import.meta.dir, "..", "..", "..", "..");
-const IA_COCKPIT = join(REPO_ROOT, "apps", "shenron", "bot", "src", "api", "ia-cockpit.ts");
+const REPO_ROOT = join(import.meta.dir, "..", "..", "..");
+const IA_COCKPIT = join(REPO_ROOT, "apps", "bot", "src", "api", "ia-cockpit.ts");
 
 describe("constants", () => {
 	test("constants.ts imports nothing", () => {

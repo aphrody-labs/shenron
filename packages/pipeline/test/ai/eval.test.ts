@@ -19,14 +19,8 @@ import {
 
 const GOLD = join(
   import.meta.dir,
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "apps",
-  "shenron",
-  "bot",
+  "..", "..", "..", "..",
+  "apps", "bot",
   "tests",
   "rag-gold.jsonl",
 );

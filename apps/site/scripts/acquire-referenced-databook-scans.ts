@@ -39,7 +39,7 @@ const MIN_EDGE = 160;
 /** The BXC FFI timeout is not guaranteed to interrupt a stalled TLS read. */
 const CHILD_TIMEOUT_MS = 75_000;
 const destination = join(import.meta.dir, "..", "public", "wiki", "databooks");
-const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "..", "aphrody-web", "apps", "bxc");
+const bxcRoot = process.env.BXC_ROOT?.trim() || resolve(import.meta.dir, "..", "..", "..", "aphrody-web", "apps", "bxc");
 const { ImpersonatedClient } = await import(join(bxcRoot, "src", "ffi", "curl-impersonate.ts"));
 
 type Page = { number?: number; image?: string | null; text?: string | null };

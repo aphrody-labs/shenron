@@ -16,7 +16,7 @@ import {
 	touchesBotSchema,
 } from "../scripts/migration-audit";
 
-const repoRoot = join(import.meta.dir, "..", "..", "..", "..");
+const repoRoot = join(import.meta.dir, "..", "..", "..");
 const snapshot = join(repoRoot, DEFAULT_SNAPSHOT);
 const tmp = mkdtempSync(join(tmpdir(), "shenron-migration-audit-"));
 afterAll(() => rmSync(tmp, { recursive: true, force: true }));
