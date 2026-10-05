@@ -520,12 +520,12 @@ Ressources locales vérifiées disponibles:
 - apps/bot/data/manga-visual-map.json: association série/tome/planche entre OCR et image manga;
 - apps/bot/assets/manga: images primaires à rouvrir visuellement avant d'attester un texte.`
 		: "";
-	const doctrines = ["docs/wiki-editorial.md"];
+	const doctrines = ["docs/products/wiki-editorial.md"];
 	if (["databooks", "databook-review", "crosscheck"].includes(stage.id)) {
 		doctrines.push(
-			"docs/japonais.md",
-			"docs/databooks-doctrine.md",
-			"docs/databooks-transcription.md"
+			"docs/guides/japonais.md",
+			"docs/reference/databooks-doctrine.md",
+			"docs/guides/databooks-transcription.md"
 		);
 	}
 	return `Tu es le sous-agent ${task.id} de la campagne Shenron. Modèle imposé: ${MODEL}, reasoning effort ${REASONING_EFFORT}.

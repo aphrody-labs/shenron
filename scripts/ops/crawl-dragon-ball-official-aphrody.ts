@@ -8,7 +8,7 @@ import { scrapeWithAphrody } from "../../packages/pipeline/scripts/lib/aphrody-w
 
 const ORIGIN = "https://dragon-ball-official.com";
 const SITEMAP = `${ORIGIN}/sitemap.xml`;
-const STATE_DIR = join(import.meta.dir, "../var/runs/dragon-ball-official-aphrody");
+const STATE_DIR = join(import.meta.dir, "../../var/runs/dragon-ball-official-aphrody");
 const BATCH_SIZE = 10;
 
 export type OfficialCrawlMode = "status" | "dry-run" | "apply";

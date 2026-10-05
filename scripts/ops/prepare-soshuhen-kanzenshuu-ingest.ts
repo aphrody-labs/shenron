@@ -99,7 +99,7 @@ async function main() {
 
 		console.log(`\n========================================================================`);
 		console.log(`Audit de préparation Sōshūhen & Kanzenshuu terminé avec succès.`);
-		console.log(`Pour plus de détails techniques, voir docs/sources-ingestion-soshuhen-kanzenshuu.md`);
+		console.log(`Pour plus de détails techniques, voir docs/guides/sources-ingestion-soshuhen-kanzenshuu.md`);
 	} finally {
 		await sql.end();
 	}

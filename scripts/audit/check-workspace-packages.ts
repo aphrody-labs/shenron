@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // check-workspace-packages.ts — conformance of the unified @shenron/* packages
-// (docs/STACK.md §4.3). Thin CLI over @shenron/config/guards.
+// (docs/architecture/STACK.md §4.3). Thin CLI over @shenron/config/guards.
 //
 // Usage:
-//   bun run check:packages                       # all checks, fail on violations missing from the baseline
-//   bun run check:packages --package @shenron/db       # one package (app checks skipped)
-//   bun run check:packages --strict              # also fail while the `transitional` baseline is not empty
-//   bun run check:packages --write-baseline      # record current violations (new ones go to `transitional`)
-//   bun run check:packages --json                # machine-readable report on stdout
+//   bun scripts/audit/check-workspace-packages.ts                       # all checks, fail on violations missing from the baseline
+//   bun scripts/audit/check-workspace-packages.ts --package @shenron/db       # one package (app checks skipped)
+//   bun scripts/audit/check-workspace-packages.ts --strict              # also fail while the `transitional` baseline is not empty
+//   bun scripts/audit/check-workspace-packages.ts --write-baseline      # record current violations (new ones go to `transitional`)
+//   bun scripts/audit/check-workspace-packages.ts --json                # machine-readable report on stdout
 //
-// Baseline: scripts/ops/check-workspace-packages.baseline.json, two sections:
+// Baseline: scripts/audit/check-workspace-packages.baseline.json (beside this file), two sections:
 //   transitional  must be empty at the end of Phase 1 (--strict enforces it)
-//   phase2        each entry cites a ticket of docs/STACK.md §7.3
+//   phase2        each entry cites a ticket of docs/architecture/STACK.md §7.3
 // A baseline entry that no longer matches a violation is stale: warning only.
 // Checks reported as `warn` never fail (none since wave 5: the "use client" reach is an error).
 
@@ -31,9 +31,9 @@ import {
 } from "../../packages/config/src/guards";
 
 const ROOT = resolve(import.meta.dir, "../..");
-const BASELINE_FILE = join(ROOT, "scripts", "ops", "check-workspace-packages.baseline.json");
+const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.json");
 
-/** Modular framework packages checked against docs/STACK.md. */
+/** Modular framework packages checked against docs/architecture/STACK.md. */
 const PACKAGES: Readonly<Record<string, string>> = {
 	"@shenron/config": "packages/config",
 	"@shenron/db": "packages/db",
@@ -44,7 +44,7 @@ const PACKAGES: Readonly<Record<string, string>> = {
 };
 
 /**
- * Allowed @shenron/* edges (docs/STACK.md §4.1). `dev` edges are allowed only
+ * Allowed @shenron/* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
  * in devDependencies. Anything not listed is forbidden.
  */
 const ALLOWED_EDGES: Readonly<
@@ -61,7 +61,7 @@ const ALLOWED_EDGES: Readonly<
 /** Subpath restrictions on allowed package edges. */
 const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>> = {};
 
-/** Imports forbidden in a `"use client"` module (docs/STACK.md §4.2). */
+/** Imports forbidden in a `"use client"` module (docs/architecture/STACK.md §4.2). */
 const CLIENT_FORBIDDEN = [
 	"@shenron/db/postgres-js",
 	"@shenron/db/sql",
@@ -107,7 +107,7 @@ const option = (name: string): string | undefined => {
 };
 if (has("--help") || has("-h")) {
 	console.log(
-		"Usage: bun scripts/ops/check-workspace-packages.ts [--package <name>] [--strict] [--write-baseline] [--json]"
+		"Usage: bun scripts/audit/check-workspace-packages.ts [--package <name>] [--strict] [--write-baseline] [--json]"
 	);
 	process.exit(0);
 }
@@ -442,13 +442,17 @@ function checkCycles(): void {
 	for (const node of [...graph.keys()].toSorted()) visit(node, []);
 }
 
-/** Shenron packages are upstream of Aphrody repositories, never consumers. */
+/**
+ * Aphrody capabilities are consumed as published `@aphrody/*` packages, pinned exactly
+ * (bunfig.toml); no manifest links an external Aphrody checkout or a path outside the repo.
+ */
 function checkDependencyDirection(): void {
 	const root = readJson<{ workspaces?: { packages?: string[] } }>(join(ROOT, "package.json"));
 	for (const workspace of root?.workspaces?.packages ?? []) {
-		if (workspace.startsWith("../aphrody-"))
-			report("workspace", "direction", `external Aphrody workspace ${workspace}`);
+		if (workspace.startsWith("../"))
+			report("workspace", "direction", `workspace glob ${workspace} leaves the repository`);
 	}
+	const exact = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 	for (const dir of [
 		ROOT,
 		...["apps", "packages"].flatMap((kind) =>
@@ -458,25 +462,21 @@ function checkDependencyDirection(): void {
 		),
 	]) {
 		const manifest = readJson<Manifest>(join(dir, "package.json"));
+		const where = toPosix(relative(ROOT, dir)) || ".";
 		for (const group of [
 			manifest?.dependencies,
 			manifest?.devDependencies,
 			manifest?.peerDependencies,
 		]) {
 			for (const [name, version] of Object.entries(group ?? {})) {
-				if (name.startsWith("@aphrody/") || version.includes("../aphrody-"))
-					report("workspace", "direction", `${relative(ROOT, dir) || "."} depends on ${name}`);
+				const path = /^(?:file|link|portal):(.*)$/.exec(version)?.[1];
+				if (path !== undefined && relative(ROOT, resolve(dir, path)).startsWith(".."))
+					report("workspace", "direction", `${where} links ${name} outside the repository (${version})`);
+				if (name.startsWith("@aphrody/") && !exact.test(version))
+					report("workspace", "direction", `${where} depends on ${name}@${version}, not an exact pin`);
 			}
 		}
 	}
-	for (const dir of ["apps/bot/src", "apps/site/src", "packages", "scripts"])
-		for (const file of sourceFiles(join(ROOT, dir))) {
-			if (dir === "packages" && !toPosix(relative(ROOT, file)).includes("/src/")) continue;
-			for (const { specifier } of importSpecifiers(readFileSync(file, "utf8"))) {
-				if (specifier.startsWith("@aphrody/"))
-					report("workspace", "direction", `${toPosix(relative(ROOT, file))} imports ${specifier}`);
-			}
-		}
 }
 
 // ── Application boundaries (§4.2) ────────────────────────────────────────────
@@ -578,7 +578,7 @@ if (WRITE_BASELINE) {
 	const next: Baseline = {
 		$comment:
 			baseline.$comment ??
-			"Pre-existing check:packages violations. `transitional` must be empty at the end of Phase 1 (--strict); `phase2` entries cite a docs/STACK.md §7.3 ticket. The baseline may only shrink after wave 1.",
+			"Pre-existing check:packages violations. `transitional` must be empty at the end of Phase 1 (--strict); `phase2` entries cite a docs/architecture/STACK.md §7.3 ticket. The baseline may only shrink after wave 1.",
 		transitional,
 		phase2: phase2.toSorted((a, b) => a.id.localeCompare(b.id)),
 	};

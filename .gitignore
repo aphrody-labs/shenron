@@ -27,8 +27,9 @@ test-results/
 
 # Native artifacts staged next to @shenron/native
 /packages/native/native/
-# wasm-pack output of koharu-canvas
-/packages/koharu-bridge/src/wasm/
+
+# Local run state: guard bundles (var/unification), crawl and workflow runs (var/runs, var/dragon-ball-*)
+/var/
 
 # Secrets and private state (credentials, trained weights, user data)
 .env

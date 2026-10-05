@@ -4,7 +4,7 @@ import {
 	containsExactTerm,
 	parseCandidates,
 	type CorpusRecord,
-} from "../ops/wiki-corpus-enricher";
+} from "./wiki-corpus-enricher";
 
 const records: CorpusRecord[] = [
 	{

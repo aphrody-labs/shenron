@@ -1,5 +1,5 @@
 {
-	"$comment": "Pre-existing check:packages violations. `transitional` must be empty at the end of Phase 1 (--strict); `phase2` entries cite a docs/STACK.md §7.3 ticket. The baseline may only shrink after wave 1.",
+	"$comment": "Pre-existing check:packages violations. `transitional` must be empty at the end of Phase 1 (--strict); `phase2` entries cite a docs/architecture/STACK.md §7.3 ticket. The baseline may only shrink after wave 1.",
 	"transitional": [],
 	"phase2": [
 		{
