@@ -87,6 +87,14 @@ interface Verdict {
   vuLe: string;
 }
 
+/** Une correspondance rendue par `bxc frames search --remote --json`. */
+interface CorrespondanceTraceMoe {
+  title?: string;
+  episode?: number | null;
+  similarity?: number;
+  atMs?: number;
+}
+
 async function urlBase(): Promise<string> {
   const direct = process.env.DATABASE_URL?.trim();
   if (direct) return direct;
@@ -235,14 +243,9 @@ for (const e of aFaire) {
     continue;
   }
   const brut = await bxc(["frames", "search", chemin, "--remote", "--limit", "3", "--json"]);
-  let meilleur: {
-    title?: string;
-    episode?: number | null;
-    similarity?: number;
-    atMs?: number;
-  } | null = null;
+  let meilleur: CorrespondanceTraceMoe | null = null;
   try {
-    const data = JSON.parse(brut) as { matches?: (typeof meilleur)[] };
+    const data = JSON.parse(brut) as { matches?: (CorrespondanceTraceMoe | null)[] };
     meilleur =
       (data.matches ?? []).find((m) => /dragon ball/i.test(m?.title ?? "")) ??
       (data.matches ?? [])[0] ??

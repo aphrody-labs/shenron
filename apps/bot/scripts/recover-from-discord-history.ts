@@ -31,7 +31,14 @@ import { container } from "tsyringe";
 import { DatabaseService } from "~/db/index";
 import { users, achievements, actionLogs, warns, jails } from "~/db/schema";
 import { eq, sql as dsql } from "drizzle-orm";
-import { Client, GatewayIntentBits, ChannelType, type GuildTextBasedChannel } from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  ChannelType,
+  type Collection,
+  type GuildTextBasedChannel,
+  type Message,
+} from "discord.js";
 import { env } from "~/lib/env";
 import { writeFileSync, readFileSync, existsSync } from "node:fs";
 
@@ -69,17 +76,15 @@ log(`✓ Connected as ${client.user?.tag}`);
 
 const guild = await client.guilds.fetch(env.GUILD_ID);
 const channels = await guild.channels.fetch();
-const textChannels = channels
-  .filter(
-    (c): c is GuildTextBasedChannel =>
-      !!c &&
-      (c.type === ChannelType.GuildText ||
-        c.type === ChannelType.GuildAnnouncement ||
-        c.type === ChannelType.PublicThread ||
-        c.type === ChannelType.PrivateThread) &&
-      c.viewable === true,
-  )
-  .toJSON();
+// `guild.channels.fetch()` ne rend aucun fil : seuls les salons texte et
+// d'annonces sont parcourus.
+const textChannels: GuildTextBasedChannel[] = [];
+for (const c of channels.values()) {
+  if (!c?.viewable) continue;
+  if (c.type === ChannelType.GuildText || c.type === ChannelType.GuildAnnouncement) {
+    textChannels.push(c);
+  }
+}
 
 log(`✓ ${textChannels.length} text channels viewable`);
 
@@ -236,7 +241,7 @@ async function scanChannel(channel: GuildTextBasedChannel): Promise<{
   messageCount: number;
   stoppedReason: string;
 }> {
-  const channelName = "name" in channel ? channel.name : channel.id;
+  const channelName = channel.name;
   let lastId: string | undefined = undefined;
   let totalScanned = 0;
   let stoppedReason = "cutoff_reached";
@@ -245,7 +250,7 @@ async function scanChannel(channel: GuildTextBasedChannel): Promise<{
 
   try {
     while (batches++ < MAX_BATCHES_PER_CHANNEL) {
-      const messages = await channel.messages.fetch({
+      const messages: Collection<string, Message<true>> = await channel.messages.fetch({
         limit: 100,
         before: lastId,
       });
@@ -483,8 +488,8 @@ let logInserted = 0;
 for (const s of sanctionHits) {
   try {
     await db.insert(actionLogs).values({
-      actorId: s.moderatorId ?? "system",
-      targetId: s.userId,
+      userId: s.userId,
+      moderatorId: s.moderatorId ?? "system",
       action: s.type,
       reason: s.reason,
       createdAt: new Date(s.ts),

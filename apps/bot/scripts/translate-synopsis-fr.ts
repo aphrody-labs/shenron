@@ -158,7 +158,9 @@ async function translateText(text: string): Promise<Tr> {
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
-const sql = new SQL(process.env.DATABASE_URL);
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) throw new Error("DATABASE_URL requis (PostgreSQL, schéma bot)");
+const sql = new SQL(DATABASE_URL);
 
 const TABLES = [
   { table: "db_episodes", col: "synopsis", colFr: "synopsis_fr", idCol: "id" },

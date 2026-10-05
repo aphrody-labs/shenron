@@ -47,14 +47,15 @@ const guild = await client.guilds.fetch(env.GUILD_ID);
 const all = await guild.channels.fetch();
 const configured = await settings.getSnowflake("channel.announce");
 
-const targets = all
-  .filter(
-    (c): c is GuildTextBasedChannel =>
-      !!c &&
-      c.viewable === true &&
-      (c.type === ChannelType.GuildAnnouncement || (!!configured && c.id === configured)),
-  )
-  .toJSON();
+// Salons à messages seulement : un `channel.announce` qui viserait une catégorie
+// ou un forum n'a pas de `messages` à parcourir.
+const targets: GuildTextBasedChannel[] = [];
+for (const c of all.values()) {
+  if (!c?.viewable || !c.isTextBased()) continue;
+  if (c.type === ChannelType.GuildAnnouncement || (!!configured && c.id === configured)) {
+    targets.push(c);
+  }
+}
 
 log(
   `✓ ${targets.length} salon(s) d'annonces : ${targets.map((c) => `#${c.name}`).join(", ") || "(aucun)"}`,

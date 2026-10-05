@@ -67,7 +67,7 @@ const popcount = (hex: string) => {
   for (let x = BigInt("0x" + hex); x; x >>= 1n) n += Number(x & 1n);
   return n;
 };
-const usable = (h?: string) => !!h && popcount(h) >= 8 && popcount(h) <= 56;
+const usable = (h?: string): h is string => !!h && popcount(h) >= 8 && popcount(h) <= 56;
 for (const e of entries)
   if (usable(e.dhash) && e.width) byDhash.set(e.dhash, [...(byDhash.get(e.dhash) ?? []), e]);
 
