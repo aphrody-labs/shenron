@@ -245,7 +245,6 @@
       "devDependencies": {
         "@types/bun": "catalog:",
         "typescript": "catalog:",
-        "undici-types": "~8.9.0",
       },
     },
     "packages/native": {
