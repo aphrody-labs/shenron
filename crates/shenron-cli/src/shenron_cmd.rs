@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2026 aphrody contributors
-//! `aphrody shenron …` — Sovereign bridge connecting Aphrody (AI, Web, Infra, Shell, OS) to Shenron and Dragon Ball FR.
+//! `shenron …`: the bridge between Shenron, Dragon Ball FR and the Aphrody capabilities (AI, Web, Infra).
 //!
 //! Provides a unified, production-grade CLI and programmatic surface that exposes:
 //! - **AI**: Hybrid RAG (FTS5 + Dense E5 + Cross-Encoder Rerank), automated training (triples, embed, rerank, lora),
@@ -12,12 +12,12 @@
 
 use std::path::PathBuf;
 
-use aphrody_config::shenron::ShenronAuthPresence;
+use crate::config::ShenronAuthPresence;
 use clap::Subcommand;
 use miette::IntoDiagnostic;
 use serde_json::json;
 
-/// Subcommands for `aphrody shenron`.
+/// Subcommands for `shenron`.
 #[derive(Debug, Subcommand)]
 pub(crate) enum ShenronAction {
     /// Comprehensive health and integration check across all Shenron pillars (DB, AI, Web, Infra, Auth, A2A)
@@ -42,7 +42,7 @@ pub(crate) enum ShenronAction {
         #[command(subcommand)]
         action: ShenronTrainAction,
     },
-    /// Databooks and manga OCR operations (bridges to `aphrody ocr shenron`)
+    /// Databooks and manga OCR operations (bridges to `shenron ocr`)
     #[cfg(feature = "ocr")]
     Ocr {
         #[command(subcommand)]
@@ -85,6 +85,50 @@ pub(crate) enum ShenronRagAction {
         /// Emit results as JSON
         #[arg(long)]
         json: bool,
+    },
+    /// Search the offline local corpus (embedded canon, guide, configured corpus and local
+    /// store) without network
+    Local {
+        /// Query string to search
+        query: String,
+        /// Maximum number of results to return
+        #[arg(short, long, default_value_t = 8)]
+        limit: usize,
+        /// Optional filter by kind (e.g. canon, guide, databook, manga)
+        #[arg(short, long)]
+        kind: Option<String>,
+        /// Emit results as JSON
+        #[arg(long)]
+        json: bool,
+    },
+    /// Ingest Shenron corpus files (JSON, JSONL or lots directories) into the local SQLite RAG
+    /// store read by `rag local`, the desktop and the MCP server
+    Ingest {
+        /// Corpus JSON/JSONL inputs or directories containing them
+        #[arg(required = true, num_args = 1..)]
+        paths: Vec<PathBuf>,
+        /// SQLite store (default: APHRODY_DRAGONBALL_RAG_DB, else <crawl dir>/rag.sqlite)
+        #[arg(long)]
+        db: Option<PathBuf>,
+        /// Maximum number of documents to ingest
+        #[arg(long)]
+        max_docs: Option<usize>,
+        /// OpenAI-compatible embeddings base URL (default: APHRODY_AI_EMBED_BASE_URL); without
+        /// one the ingestion is lexical only
+        #[arg(long)]
+        embed_url: Option<String>,
+        /// Embedding model served at --embed-url
+        #[arg(long, default_value = "intfloat/multilingual-e5-small")]
+        embed_model: String,
+        /// Embedding dimension of --embed-model
+        #[arg(long, default_value_t = 384)]
+        embed_dim: usize,
+        /// Store the full source URL as the document path (older consumers)
+        #[arg(long)]
+        preserve_url: bool,
+        /// Reproduce the historical corpus chunk boundaries
+        #[arg(long)]
+        legacy_chunks: bool,
     },
     /// Show statistics from Shenron's selected RAG engine
     Stats {
@@ -546,7 +590,7 @@ async fn probe(url: reqwest::Url, token: Option<String>) -> serde_json::Value {
 }
 
 /// Structured Shenron health report (site, bot, Aphrody AI, serving RAG, Agent Home dbfr).
-/// Shared by `aphrody shenron doctor` and the desktop app.
+/// Shared by `shenron doctor` and the desktop app.
 pub async fn doctor_report() -> miette::Result<serde_json::Value> {
     let site = probe(site_base()?.join("/wiki/personnages").into_diagnostic()?, None).await;
     let bot = probe(bot_base()?.join("/api/health/check").into_diagnostic()?, None).await;
@@ -654,6 +698,82 @@ async fn handle_rag(action: ShenronRagAction) -> miette::Result<()> {
                     );
                     println!("   {}", hit["snippet"].as_str().unwrap_or("").replace('\n', " "));
                 }
+            }
+        },
+        ShenronRagAction::Local { query, limit, kind, json } => {
+            let corpus = shenron_rag::LocalCorpus::load_with(&shenron_rag::dragonball::process_env);
+            let options = shenron_rag::LocalSearchOptions {
+                limit: Some(limit),
+                lang: None,
+                entity: None,
+                kind,
+            };
+            let hits = corpus.search(&query, &options);
+            if json {
+                let value = corpus.search_json(&query, &options);
+                println!("{}", serde_json::to_string_pretty(&value).into_diagnostic()?);
+            } else {
+                println!("{} résultat(s) sur {} document(s) locaux", hits.len(), corpus.len());
+                for (index, hit) in hits.iter().enumerate() {
+                    println!("{}. [{}] {} ({})", index + 1, hit.kind, hit.title, hit.url);
+                    println!("   {}", hit.snippet.replace('\n', " "));
+                }
+            }
+        },
+        ShenronRagAction::Ingest {
+            paths,
+            db,
+            max_docs,
+            embed_url,
+            embed_model,
+            embed_dim,
+            preserve_url,
+            legacy_chunks,
+        } => {
+            let db = db.unwrap_or_else(|| {
+                shenron_rag::dragonball::rag_store_with(&shenron_rag::dragonball::process_env)
+            });
+            if let Some(parent) = db.parent().filter(|parent| !parent.as_os_str().is_empty()) {
+                std::fs::create_dir_all(parent).into_diagnostic()?;
+            }
+            let store = aphrody_rag::RagStore::open(&db).into_diagnostic()?;
+            let mut docs = Vec::new();
+            for path in paths {
+                docs.extend(shenron_rag::load_shenron_corpus(path).into_diagnostic()?);
+            }
+            let embed_url = embed_url
+                .or_else(|| shenron_rag::dragonball::process_env("APHRODY_AI_EMBED_BASE_URL"));
+            let embedder: Option<std::sync::Arc<dyn aphrody_rag::Embedder>> =
+                embed_url.map(|base| {
+                    let base = base.trim_end_matches('/');
+                    let endpoint = if base.ends_with("/embeddings") {
+                        base.to_owned()
+                    } else {
+                        format!("{base}/embeddings")
+                    };
+                    std::sync::Arc::new(aphrody_rag::OpenAiCompatEmbedder::new(
+                        endpoint,
+                        embed_model,
+                        embed_dim,
+                        None,
+                    )) as std::sync::Arc<dyn aphrody_rag::Embedder>
+                });
+            let options = shenron_rag::ShenronIngestOptions {
+                max_docs,
+                preserve_urls: preserve_url,
+                legacy_chunks,
+                ..Default::default()
+            };
+            let stats =
+                shenron_rag::ingest_shenron_docs(&store, &docs, embedder.as_ref(), &options)
+                    .await
+                    .into_diagnostic()?;
+            println!("{}", serde_json::to_string(&stats).into_diagnostic()?);
+            if !stats.errors.is_empty() {
+                return Err(miette::miette!(
+                    "ingestion incomplete: {} error(s)",
+                    stats.errors.len()
+                ));
             }
         },
         ShenronRagAction::Stats { json } => {

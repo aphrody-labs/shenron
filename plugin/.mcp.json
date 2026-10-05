@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "shenron": {
+      "command": "shenron-mcp",
+      "args": [],
+      "env": {
+        "SHENRON_MCP_LOG": "warn"
+      }
+    }
+  }
+}

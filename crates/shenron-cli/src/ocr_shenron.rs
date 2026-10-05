@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! `aphrody ocr shenron …` — native bridge to the sibling `shenron` checkout.
+//! `shenron ocr …` — native bridge to the sibling `shenron` checkout.
 //!
 //! `shenron` already expects exactly this shape: `depose-transcriptions.ts`
 //! (`~/aphrody/apps/shenron/site/scripts/depose-transcriptions.ts`) opens with "Entrée
@@ -30,13 +30,13 @@ use aphrody_ocr::ocr_core::{OcrStatus, store::OcrStore};
 
 use crate::ocr_dbfr::plate_number;
 
-/// Actions for `aphrody ocr shenron`.
+/// Actions for `shenron ocr`.
 #[derive(clap::Subcommand, Debug, Clone)]
 pub(crate) enum ShenronAction {
     /// Report whether the sibling `shenron` checkout and its databooks
     /// tooling were found.
     ///
-    /// Example: aphrody ocr shenron doctor
+    /// Example: shenron ocr doctor
     Doctor,
     /// Write one databook's stored transcriptions as a `shenron`-shaped
     /// `resultats.jsonl`, without depositing anything.
@@ -45,7 +45,7 @@ pub(crate) enum ShenronAction {
     /// `shenron`'s own `depose-transcriptions.ts` parses; nothing downstream
     /// needs to know these files never existed on disk.
     ///
-    /// Example: aphrody ocr shenron emit 312 --out var/shenron-bridge/312
+    /// Example: shenron ocr emit 312 --out var/shenron-bridge/312
     Emit {
         /// Databook identifier.
         id: u64,
@@ -63,7 +63,7 @@ pub(crate) enum ShenronAction {
     /// `classerDefaut` was tuned against the corpus's own history and catches
     /// what aphrody's rules do not know to look for.
     ///
-    /// Example: aphrody ocr shenron verify var/shenron-bridge/312
+    /// Example: shenron ocr verify var/shenron-bridge/312
     Verify {
         /// Lot directory written by `emit`, or its `resultats.jsonl` directly.
         lot: PathBuf,
@@ -74,7 +74,7 @@ pub(crate) enum ShenronAction {
     /// passed, and resolves its own API token from `apps/site/.env` — no
     /// secret crosses from aphrody into this command.
     ///
-    /// Example: aphrody ocr shenron deposit 312 --apply
+    /// Example: shenron ocr deposit 312 --apply
     Deposit {
         /// Databook identifier.
         id: u64,
@@ -104,7 +104,7 @@ pub(crate) enum ShenronAction {
     /// whose lot fails that judge is reported and skipped, not force-deposited
     /// — `--force` stays a per-databook, explicit choice.
     ///
-    /// Example: aphrody ocr shenron pipeline --apply
+    /// Example: shenron ocr pipeline --apply
     Pipeline {
         /// Send every deposit. Without it, every lot runs as a simulation.
         #[arg(long)]
@@ -267,7 +267,7 @@ fn doctor() -> miette::Result<()> {
             );
             if !has_bun {
                 return Err(miette::miette!(
-                    "bun is not on PATH — install it, `aphrody ocr shenron` needs it to run \
+                    "bun is not on PATH — install it, `shenron ocr` needs it to run \
                      shenron's own scripts"
                 ));
             }
@@ -315,7 +315,7 @@ fn lot_id_matches(path: &Path, id: &str) -> bool {
 /// `{"image":"<databookId>-<page>.jpg","text":{"kind":"text","markdown":"…"}}`.
 ///
 /// Only pages stored as [`OcrStatus::Text`] are written — the same rule
-/// `aphrody ocr dbfr push` applies, restated here because this path never
+/// `shenron dbfr push` applies, restated here because this path never
 /// touches the public API and so never gets that check for free.
 fn emit(store: &OcrStore, id: u64, out: &Path) -> miette::Result<EmitReport> {
     use aphrody_ocr::ocr_core::store::ListFilter;
@@ -374,28 +374,6 @@ fn emit(store: &OcrStore, id: u64, out: &Path) -> miette::Result<EmitReport> {
     std::fs::write(out.join("resultats.jsonl"), lines.join("\n") + "\n")
         .map_err(|e| miette::miette!("write {}: {e}", out.join("resultats.jsonl").display()))?;
     Ok(report)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn a_lot_id_must_be_a_whole_component() {
-        assert!(lot_id_matches(Path::new("var/ocr-lots/312/0003.jpg"), "312"));
-        assert!(lot_id_matches(Path::new("var/ocr-lots-mute/312/0003.jpg"), "312"));
-        // `3` must not match a path that merely contains "312" as a substring
-        // of a different component.
-        assert!(!lot_id_matches(Path::new("var/ocr-lots/312/0003.jpg"), "3"));
-        assert!(!lot_id_matches(Path::new("var/ocr-lots/29/0003.jpg"), "312"));
-    }
-
-    #[test]
-    fn absolute_leaves_an_already_absolute_path_alone() {
-        let input = if cfg!(windows) { "C:\\a\\b" } else { "/a/b" };
-        let resolved = absolute(Path::new(input)).unwrap();
-        assert!(resolved.is_absolute());
-    }
 }
 
 /// Deposit every databook the corpus holds readable text for.
@@ -465,4 +443,26 @@ fn pipeline(apply: bool, db: Option<&Path>) -> miette::Result<()> {
         println!("refused by shenron's own judge (relis-les, ou --force par ouvrage): {failed:?}");
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_lot_id_must_be_a_whole_component() {
+        assert!(lot_id_matches(Path::new("var/ocr-lots/312/0003.jpg"), "312"));
+        assert!(lot_id_matches(Path::new("var/ocr-lots-mute/312/0003.jpg"), "312"));
+        // `3` must not match a path that merely contains "312" as a substring
+        // of a different component.
+        assert!(!lot_id_matches(Path::new("var/ocr-lots/312/0003.jpg"), "3"));
+        assert!(!lot_id_matches(Path::new("var/ocr-lots/29/0003.jpg"), "312"));
+    }
+
+    #[test]
+    fn absolute_leaves_an_already_absolute_path_alone() {
+        let input = if cfg!(windows) { "C:\\a\\b" } else { "/a/b" };
+        let resolved = absolute(Path::new(input)).unwrap();
+        assert!(resolved.is_absolute());
+    }
 }

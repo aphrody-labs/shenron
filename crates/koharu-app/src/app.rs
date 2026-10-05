@@ -1,8 +1,6 @@
 use anyhow::{Context as _, Result};
 use koharu_library::project::ProjectLibrary;
 use tauri::{AppHandle, Manager as _, WindowEvent};
-#[cfg(feature = "cef")]
-use tauri_runtime_cef::{Cef, CefRuntime};
 
 use tokio::sync::Mutex;
 
@@ -238,61 +236,4 @@ pub fn on_window_event<R: tauri::Runtime>(window: &tauri::Window<R>, event: &Win
         );
         koharu_metrics::shutdown();
     }
-}
-
-#[cfg(feature = "cef")]
-pub fn run(context: tauri::Context<CefRuntime>) -> Result<()> {
-    let cef = Cef::default();
-    #[cfg(debug_assertions)]
-    let cef = cef.remote_debugging(tauri_runtime_cef::RemoteDebugging::Port {
-        port: 4000,
-        allowed_origins: Vec::new(),
-    });
-    #[cfg(target_os = "linux")]
-    let cef = cef
-        .enable_features(["Vulkan", "VulkanFromANGLE"])
-        .command_line_args([
-            ("--enable-unsafe-webgpu", None),
-            ("use-angle", Some("vulkan")),
-            ("--ozone-platform", Some("x11")),
-        ]);
-    tauri::Builder::<CefRuntime>::new()
-        .runtime(cef)
-        .plugin(
-            tauri_plugin_log::Builder::new()
-                .level(tauri_plugin_log::log::LevelFilter::Info)
-                .max_file_size(1_000_000)
-                .clear_targets()
-                .target(tauri_plugin_log::Target::new(
-                    tauri_plugin_log::TargetKind::LogDir { file_name: None },
-                ))
-                .build(),
-        )
-        .plugin(tauri_plugin_single_instance::init(|handle, _, _| {
-            if let Some(window) = handle.get_webview_window("main") {
-                let _ = window.unminimize();
-                let _ = window.show();
-                let _ = window.set_focus();
-            }
-        }))
-        .plugin(
-            tauri_plugin_window_state::Builder::default()
-                .with_state_flags(
-                    tauri_plugin_window_state::StateFlags::SIZE
-                        | tauri_plugin_window_state::StateFlags::POSITION
-                        | tauri_plugin_window_state::StateFlags::MAXIMIZED
-                        | tauri_plugin_window_state::StateFlags::FULLSCREEN,
-                )
-                .build(),
-        )
-        .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_process::init())
-        .invoke_handler(crate::commands::cef_bindings().invoke_handler())
-        .setup(move |application| {
-            setup(application, true)?;
-            Ok(())
-        })
-        .on_window_event(on_window_event)
-        .run(context)?;
-    Ok(())
 }

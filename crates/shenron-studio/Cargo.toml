@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-studio"
+description = "Tauri commands of the Shenron studio: health, RAG, training, local corpus, local models and the in-process Koharu engine."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+aphrody-llama-server = { workspace = true }
+koharu-library = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+shenron-cli = { workspace = true }
+shenron-rag = { workspace = true }
+tauri = { workspace = true }
+tokio = { workspace = true }

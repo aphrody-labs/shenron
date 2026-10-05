@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! `aphrody ocr dbfr …` — the Dragon Ball FR databooks API, natively.
+//! `shenron dbfr …` — the Dragon Ball FR databooks API, natively.
 //!
 //! The corpus that consumes aphrody's OCR is not a folder: it is the databooks
 //! section of `dragonballfr.com`, whose API stores one text per plate. Until
@@ -28,12 +28,12 @@ use aphrody_ocr::ocr_core::{OcrStatus, store::OcrStore};
 /// Default site. Overridden by `$DBFR_BASE_URL` for a staging instance.
 const DEFAULT_BASE_URL: &str = "https://dragonballfr.com";
 
-/// Actions for `aphrody ocr dbfr`.
+/// Actions for `shenron dbfr`.
 #[derive(clap::Subcommand, Debug, Clone)]
 pub(crate) enum DbfrAction {
     /// List databook records.
     ///
-    /// Example: aphrody ocr dbfr list --limit 5 --include-hidden
+    /// Example: shenron dbfr list --limit 5 --include-hidden
     List {
         /// Free-text query passed to the API.
         #[arg(long)]
@@ -48,7 +48,7 @@ pub(crate) enum DbfrAction {
         #[arg(long)]
         include_hidden: bool,
         #[command(flatten)]
-        output: crate::model_cmd::OutputOpts,
+        output: crate::output::OutputOpts,
     },
     /// Report transcription progress across the whole corpus.
     ///
@@ -56,7 +56,7 @@ pub(crate) enum DbfrAction {
     /// counts plates, transcriptions and gaps. This is what says how much OCR
     /// work is left, and where.
     ///
-    /// Example: aphrody ocr dbfr survey --include-hidden --top 20
+    /// Example: shenron dbfr survey --include-hidden --top 20
     Survey {
         /// Include records not published publicly. Requires a token.
         #[arg(long)]
@@ -65,12 +65,12 @@ pub(crate) enum DbfrAction {
         #[arg(long, default_value_t = 15)]
         top: usize,
         #[command(flatten)]
-        output: crate::model_cmd::OutputOpts,
+        output: crate::output::OutputOpts,
     },
     /// Report one record's plates: how many carry an image, and how many are
     /// still missing a transcription.
     ///
-    /// Example: aphrody ocr dbfr pages 42
+    /// Example: shenron dbfr pages 42
     Pages {
         /// Databook identifier.
         id: u64,
@@ -78,11 +78,11 @@ pub(crate) enum DbfrAction {
         #[arg(long)]
         missing: bool,
         #[command(flatten)]
-        output: crate::model_cmd::OutputOpts,
+        output: crate::output::OutputOpts,
     },
     /// Read the stored text of specific plates.
     ///
-    /// Example: aphrody ocr dbfr textes 42 --pages 12,13,14
+    /// Example: shenron dbfr textes 42 --pages 12,13,14
     Textes {
         /// Databook identifier.
         id: u64,
@@ -90,7 +90,7 @@ pub(crate) enum DbfrAction {
         #[arg(long)]
         pages: String,
         #[command(flatten)]
-        output: crate::model_cmd::OutputOpts,
+        output: crate::output::OutputOpts,
     },
     /// Download a record's plate images into a lot directory, ready for OCR.
     ///
@@ -98,7 +98,7 @@ pub(crate) enum DbfrAction {
     /// reads back — so `fetch`, `batch` and `push` round-trip without a
     /// side-car mapping that could drift.
     ///
-    /// Example: aphrody ocr dbfr fetch 22 --dir ./lots/22
+    /// Example: shenron dbfr fetch 22 --dir ./lots/22
     Fetch {
         /// Databook identifier.
         id: u64,
@@ -115,7 +115,7 @@ pub(crate) enum DbfrAction {
         #[arg(long)]
         limit: Option<usize>,
         #[command(flatten)]
-        output: crate::model_cmd::OutputOpts,
+        output: crate::output::OutputOpts,
     },
     /// Download every plate still missing a transcription, corpus-wide.
     ///
@@ -124,7 +124,7 @@ pub(crate) enum DbfrAction {
     /// with no gap are skipped, and files already on disk are kept, so this is
     /// safe to re-run as the corpus fills.
     ///
-    /// Example: aphrody ocr dbfr fetch-all --dir ./var/ocr-lots
+    /// Example: shenron dbfr fetch-all --dir ./var/ocr-lots
     FetchAll {
         /// Root directory to fill.
         #[arg(long)]
@@ -136,7 +136,7 @@ pub(crate) enum DbfrAction {
         #[arg(long)]
         records: Option<usize>,
         #[command(flatten)]
-        output: crate::model_cmd::OutputOpts,
+        output: crate::output::OutputOpts,
     },
     /// Deposit transcriptions from the local OCR corpus into one record.
     ///
@@ -144,7 +144,7 @@ pub(crate) enum DbfrAction {
     /// name, which is how a lot exported for OCR is named. A page whose number
     /// cannot be read is reported, never guessed.
     ///
-    /// Example: aphrody ocr dbfr push 42 --lot ./lot-042/images --apply
+    /// Example: shenron dbfr push 42 --lot ./lot-042/images --apply
     Push {
         /// Databook identifier.
         id: u64,
@@ -168,7 +168,7 @@ pub(crate) enum DbfrAction {
         #[arg(long)]
         db: Option<PathBuf>,
         #[command(flatten)]
-        output: crate::model_cmd::OutputOpts,
+        output: crate::output::OutputOpts,
     },
 }
 
@@ -311,7 +311,7 @@ async fn all_records(include_hidden: bool) -> miette::Result<Vec<serde_json::Val
 async fn survey(
     include_hidden: bool,
     top: usize,
-    output: &crate::model_cmd::OutputOpts,
+    output: &crate::output::OutputOpts,
 ) -> miette::Result<()> {
     let records = all_records(include_hidden).await?;
     let mut rows: Vec<(u64, String, usize, usize, usize)> = Vec::with_capacity(records.len());
@@ -381,7 +381,7 @@ async fn list(
     limit: u32,
     offset: u32,
     include_hidden: bool,
-    output: &crate::model_cmd::OutputOpts,
+    output: &crate::output::OutputOpts,
 ) -> miette::Result<()> {
     let mut path = format!("/api/databooks?limit={limit}&offset={offset}");
     if let Some(q) = q {
@@ -418,11 +418,7 @@ async fn list(
     output.emit_report(&table, &json)
 }
 
-async fn pages(
-    id: u64,
-    missing: bool,
-    output: &crate::model_cmd::OutputOpts,
-) -> miette::Result<()> {
+async fn pages(id: u64, missing: bool, output: &crate::output::OutputOpts) -> miette::Result<()> {
     let record = get_json(&format!("/api/databooks/{id}"), false).await?;
     let plates =
         record.get("pages").and_then(serde_json::Value::as_array).cloned().unwrap_or_default();
@@ -442,10 +438,8 @@ async fn pages(
         }
         if has_text {
             with_text += 1;
-        } else if has_image {
-            if let Some(number) = number {
-                gaps.push(number);
-            }
+        } else if has_image && let Some(number) = number {
+            gaps.push(number);
         }
     }
 
@@ -477,7 +471,7 @@ async fn pages(
     output.emit_report(&table, &json)
 }
 
-async fn textes(id: u64, pages: &str, output: &crate::model_cmd::OutputOpts) -> miette::Result<()> {
+async fn textes(id: u64, pages: &str, output: &crate::output::OutputOpts) -> miette::Result<()> {
     let json =
         get_json(&format!("/api/databooks/{id}/textes?pages={}", urlencode(pages)), false).await?;
     let items =
@@ -595,7 +589,7 @@ async fn fetch(
     out: &Path,
     all: bool,
     limit: Option<usize>,
-    output: &crate::model_cmd::OutputOpts,
+    output: &crate::output::OutputOpts,
 ) -> miette::Result<()> {
     let record = get_json(&format!("/api/databooks/{id}"), false).await?;
     let plates = record.get("pages").and_then(serde_json::Value::as_array).map_or(0, Vec::len);
@@ -631,7 +625,7 @@ async fn fetch_all(
     root: &Path,
     include_hidden: bool,
     records_limit: Option<usize>,
-    output: &crate::model_cmd::OutputOpts,
+    output: &crate::output::OutputOpts,
 ) -> miette::Result<()> {
     let records = all_records(include_hidden).await?;
     let client = client()?;
@@ -731,7 +725,7 @@ async fn push(
     replace: bool,
     limit: Option<usize>,
     db: Option<&Path>,
-    output: &crate::model_cmd::OutputOpts,
+    output: &crate::output::OutputOpts,
 ) -> miette::Result<()> {
     let db_path = match db {
         Some(path) => path.to_path_buf(),
@@ -752,11 +746,11 @@ async fn push(
     let mut skipped_empty = 0_usize;
 
     for page in &stored {
-        if let Some(lot) = lot {
-            if !page.path.starts_with(lot) {
-                skipped_lot += 1;
-                continue;
-            }
+        if let Some(lot) = lot
+            && !page.path.starts_with(lot)
+        {
+            skipped_lot += 1;
+            continue;
         }
         if page.status != OcrStatus::Text {
             // Counted, not dropped: a corpus deposit that silently omits the

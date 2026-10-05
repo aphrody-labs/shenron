@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-cli"
+description = "The shenron command: Shenron health, RAG, training, databooks OCR bridge, Dragon Ball FR databooks API, manga and configuration."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lib]
+name = "shenron_cli"
+
+[[bin]]
+name = "shenron"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[features]
+default = ["ocr"]
+# Databooks OCR bridge and the Dragon Ball FR databooks API (local OCR store).
+ocr = ["dep:aphrody-ocr"]
+# Koharu model choices and persisted preferences (pulls the Koharu engine).
+koharu = ["shenron-manga/koharu"]
+
+[dependencies]
+aphrody-agent-home = { workspace = true }
+aphrody-config = { workspace = true }
+aphrody-models = { workspace = true }
+aphrody-rag = { workspace = true }
+aphrody-ocr = { workspace = true, optional = true, features = ["sqlite"] }
+aphrody-toolchains = { workspace = true }
+clap = { workspace = true }
+dirs = { workspace = true }
+image = { workspace = true }
+miette = { workspace = true }
+reqwest = { workspace = true }
+rustls = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+shenron-manga = { workspace = true }
+shenron-rag = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+assert_cmd = { workspace = true }
+predicates = { workspace = true }
+tempfile = { workspace = true }

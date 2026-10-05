@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Dependencies and build outputs
+# Local Cargo overrides (scripts/build/rust/local-aphrody-patch.ts)
+/.cargo/config.toml
+# Tauri generated schemas
+/crates/*/gen/
 node_modules/
 /target/
 **/*.rs.bk

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Native in-process Koharu engine for Aphrody OS.
+//! Native in-process Koharu engine for the Shenron desktop.
 //!
 //! Provides direct in-process execution of all Koharu document, pipeline,
 //! project, canvas, and translation operations without spawning external subprocesses.

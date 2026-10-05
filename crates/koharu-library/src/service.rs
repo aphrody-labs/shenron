@@ -377,10 +377,10 @@ impl Service {
             "project.list" => Ok(json!(self.projects.list()?)),
             "project.delete" => {
                 let Named { name } = decode(value)?;
-                if let Some(open) = &self.project {
-                    if open.lock().await.info().name == name {
-                        bail!("close the project before deleting it");
-                    }
+                if let Some(open) = &self.project
+                    && open.lock().await.info().name == name
+                {
+                    bail!("close the project before deleting it");
                 }
                 self.projects.delete(&name)?;
                 Ok(Value::Null)
@@ -687,7 +687,7 @@ impl Service {
             "page.exportPng" | "page.exportPsd" => {
                 let Export { page, path } = decode(value)?;
                 let snapshot = self.project().await?.snapshot();
-                let cpu = self.library.as_ref().map_or(false, |(cpu, _)| *cpu);
+                let cpu = self.library.as_ref().is_some_and(|(cpu, _)| *cpu);
                 let library = self.library(cpu).await?;
                 let bytes = if method == "page.exportPng" {
                     library.export_png_snapshot(&snapshot, page).await?

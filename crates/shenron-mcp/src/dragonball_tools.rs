@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2026 aphrody contributors
 //
-//! `dragonball.*` — the Dragon Ball tools of the single Aphrody MCP.
+//! `dragonball.*`: the Dragon Ball tools of the Shenron MCP server.
 //!
 //! Ported from the retired Bun server `apps/shenron-mcp` (32 public tools and
 //! the five editorial admin tools). Transport only: the local RAG, persona and
-//! `APHRODY_AI_*` chat resolution live in [`aphrody_rag::dragonball`]; wiki,
+//! `APHRODY_AI_*` chat resolution live in [`shenron_rag::dragonball`]; wiki,
 //! bot, databook, manga, canon and A2A data stay behind the Shenron bot and
 //! site APIs.
 //!
@@ -33,15 +33,15 @@ use std::{
     time::Duration,
 };
 
-use aphrody_rag::dragonball::{
-    LocalCorpus, LocalSearchOptions, active_persona_with, process_env, set_user_persona_with,
-};
 use rmcp::{
     model::{CallToolResult, ContentBlock},
     schemars::{self, JsonSchema},
 };
 use serde::Deserialize;
 use serde_json::{Map, Value, json};
+use shenron_rag::dragonball::{
+    LocalCorpus, LocalSearchOptions, active_persona_with, process_env, set_user_persona_with,
+};
 
 const MAX_RESULT_CHARS: usize = 90_000;
 
@@ -108,7 +108,7 @@ fn client() -> Result<reqwest::Client, String> {
     CLIENT
         .get_or_init(|| {
             reqwest::Client::builder()
-                .user_agent(concat!("aphrody-mcp/", env!("CARGO_PKG_VERSION")))
+                .user_agent(concat!("shenron-mcp/", env!("CARGO_PKG_VERSION")))
                 .build()
                 .map_err(|e| format!("HTTP client: {e}"))
         })
@@ -762,8 +762,8 @@ pub(crate) struct MangaScanlateRequest {
 }
 
 pub(crate) async fn manga_scanlate(r: MangaScanlateRequest) -> CallToolResult {
-    let client = aphrody_manga::MangaCdnClient::new();
-    let mut options = aphrody_manga::MangaPipelineOptions::default();
+    let client = shenron_manga::MangaCdnClient::new();
+    let mut options = shenron_manga::MangaPipelineOptions::default();
     if let Some(target) = r.target_lang {
         options.target_language = target;
     }
@@ -1045,8 +1045,8 @@ pub(crate) struct DatabooksScanlateRequest {
 }
 
 pub(crate) async fn databooks_scanlate(r: DatabooksScanlateRequest) -> CallToolResult {
-    let client = aphrody_manga::MangaCdnClient::new();
-    let mut options = aphrody_manga::MangaPipelineOptions::default();
+    let client = shenron_manga::MangaCdnClient::new();
+    let mut options = shenron_manga::MangaPipelineOptions::default();
     if let Some(target) = r.target_lang {
         options.target_language = target;
     }

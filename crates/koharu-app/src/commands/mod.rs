@@ -52,7 +52,7 @@ impl<T: IpcResponse> ChannelExt<T> for Mutex<Option<Channel<T>>> {
 }
 
 /// Defines the Koharu command list once: [`COMMAND_NAMES`], the [`bindings`] a host app
-/// (the Aphrody desktop app, dynamic runtime) mounts, and the standalone app's CEF bindings.
+/// (the Shenron desktop app, dynamic runtime) mounts.
 /// Commands generic over the Tauri runtime carry an `<Rt>` marker, resolved to each builder's
 /// local `Rt` alias (specta needs a concrete runtime).
 macro_rules! koharu_commands {
@@ -64,17 +64,6 @@ macro_rules! koharu_commands {
         pub fn bindings() -> tauri_specta::Builder<tauri::DynRuntime> {
             use tauri_specta::{Builder, ErrorHandlingMode, collect_commands};
             type Rt = tauri::DynRuntime;
-            Builder::new()
-                .commands(collect_commands![$($module::$command $(::<$runtime>)?),*])
-                .disable_serde_phases()
-                .error_handling(ErrorHandlingMode::Throw)
-        }
-
-        /// tauri-specta builder for every Koharu IPC command on the CEF runtime.
-        #[cfg(feature = "cef")]
-        pub fn cef_bindings() -> tauri_specta::Builder<tauri_runtime_cef::CefRuntime> {
-            use tauri_specta::{Builder, ErrorHandlingMode, collect_commands};
-            type Rt = tauri_runtime_cef::CefRuntime;
             Builder::new()
                 .commands(collect_commands![$($module::$command $(::<$runtime>)?),*])
                 .disable_serde_phases()

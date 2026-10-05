@@ -339,6 +339,40 @@ pub fn default_canon_lexique() -> Vec<TermeLexique> {
     ]
 }
 
+/// Chaîne de traduction japonais -> français des databooks : détection des textes
+/// corrompus, découpage en segments sûrs, masquage du lexique canonique, traduction par
+/// le moteur Aphrody ([`aphrody_translate::Translator::translate_with_lang`]),
+/// réinjection de la graphie officielle, contrôle qualité et finition de style.
+///
+/// Un texte jugé intraduisible est rendu tel quel : le traduire blanchirait une
+/// hallucination OCR.
+pub async fn traduire_jp_fr(
+    translator: &aphrody_translate::Translator,
+    lexique: &[TermeLexique],
+    texte: &str,
+) -> anyhow::Result<String> {
+    let texte = texte.trim();
+    if texte.is_empty() {
+        return Ok(String::new());
+    }
+    if let Some(motif) = intraduisible(texte) {
+        tracing::warn!(motif = ?motif, "texte japonais jugé intraduisible");
+        return Ok(texte.to_owned());
+    }
+    let mut segments_fr = Vec::new();
+    for segment in segments_traduisibles(texte, 280) {
+        let protege = proteger_termes(&segment, lexique);
+        let traduit = translator.translate_with_lang(&protege.masque, "ja", "fr").await?;
+        let restaure = restaurer_termes(&traduit, &protege.table);
+        if let Some(raison) = refus(&restaure, &segment) {
+            tracing::warn!(refus = %raison, "contrôle qualité : traduction suspecte");
+        }
+        let fini = aphrody_translate::aphrodify::aphrodify(&restaure);
+        segments_fr.push(if fini.is_empty() { restaure } else { fini });
+    }
+    Ok(segments_fr.join(" "))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

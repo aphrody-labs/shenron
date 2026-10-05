@@ -6,7 +6,7 @@ fn main() -> Result<()> {
         .map(std::path::PathBuf::from)
         .unwrap_or_else(|| {
             std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("../../../packages/koharu/bridge/src/protocol.ts")
+                .join("../../packages/koharu-bridge/src/protocol.ts")
         });
     koharu_app::bindings()
         .semantic_types(Configuration::empty().enable_lossless_floats())

@@ -1,10 +1,11 @@
 #!/usr/bin/env bun
 /**
  * Rastérise l'icône Kinto-un (`src/lib/kinto-un.ts`) en favicons pour le site
- * ET le dashboard du bot, avec `sharp` seul — l'ICO multi-tailles est un simple
- * conteneur de PNG, écrit ici en quinze lignes plutôt qu'avec une dépendance.
+ * (le bot les sert par alias, cf. `ASSET_ALIASES` de `@shenron/images`), avec
+ * `sharp` seul — l'ICO multi-tailles est un simple conteneur de PNG, écrit ici
+ * en quinze lignes plutôt qu'avec une dépendance.
  *
- * Sorties (site `apps/site/public/`, bot `apps/bot/public/`) :
+ * Sorties (site `apps/site/public/`) :
  *   favicon.ico                16 + 32 + 48 (vrai ICO, plus un PNG déguisé)
  *   favicon-16/32/48/96.png    transparents
  *   apple-touch-icon.png       180, OPAQUE (iOS compose sur noir sinon)
@@ -19,7 +20,6 @@ import sharp from "sharp";
 import { KINTO_UN_COULEURS, svgIcone, svgIllustration } from "../src/lib/kinto-un";
 
 const site = new URL("../public/", import.meta.url).pathname;
-const bot = new URL("../../bot/public/", import.meta.url).pathname;
 const logoBot = new URL("../../bot/assets/logo.webp", import.meta.url).pathname;
 
 /**
@@ -80,7 +80,7 @@ fichiers["icon-512.png"] = await png(transparente, 512);
 fichiers["icon-maskable-512.png"] = await png(maskable, 512, true);
 fichiers["mstile-150.png"] = await png(pleine, 150, true);
 
-for (const dossier of [site, bot]) {
+for (const dossier of [site]) {
 	for (const [nom, contenu] of Object.entries(fichiers)) {
 		await Bun.write(dossier + nom, contenu);
 	}
@@ -97,13 +97,10 @@ await Bun.write(logoBot, logo);
 console.log(`${logoBot} — ${logo.length} o`);
 
 /**
- * PNG de marque, à téléverser ailleurs (Discord, réseaux, presse). Ils vivent en
- * deux endroits parce qu'ils servent deux publics : `apps/site/public/dbz/marque/`
- * pour les liens publics, `apps/bot/assets/marque/` pour la galerie du dashboard
- * (le bot ne sert en statique que ce qui vit sous `assets/`).
+ * PNG de marque, à téléverser ailleurs (Discord, réseaux, presse), publiés sous
+ * `apps/site/public/dbz/marque/`.
  */
 const marque = new URL("../public/dbz/marque/", import.meta.url).pathname;
-const marqueBot = new URL("../../bot/assets/marque/", import.meta.url).pathname;
 const ill = Buffer.from(svgIllustration());
 const carreNu = Buffer.from(svgIcone({ pastille: null, echelle: 1.12 }));
 const carrePlein = Buffer.from(svgIcone({ coins: 0.18 }));
@@ -137,8 +134,32 @@ const pngMarque: Record<string, Buffer> = {
 		.png({ compressionLevel: 9 })
 		.toBuffer(),
 };
-for (const dossier of [marque, marqueBot]) {
+for (const dossier of [marque]) {
 	await Bun.$`mkdir -p ${dossier}`.quiet();
 	for (const [nom, contenu] of Object.entries(pngMarque)) await Bun.write(dossier + nom, contenu);
 	console.log(`${dossier} — ${Object.keys(pngMarque).length} PNG de marque`);
 }
+
+/**
+ * App de bureau (Tauri) : pastille arrondie pleine, lisible sur la barre des tâches
+ * claire comme sombre. L’ICO Windows porte 16 → 256 px (explorateur, raccourcis,
+ * installeur NSIS) ; les PNG servent Linux et l’icône de fenêtre.
+ */
+const bureau = new URL("../../../crates/shenron-desktop/icons/", import.meta.url).pathname;
+const splash = new URL("../../../crates/shenron-desktop/splash/", import.meta.url).pathname;
+const appIcone = Buffer.from(svgIcone({ coins: 0.22 }));
+const appPetite = Buffer.from(svgIcone({ coins: 0.22, volutes: false }));
+const pngApp = (cote: number) => png(cote < 64 ? appPetite : appIcone, cote);
+const icones: Record<string, Buffer> = {
+	"32x32.png": await pngApp(32),
+	"128x128.png": await pngApp(128),
+	"128x128@2x.png": await pngApp(256),
+	"icon.png": await pngApp(512),
+};
+icones["icon.ico"] = ico(
+	await Promise.all([16, 24, 32, 48, 64, 128, 256].map(async (cote) => ({ cote, png: await pngApp(cote) })))
+);
+await Bun.$`mkdir -p ${bureau} ${splash}`.quiet();
+for (const [nom, contenu] of Object.entries(icones)) await Bun.write(bureau + nom, contenu);
+await Bun.write(splash + "icon.svg", svgIcone({ coins: 0.22 }));
+console.log(`${bureau} — ${Object.keys(icones).length} icônes de bureau`);

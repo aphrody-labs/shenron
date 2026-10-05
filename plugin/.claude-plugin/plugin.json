@@ -6,5 +6,6 @@
     "name": "aphrody-dev",
     "email": "contact@aphrody.com"
   },
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
 }

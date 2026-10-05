@@ -5,7 +5,7 @@
 //! single-bot persona and the grounded local answer.
 //!
 //! This is the library side of the `dragonball.*` MCP tools served by
-//! `aphrody-mcp`. It replaces the Bun `apps/shenron-mcp` local RAG
+//! `shenron-mcp`. It replaces the Bun `apps/shenron-mcp` local RAG
 //! (`local-ai.ts`, `local-rag.ts`, `persona.ts`) with the same contracts:
 //!
 //! - Model endpoints follow the `APHRODY_AI_*` contract
@@ -15,7 +15,7 @@
 //!   variable, the local chat model is simply unavailable.
 //! - The corpus comes from `APHRODY_DRAGONBALL_CORPUS` (file or directory),
 //!   else `<dataset dir>/corpus`, where the dataset dir is
-//!   `APHRODY_DRAGONBALL_DATASET_DIR` or `crates/aphrody-rag-eval/datasets/dragonball`.
+//!   `APHRODY_DRAGONBALL_DATASET_DIR` or `<APHRODY_HOME|~/.aphrody>/workspaces/dbfr/datasets/dragonball`.
 //!   The runtime `aphrody-rag` store is `APHRODY_DRAGONBALL_RAG_DB`, else
 //!   `<crawl dir>/rag.sqlite`, the crawl dir being `APHRODY_CORPUS_CRAWL_DIR`
 //!   or `<APHRODY_HOME|~/.aphrody>/workspaces/dbfr/crawl`.
@@ -32,7 +32,7 @@ use aphrody_config::ai_env;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-use crate::shenron::{ShenronCorpusDoc, load_shenron_corpus};
+use crate::corpus::{ShenronCorpusDoc, load_shenron_corpus};
 
 /// Embedded canon reference, always part of the local index.
 const LORE: &str = include_str!("../assets/dragonball/lore.md");
@@ -68,12 +68,18 @@ pub fn aphrody_home_with(env: EnvLookup<'_>) -> PathBuf {
     )
 }
 
-/// Dataset directory: `APHRODY_DRAGONBALL_DATASET_DIR`, else the in-repo
-/// `crates/aphrody-rag-eval/datasets/dragonball`.
+/// Dataset directory: `APHRODY_DRAGONBALL_DATASET_DIR`, else
+/// `<home>/workspaces/dbfr/datasets/dragonball`.
 #[must_use]
 pub fn dataset_dir_with(env: EnvLookup<'_>) -> PathBuf {
     get(env, "APHRODY_DRAGONBALL_DATASET_DIR").map_or_else(
-        || Path::new(env!("CARGO_MANIFEST_DIR")).join("../aphrody-rag-eval/datasets/dragonball"),
+        || {
+            aphrody_home_with(env)
+                .join("workspaces")
+                .join("dbfr")
+                .join("datasets")
+                .join("dragonball")
+        },
         PathBuf::from,
     )
 }

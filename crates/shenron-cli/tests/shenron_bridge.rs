@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: Apache-2.0
 //
-// Integration tests for `aphrody shenron` sovereign bridge subcommands.
+// Integration tests for the `shenron` bridge subcommands.
 #![cfg(not(target_arch = "wasm32"))]
 
 use assert_cmd::Command;
 use predicates::prelude::*;
 
-fn aphrody() -> Command {
-    Command::cargo_bin("aphrody").expect("aphrody binary must be present in cargo target dir")
+fn shenron() -> Command {
+    Command::cargo_bin("shenron").expect("shenron binary must be present in cargo target dir")
 }
 
-/// `aphrody` with every Shenron endpoint on a closed loopback port and no Aphrody AI profile,
+/// `shenron` with every Shenron endpoint on a closed loopback port and no Aphrody AI profile,
 /// so the bridge probes are hermetic and always report `degraded`.
 fn offline_shenron() -> Command {
-    let mut command = aphrody();
+    let mut command = shenron();
     command
         .env("SHENRON_SITE_URL", "http://127.0.0.1:9")
         .env("SHENRON_API_URL", "http://127.0.0.1:9")
@@ -26,7 +26,7 @@ fn offline_shenron() -> Command {
 #[test]
 fn shenron_doctor_text_output() {
     offline_shenron()
-        .args(["shenron", "doctor"])
+        .args(["doctor"])
         .assert()
         .success()
         .stdout(predicate::str::contains("Shenron: degraded"))
@@ -45,7 +45,7 @@ fn shenron_doctor_json_output() {
     .expect("write credential presence fixture");
     let assert = offline_shenron()
         .env("APHRODY_SHENRON_HOME", home.path())
-        .args(["shenron", "doctor", "--json"])
+        .args(["doctor", "--json"])
         .assert()
         .success();
 
@@ -67,8 +67,8 @@ fn shenron_doctor_json_output() {
 
 #[test]
 fn shenron_persona_prompt_output() {
-    aphrody()
-        .args(["shenron", "persona", "prompt"])
+    shenron()
+        .args(["persona", "prompt"])
         .assert()
         .success()
         .stdout(predicate::str::contains("Akira Toriyama"))
@@ -79,7 +79,7 @@ fn shenron_persona_prompt_output() {
 #[test]
 fn shenron_web_status_output() {
     offline_shenron()
-        .args(["shenron", "web", "status"])
+        .args(["web", "status"])
         .assert()
         .success()
         .stdout(predicate::str::contains("Site Shenron: {\"reachable\":false}"))
@@ -89,7 +89,7 @@ fn shenron_web_status_output() {
 #[test]
 fn shenron_infra_status_output() {
     offline_shenron()
-        .args(["shenron", "infra", "status"])
+        .args(["infra", "status"])
         .assert()
         .success()
         .stdout(predicate::str::contains("Shenron: degraded"))
@@ -104,9 +104,9 @@ fn shenron_auth_status_output() {
         r#"{"betterAuth":{"email":"private@example.test"},"agentKey":{"name":"private-agent"}}"#,
     )
     .expect("write credential presence fixture");
-    let output = aphrody()
+    let output = shenron()
         .env("APHRODY_SHENRON_HOME", home.path())
-        .args(["shenron", "auth", "status"])
+        .args(["auth", "status"])
         .assert()
         .success()
         .stdout(predicate::str::contains("Présence des identifiants d'administration locaux"))
@@ -127,9 +127,9 @@ fn shenron_auth_status_json() {
     let home = tempfile::tempdir().expect("temporary Shenron home");
     std::fs::write(home.path().join("admin_credentials.json"), "{}")
         .expect("write credential presence fixture");
-    let assert = aphrody()
+    let assert = shenron()
         .env("APHRODY_SHENRON_HOME", home.path())
-        .args(["shenron", "auth", "status", "--json"])
+        .args(["auth", "status", "--json"])
         .assert()
         .success();
 
@@ -151,16 +151,9 @@ fn shenron_auth_url_never_includes_the_master_token() {
     )
     .expect("write credential fixture");
 
-    let output = aphrody()
+    let output = shenron()
         .env("APHRODY_SHENRON_HOME", home.path())
-        .args([
-            "shenron",
-            "auth",
-            "url",
-            "--site",
-            "https://example.test",
-            "--raw",
-        ])
+        .args(["auth", "url", "--site", "https://example.test", "--raw"])
         .assert()
         .success()
         .get_output()

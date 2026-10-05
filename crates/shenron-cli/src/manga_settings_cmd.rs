@@ -3,15 +3,15 @@
 
 use std::{io::Read, path::PathBuf};
 
-use aphrody_manga::koharu::{
+use clap::Subcommand;
+use miette::Result;
+use serde::de::DeserializeOwned;
+use shenron_manga::koharu::{
     PipelineConfig, ProvidersConfig,
     renderer::TypesettingConfig,
     secrets,
     translator::{Provider, ProviderConfig, Translator},
 };
-use clap::Subcommand;
-use miette::Result;
-use serde::de::DeserializeOwned;
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum PreferencesAction {

@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-ffi"
+description = "C ABI of Shenron (shenron_* and manga_*): the shenron command, RAG chunking and search, persona, manga detection, typesetting and PSD export for bun:ffi and C hosts."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lib]
+name = "shenron_ffi"
+crate-type = ["cdylib", "rlib"]
+
+[lints]
+workspace = true
+
+[dependencies]
+aphrody-agent-home = { workspace = true }
+aphrody-rag-core = { workspace = true }
+aphrody-stdio-capture = { workspace = true }
+base64 = { workspace = true }
+serde_json = { workspace = true }
+shenron-cli = { workspace = true }
+shenron-manga = { workspace = true }
+shenron-rag = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

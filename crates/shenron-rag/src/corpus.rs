@@ -14,11 +14,7 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest as _, Sha256};
 use tracing::info;
 
-use crate::{
-    embedder::Embedder,
-    error::{RagError, Result},
-    store::{NewChunk, NewDoc, RagStore},
-};
+use aphrody_rag::{Embedder, RagError, RagStore, Result};
 
 /// A normalized Shenron document before chunking and indexing.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -279,6 +275,54 @@ fn load_corpus_file(path: &Path, docs: &mut Vec<ShenronCorpusDoc>) -> Result<()>
     Ok(())
 }
 
+/// Chunk fields written together with a document replacement.
+struct NewChunk {
+    heading: Option<String>,
+    symbol: Option<String>,
+    content: String,
+    start_line: usize,
+    end_line: usize,
+    token_count: usize,
+}
+
+/// Hash recorded while a document's chunks are being replaced: an interrupted
+/// replacement never matches a content digest, so the next run redoes it.
+const PENDING_HASH: &str = "pending";
+
+/// Replace one document and all of its chunks through the public store API.
+async fn replace_doc_chunks(
+    store: &RagStore,
+    path: &str,
+    hash: &str,
+    title: &str,
+    language: &str,
+    size_bytes: i64,
+    chunks: &[NewChunk],
+) -> Result<Vec<i64>> {
+    let doc_id =
+        store.upsert_doc(path, PENDING_HASH, Some(title), Some(language), 0, size_bytes).await?;
+    store.clear_doc_chunks(doc_id).await?;
+    let mut ids = Vec::with_capacity(chunks.len());
+    for (index, chunk) in chunks.iter().enumerate() {
+        ids.push(
+            store
+                .insert_chunk(
+                    doc_id,
+                    index,
+                    chunk.heading.as_deref(),
+                    chunk.symbol.as_deref(),
+                    &chunk.content,
+                    chunk.start_line,
+                    chunk.end_line,
+                    chunk.token_count,
+                )
+                .await?,
+        );
+    }
+    store.upsert_doc(path, hash, Some(title), Some(language), 0, size_bytes).await?;
+    Ok(ids)
+}
+
 /// Ingest a slice of [`ShenronCorpusDoc`] records into `store`.
 pub async fn ingest_shenron_docs(
     store: &RagStore,
@@ -385,19 +429,17 @@ pub async fn ingest_shenron_docs(
                 end_line: chunk.end_line,
             })
             .collect();
-        let chunk_ids = match store
-            .upsert_doc_chunks(
-                NewDoc {
-                    path: &unique_path,
-                    hash: &hash,
-                    title: Some(&title),
-                    language: Some(language),
-                    mtime_ms: 0,
-                    size_bytes: text.len() as i64,
-                },
-                &chunks,
-            )
-            .await
+        let size_bytes = i64::try_from(text.len()).unwrap_or(i64::MAX);
+        let chunk_ids = match replace_doc_chunks(
+            store,
+            &unique_path,
+            &hash,
+            &title,
+            language,
+            size_bytes,
+            &chunks,
+        )
+        .await
         {
             Ok(ids) => ids,
             Err(err) => {

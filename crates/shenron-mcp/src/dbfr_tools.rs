@@ -61,7 +61,7 @@ fn error(message: &str) -> String {
 
 fn client() -> Result<reqwest::Client, String> {
     reqwest::Client::builder()
-        .user_agent(concat!("aphrody-mcp/", env!("CARGO_PKG_VERSION")))
+        .user_agent(concat!("shenron-mcp/", env!("CARGO_PKG_VERSION")))
         .build()
         .map_err(|e| error(&format!("build HTTP client: {e}")))
 }

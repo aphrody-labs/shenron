@@ -178,7 +178,7 @@ pub struct MangaPageOutput {
 
 #[derive(Debug, Error)]
 pub enum MangaPipelineError {
-    #[error("Koharu native manga pipeline is unavailable; build with aphrody-manga/koharu")]
+    #[error("Koharu native manga pipeline is unavailable; build with shenron-manga/koharu")]
     Unavailable,
     #[error("unsupported target language: {0}")]
     Language(String),
