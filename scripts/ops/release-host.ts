@@ -7,6 +7,9 @@
  *   bun release-host.ts build   # main → artifacts/releases/<sha>, assemblé sous /srv/shenron/releases
  *   bun release-host.ts cdn     # publie la release active sur le CDN
  *
+ * Build réparti (`release.ts --build-host dbfr`) : `cargo [ref]` (vps : shenron-mcp et WASM),
+ * `bundle <sha>` (dbfr : bot, site, emballage), puis `assemble <sha>` (vps) sur la release relayée.
+ *
  * `build` : avance rapide de `~/shenron` sur origin/main (arbre propre exigé), install figée,
  * `shenron-mcp` (cargo), bot compilé, WASM du viewport Koharu (`packages/koharu/scripts/
  * build-wasm.ts` : cible wasm32 et CLI wasm-bindgen verrouillé installés au premier passage,
@@ -25,7 +28,9 @@
 import { join } from "node:path";
 
 const HOME = process.env.HOME ?? "/home/ubuntu";
-const REPO = join(HOME, "shenron");
+// `bundle` tourne sur dbfr, dans un dépôt dédié que `release.ts` alimente par `git push` (dbfr n'a
+// aucun accès à GitHub) ; `SHENRON_BUILD_REPO` le désigne.
+const REPO = process.env.SHENRON_BUILD_REPO ?? join(HOME, "shenron");
 const CURRENT = "/srv/shenron/current";
 const CDN_SRC = "/srv/shenron-cdn-src";
 const CDN_OUT = "/srv/shenron-cdn";
@@ -46,19 +51,27 @@ function step(label: string, cmd: string[], env: Record<string, string> = {}, cw
   return out;
 }
 
-function build(): void {
+/** Avance rapide de `~/shenron` sur `ref` (défaut : origin/main), arbre propre exigé. */
+function syncOrigin(ref = "origin/main"): string {
   // Le chargeur natif SWC refuse un cache dont un parent est accessible en écriture au groupe.
   step("permissions", ["chmod", "755", REPO]);
   step("git", ["git", "fetch", "-q", "origin"]);
   step("git", ["git", "checkout", "-q", "main"]);
-  step("git", ["git", "merge", "-q", "--ff-only", "origin/main"]);
+  step("git", ["git", "merge", "-q", "--ff-only", ref]);
   if (step("arbre propre", ["git", "status", "--porcelain", "--untracked-files=no"]).trim())
     throw new Error("arbre de build modifié : release refusée");
-  const commit = step("commit", ["git", "rev-parse", "HEAD"]).trim();
-  step("bun install", ["bun", "install", "--frozen-lockfile"]);
+  return step("commit", ["git", "rev-parse", "HEAD"]).trim();
+}
+
+/** Produits de cargo : `shenron-mcp` et le WASM du viewport Koharu. */
+function cargoProducts(): void {
   step("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
-  step("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
   step("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
+}
+
+/** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
+function bundleSite(commit: string): string {
+  step("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
   const database = /^DATABASE_URL=["']?([^"'\n]+)["']?$/m.exec(envFile.stdout.toString())?.[1];
   if (!database) throw new Error("DATABASE_URL introuvable dans l'environnement du site");
@@ -67,12 +80,42 @@ function build(): void {
   step(
     "site + emballage",
     ["bun", "scripts/build/build-site-external.ts", "--release-dir", release],
-    {
-      SITE_BUILD_DATABASE_URL: database,
-    },
+    { SITE_BUILD_DATABASE_URL: database },
   );
+  return release;
+}
+
+function assemble(release: string, commit: string): void {
   step("assemble", ["sudo", "-n", ADAPTER, "assemble", join(REPO, release)]);
   console.log(JSON.stringify({ commit, release: `/srv/shenron/releases/${commit}` }));
+}
+
+/** Tout sur le même hôte (le vps, qui a l'accès à GitHub et le cache cargo). */
+function build(): void {
+  const commit = syncOrigin();
+  step("bun install", ["bun", "install", "--frozen-lockfile"]);
+  cargoProducts();
+  assemble(bundleSite(commit), commit);
+}
+
+/** Étape cargo seule, sur le vps : la sortie est relayée vers dbfr par `release.ts`. */
+function cargo(ref: string): void {
+  const commit = syncOrigin(ref);
+  step("bun install", ["bun", "install", "--frozen-lockfile"]);
+  cargoProducts();
+  console.log(JSON.stringify({ commit }));
+}
+
+/**
+ * Étape bot + site + emballage, sur dbfr : le dépôt de build reçoit `ref` par push, les produits
+ * de cargo y arrivent déjà posés (`target/release/shenron-mcp`, `packages/koharu/src/wasm`).
+ */
+function bundle(ref: string): void {
+  step("git", ["git", "checkout", "-q", "-f", "--detach", ref]);
+  const commit = step("commit", ["git", "rev-parse", "HEAD"]).trim();
+  step("bun install", ["bun", "install", "--frozen-lockfile"]);
+  const release = bundleSite(commit);
+  console.log(JSON.stringify({ commit, release: join(REPO, release) }));
 }
 
 async function cdn(): Promise<void> {
@@ -112,7 +155,13 @@ async function cdn(): Promise<void> {
   console.log(JSON.stringify({ cdn: "published", commit }));
 }
 
-const command = process.argv[2];
+const [command, ref] = process.argv.slice(2);
 if (command === "build") build();
+else if (command === "cargo") cargo(ref ?? "origin/main");
+else if (command === "bundle" && ref) bundle(ref);
+else if (command === "assemble" && ref) assemble(join("artifacts", "releases", ref), ref);
 else if (command === "cdn") await cdn();
-else throw new Error("usage: release-host.ts build | cdn");
+else
+  throw new Error(
+    "usage: release-host.ts build | cargo [ref] | bundle <sha> | assemble <sha> | cdn",
+  );
