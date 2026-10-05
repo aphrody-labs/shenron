@@ -34,8 +34,9 @@ const ROOT = resolve(import.meta.dir, "../..");
 const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.json");
 
 /**
- * Workspace packages checked against docs/architecture/STACK.md: the framework packages
- * (§3.1–3.7) and the consumer packages (§3.8). `@shenron/images` has no runtime class map yet.
+ * Workspace packages checked against docs/architecture/STACK.md, all with every check: the
+ * framework packages (§3.1–3.7) and the consumer packages (§3.8). `@shenron/images` has no
+ * runtime class map yet.
  */
 const PACKAGES: Readonly<Record<string, string>> = {
   "@shenron/config": "packages/config",
@@ -52,17 +53,11 @@ const PACKAGES: Readonly<Record<string, string>> = {
 };
 
 /**
- * Framework packages, also held to the manifest, tsconfig and runtime-walker conformance
- * (§4.3 checks 2, 3 and 5). Consumer packages are audited for their graph: export targets and
- * classes, edges and their subpaths, imports into apps/ and cycles.
+ * The one package allowed to load native code: `@shenron/native` binds shenron-ffi through
+ * `bun:ffi` (CLAUDE.md, STACK §5). Everywhere else `bun:ffi` and `dlopen` stay offences.
  */
-const FRAMEWORK: ReadonlySet<string> = new Set([
-  "@shenron/config",
-  "@shenron/db",
-  "@shenron/auth",
-  "@shenron/api",
-  "@shenron/ui",
-]);
+const FFI_OWNER = "@shenron/native";
+const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen"]);
 
 /**
  * Allowed @shenron/* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
@@ -117,12 +112,14 @@ const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly st
     "@shenron/pipeline": ["@shenron/pipeline/koharu"],
   },
   "@shenron/pipeline": {
-    // §4.2: SQL clients, environment and guards.
+    // §4.2: SQL clients, environment and guards; Redis for the live qualification only
+    // (src/testing/live-rag.ts and its storage suite check Redis durability itself).
     "@shenron/db": [
       "@shenron/db/sql",
       "@shenron/db/bun-sql",
       "@shenron/db/env",
       "@shenron/db/guards",
+      "@shenron/db/redis",
     ],
     // The koharu-sdk JSON Lines transport.
     "@shenron/koharu": ["@shenron/koharu/native"],
@@ -389,27 +386,25 @@ async function checkPackage(name: string, relDir: string): Promise<void> {
     }
   }
 
-  // 2–3. Framework packages only: scripts, private, no build output; tsconfig.
-  const framework = FRAMEWORK.has(name);
-  if (framework) {
-    checkManifest(name, dir, manifest);
-    checkTsconfig(name, dir);
-  }
+  // 2. scripts, private, no build output. 3. tsconfig.
+  checkManifest(name, dir, manifest);
+  checkTsconfig(name, dir);
 
-  // 4. dependency edges (manifest) and import edges (code), every package.
+  // 4. dependency edges (manifest) and import edges (code).
   checkEdges(name, dir, manifest);
 
-  // 5. no import into apps/ (every package); for the framework packages, runtime classes,
-  // empty-env imports and browser purity. Manifest-level offences of the walker duplicate
-  // check 1 above.
-  reportOffences(name, "escape", await checkNoEscapingImports(dir));
-  if (!framework) return;
+  // 5. runtime classes, escapes, empty-env imports, browser purity.
+  // Manifest-level offences of the walker duplicate check 1 above.
   const manifestRules = new Set(["missing-runtime-class", "missing-export-target"]);
   reportOffences(
     name,
     "runtime",
-    (await checkPackageRuntimes(dir)).filter((offence) => !manifestRules.has(offence.rule)),
+    (await checkPackageRuntimes(dir)).filter(
+      (offence) =>
+        !manifestRules.has(offence.rule) && !(name === FFI_OWNER && FFI_RULES.has(offence.rule)),
+    ),
   );
+  reportOffences(name, "escape", await checkNoEscapingImports(dir));
   reportOffences(name, "empty-env", await checkEmptyEnvImports(dir));
   reportOffences(name, "browser", await checkBrowserBundles(dir));
 }
