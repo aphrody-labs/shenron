@@ -3,7 +3,7 @@
  * sont paresseux (une URL invalide dégrade en lexical au lieu de jeter à l'import).
  */
 import { describe, expect, test } from "bun:test";
-import { LIVE, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 
@@ -47,7 +47,7 @@ describe("rag.ts import graph (B3)", () => {
     expect(staticClosure(join(SRC, "lib", "rag-answer.ts")).has(LLM)).toBe(true);
   });
 
-  test.if(LIVE)(
+  test.if(isLive())(
     "an invalid legacy EMBED_URL does not override the configured real hybrid backend",
     async () => {
       loadLiveRagEnv();

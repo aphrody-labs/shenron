@@ -25,7 +25,7 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
 import { PG_SOURCES, resolveEntity, urlPostgres } from "./_rag-sources-pg";
-import { CORPUS_DIR, loadCorpusDocs, renderCorpusDocs } from "./_rag-corpus-sources";
+import { corpusDir, loadCorpusDocs, renderCorpusDocs } from "./_rag-corpus-sources";
 import {
   repoRootFromScript,
   requireOfflineRagDb,
@@ -122,7 +122,7 @@ try {
 
 // ── Corpus scrapé (Kanzenshuu…), Xenoverse 2 et corpus d'auteur ────────────
 const scraped = ["corpus.json", "corpus-xv2.json"].flatMap((name) => {
-  const path = resolve(CORPUS_DIR, name);
+  const path = resolve(corpusDir(), name);
   const docs = loadCorpusDocs(path);
   if (!docs) console.warn(`⚠ ${path} introuvable, ignoré.`);
   return docs ?? [];
@@ -136,7 +136,7 @@ console.log(`✓ corpus scrapé : ${scraped.length} documents`);
 if (renderedScraped.refusedFandom > 0)
   console.warn(`⚠ ${renderedScraped.refusedFandom} document(s) Fandom refusés (source interdite).`);
 
-const author = loadCorpusDocs(resolve(CORPUS_DIR, "corpus-aphrody.json"));
+const author = loadCorpusDocs(resolve(corpusDir(), "corpus-aphrody.json"));
 if (author) {
   const renderedAuthor = renderCorpusDocs(author, true);
   db.transaction(() => {

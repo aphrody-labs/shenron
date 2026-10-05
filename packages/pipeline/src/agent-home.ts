@@ -69,10 +69,8 @@ function workspaceDomain(workspace: string, state: string): string | undefined {
  * explicitement invalide : domaine mal formé, `APHRODY_WORKSPACE` hors `workspaces/<domaine>` ou
  * en désaccord avec `APHRODY_AGENT_DOMAIN`.
  */
-export function resolveShenronHome(
-  env: AgentEnv = process.env,
-  home: string = homedir(),
-): AgentHomeResolution {
+export function resolveShenronHome(env?: AgentEnv, home: string = homedir()): AgentHomeResolution {
+  env ??= process.env;
   const state = setting(env, "APHRODY_HOME") ?? join(home, ".aphrody");
   const declared = setting(env, "APHRODY_AGENT_DOMAIN");
   if (declared !== undefined && !DOMAIN_NAME.test(declared))
@@ -158,7 +156,7 @@ export function parseFrontmatter(text: string): Record<string, string> {
  * deux manque. Sous un autre domaine que dbfr il n'existe pas de profil Shenron et la fonction lève.
  */
 export function getToriyamaPersona(
-  env: AgentEnv = process.env,
+  env?: AgentEnv,
   home: string = homedir(),
 ): { soul: string; identity: string } {
   const resolution = resolveShenronHome(env, home);
@@ -177,7 +175,7 @@ export function getToriyamaPersona(
  * est invalide.
  */
 export function loadShenronHomePersona(
-  env: AgentEnv = process.env,
+  env?: AgentEnv,
   home: string = homedir(),
 ): HomePersona | null {
   const resolution = resolveShenronHome(env, home);

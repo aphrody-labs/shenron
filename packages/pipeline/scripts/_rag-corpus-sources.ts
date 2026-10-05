@@ -15,9 +15,12 @@ export interface CorpusDoc {
 export interface CorpusPassage extends SourceChunk {
   sourceId: string;
 }
-export const CORPUS_DIR = process.env.SHENRON_RAG_CORPUS_DIR
-  ? resolve(process.env.SHENRON_RAG_CORPUS_DIR)
-  : resolve(import.meta.dir, "../../../apps/bot/data/rag");
+/** Licensed JSON corpora: `SHENRON_RAG_CORPUS_DIR`, read at call time, else the bot data. */
+export function corpusDir(): string {
+  return process.env.SHENRON_RAG_CORPUS_DIR
+    ? resolve(process.env.SHENRON_RAG_CORPUS_DIR)
+    : resolve(import.meta.dir, "../../../apps/bot/data/rag");
+}
 
 export function detectLang(
   docId: string,

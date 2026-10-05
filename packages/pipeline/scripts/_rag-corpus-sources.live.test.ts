@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import { LIVE, loadLiveRagEnv, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
 import { prepareSource } from "./_rag-aphrody-sync";
 
 let corpus: typeof import("./_rag-corpus-sources");
 let live: LiveRag;
 
-describe.if(LIVE)("documentary RAG rendered from the actual private Shenron exports", () => {
+describe.if(isLive())("documentary RAG rendered from the actual private Shenron exports", () => {
   beforeAll(async () => {
     // The corpus module reads the private environment when it loads: only in a live run.
     loadLiveRagEnv();
@@ -17,8 +17,8 @@ describe.if(LIVE)("documentary RAG rendered from the actual private Shenron expo
 
   for (const file of ["corpus.json", "corpus-xv2.json", "corpus-aphrody.json"]) {
     test(`${file}: real exported passages resolve to the preloaded PostgreSQL corpus`, async () => {
-      const { CORPUS_DIR, isFandom, loadCorpusDocs, renderCorpusDocs } = corpus;
-      const docs = loadCorpusDocs(join(CORPUS_DIR, file));
+      const { corpusDir, isFandom, loadCorpusDocs, renderCorpusDocs } = corpus;
+      const docs = loadCorpusDocs(join(corpusDir(), file));
       expect(docs?.length).toBeGreaterThan(0);
       if (!docs) throw new Error("Real Shenron corpus export is missing");
       const { passages, refusedFandom } = renderCorpusDocs(docs, file.includes("aphrody"));
@@ -47,8 +47,8 @@ describe.if(LIVE)("documentary RAG rendered from the actual private Shenron expo
   }
 
   test("preserves Japanese metadata from a real exported documentary passage", async () => {
-    const { CORPUS_DIR, corpusSourceId, loadCorpusDocs, renderCorpusDocs } = corpus;
-    const docs = loadCorpusDocs(join(CORPUS_DIR, "corpus.json"))!;
+    const { corpusDir, corpusSourceId, loadCorpusDocs, renderCorpusDocs } = corpus;
+    const docs = loadCorpusDocs(join(corpusDir(), "corpus.json"))!;
     const { passages } = renderCorpusDocs(docs);
     const passage = passages.find((item) => item.lang === "ja");
     expect(passage).toBeDefined();

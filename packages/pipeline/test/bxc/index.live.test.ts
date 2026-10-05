@@ -3,13 +3,13 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { bxc, resolveBxcPath } from "../../src/bxc/index";
 import { FramesService } from "../../src/bxc/services";
-import { LIVE } from "../../src/testing/live-rag";
+import { isLive } from "../../src/testing/live-rag";
 
 process.env.DRAGONBALLCN_SNAPSHOT_DIR = resolve(import.meta.dir, "fixtures/dragonballcn");
 const framesFixture = resolve(import.meta.dir, "fixtures/bxc-frames-stats.mjs");
 /** The scraper cases hit live sites: only in a live run (SHENRON_LIVE=1) with a bxc binary. */
 const hasBxcScraper =
-  LIVE && Boolean(Bun.which("bxc") || (process.env.BXC_BIN && existsSync(process.env.BXC_BIN)));
+  isLive() && Boolean(Bun.which("bxc") || (process.env.BXC_BIN && existsSync(process.env.BXC_BIN)));
 
 describe("BxcBridge Native Client Suite", () => {
   it("resolves valid bxc path", () => {

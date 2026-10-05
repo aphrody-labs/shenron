@@ -243,10 +243,8 @@ export interface CrawlTarget {
 /**
  * Aphrody-owned Dragon Ball crawl and RAG locations for the Shenron profile.
  */
-export function corpusLocations(
-  root: string,
-  env: Record<string, string | undefined> = process.env,
-) {
+export function corpusLocations(root: string, env?: Record<string, string | undefined>) {
+  env ??= process.env;
   const crawlDir =
     env.APHRODY_CORPUS_CRAWL_DIR?.trim() ||
     join(env.APHRODY_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces", "dbfr", "crawl");

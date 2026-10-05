@@ -3,7 +3,7 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import type { GroundedAnswerInput } from "@shenron/pipeline/ai/generate";
 import { INJECTION_GUARD } from "@shenron/pipeline/ai/prompts";
-import { LIVE, loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
 import { runIaTask } from "../src/workflows";
 
 type Model = GroundedAnswerInput["model"];
@@ -54,14 +54,14 @@ function promptText(options: CallOptions): { system: string; user: string } {
   return { system, user };
 }
 
-if (LIVE) loadLiveRagEnv();
+if (isLive()) loadLiveRagEnv();
 let live: Awaited<ReturnType<typeof requireLiveRag>>;
 beforeAll(async () => {
-  if (!LIVE) return;
+  if (!isLive()) return;
   live = await requireLiveRag();
 }, 120_000);
 
-describe.if(LIVE)("runIaTask with the real preloaded Shenron RAG (B5)", () => {
+describe.if(isLive())("runIaTask with the real preloaded Shenron RAG (B5)", () => {
   test("the citations fetched from the database appear in the prompt sent to the model", async () => {
     const question = "D'où viennent les Nameks ?";
     const { model, calls } = capturingModel("Les Nameks viennent de Namek.");

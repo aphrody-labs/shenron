@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "bun:test";
-import { LIVE, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
 import {
   buildRagContext,
   createQueryExpander,
@@ -170,7 +170,7 @@ describe("rag — routage strict vers le dossier canon", () => {
   });
 });
 
-describe.if(LIVE)("rag — filtre kind et contexte d'ancrage", () => {
+describe.if(isLive())("rag — filtre kind et contexte d'ancrage", () => {
   beforeAll(async () => {
     loadLiveRagEnv();
     await requireLiveRag();
@@ -197,7 +197,7 @@ describe.if(LIVE)("rag — filtre kind et contexte d'ancrage", () => {
 
 describe("rag-eval — adaptateur de @shenron/pipeline/ai/eval", () => {
   beforeAll(async () => {
-    if (!LIVE) return;
+    if (!isLive()) return;
     loadLiveRagEnv();
     await requireLiveRag();
   }, 120_000);
@@ -218,7 +218,7 @@ describe("rag-eval — adaptateur de @shenron/pipeline/ai/eval", () => {
     }
   });
 
-  it.if(LIVE)("classe un cas réel comme le module partagé", async () => {
+  it.if(isLive())("classe un cas réel comme le module partagé", async () => {
     const local = await import("../src/lib/rag-eval");
     const shared = await import("@shenron/pipeline/ai/eval");
     const c = { q: "Qui est Freezer ?", expectUrl: ["/wiki/personnages/freezer"] };

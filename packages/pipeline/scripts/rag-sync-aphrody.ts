@@ -9,7 +9,7 @@ import { dirname, join, resolve } from "node:path";
 import { PG_SOURCES, urlPostgres } from "./_rag-sources-pg";
 import { syncSource, type SyncManifest, type SyncResult } from "./_rag-aphrody-sync";
 import {
-  CORPUS_DIR,
+  corpusDir,
   corpusSourceId,
   isFandom,
   loadCorpusDocs,
@@ -52,7 +52,7 @@ for (const [name, author] of [
   ["corpus-xv2.json", false],
   ["corpus-aphrody.json", true],
 ] as const) {
-  const path = join(CORPUS_DIR, name);
+  const path = join(corpusDir(), name);
   const docs = loadCorpusDocs(path);
   if (!docs) {
     missingCorpora.push(name);

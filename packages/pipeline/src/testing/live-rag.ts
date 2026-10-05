@@ -2,19 +2,21 @@
 /** Shared qualification boundary: real editorial SQL, E5 vectors and Redis. */
 import { readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { lastAssignment } from "@shenron/db/env";
 import { createSql } from "@shenron/db/sql";
 import { createResilientRedis } from "@shenron/db/redis";
 import { AphrodyComputeClient, type AphrodyRagStats } from "../aphrody/compute";
 
 /**
- * Live qualification switch. `rag:test` sets SHENRON_LIVE=1 and then refuses any missing,
- * partial or stale preload; the default gate (`bun run test`) never touches live services:
- * whole-file live suites are named `*.live.test.ts` and excluded, mixed suites gate their
- * live blocks with `describe.if(LIVE)` / `test.if(LIVE)`.
+ * Live qualification switch, read at call time. `rag:test` sets SHENRON_LIVE=1 and then
+ * refuses any missing, partial or stale preload; the default gate (`bun run test`) never
+ * touches live services: whole-file live suites are named `*.live.test.ts` and excluded, mixed
+ * suites gate their live blocks with `describe.if(isLive())` / `test.if(isLive())`.
  */
-export const LIVE = process.env.SHENRON_LIVE === "1";
+export function isLive(): boolean {
+  return process.env.SHENRON_LIVE === "1";
+}
 
 export const EDITORIAL_RAG_SOURCES = [
   "db_characters",
@@ -145,11 +147,12 @@ export async function requireLiveRag(): Promise<LiveRag> {
     seen.add(source.source);
   }
   // Qualify every currently configured export, including non-editorial sources.
-  const { CORPUS_DIR, loadCorpusDocs, renderCorpusDocs } =
-    await import("../../scripts/_rag-corpus-sources");
-  const corpusDir = process.env.SHENRON_RAG_CORPUS_DIR
-    ? resolve(process.env.SHENRON_RAG_CORPUS_DIR)
-    : CORPUS_DIR;
+  const {
+    corpusDir: exportsDir,
+    loadCorpusDocs,
+    renderCorpusDocs,
+  } = await import("../../scripts/_rag-corpus-sources");
+  const corpusDir = exportsDir();
   const exported = new Map<string, number>();
   for (const [name, author] of [
     ["corpus.json", false],

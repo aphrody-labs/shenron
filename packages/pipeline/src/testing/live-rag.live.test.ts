@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, expect, test } from "bun:test";
-import { LIVE, loadLiveRagEnv, requireLiveRag, type LiveRag } from "./live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag, type LiveRag } from "./live-rag";
 
-if (LIVE) loadLiveRagEnv();
+if (isLive()) loadLiveRagEnv();
 let live: LiveRag;
 beforeAll(async () => {
-  if (!LIVE) return;
+  if (!isLive()) return;
   live = await requireLiveRag();
 }, 120_000);
 
@@ -22,7 +22,7 @@ async function search(source = "db_characters") {
   return { cache: response.headers.get("x-shenron-rag-cache"), body: await response.json() };
 }
 
-test.if(LIVE)("serves real preloaded retrieval from Redis without mixing filters", async () => {
+test.if(isLive())("serves real preloaded retrieval from Redis without mixing filters", async () => {
   const first = await search();
   const cached = await search();
   expect(cached.cache).toBe("hit");
@@ -32,7 +32,7 @@ test.if(LIVE)("serves real preloaded retrieval from Redis without mixing filters
   expect(missing.body.results).toHaveLength(0);
 });
 
-test.if(LIVE)(
+test.if(isLive())(
   "invalidates the real Redis result when an existing editorial passage is reindexed",
   async () => {
     const { results } = await live.client.ragSearchWithMode("Son Goku", 5, {

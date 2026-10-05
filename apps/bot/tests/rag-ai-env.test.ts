@@ -6,7 +6,7 @@
  */
 import { afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { createSql } from "@shenron/db/sql";
-import { LIVE, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
 import { EmbeddingSpaceMismatchError } from "@shenron/pipeline/ai/config";
 import {
   assertRagEmbeddingSpace,
@@ -90,7 +90,7 @@ describe("reranker dialects", () => {
   });
 });
 
-describe.if(LIVE)("embedding space against the real Shenron PostgreSQL index", () => {
+describe.if(isLive())("embedding space against the real Shenron PostgreSQL index", () => {
   beforeAll(async () => {
     loadLiveRagEnv();
     await requireLiveRag();

@@ -5,13 +5,13 @@ import { requireAiHttpToken, requireAiHttpUrl } from "../../src/ai/config";
 import { AphrodyComputeClient } from "../../src/aphrody/compute";
 import { aphrodyNative } from "../../src/aphrody/native";
 import { RagSearchResponse } from "../../src/ai/wire";
-import { LIVE, loadLiveRagEnv, requireLiveRag, type LiveRag } from "../../src/testing/live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag, type LiveRag } from "../../src/testing/live-rag";
 import { recordLiveRagRequests } from "../../src/testing/live-rag-requests";
 
-if (LIVE) loadLiveRagEnv();
+if (isLive()) loadLiveRagEnv();
 let live: LiveRag;
 beforeAll(async () => {
-  if (!LIVE) return;
+  if (!isLive()) return;
   live = await requireLiveRag();
 }, 120_000);
 
@@ -27,7 +27,7 @@ function clients() {
   };
 }
 
-describe.if(LIVE)("compute facades against the preloaded Shenron PostgreSQL RAG", () => {
+describe.if(isLive())("compute facades against the preloaded Shenron PostgreSQL RAG", () => {
   test("sends matching authenticated filters and returns the same real hybrid passages", async () => {
     const { modern, legacy, modernCalls, legacyCalls } = clients();
     const filters = { lang: "fr", kind: "character", sourceId: "db_characters" };

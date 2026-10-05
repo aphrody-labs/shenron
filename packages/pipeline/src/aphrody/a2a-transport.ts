@@ -16,7 +16,8 @@ export interface A2ARequestOptions {
   noStore?: boolean;
 }
 
-export function a2aBaseUrl(env: Record<string, string | undefined> = process.env): string {
+export function a2aBaseUrl(env?: Record<string, string | undefined>): string {
+  env ??= process.env;
   const raw = env[A2A_URL_ENV]?.trim();
   return (raw || A2A_DEFAULT_URL).replace(/\/+$/, "");
 }

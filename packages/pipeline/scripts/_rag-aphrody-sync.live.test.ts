@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, it } from "bun:test";
 import { createSql } from "@shenron/db/sql";
-import { LIVE, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
+import { isLive, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
 import { prepareSource, syncSource } from "./_rag-aphrody-sync";
 import { requireAiHttpUrl } from "@shenron/pipeline/ai/config";
 import { AphrodyComputeClient } from "../src/aphrody/compute";
@@ -11,7 +11,7 @@ let live: LiveRag;
 let chunks: SourceChunk[];
 let techniques: SourceChunk[];
 
-describe.if(LIVE)("editorial RAG sync using real Shenron passages", () => {
+describe.if(isLive())("editorial RAG sync using real Shenron passages", () => {
   beforeAll(async () => {
     // requireLiveRag loads the private environment first; nothing runs outside a live run.
     live = await requireLiveRag();

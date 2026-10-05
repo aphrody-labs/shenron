@@ -47,9 +47,9 @@ export interface ShenronEmbeddingsOptions {
  */
 export function resolveShenronEmbeddingsBaseUrl(
   options: { baseUrl?: string } = {},
-  env: Record<string, string | undefined> = process.env,
+  env?: Record<string, string | undefined>,
 ): URL {
-  if (options.baseUrl === undefined) return requireEmbedBaseUrl(env);
+  if (options.baseUrl === undefined) return requireEmbedBaseUrl(env ?? process.env);
   const url = new URL(options.baseUrl);
   if (
     url.protocol !== "http:" ||

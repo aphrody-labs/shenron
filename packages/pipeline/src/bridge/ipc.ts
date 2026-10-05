@@ -27,12 +27,15 @@ import type {
 } from "./types";
 import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@shenron/config/services";
 
-/** Site origin on the loopback (aphrody-infra service catalog: site = 5011); overridable. */
-const DEFAULT_SITE_URL = resolveSiteInternalUrl(typeof process !== "undefined" ? process.env : {});
+/** Environment of the process, read at call time; none in a webview. */
+function processEnv(): Record<string, string | undefined> {
+  return typeof process !== "undefined" ? process.env : {};
+}
 
-const DEFAULT_BOT_API_URL = resolveBotApiInternalUrl(
-  typeof process !== "undefined" ? process.env : {},
-);
+/** Site origin on the loopback (aphrody-infra service catalog: site = 5011); overridable. */
+const defaultSiteUrl = () => resolveSiteInternalUrl(processEnv());
+
+const defaultBotApiUrl = () => resolveBotApiInternalUrl(processEnv());
 
 const RAG_SERVED_MODES: ReadonlySet<string> = new Set([
   "hybrid",
@@ -48,7 +51,7 @@ export class DbuiBridge {
   constructor(config: BridgeConfig = {}) {
     this.explicitFallbackUrl = Boolean(config.fallbackApiUrl);
     this.config = {
-      fallbackApiUrl: config.fallbackApiUrl || DEFAULT_SITE_URL,
+      fallbackApiUrl: config.fallbackApiUrl || defaultSiteUrl(),
       forcedTransport: config.forcedTransport,
       timeoutMs: config.timeoutMs || 30_000,
     };
@@ -116,7 +119,7 @@ export class DbuiBridge {
     }
 
     try {
-      const url = new URL(mapping.path, baseUrl || DEFAULT_SITE_URL);
+      const url = new URL(mapping.path, baseUrl || defaultSiteUrl());
       const options: RequestInit = {
         method: mapping.method,
         headers: { "Content-Type": "application/json" },
@@ -154,7 +157,7 @@ export class DbuiBridge {
       );
     }
     const query = String(args.query ?? "");
-    const base = this.explicitFallbackUrl ? this.config.fallbackApiUrl! : DEFAULT_BOT_API_URL;
+    const base = this.explicitFallbackUrl ? this.config.fallbackApiUrl! : defaultBotApiUrl();
     const url = new URL("/api/public/rag/search", base);
     url.searchParams.set("q", query);
     url.searchParams.set("limit", String(args.limit ?? 6));
