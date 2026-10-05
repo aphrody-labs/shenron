@@ -23,7 +23,7 @@ puis `AGENTS.md` à la racine.
 | Doctrine éditoriale du wiki | [`products/wiki-editorial.md`](products/wiki-editorial.md) |
 | Arbitre de canonicité | [`products/canon.md`](products/canon.md) |
 | Site participatif et API agents | [`products/site-participatif.md`](products/site-participatif.md) |
-| Koharu | [`products/koharu/README.md`](products/koharu/README.md), doc amont [`koharu/`](koharu/) |
+| Koharu | [`products/koharu/README.md`](products/koharu/README.md), doc amont archivée [`reference/koharu/upstream/`](reference/koharu/upstream/) |
 | Databooks : doctrine | [`reference/databooks-doctrine.md`](reference/databooks-doctrine.md) |
 | Databooks : export, OCR, API | [`guides/databooks-transcription.md`](guides/databooks-transcription.md) |
 | Databooks : traduction | [`guides/TRADUCTION-DATABOOKS.md`](guides/TRADUCTION-DATABOOKS.md) |
