@@ -87,7 +87,7 @@ describe("ocr group", () => {
   // Regression: an OCR engine failure was reported as 503 pg_unavailable ("Data store unavailable").
   test("engine failure → 502 upstream_unavailable without the engine output", async () => {
     const { api } = setup({
-      fail: "shenron ocr image failed (exit 101): /home/op/.cache/model.onnx",
+      fail: "aphrody ocr ppocr failed (exit 101): /home/op/.cache/model.onnx",
     });
     const body = await expectApiError(await api.request(OCR, recognize(image(base64(PNG)))), {
       path: OCR,

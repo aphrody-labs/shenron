@@ -192,7 +192,8 @@ export const ModelsResponse = z
 export type ModelsResponse = z.infer<typeof ModelsResponse>;
 
 export const OcrRequest = z
-  .object({ attachment: ChatAttachment, lang: z.string().max(8).optional() })
+  // No `lang`: PP-OCRv5 (`aphrody ocr ppocr`) reads Japanese and Latin scripts on every page.
+  .object({ attachment: ChatAttachment })
   .meta({ id: "OcrRequest" });
 export type OcrRequest = z.infer<typeof OcrRequest>;
 

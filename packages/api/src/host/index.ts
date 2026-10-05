@@ -3,7 +3,7 @@
  * `@shenron/api/host` — composition of the single Shenron API server from an explicit
  * environment record: VFS database (file or embedded), RAG with the corpus embedder, chat
  * engine (Gemini web → local llama-server), MCP tools (`shenron-mcp`), OCR
- * (`shenron ocr image`), conversation store (SQLite or PostgreSQL), owner/admin auth, static
+ * (`aphrody ocr ppocr`), conversation store (SQLite or PostgreSQL), owner/admin auth, static
  * assets with precompressed siblings and the MCP reverse proxy. `serveShenronApi(env)` starts
  * it with `Bun.serve`. Hosts: `apps/server`, the desktop sidecar, the bot. Runtime class: `bun`.
  *
@@ -352,7 +352,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
           env: existsSync(paths.vfs) ? { SHENRON_VFS_DB: paths.vfs } : {},
         })
       : null;
-  const ocr = createCliOcr({ binary: envString(env, "SHENRON_CLI_BIN") ?? "shenron" });
+  const ocr = createCliOcr({ binary: envString(env, "APHRODY_BIN") ?? "aphrody" });
   const ocrPort = ocr.available() ? ocr : null;
 
   const engine = createChatEngine({
