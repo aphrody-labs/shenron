@@ -27,6 +27,7 @@
     "@shenron/auth": "workspace:*",
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
+    "@shenron/lexicon": "workspace:*",
     "@shenron/pipeline": "workspace:*",
     "zod": "catalog:"
   },

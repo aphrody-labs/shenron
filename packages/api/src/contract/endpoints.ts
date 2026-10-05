@@ -8,6 +8,13 @@
 import { z } from "zod";
 import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
 import {
+  LexiconListQuery,
+  LexiconListResponse,
+  LexiconTerm,
+  LexiconTermParams,
+  LexiconTermQuery,
+} from "./lexicon";
+import {
   PluginExportParams,
   PluginExportQuery,
   PluginFileQuery,
@@ -374,6 +381,28 @@ export const endpoints = {
     params: WikiEntityParams,
     response: WikiEntity,
     cache: WIKI_CACHE,
+  },
+  lexiconList: {
+    id: "lexiconList",
+    native: true,
+    method: "get",
+    path: "/api/public/lexicon",
+    auth: "public",
+    query: LexiconListQuery,
+    response: LexiconListResponse,
+    cache: { maxAgeSeconds: 3600 },
+    paginated: true,
+  },
+  lexiconTerm: {
+    id: "lexiconTerm",
+    native: true,
+    method: "get",
+    path: "/api/public/lexicon/{idOrForm}",
+    auth: "public",
+    params: LexiconTermParams,
+    query: LexiconTermQuery,
+    response: LexiconTerm,
+    cache: { maxAgeSeconds: 3600 },
   },
   createGoal: {
     id: "createGoal",

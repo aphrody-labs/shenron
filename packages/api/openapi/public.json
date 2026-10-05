@@ -2407,6 +2407,215 @@
           }
         ]
       }
+    },
+    "/api/public/lexicon": {
+      "get": {
+        "operationId": "lexiconList",
+        "tags": [
+          "lexicon"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LexiconListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/LexiconLang"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/LexiconKind"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ]
+      }
+    },
+    "/api/public/lexicon/{idOrForm}": {
+      "get": {
+        "operationId": "lexiconTerm",
+        "tags": [
+          "lexicon"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LexiconTerm"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "idOrForm",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/LexiconLang"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -3018,6 +3227,194 @@
           "status"
         ],
         "additionalProperties": false
+      },
+      "LexiconKind": {
+        "type": "string",
+        "enum": [
+          "character",
+          "technique",
+          "transformation",
+          "race",
+          "place",
+          "item",
+          "event",
+          "title",
+          "saga",
+          "arc",
+          "organization",
+          "other"
+        ]
+      },
+      "LexiconLang": {
+        "type": "string",
+        "enum": [
+          "ja",
+          "fr",
+          "en"
+        ]
+      },
+      "LexiconListQuery": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "$ref": "#/components/schemas/LexiconLang"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/LexiconKind"
+          },
+          "q": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "limit": {
+            "default": 20,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      },
+      "LexiconListResponse": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "$ref": "#/components/schemas/LexiconLang"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexiconTerm"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "lang",
+          "version",
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "additionalProperties": false
+      },
+      "LexiconTerm": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/LexiconKind"
+          },
+          "label": {
+            "type": "string"
+          },
+          "labelLang": {
+            "$ref": "#/components/schemas/LexiconLang"
+          },
+          "fallback": {
+            "type": "boolean"
+          },
+          "ja": {
+            "type": "string"
+          },
+          "fr": {
+            "type": "string"
+          },
+          "en": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "romaji": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "aliases": {
+            "type": "object",
+            "properties": {
+              "ja": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "fr": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "en": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "ja",
+              "fr",
+              "en"
+            ],
+            "additionalProperties": false
+          },
+          "score": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "label",
+          "labelLang",
+          "fallback",
+          "ja",
+          "fr",
+          "en",
+          "romaji",
+          "aliases"
+        ],
+        "additionalProperties": false
+      },
+      "LexiconTermQuery": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "$ref": "#/components/schemas/LexiconLang"
+          }
+        }
       },
       "MessageRecord": {
         "type": "object",

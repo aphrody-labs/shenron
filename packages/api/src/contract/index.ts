@@ -7,3 +7,4 @@ export * from "./sync";
 export * from "./endpoints";
 export * from "./local";
 export * from "./plugin";
+export * from "./lexicon";

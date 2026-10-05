@@ -12,6 +12,8 @@
  * owner/admin auth → zod validation → public cache (ETag, 304) → handler.
  */
 import type { Server, ServerWebSocket, WebSocketHandler } from "bun";
+import type { Kind, Lang, Lexicon, Term } from "@shenron/lexicon";
+import { lexicon as embeddedLexicon } from "@shenron/lexicon/data";
 import { isWikiCategoryName, type WikiCategoryName } from "@shenron/db/constants";
 import type { ConversationStore } from "@shenron/db/conversations/types";
 import { z } from "zod";
@@ -123,6 +125,11 @@ export interface ShenronApiPorts {
   mcp?: McpProxyPort | null;
   /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@shenron/api/plugin`). */
   plugin?: PluginPort | null;
+  /**
+   * Trilingual lexicon (`/api/public/lexicon*`), served beside any other group: the embedded
+   * `@shenron/lexicon` when absent, `null` to disable it.
+   */
+  lexicon?: Lexicon | null;
   rateLimit: RateLimitPort;
   publicCache: PublicCachePort;
   invalidation: InvalidationPort;
@@ -234,6 +241,50 @@ function issuesMessage(error: z.ZodError): string {
   return error.issues
     .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`)
     .join("; ");
+}
+
+/** First of `fr`, `en`, `ja` in `Accept-Language` (quality order), else French. */
+function acceptedLang(request: Request): Lang {
+  const ranked = (request.headers.get("accept-language") ?? "")
+    .split(",")
+    .map((part) => {
+      const [tag = "", ...params] = part.trim().split(";");
+      const q = Number(
+        params
+          .find((p) => p.trim().startsWith("q="))
+          ?.trim()
+          .slice(2) ?? 1,
+      );
+      return { lang: tag.trim().slice(0, 2).toLowerCase(), q: Number.isFinite(q) ? q : 0 };
+    })
+    .filter((entry) => entry.q > 0)
+    .toSorted((a, b) => b.q - a.q);
+  const found = ranked.find(
+    (entry) => entry.lang === "fr" || entry.lang === "en" || entry.lang === "ja",
+  );
+  return (found?.lang as Lang | undefined) ?? "fr";
+}
+
+/** A term as the API serves it, labelled in `lang`. */
+function lexiconTerm(lexicon: Lexicon, term: Term, lang: Lang, score?: number) {
+  const label = lexicon.label(term, lang);
+  return {
+    id: term.id,
+    kind: term.kind,
+    label: label.text,
+    labelLang: label.lang,
+    fallback: label.fallback,
+    ja: term.ja,
+    fr: term.fr,
+    en: term.en || null,
+    romaji: term.romaji ?? null,
+    aliases: {
+      ja: term.aliases?.ja ?? [],
+      fr: term.aliases?.fr ?? [],
+      en: term.aliases?.en ?? [],
+    },
+    ...(score === undefined ? {} : { score }),
+  };
 }
 
 /** Query string → object; repeated keys become arrays, `true`/`false` and numbers stay strings for zod coercion. */
@@ -379,6 +430,47 @@ export function createShenronApi(
     return pluginText(ctx, `"${file.sha256}-${format}"`, () =>
       renderPluginFile(file, format, ctx.url.origin),
     );
+  });
+
+  // ── Lexicon ───────────────────────────────────────────────────────────────
+  // The one ja/fr/en lexicon: list, search in any language and localised resolution of a term.
+  const lexicon = anyGroup && ports.lexicon !== null ? (ports.lexicon ?? embeddedLexicon()) : null;
+  add(endpoints.lexiconList, lexicon !== null, async (ctx) => {
+    const query = ctx.query as {
+      lang?: Lang;
+      kind?: Kind;
+      q?: string;
+      limit: number;
+      offset: number;
+    };
+    const lang = query.lang ?? acceptedLang(ctx.request);
+    const q = query.q?.trim();
+    const page = q
+      ? lexicon!
+          .search(q, { ...(query.kind ? { kind: query.kind } : {}), limit: 100 })
+          .map((hit) => ({ term: hit.term, score: hit.score }))
+      : lexicon!.terms
+          .filter((term) => !query.kind || term.kind === query.kind)
+          .map((term) => ({ term, score: undefined }));
+    const items = page
+      .slice(query.offset, query.offset + query.limit)
+      .map(({ term, score }) => lexiconTerm(lexicon!, term, lang, score));
+    return json(
+      {
+        lang,
+        version: lexicon!.version,
+        items,
+        total: page.length,
+        limit: query.limit,
+        offset: query.offset,
+      },
+      200,
+    );
+  });
+  add(endpoints.lexiconTerm, lexicon !== null, async (ctx) => {
+    const lang = (ctx.query as { lang?: Lang }).lang ?? acceptedLang(ctx.request);
+    const term = lexicon!.resolve(ctx.params.idOrForm ?? "");
+    return term ? json(lexiconTerm(lexicon!, term, lang), 200) : json(NOT_FOUND, 404);
   });
 
   // ── Wiki ──────────────────────────────────────────────────────────────────
