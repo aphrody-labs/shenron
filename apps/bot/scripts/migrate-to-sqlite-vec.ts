@@ -2,7 +2,7 @@
  * migrate-to-sqlite-vec.ts — Migre la table rag_vectors existante vers la table virtuelle vec_chunks (sqlite-vec).
  * Évite de ré-embedder tout le corpus de zéro (gain de 1h de calcul CPU).
  *
- * Usage : bun apps/shenron/bot/scripts/migrate-to-sqlite-vec.ts
+ * Usage : bun apps/bot/scripts/migrate-to-sqlite-vec.ts
  */
 import { Database } from "bun:sqlite";
 import * as sqliteVec from "sqlite-vec";

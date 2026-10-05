@@ -4,14 +4,14 @@
  * ET le dashboard du bot, avec `sharp` seul — l'ICO multi-tailles est un simple
  * conteneur de PNG, écrit ici en quinze lignes plutôt qu'avec une dépendance.
  *
- * Sorties (site `apps/shenron/site/public/`, bot `apps/shenron/bot/public/`) :
+ * Sorties (site `apps/site/public/`, bot `apps/bot/public/`) :
  *   favicon.ico                16 + 32 + 48 (vrai ICO, plus un PNG déguisé)
  *   favicon-16/32/48/96.png    transparents
  *   apple-touch-icon.png       180, OPAQUE (iOS compose sur noir sinon)
  *   icon-192.png, icon-512.png `purpose: "any"`, transparents
  *   icon-maskable-512.png      OPAQUE, nuage réduit à 0,8 (zone sûre Android)
  *   mstile-150.png             tuile Windows, opaque
- *   + apps/shenron/bot/assets/logo.webp  1024, logo du dashboard bot
+ *   + apps/bot/assets/logo.webp  1024, logo du dashboard bot
  *
  * Usage : bun scripts/genere-icones.ts
  */
@@ -98,8 +98,8 @@ console.log(`${logoBot} — ${logo.length} o`);
 
 /**
  * PNG de marque, à téléverser ailleurs (Discord, réseaux, presse). Ils vivent en
- * deux endroits parce qu'ils servent deux publics : `apps/shenron/site/public/dbz/marque/`
- * pour les liens publics, `apps/shenron/bot/assets/marque/` pour la galerie du dashboard
+ * deux endroits parce qu'ils servent deux publics : `apps/site/public/dbz/marque/`
+ * pour les liens publics, `apps/bot/assets/marque/` pour la galerie du dashboard
  * (le bot ne sert en statique que ce qui vit sous `assets/`).
  */
 const marque = new URL("../public/dbz/marque/", import.meta.url).pathname;

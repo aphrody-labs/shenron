@@ -1,7 +1,7 @@
 /*
  * @shenron/ui — shared design-token layer (Tailwind v4, CSS-first).
  *
- * Moved verbatim from apps/shenron/site/src/app/globals.css (HEAD f602c132): the two
+ * Moved verbatim from apps/site/src/app/globals.css (HEAD f602c132): the two
  * `@theme inline` blocks, their `:root, .dark` mirrors (without the site-only
  * `--shell-*` layout variables), `.cible-44` and the shared `.card` / `.btn*` /
  * `.input` / `.badge*` primitives, kept in `@layer components` so utilities can
@@ -375,7 +375,7 @@
 @layer components {
 	/* === Primitives dashboard admin (card / btn / input / badge) ===
      Mêmes noms de classes que le dashboard interne du bot
-     (apps/shenron/bot/src/dashboard/styles.css) → portage quasi-verbatim des pages,
+     (apps/bot/src/dashboard/styles.css) → portage quasi-verbatim des pages,
      mais stylées sur la palette DBZ du site (orange/or, surfaces chaudes). */
 	.card {
 		@apply bg-dbz-card/90 border-2 border-dbz-border rounded-xl p-5 relative overflow-hidden transition-all duration-200;

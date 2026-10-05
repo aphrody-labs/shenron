@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { Button, Card } from "@aphrody/m3-primitives";
 import { isTauri } from "../../tauri-bridge";
-import { shenron, training, type ShenronTraining, type TrainEvent } from "../../studio-bridge";
+import { shenron, training, type ShenronTraining, type TrainEvent } from "./studio-bridge";
 
 export interface TrainingStudioBackend {
   isDesktop(): boolean;

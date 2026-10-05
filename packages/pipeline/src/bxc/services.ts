@@ -292,9 +292,9 @@ function snapshotPath(fileName: string): string {
 	if (configured) return resolve(configured, fileName);
 
 	const candidates = [
-		resolve(process.cwd(), "apps/shenron/bot", fileName),
+		resolve(process.cwd(), "apps/bot", fileName),
 		resolve(process.cwd(), "../apps/bot", fileName),
-		// apps/shenron/site runs with cwd = apps/shenron/site (systemd WorkingDirectory): the bot is a sibling.
+		// apps/site runs with cwd = apps/site (systemd WorkingDirectory): the bot is a sibling.
 		resolve(process.cwd(), "../bot", fileName),
 	];
 	const existing = candidates.find((candidate) => existsSync(candidate));

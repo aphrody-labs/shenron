@@ -93,7 +93,7 @@ export class AdminReportGoalService {
 		const filename = this.dbs.sqlite.filename;
 		if (filename && samePath(filename, PRODUCTION_DB_PATH)) {
 			throw new Error(
-				"[AdminReportGoalService] refus : bun test sur la base de production (apps/shenron/bot/data/bot.db). Utiliser DatabaseService.forPath(<fichier temporaire>)."
+				"[AdminReportGoalService] refus : bun test sur la base de production (apps/bot/data/bot.db). Utiliser DatabaseService.forPath(<fichier temporaire>)."
 			);
 		}
 		if (samePath(this.docsDir, DEFAULT_ADMIN_DOCS_DIR)) {

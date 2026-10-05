@@ -6,7 +6,7 @@ import { sitePublicRedirects } from "@shenron/images/resolve";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
-const monorepoRoot = path.resolve(__dirname, "../../..");
+const monorepoRoot = path.resolve(__dirname, "../..");
 const prosemirrorTransform = path.resolve(__dirname, "node_modules/prosemirror-transform");
 const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
 

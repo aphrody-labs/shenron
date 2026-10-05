@@ -13,7 +13,7 @@ import { DatabaseService } from "../src/db/index";
 import type { AdminLabMessageOptions } from "../src/lib/admin-lab";
 
 // Isolation totale : base SQLite, docs/ et notifier temporaires. Rien n'atteint
-// apps/shenron/bot/data/bot.db (miroir PostgreSQL), docs/*.md ni le salon Discord admin.
+// apps/bot/data/bot.db (miroir PostgreSQL), docs/*.md ni le salon Discord admin.
 const workDir = mkdtempSync(join(tmpdir(), "report-goal-test-"));
 const docsDir = join(workDir, "docs");
 const sent: AdminLabMessageOptions[] = [];
@@ -163,7 +163,7 @@ describe("AdminReportGoalService — garde-fou bun test contre la production", (
 		expect(row.n).toBe(0);
 	});
 
-	test("refuse la base runtime apps/shenron/bot/data/bot.db", async () => {
+	test("refuse la base runtime apps/bot/data/bot.db", async () => {
 		const prodDb = fileURLToPath(new URL("../data/bot.db", import.meta.url));
 		const dbs = DatabaseService.forPath(prodDb);
 		const service = AdminReportGoalService.create(dbs, { docsDir, notify });

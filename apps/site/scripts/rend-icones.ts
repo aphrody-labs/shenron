@@ -2,7 +2,7 @@
  * rend-icones — contrôle visuel du jeu de glyphes maison.
  *
  * Rastérise chaque géométrie de `@shenron/ui/icones`
- * (`m3/packages/shenron-ui/src/icones/geometries.ts`) en PNG à 16, 24 et 32 px
+ * (`packages/ui/src/icones/geometries.ts`) en PNG à 16, 24 et 32 px
  * (les trois tailles réellement utilisées par l'interface) et compose une
  * planche de contact par taille, pour qu'un défaut se voie à l'œil plutôt que
  * de se deviner dans un `d=`. Une icône au trait qui devient une bouillie à
@@ -10,10 +10,10 @@
  * (nombre de fentes de la corbeille, taille de la pupille, écart des pointes).
  *
  * `sharp` vit dans le `node_modules` RACINE (cf. docs/pieges.md) — ne jamais
- * l'installer depuis `apps/shenron/site`, cela dé-hoiste `next` et casse le déploiement.
+ * l'installer depuis `apps/site`, cela dé-hoiste `next` et casse le déploiement.
  *
- *   bun apps/shenron/site/scripts/rend-icones.ts [dossier]     (défaut : /tmp/icones)
- *   bun apps/shenron/site/scripts/rend-icones.ts --dry-run     (rend tout en mémoire, n'écrit rien)
+ *   bun apps/site/scripts/rend-icones.ts [dossier]     (défaut : /tmp/icones)
+ *   bun apps/site/scripts/rend-icones.ts --dry-run     (rend tout en mémoire, n'écrit rien)
  */
 
 import { tempPath } from "@aphrody/paths";

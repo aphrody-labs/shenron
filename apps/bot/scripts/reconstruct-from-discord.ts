@@ -12,7 +12,7 @@
  * chaque run, ramenant les Saiyan à 9 000 000 XP / 11 000 zeni chaque matin
  * via shenron-guild-sync.timer. Cause racine du bug "XP/zeni ne progressent pas".
  *
- * Source : apps/shenron/bot/data/guild-scan.json (généré par scripts/scan-ids.ts).
+ * Source : apps/bot/data/guild-scan.json (généré par scripts/scan-ids.ts).
  */
 
 import "reflect-metadata";

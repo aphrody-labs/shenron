@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # optimize-assets.sh — pipeline 2026 d'optimisation maximale des assets DB.
 #
-# Sources : apps/shenron/bot/public/db/  (617 fichiers DBZ téléchargés Phase 2)
+# Sources : apps/bot/public/db/  (617 fichiers DBZ téléchargés Phase 2)
 # Outputs :
 #   - original  : optimisé in-place (pngquant + oxipng / mozjpeg via sharp / gifsicle / svgo)
 #   - .webp     : variante WebP qualité 80, m=6, lossless si <50% gain

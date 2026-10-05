@@ -17,7 +17,7 @@ import { DatabaseService } from "../src/db/index";
 import type { EvalMetrics } from "../src/services/TrainingService";
 
 // Isolated database, docs directory and notifier: nothing reaches
-// apps/shenron/bot/data/bot.db, docs/*.md or the Discord admin channel.
+// apps/bot/data/bot.db, docs/*.md or the Discord admin channel.
 const workDir = mkdtempSync(join(tmpdir(), "ia-cockpit-routes-"));
 const dbs = DatabaseService.forPath(join(workDir, "bot.db"));
 const notified: unknown[] = [];

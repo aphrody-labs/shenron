@@ -3,8 +3,8 @@ import { cheminPlanche, texteDePlanche, traductionDePlanche } from "../scripts/_
 
 describe("chemin de disque d'une planche", () => {
 	// Le chemin stocké en base n'est PAS un chemin de disque : `serveAsset`
-	// (apps/shenron/bot) route tout `assets/wiki/*` vers le `public/wiki/` du SITE. Un
-	// contrôle mené depuis apps/shenron/bot déclarait 1 236 images manquantes alors
+	// (apps/bot) route tout `assets/wiki/*` vers le `public/wiki/` du SITE. Un
+	// contrôle mené depuis apps/bot déclarait 1 236 images manquantes alors
 	// qu'aucune ne l'était.
 	it("résout la forme stockée en base", () => {
 		expect(cheminPlanche("./assets/wiki/databooks/abc.jpg")?.replaceAll("\\", "/")).toMatch(

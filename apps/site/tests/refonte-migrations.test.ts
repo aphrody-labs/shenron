@@ -6,12 +6,12 @@ const root = existsSync(join(import.meta.dir, "..", "..", "..", "..", "apps", "s
 	? join(import.meta.dir, "..", "..", "..", "..")
 	: join(import.meta.dir, "..", "..", "..");
 const migrations = [
-	"apps/shenron/site/src/db/migrations/0018_media_works_and_editions.sql",
-	"apps/shenron/bot/src/db/migrations/0018_refonte_media_works_editions.sql",
-	"apps/shenron/site/src/db/migrations/0019_narrative_graph_and_contributors.sql",
-	"apps/shenron/bot/src/db/migrations/0019_refonte_narrative_contributors.sql",
+	"apps/site/src/db/migrations/0018_media_works_and_editions.sql",
+	"apps/bot/src/db/migrations/0018_refonte_media_works_editions.sql",
+	"apps/site/src/db/migrations/0019_narrative_graph_and_contributors.sql",
+	"apps/bot/src/db/migrations/0019_refonte_narrative_contributors.sql",
 ];
-const publicationMigration = "apps/shenron/site/src/db/migrations/0017_wiki_media_publications.sql";
+const publicationMigration = "apps/site/src/db/migrations/0017_wiki_media_publications.sql";
 
 describe("migrations idempotentes de la refonte", () => {
 	for (const relative of migrations) {

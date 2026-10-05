@@ -8,7 +8,7 @@
  * Sources légales gratuites : Jikan ne fournit PAS de vidéo de film complet ni
  * toujours un trailer → trailer reste null si absent (pas d'invention).
  *
- * Usage : bun apps/shenron/bot/scripts/enrich-movies.ts
+ * Usage : bun apps/bot/scripts/enrich-movies.ts
  */
 import { Database } from "bun:sqlite";
 

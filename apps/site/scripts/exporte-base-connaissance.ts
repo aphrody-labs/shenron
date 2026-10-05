@@ -20,9 +20,9 @@
  * lexique complet « corrigera » tout ce qui n'y figure pas.
  *
  * Usage :
- *   bun apps/shenron/site/scripts/exporte-base-connaissance.ts
- *   bun apps/shenron/site/scripts/exporte-base-connaissance.ts --sortie ~/kb --sans-api
- *   bun apps/shenron/site/scripts/exporte-base-connaissance.ts --sans-transcriptions
+ *   bun apps/site/scripts/exporte-base-connaissance.ts
+ *   bun apps/site/scripts/exporte-base-connaissance.ts --sortie ~/kb --sans-api
+ *   bun apps/site/scripts/exporte-base-connaissance.ts --sans-transcriptions
  */
 import { mkdir, writeFile, cp } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
@@ -47,7 +47,7 @@ const SANS_API = flag("sans-api");
 const RACINE = join(import.meta.dir, "..");
 
 /**
- * `apps/shenron/site/.env` porte DEUX lignes `DATABASE_URL` (l'ancienne Neon, en
+ * `apps/site/.env` porte DEUX lignes `DATABASE_URL` (l'ancienne Neon, en
  * commentaire mais placée avant, puis la locale). On ancre sur le début de
  * ligne et on prend la DERNIÈRE : un `grep | head -1` tape la Neon morte.
  */
@@ -57,7 +57,7 @@ function urlBase(): string {
 		.filter((l) => l.startsWith("DATABASE_URL="))
 		.map((l) => l.slice("DATABASE_URL=".length).replace(/^"|"$/g, "").trim());
 	const url = trouvees.at(-1);
-	if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+	if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 	return url;
 }
 

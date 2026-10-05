@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 const DOC_URL =
 	"https://docs.google.com/document/d/1q4z5Bhva42er9AFxS7RyUDtONivwi_tnin9CSwVGt4g/export?format=txt";
-const OUT_DIR = join(import.meta.dirname, "../data");
+const OUT_DIR = join(import.meta.dirname, "./data");
 const OUT_PATH = join(OUT_DIR, "doc-links.json");
 
 async function main() {

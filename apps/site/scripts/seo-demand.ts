@@ -2,9 +2,9 @@
  * Measures what people actually type into Google around Dragon Ball, and says
  * which of those searches our site answers with a page.
  *
- *   bun apps/shenron/site/scripts/seo-demand.ts                 # small run, report to stdout
- *   bun apps/shenron/site/scripts/seo-demand.ts --apply         # also write docs/seo-demande.md
- *   bun apps/shenron/site/scripts/seo-demand.ts --seeds 60      # widen the seed list
+ *   bun apps/site/scripts/seo-demand.ts                 # small run, report to stdout
+ *   bun apps/site/scripts/seo-demand.ts --apply         # also write docs/seo-demande.md
+ *   bun apps/site/scripts/seo-demand.ts --seeds 60      # widen the seed list
  *
  * Source: `bxc google suggest`, the keyless autocomplete endpoint. It returns
  * the completions Google offers for a prefix, which is the closest honest proxy
@@ -275,7 +275,7 @@ const lines = [
 	"# Demande de recherche mesurée",
 	"",
 	"Ce que les gens tapent réellement dans Google autour de Dragon Ball, relevé",
-	"par `bun apps/shenron/site/scripts/seo-demand.ts --apply` via l'autocomplétion",
+	"par `bun apps/site/scripts/seo-demand.ts --apply` via l'autocomplétion",
 	"publique (`bxc google suggest`).",
 	"",
 	"**Ce que ce tableau ne dit pas** : aucun volume de recherche. L'autocomplétion",

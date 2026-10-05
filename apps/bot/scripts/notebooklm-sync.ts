@@ -10,7 +10,7 @@
  * - NOTEBOOKLM_BL_TOKEN
  * - NOTEBOOKLM_COOKIES ou NOTEBOOKLM_OAUTH_TOKEN
  *
- * Usage : bun apps/shenron/bot/scripts/notebooklm-sync.ts
+ * Usage : bun apps/bot/scripts/notebooklm-sync.ts
  */
 import { homePath } from "@aphrody/paths";
 import { readdirSync, existsSync } from "node:fs";

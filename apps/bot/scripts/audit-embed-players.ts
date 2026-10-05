@@ -10,7 +10,7 @@
  * pas un simple HTTP 200).
  *
  * Usage :
- *   DATABASE_URL=... bun apps/shenron/bot/scripts/audit-embed-players.ts \
+ *   DATABASE_URL=... bun apps/bot/scripts/audit-embed-players.ts \
  *     [--out /tmp/audit.json] [--conc 10] [--limit N] [--no-media]
  */
 import postgres from "postgres";

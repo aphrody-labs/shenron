@@ -27,7 +27,7 @@ export const STYLES_PATH = join(import.meta.dir, "..", "src", "styles.css");
 export const TOKENS_PATH = join(import.meta.dir, "..", "src", "tokens.ts");
 
 /**
- * `DEFAULT_SITE_THEME.colors.ember` in `apps/shenron/site/src/lib/site-theme.ts`: what the
+ * `DEFAULT_SITE_THEME.colors.ember` in `apps/site/src/lib/site-theme.ts`: what the
  * editor injects as soon as any theme colour is saved (OWN-7, value pinned).
  */
 export const EMBER_SITE_THEME_DEFAULT = "#ff6b1a";

@@ -24,7 +24,7 @@
  * Bun-only : `Bun.spawn`, `Bun.file`, `Bun.write`. Pas de node/npm/tsx.
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
- *   bun apps/shenron/bot/scripts/build-episode-scenes.ts --series DBZ --ep 1 \
+ *   bun apps/bot/scripts/build-episode-scenes.ts --series DBZ --ep 1 \
  *       [--max 24] [--hold 0.8] [--input <video>] \
  *       [--keep-extract-args "--scene 0.4 --period 6"] [--dry-run]
  *
@@ -42,7 +42,7 @@ import { type EpisodeFrame, type Series, pad, resolveEpisode } from "./lib/frame
 import { buildScenePreview } from "./lib/scene-preview.js";
 
 const SERIES_VALUES: Series[] = ["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA", "DBZ_KAI"];
-const ROOT = new URL("../", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("../", import.meta.url).pathname; // apps/bot/
 const SOURCES_DIR = join(ROOT, "data", "dbz-sources");
 const ASSETS_DIR = join(ROOT, "assets", "ext", "db_episodes_frames");
 const DATA_DIR = join(ROOT, "data", "dbz-frames");
@@ -350,7 +350,7 @@ async function main(): Promise<void> {
 			`  frames  : ${selected.length} webp dans ${assetDir}\n` +
 			`  preview : ${previewRel}\n` +
 			`  → ingestion Neon (gardée) :\n` +
-			`      bun apps/shenron/bot/scripts/ingest-episode-frames.ts --series ${args.series} --ep ${args.ep} --apply`
+			`      bun apps/bot/scripts/ingest-episode-frames.ts --series ${args.series} --ep ${args.ep} --apply`
 	);
 }
 

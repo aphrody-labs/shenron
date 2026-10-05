@@ -397,7 +397,7 @@ l'orchestrateur.
 // packages/config/tsconfig/react.json
 { "extends": "./bun.json", "compilerOptions": { "jsx": "react-jsx", "lib": ["ESNext", "DOM", "DOM.Iterable"] } }
 // packages/<pkg>/tsconfig.json
-{ "extends": "../config/tsconfig/bun.json", "include": ["src/**/*", "test/**/*", "scripts/**/*"] }
+{ "extends": "./config/tsconfig/bun.json", "include": ["src/**/*", "test/**/*", "scripts/**/*"] }
 ```
 
 **Classes d'exécution.**

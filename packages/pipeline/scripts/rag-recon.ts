@@ -4,10 +4,10 @@
  *
  * Sources = table db_sources + seeds high-value (Wikipédia, sources officielles).
  * Fandom est exclu : source interdite pour rédiger (cf. CLAUDE.md).
- * Sortie : apps/shenron/bot/data/rag/<slug>.md + apps/shenron/bot/data/rag/corpus.json
+ * Sortie : apps/bot/data/rag/<slug>.md + apps/bot/data/rag/corpus.json
  * (base de connaissances pour un futur RAG / recherche).
  *
- * Usage : bun apps/shenron/bot/scripts/rag-recon.ts
+ * Usage : bun apps/bot/scripts/rag-recon.ts
  */
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync } from "node:fs";

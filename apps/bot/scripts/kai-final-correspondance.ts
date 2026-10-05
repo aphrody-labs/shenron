@@ -31,7 +31,7 @@
  *      placent les fiches restantes dont l'épisode japonais est encore libre
  *      (titres dupliqués en base : 8→102, 10→103, 17→107 le 2026-09-13).
  *
- * Usage : bun apps/shenron/bot/scripts/kai-final-correspondance.ts   (DATABASE_URL requis)
+ * Usage : bun apps/bot/scripts/kai-final-correspondance.ts   (DATABASE_URL requis)
  */
 import postgres from "postgres";
 

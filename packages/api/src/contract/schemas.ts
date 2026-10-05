@@ -5,7 +5,7 @@
  * Runtime class: `pure` — only `zod` and `@shenron/db/constants`. Every
  * response schema carries `.meta({ id })`, which the OpenAPI generator turns
  * into a named component. Shapes mirror the current bot handlers
- * (`apps/shenron/bot/src/api/server.ts`, `apps/shenron/bot/src/api/ia-cockpit.ts`).
+ * (`apps/bot/src/api/server.ts`, `apps/bot/src/api/ia-cockpit.ts`).
  */
 import {
 	FEEDBACK_STATUSES,
@@ -54,7 +54,7 @@ export const RagSearchQuery = z
 	.meta({ id: "RagSearchQuery" });
 export type RagSearchQuery = z.infer<typeof RagSearchQuery>;
 
-/** One hit (`RagHit` of `apps/shenron/bot/src/lib/rag.ts`). */
+/** One hit (`RagHit` of `apps/bot/src/lib/rag.ts`). */
 export const RagHit = z
 	.object({
 		rowid: z.number(),

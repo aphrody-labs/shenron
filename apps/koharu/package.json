@@ -15,11 +15,11 @@
     "test": "bun tests/run.ts"
   },
   "dependencies": {
-    "@aphrody/bun-test-dom": "workspace:*",
+    "@aphrody/bun-test-dom": "0.1.0",
     "@aphrody/koharu-bridge": "workspace:*",
     "@aphrody/koharu-ui": "workspace:*",
-    "@aphrody/m3-primitives": "workspace:*",
-    "@aphrody/m3-theme": "workspace:*",
+    "@aphrody/m3-primitives": "3.3.4",
+    "@aphrody/m3-theme": "3.3.4",
     "@tanstack/react-query": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
@@ -28,8 +28,8 @@
     "react-i18next": "catalog:"
   },
   "devDependencies": {
-    "@aphrody/api": "workspace:*",
-    "@aphrody/plugin-opener": "workspace:*",
+    "@aphrody/api": "3.0.0-alpha.2",
+    "@aphrody/plugin-opener": "3.0.0-alpha.2",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",

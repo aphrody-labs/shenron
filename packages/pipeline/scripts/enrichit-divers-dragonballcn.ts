@@ -27,8 +27,8 @@
  * redemande rien au site.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/enrichit-divers-dragonballcn.ts --simulation
- *   bun apps/shenron/bot/scripts/enrichit-divers-dragonballcn.ts
+ *   bun apps/bot/scripts/enrichit-divers-dragonballcn.ts --simulation
+ *   bun apps/bot/scripts/enrichit-divers-dragonballcn.ts
  */
 import { join } from "node:path";
 

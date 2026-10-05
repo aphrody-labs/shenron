@@ -2,10 +2,10 @@
 /**
  * Fill the empty identity fields of `bot.db_characters` — only what a source proves.
  *
- *   bun apps/shenron/site/scripts/fill-character-identity.ts                 # simulation (default)
- *   bun apps/shenron/site/scripts/fill-character-identity.ts --fetch         # refresh the bridge caches first
- *   bun apps/shenron/site/scripts/fill-character-identity.ts --json out.json # proposals + proofs, for review
- *   bun apps/shenron/site/scripts/fill-character-identity.ts --apply --ids 79,117
+ *   bun apps/site/scripts/fill-character-identity.ts                 # simulation (default)
+ *   bun apps/site/scripts/fill-character-identity.ts --fetch         # refresh the bridge caches first
+ *   bun apps/site/scripts/fill-character-identity.ts --json out.json # proposals + proofs, for review
+ *   bun apps/site/scripts/fill-character-identity.ts --apply --ids 79,117
  *
  * WHAT IS WRITTEN: `name_ja`, and nothing else.
  *
@@ -355,7 +355,7 @@ try {
 	const jmdict = await graphiesJmdict();
 	if (jmdict.size === 0)
 		console.log(
-			"  ⚠ JMdict missing (bun apps/shenron/site/scripts/ja-preparer.ts): common words not detected"
+			"  ⚠ JMdict missing (bun apps/site/scripts/ja-preparer.ts): common words not detected"
 		);
 
 	const proposals: Proposal[] = [];

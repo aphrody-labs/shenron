@@ -47,7 +47,7 @@ const FROZEN = JSON.parse(
 const cases = parseGold(readFileSync(GOLD, "utf8"));
 
 describe("parseGold", () => {
-  test("apps/shenron/bot/tests/rag-gold.jsonl holds 172 cases", () => {
+  test("apps/bot/tests/rag-gold.jsonl holds 172 cases", () => {
     expect(cases.length).toBe(172);
     expect(FROZEN.cases).toBe(172);
   });

@@ -2,7 +2,7 @@
 /**
  * Cohérence des graphies japonaises à travers le corpus des databooks.
  *
- *   bun apps/shenron/site/scripts/ja-coherence.ts --simulation [--echantillons N]
+ *   bun apps/site/scripts/ja-coherence.ts --simulation [--echantillons N]
  *
  * Complète la table dakuten/handakuten de `databooks-ocr-corrections.ts` (les
  * confusions sourde/sonore, ex. `プロリー`→`ブロリー`) par l'axe orthogonal :
@@ -35,7 +35,7 @@
  *      titre de niveau 2 en tête d'ouvrage n'est pas simplement précédé d'un
  *      niveau 1 sur une planche pas encore transcrite.
  *
- * Prérequis : `bun apps/shenron/site/scripts/ja-preparer.ts` (JMdict, pour la section
+ * Prérequis : `bun apps/site/scripts/ja-preparer.ts` (JMdict, pour la section
  * ponctuation/structure qui n'en a en fait pas besoin — seule la
  * régénération des candidats, non incluse ici, en aurait besoin).
  */
@@ -74,7 +74,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
 		.trim();
 }
 const DATABASE_URL = await lireEnv("DATABASE_URL");
-if (!DATABASE_URL) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!DATABASE_URL) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(DATABASE_URL, { max: 2 });
 
 interface Planche {

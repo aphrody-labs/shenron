@@ -1,4 +1,4 @@
-import manifest from "../../../../apps/shenron/bot/data/manga-spin-offs-manifest.json";
+import manifest from "../../../apps/bot/data/manga-spin-offs-manifest.json";
 
 export type MangaSpinOff = {
 	series: string;

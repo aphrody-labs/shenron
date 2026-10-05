@@ -117,19 +117,19 @@ export function repoRootFrom(moduleUrl: string, depth: number, platform: PathPla
 	return p.resolve(p.dirname(file), ...Array.from({ length: depth }, () => ".."));
 }
 
-/** Repository root seen from a file of `packages/shenron/pipeline/scripts/`. */
+/** Repository root seen from a file of `packages/pipeline/scripts/`. */
 export function repoRootFromScript(moduleUrl: string, platform: PathPlatform = currentPlatform()): string {
 	return repoRootFrom(moduleUrl, 4, platform);
 }
 
-/** SQLite database served by the bot (`apps/shenron/bot/data/bot.db`). */
+/** SQLite database served by the bot (`apps/bot/data/bot.db`). */
 export function servedBotDbPath(repoRoot: string, platform: PathPlatform = currentPlatform()): string {
 	return pathApi(platform).join(repoRoot, "apps", "shenron", "bot", "data", "bot.db");
 }
 
 /**
  * B6. Query lexicon output: `RAG_LEXIQUE` when set, else
- * `apps/shenron/bot/data/rag/lexique-requetes.json` — the file `apps/shenron/bot/src/lib/rag.ts` reads.
+ * `apps/bot/data/rag/lexique-requetes.json` — the file `apps/bot/src/lib/rag.ts` reads.
  */
 export function resolveLexiquePath(
 	moduleUrl: string,

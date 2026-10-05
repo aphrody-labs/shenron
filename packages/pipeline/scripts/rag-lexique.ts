@@ -14,18 +14,18 @@
  *   3. les équivalences anglaises officielles listées ci-dessous (localisation
  *      Funimation/Viz ↔ AB Groupe/Glénat), qui n'existent dans aucune table.
  *
- * Écrit `apps/shenron/bot/data/rag/lexique-requetes.json` (ou `RAG_LEXIQUE`) :
+ * Écrit `apps/bot/data/rag/lexique-requetes.json` (ou `RAG_LEXIQUE`) :
  * `{ generatedAt, groups: string[][] }`.
  *
- * Usage : bun packages/shenron/pipeline/scripts/rag-lexique.ts
+ * Usage : bun packages/pipeline/scripts/rag-lexique.ts
  */
 import postgres from "postgres";
 import { join } from "node:path";
 import { urlPostgres } from "./_rag-sources-pg";
 import { repoRootFromScript, resolveLexiquePath } from "./lib/script-env";
 
-// B6 : chemins dérivés par fileURLToPath ; sortie = le fichier que lit apps/shenron/bot/src/lib/rag.ts
-// (apps/shenron/bot/data/rag/lexique-requetes.json), ou RAG_LEXIQUE.
+// B6 : chemins dérivés par fileURLToPath ; sortie = le fichier que lit apps/bot/src/lib/rag.ts
+// (apps/bot/data/rag/lexique-requetes.json), ou RAG_LEXIQUE.
 const OUT = resolveLexiquePath(import.meta.url, process.env);
 const LEXIQUE_CANONIQUE = join(repoRootFromScript(import.meta.url), "data", "lexique-db-canonique.json");
 

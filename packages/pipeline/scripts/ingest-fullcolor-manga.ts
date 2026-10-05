@@ -3,7 +3,7 @@
  * (édition « Full Color ») depuis Sushi Scan vers nos propres assets + Neon.
  *
  * Contrairement au N&B (hotlinké depuis scan-vf.net), ici on **télécharge** les
- * planches couleur sur le VPS (`apps/shenron/bot/assets/manga/DB/fullcolor/…`) et on les
+ * planches couleur sur le VPS (`apps/bot/assets/manga/DB/fullcolor/…`) et on les
  * sert depuis bot.dragonballfr.com — zéro dépendance à un site tiers au runtime.
  *
  * Source : page-lecteur Sushi Scan (`ts_reader.run({sources:[{images:[…]}]})`),
@@ -14,7 +14,7 @@
  * Env requis : DATABASE_URL (Neon).
  * Usage :
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/shenron/bot \
+ *     --working-directory=apps/shenron/bot \
  *     bun scripts/ingest-fullcolor-manga.ts [--dry-run]
  *   # puis: systemctl restart shenron  (recharge le schéma + relâche le lock)
  */

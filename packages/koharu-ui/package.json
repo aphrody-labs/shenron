@@ -32,11 +32,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aphrody/api": "workspace:*",
+    "@aphrody/api": "3.0.0-alpha.2",
     "@aphrody/koharu-bridge": "workspace:*",
     "@aphrody/koharu-sdk": "workspace:*",
-    "@aphrody/m3-primitives": "workspace:*",
-    "@aphrody/plugin-opener": "workspace:*",
+    "@aphrody/m3-primitives": "3.3.4",
+    "@aphrody/plugin-opener": "3.0.0-alpha.2",
     "@base-ui/react": "catalog:",
     "@shenron/pipeline": "workspace:*",
     "@tanstack/react-query": "catalog:",

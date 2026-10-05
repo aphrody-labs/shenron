@@ -3,10 +3,10 @@
  * through Google Translate reached by bxc — with the Dragon Ball vocabulary
  * held out of the engine's reach.
  *
- *   bun apps/shenron/site/scripts/i18n-translate.ts            # what is missing
- *   bun apps/shenron/site/scripts/i18n-translate.ts --apply    # translate and write
- *   bun apps/shenron/site/scripts/i18n-translate.ts --apply --locale ja
- *   bun apps/shenron/site/scripts/i18n-translate.ts --apply --force nav
+ *   bun apps/site/scripts/i18n-translate.ts            # what is missing
+ *   bun apps/site/scripts/i18n-translate.ts --apply    # translate and write
+ *   bun apps/site/scripts/i18n-translate.ts --apply --locale ja
+ *   bun apps/site/scripts/i18n-translate.ts --apply --force nav
  *
  * Why the glossary is not optional: « Le Kaméhaméha de Son Goku » comes back
  * from Google as *The Goku Sound Camel*. `lib/i18n/glossary` swaps every known

@@ -16,7 +16,7 @@
  * bot (économie, niveaux, tickets) faites pendant le build : on ne recopie donc
  * que l'index.
  *
- * Usage : bun apps/shenron/bot/scripts/rag-refresh.ts [--no-vectors]
+ * Usage : bun apps/bot/scripts/rag-refresh.ts [--no-vectors]
  */
 import { Database } from "bun:sqlite";
 import { copyFileSync, existsSync, rmSync } from "node:fs";
@@ -25,8 +25,8 @@ import * as sqliteVec from "sqlite-vec";
 
 import { fileURLToPath } from "node:url";
 
-const ROOT = fileURLToPath(new URL("../../../../", import.meta.url));
-const BOT_DIR = join(ROOT, "apps/shenron/bot");
+const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
+const BOT_DIR = join(ROOT, "apps/bot");
 const DB_PROD = join(BOT_DIR, "data/bot.db");
 import os from "node:os";
 
@@ -74,7 +74,7 @@ function reinjecterIndex(source: string, cible: string): void {
 async function main() {
 	console.log("=== DÉBUT DU RAFRAÎCHISSEMENT RAG HEBDOMADAIRE ===");
 	if (process.env.RAG_BACKEND === "aphrody") {
-		await runCmd(["bun", "packages/shenron/pipeline/scripts/rag-sync-aphrody.ts", "--toutes", "--appliquer", "--force"]);
+		await runCmd(["bun", "packages/pipeline/scripts/rag-sync-aphrody.ts", "--toutes", "--appliquer", "--force"]);
 		await runCmd(["bun", "scripts/ops/eval-aphrody-rag.ts", "--ci"]);
 		console.log("✓ Corpus Aphrody synchronisé et évalué.");
 		return;
@@ -88,7 +88,7 @@ async function main() {
 
 	console.log("\n[RAG-REFRESH] 2. Construction de l'index sur la copie…");
 	await runCmd(
-		["bun", "packages/shenron/pipeline/scripts/rag-build.ts", ...(noVectors ? ["--no-vectors"] : [])],
+		["bun", "packages/pipeline/scripts/rag-build.ts", ...(noVectors ? ["--no-vectors"] : [])],
 		{ RAG_DB: DB_TMP }
 	);
 
@@ -98,7 +98,7 @@ async function main() {
 	console.log("✓ Index RAG mis à jour (runtime préservé).");
 
 	console.log("\n[RAG-REFRESH] 4. Lancement de l'évaluation RAG…");
-	await runCmd(["bun", "apps/shenron/bot/scripts/rag-eval.ts"]);
+	await runCmd(["bun", "apps/bot/scripts/rag-eval.ts"]);
 
 	console.log("\n=== RAFRAÎCHISSEMENT RAG TERMINÉ AVEC SUCCÈS ===");
 }

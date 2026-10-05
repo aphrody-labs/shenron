@@ -25,7 +25,7 @@
  * Env : DATABASE_URL (requis). VOIRANIME_JSON optionnel.
  * Usage :
  *   set -a; source ~/.shenron-neon.env; set +a
- *   bun apps/shenron/bot/scripts/import-kai-voiranime.ts
+ *   bun apps/bot/scripts/import-kai-voiranime.ts
  */
 import os from "node:os";
 import postgres from "postgres";

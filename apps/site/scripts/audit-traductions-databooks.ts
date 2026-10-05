@@ -22,7 +22,7 @@
  *   - la citation `canon_references` (`planche-<id>-<n>`) est masquée
  *     (`visible = false`), sans attendre la passe suivante de `canon-ingest`.
  *
- * Usage (depuis apps/shenron/site) :
+ * Usage (depuis apps/site) :
  *   bun scripts/audit-traductions-databooks.ts                    # simulation
  *   bun scripts/audit-traductions-databooks.ts --json=/tmp/audit.json
  *   bun scripts/audit-traductions-databooks.ts --ecrivain=shenron-massive-vps --details

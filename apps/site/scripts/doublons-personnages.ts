@@ -73,7 +73,7 @@ async function urlBase(): Promise<string> {
 		.trim()
 		.replace(/^["']|["']$/g, "");
 	if (!valeur) {
-		console.error("✗ DATABASE_URL introuvable (environnement ou apps/shenron/site/.env).");
+		console.error("✗ DATABASE_URL introuvable (environnement ou apps/site/.env).");
 		process.exit(1);
 	}
 	return valeur;

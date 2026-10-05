@@ -4,7 +4,7 @@
  *
  * Chaque script de la chaîne re-résolvait ces trois choses pour son compte, et
  * pas tout à fait de la même façon. Le piège est connu et coûteux :
- * `apps/shenron/site/.env` porte DEUX lignes `DATABASE_URL`, l'ancienne base Neon
+ * `apps/site/.env` porte DEUX lignes `DATABASE_URL`, l'ancienne base Neon
  * (décommissionnée) en commentaire AVANT la locale — un `grep | head -1` tape
  * la base morte. Une seule lecture, ici, ancrée et prenant la DERNIÈRE.
  */
@@ -23,7 +23,7 @@ import {
 	databooksFreeze,
 } from "../src/lib/databooks-freeze";
 
-/** Racine du dépôt (ce fichier vit dans `apps/shenron/site/scripts/`). */
+/** Racine du dépôt (ce fichier vit dans `apps/site/scripts/`). */
 export const RACINE_SITE = join(import.meta.dir, "..");
 
 /**
@@ -59,8 +59,8 @@ export function arretSiGel(ecrivain: string): void {
  * Où vivent RÉELLEMENT les images des planches.
  *
  * Le chemin stocké en base (`./assets/wiki/databooks/<uuid>.jpg`) n'est pas un
- * chemin de disque : `serveAsset` (apps/shenron/bot) route tout `assets/wiki/*` vers le
- * `public/wiki/` du SITE. Un contrôle d'intégrité mené depuis `apps/shenron/bot/`
+ * chemin de disque : `serveAsset` (apps/bot) route tout `assets/wiki/*` vers le
+ * `public/wiki/` du SITE. Un contrôle d'intégrité mené depuis `apps/bot/`
  * déclare donc des milliers d'images manquantes alors qu'aucune ne l'est.
  */
 export const RACINE_PLANCHES = join(RACINE_SITE, "public", "wiki");
@@ -77,13 +77,13 @@ export function cheminPlanche(image: string | null | undefined): string | null {
 /** L'URL de la base du site, lue une seule fois et correctement. */
 export async function urlBase(): Promise<string> {
 	// Ordre : `DATABASE_URL` de l'environnement, puis `REMOTE_DATABASE_URL` de
-	// `<dépôt>/.env.remote-db`, puis `DATABASE_URL` de `apps/shenron/site/.env`.
+	// `<dépôt>/.env.remote-db`, puis `DATABASE_URL` de `apps/site/.env`.
 	// Le PostgreSQL local historique (5432) peut être occupé par une autre
 	// application sur les postes de travail. Le tunnel DB du dépôt est alors la
 	// seule route qui mène réellement à `shenron_site`; il doit donc précéder le
-	// vieux `apps/shenron/site/.env`. `REMOTE_DATABASE_URL` reste un secret local, lu
+	// vieux `apps/site/.env`. `REMOTE_DATABASE_URL` reste un secret local, lu
 	// ici sans jamais être affiché. Dans chaque fichier, la DERNIÈRE ligne active
-	// gagne (`loadDatabaseUrl`) : `apps/shenron/site/.env` garde l'URL Neon d'avant la
+	// gagne (`loadDatabaseUrl`) : `apps/site/.env` garde l'URL Neon d'avant la
 	// migration, en commentaire, plus haut.
 	const resultat = loadDatabaseUrl({
 		fallbackFiles: [
@@ -93,7 +93,7 @@ export async function urlBase(): Promise<string> {
 	});
 	if (!resultat.ok) {
 		throw new Error(
-			`DATABASE_URL introuvable : exporte-la, ou vérifie apps/shenron/site/.env (ancrage ^DATABASE_URL=). ${resultat.reason}`
+			`DATABASE_URL introuvable : exporte-la, ou vérifie apps/site/.env (ancrage ^DATABASE_URL=). ${resultat.reason}`
 		);
 	}
 	return resultat.url;
@@ -108,7 +108,7 @@ export async function connecte(): Promise<postgres.Sql> {
  * Le jeton d'écriture de l'API databooks.
  *
  * Les scripts de dépôt exigeaient qu'on l'exporte à la main avant chaque
- * lancement, alors qu'il est dans `apps/shenron/site/.env` à deux pas — une friction
+ * lancement, alors qu'il est dans `apps/site/.env` à deux pas — une friction
  * pure, qui poussait à recopier le secret dans un shell d'historique.
  */
 export async function jetonApi(): Promise<string> {

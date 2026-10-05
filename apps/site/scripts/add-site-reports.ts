@@ -2,10 +2,10 @@
  * Crée la table `public.site_reports` (signalements/tickets utilisateurs) sur le
  * Postgres du site. Idempotent (`CREATE TABLE IF NOT EXISTS`) — sûr à rejouer.
  *
- * Miroir de `siteReports` dans `apps/shenron/site/src/db/schema.ts`. Appliquée à la main
+ * Miroir de `siteReports` dans `apps/site/src/db/schema.ts`. Appliquée à la main
  * (le site utilise `db:push` historiquement ; `drizzle-kit migrate` plante sous
  * Bun). Lancer :
- *   DATABASE_URL=... bun apps/shenron/site/scripts/add-site-reports.ts
+ *   DATABASE_URL=... bun apps/site/scripts/add-site-reports.ts
  * ou via l'EnvironmentFile systemd (cf. add-wiki-sections.ts).
  */
 import postgres from "postgres";

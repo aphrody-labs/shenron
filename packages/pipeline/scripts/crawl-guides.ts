@@ -5,7 +5,7 @@
  * extrait le contenu utile en enlevant le header, la navigation et le footer,
  * et enregistre les fichiers Markdown nettoyés dans data/rag/raw/guides/.
  *
- * Usage : bun apps/shenron/bot/scripts/crawl-guides.ts
+ * Usage : bun apps/bot/scripts/crawl-guides.ts
  */
 
 import { existsSync, mkdirSync } from "node:fs";

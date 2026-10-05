@@ -19,7 +19,7 @@
  * bot.db est ouvert en écriture : LANCER BOT ARRÊTÉ (piège lock SQLite →
  * handlers Bun.serve figés). Idempotent. Usage :
  *   sudo systemctl stop shenron
- *   cd apps/shenron/bot && bun scripts/purge-orphan-manga-rag-chunks.ts [--dry-run]
+ *   cd apps/bot && bun scripts/purge-orphan-manga-rag-chunks.ts [--dry-run]
  *   sudo systemctl start shenron
  */
 import { Database } from "bun:sqlite";

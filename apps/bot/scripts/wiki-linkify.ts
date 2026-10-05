@@ -16,8 +16,8 @@
  *  - bornes de mots Unicode (accents gérés) via lookarounds \p{L}\p{N}.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/wiki-linkify.ts                 # dry-run global (stats)
- *   bun apps/shenron/bot/scripts/wiki-linkify.ts --apply         # écrit PG (tous types)
+ *   bun apps/bot/scripts/wiki-linkify.ts                 # dry-run global (stats)
+ *   bun apps/bot/scripts/wiki-linkify.ts --apply         # écrit PG (tous types)
  *   ... [--type characters] [--ids 1,2] [--limit N]
  *
  * Env : DATABASE_URL = PG du site.

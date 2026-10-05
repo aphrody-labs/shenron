@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { DEFAULT_PAGINATION_LABELS, Pagination, pagesVisibles } from "../src/components/pagination";
 import { pageWindow } from "../src/lib/page-window";
 
-// Expected markup captured from apps/shenron/site/src/components/ui/Pagination.tsx
+// Expected markup captured from apps/site/src/components/ui/Pagination.tsx
 // before it became a wrapper over @shenron/ui (wave 3, W3-UI-02); focus ring
 // since moved from box-shadow ring to outline (design rule: no drop shadow).
 const BEFORE = {

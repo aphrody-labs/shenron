@@ -7,7 +7,7 @@ import { logger } from "~/lib/logger";
  * Épisodes — lecture des lecteurs VF/VOSTFR, côté PostgreSQL du site.
  *
  * ── POURQUOI PAS LE SQLITE DU BOT (vérifié, pas supposé) ────────────────────
- * `db_episodes` EST bien répliquée dans `apps/shenron/bot/data/bot.db` (826 lignes au
+ * `db_episodes` EST bien répliquée dans `apps/bot/data/bot.db` (826 lignes au
  * 2026-09-02) — mais la table SQLite n'a que 15 colonnes, et ni `players` ni
  * `synopsis_fr` n'en font partie : ce sont des colonnes **PostgreSQL-only**,
  * comme `subtitles` ou `stream_*` (cf. CLAUDE.md, « pièges DB site »). Le
@@ -20,9 +20,9 @@ import { logger } from "~/lib/logger";
  * dès le second clic. Le cache est volontairement court — un `players` remis à
  * jour par `shenron-refresh-players.timer` doit se voir dans la minute.
  *
- * ── LA CONNEXION N'EST PAS DANS `apps/shenron/bot/.env` ─────────────────────────────
+ * ── LA CONNEXION N'EST PAS DANS `apps/bot/.env` ─────────────────────────────
  * Le bot n'a jamais eu besoin de PostgreSQL : son unit ne charge que
- * `apps/shenron/bot/.env`. Plutôt que d'y ajouter un secret (fichier gitignoré, édition
+ * `apps/bot/.env`. Plutôt que d'y ajouter un secret (fichier gitignoré, édition
  * bloquée par un hook), on lit `~/.shenron-neon.env` — le fichier que tous les
  * scripts du dépôt utilisent déjà — en prenant la **DERNIÈRE** ligne
  * `^DATABASE_URL=` : la première est l'ancienne URL Neon, laissée en

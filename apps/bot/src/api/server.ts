@@ -524,7 +524,7 @@ const ASSET_CONTENT_TYPES: Record<string, string> = {
 };
 
 /**
- * Sert un fichier depuis `apps/shenron/assets/` ou refuse :
+ * Sert un fichier depuis `apps/assets/` ou refuse :
  *   - path traversal (`..`) interdit
  *   - extensions whitelist (cf ASSET_CONTENT_TYPES)
  *   - tout fichier hors `assets/` interdit
@@ -6625,7 +6625,7 @@ async function mapLimitDeadline<T, R>(
 // ── A2A bridge ────────────────────────────────────────────────────────────
 // Le bot n'implémente plus A2A : tout est relayé vers le serveur Rust
 // `aphrody a2a serve` (APHRODY_A2A_URL, défaut http://127.0.0.1:8788), comme
-// le site (`apps/shenron/site/src/lib/a2a-hub.ts`). Voir ./a2a-proxy.ts.
+// le site (`apps/site/src/lib/a2a-hub.ts`). Voir ./a2a-proxy.ts.
 
 const A2A_CORS = { "Access-Control-Allow-Origin": "*" } as const;
 

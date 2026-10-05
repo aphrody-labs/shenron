@@ -19,7 +19,7 @@ if (!DATABASE_URL) {
 }
 
 const sql = postgres(DATABASE_URL);
-const sqlitePath = resolve(import.meta.dir, "../../apps/bot/data/bot.db");
+const sqlitePath = resolve(import.meta.dir, "../apps/bot/data/bot.db");
 const sqlite = new Database(sqlitePath);
 
 interface ContributorDef {

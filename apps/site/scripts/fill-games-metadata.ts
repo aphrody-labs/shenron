@@ -40,8 +40,8 @@
  * `bxc wiki` needs the `/w/index.php?title=` form on Wikipedia: `/wiki/<Title>` makes it
  * query `/api.php`, which Wikipedia does not serve (measured 2026-09-12).
  *
- *   bun apps/shenron/site/scripts/fill-games-metadata.ts            # simulation
- *   bun apps/shenron/site/scripts/fill-games-metadata.ts --apply
+ *   bun apps/site/scripts/fill-games-metadata.ts            # simulation
+ *   bun apps/site/scripts/fill-games-metadata.ts --apply
  */
 import {
 	APPLY,

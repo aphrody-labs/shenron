@@ -10,12 +10,12 @@ import { API_URL as API } from "@/lib/config";
  * Deux racines cohabitent derrière ces chemins, et les confondre rend un 404 sur un
  * fichier pourtant présent : le miroir DB vit dans `public/db/` du bot (servi par
  * `/db/`), tandis que les médias uploadés depuis le studio sont enregistrés
- * « ./assets/wiki/… » et vivent dans `apps/shenron/site/public/wiki/` (servi par `/assets/`).
+ * « ./assets/wiki/… » et vivent dans `apps/site/public/wiki/` (servi par `/assets/`).
  * Mesuré le 2026-09-03 : 4 uploads étaient invisibles dans la galerie pour ce seul
  * motif — le chemin en base n'est jamais un chemin de disque.
  *
  * `assets/wiki/` n'est PAS le seul préfixe servi par `/assets/` : le bot expose
- * toute son arborescence `apps/shenron/bot/assets/` sous cette route (`serveAsset`), et
+ * toute son arborescence `apps/bot/assets/` sous cette route (`serveAsset`), et
  * les scripts d'enrichissement y écrivent la majorité des médias des fiches —
  * `./assets/ext/db_episodes/601.jpg`, `./assets/ext/db_games/17.jpg`,
  * `./assets/dbz/xv2-portraits/…`. Les router vers `/db/` rendait un 404 sur des

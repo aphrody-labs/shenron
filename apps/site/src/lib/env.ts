@@ -4,7 +4,7 @@ import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 
 /**
  * Env typé site (Next 16). Validation au boot, échec rapide en prod.
- * Toutes les vars utilisées dans `apps/shenron/site` doivent passer ici — interdire
+ * Toutes les vars utilisées dans `apps/site` doivent passer ici — interdire
  * `process.env.X` direct dans le reste du code.
  */
 export const env = createEnv({

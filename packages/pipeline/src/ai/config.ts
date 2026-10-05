@@ -54,7 +54,7 @@ export type AphrodyChatModelId =
 	| "gemini-web/pro"
 	| (string & {});
 
-/** Default chat model id (same default as `apps/shenron/bot/src/lib/llm.ts`). */
+/** Default chat model id (same default as `apps/bot/src/lib/llm.ts`). */
 export const DEFAULT_CHAT_MODEL: AphrodyChatModelId = "gemini-web/flash";
 
 /** Default model of the structured vision review sent to `aphrody-ai-http`. */

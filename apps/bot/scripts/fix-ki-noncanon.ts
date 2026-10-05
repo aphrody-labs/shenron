@@ -15,8 +15,8 @@
  * des vrais niveaux Daizenshuu (ère Saiyan-Freezer) fera l'objet d'une passe sourcée.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/fix-ki-noncanon.ts            # dry-run
- *   bun apps/shenron/bot/scripts/fix-ki-noncanon.ts --apply
+ *   bun apps/bot/scripts/fix-ki-noncanon.ts            # dry-run
+ *   bun apps/bot/scripts/fix-ki-noncanon.ts --apply
  * Env : DATABASE_URL = PG du site (source de vérité ; propagé au SQLite par reverse-sync).
  */
 import postgres from "postgres";

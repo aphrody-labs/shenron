@@ -13,7 +13,7 @@ import {
   type ShenronRagHit,
   type ShenronRagStats,
   type ShenronTraining,
-} from "../../studio-bridge";
+} from "./studio-bridge";
 
 const buttonClass = "min-h-12 px-5 text-[18px]";
 

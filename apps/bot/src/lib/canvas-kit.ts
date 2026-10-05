@@ -15,7 +15,7 @@ import { logger } from "~/lib/logger";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────
 
-/** Racine `apps/shenron/bot` vue depuis ce module (indépendante du cwd). */
+/** Racine `apps/bot` vue depuis ce module (indépendante du cwd). */
 const BOT_ROOT = `${import.meta.dir}/../..`;
 
 /**

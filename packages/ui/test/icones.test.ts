@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import * as I from "../src/icones";
 import { NOMS_ICONES, svgIcone } from "../src/icones";
 
-// Expected markup captured from the site components (apps/shenron/site/src/components/icones)
+// Expected markup captured from the site components (apps/site/src/components/icones)
 // before the move into @shenron/ui (wave 3, W3-UI-01).
 const BEFORE = {
 	chevron:

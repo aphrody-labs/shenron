@@ -24,11 +24,11 @@ export const AGENT_SCOPES = [
 ] as const;
 export type AgentScope = (typeof AGENT_SCOPES)[number];
 
-/** RAG training feedback statuses (= apps/shenron/bot/src/api/ia-cockpit.ts). */
+/** RAG training feedback statuses (= apps/bot/src/api/ia-cockpit.ts). */
 export const FEEDBACK_STATUSES = ["pending", "gold_added", "rejected", "reviewed"] as const;
 export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number];
 
-/** Admin goal priorities (= apps/shenron/bot/src/api/ia-cockpit.ts). */
+/** Admin goal priorities (= apps/bot/src/api/ia-cockpit.ts). */
 export const GOAL_PRIORITIES = ["p0", "p1", "p2", "p3"] as const;
 export type GoalPriority = (typeof GOAL_PRIORITIES)[number];
 

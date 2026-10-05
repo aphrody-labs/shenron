@@ -36,7 +36,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@aphrody/paths": "workspace:*",
+    "@aphrody/paths": "0.1.0",
     "zod": "catalog:"
   },
   "engines": {

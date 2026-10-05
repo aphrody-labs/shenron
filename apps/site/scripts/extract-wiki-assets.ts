@@ -4,7 +4,7 @@
  * Extracts official high-resolution visuals, saga metadata, and character/movie
  * infobox profiles from https://dragonball.fandom.com using `bxc wiki` commands.
  *
- * Output: apps/shenron/site/data/extracted-wiki-assets.json
+ * Output: apps/site/data/extracted-wiki-assets.json
  */
 
 interface WikiImage {
@@ -379,7 +379,7 @@ async function main() {
     }
   }
 
-  const outputPath = "apps/shenron/site/data/extracted-wiki-assets.json";
+  const outputPath = "apps/site/data/extracted-wiki-assets.json";
   await Bun.write(outputPath, JSON.stringify(results, null, 2));
 
   const durationSec = ((Date.now() - startTime) / 1000).toFixed(1);

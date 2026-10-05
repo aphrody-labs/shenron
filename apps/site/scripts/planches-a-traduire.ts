@@ -2,9 +2,9 @@
 /**
  * File de TRADUCTION des planches de databook : japonais → français.
  *
- *   bun apps/shenron/site/scripts/planches-a-traduire.ts --compte
- *   bun apps/shenron/site/scripts/planches-a-traduire.ts --lot 40 --json /tmp/lot-01.json
- *   bun apps/shenron/site/scripts/planches-a-traduire.ts --databook 4 --pages 41-80 --json …
+ *   bun apps/site/scripts/planches-a-traduire.ts --compte
+ *   bun apps/site/scripts/planches-a-traduire.ts --lot 40 --json /tmp/lot-01.json
+ *   bun apps/site/scripts/planches-a-traduire.ts --databook 4 --pages 41-80 --json …
  *
  * Ce que le script garantit, et qui n'est pas négociable :
  *
@@ -79,7 +79,7 @@ function appartientAuShard(databookId: string | number, page: number): boolean {
 }
 
 // Utilise la résolution canonique (tunnel local, REMOTE_DATABASE_URL ou .env)
-// au lieu de relire directement l'ancien fichier apps/shenron/site/.env.
+// au lieu de relire directement l'ancien fichier apps/site/.env.
 const sql = await connecte();
 
 interface PlancheBrute {

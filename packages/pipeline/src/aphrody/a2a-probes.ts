@@ -65,7 +65,7 @@ export function resolveCoordDir(): string {
 
 /**
  * Site database URL: `DATABASE_URL`, else the LAST active `DATABASE_URL=` line of
- * `apps/shenron/site/.env` (the file keeps a decommissioned URL, commented, above the live one).
+ * `apps/site/.env` (the file keeps a decommissioned URL, commented, above the live one).
  * Resolved by `loadDatabaseUrl` (validated, never logged).
  */
 async function resolveDatabaseUrl(): Promise<string | null> {
@@ -179,7 +179,7 @@ async function probeDatabooksPipeline(): Promise<DatabooksPipelineSnapshot> {
 		return {
 			measured: false,
 			measuredAt,
-			error: "DATABASE_URL introuvable (env ou apps/shenron/site/.env)",
+			error: "DATABASE_URL introuvable (env ou apps/site/.env)",
 		};
 	}
 

@@ -45,7 +45,7 @@ type Offre = { hebergeur: string; url: string };
 async function bxc(argv: string[]): Promise<unknown> {
 	const cmd = BXC_BIN ? [BXC_BIN, ...argv] : [process.execPath, BXC_CLI, ...argv];
 	const proc = Bun.spawn(cmd, {
-		cwd: BXC_BIN ? undefined : join(BXC_CLI, "../../../.."),
+		cwd: BXC_BIN ? undefined : join(BXC_CLI, "../../.."),
 		env: {
 			...process.env,
 			HTTPS_PROXY: "",

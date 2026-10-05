@@ -87,7 +87,7 @@ if (process.argv[3] === "--release-dir") {
   const dirty = run(["git", "status", "--porcelain", "--untracked-files=no"]);
   if (dirty.exitCode || dirty.stdout.toString().trim())
     throw new Error("release source must be committed and clean");
-  const botBinary = join(repo, "apps/shenron/bot/dist/shenron");
+  const botBinary = join(repo, "apps/bot/dist/shenron");
   if (!existsSync(botBinary)) throw new Error("compile the Shenron bot owner before packaging");
   const payloadStage = await artifactPath(store, `${releaseArg}.staging`);
   if (existsSync(payloadStage)) throw new Error("release staging directory already exists");
@@ -168,9 +168,9 @@ if (process.argv[3] === "--release-dir") {
         return { name: owner.name, path: ownerRelative, roots: [...roots].toSorted() };
       }),
     );
-    await mkdir(join(sourceStage, "apps/shenron/bot/dist"), { recursive: true });
-    await Bun.write(join(sourceStage, "apps/shenron/bot/dist/shenron"), Bun.file(botBinary));
-    const mode = run(["chmod", "0755", join(sourceStage, "apps/shenron/bot/dist/shenron")]);
+    await mkdir(join(sourceStage, "apps/bot/dist"), { recursive: true });
+    await Bun.write(join(sourceStage, "apps/bot/dist/shenron"), Bun.file(botBinary));
+    const mode = run(["chmod", "0755", join(sourceStage, "apps/bot/dist/shenron")]);
     if (mode.exitCode) throw new Error(mode.stderr.toString());
     const tar = run(["tar", "-czf", join(payloadStage, "source.tar.gz"), "-C", sourceStage, "."]);
     if (tar.exitCode) throw new Error(tar.stderr.toString());

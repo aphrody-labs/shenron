@@ -29,7 +29,7 @@
  * `strokeWidth`).
  *
  * Rendu : `packages/shenron-ui/src/icones/` (composants React, sous-chemin `@shenron/ui/icones`). Contrôle
- * visuel : `apps/shenron/site/scripts/rend-icones.ts` (SVG → PNG à 16/24/32 px).
+ * visuel : `apps/site/scripts/rend-icones.ts` (SVG → PNG à 16/24/32 px).
  */
 
 /** Côté de la boîte de dessin, en unités SVG. Identique à lucide. */

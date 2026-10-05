@@ -2,7 +2,7 @@
  * Génère les 7 visuels provisoires qui remplacent des fan-arts retirés de
  * public/dbz/transformations/. Ce sont des placeholders générés par Shenron,
  * jamais des illustrations officielles Dragon Ball : leur texte le dit
- * explicitement. Usage : bun apps/shenron/site/scripts/generate-transformation-placeholders.ts
+ * explicitement. Usage : bun apps/site/scripts/generate-transformation-placeholders.ts
  */
 import sharp from "sharp";
 import { join } from "node:path";

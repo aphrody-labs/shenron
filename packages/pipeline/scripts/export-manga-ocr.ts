@@ -65,7 +65,7 @@ const PLAN = flag("plan");
  * Les identités ciblées, par `--id` répété ou par `--ids-fichier`.
  *
  * Une campagne de reprise en porte plus d'un millier (cf.
- * `apps/shenron/site/scripts/planches-manga-a-relire.ts --ids`) : autant d'arguments
+ * `apps/site/scripts/planches-manga-a-relire.ts --ids`) : autant d'arguments
  * dépasseraient la limite de ligne de commande de Windows. Le fichier attend
  * une identité par ligne, au format `DB:vol12:7`, et tolère les commentaires
  * `#` ainsi que les lignes vides.
@@ -286,7 +286,7 @@ for (let lot = 1; lot <= totalLots; lot++) {
 		lot,
 		lots: totalLots,
 		generatedAt: new Date().toISOString(),
-		generator: "apps/shenron/bot/scripts/export-manga-ocr.ts",
+		generator: "apps/bot/scripts/export-manga-ocr.ts",
 		selection,
 		series: SERIES,
 		imagePipeline: { width: WIDTH, quality: QUALITY, format: "jpeg" },
@@ -314,7 +314,7 @@ const corpusManifest = {
 	schemaVersion: MANGA_MANIFEST_SCHEMA_VERSION,
 	runId,
 	generatedAt: new Date().toISOString(),
-	generator: "apps/shenron/bot/scripts/export-manga-ocr.ts",
+	generator: "apps/bot/scripts/export-manga-ocr.ts",
 	selection,
 	series: SERIES,
 	corpusSha256,

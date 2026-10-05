@@ -12,7 +12,7 @@
  * Transport : Aphrody `POST /api/v1/shenron/vision/structured` (aphrody-ai-http,
  *   Bearer token), une image par requête ; aucun appel direct à un serveur de modèle.
  *
- * Usage : bun apps/shenron/bot/scripts/test-gemma-multimodal.ts [--manga N] [--video chemin]
+ * Usage : bun apps/bot/scripts/test-gemma-multimodal.ts [--manga N] [--video chemin]
  * Env   : APHRODY_AI_HTTP_URL, APHRODY_AI_HTTP_TOKEN, MM_MODEL (défaut : modèle vision résolu)
  */
 import { $ } from "bun";
@@ -25,7 +25,7 @@ import {
 const MODEL = process.env.MM_MODEL ?? resolveVisionModel(process.env);
 const VISION_URL = new URL("/api/v1/shenron/vision/structured", requireAiHttpUrl(process.env));
 const TOKEN = requireAiHttpToken(process.env);
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const args = process.argv.slice(2);
 const flag = (name: string, def?: string) => {
 	const i = args.indexOf(name);

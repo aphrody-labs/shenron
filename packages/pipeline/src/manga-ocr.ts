@@ -27,7 +27,7 @@ export interface MangaOcrManifest {
 	lot: number;
 	lots: number;
 	generatedAt: string;
-	generator: "apps/shenron/bot/scripts/export-manga-ocr.ts";
+	generator: "apps/bot/scripts/export-manga-ocr.ts";
 	selection: "missing" | "all" | "ids";
 	series: MangaSeries[];
 	imagePipeline: {

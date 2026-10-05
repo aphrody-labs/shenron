@@ -25,12 +25,12 @@
  * SIMULATION PAR DÉFAUT.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/rag-resync-entites.ts --liste
- *   bun apps/shenron/bot/scripts/rag-resync-entites.ts db_characters
- *   bun apps/shenron/bot/scripts/rag-resync-entites.ts db_characters --appliquer
- *   bun apps/shenron/bot/scripts/rag-resync-entites.ts databooks --appliquer
- *   bun apps/shenron/bot/scripts/rag-resync-entites.ts --toutes --appliquer
- *   bun apps/shenron/bot/scripts/rag-resync-entites.ts --reparer --appliquer
+ *   bun apps/bot/scripts/rag-resync-entites.ts --liste
+ *   bun apps/bot/scripts/rag-resync-entites.ts db_characters
+ *   bun apps/bot/scripts/rag-resync-entites.ts db_characters --appliquer
+ *   bun apps/bot/scripts/rag-resync-entites.ts databooks --appliquer
+ *   bun apps/bot/scripts/rag-resync-entites.ts --toutes --appliquer
+ *   bun apps/bot/scripts/rag-resync-entites.ts --reparer --appliquer
  */
 import { PG_SOURCES } from "./_rag-sources-pg";
 import { warnIgnoredEmbedBaseUrl } from "@shenron/pipeline/ai/config";

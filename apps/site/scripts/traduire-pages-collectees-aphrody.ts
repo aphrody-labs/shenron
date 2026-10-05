@@ -29,9 +29,9 @@
  * jamais écrite : la fiche est laissée telle quelle et comptée à part.
  *
  * Usage (depuis la racine du dépôt) :
- *   bun apps/shenron/site/scripts/traduire-pages-collectees-aphrody.ts selectionner --travail <dossier>
- *   bun apps/shenron/site/scripts/traduire-pages-collectees-aphrody.ts traduire --travail <dossier> [--concurrence 4]
- *   bun apps/shenron/site/scripts/traduire-pages-collectees-aphrody.ts appliquer --travail <dossier> [--lot 50]
+ *   bun apps/site/scripts/traduire-pages-collectees-aphrody.ts selectionner --travail <dossier>
+ *   bun apps/site/scripts/traduire-pages-collectees-aphrody.ts traduire --travail <dossier> [--concurrence 4]
+ *   bun apps/site/scripts/traduire-pages-collectees-aphrody.ts appliquer --travail <dossier> [--lot 50]
  */
 import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";

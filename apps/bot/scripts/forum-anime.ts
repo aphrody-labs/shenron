@@ -18,12 +18,12 @@
  *                   dupliqué ; relancer après un 429 ou une coupure reprend où
  *                   c'en était.
  *
- *   bun apps/shenron/bot/scripts/forum-anime.ts plan
- *   bun apps/shenron/bot/scripts/forum-anime.ts applique [--limite N] [--seulement <motif>] [--categorie <id>]
- *   bun apps/shenron/bot/scripts/forum-anime.ts doctor
- *   bun apps/shenron/bot/scripts/forum-anime.ts rafraichit [--seulement <motif>]
- *   bun apps/shenron/bot/scripts/forum-anime.ts annonce [--salon <id>] [--plafond 10]
- *   bun apps/shenron/bot/scripts/forum-anime.ts etat
+ *   bun apps/bot/scripts/forum-anime.ts plan
+ *   bun apps/bot/scripts/forum-anime.ts applique [--limite N] [--seulement <motif>] [--categorie <id>]
+ *   bun apps/bot/scripts/forum-anime.ts doctor
+ *   bun apps/bot/scripts/forum-anime.ts rafraichit [--seulement <motif>]
+ *   bun apps/bot/scripts/forum-anime.ts annonce [--salon <id>] [--plafond 10]
+ *   bun apps/bot/scripts/forum-anime.ts etat
  *
  * Jeton : `DISCORD_TOKEN_GRAND_PRETRE` (administrateur de la guilde).
  * Base   : `DATABASE_URL` de `~/.shenron-neon.env` (la DERNIÈRE ligne — cf. CLAUDE.md).

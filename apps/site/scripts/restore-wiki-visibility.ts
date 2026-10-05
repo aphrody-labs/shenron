@@ -13,12 +13,12 @@
  * Il écrit TOUJOURS une sauvegarde JSON horodatée avant de modifier quoi que ce
  * soit, et n'écrit rien sans `--apply`.
  *
- *   bun apps/shenron/site/scripts/restore-wiki-visibility.ts                  # état + sauvegarde, aucune écriture
- *   bun apps/shenron/site/scripts/restore-wiki-visibility.ts --apply          # republie les lignes masquées
- *   bun apps/shenron/site/scripts/restore-wiki-visibility.ts --apply --tables db_techniques,db_races
- *   bun apps/shenron/site/scripts/restore-wiki-visibility.ts --undo <fichier> # réapplique une sauvegarde
+ *   bun apps/site/scripts/restore-wiki-visibility.ts                  # état + sauvegarde, aucune écriture
+ *   bun apps/site/scripts/restore-wiki-visibility.ts --apply          # republie les lignes masquées
+ *   bun apps/site/scripts/restore-wiki-visibility.ts --apply --tables db_techniques,db_races
+ *   bun apps/site/scripts/restore-wiki-visibility.ts --undo <fichier> # réapplique une sauvegarde
  *
- * `DATABASE_URL` vient de `apps/shenron/site/.env` ou de l'environnement.
+ * `DATABASE_URL` vient de `apps/site/.env` ou de l'environnement.
  */
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { join } from "node:path";

@@ -7,7 +7,7 @@
  * ajouter une source, elle doit être libre et accessible sans inscription.
  *
  * Usage :
- *   bun scripts/fetch-dbz-assets.ts                # download tout dans apps/shenron/site/public/dbz/
+ *   bun scripts/fetch-dbz-assets.ts                # download tout dans apps/site/public/dbz/
  *   bun scripts/fetch-dbz-assets.ts --characters   # uniquement personnages
  *   bun scripts/fetch-dbz-assets.ts --planets      # uniquement planètes
  *

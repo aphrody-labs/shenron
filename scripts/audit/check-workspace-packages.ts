@@ -28,7 +28,7 @@ import {
 	RUNTIME_CLASSES,
 	stripNonCode,
 	type Offence,
-} from "../../../../../packages/shenron/config/src/guards";
+} from "../../packages/config/src/guards";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const BASELINE_FILE = join(ROOT, "scripts", "ops", "check-workspace-packages.baseline.json");

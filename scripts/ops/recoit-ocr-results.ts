@@ -17,7 +17,7 @@
  *
  * Sender side from the Aphrody monorepo — take a consistent snapshot, never copy a live DB:
  *   sqlite3 <ocr-workspace>/results.db "VACUUM INTO '<ocr-workspace>/results.snapshot.db'"
- *   bun scripts/tools/shenron/scripts/ops/envoie-ocr-results.ts --snapshot <ocr-workspace>/results.snapshot.db
+ *   bun scripts/ops/envoie-ocr-results.ts --snapshot <ocr-workspace>/results.snapshot.db
  *   # Transfer goes through Aphrody SSH (in-process SFTP + its SSH command adapter).
  * The imported Shenron checkout remains the remote receiver at `shenron/scripts/ops/recoit-ocr-results.ts`;
  * the sender is owned by this Aphrody monorepo and is not expected in the legacy Shenron checkout.

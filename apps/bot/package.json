@@ -10,8 +10,8 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
-    "build": "bun ../../../packages/infra/workspace/src/ops.ts shenron script @shenron/bot build:owner",
-    "compile": "bun ../../../packages/infra/workspace/src/ops.ts shenron script @shenron/bot compile:owner",
+    "build": "bash scripts/build-bundle.sh",
+    "compile": "bun build src/entry-standalone.ts --compile --minify --sourcemap --outfile=dist/shenron",
     "type-check": "tsc --noEmit",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
@@ -41,13 +41,11 @@
     "db:push": "drizzle-kit push",
     "db:seed-xv2-char-meta": "bun src/db/seed-xv2-char-meta.ts",
     "db:seed-xv2-all": "bun src/db/seed-xv2-techniques.ts && bun src/db/seed-xv2-characters.ts && bun src/db/seed-xv2-char-meta.ts && bun src/db/seed-xv2-portraits.ts && bun src/db/seed-xv2-transformations.ts && bun src/db/seed-xv2-char-techniques.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "build:owner": "bash scripts/build-bundle.sh",
-    "compile:owner": "bun build src/entry-standalone.ts --compile --minify --sourcemap --outfile=dist/shenron"
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@aphrody/discord-kit": "workspace:*",
-    "@aphrody/paths": "workspace:*",
+    "@aphrody/discord-kit": "0.1.0",
+    "@aphrody/paths": "0.1.0",
     "@discordx/di": "catalog:",
     "@discordx/pagination": "catalog:",
     "@napi-rs/canvas": "catalog:",
@@ -72,7 +70,7 @@
     "sqlite-vec": "catalog:",
     "tsyringe": "catalog:",
     "zod": "catalog:",
-    "@aphrody/media": "workspace:*"
+    "@aphrody/media": "0.1.0"
   },
   "devDependencies": {
     "drizzle-kit": "catalog:"

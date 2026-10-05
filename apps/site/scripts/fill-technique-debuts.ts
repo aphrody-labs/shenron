@@ -2,8 +2,8 @@
  * Fills `debut_chapter_id` and `creator_id` of canonical techniques from the
  * databooks — after re-reading every cited planche.
  *
- *   bun apps/shenron/site/scripts/fill-technique-debuts.ts            # simulation (default)
- *   bun apps/shenron/site/scripts/fill-technique-debuts.ts --apply    # writes, one revision per row
+ *   bun apps/site/scripts/fill-technique-debuts.ts            # simulation (default)
+ *   bun apps/site/scripts/fill-technique-debuts.ts --apply    # writes, one revision per row
  *
  * Values and their evidence live in `_technique-lexicon.ts`. This script trusts
  * none of them blindly:

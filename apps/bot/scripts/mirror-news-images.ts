@@ -7,13 +7,13 @@
  *   - sinon (404/timeout) → image mise à NULL (le front affiche un placeholder)
  *
  * Résultat : 100% des images db_news servies en 200 (ou null), aucune 404 externe.
- * Usage : bun apps/shenron/bot/scripts/mirror-news-images.ts
+ * Usage : bun apps/bot/scripts/mirror-news-images.ts
  */
 import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-// Racine du package bot, robuste quel que soit le CWD (repo root ou apps/shenron/bot).
+// Racine du package bot, robuste quel que soit le CWD (repo root ou apps/bot).
 const BOT_ROOT = join(dirname(new URL(import.meta.url).pathname), "..");
 const ASSET_DIR = join(BOT_ROOT, "assets/ext/db_news");
 const DB_PATH = join(BOT_ROOT, "data/bot.db");

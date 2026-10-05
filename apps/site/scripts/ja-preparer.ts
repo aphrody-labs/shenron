@@ -1,7 +1,7 @@
 /**
- * Installe les ressources japonaises hors dépôt, dans `apps/shenron/site/.ja-data/`.
+ * Installe les ressources japonaises hors dépôt, dans `apps/site/.ja-data/`.
  *
- *   bun apps/shenron/site/scripts/ja-preparer.ts [--force]
+ *   bun apps/site/scripts/ja-preparer.ts [--force]
  *
  * Deux ressources, aucune versionnée dans git (elles pèsent 18 et 113 Mo, et ne
  * sont pas notre code) :

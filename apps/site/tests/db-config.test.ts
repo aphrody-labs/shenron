@@ -12,7 +12,7 @@ beforeAll(async () => {
 	mod = await import("../src/lib/db");
 });
 
-describe("apps/shenron/site/src/lib/db facade", () => {
+describe("apps/site/src/lib/db facade", () => {
 	it("exports exactly the historical names", () => {
 		expect(Object.keys(mod).toSorted()).toEqual(
 			[

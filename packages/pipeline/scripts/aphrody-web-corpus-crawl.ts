@@ -30,7 +30,7 @@ type CrawlPage = { url: string; title?: string; markdown?: string };
 type CrawlReport = { pages?: CrawlPage[]; errors?: Array<{ url: string; error: string }> };
 type CorpusDoc = { id: string; name: string; url: string; markdown: string; lang?: string; kind?: string };
 
-const root = resolve(import.meta.dir, "../../../..");
+const root = resolve(import.meta.dir, "../../..");
 const dataDir = resolve(root, "crates/ai/rag-eval/datasets/dragonball");
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");

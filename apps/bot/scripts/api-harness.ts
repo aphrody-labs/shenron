@@ -5,9 +5,9 @@
  * d'abord, puis le repli `fetch` (`/graphql` limité S9, `@shenron/api` B14,
  * 404 JSON historique). Sert aux essais `curl` et au test de montage.
  *
- *   bun apps/shenron/bot/scripts/api-harness.ts            # port wiki de démonstration (en mémoire)
- *   bun apps/shenron/bot/scripts/api-harness.ts --pg       # port wiki PostgreSQL via PgService (env du process)
- *   bun apps/shenron/bot/scripts/api-harness.ts --no-wiki  # groupe wiki désactivé (comme sans PostgreSQL)
+ *   bun apps/bot/scripts/api-harness.ts            # port wiki de démonstration (en mémoire)
+ *   bun apps/bot/scripts/api-harness.ts --pg       # port wiki PostgreSQL via PgService (env du process)
+ *   bun apps/bot/scripts/api-harness.ts --no-wiki  # groupe wiki désactivé (comme sans PostgreSQL)
  *
  * Les routes historiques de ce banc répondent `{ legacy: "<route>" }` : elles
  * n'ont pas les services du bot (SQLite, Discord) et ne servent qu'à prouver

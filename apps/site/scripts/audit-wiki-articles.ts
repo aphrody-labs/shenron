@@ -8,7 +8,7 @@
  * contre le manga/databooks par un rédacteur, puis déposés via le workflow de
  * contribution modérée.
  *
- * Usage: bun apps/shenron/site/scripts/audit-wiki-articles.ts [--json] [--newvps]
+ * Usage: bun apps/site/scripts/audit-wiki-articles.ts [--json] [--newvps]
  */
 import { join } from "node:path";
 import postgres from "postgres";

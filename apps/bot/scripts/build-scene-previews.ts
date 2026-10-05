@@ -27,7 +27,7 @@
  * SIMULATION PAR DÉFAUT — `--appliquer` pour écrire.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/build-scene-previews.ts [--series DBS] [--limite N]
+ *   bun apps/bot/scripts/build-scene-previews.ts [--series DBS] [--limite N]
  *     [--hold 0.8] [--images] [--appliquer]
  * Env : DATABASE_URL.
  */
@@ -36,7 +36,7 @@ import { dirname, join } from "node:path";
 import postgres from "postgres";
 import { buildScenePreview } from "./lib/scene-preview.js";
 
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes(`--${n}`);
 const opt = (n: string) => {

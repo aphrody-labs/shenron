@@ -4,7 +4,7 @@
  *
  * Bun's `RedisClient` gives up after `maxRetries`: from then on every command
  * throws `ERR_REDIS_CONNECTION_CLOSED` forever (incident 2026-08-21, pattern of
- * apps/shenron/bot/src/workers/indexer.ts). Here the client is disposable: once it is
+ * apps/bot/src/workers/indexer.ts). Here the client is disposable: once it is
  * dead it is dropped and a new one is built after a backoff. Commands issued
  * while no live client may be built (the dead window) reject with an explicit
  * error — never a silent no-op. Clients are built by `@aphrody/sql/redis`.

@@ -1,27 +1,27 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Offline audit of the site's Drizzle migrations (apps/shenron/site/src/db/migrations).
+ * Offline audit of the site's Drizzle migrations (apps/site/src/db/migrations).
  *
  * Reports, without touching any file nor any database:
  * - journal vs SQL files (journaled / unjournaled / journal entries without file);
  * - snapshots present in `meta/`;
- * - `tablesFilter` coverage of `apps/shenron/site/drizzle.config.ts` against the
- *   `pgTable("…")` declarations of `packages/shenron/db/src/schema.ts`;
+ * - `tablesFilter` coverage of `apps/site/drizzle.config.ts` against the
+ *   `pgTable("…")` declarations of `packages/db/src/schema.ts`;
  * - `bot` schema DDL found inside public migrations;
  * - the Drizzle hash of each file (sha256 of the text, as `readMigrationFiles`
  *   computes it; CRLF is normalised to LF so a Windows checkout hashes like the
  *   Linux release).
  *
  * Usage:
- *   bun packages/shenron/db/scripts/migration-audit.ts            # print the audit (JSON)
- *   bun packages/shenron/db/scripts/migration-audit.ts --check    # compare with the committed snapshot (exit 1 on drift)
- *   bun packages/shenron/db/scripts/migration-audit.ts --write    # rewrite the snapshot (human decision only)
- *   bun packages/shenron/db/scripts/migration-audit.ts --probe --operator
+ *   bun packages/db/scripts/migration-audit.ts            # print the audit (JSON)
+ *   bun packages/db/scripts/migration-audit.ts --check    # compare with the committed snapshot (exit 1 on drift)
+ *   bun packages/db/scripts/migration-audit.ts --write    # rewrite the snapshot (human decision only)
+ *   bun packages/db/scripts/migration-audit.ts --probe --operator
  *       # OPERATOR ONLY: READ ONLY transaction reading drizzle.__drizzle_migrations,
  *       # pg_extension and information_schema.tables. Never run by agents.
  *   --root <dir>       repository root (default: two levels above this file)
- *   --snapshot <file>  snapshot path (default: packages/shenron/db/migration-audit.snapshot.json)
+ *   --snapshot <file>  snapshot path (default: packages/db/migration-audit.snapshot.json)
  *
  * No migration file is moved, renamed or journaled by this script.
  */
@@ -30,10 +30,10 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 
-export const MIGRATIONS_DIR = "apps/shenron/site/src/db/migrations";
-export const DRIZZLE_CONFIG = "apps/shenron/site/drizzle.config.ts";
-export const PUBLIC_SCHEMA = "packages/shenron/db/src/schema.ts";
-export const DEFAULT_SNAPSHOT = "packages/shenron/db/migration-audit.snapshot.json";
+export const MIGRATIONS_DIR = "apps/site/src/db/migrations";
+export const DRIZZLE_CONFIG = "apps/site/drizzle.config.ts";
+export const PUBLIC_SCHEMA = "packages/db/src/schema.ts";
+export const DEFAULT_SNAPSHOT = "packages/db/migration-audit.snapshot.json";
 
 export interface JournalEntry {
 	idx: number;
@@ -182,7 +182,7 @@ export function diffAudits(expected: unknown, actual: unknown, path = "$"): stri
 async function probe(root: string, audit: MigrationAudit): Promise<number> {
 	const { loadDatabaseUrl } = await import("../src/env");
 	const { createSql } = await import("../src/sql");
-	const loaded = loadDatabaseUrl({ fallbackFiles: [{ path: join(root, "apps/shenron/site/.env") }] });
+	const loaded = loadDatabaseUrl({ fallbackFiles: [{ path: join(root, "apps/site/.env") }] });
 	if (!loaded.ok) {
 		console.error(`✗ ${loaded.reason}`);
 		return 2;

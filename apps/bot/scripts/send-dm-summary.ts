@@ -25,7 +25,7 @@ async function getDiscordToken(): Promise<string> {
 				.trim();
 		}
 	}
-	throw new Error("DISCORD_TOKEN introuvable dans apps/shenron/bot/.env");
+	throw new Error("DISCORD_TOKEN introuvable dans apps/bot/.env");
 }
 
 const SUMMARY_CONTENT = `🐉 **Rapport historique — métriques à revalider avant diffusion (Shenron Engine)**

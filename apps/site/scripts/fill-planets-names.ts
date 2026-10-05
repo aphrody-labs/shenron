@@ -27,8 +27,8 @@
  * Scrape: ~/.shenron-build-tmp/scrape/meta/planets/ja-geo.json
  *   bxc wiki page "https://ja.wikipedia.org/w/index.php?title=ドラゴンボールの地理" --out ja-geo.json
  *
- *   bun apps/shenron/site/scripts/fill-planets-names.ts            # simulation
- *   bun apps/shenron/site/scripts/fill-planets-names.ts --apply
+ *   bun apps/site/scripts/fill-planets-names.ts            # simulation
+ *   bun apps/site/scripts/fill-planets-names.ts --apply
  */
 import {
 	APPLY,

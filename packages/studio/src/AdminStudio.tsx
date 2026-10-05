@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "@aphrody/m3-primitives";
 import { StudioHeader } from "./StudioHeader";
 import { isTauri } from "../../tauri-bridge";
-import { nativeAi, type NativeAiStatus } from "../../studio-bridge";
+import { nativeAi, type NativeAiStatus } from "./studio-bridge";
 import { adminUrl } from "@shenron/config/admin";
 
 const buttonClass = "min-h-12 px-5 text-[18px]";

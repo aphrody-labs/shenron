@@ -2,8 +2,8 @@
  * export-data.ts — Exporte TOUTE la data du bot (tables db_* + métier) en gros
  * JSON par table + un index. Sert de dump portable / source pour le RAG / debug.
  *
- * Sortie : apps/shenron/bot/data/export/<table>.json + index.json
- * Usage : bun apps/shenron/bot/scripts/export-data.ts
+ * Sortie : apps/bot/data/export/<table>.json + index.json
+ * Usage : bun apps/bot/scripts/export-data.ts
  */
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync } from "node:fs";

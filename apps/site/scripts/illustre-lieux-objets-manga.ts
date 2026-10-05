@@ -2,7 +2,7 @@
 /**
  * Illustrate wiki locations and items with panels cropped from the official manga.
  *
- * Driven by `apps/shenron/site/data/illustrations-lieux-objets.json`: one entry per entity,
+ * Driven by `apps/site/data/illustrations-lieux-objets.json`: one entry per entity,
  * each naming the exact source page (series, chapter, page, CDN URL) and the crop
  * box in source pixels. Every crop was chosen by eye; this script only replays it.
  *
@@ -17,9 +17,9 @@
  * crop SHA-256 is already registered, is skipped.
  *
  * Usage (repo root):
- *   bun --env-file=.env apps/shenron/site/scripts/illustre-lieux-objets-manga.ts
- *   bun --env-file=.env apps/shenron/site/scripts/illustre-lieux-objets-manga.ts --appliquer
- *   bun --env-file=.env apps/shenron/site/scripts/illustre-lieux-objets-manga.ts --appliquer --ids 17,18
+ *   bun --env-file=.env apps/site/scripts/illustre-lieux-objets-manga.ts
+ *   bun --env-file=.env apps/site/scripts/illustre-lieux-objets-manga.ts --appliquer
+ *   bun --env-file=.env apps/site/scripts/illustre-lieux-objets-manga.ts --appliquer --ids 17,18
  */
 import { mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";

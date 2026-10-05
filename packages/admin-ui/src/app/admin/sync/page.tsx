@@ -162,7 +162,7 @@ sudo systemctl start shenron-guild-sync.service
 sudo journalctl -u shenron-guild-sync -f
 
 # Reconstruction complète depuis l'historique Discord (lent, < 15 min)
-cd apps/shenron/bot
+cd apps/bot
 bun scripts/recover-from-discord-history.ts --days 90 --concurrency 6`}
           </pre>
           <p className="text-xs text-zinc-500">

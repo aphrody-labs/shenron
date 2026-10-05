@@ -11,13 +11,13 @@
  *  4. Download des URLs image/audio découvertes → public/{sfx,dbz,sprites}/bxc/
  *
  * Usage :
- *   bun apps/shenron/site/scripts/bxc-asset-harvest.ts
- *   bun apps/shenron/site/scripts/bxc-asset-harvest.ts --profile max --delay 800
- *   bun apps/shenron/site/scripts/bxc-asset-harvest.ts --mirror-only
- *   bun apps/shenron/site/scripts/bxc-asset-harvest.ts --max-sources 1 --no-mirror
- *   APHRODY_BIN=aphrody bun apps/shenron/site/scripts/bxc-asset-harvest.ts
+ *   bun apps/site/scripts/bxc-asset-harvest.ts
+ *   bun apps/site/scripts/bxc-asset-harvest.ts --profile max --delay 800
+ *   bun apps/site/scripts/bxc-asset-harvest.ts --mirror-only
+ *   bun apps/site/scripts/bxc-asset-harvest.ts --max-sources 1 --no-mirror
+ *   APHRODY_BIN=aphrody bun apps/site/scripts/bxc-asset-harvest.ts
  *
- * Voir aussi : `bun apps/shenron/bot/scripts/rag-harvest.ts run-seeds`
+ * Voir aussi : `bun apps/bot/scripts/rag-harvest.ts run-seeds`
  */
 import { mkdirSync, writeFileSync, existsSync, readFileSync, appendFileSync } from "node:fs";
 import { join, dirname, basename, extname } from "node:path";

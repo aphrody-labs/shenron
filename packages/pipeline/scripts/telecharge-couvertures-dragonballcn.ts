@@ -19,9 +19,9 @@
  * script après un crawl élargi ne retélécharge que le nouveau.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/telecharge-couvertures-dragonballcn.ts --simulation
- *   bun apps/shenron/bot/scripts/telecharge-couvertures-dragonballcn.ts
- *   bun apps/shenron/bot/scripts/telecharge-couvertures-dragonballcn.ts --collection dragonball_jp_original
+ *   bun apps/bot/scripts/telecharge-couvertures-dragonballcn.ts --simulation
+ *   bun apps/bot/scripts/telecharge-couvertures-dragonballcn.ts
+ *   bun apps/bot/scripts/telecharge-couvertures-dragonballcn.ts --collection dragonball_jp_original
  */
 import { join } from "node:path";
 import postgres from "postgres";

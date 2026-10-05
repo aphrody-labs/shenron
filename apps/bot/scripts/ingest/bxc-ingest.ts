@@ -11,7 +11,7 @@
  *   APHRODY_WEB_PROFILE  profil Web (défaut "max").
  *   --dry-run    n'écrit rien en DB, log seulement ce qui serait inséré.
  *
- * Usage : bun apps/shenron/bot/scripts/ingest/bxc-ingest.ts [--dry-run]
+ * Usage : bun apps/bot/scripts/ingest/bxc-ingest.ts [--dry-run]
  */
 // db_news est une table RUNTIME (forward-syncée SQLite→Neon), PAS du wiki
 // éditorial → on n'importe PAS ./_db (qui charge wiki-write-guard et exit(1)).

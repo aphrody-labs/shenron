@@ -12,7 +12,7 @@ import {
 } from "../src/http";
 
 describe("fnvEtag", () => {
-	// Vectors produced by `etagOf(new TextEncoder().encode(body))` of apps/shenron/bot/src/api/server.ts.
+	// Vectors produced by `etagOf(new TextEncoder().encode(body))` of apps/bot/src/api/server.ts.
 	const vectors: [string, string][] = [
 		["", '"811c9dc5-0"'],
 		['{"status":"ok"}', '"db4ee913-f"'],

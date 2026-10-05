@@ -9,11 +9,11 @@
  * dans rag-build (resolveSourceId), donc retrievables comme une source à part.
  *
  * Idempotent : réécrit intégralement corpus-manga.json à chaque run.
- * Usage : bun apps/shenron/bot/scripts/ingest-manga-rag.ts
+ * Usage : bun apps/bot/scripts/ingest-manga-rag.ts
  */
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const TDIR = `${ROOT}assets/manga/transcripts`;
 const OUT = `${ROOT}data/rag/corpus-manga.json`;
 

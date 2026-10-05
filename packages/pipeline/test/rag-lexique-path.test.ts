@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * B6: `rag-lexique.ts` writes where `apps/shenron/bot/src/lib/rag.ts` reads, with a
+ * B6: `rag-lexique.ts` writes where `apps/bot/src/lib/rag.ts` reads, with a
  * path derived by `fileURLToPath` (correct on Windows), or `RAG_LEXIQUE`.
  * Only the exported resolver is exercised; the script is never executed.
  */
@@ -41,7 +41,7 @@ describe("resolveLexiquePath (B6)", () => {
 
 	it("matches the file the bot reads in this checkout", () => {
 		const scriptUrl = new URL("../scripts/rag-lexique.ts", import.meta.url).href;
-		const botReads = fileURLToPath(new URL("../../../../apps/shenron/bot/data/rag/lexique-requetes.json", import.meta.url));
+		const botReads = fileURLToPath(new URL("../../../apps/bot/data/rag/lexique-requetes.json", import.meta.url));
 		expect(resolveLexiquePath(scriptUrl, {})).toBe(botReads);
 	});
 

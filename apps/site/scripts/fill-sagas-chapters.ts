@@ -23,8 +23,8 @@
  * Scrape: ~/.shenron-build-tmp/scrape/meta/sagas/kz-<series>_<arc>/http.html
  *   bxc recon https://www.kanzenshuu.com/manga/<series>/<arc>/ --snapshot-dir kz-<series>_<arc>
  *
- *   bun apps/shenron/site/scripts/fill-sagas-chapters.ts            # simulation
- *   bun apps/shenron/site/scripts/fill-sagas-chapters.ts --apply
+ *   bun apps/site/scripts/fill-sagas-chapters.ts            # simulation
+ *   bun apps/site/scripts/fill-sagas-chapters.ts --apply
  */
 import {
 	APPLY,

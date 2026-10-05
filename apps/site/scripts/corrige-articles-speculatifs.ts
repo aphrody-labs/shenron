@@ -13,8 +13,8 @@
  * - Consigne un snapshot complet avant/après dans `public.wiki_revisions`.
  *
  * Usage :
- *   bun apps/shenron/site/scripts/corrige-articles-speculatifs.ts            # Simulation
- *   bun apps/shenron/site/scripts/corrige-articles-speculatifs.ts --appliquer # Applique en base
+ *   bun apps/site/scripts/corrige-articles-speculatifs.ts            # Simulation
+ *   bun apps/site/scripts/corrige-articles-speculatifs.ts --appliquer # Applique en base
  */
 import { join } from "node:path";
 import postgres from "postgres";

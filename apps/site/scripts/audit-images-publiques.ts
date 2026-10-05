@@ -8,10 +8,10 @@
  * such as the HTML of a Next catch-all route).
  *
  * Usage:
- *   bun apps/shenron/site/scripts/audit-images-publiques.ts
- *   bun apps/shenron/site/scripts/audit-images-publiques.ts --base https://dragonballfr.com --per 6
- *   bun apps/shenron/site/scripts/audit-images-publiques.ts --include /wiki/toriyama --include /classements
- *   bun apps/shenron/site/scripts/audit-images-publiques.ts --all --out /tmp/images.json
+ *   bun apps/site/scripts/audit-images-publiques.ts
+ *   bun apps/site/scripts/audit-images-publiques.ts --base https://dragonballfr.com --per 6
+ *   bun apps/site/scripts/audit-images-publiques.ts --include /wiki/toriyama --include /classements
+ *   bun apps/site/scripts/audit-images-publiques.ts --all --out /tmp/images.json
  *
  * Options:
  *   --base <url>         site origin (default https://dragonballfr.com)

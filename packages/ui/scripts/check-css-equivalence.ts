@@ -1,17 +1,17 @@
 /**
  * Proves that the site stylesheet compiles to the same CSS before and after a
- * change of `apps/shenron/site/src/app/globals.css` / `packages/shenron-ui/src/styles.css`
+ * change of `apps/site/src/app/globals.css` / `packages/shenron-ui/src/styles.css`
  * (first use: moving the token layer into `@shenron/ui/styles.css`).
  *
  *   bun packages/shenron-ui/scripts/check-css-equivalence.ts [--ref <rev>] [--keep <dir>] [--limit <n>]
  *
  * Both sides are compiled like Next compiles the site: postcss +
- * `@tailwindcss/postcss`, `base` = apps/shenron/site, candidates scanned from the
+ * `@tailwindcss/postcss`, `base` = apps/site, candidates scanned from the
  * working tree. Tailwind's Lightning CSS pass (without minification) flattens
  * nesting so the two outputs compare rule by rule. Each compilation runs in its
  * own `bun` process: the plugin caches compilers per input file.
  *
- * - Baseline: `git show <rev>:apps/shenron/site/src/app/globals.css` (default `HEAD`).
+ * - Baseline: `git show <rev>:apps/site/src/app/globals.css` (default `HEAD`).
  *   When that revision already imports `@shenron/ui/styles.css`, the package
  *   stylesheet of the same revision is inlined at the import.
  * - Candidate: the working-tree `globals.css`; its `@import "@shenron/ui/styles.css"`
@@ -35,7 +35,7 @@ import postcss, { type AtRule, type ChildNode, type Container, type Rule } from 
 const REPO_ROOT = resolve(import.meta.dir, "..", "..", "..");
 const SITE_DIR = join(REPO_ROOT, "apps", "site");
 const GLOBALS_PATH = join(SITE_DIR, "src", "app", "globals.css");
-const GLOBALS_GIT_PATH = "apps/shenron/site/src/app/globals.css";
+const GLOBALS_GIT_PATH = "apps/site/src/app/globals.css";
 const PACKAGE_STYLES_GIT_PATH = "packages/shenron-ui/src/styles.css";
 const PACKAGE_IMPORT = /@import\s+["']@shenron\/ui\/styles\.css["']\s*;/;
 

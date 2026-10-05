@@ -6,7 +6,7 @@
  * This makes the local journal useful while respecting the publisher's text.
  *
  * Usage (local PostgreSQL):
- *   sudo -u postgres bun apps/shenron/site/scripts/import-dbofficial-news.ts --local
+ *   sudo -u postgres bun apps/site/scripts/import-dbofficial-news.ts --local
  */
 import postgres from "postgres";
 import { existsSync } from "node:fs";

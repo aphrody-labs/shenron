@@ -8,7 +8,7 @@
  * remplacement se réduit à changer la ligne d'import et le nom.
  *
  * Correspondance avec ce qu'ils remplacent, et fréquence mesurée (nombre de
- * fichiers de `apps/shenron/site/src` qui importaient le glyphe lucide) :
+ * fichiers de `apps/site/src` qui importaient le glyphe lucide) :
  *
  * | maison           | lucide          | fichiers |
  * |------------------|-----------------|---------:|
@@ -67,7 +67,7 @@ export const Coche = (p: ProprietesIcone) => <Glyphe nom="coche" {...p} />;
 export const Etincelle = (p: ProprietesIcone) => <Glyphe nom="etincelle" {...p} />;
 
 /**
- * Lot 2 — les 57 glyphes suivants par fréquence mesurée dans `apps/shenron/site/src`.
+ * Lot 2 — les 57 glyphes suivants par fréquence mesurée dans `apps/site/src`.
  * Même contrat : `Glyphe` + une entrée de `GEOMETRIES`, API lucide.
  *
  * Plusieurs glyphes lucide tombent sur un seul dessin quand ils disent la même

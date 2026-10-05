@@ -7,7 +7,7 @@
  * ici dans Neon, puis on propage vers le SQLite replica du bot via
  *   sudo systemctl start shenron-neon-pull.service
  *
- * Mapping chargé depuis apps/shenron/bot/data/fr-episode-titles.json :
+ * Mapping chargé depuis apps/bot/data/fr-episode-titles.json :
  *   { [series]: { [number_in_series]: titre_fr } }
  * Idempotent : UPDATE ciblé par (series, number_in_series). Ne met à jour QUE si
  * un titre FR existe pour l'épisode ; logue les épisodes sans correspondance et

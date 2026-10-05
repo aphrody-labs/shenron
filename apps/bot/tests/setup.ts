@@ -43,14 +43,14 @@ const db = drizzle(sqlite);
 // bridge's metadata-only fixture, never an ignored runtime crawl snapshot.
 Bun.env.DRAGONBALLCN_SNAPSHOT_DIR = resolve(
 	import.meta.dir,
-	"../../../../packages/shenron/pipeline/test/bxc/fixtures/dragonballcn"
+	"../../../packages/pipeline/test/bxc/fixtures/dragonballcn"
 );
 // The bot unit tier must not depend on an installed BXC binary (absent on CI
 // runners). Route the bridge to the deterministic CLI fixture; the real binary
 // is exercised by the @shenron/pipeline/bxc live tier (`test-all --live`).
 Bun.env.BXC_BIN = resolve(
 	import.meta.dir,
-	"../../../../packages/shenron/pipeline/test/bxc/fixtures/bxc-frames-stats.mjs"
+	"../../../packages/pipeline/test/bxc/fixtures/bxc-frames-stats.mjs"
 );
 // Migrated frame queries use the Aphrody CLI contract in the same offline fixture.
 Bun.env.APHRODY_BIN = Bun.env.BXC_BIN;

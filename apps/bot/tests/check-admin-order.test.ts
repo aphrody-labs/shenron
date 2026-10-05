@@ -1,5 +1,5 @@
 /**
- * W3-AUTH-04 — même table que `packages/shenron/auth/test/guards.test.ts` (« bot
+ * W3-AUTH-04 — même table que `packages/auth/test/guards.test.ts` (« bot
  * checkAdmin table », W2-AUTH-04), rejouée à travers le vrai `checkAdmin` du
  * bot : l'ordre 503 → Bearer (préfixe exact, mauvais jeton final) → session
  * Better Auth (staff requis, S1) → cookie hérité → 401, et les corps

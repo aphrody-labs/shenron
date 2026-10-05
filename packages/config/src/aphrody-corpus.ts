@@ -6,7 +6,7 @@
  * endroits ; un miroir de wiki de fans reste refusé aux deux endroits.
  *
  * Données pures : aucun accès disque, réseau ou base. Les parseurs restent
- * côté site (`apps/shenron/site/scripts/_aphrody-corpus.ts`).
+ * côté site (`apps/site/scripts/_aphrody-corpus.ts`).
  */
 
 /** Langue d'une référence canon (miroir de `CanonReference["lang"]`). */

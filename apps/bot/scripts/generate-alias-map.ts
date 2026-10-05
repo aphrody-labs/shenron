@@ -5,7 +5,7 @@
  * Normalise les noms, associe les écritures japonaises/romaji, intègre des synonymes historiques
  * (ex: Sangoku -> Goku, Frieza -> Freezer, Cell -> Celula) et écrit le résultat dans alias-map.json.
  *
- * Usage : bun apps/shenron/bot/scripts/generate-alias-map.ts
+ * Usage : bun apps/bot/scripts/generate-alias-map.ts
  */
 import { Database } from "bun:sqlite";
 import { writeFileSync, mkdirSync } from "node:fs";

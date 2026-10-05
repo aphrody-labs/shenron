@@ -30,17 +30,17 @@ import { userHome } from "@aphrody/paths";
  * SIMULATION PAR DÉFAUT — sans `--appliquer`, rien n'est écrit nulle part.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/orchestre-donnees.ts                 # état + écarts
- *   bun apps/shenron/bot/scripts/orchestre-donnees.ts --appliquer     # exécute la chaîne
- *   bun apps/shenron/bot/scripts/orchestre-donnees.ts --sans-canon --appliquer
- *   bun apps/shenron/bot/scripts/orchestre-donnees.ts --sans-rag --appliquer
+ *   bun apps/bot/scripts/orchestre-donnees.ts                 # état + écarts
+ *   bun apps/bot/scripts/orchestre-donnees.ts --appliquer     # exécute la chaîne
+ *   bun apps/bot/scripts/orchestre-donnees.ts --sans-canon --appliquer
+ *   bun apps/bot/scripts/orchestre-donnees.ts --sans-rag --appliquer
  */
 import { Database } from "bun:sqlite";
 import postgres from "postgres";
 import { join } from "node:path";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const DEPOT = join(ROOT, "..", "..");
 const DBP = process.env.RAG_DB ?? join(ROOT, "data/bot.db");
 const RAPPORT = join(ROOT, "data/orchestration.json");
@@ -56,12 +56,12 @@ async function remoteRagStats() {
 	catch { return null; }
 }
 
-/** `apps/shenron/site/.env` porte DEUX `DATABASE_URL` (l'ancienne Neon d'abord) : la DERNIÈRE fait foi. */
+/** `apps/site/.env` porte DEUX `DATABASE_URL` (l'ancienne Neon d'abord) : la DERNIÈRE fait foi. */
 async function urlPostgres(): Promise<string> {
 	const direct = process.env.DATABASE_URL?.trim();
 	if (direct) return direct;
 	for (const chemin of [
-		join(DEPOT, "apps/shenron/site/.env"),
+		join(DEPOT, "apps/site/.env"),
 		join(userHome(), ".shenron-neon.env"),
 	]) {
 		const texte = await Bun.file(chemin)
@@ -75,7 +75,7 @@ async function urlPostgres(): Promise<string> {
 			.replace(/^["']|["']$/g, "");
 		if (valeur) return valeur;
 	}
-	throw new Error("DATABASE_URL introuvable (env, apps/shenron/site/.env, ~/.shenron-neon.env).");
+	throw new Error("DATABASE_URL introuvable (env, apps/site/.env, ~/.shenron-neon.env).");
 }
 
 interface Etape {
@@ -163,7 +163,7 @@ for (const table of TABLES) {
 }
 journal({
 	nom: "réplica SQLite",
-	role: "PostgreSQL → apps/shenron/bot/data/bot.db (timer shenron-neon-pull)",
+	role: "PostgreSQL → apps/bot/data/bot.db (timer shenron-neon-pull)",
 	statut: ecartsReplica.length === 0 ? "ok" : "écart",
 	detail:
 		ecartsReplica.length === 0
@@ -188,7 +188,7 @@ if (SANS_CANON) {
 			detail: `${avant!.total} preuves indexées (${avant!.traduites} traduites) — le service shenron-canon-ingest repasse toutes les 15 min`,
 		});
 	} else {
-		const r = await lance("canon-ingest", ["apps/shenron/site/scripts/canon-ingest.ts"]);
+		const r = await lance("canon-ingest", ["apps/site/scripts/canon-ingest.ts"]);
 		const [apres] = (await sql`
 			select count(*)::int total from public.canon_references where visible
 		`) as unknown as { total: number }[];
@@ -217,7 +217,7 @@ if (SANS_CORPUS || RAG_APHRODY || !APPLIQUER) {
 				: `écrit il y a ${Math.round(age / 3_600_000)} h — le build hebdomadaire lit ce fichier, pas la base`,
 	});
 } else {
-	const r = await lance("ingest-databooks-rag", ["packages/shenron/pipeline/scripts/ingest-databooks-rag.ts"]);
+	const r = await lance("ingest-databooks-rag", ["packages/pipeline/scripts/ingest-databooks-rag.ts"]);
 	journal({
 		nom: "corpus databooks",
 		role: "PostgreSQL → data/rag/corpus-databooks.json (lu par rag-build)",
@@ -233,7 +233,7 @@ if (SANS_CORPUS || RAG_APHRODY || !APPLIQUER) {
 // du bot par `lib/rag.ts`).
 
 if (!SANS_RAG && !RAG_APHRODY && APPLIQUER) {
-	const r = await lance("rag-lexique", ["packages/shenron/pipeline/scripts/rag-lexique.ts"]);
+	const r = await lance("rag-lexique", ["packages/pipeline/scripts/rag-lexique.ts"]);
 	journal({
 		nom: "lexique des requêtes",
 		role: "PostgreSQL + lexique canonique → data/rag/lexique-requetes.json",
@@ -253,7 +253,7 @@ if (SANS_RAG) {
 	journal({ nom: "index RAG", role: RAG_APHRODY ? "→ Aphrody" : "→ rag_chunks", statut: "ignoré", detail: "--sans-rag" });
 } else {
 	const r = await lance("rag-resync-entites", [
-		"packages/shenron/pipeline/scripts/rag-resync-entites.ts",
+		"packages/pipeline/scripts/rag-resync-entites.ts",
 		"--toutes",
 		...(APPLIQUER ? ["--appliquer"] : []),
 	]);

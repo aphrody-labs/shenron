@@ -32,7 +32,7 @@ const APPLY_MIN_CONFIDENCE = 0.85;
 const argOpt = (k: string) => process.argv.find((a) => a.startsWith(`--${k}=`))?.slice(k.length + 3);
 const LIMIT = Number(argOpt("limit") ?? 0) || 0;
 const RACINE = join(import.meta.dir, "..", "..", "..");
-const ROOTS = { bot: join(RACINE, "apps/shenron/bot"), site: join(RACINE, "apps/shenron/site") };
+const ROOTS = { bot: join(RACINE, "apps/bot"), site: join(RACINE, "apps/site") };
 const DATE = new Date().toISOString().slice(0, 10);
 const WANTED = (argOpt("types")?.split(",") ?? Object.keys(ILLUSTRATION_TYPES)).filter((t) => ILLUSTRATION_TYPES[t]);
 
@@ -85,7 +85,7 @@ await sql.end();
 const needs = stats.emptyBefore + stats.missingBefore + stats.lowResBefore;
 const report = `# Illustrations sourcées du wiki — ${DATE}
 
-Script : \`apps/shenron/bot/scripts/wiki-illustrer.ts\` (${APPLY ? "**appliqué**" : "simulation"}${APPLY_LOW_RES ? ", basse résolution comprise" : ""}).
+Script : \`apps/bot/scripts/wiki-illustrer.ts\` (${APPLY ? "**appliqué**" : "simulation"}${APPLY_LOW_RES ? ", basse résolution comprise" : ""}).
 Sources interrogées : xv2, databook, manga, anime. Aucune image n'est générée ; une fiche sans candidat reste vide.
 
 ## Compteurs

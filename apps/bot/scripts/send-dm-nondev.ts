@@ -19,7 +19,7 @@ async function getDiscordToken(): Promise<string> {
 			return trimmed.slice("DISCORD_TOKEN=".length).replace(/^['"]|['"]$/g, "").trim();
 		}
 	}
-	throw new Error("DISCORD_TOKEN introuvable dans apps/shenron/bot/.env");
+	throw new Error("DISCORD_TOKEN introuvable dans apps/bot/.env");
 }
 
 const PART_1 = `🐉 **Rapport d'avancement — Shenron & Dragon Ball FR**

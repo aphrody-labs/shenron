@@ -27,9 +27,9 @@
  * n'a pas de révisions wiki, l'instantané est son chemin de retour.
  *
  * Usage (depuis la racine du dépôt) :
- *   bun --env-file=.env apps/shenron/site/scripts/repare-entites-html-pages-collectees.ts [--sources-externes] [--echantillons 10]
- *   bun --env-file=.env apps/shenron/site/scripts/repare-entites-html-pages-collectees.ts --repetition [--sources-externes]
- *   bun --env-file=.env apps/shenron/site/scripts/repare-entites-html-pages-collectees.ts --appliquer --instantane <hors-dépôt.jsonl.gz> [--lot 100] [--sources-externes]
+ *   bun --env-file=.env apps/site/scripts/repare-entites-html-pages-collectees.ts [--sources-externes] [--echantillons 10]
+ *   bun --env-file=.env apps/site/scripts/repare-entites-html-pages-collectees.ts --repetition [--sources-externes]
+ *   bun --env-file=.env apps/site/scripts/repare-entites-html-pages-collectees.ts --appliquer --instantane <hors-dépôt.jsonl.gz> [--lot 100] [--sources-externes]
  */
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
@@ -68,7 +68,7 @@ function integerOption(name: string, fallback: number, min: number, max: number)
 if (applying && rehearsing) throw new Error("--appliquer et --repetition sont exclusifs.");
 if (applying && !snapshotArg) throw new Error("--appliquer exige --instantane <fichier.jsonl.gz> hors du dépôt.");
 
-const repositoryRoot = fileURLToPath(new URL("../../../../", import.meta.url));
+const repositoryRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const snapshotPath = snapshotArg ? resolve(snapshotArg) : undefined;
 if (snapshotPath) {
 	if (snapshotPath.toLowerCase().startsWith(repositoryRoot.toLowerCase())) throw new Error("L'instantané doit être écrit hors du dépôt.");

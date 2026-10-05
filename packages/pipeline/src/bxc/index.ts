@@ -24,7 +24,7 @@ export * from "./services";
 
 
 /**
- * Client universel Bxc pour le backend Shenron (apps/shenron/site, apps/shenron/bot, worker)
+ * Client universel Bxc pour le backend Shenron (apps/site, apps/bot, worker)
  */
 export class BxcBridge {
   public readonly animesama: AnimesamaService;

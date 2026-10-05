@@ -14,7 +14,7 @@ function siteSignActing(secret: string, discordId: string, now: number) {
 	return { ts, sig };
 }
 
-// ── Inline copy of the current bot verifier (apps/shenron/bot/src/api/user-auth.ts) ──
+// ── Inline copy of the current bot verifier (apps/bot/src/api/user-auth.ts) ──
 const SKEW_MS = 5 * 60 * 1000;
 function botHmacHex(secret: string, msg: string): string {
 	const hasher = new Bun.CryptoHasher("sha256", secret);

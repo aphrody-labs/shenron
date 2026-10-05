@@ -110,7 +110,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
 }
 
 const DATABASE_URL = await lireEnv("DATABASE_URL");
-if (!DATABASE_URL) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!DATABASE_URL) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(DATABASE_URL, { max: 2 });
 
 interface Planche {

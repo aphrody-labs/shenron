@@ -3,8 +3,8 @@ import { analyze } from "../scripts/check-css-equivalence";
 import { judge, PRIMITIVE, total } from "../scripts/check-dashboard-css";
 
 // Host checkout (aphrody): this package is its m3/packages/shenron-ui.
-const root = new URL("../../../../", import.meta.url);
-const dashboardCss = await Bun.file(new URL("apps/shenron/bot/src/dashboard/styles.css", root)).text();
+const root = new URL("../../../", import.meta.url);
+const dashboardCss = await Bun.file(new URL("apps/bot/src/dashboard/styles.css", root)).text();
 
 const BASE = `
 @layer theme { :root { --color-dbz-bg: #050a15; --radius-lg: .5rem; } }

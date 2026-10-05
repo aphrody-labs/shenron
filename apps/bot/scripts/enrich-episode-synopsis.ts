@@ -20,7 +20,7 @@
  *
  * Usage :
  *   set -a; . ~/.shenron-neon.env; set +a; \
- *   ~/.bun/bin/bun apps/shenron/bot/scripts/enrich-episode-synopsis.ts
+ *   ~/.bun/bin/bun apps/bot/scripts/enrich-episode-synopsis.ts
  */
 import postgres from "postgres";
 

@@ -2,18 +2,18 @@
  * Mapping between paths stored in the database and files on disk.
  *
  * Measured facts (see docs/pieges.md): a DB path is never a disk path.
- *  - `./assets/wiki/<x>` and `assets/wiki/<x>` → `apps/shenron/site/public/wiki/<x>`
- *  - `./assets/<other>`                       → `apps/shenron/bot/assets/<other>`
- *  - `/db/<x>` (mirror)                        → `apps/shenron/bot/public/db/<x>`
+ *  - `./assets/wiki/<x>` and `assets/wiki/<x>` → `apps/site/public/wiki/<x>`
+ *  - `./assets/<other>`                       → `apps/bot/assets/<other>`
+ *  - `/db/<x>` (mirror)                        → `apps/bot/public/db/<x>`
  * The bot serves the first two under `/assets/…` and the mirror under `/db/…`.
  */
 import { join, normalize } from "node:path";
 import ASSET_ALIASES_JSON from "./asset-aliases.json" with { type: "json" };
 
 export interface AssetRoots {
-	/** apps/shenron/bot */
+	/** apps/bot */
 	bot: string;
-	/** apps/shenron/site */
+	/** apps/site */
 	site: string;
 }
 
@@ -29,8 +29,8 @@ function toPosix(p: string): string {
  * Deduplicated binaries: `<app>/<root>/<path>` → canonical `<app>/<root>/<path>`
  * (paths relative to `apps/`). Each alias is a byte-identical copy that was
  * removed from disk; its public URL keeps answering through this map (bot
- * `/assets/**`, bot favicons, Next redirects for `apps/shenron/site/public`).
- * Regenerate and verify with `packages/shenron/images/tests/asset-aliases.test.ts`.
+ * `/assets/**`, bot favicons, Next redirects for `apps/site/public`).
+ * Regenerate and verify with `packages/images/tests/asset-aliases.test.ts`.
  */
 export const ASSET_ALIASES: Readonly<Record<string, string>> = ASSET_ALIASES_JSON;
 
@@ -86,8 +86,8 @@ export function diskToDbPath(disk: string, roots: AssetRoots): string | null {
 	const botDb = toPosix(join(roots.bot, "public", "db")) + "/";
 	const siteWiki = toPosix(join(roots.site, "public", "wiki")) + "/";
 	const d = toPosix(disk);
-	// `apps/shenron/bot/assets/wiki/` is a dead root: the bot serves `/assets/wiki/*` from
-	// `apps/shenron/site/public/wiki/` only, so a file there has no servable DB path.
+	// `apps/bot/assets/wiki/` is a dead root: the bot serves `/assets/wiki/*` from
+	// `apps/site/public/wiki/` only, so a file there has no servable DB path.
 	if (d.startsWith(botAssets + "wiki/")) return null;
 	if (d.startsWith(siteWiki)) return `./assets/wiki/${d.slice(siteWiki.length)}`;
 	if (d.startsWith(botAssets)) return `./assets/${d.slice(botAssets.length)}`;

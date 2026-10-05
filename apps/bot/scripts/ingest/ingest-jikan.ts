@@ -20,7 +20,7 @@ const SLEEP = (ms: number) => new Promise((r) => setTimeout(r, ms));
 //   54900 → **WIND BREAKER**, pas DAIMA. Nos épisodes 1 à 13 de DAIMA ont porté
 //           pendant des mois les titres japonais, les rōmaji et les dates de
 //           diffusion de cette autre série (`サクラとフウリン`, avril-juin 2024).
-//           Réparé par `apps/shenron/site/scripts/corrige-episodes-daima.ts`.
+//           Réparé par `apps/site/scripts/corrige-episodes-daima.ts`.
 //    9617 → le film **K-On!**, pas Dragon Ball Z Kai.
 //   12095 et 33092 → HTTP 404, donc silencieusement sans effet.
 // Un identifiant numérique ne se relit pas : le contrôle qui les a démasqués est

@@ -25,8 +25,8 @@
  * SIMULATION PAR DÉFAUT.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/dedoublonne-assets.ts
- *   bun apps/shenron/bot/scripts/dedoublonne-assets.ts --appliquer
+ *   bun apps/bot/scripts/dedoublonne-assets.ts
+ *   bun apps/bot/scripts/dedoublonne-assets.ts --appliquer
  */
 import { join } from "node:path";
 import postgres from "postgres";

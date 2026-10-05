@@ -10,7 +10,7 @@
  * query string or a response body).
  *
  * Documented differences with the historical `AphrodyComputeClient`
- * (`packages/shenron/pipeline/src/aphrody/compute.ts`): `embed` collapses whitespace and splits
+ * (`packages/pipeline/src/aphrody/compute.ts`): `embed` collapses whitespace and splits
  * requests in batches of {@link APHRODY_LIMITS}.embedTexts with 384-dimension
  * checks (B18), and `ocr` defaults to the `ppocr` engine.
  */

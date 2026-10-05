@@ -2,7 +2,7 @@
 /**
  * assets-dragonballcn.ts — Constitue le MIROIR LOCAL de ce que
  * comic.dragonballcn.com (鳥山明漫画資料館) sert réellement, rangé sous
- * `apps/shenron/bot/assets/dragonballcn/`.
+ * `apps/bot/assets/dragonballcn/`.
  *
  * CE QUI EST MIROITÉ
  * ------------------
@@ -21,9 +21,9 @@
  *     <collection>/NNN.webp         couverture, NNN = rang de parution dans l'édition
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/assets-dragonballcn.ts --simulation
- *   bun apps/shenron/bot/scripts/assets-dragonballcn.ts
- *   bun apps/shenron/bot/scripts/assets-dragonballcn.ts --collection dragonball_jp_original --force
+ *   bun apps/bot/scripts/assets-dragonballcn.ts --simulation
+ *   bun apps/bot/scripts/assets-dragonballcn.ts
+ *   bun apps/bot/scripts/assets-dragonballcn.ts --collection dragonball_jp_original --force
  */
 import { mkdir, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";

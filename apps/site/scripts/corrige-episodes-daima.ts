@@ -5,7 +5,7 @@
  *
  * CE QUI S'EST PASSÉ
  * ------------------
- * `apps/shenron/bot/scripts/ingest/ingest-jikan.ts` interroge MyAnimeList par
+ * `apps/bot/scripts/ingest/ingest-jikan.ts` interroge MyAnimeList par
  * identifiant. Celui écrit pour DAIMA, **54900, est celui de *Wind Breaker***
  * (série de printemps 2024). Nos épisodes 1 à 13 ont donc reçu les titres
  * japonais, les rōmaji et les dates de diffusion de cette série : `サクラとフウリン`

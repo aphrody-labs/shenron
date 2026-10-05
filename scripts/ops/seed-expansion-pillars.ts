@@ -30,11 +30,11 @@ function getPgUrl(): string | null {
   return null;
 }
 
-const sqlitePath = join(import.meta.dir, "../../apps/bot/data/bot.db");
+const sqlitePath = join(import.meta.dir, "../apps/bot/data/bot.db");
 
 function publishableSeedImage(image: string): string | null {
   if (!image.startsWith("/images/")) return image;
-  const file = join(import.meta.dir, "../../apps/site/public", image.replace(/^\/+/, ""));
+  const file = join(import.meta.dir, "../apps/site/public", image.replace(/^\/+/, ""));
   return existsSync(file) ? image : null;
 }
 

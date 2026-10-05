@@ -7,7 +7,7 @@
  * Clé : YOUTUBE_API_KEY (env) — créée via gcloud, jamais commitée.
  * Quota : search.list coûte 100 unités (défaut 10 000/jour ≈ 100 recherches).
  *
- * Usage : YOUTUBE_API_KEY=$(cat ~/.shenron-yt.key) bun apps/shenron/bot/scripts/enrich-trailers.ts
+ * Usage : YOUTUBE_API_KEY=$(cat ~/.shenron-yt.key) bun apps/bot/scripts/enrich-trailers.ts
  */
 import { Database } from "bun:sqlite";
 

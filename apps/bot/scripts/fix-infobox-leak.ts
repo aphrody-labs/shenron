@@ -19,7 +19,7 @@
  * SQLite : `sudo systemctl start shenron-neon-pull.service`.
  *
  * Idempotent. Usage :
- *   DATABASE_URL=… bun apps/shenron/bot/scripts/fix-infobox-leak.ts [--dry-run]
+ *   DATABASE_URL=… bun apps/bot/scripts/fix-infobox-leak.ts [--dry-run]
  */
 import { SQL } from "bun";
 

@@ -2,7 +2,7 @@
 /**
  * Checks every hard-coded character slug against `bot.db_characters`.
  *
- *   bun apps/shenron/site/scripts/check-wiki-slugs.ts
+ *   bun apps/site/scripts/check-wiki-slugs.ts
  *
  * The id → slug table in `src/lib/wiki-slugs.ts` is written by hand. On
  * 2026-09-12 it had drifted from the database: 26 canonical URLs served another

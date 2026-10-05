@@ -8,7 +8,7 @@
  * SQLite nécessaire.
  *
  * Env requis : DATABASE_URL (Neon). Optionnel : VOIRANIME_JSON (chemin).
- * Usage : bun apps/shenron/bot/scripts/import-voiranime-movies-players.ts
+ * Usage : bun apps/bot/scripts/import-voiranime-movies-players.ts
  */
 import postgres from "postgres";
 

@@ -6,7 +6,7 @@
  * -------------------------------------------------------
  * `ingest-fullcolor-manga.ts` visait la même idée par Sushi Scan, mais couvrait
  * **2 tomes** et n'a jamais atterri : 175 Mo dorment dans
- * `apps/shenron/bot/assets/manga/DB/fullcolor/`, et **zéro ligne** de
+ * `apps/bot/assets/manga/DB/fullcolor/`, et **zéro ligne** de
  * `bot.db_manga_chapters` ne pointe ce dossier (mesuré le 2026-09-02). Le
  * forum, lui, porte l'œuvre entière : 520 fils, 7 954 planches. On repart donc
  * de cette source-là, sans toucher à l'ancienne chaîne.
@@ -44,7 +44,7 @@
  *
  * Usage :
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/shenron/bot \
+ *     --working-directory=apps/shenron/bot \
  *     bun scripts/ingest-scans-couleur.ts [--appliquer]
  *
  * Simulation par défaut. `--appliquer` écrit.

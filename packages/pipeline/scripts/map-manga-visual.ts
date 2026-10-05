@@ -8,7 +8,7 @@
  *   { totalTomes, totalPages, tomes: [{ series, tome, plancheCount,
  *       pages: [{ planche, image (chemin local), url, text (OCR), hasJa, lineCount }] }] }
  *
- * Usage : bun apps/shenron/bot/scripts/map-manga-visual.ts
+ * Usage : bun apps/bot/scripts/map-manga-visual.ts
  */
 import { Glob } from "bun";
 import { Database } from "bun:sqlite";
@@ -16,7 +16,7 @@ import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 
-const ROOT = fileURLToPath(new URL("..", import.meta.url)); // apps/shenron/bot/
+const ROOT = fileURLToPath(new URL("..", import.meta.url)); // apps/bot/
 const MANGA = join(ROOT, "assets", "manga");
 const OUT = join(ROOT, "data", "manga-visual-map.json");
 const ASSET_BASE = process.env.ASSET_BASE ?? "https://bot.dragonballfr.com";

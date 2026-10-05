@@ -4,8 +4,8 @@
  * sur l'ensemble des tables éditoriales du wiki (Goal #20).
  *
  * Usage :
- *   bun apps/shenron/site/scripts/audit-wiki-couverture.ts
- *   bun apps/shenron/site/scripts/audit-wiki-couverture.ts --json
+ *   bun apps/site/scripts/audit-wiki-couverture.ts
+ *   bun apps/site/scripts/audit-wiki-couverture.ts --json
  */
 import { join } from "node:path";
 import postgres from "postgres";
@@ -26,7 +26,7 @@ async function urlBase(): Promise<string> {
 			.trim()
 			.replace(/^["']|["']$/g, "");
 	};
-	// La réplique distante est la source éditoriale. `apps/shenron/site/.env` peut
+	// La réplique distante est la source éditoriale. `apps/site/.env` peut
 	// délibérément viser un PostgreSQL local, souvent absent sur les machines
 	// d'audit ; la préférer produisait un faux audit en échec d'authentification.
 	const remote = await readValue(

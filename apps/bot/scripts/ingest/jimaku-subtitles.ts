@@ -75,9 +75,9 @@ import { userHome } from "@aphrody/paths";
  * IDEMPOTENT — une fiche qui porte déjà une piste dans cette langue est sautée.
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
- *   bun apps/shenron/bot/scripts/ingest/jimaku-subtitles.ts --series DBZ            # plan
- *   bun apps/shenron/bot/scripts/ingest/jimaku-subtitles.ts --series DBZ_KAI --appliquer
- *   bun apps/shenron/bot/scripts/ingest/jimaku-subtitles.ts --films --appliquer
+ *   bun apps/bot/scripts/ingest/jimaku-subtitles.ts --series DBZ            # plan
+ *   bun apps/bot/scripts/ingest/jimaku-subtitles.ts --series DBZ_KAI --appliquer
+ *   bun apps/bot/scripts/ingest/jimaku-subtitles.ts --films --appliquer
  *
  *   --series S    série db_episodes visée (défaut DBS)
  *   --entry N     entrée jimaku (défaut : déduit de --series via ENTREES)
@@ -102,7 +102,7 @@ import postgres from "postgres";
 
 type Sql = ReturnType<typeof postgres>;
 
-const ROOT = new URL("../..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("../..", import.meta.url).pathname; // apps/bot/
 const BASE = "https://jimaku.cc";
 const UA = "shenron-dragonballfr/1.0 (+https://dragonballfr.com)";
 

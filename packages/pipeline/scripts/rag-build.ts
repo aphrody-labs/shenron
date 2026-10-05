@@ -16,7 +16,7 @@
  * recreate : ne JAMAIS lancer sur la base servie (cf. docs/rag-enrichment.md,
  * procédure copy-swap) — pour une mise à jour à chaud, `rag-resync-entites.ts`.
  *
- * Usage : RAG_DB=/tmp/ragbuild.db bun apps/shenron/bot/scripts/rag-build.ts [--no-vectors]
+ * Usage : RAG_DB=/tmp/ragbuild.db bun apps/bot/scripts/rag-build.ts [--no-vectors]
  */
 import { Database } from "bun:sqlite";
 import * as sqliteVec from "sqlite-vec";

@@ -21,7 +21,7 @@
  * lancer via systemd-run avec EnvironmentFile (cf. rappel affiché en fin).
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
- *   bun apps/shenron/bot/scripts/ingest-episode-frames.ts --series DBZ --ep 1 [--file <json>] [--apply]
+ *   bun apps/bot/scripts/ingest-episode-frames.ts --series DBZ --ep 1 [--file <json>] [--apply]
  *
  *   --series   série db_episodes (sinon lue depuis le dataset).
  *   --ep       numberInSeries (sinon lu depuis le dataset).
@@ -33,7 +33,7 @@ import { stat } from "node:fs/promises";
 import type { EpisodeFrame, Series } from "./lib/frames-common.js";
 
 const SERIES_VALUES: Series[] = ["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA", "DBZ_KAI", "DBZ_KAI_FINAL"];
-const ROOT = new URL("../", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("../", import.meta.url).pathname; // apps/bot/
 const DATA_DIR = join(ROOT, "data", "dbz-frames");
 
 interface Args {

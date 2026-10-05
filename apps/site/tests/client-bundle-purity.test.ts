@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Pureté du bundle client (W5-TOOL-01, docs/STACK.md §4.2) : depuis chaque
- * module `"use client"` d'`apps/shenron/site/src`, le graphe d'imports statiques
+ * module `"use client"` d'`apps/site/src`, le graphe d'imports statiques
  * (relatifs, alias `@/`, et entrées source des paquets `@shenron/*`) ne doit
  * jamais atteindre `@shenron/pipeline/ai`, `@shenron/db/{postgres-js,sql,bun-sql,redis}`,
  * `@shenron/api/server` ni `@shenron/pipeline/aphrody`.

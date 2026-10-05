@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * import-assets-mirror — copie reference/db-recon/assets/ → apps/shenron/bot/public/db/
+ * import-assets-mirror — copie reference/db-recon/assets/ → apps/bot/public/db/
  * et peuple db_assets avec sha256 + bytes + source + license + attribution.
  * Idempotent : skip si path déjà présent (basé sur sha256).
  */

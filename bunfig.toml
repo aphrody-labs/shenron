@@ -1,0 +1,42 @@
+[install]
+linker = "isolated"
+hoist = false
+saveTextLockfile = true
+minimumReleaseAge = 259200
+# Owner-published Aphrody packages are pinned exactly and released in step with this repository;
+# security fixes (next, nodemailer, undici) track upstream in real time.
+minimumReleaseAgeExcludes = [
+  "@aphrody/api",
+  "@aphrody/bun",
+  "@aphrody/bun-test-dom",
+  "@aphrody/discord-kit",
+  "@aphrody/http",
+  "@aphrody/inference",
+  "@aphrody/m3-motion",
+  "@aphrody/m3-primitives",
+  "@aphrody/m3-reader",
+  "@aphrody/m3-theme",
+  "@aphrody/m3-tokens",
+  "@aphrody/media",
+  "@aphrody/paths",
+  "@aphrody/plugin-opener",
+  "@aphrody/runtime-sdk",
+  "@aphrody/sql",
+  "@aphrody/update",
+  "next",
+  "@next/env",
+  "@next/swc-linux-x64-gnu",
+  "@next/swc-linux-x64-musl",
+  "@next/swc-win32-x64-msvc",
+  "@next/swc-darwin-arm64",
+  "@next/swc-darwin-x64",
+  "@next/swc-linux-arm64-gnu",
+  "@next/swc-linux-arm64-musl",
+  "@next/swc-win32-arm64-msvc",
+  "nodemailer",
+  "undici",
+]
+
+[jsx]
+runtime = "automatic"
+importSource = "react"

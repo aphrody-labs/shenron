@@ -40,10 +40,10 @@
  * SIMULATION PAR DÉFAUT : sans `--appliquer`, rien n'est écrit en base.
  *
  * Usage :
- *   bun apps/shenron/site/scripts/traduction-boucle.ts --lots 1              # un lot, à blanc
- *   bun apps/shenron/site/scripts/traduction-boucle.ts --lots 5 --appliquer
- *   bun apps/shenron/site/scripts/traduction-boucle.ts --databook 12 --appliquer
- *   bun apps/shenron/site/scripts/traduction-boucle.ts --moteur google --lots 0 --appliquer  # jusqu'à épuisement
+ *   bun apps/site/scripts/traduction-boucle.ts --lots 1              # un lot, à blanc
+ *   bun apps/site/scripts/traduction-boucle.ts --lots 5 --appliquer
+ *   bun apps/site/scripts/traduction-boucle.ts --databook 12 --appliquer
+ *   bun apps/site/scripts/traduction-boucle.ts --moteur google --lots 0 --appliquer  # jusqu'à épuisement
  */
 import postgres from "postgres";
 import { fileURLToPath } from "node:url";
@@ -58,7 +58,7 @@ import { contientJaponais } from "../src/lib/ja/normalisation";
 // .coord/FREEZE-databooks.json existe.
 arretSiGel("traduction-boucle");
 
-const RACINE = fileURLToPath(new URL("..", import.meta.url)); // apps/shenron/site/
+const RACINE = fileURLToPath(new URL("..", import.meta.url)); // apps/site/
 const DEPOT = join(RACINE, "..", "..");
 
 const args = process.argv.slice(2);
@@ -372,7 +372,7 @@ async function moteurGoogle(): Promise<Traducteur> {
 async function moteurNllb(): Promise<Traducteur> {
 	const { env, pipeline } = await import("@huggingface/transformers");
 	// Cache partagé avec les modèles du RAG : inutile de dupliquer des gigaoctets.
-	env.cacheDir = join(DEPOT, "apps/shenron/bot/.models");
+	env.cacheDir = join(DEPOT, "apps/bot/.models");
 	console.log(`chargement de ${MODELE} (hors ligne)…`);
 	const t0 = Date.now();
 	const pipe = (await pipeline("translation", MODELE, { dtype: "q8" })) as unknown as (
@@ -549,7 +549,7 @@ while (LOTS === 0 || lot < LOTS) {
 
 	const argvDepot = [
 		"bun",
-		"apps/shenron/site/scripts/depose-traductions.ts",
+		"apps/site/scripts/depose-traductions.ts",
 		fichierJsonl,
 		"--par",
 		signature,

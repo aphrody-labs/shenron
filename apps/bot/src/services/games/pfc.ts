@@ -1,7 +1,7 @@
 /**
  * PFC (Pierre-Feuille-Ciseaux) — logique pure, sans dépendance Discord.
  * Utilisé à la fois par :
- *   - la commande slash `/pfc` (apps/shenron/bot/src/commands/games/Pfc.ts)
+ *   - la commande slash `/pfc` (apps/bot/src/commands/games/Pfc.ts)
  *   - l'endpoint REST `POST /api/games/pfc/play` (depuis le site)
  *
  * Mêmes règles, mêmes constantes économiques, source de vérité unique.

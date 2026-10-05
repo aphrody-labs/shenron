@@ -2,7 +2,7 @@
  * no-404 — test de non-régression : aucune page ni route API du site ne doit
  * renvoyer 404 (ni 5xx). Couvre trois sources d'URLs :
  *
- *  1. Énumération récursive des fichiers `page.tsx` sous `apps/shenron/site/src/app/`
+ *  1. Énumération récursive des fichiers `page.tsx` sous `apps/site/src/app/`
  *     → conversion chemin fichier → chemin URL. Les groupes `(group)` sont
  *     transparents ; les segments dynamiques (`[id]`, `[slug]`, `[...slug]`)
  *     sont substitués par de VRAIES valeurs (cf. DYNAMIC_SAMPLES) car toutes
@@ -17,7 +17,7 @@
  *     vérifie qu'aucun ne 404. C'est ainsi qu'on attrape de vrais slugs/ids
  *     (films, jeux, techniques, races, profils, posts…) sans les coder en dur.
  *
- *  3. Routes API : énumération récursive des `route.ts` sous `apps/shenron/site/src/app/api/`. On teste
+ *  3. Routes API : énumération récursive des `route.ts` sous `apps/site/src/app/api/`. On teste
  *     en GET. Beaucoup sont POST-only, auth-gated ou catch-all proxy → pour
  *     ceux-là l'objectif est « PAS de 404 » : un 400/401/403/405 est
  *     ACCEPTABLE. L'assertion dure = `status !== 404`.
@@ -29,7 +29,7 @@
  *
  * BASE configurable : `SITE_URL` (défaut prod). Concurrence bornée à 16.
  *
- *   SITE_TEST_LIVE=1 bun test apps/shenron/site/tests/no-404.test.ts
+ *   SITE_TEST_LIVE=1 bun test apps/site/tests/no-404.test.ts
  */
 import { describe, expect, it } from "bun:test";
 import { readdirSync } from "node:fs";

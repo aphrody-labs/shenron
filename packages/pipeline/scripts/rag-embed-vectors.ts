@@ -9,7 +9,7 @@
  * `POST /api/v1/shenron/rag/sync/finish` (Aphrody vérifie le compte avant de
  * retirer l'ancienne génération). La base SQLite n'est ouverte qu'en lecture.
  *
- * Usage : bun packages/shenron/pipeline/scripts/rag-embed-vectors.ts
+ * Usage : bun packages/pipeline/scripts/rag-embed-vectors.ts
  *   RAG_DB (copie hors service, obligatoire), APHRODY_AI_HTTP_URL et
  *   APHRODY_AI_HTTP_TOKEN (ou leurs alias ; obligatoires, aucun défaut).
  */

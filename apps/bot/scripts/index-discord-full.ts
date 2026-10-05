@@ -6,7 +6,7 @@
  * worker (dbz:message / dbz:user / dbz:channel + analytics lore + sentiment). Idempotent (hset).
  *
  * Env : DISCORD_TOKEN_GRAND_PRETRE (perms lecture + intent GuildMembers activé). REDIS_URL -> db0.
- * Usage : bun apps/shenron/bot/scripts/index-discord-full.ts [--max <N par salon, défaut illimité>]
+ * Usage : bun apps/bot/scripts/index-discord-full.ts [--max <N par salon, défaut illimité>]
  */
 import { redis } from "bun";
 import { env } from "../src/lib/env";

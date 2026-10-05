@@ -1,6 +1,6 @@
 /**
  * reconstruct-manga-pages-from-disk.ts — Reconstruit `bot.db_manga_chapters.pages`
- * à partir des planches **déjà self-hostées** sur le VPS (`apps/shenron/bot/assets/manga/`).
+ * à partir des planches **déjà self-hostées** sur le VPS (`apps/bot/assets/manga/`).
  *
  * Contexte : migration Neon → PostgreSQL local (2026-06-23). La colonne `pages`
  * (jsonb, Neon-only) était absente du réplica SQLite → le seed `bot.*` l'a laissée
@@ -17,7 +17,7 @@
  * avec Neon, à re-scraper plus tard si besoin).
  *
  * Idempotent. Env requis : DATABASE_URL (PostgreSQL local).
- * Usage : cd apps/shenron/bot && bun scripts/reconstruct-manga-pages-from-disk.ts [--dry-run]
+ * Usage : cd apps/bot && bun scripts/reconstruct-manga-pages-from-disk.ts [--dry-run]
  */
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";

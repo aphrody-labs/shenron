@@ -25,13 +25,13 @@
  * sans que le japonais ne soit dénaturé.
  *
  * Idempotent : réécrit intégralement corpus-databooks.json à chaque run.
- * Usage : bun apps/shenron/bot/scripts/ingest-databooks-rag.ts
+ * Usage : bun apps/bot/scripts/ingest-databooks-rag.ts
  */
 import postgres from "postgres";
 import { defautDePlanche } from "@shenron/config/databooks-defauts";
 import { urlPostgres } from "./_rag-sources-pg";
 
-const BOT_ROOT = new URL("../../../../apps/shenron/bot/", import.meta.url);
+const BOT_ROOT = new URL("../../../apps/bot/", import.meta.url);
 const OUT = new URL("data/rag/corpus-databooks.json", BOT_ROOT);
 const BASE_URL = "https://dragonballfr.com/wiki/databooks";
 

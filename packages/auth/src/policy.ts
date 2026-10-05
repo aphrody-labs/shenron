@@ -1,7 +1,7 @@
 /**
  * Pure access decision shared by the wiki launch rules
- * (`apps/shenron/site/src/lib/wiki-launch-config.ts`, `proxy.ts`) and the contribution
- * rights (`apps/shenron/site/src/lib/contribution-rights-shared.ts`). Runtime class `pure`.
+ * (`apps/site/src/lib/wiki-launch-config.ts`, `proxy.ts`) and the contribution
+ * rights (`apps/site/src/lib/contribution-rights-shared.ts`). Runtime class `pure`.
  *
  * - `public` lets everyone in, anonymous included;
  * - staff (`isAdmin`) passes every other rule;

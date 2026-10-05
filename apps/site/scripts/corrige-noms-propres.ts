@@ -32,7 +32,7 @@
  *     Celui du 2026-08-25 est dans `~/backups/`.
  *
  * Jeton : $DATABOOKS_API_TOKEN, sinon $SHENRON_ADMIN_TOKEN, lus dans
- * `apps/shenron/site/.env` (dernière ligne qui matche — le fichier a une ligne Neon
+ * `apps/site/.env` (dernière ligne qui matche — le fichier a une ligne Neon
  * commentée AVANT la ligne active).
  */
 import postgres from "postgres";
@@ -75,7 +75,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
 }
 
 const DATABASE_URL = await lireEnv("DATABASE_URL");
-if (!DATABASE_URL) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!DATABASE_URL) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(DATABASE_URL, { max: 2 });
 
 const API = origineSite();
@@ -87,7 +87,7 @@ const JETON = (
 
 if (APPLIQUER && JETON.length < 16) {
 	console.error(
-		"erreur : jeton absent — DATABOOKS_API_TOKEN ou SHENRON_ADMIN_TOKEN doit être dans apps/shenron/site/.env"
+		"erreur : jeton absent — DATABOOKS_API_TOKEN ou SHENRON_ADMIN_TOKEN doit être dans apps/site/.env"
 	);
 	process.exit(2);
 }

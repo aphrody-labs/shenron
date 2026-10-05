@@ -16,7 +16,7 @@ const limit = Number.isFinite(requestedLimit) ? Math.max(1, Math.min(50_000, Mat
 
 async function databaseUrl(): Promise<string> {
 	if (process.env.DATABASE_URL?.trim()) return process.env.DATABASE_URL.trim();
-	for (const path of ["apps/shenron/site/.env", ".env"]) {
+	for (const path of ["apps/site/.env", ".env"]) {
 		const env = await Bun.file(path).text().catch(() => "");
 		const line = env.split("\n").find((entry) => entry.startsWith("DATABASE_URL="));
 		if (line) return line.slice("DATABASE_URL=".length).trim().replace(/^['"]|['"]$/g, "");

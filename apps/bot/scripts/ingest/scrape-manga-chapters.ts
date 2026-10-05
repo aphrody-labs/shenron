@@ -12,7 +12,7 @@
  *   --chapter <N> Traiter uniquement un chapitre spécifique.
  *
  * Env requis : DATABASE_URL (Neon).
- * Usage : bun apps/shenron/bot/scripts/ingest/scrape-manga-chapters.ts [--force] [--limit 10]
+ * Usage : bun apps/bot/scripts/ingest/scrape-manga-chapters.ts [--force] [--limit 10]
  */
 import postgres from "postgres";
 

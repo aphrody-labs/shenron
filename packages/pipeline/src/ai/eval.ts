@@ -2,7 +2,7 @@
 /**
  * `@shenron/pipeline/ai/eval` — RAG retrieval metrics on the gold set.
  *
- * Runtime class: `pure`. Logic moved from `apps/shenron/bot/src/lib/rag-eval.ts`
+ * Runtime class: `pure`. Logic moved from `apps/bot/src/lib/rag-eval.ts`
  * with identical results (one definition of "finding the right source").
  *
  * A gold case:

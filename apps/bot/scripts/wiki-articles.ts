@@ -30,7 +30,7 @@
  * l'index FTS5 local reste disponible pour les déploiements antérieurs.
  *
  * Env : DATABASE_URL = PG du site (via ~/.shenron-neon.env). BOT_DB = chemin sqlite.
- * Usage : bun apps/shenron/bot/scripts/wiki-articles.ts <cmd> [...]
+ * Usage : bun apps/bot/scripts/wiki-articles.ts <cmd> [...]
  */
 import { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
@@ -611,7 +611,7 @@ async function main() {
 			return cmdWrite(args.positional[0], args.positional[1], args);
 		default:
 			console.error(
-				"Usage: bun apps/shenron/bot/scripts/wiki-articles.ts <migrate|stats|list|context|write> ..."
+				"Usage: bun apps/bot/scripts/wiki-articles.ts <migrate|stats|list|context|write> ..."
 			);
 			process.exit(1);
 	}

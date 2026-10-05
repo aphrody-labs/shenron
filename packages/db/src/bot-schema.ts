@@ -2,10 +2,10 @@
  * Schéma Drizzle du **wiki Dragon Ball**, schéma PostgreSQL `bot`.
  *
  * Source de vérité = PostgreSQL local (`shenron_site`, schéma `bot`). Le SQLite
- * du bot (`apps/shenron/bot/data/bot.db`) n'est qu'un réplica partiel (ni `article`,
+ * du bot (`apps/bot/data/bot.db`) n'est qu'un réplica partiel (ni `article`,
  * ni `visible`, ni sections/références canon/databooks) : toute indexation
  * lit PostgreSQL. L'ancien miroir Neon (timer `shenron-neon-sync`) est retiré.
- * Ce schéma est generate-only : `apps/shenron/site/drizzle.config.bot.ts` refuse
+ * Ce schéma est generate-only : `apps/site/drizzle.config.bot.ts` refuse
  * `push` et `migrate`.
  *
  * Le site lit le wiki **directement ici via Drizzle** (plus de fetch sur l'API
@@ -13,13 +13,13 @@
  * bot. Toutes les colonnes int SQLite arrivent en `bigint` Postgres, les autres
  * en `text` — on type donc à l'identique. Lecture seule : aucune écriture site.
  *
- * ── INDEX : voir `apps/shenron/site/src/db/bot-indexes.sql` ─────────────────────────
+ * ── INDEX : voir `apps/site/src/db/bot-indexes.sql` ─────────────────────────
  * Les index de ce schéma ne sont volontairement PAS déclarés ici. Ce fichier
  * n'ayant jamais porté d'`index()`, les tables du wiki n'ont longtemps eu que
  * leur clé primaire (deux tables de jointure n'avaient même pas ça) : mesuré le
  * 2026-08-21, 272 000 balayages séquentiels sur `db_episodes`, 76 000 sur
  * `db_manga_chapters`. Ils vivent désormais dans `bot-indexes.sql`, appliqué par
- * `apps/shenron/site/scripts/apply-bot-indexes.ts`.
+ * `apps/site/scripts/apply-bot-indexes.ts`.
  *
  * Pourquoi pas ici : les index qui comptent sont des index PARTIELS
  * (`WHERE visible`) et des GIN `gin_trgm_ops`, que drizzle-kit ne restitue pas
@@ -35,8 +35,8 @@ export const bot = pgSchema("bot");
 /**
  * Frame de scène d'épisode (extraite par le pipeline bot, montée en preview).
  *
- * CONTRAT PARTAGÉ avec `apps/shenron/bot` — SOURCE DE VÉRITÉ = `apps/shenron/bot/src/db/episode-frames.ts`
- * (type `EpisodeFrame`). Le site ne peut pas importer depuis `apps/shenron/bot` → on
+ * CONTRAT PARTAGÉ avec `apps/bot` — SOURCE DE VÉRITÉ = `apps/bot/src/db/episode-frames.ts`
+ * (type `EpisodeFrame`). Le site ne peut pas importer depuis `apps/bot` → on
  * REDÉFINIT le type ici, IDENTIQUE au bot (le jsonb Neon `bot.db_episodes.frames`
  * remonte tel quel). Champs clés pour l'affichage :
  *  - `imagePath`  : chemin relatif `./assets/ext/db_episodes_frames/...` → passer
@@ -80,7 +80,7 @@ const int = (name: string) => bigint(name, { mode: "number" });
 
 /**
  * Source citée dans un article wiki long-format (champ `article_sources`).
- * Alimenté par `apps/shenron/bot/scripts/wiki-articles.ts` (grounding RAG). Colonnes
+ * Alimenté par `apps/bot/scripts/wiki-articles.ts` (grounding RAG). Colonnes
  * PG-only : le reverse-sync Neon→SQLite les ignore (intersection de colonnes),
  * comme `players`/`frames`/`pages`. Seul le lecteur du site les lit.
  */

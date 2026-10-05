@@ -22,7 +22,7 @@ function memoryFs(files: Record<string, string | Error>): FreezeFs {
 	};
 }
 
-/** Reason extraction of apps/shenron/site/src/lib/databooks-freeze.ts, verbatim. */
+/** Reason extraction of apps/site/src/lib/databooks-freeze.ts, verbatim. */
 function siteReason(raw: string): string {
 	let reason = "gel actif (raison non précisée)";
 	try {

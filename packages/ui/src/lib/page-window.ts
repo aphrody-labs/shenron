@@ -6,8 +6,8 @@
  * constant width instead of jumping from page to page. Seven pages or fewer
  * are all listed.
  *
- * Moved verbatim from `apps/shenron/site/src/components/ui/Pagination.tsx`
- * (`pagesVisibles`), which `apps/shenron/site/src/components/kit/LinkPager.tsx`
+ * Moved verbatim from `apps/site/src/components/ui/Pagination.tsx`
+ * (`pagesVisibles`), which `apps/site/src/components/kit/LinkPager.tsx`
  * duplicated as `pagerWindow`: same statements, same output for every input.
  */
 export function pageWindow(current: number, total: number, radius = 1): Array<number | null> {

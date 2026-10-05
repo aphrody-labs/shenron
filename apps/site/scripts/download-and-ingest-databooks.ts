@@ -6,13 +6,13 @@
  *   1. Databooks 457 à 464 (471 planches pointant vers comic.dragonballcn.com) :
  *      - Téléchargement via BXC curl-impersonate (profile chrome131)
  *      - Validation d'intégrité par Sharp
- *      - Écriture atomique dans apps/shenron/site/public/wiki/databooks/
+ *      - Écriture atomique dans apps/site/public/wiki/databooks/
  *      - Mise à jour en base vers ./assets/wiki/databooks/<fichier>
  *      - Audit trail dans public.wiki_revisions
  *
  *   2. Databook 1 (Daizenshuu 1 — Complete Illustrations, 208 planches) :
  *      - Téléchargement des planches manquantes depuis 0-5-34-1.json
- *      - Sauvegarde dans apps/shenron/site/public/wiki/databooks/daizenshuu-01/
+ *      - Sauvegarde dans apps/site/public/wiki/databooks/daizenshuu-01/
  *      - Préservation des planches existantes HD (p. 1, 2, 3, 4, 6) et de leurs traductions
  *      - Mise à jour en base et journalisation
  */

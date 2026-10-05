@@ -35,14 +35,14 @@ import { userHome } from "@aphrody/paths";
  * il s'est arrêté.
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
- *   bun apps/shenron/bot/scripts/images-attribution.ts --lot 10
- *   bun apps/shenron/bot/scripts/images-attribution.ts --series DBS --lot 40
- *   bun apps/shenron/bot/scripts/images-attribution.ts --rapport   # sans réseau
+ *   bun apps/bot/scripts/images-attribution.ts --lot 10
+ *   bun apps/bot/scripts/images-attribution.ts --series DBS --lot 40
+ *   bun apps/bot/scripts/images-attribution.ts --rapport   # sans réseau
  */
 import postgres from "postgres";
 import { join } from "node:path";
 
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const ETAT = join(ROOT, "data", "attribution-images.json");
 const RAPPORT = join(ROOT, "..", "..", "docs", "attribution-images.md");
 const BXC = process.env.BXC_CLI ?? join(userHome(), "bxc/src/cli/index.ts");
@@ -136,7 +136,7 @@ async function ecrireRapport(): Promise<void> {
 	const lignes = [
 		"# Attribution des vignettes d'épisode",
 		"",
-		"Produit par `bun apps/shenron/bot/scripts/images-attribution.ts` : chaque vignette est",
+		"Produit par `bun apps/bot/scripts/images-attribution.ts` : chaque vignette est",
 		"comparée à l'index image par image de trace.moe, interrogé par bxc. Seul un",
 		"vecteur de 33 entiers quitte la machine, jamais l'image.",
 		"",

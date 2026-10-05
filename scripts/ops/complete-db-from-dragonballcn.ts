@@ -31,18 +31,18 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { Database } from "bun:sqlite";
 import postgres from "postgres";
-import { arretSiGel } from "../../../../../apps/shenron/site/scripts/_databooks-base";
+import { arretSiGel } from "../../apps/site/scripts/_databooks-base";
 
 // Ce seeder crée et remplace des ouvrages complets : le gel doit gagner avant
 // toute résolution de credentials ou ouverture postgres.
 arretSiGel("complete-db-from-dragonballcn");
 
 const ROOTS = {
-  data: join(import.meta.dir, "../../data/dragonballcn"),
-  volumes: join(import.meta.dir, "../../data/dragonballcn/volumes"),
-  catalog: join(import.meta.dir, "../../data/dragonballcn/catalog.json"),
-  manifest: join(import.meta.dir, "../../data/dragonballcn/manifest.json"),
-  botDb: join(import.meta.dir, "../../../../../apps/shenron/bot/data/bot.db"),
+  data: join(import.meta.dir, "../data/dragonballcn"),
+  volumes: join(import.meta.dir, "../data/dragonballcn/volumes"),
+  catalog: join(import.meta.dir, "../data/dragonballcn/catalog.json"),
+  manifest: join(import.meta.dir, "../data/dragonballcn/manifest.json"),
+  botDb: join(import.meta.dir, "../../apps/bot/data/bot.db"),
 };
 
 const DRY_RUN = process.argv.includes("--dry-run");

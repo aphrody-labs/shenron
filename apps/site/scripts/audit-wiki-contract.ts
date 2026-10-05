@@ -8,7 +8,7 @@
  * clé primaire et chaque champ mutable à `information_schema` et échoue avec
  * toutes les divergences détectées.
  *
- * Usage: bun apps/shenron/site/scripts/audit-wiki-contract.ts [--json]
+ * Usage: bun apps/site/scripts/audit-wiki-contract.ts [--json]
  */
 import { join } from "node:path";
 import postgres from "postgres";

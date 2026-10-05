@@ -14,7 +14,7 @@
  *
  * Métriques : Recall@{1,3,5,10}, MRR, nDCG@10, latence p50/p95, ventilation par tag.
  *
- * Lecture seule sur apps/shenron/bot/data/bot.db (ou RAG_DB). Embeddings via Aphrody
+ * Lecture seule sur apps/bot/data/bot.db (ou RAG_DB). Embeddings via Aphrody
  * `POST /api/v1/shenron/embed` : APHRODY_AI_HTTP_URL et APHRODY_AI_HTTP_TOKEN
  * obligatoires hors --lexical-only (B13).
  *
@@ -36,11 +36,11 @@ import {
 import { resolveDataPath } from "@shenron/config/paths";
 import { hybridSearch } from "../src/lib/rag";
 import { ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
-import { repoRootFromScript, servedBotDbPath } from "../../../../packages/shenron/pipeline/scripts/lib/script-env";
+import { repoRootFromScript, servedBotDbPath } from "../../../packages/pipeline/scripts/lib/script-env";
 
 const REPO_ROOT = repoRootFromScript(import.meta.url);
 const DB = process.env.RAG_DB ?? servedBotDbPath(REPO_ROOT);
-// Jeu doré : RAG_GOLD_PATH / RAG_GOLD, sinon apps/shenron/bot/tests/rag-gold.jsonl (l'ancien
+// Jeu doré : RAG_GOLD_PATH / RAG_GOLD, sinon apps/bot/tests/rag-gold.jsonl (l'ancien
 // défaut, relatif au script, visait un chemin du pipeline qui n'existe pas).
 const GOLD = resolveDataPath("ragGold", {
 	env: process.env,

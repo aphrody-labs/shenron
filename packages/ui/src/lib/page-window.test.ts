@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { pageWindow, pagerWindow, pagesVisibles } from "./page-window";
 
 /**
- * Verbatim copy of `pagesVisibles` from apps/shenron/site/src/components/ui/Pagination.tsx
+ * Verbatim copy of `pagesVisibles` from apps/site/src/components/ui/Pagination.tsx
  * before the move (HEAD f602c132), kept as the parity oracle.
  */
 function legacyPagesVisibles(page: number, total: number, fenetre = 1): Array<number | null> {
@@ -28,7 +28,7 @@ function legacyPagesVisibles(page: number, total: number, fenetre = 1): Array<nu
 }
 
 /**
- * Verbatim copy of `pagerWindow` from apps/shenron/site/src/components/kit/LinkPager.tsx
+ * Verbatim copy of `pagerWindow` from apps/site/src/components/kit/LinkPager.tsx
  * before the move (HEAD f602c132), kept as the parity oracle.
  */
 function legacyPagerWindow(page: number, total: number, radius = 1): Array<number | null> {

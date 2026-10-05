@@ -5,10 +5,10 @@
  *   bun packages/shenron-ui/scripts/check-dashboard-css.ts [--ref <rev>] [--keep <dir>] [--limit <n>]
  *
  * Both sides are compiled like the site check: postcss + `@tailwindcss/postcss`
- * (no minification), `base` = apps/shenron/bot/src/dashboard, candidates scanned from
+ * (no minification), `base` = apps/bot/src/dashboard, candidates scanned from
  * the working tree, one `bun` process per compilation.
  *
- * - Baseline: `git show <rev>:apps/shenron/bot/src/dashboard/styles.css` (default
+ * - Baseline: `git show <rev>:apps/bot/src/dashboard/styles.css` (default
  *   `HEAD`); an `@import "@shenron/ui/styles.css"` in that revision is inlined
  *   from the package stylesheet of the same revision.
  * - Candidate: the working-tree stylesheet, resolving the package import through
@@ -41,7 +41,7 @@ import { analyze, type Analysis, compare, type Findings } from "./check-css-equi
 const REPO_ROOT = resolve(import.meta.dir, "..", "..", "..");
 export const DASHBOARD_DIR = join(REPO_ROOT, "apps", "bot", "src", "dashboard");
 const STYLES_PATH = join(DASHBOARD_DIR, "styles.css");
-const STYLES_GIT_PATH = "apps/shenron/bot/src/dashboard/styles.css";
+const STYLES_GIT_PATH = "apps/bot/src/dashboard/styles.css";
 const PACKAGE_STYLES_GIT_PATH = "packages/shenron-ui/src/styles.css";
 const PACKAGE_IMPORT = /@import\s+["']@shenron\/ui\/styles\.css["']\s*;/;
 

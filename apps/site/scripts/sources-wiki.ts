@@ -46,7 +46,7 @@ async function urlBase(): Promise<string> {
 		.trim()
 		.replace(/^["']|["']$/g, "");
 	if (!valeur) {
-		console.error("✗ DATABASE_URL introuvable (environnement ou apps/shenron/site/.env).");
+		console.error("✗ DATABASE_URL introuvable (environnement ou apps/site/.env).");
 		process.exit(1);
 	}
 	return valeur;
@@ -183,7 +183,7 @@ try {
 				console.log(
 					`\n⚠ PLANCHE JUGÉE FAUTIVE (${defaut}) : transcription non fiable, ne rien en tirer.`
 				);
-			if (image) console.log(`image : apps/shenron/site/public/wiki/databooks/${image}`);
+			if (image) console.log(`image : apps/site/public/wiki/databooks/${image}`);
 			console.log(`\n${texte}`);
 		}
 	} else if (commande === "page") {

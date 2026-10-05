@@ -1,4 +1,4 @@
-/** First-party Toei episode importer. Usage: sudo -u postgres bun apps/shenron/bot/scripts/ingest-toei-episode-synopses.ts --apply --local */
+/** First-party Toei episode importer. Usage: sudo -u postgres bun apps/bot/scripts/ingest-toei-episode-synopses.ts --apply --local */
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
 

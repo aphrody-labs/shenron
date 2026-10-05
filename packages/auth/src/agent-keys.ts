@@ -1,7 +1,7 @@
 /**
  * Agent API keys: format, hashing, scopes and write quota (runtime class `server`).
  *
- * Same format as `apps/shenron/site/src/lib/agent-keys.ts`: `dbfr_agent_` + 32 random
+ * Same format as `apps/site/src/lib/agent-keys.ts`: `dbfr_agent_` + 32 random
  * bytes in base64url; only the SHA-256 hex of the full token is stored; the
  * display prefix is the first `prefix + 6` characters.
  */

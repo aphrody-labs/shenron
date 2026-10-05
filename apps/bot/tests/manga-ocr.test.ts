@@ -11,7 +11,7 @@ import {
 	normalizeMangaMarkdown,
 	parseMangaResults,
 	reviewedMangaResult,
-} from "../../../../packages/shenron/pipeline/src/manga-ocr";
+} from "../../../packages/pipeline/src/manga-ocr";
 
 const hash = "a".repeat(64);
 
@@ -21,7 +21,7 @@ function manifest(): MangaOcrManifest {
 		lot: 1,
 		lots: 1,
 		generatedAt: "2026-09-06T00:00:00.000Z",
-		generator: "apps/shenron/bot/scripts/export-manga-ocr.ts",
+		generator: "apps/bot/scripts/export-manga-ocr.ts",
 		selection: "missing",
 		series: ["DB", "DBS"],
 		imagePipeline: { width: 1800, quality: 86, format: "jpeg" },

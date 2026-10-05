@@ -5,7 +5,7 @@ import { userHome } from "@aphrody/paths";
  *
  * Le pipeline « Scènes d'épisode » existe depuis longtemps (`extract-dbz-frames.ts`,
  * `ingest-episode-frames.ts`), mais il attend un fichier vidéo dans
- * `apps/shenron/bot/data/dbz-sources/`. Il n'y en a aucun sur ce VPS, et il n'y en aura
+ * `apps/bot/data/dbz-sources/`. Il n'y en a aucun sur ce VPS, et il n'y en aura
  * pas : 826 épisodes ne tiennent pas sur un disque déjà à 90 %. Résultat mesuré
  * le 2026-09-12 : la colonne `db_episodes.frames` est vide partout.
  *
@@ -49,9 +49,9 @@ import { userHome } from "@aphrody/paths";
  * `-extension_picky 0`.
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
- *   bun apps/shenron/bot/scripts/frames-depuis-lecteur.ts --series DBZ --ep 1
- *   bun apps/shenron/bot/scripts/frames-depuis-lecteur.ts --series DBZ --de 1 --a 10 --appliquer
- *   bun apps/shenron/bot/scripts/frames-depuis-lecteur.ts --series DB --lang vostfr --n 6 --appliquer
+ *   bun apps/bot/scripts/frames-depuis-lecteur.ts --series DBZ --ep 1
+ *   bun apps/bot/scripts/frames-depuis-lecteur.ts --series DBZ --de 1 --a 10 --appliquer
+ *   bun apps/bot/scripts/frames-depuis-lecteur.ts --series DB --lang vostfr --n 6 --appliquer
  *
  *   --series    DB | DBZ | DBGT | DBS | DB_DAIMA | DBZ_KAI | DBZ_KAI_FINAL   (défaut DBZ)
  *   --ep N      un seul épisode        --de N --a M   une plage
@@ -77,7 +77,7 @@ import {
 	writeDatasetIfNonEmpty,
 } from "./lib/frames-common.js";
 
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const ASSETS_DIR = join(ROOT, "assets", "ext", "db_episodes_frames");
 const DATA_DIR = join(ROOT, "data", "dbz-frames");
 /** bxc depuis ses sources : le binaire compilé est cassé pour ces commandes. */

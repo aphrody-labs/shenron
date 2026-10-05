@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Parity with apps/shenron/site/src/lib/agent-keys.ts: the "site" queries below are the
+// Parity with apps/site/src/lib/agent-keys.ts: the "site" queries below are the
 // exact Drizzle calls of the site module, rebuilt on the same mock database.
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";

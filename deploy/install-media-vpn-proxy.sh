@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/shenron/install-media-vpn-proxy.sh
+# deploy/install-media-vpn-proxy.sh
 # Centralized installer for the Privoxy -> Mullvad WireGuard HTTP bridge (127.0.0.1:8119).
 # Owned and orchestrated by aphrody-infra.
 set -euo pipefail

@@ -4,8 +4,8 @@
  * personas, grounding rules, anti-injection guard, sources block.
  *
  * Runtime class: `pure`. Persona texts and fallbacks are copied verbatim from
- * `apps/shenron/bot/src/lib/llm.ts` (`PERSONA_SYSTEM`, `FALLBACK`); the guard is the
- * sentence of `apps/shenron/site/src/lib/site-rag.ts`. Bot personas now receive the
+ * `apps/bot/src/lib/llm.ts` (`PERSONA_SYSTEM`, `FALLBACK`); the guard is the
+ * sentence of `apps/site/src/lib/site-rag.ts`. Bot personas now receive the
  * guard too (B17), and `PROMPT_VERSION` enters the semantic cache scope (B7).
  */
 
@@ -79,7 +79,7 @@ function isPersonaId(value: string): value is PersonaId {
 	return (PERSONA_IDS as readonly string[]).includes(value);
 }
 
-/** Same normalisation as `persona()` in `apps/shenron/bot/src/lib/llm.ts`. */
+/** Same normalisation as `persona()` in `apps/bot/src/lib/llm.ts`. */
 export function resolvePersona(id: string): PersonaId {
 	const p = (id || DEFAULT_PERSONA).toLowerCase().replace(/[^a-z]/g, "");
 	return isPersonaId(p) ? p : DEFAULT_PERSONA;

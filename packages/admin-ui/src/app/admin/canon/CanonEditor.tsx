@@ -904,7 +904,7 @@ export default function CanonEditor({
       >
         {config.references.length === 0 ? (
           <p className="rounded-lg border border-dbz-border bg-black/20 p-3 text-[13px] leading-relaxed text-white/50">
-            Aucune citation chargée. Depuis <code>apps/shenron/site</code> :{" "}
+            Aucune citation chargée. Depuis <code>apps/site</code> :{" "}
             <code className="text-dbz-orange">bun run canon:aphrody --appliquer</code> lit les
             introductions des 42 tomes, le Super Exciting Guide, les Daizenshuu et les interviews
             conservés dans <code>.aphrody</code>.

@@ -1,7 +1,7 @@
 /**
  * Extrait du corpus le vocabulaire japonais qui manque à notre lexique.
  *
- *   bun apps/shenron/site/scripts/ja-vocabulaire.ts [--min N] [--json fichier]
+ *   bun apps/site/scripts/ja-vocabulaire.ts [--min N] [--json fichier]
  *
  * Le détecteur de fautes et cet outil lisent le MÊME signal — une graphie que ni
  * le dictionnaire morphologique, ni JMdict, ni notre lexique ne connaissent — et
@@ -43,7 +43,7 @@ const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
 	?.slice("DATABASE_URL=".length)
 	.replace(/^"|"$/g, "")
 	.trim();
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(url, { max: 2 });
 
 const brut = await sql<{ ja: string; fr: string; kind: string }[]>`

@@ -9,7 +9,7 @@
  *
  * Lancer sur le VPS (PG local) :
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/shenron/bot bun scripts/add-databooks.ts
+ *     --working-directory=apps/shenron/bot bun scripts/add-databooks.ts
  */
 import postgres from "postgres";
 

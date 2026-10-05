@@ -64,7 +64,7 @@ export async function connect(): Promise<Sql> {
 			.trim()
 			.replace(/^["']|["']$/g, "");
 	}
-	if (!url) throw new Error("DATABASE_URL introuvable (variable d'environnement ou apps/shenron/site/.env)");
+	if (!url) throw new Error("DATABASE_URL introuvable (variable d'environnement ou apps/site/.env)");
 	return postgres(url, { max: 2, prepare: false });
 }
 

@@ -8,7 +8,7 @@
  *   - forward vers l'API REST du bot `${SHENRON_API_URL}/api/<path>`.
  *
  * Donc `api.get("/economy/stats")` → `/api/bot-admin/economy/stats` → bot `/api/economy/stats`.
- * Mirroir 1:1 du client du dashboard interne du bot (apps/shenron/bot/src/dashboard/lib/api.ts)
+ * Mirroir 1:1 du client du dashboard interne du bot (apps/bot/src/dashboard/lib/api.ts)
  * pour permettre le portage quasi-verbatim des pages.
  */
 const PROXY_BASE = "/api/bot-admin";

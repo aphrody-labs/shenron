@@ -8,17 +8,17 @@
  * Sortie résolveur : { type:"hls"|"mp4", url, headers:{Referer}, provider }.
  * Puis ffmpeg (HLS/m3u8 → mp4, headers Referer injectés).
  *
- * Usage : bun apps/shenron/bot/scripts/download-voiranime-mp4.ts <SÉRIE> <ep|début-fin> [opts]
+ * Usage : bun apps/bot/scripts/download-voiranime-mp4.ts <SÉRIE> <ep|début-fin> [opts]
  *   SÉRIE : DB | DBZ | DBGT | DBS | DB_DAIMA   (VOSTFR — comme le résolveur prod)
  *   --duration <sec>  tronque (ex. 90 pour un clip de test rapide)
- *   --out <dir>       défaut apps/shenron/bot/data/dbz-videos
+ *   --out <dir>       défaut apps/bot/data/dbz-videos
  *   --limit <N>       max d'épisodes
  * Env : BXC_DIR (défaut ~/bxc)
  */
 import { existsSync, mkdirSync } from "node:fs";
 import os from "node:os";
 
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const BXC_DIR = process.env.BXC_DIR ?? `${os.homedir()}/bxc`;
 const SERIES = new Set(["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA"]);
 

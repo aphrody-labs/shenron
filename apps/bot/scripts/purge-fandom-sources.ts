@@ -20,8 +20,8 @@
  * ressort dans le rapport final pour re-sourçage manuel (manga, databooks).
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/purge-fandom-sources.ts            # dry-run
- *   bun apps/shenron/bot/scripts/purge-fandom-sources.ts --apply
+ *   bun apps/bot/scripts/purge-fandom-sources.ts            # dry-run
+ *   bun apps/bot/scripts/purge-fandom-sources.ts --apply
  */
 import { randomBytes } from "node:crypto";
 import postgres from "postgres";

@@ -3,13 +3,13 @@
  * optimize-jpeg-batch — sharp en parallèle pour batch JPEG (re-encode mozjpeg q=82).
  * Beaucoup plus rapide que `sharp-cli` par fichier (init coût ~500ms).
  *
- * Usage: bun run scripts/optimize-jpeg-batch.ts apps/shenron/bot/public/db
+ * Usage: bun run scripts/optimize-jpeg-batch.ts apps/bot/public/db
  */
 import { readdirSync, statSync, readFileSync, writeFileSync } from "node:fs";
 import { join, extname } from "node:path";
 import sharp from "sharp";
 
-const ROOT = process.argv[2] ?? "apps/shenron/bot/public/db";
+const ROOT = process.argv[2] ?? "apps/bot/public/db";
 const CONCURRENCY = parseInt(Bun.env.JOBS ?? "8", 10);
 
 function* walk(dir: string): Generator<string> {

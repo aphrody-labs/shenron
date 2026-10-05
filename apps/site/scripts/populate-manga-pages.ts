@@ -12,7 +12,7 @@
  * Total : 153 chapitres, 28 249 planches.
  *
  * Usage :
- *   bun --env-file=apps/shenron/site/.env apps/shenron/site/scripts/populate-manga-pages.ts [--dry-run]
+ *   bun --env-file=apps/site/.env apps/site/scripts/populate-manga-pages.ts [--dry-run]
  */
 
 import { existsSync, readFileSync } from "node:fs";
@@ -30,7 +30,7 @@ async function getDatabaseUrl(): Promise<string> {
 	const lines = text.split("\n").filter((l) => l.startsWith("DATABASE_URL="));
 	const value = lines.at(-1)?.slice("DATABASE_URL=".length).trim().replace(/^["']|["']$/g, "");
 	if (!value) {
-		console.error("✗ DATABASE_URL introuvable dans l'environnement ou apps/shenron/site/.env");
+		console.error("✗ DATABASE_URL introuvable dans l'environnement ou apps/site/.env");
 		process.exit(1);
 	}
 	return value;

@@ -1,19 +1,19 @@
 #!/usr/bin/env bun
 /**
- * Generates `apps/shenron/site/src/data/image-variants.json` from the asset inventory:
+ * Generates `apps/site/src/data/image-variants.json` from the asset inventory:
  * for every DB path referenced by an image column (and by the home scenes), the
  * measured dimensions and — when the SAME picture (identical dHash, different
  * bytes) exists at a strictly larger resolution under a servable path — that
  * larger variant. The site's `pickBestImage` serves it. Nothing is copied.
  *
- * Usage: bun apps/shenron/bot/scripts/assets-variantes.ts
+ * Usage: bun apps/bot/scripts/assets-variantes.ts
  */
 import { join } from "node:path";
 import postgres from "postgres";
 import { coversResolution, dbPathToDisk, diskToDbPath, normalizeDbPath } from "@shenron/images";
 
 const RACINE = join(import.meta.dir, "..", "..", "..");
-const ROOTS = { bot: join(RACINE, "apps/shenron/bot"), site: join(RACINE, "apps/shenron/site") };
+const ROOTS = { bot: join(RACINE, "apps/bot"), site: join(RACINE, "apps/site") };
 const CACHE = join(ROOTS.bot, "data/cache/assets-inventory.jsonl");
 const OUT = join(ROOTS.site, "src/data/image-variants.json");
 const IMAGE_COLUMNS: [string, string][] = [

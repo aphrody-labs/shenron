@@ -14,18 +14,18 @@ import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { realpath } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { AphrodyComputeClient } from "../../../../../packages/shenron/pipeline/src/aphrody/compute";
+import { AphrodyComputeClient } from "../../packages/pipeline/src/aphrody/compute";
 import {
   aggregate,
   aggregateByTag,
   parseGold,
   runCase,
   type CaseResult,
-} from "../../../../../packages/shenron/pipeline/src/ai/eval";
-import { requireAiHttpUrl } from "../../../../../packages/shenron/pipeline/src/ai/config";
-import { resolveDataPath } from "../../../../../packages/shenron/config/src/paths";
+} from "../../packages/pipeline/src/ai/eval";
+import { requireAiHttpUrl } from "../../packages/pipeline/src/ai/config";
+import { resolveDataPath } from "../../packages/config/src/paths";
 
-const REPO_ROOT = fileURLToPath(new URL("../../../../../", import.meta.url));
+const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const COMPUTE_SERVICES = ["aphrody-shenron-embed", "aphrody-ai-http"];
 
 const sha256 = (bytes: string | Uint8Array): string =>
@@ -75,7 +75,7 @@ async function prepareAttestation(releasePath: string) {
   if (process.platform !== "linux")
     throw new Error("Compute attestation requires Linux process provenance");
   const { loadLiveRagEnv, requireLiveRag } =
-    await import("../../../../../packages/shenron/pipeline/src/testing/live-rag");
+    await import("../../packages/pipeline/src/testing/live-rag");
   loadLiveRagEnv();
   const preload = await requireLiveRag();
   const release = await realpath(resolve(releasePath));
@@ -88,7 +88,7 @@ async function prepareAttestation(releasePath: string) {
   if (!/^[0-9a-f]{40}$/.test(source.repositoryCommit ?? ""))
     throw new Error("Release source commit is missing");
   const canonicalGold = await command(
-    ["git", "show", `${source.repositoryCommit}:apps/shenron/bot/tests/rag-gold.jsonl`],
+    ["git", "show", `${source.repositoryCommit}:apps/bot/tests/rag-gold.jsonl`],
     REPO_ROOT,
   );
   await requireListenerBinary(new URL(aphrodyApiUrlFromEnv()), release, "aphrody-mcp");

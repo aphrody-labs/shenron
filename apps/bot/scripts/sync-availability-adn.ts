@@ -31,7 +31,7 @@
  *
  * Env requis : DATABASE_URL.
  * Usage :
- *   DATABASE_URL=… bun apps/shenron/bot/scripts/sync-availability-adn.ts [--dry-run]
+ *   DATABASE_URL=… bun apps/bot/scripts/sync-availability-adn.ts [--dry-run]
  */
 import postgres from "postgres";
 

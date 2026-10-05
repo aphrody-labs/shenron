@@ -11,8 +11,8 @@
  * articles réellement structurés (≥ 2 sections `##`). `id` = IDENTITY (omis).
  *
  * Lancer (dry-run par défaut) :
- *   DATABASE_URL=... bun apps/shenron/site/scripts/migrate-articles-to-sections.ts
- *   DATABASE_URL=... bun apps/shenron/site/scripts/migrate-articles-to-sections.ts --apply
+ *   DATABASE_URL=... bun apps/site/scripts/migrate-articles-to-sections.ts
+ *   DATABASE_URL=... bun apps/site/scripts/migrate-articles-to-sections.ts --apply
  *   … --table db_planets --entity-type planet --limit 50
  * ou via systemd-run avec EnvironmentFile=~/.shenron-neon.env.
  */

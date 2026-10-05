@@ -2,8 +2,8 @@
  * i18n audit — counts user-facing strings written in the source instead of
  * `messages/*.json`, per file, and writes the backlog to docs/i18n-backlog.md.
  *
- *   bun apps/shenron/site/scripts/i18n-audit.ts            # report
- *   bun apps/shenron/site/scripts/i18n-audit.ts --json     # machine-readable
+ *   bun apps/site/scripts/i18n-audit.ts            # report
+ *   bun apps/site/scripts/i18n-audit.ts --json     # machine-readable
  *
  * Heuristics, on purpose simple and explicit: JSX text nodes with a French
  * word (accented letter or a common French word), and string props that carry
@@ -38,7 +38,7 @@ if (json) {
 	const lines = [
 		"# i18n — textes d'interface encore écrits en dur (hors /admin)",
 		"",
-		`Mesuré par \`bun apps/shenron/site/scripts/i18n-audit.ts\`. Total : ${total} chaînes dans ${rows.length} fichiers.`,
+		`Mesuré par \`bun apps/site/scripts/i18n-audit.ts\`. Total : ${total} chaînes dans ${rows.length} fichiers.`,
 		"",
 		"| Fichier | Chaînes | Exemples |",
 		"|---|---:|---|",

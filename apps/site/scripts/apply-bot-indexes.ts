@@ -14,7 +14,7 @@
  * avait 1 323, et choisissait un balayage séquentiel même quand un index
  * existait. Créer les index sans rafraîchir les statistiques n'aurait rien changé.
  *
- *   bun apps/shenron/site/scripts/apply-bot-indexes.ts [--dry-run]
+ *   bun apps/site/scripts/apply-bot-indexes.ts [--dry-run]
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";

@@ -67,7 +67,7 @@ function usage(message?: string): never {
         Passe le juge de qualité sur un lot AVANT dépôt.
 
   depose <lot-ou-jsonl…> [--simulation] [--force]
-        Vérifie puis dépose (jeton résolu tout seul depuis apps/shenron/site/.env).
+        Vérifie puis dépose (jeton résolu tout seul depuis apps/site/.env).
         Refuse toute planche fautive, sauf --force.`);
 	process.exit(2);
 }

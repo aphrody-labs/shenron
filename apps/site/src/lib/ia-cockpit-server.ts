@@ -140,7 +140,7 @@ const GOLD_RELATIVE = join("apps", "bot", "tests", "rag-gold.jsonl");
 /** Historical search inside the release (site cwd, then monorepo root). */
 function legacyGoldSetPath(): string | null {
 	const candidates = [
-		// Site process: cwd = apps/shenron/site of the release.
+		// Site process: cwd = apps/site of the release.
 		join(process.cwd(), "..", "bot", "tests", "rag-gold.jsonl"),
 		// Monorepo root (tests, scripts).
 		join(process.cwd(), GOLD_RELATIVE),

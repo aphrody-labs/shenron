@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Enrichit `bot.db_manga_volumes` avec la bibliographie relevée du catalogue
- * de comic.dragonballcn.com (`bun apps/shenron/bot/scripts/crawl-dragonballcn.ts`).
+ * de comic.dragonballcn.com (`bun apps/bot/scripts/crawl-dragonballcn.ts`).
  *
  * Mesuré le 2026-09-03 : les 65 tomes en base (42 DB + 23 DBS) portent un titre
  * générique (« Dragon Ball Vol. 1 ») et **zéro** titre japonais, ISBN ou date de
@@ -28,9 +28,9 @@
  * `/admin/wiki/history`.
  *
  * Usage :
- *   bun apps/shenron/site/scripts/enrichit-tomes-manga.ts                 # simulation
- *   bun apps/shenron/site/scripts/enrichit-tomes-manga.ts --appliquer
- *   bun apps/shenron/site/scripts/enrichit-tomes-manga.ts --force --appliquer
+ *   bun apps/site/scripts/enrichit-tomes-manga.ts                 # simulation
+ *   bun apps/site/scripts/enrichit-tomes-manga.ts --appliquer
+ *   bun apps/site/scripts/enrichit-tomes-manga.ts --force --appliquer
  */
 import { join } from "node:path";
 import postgres from "postgres";
@@ -114,7 +114,7 @@ try {
 	);
 	if (!collection) {
 		console.error(`✗ Collection « dragonball_jp_original » absente de ${CATALOGUE}.`);
-		console.error("  Relever d'abord : bun apps/shenron/bot/scripts/crawl-dragonballcn.ts");
+		console.error("  Relever d'abord : bun apps/bot/scripts/crawl-dragonballcn.ts");
 		process.exit(1);
 	}
 

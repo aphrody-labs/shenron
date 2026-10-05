@@ -3,8 +3,8 @@
 //
 // openapi.ts — writes openapi/public.json from createShenronApi(fake ports).
 //
-//   bun packages/shenron/api/scripts/openapi.ts           # (re)generate
-//   bun packages/shenron/api/scripts/openapi.ts --check   # exit 1 when the committed file drifts
+//   bun packages/api/scripts/openapi.ts           # (re)generate
+//   bun packages/api/scripts/openapi.ts --check   # exit 1 when the committed file drifts
 //
 // The document does not depend on the enabled groups nor on any data: the
 // ports below are inert and never called.
@@ -50,7 +50,7 @@ if (import.meta.main) {
 		}
 		if (current !== rendered) {
 			console.error(
-				`${label} is out of date: run \`bun packages/shenron/api/scripts/openapi.ts\` and commit the result.`
+				`${label} is out of date: run \`bun packages/api/scripts/openapi.ts\` and commit the result.`
 			);
 			process.exit(1);
 		}

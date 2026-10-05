@@ -71,7 +71,7 @@ pub(crate) enum ShenronAction {
     /// Emit, then hand the lot to `shenron`'s own depositor.
     ///
     /// `shenron depose` refuses a lot carrying a defect unless `--force` is
-    /// passed, and resolves its own API token from `apps/shenron/site/.env` — no
+    /// passed, and resolves its own API token from `apps/site/.env` — no
     /// secret crosses from aphrody into this command.
     ///
     /// Example: aphrody ocr shenron deposit 312 --apply
@@ -88,7 +88,7 @@ pub(crate) enum ShenronAction {
         #[arg(long)]
         force: bool,
         /// Directory to stage the bridge lot in. Defaults to
-        /// `<root>/apps/shenron/site/var/aphrody-bridge/<id>` inside the monorepo
+        /// `<root>/apps/site/var/aphrody-bridge/<id>` inside the monorepo
         /// checkout, so `shenron`'s own tooling can find it without a path
         /// argument crossing back into aphrody's tree.
         #[arg(long)]
@@ -167,7 +167,7 @@ fn scripts_dir(shenron_root: &Path) -> PathBuf {
 ///
 /// Every path this module hands to `bun` is a bridge artifact aphrody wrote,
 /// and `run_bun` spawns the child with its own working directory
-/// (`<shenron>/apps/shenron/site`, or the legacy `<shenron>/apps/site`) — a
+/// (`<shenron>/apps/site`, or the legacy `<shenron>/apps/site`) — a
 /// relative path built against Aphrody's cwd would
 /// silently resolve against the wrong tree once it crosses that boundary.
 fn absolute(path: &Path) -> miette::Result<PathBuf> {

@@ -746,10 +746,10 @@ async function readEnvValue(file: string, key: string): Promise<string | undefin
 const DATABASE_URL =
 	process.env.DATABASE_URL?.trim() ||
 	(await readEnvValue(".env.remote-db", "REMOTE_DATABASE_URL")) ||
-	(await readEnvValue("apps/shenron/site/.env", "DATABASE_URL"));
+	(await readEnvValue("apps/site/.env", "DATABASE_URL"));
 
 if (!DATABASE_URL) {
-	console.error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+	console.error("DATABASE_URL introuvable dans apps/site/.env");
 	process.exit(2);
 }
 

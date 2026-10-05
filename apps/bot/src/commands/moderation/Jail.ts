@@ -117,7 +117,7 @@ export class JailCommands {
 		// On essaie d'abord le fichier local assets/sanctions/jail.gif.
 		let jailLocal = `${process.cwd()}/assets/sanctions/jail.gif`;
 		if (!existsSync(jailLocal)) {
-			jailLocal = `${process.cwd()}/apps/shenron/bot/assets/sanctions/jail.gif`;
+			jailLocal = `${process.cwd()}/apps/bot/assets/sanctions/jail.gif`;
 		}
 		if (!existsSync(jailLocal)) {
 			jailLocal = `${import.meta.dir}/../../../assets/sanctions/jail.gif`;

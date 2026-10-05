@@ -19,7 +19,7 @@
  *
  * Env requis : DATABASE_URL.
  * Usage :
- *   DATABASE_URL=… bun apps/shenron/bot/scripts/enrich-movie-metadata-kitsu.ts [--dry-run]
+ *   DATABASE_URL=… bun apps/bot/scripts/enrich-movie-metadata-kitsu.ts [--dry-run]
  */
 import postgres from "postgres";
 

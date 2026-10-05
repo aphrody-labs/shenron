@@ -1,8 +1,8 @@
 /**
  * Traduit des planches de databook du japonais vers le français.
  *
- *   bun apps/shenron/site/scripts/ja-traduire.ts --databook 19 [--planches 1,2,3] [--json f.json]
- *   bun apps/shenron/site/scripts/ja-traduire.ts --texte "孫悟空は界王拳を使った。"
+ *   bun apps/site/scripts/ja-traduire.ts --databook 19 [--planches 1,2,3] [--json f.json]
+ *   bun apps/site/scripts/ja-traduire.ts --texte "孫悟空は界王拳を使った。"
  *
  * **N'écrit rien en base.** La traduction automatique d'un corpus lu
  * automatiquement empile deux sources d'erreur ; le résultat est une proposition
@@ -53,7 +53,7 @@ const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
 	?.slice("DATABASE_URL=".length)
 	.replace(/^"|"$/g, "")
 	.trim();
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(url, { max: 2 });
 
 // Lexique du domaine : c'est lui qui porte la forme française officielle.

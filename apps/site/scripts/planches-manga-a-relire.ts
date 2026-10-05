@@ -16,10 +16,10 @@
  *
  * Lecture seule, sur le réplica SQLite : le script ne corrige rien, il constate.
  *
- *   bun apps/shenron/site/scripts/planches-manga-a-relire.ts
- *   bun apps/shenron/site/scripts/planches-manga-a-relire.ts --json
- *   bun apps/shenron/site/scripts/planches-manga-a-relire.ts --serie DB --exemples 5
- *   bun apps/shenron/site/scripts/planches-manga-a-relire.ts --ids /tmp/a-reprendre.txt
+ *   bun apps/site/scripts/planches-manga-a-relire.ts
+ *   bun apps/site/scripts/planches-manga-a-relire.ts --json
+ *   bun apps/site/scripts/planches-manga-a-relire.ts --serie DB --exemples 5
+ *   bun apps/site/scripts/planches-manga-a-relire.ts --ids /tmp/a-reprendre.txt
  */
 import { Database } from "bun:sqlite";
 import { join } from "node:path";
@@ -35,7 +35,7 @@ const opt = (n: string, defaut?: string) => {
 	return i !== -1 && args[i + 1] && !args[i + 1]!.startsWith("--") ? args[i + 1]! : defaut;
 };
 
-const RACINE = join(fileURLToPath(new URL("../../../..", import.meta.url)));
+const RACINE = join(fileURLToPath(new URL("../../..", import.meta.url)));
 const BASE = opt("base", join(RACINE, "apps", "bot", "data", "bot.db"))!;
 const SERIE = opt("serie");
 const EXEMPLES = Number(opt("exemples", "3"));

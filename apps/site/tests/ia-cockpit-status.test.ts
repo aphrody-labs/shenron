@@ -353,7 +353,7 @@ describe("fetchAphrodyWebCrawlStats — contrat du client Aphrody Web", () => {
 	});
 });
 
-describe("jeu doré et arithmétique des métriques (classements synthétiques, aucune récupération ; définitions de apps/shenron/bot/src/lib/rag-eval.ts)", () => {
+describe("jeu doré et arithmétique des métriques (classements synthétiques, aucune récupération ; définitions de apps/bot/src/lib/rag-eval.ts)", () => {
 	const gold = parseGoldSet(
 		[
 			'{"q":"Qui est Freezer ?","expectUrl":["/wiki/personnages/freezer"]}',

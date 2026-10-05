@@ -20,7 +20,7 @@ import { existsSync } from "node:fs";
 import { rename } from "node:fs/promises";
 import { join } from "node:path";
 import postgres from "postgres";
-import { defautDePlanche } from "../../../../../apps/shenron/site/src/lib/databooks-defauts";
+import { defautDePlanche } from "../../apps/site/src/lib/databooks-defauts";
 
 export type WikiPageCandidate = {
 	id: string;
@@ -192,7 +192,7 @@ export function parseCandidates(value: unknown): WikiPageCandidate[] {
 
 async function databaseUrl(): Promise<string> {
 	if (process.env.DATABASE_URL?.trim()) return process.env.DATABASE_URL.trim();
-	const siteEnv = await Bun.file(join(import.meta.dir, "../../apps/site/.env")).text().catch(() => "");
+	const siteEnv = await Bun.file(join(import.meta.dir, "../apps/site/.env")).text().catch(() => "");
 	const line = siteEnv.split("\n").filter((value) => value.startsWith("DATABASE_URL=")).at(-1);
 	const url = line?.slice("DATABASE_URL=".length).trim().replace(/^["']|["']$/g, "");
 	if (!url) throw new Error("DATABASE_URL is required to read the primary-source corpus");

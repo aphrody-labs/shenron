@@ -270,9 +270,9 @@ export async function getBxcImportStats(): Promise<{ total: number; latestAt: Da
 }
 
 function harvestRoot(): string {
-	// En développement et au runtime le cwd est `apps/shenron/site`; les tests/outils
+	// En développement et au runtime le cwd est `apps/site`; les tests/outils
 	// peuvent en revanche démarrer à la racine du monorepo.
-	const siteRoot = process.cwd().endsWith("/apps/shenron/site")
+	const siteRoot = process.cwd().endsWith("/apps/site")
 		? process.cwd()
 		: join(process.cwd(), "apps", "site");
 	return join(siteRoot, "shenron-media-masters", "bxc-harvest", "images");

@@ -5,7 +5,7 @@
  * self-hostée dans ./assets/dbz/characters/) de son personnage/antagoniste
  * emblématique. Idempotent : ne touche que les sagas dont image IS NULL.
  *
- * Usage : bun apps/shenron/bot/scripts/enrich-sagas.ts
+ * Usage : bun apps/bot/scripts/enrich-sagas.ts
  * Après : sudo systemctl restart shenron (vide le cache wiki) puis
  *         sudo systemctl start shenron-neon-sync.service (resync Neon).
  */
@@ -50,7 +50,7 @@ if (!Bun.env.ALLOW_SQLITE_WIKI_WRITE) {
 	);
 	process.exit(1);
 }
-const db = new Database("apps/shenron/bot/data/bot.db");
+const db = new Database("apps/bot/data/bot.db");
 db.exec("PRAGMA busy_timeout = 5000;");
 
 const charImg = new Map<number, string>();

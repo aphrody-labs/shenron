@@ -15,7 +15,7 @@
  *   bun scripts/dm.ts vu <userId>                 # marquer comme traité
  *
  * L'API est en loopback (`127.0.0.1:5006`) et protégée par `API_ADMIN_TOKEN`,
- * qui est lu dans `apps/shenron/bot/.env` — jamais passé en argument, pour qu'il ne
+ * qui est lu dans `apps/bot/.env` — jamais passé en argument, pour qu'il ne
  * finisse pas dans l'historique du shell.
  */
 
@@ -43,7 +43,7 @@ async function jeton(): Promise<string> {
 		.trim()
 		.replace(/^["']|["']$/g, "");
 	if (!valeur) {
-		console.error("✗ API_ADMIN_TOKEN introuvable (ni en environnement, ni dans apps/shenron/bot/.env).");
+		console.error("✗ API_ADMIN_TOKEN introuvable (ni en environnement, ni dans apps/bot/.env).");
 		process.exit(1);
 	}
 	return valeur;

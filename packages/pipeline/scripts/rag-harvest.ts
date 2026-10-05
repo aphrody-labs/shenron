@@ -4,7 +4,7 @@
  * Recursive site mirrors use the Aphrody Web Rust owner.
  * Extrait du markdown brut, normalise, et versionne dans data/rag/raw/.
  *
- * Usage : bun apps/shenron/bot/scripts/rag-harvest.ts <subcommand> [options]
+ * Usage : bun apps/bot/scripts/rag-harvest.ts <subcommand> [options]
  */
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
@@ -502,7 +502,7 @@ function printHelpAndExit() {
 rag-harvest.ts — Dragon Ball RAG Data Harvester (Aphrody Web)
 
 Usage:
-  bun apps/shenron/bot/scripts/rag-harvest.ts <subcommand> [options]
+  bun apps/bot/scripts/rag-harvest.ts <subcommand> [options]
 
 Subcommands:
   recon <url>            Harvest Markdown and structural report through Aphrody Web
@@ -518,7 +518,7 @@ Options:
   --max-assets <N>       Maximum linked assets to mirror [default: 1000]
   --delay <ms>           Rate-limiting delay between requests in milliseconds [default: 1000]
   --source-id <id>       Override source ID (for folders and manifest) [default: derived from hostname]
-  --output-dir <dir>     Output base directory [default: apps/shenron/bot/data/rag/raw/]
+  --output-dir <dir>     Output base directory [default: apps/bot/data/rag/raw/]
   --selector <css>       CSS selector for scrape command
   --json                 Request JSON output where applicable (search/scrape)
   --markdown             Request Markdown output where applicable (scrape)
@@ -529,10 +529,10 @@ Options:
   --queue <name>         Crawl worker queue name [default: rag-harvest-queue]
 
 Examples:
-  bun apps/shenron/bot/scripts/rag-harvest.ts recon https://www.kanzenshuu.com/guides/
-  bun apps/shenron/bot/scripts/rag-harvest.ts scrape https://www.kanzenshuu.com/manga/db/ --selector "main"
-  bun apps/shenron/bot/scripts/rag-harvest.ts search "Dragon Ball canon timeline" --json
-  bun apps/shenron/bot/scripts/rag-harvest.ts run-seeds --delay 2000
+  bun apps/bot/scripts/rag-harvest.ts recon https://www.kanzenshuu.com/guides/
+  bun apps/bot/scripts/rag-harvest.ts scrape https://www.kanzenshuu.com/manga/db/ --selector "main"
+  bun apps/bot/scripts/rag-harvest.ts search "Dragon Ball canon timeline" --json
+  bun apps/bot/scripts/rag-harvest.ts run-seeds --delay 2000
 `);
 	process.exit(1);
 }

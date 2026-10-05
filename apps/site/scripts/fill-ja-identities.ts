@@ -3,9 +3,9 @@
  * Write the Japanese identity cells listed in a REVIEWED evidence file — and only
  * after re-checking each proof against its primary source.
  *
- *   bun apps/shenron/site/scripts/fill-ja-identities.ts                          # simulation (default)
- *   bun apps/shenron/site/scripts/fill-ja-identities.ts --preuves data/ja-identities-2026-09-23.json
- *   bun apps/shenron/site/scripts/fill-ja-identities.ts --appliquer
+ *   bun apps/site/scripts/fill-ja-identities.ts                          # simulation (default)
+ *   bun apps/site/scripts/fill-ja-identities.ts --preuves data/ja-identities-2026-09-23.json
+ *   bun apps/site/scripts/fill-ja-identities.ts --appliquer
  *
  * Cells covered: `db_characters.name_ja`, `db_races.name_ja`,
  * `db_databooks.title_ja`, `db_games.title_ja`. Nothing else (never `name_romaji`:

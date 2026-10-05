@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Bridge HTTP fallback against the real public RAG route bodies (native RAG + PG, no stub). */
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { contextPublicRag, searchPublicRag } from "../../../../apps/shenron/bot/src/api/public-rag";
+import { contextPublicRag, searchPublicRag } from "../../../apps/bot/src/api/public-rag";
 import { DbuiBridge } from "../src/bridge/ipc";
 import { loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
 
@@ -9,7 +9,7 @@ loadLiveRagEnv();
 let server: ReturnType<typeof Bun.serve> | undefined;
 beforeAll(async () => {
   await requireLiveRag();
-  // Same route owner as packages/shenron/api/test/rag-live.test.ts; retrieval stays real.
+  // Same route owner as packages/api/test/rag-live.test.ts; retrieval stays real.
   server = Bun.serve({
     hostname: "127.0.0.1",
     port: 0,

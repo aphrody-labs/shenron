@@ -9,7 +9,7 @@ import {
 
 /**
  * Golden inputs. The expected cookie was generated once by running the
- * algorithm of `apps/shenron/site/src/lib/admin-token.ts` (copied below verbatim,
+ * algorithm of `apps/site/src/lib/admin-token.ts` (copied below verbatim,
  * with `env`/`Date.now()` replaced by these fixed inputs).
  */
 const SECRET = "golden-better-auth-secret-0123456789abcdef";

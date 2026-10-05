@@ -1,10 +1,10 @@
 /**
  * mirror-media.ts — Rapatrie en local toutes les images distantes (posters
- * MAL, stills TMDB, covers AniList) dans apps/shenron/bot/assets/ext/ et réécrit les
+ * MAL, stills TMDB, covers AniList) dans apps/bot/assets/ext/ et réécrit les
  * chemins DB vers `./assets/ext/...` → site 100 % self-hosted (zéro dépendance
  * CDN externe, durable).
  *
- * Usage : bun apps/shenron/bot/scripts/mirror-media.ts
+ * Usage : bun apps/bot/scripts/mirror-media.ts
  */
 import { Database } from "bun:sqlite";
 import { mkdirSync, existsSync } from "node:fs";

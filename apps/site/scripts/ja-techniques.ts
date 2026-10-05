@@ -1,8 +1,8 @@
 /**
  * Fills `name_ja` and `name_romaji` of canonical techniques — after verification.
  *
- *   bun apps/shenron/site/scripts/ja-techniques.ts            # simulation (default)
- *   bun apps/shenron/site/scripts/ja-techniques.ts --apply    # writes, one revision per row
+ *   bun apps/site/scripts/ja-techniques.ts            # simulation (default)
+ *   bun apps/site/scripts/ja-techniques.ts --apply    # writes, one revision per row
  *
  * History: the first version matched French names against a hard-coded list and
  * wrote without revision. Measured on 2026-09-12 it left 98 % of `name_ja` empty

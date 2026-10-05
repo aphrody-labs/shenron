@@ -5,7 +5,7 @@
  * et lui assigne le rôle correspondant + tous les rôles inférieurs s'il les
  * a pas. Idempotent. Logue les actions.
  *
- * Usage : `bun apps/shenron/bot/scripts/reconcile-level-roles.ts [--dry] [--guild=ID]`
+ * Usage : `bun apps/bot/scripts/reconcile-level-roles.ts [--dry] [--guild=ID]`
  *
  * Utile quand `handleLevelUp()` n'a pas pu poser le rôle (bot offline,
  * permissions, race condition, hierarchy, etc.).

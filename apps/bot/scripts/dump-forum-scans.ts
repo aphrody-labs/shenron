@@ -13,11 +13,11 @@
  *
  * REST uniquement (pas de gateway) : zéro interférence avec le bot en production.
  *
- *   bun apps/shenron/bot/scripts/dump-forum-scans.ts index [--forum <id>] [--sortie <dir>]
- *   bun apps/shenron/bot/scripts/dump-forum-scans.ts telecharge [--concurrence 8] [--depuis <n>] [--jusqu-a <n>]
- *   bun apps/shenron/bot/scripts/dump-forum-scans.ts etat
+ *   bun apps/bot/scripts/dump-forum-scans.ts index [--forum <id>] [--sortie <dir>]
+ *   bun apps/bot/scripts/dump-forum-scans.ts telecharge [--concurrence 8] [--depuis <n>] [--jusqu-a <n>]
+ *   bun apps/bot/scripts/dump-forum-scans.ts etat
  *
- * Jeton : `DISCORD_TOKEN_GRAND_PRETRE` de `apps/shenron/bot/.env` (lecture seule côté Discord).
+ * Jeton : `DISCORD_TOKEN_GRAND_PRETRE` de `apps/bot/.env` (lecture seule côté Discord).
  */
 
 import { mkdir, readdir, stat } from "node:fs/promises";
@@ -124,7 +124,7 @@ async function jeton(): Promise<string> {
 		.join("=")
 		.trim()
 		.replace(/^["']|["']$/g, "");
-	if (!valeur) throw new Error("DISCORD_TOKEN_GRAND_PRETRE introuvable (env ou apps/shenron/bot/.env)");
+	if (!valeur) throw new Error("DISCORD_TOKEN_GRAND_PRETRE introuvable (env ou apps/bot/.env)");
 	return valeur;
 }
 

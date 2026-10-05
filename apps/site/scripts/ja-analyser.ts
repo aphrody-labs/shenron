@@ -1,7 +1,7 @@
 /**
  * Analyse japonaise de TOUTES les transcriptions de databooks.
  *
- *   bun apps/shenron/site/scripts/ja-analyser.ts [--limite N] [--json fichier] [--seuil N]
+ *   bun apps/site/scripts/ja-analyser.ts [--limite N] [--json fichier] [--seuil N]
  *
  * Produit la liste des fautes de lecture probables, ouvrage par ouvrage. Rien
  * n'est écrit en base : une correction automatique sur 11 775 planches de
@@ -12,7 +12,7 @@
  * morphologique, un index de 464 819 graphies et le corpus entier. C'est un
  * traitement par lot, pas une requête web.
  *
- * Prérequis : `bun apps/shenron/site/scripts/ja-preparer.ts`.
+ * Prérequis : `bun apps/site/scripts/ja-preparer.ts`.
  */
 import postgres from "postgres";
 import { exigerRessources, graphiesJmdict, segmenter } from "../src/lib/ja/dictionnaire";
@@ -41,7 +41,7 @@ const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
 	?.slice("DATABASE_URL=".length)
 	.replace(/^"|"$/g, "")
 	.trim();
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(url, { max: 2 });
 
 // Refus de démarrer sans les ressources : mieux vaut une erreur qu'un

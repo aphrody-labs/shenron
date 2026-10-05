@@ -27,8 +27,8 @@
  * par `ingest-aphrody-rag.ts` (RAG) et disponible pour `canon-charge-aphrody.ts`.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/harvest-kanzenshuu-aphrody.ts --limite 5   # essai
- *   bun apps/shenron/bot/scripts/harvest-kanzenshuu-aphrody.ts --tout
+ *   bun apps/bot/scripts/harvest-kanzenshuu-aphrody.ts --limite 5   # essai
+ *   bun apps/bot/scripts/harvest-kanzenshuu-aphrody.ts --tout
  */
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -174,4 +174,4 @@ for (const url of uniques) {
 console.log(
 	`✓ ${deposes} déposés, ${sautes} déjà présents, ${ignores} ignorés (corps vide) sur ${uniques.length}.`
 );
-console.log("→ Enchaîner : bun apps/shenron/bot/scripts/ingest-aphrody-rag.ts --injecte");
+console.log("→ Enchaîner : bun apps/bot/scripts/ingest-aphrody-rag.ts --injecte");

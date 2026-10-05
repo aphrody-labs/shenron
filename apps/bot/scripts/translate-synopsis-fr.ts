@@ -22,7 +22,7 @@
  * On peut relancer après coupure sans rien casser.
  *
  * Usage :
- *   DATABASE_URL=… bun apps/shenron/bot/scripts/translate-synopsis-fr.ts [options]
+ *   DATABASE_URL=… bun apps/bot/scripts/translate-synopsis-fr.ts [options]
  *     --dry-run            n'écrit rien, affiche les traductions candidates
  *     --only episodes|movies    restreint à une table
  *     --limit N            au plus N lignes par table

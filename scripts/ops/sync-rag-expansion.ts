@@ -34,7 +34,7 @@ const PILIERS = [
 const proc = Bun.spawn(
 	[
 		process.execPath,
-		join(import.meta.dir, "../../packages/pipeline/scripts/rag-resync-entites.ts"),
+		join(import.meta.dir, "../packages/pipeline/scripts/rag-resync-entites.ts"),
 		...PILIERS,
 		...process.argv.slice(2).filter((a) => a === "--appliquer"),
 	],

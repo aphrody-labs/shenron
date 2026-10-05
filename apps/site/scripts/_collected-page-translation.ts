@@ -5,7 +5,7 @@
  *
  * No I/O here — the remote Aphrody calls live in `_aphrody-translate-remote.ts`
  * and the CLI in `traduire-pages-collectees-aphrody.ts`. Pinned by
- * `apps/shenron/site/tests/collected-page-translation.test.ts`.
+ * `apps/site/tests/collected-page-translation.test.ts`.
  */
 
 // ── Language detection (stopword ratio) ───────────────────────────────────────

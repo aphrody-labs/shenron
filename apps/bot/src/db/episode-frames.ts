@@ -7,7 +7,7 @@
  * sans inverser la dépendance src → scripts. La fondation pipeline
  * `scripts/lib/frames-common.ts` ré-exporte ces types depuis ici.
  *
- * Le site (`apps/shenron/site/`) s'aligne sur CE shape (colonne Neon `bot.db_episodes.frames`
+ * Le site (`apps/site/`) s'aligne sur CE shape (colonne Neon `bot.db_episodes.frames`
  * jsonb = `EpisodeFrame[]`).
  */
 
@@ -17,7 +17,7 @@ export type Series = "DB" | "DBZ" | "DBGT" | "DBS" | "DB_DAIMA" | "DBZ_KAI" | "D
 /**
  * Une frame extraite/scrapée d'un épisode. Schéma stable, repris du
  * `AnimeFrameImport` rpbey et adapté au modèle shenron (asset self-host sous
- * `apps/shenron/bot/assets/`).
+ * `apps/bot/assets/`).
  */
 export interface EpisodeFrame {
 	/** Provenance : "ffmpeg" (vidéo locale). */

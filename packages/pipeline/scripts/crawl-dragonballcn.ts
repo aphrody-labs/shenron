@@ -20,11 +20,11 @@
  * éditoriale restent dans Shenron.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/crawl-dragonballcn.ts                      # tout le catalogue (~15 s)
- *   bun apps/shenron/bot/scripts/crawl-dragonballcn.ts --avec-planches      # relève aussi les fiches de tome
- *   bun apps/shenron/bot/scripts/crawl-dragonballcn.ts --collection dragonball_jp_original
- *   bun apps/shenron/bot/scripts/crawl-dragonballcn.ts --limite 5 --delai 2000
- *   bun apps/shenron/bot/scripts/crawl-dragonballcn.ts --force              # ignore le cache disque
+ *   bun apps/bot/scripts/crawl-dragonballcn.ts                      # tout le catalogue (~15 s)
+ *   bun apps/bot/scripts/crawl-dragonballcn.ts --avec-planches      # relève aussi les fiches de tome
+ *   bun apps/bot/scripts/crawl-dragonballcn.ts --collection dragonball_jp_original
+ *   bun apps/bot/scripts/crawl-dragonballcn.ts --limite 5 --delai 2000
+ *   bun apps/bot/scripts/crawl-dragonballcn.ts --force              # ignore le cache disque
  */
 
 import { fileURLToPath } from "node:url";

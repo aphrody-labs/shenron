@@ -23,7 +23,7 @@
  *     (souvent d'une meilleure source, ou relu à la main) n'est jamais écrasé.
  *   - **Simulation par défaut.** `--appliquer` pour écrire.
  *
- *   bun apps/shenron/bot/scripts/chronologie-wikipedia.ts [--serie DBGT] [--appliquer]
+ *   bun apps/bot/scripts/chronologie-wikipedia.ts [--serie DBGT] [--appliquer]
  */
 
 import { SQL } from "bun";

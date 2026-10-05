@@ -15,7 +15,7 @@ import { defineConfig } from "drizzle-kit";
  *
  * Garde : `push` et `migrate` sont refusés (generate-only), avant toute connexion.
  *
- * Le seed des données vient ensuite de `apps/shenron/bot/scripts/seed-pg-from-sqlite.ts`.
+ * Le seed des données vient ensuite de `apps/bot/scripts/seed-pg-from-sqlite.ts`.
  */
 const REFUSED_COMMANDS = ["push", "migrate"] as const;
 const refused = process.argv.find((arg) => (REFUSED_COMMANDS as readonly string[]).includes(arg));

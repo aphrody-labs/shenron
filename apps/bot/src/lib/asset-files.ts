@@ -3,9 +3,9 @@
  * (`@shenron/images/asset-aliases.json`).
  *
  * Byte-identical copies shared with the site (fonts, `dbz/`, banners, brand
- * PNGs, favicons) live once, under `apps/shenron/site/public/`; the bot keeps serving
+ * PNGs, favicons) live once, under `apps/site/public/`; the bot keeps serving
  * them at their historical `/assets/**` URLs and loads them for canvas from
- * the canonical copy. Roots follow the process cwd (`apps/shenron/bot`), like the rest
+ * the canonical copy. Roots follow the process cwd (`apps/bot`), like the rest
  * of the static handlers (`assets/…`, `../site/public/wiki`).
  */
 import { resolve } from "node:path";
@@ -16,7 +16,7 @@ function assetRoots(cwd: string = process.cwd()): AssetRoots {
 }
 
 /**
- * Absolute disk path of a bot file given relative to `apps/shenron/bot`
+ * Absolute disk path of a bot file given relative to `apps/bot`
  * (`assets/fonts/Inter-Bold.ttf`, `public/favicon.ico`), following aliases.
  */
 export function botFile(relative: string, cwd?: string): string {

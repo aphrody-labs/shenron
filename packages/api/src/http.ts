@@ -4,7 +4,7 @@
  * limiter, public JSON cache (TTL, LRU, FNV ETag, 304), cache and CORS headers,
  * invalidation port. Runtime class: `pure` (no hono, no node:, no bun:).
  *
- * Semantics copied from `apps/shenron/bot/src/api/server.ts` (`publicCachedJson`,
+ * Semantics copied from `apps/bot/src/api/server.ts` (`publicCachedJson`,
  * `publicRateLimit`, `publicCorsHeaders`, `etagOf`).
  */
 
@@ -66,7 +66,7 @@ const encoder = new TextEncoder();
 /**
  * FNV-1a 32-bit over the UTF-8 bytes, sampled on at most ~4096 positions,
  * suffixed with the byte length in hex — byte-identical to `etagOf` in
- * `apps/shenron/bot/src/api/server.ts`.
+ * `apps/bot/src/api/server.ts`.
  */
 export function fnvEtag(body: string): string {
 	const bytes = encoder.encode(body);

@@ -13,7 +13,7 @@
  * Par défaut, le script simule. `--appliquer` écrit par transaction et crée
  * une révision pour chaque fiche effectivement créée ou mise à jour.
  *
- * Usage : bun apps/shenron/site/scripts/materialize-crawled-wiki-pages.ts [--limit 50] [--offset 0] [--manquantes] [--appliquer]
+ * Usage : bun apps/site/scripts/materialize-crawled-wiki-pages.ts [--limit 50] [--offset 0] [--manquantes] [--appliquer]
  */
 import { randomUUID } from "node:crypto";
 import postgres from "postgres";

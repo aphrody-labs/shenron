@@ -217,7 +217,7 @@ async function runProfiling() {
 		},
 	};
 
-	const outDir = join(import.meta.dir, "../../../../docs/operations/shenron/measurements");
+	const outDir = join(import.meta.dir, "../../../docs/operations/measurements");
 	await mkdir(outDir, { recursive: true });
 	const outPath = join(outDir, "bot-profile-report.json");
 	await Bun.write(outPath, JSON.stringify(report, null, 2));

@@ -14,7 +14,7 @@
  * rédigé, ce qui demande de les lire. Le script sert donc à cadrer ce travail :
  * il dit quelles paires existent et ce que chacune contient.
  *
- *   bun apps/shenron/site/scripts/doublons-planetes.ts
+ *   bun apps/site/scripts/doublons-planetes.ts
  */
 import postgres from "postgres";
 
@@ -42,7 +42,7 @@ const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
 	.pop()
 	?.slice("DATABASE_URL=".length)
 	.replace(/^["']|["']$/g, "");
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 
 const sql = postgres(url);
 const lignes = (await sql`

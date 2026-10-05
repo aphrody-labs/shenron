@@ -6,7 +6,7 @@
  *  - bot offline au moment du join
  *  - membre ajouté hors range cache
  *
- * Usage : `bun apps/shenron/bot/scripts/backfill-saiyan.ts [--dry]`
+ * Usage : `bun apps/bot/scripts/backfill-saiyan.ts [--dry]`
  */
 
 import "reflect-metadata";

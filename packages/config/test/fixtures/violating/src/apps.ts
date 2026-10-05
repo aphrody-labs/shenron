@@ -1,2 +1,2 @@
-import { x } from "../../../../../../../apps/shenron/bot/src/x";
+import { x } from "../../../../../../apps/bot/src/x";
 export { x };

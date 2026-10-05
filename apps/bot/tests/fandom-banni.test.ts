@@ -10,11 +10,11 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { renderCorpusDocs } from "../../../../packages/shenron/pipeline/scripts/_rag-corpus-sources";
+import { renderCorpusDocs } from "../../../packages/pipeline/scripts/_rag-corpus-sources";
 
 const RAG_DIR = join(import.meta.dir, "../data/rag");
 const BOT_SCRIPTS = join(import.meta.dir, "../scripts");
-const PIPELINE_SCRIPTS = join(import.meta.dir, "../../../../packages/shenron/pipeline/scripts");
+const PIPELINE_SCRIPTS = join(import.meta.dir, "../../../packages/pipeline/scripts");
 
 /** Un doc du corpus RAG (id + url suffisent à trancher l'origine). */
 type Doc = { id: string; url?: string; name?: string };

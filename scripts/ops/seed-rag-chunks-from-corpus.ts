@@ -7,9 +7,9 @@ import { Database } from "bun:sqlite";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-const botDbPath = join(import.meta.dir, "../../apps/bot/data/bot.db");
-const corpusJsonPath = join(import.meta.dir, "../../apps/bot/data/rag/corpus.json");
-const massiveDbPath = join(import.meta.dir, "../../data/rag/massive-unified-index.db");
+const botDbPath = join(import.meta.dir, "../apps/bot/data/bot.db");
+const corpusJsonPath = join(import.meta.dir, "../apps/bot/data/rag/corpus.json");
+const massiveDbPath = join(import.meta.dir, "../data/rag/massive-unified-index.db");
 
 console.log("🐉 Initialisation de rag_chunks dans", botDbPath);
 const db = new Database(botDbPath);

@@ -8,8 +8,8 @@
  * été copiés sur les fiches 8, 10, 17, 19, 22, 24.
  *
  * Usage :
- *   bun apps/shenron/site/scripts/corrige-kai-final-titres.ts            # simulation
- *   bun apps/shenron/site/scripts/corrige-kai-final-titres.ts --appliquer # applique avec wiki_revisions
+ *   bun apps/site/scripts/corrige-kai-final-titres.ts            # simulation
+ *   bun apps/site/scripts/corrige-kai-final-titres.ts --appliquer # applique avec wiki_revisions
  */
 import { join } from "node:path";
 import postgres from "postgres";

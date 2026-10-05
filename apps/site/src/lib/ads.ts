@@ -18,7 +18,7 @@
  *     bidon ne remplit jamais et pollue les diagnostics de la console.
  *
  * Créer un bloc dans AdSense → copier son `data-ad-slot` (10 chiffres) dans la
- * var correspondante de `apps/shenron/site/.env`, rebuild, l'emplacement s'allume seul.
+ * var correspondante de `apps/site/.env`, rebuild, l'emplacement s'allume seul.
  */
 
 /**

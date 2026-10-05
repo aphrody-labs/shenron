@@ -49,7 +49,7 @@ async function databaseUrl(): Promise<string> {
 		?.slice("DATABASE_URL=".length)
 		.trim()
 		.replace(/^['"]|['"]$/g, "");
-	if (!value) throw new Error("DATABASE_URL absent (environnement et apps/shenron/site/.env)");
+	if (!value) throw new Error("DATABASE_URL absent (environnement et apps/site/.env)");
 	return value;
 }
 
@@ -224,7 +224,7 @@ try {
 			AND indexdef ILIKE 'CREATE UNIQUE INDEX%series%tome%planche%'`;
 	if (indexes.length === 0) {
 		throw new Error(
-			"index unique manga absent: appliquer apps/shenron/site/src/db/bot-indexes.sql avant le dépôt"
+			"index unique manga absent: appliquer apps/site/src/db/bot-indexes.sql avant le dépôt"
 		);
 	}
 

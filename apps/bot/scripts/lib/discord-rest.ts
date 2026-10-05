@@ -26,7 +26,7 @@ export async function jetonDiscord(persona = "GRAND_PRETRE"): Promise<string> {
 		.join("=")
 		.trim()
 		.replace(/^["']|["']$/g, "");
-	if (!valeur) throw new Error(`${cle} introuvable (env ou apps/shenron/bot/.env)`);
+	if (!valeur) throw new Error(`${cle} introuvable (env ou apps/bot/.env)`);
 	return valeur;
 }
 

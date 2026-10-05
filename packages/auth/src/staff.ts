@@ -2,8 +2,8 @@
  * Staff policy (runtime class `pure`, decision D6 of docs/STACK.md).
  *
  * - bot scope  = OWNER_ID ∪ OWNER_IDS ∪ BOT_DEV_ID ∪ OAUTH_ALLOWED_USERS
- *   (`isBotOwner` + `isUserAllowed` of `apps/shenron/bot/src/api/oauth.ts`);
- * - site scope = OWNER_ID ∪ OAUTH_ALLOWED_USERS (`apps/shenron/site/src/lib/session.ts`).
+ *   (`isBotOwner` + `isUserAllowed` of `apps/bot/src/api/oauth.ts`);
+ * - site scope = OWNER_ID ∪ OAUTH_ALLOWED_USERS (`apps/site/src/lib/session.ts`).
  *
  * The environment is injected: nothing is read at module load.
  */

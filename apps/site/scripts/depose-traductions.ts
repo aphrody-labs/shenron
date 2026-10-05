@@ -2,9 +2,9 @@
 /**
  * Dépose les traductions françaises des planches de databook.
  *
- *   bun apps/shenron/site/scripts/depose-traductions.ts /tmp/traductions-01.jsonl
- *   bun apps/shenron/site/scripts/depose-traductions.ts /tmp/… --appliquer
- *   bun apps/shenron/site/scripts/depose-traductions.ts /tmp/… --par machine:agy --source-relue --appliquer
+ *   bun apps/site/scripts/depose-traductions.ts /tmp/traductions-01.jsonl
+ *   bun apps/site/scripts/depose-traductions.ts /tmp/… --appliquer
+ *   bun apps/site/scripts/depose-traductions.ts /tmp/… --par machine:agy --source-relue --appliquer
  *
  * Entrée : un JSONL, une ligne par planche —
  *   {"databookId":4,"page":12,"fr":"…"}

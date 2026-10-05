@@ -44,7 +44,7 @@ export interface SourceChunk {
 	entity: string;
 }
 
-const ROOT = new URL("../../../../apps/shenron/bot/", import.meta.url).pathname;
+const ROOT = new URL("../../../apps/bot/", import.meta.url).pathname;
 const CHUNK_CHARS = 1400;
 const CHUNK_OVERLAP = 0.15;
 
@@ -934,7 +934,7 @@ async function renduPagesWiki(sql: Sql): Promise<SourceChunk[]> {
 
 // ── Manga : une planche = un passage citable ────────────────────────────────
 
-/** Même lecture du numéro de fichier que `apps/shenron/site/src/lib/manga-api.ts`. */
+/** Même lecture du numéro de fichier que `apps/site/src/lib/manga-api.ts`. */
 function numeroDePlanche(chemin: string, index: number): number {
 	const fichier = chemin.split("?")[0]!.split("/").pop() ?? "";
 	const groupes = fichier.replace(/\.[a-z0-9]+$/i, "").match(/\d+/g);
@@ -1108,9 +1108,9 @@ export const PG_SOURCES: Record<string, (sql: Sql) => Promise<SourceChunk[]>> = 
 };
 
 /**
- * URL PostgreSQL : `DATABASE_URL` de l'environnement, puis `apps/shenron/site/.env`,
+ * URL PostgreSQL : `DATABASE_URL` de l'environnement, puis `apps/site/.env`,
  * puis `~/.shenron-neon.env` (repli conservé jusqu'à INFRA-3).
- * `apps/shenron/site/.env` porte DEUX `DATABASE_URL` (l'ancienne Neon avant la locale) :
+ * `apps/site/.env` porte DEUX `DATABASE_URL` (l'ancienne Neon avant la locale) :
  * la DERNIÈRE ligne active fait foi (`loadDatabaseUrl`).
  */
 export async function urlPostgres(): Promise<string> {
@@ -1121,7 +1121,7 @@ export async function urlPostgres(): Promise<string> {
 		],
 	});
 	if (!result.ok) {
-		throw new Error(`DATABASE_URL introuvable (env, apps/shenron/site/.env, ~/.shenron-neon.env). ${result.reason}`);
+		throw new Error(`DATABASE_URL introuvable (env, apps/site/.env, ~/.shenron-neon.env). ${result.reason}`);
 	}
 	return result.url;
 }

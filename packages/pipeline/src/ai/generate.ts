@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@shenron/pipeline/ai/generate` — grounded answer generation behind ports
- * (logic of `generateLlmAnswer` in `apps/shenron/bot/src/lib/llm.ts`).
+ * (logic of `generateLlmAnswer` in `apps/bot/src/lib/llm.ts`).
  *
  * Runtime class: `pure`. `generateText` with `instructions` and
  * `maxRetries: 0`; persona fallbacks and session turns are never cached; a

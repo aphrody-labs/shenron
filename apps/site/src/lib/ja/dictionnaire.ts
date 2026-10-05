@@ -11,7 +11,7 @@
  * Deux ressources externes, chargées paresseusement et gardées en mémoire. Elles
  * ne sont PAS dans le dépôt (18 Mo pour le dictionnaire morphologique, 113 Mo
  * pour JMdict) : `scripts/ja-preparer.ts` les installe dans `.ja-data/`, comme
- * `apps/shenron/bot/.models` le fait pour les modèles du RAG.
+ * `apps/bot/.models` le fait pour les modèles du RAG.
  *
  * **JMdict** (EDRDG, ~218 000 entrées) est la base de jisho.org. Il sert ici à
  * une seule chose, mais décisive : dire si une graphie est un mot japonais réel.
@@ -33,9 +33,9 @@ import { join } from "node:path";
  * Résolue **paresseusement**, et par essais successifs, parce que ce module est
  * chargé dans deux mondes qui ne s'accordent sur rien :
  *
- *  - un script Bun lancé depuis la racine du monorepo (`bun apps/shenron/site/scripts/…`)
+ *  - un script Bun lancé depuis la racine du monorepo (`bun apps/site/scripts/…`)
  *    a pour répertoire courant `~/shenron` ;
- *  - le serveur Next a pour répertoire courant `apps/shenron/site`.
+ *  - le serveur Next a pour répertoire courant `apps/site`.
  *
  * Deux pièges déjà rencontrés, chacun ayant cassé un côté en réparant l'autre :
  * `process.cwd()` seul faisait chercher les ressources un cran trop haut depuis
@@ -46,7 +46,7 @@ import { join } from "node:path";
  *
  * D'où la résolution à l'appel, jamais à l'évaluation du module.
  */
-const CANDIDATS = [".ja-data", "apps/shenron/site/.ja-data", "../.ja-data"];
+const CANDIDATS = [".ja-data", "apps/site/.ja-data", "../.ja-data"];
 
 let racineResolue: string | null = null;
 
@@ -165,7 +165,7 @@ export async function graphiesJmdict(): Promise<Set<string>> {
 	// — c'est exactement ce genre de raccourci qui a fait échouer un build.
 	const chemin = join(dossierDonnees(), "jmdict-graphies.txt");
 	if (!existsSync(chemin)) {
-		console.warn("[ja] JMdict absent — lancer `bun apps/shenron/site/scripts/ja-preparer.ts`");
+		console.warn("[ja] JMdict absent — lancer `bun apps/site/scripts/ja-preparer.ts`");
 		graphies = new Set();
 		return graphies;
 	}
@@ -189,7 +189,7 @@ export async function exigerRessources(): Promise<void> {
 	if (manquantes.length > 0) {
 		throw new Error(
 			`ressources japonaises absentes (${manquantes.join(", ")}) dans ${dossierDonnees()}.\n` +
-				"Lancer : bun apps/shenron/site/scripts/ja-preparer.ts"
+				"Lancer : bun apps/site/scripts/ja-preparer.ts"
 		);
 	}
 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { contextPublicRag, searchPublicRag } from "../../../../apps/shenron/bot/src/api/public-rag";
+import { contextPublicRag, searchPublicRag } from "../../../apps/bot/src/api/public-rag";
 import { loadLiveRagEnv, requireLiveRag } from "../../pipeline/src/testing/live-rag";
 import { createShenronApiClient } from "../src/client";
 import { RagContextResponse, RagSearchResponse } from "../src/contract";

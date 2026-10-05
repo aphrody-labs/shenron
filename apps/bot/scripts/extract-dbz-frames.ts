@@ -14,19 +14,19 @@
  *     avec un échantillonnage régulier `fps=1/PERIODE` (filet de sécurité pour les
  *     plans longs sans coupe). Dédup par hash de contenu (frames quasi-identiques).
  *   Sortie : webp (qualité réglable) dans
- *     apps/shenron/bot/assets/ext/db_episodes_frames/<series>/ep<NNN>/frame-<NNNNN>.webp
- *     + dataset JSON apps/shenron/bot/data/dbz-frames/<series>-ep<NNN>.json (contrat
+ *     apps/bot/assets/ext/db_episodes_frames/<series>/ep<NNN>/frame-<NNNNN>.webp
+ *     + dataset JSON apps/bot/data/dbz-frames/<series>-ep<NNN>.json (contrat
  *     frames-common.ts). AUCUNE écriture DB (ingestion séparée, gardée).
  *
  * Bun-only : `Bun.spawn(["ffmpeg", ...])`, `Bun.file`, `Bun.write`. Pas de node.
  *
  * ── Où déposer les vidéos sources ────────────────────────────────────────────
- *   apps/shenron/bot/data/dbz-sources/<series>/<numberInSeries>.<ext>
- *   ex. apps/shenron/bot/data/dbz-sources/DBZ/1.mkv  (l'épisode 1 de DBZ)
+ *   apps/bot/data/dbz-sources/<series>/<numberInSeries>.<ext>
+ *   ex. apps/bot/data/dbz-sources/DBZ/1.mkv  (l'épisode 1 de DBZ)
  *   (ou passer --input <chemin> pour un fichier hors arborescence.)
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
- *   bun apps/shenron/bot/scripts/extract-dbz-frames.ts --series DBZ --ep 1 \
+ *   bun apps/bot/scripts/extract-dbz-frames.ts --series DBZ --ep 1 \
  *       [--input <video>] [--scene 0.4] [--period 6] [--quality 82] \
  *       [--max 400] [--dry-run]
  *
@@ -51,7 +51,7 @@ import {
 } from "./lib/frames-common.js";
 
 const SERIES_VALUES: Series[] = ["DB", "DBZ", "DBGT", "DBS", "DB_DAIMA", "DBZ_KAI"];
-const ROOT = new URL("../", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("../", import.meta.url).pathname; // apps/bot/
 const SOURCES_DIR = join(ROOT, "data", "dbz-sources");
 const ASSETS_DIR = join(ROOT, "assets", "ext", "db_episodes_frames");
 const DATA_DIR = join(ROOT, "data", "dbz-frames");

@@ -3,7 +3,7 @@
  * External contract drift: every `/api/public/*` path referenced by the
  * consumers within Shenron (the site `llms.txt`) must be a known route — an ENDPOINTS
  * entry or a LEGACY_PUBLIC_PATHS entry — and the legacy list itself must match
- * the routes actually served by `apps/shenron/bot/src/api/server.ts` (read as text).
+ * the routes actually served by `apps/bot/src/api/server.ts` (read as text).
  */
 import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -124,7 +124,7 @@ describe("site llms.txt", () => {
 	});
 });
 
-describe("LEGACY_PUBLIC_PATHS ↔ apps/shenron/bot/src/api/server.ts", () => {
+describe("LEGACY_PUBLIC_PATHS ↔ apps/bot/src/api/server.ts", () => {
 	const server = readFileSync(BOT_SERVER, "utf8");
 	const routeKeys = new Set([...server.matchAll(/^\s*"(\/[^"]+)":/gm)].map((m) => m[1]!));
 	const toBun = (p: string) => p.replace(/\{(\w+)\}/g, ":$1");

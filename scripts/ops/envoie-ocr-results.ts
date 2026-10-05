@@ -7,7 +7,7 @@ import { inspectOcrResults } from "./_ocr-results-db";
 import {
   runAphrodyCli,
   type CliResult,
-} from "../../../../../packages/shenron/pipeline/src/aphrody/cli.ts";
+} from "../../packages/pipeline/src/aphrody/cli.ts";
 
 const args = process.argv.slice(2);
 function option(name: string, fallback?: string): string | undefined {

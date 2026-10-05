@@ -16,9 +16,9 @@
  * Masquage (`visible = false`), jamais de suppression — même doctrine que
  * `doublons-personnages.ts` : `--demasquer` annule tout.
  *
- *   bun apps/shenron/site/scripts/cosmologie-hors-sujet.ts             # simulation
- *   bun apps/shenron/site/scripts/cosmologie-hors-sujet.ts --appliquer
- *   bun apps/shenron/site/scripts/cosmologie-hors-sujet.ts --demasquer
+ *   bun apps/site/scripts/cosmologie-hors-sujet.ts             # simulation
+ *   bun apps/site/scripts/cosmologie-hors-sujet.ts --appliquer
+ *   bun apps/site/scripts/cosmologie-hors-sujet.ts --demasquer
  */
 import postgres from "postgres";
 
@@ -41,7 +41,7 @@ const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
 	.pop()
 	?.slice("DATABASE_URL=".length)
 	.replace(/^["']|["']$/g, "");
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 
 const sql = postgres(url);
 /** État `visible` VOULU à la fin : masquer → false, démasquer → true. */

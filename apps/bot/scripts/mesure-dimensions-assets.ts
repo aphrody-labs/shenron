@@ -8,16 +8,16 @@
  * fiche qu'elle illustre.
  *
  * Les fichiers vivent dans DEUX racines, et les confondre fait conclure à tort
- * qu'une image est perdue : le miroir DB dans `apps/shenron/bot/public/db/`, les médias du
- * wiki dans `apps/shenron/site/public/wiki/`. Le chemin en base n'est jamais un chemin de
+ * qu'une image est perdue : le miroir DB dans `apps/bot/public/db/`, les médias du
+ * wiki dans `apps/site/public/wiki/`. Le chemin en base n'est jamais un chemin de
  * disque.
  *
  * Lecture seule sur les fichiers : on mesure, on n'y touche pas. `sharp` ne
  * réencode rien ici (`metadata()` seul) — il palettiserait un PNG s'il l'écrivait.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/mesure-dimensions-assets.ts --simulation
- *   bun apps/shenron/bot/scripts/mesure-dimensions-assets.ts
+ *   bun apps/bot/scripts/mesure-dimensions-assets.ts --simulation
+ *   bun apps/bot/scripts/mesure-dimensions-assets.ts
  */
 import { join } from "node:path";
 import postgres from "postgres";

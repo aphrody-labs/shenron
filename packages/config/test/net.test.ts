@@ -70,7 +70,7 @@ describe("parseHttpsOrLoopbackUrl", () => {
 	});
 });
 
-/** Copy of the site doctrine (`apps/shenron/site/src/app/api/_client-ip.ts`) used as the parity oracle. */
+/** Copy of the site doctrine (`apps/site/src/app/api/_client-ip.ts`) used as the parity oracle. */
 function siteClientIp(req: Request): string {
 	const realIp = req.headers.get("x-real-ip")?.trim();
 	if (realIp) return realIp;

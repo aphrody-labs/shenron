@@ -6,7 +6,7 @@ import { Button, Card } from "@aphrody/m3-primitives";
 import { StudioHeader } from "./StudioHeader";
 import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
 import { isTauri } from "../../tauri-bridge";
-import { corpus, type CorpusHit } from "../../studio-bridge";
+import { corpus, type CorpusHit } from "./studio-bridge";
 
 const KINDS: Array<[string, string]> = [
   ["", "Tout"],

@@ -28,7 +28,7 @@
  *
  * Env requis : DATABASE_URL. Optionnel : ONLY_SERIES, LIMIT.
  * Usage :
- *   DATABASE_URL=… bun apps/shenron/bot/scripts/enrich-episode-metadata-kitsu.ts \
+ *   DATABASE_URL=… bun apps/bot/scripts/enrich-episode-metadata-kitsu.ts \
  *     [--dry-run] [--only DBZ_KAI] [--limit N] [--champs synopsis,duree]
  */
 import postgres from "postgres";

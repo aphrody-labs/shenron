@@ -18,11 +18,11 @@ import { Database } from "bun:sqlite";
 import postgres from "postgres";
 
 const ROOTS = {
-  data: join(import.meta.dir, "../../data/dragonballcn"),
-  volumes: join(import.meta.dir, "../../data/dragonballcn/volumes"),
-  catalog: join(import.meta.dir, "../../data/dragonballcn/catalog.json"),
-  manifest: join(import.meta.dir, "../../data/dragonballcn/manifest.json"),
-  botDb: join(import.meta.dir, "../../apps/bot/data/bot.db"),
+  data: join(import.meta.dir, "../data/dragonballcn"),
+  volumes: join(import.meta.dir, "../data/dragonballcn/volumes"),
+  catalog: join(import.meta.dir, "../data/dragonballcn/catalog.json"),
+  manifest: join(import.meta.dir, "../data/dragonballcn/manifest.json"),
+  botDb: join(import.meta.dir, "../apps/bot/data/bot.db"),
 };
 
 // ---------------------------------------------------------------------------

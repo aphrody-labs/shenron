@@ -12,8 +12,8 @@
  * de section, 1 carte de lien). Le script est idempotent — le relancer ne fait
  * rien de plus.
  *
- *   bun apps/shenron/site/scripts/chemins-wiki-canoniques.ts            # simulation
- *   bun apps/shenron/site/scripts/chemins-wiki-canoniques.ts --appliquer
+ *   bun apps/site/scripts/chemins-wiki-canoniques.ts            # simulation
+ *   bun apps/site/scripts/chemins-wiki-canoniques.ts --appliquer
  */
 import postgres from "postgres";
 
@@ -53,7 +53,7 @@ const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
 	.pop()
 	?.slice("DATABASE_URL=".length)
 	.replace(/^["']|["']$/g, "");
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 
 const sql = postgres(url);
 let total = 0;

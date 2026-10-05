@@ -26,7 +26,7 @@
  * donc relancer après une coupure / un rate-limit sans rien casser.
  *
  * Usage :
- *   DATABASE_URL=… bun apps/shenron/bot/scripts/translate-wiki-fr.ts [options]
+ *   DATABASE_URL=… bun apps/bot/scripts/translate-wiki-fr.ts [options]
  *     --dry-run            n'écrit rien ; montre ce qui serait traduit
  *     --only t1,t2         restreint aux tables (ex: --only db_episodes,db_movies)
  *     --limit N            au plus N lignes par table (test)

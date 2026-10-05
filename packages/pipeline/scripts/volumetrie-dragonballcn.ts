@@ -21,10 +21,10 @@
  *   · `data/catalogues/dragonballcn-inventaire.json` — le détail des planches
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/volumetrie-dragonballcn.ts                    # tout ce qui manque
- *   bun apps/shenron/bot/scripts/volumetrie-dragonballcn.ts --collection divers
- *   bun apps/shenron/bot/scripts/volumetrie-dragonballcn.ts --limite 10 --delai 3000
- *   bun apps/shenron/bot/scripts/volumetrie-dragonballcn.ts --recommencer      # ignore les mesures acquises
+ *   bun apps/bot/scripts/volumetrie-dragonballcn.ts                    # tout ce qui manque
+ *   bun apps/bot/scripts/volumetrie-dragonballcn.ts --collection divers
+ *   bun apps/bot/scripts/volumetrie-dragonballcn.ts --limite 10 --delai 3000
+ *   bun apps/bot/scripts/volumetrie-dragonballcn.ts --recommencer      # ignore les mesures acquises
  */
 import { join } from "node:path";
 import { aphrodyWebScrape } from "@shenron/pipeline/aphrody";

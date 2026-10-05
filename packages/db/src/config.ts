@@ -1,4 +1,4 @@
-/** Default pool size, aligned with rg `packages/shenron/db/src/pg.ts`. */
+/** Default pool size, aligned with rg `packages/db/src/pg.ts`. */
 export const DEFAULT_POOL_MAX = 4;
 /** Hard ceiling: the local PostgreSQL is shared with the bot, MCP and crawler. */
 export const POOL_MAX_CEILING = 20;

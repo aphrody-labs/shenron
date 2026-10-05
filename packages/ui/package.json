@@ -100,7 +100,7 @@
     "react-markdown": "catalog:",
     "remark-gfm": "catalog:",
     "tailwind-merge": "catalog:",
-    "@aphrody/m3-reader": "workspace:*"
+    "@aphrody/m3-reader": "3.3.4"
   },
   "peerDependencies": {
     "react": "catalog:",

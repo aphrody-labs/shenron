@@ -40,7 +40,7 @@ const nodeFs: FreezeFs = {
 	read: (path) => readFileSync(path, "utf8"),
 };
 
-/** Reason extraction identical to `apps/shenron/site/src/lib/databooks-freeze.ts`. */
+/** Reason extraction identical to `apps/site/src/lib/databooks-freeze.ts`. */
 export function freezeReason(raw: string): string {
 	try {
 		const value = JSON.parse(raw) as Record<string, unknown> | null;

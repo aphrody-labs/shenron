@@ -23,8 +23,8 @@
  * Idempotent : `--injecte` purge d'abord `source_id = 'aphrody'`.
  *
  * Usage :
- *   bun apps/shenron/bot/scripts/ingest-aphrody-rag.ts              # corpus + rapport
- *   bun apps/shenron/bot/scripts/ingest-aphrody-rag.ts --injecte    # + écriture à chaud
+ *   bun apps/bot/scripts/ingest-aphrody-rag.ts              # corpus + rapport
+ *   bun apps/bot/scripts/ingest-aphrody-rag.ts --injecte    # + écriture à chaud
  */
 import { Database } from "bun:sqlite";
 import * as sqliteVec from "sqlite-vec";

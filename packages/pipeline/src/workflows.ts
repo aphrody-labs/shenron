@@ -146,9 +146,9 @@ export interface OcrJobOptions {
 }
 
 export async function runMangaOcr(options: OcrJobOptions = {}): Promise<PipelineExecution> {
-	const root = join(import.meta.dir, "../../../..");
+	const root = join(import.meta.dir, "../../..");
 	if (options.tome !== undefined) throw new Error("Le filtre tome exige lotId");
-	const command = ["bun", join(root, "packages/shenron/pipeline/scripts/run-manga-ocr.ts")];
+	const command = ["bun", join(root, "packages/pipeline/scripts/run-manga-ocr.ts")];
 	if (options.sourceDir) command.push("--root", options.sourceDir);
 	if (options.lotId) command.push("--lot", options.lotId);
 	if (options.concurrency !== undefined) command.push("--limit", String(options.concurrency));
@@ -157,9 +157,9 @@ export async function runMangaOcr(options: OcrJobOptions = {}): Promise<Pipeline
 }
 
 export async function runDatabooksOcr(options: OcrJobOptions = {}): Promise<PipelineExecution> {
-	const root = join(import.meta.dir, "../../../..");
+	const root = join(import.meta.dir, "../../..");
 	if (options.lotId) throw new Error("Le worker databooks continu ne prend pas de lotId");
-	const command = ["bun", join(root, "scripts/tools/shenron/scripts/ops/gpu-continuous-ocr.ts")];
+	const command = ["bun", join(root, "scripts/ops/gpu-continuous-ocr.ts")];
 	if (options.concurrency !== undefined) command.push("--limite-lots", String(options.concurrency));
 	return executeCommand(command, { cwd: root, dryRun: options.dryRun, runner: options.runner });
 }
@@ -190,8 +190,8 @@ export interface RagSearchResultItem {
 
 export async function buildRagIndex(options: RagBuildOptions = {}): Promise<PipelineExecution> {
 	if (options.source && options.source !== "all") throw new Error("source ciblée: utilisez rag-resync-entites");
-	const root = join(import.meta.dir, "../../../..");
-	return executeCommand(["bun", join(root, "packages/shenron/pipeline/scripts/rag-sync-aphrody.ts"), "--toutes", ...(options.dryRun ? [] : ["--appliquer"])], {
+	const root = join(import.meta.dir, "../../..");
+	return executeCommand(["bun", join(root, "packages/pipeline/scripts/rag-sync-aphrody.ts"), "--toutes", ...(options.dryRun ? [] : ["--appliquer"])], {
 		cwd: root, dryRun: options.dryRun, runner: options.runner,
 	});
 }
@@ -201,8 +201,8 @@ export async function searchRagIndex(query: string, limit = 5): Promise<RagSearc
 }
 
 export async function evaluateRag(options: { dryRun?: boolean; runner?: CommandRunner } = {}): Promise<PipelineExecution> {
-	const root = join(import.meta.dir, "../../../..");
-	return executeCommand(["bun", join(root, "scripts/tools/shenron/scripts/ops/eval-aphrody-rag.ts"), "--ci"], {
+	const root = join(import.meta.dir, "../../..");
+	return executeCommand(["bun", join(root, "scripts/ops/eval-aphrody-rag.ts"), "--ci"], {
 		cwd: root, dryRun: options.dryRun, runner: options.runner,
 	});
 }
@@ -232,29 +232,29 @@ export function corpusLocations(root: string, env: Record<string, string | undef
 
 /** Ingests every Aphrody Web corpus JSONL export into the Aphrody RAG owner. */
 export async function runCorpusIngest(options: { dryRun?: boolean; runner?: CommandRunner } = {}): Promise<PipelineExecution> {
-	const root = join(import.meta.dir, "../../../..");
+	const root = join(import.meta.dir, "../../..");
 	const loc = corpusLocations(root);
 	const corpusDir = join(loc.crawlDir, "corpus");
 	const exports = existsSync(corpusDir) ? readdirSync(corpusDir).filter((f) => f.endsWith(".jsonl")).toSorted().map((f) => join(corpusDir, f)) : [];
 	if (!exports.length && !options.dryRun) throw new Error(`aucun export Aphrody Web dans ${corpusDir}; lancer d'abord: pipeline crawl universal`);
-	const command = ["bun", join(root, "packages/shenron/pipeline/scripts/rag-sync-aphrody.ts"), "--corpus-crawl", `--crawl-dir=${loc.crawlDir}`];
+	const command = ["bun", join(root, "packages/pipeline/scripts/rag-sync-aphrody.ts"), "--corpus-crawl", `--crawl-dir=${loc.crawlDir}`];
 	if (!options.dryRun) command.push("--appliquer");
 	return executeCommand(command, { cwd: root, dryRun: options.dryRun, runner: options.runner });
 }
 
 export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> {
-	const root = join(import.meta.dir, "../../../..");
+	const root = join(import.meta.dir, "../../..");
 	let command: string[] = [];
 	switch (target.source) {
-		case "dragonballcn": command = ["bun", join(root, "packages/shenron/pipeline/scripts/crawl-dragonballcn.ts")]; break;
-		case "kanzenshuu": command = ["bun", join(root, "packages/shenron/pipeline/scripts/crawl-kanzenshuu-rag.ts")]; break;
-		case "databooks": command = ["bun", join(root, "packages/shenron/pipeline/scripts/crawl-databooks-rag.ts")]; break;
+		case "dragonballcn": command = ["bun", join(root, "packages/pipeline/scripts/crawl-dragonballcn.ts")]; break;
+		case "kanzenshuu": command = ["bun", join(root, "packages/pipeline/scripts/crawl-kanzenshuu-rag.ts")]; break;
+		case "databooks": command = ["bun", join(root, "packages/pipeline/scripts/crawl-databooks-rag.ts")]; break;
 		case "official":
-			command = ["bun", join(root, "scripts/tools/shenron/scripts/ops/crawl-dragon-ball-official-aphrody.ts"), target.dryRun ? "--dry-run" : "--apply"];
+			command = ["bun", join(root, "scripts/ops/crawl-dragon-ball-official-aphrody.ts"), target.dryRun ? "--dry-run" : "--apply"];
 			break;
 		case "universal": {
 			// Aphrody Web Rust owns crawling/extraction; Shenron supplies its DBFR plan.
-			command = ["bun", join(root, "packages/shenron/pipeline/scripts/aphrody-web-corpus-crawl.ts")];
+			command = ["bun", join(root, "packages/pipeline/scripts/aphrody-web-corpus-crawl.ts")];
 			if (target.dryRun) command.push("--dry-run");
 			if (target.depth !== undefined || target.outDir) throw new Error("crawl universal: profondeur et sortie viennent de crawl.config.json et APHRODY_CORPUS_CRAWL_DIR");
 			return executeCommand(command, { cwd: root, dryRun: target.dryRun, runner: target.runner });
@@ -262,7 +262,7 @@ export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> 
 		case "custom":
 			if (!target.url) throw new Error("crawl custom exige une URL");
 			if (target.outDir) throw new Error("crawl distant Aphrody ne prend pas --out; les pages restent dans l'index Aphrody Web");
-			command = ["bun", join(root, "scripts/tools/shenron/scripts/ops/aphrody-web-crawl.ts"), target.url];
+			command = ["bun", join(root, "scripts/ops/aphrody-web-crawl.ts"), target.url];
 			break;
 	}
 	if (target.outDir) command.push("--out", target.outDir);
@@ -284,8 +284,8 @@ export interface TranslationOptions {
 
 export async function runTranslation(options: TranslationOptions = {}): Promise<Record<string, unknown>> {
 	const args = options.args ?? [];
-	const root = join(import.meta.dir, "../../../..");
-	const supervisor = join(root, "apps/shenron/site/scripts/traduction-boucle.ts");
+	const root = join(import.meta.dir, "../../..");
+	const supervisor = join(root, "apps/site/scripts/traduction-boucle.ts");
 	if (options.dryRun) {
 		return {
 			status: "planned",

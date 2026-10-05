@@ -9,7 +9,7 @@
  * Pas d'API key : scrape HTML public (vignettes hébergées sur image.tmdb.org,
  * domaine déjà whitelist next/image à ajouter). Délai 1.2s/req anti rate-limit.
  *
- * Usage : bun apps/shenron/bot/scripts/enrich-episodes.ts
+ * Usage : bun apps/bot/scripts/enrich-episodes.ts
  */
 import { Database } from "bun:sqlite";
 

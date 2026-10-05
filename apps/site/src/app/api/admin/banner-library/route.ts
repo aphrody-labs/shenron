@@ -1,8 +1,8 @@
 /**
  * GET /api/admin/banner-library — galerie d'images utilisables comme bannières
  * (admin only). Agrège :
- *   - assets wiki uploadés (`apps/shenron/site/public/wiki/banners`)
- *   - assets officiels Toei / DB Official (`apps/shenron/bot/public/db/{toei,dbofficial}`)
+ *   - assets wiki uploadés (`apps/site/public/wiki/banners`)
+ *   - assets officiels Toei / DB Official (`apps/bot/public/db/{toei,dbofficial}`)
  *
  * Chaque entrée expose un `value` stockable tel quel dans PageBanners
  * (URL absolue bot pour /db/*, chemin `./assets/wiki/...` pour les uploads).
@@ -58,11 +58,11 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 	}
 
-	// Chemins relatifs au monorepo (site tourne depuis apps/shenron/site).
+	// Chemins relatifs au monorepo (site tourne depuis apps/site).
 	const root = join(process.cwd(), "..", "..");
 	const siteWikiBanners = join(process.cwd(), "public", "wiki", "banners");
 	const botDb = join(process.cwd(), "..", "bot", "public", "db");
-	// Fallback si cwd n'est pas apps/shenron/site (ex. monorepo root).
+	// Fallback si cwd n'est pas apps/site (ex. monorepo root).
 	const altBotDb = join(root, "apps", "bot", "public", "db");
 	const altWiki = join(root, "apps", "site", "public", "wiki", "banners");
 

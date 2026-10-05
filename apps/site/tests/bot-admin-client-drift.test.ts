@@ -10,7 +10,7 @@ const { BotAdminError, createBotAdminContractClient, unwrapBotResult } =
 
 /**
  * Réponses enregistrées du bot, dans la forme des handlers de
- * apps/shenron/bot/src/api/server.ts : `/api/stats/totals` → `{ stats }`,
+ * apps/bot/src/api/server.ts : `/api/stats/totals` → `{ stats }`,
  * `/api/services` → `{ actions }`, `/api/database/tables` → `{ tables }`,
  * `/api/database/:table` → `listRows(...)`, `/api/wiki/stats` →
  * `{ counts, isSeeded }`, `/api/economy/stats` → agrégats zéni.

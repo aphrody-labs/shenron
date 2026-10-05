@@ -32,7 +32,7 @@ function getPgUrl(): string | null {
   return null;
 }
 
-const sqlitePath = join(import.meta.dir, "../../apps/bot/data/bot.db");
+const sqlitePath = join(import.meta.dir, "../apps/bot/data/bot.db");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMBATS SUPPLÉMENTAIRES

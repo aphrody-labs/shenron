@@ -58,8 +58,8 @@ describe("asset dedup manifest", () => {
 			}
 			for (const g of byHash.values()) if (g.length > 1 && !ALLOWED_GROUP(g)) dups.push(g.toSorted());
 		}
-		// A new duplicate: keep one copy (prefer apps/shenron/site/public) and add the
-		// others to packages/shenron/images/src/asset-aliases.json.
+		// A new duplicate: keep one copy (prefer apps/site/public) and add the
+		// others to packages/images/src/asset-aliases.json.
 		expect(dups).toEqual([]);
 	}, 120_000);
 

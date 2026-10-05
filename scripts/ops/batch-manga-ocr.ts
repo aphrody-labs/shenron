@@ -11,7 +11,7 @@
 
 
 import { join } from "node:path";
-import { connecte } from "../../../../../apps/shenron/site/scripts/_databooks-base";
+import { connecte } from "../../apps/site/scripts/_databooks-base";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {

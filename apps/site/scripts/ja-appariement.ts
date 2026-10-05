@@ -2,11 +2,11 @@
  * Propose un nom japonais pour les techniques du wiki, chaque valeur adossée
  * à une planche de databook.
  *
- *   bun apps/shenron/site/scripts/ja-appariement.ts [--simulation]     # simulation — seul mode
- *   bun apps/shenron/site/scripts/ja-appariement.ts --json p.json      # sortie vérifiable
- *   bun apps/shenron/site/scripts/ja-appariement.ts --limite 30        # échantillon
- *   bun apps/shenron/site/scripts/ja-appariement.ts --tout             # inclut les rejets
- *   bun apps/shenron/site/scripts/ja-appariement.ts --champs           # faisabilité par table
+ *   bun apps/site/scripts/ja-appariement.ts [--simulation]     # simulation — seul mode
+ *   bun apps/site/scripts/ja-appariement.ts --json p.json      # sortie vérifiable
+ *   bun apps/site/scripts/ja-appariement.ts --limite 30        # échantillon
+ *   bun apps/site/scripts/ja-appariement.ts --tout             # inclut les rejets
+ *   bun apps/site/scripts/ja-appariement.ts --champs           # faisabilité par table
  *
  * **Ce script n'écrit rien**, et `--simulation` est son seul mode : `--apply`
  * est refusé explicitement. Une graphie japonaise fausse sur une fiche publique
@@ -17,7 +17,7 @@
  *
  * ## Ce qu'il fait, et pourquoi dans cet ordre
  *
- * 1. **Hypothèse.** Le corpus Xenoverse 2 du RAG (`apps/shenron/bot/data/rag/corpus-xv2.json`,
+ * 1. **Hypothèse.** Le corpus Xenoverse 2 du RAG (`apps/bot/data/rag/corpus-xv2.json`,
  *    extrait des `msg` FR+JP du jeu) associe un nom français à une graphie
  *    japonaise par identifiant de compétence. C'est la seule passerelle sans
  *    approximation dont on dispose — cf. `src/lib/ja/appariement.ts` pour les
@@ -72,7 +72,7 @@ if (process.argv.includes("--apply")) {
 const XV2 =
 	argument("xv2") ?? new URL("../../bot/data/rag/corpus-xv2.json", import.meta.url).pathname;
 
-// `pop()` et non `find()` : `apps/shenron/site/.env` porte DEUX lignes DATABASE_URL, la
+// `pop()` et non `find()` : `apps/site/.env` porte DEUX lignes DATABASE_URL, la
 // Neon d'avant migration (commentée) précédant la locale. Ancrer sur la
 // dernière évite de lire une base décommissionnée.
 const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
@@ -82,7 +82,7 @@ const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
 	?.slice("DATABASE_URL=".length)
 	.replace(/^"|"$/g, "")
 	.trim();
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 const sql = postgres(url, { max: 2 });
 
 console.log("· lecture des transcriptions…");
@@ -117,7 +117,7 @@ if (existsSync(XV2)) {
 const jmdict = await graphiesJmdict();
 if (jmdict.size === 0) {
 	console.log("  ⚠ JMdict absent : impossible de distinguer un mot courant d'un nom propre.");
-	console.log("    Lancer `bun apps/shenron/site/scripts/ja-preparer.ts` pour un verdict fiable.");
+	console.log("    Lancer `bun apps/site/scripts/ja-preparer.ts` pour un verdict fiable.");
 }
 
 /**

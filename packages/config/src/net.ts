@@ -3,7 +3,7 @@
  * Network guards shared by every `@shenron/*` package: the single loopback /
  * HTTPS URL doctrine (formerly copied in `compute.ts`, `shenron-embeddings.ts`,
  * `web.ts` and `ia-cockpit.ts`) and the client IP doctrine of
- * `apps/shenron/site/src/app/api/_client-ip.ts`.
+ * `apps/site/src/app/api/_client-ip.ts`.
  *
  * Runtime class: `pure` (only `URL` and `Headers`).
  */
@@ -103,7 +103,7 @@ export function parseHttpsOrLoopbackUrl(raw: string | undefined, label: string):
  * Client IP as nginx sees it: `x-real-ip` (set by nginx to the socket address,
  * not spoofable), else the LAST `X-Forwarded-For` hop (the one appended by the
  * front proxy; the leftmost hop is client-controlled), else `"unknown"`.
- * Same output as `apps/shenron/site/src/app/api/_client-ip.ts`.
+ * Same output as `apps/site/src/app/api/_client-ip.ts`.
  */
 export function clientIpFromHeaders(headers: Headers): string {
 	const realIp = headers.get("x-real-ip")?.trim();

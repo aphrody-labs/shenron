@@ -2,7 +2,7 @@
 /**
  * Agent key repository (`AgentKey`, `AgentAudit`). Structurally satisfies the
  * `AgentKeyStore` port of `@shenron/auth` and carries the admin operations of
- * `apps/shenron/site/src/lib/agent-keys.ts` with the same surface. Only the SHA-256 of
+ * `apps/site/src/lib/agent-keys.ts` with the same surface. Only the SHA-256 of
  * a token is stored; revocation is soft (`revokedAt`), rows are never deleted.
  *
  * Runtime class: `pure` (Web Crypto only, query builder only).
@@ -212,7 +212,7 @@ export function createAgentKeyRepository(db: AnyDb) {
 			}
 		},
 
-		// ── Admin operations (surface of apps/shenron/site/src/lib/agent-keys.ts) ──
+		// ── Admin operations (surface of apps/site/src/lib/agent-keys.ts) ──
 
 		/** Creates a key. The returned token is the only plain copy that will ever exist. */
 		async createAgentKey(input: {

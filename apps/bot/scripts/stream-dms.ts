@@ -9,7 +9,7 @@
  * Au 1er passage : pose la ligne de base (dernier message vu) SANS logger l'historique
  * → on capture la conversation À PARTIR DE MAINTENANT (corrections, exemples, feedback).
  *
- * Usage : DISCORD_TOKEN=… bun apps/shenron/bot/scripts/stream-dms.ts [userId ...]
+ * Usage : DISCORD_TOKEN=… bun apps/bot/scripts/stream-dms.ts [userId ...]
  * Env   : DM_POLL_MS (défaut 15000)
  */
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";

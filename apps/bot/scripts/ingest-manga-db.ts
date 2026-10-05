@@ -8,7 +8,7 @@
  * Source : assets/manga/transcripts/*.md (générés par scripts/transcribe-manga.py).
  * Idempotent : reconstruit intégralement (DELETE + INSERT). Le JP n'est PAS du bruit.
  *
- * Usage : bun apps/shenron/bot/scripts/ingest-manga-db.ts
+ * Usage : bun apps/bot/scripts/ingest-manga-db.ts
  */
 import { Database } from "bun:sqlite";
 import { drizzle } from "drizzle-orm/bun-sqlite";
@@ -16,7 +16,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import * as schema from "../src/db/schema";
 import { dbMangaPages, type NewDbMangaPage } from "../src/db/schema";
 
-const ROOT = new URL("..", import.meta.url).pathname; // apps/shenron/bot/
+const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const TDIR = `${ROOT}assets/manga/transcripts`;
 const DBP = process.env.DATABASE_PATH ?? `${ROOT}data/bot.db`;
 

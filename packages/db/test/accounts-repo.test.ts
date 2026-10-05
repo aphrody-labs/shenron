@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Parity with apps/shenron/site/src/lib/session.ts (ba_account, provider discord → accountId).
+// Parity with apps/site/src/lib/session.ts (ba_account, provider discord → accountId).
 import { describe, expect, test } from "bun:test";
 import { and, eq } from "drizzle-orm";
 import { drizzle as bunSqlDrizzle } from "drizzle-orm/bun-sql";

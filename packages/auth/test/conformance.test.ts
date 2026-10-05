@@ -2,7 +2,7 @@
 /**
  * W3-AUTH-07 — conformance of the `@shenron/db` repositories to the ports of
  * `@shenron/auth` (docs/STACK.md, D-ports). The `satisfies` clauses are the
- * contract: `tsc --noEmit -p packages/shenron/auth` fails when a repository drifts from
+ * contract: `tsc --noEmit -p packages/auth` fails when a repository drifts from
  * `AgentKeyStore` / `DiscordAccountLookup`. `@shenron/db` is a devDependency
  * only: `src/` never imports it (checked below and by check-workspace-packages).
  */

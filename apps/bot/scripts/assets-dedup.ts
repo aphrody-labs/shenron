@@ -7,7 +7,7 @@
  * answering. Both files are re-hashed right before linking. The rewrite is
  * atomic (link to a temp name, then rename over the duplicate).
  *
- * A reversible manifest is written to `apps/shenron/bot/data/assets-dedup-<date>.json`
+ * A reversible manifest is written to `apps/bot/data/assets-dedup-<date>.json`
  * (`path → canonical, sha256, size`). To undo: copy the canonical over the path
  * (identical bytes) — `--undo=<manifest>` does exactly that.
  *
@@ -16,13 +16,13 @@
  * canonical DB path; counts are printed before/after.
  *
  * Canonical choice per group: the file referenced by the database, else the one
- * under a tracked/curated root (`apps/shenron/bot/assets` > `apps/shenron/site/public/wiki` >
- * `apps/shenron/bot/public/db`), else the shortest path.
+ * under a tracked/curated root (`apps/bot/assets` > `apps/site/public/wiki` >
+ * `apps/bot/public/db`), else the shortest path.
  *
  * DRY-RUN BY DEFAULT.
- *   bun apps/shenron/bot/scripts/assets-dedup.ts            # simulate
- *   bun apps/shenron/bot/scripts/assets-dedup.ts --apply    # link + rewrite DB
- *   bun apps/shenron/bot/scripts/assets-dedup.ts --undo=apps/shenron/bot/data/assets-dedup-2026-09-12.json
+ *   bun apps/bot/scripts/assets-dedup.ts            # simulate
+ *   bun apps/bot/scripts/assets-dedup.ts --apply    # link + rewrite DB
+ *   bun apps/bot/scripts/assets-dedup.ts --undo=apps/bot/data/assets-dedup-2026-09-12.json
  */
 import { copyFileSync, linkSync, renameSync, statSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
@@ -35,7 +35,7 @@ const UNDO = process.argv.find((a) => a.startsWith("--undo="))?.slice(7);
 /** Replay only the DB rewrite + URL check from an existing manifest (links already done). */
 const REWRITE_FROM = process.argv.find((a) => a.startsWith("--rewrite-from="))?.slice(15);
 const RACINE = join(import.meta.dir, "..", "..", "..");
-const ROOTS = { bot: join(RACINE, "apps/shenron/bot"), site: join(RACINE, "apps/shenron/site") };
+const ROOTS = { bot: join(RACINE, "apps/bot"), site: join(RACINE, "apps/site") };
 const CACHE = join(ROOTS.bot, "data/cache/assets-inventory.jsonl");
 const DATE = new Date().toISOString().slice(0, 10);
 const BOT_URL = process.env.BOT_URL ?? "http://127.0.0.1:5006";

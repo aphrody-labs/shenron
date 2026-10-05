@@ -19,7 +19,7 @@
     "build:dev": "RUSTFLAGS=\"--remap-path-prefix=$HOME=~\" wasm-pack build ../../../crates/koharu/koharu-canvas --dev --target web --out-dir ../../../packages/koharu/bridge/src/wasm --out-name koharu_canvas --no-pack && bun scripts/prepare-wasm.ts"
   },
   "dependencies": {
-    "@aphrody/api": "workspace:*"
+    "@aphrody/api": "3.0.0-alpha.2"
   },
   "devDependencies": {
     "nodemon": "catalog:"

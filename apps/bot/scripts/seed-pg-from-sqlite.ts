@@ -1,6 +1,6 @@
 /**
  * seed-pg-from-sqlite.ts — Seed initial du schéma Postgres **`bot`** depuis le
- * réplica SQLite du bot (`apps/shenron/bot/data/bot.db`).
+ * réplica SQLite du bot (`apps/bot/data/bot.db`).
  *
  * Contexte : migration Neon → PostgreSQL local (VPS, 2026-06-23). Neon ayant
  * dépassé son quota de transfert, ses données `bot.*` (wiki éditorial) sont
@@ -23,7 +23,7 @@
  * Idempotent : TRUNCATE + INSERT par table dans une transaction. Relançable.
  *
  * Env requis : DATABASE_URL = PostgreSQL local (`~/.shenron-neon.env`).
- * Usage : cd apps/shenron/bot && bun scripts/seed-pg-from-sqlite.ts [--dry-run]
+ * Usage : cd apps/bot && bun scripts/seed-pg-from-sqlite.ts [--dry-run]
  */
 import { Database } from "bun:sqlite";
 import postgres from "postgres";

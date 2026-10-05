@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * sync-manga-pages-to-sqlite.ts — Synchronise bot.db_manga_pages (PostgreSQL)
- * vers la table db_manga_pages du réplica local SQLite (apps/shenron/bot/data/bot.db).
+ * vers la table db_manga_pages du réplica local SQLite (apps/bot/data/bot.db).
  */
 import { Database } from "bun:sqlite";
 import { join } from "node:path";

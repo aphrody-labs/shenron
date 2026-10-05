@@ -1,15 +1,15 @@
 #!/usr/bin/env bun
 /**
  * Inventory of every image asset under the three media roots:
- *   apps/shenron/bot/assets, apps/shenron/bot/public/db, apps/shenron/site/public/wiki.
+ *   apps/bot/assets, apps/bot/public/db, apps/site/public/wiki.
  * Computes size, SHA-256 (full content), dimensions and a 64-bit dHash, cached in
- * `apps/shenron/bot/data/cache/assets-inventory.jsonl` (keyed by path+size+mtime, so a rerun
+ * `apps/bot/data/cache/assets-inventory.jsonl` (keyed by path+size+mtime, so a rerun
  * only hashes what changed). Read-only on the files.
  *
  * Usage:
- *   bun apps/shenron/bot/scripts/assets-inventaire.ts            # hash + dims + dHash
- *   bun apps/shenron/bot/scripts/assets-inventaire.ts --no-dhash # sha256 only (fast)
- *   bun apps/shenron/bot/scripts/assets-inventaire.ts --report   # print groups from the cache
+ *   bun apps/bot/scripts/assets-inventaire.ts            # hash + dims + dHash
+ *   bun apps/bot/scripts/assets-inventaire.ts --no-dhash # sha256 only (fast)
+ *   bun apps/bot/scripts/assets-inventaire.ts --report   # print groups from the cache
  */
 import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -18,11 +18,11 @@ import { dHash, hammingDistance, hashFile, isImagePath } from "@shenron/images";
 
 const RACINE = join(import.meta.dir, "..", "..", "..");
 const ROOTS = [
-	join(RACINE, "apps/shenron/bot/assets"),
-	join(RACINE, "apps/shenron/bot/public/db"),
-	join(RACINE, "apps/shenron/site/public/wiki"),
+	join(RACINE, "apps/bot/assets"),
+	join(RACINE, "apps/bot/public/db"),
+	join(RACINE, "apps/site/public/wiki"),
 ];
-const CACHE = join(RACINE, "apps/shenron/bot/data/cache/assets-inventory.jsonl");
+const CACHE = join(RACINE, "apps/bot/data/cache/assets-inventory.jsonl");
 const NO_DHASH = process.argv.includes("--no-dhash");
 const REPORT_ONLY = process.argv.includes("--report");
 const CONC = 4;
@@ -148,7 +148,7 @@ function report(entries: Entry[]) {
 	}
 	console.log(`== Near-clones (dHash exact, different bytes): ${nearGroups.length} groups, ${near} extra files`);
 	console.log(`== Near-clones (dHash distance 1..3): ${nearLoose} pairs`);
-	const out = join(RACINE, "apps/shenron/bot/data/cache/assets-near-clones.json");
+	const out = join(RACINE, "apps/bot/data/cache/assets-near-clones.json");
 	Bun.write(out, JSON.stringify(nearGroups.map((g) => g.map((e) => ({ path: e.path.replace(RACINE + "/", ""), w: e.width, h: e.height, size: e.size }))), null, 1));
 	console.log(`   details → ${out.replace(RACINE + "/", "")}`);
 }

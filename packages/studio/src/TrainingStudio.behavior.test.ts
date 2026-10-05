@@ -4,7 +4,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TrainingStudio, type TrainingStudioBackend } from "./TrainingStudio";
-import type { ShenronTraining, TrainEvent } from "../../studio-bridge";
+import type { ShenronTraining, TrainEvent } from "./studio-bridge";
 
 function deferred<T>() {
   let resolve!: (value: T) => void;

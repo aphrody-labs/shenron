@@ -13,7 +13,7 @@
  *
  * Lancer sur le VPS (PG local) :
  *   sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \
- *     --working-directory=apps/shenron/shenron/bot bun scripts/add-wiki-sections.ts
+ *     --working-directory=apps/shenron/bot bun scripts/add-wiki-sections.ts
  * ou simplement `DATABASE_URL=... bun scripts/add-wiki-sections.ts`.
  */
 import postgres from "postgres";

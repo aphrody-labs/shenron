@@ -30,13 +30,13 @@
   },
   "dependencies": {
     "@aphrody/koharu-bridge": "workspace:*",
-    "@aphrody/media": "workspace:*"
+    "@aphrody/media": "0.1.0"
   },
   "devDependencies": {
-    "@aphrody/api": "workspace:*"
+    "@aphrody/api": "3.0.0-alpha.2"
   },
   "peerDependencies": {
-    "@aphrody/api": "workspace:*"
+    "@aphrody/api": "3.0.0-alpha.2"
   },
   "peerDependenciesMeta": {
     "@tauri-apps/api": {

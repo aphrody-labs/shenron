@@ -57,7 +57,7 @@ const flag = (nom: string) => args.includes(`--${nom}`);
 
 const APPLIQUER = flag("appliquer");
 
-/** URL de la base, lue dans `apps/shenron/site/.env` (ancrage `^DATABASE_URL=` : le
+/** URL de la base, lue dans `apps/site/.env` (ancrage `^DATABASE_URL=` : le
  *  fichier porte une ligne Neon COMMENTÉE avant la ligne active). */
 async function urlBase(): Promise<string> {
 	const direct = process.env.DATABASE_URL?.trim();
@@ -71,7 +71,7 @@ async function urlBase(): Promise<string> {
 		.trim()
 		.replace(/^["']|["']$/g, "");
 	if (!valeur) {
-		console.error("✗ DATABASE_URL introuvable (environnement ou apps/shenron/site/.env).");
+		console.error("✗ DATABASE_URL introuvable (environnement ou apps/site/.env).");
 		process.exit(1);
 	}
 	return valeur;

@@ -1,7 +1,7 @@
 /**
  * Static Bearer tokens and the `dbfr_admin` cookie codec (runtime class `server`).
  *
- * The cookie format is byte-for-byte the one of `apps/shenron/site/src/lib/admin-token.ts`:
+ * The cookie format is byte-for-byte the one of `apps/site/src/lib/admin-token.ts`:
  * `${exp}.${hex(HMAC-SHA256(secret, "admin:" + exp + ":" + sha256Hex(token).slice(0, 16)))}`
  * with a 7-day TTL. The signature is bound to the fingerprint of the current
  * master token: rotating the token revokes every cookie already issued.

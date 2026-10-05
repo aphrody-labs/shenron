@@ -13,7 +13,7 @@ import { tempPath } from "@aphrody/paths";
  * 6. Compte les lignes des tables structurées principales (personnages, techniques, planètes).
 
  *
- * Usage : bun apps/shenron/bot/scripts/rag-status.ts
+ * Usage : bun apps/bot/scripts/rag-status.ts
  */
 
 import { Database } from "bun:sqlite";
@@ -24,8 +24,8 @@ import * as sqliteVec from "sqlite-vec";
 import { AphrodyComputeClient, ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
 import { requireAphrodyApiUrl } from "./lib/script-env";
 
-const ROOT = fileURLToPath(new URL("../../../../", import.meta.url));
-const DB_PROD = process.env.RAG_DB ?? join(ROOT, "apps/shenron/bot/data/bot.db");
+const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
+const DB_PROD = process.env.RAG_DB ?? join(ROOT, "apps/bot/data/bot.db");
 const DB_TMP = tempPath("rag.db");
 
 function formatBytes(bytes: number): string {

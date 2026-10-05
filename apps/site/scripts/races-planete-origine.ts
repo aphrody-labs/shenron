@@ -16,8 +16,8 @@
  * entre Vegeta et Sadala relève de l'éditorial, pas de la mesure. Ces races
  * restent à saisir à la main.
  *
- *   bun apps/shenron/site/scripts/races-planete-origine.ts             # simulation
- *   bun apps/shenron/site/scripts/races-planete-origine.ts --apply   (--appliquer accepté)
+ *   bun apps/site/scripts/races-planete-origine.ts             # simulation
+ *   bun apps/site/scripts/races-planete-origine.ts --apply   (--appliquer accepté)
  *
  * Chaque rattachement est versionné dans `public.wiki_revisions` (une révision par race)
  * et n'écrit que si `home_planet_id` est encore vide — cf. `_fill-meta.ts`. À relancer
@@ -42,7 +42,7 @@ const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
 	.pop()
 	?.slice("DATABASE_URL=".length)
 	.replace(/^["']|["']$/g, "");
-if (!url) throw new Error("DATABASE_URL introuvable dans apps/shenron/site/.env");
+if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");
 
 const sql = postgres(url);
 const races = (await sql`

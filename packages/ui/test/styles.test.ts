@@ -1,17 +1,17 @@
 import { describe, expect, test } from "bun:test";
 
-// The package lives at m3/packages/shenron-ui of the aphrody checkout that hosts the
+// The package lives at packages/ui of the aphrody checkout that hosts the
 // Shenron apps; the package stylesheet is read next to this test.
-const root = new URL("../../../../", import.meta.url);
+const root = new URL("../../../", import.meta.url);
 const read = (p: string) => Bun.file(new URL(p, root)).text();
 
 const pkgCss = await Bun.file(new URL("../src/styles.css", import.meta.url)).text();
-const siteCss = await read("apps/shenron/site/src/app/globals.css");
+const siteCss = await read("apps/site/src/app/globals.css");
 const combined = `${siteCss}\n${pkgCss}`;
 
 // Parsed from source text: importing site-theme.ts would couple the package
 // type-check to the site's module graph.
-const siteTheme = await read("apps/shenron/site/src/lib/site-theme.ts");
+const siteTheme = await read("apps/site/src/lib/site-theme.ts");
 const block = /export const THEME_COLOR_VARS = \{([\s\S]*?)\} as const;/.exec(siteTheme)?.[1] ?? "";
 const themeVars = [...block.matchAll(/(\w+):\s*"(--dbz-[\w-]+)"/g)].map((m) => m[2] as string);
 

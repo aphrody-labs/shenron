@@ -23,8 +23,8 @@
  *   bxc wiki page "https://ja.wikipedia.org/w/index.php?title=<title>" --out ja-<title>.json
  *   for ドラゴンボール (アニメ), ドラゴンボールZ, ドラゴンボールGT, ドラゴンボール超
  *
- *   bun apps/shenron/site/scripts/fill-arcs-names.ts            # simulation
- *   bun apps/shenron/site/scripts/fill-arcs-names.ts --apply
+ *   bun apps/site/scripts/fill-arcs-names.ts            # simulation
+ *   bun apps/site/scripts/fill-arcs-names.ts --apply
  */
 import {
 	APPLY,

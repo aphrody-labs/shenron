@@ -17,7 +17,7 @@ export interface CorpusPassage extends SourceChunk {
 }
 export const CORPUS_DIR = process.env.SHENRON_RAG_CORPUS_DIR
   ? resolve(process.env.SHENRON_RAG_CORPUS_DIR)
-  : resolve(import.meta.dir, "../../../../apps/shenron/bot/data/rag");
+  : resolve(import.meta.dir, "../../../apps/bot/data/rag");
 
 export function detectLang(
   docId: string,

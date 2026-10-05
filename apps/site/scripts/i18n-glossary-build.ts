@@ -2,8 +2,8 @@
  * Builds `messages/glossary.json` — the vocabulary machine translation must not
  * touch — from our own tables.
  *
- *   bun apps/shenron/site/scripts/i18n-glossary-build.ts          # report only
- *   bun apps/shenron/site/scripts/i18n-glossary-build.ts --apply  # write the file
+ *   bun apps/site/scripts/i18n-glossary-build.ts          # report only
+ *   bun apps/site/scripts/i18n-glossary-build.ts --apply  # write the file
  *
  * Sources: characters, techniques, planets, transformations and races of the
  * wiki, plus the site's own brand words. Nothing is invented here: a term

@@ -1,6 +1,6 @@
 /**
  * Façades auth du site (W3-AUTH-01, W3-AUTH-03) contre les vecteurs dorés des
- * tests de `@shenron/auth` (`packages/shenron/auth/test/tokens.test.ts`) : le cookie
+ * tests de `@shenron/auth` (`packages/auth/test/tokens.test.ts`) : le cookie
  * `dbfr_admin` et le Bearer statique produits par le paquet sont acceptés par
  * `admin-token.ts` / `api-token.ts`, API publiques inchangées. S8 : un 401
  * anonyme de l'API agents n'écrit plus dans `agent_audit`.

@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, mock } from "bun:test";
 import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
-import { recordLiveRagRequests } from "../../../../packages/shenron/pipeline/src/testing/live-rag-requests";
+import { recordLiveRagRequests } from "../../../packages/pipeline/src/testing/live-rag-requests";
 import { createReadinessHandler } from "../src/app/api/health/ready/route";
 import { probeRag, resetRagProbeCache, type ServiceHealth } from "../src/lib/service-health";
 

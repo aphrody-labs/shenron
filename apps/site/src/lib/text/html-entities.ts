@@ -2,10 +2,10 @@
  * Dependency-free HTML character reference decoder for crawled text.
  *
  * Pure module (no `server-only`, no I/O): it is imported by the site, by
- * `apps/shenron/site/scripts/*` and by `scripts/ops/*` alike.
+ * `apps/site/scripts/*` and by `scripts/ops/*` alike.
  *
  * Semantics — chosen for crawled material and pinned by
- * `apps/shenron/site/tests/html-entities.test.ts`:
+ * `apps/site/tests/html-entities.test.ts`:
  *
  * - **One level per call.** `&amp;lt;` becomes `&lt;`, never `<`: a call
  *   emulates the single decoding step an HTML parser performs, so a text
