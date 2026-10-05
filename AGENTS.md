@@ -123,14 +123,21 @@ Lancer et construire :
   mono-guilde, arrêt propre, binaire compilé, REST `discordFetch`, aussi sous
   `scripts/lib/discord-rest.ts`) et `@aphrody/messaging` (texte et DM hors gateway) ; les
   gardes métier (owner, staff, salon, permissions) restent dans `src/guards/`.
-- **Binaire autonome** (`apps/server`) : un `Bun.serve` frontal sert `/api/local/*`
-  (`bun:ffi` vers `libshenron_ffi`), les assets statiques, et relaie le reste vers le
-  `server.js` standalone de Next lancé en processus enfant. `SHENRON_HOME` contient
+- **Binaire autonome** (`apps/server`) : un `Bun.serve` frontal sert, dans cet ordre,
+  `/api/local/*` (`bun:ffi` vers `libshenron_ffi` ; `health` rapporte les `groups` de
+  l'API, type `LocalHealthResponse` du contrat), l'hôte `@shenron/api/host` (`/api/v1/*`
+  toujours, `/api/public/*` et `/mcp` quand il les sert, WebSocket du chat), les assets
+  statiques puis `/assets/*` du VFS, et relaie le reste vers le `server.js` standalone de
+  Next lancé en processus enfant. `src/backend.ts` câble l'hôte depuis `SHENRON_HOME` et
+  le payload (VFS public, conversations SQLite, agent home, OCR `aphrody`, sidecar
+  `shenron-mcp` voisin, chat sur un modèle local déclaré) ; une capacité absente désactive
+  son groupe sans arrêter le serveur. `SHENRON_HOME` contient
   `config/shenron.env` (refusé s'il n'est pas en 600) ; profil `production` dès que
   `DATABASE_URL` est posé, sinon URLs publiques de dragonballfr.com. Le build compile le site
   sans base, aplatit `node_modules/.bun`, échoue sur toute donnée privée, emballe un payload
-  zstd dans `bun build --compile`. `shenron-desktop` (Tauri 3) lance ce serveur en sidecar et
-  ouvre `/bureau`.
+  zstd (site, bibliothèque native, VFS public gardé, modèle de l'agent home) dans
+  `bun build --compile`. `shenron-desktop` (Tauri 3) lance ce serveur en sidecar, livre
+  `shenron-mcp` à côté et ouvre `/bureau`.
 - **Natif** : `@shenron/native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;
   `@shenron/koharu` parle au moteur par Tauri ou par `koharu-sdk` en JSON Lines sur stdio.
   Les globals Tauri se lisent par `globalThis.__TAURI_INTERNALS__`.
