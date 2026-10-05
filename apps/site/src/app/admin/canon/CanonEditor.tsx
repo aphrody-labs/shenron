@@ -1115,7 +1115,10 @@ export default function CanonEditor({
               <span>{config.powerScaling.enabled ? "Activé" : "Désactivé"}</span>
             </label>
           </Champ>
-          <Champ label="1 Kiri = X Battle Power (BP)" aide="Étalon officiel V-Jump : ~50 000 BP">
+          <Champ
+            label="1 Kiri = X Battle Power (BP)"
+            aide="Conversion de fans, non canonique : aucune source primaire ne la fixe"
+          >
             <input
               type="number"
               value={config.powerScaling.kiriToBpRate}

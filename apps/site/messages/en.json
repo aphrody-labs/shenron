@@ -697,7 +697,7 @@
       "multipliers": "Official Multipliers",
       "fullDossier": "Read full dossier",
       "multiplierBase": "Base: {base} · {source}",
-      "kiriScale": "Kiri Scale: 1 kiri ≈ {rate} scouter units. Planet destruction threshold: {floor} kiri.",
+      "kiriScale": "Fan conversion, not canon: 1 kiri ≈ {rate} scouter units. Planet destruction threshold: {floor} kiri.",
       "sourcesAllowed": "Accepted sources",
       "sourcesRefused": "Excluded sources",
       "seeAlso": "See also",

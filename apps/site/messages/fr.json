@@ -697,7 +697,7 @@
       "multipliers": "Multiplicateurs imprimés",
       "fullDossier": "Le dossier complet",
       "multiplierBase": "Base : {base} · {source}",
-      "kiriScale": "Étalon Kiri : 1 kiri ≈ {rate} unités de scouter. Seuil de destruction d'une planète : {floor} kiri.",
+      "kiriScale": "Conversion de fans, non canonique : 1 kiri ≈ {rate} unités de scouter. Seuil de destruction d'une planète : {floor} kiri.",
       "sourcesAllowed": "Sources admises",
       "sourcesRefused": "Sources refusées",
       "seeAlso": "Voir aussi",

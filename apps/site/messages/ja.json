@@ -697,7 +697,7 @@
       "multipliers": "公式戦闘力倍率",
       "fullDossier": "詳細な解説記事を読む",
       "multiplierBase": "基準：{base} · {source}",
-      "kiriScale": "キリ単位換算：1キリ ≈ 約{rate}戦闘力。惑星破壊の基準値：{floor}キリ。",
+      "kiriScale": "ファンによる非公式の換算：1キリ ≈ 約{rate}戦闘力。惑星破壊の基準値：{floor}キリ。",
       "sourcesAllowed": "承認された情報源",
       "sourcesRefused": "非公認・除外された情報源",
       "seeAlso": "こちらも参照",

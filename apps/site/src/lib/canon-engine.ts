@@ -189,6 +189,10 @@ interface PowerScalingTier {
 
 export interface PowerScalingConfig {
   enabled: boolean;
+  /**
+   * Conversion de fans, non canonique : aucune source primaire ne fixe la valeur
+   * d'un kiri en unités de scouter. Affichée comme telle, jamais comme un fait.
+   */
   kiriToBpRate: number;
   planetDestructionKiriFloor: number;
   multipliers: PowerScalingMultiplier[];
@@ -374,7 +378,8 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "L'incarnation originale de Broly dans les films 8, 10 et 11 de Dragon Ball Z est hors de la continuité canonique du manga, bien que son design graphique initial ait été dessiné par Akira Toriyama. Son traumatisme lié aux pleurs de Goku et sa folie destructrice appartiennent à la chronologie parallèle de Toei Animation. Seul le Broly redéfini et réécrit par Akira Toriyama dans Dragon Ball Super: Broly (2018) est canonique.",
     toriyamaQuote: {
       text: "J'avais complètement oublié l'histoire des anciens films de Broly. En 2018, j'ai repris le personnage à zéro en conservant son apparence essentielle mais en réécrivant son histoire pour l'intégrer à la série officielle.",
-      source: "Commentaire de production Dragon Ball Super: Broly",
+      source:
+        "Paraphrase, pas une citation littérale — Commentaire de production Dragon Ball Super: Broly",
       year: 2018,
     },
     sources: [
@@ -497,7 +502,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "Son Goku est un Saiyan de basse classe né sur la planète Vegeta sous le nom de Kakarotto (Kakarot). Envoyé sur Terre dans une capsule spatiale pour survivre aux soupçons pesant sur Freezer (Dragon Ball Minus / Jaco / DBS Broly), il a été recueilli par Grand-Père Son Gohan. Sa véritable nature extraterrestre et son nom de naissance saiyan sont révélés dès l'arrivée de son frère Raditz au chapitre 195 du manga.",
     toriyamaQuote: {
       text: "Goku est un Saiyan envoyé depuis la planète Vegeta. J'ai pensé que révéler ses origines extraterrestres donnerait un nouvel élan spectaculaire à l'histoire.",
-      source: "Daizenshuu 2 : Story Guide",
+      source: "Paraphrase, pas une citation littérale — Daizenshuu 2 : Story Guide",
       year: 1995,
     },
     sources: [
@@ -603,7 +608,6 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     },
     sources: [
       "Mandō Kobayashi Mars 2014",
-      "Super Exciting Guide",
       "Dragon Ball Super: Super Hero (arbre généalogique Red Ribbon)",
     ],
   },
@@ -649,7 +653,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       source: "Dragon Ball GT DVD Box 'Dragon Box GT' (Introduction de Toriyama)",
       year: 2005,
     },
-    sources: ["Dragon Box GT", "Kanzenshuu Archives"],
+    sources: ["Dragon Box GT"],
   },
   {
     id: "super-saiyan-4",
@@ -774,9 +778,9 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "konatsien",
     ],
     verdict:
-      "Non-canonique. L'origine cinématographique de l'épée de Trunks contredit le manga canonique.",
+      "Non-canonique. Tapion, Hildegarn et l'épée que Tapion confie à Trunks viennent du seul film Toei L'Attaque du Dragon (1995).",
     explanation:
-      "Le film 13 'L'Attaque du Dragon' (1995) met en scène Tapion offrant son épée au jeune Trunks du présent. Cependant, dans le manga original et le chapitre spécial 'Trunks the Story', Trunks du futur combat les cyborgs dans une trame apocalyptique où Tapion et Hildegarn n'ont jamais existé. L'épée de Trunks dans le canon est une arme forgée durant la résistance contre C-17 et C-18.",
+      "Le film 13 'L'Attaque du Dragon' (1995) met en scène Tapion offrant son épée au jeune Trunks du présent. Cependant, dans le manga original et le chapitre spécial 'Trunks the Story', Trunks du futur combat les cyborgs dans une trame apocalyptique où Tapion et Hildegarn n'ont jamais existé.",
     sources: [
       "Manga Dragon Ball Tome 33 (Trunks the Story)",
       "Daizenshuu 6",
@@ -854,7 +858,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       source: "Daizenshuu 6 : Movies & TV Specials",
       year: 1995,
     },
-    sources: ["Daizenshuu 6", "docs/products/toriyama-interviews.md"],
+    sources: ["Daizenshuu 6"],
   },
   {
     id: "tarble",
@@ -901,14 +905,11 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "Toriyama a toujours affirmé que Piccolo était son personnage favori, bien avant Goku et Vegeta. C'est pour cette raison qu'il a placé Piccolo et Gohan au centre absolu du film Dragon Ball Super: Super Hero en 2022.",
     toriyamaQuote: {
       text: "Je suppose que j'aime Piccolo le plus après tout... Avec Piccolo, son passé de méchant le rend plus intéressant à développer que Goku, qui est d'une pureté absolue.",
-      source: "Daizenshuu 2 : Story Guide (1995) & Interview Super Hero (2022)",
+      source:
+        "Paraphrase, pas une citation littérale — Daizenshuu 2 : Story Guide (1995) & Interview Super Hero (2022)",
       year: 1995,
     },
-    sources: [
-      "Daizenshuu 2",
-      "Interview DBS Super Hero (2022)",
-      "docs/products/toriyama-interviews.md",
-    ],
+    sources: ["Daizenshuu 2", "Interview DBS Super Hero (2022)"],
   },
   {
     id: "super-saiyan-5-af",
@@ -920,7 +921,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     verdict: "100% Apocryphe & Fanon. Canular né sur Internet en 1999.",
     explanation:
       "Créé à l'origine par David Montiel Franco (Tablos) comme fan-art dans un magazine espagnol, puis propagé mondialement comme fausse rumeur de suite officielle. N'a aucun lien avec Akira Toriyama, bien que Toyotaro (alors Toyble) s'en soit inspiré pour son doujinshi amateur avant d'être engagé par Shueisha.",
-    sources: ["Hobby Consolas (1999)", "Historique Dragon Ball AF"],
+    sources: ["Hobby Consolas (1999)"],
   },
   {
     id: "daima",
@@ -943,7 +944,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "tamagami",
     ],
     verdict:
-      "Canonique. Dernière œuvre majeure directement scénarisée et dessinée par Akira Toriyama.",
+      "Canonique. Dernière œuvre majeure dont Akira Toriyama a conçu l'histoire et les designs.",
     explanation:
       "Akira Toriyama s'est impliqué à un niveau record dans Dragon Ball Daima : il a créé le concept original, l'histoire complète, la structure du Royaume des Démons (Makai), les vaisseaux, ainsi que l'intégralité des nouveaux personnages et monstres.",
     toriyamaQuote: {
@@ -1055,8 +1056,8 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     verdict:
       "100% Canon absolu dans le manga (Tome 38). Yakon = 800 Kiri, Goku SSJ2 = 3 000 Kiri. Seuil de destruction planétaire = 200 à 300 Kiri.",
     explanation:
-      "Introduit par Akira Toriyama dans l'arc Majin Boo afin de contourner l'inflation astronomique des scouters. Babidi utilise un appareil magique mesurant le ki en Kiri : Yakon absorbe la lumière et atteint 800 Kiri, tandis que Goku passant en SSJ2 sature le compteur à 3 000 Kiri. D'après les calculs éditoriaux du V-Jump (1994), 1 Kiri équivaut à environ 50 000 unités scouter.",
-    sources: ["Manga Dragon Ball Tome 38 (Chapitres 450-452)", "V-Jump Décembre 1994"],
+      "Introduit par Akira Toriyama dans l'arc Majin Boo afin de contourner l'inflation astronomique des scouters. Babidi utilise un appareil magique mesurant le ki en Kiri : Yakon absorbe la lumière et atteint 800 Kiri, tandis que Goku passant en SSJ2 sature le compteur à 3 000 Kiri. La conversion « 1 Kiri ≈ 50 000 unités scouter », répandue chez les fans, n'a aucune source officielle.",
+    sources: ["Manga Dragon Ball Tome 38 (Chapitres 450-452)"],
   },
   {
     id: "fusion-potara-vs-metamol-puissance",
@@ -1266,7 +1267,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     ],
     verdict: "Canon supervisé. Introduit dans Dragon Ball Super par Akira Toriyama.",
     explanation:
-      "Zunama et Lord Zuno expliquent en l'An 41 du Calendrier Divin que le Dieu Dragon Zalama a forgé les Super Dragon Balls, des sphères dorées de la taille d'une planète capables d'exaucer absolument n'importe quel vœu sans aucune restriction. Toriyama a personnellement écrit le rituel en langage des dieux (Chant des Dieux) pour invoquer Super Shenron.",
+      "Lord Zuno explique que le Dieu Dragon Zalama a forgé les Super Dragon Balls, des sphères dorées de la taille d'une planète capables d'exaucer absolument n'importe quel vœu sans aucune restriction. Toriyama a personnellement écrit le rituel en langage des dieux (Chant des Dieux) pour invoquer Super Shenron.",
     sources: ["Manga Dragon Ball Super Tome 1 (Chapitres 6-7)", "Série DBS Arc Univers 6"],
   },
   {
@@ -1287,7 +1288,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     verdict:
       "100% Canon absolu. Créé par Toriyama pour la fin du manga original et enrichi dans DBS.",
     explanation:
-      "Uub est la réincarnation humaine du Majin Boo originel (Kid Boo), née du souhait pur exprimé par Son Goku avant de l'achever avec le Genkidama (Chapitre 516). Toriyama a consacré la conclusion de son manga (Chapitres 518-519) à la rencontre et au départ de Son Goku pour entraîner Uub. Dans Dragon Ball Super (Chapitre 66), Toyotaro et Toriyama confirment qu'en héritant du corps de Boo, Uub a également hérité du prodigieux Ki Divin du Grand Kaïoshin absorbé cinq millions d'années plus tôt.",
+      "Uub est la réincarnation humaine du Majin Boo originel (Kid Boo), née du souhait pur exprimé par Son Goku avant de l'achever avec le Genkidama (Chapitre 516). Toriyama a consacré la conclusion de son manga (Chapitres 518-519) à la rencontre et au départ de Son Goku pour entraîner Uub. Dans Dragon Ball Super (Chapitre 66), Toyotaro et Toriyama confirment que, réincarnation de Kid Boo, Uub a également hérité du prodigieux Ki Divin du Grand Kaïoshin absorbé cinq millions d'années plus tôt.",
     sources: [
       "Manga Dragon Ball Tome 42 (Chapitres 516-519)",
       "Manga Dragon Ball Super Tome 15 (Chapitre 66)",
@@ -1332,11 +1333,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     verdict: "Non-canonique. Jeux d'arcade et anime promotionnel dérivés.",
     explanation:
       "Conçus par Dimps et Bandai Namco avec Toei Animation pour promouvoir le jeu de cartes d'arcade au Japon. Bien que Toriyama ait validé certains charadesigns originaux (comme le Trunks en manteau de la Patrouille du Temps dans Dragon Ball Online), les fusions impossibles (Vegetto SSJ4, Bardock SSJ4, etc.) et les arcs temporels de Heroes sont hors de la continuité canonique.",
-    sources: [
-      "Super Dragon Ball Heroes Official Website",
-      "V-Jump Archives",
-      "Dragon Ball Online Lore Notes",
-    ],
+    sources: ["Super Dragon Ball Heroes Official Website"],
   },
   {
     id: "dbm-multiverse",
@@ -1380,11 +1377,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     verdict: "Non-canonique. Épisodes produits par Toei Animation pour ne pas rattraper le manga.",
     explanation:
       "Des arcs entiers (Garlic Jr), des tournois (l'Autre Monde avec Paikuhan) et des personnages secondaires (le grillon Gregory chez Kaio, l'ex-petite amie de Krilin Maron) ont été inventés par les scénaristes de Toei Animation pour meubler le temps d'antenne hebdomadaire. Ils n'apparaissent jamais dans le manga original de Toriyama.",
-    sources: [
-      "Manga Dragon Ball (Tomes 1 à 42)",
-      "Daizenshuu 6 (Anime)",
-      "Guide des épisodes Toei",
-    ],
+    sources: ["Manga Dragon Ball (Tomes 1 à 42)", "Daizenshuu 6 (Anime)"],
   },
   {
     id: "gregory-kaio",
@@ -1403,11 +1396,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
     verdict: "Non-canonique au manga original. Personnage filler conçu pour l'anime Toei.",
     explanation:
       "Le grillon Gregory n'apparaît dans aucune case des 42 tomes du manga original d'Akira Toriyama : sur la planète de Kaïo, seul le singe Bubbles accompagne le maître des lieux. C'est le staff de l'anime Toei qui a demandé un second compagnon pour allonger et combler l'entraînement humoristique de Goku. Akira Toriyama a dessiné son design pour faire plaisir au studio, mais ne l'a jamais inclus dans son manga.",
-    sources: [
-      "Manga Dragon Ball (Tomes 18-19)",
-      "Daizenshuu 5 & 6 (Anime)",
-      "Guide des fillers DBZ",
-    ],
+    sources: ["Manga Dragon Ball (Tomes 18-19)", "Daizenshuu 5 & 6 (Anime)"],
   },
 ];
 
@@ -1416,6 +1405,7 @@ const CANON_DATABASE: CanonTopicEntry[] = [
  */
 export const DEFAULT_POWER_SCALING_CONFIG: PowerScalingConfig = {
   enabled: true,
+  // Conversion de fans, non canonique (cf. `PowerScalingConfig.kiriToBpRate`).
   kiriToBpRate: 50000,
   planetDestructionKiriFloor: 200,
   multipliers: [

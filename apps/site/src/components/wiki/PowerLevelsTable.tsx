@@ -107,11 +107,11 @@ export function PowerLevelsTable({
             <div className="text-[10px] font-bold uppercase tracking-wider text-purple-400">
               Unités Kiri (Babidi)
             </div>
-            <div className="text-lg font-extrabold text-white mt-1">1 Kiri = 50 000 BP</div>
+            <div className="text-lg font-extrabold text-white mt-1">1 Kiri ≈ 50 000 BP</div>
           </div>
           <p className="text-[11px] text-white/50 mt-2 leading-relaxed">
-            Dispositif magique de Babidi : Yakon = 800 Kiri (40M) ; Goku SSJ2 = 3 000 Kiri (150M) au
-            minimum.
+            Dispositif magique de Babidi : Yakon = 800 Kiri ; Goku SSJ2 = 3 000 Kiri au minimum. La
+            conversion en BP est une estimation de fans, non canonique.
           </p>
         </div>
       </div>
