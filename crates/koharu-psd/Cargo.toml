@@ -1,7 +1,8 @@
 [package]
 name = "koharu-psd"
-version = "0.83.5"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 description = "Manga translation tools"
 license = "MIT OR Apache-2.0"
 authors = ["Mayo Takanashi <mayo@linux.com>", "Wangchong Zhou <fffonion@gmail.com>"]
@@ -10,6 +11,10 @@ homepage = "https://koharu.rs"
 repository = "https://github.com/koharu-rs/koharu"
 keywords = ["manga", "ocr", "translation", "deep_learning", "computer_vision"]
 publish = false
+
+[lints]
+workspace = true
+
 [dependencies]
 image = { workspace = true }
 koharu-renderer = { workspace = true }

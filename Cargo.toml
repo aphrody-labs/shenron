@@ -80,22 +80,22 @@ fs4 = "1.1.0"
 futures = "0.3.34"
 image = "0.25.10"
 js-sys = "0.3.105"
-koharu-agent = { path = "crates/koharu-agent", version = "0.83.5" }
-koharu-app = { path = "crates/koharu-app", version = "0.83.5" }
+koharu-agent = { path = "crates/koharu-agent", version = "1.1.0" }
+koharu-app = { path = "crates/koharu-app", version = "1.1.0" }
 koharu-config = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-desktop = { path = "crates/koharu-desktop", version = "0.83.5" }
+koharu-desktop = { path = "crates/koharu-desktop", version = "1.1.0" }
 koharu-diffusion = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-library = { path = "crates/koharu-library", version = "0.83.5" }
+koharu-library = { path = "crates/koharu-library", version = "1.1.0" }
 koharu-llama = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-ml = { path = "crates/koharu-ml", version = "0.83.5" }
-koharu-pipeline = { path = "crates/koharu-pipeline", version = "0.83.5" }
-koharu-psd = { path = "crates/koharu-psd", version = "0.83.5" }
-koharu-rasterizer = { path = "crates/koharu-rasterizer", version = "0.83.5" }
-koharu-renderer = { path = "crates/koharu-renderer", version = "0.83.5" }
+koharu-ml = { path = "crates/koharu-ml", version = "1.1.0" }
+koharu-pipeline = { path = "crates/koharu-pipeline", version = "1.1.0" }
+koharu-psd = { path = "crates/koharu-psd", version = "1.1.0" }
+koharu-rasterizer = { path = "crates/koharu-rasterizer", version = "1.1.0" }
+koharu-renderer = { path = "crates/koharu-renderer", version = "1.1.0" }
 koharu-runtime = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
-koharu-scene = { path = "crates/koharu-scene", version = "0.83.5" }
-koharu-secrets = { path = "crates/koharu-secrets", version = "0.83.5" }
-koharu-storage = { path = "crates/koharu-storage", version = "0.83.5" }
+koharu-scene = { path = "crates/koharu-scene", version = "1.1.0" }
+koharu-secrets = { path = "crates/koharu-secrets", version = "1.1.0" }
+koharu-storage = { path = "crates/koharu-storage", version = "1.1.0" }
 koharu-torch = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "0.83.5" }
 koharu-translator = { path = "crates/koharu-translator", version = "0.83.5" }
 llguidance = "1.8.0"
