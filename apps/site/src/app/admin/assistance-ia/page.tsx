@@ -1,4 +1,12 @@
-// SPDX-License-Identifier: Apache-2.0
-// Canonical Aphrody M3 administration; this host retains routing and authentication.
-export { default, metadata } from "@aphrody/admin-ui/app/admin/assistance-ia/page";
+import type { Metadata } from "next";
+import { redirectToAdminIa } from "@/components/admin/admin-ia-redirect";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Supervision IA & Modèles — Cockpit Unifié",
+};
+
+export default function AssistanceIaPage() {
+  redirectToAdminIa("overview");
+}

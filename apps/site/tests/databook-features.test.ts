@@ -4,7 +4,7 @@
  * - PostgreSQL Shenron réel (lecture seule, RAG préchargé obligatoire) : colonnes + données seed.
  */
 import { beforeAll, describe, expect, test } from "bun:test";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { LIVE, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
 import {
 	DATABOOK_CATEGORIES,
 	kindFromCategory,
@@ -122,7 +122,7 @@ describe("source features shipped", () => {
 		).text();
 		if (src.includes("@shenron/ui/reader")) {
 			src = await Bun.file(
-				new URL("../../../../m3/packages/m3-reader/src/DatabookReader.tsx", import.meta.url)
+				new URL("../../../packages/ui/src/reader/DatabookReader.tsx", import.meta.url)
 			).text();
 		}
 		expect(src).toContain("lightbox");
@@ -184,7 +184,7 @@ describe("source features shipped", () => {
 	});
 });
 
-describe("intégration Postgres (Shenron configuré, RAG préchargé)", () => {
+describe.if(LIVE)("intégration Postgres (Shenron configuré, RAG préchargé)", () => {
 	let dbUrl = "";
 	beforeAll(async () => {
 		loadLiveRagEnv();

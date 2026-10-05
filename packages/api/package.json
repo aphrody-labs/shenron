@@ -15,7 +15,7 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "lint": "oxlint -c ../.oxlintrc.json",
-    "test": "bun test",
+    "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
     "openapi": "bun scripts/openapi.ts",
     "openapi:check": "bun scripts/openapi.ts --check",
     "typecheck": "tsc -p tsconfig.json --noEmit"

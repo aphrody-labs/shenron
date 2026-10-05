@@ -20,8 +20,12 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from "../src/components/tabs";
 const srcDir = new URL("../src/", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 
 describe("Base UI 1.8 selectors", () => {
-	test("no data-[expanded] or data-[selected] in packages/shenron-ui/src", async () => {
-		const files = await Array.fromAsync(new Glob("**/*.{ts,tsx,css}").scan({ cwd: srcDir }));
+	test("no data-[expanded] or data-[selected] in packages/ui/src", async () => {
+		// The Koharu editor (src/koharu) uses its own data-selected/data-expanded attributes on
+		// plain elements, and Base UI 1.x Toast genuinely renders data-expanded on its viewport.
+		const files = (await Array.fromAsync(new Glob("**/*.{ts,tsx,css}").scan({ cwd: srcDir }))).filter(
+			(f) => !f.startsWith("koharu/")
+		);
 		expect(files.length).toBeGreaterThan(0);
 		const hits: string[] = [];
 		for (const f of files) {

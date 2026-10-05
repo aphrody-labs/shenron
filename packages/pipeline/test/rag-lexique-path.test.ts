@@ -17,19 +17,19 @@ import {
 	resolveLexiquePath,
 } from "../scripts/lib/script-env";
 
-const WIN_SCRIPT = "file:///C:/Users/dev/src/shenron/packages/shenron/pipeline/scripts/rag-lexique.ts";
-const POSIX_SCRIPT = "file:///srv/rg/releases/shenron/packages/shenron/pipeline/scripts/rag-lexique.ts";
+const WIN_SCRIPT = "file:///C:/Users/dev/src/shenron/packages/pipeline/scripts/rag-lexique.ts";
+const POSIX_SCRIPT = "file:///srv/rg/releases/shenron/packages/pipeline/scripts/rag-lexique.ts";
 
 describe("resolveLexiquePath (B6)", () => {
 	it("resolves the bot lexicon on win32 without a leading slash", () => {
 		const p = resolveLexiquePath(WIN_SCRIPT, {}, "win32");
-		expect(p).toBe("C:\\Users\\dev\\src\\shenron\\apps\\shenron\\bot\\data\\rag\\lexique-requetes.json");
+		expect(p).toBe("C:\\Users\\dev\\src\\shenron\\apps\\bot\\data\\rag\\lexique-requetes.json");
 		expect(p.startsWith("/")).toBe(false);
 	});
 
 	it("resolves the bot lexicon on posix", () => {
 		expect(resolveLexiquePath(POSIX_SCRIPT, {}, "posix")).toBe(
-			"/srv/rg/releases/shenron/apps/shenron/bot/data/rag/lexique-requetes.json"
+			"/srv/rg/releases/shenron/apps/bot/data/rag/lexique-requetes.json"
 		);
 	});
 
@@ -91,11 +91,11 @@ describe("script environment contract (B13, rule 9)", () => {
 
 	it("refuses a destructive rebuild without RAG_DB or against the served database", () => {
 		expect(() => requireOfflineRagDb({}, "/srv/shenron", "posix")).toThrow(/RAG_DB/);
-		expect(() => requireOfflineRagDb({ RAG_DB: "/srv/shenron/apps/shenron/bot/data/bot.db" }, "/srv/shenron", "posix")).toThrow(
+		expect(() => requireOfflineRagDb({ RAG_DB: "/srv/shenron/apps/bot/data/bot.db" }, "/srv/shenron", "posix")).toThrow(
 			/base servie/
 		);
 		expect(() =>
-			requireOfflineRagDb({ RAG_DB: "c:\\shenron\\APPS\\shenron\\bot\\data\\bot.db" }, "C:\\shenron", "win32")
+			requireOfflineRagDb({ RAG_DB: "c:\\shenron\\APPS\\bot\\data\\bot.db" }, "C:\\shenron", "win32")
 		).toThrow(/base servie/);
 		expect(requireOfflineRagDb({ RAG_DB: tempPath("ragbuild.db") }, "/srv/shenron", "posix")).toBe(tempPath("ragbuild.db"));
 	});

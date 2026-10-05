@@ -38,8 +38,23 @@
     "./layout/*": "./src/layout/*.tsx",
     "./navigation/*": "./src/navigation/*.tsx",
     "./admin/*": "./src/admin/*.tsx",
-    "./*": "./src/components/*.tsx",
-    "./use-focus-trap": "./src/reader/use-focus-trap.ts"
+    "./use-focus-trap": "./src/reader/use-focus-trap.ts",
+    "./koharu": "./src/koharu/index.ts",
+    "./koharu/providers": "./src/koharu/providers.tsx",
+    "./koharu/navigation": "./src/koharu/navigation.ts",
+    "./koharu/components/editor/useCanvas": "./src/koharu/components/editor/useCanvas.ts",
+    "./koharu/components/preferences/models": "./src/koharu/components/preferences/models.ts",
+    "./koharu/components/*": "./src/koharu/components/*.tsx",
+    "./koharu/lib/*": "./src/koharu/lib/*.ts",
+    "./koharu/locales/*": "./src/koharu/locales/*",
+    "./koharu/assets/*": "./src/koharu/assets/*",
+    "./koharu.css": "./src/koharu/editor.css",
+    "./studio": "./src/studio/index.ts",
+    "./studio/studio-bridge": "./src/studio/studio-bridge.ts",
+    "./studio/tauri-bridge": "./src/studio/tauri-bridge.ts",
+    "./studio/shenron-theme": "./src/studio/shenron-theme.ts",
+    "./studio/*": "./src/studio/*.tsx",
+    "./*": "./src/components/*.tsx"
   },
   "shenron": {
     "runtime": {
@@ -74,14 +89,29 @@
       "./layout/*": "react",
       "./navigation/*": "react",
       "./admin/*": "react",
-      "./*": "react",
-      "./use-focus-trap": "react"
+      "./use-focus-trap": "react",
+      "./koharu": "react",
+      "./koharu/providers": "react",
+      "./koharu/navigation": "pure",
+      "./koharu/components/editor/useCanvas": "react",
+      "./koharu/components/preferences/models": "pure",
+      "./koharu/components/*": "react",
+      "./koharu/lib/*": "react",
+      "./koharu/locales/*": "pure",
+      "./koharu/assets/*": "css",
+      "./koharu.css": "css",
+      "./studio": "react",
+      "./studio/studio-bridge": "pure",
+      "./studio/tauri-bridge": "pure",
+      "./studio/shenron-theme": "pure",
+      "./studio/*": "react",
+      "./*": "react"
     }
   },
   "scripts": {
     "type-check": "tsc --noEmit",
     "lint": "oxlint -c ../.oxlintrc.json",
-    "test": "bun test",
+    "test": "bun test --path-ignore-patterns='test/koharu/**' && bun test/koharu/run.ts",
     "tokens": "bun scripts/generate-tokens.ts",
     "tokens:check": "bun scripts/generate-tokens.ts --check",
     "css:equivalence": "bun scripts/check-css-equivalence.ts",
@@ -92,31 +122,53 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@aphrody/api": "3.0.0-alpha.2",
+    "@aphrody/m3-primitives": "3.3.4",
+    "@aphrody/m3-reader": "3.3.4",
+    "@aphrody/m3-theme": "3.3.4",
+    "@aphrody/plugin-opener": "3.0.0-alpha.2",
     "@base-ui/react": "catalog:",
+    "@shenron/config": "workspace:*",
+    "@shenron/koharu": "workspace:*",
+    "@shenron/pipeline": "workspace:*",
     "@tanstack/react-query": "catalog:",
+    "@tanstack/react-virtual": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
+    "i18next": "catalog:",
+    "i18next-browser-languagedetector": "catalog:",
+    "i18next-localstorage-backend": "catalog:",
     "lucide-react": "catalog:",
+    "next-themes": "catalog:",
+    "react-colorful": "catalog:",
+    "react-i18next": "catalog:",
     "react-markdown": "catalog:",
+    "react-resizable-panels": "catalog:",
     "remark-gfm": "catalog:",
+    "swiper": "^14.3.0",
     "tailwind-merge": "catalog:",
-    "@aphrody/m3-reader": "3.3.4"
+    "zustand": "catalog:"
   },
   "peerDependencies": {
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@aphrody/bun-test-dom": "0.1.0",
+    "@tailwindcss/postcss": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/bun": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "postcss": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "postcss": "catalog:",
-    "@tailwindcss/postcss": "catalog:",
-    "tailwindcss": "catalog:",
-    "@shenron/config": "workspace:*"
+    "tailwindcss": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.2"
-  }
+  },
+  "description": "Shenron's single UI layer: Dragon Ball design system, site components, readers, admin primitives, the Koharu manga editor and the desktop studio."
 }

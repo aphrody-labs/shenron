@@ -5,8 +5,8 @@ import {
   type NativeClient,
   type NativeMethod,
   type NativeParams,
-} from "@aphrody/koharu-sdk/native";
-export { formatSdkError } from "@aphrody/koharu-sdk/native";
+} from "@shenron/koharu/native";
+export { formatSdkError } from "@shenron/koharu/native";
 
 export class KoharuSdkClient {
   private readonly client: NativeClient;

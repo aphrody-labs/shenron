@@ -82,20 +82,20 @@ describe("variants", () => {
 });
 
 describe("resolve", () => {
-	const roots = { bot: "/r/apps/shenron/bot", site: "/r/apps/shenron/site" };
+	const roots = { bot: "/r/apps/bot", site: "/r/apps/site" };
 	test("db path → disk and back", () => {
-		expect(dbPathToDisk("./assets/wiki/characters/x.png", roots)).toBe("/r/apps/shenron/site/public/wiki/characters/x.png");
-		expect(dbPathToDisk("assets/wiki/characters/x.png", roots)).toBe("/r/apps/shenron/site/public/wiki/characters/x.png");
-		expect(dbPathToDisk("./assets/dbz/xv2-portraits/GOK.png", roots)).toBe("/r/apps/shenron/bot/assets/dbz/xv2-portraits/GOK.png");
-		expect(dbPathToDisk("db/toei/a.jpg", roots)).toBe("/r/apps/shenron/bot/public/db/toei/a.jpg");
+		expect(dbPathToDisk("./assets/wiki/characters/x.png", roots)).toBe("/r/apps/site/public/wiki/characters/x.png");
+		expect(dbPathToDisk("assets/wiki/characters/x.png", roots)).toBe("/r/apps/site/public/wiki/characters/x.png");
+		expect(dbPathToDisk("./assets/dbz/xv2-portraits/GOK.png", roots)).toBe("/r/apps/bot/assets/dbz/xv2-portraits/GOK.png");
+		expect(dbPathToDisk("db/toei/a.jpg", roots)).toBe("/r/apps/bot/public/db/toei/a.jpg");
 		expect(dbPathToDisk("https://x/y.png", roots)).toBeNull();
 		expect(dbPathToDisk("./etc/passwd", roots)).toBeNull();
-		expect(diskToDbPath("/r/apps/shenron/site/public/wiki/sagas/s.jpg", roots)).toBe("./assets/wiki/sagas/s.jpg");
-		expect(diskToDbPath("/r/apps/shenron/bot/assets/manga/DBS/ch1/001.webp", roots)).toBe("./assets/manga/DBS/ch1/001.webp");
-		expect(diskToDbPath("/r/apps/shenron/bot/public/db/toei/a.jpg", roots)).toBe("db/toei/a.jpg");
+		expect(diskToDbPath("/r/apps/site/public/wiki/sagas/s.jpg", roots)).toBe("./assets/wiki/sagas/s.jpg");
+		expect(diskToDbPath("/r/apps/bot/assets/manga/DBS/ch1/001.webp", roots)).toBe("./assets/manga/DBS/ch1/001.webp");
+		expect(diskToDbPath("/r/apps/bot/public/db/toei/a.jpg", roots)).toBe("db/toei/a.jpg");
 		expect(diskToDbPath("/elsewhere/a.jpg", roots)).toBeNull();
 		// Dead root: not served by the bot.
-		expect(diskToDbPath("/r/apps/shenron/bot/assets/wiki/characters/x.jpg", roots)).toBeNull();
+		expect(diskToDbPath("/r/apps/bot/assets/wiki/characters/x.jpg", roots)).toBeNull();
 	});
 	test("url path", () => {
 		expect(dbPathToUrlPath("./assets/dbz/a b.png")).toBe("/assets/dbz/a%20b.png");

@@ -1,22 +1,26 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
-import { CollectionReader, DatabookReader, MangaReader } from "@aphrody/m3-reader/source";
-import { useFocusTrap } from "@aphrody/m3-reader/use-focus-trap";
+import { CollectionReader, MangaReader } from "@aphrody/m3-reader/source";
 import * as shenron from "../src/reader";
-import { useFocusTrap as shenronFocusTrap } from "../src/reader/use-focus-trap";
+import { DatabookReader } from "../src/reader/DatabookReader";
 const read = (name: string) => readFile(new URL("../src/" + name, import.meta.url), "utf8");
-describe("one reader implementation across Aphrody and Shenron", () => {
-  test("all three readers and modal lifecycle share the canonical implementation", () => {
+describe("readers: generic ones shared with M3, the databook reader owned by Shenron", () => {
+  test("manga and collection readers stay the canonical M3 implementation", () => {
     expect(shenron.CollectionReader).toBe(CollectionReader);
-    expect(shenron.DatabookReader).toBe(DatabookReader);
     expect(shenron.MangaReader).toBe(MangaReader);
-    expect(shenronFocusTrap).toBe(useFocusTrap);
   });
-  test("the Shenron style exports delegate to M3 including the Dragon Ball skin", async () => {
+  test("the databook reader is Shenron's own and carries its focus trap", async () => {
+    expect(shenron.DatabookReader).toBe(DatabookReader);
+    const source = await read("reader/DatabookReader.tsx");
+    expect(source).toContain('from "./use-focus-trap"');
+    expect(source).not.toMatch(/from ["']@aphrody\/m3-reader/);
+  });
+  test("generic reader styles come from M3, the Dragon Ball skin lives here", async () => {
     expect(await read("reader-styles.css")).toContain('@import "@aphrody/m3-reader/styles.css"');
-    expect(await read("reader-dragon-ball.css")).toContain(
-      '@import "@aphrody/m3-reader/dragon-ball.css"',
-    );
+    const skin = await read("reader-dragon-ball.css");
+    expect(skin).not.toContain("@import");
+    expect(skin).toContain(".m3-reader--dragon-ball");
+    expect(skin).toContain("var(--dbz-orange");
   });
 });

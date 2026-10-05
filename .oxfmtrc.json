@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    ".claude/**",
+    "**/examples/**",
+    "**/*.min.js",
+    "**/node_modules/**",
+    "target/**",
+    "**/.next/**",
+    "**/.next-*/**",
+    "packages/koharu/src/wasm/**",
+    "packages/koharu/src/protocol.ts",
+    "plugin/references/**"
+  ]
+}

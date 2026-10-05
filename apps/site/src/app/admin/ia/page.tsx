@@ -1,4 +1,15 @@
-// SPDX-License-Identifier: Apache-2.0
-// Canonical Aphrody M3 administration; this host retains routing and authentication.
-export { default, metadata } from "@aphrody/admin-ui/app/admin/ia/page";
+import type { Metadata } from "next";
+import { requireAdmin } from "@/lib/session";
+import { UnifiedIaCockpit } from "@/components/admin/UnifiedIaCockpit";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "IA & Canon Cockpit — Console Unifiée",
+  description: "Supervision temps réel, doctrine de canonicité, entraînement RAG et modèles",
+};
+
+export default async function AdminIaPage() {
+  await requireAdmin();
+  return <UnifiedIaCockpit initialTab="overview" />;
+}

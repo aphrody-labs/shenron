@@ -8,13 +8,13 @@
     "./scripts/aphrody-corpus": "./scripts/_aphrody-corpus.ts"
   },
   "scripts": {
-    "predev": "bun ../../../m3/packages/shenron-ui/scripts/sync-assets.ts --to public",
+    "predev": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
     "dev": "NEXT_DIST_DIR=.next-dev next dev --turbopack",
-    "prebuild": "bun ../../../m3/packages/shenron-ui/scripts/sync-assets.ts --to public",
+    "prebuild": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
     "build": "NEXT_DIST_DIR=.next-build next build --turbopack",
     "start": "next start",
     "lint": "oxlint -c .oxlintrc.json",
-    "test": "bun test --isolate tests/",
+    "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
     "type-check": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json",
     "type-check:tests": "tsc --noEmit -p tsconfig.tests.json",
     "wiki:repair-interviews": "bun scripts/repair-interview-databook-links.ts",
@@ -41,7 +41,6 @@
     "@shenron/db": "workspace:*",
     "@shenron/ui": "workspace:*",
     "@shenron/images": "workspace:*",
-    "@aphrody/koharu-ui": "workspace:*",
     "@t3-oss/env-nextjs": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tiptap/core": "catalog:",
@@ -98,8 +97,8 @@
     "@shenron/pipeline": "workspace:*",
     "ai": "catalog:",
     "prosemirror-transform": "catalog:",
-    "@aphrody/admin-ui": "workspace:*",
-    "@aphrody/discord-kit": "0.1.0"
+    "@aphrody/discord-kit": "0.1.0",
+    "next-themes": "catalog:"
   },
   "devDependencies": {
     "@huggingface/transformers": "catalog:",

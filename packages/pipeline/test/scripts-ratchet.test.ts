@@ -14,7 +14,7 @@ const PKG = fileURLToPath(new URL("..", import.meta.url));
 /** Upper bound: every entry excluded when the gate was introduced. */
 const BASELINE = [
 	"scripts/_aphrody-remote-ocr.test.ts",
-	"scripts/_rag-aphrody-sync.test.ts",
+	"scripts/_rag-aphrody-sync.live.test.ts",
 	"scripts/crawl-guides.ts",
 	"scripts/ingest-databooks-rag.ts",
 	"scripts/lib/aphrody-web-scrape.test.ts",

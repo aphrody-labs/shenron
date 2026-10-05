@@ -71,11 +71,12 @@ describe("@shenron/pipeline — exécution vérifiable", () => {
 	it("exige les fichiers réels du profil éditorial", () => {
 		const root = join(tmpdir(), `shenron-profile-${process.pid}-${Date.now()}`);
 		mkdirSync(root, { recursive: true });
-		process.env.APHRODY_PROFILE_HOME = root;
-		expect(() => getToriyamaPersona()).toThrow("Profil Shenron incomplet");
+		// Explicit environment: the ambient agent session (APHRODY_AGENT_DOMAIN…) must not leak in.
+		const env = { APHRODY_PROFILE_HOME: root };
+		expect(() => getToriyamaPersona(env)).toThrow("Profil Shenron incomplet");
 		writeFileSync(join(root, "SOUL.md"), "soul fixture");
 		writeFileSync(join(root, "IDENTITY.md"), "identity fixture");
-		expect(getToriyamaPersona()).toEqual({ soul: "soul fixture", identity: "identity fixture" });
+		expect(getToriyamaPersona(env)).toEqual({ soul: "soul fixture", identity: "identity fixture" });
 		rmSync(root, { recursive: true, force: true });
 	});
 });

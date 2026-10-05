@@ -24,7 +24,8 @@ pub struct ShenronMcp {
 /// Read-only tools without heavy compute: what an anonymous public endpoint may serve.
 fn is_public(tool: &rmcp::model::Tool) -> bool {
     let name = tool.name.as_ref();
-    if name.contains("scanlate") {
+    // Admin catalogs, scanlation (heavy compute) and writes never reach anonymous clients.
+    if name.contains("scanlate") || name.contains("admin") {
         return false;
     }
     matches!(name, "dbfr_databooks" | "dbfr_pages" | "dbfr_textes")
@@ -807,6 +808,8 @@ mod tests {
             "dragonball.admin_databooks_deposit",
             "dragonball.admin_bot_command_execute",
             "dragonball.admin_service_action",
+            "dragonball.admin_bot_commands",
+            "dragonball.admin_services",
             "dragonball.a2a_send",
             "dragonball.manga_scanlate",
             "dragonball.databooks_scanlate",

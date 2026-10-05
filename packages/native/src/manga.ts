@@ -133,4 +133,4 @@ export function mangaScanlateChapter(
 }
 
 // Shared parsing of the versioned Rust/Koharu result; no second wire model.
-export * from "@aphrody/media/manga";
+export * from "@shenron/media/manga";

@@ -128,7 +128,7 @@ describe("système de design — un seul vocabulaire", () => {
 	test("le titre de page du kit délègue à HeroTitles", () => {
 		const heading = readFileSync(join(KIT_DIR, "SectionHeading.tsx"), "utf8");
 		if (heading.includes("@shenron/ui/layout/SectionHeading")) {
-			const uiHeading = readFileSync(join(REPO_ROOT, "packages", "shenron", "ui", "src", "layout", "SectionHeading.tsx"), "utf8");
+			const uiHeading = readFileSync(join(REPO_ROOT, "packages", "ui", "src", "layout", "SectionHeading.tsx"), "utf8");
 			expect(uiHeading).toContain("HeroTitles");
 		} else {
 			expect(heading).toContain("HeroTitles");
@@ -179,7 +179,7 @@ describe("système de design — un seul vocabulaire", () => {
 		const css = readFileSync(join(APP_DIR, "globals.css"), "utf8");
 		expect(layout).toContain("data-wiki-surface");
 		if (css.includes("@shenron/ui/site.css")) {
-			const uiCss = readFileSync(join(REPO_ROOT, "packages", "shenron", "ui", "src", "site.css"), "utf8");
+			const uiCss = readFileSync(join(REPO_ROOT, "packages", "ui", "src", "site.css"), "utf8");
 			expect(uiCss).toContain("[data-wiki-surface]");
 			expect(uiCss).toContain("--wiki-shell-max");
 		} else {

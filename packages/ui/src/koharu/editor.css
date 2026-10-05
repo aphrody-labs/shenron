@@ -1,0 +1,9 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Koharu manga editor: M3 tokens and the editor surfaces, built only for the /koharu route.
+   Every editor rule is scoped to [data-koharu-ui] / [data-koharu-ui-layer]. */
+@import "tailwindcss";
+@import "@aphrody/m3-theme/tokens.css";
+@import "@aphrody/m3-theme/tailwind.css";
+@import "./styles.css";
+
+@source "./";

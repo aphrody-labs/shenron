@@ -7,9 +7,9 @@ import {
   recogniseRemotePage as recognise,
   reviewRemoteImage as review,
   toOcrResultV2,
-} from "@aphrody/media/remote-ocr";
-export { toOcrResultV2 } from "@aphrody/media/remote-ocr";
-export type { RemoteOcrBlock, RemoteOcrResult } from "@aphrody/media/remote-ocr";
+} from "@shenron/media/remote-ocr";
+export { toOcrResultV2 } from "@shenron/media/remote-ocr";
+export type { RemoteOcrBlock, RemoteOcrResult } from "@shenron/media/remote-ocr";
 type Fetcher = typeof fetch;
 function options(fetcher: Fetcher) {
   return {

@@ -8,6 +8,14 @@ import { createSql } from "@shenron/db/sql";
 import { createResilientRedis } from "@shenron/db/redis";
 import { AphrodyComputeClient, type AphrodyRagStats } from "../aphrody/compute";
 
+/**
+ * Live qualification switch. `rag:test` sets SHENRON_LIVE=1 and then refuses any missing,
+ * partial or stale preload; the default gate (`bun run test`) never touches live services:
+ * whole-file live suites are named `*.live.test.ts` and excluded, mixed suites gate their
+ * live blocks with `describe.if(LIVE)` / `test.if(LIVE)`.
+ */
+export const LIVE = process.env.SHENRON_LIVE === "1";
+
 export const EDITORIAL_RAG_SOURCES = [
   "db_characters",
   "db_wiki_sections",

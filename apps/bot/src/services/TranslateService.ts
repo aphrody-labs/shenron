@@ -1,5 +1,5 @@
-import { TranslationHttpClient, type TranslateResult } from "@aphrody/media/translation-http";
-export type { TranslateResult } from "@aphrody/media/translation-http";
+import { TranslationHttpClient, type TranslateResult } from "@shenron/media/translation-http";
+export type { TranslateResult } from "@shenron/media/translation-http";
 import { singleton, container } from "tsyringe";
 import { isIP } from "node:net";
 import { env } from "~/lib/env";

@@ -119,7 +119,7 @@ export function repoRootFrom(moduleUrl: string, depth: number, platform: PathPla
 
 /** Repository root seen from a file of `packages/pipeline/scripts/`. */
 export function repoRootFromScript(moduleUrl: string, platform: PathPlatform = currentPlatform()): string {
-	return repoRootFrom(moduleUrl, 4, platform);
+	return repoRootFrom(moduleUrl, 3, platform);
 }
 
 /** SQLite database served by the bot (`apps/bot/data/bot.db`). */

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Aphrody OCR v2 remains evidence until Shenron's visual/editorial review. */
 
-import { parseOcrEvidence } from "@aphrody/media/ocr";
+import { parseOcrEvidence } from "@shenron/media/ocr";
 type ImageMime = "image/jpeg" | "image/png" | "image/webp";
 import type {
   DatabookCandidateBinding,

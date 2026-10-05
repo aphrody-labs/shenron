@@ -15,7 +15,7 @@
     "type-check": "tsc --noEmit",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "test": "bun test --isolate tests/",
+    "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
     "ids": "bun scripts/discover-ids.ts",
     "watch-logs": "bun scripts/log-watcher.ts",
     "bg:fetch": "bun scripts/fetch-backgrounds.ts --download",
@@ -70,7 +70,7 @@
     "sqlite-vec": "catalog:",
     "tsyringe": "catalog:",
     "zod": "catalog:",
-    "@aphrody/media": "workspace:*"
+    "@shenron/media": "workspace:*"
   },
   "devDependencies": {
     "drizzle-kit": "catalog:"

@@ -1,9 +1,5 @@
 import { beforeAll, describe, expect, it } from "bun:test";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
-loadLiveRagEnv();
-beforeAll(async () => {
-  await requireLiveRag();
-}, 120_000);
+import { LIVE, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
 import {
   buildRagContext,
   createQueryExpander,
@@ -174,7 +170,12 @@ describe("rag — routage strict vers le dossier canon", () => {
   });
 });
 
-describe("rag — filtre kind et contexte d'ancrage", () => {
+describe.if(LIVE)("rag — filtre kind et contexte d'ancrage", () => {
+  beforeAll(async () => {
+    loadLiveRagEnv();
+    await requireLiveRag();
+  }, 120_000);
+
   it("filtre par kind", async () => {
     const { results } = await hybridSearch(null, "Vegeta", 10, {
       kind: "battle",
@@ -195,6 +196,12 @@ describe("rag — filtre kind et contexte d'ancrage", () => {
 });
 
 describe("rag-eval — adaptateur de @shenron/pipeline/ai/eval", () => {
+  beforeAll(async () => {
+    if (!LIVE) return;
+    loadLiveRagEnv();
+    await requireLiveRag();
+  }, 120_000);
+
   it("réexporte la définition partagée des métriques", async () => {
     const shared = await import("@shenron/pipeline/ai/eval");
     const local = await import("../src/lib/rag-eval");
@@ -209,7 +216,11 @@ describe("rag-eval — adaptateur de @shenron/pipeline/ai/eval", () => {
     ] as const) {
       expect(local[name]).toBe(shared[name] as never);
     }
-    await requireLiveRag();
+  });
+
+  it.if(LIVE)("classe un cas réel comme le module partagé", async () => {
+    const local = await import("../src/lib/rag-eval");
+    const shared = await import("@shenron/pipeline/ai/eval");
     const c = { q: "Qui est Freezer ?", expectUrl: ["/wiki/personnages/freezer"] };
     const { results, mode } = await hybridSearch(null, c.q, 5);
     expect(local.firstHitRank(results, c)).toBe(shared.firstHitRank(results, c));

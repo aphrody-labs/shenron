@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { ASSET_ALIASES, dbPathToDisk, resolveAppFile, sitePublicRedirects } from "../src/resolve";
 
-const APPS = join(import.meta.dir, "..", "..", "..", "apps", "shenron");
+const APPS = join(import.meta.dir, "..", "..", "..", "apps");
 const ROOTS = { bot: join(APPS, "bot"), site: join(APPS, "site") };
 /** Directories served by URL or read by the bot canvas; the dedup scope. */
 const SCANNED = ["bot/assets", "bot/public", "site/public"];
