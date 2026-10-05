@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : apps/site/src/lib/ja/normalisation.ts, apps/site/src/lib/ja/traduction.ts, scripts/plugin/src/lexique.ts
-// Révision : bf5d376 (2026-10-05)
+// Révision : bf5d376+modifications (2026-10-05)
 // scripts/plugin/src/lexique.ts
 import { join } from "path";
 

@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : data/lexique-db-canonique.json. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`data/lexique-db-canonique.json`),
-> révision `bf5d376` du 2026-10-05. Citer cette révision et cette date avec toute
+> révision `bf5d376+modifications` du 2026-10-05. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 786 termes : graphie japonaise (`name_ja`) et forme française (`name`) des fiches du
@@ -711,7 +711,7 @@ l'absence d'un terme ne prouve aucune faute. Recherche et masquage : `bun script
 | Japonais | Forme française |
 | --- | --- |
 | バブリ | Babari |
-| フリーザ第 | Freezer No. 79 |
+| フリーザ第79惑星 | Freezer No. 79 |
 | 不明 | Inconnu |
 | カナッサ星 | Kanassa |
 | あの世 | L'Autre Monde |

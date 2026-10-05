@@ -360,6 +360,12 @@
     "length": 8
   },
   {
+    "ja": "フリーザ第79惑星",
+    "fr": "Freezer No. 79",
+    "kind": "planete",
+    "length": 8
+  },
+  {
     "ja": "あかかめんじん",
     "fr": "Saiyan au Masque Écarlate",
     "kind": "personnage",
@@ -1509,12 +1515,6 @@
     "ja": "ブールベリ",
     "fr": "Blueberry",
     "kind": "personnage",
-    "length": 5
-  },
-  {
-    "ja": "フリーザ第",
-    "fr": "Freezer No. 79",
-    "kind": "planete",
     "length": 5
   },
   {
