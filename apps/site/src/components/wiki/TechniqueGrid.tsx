@@ -15,7 +15,7 @@
  */
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Pagination } from "@/components/ui/Pagination";
+import { Pagination } from "@/components/kit/Pagination";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { assetUrl } from "@/lib/assets";
 import type { AccessSnapshot } from "@/lib/wiki-launch";

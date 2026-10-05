@@ -11,7 +11,7 @@
  * en haut de page. Le composant ne s'affiche que s'il y a réellement un trou :
  * dès qu'un article existe, il disparaît.
  */
-import { Crayon } from "@/components/icones";
+import { Crayon } from "@shenron/ui/icones";
 import Link from "next/link";
 import { WikiContribute } from "@/components/wiki/WikiContribute";
 

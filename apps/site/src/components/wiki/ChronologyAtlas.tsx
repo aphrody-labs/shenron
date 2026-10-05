@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GatedLink } from "@/components/GatedLink";
-import { Film, Horloge, Livre, Tv } from "@/components/icones";
+import { Film, Horloge, Livre, Tv } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { markdownToPlainText } from "@/lib/markdown-plain";
 import type { Arc, Databook, Saga } from "@/lib/db-universe";

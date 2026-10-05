@@ -12,7 +12,7 @@
  *   - « Masquer » → bascule `visible = false` (POST /api/wiki-admin/:table?as=visibility)
  *     puis redirige vers l'index, car la fiche masquée renvoie 404 en lecture publique.
  */
-import { Bouclier, Crayon, OeilBarre } from "@/components/icones";
+import { Bouclier, Crayon, OeilBarre } from "@shenron/ui/icones";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiAt } from "@/lib/admin-api";

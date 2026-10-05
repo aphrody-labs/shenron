@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import { DragonRadar, Livre, Kame } from "@/components/icones";
+import { DragonRadar, Livre, Kame } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 
 type SearchScope = "all" | "canon" | "manga" | "anime" | "lore";

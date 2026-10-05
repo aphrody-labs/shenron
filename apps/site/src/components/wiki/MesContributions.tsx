@@ -13,7 +13,7 @@
  */
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Chargement } from "@/components/icones";
+import { Chargement } from "@shenron/ui/icones";
 import {
   CONTRIBUTABLE_COLUMNS,
   CONTRIBUTION_STATUS_LABELS,

@@ -20,7 +20,7 @@ import {
   Recherche,
   Telecharger,
   Tv,
-} from "@/components/icones";
+} from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import Image from "next/image";
 import { isEditableAsset } from "@/lib/images";

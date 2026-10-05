@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bibliotheque, Livre } from "@/components/icones";
+import { Bibliotheque, Livre } from "@shenron/ui/icones";
 
 export interface CoverageMetric {
   label: string;

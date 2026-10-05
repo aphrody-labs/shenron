@@ -15,7 +15,7 @@ import { comparerRichesse, scoreRichesse, type SignauxRichesse } from "@/lib/cha
 
 import { ogMeta } from "@/lib/og";
 import { assetUrl } from "@/lib/assets";
-import { Shenron } from "@/components/icones";
+import { Shenron } from "@shenron/ui/icones";
 
 export const revalidate = 3600;
 

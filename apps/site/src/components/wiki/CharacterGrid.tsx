@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Scouter } from "@/components/icones";
-import { Pagination } from "@/components/ui/Pagination";
-import { ViewTransition } from "@/components/ViewTransition";
+import { Scouter } from "@shenron/ui/icones";
+import { Pagination } from "@/components/kit/Pagination";
+import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterFilterModal, type FacetOption } from "@/components/wiki/CharacterFilterModal";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
