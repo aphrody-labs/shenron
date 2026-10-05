@@ -967,6 +967,33 @@
     },
     "sources": {
       "newTab": "(s’ouvre dans un nouvel onglet)"
+    },
+    "jeux": {
+      "2048": {
+        "help": "Balaie le plateau du doigt, utilise les flèches du clavier quand il a le focus, ou les boutons sous le plateau.",
+        "board": "Plateau du 2048 : fusionne les guerriers de même puissance",
+        "controls": "Déplacer les tuiles",
+        "up": "Vers le haut",
+        "down": "Vers le bas",
+        "left": "Vers la gauche",
+        "right": "Vers la droite",
+        "score": "Ki total : {score}",
+        "gameOver": "Partie terminée. Ki final : {score}."
+      },
+      "play": "Jouer",
+      "discordOnly": "Jouable sur Discord uniquement",
+      "pfc": {
+        "lead": "{name}, affronte le bot avec les mêmes règles que /pfc sur Discord."
+      },
+      "bingo": {
+        "lead": "{name}, devine une puissance cachée entre 1 et 100 en dix scans."
+      },
+      "morpion": {
+        "lead": "{name} joue les X, le bot joue les O.",
+        "board": "Plateau de morpion, flèches pour changer de case",
+        "cell": "Ligne {row}, colonne {col} : {state}",
+        "empty": "case libre"
+      }
     }
   },
   "shell": {

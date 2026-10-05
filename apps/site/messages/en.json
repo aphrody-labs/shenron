@@ -967,6 +967,33 @@
     },
     "sources": {
       "newTab": "(opens in a new tab)"
+    },
+    "jeux": {
+      "2048": {
+        "help": "Swipe the board, use the arrow keys once it has focus, or the buttons below it.",
+        "board": "2048 board: merge fighters of equal power",
+        "controls": "Move the tiles",
+        "up": "Up",
+        "down": "Down",
+        "left": "Left",
+        "right": "Right",
+        "score": "Total ki: {score}",
+        "gameOver": "Game over. Final ki: {score}."
+      },
+      "play": "Play",
+      "discordOnly": "Playable on Discord only",
+      "pfc": {
+        "lead": "{name}, take on the bot with the same rules as /pfc on Discord."
+      },
+      "bingo": {
+        "lead": "{name}, find a hidden power level between 1 and 100 in ten scans."
+      },
+      "morpion": {
+        "lead": "{name} plays X, the bot plays O.",
+        "board": "Tic-tac-toe board, arrow keys move between squares",
+        "cell": "Row {row}, column {col}: {state}",
+        "empty": "empty square"
+      }
     }
   },
   "shell": {
