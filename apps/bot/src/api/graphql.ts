@@ -419,8 +419,10 @@ const MangaPage = builder.objectRef<MangaPageRow>("MangaPage").implement({
   fields: (t) => ({
     id: t.exposeInt("id"),
     series: t.exposeString("series"),
-    tome: t.exposeString("tome"),
-    planche: t.exposeInt("planche"),
+    volume: t.exposeString("tome", { description: "Volume key (vol1, ch1321, t901)." }),
+    page: t.exposeInt("planche", { description: "Page number inside the volume." }),
+    tome: t.exposeString("tome", { deprecationReason: "Use `volume`." }),
+    planche: t.exposeInt("planche", { deprecationReason: "Use `page`." }),
     lang: t.exposeString("lang"),
     hasJa: t.boolean({ resolve: (p) => !!p.has_ja }),
     lineCount: t.exposeInt("line_count"),
@@ -438,24 +440,74 @@ const MangaPage = builder.objectRef<MangaPageRow>("MangaPage").implement({
   }),
 });
 
-const MangaTome = builder
-  .objectRef<{
-    series: string;
-    tome: string;
-    planches: number;
-    lines: number;
-    planches_ja: number;
-  }>("MangaTome")
-  .implement({
-    description: "Tome/chapitre manga transcrit + compteurs.",
-    fields: (t) => ({
-      series: t.exposeString("series"),
-      tome: t.exposeString("tome"),
-      planches: t.int({ resolve: (r) => r.planches }),
-      lines: t.int({ resolve: (r) => r.lines }),
-      planchesWithJa: t.int({ resolve: (r) => r.planches_ja }),
+/** One transcribed manga volume (or chapter) and its counters. */
+interface MangaVolumeRow {
+  series: string;
+  volume: string;
+  pages: number;
+  lines: number;
+  pages_ja: number;
+}
+
+const MangaVolume = builder.objectRef<MangaVolumeRow>("MangaVolume").implement({
+  description: "Tome/chapitre manga transcrit + compteurs.",
+  fields: (t) => ({
+    series: t.exposeString("series"),
+    volume: t.exposeString("volume", { description: "Volume key (vol1, ch1321, t901)." }),
+    pages: t.int({ resolve: (r) => r.pages }),
+    lines: t.int({ resolve: (r) => r.lines }),
+    pagesWithJa: t.int({ resolve: (r) => r.pages_ja }),
+  }),
+});
+
+/** @deprecated Former name of {@link MangaVolume}, kept for one version. */
+const MangaTome = builder.objectRef<MangaVolumeRow>("MangaTome").implement({
+  description: "Deprecated: use MangaVolume. Tome/chapitre manga transcrit + compteurs.",
+  fields: (t) => ({
+    series: t.exposeString("series"),
+    tome: t.exposeString("volume", { deprecationReason: "Use `MangaVolume.volume`." }),
+    planches: t.int({
+      deprecationReason: "Use `MangaVolume.pages`.",
+      resolve: (r) => r.pages,
     }),
-  });
+    lines: t.int({ resolve: (r) => r.lines }),
+    planchesWithJa: t.int({
+      deprecationReason: "Use `MangaVolume.pagesWithJa`.",
+      resolve: (r) => r.pages_ja,
+    }),
+  }),
+});
+
+/** Counters per volume, shared by `mangaVolumes` and its deprecated alias `mangaTomes`. */
+function mangaVolumeRows(ctx: GqlContext, series: string | null | undefined): MangaVolumeRow[] {
+  return all<MangaVolumeRow>(
+    ctx,
+    `SELECT series, tome AS volume, COUNT(*) AS pages, SUM(line_count) AS lines, SUM(has_ja) AS pages_ja FROM db_manga_pages ${series ? "WHERE series=?" : ""} GROUP BY series, tome ORDER BY series, tome`,
+    ...(series ? [series] : []),
+  );
+}
+
+/** `volume` is the argument; the former `tome` is still read when `volume` is absent. */
+function requireVolume(volume: string | null | undefined, tome: string | null | undefined): string {
+  const value = volume ?? tome;
+  if (!value) {
+    throw new GraphQLError("The argument `volume` is required.", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+  return value;
+}
+
+/** `page` is the argument; the former `planche` is still read when `page` is absent. */
+function requirePage(page: number | null | undefined, planche: number | null | undefined): number {
+  const value = page ?? planche;
+  if (value === null || value === undefined) {
+    throw new GraphQLError("The argument `page` is required.", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+  return value;
+}
 
 // ── Query root ──────────────────────────────────────────────────────────────
 builder.queryType({
@@ -691,23 +743,26 @@ builder.queryType({
         return { mode, results: results as unknown as RagHitRow[] };
       },
     }),
-    mangaTomes: t.field({
-      type: [MangaTome],
+    mangaVolumes: t.field({
+      type: [MangaVolume],
       description: "Tomes/chapitres manga transcrits + compteurs.",
       args: { series: t.arg.string() },
-      resolve: (_r, a, ctx) =>
-        all<{ series: string; tome: string; planches: number; lines: number; planches_ja: number }>(
-          ctx,
-          `SELECT series, tome, COUNT(*) AS planches, SUM(line_count) AS lines, SUM(has_ja) AS planches_ja FROM db_manga_pages ${a.series ? "WHERE series=?" : ""} GROUP BY series, tome ORDER BY series, tome`,
-          ...(a.series ? [a.series] : []),
-        ),
+      resolve: (_r, a, ctx) => mangaVolumeRows(ctx, a.series),
+    }),
+    mangaTomes: t.field({
+      type: [MangaTome],
+      description: "Deprecated: use mangaVolumes.",
+      deprecationReason: "Use `mangaVolumes`.",
+      args: { series: t.arg.string() },
+      resolve: (_r, a, ctx) => mangaVolumeRows(ctx, a.series),
     }),
     mangaPages: t.field({
       type: [MangaPage],
       description: "Planches d'un tome (ordre de lecture).",
       args: {
         series: t.arg.string({ required: true }),
-        tome: t.arg.string({ required: true }),
+        volume: t.arg.string({ description: "Volume key (vol1, ch1321, t901). Required." }),
+        tome: t.arg.string({ deprecationReason: "Use `volume`." }),
         limit: t.arg.int(),
         offset: t.arg.int(),
       },
@@ -716,7 +771,7 @@ builder.queryType({
           ctx,
           "SELECT * FROM db_manga_pages WHERE series=? AND tome=? ORDER BY planche LIMIT ? OFFSET ?",
           a.series,
-          a.tome,
+          requireVolume(a.volume, a.tome),
           clampLimit(a.limit, 60, 400),
           Math.max(a.offset ?? 0, 0),
         ),
@@ -726,16 +781,18 @@ builder.queryType({
       nullable: true,
       args: {
         series: t.arg.string({ required: true }),
-        tome: t.arg.string({ required: true }),
-        planche: t.arg.int({ required: true }),
+        volume: t.arg.string({ description: "Volume key (vol1, ch1321, t901). Required." }),
+        page: t.arg.int({ description: "Page number inside the volume. Required." }),
+        tome: t.arg.string({ deprecationReason: "Use `volume`." }),
+        planche: t.arg.int({ deprecationReason: "Use `page`." }),
       },
       resolve: (_r, a, ctx) =>
         one<MangaPageRow>(
           ctx,
           "SELECT * FROM db_manga_pages WHERE series=? AND tome=? AND planche=?",
           a.series,
-          a.tome,
-          a.planche,
+          requireVolume(a.volume, a.tome),
+          requirePage(a.page, a.planche),
         ),
     }),
     mangaSearch: t.field({
