@@ -30,6 +30,8 @@ import type {
   WikiListQueryInput,
 } from "../contract/schemas";
 
+export * from "./chat-stream";
+
 export type ApiFailure =
   | { ok: false; kind: "unreachable" | "timeout"; path: string; detail: string }
   | {
