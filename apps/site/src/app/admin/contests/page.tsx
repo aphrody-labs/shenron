@@ -1,9 +1,9 @@
 /**
- * /admin/concours — arbitrage du concours communautaire.
+ * /admin/contests — arbitrage du concours communautaire.
  *
  * Deux usages, dans cet ordre :
  *  1. le classement complet des noteurs (l'objet du prix) et des fortunes ;
- *  2. l'ouverture du dossier d'un membre (`?membre=<discordId>`) : chaque note,
+ *  2. l'ouverture du dossier d'un membre (`?member=<discordId>`, ancien `?membre=` encore lu) : chaque note,
  *     chaque avis, chaque commentaire, plus les signaux d'intégrité — le seul
  *     moyen de départager un gagnant d'un cliqueur d'étoiles.
  */
@@ -26,10 +26,11 @@ const dateFmt = (iso: string | null) =>
 export default async function AdminConcoursPage({
   searchParams,
 }: {
-  searchParams: Promise<{ membre?: string }>;
+  searchParams: Promise<{ member?: string; membre?: string }>;
 }) {
   await requireAdmin();
-  const { membre } = await searchParams;
+  const sp = await searchParams;
+  const membre = sp.member ?? sp.membre;
   const selected = membre && ID_DISCORD.test(membre) ? membre : null;
 
   const [raters, richest, dossier] = await Promise.all([
@@ -75,7 +76,7 @@ export default async function AdminConcoursPage({
                 Profil public
               </Link>
               <Link
-                href="/admin/concours"
+                href="/admin/contests"
                 className="rounded border border-dbz-border px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white/70 hover:border-dbz-orange hover:text-dbz-orange"
               >
                 Fermer
@@ -131,7 +132,7 @@ export default async function AdminConcoursPage({
                     </td>
                     <td className="p-3 text-right">
                       <Link
-                        href={`/admin/concours?membre=${r.discordId}`}
+                        href={`/admin/contests?member=${r.discordId}`}
                         className="rounded border border-dbz-border px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-white/60 hover:border-dbz-orange hover:text-dbz-orange"
                       >
                         Dossier
@@ -181,7 +182,7 @@ export default async function AdminConcoursPage({
                     </td>
                     <td className="p-3 text-right">
                       <Link
-                        href={`/admin/concours?membre=${e.discordId}`}
+                        href={`/admin/contests?member=${e.discordId}`}
                         className="rounded border border-dbz-border px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-white/60 hover:border-dbz-orange hover:text-dbz-orange"
                       >
                         Dossier

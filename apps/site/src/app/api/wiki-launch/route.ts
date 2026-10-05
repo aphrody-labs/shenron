@@ -5,7 +5,7 @@
  *   PUT → { ok, ...config }             enregistre + revalide le layout
  *
  * Le PUT accepte n'importe quel sous-ensemble des trois champs : la page
- * /admin/lancement envoie l'accès et l'ordre séparément sans écraser le reste.
+ * /admin/launch envoie l'accès et l'ordre séparément sans écraser le reste.
  * Le nettoyage (clés inconnues, modes invalides, rôles non-snowflake) est fait
  * dans `wiki-launch-config`, source unique de vérité.
  */

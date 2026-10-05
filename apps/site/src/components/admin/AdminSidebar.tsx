@@ -165,7 +165,7 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "pilotage",
   },
   {
-    href: "/admin/commandes",
+    href: "/admin/command-runner",
     label: "Exécuter une commande",
     description: "Lancer une commande du bot à distance (XP, zénis, races, rôles…)",
     icon: <Terminal className="h-4 w-4" />,
@@ -209,14 +209,14 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "systeme",
   },
   {
-    href: "/admin/activite",
+    href: "/admin/activity",
     label: "Activité du site",
     description: "Audience web : visites, visiteurs, sources, top pages",
     icon: <Activity className="h-4 w-4" />,
     section: "systeme",
   },
   {
-    href: "/admin/ia",
+    href: "/admin/ai",
     label: "IA & Canon",
     description: "Supervision, entraînement RAG, doctrine et agents",
     icon: <Brain className="h-4 w-4 text-dbz-orange" />,
@@ -246,14 +246,14 @@ const ADMIN_LINKS: AdminLink[] = [
 
   // ENCYCLOPÉDIE / WIKI DBZ
   {
-    href: "/admin/lancement",
+    href: "/admin/launch",
     label: "Lancement wiki",
     description: "Ouvrir les catégories au public une par une (gating bêta)",
     icon: <Rocket className="h-4 w-4" />,
     section: "encyclopedie",
   },
   {
-    href: "/admin/visibilite",
+    href: "/admin/visibility",
     label: "Visibilité",
     description: "Afficher/masquer chaque entité du wiki sur le site public",
     icon: <Eye className="h-4 w-4" />,
@@ -274,7 +274,7 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "encyclopedie",
   },
   {
-    href: "/admin/campagnes-bxc",
+    href: "/admin/bxc-campaigns",
     label: "Campagnes BXC",
     description: "Réception, provenance et revue des collectes BXC",
     icon: <Activity className="h-4 w-4 text-dbz-orange" />,
@@ -295,14 +295,14 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "encyclopedie",
   },
   {
-    href: "/admin/db-universe/films",
+    href: "/admin/db-universe/movies",
     label: "Films",
     description: "Films et OAV Dragon Ball",
     icon: <Film className="h-4 w-4" />,
     section: "encyclopedie",
   },
   {
-    href: "/admin/chronologie",
+    href: "/admin/timeline",
     label: "Chronologie",
     description: "Ordre officiel de la frise universelle (épisodes + films)",
     icon: <History className="h-4 w-4" />,
@@ -433,7 +433,7 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "communaute",
   },
   {
-    href: "/admin/signalements",
+    href: "/admin/reports",
     label: "Signalements",
     description: "Erreurs remontées par les membres depuis le site",
     icon: <Flag className="h-4 w-4" />,
@@ -491,14 +491,14 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "economie",
   },
   {
-    href: "/admin/ursaf",
+    href: "/admin/taxes",
     label: "URSAF & inflation",
     description: "Avis d'imposition des tricheurs, indice des prix du serveur",
     icon: <Landmark className="h-4 w-4" />,
     section: "economie",
   },
   {
-    href: "/admin/concours",
+    href: "/admin/contests",
     label: "Concours communauté",
     description: "Top noteurs, top Zénis et dossier d'intégrité par membre",
     icon: <Medal className="h-4 w-4" />,
@@ -517,7 +517,7 @@ const ADMIN_LINKS: AdminLink[] = [
     // Commentaires du SITE (articles, fiches wiki, databooks, tier lists) — à
     // distinguer de la modération Discord juste au-dessus : deux surfaces, deux
     // jeux de données, mais la même section parce que c'est le même métier.
-    href: "/admin/moderation/commentaires",
+    href: "/admin/moderation/comments",
     label: "Commentaires du site",
     description: "File unique des commentaires, toutes surfaces confondues",
     icon: <MessageSquare className="h-4 w-4" />,

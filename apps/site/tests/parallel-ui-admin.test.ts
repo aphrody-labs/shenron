@@ -30,8 +30,8 @@ describe("onglets du cockpit IA", () => {
   });
 
   test("chaque redirection historique cible un onglet existant", async () => {
-    const redirect = await adminSrc("admin-ia-redirect.tsx");
-    const declared = /AdminIaTab\s*=\s*([^;]+);/.exec(redirect)?.[1] ?? "";
+    const redirect = await adminSrc("admin-ai-redirect.tsx");
+    const declared = /AdminAiTab\s*=\s*([^;]+);/.exec(redirect)?.[1] ?? "";
     const tabs = [...declared.matchAll(/"([a-z]+)"/g)].map((match) => match[1]!);
     expect(tabs.length).toBeGreaterThan(0);
     for (const tab of tabs) expect(IA_COCKPIT_TABS as readonly string[]).toContain(tab);
@@ -122,9 +122,9 @@ describe("IA locale du bureau", () => {
 });
 
 describe("frontière d'erreur du cockpit", () => {
-  test("une erreur de rendu reste locale à /admin/ia et renvoie au tableau de bord", async () => {
+  test("une erreur de rendu reste locale à /admin/ai et renvoie au tableau de bord", async () => {
     const boundary = await Bun.file(
-      new URL("../src/app/admin/ia/error.tsx", import.meta.url),
+      new URL("../src/app/admin/ai/error.tsx", import.meta.url),
     ).text();
     expect(boundary).toContain("SectionError");
     expect(boundary).toContain('backHref="/admin/dashboard"');

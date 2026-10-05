@@ -17,7 +17,7 @@ import {
  * Les preuves derrière un verdict de canonicité.
  *
  * Le verdict lui-même vient de `canon-engine`, appliqué à la doctrine éditée
- * dans `/admin/ia?tab=canon` : une table curée, déterministe, relue à la main. Il n'est
+ * dans `/admin/ai?tab=canon` : une table curée, déterministe, relue à la main. Il n'est
  * **pas** rédigé par un modèle — le rédacteur LLM du RAG est hors-ligne et sa
  * prose de repli n'a aucune valeur probante.
  *

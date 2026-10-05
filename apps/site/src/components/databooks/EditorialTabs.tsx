@@ -7,7 +7,7 @@ import { EditorialTabsView, type EditorialTab } from "./EditorialTabsView";
  *
  * Quatre pages le recopiaient à la main (deux à trois boutons chacune, avec ou sans
  * emoji, avec ou sans `GatedLink`) et la grille des databooks en ajoutait un cinquième.
- * Une rubrique refermée depuis /admin/lancement n’y figure plus : un onglet ne mène
+ * Une rubrique refermée depuis /admin/launch n’y figure plus : un onglet ne mène
  * jamais à une impasse.
  */
 const TABS: readonly EditorialTab[] = [

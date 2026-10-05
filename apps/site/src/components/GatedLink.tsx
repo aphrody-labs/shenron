@@ -6,7 +6,7 @@ import { isPathPublic } from "@/lib/wiki-launch";
 /**
  * Lien qui **refuse de mener à une impasse**.
  *
- * Le site ouvre ses rubriques une par une (`/admin/lancement`), et le proxy
+ * Le site ouvre ses rubriques une par une (`/admin/launch`), et le proxy
  * redirige tout accès anonyme à une rubrique fermée vers `/coming-soon`. Les
  * pages publiques, elles, continuaient d'émettre les liens comme si tout était
  * ouvert : au 2026-08-21, `/wiki/sagas` publiait à lui seul **65 liens vers

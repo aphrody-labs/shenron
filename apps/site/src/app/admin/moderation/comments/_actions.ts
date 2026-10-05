@@ -39,7 +39,7 @@ async function run(
       name: me.user.username,
       isAdmin: true,
     });
-    revalidatePath("/admin/moderation/commentaires");
+    revalidatePath("/admin/moderation/comments");
     return { ok: true };
   } catch (err) {
     if (err instanceof SocialError) return { ok: false, error: socialErrorMessage(err.code) };

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /admin/signalements — back-office des signalements utilisateurs (tickets).
+ * /admin/reports — back-office des signalements utilisateurs (tickets).
  * Liste les remontées « Signaler une erreur » des membres, avec filtres par
  * statut, workflow (ouvert → en cours → résolu → fermé), note interne et
  * suppression. Lecture/écriture via /api/admin/reports (Postgres site).

@@ -47,7 +47,7 @@ const FOOTER_COLUMNS: Array<{
 type FooterLink = { href: string; label?: string; labelKey?: string; external?: boolean };
 
 export async function SiteFooter() {
-  // Le pied de page liste des rubriques refermables depuis /admin/lancement : sans
+  // Le pied de page liste des rubriques refermables depuis /admin/launch : sans
   // cette lecture, il continuait de les annoncer sur TOUTES les pages du site
   // (une fermeture de « Sagas & arcs » y laissait un 307 en bas de chaque page).
   const cfg = await getLaunchConfig().catch(() => null);

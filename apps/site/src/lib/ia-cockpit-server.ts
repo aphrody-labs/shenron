@@ -1,5 +1,5 @@
 /**
- * IA & Canon Cockpit (/admin/ia) — concrete data sources.
+ * IA & Canon Cockpit (/admin/ai) — concrete data sources.
  *
  * Owners, never local files of another process:
  *   - Aphrody AI private HTTP (`APHRODY_AI_HTTP_URL`, loopback, bearer

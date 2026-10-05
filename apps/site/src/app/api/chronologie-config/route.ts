@@ -2,7 +2,7 @@
  * /api/chronologie-config — curation de la chronologie universelle (gate admin).
  *
  *   GET → { config, items }   config résolue + dataset brut (épisodes + films)
- *                             pour alimenter l'éditeur `/admin/chronologie`
+ *                             pour alimenter l'éditeur `/admin/timeline`
  *   PUT → { ok, config }      enregistre le patch (upsert singleton) + revalide
  *                             `/wiki/timeline`
  *

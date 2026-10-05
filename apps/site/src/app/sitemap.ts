@@ -39,7 +39,7 @@ export const revalidate = 86400; // Cache le sitemap pendant 24 heures
  * `/wiki/sagas` (33 sagas) et `/wiki/games` (58 jeux) répondaient 200 en
  * production sans qu'aucune de leurs URL ne figure au sitemap — une centaine de
  * pages publiques invisibles de Google, et une régression garantie à chaque
- * ouverture de rubrique. Ici, ouvrir une rubrique depuis /admin/lancement la fait
+ * ouverture de rubrique. Ici, ouvrir une rubrique depuis /admin/launch la fait
  * entrer au sitemap à la revalidation suivante, sans toucher au code.
  *
  * `isPathPublic` est la MÊME fonction que celle qui décide d'émettre un lien
@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // plus de deux tableaux écrits à la main. Ces tableaux avaient divergé : ni
   // `/tierlists`, ni `/wiki/modifications`, ni `/wiki/contribute`, ni
   // `/wiki/tools` n'y figuraient, alors que ces pages répondaient 200. Une
-  // rubrique qui s'ouvre depuis /admin/lancement entre désormais au sitemap à la
+  // rubrique qui s'ouvre depuis /admin/launch entre désormais au sitemap à la
   // revalidation suivante, sans toucher à ce fichier.
   //
   // `isPathPublic` filtre toujours : une rubrique fermée n'est pas annoncée, et

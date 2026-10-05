@@ -1,5 +1,5 @@
 /**
- * IA & Canon Cockpit (/admin/ia) — pure status aggregation.
+ * IA & Canon Cockpit (/admin/ai) — pure status aggregation.
  *
  * Aphrody owns RAG, LLM, OCR, embeddings and crawl for Shenron. The cockpit
  * reports what each owner actually answers, source by source:

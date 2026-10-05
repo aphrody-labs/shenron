@@ -52,7 +52,7 @@ const empty = (q: string): GlobalSearchResults => ({
  * réellement publique. Le filtrage vit ICI, côté serveur, et non dans la
  * palette : celle-ci portait une liste en dur héritée de la bêta (4 catégories
  * sur 12), qui restait fausse dès qu'une rubrique était ouverte ou refermée
- * depuis /admin/lancement. Une URL témoin par catégorie suffit — `isPathPublic`
+ * depuis /admin/launch. Une URL témoin par catégorie suffit — `isPathPublic`
  * résout par préfixe, exactement comme le proxy.
  */
 const TEMOINS: Record<Exclude<keyof SearchResults, "q">, string> = {

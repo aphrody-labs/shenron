@@ -425,6 +425,29 @@ describe("proxy : outils staff de l'atelier", () => {
     expect(res.status).toBe(307);
     expect(new URL(res.headers.get("location") ?? "").pathname).toBe("/");
   });
+
+  test("les anciennes adresses françaises de l'administration répondent un 308, requête gardée", async () => {
+    const moved = async (path: string) => {
+      const res = await proxy(request(path, staff));
+      expect(res.status).toBe(308);
+      const location = new URL(res.headers.get("location") ?? "");
+      return `${location.pathname}${location.search}`;
+    };
+    expect(await moved("/admin/ia?tab=canon")).toBe("/admin/ai?tab=canon");
+    expect(await moved("/admin/assistance-ia")).toBe("/admin/ai?tab=overview");
+    expect(await moved("/admin/lancement")).toBe("/admin/launch");
+    expect(await moved("/admin/concours?membre=1")).toBe("/admin/contests?membre=1");
+    expect(await moved("/admin/moderation/commentaires")).toBe("/admin/moderation/comments");
+    expect(await moved("/atelier/traduction")).toBe("/workshop/translation");
+  });
+
+  for (const path of ["/admin/lancement", "/atelier/traduction", "/atelier/databooks/19"]) {
+    test(`${path} : un anonyme repart à l'accueil avant tout 308`, async () => {
+      const res = await proxy(request(path));
+      expect(res.status).toBe(307);
+      expect(new URL(res.headers.get("location") ?? "").pathname).toBe("/");
+    });
+  }
 });
 
 describe("proxy : préfixe de cookie aligné sur la configuration Better Auth", () => {

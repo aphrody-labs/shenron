@@ -416,7 +416,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
       "Épisodes DB → Kai, arcs, films et jeux — classés par vos notes. Note ton favori pour le propulser (et décrocher le badge #1).",
     defaultEnabled: true,
   },
-  // Panneaux dont la destination dépend du gating (/admin/lancement). Un panneau
+  // Panneaux dont la destination dépend du gating (/admin/launch). Un panneau
   // activé alors que sa rubrique est fermée enverrait le visiteur sur
   // /coming-soon depuis la page d'accueil : on ne l'active par défaut que
   // lorsque la route est ouverte.
@@ -580,7 +580,7 @@ export interface HomeConfig {
   /**
    * L'arbitre de canonicité (`/wiki/canon`) : une barre pour poser une
    * affirmation, les cinq rangs, quelques sujets tranchés. Titre et sous-titre
-   * s'éditent ici ; la doctrine elle-même vit dans `/admin/ia?tab=canon`.
+   * s'éditent ici ; la doctrine elle-même vit dans `/admin/ai?tab=canon`.
    */
   canon: HomeCanonConfig;
   /** VFX/SFX home — volume, mapping fichiers, toggles effets. */

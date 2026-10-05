@@ -55,7 +55,7 @@ export async function GET() {
       { headers: NO_STORE },
     );
   } catch (error) {
-    console.error("[api/admin/ia] GET failed:", error);
+    console.error("[api/admin/ai] GET failed:", error);
     return NextResponse.json({ error: describeError(error) }, { status: 500, headers: NO_STORE });
   }
 }
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
           try {
             return analyzeCanon(query, canonConfig);
           } catch (error) {
-            console.error("[api/admin/ia] canon analysis failed:", error);
+            console.error("[api/admin/ai] canon analysis failed:", error);
             return null;
           }
         })(),
@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
       }
       const saved = await saveCanonConfig(config, me.discordId || me.user.id);
       revalidatePath("/wiki/canon");
-      revalidatePath("/admin/ia");
+      revalidatePath("/admin/ai");
       return NextResponse.json({ ok: true, config: saved });
     }
 
@@ -237,7 +237,7 @@ export async function POST(req: NextRequest) {
     if (error instanceof CockpitActionError) {
       return NextResponse.json({ ok: false, error: error.message }, { status: error.status });
     }
-    console.error("[api/admin/ia] POST failed:", error);
+    console.error("[api/admin/ai] POST failed:", error);
     return NextResponse.json({ ok: false, error: describeError(error) }, { status: 500 });
   }
 }

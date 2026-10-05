@@ -8,7 +8,7 @@
  * lien entrant sur tout le site.
  *
  * Elle est dérivée de `lib/site-map.ts` (lui-même dérivé du registre d'accès) :
- * ouvrir une rubrique depuis `/admin/lancement` la fait apparaître ici à la
+ * ouvrir une rubrique depuis `/admin/launch` la fait apparaître ici à la
  * revalidation suivante, sans toucher à ce fichier. Et une rubrique refermée en
  * disparaît — une carte du site qui mène à des redirections serait pire que pas
  * de carte.

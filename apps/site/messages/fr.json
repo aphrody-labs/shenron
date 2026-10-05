@@ -1106,7 +1106,7 @@
         "title": "Envoyer un message",
         "description": "Publier une annonce dans un salon Discord par le compte du bot."
       },
-      "commandes": {
+      "commandRunner": {
         "title": "Exécuter une commande",
         "description": "Lancer à distance n’importe quelle commande du bot, avec tous ses paramètres."
       },
@@ -1162,11 +1162,11 @@
         "title": "Statistiques",
         "description": "Chiffres globaux d’utilisation du bot."
       },
-      "activite": {
+      "activity": {
         "title": "Activité du site",
         "description": "Audience web : visites, visiteurs, sources et pages les plus lues."
       },
-      "ia": {
+      "ai": {
         "title": "IA et canon",
         "description": "Supervision, entraînement RAG, doctrine et agents."
       },
@@ -1198,11 +1198,11 @@
         "title": "Documentation de l’API",
         "description": "Portées, points d’écriture et routes du bot."
       },
-      "lancement": {
+      "launch": {
         "title": "Accès des rubriques",
         "description": "Qui peut voir chaque catégorie du wiki et chaque section du site."
       },
-      "visibilite": {
+      "visibility": {
         "title": "Visibilité",
         "description": "Afficher ou masquer chaque entité du wiki sur le site public."
       },
@@ -1222,7 +1222,7 @@
         "title": "Épisodes",
         "description": "Catalogue des épisodes."
       },
-      "films": {
+      "movies": {
         "title": "Films",
         "description": "Films et OAV Dragon Ball."
       },
@@ -1234,11 +1234,11 @@
         "title": "Databooks et interviews",
         "description": "Guides officiels, artbooks et interviews, triables par date."
       },
-      "campagnesBxc": {
+      "bxcCampaigns": {
         "title": "Campagnes BXC",
         "description": "Réception, provenance et revue des collectes BXC."
       },
-      "chronologie": {
+      "timeline": {
         "title": "Chronologie",
         "description": "Ordre officiel de la frise universelle : épisodes et films."
       },
@@ -1298,7 +1298,7 @@
         "title": "Tickets de support",
         "description": "Demandes d’aide ouvertes par les membres."
       },
-      "signalements": {
+      "reports": {
         "title": "Signalements",
         "description": "Erreurs remontées par les membres depuis le site."
       },
@@ -1338,11 +1338,11 @@
         "title": "Classements",
         "description": "Les membres en tête du serveur, par métrique."
       },
-      "ursaf": {
+      "taxes": {
         "title": "URSAF et inflation",
         "description": "Avis d’imposition des tricheurs et indice des prix du serveur."
       },
-      "concours": {
+      "contests": {
         "title": "Concours de la communauté",
         "description": "Meilleurs noteurs, meilleurs Zénis et dossier d’intégrité par membre."
       },

@@ -199,7 +199,7 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
             Cet arc n&apos;a pas encore de texte. Faute d&apos;un découpage propre en base, voici le
             périmètre de la saga{" "}
             {/* `GatedLink` et non `Link` : si la rubrique Sagas est refermée
-						    depuis /admin/lancement, ce lien enverrait le visiteur sur une
+						    depuis /admin/launch, ce lien enverrait le visiteur sur une
 						    page qui le renvoie aussitôt vers /coming-soon. */}
             <GatedLink
               href={`/wiki/sagas/${saga.slug}`}

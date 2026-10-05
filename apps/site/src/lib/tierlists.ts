@@ -121,7 +121,7 @@ export async function getTierlistPool(templateKey: string): Promise<TierlistItem
       })
       .from(botCharacters)
       // Seules lectures de `botCharacters` du code qui omettaient ce filtre :
-      // un personnage masqué depuis /admin/visibilite restait proposé (nom +
+      // un personnage masqué depuis /admin/visibility restait proposé (nom +
       // portrait) dans l'éditeur de tier list, page ouverte aux membres.
       .where(eq(botCharacters.visible, true))
       .orderBy(botCharacters.id);

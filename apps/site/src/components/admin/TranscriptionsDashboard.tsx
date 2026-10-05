@@ -414,7 +414,7 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
                 </Link>
 
                 <Link
-                  href="/admin/ia?tab=overview"
+                  href="/admin/ai?tab=overview"
                   className="flex flex-col justify-between rounded-lg border border-white/10 bg-white/5 p-4 transition hover:border-dbz-orange hover:bg-white/10"
                 >
                   <span className="font-semibold text-white">Cockpit IA &amp; Canon</span>

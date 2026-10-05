@@ -75,10 +75,10 @@ const ENTITY_KANJI: Record<string, string> = {
 
 // Outils/tables utilitaires (pas de complétude de contenu à suivre).
 const TOOLS: { label: string; kanji: string; href: string }[] = [
-  { label: "Chronologie", kanji: "年表", href: "/admin/chronologie" },
+  { label: "Chronologie", kanji: "年表", href: "/admin/timeline" },
   { label: "Sources", kanji: "源", href: "/admin/db-universe/sources" },
   { label: "Images & médias", kanji: "画", href: "/admin/db-universe/assets" },
-  { label: "Visibilité", kanji: "眼", href: "/admin/visibilite" },
+  { label: "Visibilité", kanji: "眼", href: "/admin/visibility" },
   { label: "Actualités", kanji: "報", href: "/admin/database/db_news" },
 ];
 

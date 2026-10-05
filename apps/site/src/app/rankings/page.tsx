@@ -109,7 +109,7 @@ export default async function ClassementsPage() {
       {/* Pont staff → gestion des classements, invisible pour les visiteurs. */}
       <DomainBar
         domain="rankings"
-        actions={[{ href: "/admin/concours", label: "Arbitrer le concours" }]}
+        actions={[{ href: "/admin/contests", label: "Arbitrer le concours" }]}
         className="mb-6"
       />
 

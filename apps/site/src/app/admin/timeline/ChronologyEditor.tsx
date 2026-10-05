@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Éditeur de la chronologie universelle (/admin/chronologie).
+ * Éditeur de la chronologie universelle (/admin/timeline).
  *
  * La frise publique `/wiki/timeline` est FIXE : son ordre officiel est décidé
  * ici. On part du dataset brut (tous les épisodes + films + tomes du manga) et on

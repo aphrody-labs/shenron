@@ -1,5 +1,5 @@
 /**
- * /admin/moderation/commentaires — la file unique des commentaires du site.
+ * /admin/moderation/comments — la file unique des commentaires du site.
  *
  * Elle existe parce que le socle social est polymorphe : un commentaire peut
  * viser un article, une fiche wiki, un databook ou une tier list. Une file par
@@ -27,9 +27,11 @@ const FILTERS = [
 export default async function CommentModerationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ statut?: string }>;
+  searchParams: Promise<{ status?: string; statut?: string }>;
 }) {
-  const { statut } = await searchParams;
+  const sp = await searchParams;
+  // `?status=` ; l'ancien `?statut=` reste lu.
+  const statut = sp.status ?? sp.statut;
   const filter =
     statut && (statut === "all" || (COMMENT_STATUSES as readonly string[]).includes(statut))
       ? (statut as CommentStatus | "all")
@@ -62,7 +64,7 @@ export default async function CommentModerationPage({
         {FILTERS.map((f) => (
           <Link
             key={f.key}
-            href={f.key === "all" ? "?" : `?statut=${f.key}`}
+            href={f.key === "all" ? "?" : `?status=${f.key}`}
             aria-current={filter === f.key ? "page" : undefined}
             className={`rounded-full border px-3 py-1.5 text-[13px] transition-colors ${
               filter === f.key

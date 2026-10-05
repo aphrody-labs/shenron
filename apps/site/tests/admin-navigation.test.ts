@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
+import { staffLegacyRedirect } from "../src/lib/legacy-routes";
 
 const siteRoot = fileURLToPath(new URL("..", import.meta.url));
 const sidebar = await Bun.file(
@@ -14,7 +15,7 @@ const pages = [...new Bun.Glob("src/app/admin/**/page.tsx").scanSync(siteRoot)].
       .replace(/^src\/app\//, "")
       .replace(/\/page\.tsx$/, "")}`,
 );
-const consolidatedIaRoutes = ["/admin/assistance-ia", "/admin/evaluations", "/admin/canon"];
+const consolidatedIaRoutes = ["/admin/evaluations", "/admin/canon"];
 
 describe("navigation administrateur", () => {
   test("ne contient aucun raccourci dupliqué", () => {
@@ -38,9 +39,10 @@ describe("navigation administrateur", () => {
       ),
     );
 
-    for (const source of redirects) expect(source).toContain("redirectToAdminIa");
-    expect(links).toContain("/admin/ia");
+    for (const source of redirects) expect(source).toContain("redirectToAdminAi");
+    expect(links).toContain("/admin/ai");
     expect(links).not.toContain("/admin/assistance-ia");
+    expect(staffLegacyRedirect("/admin/assistance-ia")).toBe("/admin/ai?tab=overview");
     expect(links).not.toContain("/admin/evaluations");
     expect(links).not.toContain("/admin/canon");
   });

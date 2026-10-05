@@ -5,7 +5,7 @@
  * exemplaires divergents — `lib/wiki-launch.ts` (le registre d'accès, seul à
  * jour), `components/SiteFooter.tsx` (trois colonnes écrites en dur),
  * `lib/site-menu.ts` (menu mobile), `app/sitemap.ts` (deux tableaux de chemins
- * figés) et la home. Ouvrir une rubrique depuis `/admin/lancement` la faisait
+ * figés) et la home. Ouvrir une rubrique depuis `/admin/launch` la faisait
  * apparaître dans la nav… mais pas au sitemap, pas au pied de page, pas dans le
  * menu mobile. Inversement, le pied de page annonçait des rubriques refermées.
  *

@@ -1106,7 +1106,7 @@
         "title": "Send a message",
         "description": "Post an announcement in a Discord channel from the bot account."
       },
-      "commandes": {
+      "commandRunner": {
         "title": "Run a command",
         "description": "Run any bot command remotely, with all of its options."
       },
@@ -1162,11 +1162,11 @@
         "title": "Statistics",
         "description": "Overall bot usage figures."
       },
-      "activite": {
+      "activity": {
         "title": "Site activity",
         "description": "Web audience: visits, visitors, sources and most-read pages."
       },
-      "ia": {
+      "ai": {
         "title": "AI and canon",
         "description": "Supervision, RAG training, doctrine and agents."
       },
@@ -1198,11 +1198,11 @@
         "title": "API documentation",
         "description": "Scopes, write endpoints and bot routes."
       },
-      "lancement": {
+      "launch": {
         "title": "Section access",
         "description": "Who can see each wiki category and each site section."
       },
-      "visibilite": {
+      "visibility": {
         "title": "Visibility",
         "description": "Show or hide each wiki entity on the public site."
       },
@@ -1222,7 +1222,7 @@
         "title": "Episodes",
         "description": "Episode catalogue."
       },
-      "films": {
+      "movies": {
         "title": "Films",
         "description": "Dragon Ball films and OVAs."
       },
@@ -1234,11 +1234,11 @@
         "title": "Databooks and interviews",
         "description": "Official guides, artbooks and interviews, sortable by date."
       },
-      "campagnesBxc": {
+      "bxcCampaigns": {
         "title": "BXC campaigns",
         "description": "Intake, provenance and review of BXC harvests."
       },
-      "chronologie": {
+      "timeline": {
         "title": "Timeline",
         "description": "Official order of the universal timeline: episodes and films."
       },
@@ -1298,7 +1298,7 @@
         "title": "Support tickets",
         "description": "Help requests opened by members."
       },
-      "signalements": {
+      "reports": {
         "title": "Reports",
         "description": "Errors reported by members from the site."
       },
@@ -1338,11 +1338,11 @@
         "title": "Leaderboards",
         "description": "The server’s leading members, by metric."
       },
-      "ursaf": {
+      "taxes": {
         "title": "URSAF and inflation",
         "description": "Tax notices for cheaters and the server price index."
       },
-      "concours": {
+      "contests": {
         "title": "Community contests",
         "description": "Top raters, top Zeni and an integrity file per member."
       },

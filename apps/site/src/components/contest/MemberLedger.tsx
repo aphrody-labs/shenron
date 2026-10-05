@@ -2,7 +2,7 @@
  * Registre public des contributions d'un membre : chaque note déposée, la fiche
  * visée, le score, l'avis rédigé et l'horodatage. Rendu côté serveur, partagé
  * entre le profil public (`/profile/[id]`) et l'arbitrage du concours
- * (`/admin/concours`).
+ * (`/admin/contests`).
  *
  * `showSignals` n'est vrai que côté admin : les indices de triche sont des
  * mesures brutes, pas un verdict, et les afficher publiquement équivaudrait à

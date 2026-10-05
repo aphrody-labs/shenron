@@ -1106,7 +1106,7 @@
         "title": "メッセージ送信",
         "description": "ボットのアカウントで Discord チャンネルに告知を投稿する。"
       },
-      "commandes": {
+      "commandRunner": {
         "title": "コマンド実行",
         "description": "ボットのコマンドを、すべてのオプション付きでリモート実行する。"
       },
@@ -1162,11 +1162,11 @@
         "title": "統計",
         "description": "ボットの利用状況の全体数値。"
       },
-      "activite": {
+      "activity": {
         "title": "サイトのアクティビティ",
         "description": "ウェブの訪問数、訪問者、流入元、よく読まれたページ。"
       },
-      "ia": {
+      "ai": {
         "title": "AI と正典",
         "description": "監視、RAG の学習、ドクトリン、エージェント。"
       },
@@ -1198,11 +1198,11 @@
         "title": "API ドキュメント",
         "description": "権限範囲、書き込みエンドポイント、ボットのルート。"
       },
-      "lancement": {
+      "launch": {
         "title": "セクションの公開範囲",
         "description": "Wiki の各カテゴリとサイトの各セクションを誰が見られるか。"
       },
-      "visibilite": {
+      "visibility": {
         "title": "表示設定",
         "description": "公開サイトで Wiki の各項目を表示または非表示にする。"
       },
@@ -1222,7 +1222,7 @@
         "title": "エピソード",
         "description": "エピソード一覧。"
       },
-      "films": {
+      "movies": {
         "title": "映画",
         "description": "ドラゴンボールの映画と OVA。"
       },
@@ -1234,11 +1234,11 @@
         "title": "資料集とインタビュー",
         "description": "公式ガイド、画集、インタビュー（日付順に並べ替え可能）。"
       },
-      "campagnesBxc": {
+      "bxcCampaigns": {
         "title": "BXC キャンペーン",
         "description": "BXC 収集の受付、出どころ、レビュー。"
       },
-      "chronologie": {
+      "timeline": {
         "title": "年表",
         "description": "エピソードと映画による公式年表の順序。"
       },
@@ -1298,7 +1298,7 @@
         "title": "サポートチケット",
         "description": "メンバーからのヘルプ依頼。"
       },
-      "signalements": {
+      "reports": {
         "title": "報告",
         "description": "メンバーがサイトから報告した誤り。"
       },
@@ -1338,11 +1338,11 @@
         "title": "ランキング",
         "description": "サーバーの上位メンバー（指標別）。"
       },
-      "ursaf": {
+      "taxes": {
         "title": "URSAF とインフレ",
         "description": "不正者への課税通知とサーバーの物価指数。"
       },
-      "concours": {
+      "contests": {
         "title": "コミュニティコンテスト",
         "description": "評価数上位、ゼニー上位、メンバーごとの健全性ファイル。"
       },

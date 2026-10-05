@@ -28,9 +28,11 @@ type FilterKey = (typeof FILTERS)[number]["key"];
 export default async function AdminPosts({
   searchParams,
 }: {
-  searchParams: Promise<{ statut?: string }>;
+  searchParams: Promise<{ status?: string; statut?: string }>;
 }) {
-  const { statut } = await searchParams;
+  const sp = await searchParams;
+  // `?status=` ; l'ancien `?statut=` reste lu.
+  const statut = sp.status ?? sp.statut;
   const filter: FilterKey = FILTERS.some((f) => f.key === statut) ? (statut as FilterKey) : "all";
 
   const all = await db.query.posts.findMany({
@@ -71,7 +73,7 @@ export default async function AdminPosts({
         {FILTERS.map((f) => (
           <Link
             key={f.key}
-            href={f.key === "all" ? "/admin/posts" : `/admin/posts?statut=${f.key}`}
+            href={f.key === "all" ? "/admin/posts" : `/admin/posts?status=${f.key}`}
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
               filter === f.key

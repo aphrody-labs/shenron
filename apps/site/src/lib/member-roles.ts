@@ -1,6 +1,6 @@
 /**
  * member-roles — rôles Discord d'un visiteur, pour le contrôle d'accès par rôle
- * (`/admin/lancement`, appliqué dans `proxy.ts`).
+ * (`/admin/launch`, appliqué dans `proxy.ts`).
  *
  * Le site ne stocke PAS les rôles : ils changent côté Discord sans prévenir et un
  * miroir en base serait périmé en permanence. La source de vérité est le bot, qui

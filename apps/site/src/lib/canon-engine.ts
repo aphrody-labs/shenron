@@ -1,7 +1,7 @@
 /**
  * @file canon-engine.ts
  * Moteur de canonicité Dragon Ball — **déterministe et entièrement paramétrable
- * depuis `/admin/ia?tab=canon`**.
+ * depuis `/admin/ai?tab=canon`**.
  *
  * Le reproche fondateur de cette version : « il se base sur des trucs
  * d'internet ». Il ne le fait plus, et il ne peut plus le faire. Un verdict ne
@@ -250,7 +250,7 @@ export interface CanonConfig {
  * Elles reprennent la doctrine du dépôt : le manga des 42 tomes fait foi, ce que
  * Toriyama a écrit ou supervisé vient ensuite, les databooks documentent sans
  * créer, l'animation Toei et les jeux sont des dimensions parallèles, le reste
- * est une rumeur. Tout est réécrivable depuis `/admin/ia?tab=canon`.
+ * est une rumeur. Tout est réécrivable depuis `/admin/ai?tab=canon`.
  */
 const DEFAULT_CANON_TIERS: CanonTierConfig[] = [
   {

@@ -5,7 +5,7 @@
  * (îlot client → n'introduit aucune session côté serveur, cache préservé). Ouvre
  * une modale de signalement réservée aux membres **connectés** (compte Discord
  * lié) ; un anonyme est invité à se connecter. Chaque envoi crée un ticket
- * (`POST /api/reports`) visible dans /admin/signalements.
+ * (`POST /api/reports`) visible dans /admin/reports.
  *
  * Masqué sur le back-office (/admin) : l'équipe n'a pas à se signaler à elle-même.
  */

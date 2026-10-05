@@ -25,7 +25,7 @@ export const ADMIN_PAGES = {
   botDetail: { family: "pilotage", route: "/admin/bot/[id]" },
   console: { family: "pilotage", route: "/admin/console" },
   send: { family: "pilotage", route: "/admin/send" },
-  commandes: { family: "pilotage", route: "/admin/commandes" },
+  commandRunner: { family: "pilotage", route: "/admin/command-runner" },
 
   home: { family: "site", route: "/admin/home" },
   design: { family: "site", route: "/admin/design" },
@@ -41,8 +41,8 @@ export const ADMIN_PAGES = {
   services: { family: "systeme", route: "/admin/services" },
   live: { family: "systeme", route: "/admin/live" },
   stats: { family: "systeme", route: "/admin/stats" },
-  activite: { family: "systeme", route: "/admin/activite" },
-  ia: { family: "systeme", route: "/admin/ia" },
+  activity: { family: "systeme", route: "/admin/activity" },
+  ai: { family: "systeme", route: "/admin/ai" },
   triggers: { family: "systeme", route: "/admin/triggers" },
   webhooks: { family: "systeme", route: "/admin/webhooks" },
   database: { family: "systeme", route: "/admin/database" },
@@ -51,17 +51,17 @@ export const ADMIN_PAGES = {
   a2a: { family: "systeme", route: "/admin/a2a" },
   apiDocs: { family: "systeme", route: "/admin/api-docs" },
 
-  lancement: { family: "encyclopedie", route: "/admin/lancement" },
-  visibilite: { family: "encyclopedie", route: "/admin/visibilite" },
+  launch: { family: "encyclopedie", route: "/admin/launch" },
+  visibility: { family: "encyclopedie", route: "/admin/visibility" },
   sources: { family: "encyclopedie", route: "/admin/db-universe/sources" },
   assets: { family: "encyclopedie", route: "/admin/db-universe/assets" },
   sagas: { family: "encyclopedie", route: "/admin/db-universe/sagas" },
   episodes: { family: "encyclopedie", route: "/admin/db-universe/episodes" },
-  films: { family: "encyclopedie", route: "/admin/db-universe/films" },
+  movies: { family: "encyclopedie", route: "/admin/db-universe/movies" },
   games: { family: "encyclopedie", route: "/admin/db-universe/games" },
   dbDatabooks: { family: "encyclopedie", route: "/admin/db-universe/databooks" },
-  campagnesBxc: { family: "encyclopedie", route: "/admin/campagnes-bxc" },
-  chronologie: { family: "encyclopedie", route: "/admin/chronologie" },
+  bxcCampaigns: { family: "encyclopedie", route: "/admin/bxc-campaigns" },
+  timeline: { family: "encyclopedie", route: "/admin/timeline" },
   wiki: { family: "encyclopedie", route: "/admin/wiki" },
   wikiHistory: { family: "encyclopedie", route: "/admin/wiki/history" },
   wikiCategoryNew: { family: "encyclopedie", route: "/admin/wiki/category/new" },
@@ -77,7 +77,7 @@ export const ADMIN_PAGES = {
   canvasThemes: { family: "communaute", route: "/admin/canvas/themes" },
   giveaways: { family: "communaute", route: "/admin/giveaways" },
   tickets: { family: "communaute", route: "/admin/tickets" },
-  signalements: { family: "communaute", route: "/admin/signalements" },
+  reports: { family: "communaute", route: "/admin/reports" },
   wikiContributions: { family: "communaute", route: "/admin/wiki/contributions" },
   tierlists: { family: "communaute", route: "/admin/tierlists" },
   tierlistNew: { family: "communaute", route: "/admin/tierlists/new" },
@@ -88,13 +88,13 @@ export const ADMIN_PAGES = {
   levels: { family: "economie", route: "/admin/levels" },
   shop: { family: "economie", route: "/admin/shop" },
   leaderboards: { family: "economie", route: "/admin/leaderboards" },
-  ursaf: { family: "economie", route: "/admin/ursaf" },
-  concours: { family: "economie", route: "/admin/concours" },
+  taxes: { family: "economie", route: "/admin/taxes" },
+  contests: { family: "economie", route: "/admin/contests" },
 
   account: { family: "securite", route: "/admin/account" },
   audit: { family: "securite", route: "/admin/audit" },
   moderation: { family: "securite", route: "/admin/moderation" },
-  moderationComments: { family: "securite", route: "/admin/moderation/commentaires" },
+  moderationComments: { family: "securite", route: "/admin/moderation/comments" },
   auditInternal: { family: "securite", route: "/admin/audit-internal" },
   hierarchy: { family: "securite", route: "/admin/hierarchy" },
   commands: { family: "securite", route: "/admin/commands" },
@@ -105,11 +105,11 @@ export type AdminPageId = keyof typeof ADMIN_PAGES;
 
 /**
  * Routes qui ne rendent pas d'en-tête propre : la racine et les anciens écrans
- * IA redirigent, le cockpit IA porte le sien.
+ * IA redirigent (`/admin/assistance-ia` répond un 308 depuis le proxy), le cockpit IA
+ * porte le sien.
  */
 export const ADMIN_ROUTES_WITHOUT_HEADING = [
   "/admin",
-  "/admin/assistance-ia",
   "/admin/evaluations",
   "/admin/canon",
 ] as const;

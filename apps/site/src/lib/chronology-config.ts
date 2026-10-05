@@ -5,7 +5,7 @@
  * La table `ChronologyConfig` (schéma public) stocke un unique document JSON
  * (singleton `default`) : ordre des ères + overrides par entrée (ère/date/titre/
  * note/masquage/rang manuel). La page publique lit ici la config résolue puis
- * `applyChronology` produit la frise FIXE ; l'éditeur `/admin/chronologie`
+ * `applyChronology` produit la frise FIXE ; l'éditeur `/admin/timeline`
  * l'écrit via `/api/chronologie-config`. Toute lecture est enveloppée (jamais
  * throw) : table absente / DB indispo / JSON invalide ⇒ défauts → frise
  * strictement identique à l'ancien ordre auto « ère ». Cf. `lib/chronology.ts`.

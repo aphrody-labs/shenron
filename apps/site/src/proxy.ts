@@ -165,7 +165,7 @@ export async function proxy(request: NextRequest) {
   //
   // Les outils staff de l'atelier (transcription, traduction, relecture) ont quitté
   // `/admin` pour l'espace Bibliothèque (`/workshop`) : ils passent par la même garde.
-  // Les anciennes adresses (`/admin/databooks`, `/atelier/traduction`, `/admin/ia`…)
+  // Les anciennes adresses (`/admin/databooks`, `/atelier/traduction`, `/admin/ai`…)
   // répondent un 308, APRÈS la garde (un anonyme ne découvre rien).
   if (pathname === "/admin" || pathname.startsWith("/admin/") || isStaffPath(pathname)) {
     const visitor = await visitorOf(request);

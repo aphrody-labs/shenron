@@ -38,7 +38,7 @@ export async function Breadcrumbs({
   /** Classes du `<nav>` (marges). */
   className?: string;
 }) {
-  // Un maillon qui pointe une rubrique refermée depuis /admin/lancement est une
+  // Un maillon qui pointe une rubrique refermée depuis /admin/launch est une
   // impasse — et, balisé en `BreadcrumbList`, une impasse **annoncée à Google**.
   // On garde le maillon (le chemin reste lisible) mais on retire sa cible : il
   // devient un simple repère, exactement comme la page courante.

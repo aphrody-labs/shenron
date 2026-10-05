@@ -31,7 +31,7 @@ import type { CanonConfig, CanonReference } from "@/lib/canon-engine";
 import { T } from "@/components/T";
 
 // Rendu à la demande, toujours : la page lit `?q=` (API dynamique) ET la
-// doctrine en base, qui s'édite dans /admin/ia?tab=canon. Un prérendu figerait la
+// doctrine en base, qui s'édite dans /admin/ai?tab=canon. Un prérendu figerait la
 // doctrine à l'heure du build et servirait une page périmée après chaque
 // enregistrement de l'éditeur. `force-dynamic` ne fait donc que rendre
 // explicite ce que `await searchParams` impose déjà.
@@ -198,7 +198,7 @@ async function AnnonceVerdict({ question }: { question: string }) {
  * La page promet un verdict qui ne vient ni d'un modèle ni d'un wiki de fans.
  * Une promesse ne vaut que si le lecteur peut lire la règle : les rangs
  * de canonicité avec leur définition, les sources admises et celles qu'on refuse. Tout vient
- * de `/admin/ia?tab=canon` — changer la doctrine change cette page.
+ * de `/admin/ai?tab=canon` — changer la doctrine change cette page.
  */
 function Doctrine({ config }: { config: CanonConfig }) {
   return (

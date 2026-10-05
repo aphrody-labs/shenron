@@ -4,7 +4,7 @@
  * Aucun import server (pas de `postgres`/drizzle) : utilisable à la fois par le
  * helper server-only `dbUniverse.timeline()` (qui construit le dataset), par le
  * composant public `ChronologyTimeline` (frise FIXE) ET par l'éditeur admin
- * (`/admin/chronologie`, curation). C'est le seul point qui unifie les TROIS
+ * (`/admin/timeline`, curation). C'est le seul point qui unifie les TROIS
  * espaces de séries disjoints (épisodes `DB/DBZ/DBGT/DBS/DB_DAIMA`, films
  * `DB_MOVIE/DBZ_MOVIE/DBZ_OVA/DBZ_SPECIAL/DBS_MOVIE`, et tomes de manga `DB/DBS`
  * rangés dans l'ère `Manga`) sous des « ères » communes.

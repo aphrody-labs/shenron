@@ -43,7 +43,7 @@ export function WikiAdminActions({
   async function hide() {
     if (busy) return;
     const ok = window.confirm(
-      `Masquer « ${label ?? "cette fiche"} » du site public ?\n\nElle restera modifiable et réaffichable depuis /admin/visibilite.`,
+      `Masquer « ${label ?? "cette fiche"} » du site public ?\n\nElle restera modifiable et réaffichable depuis /admin/visibility.`,
     );
     if (!ok) return;
     setBusy(true);
@@ -77,7 +77,7 @@ export function WikiAdminActions({
         <OeilBarre className="h-3.5 w-3.5" /> {busy ? "Masquage…" : "Masquer"}
       </button>
       <a
-        href="/admin/visibilite"
+        href="/admin/visibility"
         className="text-white/50 underline-offset-2 transition-colors hover:text-white/70 hover:underline"
       >
         Gérer la visibilité

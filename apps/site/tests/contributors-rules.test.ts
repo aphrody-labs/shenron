@@ -81,7 +81,7 @@ describe("detectCheatSignals", () => {
 const contributors = await Bun.file(new URL("../src/lib/contributors.ts", import.meta.url)).text();
 const profil = await Bun.file(new URL("../src/app/profile/[id]/page.tsx", import.meta.url)).text();
 const adminConcours = await Bun.file(
-  new URL("../src/app/admin/concours/page.tsx", import.meta.url),
+  new URL("../src/app/admin/contests/page.tsx", import.meta.url),
 ).text();
 const ledger = await Bun.file(
   new URL("../src/components/contest/MemberLedger.tsx", import.meta.url),

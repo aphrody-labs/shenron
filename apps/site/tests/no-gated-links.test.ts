@@ -42,7 +42,7 @@ function portablePath(file: string): string {
   return file.replaceAll("\\", "/");
 }
 
-/** Préfixes des rubriques refermables depuis /admin/lancement. */
+/** Préfixes des rubriques refermables depuis /admin/launch. */
 const GATEABLE_PREFIXES = GATEABLE_CATEGORIES.flatMap((c) => c.prefixes);
 
 /** Fichiers autorisés à mentionner une rubrique fermée. */

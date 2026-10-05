@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirectToAdminIa } from "@/components/admin/admin-ia-redirect";
+import { redirectToAdminAi } from "@/components/admin/admin-ai-redirect";
 
 export const dynamic = "force-dynamic";
 
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminEvaluationsPage() {
-  redirectToAdminIa("training");
+  redirectToAdminAi("training");
 }

@@ -218,7 +218,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
   const setTab = (tab: IaCockpitTab) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", tab);
-    router.push(`/admin/ia?${params.toString()}`, { scroll: false });
+    router.push(`/admin/ai?${params.toString()}`, { scroll: false });
   };
 
   // ── Données et rafraîchissement en direct ─────────────────────────────────
@@ -607,7 +607,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
           </span>
           {loadFailure.kind === "unauthenticated" || loadFailure.kind === "forbidden" ? (
             <Link
-              href={`/signin?callbackURL=${encodeURIComponent(`/admin/ia?tab=${activeTab}`)}`}
+              href={`/signin?callbackURL=${encodeURIComponent(`/admin/ai?tab=${activeTab}`)}`}
               className="font-semibold underline"
             >
               Se reconnecter
@@ -677,7 +677,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
             text="Métadonnées éditoriales et ouvrages officiels."
           />
           <CorpusLink
-            href="/admin/ia?tab=canon"
+            href="/admin/ai?tab=canon"
             title="Canon & preuves"
             text="Doctrine, références et verdicts contrôlés."
           />

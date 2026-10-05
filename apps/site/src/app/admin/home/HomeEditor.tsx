@@ -671,7 +671,7 @@ function CanonEditor({
           <h4 className="text-sm font-semibold text-zinc-200">Arbitre de canonicité</h4>
           <p className="text-xs text-zinc-500">
             La barre « est-ce canon ? », les cinq rangs et quelques sujets tranchés. La doctrine
-            elle-même s'édite dans /admin/ia?tab=canon.
+            elle-même s'édite dans /admin/ai?tab=canon.
           </p>
         </div>
         <label className="flex items-center gap-2 text-xs text-zinc-400">

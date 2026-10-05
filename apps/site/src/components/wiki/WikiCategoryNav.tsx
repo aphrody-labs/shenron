@@ -16,7 +16,7 @@ import { getLaunchConfig } from "@/lib/wiki-launch-config";
  * barres maison faisaient la même chose (puces ici, onglets soulignés dans
  * `UniverseTabs`) ; il n'en reste qu'une.
  *
- * Une rubrique fermée depuis `/admin/lancement` n'est pas listée : un onglet
+ * Une rubrique fermée depuis `/admin/launch` n'est pas listée : un onglet
  * inerte au milieu d'une barre de navigation se lit comme un bug. Compteurs
  * réels, jamais codés en dur. Server component, sans cookie ni en-tête → cache
  * CDN/ISR préservé.

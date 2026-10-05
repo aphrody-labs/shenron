@@ -125,7 +125,7 @@ export default async function ProfilePage({
         {/* Pont staff : ouvrir le dossier d'intégrité de CE membre (concours). */}
         <DomainBar
           domain="rankings"
-          actions={[{ href: `/admin/concours?membre=${id}`, label: "Dossier concours du membre" }]}
+          actions={[{ href: `/admin/contests?member=${id}`, label: "Dossier concours du membre" }]}
           className="mb-6"
         />
         <div className="mb-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">

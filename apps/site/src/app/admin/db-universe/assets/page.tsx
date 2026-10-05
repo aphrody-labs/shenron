@@ -50,14 +50,34 @@ type Asset = {
   sha256: string | null;
 };
 
+/** Paramètres d'URL (anglais) ; les anciens noms français (`licence`, `vue`, `tri`) restent lus. */
 type Params = {
   bucket?: string;
   q?: string;
-  licence?: string;
-  vue?: string;
-  tri?: string;
+  license?: string;
+  view?: string;
+  sort?: string;
   page?: string;
 };
+type LegacyParams = Params & { licence?: string; vue?: string; tri?: string };
+
+type Vue = "tous" | "orphelins" | "doublons";
+const VIEW_IN_URL: Record<Exclude<Vue, "tous">, string> = {
+  orphelins: "orphans",
+  doublons: "duplicates",
+};
+const SORT_IN_URL: Record<TriAssets, string> = {
+  naturel: "natural",
+  recent: "recent",
+  lourd: "heaviest",
+  petit: "smallest",
+  rattachement: "unlinked",
+};
+/** Valeur d'URL (anglaise, ou ancienne valeur française) → clé interne. */
+const fromUrl = <K extends string>(table: Record<K, string>, value: string | undefined) =>
+  (Object.entries(table) as [K, string][]).find(
+    ([cle, url]) => value === url || value === cle,
+  )?.[0];
 
 /** Conserve les filtres courants en changeant une seule clé — sinon chaque clic les perd. */
 const lien = (params: Params, modif: Partial<Params>) => {
@@ -68,17 +88,27 @@ const lien = (params: Params, modif: Partial<Params>) => {
   return `/admin/db-universe/assets${s ? `?${s}` : ""}`;
 };
 
-export default async function AdminAssetsPage({ searchParams }: { searchParams: Promise<Params> }) {
-  const sp = await searchParams;
-  const bucket = sp.bucket ?? "";
-  const recherche = sp.q ?? "";
-  const licence = sp.licence ?? "";
-  const vue = (["orphelins", "doublons"].includes(sp.vue ?? "") ? sp.vue : "tous") as
-    | "tous"
-    | "orphelins"
-    | "doublons";
-  const page = Math.max(1, Number(sp.page) || 1);
-  const tri = (TRIS_ASSETS.some((t) => t.cle === sp.tri) ? sp.tri : "naturel") as TriAssets;
+export default async function AdminAssetsPage({
+  searchParams,
+}: {
+  searchParams: Promise<LegacyParams>;
+}) {
+  const brut = await searchParams;
+  const bucket = brut.bucket ?? "";
+  const recherche = brut.q ?? "";
+  const licence = brut.license ?? brut.licence ?? "";
+  const vue: Vue = fromUrl(VIEW_IN_URL, brut.view ?? brut.vue) ?? "tous";
+  const page = Math.max(1, Number(brut.page) || 1);
+  const tri: TriAssets = fromUrl(SORT_IN_URL, brut.sort ?? brut.tri) ?? "naturel";
+  // Filtres courants, sous leurs noms d'URL anglais : chaque lien les reconduit.
+  const sp: Params = {
+    bucket,
+    q: recherche,
+    license: licence,
+    view: vue === "tous" ? "" : VIEW_IN_URL[vue],
+    sort: tri === "naturel" ? "" : SORT_IN_URL[tri],
+    page: brut.page,
+  };
 
   const [{ lignes, total }, buckets, licences, stats] = await Promise.all([
     listAssets({ bucket, recherche, licence, vue, tri, page, parPage: PAR_PAGE }),
@@ -106,12 +136,12 @@ export default async function AdminAssetsPage({ searchParams }: { searchParams: 
           {
             valeur: String(stats.orphelins),
             etiquette: "non rattachés",
-            lien: lien({}, { vue: "orphelins" }),
+            lien: lien({}, { view: VIEW_IN_URL.orphelins }),
           },
           {
             valeur: String(stats.doublonsEnTrop),
             etiquette: "fichiers en double",
-            lien: lien({}, { vue: "doublons" }),
+            lien: lien({}, { view: VIEW_IN_URL.doublons }),
           },
         ].map((c) => {
           const contenu = (
@@ -141,7 +171,7 @@ export default async function AdminAssetsPage({ searchParams }: { searchParams: 
       {/* Recherche + filtres : formulaire GET, la page reste server-only et l'URL partageable. */}
       <form method="GET" className="flex flex-wrap items-center gap-2 mb-4">
         {bucket ? <input type="hidden" name="bucket" value={bucket} /> : null}
-        {vue !== "tous" ? <input type="hidden" name="vue" value={vue} /> : null}
+        {vue !== "tous" ? <input type="hidden" name="view" value={VIEW_IN_URL[vue]} /> : null}
         <input
           type="search"
           name="q"
@@ -150,7 +180,7 @@ export default async function AdminAssetsPage({ searchParams }: { searchParams: 
           className="flex-1 min-w-[220px] bg-dbz-bg border-2 border-dbz-border px-3 py-2 text-white placeholder:text-white/35 focus:border-dbz-orange outline-none"
         />
         <select
-          name="licence"
+          name="license"
           defaultValue={licence}
           className="bg-dbz-bg border-2 border-dbz-border px-3 py-2 text-white focus:border-dbz-orange outline-none"
         >
@@ -162,13 +192,13 @@ export default async function AdminAssetsPage({ searchParams }: { searchParams: 
           ))}
         </select>
         <select
-          name="tri"
-          defaultValue={tri}
+          name="sort"
+          defaultValue={SORT_IN_URL[tri]}
           className="bg-dbz-bg border-2 border-dbz-border px-3 py-2 text-white focus:border-dbz-orange outline-none"
           aria-label="Ordre de tri"
         >
           {TRIS_ASSETS.map((t) => (
-            <option key={t.cle} value={t.cle}>
+            <option key={t.cle} value={SORT_IN_URL[t.cle]}>
               {t.libelle}
             </option>
           ))}
@@ -221,7 +251,7 @@ export default async function AdminAssetsPage({ searchParams }: { searchParams: 
             ? "médias rattachés à aucune fiche. Ce n'est pas une anomalie en soi : des buckets entiers (toei, dbofficial, shueisha…) sont des bannières et des visuels d'actualité, qui n'illustrent aucune fiche par nature. Les buckets de fiches, eux, sont rattachés à 100 %"
             : `médias dont le sha256 est partagé par au moins deux lignes — les ${total} lignes affichées forment ${stats.doublonsEnTrop} doublons réels, chaque groupe étant montré en entier`}
           {" · "}
-          <Link href={lien(sp, { vue: "", page: "" })} className="underline hover:text-white">
+          <Link href={lien(sp, { view: "", page: "" })} className="underline hover:text-white">
             revenir à tout
           </Link>
         </p>

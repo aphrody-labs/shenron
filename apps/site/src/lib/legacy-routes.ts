@@ -97,6 +97,19 @@ export const STAFF_ROUTE_RENAMES: readonly RouteRename[] = [
   { from: "/atelier/databooks", to: "/workshop/databooks" },
   { from: "/admin/transcriptions", to: "/workshop/transcription", keepRest: false },
   { from: "/admin/databooks", to: "/workshop/translation", restTo: "/workshop/databooks" },
+  { from: "/admin/activite", to: "/admin/activity" },
+  { from: "/admin/campagnes-bxc", to: "/admin/bxc-campaigns" },
+  { from: "/admin/chronologie", to: "/admin/timeline" },
+  { from: "/admin/concours", to: "/admin/contests" },
+  { from: "/admin/ia", to: "/admin/ai" },
+  { from: "/admin/assistance-ia", to: "/admin/ai?tab=overview", keepRest: false },
+  { from: "/admin/lancement", to: "/admin/launch" },
+  { from: "/admin/signalements", to: "/admin/reports" },
+  { from: "/admin/ursaf", to: "/admin/taxes" },
+  { from: "/admin/visibilite", to: "/admin/visibility" },
+  { from: "/admin/commandes", to: "/admin/command-runner" },
+  { from: "/admin/moderation/commentaires", to: "/admin/moderation/comments" },
+  { from: "/admin/db-universe/films", to: "/admin/db-universe/movies" },
 ];
 
 /**

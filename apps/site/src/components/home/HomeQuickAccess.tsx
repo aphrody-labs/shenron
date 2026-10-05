@@ -7,7 +7,7 @@
  * la ligne : rien ne se cache dans un défilement horizontal sur téléphone.
  *
  * Composant sans état ni effet : il se rend côté serveur (et dans les tests)
- * tel quel. La fermeture éventuelle d'une rubrique (`/admin/lancement`) est
+ * tel quel. La fermeture éventuelle d'une rubrique (`/admin/launch`) est
  * arbitrée par `ClientGatedWrap` avec l'instantané d'accès de la page.
  */
 import { ClientGatedWrap } from "@/components/GatedClientLink";

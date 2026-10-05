@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /admin/ursaf — URSAF (Union de Recouvrement des Saiyens et Autres Fraudeurs)
+ * /admin/taxes — URSAF (Union de Recouvrement des Saiyens et Autres Fraudeurs)
  * et inflation du serveur.
  *
  * Ordre de lecture voulu : d'abord SIMULER (ce que l'URSAF imposerait
@@ -297,7 +297,7 @@ export default function AdminUrsafPage() {
                       <tr key={a.userId}>
                         <td className="p-2">
                           <Link
-                            href={`/admin/concours?membre=${a.userId}`}
+                            href={`/admin/contests?member=${a.userId}`}
                             className="font-mono text-xs text-dbz-orange hover:underline"
                           >
                             {a.userId}

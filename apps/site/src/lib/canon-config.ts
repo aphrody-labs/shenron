@@ -5,7 +5,7 @@
  * (singleton `default`) : définitions des cinq rangs, règles générales, sources
  * admises et refusées, sujets tranchés et familles de formulations. La page
  * `/wiki/canon` lit ici la doctrine effective et la passe à `analyzeCanon` ;
- * l'éditeur `/admin/ia?tab=canon` l'écrit via `/api/canon-config`.
+ * l'éditeur `/admin/ai?tab=canon` l'écrit via `/api/canon-config`.
  *
  * Toute lecture est enveloppée et ne throw jamais : table absente, base
  * indisponible ou document invalide ⇒ doctrine livrée avec le dépôt. La page de

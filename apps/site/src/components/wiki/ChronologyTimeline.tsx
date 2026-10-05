@@ -3,7 +3,7 @@
 /**
  * ChronologyTimeline — frise **publique et FIXE** de la chronologie universelle.
  *
- * L'ordre officiel est décidé par l'admin (`/admin/chronologie` → `applyChronology`
+ * L'ordre officiel est décidé par l'admin (`/admin/timeline` → `applyChronology`
  * côté serveur) : ce composant reçoit la liste DÉJÀ résolue et ordonnée. Il ne
  * propose que des aides de lecture (filtre par ère, recherche, bascule épisodes/
  * films, tri alternatif diffusion/titre, export de la liste officielle). Aucune

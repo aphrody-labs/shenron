@@ -9,7 +9,7 @@
  * (`lib/site-map.ts`) : c'était une liste écrite à la main, et elle avait
  * divergé — ni `/wiki/characters`, ni `/wiki/contribute`, ni le fil d'actualité
  * n'y figuraient, alors que des rubriques refermées y restaient. Désormais, une
- * rubrique ouverte depuis `/admin/lancement` apparaît dans le menu sans toucher
+ * rubrique ouverte depuis `/admin/launch` apparaît dans le menu sans toucher
  * à ce fichier.
  *
  * Client-safe : `site-map` ne lit ni base ni secret, et le filtrage par accès
