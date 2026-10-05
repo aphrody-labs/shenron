@@ -25,7 +25,7 @@ export async function GET(req: Request) {
       {
         error: "Paramètre `q` requis (2 caractères minimum).",
         example: "?q=kamehameha",
-        /** @deprecated Ancien nom de `example`. */
+        /** @deprecated Former name of `example`. */
         exemple: "?q=kamehameha",
       },
       { status: 400, headers: CORS_MANGA },

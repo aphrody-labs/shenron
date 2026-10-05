@@ -253,8 +253,8 @@ const schemas = {
       series: { type: "string", description: "DB | DBS" },
       volume: { type: "string", description: "vol1 | ch1321 | t901" },
       page: { type: "integer" },
-      tome: { type: "string", deprecated: true, description: "Ancien nom de `volume`." },
-      planche: { type: "integer", deprecated: true, description: "Ancien nom de `page`." },
+      tome: { type: "string", deprecated: true, description: "Former name of `volume`." },
+      planche: { type: "integer", deprecated: true, description: "Former name of `page`." },
       lang: { type: "string", enum: ["fr", "ja"] },
       hasJa: { type: "boolean" },
       lineCount: { type: "integer" },
@@ -275,12 +275,12 @@ const schemas = {
       lines: { type: "integer" },
       pagesWithJa: { type: "integer" },
       pageRange: { type: "array", items: { type: "integer" }, minItems: 2, maxItems: 2 },
-      tome: { type: "string", deprecated: true, description: "Ancien nom de `volume`." },
-      planches: { type: "integer", deprecated: true, description: "Ancien nom de `pages`." },
+      tome: { type: "string", deprecated: true, description: "Former name of `volume`." },
+      planches: { type: "integer", deprecated: true, description: "Former name of `pages`." },
       planchesWithJa: {
         type: "integer",
         deprecated: true,
-        description: "Ancien nom de `pagesWithJa`.",
+        description: "Former name of `pagesWithJa`.",
       },
       plancheRange: {
         type: "array",
@@ -288,7 +288,7 @@ const schemas = {
         minItems: 2,
         maxItems: 2,
         deprecated: true,
-        description: "Ancien nom de `pageRange`.",
+        description: "Former name of `pageRange`.",
       },
     },
   },
@@ -377,7 +377,7 @@ export const openapiSpec = {
                     tomes: {
                       type: "array",
                       deprecated: true,
-                      description: "Ancien nom de `volumes`.",
+                      description: "Former name of `volumes`.",
                       items: { $ref: "#/components/schemas/MangaVolume" },
                     },
                   },
@@ -436,7 +436,7 @@ export const openapiSpec = {
         tags: ["Manga"],
         summary: "Traduction publiée d'une page (revue staff Koharu)",
         description:
-          "Ancien chemin `/api/manga/planche/{pageId}/traduction`, toujours servi en alias (déprécié).",
+          "Deprecated former path `/api/manga/planche/{pageId}/traduction`, still served as an alias.",
         parameters: [
           {
             name: "pageId",

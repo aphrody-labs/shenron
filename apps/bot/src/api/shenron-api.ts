@@ -179,7 +179,7 @@ export interface PublicFallbackOptions {
   api: ShenronApi;
   buckets: PublicRateBuckets;
   graphql: (request: Request) => Response | Promise<Response>;
-  /** Revue Koharu → Shenron (`/api/manga/candidates*`, `/api/manga/page/*`, ancien `/api/manga/planche/*`). */
+  /** Koharu → Shenron review (`/api/manga/candidates*`, `/api/manga/page/*`, former `/api/manga/planche/*`). */
   manga?: MangaReviewApi | null;
   corsOrigins?: readonly string[];
   now?: () => number;
@@ -279,7 +279,7 @@ export interface MangaReviewApi {
 
 const CANDIDATES_PATH = "/api/manga/candidates";
 const CANDIDATE_ACTION = /^\/api\/manga\/candidates\/([1-9][0-9]{0,15})\/(approve|reject)$/;
-/** `/api/manga/page/:pageId/translation`, et l'ancien `/api/manga/planche/:pageId/traduction` servi en alias. */
+/** `/api/manga/page/:pageId/translation`, and the former `/api/manga/planche/:pageId/traduction` served as an alias. */
 const PAGE_TRANSLATION =
   /^\/api\/manga\/(?:page\/([^/]+)\/translation|planche\/([^/]+)\/traduction)$/;
 const MAX_CANDIDATE_BODY = 2 * 1024 * 1024;

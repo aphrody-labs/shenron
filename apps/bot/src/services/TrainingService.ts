@@ -365,7 +365,7 @@ export class TrainingService {
       query,
       count: json.count ?? 0,
       latencyMs: Math.round(performance.now() - start),
-      // Champs anglais ; anciens noms en repli face à un site plus ancien.
+      // English fields; the former names are read as a fallback against an older site.
       results: (json.results ?? json.resultats ?? []).slice(0, 5).map((r: any) => ({
         series: r.series,
         volume: r.volume ?? r.tome,

@@ -40,7 +40,7 @@ export type PlancheApi = {
   index: number;
   /** Numéro imprimé/numérisé (nom de fichier), quand il diffère du rang. */
   page: number;
-  /** @deprecated Ancien nom de `page`, doublon gardé le temps d'une version. */
+  /** @deprecated Former name of `page`, kept as a duplicate for one version. */
   planche: number;
   image: string;
   /** Texte OCR de la planche (`null` quand la transcription n'existe pas). */
@@ -54,14 +54,14 @@ export type PlancheApi = {
   api: string;
 };
 
-/** Édition d'une série : langue et colorisation, avec les anciens noms en doublon. */
+/** Edition of a series: language and colorization, with the former names as duplicates. */
 export type EditionApi = {
   language: string;
   /** `bw` ou `color`. */
   colorization: string;
-  /** @deprecated Ancien nom de `language`. */
+  /** @deprecated Former name of `language`. */
   langue: string;
-  /** @deprecated Ancien nom de `colorization` (`nb` ou `couleur`). */
+  /** @deprecated Former name of `colorization` (`nb` or `couleur`). */
   colorisation: string;
 };
 
@@ -72,19 +72,19 @@ export type ChapitreApi = {
   title: string | null;
   volume_id: number | null;
   edition: EditionApi;
-  /** Nombre de pages du chapitre ; la liste est `pageList`. */
+  /** Number of pages of the chapter; the list is `pageList`. */
   pages: number;
-  /** Pages transcrites sur `pages` (0 quand l'OCR n'a pas tourné). */
+  /** Transcribed pages out of `pages` (0 when the OCR did not run). */
   transcribed: number;
-  /** @deprecated Ancien nom de `transcribed`. */
+  /** @deprecated Former name of `transcribed`. */
   transcrites: number;
   prev: number | null;
   next: number | null;
   href: string;
   api: string;
-  /** Les pages, dans l'ordre de lecture. */
+  /** The pages, in reading order. */
   pageList: PlancheApi[];
-  /** @deprecated Ancien nom de `pageList`. */
+  /** @deprecated Former name of `pageList`. */
   planches: PlancheApi[];
 };
 
@@ -282,16 +282,16 @@ export async function tomeApi(id: number): Promise<TomeApi | null> {
 
 export type ResultatPlanche = {
   series: string;
-  /** Clé de volume de l'OCR (`vol13`, `ch42`). */
+  /** OCR volume key (`vol13`, `ch42`). */
   volume: string;
-  /** @deprecated Ancien nom de `volume`. */
+  /** @deprecated Former name of `volume`. */
   tome: string;
-  /** Numéro de page (celui du fichier). */
+  /** Page number (the one of the file). */
   page: number;
-  /** @deprecated Ancien nom de `page`. */
+  /** @deprecated Former name of `page`. */
   planche: number;
   excerpt: string;
-  /** @deprecated Ancien nom de `excerpt`. */
+  /** @deprecated Former name of `excerpt`. */
   extrait: string;
   snippet: string;
   chapter_id: number | null;
@@ -303,7 +303,7 @@ export type ResultatPlanche = {
   image: string | null;
   /** Rang de lecture dans le chapitre (adresse du lecteur), `null` si inconnu. */
   index: number | null;
-  /** @deprecated Ancien nom de `index`. */
+  /** @deprecated Former name of `index`. */
   rang: number | null;
 };
 
@@ -406,9 +406,9 @@ export async function totalPlanchesPourRequete(
  * pour « kamehameha » et les rendait dans l'ordre de rangement, pas de
  * pertinence.
  *
- * Les champs anglais (`volume`, `page`, `excerpt`, `index`) sont la forme
- * courante ; les anciens (`tome`, `planche`, `extrait`, `rang`) restent en doublon
- * déprécié le temps d'une version.
+ * The English fields (`volume`, `page`, `excerpt`, `index`) are the current form;
+ * the former ones (`tome`, `planche`, `extrait`, `rang`) stay as deprecated
+ * duplicates for one version.
  */
 export async function chercherPlanches(
   q: string,
@@ -623,7 +623,7 @@ export async function pageIdDePlanche(chapterId: number, index: number): Promise
   return `${cle.series}:${cle.tome}:${p.page}`;
 }
 
-/** GET JSON sur l'API publique du bot, revalidé toutes les 5 minutes. */
+/** GET on the bot's public API, revalidated every 5 minutes. */
 const botGet = (path: string) =>
   fetch(`${BOT_API_URL}${path}`, {
     headers: { accept: "application/json" },
@@ -632,9 +632,9 @@ const botGet = (path: string) =>
 
 /**
  * Traductions FR publiées d'une planche, lues sur l'API publique du bot
- * (`GET /api/manga/page/:pageId/translation`, ancien chemin
- * `/api/manga/planche/:pageId/traduction` en repli face à un bot plus ancien).
- * `null` quand rien n'est publié.
+ * (`GET /api/manga/page/:pageId/translation`, with the former path
+ * `/api/manga/planche/:pageId/traduction` as a fallback against an older bot).
+ * `null` when nothing is published.
  */
 export async function traductionPlanche(
   chapterId: number,
@@ -645,7 +645,7 @@ export async function traductionPlanche(
   try {
     const key = encodeURIComponent(pageId);
     let res = await botGet(`/api/manga/page/${key}/translation`);
-    // Un bot d'avant le renommage répond 404 hors JSON : on retente l'ancien chemin.
+    // A bot that predates the rename answers a non-JSON 404: try the former path.
     if (res.status === 404 && !(res.headers.get("content-type") ?? "").includes("json")) {
       res = await botGet(`/api/manga/planche/${key}/traduction`);
     }

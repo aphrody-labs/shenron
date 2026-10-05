@@ -777,7 +777,7 @@ async function MangaEtScenes({ question }: { question: string }) {
           </p>
           <ul className="mt-5 grid gap-3 sm:grid-cols-2">
             {planchesManga.map((p) => (
-              <li key={`${p.series}-${p.tome}-${p.planche}`}>
+              <li key={`${p.series}-${p.volume}-${p.page}`}>
                 <PlancheManga planche={p} />
               </li>
             ))}
@@ -851,12 +851,12 @@ function PlancheManga({ planche: p }: { planche: ResultatPlanche }) {
       )}
       <span className={`min-w-0 py-3 pr-4${p.image ? "" : " pl-4"}`}>
         <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-white/70 font-semibold">
-          <T k="wiki.canon.mangaPlate" values={{ series: p.series, number: p.rang ?? p.planche }} />
+          <T k="wiki.canon.mangaPlate" values={{ series: p.series, number: p.index ?? p.page }} />
           {" · "}
           <T k="wiki.canon.relevance" values={{ score: Math.round(p.score) }} />
         </span>
         <span className="mt-1 block line-clamp-4 text-xs sm:text-sm leading-relaxed text-white/85">
-          {p.extrait}
+          {p.excerpt}
         </span>
       </span>
     </>

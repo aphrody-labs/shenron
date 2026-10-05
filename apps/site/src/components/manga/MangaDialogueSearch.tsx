@@ -19,7 +19,7 @@ interface Result {
   snippet: string;
 }
 
-/** Ligne de l'API : champs anglais, anciens `tome`/`planche` en repli d'un bot plus ancien. */
+/** A row of the API: English fields, the former `tome`/`planche` as a fallback against an older bot. */
 type ApiResult = Omit<Result, "volume" | "page"> &
   Partial<Pick<Result, "volume" | "page">> & { tome?: string; planche?: number };
 

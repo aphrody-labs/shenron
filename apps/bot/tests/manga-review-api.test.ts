@@ -40,7 +40,7 @@ describe("API revue manga", () => {
     expect(api.handles("/api/manga/candidates")).toBe(true);
     expect(api.handles("/api/manga/candidates/3/approve")).toBe(true);
     expect(api.handles("/api/manga/page/DB:vol1:12/translation")).toBe(true);
-    // Ancien chemin français, servi en alias.
+    // The former French path, served as an alias.
     expect(api.handles("/api/manga/planche/DB:vol1:12/traduction")).toBe(true);
     expect(api.handles("/api/manga/page/DB:vol1:12/traduction")).toBe(false);
     expect(api.handles("/api/manga/status")).toBe(false);

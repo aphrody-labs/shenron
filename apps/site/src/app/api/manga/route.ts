@@ -25,11 +25,11 @@ export async function GET() {
     volumes: number;
     chapters: number;
     pages: number;
-    /** @deprecated Ancien nom de `volumes`. */
+    /** @deprecated Former name of `volumes`. */
     tomes: number;
-    /** @deprecated Ancien nom de `chapters`. */
+    /** @deprecated Former name of `chapters`. */
     chapitres: number;
-    /** @deprecated Ancien nom de `pages`. */
+    /** @deprecated Former name of `pages`. */
     planches: number;
   }> = [];
   let catalog: Array<{
@@ -43,17 +43,17 @@ export async function GET() {
     cover: string | null;
     url: string;
     readableHere: boolean;
-    /** @deprecated Ancien nom de `number`. */
+    /** @deprecated Former name of `number`. */
     numero: number | null;
-    /** @deprecated Ancien nom de `title`. */
+    /** @deprecated Former name of `title`. */
     titre: string | null;
-    /** @deprecated Ancien nom de `titleJa`. */
+    /** @deprecated Former name of `titleJa`. */
     titreJa: string | null;
-    /** @deprecated Ancien nom de `publishedAt`. */
+    /** @deprecated Former name of `publishedAt`. */
     datePublication: number | null;
-    /** @deprecated Ancien nom de `cover`. */
+    /** @deprecated Former name of `cover`. */
     couverture: string | null;
-    /** @deprecated Ancien nom de `readableHere`. */
+    /** @deprecated Former name of `readableHere`. */
     lectureDisponibleIci: boolean;
   }> = [];
   let transcribed = 0;
@@ -181,7 +181,7 @@ export async function GET() {
       transcribedPages: transcribed,
       routes: {
         ...routes,
-        // Anciens noms, gardés en doublon déprécié le temps d'une version.
+        // Former names, kept as deprecated duplicates for one version.
         tome: routes.volume,
         chapitre: routes.chapter,
         planche: routes.page,
@@ -192,7 +192,7 @@ export async function GET() {
         tomesLisibles: routes.readableVolumes,
       },
       examples,
-      /** @deprecated Anciens noms des champs ci-dessus. */
+      /** @deprecated Former names of the fields above. */
       nom: name,
       licence: license,
       catalogue: catalog,

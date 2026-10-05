@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
               page: p.page,
               excerpt: p.excerpt,
               score: p.score,
-              // Anciens noms, dépréciés le temps d'une version.
+              // Former names, deprecated for one version.
               tome: p.tome,
               planche: p.planche,
               extrait: p.extrait,

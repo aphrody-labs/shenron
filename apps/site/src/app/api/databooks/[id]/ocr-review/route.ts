@@ -4,9 +4,10 @@
  *   GET /api/databooks/:id/ocr-review?page=12   (admin connecté ou jeton)
  *
  * Ancienne adresse servie : `/api/databooks/:id/relecture-ocr?planche=12`.
- * Réponse : `page`, `noScan`, `unavailable`, `regions[].{text,score,box}`, `text`,
- * `seconds`, `cache` ; les anciens champs (`planche`, `sansScan`, `indisponible`,
- * `texte`, `secondes`, `regions[].{texte,boite}`) restent en doublon déprécié.
+ * Response: `page`, `noScan`, `unavailable`, `regions[].{text,score,box}`, `text`,
+ * `seconds`, `cache`. The former French fields (`planche`, `sansScan`,
+ * `indisponible`, `texte`, `secondes`, `regions[].{texte,boite}`) stay as
+ * deprecated duplicates for one version.
  *
  * Le corpus est transcrit par dots.ocr, un modèle de vision autorégressif.
  * Cette route en fournit une **seconde lecture par un moteur d'une autre
@@ -46,7 +47,7 @@ const SERVICE = resolveRelectureOcrUrl(process.env);
 /** Où vivent les scans : `./assets/wiki/...` en base, `public/wiki/...` sur disque. */
 const RACINE_SCANS = path.join(process.cwd(), "public");
 
-/** Une région telle que la rend le service de relecture (champs français). */
+/** A region as the review service returns it (French field names). */
 interface RegionLue {
   texte: string;
   score: number;
@@ -54,10 +55,10 @@ interface RegionLue {
 }
 
 /**
- * Une région dans la réponse de la route : `text` et `box`, avec `texte` et
- * `boite` en doublon déprécié le temps d'une version.
+ * A region in the route response: `text` and `box`, with `texte` and `boite`
+ * as deprecated duplicates for one version.
  */
-function regionRendue(r: RegionLue) {
+function renderRegion(r: RegionLue) {
   return { text: r.texte, score: r.score, box: r.boite, texte: r.texte, boite: r.boite };
 }
 
@@ -88,7 +89,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
       page: numero,
       noScan: true,
       regions: [],
-      // Anciens noms, dépréciés.
+      // Former names, deprecated.
       planche: numero,
       sansScan: true,
     });
@@ -121,7 +122,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
         unavailable: true,
         detail: e instanceof Error ? e.message : String(e),
         regions: [],
-        // Anciens noms, dépréciés.
+        // Former names, deprecated.
         planche: numero,
         indisponible: true,
       },
@@ -138,7 +139,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
         unavailable: true,
         detail: detail.slice(0, 300),
         regions: [],
-        // Anciens noms, dépréciés.
+        // Former names, deprecated.
         planche: numero,
         indisponible: true,
       },
@@ -156,11 +157,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   return NextResponse.json({
     id,
     page: numero,
-    regions: lu.regions.map(regionRendue),
+    regions: lu.regions.map(renderRegion),
     text: lu.texte,
     seconds: lu.secondes,
     cache: lu.cache,
-    // Anciens noms, dépréciés.
+    // Former names, deprecated.
     planche: numero,
     texte: lu.texte,
     secondes: lu.secondes,
