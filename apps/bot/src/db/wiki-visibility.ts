@@ -2,8 +2,11 @@
  * Visibilité éditoriale du réplica SQLite du wiki (SH-P0-004).
  *
  * PostgreSQL `bot.*` est la source : une fiche se retire par `visible = false`,
- * jamais par DELETE. Le reverse-sync Neon→SQLite copie l'intersection des
- * colonnes des deux côtés : tant que la table SQLite n'avait pas `visible`, la
+ * jamais par DELETE. Le reverse-sync PostgreSQL → SQLite
+ * (`scripts/sync-neon-to-sqlite.ts`, logique `./replica-sync.ts`) copie
+ * l'intersection des colonnes des deux côtés, après avoir appelé
+ * `ensureWikiReplicaSchema` puis `ensureWikiVisibility` : il fait donc descendre
+ * les lignes masquées avec `visible = 0`. Tant que la table SQLite n'avait pas `visible`, la
  * ligne masquée descendait sans son drapeau et les routes historiques du bot,
  * le GraphQL et la couverture la servaient. Ce module garantit la colonne
  * (défaut 1, ajout idempotent) ; chaque lecture publique du réplica filtre
@@ -54,7 +57,8 @@ export function ensureWikiVisibility(sqlite: Database): WikiVisibilityTable[] {
  * `checked_at`) figurent dans le schéma, mais aucune migration SQL ne les crée.
  * Les bases existantes les ont (reverse-sync) ; une base neuve ne les avait pas,
  * et ses lectures publiques échouaient. Complément idempotent, appelé par `src/index.ts`
- * après les migrations (jamais avant : une base vide doit rester vide).
+ * après les migrations (jamais avant : une base vide doit rester vide) et par le
+ * reverse-sync (`./replica-sync.ts`) avant sa copie, qui refuse une base non migrée.
  */
 export function ensureWikiReplicaSchema(sqlite: Database): void {
   const columns = (table: string) =>

@@ -10,18 +10,17 @@
  * brut : le driver `drizzle-orm/bun-sql` ne modifie pas le client Bun.SQL
  * (contrairement au driver postgres-js), les gabarits `sql\`…\`` restent sûrs.
  *
- * Résolution de l'URL (`loadDatabaseUrl`, dernière ligne active gagnante) :
- * `DATABASE_URL` de l'environnement, puis le fichier systemd historique
- * `SHENRON_PG_ENV` ou `~/.shenron-neon.env` (conservé jusqu'à INFRA-3).
+ * Résolution de l'URL : `resolveBotDatabaseUrl` (`./pg-url`, partagé avec le
+ * reverse-sync `scripts/sync-neon-to-sqlite.ts`).
  */
-import { homedir } from "node:os";
-import { join } from "node:path";
 import type { SQL } from "bun";
 import type { EnvSource } from "@shenron/db/config";
 import { createBunDb, type ShenronBunDb } from "@shenron/db/bun-sql";
-import { loadDatabaseUrl } from "@shenron/db/env";
 import { singleton } from "tsyringe";
 import { logger } from "~/lib/logger";
+import { resolveBotDatabaseUrl } from "./pg-url";
+
+export { pgFallbackFiles, resolveBotDatabaseUrl } from "./pg-url";
 
 export const BOT_PG_APPLICATION_NAME = "shenron-bot";
 export const BOT_PG_POOL_MAX = 2;
@@ -31,17 +30,6 @@ export interface PgHandle {
   readonly sql: SQL;
   /** Drizzle (schéma public) sur le même pool. */
   readonly db: ShenronBunDb;
-}
-
-/** Fichiers de repli de l'URL, dans l'ordre (le fichier systemd historique). */
-export function pgFallbackFiles(env: EnvSource = process.env): { path: string }[] {
-  return [{ path: env.SHENRON_PG_ENV?.trim() || join(homedir(), ".shenron-neon.env") }];
-}
-
-/** L'URL PostgreSQL du site pour le bot, ou `null` si la machine n'en a pas. */
-export function resolveBotDatabaseUrl(env: EnvSource = process.env): string | null {
-  const result = loadDatabaseUrl({ env, fallbackFiles: pgFallbackFiles(env) });
-  return result.ok ? result.url : null;
 }
 
 /** Construit le pool unique (aucune connexion avant la première requête). */

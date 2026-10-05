@@ -1,11 +1,13 @@
 /**
- * Liste des tables du **wiki éditorial** dont Neon `bot.*` est la SOURCE DE
- * VÉRITÉ (édité par le site via Server Actions). Partagée par les deux scripts
- * de sync sans side-effect :
- *   - sync-sqlite-to-neon.ts (forward, runtime+news) les EXCLUT.
- *   - sync-neon-to-sqlite.ts (reverse, wiki) les rafraîchit Neon→SQLite.
+ * Liste des tables du **wiki éditorial** dont PostgreSQL `bot.*` est la SOURCE DE
+ * VÉRITÉ (édité par le site via Server Actions). Module sans side-effect, lu par
+ * le reverse-sync `sync-neon-to-sqlite.ts` (PostgreSQL → SQLite, logique dans
+ * `src/db/replica-sync.ts`), qui rafraîchit ces tables dans le réplica du bot.
+ * L'ancien forward-sync SQLite → PostgreSQL (`sync-sqlite-to-neon.ts`), qui les
+ * excluait, ne fait plus partie du dépôt. Elle doit couvrir
+ * `WIKI_VISIBILITY_TABLES` (`src/db/wiki-visibility.ts`) : le reverse-sync le vérifie.
  *
- * `db_news` n'en fait PAS partie (écrit par le bot en runtime → forward-mirroré).
+ * `db_news` n'en fait PAS partie (écrite par le bot en runtime).
  */
 export const WIKI_EDITORIAL = [
   "media_works",

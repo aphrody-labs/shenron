@@ -10,18 +10,21 @@ tenus ici.
 - **Wiki = PostgreSQL, SQLite du bot = réplica.** On n'écrit plus le wiki dans
   SQLite : les écrivains éditoriaux sont gardés par
   `apps/bot/src/db/wiki-write-guard.ts` (`process.exit(1)` sauf
-  `ALLOW_SQLITE_WIKI_WRITE=1`), car le reverse-sync les écraserait. La garde ne
+  `ALLOW_SQLITE_WIKI_WRITE=1`), car le reverse-sync
+  (`apps/bot/scripts/sync-neon-to-sqlite.ts`) les écraserait. La garde ne
   s'applique pas quand l'entrée est `src/index.ts` : le bot importe l'auto-seed
   au démarrage, et un `exit` au niveau module échappait à son `try/catch`
-  (boucle de redémarrage vécue).
+  (boucle de redémarrage vécue). Le reverse-sync lui-même est exempté par son
+  chemin exact, jamais par l'override.
 - **Scripts de sync : pas de `main()` au niveau module dans un fichier
   importé.** Les constantes partagées (`WIKI_EDITORIAL`) vivent dans
   `apps/bot/scripts/_wiki-editorial.ts`, sinon l'import déclenche une seconde
   synchronisation.
-- **NOT NULL côté SQLite, NULL autorisé côté PostgreSQL** : un NULL casse le
-  reverse-sync (`SQLITE_CONSTRAINT_NOTNULL`, rollback complet). Toujours poser
-  une valeur par défaut en PostgreSQL pour ces colonnes (voir
-  [`wiki-data-ingestion.md`](wiki-data-ingestion.md)).
+- **NOT NULL et UNIQUE côté SQLite, absents côté PostgreSQL** : le reverse-sync
+  remplace un NULL par le défaut SQLite (sinon 0 ou '') et écarte un doublon
+  d'index unique, compteurs `nullsReplaced` et `duplicatesDropped` dans son
+  rapport. Toujours poser une valeur par défaut en PostgreSQL pour ces colonnes
+  (voir [`wiki-data-ingestion.md`](wiki-data-ingestion.md)).
 - **`drizzle-kit migrate` échoue silencieusement sous Bun** et `db:push` est
   interdit (il propose de supprimer les tables du schéma `bot` créées hors
   Drizzle). Les migrations s'écrivent en SQL idempotent et s'appliquent par le

@@ -8,9 +8,12 @@ placeholder**.
 
 Les tables wiki-éditoriales (`db_characters`, `db_planets`, `db_arcs`, `db_sagas`,
 `db_techniques`, `db_transformations`, …) vivent dans **PostgreSQL** (source de
-vérité), reverse-syncées PG→SQLite toutes les 15 min (`shenron-neon-pull`, liste
-dans `apps/bot/scripts/_wiki-editorial.ts`). Le **site lit PG en direct** ; le
-**bot Discord + le RAG lisent le réplica SQLite**.
+vérité), reverse-syncées PG→SQLite toutes les 15 min (`shenron-neon-pull`, qui
+lance `apps/bot/scripts/sync-neon-to-sqlite.ts` ; liste dans
+`apps/bot/scripts/_wiki-editorial.ts`). Le **site lit PG en direct** ; le
+**bot Discord + le RAG lisent le réplica SQLite**. Le reverse-sync remplace chaque
+table en entier (lignes masquées comprises, `visible = 0`) et rend un rapport JSON
+par table ; `--dry-run` lit sans écrire, `--tables a,b` restreint la liste.
 
 ## Le pipeline Fandom a été retiré (2026-09-10)
 
@@ -47,12 +50,17 @@ numéros d'épisode) — jamais pour la rédaction. Détail de la doctrine :
 
 ## Piège critique — reverse-sync & NULL NOT-NULL
 
-Le SQLite du bot a des colonnes **NOT NULL** que PG autorise NULL. Un NULL en PG
-casse la reverse-sync (`SQLITE_CONSTRAINT_NOTNULL`, qui rollback toute la
-transaction et fige la data du bot). Colonnes vues : `db_planets.is_destroyed`
-(bigint 0/1), `db_assets.source_id|license_key|created_at`. **Toujours poser une
-valeur par défaut en PG** (jamais NULL) pour ces colonnes. Vérif après ingestion :
-`systemctl start shenron-neon-pull.service` puis `systemctl is-active` (≠ failed).
+Le SQLite du bot a des colonnes **NOT NULL** et des index **UNIQUE** que PG n'a
+pas. Le reverse-sync ne s'y bloque plus : un NULL prend le défaut SQLite, sinon
+0 ou '' (`nullsReplaced` dans le rapport), et une ligne qui violerait un index
+unique est écartée en gardant la ligne visible puis le plus petit `id`
+(`duplicatesDropped`). Ces compteurs signalent une donnée à corriger en PG.
+Colonnes vues : `db_planets.is_destroyed` (bigint 0/1),
+`db_assets.source_id|license_key|created_at`, `db_characters.image` et le nom
+unique de `db_characters`. **Toujours poser une valeur par défaut en PG** (jamais
+NULL) pour ces colonnes. Vérif après ingestion :
+`systemctl start shenron-neon-pull.service` puis `systemctl is-active` (≠ failed)
+et le rapport JSON du journal de l'unité.
 
 ## Flux complet
 

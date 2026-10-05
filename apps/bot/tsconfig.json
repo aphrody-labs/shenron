@@ -20,5 +20,5 @@
       "undici-types": ["./node_modules/undici-types"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "drizzle.config.ts"]
+  "include": ["src/**/*", "tests/**/*", "scripts/sync-neon-to-sqlite.ts", "drizzle.config.ts"]
 }

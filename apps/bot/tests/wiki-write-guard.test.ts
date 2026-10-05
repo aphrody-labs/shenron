@@ -36,6 +36,24 @@ describe("wiki-write-guard", () => {
     expect(run.stdout.toString()).toContain("loaded");
   });
 
+  test("le reverse-sync scripts/sync-neon-to-sqlite.ts est exempté, sans override", () => {
+    const script = join(import.meta.dir, "../scripts/sync-neon-to-sqlite.ts");
+    const run = Bun.spawnSync([process.execPath, script, "--help"], { env, cwd: dir });
+    expect(run.stderr.toString()).not.toContain("ALLOW_SQLITE_WIKI_WRITE");
+    expect(run.exitCode).toBe(0);
+    expect(run.stdout.toString()).toContain("bun scripts/sync-neon-to-sqlite.ts");
+  });
+
+  test("un homonyme du reverse-sync hors du bot reste refusé", () => {
+    const scripts = join(dir, "apps", "bot", "scripts");
+    mkdirSync(scripts, { recursive: true });
+    const file = join(scripts, "sync-neon-to-sqlite.ts");
+    writeFileSync(file, `import ${JSON.stringify(GUARD)};\nconsole.log("loaded");\n`);
+    const run = Bun.spawnSync([process.execPath, file], { env });
+    expect(run.exitCode).toBe(1);
+    expect(run.stderr.toString()).toContain("ALLOW_SQLITE_WIKI_WRITE");
+  });
+
   test("l'exécutable compilé (shenron-bot) est exempté", () => {
     const outfile = join(dir, "compiled-probe");
     const build = Bun.spawnSync([
