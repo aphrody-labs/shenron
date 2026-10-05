@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-import { afterAll, afterEach, describe, expect, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 import {
+  close,
   cstr,
   resolveNativeLibraryPath,
   SHENRON_FFI_FILE,
@@ -14,7 +15,6 @@ import {
 import * as shenron from "../src/shenron";
 
 const PACKAGE_ROOT = join(import.meta.dir, "..");
-const REPO_ROOT = join(PACKAGE_ROOT, "..", "..");
 const scratch = mkdtempSync(join(tmpdir(), "shenron-native-"));
 const saved = {
   SHENRON_FFI_LIB: process.env.SHENRON_FFI_LIB,
@@ -29,6 +29,8 @@ function restoreEnv(): void {
 }
 
 afterEach(restoreEnv);
+// Each test resolves and opens the library itself (another test file may have opened one).
+beforeEach(() => close());
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
 
 /** No default candidate beside the package: the default resolution finds nothing. */
@@ -108,26 +110,61 @@ describe("@shenron/native/shenron", () => {
   });
 });
 
-// Opt-in: runs only where a shenron-ffi build is present (never built by the test itself).
-const builtLibrary = ["release", "debug"]
-  .map((profile) => join(REPO_ROOT, "target", profile, SHENRON_FFI_FILE))
-  .find((path) => existsSync(path));
+// Opt-in: SHENRON_FFI_DEV=1 (or SHENRON_FFI_LIB) after `cargo build -p shenron-ffi`; never
+// built by the test itself. Without a library the suite is skipped.
+function liveLibrary(): string | undefined {
+  if (process.env.SHENRON_FFI_DEV !== "1" && !process.env.SHENRON_FFI_LIB) return undefined;
+  try {
+    return resolveNativeLibraryPath();
+  } catch {
+    return undefined;
+  }
+}
+const builtLibrary = liveLibrary();
 
 describe.if(builtLibrary !== undefined)("with the built shenron-ffi library", () => {
-  test("shenronLoad opens one library per process and checks its ABI", () => {
+  test("shenronLoad opens one library per process and checks its ABI and identity", () => {
     const path = builtLibrary as string;
     expect(shenronLoad(path)).toBe(path);
     expect(shenronLoad(join(scratch, "other", SHENRON_FFI_FILE))).toBe(path);
     expect(shenron.shenronAbiVersion()).toBe(shenron.EXPECTED_SHENRON_ABI_VERSION);
+    const info = shenron.shenronBuildInfo();
+    expect(info.abi).toBe(2);
+    expect(info.version).toBe(shenron.SHENRON_FFI_VERSION);
+    expect(["debug", "release"]).toContain(info.profile);
   });
 
   test("shenronLocalSearch returns the decoded corpus answer", () => {
     shenronLoad(builtLibrary as string);
     const answer = shenronLocalSearch("Goku", 2);
-    expect(typeof answer.mode).toBe("string");
-    expect(Array.isArray(answer.results)).toBe(true);
-    expect((answer.results as unknown[]).length).toBeLessThanOrEqual(2);
+    expect(answer.mode).toBe("aphrody_local_naive");
+    expect(answer.results.length).toBeLessThanOrEqual(2);
+    expect(answer.total).toBe(answer.results.length);
     // An empty kind searches every kind, like an absent one.
     expect(shenronLocalSearch("Goku", 2, "").mode).toBe(answer.mode);
+  });
+
+  test("captured runs capture stdout outside the Rust test harness", () => {
+    shenronLoad(builtLibrary as string);
+    const run = shenron.shenronRunCaptured(["auth", "status", "--json"]);
+    expect(run.code).toBe(0);
+    const status = JSON.parse(run.stdout) as Record<string, unknown>;
+    expect(Object.keys(status).toSorted()).toEqual(["admin_credentials_present", "configured"]);
+    expect(JSON.parse(shenron.shenronAuthStatus().stdout)).toEqual(status);
+  });
+
+  test("10 000 owned strings are freed: no measurable RSS growth", () => {
+    shenronLoad(builtLibrary as string);
+    const markdown = "# Goku\n\n" + "Kamehameha. ".repeat(40);
+    const batch = () => {
+      for (let i = 0; i < 10_000; i++) shenron.shenronRagChunk(markdown, 200, 0.1);
+      Bun.gc(true);
+      return process.memoryUsage().rss;
+    };
+    const warm = batch();
+    const after = batch();
+    const growthMb = (after - warm) / 1024 / 1024;
+    console.log(`rag_chunk: RSS growth over 10 000 calls ${growthMb.toFixed(2)} MB`);
+    expect(growthMb).toBeLessThan(8);
   });
 });

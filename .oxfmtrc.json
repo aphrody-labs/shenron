@@ -10,6 +10,7 @@
     "**/.next-*/**",
     "packages/koharu/src/wasm/**",
     "packages/koharu/src/protocol.ts",
+    "packages/native/src/generated/**",
     "plugin/references/**",
     "packages/ui/src/tokens.ts",
     "packages/api/openapi/public.json",

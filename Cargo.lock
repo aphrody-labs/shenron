@@ -9208,9 +9208,13 @@ dependencies = [
  "aphrody-agent-home",
  "aphrody-rag-core",
  "aphrody-stdio-capture",
+ "serde",
  "serde_json",
  "shenron-cli",
  "shenron-rag",
+ "specta",
+ "specta-serde",
+ "specta-typescript",
  "tempfile",
  "tokio",
 ]

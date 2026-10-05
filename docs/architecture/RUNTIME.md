@@ -107,3 +107,22 @@ Construction : `bun run build:bot`.
 - Une écriture SQLite ad hoc sur la base du bot pendant qu'il tourne peut
   bloquer ses handlers HTTP : travailler sur une copie (voir
   [`pieges.md`](../guides/pieges.md)).
+
+## 6. Frontière native (`bun:ffi`)
+
+`libshenron_ffi` (`crates/shenron-ffi`) n'est chargée que par `@shenron/native`
+([README](../../packages/native/README.md), [ABI](../../crates/shenron-ffi/README.md)).
+
+- **ABI 2**, rétrocompatible : les symboles de l'ABI 1 restent ; s'ajoutent les tâches
+  annulables (`shenron_job_new`, `shenron_cancel`, `shenron_job_release`, variantes `*_job`)
+  et `shenron_build_info`. La table `dlopen` et les types JSON se génèrent depuis Rust
+  (`packages/native/src/generated/`, porte `bun packages/native/scripts/generate.ts --check`).
+- **Refus** : ABI, cible (`process.platform`/`process.arch`) ou version du workspace
+  différentes (sauf `SHENRON_FFI_ALLOW_VERSION_SKEW=1`), Bun hors `engines.bun`.
+- **Mémoire** : chaîne possédée libérée une fois par `shenron_string_free` ; chaîne statique
+  jamais ; `shenron_last_error` par thread, lu sur le thread de l'appel.
+- **Threads** : les appels longs (recherche, commandes, persona) passent par
+  `@shenron/native/worker`, un pool borné de workers Bun ayant chacun sa poignée `dlopen` ;
+  la boucle d'événements reste libre. Un `AbortSignal` annule depuis le thread principal
+  (`shenron_cancel`) sans attendre le worker. Les commandes capturées redirigent stdout/stderr
+  de tout le processus pendant leur exécution.

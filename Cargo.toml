@@ -45,6 +45,8 @@ secrecy = { version = "0.10.3", features = ["serde"] }
 serde-wasm-bindgen = "0.6.5"
 slotmap = "1.1.1"
 smallvec = "1.16.0"
+# shenron-ffi: serde-aware generation of the @shenron/native payload types (pinned with specta).
+specta-serde = "=0.0.12"
 tauri-specta = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", package = "aphrody-tauri-specta", version = "2.0.0-rc.25", features = ["derive", "typescript"] }
 tokio-rayon = "2.1.0"
 unicode-bidi = "0.3.18"

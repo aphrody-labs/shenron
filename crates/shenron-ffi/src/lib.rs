@@ -1,17 +1,36 @@
 // SPDX-License-Identifier: Apache-2.0
 //! C ABI of Shenron for `bun:ffi` (`@shenron/native`) and any C host.
 //!
-//! - `shenron_*`: the `shenron` command in process (inherited or captured stdio),
-//!   RAG search, statistics and chunking, the local corpus, persona and auth presence.
+//! - ABI 1: the `shenron` command in process (inherited or captured stdio), RAG search,
+//!   statistics and chunking, the local corpus, persona and auth presence.
+//! - ABI 2 ([`abi::ABI_VERSION`]) keeps every ABI 1 symbol unchanged and adds cancellable jobs
+//!   (`shenron_job_new`, `shenron_cancel`, `shenron_job_release`, `shenron_job_count` and the
+//!   `*_job` variants of the long calls, which answer a [`types::JobOutcome`]) and the library
+//!   identity (`shenron_build_info`).
 //!
-//! Owned strings are released with `shenron_string_free`; `shenron_last_error` returns the last
-//! error recorded on the calling thread.
-//! Every export catches panics; none unwinds across the C boundary.
+//! Memory: an owned string is allocated here by the Rust global allocator and released by the
+//! caller, exactly once, with `shenron_string_free` (from any thread); static strings are never
+//! freed; `shenron_last_error` belongs to the calling thread and lives until that thread's next
+//! call. Input strings are borrowed for the duration of the call only.
+//!
+//! Threads: every export may be called from any thread; long ones block their caller (run them
+//! on a worker thread) while async work runs on one process-wide tokio runtime. Captured
+//! commands redirect the process-wide stdout/stderr and are serialised by one lock.
+//!
+//! Every export catches panics; none unwinds across the C boundary. [`abi::SYMBOLS`] and
+//! [`types`] generate `packages/native/src/generated/{symbols,types}.ts` (`tests/typescript.rs`).
 
 #![allow(
     clippy::missing_safety_doc,
     reason = "every unsafe export documents its contract in a # Safety section"
 )]
+
+#[cfg(not(target_arch = "wasm32"))]
+pub mod abi;
+#[cfg(not(target_arch = "wasm32"))]
+mod jobs;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod types;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub use native::*;
@@ -21,38 +40,38 @@ mod native {
     use std::{
         cell::RefCell,
         ffi::{CStr, CString, OsString, c_char, c_int},
-        panic::catch_unwind,
+        panic::{AssertUnwindSafe, catch_unwind},
         ptr,
-        sync::{Mutex, OnceLock},
+        sync::OnceLock,
+        time::Duration,
     };
 
     use aphrody_stdio_capture::with_captured_stdio;
+    use serde::Serialize;
+    use serde_json::Value;
 
-    /// ABI revision of the `shenron_*` symbol set (`EXPECTED_SHENRON_ABI_VERSION` in `@shenron/native`).
-    pub(crate) const ABI_VERSION: u32 = 1;
-
-    /// Status codes the boundary itself injects; a wrapped command may return any other exit code.
-    #[repr(i32)]
-    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-    pub(crate) enum Status {
-        /// Malformed request: invalid argv, JSON or UTF-8 (sysexits EX_USAGE).
-        Usage = 64,
-        /// Internal error: a caught Rust panic (sysexits EX_SOFTWARE).
-        Software = 70,
-    }
+    use crate::{
+        abi::{ABI_VERSION, Status},
+        jobs::{self, Job, JobError},
+        types::{
+            AuthStatus, BuildInfo, CapturedResult, FfiError, LocalHit, LocalSearchResponse,
+            RagChunk, RagHit, RagSearchResponse, RagSourceStats, RagStats,
+        },
+    };
 
     thread_local! {
         /// Last error recorded on this thread (the C ABI has no Result channel).
         static LAST_ERROR: RefCell<Option<CString>> = const { RefCell::new(None) };
     }
 
-    fn set_last_error<M: Into<Vec<u8>>>(msg: M) {
+    pub(crate) fn set_last_error<M: Into<Vec<u8>>>(msg: M) {
         let value = CString::new(msg)
             .unwrap_or_else(|_| c"error message contained an interior NUL byte".to_owned());
         LAST_ERROR.with(|cell| *cell.borrow_mut() = Some(value));
     }
 
-    /// Last error recorded on this thread, or NULL. Valid until the next call on this thread; do not free.
+    /// Last error recorded on this thread, or NULL. Valid until the next call on this thread; do
+    /// not free. Read it on the thread that made the failing call.
     #[unsafe(no_mangle)]
     #[must_use]
     pub extern "C" fn shenron_last_error() -> *const c_char {
@@ -75,13 +94,14 @@ mod native {
         })
     }
 
-    /// Serialise stdout/stderr capture: the redirect swaps process-global descriptors.
-    fn capture_lock() -> std::sync::MutexGuard<'static, ()> {
-        static CAPTURE_LOCK: Mutex<()> = Mutex::new(());
-        CAPTURE_LOCK.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+    /// Serialises stdout/stderr capture: the redirect swaps process-global descriptors. An async
+    /// mutex, so a cancelled job stops waiting for it.
+    fn capture_lock() -> &'static tokio::sync::Mutex<()> {
+        static CAPTURE_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+        &CAPTURE_LOCK
     }
 
-    fn panic_message(payload: &(dyn std::any::Any + Send)) -> &str {
+    pub(crate) fn panic_message(payload: &(dyn std::any::Any + Send)) -> &str {
         payload
             .downcast_ref::<&str>()
             .copied()
@@ -89,12 +109,45 @@ mod native {
             .unwrap_or("unknown panic")
     }
 
-    /// Run `shenron <args…>` on the persistent runtime.
-    fn run_argv(args: Vec<String>) -> i32 {
+    fn shenron_argv(args: Vec<String>) -> Vec<OsString> {
         let mut argv: Vec<OsString> = Vec::with_capacity(args.len() + 1);
         argv.push(OsString::from("shenron"));
         argv.extend(args.into_iter().map(OsString::from));
-        runtime().block_on(shenron_cli::run_async(argv))
+        argv
+    }
+
+    /// Run `shenron <args…>` on the persistent runtime.
+    fn run_argv(args: Vec<String>) -> i32 {
+        runtime().block_on(shenron_cli::run_async(shenron_argv(args)))
+    }
+
+    /// Captured run on the caller's thread (ABI 1).
+    fn run_captured(args: Vec<String>) -> CapturedResult {
+        let _guard = capture_lock().blocking_lock();
+        let (code, stdout, stderr) = with_captured_stdio(|| run_argv(args));
+        CapturedResult { code, stdout, stderr }
+    }
+
+    /// Captured run as a job: waiting for the capture lock and the command are both cancellable.
+    fn run_captured_job(job: &Job, args: Vec<String>) -> Result<CapturedResult, JobError> {
+        let Some(_guard) = job.block_on(|| capture_lock().lock()) else {
+            return Err(JobError::Cancelled);
+        };
+        let argv = shenron_argv(args);
+        let mut cancelled = false;
+        let (code, stdout, stderr) =
+            with_captured_stdio(|| match job.block_on(|| shenron_cli::run_async(argv)) {
+                Some(code) => code,
+                None => {
+                    cancelled = true;
+                    Status::Cancelled.code()
+                },
+            });
+        if cancelled {
+            Err(JobError::Cancelled)
+        } else {
+            Ok(CapturedResult { code, stdout, stderr })
+        }
     }
 
     /// # Safety
@@ -138,8 +191,57 @@ mod native {
             .map_err(|err| format!("args_json must be a JSON array of strings: {err}"))
     }
 
-    fn json_result(code: i32, stdout: &str, stderr: &str) -> String {
-        serde_json::json!({ "code": code, "stdout": stdout, "stderr": stderr }).to_string()
+    /// # Safety
+    /// `ptr` must be NULL or a valid NUL-terminated string, alive for `'a`.
+    unsafe fn required_str<'a>(ptr: *const c_char, name: &str) -> Result<&'a str, String> {
+        if ptr.is_null() {
+            return Err(format!("{name} pointer is null"));
+        }
+        // SAFETY: forwarded contract.
+        unsafe { CStr::from_ptr(ptr) }.to_str().map_err(|_| format!("{name} is not valid UTF-8"))
+    }
+
+    /// An optional filter: NULL, empty or invalid UTF-8 means absent.
+    ///
+    /// # Safety
+    /// `ptr` must be NULL or a valid NUL-terminated string.
+    unsafe fn optional_str(ptr: *const c_char) -> Option<String> {
+        if ptr.is_null() {
+            return None;
+        }
+        // SAFETY: forwarded contract.
+        unsafe { CStr::from_ptr(ptr) }
+            .to_str()
+            .ok()
+            .filter(|text| !text.is_empty())
+            .map(str::to_owned)
+    }
+
+    fn to_json<T: Serialize>(value: &T) -> String {
+        serde_json::to_string(value).unwrap_or_else(|error| {
+            serde_json::json!({ "error": format!("unserialisable result: {error}") }).to_string()
+        })
+    }
+
+    fn captured_json(code: i32, stdout: String, stderr: String) -> String {
+        to_json(&CapturedResult { code, stdout, stderr })
+    }
+
+    fn usage_json(message: String) -> String {
+        captured_json(Status::Usage.code(), String::new(), message)
+    }
+
+    /// A command result as `shenron <command> --json` prints it (pretty JSON or the report).
+    fn command_json(result: Result<Value, String>) -> String {
+        match result {
+            Ok(value) => {
+                let text = serde_json::to_string_pretty(&value).unwrap_or_default();
+                captured_json(0, format!("{text}\n"), String::new())
+            },
+            Err(report) => {
+                captured_json(Status::Failed.code(), String::new(), format!("{report}\n"))
+            },
+        }
     }
 
     fn string_to_c(text: String) -> *mut c_char {
@@ -152,52 +254,20 @@ mod native {
         }
     }
 
-    /// Search the local Shenron corpus in process (embedded canon, guide, configured corpus and
-    /// local RAG store). Returns `{"query","mode","results":[...]}` JSON; free with `shenron_string_free`.
-    ///
-    /// # Safety
-    /// `query` must be a valid NUL-terminated UTF-8 string; `kind` may be NULL or a valid
-    /// NUL-terminated UTF-8 string. A non-null result must be freed exactly once.
-    #[unsafe(no_mangle)]
-    #[must_use]
-    pub unsafe extern "C" fn shenron_local_search(
-        query: *const c_char,
-        limit: c_int,
-        kind: *const c_char,
-    ) -> *mut c_char {
-        let outcome = catch_unwind(|| {
-            if query.is_null() {
-                return json_result(Status::Usage as i32, "", "query pointer is null");
-            }
-            // SAFETY: forwarded contract.
-            let Ok(query) = unsafe { CStr::from_ptr(query) }.to_str() else {
-                return json_result(Status::Usage as i32, "", "query is not valid UTF-8");
-            };
-            let kind = if kind.is_null() {
-                None
-            } else {
-                // SAFETY: forwarded contract.
-                unsafe { CStr::from_ptr(kind) }
-                    .to_str()
-                    .ok()
-                    .filter(|k| !k.is_empty())
-                    .map(str::to_owned)
-            };
-            let options = shenron_rag::LocalSearchOptions {
-                limit: usize::try_from(limit.max(1)).ok(),
-                lang: None,
-                entity: None,
-                kind,
-            };
-            local_corpus().search_json(query, &options).to_string()
-        });
-        let json = outcome.unwrap_or_else(|payload| {
-            let message = format!("shenron_local_search panicked: {}", panic_message(&*payload));
+    /// Run an ABI 1 export body returning JSON; a panic becomes a `CapturedResult` with code 70.
+    fn captured_export(operation: &str, body: impl FnOnce() -> String) -> *mut c_char {
+        let json = catch_unwind(AssertUnwindSafe(body)).unwrap_or_else(|payload| {
+            let message = format!("{operation} panicked: {}", panic_message(&*payload));
             set_last_error(message.clone());
-            json_result(Status::Software as i32, "", &message)
+            captured_json(Status::Software.code(), String::new(), message)
         });
         string_to_c(json)
     }
+
+    // --- Operations: one implementation each, run blocking (ABI 1) or as a job (ABI 2). ---
+
+    /// Mode reported by the local corpus search (`shenron_rag::LocalCorpus::search_json`).
+    const LOCAL_MODE: &str = "aphrody_local_naive";
 
     /// The local corpus, loaded once per process from the environment.
     fn local_corpus() -> &'static shenron_rag::LocalCorpus {
@@ -206,6 +276,133 @@ mod native {
             shenron_rag::LocalCorpus::load_with(&shenron_rag::dragonball::process_env)
         })
     }
+
+    pub(crate) fn local_search(
+        query: &str,
+        limit: c_int,
+        kind: Option<String>,
+    ) -> LocalSearchResponse {
+        let options = shenron_rag::LocalSearchOptions {
+            limit: usize::try_from(limit.max(1)).ok(),
+            lang: None,
+            entity: None,
+            kind,
+        };
+        let results: Vec<LocalHit> =
+            local_corpus().search(query, &options).into_iter().map(LocalHit::from).collect();
+        LocalSearchResponse {
+            q: query.to_owned(),
+            mode: LOCAL_MODE.to_owned(),
+            total: u32::try_from(results.len()).unwrap_or(u32::MAX),
+            results,
+        }
+    }
+
+    async fn rag_search_value(
+        query: String,
+        limit: c_int,
+        kind: Option<String>,
+    ) -> Result<Value, String> {
+        let limit = usize::try_from(limit.max(1)).unwrap_or(1);
+        shenron_cli::shenron_cmd::rag_search_checked(&query, limit, kind.as_deref())
+            .await
+            .map_err(|report| format!("{report:?}"))
+    }
+
+    async fn rag_stats_value() -> Result<Value, String> {
+        shenron_cli::shenron_cmd::rag_stats_report().await.map_err(|report| format!("{report:?}"))
+    }
+
+    fn text(value: &Value, key: &str) -> Option<String> {
+        match value.get(key)? {
+            Value::String(text) => Some(text.clone()),
+            Value::Number(number) => Some(number.to_string()),
+            _ => None,
+        }
+    }
+
+    fn count(value: &Value, key: &str) -> Option<u32> {
+        value.get(key)?.as_u64().map(|n| u32::try_from(n).unwrap_or(u32::MAX))
+    }
+
+    /// Normalise a backend RAG answer (`results` already checked by the command).
+    pub(crate) fn rag_search_response(value: &Value) -> RagSearchResponse {
+        let hit = |hit: &Value| RagHit {
+            title: text(hit, "title").unwrap_or_default(),
+            url: text(hit, "url").unwrap_or_default(),
+            snippet: text(hit, "snippet").unwrap_or_default(),
+            score: hit.get("score").and_then(Value::as_f64).unwrap_or(0.0),
+            kind: text(hit, "kind")
+                .filter(|kind| !kind.is_empty())
+                .unwrap_or_else(|| "document".into()),
+            source_id: text(hit, "sourceId"),
+            origin_source_id: text(hit, "originSourceId"),
+            entity: text(hit, "entity"),
+            lang: text(hit, "lang"),
+            content: text(hit, "content"),
+        };
+        RagSearchResponse {
+            q: text(value, "q").unwrap_or_default(),
+            mode: text(value, "mode"),
+            results: value
+                .get("results")
+                .and_then(Value::as_array)
+                .map(|hits| hits.iter().map(hit).collect())
+                .unwrap_or_default(),
+        }
+    }
+
+    /// Normalise the statistics of either backend (the bot's carry `backend: "local"`).
+    pub(crate) fn rag_stats(value: &Value) -> RagStats {
+        RagStats {
+            backend: text(value, "backend").unwrap_or_else(|| "aphrody".to_owned()),
+            chunks: count(value, "chunks").unwrap_or(0),
+            vectors: count(value, "vectors").unwrap_or(0),
+            vectors_stored: count(value, "vectorsStored"),
+            mode: text(value, "mode"),
+            built_at: text(value, "builtAt"),
+            rag_ready: value.get("ragReady").and_then(Value::as_bool),
+            sources: value
+                .get("sources")
+                .and_then(Value::as_array)
+                .map(|sources| {
+                    sources
+                        .iter()
+                        .map(|source| RagSourceStats {
+                            source_id: text(source, "sourceId").unwrap_or_default(),
+                            kind: text(source, "kind").unwrap_or_default(),
+                            count: count(source, "count").unwrap_or(0),
+                            vectors: count(source, "vectors"),
+                        })
+                        .collect()
+                })
+                .unwrap_or_default(),
+        }
+    }
+
+    fn auth_status() -> AuthStatus {
+        let home = shenron_cli::shenron_cmd::locate_home_shenron();
+        shenron_cli::config::ShenronAuthPresence::from_home(&home).into()
+    }
+
+    pub(crate) fn build_info() -> BuildInfo {
+        BuildInfo {
+            version: env!("CARGO_PKG_VERSION").to_owned(),
+            abi: ABI_VERSION,
+            target: env!("SHENRON_FFI_TARGET").to_owned(),
+            os: std::env::consts::OS.to_owned(),
+            arch: std::env::consts::ARCH.to_owned(),
+            profile: env!("SHENRON_FFI_PROFILE").to_owned(),
+            features: env!("SHENRON_FFI_FEATURES")
+                .split(',')
+                .filter(|feature| !feature.is_empty())
+                .map(str::to_owned)
+                .collect(),
+            rustc: env!("SHENRON_FFI_RUSTC").to_owned(),
+        }
+    }
+
+    // --- ABI 1 ---
 
     /// Returns the Shenron ABI revision.
     #[unsafe(no_mangle)]
@@ -248,16 +445,17 @@ mod native {
     #[unsafe(no_mangle)]
     #[must_use]
     pub unsafe extern "C" fn shenron_run(argc: c_int, argv: *const *const c_char) -> c_int {
-        let outcome = catch_unwind(|| match unsafe { collect_args(argc, argv) } {
-            Some(args) => run_argv(args),
-            None => {
-                set_last_error("invalid argv: null pointer or negative argc");
-                Status::Usage as c_int
-            },
-        });
+        let outcome =
+            catch_unwind(AssertUnwindSafe(|| match unsafe { collect_args(argc, argv) } {
+                Some(args) => run_argv(args),
+                None => {
+                    set_last_error("invalid argv: null pointer or negative argc");
+                    Status::Usage.code()
+                },
+            }));
         outcome.unwrap_or_else(|payload| {
             set_last_error(format!("shenron panicked: {}", panic_message(&*payload)));
-            Status::Software as c_int
+            Status::Software.code()
         })
     }
 
@@ -268,20 +466,21 @@ mod native {
     #[unsafe(no_mangle)]
     #[must_use]
     pub unsafe extern "C" fn shenron_run_json(args_json: *const c_char) -> c_int {
-        let outcome = catch_unwind(|| match unsafe { parse_json_args(args_json) } {
-            Ok(args) => run_argv(args),
-            Err(message) => {
-                set_last_error(message);
-                Status::Usage as c_int
-            },
-        });
+        let outcome =
+            catch_unwind(AssertUnwindSafe(|| match unsafe { parse_json_args(args_json) } {
+                Ok(args) => run_argv(args),
+                Err(message) => {
+                    set_last_error(message);
+                    Status::Usage.code()
+                },
+            }));
         outcome.unwrap_or_else(|payload| {
             set_last_error(format!("shenron panicked: {}", panic_message(&*payload)));
-            Status::Software as c_int
+            Status::Software.code()
         })
     }
 
-    /// Run any Shenron command with captured stdio, returning `{"code":0,"stdout":"...","stderr":"..."}` JSON.
+    /// Run any Shenron command with captured stdio, returning `CapturedResult` JSON.
     ///
     /// # Safety
     /// `args_json` must be null or a valid NUL-terminated UTF-8 C string. A
@@ -289,24 +488,14 @@ mod native {
     #[unsafe(no_mangle)]
     #[must_use]
     pub unsafe extern "C" fn shenron_run_captured(args_json: *const c_char) -> *mut c_char {
-        let outcome = catch_unwind(|| match unsafe { parse_json_args(args_json) } {
-            Ok(args) => {
-                let _guard = capture_lock();
-                let (code, out, err) = with_captured_stdio(|| run_argv(args));
-                json_result(code, &out, &err)
-            },
-            Err(message) => json_result(Status::Usage as i32, "", &message),
-        });
-        let json = outcome.unwrap_or_else(|payload| {
-            let message = format!("shenron panicked: {}", panic_message(&*payload));
-            set_last_error(message.clone());
-            json_result(Status::Software as i32, "", &message)
-        });
-        string_to_c(json)
+        captured_export("shenron_run_captured", || match unsafe { parse_json_args(args_json) } {
+            Ok(args) => to_json(&run_captured(args)),
+            Err(message) => usage_json(message),
+        })
     }
 
-    /// Perform a high-speed RAG search on the Shenron index in-process.
-    /// Returns a JSON string of results. Must be freed with `shenron_string_free`.
+    /// Search the serving RAG (the bot, or Aphrody with `RAG_BACKEND=aphrody`): `CapturedResult`
+    /// JSON whose stdout is the backend answer, as `shenron rag search --json` prints it.
     ///
     /// # Safety
     /// `query` must be a valid NUL-terminated C string; `kind` may be null or a
@@ -318,63 +507,48 @@ mod native {
         limit: c_int,
         kind: *const c_char,
     ) -> *mut c_char {
-        let outcome = catch_unwind(|| {
-            if query.is_null() {
-                return json_result(Status::Usage as i32, "", "query pointer is null");
-            }
-            let q_str = match unsafe { CStr::from_ptr(query) }.to_str() {
-                Ok(s) => s.to_string(),
-                Err(_) => {
-                    return json_result(Status::Usage as i32, "", "query is not valid UTF-8");
-                },
+        captured_export("shenron_rag_search", || {
+            let query = match unsafe { required_str(query, "query") } {
+                Ok(query) => query.to_owned(),
+                Err(message) => return usage_json(message),
             };
-            let mut args = vec![
-                "rag".to_string(),
-                "search".to_string(),
-                q_str,
-                "--limit".to_string(),
-                limit.max(1).to_string(),
-                "--json".to_string(),
-            ];
-            if !kind.is_null()
-                && let Ok(k_str) = unsafe { CStr::from_ptr(kind) }.to_str()
-                && !k_str.is_empty()
-            {
-                args.push("--kind".to_string());
-                args.push(k_str.to_string());
-            }
-            let _guard = capture_lock();
-            let (code, out, err) = with_captured_stdio(|| run_argv(args));
-            json_result(code, &out, &err)
-        });
-        let json = outcome.unwrap_or_else(|payload| {
-            let message = format!("shenron_rag_search panicked: {}", panic_message(&*payload));
-            set_last_error(message.clone());
-            json_result(Status::Software as i32, "", &message)
-        });
-        string_to_c(json)
+            let kind = unsafe { optional_str(kind) };
+            command_json(runtime().block_on(rag_search_value(query, limit, kind)))
+        })
     }
 
-    /// Retrieve Shenron RAG index statistics as a JSON string.
+    /// Search the local Shenron corpus in process (embedded canon, guide, configured corpus and
+    /// local RAG store): `LocalSearchResponse` JSON; free with `shenron_string_free`.
+    ///
+    /// # Safety
+    /// `query` must be a valid NUL-terminated UTF-8 string; `kind` may be NULL or a valid
+    /// NUL-terminated UTF-8 string. A non-null result must be freed exactly once.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_local_search(
+        query: *const c_char,
+        limit: c_int,
+        kind: *const c_char,
+    ) -> *mut c_char {
+        captured_export("shenron_local_search", || {
+            let query = match unsafe { required_str(query, "query") } {
+                Ok(query) => query,
+                Err(message) => return usage_json(message),
+            };
+            let kind = unsafe { optional_str(kind) };
+            to_json(&local_search(query, limit, kind))
+        })
+    }
+
+    /// Statistics of the serving RAG: `CapturedResult` JSON whose stdout is the backend answer.
     #[unsafe(no_mangle)]
     #[must_use]
     pub extern "C" fn shenron_rag_stats() -> *mut c_char {
-        let outcome = catch_unwind(|| {
-            let args = vec!["rag".to_string(), "stats".to_string(), "--json".to_string()];
-            let _guard = capture_lock();
-            let (code, out, err) = with_captured_stdio(|| run_argv(args));
-            json_result(code, &out, &err)
-        });
-        let json = outcome.unwrap_or_else(|payload| {
-            let message = format!("shenron_rag_stats panicked: {}", panic_message(&*payload));
-            set_last_error(message.clone());
-            json_result(Status::Software as i32, "", &message)
-        });
-        string_to_c(json)
+        captured_export("shenron_rag_stats", || command_json(runtime().block_on(rag_stats_value())))
     }
 
     /// Chunk Shenron Markdown with Aphrody's canonical RAG implementation.
-    /// Returns a JSON array of `{content, section}` objects. Free the returned
+    /// Returns a JSON array of `RagChunk`, or `FfiError`. Free the returned
     /// string with `shenron_string_free`.
     ///
     /// # Safety
@@ -389,68 +563,44 @@ mod native {
     ) -> *mut c_char {
         use aphrody_rag_core::Chunker;
 
-        let outcome = catch_unwind(|| {
-            if markdown.is_null() {
-                return "{\"error\":\"markdown pointer is null\"}".to_owned();
-            }
-            let source = match unsafe { CStr::from_ptr(markdown) }.to_str() {
+        let outcome = catch_unwind(AssertUnwindSafe(|| {
+            let source = match unsafe { required_str(markdown, "markdown") } {
                 Ok(source) => source,
-                Err(_) => return "{\"error\":\"markdown is not valid UTF-8\"}".to_owned(),
+                Err(error) => return to_json(&FfiError { error }),
             };
             let mut options = aphrody_rag_core::ChunkOptions::shenron_parity();
             options.max_chars = usize::try_from(max_chars.max(1)).unwrap_or(1);
             options.overlap_pct = overlap_pct.clamp(0.0, 1.0);
-            let chunks = aphrody_rag_core::MarkdownChunker.chunk(source, source, &options);
-            serde_json::to_string(
-                &chunks
-                    .into_iter()
-                    .map(|chunk| {
-                        serde_json::json!({
-                            "content": chunk.text,
-                            "section": chunk.symbol.unwrap_or_default(),
-                        })
-                    })
-                    .collect::<Vec<_>>(),
-            )
-            .unwrap_or_else(|error| {
-                format!(
-                    "{{\"error\":{}}}",
-                    serde_json::to_string(&error.to_string()).unwrap_or_default()
-                )
-            })
-        });
+            let chunks: Vec<RagChunk> = aphrody_rag_core::MarkdownChunker
+                .chunk(source, source, &options)
+                .into_iter()
+                .map(|chunk| RagChunk {
+                    content: chunk.text,
+                    section: chunk.symbol.unwrap_or_default(),
+                })
+                .collect();
+            to_json(&chunks)
+        }));
         let json = outcome.unwrap_or_else(|payload| {
-            format!(
-                "{{\"error\":{}}}",
-                serde_json::to_string(&format!(
-                    "shenron_rag_chunk panicked: {}",
-                    panic_message(&*payload)
-                ))
-                .unwrap_or_default()
-            )
+            to_json(&FfiError {
+                error: format!("shenron_rag_chunk panicked: {}", panic_message(&*payload)),
+            })
         });
         string_to_c(json)
     }
 
-    /// Retrieve only whether local admin credentials are configured.
+    /// Retrieve only whether local admin credentials are configured: `CapturedResult` JSON
+    /// whose stdout is `AuthStatus`.
     ///
-    /// The CLI JSON contract is deliberately sanitized and must never include
+    /// The JSON contract is deliberately sanitized and must never include
     /// credential values, cookies, tokens, scopes, or account identifiers.
     #[unsafe(no_mangle)]
     #[must_use]
     pub extern "C" fn shenron_auth_status() -> *mut c_char {
-        let outcome = catch_unwind(|| {
-            let args = vec!["auth".to_string(), "status".to_string(), "--json".to_string()];
-            let _guard = capture_lock();
-            let (code, out, err) = with_captured_stdio(|| run_argv(args));
-            json_result(code, &out, &err)
-        });
-        let json = outcome.unwrap_or_else(|payload| {
-            let message = format!("shenron_auth_status panicked: {}", panic_message(&*payload));
-            set_last_error(message.clone());
-            json_result(Status::Software as i32, "", &message)
-        });
-        string_to_c(json)
+        captured_export("shenron_auth_status", || {
+            let text = serde_json::to_string_pretty(&auth_status()).unwrap_or_default();
+            captured_json(0, format!("{text}\n"), String::new())
+        })
     }
 
     /// Retrieve the canonical Akira Toriyama (Tori-bot) x Shenron persona prompt.
@@ -478,7 +628,7 @@ mod native {
         CString::new(text).unwrap_or_else(|_| c"Shenron Persona".to_owned())
     }
 
-    /// Query the sovereign Akira Toriyama / Shenron persona directly.
+    /// Query the sovereign Akira Toriyama / Shenron persona directly (captured `persona ask`).
     ///
     /// # Safety
     /// `question` must be a valid NUL-terminated C string. A non-null result
@@ -486,27 +636,168 @@ mod native {
     #[unsafe(no_mangle)]
     #[must_use]
     pub unsafe extern "C" fn shenron_persona_ask(question: *const c_char) -> *mut c_char {
-        let outcome = catch_unwind(|| {
-            if question.is_null() {
-                return json_result(Status::Usage as i32, "", "question pointer is null");
-            }
-            let q_str = match unsafe { CStr::from_ptr(question) }.to_str() {
-                Ok(s) => s.to_string(),
-                Err(_) => {
-                    return json_result(Status::Usage as i32, "", "question is not valid UTF-8");
+        captured_export("shenron_persona_ask", || {
+            match unsafe { required_str(question, "question") } {
+                Ok(question) => {
+                    to_json(&run_captured(vec!["persona".into(), "ask".into(), question.into()]))
                 },
-            };
-            let args = vec!["persona".to_string(), "ask".to_string(), q_str];
-            let _guard = capture_lock();
-            let (code, out, err) = with_captured_stdio(|| run_argv(args));
-            json_result(code, &out, &err)
-        });
-        let json = outcome.unwrap_or_else(|payload| {
-            let message = format!("shenron_persona_ask panicked: {}", panic_message(&*payload));
+                Err(message) => usage_json(message),
+            }
+        })
+    }
+
+    // --- ABI 2 ---
+
+    /// Identity of the library: `BuildInfo` JSON (version, ABI, target, profile, features,
+    /// compiler). Free with `shenron_string_free`.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_build_info() -> *mut c_char {
+        let json = catch_unwind(|| to_json(&build_info())).unwrap_or_else(|payload| {
+            let message = format!("shenron_build_info panicked: {}", panic_message(&*payload));
             set_last_error(message.clone());
-            json_result(Status::Software as i32, "", &message)
+            to_json(&serde_json::json!({ "error": message }))
         });
         string_to_c(json)
+    }
+
+    /// Register a cancellable job; returns its id (never 0; 0 reports an internal failure).
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_job_new() -> u64 {
+        catch_unwind(jobs::create).unwrap_or_else(|payload| {
+            set_last_error(format!("shenron_job_new panicked: {}", panic_message(&*payload)));
+            0
+        })
+    }
+
+    /// Cancel a registered job from any thread; true if it was registered (pending or running).
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_cancel(job: u64) -> bool {
+        catch_unwind(|| jobs::cancel(job)).unwrap_or(false)
+    }
+
+    /// Cancel and forget a job that will not be passed to a `*_job` export.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_job_release(job: u64) -> bool {
+        catch_unwind(|| jobs::release(job)).unwrap_or(false)
+    }
+
+    /// Number of registered jobs, pending or running.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_job_count() -> u32 {
+        catch_unwind(jobs::count).map_or(u32::MAX, |n| u32::try_from(n).unwrap_or(u32::MAX))
+    }
+
+    /// `shenron_run_captured` as job `job`: `JobOutcome<CapturedResult>` JSON.
+    ///
+    /// # Safety
+    /// `args_json` must be null or a valid NUL-terminated UTF-8 C string, read during the call.
+    /// `job` comes from `shenron_job_new` and is consumed. Free the result once.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_run_captured_job(
+        job: u64,
+        args_json: *const c_char,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_run_captured_job", |job| {
+            let args = unsafe { parse_json_args(args_json) }.map_err(JobError::Usage)?;
+            run_captured_job(job, args)
+        }))
+    }
+
+    /// Search the serving RAG as job `job`: `JobOutcome<RagSearchResponse>` JSON; a failed
+    /// search (unreachable backend, out-of-range query) is status 1 with its report.
+    ///
+    /// # Safety
+    /// As `shenron_rag_search`; `job` comes from `shenron_job_new` and is consumed.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_rag_search_job(
+        job: u64,
+        query: *const c_char,
+        limit: c_int,
+        kind: *const c_char,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_rag_search_job", |job| {
+            let query = unsafe { required_str(query, "query") }.map_err(JobError::Usage)?;
+            let kind = unsafe { optional_str(kind) };
+            match job.block_on(|| rag_search_value(query.to_owned(), limit, kind)) {
+                None => Err(JobError::Cancelled),
+                Some(Ok(value)) => Ok(rag_search_response(&value)),
+                Some(Err(report)) => Err(JobError::Failed(report)),
+            }
+        }))
+    }
+
+    /// Statistics of the serving RAG as job `job`: `JobOutcome<RagStats>` JSON.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_rag_stats_job(job: u64) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_rag_stats_job", |job| {
+            match job.block_on(rag_stats_value) {
+                None => Err(JobError::Cancelled),
+                Some(Ok(value)) => Ok(rag_stats(&value)),
+                Some(Err(report)) => Err(JobError::Failed(report)),
+            }
+        }))
+    }
+
+    /// Search the local corpus as job `job`: `JobOutcome<LocalSearchResponse>` JSON. The search
+    /// runs on the blocking pool; cancellation releases the caller at once.
+    ///
+    /// # Safety
+    /// As `shenron_local_search`; `job` comes from `shenron_job_new` and is consumed.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_local_search_job(
+        job: u64,
+        query: *const c_char,
+        limit: c_int,
+        kind: *const c_char,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_local_search_job", |job| {
+            let query =
+                unsafe { required_str(query, "query") }.map_err(JobError::Usage)?.to_owned();
+            let kind = unsafe { optional_str(kind) };
+            job.blocking(move || local_search(&query, limit, kind))
+        }))
+    }
+
+    /// Ask the persona as job `job`: `JobOutcome<CapturedResult>` JSON.
+    ///
+    /// # Safety
+    /// As `shenron_persona_ask`; `job` comes from `shenron_job_new` and is consumed.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_persona_ask_job(
+        job: u64,
+        question: *const c_char,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_persona_ask_job", |job| {
+            let question =
+                unsafe { required_str(question, "question") }.map_err(JobError::Usage)?;
+            run_captured_job(job, vec!["persona".into(), "ask".into(), question.into()])
+        }))
+    }
+
+    /// Diagnostic: hold job `job` for `ms` milliseconds without I/O, then answer
+    /// `JobOutcome<number>` (the duration). Measures the boundary and its cancellation; `0`
+    /// yields once instead of arming a timer (whose resolution is 1 ms).
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_sleep_job(job: u64, ms: u32) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_sleep_job", |job| {
+            let done = if ms == 0 {
+                job.block_on(tokio::task::yield_now)
+            } else {
+                job.block_on(|| tokio::time::sleep(Duration::from_millis(u64::from(ms))))
+            };
+            done.map(|()| ms).ok_or(JobError::Cancelled)
+        }))
     }
 }
 
@@ -514,15 +805,91 @@ mod native {
 mod tests {
     use std::ffi::{CStr, CString};
 
-    use super::native::*;
+    use super::{abi, native::*};
+
+    fn owned(ptr: *mut std::ffi::c_char) -> serde_json::Value {
+        assert!(!ptr.is_null());
+        let text = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap().to_owned();
+        unsafe { shenron_string_free(ptr) };
+        serde_json::from_str(&text).unwrap()
+    }
 
     #[test]
     fn shenron_abi_and_version_are_valid() {
-        assert_eq!(shenron_abi_version(), 1);
+        assert_eq!(shenron_abi_version(), abi::ABI_VERSION);
+        assert_eq!(abi::ABI_VERSION, 2);
         let ptr = shenron_version();
         assert!(!ptr.is_null());
         let text = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap();
-        assert!(!text.is_empty());
+        assert_eq!(text, env!("CARGO_PKG_VERSION"));
+    }
+
+    #[test]
+    fn build_info_describes_this_build() {
+        let info = owned(shenron_build_info());
+        assert_eq!(info["version"], env!("CARGO_PKG_VERSION"));
+        assert_eq!(info["abi"], abi::ABI_VERSION);
+        assert_eq!(info["os"], std::env::consts::OS);
+        assert_eq!(info["arch"], std::env::consts::ARCH);
+        let target = info["target"].as_str().unwrap();
+        assert!(target.starts_with(std::env::consts::ARCH), "{target}");
+        assert!(["debug", "release"].contains(&info["profile"].as_str().unwrap()));
+        assert!(info["features"].is_array());
+        assert!(info["rustc"].as_str().unwrap().starts_with("rustc "), "{info}");
+    }
+
+    #[test]
+    fn every_export_is_in_the_abi_table_and_back() {
+        let mut exported = Vec::new();
+        for source in [include_str!("lib.rs"), include_str!("jobs.rs")] {
+            let mut lines = source.lines().peekable();
+            while let Some(line) = lines.next() {
+                if line.trim() != "#[unsafe(no_mangle)]" {
+                    continue;
+                }
+                let signature = lines.find(|line| line.contains("extern \"C\" fn ")).unwrap();
+                let name = signature.split("fn ").nth(1).unwrap().split('(').next().unwrap();
+                exported.push(name.to_owned());
+            }
+        }
+        let mut declared: Vec<String> = abi::SYMBOLS.iter().map(|s| s.name.to_owned()).collect();
+        exported.sort();
+        declared.sort();
+        assert_eq!(exported, declared, "abi::SYMBOLS must list exactly the exports");
+        assert!(abi::SYMBOLS.iter().all(|s| s.since <= abi::ABI_VERSION && !s.doc.is_empty()));
+    }
+
+    #[test]
+    fn jobs_answer_a_typed_envelope_and_leave_no_entry() {
+        let job = shenron_job_new();
+        assert!(job > 0);
+        let outcome = owned(shenron_sleep_job(job, 1));
+        assert_eq!(outcome, serde_json::json!({"status": 0, "value": 1, "error": null}));
+        assert!(!shenron_cancel(job), "a finished job is unregistered");
+
+        let job = shenron_job_new();
+        assert!(shenron_job_release(job));
+        assert_eq!(owned(shenron_sleep_job(job, 1))["status"], abi::Status::Usage.code());
+
+        let job = shenron_job_new();
+        assert!(shenron_cancel(job));
+        assert_eq!(owned(shenron_sleep_job(job, 60_000))["status"], abi::Status::Cancelled.code());
+    }
+
+    #[test]
+    fn local_search_job_matches_the_blocking_export() {
+        let query = CString::new("Son Goku").unwrap();
+        let blocking = owned(unsafe { shenron_local_search(query.as_ptr(), 3, std::ptr::null()) });
+        let job = shenron_job_new();
+        let outcome =
+            owned(unsafe { shenron_local_search_job(job, query.as_ptr(), 3, std::ptr::null()) });
+        assert_eq!(outcome["status"], 0, "{outcome}");
+        assert_eq!(outcome["value"], blocking);
+        let null = owned(unsafe {
+            shenron_local_search_job(shenron_job_new(), std::ptr::null(), 3, std::ptr::null())
+        });
+        assert_eq!(null["status"], abi::Status::Usage.code());
+        assert_eq!(null["error"], "query pointer is null");
     }
 
     #[test]
@@ -582,11 +949,16 @@ mod tests {
             .stack_size(8 * 1024 * 1024)
             .spawn(|| {
                 let json = CString::new(r#"["auth", "status", "--json"]"#).unwrap();
-                let res_ptr = unsafe { shenron_run_captured(json.as_ptr()) };
-                assert!(!res_ptr.is_null());
-                let text = unsafe { CStr::from_ptr(res_ptr) }.to_str().unwrap();
-                assert!(text.contains("code"));
-                unsafe { shenron_string_free(res_ptr) };
+                let value = owned(unsafe { shenron_run_captured(json.as_ptr()) });
+                assert_eq!(value["code"], 0, "{value}");
+                let job = shenron_job_new();
+                let outcome = owned(unsafe { shenron_run_captured_job(job, json.as_ptr()) });
+                assert_eq!(outcome["status"], 0, "{outcome}");
+                assert_eq!(outcome["value"]["code"], 0);
+                // The test harness captures `println!` per thread before the descriptors, so
+                // `stdout` is checked by the Bun suite (packages/native/test), not here.
+                assert!(outcome["value"]["stdout"].is_string());
+                assert!(outcome["value"]["stderr"].is_string());
             })
             .expect("failed to spawn test thread")
             .join()
@@ -594,13 +966,62 @@ mod tests {
     }
 
     #[test]
-    fn local_search_answers_from_the_embedded_canon() {
+    fn auth_status_is_sanitised_and_matches_the_command() {
+        let value = owned(shenron_auth_status());
+        assert_eq!(value["code"], 0);
+        let status: serde_json::Value =
+            serde_json::from_str(value["stdout"].as_str().unwrap()).unwrap();
+        let mut keys: Vec<&str> = status.as_object().unwrap().keys().map(String::as_str).collect();
+        keys.sort_unstable();
+        assert_eq!(keys, ["admin_credentials_present", "configured"]);
+    }
+
+    #[test]
+    fn local_search_answers_from_the_embedded_canon_like_the_corpus_json() {
         let query = CString::new("Son Goku").unwrap();
-        let ptr = unsafe { shenron_local_search(query.as_ptr(), 3, std::ptr::null()) };
-        assert!(!ptr.is_null());
-        let text = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap().to_owned();
-        unsafe { shenron_string_free(ptr) };
-        let value: serde_json::Value = serde_json::from_str(&text).unwrap();
-        assert!(value["results"].as_array().is_some_and(|hits| !hits.is_empty()), "{text}");
+        let value = owned(unsafe { shenron_local_search(query.as_ptr(), 3, std::ptr::null()) });
+        assert!(value["results"].as_array().is_some_and(|hits| !hits.is_empty()), "{value}");
+        // The typed answer is the corpus' own JSON envelope, except that a hit always carries
+        // `entity` (`null` when absent, where the corpus omits the key).
+        let mut typed = value.clone();
+        for hit in typed["results"].as_array_mut().unwrap() {
+            let hit = hit.as_object_mut().unwrap();
+            assert!(hit.contains_key("entity"));
+            if hit["entity"].is_null() {
+                hit.remove("entity");
+            }
+        }
+        let corpus = shenron_rag::LocalCorpus::load_with(&shenron_rag::dragonball::process_env);
+        let options = shenron_rag::LocalSearchOptions {
+            limit: Some(3),
+            lang: None,
+            entity: None,
+            kind: None,
+        };
+        assert_eq!(typed, corpus.search_json("Son Goku", &options));
+    }
+
+    #[test]
+    fn rag_answers_are_normalised_over_both_backends() {
+        let local = rag_search_response(&serde_json::json!({
+            "q": "Goku", "mode": "hybrid",
+            "results": [{"rowid": 3, "title": "Goku", "url": "/wiki/goku", "snippet": "S",
+                "score": 0.5, "kind": "wiki", "sourceId": "wiki", "lang": "fr"},
+                {"snippet": "only"}]
+        }));
+        assert_eq!(local.q, "Goku");
+        assert_eq!(local.mode.as_deref(), Some("hybrid"));
+        assert_eq!(local.results[0].source_id.as_deref(), Some("wiki"));
+        assert_eq!(local.results[1].kind, "document");
+        assert!(local.results[1].score.abs() < f64::EPSILON);
+
+        let bot = rag_stats(&serde_json::json!({"chunks": 12, "vectors": 10, "mode": "fts",
+            "builtAt": "2026-10-01", "ragReady": true, "backend": "local"}));
+        assert_eq!((bot.backend.as_str(), bot.chunks, bot.rag_ready), ("local", 12, Some(true)));
+        let aphrody = rag_stats(&serde_json::json!({"chunks": 5, "vectors": 4,
+            "vectorsStored": 4, "sources": [{"sourceId": "db", "kind": "databook", "count": 5}]}));
+        assert_eq!(aphrody.backend, "aphrody");
+        assert_eq!(aphrody.sources[0].count, 5);
+        assert_eq!(aphrody.vectors_stored, Some(4));
     }
 }
