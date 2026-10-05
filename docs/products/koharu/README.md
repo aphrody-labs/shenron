@@ -18,7 +18,7 @@ d'origine : [`docs/licenses/koharu/`](../../licenses/koharu/).
 | Hôte | `shenron-desktop`, le seul binaire graphique : il monte les commandes de `koharu-app` et le moteur dans son processus (fonctionnalité `koharu`, par défaut) |
 | Socle ML | `koharu-{llama,torch,diffusion,runtime,config}`, fournis par Aphrody (voir [`APHRODY-ECOSYSTEM.md`](../../architecture/APHRODY-ECOSYSTEM.md)) |
 | Client Bun | `@shenron/koharu` (`packages/koharu`) : `./protocol` (généré), `./native` (transport `koharu-sdk`), `./canvas` (WASM de `koharu-canvas`) |
-| Interface | `@shenron/ui/koharu`, montée par le site sous `/koharu` et rendue utilisable par `shenron-desktop` |
+| Interface | `@shenron/ui/koharu`, montée par le site sous `/koharu` (onglet de l'espace Bibliothèque, à côté du manga, des databooks et de l'atelier de transcription et de traduction) ; l'éditeur s'ouvre dans `shenron-desktop`, le navigateur affiche sa présentation |
 
 Deux transports, un seul moteur :
 

@@ -261,6 +261,14 @@
     "commandes": {
       "label": "Commandes du Bot",
       "blurb": "Répertoire complet des interactions et commandes Discord"
+    },
+    "atelier": {
+      "label": "Transcription et traduction",
+      "blurb": "Où en sont les planches du manga et des databooks"
+    },
+    "koharu": {
+      "label": "Koharu",
+      "blurb": "L'éditeur de traduction manga de Shenron"
     }
   },
   "dashboard": {
@@ -1234,18 +1242,6 @@
         "title": "Chronologie",
         "description": "Ordre officiel de la frise universelle : épisodes et films."
       },
-      "databooks": {
-        "title": "Databooks et traductions",
-        "description": "Catalogue des ouvrages officiels, campagnes de traduction et qualité OCR."
-      },
-      "databookDetail": {
-        "title": "Databook",
-        "description": "Planches, traduction et relecture de l’ouvrage."
-      },
-      "transcriptions": {
-        "title": "Transcriptions et arbitrage",
-        "description": "Corpus manga et databooks : arbitrage des défauts OCR et relecture."
-      },
       "wiki": {
         "title": "Wiki",
         "description": "Fiches, catégories et pages libres du wiki."
@@ -1413,6 +1409,101 @@
         "morpion": "Aligne trois X avant le bot.",
         "bingo": "Trouve la puissance cachée en dix scans."
       }
+    }
+  },
+  "bibliotheque": {
+    "label": "Bibliothèque Dragon Ball",
+    "eyebrow": "Bibliothèque",
+    "tabs": {
+      "manga": "Manga",
+      "databooks": "Databooks",
+      "atelier": "Transcription et traduction",
+      "koharu": "Koharu"
+    },
+    "atelier": {
+      "label": "Atelier des planches",
+      "breadcrumb": "Transcription et traduction",
+      "title": "Transcription et traduction des planches",
+      "lead": "Chaque planche du manga et des databooks suit la même chaîne : scan officiel, transcription du japonais relue, traduction française appuyée sur le lexique canonique, puis lettrage dans Koharu. Voici où en est le travail, mesuré et jamais arrondi à la hausse.",
+      "databooksTitle": "Databooks et guides officiels",
+      "readDatabooks": "Lire les databooks",
+      "mangaTitle": "Manga",
+      "readManga": "Lire le manga",
+      "mangaChapters": "Chapitres lisibles",
+      "mangaChaptersHint": "sur {total} chapitres répertoriés",
+      "mangaPlates": "Planches servies",
+      "mangaTranscribed": "Planches transcrites",
+      "chainTitle": "Le parcours d'une planche",
+      "chainLead": "Quatre étapes, les mêmes pour le manga et pour les databooks.",
+      "steps": {
+        "scan": {
+          "label": "Scan",
+          "text": "La planche officielle, numérisée tome par tome et attribuée à sa source."
+        },
+        "transcription": {
+          "label": "Transcription",
+          "text": "Le japonais relevé par OCR, puis relu et arbitré planche par planche."
+        },
+        "traduction": {
+          "label": "Traduction",
+          "text": "Le français, appuyé sur le lexique canonique de DBFR pour les noms et les techniques."
+        },
+        "koharu": {
+          "label": "Koharu",
+          "text": "Bulles nettoyées, texte lettré et planche exportée dans l'éditeur Koharu."
+        }
+      },
+      "tabs": {
+        "overview": "Vue d'ensemble",
+        "transcription": "Transcription",
+        "traduction": "Traduction"
+      },
+      "staff": {
+        "transcription": {
+          "title": "Transcription et arbitrage",
+          "description": "Corpus manga et databooks : arbitrage des défauts OCR et relecture multi-agents."
+        },
+        "traduction": {
+          "title": "Traduction et campagnes",
+          "description": "Catalogue des ouvrages officiels, campagnes de traduction française et qualité OCR."
+        },
+        "catalogue": "Catalogue (métadonnées)",
+        "bxc": "Campagnes BXC"
+      }
+    },
+    "koharu": {
+      "title": "Koharu, l'éditeur de traduction manga",
+      "lead": "Koharu détecte les bulles, transcrit le japonais, traduit avec le lexique canonique de Shenron, nettoie la planche et la relettre, jusqu'à l'export PSD. Le moteur tourne en local, dans l'application de bureau Shenron.",
+      "featuresTitle": "Ce que fait Koharu",
+      "features": {
+        "detect": {
+          "label": "Détection",
+          "text": "Bulles, cartouches et onomatopées repérées sur chaque planche."
+        },
+        "ocr": {
+          "label": "Transcription",
+          "text": "Le japonais lu par OCR, vertical comme horizontal."
+        },
+        "translate": {
+          "label": "Traduction",
+          "text": "Un modèle local ou distant, contraint par le lexique canonique de DBFR."
+        },
+        "inpaint": {
+          "label": "Nettoyage",
+          "text": "Le texte d'origine effacé sans abîmer le dessin."
+        },
+        "typeset": {
+          "label": "Lettrage",
+          "text": "Le français composé dans la bulle, police et sens de lecture compris."
+        },
+        "export": {
+          "label": "Export",
+          "text": "Planche finale ou PSD à calques, prête pour la relecture."
+        }
+      },
+      "desktopTitle": "Ouvrir l'éditeur",
+      "desktopText": "L'éditeur s'ouvre dans l'application de bureau Shenron, qui embarque les modèles et fonctionne hors ligne. Les planches traduites rejoignent ensuite l'atelier.",
+      "atelierLink": "Voir l'avancement de la traduction"
     }
   }
 }

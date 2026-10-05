@@ -402,7 +402,7 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Link
-                  href="/admin/databooks"
+                  href="/atelier/traduction"
                   className="flex flex-col justify-between rounded-lg border border-white/10 bg-white/5 p-4 transition hover:border-dbz-orange hover:bg-white/10"
                 >
                   <span className="font-semibold text-white">Gestion Databooks</span>
@@ -442,8 +442,8 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
                 {databooks.transcribedPages.toLocaleString("fr-FR")} planches transcrites
               </p>
             </div>
-            <Link href="/admin/databooks" className="btn btn-primary btn-sm text-xs">
-              Ouvrir le poste de commande Databooks →
+            <Link href="/atelier/traduction" className="btn btn-primary btn-sm text-xs">
+              Ouvrir l'onglet Traduction →
             </Link>
           </div>
 
@@ -451,8 +451,8 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
             <p className="text-sm leading-relaxed text-white/70">
               Le suivi détaillé et le contrôle des campagnes de traduction se font désormais sur la
               page dédiée{" "}
-              <Link href="/admin/databooks" className="text-dbz-orange underline">
-                /admin/databooks
+              <Link href="/atelier/traduction" className="text-dbz-orange underline">
+                Traduction
               </Link>
               . Vous pouvez y piloter les vagues de traduction, identifier les ouvrages nécessitant
               une retranscription OCR et réindexer le cache Redis.
@@ -557,7 +557,7 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <Link
-                          href={`/admin/databooks/${item.databookId}?planche=${item.pageNumber}`}
+                          href={`/atelier/databooks/${item.databookId}?planche=${item.pageNumber}`}
                           className="text-xs font-bold text-dbz-orange hover:underline"
                         >
                           #{item.databookId} {item.databookTitle} · p.{item.pageNumber}
@@ -585,7 +585,7 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
 
                     <div className="mt-3 flex items-center justify-between">
                       <Link
-                        href={`/admin/databooks/${item.databookId}?planche=${item.pageNumber}`}
+                        href={`/atelier/databooks/${item.databookId}?planche=${item.pageNumber}`}
                         className="text-[11px] text-white/50 hover:text-white"
                       >
                         Inspecter scan &rarr;

@@ -9,8 +9,8 @@ import { ChevronDown, Compass, X } from "lucide-react";
 export function WikiDrawer({ className = "" }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
-    // Ouvrir Manga, Databooks et Événements par défaut
-    return { manga: true, databooks: true, events: true };
+    // Ouvrir la Bibliothèque (manga et databooks) et les Événements par défaut
+    return { bibliotheque: true, events: true };
   });
   const pathname = usePathname();
 

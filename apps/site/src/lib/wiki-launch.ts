@@ -167,6 +167,30 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     group: "archives",
     blurb: "Daizenshuu, Chōzenshū et artbooks officiels",
   },
+  // L'espace Bibliothèque (`lib/bibliotheque.ts`) : manga et databooks ci-dessus, puis
+  // l'atelier (avancement public, outils staff gardés par le proxy) et l'éditeur Koharu.
+  {
+    key: "atelier",
+    label: "Transcription et traduction",
+    href: "/atelier",
+    prefixes: ["/atelier"],
+    alwaysOpen: true,
+    scope: "site",
+    defaultMode: "public",
+    group: "archives",
+    blurb: "Où en sont les planches du manga et des databooks",
+  },
+  {
+    key: "koharu",
+    label: "Koharu",
+    href: "/koharu",
+    prefixes: ["/koharu"],
+    alwaysOpen: true,
+    scope: "site",
+    defaultMode: "public",
+    group: "archives",
+    blurb: "L'éditeur de traduction manga de Shenron",
+  },
   {
     key: "puissances",
     label: "Puissances & Scouter",

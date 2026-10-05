@@ -29,12 +29,14 @@ export interface WikiNavGroup {
 
 export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
   {
-    id: "manga",
-    title: "Manga & Œuvre Originale",
-    titleJa: "原作漫画",
-    icon: "📖",
+    // Un seul groupe pour l'espace Bibliothèque (`lib/bibliotheque.ts`) : le manga et les
+    // databooks se lisent côte à côte ; l'atelier et Koharu sont dans la nav principale.
+    id: "bibliotheque",
+    title: "Bibliothèque : manga & databooks",
+    titleJa: "書庫：原作漫画・資料集",
+    icon: "📚",
     summary:
-      "Les 42 tomes du chef-d'œuvre d'Akira Toriyama en éditions N&B Tankōbon et Full Color.",
+      "Les tomes d'Akira Toriyama planche par planche, et les guides officiels Shueisha transcrits et traduits.",
     items: [
       {
         id: "manga-index",
@@ -56,15 +58,6 @@ export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
         description: "Parcours de lecture fluide avec bascule Tankōbon et Full Color Shueisha.",
         targetCanon: "manga",
       },
-    ],
-  },
-  {
-    id: "databooks",
-    title: "Databooks & Archives Écrites",
-    titleJa: "関連書籍・ガイド",
-    icon: "📜",
-    summary: "Les guides officiels Shueisha, novélisations et transcriptions d'archives Toriyama.",
-    items: [
       {
         id: "databooks-all",
         label: "Databooks & Guides Officiels",

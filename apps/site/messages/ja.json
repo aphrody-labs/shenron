@@ -261,6 +261,14 @@
     "commandes": {
       "label": "ボットコマンド一覧",
       "blurb": "Discordボット『神龍』の機能と全コマンド解説"
+    },
+    "atelier": {
+      "label": "文字起こしと翻訳",
+      "blurb": "漫画と資料集の原稿の進捗"
+    },
+    "koharu": {
+      "label": "Koharu（翻訳エディタ）",
+      "blurb": "Shenron の漫画翻訳エディタ"
     }
   },
   "dashboard": {
@@ -1234,18 +1242,6 @@
         "title": "年表",
         "description": "エピソードと映画による公式年表の順序。"
       },
-      "databooks": {
-        "title": "資料集と翻訳",
-        "description": "公式書籍の目録、翻訳キャンペーン、OCR の品質。"
-      },
-      "databookDetail": {
-        "title": "資料集",
-        "description": "書籍のページ、翻訳、校正。"
-      },
-      "transcriptions": {
-        "title": "文字起こしと判定",
-        "description": "漫画と資料集のコーパス：OCR の不具合判定と校正。"
-      },
       "wiki": {
         "title": "Wiki",
         "description": "Wiki の項目、カテゴリ、自由ページ。"
@@ -1413,6 +1409,101 @@
         "morpion": "ボットより先に X を三つ並べよう。",
         "bingo": "隠された戦闘力を十回のスキャンで見つけよう。"
       }
+    }
+  },
+  "bibliotheque": {
+    "label": "ドラゴンボール書庫",
+    "eyebrow": "書庫",
+    "tabs": {
+      "manga": "漫画",
+      "databooks": "資料集",
+      "atelier": "文字起こしと翻訳",
+      "koharu": "Koharu（翻訳エディタ）"
+    },
+    "atelier": {
+      "label": "原稿工房",
+      "breadcrumb": "文字起こしと翻訳",
+      "title": "原稿の文字起こしと翻訳",
+      "lead": "漫画と資料集のすべての原稿は同じ工程をたどります。公式スキャン、校正済みの日本語の文字起こし、正典用語集に基づくフランス語訳、そして Koharu での写植。作業の進捗を、切り上げずに実測で示します。",
+      "databooksTitle": "資料集と公式ガイド",
+      "readDatabooks": "資料集を読む",
+      "mangaTitle": "漫画",
+      "readManga": "漫画を読む",
+      "mangaChapters": "閲覧できる話数",
+      "mangaChaptersHint": "登録済み {total} 話のうち",
+      "mangaPlates": "公開中のページ",
+      "mangaTranscribed": "文字起こし済みのページ",
+      "chainTitle": "原稿ができるまで",
+      "chainLead": "漫画も資料集も、同じ四つの工程です。",
+      "steps": {
+        "scan": {
+          "label": "スキャン",
+          "text": "巻ごとに取り込み、出典を明記した公式の原稿。"
+        },
+        "transcription": {
+          "label": "文字起こし",
+          "text": "OCR で読み取った日本語を、ページごとに校正し判定します。"
+        },
+        "traduction": {
+          "label": "翻訳",
+          "text": "人名や技名は DBFR の正典用語集に沿ったフランス語訳。"
+        },
+        "koharu": {
+          "label": "Koharu",
+          "text": "Koharu エディタで吹き出しを消し、写植し、原稿を書き出します。"
+        }
+      },
+      "tabs": {
+        "overview": "概要",
+        "transcription": "文字起こし",
+        "traduction": "翻訳"
+      },
+      "staff": {
+        "transcription": {
+          "title": "文字起こしと判定",
+          "description": "漫画と資料集のコーパス：OCR の不具合判定と複数エージェントによる校正。"
+        },
+        "traduction": {
+          "title": "翻訳とキャンペーン",
+          "description": "公式書籍の目録、フランス語翻訳キャンペーン、OCR の品質。"
+        },
+        "catalogue": "目録（メタデータ）",
+        "bxc": "BXC キャンペーン"
+      }
+    },
+    "koharu": {
+      "title": "Koharu：漫画翻訳エディタ",
+      "lead": "Koharu は吹き出しを検出し、日本語を文字起こしし、Shenron の正典用語集で翻訳し、原稿を修復して写植し、PSD まで書き出します。エンジンは Shenron デスクトップアプリ内でローカルに動作します。",
+      "featuresTitle": "Koharu の機能",
+      "features": {
+        "detect": {
+          "label": "検出",
+          "text": "各ページの吹き出し、ナレーション、擬音を検出します。"
+        },
+        "ocr": {
+          "label": "文字起こし",
+          "text": "縦書きも横書きも OCR で読み取ります。"
+        },
+        "translate": {
+          "label": "翻訳",
+          "text": "DBFR の正典用語集に従う、ローカルまたはリモートのモデル。"
+        },
+        "inpaint": {
+          "label": "修復",
+          "text": "絵を傷めずに元の文字を消します。"
+        },
+        "typeset": {
+          "label": "写植",
+          "text": "フォントと読み方向を含め、吹き出しにフランス語を組みます。"
+        },
+        "export": {
+          "label": "書き出し",
+          "text": "完成ページまたはレイヤー付き PSD を校正用に出力します。"
+        }
+      },
+      "desktopTitle": "エディタを開く",
+      "desktopText": "エディタは、モデルを同梱しオフラインで動く Shenron デスクトップアプリで開きます。翻訳した原稿はその後、工房に加わります。",
+      "atelierLink": "翻訳の進捗を見る"
     }
   }
 }

@@ -662,12 +662,12 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
             </p>
           </div>
           <CorpusLink
-            href="/admin/transcriptions"
+            href="/atelier/transcription"
             title="Manga & OCR"
             text="Relecture, défauts OCR et arbitrage multi-agents."
           />
           <CorpusLink
-            href="/admin/databooks"
+            href="/atelier/traduction"
             title="Databooks & traductions"
             text="Pages, campagnes, traductions FR et gelures d'écriture."
           />

@@ -77,7 +77,7 @@ const SITE_DOMAINS: readonly SiteDomain[] = [
     label: "Databooks",
     description: "Daizenshuu, guides et interviews : planches, transcriptions, traductions.",
     publicHref: "/wiki/databooks",
-    adminHref: "/admin/databooks",
+    adminHref: "/atelier/traduction",
     publicPrefixes: ["/wiki/databooks"],
     adminCta: "Gérer les databooks",
   },

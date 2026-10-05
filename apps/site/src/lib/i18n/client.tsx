@@ -110,6 +110,8 @@ const RUBRIQUES: Record<string, keyof Dictionary["categories"]> = {
   "/wiki/cosmologie": "cosmologie",
   "/wiki/races": "races",
   "/wiki/databooks": "databooks",
+  "/atelier": "atelier",
+  "/koharu": "koharu",
   "/wiki/canon": "canon",
   "/wiki/tools": "tools",
   "/wiki/contribuer": "contribuer",

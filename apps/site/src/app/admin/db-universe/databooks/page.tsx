@@ -82,7 +82,7 @@ export default async function AdminDatabooksPage() {
         markdown) — comme pour les personnages. L&apos;index public triable est sur{" "}
         <code className="text-dbz-orange/80">/wiki/databooks</code>. Le texte des planches se relit
         dans le{" "}
-        <Link href="/admin/databooks" className="text-dbz-orange hover:underline">
+        <Link href="/atelier/transcription" className="text-dbz-orange hover:underline">
           suivi des transcriptions
         </Link>
         .
@@ -109,9 +109,9 @@ export default async function AdminDatabooksPage() {
       )}
 
       <div className="mb-6 flex flex-wrap justify-end gap-2">
-        <Link href="/admin/databooks" className="btn btn-ghost h-9 px-3 text-xs">
+        <Link href="/atelier/traduction" className="btn btn-ghost h-9 px-3 text-xs">
           <Scan className="h-3.5 w-3.5" />
-          Suivi des transcriptions
+          Atelier : traduction et campagnes
         </Link>
         <DbAddButton table={TABLE} label="Ajouter une entrée" />
       </div>

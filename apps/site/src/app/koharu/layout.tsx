@@ -1,13 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { Metadata } from "next";
 import "@shenron/ui/koharu.css";
 
-export const metadata: Metadata = {
-  title: "Éditeur de traduction manga",
-  description: "Koharu, l'éditeur de traduction manga de Shenron (application de bureau).",
-  robots: { index: false, follow: false },
-};
-
+/** The editor's stylesheet is scoped to `[data-koharu-ui]`; only this route loads it. */
 export default function KoharuLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

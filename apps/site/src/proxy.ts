@@ -8,13 +8,14 @@ import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { findEntry, resolveAccess } from "@/lib/wiki-launch";
 import { getMemberRoleIds } from "@/lib/member-roles";
 import { SITE_URL } from "@/lib/config";
+import { atelierRedirect, isAtelierStaffPath } from "@/lib/bibliotheque";
 
 /** Hôte canonique dérivé de {@link SITE_URL} (source unique des URL publiques). */
 const CANONICAL_HOST = new URL(SITE_URL).host;
 
 // proxy.ts = « middleware » de Next 16 (renommé middleware.ts → proxy.ts).
 // Trois rôles : (1) canonicalisation du host vers dragonballfr.com ; (2) gating
-// de l'espace /admin, qu'un `redirect()` de layout ne peut PAS protéger sous
+// de l'espace /admin et des outils staff de l'atelier, qu'un `redirect()` de layout ne peut PAS protéger sous
 // streaming (cf. le bloc dédié plus bas) ; (3) gating bêta des sections non
 // publiques (wiki hors catégories ouvertes, + tierlists), avec exception
 // admin/owner. Cf. https://nextjs.org/docs/messages/middleware-to-proxy
@@ -35,7 +36,7 @@ function hasAuthCredentials(request: NextRequest): boolean {
   if (request.nextUrl.searchParams.has("admin_token")) return true;
   if (
     request.nextUrl.searchParams.has("token") &&
-    (request.nextUrl.pathname.startsWith("/admin") || request.nextUrl.pathname === "/admin")
+    (request.nextUrl.pathname.startsWith("/admin") || isAtelierStaffPath(request.nextUrl.pathname))
   ) {
     return true;
   }
@@ -131,7 +132,7 @@ export async function proxy(request: NextRequest) {
   // que leur charge utile est déjà émise. Un anonyme recevait donc un 200 avec
   // les données — mesuré le 2026-08-22 sur la prod : 851 Kio de titres sur
   // /admin/db-universe/databooks, et 470 Kio contenant 7 032 segments de
-  // japonais transcrit sur /admin/databooks/19.
+  // japonais transcrit sur /admin/databooks/19 (aujourd'hui /atelier/databooks/19).
   //
   // C'est la même mécanique que le 308 de `/wiki/dragon-ball`, qui a dû quitter
   // le composant pour `next.config` : sous streaming, une redirection de layout
@@ -140,10 +141,20 @@ export async function proxy(request: NextRequest) {
   //
   // `requireAdmin()` reste en place dans le layout — défense en profondeur, et
   // il couvre les chemins qui n'entrent pas dans le matcher du proxy.
-  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+  //
+  // Les outils staff de l'atelier (transcription, traduction, relecture) ont quitté
+  // `/admin` pour l'espace Bibliothèque : ils passent par la même garde. Les anciennes
+  // adresses répondent un 308, après la garde (un anonyme ne découvre rien).
+  if (pathname === "/admin" || pathname.startsWith("/admin/") || isAtelierStaffPath(pathname)) {
     const visitor = await visitorOf(request);
     if (!visitor.isAdmin) {
       return NextResponse.redirect(new URL("/", request.url));
+    }
+    const moved = atelierRedirect(pathname);
+    if (moved) {
+      const target = new URL(moved, request.url);
+      target.search = request.nextUrl.search;
+      return NextResponse.redirect(target, 308);
     }
     return NextResponse.next();
   }

@@ -12,6 +12,7 @@ import { MangaInfoSection } from "@/components/manga/MangaInfoSection";
 import { SERIE_COULEUR } from "@/lib/manga-editions";
 import { MangaDialogueSearch } from "@/components/manga/MangaDialogueSearch";
 import { ogMeta } from "@/lib/og";
+import { BibliothequeNav } from "@/components/bibliotheque/BibliothequeNav";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -159,6 +160,7 @@ export default async function MangaIndexPage() {
     <PageShell rhythm="tight">
       <Breadcrumbs className="mb-4" items={[{ label: "Manga" }]} />
       <PageHeader eyebrow="Manga" title="Lecteur de scan" subtitle={lead} className="mb-6" />
+      <BibliothequeNav />
       <PageBanner src={heroImage} alt="Couverture du manga Dragon Ball" position="top" />
       <ContinueRail kinds={["chapter"]} titleKey="history.resumeReading" />
       <MangaDialogueSearch />

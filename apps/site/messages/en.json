@@ -261,6 +261,14 @@
     "commandes": {
       "label": "Bot Commands",
       "blurb": "Complete directory of Discord bot features and commands"
+    },
+    "atelier": {
+      "label": "Transcription & translation",
+      "blurb": "Progress on the manga and databook pages"
+    },
+    "koharu": {
+      "label": "Koharu",
+      "blurb": "Shenron's manga translation editor"
     }
   },
   "dashboard": {
@@ -1234,18 +1242,6 @@
         "title": "Timeline",
         "description": "Official order of the universal timeline: episodes and films."
       },
-      "databooks": {
-        "title": "Databooks and translations",
-        "description": "Catalogue of official books, translation campaigns and OCR quality."
-      },
-      "databookDetail": {
-        "title": "Databook",
-        "description": "Pages, translation and proofreading of the book."
-      },
-      "transcriptions": {
-        "title": "Transcriptions and review",
-        "description": "Manga and databook corpus: OCR defect review and proofreading."
-      },
       "wiki": {
         "title": "Wiki",
         "description": "Wiki entries, categories and free pages."
@@ -1413,6 +1409,101 @@
         "morpion": "Line up three X before the bot does.",
         "bingo": "Find the hidden power level in ten scans."
       }
+    }
+  },
+  "bibliotheque": {
+    "label": "Dragon Ball library",
+    "eyebrow": "Library",
+    "tabs": {
+      "manga": "Manga",
+      "databooks": "Databooks",
+      "atelier": "Transcription & translation",
+      "koharu": "Koharu"
+    },
+    "atelier": {
+      "label": "Page workshop",
+      "breadcrumb": "Transcription & translation",
+      "title": "Transcribing and translating the pages",
+      "lead": "Every manga and databook page follows the same chain: official scan, proofread Japanese transcription, French translation backed by the canonical lexicon, then lettering in Koharu. Here is where the work stands, measured and never rounded up.",
+      "databooksTitle": "Databooks and official guides",
+      "readDatabooks": "Read the databooks",
+      "mangaTitle": "Manga",
+      "readManga": "Read the manga",
+      "mangaChapters": "Readable chapters",
+      "mangaChaptersHint": "out of {total} listed chapters",
+      "mangaPlates": "Pages served",
+      "mangaTranscribed": "Transcribed pages",
+      "chainTitle": "The life of a page",
+      "chainLead": "Four steps, the same for the manga and for the databooks.",
+      "steps": {
+        "scan": {
+          "label": "Scan",
+          "text": "The official page, scanned volume by volume and credited to its source."
+        },
+        "transcription": {
+          "label": "Transcription",
+          "text": "The Japanese text read by OCR, then proofread and settled page by page."
+        },
+        "traduction": {
+          "label": "Translation",
+          "text": "The French text, backed by DBFR's canonical lexicon for names and techniques."
+        },
+        "koharu": {
+          "label": "Koharu",
+          "text": "Balloons cleaned, text lettered and the page exported in the Koharu editor."
+        }
+      },
+      "tabs": {
+        "overview": "Overview",
+        "transcription": "Transcription",
+        "traduction": "Translation"
+      },
+      "staff": {
+        "transcription": {
+          "title": "Transcription and review",
+          "description": "Manga and databook corpus: OCR defect review and multi-agent proofreading."
+        },
+        "traduction": {
+          "title": "Translation and campaigns",
+          "description": "Catalogue of official books, French translation campaigns and OCR quality."
+        },
+        "catalogue": "Catalogue (metadata)",
+        "bxc": "BXC campaigns"
+      }
+    },
+    "koharu": {
+      "title": "Koharu, the manga translation editor",
+      "lead": "Koharu detects balloons, transcribes the Japanese, translates with Shenron's canonical lexicon, cleans the page and letters it again, all the way to a PSD export. The engine runs locally, in the Shenron desktop app.",
+      "featuresTitle": "What Koharu does",
+      "features": {
+        "detect": {
+          "label": "Detection",
+          "text": "Balloons, captions and sound effects located on every page."
+        },
+        "ocr": {
+          "label": "Transcription",
+          "text": "Japanese read by OCR, vertical as well as horizontal."
+        },
+        "translate": {
+          "label": "Translation",
+          "text": "A local or remote model, constrained by DBFR's canonical lexicon."
+        },
+        "inpaint": {
+          "label": "Cleaning",
+          "text": "The original text erased without damaging the artwork."
+        },
+        "typeset": {
+          "label": "Lettering",
+          "text": "French set inside the balloon, font and reading direction included."
+        },
+        "export": {
+          "label": "Export",
+          "text": "Final page or layered PSD, ready for proofreading."
+        }
+      },
+      "desktopTitle": "Open the editor",
+      "desktopText": "The editor opens in the Shenron desktop app, which ships the models and works offline. Translated pages then join the workshop.",
+      "atelierLink": "See the translation progress"
     }
   }
 }

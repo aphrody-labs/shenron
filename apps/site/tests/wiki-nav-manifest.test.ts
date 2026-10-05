@@ -5,8 +5,9 @@ import { GATEABLE_CATEGORIES } from "../src/lib/wiki-launch";
 describe("wiki-nav-manifest — Manifeste de navigation encyclopédique", () => {
   test("contient toutes les sections fondamentales de l'architecture", () => {
     const groupIds = WIKI_NAVIGATION_MANIFEST.map((g) => g.id);
-    expect(groupIds).toContain("manga");
-    expect(groupIds).toContain("databooks");
+    expect(groupIds).toContain("bibliotheque");
+    expect(groupIds).not.toContain("manga");
+    expect(groupIds).not.toContain("databooks");
     expect(groupIds).toContain("animation");
     expect(groupIds).toContain("events");
     expect(groupIds).toContain("lore");

@@ -341,7 +341,7 @@ describe("15 routes admin-ou-jeton : instantané statut/corps", () => {
 
 describe("proxy : chemin rapide anonyme et gating /admin", () => {
   const adminRequest = (cookie?: string) =>
-    new NextRequest("http://localhost/admin/databooks", {
+    new NextRequest("http://localhost/admin/dashboard", {
       headers: { host: "localhost", ...(cookie ? { cookie } : {}) },
     });
 
@@ -375,6 +375,49 @@ describe("proxy : chemin rapide anonyme et gating /admin", () => {
     resolveThrows = true;
     const res = await proxy(adminRequest("better-auth.session_token=abc.def"));
     expect(resolveCalls).toBe(1);
+    expect(res.status).toBe(307);
+    expect(new URL(res.headers.get("location") ?? "").pathname).toBe("/");
+  });
+});
+
+describe("proxy : outils staff de l'atelier", () => {
+  const request = (path: string, cookie?: string) =>
+    new NextRequest(`http://localhost${path}`, {
+      headers: { host: "localhost", ...(cookie ? { cookie } : {}) },
+    });
+  const staff = "better-auth.session_token=abc.def";
+
+  for (const path of ["/atelier/transcription", "/atelier/traduction", "/atelier/databooks/19"]) {
+    test(`${path} : un anonyme repart à l'accueil sans rendu`, async () => {
+      const res = await proxy(request(path));
+      expect(res.status).toBe(307);
+      expect(new URL(res.headers.get("location") ?? "").pathname).toBe("/");
+      expect(resolveCalls).toBe(0);
+    });
+
+    test(`${path} : le staff passe`, async () => {
+      const res = await proxy(request(path, staff));
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+    });
+  }
+
+  test("les anciennes adresses d'administration répondent un 308 vers l'atelier, requête gardée", async () => {
+    const moved = async (path: string) => {
+      const res = await proxy(request(path, staff));
+      expect(res.status).toBe(308);
+      const location = new URL(res.headers.get("location") ?? "");
+      return `${location.pathname}${location.search}`;
+    };
+    expect(await moved("/admin/transcriptions")).toBe("/atelier/transcription");
+    expect(await moved("/admin/databooks")).toBe("/atelier/traduction");
+    expect(await moved("/admin/databooks/19?planche=12&filtre=suspectes")).toBe(
+      "/atelier/databooks/19?planche=12&filtre=suspectes",
+    );
+  });
+
+  test("un anonyme sur une ancienne adresse ne découvre pas la nouvelle", async () => {
+    const res = await proxy(request("/admin/databooks/19"));
     expect(res.status).toBe(307);
     expect(new URL(res.headers.get("location") ?? "").pathname).toBe("/");
   });

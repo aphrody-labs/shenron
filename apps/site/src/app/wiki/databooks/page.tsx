@@ -15,6 +15,7 @@ import { progressionTranscription } from "@/lib/databooks-transcription";
 import { DomainBar, StatTiles, ContributeRail } from "@/components/kit";
 
 import { ogMeta } from "@/lib/og";
+import { BibliothequeNav } from "@/components/bibliotheque/BibliothequeNav";
 import { publicDatabookImage } from "@/lib/databook-media";
 import { isToriyamaInterviewBook } from "@/lib/toriyama-words";
 
@@ -102,6 +103,7 @@ export default async function DatabooksIndexPage() {
           )
         }
       />
+      <BibliothequeNav className="mb-3" />
       <EditorialTabs active="/wiki/databooks" className="mb-6" />
       <PageBanner src={heroImage} alt="Databooks Dragon Ball" />
 
@@ -110,7 +112,10 @@ export default async function DatabooksIndexPage() {
       <DomainBar
         domain="databooks"
         className="mb-6"
-        actions={[{ href: "/admin/transcriptions", label: "Transcriptions & arbitrage" }]}
+        actions={[
+          { href: "/atelier/transcription", label: "Transcription & arbitrage" },
+          { href: "/atelier/traduction", label: "Traduction & campagnes" },
+        ]}
       />
 
       {/* Couverture réelle de la transcription : elle dit au lecteur ce qu’il peut espérer

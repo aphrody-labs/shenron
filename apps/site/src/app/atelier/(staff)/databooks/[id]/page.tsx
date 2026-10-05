@@ -1,13 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Crayon, FlecheGauche, LienExterne } from "@shenron/ui/icones";
-import { AdminHeader } from "../../db-universe/_Header";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { Crayon, LienExterne } from "@shenron/ui/icones";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { GatedLink } from "@/components/GatedLink";
+import { AtelierNav, BibliothequeNav } from "@/components/bibliotheque/BibliothequeNav";
 import {
   TranscriptionRelecteur,
   type PlancheRelecture,
 } from "@/components/admin/TranscriptionRelecteur";
 import { getDatabook } from "@/lib/databooks";
 import { parseDatabookId } from "@/lib/databooks-rules";
+import { requireAdmin } from "@/lib/session";
 
 /**
  * Écran de relecture d'un ouvrage transcrit.
@@ -30,6 +35,7 @@ export default async function RelecturePage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ filtre?: string; planche?: string }>;
 }) {
+  await requireAdmin();
   const id = parseDatabookId((await params).id);
   if (id === null) notFound();
 
@@ -49,20 +55,26 @@ export default async function RelecturePage({
   const transcrites = planches.filter((p) => p.texte.trim().length > 0).length;
 
   return (
-    <div className="mx-auto w-full max-w-[1600px]">
-      <AdminHeader
+    <PageShell width="wide" rhythm="tight">
+      <Breadcrumbs
+        className="mb-4"
+        items={[
+          { label: "Transcription et traduction", href: "/atelier" },
+          { label: "Transcription", href: "/atelier/transcription" },
+          { label: fiche.title },
+        ]}
+      />
+      <PageHeader
+        className="mb-6"
+        eyebrow="Relecture"
         title={fiche.title}
         subtitle={
           planches.length > 0
             ? `${transcrites}/${planches.length} planches transcrites · ${Math.round((transcrites / planches.length) * 100)} %`
             : "Aucune planche"
         }
-        right={
+        actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Link href="/admin/databooks" className="btn btn-ghost h-9 px-3 text-xs">
-              <FlecheGauche className="h-3.5 w-3.5" />
-              Suivi
-            </Link>
             <Link
               href={`/admin/wiki/studio/db_databooks/${fiche.id}`}
               className="btn btn-ghost h-9 px-3 text-xs"
@@ -71,18 +83,18 @@ export default async function RelecturePage({
               <Crayon className="h-3.5 w-3.5" />
               Studio
             </Link>
-            <a
+            <GatedLink
               href={`/wiki/databooks/${fiche.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
               className="btn btn-ghost h-9 px-3 text-xs"
             >
               <LienExterne className="h-3.5 w-3.5" />
               Public
-            </a>
+            </GatedLink>
           </div>
         }
       />
+      <BibliothequeNav />
+      <AtelierNav />
 
       {planches.length === 0 ? (
         <div className="dbz-panel p-12 text-center">
@@ -107,6 +119,6 @@ export default async function RelecturePage({
           plancheInitiale={Number.isSafeInteger(nPlanche) && nPlanche > 0 ? nPlanche : undefined}
         />
       )}
-    </div>
+    </PageShell>
   );
 }
