@@ -9,13 +9,20 @@ import { dbCharacters, dbPlanets, dbTransformations } from "~/db/schema";
 import { WikiService } from "~/services/WikiService";
 import { logger } from "~/lib/logger";
 
+/**
+ * dragonball-api.com est une base de fans : elle amorce les fiches (noms,
+ * images, rattachements), jamais leurs chiffres. Ses `ki` / `maxKi` ne
+ * viennent d'aucune source primaire et ne sont pas enregistrés.
+ */
 const BASE = "https://dragonball-api.com/api";
 const LOCAL_IMG_ROOT = "./assets/dbz";
 
 interface RemoteChar {
   id: number;
   name: string;
+  /** Valeur de fans, ignorée (cf. `BASE`). */
   ki: string;
+  /** Valeur de fans, ignorée (cf. `BASE`). */
   maxKi: string;
   race: string;
   gender: string;
@@ -171,12 +178,12 @@ const PLANET_OVERRIDES: Record<string, { ja: string; romaji: string }> = {
   babari: { ja: "バブリ", romaji: "Baburi-sei" },
   monmar: { ja: "モンマール星", romaji: "Monmaaru-sei" },
   otromundo: { ja: "あの世", romaji: "Ano-yo" },
-  planetasagrado: { ja: "聖地", romaji: "Seichi" },
+  // `planetasagrado` et `tsufuruniverso6` : aucune graphie sourcée,
+  // la cellule reste vide (聖地 est la terre sainte de Karin, pas ce monde).
   planetadebills: { ja: "ビルスの星", romaji: "Birusu no Hoshi" },
   planetadelgrankaio: { ja: "大界王星", romaji: "Daikaiou-sei" },
   templomovildelreydetodo: { ja: "全王の宮殿", romaji: "Zen'ou no Kyuuden" },
   universo11: { ja: "第11宇宙", romaji: "Dai-11 Uchuu" },
-  tsufuruniverso6: { ja: "ツフル星", romaji: "Tsufuru-sei (Uchuu 6)" },
   nuevoplanetatsufrui: { ja: "新ツフル星", romaji: "Shin Tsufuru-sei" },
   nucleodelmundo: { ja: "世界の中心", romaji: "Sekai no Chuushin" },
   kaiodelnorte: { ja: "北の界王星", romaji: "Kita no Kaiou-sei" },
@@ -363,8 +370,8 @@ export async function runWikiSeed(
         id: full.id,
         name: full.name,
         image: localImg,
-        ki: full.ki,
-        maxKi: full.maxKi,
+        ki: null,
+        maxKi: null,
         race: full.race,
         gender: full.gender,
         affiliation: full.affiliation,
@@ -383,7 +390,7 @@ export async function runWikiSeed(
           id: t.id,
           name: t.name,
           image: tImg,
-          ki: t.ki,
+          ki: null,
           characterId: full.id,
         })
         .onConflictDoNothing();

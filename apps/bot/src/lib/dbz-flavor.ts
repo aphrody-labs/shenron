@@ -56,7 +56,7 @@ const LEVEL_FLAVORS: Record<number, readonly string[]> = {
     "🫠 **Forme coûteuse** — tu la tiens 10 minutes, puis tu dors 3 jours.",
   ],
   9: [
-    "🌌 **Super Saiyan Blue** — union du Saiyan et du Kaio-ken, aura turquoise.",
+    "🌌 **Super Saiyan Blue** — le ki divin combiné au Super Saiyan, aura turquoise.",
     "🐉 **Beerus hoche la tête** — il ne dort plus pendant ton combat.",
     "🧘 **Whis lève les yeux** de sa tasse. C'est un compliment.",
   ],
