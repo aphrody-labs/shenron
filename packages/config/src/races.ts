@@ -4,7 +4,7 @@
  *
  * Un membre choisit UNE race (rôle Discord exclusif) qui module sa progression.
  * Les traits transposent les traits FACTUELS des races CaC de Xenoverse 2
- * (cf. docs/races-systeme-niveau.md) sur les leviers du bot (XP, vocal, zéni, jeux).
+ * (cf. docs/products/races-systeme-niveau.md) sur les leviers du bot (XP, vocal, zéni, jeux).
  *
  * Les 6 races correspondent aux rôles du serveur : Saiyan, Humain, Namek, Mutant,
  * Cyborg, Majin. Module PUR (aucune dépendance DB/Discord) → testable.

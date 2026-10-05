@@ -12,14 +12,14 @@ auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
 
 ## Sources de vérité
 
-- Carte des paquets et graphe de dépendances autorisé : `docs/architecture/STACK.md` (§3–4),
-  avec `RUNTIME.md` et `i18n.md` à côté. Beaucoup de documents de `docs/` gardent les chemins
-  de l'ancien monorepo (`apps/shenron/…`, `packages/shenron-…`) : le code fait foi.
+- Index de la documentation : `docs/README.md`. Carte des paquets et graphe de dépendances
+  autorisé : `docs/architecture/STACK.md` (§3–4), avec `RUNTIME.md` et `i18n.md` à côté. En
+  cas d'écart, le code fait foi.
 - Variables d'environnement : `docs/operations/ENV.md`. Les défauts codés ne vivent que dans
   `@shenron/config` ; le site lit l'environnement par `apps/site/src/lib/env.ts` (t3-env).
-- Plan directeur : `docs/reference/root/PLAN.md` (invariants éditoriaux toujours valables ; ses
-  commandes `test:ci` et `type-check` sont périmées). Mémoire datée : `data/home/MEMORY.md`,
-  privée et ignorée par Git. `docs/operations/DEV-LOCAL.md` est historique : ne pas l'exécuter.
+- Plan directeur : `docs/reference/root/PLAN.md` (invariants éditoriaux). Mémoire datée :
+  `data/home/MEMORY.md`, privée et ignorée par Git. Les rapports générés (signalements,
+  objectifs, audits i18n/SEO, profils) s'écrivent dans `var/reports/`, jamais dans `docs/`.
 
 ## Périmètre et propriétaires
 

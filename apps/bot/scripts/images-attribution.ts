@@ -44,14 +44,14 @@ import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const ETAT = join(ROOT, "data", "attribution-images.json");
-const RAPPORT = join(ROOT, "..", "..", "docs", "attribution-images.md");
+const RAPPORT = join(ROOT, "..", "..", "var", "reports", "attribution-images.md");
 const BXC = process.env.BXC_CLI ?? join(userHome(), "bxc/src/cli/index.ts");
 
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes(`--${n}`);
 const opt = (n: string, d?: string) => {
-	const i = args.indexOf(`--${n}`);
-	return i >= 0 ? (args[i + 1] ?? d) : d;
+  const i = args.indexOf(`--${n}`);
+  return i >= 0 ? (args[i + 1] ?? d) : d;
 };
 
 const LOT = Math.max(1, Math.min(100, Number(opt("lot", "10")) || 10));
@@ -68,129 +68,138 @@ const SEUIL_BRUIT = 0.5;
  * quelques erreurs réelles dans des centaines de lignes sans intérêt.
  */
 type TypeVerdict =
-	| "confirme"
-	| "desaccord"
-	| "plausible-accord"
-	| "plausible-desaccord"
-	| "sans-reponse";
+  | "confirme"
+  | "desaccord"
+  | "plausible-accord"
+  | "plausible-desaccord"
+  | "sans-reponse";
 
 interface Verdict {
-	id: number;
-	series: string;
-	episode: number;
-	image: string;
-	titreTrouve: string | null;
-	episodeTrouve: number | null;
-	similarite: number | null;
-	timecodeMs: number | null;
-	verdict: TypeVerdict;
-	vuLe: string;
+  id: number;
+  series: string;
+  episode: number;
+  image: string;
+  titreTrouve: string | null;
+  episodeTrouve: number | null;
+  similarite: number | null;
+  timecodeMs: number | null;
+  verdict: TypeVerdict;
+  vuLe: string;
 }
 
 async function urlBase(): Promise<string> {
-	const direct = process.env.DATABASE_URL?.trim();
-	if (direct) return direct;
-	const texte = await Bun.file(join(ROOT, "..", "site", ".env"))
-		.text()
-		.catch(() => "");
-	const valeur = texte
-		.split("\n")
-		.findLast((l) => l.startsWith("DATABASE_URL="))
-		?.slice("DATABASE_URL=".length)
-		.trim()
-		.replace(/^["']|["']$/g, "");
-	if (!valeur) throw new Error("DATABASE_URL introuvable");
-	return valeur;
+  const direct = process.env.DATABASE_URL?.trim();
+  if (direct) return direct;
+  const texte = await Bun.file(join(ROOT, "..", "site", ".env"))
+    .text()
+    .catch(() => "");
+  const valeur = texte
+    .split("\n")
+    .findLast((l) => l.startsWith("DATABASE_URL="))
+    ?.slice("DATABASE_URL=".length)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (!valeur) throw new Error("DATABASE_URL introuvable");
+  return valeur;
 }
 
 async function bxc(argv: string[], timeoutMs = 120_000): Promise<string> {
-	const proc = Bun.spawn(["bun", BXC, ...argv], { stdout: "pipe", stderr: "pipe" });
-	const minuteur = setTimeout(() => proc.kill(), timeoutMs);
-	const sortie = await new Response(proc.stdout).text();
-	await proc.exited;
-	clearTimeout(minuteur);
-	return sortie;
+  const proc = Bun.spawn(["bun", BXC, ...argv], { stdout: "pipe", stderr: "pipe" });
+  const minuteur = setTimeout(() => proc.kill(), timeoutMs);
+  const sortie = await new Response(proc.stdout).text();
+  await proc.exited;
+  clearTimeout(minuteur);
+  return sortie;
 }
 
 /** La règle de lecture, en un seul endroit — le rapport la rejoue sans réseau. */
 function verdictPour(similarite: number, memeNumero: boolean): TypeVerdict {
-	if (similarite < SEUIL_BRUIT) return "sans-reponse";
-	if (similarite >= SEUIL_FERME) return memeNumero ? "confirme" : "desaccord";
-	return memeNumero ? "plausible-accord" : "plausible-desaccord";
+  if (similarite < SEUIL_BRUIT) return "sans-reponse";
+  if (similarite >= SEUIL_FERME) return memeNumero ? "confirme" : "desaccord";
+  return memeNumero ? "plausible-accord" : "plausible-desaccord";
 }
 
 const deja: Record<string, Verdict> = await Bun.file(ETAT)
-	.json()
-	.catch(() => ({}));
+  .json()
+  .catch(() => ({}));
 
 /** Écrit le rapport lisible à côté de l'état machine. */
 async function ecrireRapport(): Promise<void> {
-	// Les verdicts se recalculent à la lecture : affiner la règle ne coûte pas
-	// une seule requête de quota.
-	const tous = Object.values(deja).map((v) => (Object.assign(v, { verdict: verdictPour(v.similarite ?? 0, v.episodeTrouve !== null && Number(v.episodeTrouve) === Number(v.episode)) })));
-	const par = (v: TypeVerdict) => tous.filter((t) => t.verdict === v);
-	const desaccords = par("desaccord").toSorted((a, b) => (b.similarite ?? 0) - (a.similarite ?? 0));
-	const plausibles = par("plausible-desaccord").toSorted(
-		(a, b) => (b.similarite ?? 0) - (a.similarite ?? 0)
-	);
-	const lignes = [
-		"# Attribution des vignettes d'épisode",
-		"",
-		"Produit par `bun apps/bot/scripts/images-attribution.ts` : chaque vignette est",
-		"comparée à l'index image par image de trace.moe, interrogé par bxc. Seul un",
-		"vecteur de 33 entiers quitte la machine, jamais l'image.",
-		"",
-		`Vignettes examinées : **${tous.length}**.`,
-		"",
-		"| Verdict | Nombre | Lecture |",
-		"|---|---:|---|",
-		`| Confirmé | ${par("confirme").length} | même épisode, similarité ≥ ${SEUIL_FERME} |`,
-		`| Désaccord | ${desaccords.length} | autre épisode reconnu avec une similarité ≥ ${SEUIL_FERME} |`,
-		`| Accord probable | ${par("plausible-accord").length} | même épisode, similarité ${SEUIL_BRUIT}–${SEUIL_FERME} (vignette ré-encodée) |`,
-		`| À vérifier | ${plausibles.length} | autre épisode, similarité ${SEUIL_BRUIT}–${SEUIL_FERME} |`,
-		`| Sans réponse | ${par("sans-reponse").length} | rien au-dessus de ${SEUIL_BRUIT} |`,
-		"",
-	];
-	if (desaccords.length > 0) {
-		lignes.push(
-			"## Désaccords — la vignette montre un autre épisode",
-			"",
-			"| Fiche | Notre étiquette | Reconnu | Similarité | Image |",
-			"|---|---|---|---:|---|",
-			...desaccords.map(
-				(d) =>
-					`| ${d.id} | ${d.series} ${d.episode} | ${d.titreTrouve} ${d.episodeTrouve} | ${(d.similarite ?? 0).toFixed(3)} | \`${d.image}\` |`
-			),
-			""
-		);
-	}
-	if (plausibles.length > 0) {
-		lignes.push(
-			"## À vérifier à l'œil",
-			"",
-			"| Fiche | Notre étiquette | Reconnu | Similarité |",
-			"|---|---|---|---:|",
-			...plausibles
-				.slice(0, 60)
-				.map(
-					(d) =>
-						`| ${d.id} | ${d.series} ${d.episode} | ${d.titreTrouve} ${d.episodeTrouve ?? "?"} | ${(d.similarite ?? 0).toFixed(3)} |`
-				),
-			""
-		);
-	}
-	lignes.push(
-		"Rien n'est corrigé automatiquement : remplacer une vignette est une décision",
-		"éditoriale, et une similarité moyenne ne suffit pas à la prendre.",
-		""
-	);
-	await Bun.write(RAPPORT, lignes.join("\n"));
+  // Les verdicts se recalculent à la lecture : affiner la règle ne coûte pas
+  // une seule requête de quota.
+  const tous = Object.values(deja).map((v) =>
+    Object.assign(v, {
+      verdict: verdictPour(
+        v.similarite ?? 0,
+        v.episodeTrouve !== null && Number(v.episodeTrouve) === Number(v.episode),
+      ),
+    }),
+  );
+  const par = (v: TypeVerdict) => tous.filter((t) => t.verdict === v);
+  const desaccords = par("desaccord").toSorted((a, b) => (b.similarite ?? 0) - (a.similarite ?? 0));
+  const plausibles = par("plausible-desaccord").toSorted(
+    (a, b) => (b.similarite ?? 0) - (a.similarite ?? 0),
+  );
+  const lignes = [
+    "# Attribution des vignettes d'épisode",
+    "",
+    "Produit par `bun apps/bot/scripts/images-attribution.ts` : chaque vignette est",
+    "comparée à l'index image par image de trace.moe, interrogé par bxc. Seul un",
+    "vecteur de 33 entiers quitte la machine, jamais l'image.",
+    "",
+    `Vignettes examinées : **${tous.length}**.`,
+    "",
+    "| Verdict | Nombre | Lecture |",
+    "|---|---:|---|",
+    `| Confirmé | ${par("confirme").length} | même épisode, similarité ≥ ${SEUIL_FERME} |`,
+    `| Désaccord | ${desaccords.length} | autre épisode reconnu avec une similarité ≥ ${SEUIL_FERME} |`,
+    `| Accord probable | ${par("plausible-accord").length} | même épisode, similarité ${SEUIL_BRUIT}–${SEUIL_FERME} (vignette ré-encodée) |`,
+    `| À vérifier | ${plausibles.length} | autre épisode, similarité ${SEUIL_BRUIT}–${SEUIL_FERME} |`,
+    `| Sans réponse | ${par("sans-reponse").length} | rien au-dessus de ${SEUIL_BRUIT} |`,
+    "",
+  ];
+  if (desaccords.length > 0) {
+    lignes.push(
+      "## Désaccords — la vignette montre un autre épisode",
+      "",
+      "| Fiche | Notre étiquette | Reconnu | Similarité | Image |",
+      "|---|---|---|---:|---|",
+      ...desaccords.map(
+        (d) =>
+          `| ${d.id} | ${d.series} ${d.episode} | ${d.titreTrouve} ${d.episodeTrouve} | ${(d.similarite ?? 0).toFixed(3)} | \`${d.image}\` |`,
+      ),
+      "",
+    );
+  }
+  if (plausibles.length > 0) {
+    lignes.push(
+      "## À vérifier à l'œil",
+      "",
+      "| Fiche | Notre étiquette | Reconnu | Similarité |",
+      "|---|---|---|---:|",
+      ...plausibles
+        .slice(0, 60)
+        .map(
+          (d) =>
+            `| ${d.id} | ${d.series} ${d.episode} | ${d.titreTrouve} ${d.episodeTrouve ?? "?"} | ${(d.similarite ?? 0).toFixed(3)} |`,
+        ),
+      "",
+    );
+  }
+  lignes.push(
+    "Rien n'est corrigé automatiquement : remplacer une vignette est une décision",
+    "éditoriale, et une similarité moyenne ne suffit pas à la prendre.",
+    "",
+  );
+  await Bun.write(RAPPORT, lignes.join("\n"));
 }
 
 if (flag("rapport")) {
-	await ecrireRapport();
-	console.log(`${Object.keys(deja).length} vignette(s) au rapport → docs/attribution-images.md`);
-	process.exit(0);
+  await ecrireRapport();
+  console.log(
+    `${Object.keys(deja).length} vignette(s) au rapport → var/reports/attribution-images.md`,
+  );
+  process.exit(0);
 }
 
 const quotaBrut = await bxc(["frames", "quota", "--json"], 30_000);
@@ -198,8 +207,8 @@ const quota = JSON.parse(quotaBrut) as { quota?: number; quotaUsed?: number };
 const restant = (quota.quota ?? 0) - (quota.quotaUsed ?? 0);
 console.log(`quota trace.moe : ${restant} recherche(s) disponible(s) aujourd'hui`);
 if (restant <= 0) {
-	console.log("rien à faire — le quota se recharge chaque jour");
-	process.exit(0);
+  console.log("rien à faire — le quota se recharge chaque jour");
+  process.exit(0);
 }
 
 const sql = postgres(await urlBase(), { max: 2, prepare: false });
@@ -213,68 +222,72 @@ const episodes = (await sql`
 
 const aFaire = episodes.filter((e) => !deja[String(e.id)]).slice(0, Math.min(LOT, restant));
 console.log(
-	`${episodes.length} vignette(s) au catalogue, ${Object.keys(deja).length} déjà examinée(s), ` +
-		`${aFaire.length} dans ce lot`
+  `${episodes.length} vignette(s) au catalogue, ${Object.keys(deja).length} déjà examinée(s), ` +
+    `${aFaire.length} dans ce lot`,
 );
 
 let confirmes = 0;
 let desaccords = 0;
 for (const e of aFaire) {
-	const chemin = join(ROOT, e.image.replace(/^\.\//, ""));
-	if (!(await Bun.file(chemin).exists())) {
-		console.log(`  · ${e.series} ${e.episode} — fichier absent, ignoré`);
-		continue;
-	}
-	const brut = await bxc(["frames", "search", chemin, "--remote", "--limit", "3", "--json"]);
-	let meilleur: { title?: string; episode?: number | null; similarity?: number; atMs?: number } | null =
-		null;
-	try {
-		const data = JSON.parse(brut) as { matches?: typeof meilleur[] };
-		meilleur =
-			(data.matches ?? []).find((m) => /dragon ball/i.test(m?.title ?? "")) ??
-			(data.matches ?? [])[0] ??
-			null;
-	} catch {
-		meilleur = null;
-	}
-	const sim = meilleur?.similarity ?? 0;
-	// `number_in_series` peut revenir en chaîne selon le type SQL : comparer sans
-	// convertir rendait « DB 6 reconnu Dragon Ball 6 » en désaccord.
-	const memeNumero =
-		meilleur?.episode !== null &&
-		meilleur?.episode !== undefined &&
-		Number(meilleur.episode) === Number(e.episode);
-	const verdict = verdictPour(sim, memeNumero);
-	if (verdict === "confirme") confirmes++;
-	if (verdict === "desaccord") desaccords++;
-	deja[String(e.id)] = {
-		id: e.id,
-		series: e.series,
-		episode: e.episode,
-		image: e.image,
-		titreTrouve: meilleur?.title ?? null,
-		episodeTrouve: meilleur?.episode ?? null,
-		similarite: meilleur?.similarity ?? null,
-		timecodeMs: meilleur?.atMs ?? null,
-		verdict,
-		vuLe: new Date().toISOString(),
-	};
-	const marque = {
-		confirme: "✓",
-		desaccord: "✗",
-		"plausible-accord": "~",
-		"plausible-desaccord": "?",
-		"sans-reponse": "·",
-	}[verdict];
-	console.log(
-		`  ${marque} ${e.series} ${e.episode} → ${meilleur?.title ?? "rien"} ${meilleur?.episode ?? ""} (${sim.toFixed(3)})`
-	);
-	await Bun.write(ETAT, JSON.stringify(deja, null, "\t"));
+  const chemin = join(ROOT, e.image.replace(/^\.\//, ""));
+  if (!(await Bun.file(chemin).exists())) {
+    console.log(`  · ${e.series} ${e.episode} — fichier absent, ignoré`);
+    continue;
+  }
+  const brut = await bxc(["frames", "search", chemin, "--remote", "--limit", "3", "--json"]);
+  let meilleur: {
+    title?: string;
+    episode?: number | null;
+    similarity?: number;
+    atMs?: number;
+  } | null = null;
+  try {
+    const data = JSON.parse(brut) as { matches?: (typeof meilleur)[] };
+    meilleur =
+      (data.matches ?? []).find((m) => /dragon ball/i.test(m?.title ?? "")) ??
+      (data.matches ?? [])[0] ??
+      null;
+  } catch {
+    meilleur = null;
+  }
+  const sim = meilleur?.similarity ?? 0;
+  // `number_in_series` peut revenir en chaîne selon le type SQL : comparer sans
+  // convertir rendait « DB 6 reconnu Dragon Ball 6 » en désaccord.
+  const memeNumero =
+    meilleur?.episode !== null &&
+    meilleur?.episode !== undefined &&
+    Number(meilleur.episode) === Number(e.episode);
+  const verdict = verdictPour(sim, memeNumero);
+  if (verdict === "confirme") confirmes++;
+  if (verdict === "desaccord") desaccords++;
+  deja[String(e.id)] = {
+    id: e.id,
+    series: e.series,
+    episode: e.episode,
+    image: e.image,
+    titreTrouve: meilleur?.title ?? null,
+    episodeTrouve: meilleur?.episode ?? null,
+    similarite: meilleur?.similarity ?? null,
+    timecodeMs: meilleur?.atMs ?? null,
+    verdict,
+    vuLe: new Date().toISOString(),
+  };
+  const marque = {
+    confirme: "✓",
+    desaccord: "✗",
+    "plausible-accord": "~",
+    "plausible-desaccord": "?",
+    "sans-reponse": "·",
+  }[verdict];
+  console.log(
+    `  ${marque} ${e.series} ${e.episode} → ${meilleur?.title ?? "rien"} ${meilleur?.episode ?? ""} (${sim.toFixed(3)})`,
+  );
+  await Bun.write(ETAT, JSON.stringify(deja, null, "\t"));
 }
 
 await ecrireRapport();
 console.log(
-	`\n${aFaire.length} examinée(s) : ${confirmes} confirmée(s), ${desaccords} en désaccord — ` +
-		"rapport dans docs/attribution-images.md"
+  `\n${aFaire.length} examinée(s) : ${confirmes} confirmée(s), ${desaccords} en désaccord — ` +
+    "rapport dans var/reports/attribution-images.md",
 );
 await sql.end();

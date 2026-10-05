@@ -25,7 +25,7 @@ Pour obtenir des candidats OCR Koharu depuis un projet natif, utiliser
 Le binaire Rust doit être installé ou fourni avec `--sdk`. La commande vérifie
 le SHA-256 des images du manifeste contre les images stockées dans le projet,
 puis écrit uniquement un artefact `decision=unreviewed`, sans dépôt éditorial.
-Voir `docs/KOHARU-CAPABILITY-MAP.md` pour la frontière de provenance.
+Voir `docs/products/koharu/README.md` pour la frontière de provenance.
 
 Pour des sorties `aphrody.ocr.result/v2` (y compris une projection OCR Koharu),
 `bun run pipeline aphrody-ocr-candidate <manga|databook> <manifest.json>
@@ -59,12 +59,12 @@ sa file depuis PostgreSQL et les scripts de dépôt attendent des transcriptions
 déjà jugées au format `{image,text}`, pas `shenron.databook.review-candidate/v1`.
 
 Pour les règles de bascule et les preuves de production, voir
-`docs/APHRODY-OFFLOAD.md` à la racine du dépôt.
+`docs/architecture/APHRODY-ECOSYSTEM.md` (§6.2).
 
 La commande `pipeline translation` délègue la traduction à
 `apps/site/scripts/traduction-boucle.ts`, qui consomme le propriétaire
 Rust `aphrody-translate` pour le moteur et conserve les règles de validation et
 de dépôt propres aux databooks. L'ancien démon Google/BXC du processus Shenron
 n'est plus utilisé par ce flux. Voir
-[`docs/TRADUCTION-DATABOOKS.md`](../../docs/TRADUCTION-DATABOOKS.md) pour les
+[`docs/guides/TRADUCTION-DATABOOKS.md`](../../docs/guides/TRADUCTION-DATABOOKS.md) pour les
 compteurs et le protocole d'arrêt/reprise.

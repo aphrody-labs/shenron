@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@shenron/pipeline/aphrody/embeddings` — legacy facade over Aphrody
- * `POST /api/v1/shenron/embed` (docs/STACK.md §6.3, D10, D16).
+ * `POST /api/v1/shenron/embed` (docs/architecture/STACK.md §6.3, D10, D16).
  *
  * `ShenronEmbeddingsClient` keeps its constructor (`baseUrl`, `fetcher`, plus
  * optional `token` and `env`), the `embed(texts, kind, { timeoutMs })`

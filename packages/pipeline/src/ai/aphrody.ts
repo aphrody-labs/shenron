@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@shenron/pipeline/ai/aphrody` — typed client of the `/api/v1/shenron/*` routes of
- * `aphrody-ai-http` (docs/STACK.md §3.4).
+ * `aphrody-ai-http` (docs/architecture/STACK.md §3.4).
  *
  * Runtime class: `pure`. Every call returns an {@link AiResult} instead of
  * throwing. `fetch` is resolved at call time (`o.fetch ?? globalThis.fetch`),

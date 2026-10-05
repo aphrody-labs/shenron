@@ -183,7 +183,7 @@ export function requireOfflineRagDb(
     platform === "win32" ? target.toLowerCase() === served.toLowerCase() : target === served;
   if (same) {
     throw new Error(
-      `refus : RAG_DB désigne la base servie (${served}). Construire sur une copie puis basculer (docs/rag-enrichment.md).`,
+      `refus : RAG_DB désigne la base servie (${served}). Construire sur une copie puis basculer (docs/architecture/rag-enrichment.md).`,
     );
   }
   return target;

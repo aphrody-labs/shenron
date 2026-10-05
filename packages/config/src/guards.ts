@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Portability guards shared by every `@shenron/*` package (docs/STACK.md §3.0).
+ * Portability guards shared by every `@shenron/*` package (docs/architecture/STACK.md §3.0).
  *
  * The walker reads a package manifest (`exports` + `shenron.runtime`), follows
  * the relative-import closure of each entry and applies the runtime class
@@ -500,7 +500,7 @@ function globalSpecifierRule(specifier: string): string | null {
   return null;
 }
 
-/** Specifier rules of the runtime class table (docs/STACK.md §3.0). */
+/** Specifier rules of the runtime class table (docs/architecture/STACK.md §3.0). */
 function classSpecifierRule(runtime: RuntimeClass, specifier: string): string | null {
   const react = isPackage(specifier, "react") || isPackage(specifier, "react-dom");
   const next = isPackage(specifier, "next");

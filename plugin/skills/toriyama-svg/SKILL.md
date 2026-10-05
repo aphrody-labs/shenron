@@ -16,7 +16,7 @@ sinon consigner les mesures manuelles et le contrôle non effectué.
    et découpe. Créer `mesures.json` avant de dessiner, recouper une couleur
    incohérente sur une seconde source.
 3. Consigner sources, proportions, palette et décision → mesure dans
-   `docs/reference/shenron/<sujet>-analyse-visuelle.md` depuis Aphrody.
+   `docs/reference/<sujet>-analyse-visuelle.md` depuis Aphrody.
 4. Réutiliser la géométrie propriétaire ; une seule source génère illustration,
    composant et icônes. Construire les arcs entre creux et découper l'ombre par
    la silhouette, sans décalquer ni vectoriser automatiquement une planche.

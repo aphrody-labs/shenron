@@ -23,7 +23,7 @@
  *         n'est pas écrite : le contrat n'est pas négociable, seul le
  *         fournisseur l'est.
  *
- * L'invariant reste celui de `docs/ocr-manga.md` : deux lectures visuelles
+ * L'invariant reste celui de `docs/guides/ocr-manga.md` : deux lectures visuelles
  * indépendantes, décision confirmée, aucune anomalie. Un JSONL PP-OCR seul
  * n'est jamais déposable.
  */

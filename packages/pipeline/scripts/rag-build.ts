@@ -13,7 +13,7 @@
  * Récupération HYBRIDE : BM25 lexical (`rag_chunks`) + embeddings denses
  * multilingues (`vec_chunks`, multilingual-e5-small via Aphrody
  * `POST /api/v1/shenron/embed`, APHRODY_AI_HTTP_URL / APHRODY_AI_HTTP_TOKEN). DROP +
- * recreate : ne JAMAIS lancer sur la base servie (cf. docs/rag-enrichment.md,
+ * recreate : ne JAMAIS lancer sur la base servie (cf. docs/architecture/rag-enrichment.md,
  * procédure copy-swap) — pour une mise à jour à chaud, `rag-resync-entites.ts`.
  *
  * Usage : RAG_DB=/tmp/ragbuild.db bun apps/bot/scripts/rag-build.ts [--no-vectors]

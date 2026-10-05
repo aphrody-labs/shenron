@@ -3,7 +3,7 @@ import { describe, expect, it } from "bun:test";
 import { AphrodyComputeClient } from "./compute";
 import { AphrodyWebClient } from "./web";
 
-// B18 (docs/STACK.md §2.2): the embed path now checks 384-dimensional vectors.
+// B18 (docs/architecture/STACK.md §2.2): the embed path now checks 384-dimensional vectors.
 const E5_VECTOR = Array.from({ length: 384 }, (_, i) => i / 384);
 // No address default any more (the resolver has none): every client gets an explicit loopback base.
 const TEST_BASE = "http://127.0.0.1:8789";

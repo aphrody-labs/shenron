@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@shenron/pipeline/aphrody/compute` — legacy facade over `@shenron/pipeline/ai/aphrody`
- * (docs/STACK.md §6.3, D16).
+ * (docs/architecture/STACK.md §6.3, D16).
  *
  * `AphrodyComputeClient` keeps its historical contract: constructor options
  * (`baseUrl`, `token`, `fetcher`), method signatures, thrown errors and

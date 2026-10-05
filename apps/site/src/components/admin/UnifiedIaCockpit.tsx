@@ -1592,8 +1592,8 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                   </span>
                 </div>
                 <p className="text-xs text-white/60">
-                  Lecture impérative de <code>docs/products/GOALS.md</code> et{" "}
-                  <code>docs/operations/ADMIN-REPORTS.md</code> au démarrage de chaque session. Primauté
+                  Lecture impérative de <code>var/reports/GOALS.md</code> et{" "}
+                  <code>var/reports/ADMIN-REPORTS.md</code> au démarrage de chaque session. Primauté
                   absolue aux 42 tomes.
                 </p>
               </div>
@@ -1618,7 +1618,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-emerald-400" />
-                  Objectifs Actifs (bot.admin_goals → docs/products/GOALS.md)
+                  Objectifs Actifs (bot.admin_goals → var/reports/GOALS.md)
                 </h3>
                 <span className="text-xs text-white/40">
                   {fmtInt(summary?.activeGoals)} actif(s)

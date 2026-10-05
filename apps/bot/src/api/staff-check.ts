@@ -5,7 +5,7 @@ import { baAccount } from "~/db/schema";
 import { botStaffPolicy } from "~/lib/env";
 
 /**
- * Bot staff policy (S1, docs/STACK.md §2.2).
+ * Bot staff policy (S1, docs/architecture/STACK.md §2.2).
  *
  * Staff = OWNER_ID ∪ OWNER_IDS ∪ BOT_DEV_ID ∪ OAUTH_ALLOWED_USERS
  * (`staffPolicyFromEnv(env, "bot")`): exactly the whitelist the Discord logins
@@ -14,7 +14,7 @@ import { botStaffPolicy } from "~/lib/env";
  * of waiting for them to expire.
  */
 export function isBotStaff(discordId: string | null | undefined): boolean {
-	return botStaffPolicy().isStaff(discordId);
+  return botStaffPolicy().isStaff(discordId);
 }
 
 /**
@@ -24,13 +24,13 @@ export function isBotStaff(discordId: string | null | undefined): boolean {
  * lookup (the `@shenron/db` repository targets PostgreSQL).
  */
 export async function discordIdForBaUser(
-	baUserId: string,
-	db: DB = container.resolve(DatabaseService).db
+  baUserId: string,
+  db: DB = container.resolve(DatabaseService).db,
 ): Promise<string | null> {
-	const rows = await db
-		.select({ accountId: baAccount.accountId })
-		.from(baAccount)
-		.where(and(eq(baAccount.userId, baUserId), eq(baAccount.providerId, "discord")))
-		.limit(1);
-	return rows[0]?.accountId ?? null;
+  const rows = await db
+    .select({ accountId: baAccount.accountId })
+    .from(baAccount)
+    .where(and(eq(baAccount.userId, baUserId), eq(baAccount.providerId, "discord")))
+    .limit(1);
+  return rows[0]?.accountId ?? null;
 }

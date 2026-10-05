@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Error envelope of every Shenron HTTP API (docs/STACK.md §3.6).
+ * Error envelope of every Shenron HTTP API (docs/architecture/STACK.md §3.6).
  *
  * Runtime class: `pure` — plain zod with `.meta({ id })`, no hono import, so
  * a browser bundle can validate API errors without pulling the server.

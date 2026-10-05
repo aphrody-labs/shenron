@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Mutable data paths (docs/STACK.md D15).
+ * Mutable data paths (docs/architecture/STACK.md D15).
  *
  * Centralises which environment variables may relocate a writable file or
  * directory, while every caller keeps its current default (`legacyDefault`,

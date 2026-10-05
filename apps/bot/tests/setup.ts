@@ -27,8 +27,8 @@ Bun.env.LOG_LEVEL = "error"; // silence pino pendant les tests
 const dbPath = Bun.env.DATABASE_PATH;
 mkdirSync(tmpdir(), { recursive: true });
 for (const ext of ["", "-journal", "-wal", "-shm"]) {
-	const p = `${dbPath}${ext}`;
-	if (existsSync(p)) unlinkSync(p);
+  const p = `${dbPath}${ext}`;
+  if (existsSync(p)) unlinkSync(p);
 }
 
 // Applique les migrations sur la DB fraîche
@@ -41,10 +41,10 @@ const db = drizzle(sqlite);
 
 // The bot unit tier must not depend on an installed BXC binary (absent on CI
 // runners). Route the bridge to the deterministic CLI fixture; the real binary
-// is exercised by the @shenron/pipeline/bxc live tier (`test-all --live`).
+// is exercised by the @shenron/pipeline/bxc live tier (`bun run test:live`).
 Bun.env.BXC_BIN = resolve(
-	import.meta.dir,
-	"../../../packages/pipeline/test/bxc/fixtures/bxc-frames-stats.mjs"
+  import.meta.dir,
+  "../../../packages/pipeline/test/bxc/fixtures/bxc-frames-stats.mjs",
 );
 // Migrated frame queries use the Aphrody CLI contract in the same offline fixture.
 Bun.env.APHRODY_BIN = Bun.env.BXC_BIN;
@@ -52,15 +52,15 @@ const migrationsFolder = join(import.meta.dir, "../src/db/migrations");
 console.log("Migrations folder:", migrationsFolder);
 migrate(db, { migrationsFolder });
 for (const statement of [
-	"ALTER TABLE users ADD COLUMN equipped_banner TEXT;",
-	"ALTER TABLE users ADD COLUMN zeni_frozen INTEGER NOT NULL DEFAULT 0;",
-	"ALTER TABLE level_rewards ADD COLUMN banner_url TEXT;",
+  "ALTER TABLE users ADD COLUMN equipped_banner TEXT;",
+  "ALTER TABLE users ADD COLUMN zeni_frozen INTEGER NOT NULL DEFAULT 0;",
+  "ALTER TABLE level_rewards ADD COLUMN banner_url TEXT;",
 ]) {
-	try {
-		sqlite.exec(statement);
-	} catch {
-		// Existing migration already includes the compatibility column.
-	}
+  try {
+    sqlite.exec(statement);
+  } catch {
+    // Existing migration already includes the compatibility column.
+  }
 }
 sqlite.exec(`CREATE TABLE IF NOT EXISTS economy_flags (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,

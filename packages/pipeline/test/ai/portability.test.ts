@@ -29,7 +29,7 @@ const SUBPATHS = [
 ];
 
 describe("@shenron/pipeline/ai manifest", () => {
-  test("exports every subpath of docs/STACK.md §3.4 with its runtime class", () => {
+  test("exports every subpath of docs/architecture/STACK.md §3.4 with its runtime class", () => {
     expect(
       Object.keys(manifest.exports)
         .filter((key) => key === "./ai" || key.startsWith("./ai/"))

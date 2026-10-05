@@ -41,7 +41,9 @@ function closure(key: string): string[] {
     for (const { specifier } of importSpecifiers(readFileSync(file, "utf8"))) {
       if (!specifier.startsWith(".")) continue;
       const base = join(dirname(file), specifier);
-      const target = [`${base}.ts`, join(base, "index.ts")].find((candidate) => existsSync(candidate));
+      const target = [`${base}.ts`, join(base, "index.ts")].find((candidate) =>
+        existsSync(candidate),
+      );
       if (target) visit(target);
     }
   };
@@ -59,7 +61,7 @@ function bareImports(key: string): { file: string; specifier: string; typeOnly: 
 }
 
 describe("@shenron/api manifest", () => {
-  test("exports and runtime classes of docs/STACK.md §3.6, no root export", () => {
+  test("exports and runtime classes of docs/architecture/STACK.md §3.6, no root export", () => {
     expect(manifest.exports).not.toHaveProperty(".");
     expect(Object.keys(manifest.exports).toSorted()).toEqual(Object.keys(RUNTIME).toSorted());
     expect(manifest.shenron.runtime).toEqual(RUNTIME);
@@ -71,10 +73,14 @@ describe("@shenron/api manifest", () => {
     test(`${key}: pure (no node:, bun, process, Bun., next)`, async () => {
       const runtime = bareImports(key).filter(({ typeOnly }) => !typeOnly);
       expect(
-        runtime.filter(({ specifier }) => /^(?:node:|bun(?::|$)|next(?:\/|$)|hono|@hono\/)/.test(specifier)),
+        runtime.filter(({ specifier }) =>
+          /^(?:node:|bun(?::|$)|next(?:\/|$)|hono|@hono\/)/.test(specifier),
+        ),
       ).toEqual([]);
       for (const file of closure(key)) {
-        expect(stripNonCode(readFileSync(file, "utf8"))).not.toMatch(/\bprocess\.|\bBun\.|\bimport\.meta\b/);
+        expect(stripNonCode(readFileSync(file, "utf8"))).not.toMatch(
+          /\bprocess\.|\bBun\.|\bimport\.meta\b/,
+        );
       }
       const mod = (await import(join(PKG_DIR, manifest.exports[key]!))) as Record<string, unknown>;
       expect(Object.keys(mod).length).toBeGreaterThan(0);
@@ -99,7 +105,9 @@ describe("@shenron/api manifest", () => {
 
   test("only ./chat and ./host reach @shenron/pipeline (§4.1), through its doctrine subpaths", () => {
     for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
-      expect(bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline"))).toEqual([]);
+      expect(
+        bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
+      ).toEqual([]);
     }
     const reached = ["./chat", "./host"].flatMap((key) =>
       bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
@@ -109,7 +117,9 @@ describe("@shenron/api manifest", () => {
   });
 
   test("./openapi.json is valid JSON", () => {
-    const doc = JSON.parse(readFileSync(join(PKG_DIR, manifest.exports["./openapi.json"]!), "utf8"));
+    const doc = JSON.parse(
+      readFileSync(join(PKG_DIR, manifest.exports["./openapi.json"]!), "utf8"),
+    );
     expect(doc.openapi).toBe("3.1.0");
   });
 

@@ -13,7 +13,7 @@ backups, timers, rétention) est portée par le dépôt frère `aphrody-infra` :
 
 Aucune adresse, aucun hôte ni port de production n'est décrit ici : les lire
 dans le catalogue `aphrody-infra`. Frontière et historique des suppressions :
-[`../docs/INFRA-DELEGATION.md`](../docs/INFRA-DELEGATION.md).
+[`../docs/operations/INFRA-DELEGATION.md`](../docs/operations/INFRA-DELEGATION.md).
 
 ## Contenu restant
 

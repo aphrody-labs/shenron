@@ -18,8 +18,40 @@
     "./policy": "./src/policy.ts",
     "./agent-keys": "./src/agent-keys.ts",
     "./next": "./src/next.ts",
-    "./hono": "./src/hono.ts",
     "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "lint": "oxlint -c ../../.oxlintrc.json src",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@shenron/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@shenron/db": "workspace:*",
+    "@types/react": "catalog:",
+    "better-auth": "catalog:",
+    "drizzle-orm": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "better-auth": "1.7.6",
+    "next": "16.3.8",
+    "react": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "bun": ">=1.4.2"
   },
   "shenron": {
     "runtime": {
@@ -36,46 +68,7 @@
       "./policy": "pure",
       "./agent-keys": "server",
       "./next": "next",
-      "./hono": "hono",
       "./client": "react"
     }
-  },
-  "scripts": {
-    "lint": "oxlint -c ../../.oxlintrc.json src",
-    "test": "bun test",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@shenron/config": "workspace:*"
-  },
-  "devDependencies": {
-    "typescript": "catalog:",
-    "better-auth": "catalog:",
-    "hono": "catalog:",
-    "next": "catalog:",
-    "react": "catalog:",
-    "@types/react": "catalog:",
-    "@shenron/db": "workspace:*",
-    "drizzle-orm": "catalog:"
-  },
-  "peerDependencies": {
-    "better-auth": "1.7.5",
-    "hono": "^4.13.10",
-    "next": "16.3.5",
-    "react": "catalog:"
-  },
-  "peerDependenciesMeta": {
-    "hono": {
-      "optional": true
-    },
-    "next": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    }
-  },
-  "engines": {
-    "bun": ">=1.4.2"
   }
 }

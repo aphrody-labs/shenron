@@ -10,6 +10,7 @@
     "**/.next-*/**",
     "packages/koharu/src/wasm/**",
     "packages/koharu/src/protocol.ts",
-    "plugin/references/**"
+    "plugin/references/**",
+    "packages/ui/src/tokens.ts"
   ]
 }
