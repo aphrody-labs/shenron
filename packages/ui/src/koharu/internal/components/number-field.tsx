@@ -3,7 +3,7 @@
 import { NumberField as NumberFieldPrimitive } from "@base-ui/react/number-field";
 import * as React from "react";
 
-import { cn } from "../lib/utils";
+import { cn } from "../../../lib/utils";
 
 const NumberField = NumberFieldPrimitive.Root;
 

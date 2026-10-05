@@ -32,7 +32,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import { Separator } from "../../internal/components/separator";
-import { cn } from "../../internal/lib/utils";
+import { cn } from "../../../lib/utils";
 
 const rowHeight = 38;
 const listHeight = 248;

@@ -35,7 +35,7 @@ import {
   MenubarSubTrigger,
   MenubarTrigger as UiMenubarTrigger,
 } from "../../internal/components/menubar";
-import { cn } from "../../internal/lib/utils";
+import { cn } from "../../../lib/utils";
 
 export function TitleBar({ windowControls = true }: { windowControls?: boolean } = {}) {
   const { t } = useTranslation();

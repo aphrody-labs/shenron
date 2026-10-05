@@ -9,7 +9,7 @@ import { SettingsPage } from "../preferences/SettingsPage";
 import { StartView } from "../start/StartView";
 import { useProject } from "../../lib/queries";
 import { useKoharuStore } from "../../lib/store";
-import { cn } from "../../internal/lib/utils";
+import { cn } from "../../../lib/utils";
 
 /** `embedded`: hosted inside another app (Aphrody Studio) — fills its container, no window controls. */
 export function KoharuApp({ embedded = false }: { embedded?: boolean } = {}) {

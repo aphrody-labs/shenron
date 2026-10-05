@@ -56,7 +56,7 @@ import {
 import { Input } from "@aphrody/m3-primitives";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../internal/components/tooltip";
-import { cn } from "../../internal/lib/utils";
+import { cn } from "../../../lib/utils";
 
 const emptyPages: PageSummary[] = [];
 

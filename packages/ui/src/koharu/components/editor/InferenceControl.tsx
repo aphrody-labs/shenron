@@ -33,7 +33,7 @@ import {
 } from "@shenron/koharu/protocol";
 import { Button } from "../../internal/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
-import { cn } from "../../internal/lib/utils";
+import { cn } from "../../../lib/utils";
 
 type SelectorView = "root" | "model" | "scope" | "stages" | "output";
 
