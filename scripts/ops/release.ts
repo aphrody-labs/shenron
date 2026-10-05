@@ -257,7 +257,27 @@ async function probes(): Promise<void> {
     if (res.status !== 200) failures.push(font);
   }
   failures.push(...(await koharuWasmProbe()));
+  failures.push(...(await ragProbe()));
   if (failures.length) throw new Error(`sondes en échec : ${failures.join(", ")}`);
+}
+
+/**
+ * Le RAG de production : la recherche du bot passe par le calcul d'Aphrody (hôte de calcul,
+ * tunnel inverse vers le vps). Une réponse sans résultat (`index_unavailable`) ou en erreur
+ * signale un calcul injoignable ou une base RAG absente.
+ */
+async function ragProbe(): Promise<string[]> {
+  const url = "https://bot.dragonballfr.com/api/public/rag/search?q=Kid%20Buu";
+  const res = await fetch(url, { signal: AbortSignal.timeout(60_000) }).catch(() => null);
+  const body = (await res?.json().catch(() => null)) as {
+    results?: unknown[];
+    error?: string;
+  } | null;
+  const count = body?.results?.length ?? 0;
+  console.log(
+    `${res?.status ?? "ERR"} rag/search (${count} résultats${body?.error ? `, ${body.error}` : ""})`,
+  );
+  return res?.status === 200 && count > 0 ? [] : ["rag/search"];
 }
 
 /**
