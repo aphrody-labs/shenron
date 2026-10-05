@@ -65,14 +65,25 @@ fn shenron_doctor_json_output() {
     assert!(!stdout.contains("private-scope"));
 }
 
+/// Runs on the repository's public agent home (`agent-home/`), copied into a temporary
+/// `APHRODY_HOME`, instead of whatever `~/.aphrody/workspace-dbfr` the host happens to hold.
 #[test]
 fn shenron_persona_prompt_output() {
+    let state = tempfile::tempdir().expect("temporary Aphrody home");
+    let workspace = state.path().join("workspace-dbfr");
+    std::fs::create_dir_all(&workspace).expect("workspace-dbfr");
+    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../agent-home");
+    for entry in std::fs::read_dir(&fixture).expect("agent-home fixture") {
+        let entry = entry.expect("agent-home entry");
+        std::fs::copy(entry.path(), workspace.join(entry.file_name())).expect("copy agent home");
+    }
     shenron()
+        .env("APHRODY_HOME", state.path())
         .args(["persona", "prompt"])
         .assert()
         .success()
         .stdout(predicate::str::contains("Akira Toriyama"))
-        .stdout(predicate::str::contains("Tori-bot"))
+        .stdout(predicate::str::contains("Dragon Sacré"))
         .stdout(predicate::str::contains("Daizenshuu"));
 }
 
