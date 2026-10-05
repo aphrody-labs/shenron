@@ -135,6 +135,7 @@ export function InterviewsExplorer({ groups, ragResults = [] }: InterviewsExplor
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
+							aria-hidden
 						>
 							<path
 								strokeLinecap="round"
@@ -318,6 +319,7 @@ export function InterviewsExplorer({ groups, ragResults = [] }: InterviewsExplor
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke="currentColor"
+												aria-hidden
 											>
 												<path
 													strokeLinecap="round"

@@ -182,6 +182,29 @@ Il est donc conservé tel quel, et non aplati « pour rester cohérent ».
 L'étoile est franchement grasse : c'est ce qui la garde lisible en puce de
 liste à 10 px, taille à laquelle un pentagramme régulier se réduit à une tache.
 
+## La Dragon Ball (boule de cristal)
+
+Source unique : `packages/ui/src/toriyama-svg/sphere.ts`, lue par `<DragonBall>`,
+`<DragonBallSphere>` et `TORIYAMA_PALETTE.dragonBall` (deux copies divergeables
+du dégradé, des positions et de la fonction d'étoile supprimées le 2026-10-05).
+
+| Grandeur          | Valeur                                                           | Source                                                                                                      |
+| ----------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Disque            | Ø 100 px, centre (444,5 ; 165,8)                                 | tome 1 original, `db_manga_volumes/82.jpg` (1000 × 1500), cordes sur 100 lignes                             |
+| Foyer du dégradé  | (−0,30 ; −0,39) R                                                | idem, 10 arrêts `#FDFFEA` → `#EF9A2B`, médiane sur 180 rayons                                               |
+| Étoile (1 étoile) | rayon externe 0,412 R, interne 0,45 (mesuré 0,479 / 0,45 / 0,45) | idem + ligne de titre                                                                                       |
+| Rouge d'étoile    | `#E81F23` (second relevé `#EA1E24`)                              | médiane sur 758 px                                                                                          |
+| Cerne             | 4,5 % du diamètre                                                | logo DBS, `db_manga_volumes/124.jpg` (4 px pour Ø 89) ; absent du tome 1, écart assumé pour le fond sombre |
+
+Manques consignés : la disposition et le rayon des étoiles de 2 à 7 ne sont
+pas mesurés (aucune boule multi-étoiles assez grande dans le corpus ; les images
+`db_manga_volumes/` ne sont pas présentes dans ce checkout, mesure non refaite).
+L'icône `dragonBall` de `icones/geometries.ts` pose ses quatre étoiles en losange
+(rayon interne ≈ 0,40) quand le composant les pose en carré (0,45) :
+contradiction non tranchée faute de planche du 四星球, et l'icône est figée par
+l'empreinte de `packages/ui/test/icones.test.ts`. Rendu 512/64/16 px sur fonds
+clair et sombre regardé : sous 64 px, les étoiles de 5 à 7 deviennent du bruit.
+
 ## Ce qui n'est PAS repris de la couverture, et pourquoi
 
 - **Le fond blanc.** Le site est sombre par charte ; transposer le papier

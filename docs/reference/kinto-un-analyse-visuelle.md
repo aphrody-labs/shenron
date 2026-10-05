@@ -182,6 +182,21 @@ OG / Twitter : rien à faire, `app/opengraph-image.tsx` couvre les deux.
 | Dashboard bot : favicons, manifest, logo (`Layout.tsx`, `Login.tsx`) | `apps/bot/public/`, `apps/bot/assets/logo.webp`                                          |
 | JSON-LD `Organization.logo`                                          | `apple-touch-icon.png`                                                                   |
 
+## Géométrie unique (2026-10-05)
+
+`arcs` et `volute` n'existent plus qu'une fois, dans
+`packages/ui/src/toriyama-svg/geometry.ts` ; `kinto-un.ts` (et donc
+`apps/site/src/lib/kinto-un.ts`) et `couverture.ts` les importent. Le moteur
+divergent de `geometry.ts` (flèche plancher 0,5, sortie espacée) a été remplacé
+par celui du Kinto-Un : sortie de `svgIllustration`/`svgIcone`/`svgMonochrome`
+et des motifs de couverture contrôlée identique octet pour octet (SHA-256
+`2d6ec357…` avant/après). `<KintoUnCloud>` dessinait sa propre silhouette
+(sept points annoncés « mesurés » sans source, ombre découpée par un
+`clip-path: polygon()` CSS et non par la silhouette) : il délègue désormais à
+`corpsNuage(KINTO_UN_ILLUSTRATION, "ktc")`. Rendu de contrôle 512/64/16 px sur
+fonds clair et sombre regardé : silhouette et volutes du manga, bouillie jaune
+à 16 px (attendu : la variante `icone` sert sous 64 px).
+
 ## Reproduire
 
 ```bash
