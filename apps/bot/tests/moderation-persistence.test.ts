@@ -27,7 +27,7 @@ describe("Moderation Persistence", () => {
 		});
 
 		// Mock GuildMember
-		const rolesAdded: string[] = [];
+		const rolesAdded: Array<string | { id: string }> = [];
 		const fakeMember = {
 			id: userId,
 			user: {

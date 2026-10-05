@@ -21,6 +21,7 @@ const { GiveawayCommands } = await import("~/commands/giveaway/Giveaway");
 const { LevelCommands } = await import("~/commands/level/Level");
 const { LevelAdminCommands } = await import("~/commands/admin/LevelAdmin");
 const { ModerationCommands } = await import("~/commands/moderation/Moderation");
+const { JailCommands } = await import("~/commands/moderation/Jail");
 const { TicketCommands } = await import("~/commands/ticket/Ticket");
 const { VocalCommands } = await import("~/commands/vocal/Vocal");
 const { WikiCommands } = await import("~/commands/wiki/Wiki");
@@ -177,10 +178,10 @@ describe("EconomyCommands", () => {
 		assertResponded(int);
 	});
 
-	test("/custom admin set", async () => {
+	test("/custom admin give", async () => {
 		const int = interaction();
 		await cmd.customAdmin(
-			"set",
+			"give",
 			"title",
 			"test_key",
 			richUser() as never,
@@ -247,7 +248,7 @@ describe("ModerationCommands", () => {
 	test("/jail (no role configured → no-op friendly)", async () => {
 		const int = interaction();
 		try {
-			await cmd.jail(target(), "1h", "test", int as never);
+			await container.resolve(JailCommands).jail(target(), "1h", "test", undefined, int as never);
 		} catch {}
 		expect(int.calls.length >= 0).toBe(true);
 	});
@@ -255,7 +256,7 @@ describe("ModerationCommands", () => {
 	test("/unjail (not jailed)", async () => {
 		const int = interaction();
 		try {
-			await cmd.unjail(target(), "test", int as never);
+			await container.resolve(JailCommands).unjail(target(), "test", int as never);
 		} catch {}
 		expect(int.calls.length >= 0).toBe(true);
 	});
@@ -400,7 +401,7 @@ describe("Games", () => {
 		const cmd = container.resolve(BingoCommand);
 		const int = interaction();
 		try {
-			await cmd.bingo("bot", undefined, int as never);
+			await cmd.bingo("bot", undefined, undefined, undefined, int as never);
 		} catch {}
 		expect(int.calls.length >= 0).toBe(true);
 	});
@@ -409,7 +410,7 @@ describe("Games", () => {
 		const cmd = container.resolve(MorpionCommand);
 		const int = interaction();
 		try {
-			await cmd.morpion("bot", undefined, int as never);
+			await cmd.morpion("bot", undefined, undefined, int as never);
 		} catch {}
 		expect(int.calls.length >= 0).toBe(true);
 	});
@@ -418,7 +419,7 @@ describe("Games", () => {
 		const cmd = container.resolve(PenduCommand);
 		const int = interaction();
 		try {
-			await cmd.pendu("bot", undefined, int as never);
+			await cmd.pendu("bot", undefined, undefined, undefined, int as never);
 		} catch {}
 		expect(int.calls.length >= 0).toBe(true);
 	});
@@ -427,7 +428,7 @@ describe("Games", () => {
 		const cmd = container.resolve(PfcCommand);
 		const int = interaction();
 		try {
-			await cmd.pfc("bot", undefined, int as never);
+			await cmd.pfc("bot", undefined, undefined, int as never);
 		} catch {}
 		expect(int.calls.length >= 0).toBe(true);
 	});
@@ -450,12 +451,12 @@ describe("GiveawayCommands", () => {
 		});
 		try {
 			await cmd.create(
-				"Ma récompense",
-				"1m",
-				1,
-				"description du giveaway",
 				"Titre du giveaway",
+				"Ma récompense",
+				1,
+				"1m",
 				int.channel as never,
+				"description du giveaway",
 				int as never
 			);
 		} catch {}

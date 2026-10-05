@@ -169,8 +169,8 @@ export async function runBxcLaunch<T>(
 	let exitCode: number;
 	try {
 		[stdout, stderr, exitCode] = await Promise.all([
-			new Response(proc.stdout).text(),
-			new Response(proc.stderr).text(),
+			new Response(proc.stdout as ReadableStream<Uint8Array>).text(),
+			new Response(proc.stderr as ReadableStream<Uint8Array>).text(),
 			proc.exited,
 		]);
 	} catch (error) {
@@ -314,7 +314,8 @@ export function resolveEpisodeStreams(
 				variants?: Partial<Record<"vf" | "vostfr", DirectStream>>;
 				error?: string;
 		  }
-	>("resolve-episode.ts", [series, String(number)]).then((result) => {
+	>("resolve-episode.ts", [series, String(number)]).then(
+		(result): BxcResult<Partial<Record<"vf" | "vostfr", DirectStream>>> => {
 		if (!result.ok) return result;
 		if ("variants" in result.value) {
 			if (result.value.error && !result.value.variants) {
@@ -322,6 +323,11 @@ export function resolveEpisodeStreams(
 			}
 			return { ok: true, value: result.value.variants ?? {}, stderr: result.stderr };
 		}
-		return { ok: true, value: result.value, stderr: result.stderr };
-	});
+		return {
+			ok: true,
+			value: result.value as Partial<Record<"vf" | "vostfr", DirectStream>>,
+			stderr: result.stderr,
+		};
+		}
+	);
 }

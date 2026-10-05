@@ -57,7 +57,7 @@ describe("S5 — bot A2A write guard", () => {
 
 	it("enforce on -> 401 on missing or wrong Bearer", async () => {
 		setEnv("true", TOKEN);
-		for (const headers of [{}, { authorization: "Bearer wrong" }]) {
+		for (const headers of [{}, { authorization: "Bearer wrong" }] as Record<string, string>[]) {
 			const res = await a2aJsonRpc(rpc("tasks/cancel", headers));
 			expect(res.status).toBe(401);
 			expect(await res.json()).toEqual({ error: "a2a_unauthorized" });

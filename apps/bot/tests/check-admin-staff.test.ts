@@ -219,7 +219,7 @@ describe("S10 — SESSION_SECRET fallback warning", () => {
 		expect(payload?.source).toBe("token");
 		expect(await verifySession(again)).not.toBeNull();
 
-		const calls = warnSpy.mock.calls.filter((c) => c[0] === SESSION_SECRET_FALLBACK_WARNING);
+		const calls = warnSpy.mock.calls.filter((c: unknown[]) => c[0] === SESSION_SECRET_FALLBACK_WARNING);
 		expect(calls).toHaveLength(1);
 		for (const call of warnSpy.mock.calls) {
 			expect(JSON.stringify(call)).not.toContain(ADMIN_TOKEN);
@@ -230,7 +230,7 @@ describe("S10 — SESSION_SECRET fallback warning", () => {
 		(env as { SESSION_SECRET?: string }).SESSION_SECRET = "s".repeat(40);
 		(env as { API_ADMIN_TOKEN?: string }).API_ADMIN_TOKEN = ADMIN_TOKEN;
 		expect(await verifySession(await createSession())).not.toBeNull();
-		expect(warnSpy.mock.calls.filter((c) => c[0] === SESSION_SECRET_FALLBACK_WARNING)).toHaveLength(
+		expect(warnSpy.mock.calls.filter((c: unknown[]) => c[0] === SESSION_SECRET_FALLBACK_WARNING)).toHaveLength(
 			0
 		);
 	});

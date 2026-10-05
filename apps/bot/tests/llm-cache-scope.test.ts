@@ -52,7 +52,7 @@ test("the same question only reuses a cached answer with the same evidence and m
   };
   let modelCalls = 0;
   globalThis.fetch = (async () =>
-    Response.json({ answer: `Réponse ${++modelCalls}`, model: "fixture" })) as typeof fetch;
+    Response.json({ answer: `Réponse ${++modelCalls}`, model: "fixture" })) as unknown as typeof fetch;
   const db = new Database(":memory:");
   const hit = (content: string) => ({
     rowid: 1,
@@ -123,7 +123,7 @@ test("B7: the cache scope binds the model, PROMPT_VERSION and the evidence", asy
     setSemanticCache: async () => {},
   };
   globalThis.fetch = (async () =>
-    Response.json({ answer: "Réponse", model: "fixture" })) as typeof fetch;
+    Response.json({ answer: "Réponse", model: "fixture" })) as unknown as typeof fetch;
   const db = new Database(":memory:");
   try {
     await generateLlmAnswer(
