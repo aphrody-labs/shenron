@@ -61,8 +61,13 @@ export class RedisIndexerService {
 
   private initWorker() {
     try {
-      const workerUrl = new URL("../workers/indexer.ts", import.meta.url);
-      this.worker = new Worker(workerUrl.href, { type: "module" });
+      // Exécutable compilé : le worker est un point d’entrée de `bun build --compile`
+      // (scripts/build/bot.ts), résolu depuis la racine des entrées (src/).
+      const compiled = /\/\$bunfs\/|~BUN/.test(import.meta.url);
+      const workerUrl = compiled
+        ? "./workers/indexer.ts"
+        : new URL("../workers/indexer.ts", import.meta.url).href;
+      this.worker = new Worker(workerUrl, { type: "module" });
 
       this.worker.addEventListener("message", (event) => {
         const { status, type, count, error } = event.data;

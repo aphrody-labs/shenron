@@ -36,6 +36,8 @@ const child = Bun.spawn(
     process.execPath,
     "build",
     "src/entry-standalone.ts",
+    // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
+    "src/workers/indexer.ts",
     "--compile",
     `--target=${bunTarget}`,
     "--minify-whitespace",
