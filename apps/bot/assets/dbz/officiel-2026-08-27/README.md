@@ -45,7 +45,7 @@ de la source, pas la définition — elles ne remplacent pas un scan haute
 définition.
 
 **Appariement non automatisable pour les transformations** : le lot propose un
-Gogeta *Super Saiyan 4* là où la fiche dit « Gogeta SSJ ». Illustrer une
+Gogeta _Super Saiyan 4_ là où la fiche dit « Gogeta SSJ ». Illustrer une
 transformation par la mauvaise est une erreur factuelle, pas un détail
 esthétique. Le rattachement se fait à la main, en regardant l'image.
 
