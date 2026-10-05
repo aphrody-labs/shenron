@@ -118,15 +118,20 @@ describe("système de design — un seul vocabulaire", () => {
    * `HeroTitles` raconte pourquoi : deux identités sur un site, c'est zéro.
    */
   test("le titre de page du kit délègue à HeroTitles", () => {
-    const heading = readFileSync(join(KIT_DIR, "SectionHeading.tsx"), "utf8");
-    if (heading.includes("@shenron/ui/layout/SectionHeading")) {
-      const uiHeading = readFileSync(
-        join(REPO_ROOT, "packages", "ui", "src", "layout", "SectionHeading.tsx"),
-        "utf8",
-      );
-      expect(uiHeading).toContain("HeroTitles");
-    } else {
-      expect(heading).toContain("HeroTitles");
+    // Le kit ne définit plus de titre : son baril réexporte celui du paquet.
+    const barrel = readFileSync(join(KIT_DIR, "index.ts"), "utf8");
+    expect(barrel).toMatch(
+      /export \{ SectionHeading \} from "@shenron\/ui\/layout\/SectionHeading";/,
+    );
+    const uiHeading = readFileSync(
+      join(REPO_ROOT, "packages", "ui", "src", "layout", "SectionHeading.tsx"),
+      "utf8",
+    );
+    expect(uiHeading).toContain("HeroTitles");
+    // Aucun fichier du kit n'introduit de troisième typographie de titre.
+    for (const file of readdirSync(KIT_DIR)) {
+      const src = readFileSync(join(KIT_DIR, file), "utf8");
+      expect(src, `kit/${file}`).not.toMatch(/function (SectionHeading|PageTitle|HeroTitles)\b/);
     }
   });
 
