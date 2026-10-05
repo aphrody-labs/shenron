@@ -4,23 +4,33 @@
 Koharu est le moteur de traduction de manga absorbé dans ce dépôt (projets,
 scènes, détection, OCR, traduction, nettoyage, rendu, export). Référence unique
 pour son emplacement, son interface et sa frontière éditoriale. Documentation
-amont (en/ja/zh) : [`docs/koharu/`](../../koharu/) ; journal amont :
-[`docs/koharu/CHANGELOG.md`](../../koharu/CHANGELOG.md) ; licences MIT/Apache-2.0
+amont de koharu-rs (Mintlify, en/ja/zh), archivée telle quelle et non maintenue :
+[`docs/reference/koharu/upstream/`](../../reference/koharu/upstream/) ; journal amont :
+[`CHANGELOG.md`](../../reference/koharu/upstream/CHANGELOG.md) ; licences MIT/Apache-2.0
 d'origine : [`docs/licenses/koharu/`](../../licenses/koharu/).
 
 ## Emplacement
 
 | Surface | Chemin |
 | --- | --- |
-| Moteur Rust | `crates/koharu-*` (`library`, `app`, `pipeline`, `ml`, `translator`, `scene`, `storage`, `renderer`, `rasterizer`, `psd`, `canvas`, `desktop`, `agent`, `metrics`, `secrets`) |
+| Moteur | `koharu-library` (projets, scènes, pipeline, rendu, export), sur les crates `crates/koharu-*` (`pipeline`, `ml`, `translator`, `scene`, `storage`, `renderer`, `rasterizer`, `psd`, `canvas`, `agent`, `metrics`, `secrets`, `desktop`) |
+| Commandes Tauri | `koharu-app` : bibliothèque de commandes et générateur du protocole (`src/bin/generate.rs`), sans exécutable propre |
+| Hôte | `shenron-desktop`, le seul binaire graphique : il monte les commandes de `koharu-app` et le moteur dans son processus (fonctionnalité `koharu`, par défaut) |
 | Socle ML | `koharu-{llama,torch,diffusion,runtime,config}`, fournis par Aphrody (voir [`APHRODY-ECOSYSTEM.md`](../../architecture/APHRODY-ECOSYSTEM.md)) |
-| Client Bun | `@shenron/koharu` (`packages/koharu`) : protocole typé, transports Tauri et natif, réglages, médias, canvas WASM |
-| Interface | `@shenron/ui`, montée par le site sous `/koharu` |
+| Client Bun | `@shenron/koharu` (`packages/koharu`) : `./protocol` (généré), `./native` (transport `koharu-sdk`), `./canvas` (WASM de `koharu-canvas`) |
+| Interface | `@shenron/ui/koharu`, montée par le site sous `/koharu` et rendue utilisable par `shenron-desktop` |
 
-`koharu-library` est le point d'entrée Rust sans Tauri. Son exécutable
-`koharu-sdk` parle JSON Lines sur stdin/stdout (`{ id, method, params }` →
-`{ id, result }` ou `{ id, error }`) ; `--root <dossier>` choisit la collection de
-projets. Les méthodes sont listées dans `crates/koharu-library/README.md`.
+Deux transports, un seul moteur :
+
+- **Tauri (Specta)** pour l'éditeur : `packages/koharu/src/protocol.ts` est généré
+  depuis les commandes de `koharu-app` ; `shenron-desktop` les enregistre sous leurs
+  noms d'origine (`koharu_app::COMMAND_NAMES`), à côté des commandes du studio
+  (`crates/shenron-studio` : `studio_*`, `koharu_rpc`, `shenron_chat`).
+- **`koharu-sdk` en JSON Lines** pour la chaîne éditoriale : l'exécutable sans
+  Tauri de `koharu-library` parle sur stdin/stdout (`{ id, method, params }` →
+  `{ id, result }` ou `{ id, error }`) ; `--root <dossier>` choisit la collection de
+  projets. `@shenron/koharu/native` le pilote pour `@shenron/pipeline`. Les méthodes
+  sont listées dans `crates/koharu-library/README.md`.
 
 ```sh
 cargo build -p koharu-library --bin koharu-sdk
@@ -28,7 +38,20 @@ bun --filter @shenron/koharu protocol      # régénère packages/koharu/src/pro
 bun --filter @shenron/koharu build:wasm    # reconstruit koharu-canvas
 ```
 
-Les fichiers générés (protocole, WASM) ne s'éditent jamais à la main.
+Les fichiers générés (protocole, WASM) ne s'éditent jamais à la main. Le générateur
+écrit `packages/koharu/src/protocol.ts` relativement à la racine du dépôt quel que soit le
+répertoire courant ; `KOHARU_PROTOCOL_OUT` le redirige (chemin relatif à la racine).
+
+## Retiré
+
+Ces surfaces n'avaient aucun appelant et ont été supprimées le 2026-10-05 :
+
+- `@shenron/koharu` racine, `./tauri`, `./settings` et `./media` (client générique,
+  adaptateur Tauri, contrat de réglages JSON Lines, réexport de `@shenron/media`) ;
+- `MangaStudio` et `KoharuSettings` du studio, doublons de `/koharu` et de
+  `SettingsPage`, ainsi que `KoharuSettings` des préférences et `Updater` de
+  l'éditeur (jamais montés) ;
+- l'ancien chemin `packages/koharu-bridge/` du générateur.
 
 ## Candidats vers Shenron
 
