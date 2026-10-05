@@ -1,6 +1,7 @@
 import { requireUser } from "@/lib/session";
 import AccountSettings from "./AccountSettings";
 import { UserNav } from "@/components/user/UserNav";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 
 export const dynamic = "force-dynamic";
 // Page strictement personnelle (sessions, export, suppression) : comme
@@ -10,8 +11,8 @@ export const metadata = { title: "Paramètres", robots: { index: false, follow: 
 export default async function ParametresPage() {
   const me = await requireUser("/parametres");
   return (
-    <main className="min-h-screen bg-[#0e0d0b] text-white">
-      <div className="mx-auto max-w-4xl px-4 py-8 pb-28 md:px-8 md:py-12">
+    <PageShell width="narrow" rhythm="tight">
+      <div>
         <UserNav />
         <AccountSettings
           initial={{
@@ -21,6 +22,6 @@ export default async function ParametresPage() {
           }}
         />
       </div>
-    </main>
+    </PageShell>
   );
 }

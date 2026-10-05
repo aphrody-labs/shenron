@@ -1,7 +1,7 @@
-import { PageShell } from "@/components/kit";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import { TierlistEditor } from "@/components/tierlist/TierlistEditor";
 import {
   TIERLIST_TEMPLATES,
@@ -61,7 +61,7 @@ export default async function CreerTierlistPage({
   const allowEmpty = tpl.source === "none";
 
   return (
-    <div className="container w-full mx-auto max-w-4xl px-4 py-12">
+    <PageShell width="narrow">
       <PageHeader eyebrow="Tierlists" title="Ton classement" subtitle={tpl.title} size="md" />
       {pool.length === 0 && !allowEmpty ? (
         <div className="dbz-panel p-8 text-center text-white/60">
@@ -81,6 +81,6 @@ export default async function CreerTierlistPage({
           ← Changer de thème
         </Link>
       </p>
-    </div>
+    </PageShell>
   );
 }

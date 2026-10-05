@@ -21,6 +21,7 @@ import {
   type MediaCatalog,
 } from "@/components/stream/MediaCatalogRails";
 import { UserNav } from "@/components/user/UserNav";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 import { T } from "@/components/T";
 import { readAccountSummary } from "@/lib/account-data";
 import { assetUrl } from "@/lib/assets";
@@ -69,8 +70,8 @@ export default async function DashboardPage() {
       )
     : 0;
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_80%_0%,rgba(243,132,24,.12),transparent_32%),#0e0d0b] text-white">
-      <div className="mx-auto max-w-[1400px] px-4 py-8 pb-28 md:px-8 md:py-12">
+    <PageShell width="wide" rhythm="tight">
+      <div>
         <UserNav />
         <MemberHero username={username} catalog={catalog} />
         <ContinueRail
@@ -253,7 +254,7 @@ export default async function DashboardPage() {
           </p>
         )}
       </div>
-    </main>
+    </PageShell>
   );
 }
 

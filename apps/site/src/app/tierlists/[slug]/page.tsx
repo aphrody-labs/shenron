@@ -2,7 +2,8 @@ import { hasEditorialDatabase } from "@/lib/prerender";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 import { TierlistView } from "@/components/tierlist/TierlistView";
 import { TierlistLike } from "@/components/tierlist/TierlistLike";
 import { getTierlistBySlug, listTierlists } from "@/lib/tierlists";
@@ -46,7 +47,7 @@ export default async function TierlistPage({ params }: { params: Promise<{ slug:
   const totalItems = tl.tiers.reduce((n, t) => n + t.items.length, 0);
 
   return (
-    <div className="container w-full mx-auto max-w-4xl px-4 py-12">
+    <PageShell width="narrow">
       <PageHeader
         eyebrow="Tierlist"
         title={tl.title}
@@ -94,6 +95,6 @@ export default async function TierlistPage({ params }: { params: Promise<{ slug:
           Créer la mienne
         </Link>
       </div>
-    </div>
+    </PageShell>
   );
 }

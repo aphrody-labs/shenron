@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { DomainBar } from "@/components/kit";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 import { UserNav } from "@/components/user/UserNav";
 import { T } from "@/components/T";
 import { ContinueRail } from "@/components/history/ContinueRail";
@@ -82,12 +83,12 @@ export default async function ProfilePage({
     );
     if (!ownProfile) return unavailable;
     return (
-      <main className="min-h-screen bg-[#0e0d0b] px-4 py-8 text-white md:px-8 md:py-14">
-        <div className="mx-auto max-w-6xl">
+      <PageShell rhythm="tight">
+        <div>
           <UserNav />
           {unavailable}
         </div>
-      </main>
+      </PageShell>
     );
   }
   if (result.status === "absent") notFound();
@@ -118,8 +119,8 @@ export default async function ProfilePage({
     ["profile.gearTitleItem", equipped.title],
   ];
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_75%_0%,rgba(243,132,24,.14),transparent_35%),#0e0d0b] text-white">
-      <div className="mx-auto max-w-6xl px-4 py-8 pb-24 md:px-8 md:py-14">
+    <PageShell rhythm="tight">
+      <div>
         {ownProfile && <UserNav />}
         {/* Pont staff : ouvrir le dossier d'intégrité de CE membre (concours). */}
         <DomainBar
@@ -316,7 +317,7 @@ export default async function ProfilePage({
           </div>
         </div>
       </div>
-    </main>
+    </PageShell>
   );
 }
 
