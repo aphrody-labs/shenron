@@ -48,7 +48,7 @@ import {
   type Typography,
   type WritingMode,
 } from "@shenron/koharu/protocol";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -878,7 +878,7 @@ function LayerEditor({ layer, onDelete }: { layer: Layer; onDelete?: () => void 
               data-testid={`edit-source-${layer.id}`}
               aria-label={t("layers.sourceLabel", { name })}
               wrap="soft"
-              className="max-h-14 min-h-8 w-full max-w-full min-w-0 resize-y overflow-y-auto rounded-md bg-background px-1.5 py-1 text-[12px] leading-4 md:text-[12px]"
+              className="max-h-14 min-h-8 w-full max-w-full min-w-0 resize-y overflow-y-auto rounded-md bg-background text-foreground px-1.5 py-1 text-[12px] leading-4 md:text-[12px]"
               value={layer.content.source?.text ?? ""}
               onCommit={(text) =>
                 void call(commands.setSourceText, layer.id, text)
@@ -892,7 +892,7 @@ function LayerEditor({ layer, onDelete }: { layer: Layer; onDelete?: () => void 
               data-testid={`edit-translation-${layer.id}`}
               aria-label={t("layers.translationLabel", { name })}
               wrap="soft"
-              className="max-h-16 min-h-9 w-full max-w-full min-w-0 resize-y overflow-y-auto rounded-md border-primary/25 bg-background px-1.5 py-1 text-[12px] leading-4 md:text-[12px]"
+              className="max-h-16 min-h-9 w-full max-w-full min-w-0 resize-y overflow-y-auto rounded-md border-primary/25 bg-background text-foreground px-1.5 py-1 text-[12px] leading-4 md:text-[12px]"
               value={layer.content.translation?.text ?? ""}
               onCommit={(text) =>
                 void call(commands.setTranslation, layer.id, text.trim() ? text : null)

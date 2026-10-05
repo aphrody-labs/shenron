@@ -6,7 +6,7 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { useTranslation } from "react-i18next";
 
 import { useColorSampling } from "./ColorSampling";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
 import { cn } from "../../../lib/utils";
 

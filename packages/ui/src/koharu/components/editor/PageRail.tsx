@@ -37,7 +37,7 @@ import {
   type PageSummary,
   type ProjectInfo,
 } from "@shenron/koharu/protocol";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import {
   Dialog,
   DialogContent,

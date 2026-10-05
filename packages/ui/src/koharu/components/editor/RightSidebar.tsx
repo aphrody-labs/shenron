@@ -8,7 +8,7 @@ import { AgentPanel } from "./AgentPanel";
 import { ShenronExportPanel } from "../ShenronExportPanel";
 import { Inspector } from "./Inspector";
 import { rightSidebarPanels, type RightSidebarPanel } from "../../navigation";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 
 const shenronHost = {
   isTauri,

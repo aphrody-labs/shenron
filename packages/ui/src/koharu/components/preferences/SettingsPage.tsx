@@ -20,7 +20,7 @@ import {
   type ProviderPreferences as ProviderSettings,
   type TypesettingConfig,
 } from "@shenron/koharu/protocol";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import { Input } from "@aphrody/m3-primitives";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import {

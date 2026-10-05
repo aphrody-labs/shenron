@@ -17,7 +17,7 @@ import {
   type RunId,
 } from "@shenron/koharu/protocol";
 import { Badge } from "@aphrody/m3-primitives";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import {
   Select,
@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../internal/components/select";
-import { Textarea } from "../../internal/components/textarea";
+import { Textarea } from "../../../components/textarea";
 
 interface ConversationMessage {
   id: string;
@@ -210,7 +210,7 @@ export function AgentPanel() {
             disabled={running !== null}
             aria-label={t("agent.message")}
             placeholder={t("agent.placeholder")}
-            className="max-h-36 min-h-16 resize-none border-0 bg-transparent px-1.5 py-1 text-[11px] leading-5 shadow-none focus-visible:ring-0"
+            className="max-h-36 min-h-16 resize-none border-0 bg-transparent text-foreground px-1.5 py-1 text-[11px] leading-5 shadow-none focus-visible:ring-0"
             onChange={(event) => setPrompt(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {

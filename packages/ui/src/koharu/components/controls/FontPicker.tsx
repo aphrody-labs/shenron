@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useFontPreview } from "../../lib/queries";
 import type { FontFamily, FontSource } from "@shenron/koharu/protocol";
 import { Badge } from "@aphrody/m3-primitives";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +31,7 @@ import {
 } from "../../internal/components/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "../../internal/components/popover";
 import { ScrollArea } from "../../internal/components/scroll-area";
-import { Separator } from "../../internal/components/separator";
+import { Separator } from "../../../components/separator";
 import { cn } from "../../../lib/utils";
 
 const rowHeight = 38;

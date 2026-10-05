@@ -19,7 +19,7 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from "../../internal/components/alert-dialog";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import { Input } from "@aphrody/m3-primitives";
 import { ScrollArea } from "../../internal/components/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../internal/components/tooltip";

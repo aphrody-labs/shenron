@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { modelKey, modelSelection, providerName } from "../../lib/translation";
 import type { Model, ModelSelection, ProviderPreference } from "@shenron/koharu/protocol";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import {
   InputGroup,
   InputGroupAddon,

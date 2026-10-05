@@ -11,8 +11,8 @@ import type {
   ProviderPreference,
   ProviderPreferences as ProviderSettings,
 } from "@shenron/koharu/protocol";
-import { Button } from "../../internal/components/button";
-import { Input } from "../../internal/components/input";
+import { Button } from "../../../components/button";
+import { Input } from "../../../components/input";
 
 type ConfigWithSetting<T, Key extends PropertyKey> = T extends { settings: infer Settings }
   ? Key extends keyof Settings

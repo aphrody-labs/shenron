@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../internal/components/select";
-import { Textarea } from "../../internal/components/textarea";
+import { Textarea } from "../../../components/textarea";
 
 export function TranslationPreferences({
   value,

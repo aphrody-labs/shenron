@@ -8,7 +8,7 @@ import { call } from "../../lib/backend";
 import { usePages } from "../../lib/queries";
 import { useKoharuStore } from "../../lib/store";
 import { commands, type Download as DownloadState, type Job } from "@shenron/koharu/protocol";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 
 export function ActivityCenter() {
   const { t } = useTranslation();

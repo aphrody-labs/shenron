@@ -22,7 +22,7 @@ import {
   useKoharuStore,
   type CanvasTool,
 } from "../../lib/store";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import {
   NumberField,
   NumberFieldDecrement,

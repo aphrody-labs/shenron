@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 
-import { Textarea } from "../../internal/components/textarea";
+import { Textarea } from "../../../components/textarea";
 
 type CommitTextareaProps = Omit<ComponentProps<typeof Textarea>, "value" | "onChange"> & {
   value: string;

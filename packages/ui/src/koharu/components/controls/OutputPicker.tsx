@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { orderedLanguageChoices } from "../../lib/translation";
 import type { LanguageChoice } from "@shenron/koharu/protocol";
-import { Button } from "../../internal/components/button";
+import { Button } from "../../../components/button";
 import {
   Select,
   SelectContent,
@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../internal/components/select";
-import { Textarea } from "../../internal/components/textarea";
+import { Textarea } from "../../../components/textarea";
 
 export type OutputDraft = {
   targetLanguage: string;
