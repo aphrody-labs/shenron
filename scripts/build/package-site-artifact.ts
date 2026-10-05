@@ -9,10 +9,12 @@
  *
  * SORTIE (défaut `artifacts/site-build.tar.gz`) : `artifact-manifest.json` + `build/`.
  * `--release-dir` écrit, depuis le commit propre courant, le répertoire `shenron/` d'un bundle :
- * `source.tar.gz` (git archive + bot compilé en `apps/bot/dist/shenron`), `site-build.tar.gz`,
- * `systemd/shenron-{site,bot}.service` (rendus par le CLI hôte d'Aphrody), `nginx/shenron.conf`,
+ * `source.tar.gz` (git archive + bot compilé en `apps/bot/dist/shenron` + serveur MCP en
+ * `bin/shenron-mcp`), `site-build.tar.gz`, `systemd/shenron-{site,bot,mcp-http}.service` (rendus
+ * par le CLI hôte d'Aphrody), `nginx/shenron.conf`,
  * `release.json` (`repository: "shenron"`, `sourceLayout: "legacy"`) et `SHA256SUMS`.
- * Préalables : `bun scripts/build/bot.ts` et le build Next (`NEXT_DIST_DIR=.next-build`).
+ * Préalables : `bun scripts/build/bot.ts`, `cargo build --release -p shenron-mcp` et le build
+ * Next (`NEXT_DIST_DIR=.next-build`).
  * Aucun processus d'exécution, aucune migration ni base : l'emballage ne fait que copier.
  */
 import { existsSync } from "node:fs";
@@ -26,7 +28,7 @@ const USAGE =
   "usage: package-site-artifact.ts [SORTIE] [--release-dir DOSSIER] [--target vps|dbfr]";
 const TARGETS = ["vps", "dbfr"] as const;
 // Ordre du roster du catalogue Infra (services shenron sous /srv/shenron/current).
-const SERVICES = ["shenron-site", "shenron-bot"] as const;
+const SERVICES = ["shenron-site", "shenron-bot", "shenron-mcp-http"] as const;
 // Vhosts installés par l'Infra depuis `config/host/nginx/shenron` (conf.d séparés).
 const PUBLIC_HOSTS = [
   "dragonballfr.com",
@@ -38,6 +40,12 @@ const PUBLIC_HOSTS = [
 const repo = join(import.meta.dir, "..", "..");
 const build = join(repo, "apps", "site", ".next-build");
 const botBinary = join(repo, "dist", "bot", "linux-x64", "shenron-bot");
+// `ExecStart` de shenron-mcp-http.service : `/srv/shenron/current/bin/shenron-mcp`.
+const mcpBinary = join(
+  process.env.CARGO_TARGET_DIR?.trim() || join(repo, "target"),
+  "release",
+  "shenron-mcp",
+);
 
 const args = process.argv.slice(2);
 function option(name: string): string | undefined {
@@ -135,6 +143,10 @@ if (releaseArg !== undefined) {
     throw new Error("la source de release doit être commitée et propre");
   if (!existsSync(botBinary))
     throw new Error("bot compilé absent : lancer `bun scripts/build/bot.ts` avant l'emballage");
+  if (!existsSync(mcpBinary))
+    throw new Error(
+      "serveur MCP absent : lancer `cargo build --release -p shenron-mcp` avant l'emballage",
+    );
   const payload = await artifactPath(store, `${releaseArg}.staging`);
   if (existsSync(payload)) throw new Error("le répertoire de préparation de release existe déjà");
   // Le répertoire de release est le `shenron/` d'un bundle : `assemble DOSSIER`.
@@ -143,6 +155,7 @@ if (releaseArg !== undefined) {
   await mkdir(join(shenron, "systemd"), { recursive: true });
   await mkdir(join(shenron, "nginx"), { recursive: true });
   await mkdir(join(source, "apps", "bot", "dist"), { recursive: true });
+  await mkdir(join(source, "bin"), { recursive: true });
   try {
     const archive = join(payload, ".source.tar");
     run(["git", "archive", "--format=tar", "--output", archive, commit]);
@@ -152,6 +165,9 @@ if (releaseArg !== undefined) {
     const bot = join(source, "apps", "bot", "dist", "shenron");
     await Bun.write(bot, Bun.file(botBinary));
     run(["chmod", "0755", bot]);
+    const mcp = join(source, "bin", "shenron-mcp");
+    await Bun.write(mcp, Bun.file(mcpBinary));
+    run(["chmod", "0755", mcp]);
     run(["tar", "-czf", join(shenron, "source.tar.gz"), "-C", source, "."]);
     await rm(source, { recursive: true });
     await Bun.write(join(shenron, "site-build.tar.gz"), Bun.file(output));
