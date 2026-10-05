@@ -1,0 +1,7 @@
+{
+  "extends": "../packages/config/tsconfig/bun.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true
+  },
+  "include": ["**/*.ts"]
+}

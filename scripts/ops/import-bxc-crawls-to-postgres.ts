@@ -154,7 +154,7 @@ async function importRow(row: BxcRow): Promise<void> {
 	`;
   await sql`
 		INSERT INTO public.external_source_provenance (url, provenance, updated_at)
-		VALUES (${row.url}, ${sql.json(provenance)}::jsonb, now())
+		VALUES (${row.url}, ${sql.json(provenance as postgres.JSONValue)}::jsonb, now())
 		ON CONFLICT (url) DO UPDATE SET provenance = EXCLUDED.provenance, updated_at = EXCLUDED.updated_at
 	`;
   imported++;

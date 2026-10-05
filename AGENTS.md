@@ -54,7 +54,7 @@ Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`ca
 
 ```sh
 bun install --frozen-lockfile          # ou bun ci
-bun run typecheck                      # tsc 7 dans chacun des 13 paquets
+bun run typecheck                      # tsc 7 : les 13 paquets, puis scripts/ (scripts/tsconfig.json)
 bun run lint                           # oxlint (.oxlintrc.json) sur apps packages scripts
 bun run test                           # bun test de chaque paquet, *.live.test.ts exclus
 bun run format:check                   # oxfmt

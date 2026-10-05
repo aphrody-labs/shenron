@@ -118,7 +118,8 @@
     }
   },
   "scripts": {
-    "typecheck": "bun run --filter '*' typecheck",
+    "typecheck": "bun run --filter '*' typecheck && bun run typecheck:scripts",
+    "typecheck:scripts": "tsc --noEmit -p scripts",
     "test": "bun run --filter '*' test",
     "lint": "oxlint -c .oxlintrc.json apps packages scripts",
     "format:check": "oxfmt --check apps packages scripts",

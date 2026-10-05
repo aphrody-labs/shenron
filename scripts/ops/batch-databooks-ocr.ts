@@ -29,7 +29,7 @@ const flag = (nom: string) => args.includes(`--${nom}`);
 const STATUT = flag("statut");
 const EXPORTER = flag("exporter");
 const TAILLE_LOT = Number(opt("taille", "100"));
-const SORTIE = opt("sortie", join(process.cwd(), "data", "databooks-ocr", "lots"));
+const SORTIE = opt("sortie") ?? join(process.cwd(), "data", "databooks-ocr", "lots");
 const DATABOOK_ID = opt("databook") ? Number(opt("databook")) : null;
 
 interface PlancheOcrManquante {
