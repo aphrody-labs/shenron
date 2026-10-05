@@ -38,7 +38,7 @@ import {
   renderEntryModule,
   type VectorMode,
 } from "../../packages/db/src/vfs/build";
-import { applyVfsSchema, createE5Embedder, sha256Hex, ShenronVfs } from "../../packages/db/src/vfs/index";
+import { applyVfsSchema, cdnOrigins, createE5Embedder, sha256Hex, ShenronVfs } from "../../packages/db/src/vfs/index";
 import { shenronRagChunk } from "../../packages/native/src/engine";
 
 const ROOT = resolve(import.meta.dir, "../..");
@@ -236,7 +236,7 @@ if (!skip.has("cdn") && wikiUrl) {
   await sql.close();
   // Sizes of the manga pages come from the CDN (HEAD, bounded concurrency) when asked.
   const probe = Math.max(0, Number(values["probe-cdn"]) || 0);
-  const origin = (process.env.SHENRON_CDN_URL ?? "https://cdn.dragonballfr.com").split(",")[0]!.replace(/\/+$/, "");
+  const origin = cdnOrigins(process.env)[0]!;
   const sizes = new Map<string, number>();
   const toProbe = pages.slice(0, probe);
   let probed = 0;

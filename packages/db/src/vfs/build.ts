@@ -7,6 +7,7 @@
  * binary. Runtime class: `bun`.
  */
 import type { Database } from "bun:sqlite";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { drizzle } from "drizzle-orm/bun-sql";
 import { fullSchema } from "../full-schema";
 import { createWikiReadRepository } from "../repos/wiki";
@@ -47,7 +48,10 @@ export interface RagRow {
 }
 
 /** Is this row content already public on the site? */
-export function isPublicRagRow(row: Pick<RagRow, "url" | "metadata">, siteOrigin = "https://dragonballfr.com"): boolean {
+export function isPublicRagRow(
+  row: Pick<RagRow, "url" | "metadata">,
+  siteOrigin: string = DEFAULT_PUBLIC_ORIGINS.site,
+): boolean {
   const meta = (typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata ?? {}) as Record<string, unknown>;
   if (meta.visible === false) return false;
   if (!row.url?.startsWith(`${siteOrigin}/`)) return false;
