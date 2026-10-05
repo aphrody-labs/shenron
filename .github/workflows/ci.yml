@@ -48,6 +48,12 @@ jobs:
       - name: AI contracts
         run: bun packages/pipeline/scripts/ai/check-contracts.ts
 
+      - name: Workspace package graph and runtime classes
+        run: bun scripts/audit/check-workspace-packages.ts --strict
+
+      - name: Migrations (offline audit)
+        run: bun run --filter @shenron/db audit:migrations
+
       - name: Plugin offline snapshots are up to date
         run: bun scripts/plugin/build-references.ts --check
 
