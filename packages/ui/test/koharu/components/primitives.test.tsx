@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // The editor composes the shared @shenron/ui primitives: these tests pin the hooks its
 // stylesheet targets (`data-slot`, `data-koharu-ui-layer`) and the keyboard behaviour.
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "bun:test";
-import { TooltipProvider } from "@aphrody/m3-primitives";
+import { Toaster, TooltipProvider } from "@aphrody/m3-primitives";
 
 import { Button } from "@shenron/ui/button";
+import { receiveError } from "@shenron/ui/koharu/lib/store";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -271,5 +272,15 @@ describe("shared overlays in the editor", () => {
     await waitFor(() => expect(onValueChange).toHaveBeenCalled());
     expect(onValueChange.mock.calls[0]?.[0]).toBe("Vertical");
     await waitFor(() => expect(trigger).toHaveTextContent("Vertical"));
+  });
+});
+
+describe("editor notices", () => {
+  it("shows store errors in the toaster the editor mounts", async () => {
+    render(<Toaster />);
+    act(() => receiveError("Disk full"));
+
+    expect(await screen.findByText("Could not complete that action")).toBeInTheDocument();
+    expect(screen.getByText("Disk full")).toBeInTheDocument();
   });
 });
