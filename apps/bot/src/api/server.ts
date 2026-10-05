@@ -4030,7 +4030,8 @@ export class ApiServer {
                 .update(dmMessages)
                 .set({ readAt: new Date() })
                 .where(and(inArray(dmMessages.id, body.ids), isNull(dmMessages.readAt)));
-              return Response.json({ ok: true, marques: body.ids.length });
+              // `marques` is the deprecated name of `marked` (removed in 1.4.0).
+              return Response.json({ ok: true, marked: body.ids.length, marques: body.ids.length });
             }
             if (body?.userId) {
               await dbs.db
@@ -4101,6 +4102,8 @@ export class ApiServer {
               return Response.json({
                 ok: true,
                 messageId: sent.id,
+                recipient: contact.username,
+                // Deprecated name of `recipient` (removed in 1.4.0).
                 destinataire: contact.username,
               });
             } catch (e) {
@@ -4239,6 +4242,8 @@ export class ApiServer {
                 ok: true,
                 messageId: sent.id,
                 channelId: sent.channelId,
+                recipient: destinataire,
+                // Deprecated name of `recipient` (removed in 1.4.0).
                 destinataire,
                 url: `https://discord.com/channels/${sent.guildId ?? "@me"}/${sent.channelId}/${sent.id}`,
               });

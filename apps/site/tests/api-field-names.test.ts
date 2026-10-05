@@ -1167,6 +1167,8 @@ const FORMER_NAMES: Record<string, readonly string[]> = {
     "plancheRange",
     "tomes",
     "planche",
+    "marques",
+    "destinataire",
   ],
 };
 
@@ -1193,9 +1195,7 @@ const INTERNAL_KEYS: Record<string, readonly string[]> = {
  * in a file another agent held while the renames were made: rename them, keep the French name as
  * a deprecated duplicate, then move them to FORMER_NAMES.
  */
-const NOT_YET_RENAMED: Record<string, readonly string[]> = {
-  "apps/bot/src/api/server.ts": ["marques", "destinataire"],
-};
+const NOT_YET_RENAMED: Record<string, readonly string[]> = {};
 
 describe("guard: exposed JSON keys are English", () => {
   const frenchKeysByFile = new Map<string, Map<string, number>>();

@@ -190,7 +190,7 @@ switch (commande) {
       process.exit(2);
     }
     const res = await api("/api/dm/send", { method: "POST", body: { userId, content: contenu } });
-    console.log(`✓ envoyé à @${res.destinataire} (${userId})`);
+    console.log(`✓ envoyé à @${res.recipient ?? res.destinataire} (${userId})`);
     break;
   }
 
