@@ -5,3 +5,4 @@ export * from "./schemas";
 export * from "./chat";
 export * from "./sync";
 export * from "./endpoints";
+export * from "./local";

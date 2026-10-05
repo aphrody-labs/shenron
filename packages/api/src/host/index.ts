@@ -5,7 +5,12 @@
  * engine (Gemini web → local llama-server), MCP tools (`shenron-mcp`), OCR
  * (`aphrody ocr ppocr`), conversation store (SQLite or PostgreSQL), owner/admin auth, static
  * assets with precompressed siblings and the MCP reverse proxy. `serveShenronApi(env)` starts
- * it with `Bun.serve`. Hosts: `apps/server`, the desktop sidecar, the bot. Runtime class: `bun`.
+ * it with `Bun.serve`; a front server mounts it with `handles()`, `fetch()` and `websocket`.
+ * Hosts: `apps/server` (front of `shenron-server`, desktop sidecar), the bot. Runtime class: `bun`.
+ *
+ * A capability that is missing disables its group (no route, `groups[name].available` false
+ * with a short French reason): no VFS, no usable chat backend, no `aphrody` for the OCR, no
+ * MCP URL, an unwritable conversation store. Nothing here throws for a missing capability.
  *
  * The caller passes the environment (`process.env` in an entry point): nothing is read at
  * module load. Variables are listed in docs/architecture/STACK.md §3.6.
@@ -37,9 +42,10 @@ import {
 } from "@shenron/db/vfs";
 import { createChatEngine } from "../chat/engine";
 import { agentHomeFromDir, agentHomeFromVfs } from "../chat/home";
-import { backendsFromEnv } from "../chat/llm";
+import { backendsFromEnv, geminiCookieCandidates, type LlmBackend } from "../chat/llm";
 import { createStdioMcpClient } from "../chat/mcp";
 import { createCliOcr } from "../chat/ocr";
+import type { LocalApiGroups, LocalApiGroupStatus } from "../contract/local";
 import type { RagHit, RagSearchQuery } from "../contract/schemas";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "../http";
 import {
@@ -281,10 +287,12 @@ export interface LocalApiOptions {
   service?: ShenronApiService;
   /** Already-open VFS database (embedded binary) instead of `SHENRON_VFS_DB`. */
   vfsDatabase?: Database;
-  /** VFS path → `$bunfs` path of embedded files. */
+  /** VFS path → readable file (`$bunfs` path or extracted payload file) of embedded nodes. */
   embedded?: Readonly<Record<string, string>>;
   /** Conversation store override (tests); `null` disables the store. */
   conversations?: ConversationStore | null;
+  /** `false` leaves the wiki routes to another host (the site on PostgreSQL in production). */
+  wiki?: boolean;
   fetch?: typeof fetch;
 }
 
@@ -292,6 +300,14 @@ export interface LocalApi {
   api: ShenronApi;
   vfs: OpenedVfs | null;
   conversations: ConversationStore | null;
+  /** Availability of each API group, fixed at creation. */
+  groups: LocalApiGroups;
+  /** `true` for a path this host answers (enabled API routes, `/mcp`, `/assets/*`). */
+  handles(pathname: string): boolean;
+  /** Answer a request in a front `Bun.serve` (loopback detection, `/assets/*`, WebSocket upgrade). */
+  fetch(request: Request, server: Bun.Server<ChatSocketData>): Promise<Response>;
+  /** WebSocket handlers of `/api/v1/chat/ws`, for the front `Bun.serve`. */
+  websocket: Bun.WebSocketHandler<ChatSocketData>;
   /** Bun.serve options (`routes`, `websocket`, `fetch`) with loopback detection and `/assets/*`. */
   serveOptions(): Bun.Serve.Options<ChatSocketData>;
   close(): Promise<void>;
@@ -301,6 +317,26 @@ type HostRoute = (
   request: Request,
   server: Bun.Server<ChatSocketData>,
 ) => Response | Promise<Response>;
+
+const available = (): LocalApiGroupStatus => ({ available: true });
+const unavailable = (reason: string): LocalApiGroupStatus => ({ available: false, reason });
+
+/**
+ * Chat backends this host can call: `local` (built only when its OpenAI-compatible URL is
+ * declared: llama-server, aphrody-llama-daemon), `extractive` (only when listed in
+ * `SHENRON_CHAT_BACKENDS`) and `gemini-web` when its client is installed with a cookie store.
+ */
+export function usableChatBackends(
+  env: EnvSource,
+  home = envString(env, "HOME") ?? homedir(),
+): LlmBackend[] {
+  return backendsFromEnv(env).filter((backend) => {
+    if (backend.id !== "gemini-web") return true;
+    const binary = envString(env, "APHRODY_GEMINI_WEB_BIN") ?? "aphrody-gemini-web";
+    const installed = /[\\/]/.test(binary) ? existsSync(binary) : Bun.which(binary) !== null;
+    return installed && geminiCookieCandidates(env, home).some((path) => existsSync(path));
+  });
+}
 
 export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): LocalApi {
   const paths = hostPaths(env);
@@ -314,7 +350,21 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       cdn,
     });
   } else if (existsSync(paths.vfs)) {
-    opened = openShenronVfs(paths.vfs, { readOnly: true, cdn });
+    let candidate: OpenedVfs | null = null;
+    try {
+      candidate = openShenronVfs(paths.vfs, {
+        readOnly: true,
+        embedded: options.embedded ?? {},
+        cdn,
+      });
+      // SQLite opens any file lazily: read the root node now so a foreign file fails here.
+      candidate.vfs.stat("/");
+      opened = candidate;
+    } catch (error) {
+      // An unreadable or foreign file disables the VFS groups; the cause stays in the log.
+      candidate?.vfs.db.close();
+      console.error(JSON.stringify({ event: "shenron.api.vfs_unavailable", error: String(error) }));
+    }
   }
   const embedModel = envString(env, "APHRODY_AI_EMBED_MODEL") ?? RAG_EMBED_MODEL;
   const embedBase = envString(env, "APHRODY_AI_EMBED_BASE_URL");
@@ -327,16 +377,31 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     : null;
 
   let conversations: ConversationStore | null = options.conversations ?? null;
+  let storeReason = "stockage des conversations désactivé";
   let pg: InstanceType<typeof Bun.SQL> | null = null;
+  let sqlite: SqliteConversationStore | null = null;
   if (options.conversations === undefined) {
     const pgUrl = envString(env, "SHENRON_CHAT_PG_URL");
-    if (pgUrl) {
-      pg = new Bun.SQL(pgUrl);
-      conversations = new PgConversationStore(pg, {
-        schema: envString(env, "SHENRON_CHAT_PG_SCHEMA") ?? "chat",
-      });
-    } else if (env.SHENRON_CHAT_STORE !== "off") {
-      conversations = new SqliteConversationStore(paths.conversations);
+    try {
+      if (pgUrl) {
+        pg = new Bun.SQL(pgUrl);
+        conversations = new PgConversationStore(pg, {
+          schema: envString(env, "SHENRON_CHAT_PG_SCHEMA") ?? "chat",
+        });
+      } else if (env.SHENRON_CHAT_STORE !== "off") {
+        sqlite = new SqliteConversationStore(paths.conversations);
+        conversations = sqlite;
+      }
+    } catch (error) {
+      // The SQLite cause stays in the log (never a PostgreSQL URL, which may hold a password);
+      // the groups report a short reason only.
+      console.error(
+        JSON.stringify({
+          event: "shenron.api.conversations_unavailable",
+          error: pgUrl ? "invalid PostgreSQL URL" : String(error),
+        }),
+      );
+      storeReason = "base des conversations inaccessible";
     }
   }
 
@@ -355,12 +420,14 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const ocr = createCliOcr({ binary: envString(env, "APHRODY_BIN") ?? "aphrody" });
   const ocrPort = ocr.available() ? ocr : null;
 
+  // Only the backends this host can call: none disables the chat and models routes.
+  const backends = usableChatBackends(env);
   const engine = createChatEngine({
     rag: opened?.rag ?? null,
     embed: embedder?.query ?? null,
     embedderModel: embedModel,
     publicOnly,
-    backends: backendsFromEnv(env),
+    backends,
     home: () =>
       opened && opened.vfs.exists("/home/SOUL.md")
         ? agentHomeFromVfs(opened.vfs)
@@ -372,13 +439,15 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     log: (event) => console.error(JSON.stringify(event)),
   });
 
+  const chat = backends.length > 0 ? engine : null;
+  const wiki = opened && options.wiki !== false ? opened.wiki : null;
   const assetsDir = envString(env, "SHENRON_ASSETS_DIR") ?? null;
   const mcpUrl = envString(env, "SHENRON_MCP_URL");
   const api = createShenronApi(
     {
-      wiki: opened ? opened.wiki : null,
+      wiki,
       rag: opened ? createVfsRagPort(opened, embedder?.query ?? null, publicOnly) : null,
-      chat: engine,
+      chat,
       conversations,
       vfs: opened ? createVfsPort(opened, { publicOnly, assetsDir }) : null,
       ocr: ocrPort,
@@ -419,8 +488,12 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
             },
           });
         } catch (error) {
+          // The cause (CDN origin, cache path) stays in the log.
+          console.error(
+            JSON.stringify({ event: "shenron.api.asset_unavailable", path, error: String(error) }),
+          );
           return Response.json(
-            { error: "asset unavailable", code: "upstream_unavailable", message: String(error) },
+            { error: "asset unavailable", code: "upstream_unavailable" },
             { status: 502 },
           );
         }
@@ -429,10 +502,39 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     return Response.json({ error: "Not found" }, { status: 404 });
   };
 
+  const vfsMissing = "aucun VFS Shenron installé";
+  const store = conversations ? available() : unavailable(storeReason);
+  const chatGroup = chat
+    ? available()
+    : unavailable("aucun modèle de chat déclaré (llama-server, aphrody-llama-daemon)");
+  const groups: LocalApiGroups = {
+    wiki: wiki ? available() : unavailable(opened ? "wiki servi par le site" : vfsMissing),
+    rag: opened ? available() : unavailable(vfsMissing),
+    chat: chatGroup,
+    conversations: store,
+    sync: { ...store },
+    vfs: opened ? available() : unavailable(vfsMissing),
+    ocr: ocrPort ? available() : unavailable("aphrody introuvable : OCR indisponible"),
+    mcp: mcpUrl ? available() : unavailable("serveur MCP non configuré"),
+    models: { ...chatGroup },
+  };
+  const servesAssets = assetsDir !== null || opened !== null;
+  const isAsset = (pathname: string) => servesAssets && pathname.startsWith("/assets/");
+
   return {
     api,
     vfs: opened,
     conversations,
+    groups,
+    handles: (pathname) => isAsset(pathname) || api.handles(pathname),
+    async fetch(request, server) {
+      mark(request, server);
+      const method = request.method;
+      if (isAsset(new URL(request.url).pathname) && (method === "GET" || method === "HEAD"))
+        return serveAsset(request, server);
+      return api.fetch(request, server);
+    },
+    websocket: api.websocket,
     serveOptions() {
       const routes: Record<string, Record<string, HostRoute>> = {};
       for (const [path, methods] of Object.entries(api.routes)) {
@@ -462,6 +564,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     async close() {
       mcp?.close();
       opened?.vfs.db.close();
+      sqlite?.db.close();
       await pg?.close();
     },
   };
