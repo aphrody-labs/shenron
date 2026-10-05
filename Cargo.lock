@@ -9243,7 +9243,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-cli"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-config",
@@ -9269,7 +9269,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-desktop"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-build",
@@ -9288,7 +9288,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-ffi"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-rag-core",
@@ -9304,7 +9304,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-manga"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "aphrody-ocr-core",
  "image",
@@ -9322,7 +9322,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-mcp"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "axum",
  "reqwest",
@@ -9341,7 +9341,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-rag"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "aphrody-config",
  "aphrody-rag",
@@ -9360,7 +9360,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-studio"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "aphrody-llama-server",
  "aphrody-tauri",
@@ -9375,7 +9375,7 @@ dependencies = [
 
 [[package]]
 name = "shenron-translate"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "aphrody-translate",

@@ -21,8 +21,9 @@ import {
 } from "./config";
 import { extract } from "./payload";
 import { serveSite } from "./site";
+import { VERSION } from "./version";
 
-export const VERSION = "1.0.0";
+export { VERSION } from "./version";
 
 const HELP = `shenron-server ${VERSION} — Shenron (dragonballfr.com) en un binaire
 

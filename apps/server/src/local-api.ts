@@ -19,8 +19,7 @@ import type { LocalApiGroups, LocalHealthResponse } from "@shenron/api/contract"
 import { SHENRON_FFI_FILE, shenronLoad, shenronLocalSearch } from "@shenron/native/shenron";
 
 import { profileOf, type ServerPaths } from "./config";
-
-const VERSION = "1.0.0";
+import { VERSION } from "./version";
 
 /** The native calls of the local APIs (`@shenron/native` by default; a fake in tests). */
 export interface LocalNative {

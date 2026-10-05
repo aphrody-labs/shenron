@@ -1,6 +1,6 @@
 {
   "name": "@shenron/native",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Bun FFI binding of the Shenron native library (shenron-ffi): shenron commands, RAG/persona helpers and the Koharu manga pipeline.",
   "license": "Apache-2.0",
