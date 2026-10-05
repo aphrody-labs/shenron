@@ -19,6 +19,7 @@
  *
  * Voir aussi : `bun apps/bot/scripts/rag-harvest.ts run-seeds`
  */
+import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync, appendFileSync } from "node:fs";
 import { join, dirname, basename, extname } from "node:path";
 import { createHash } from "node:crypto";
@@ -711,8 +712,6 @@ function loadAllSources(): Source[] {
   try {
     const dbPath = join(SITE_ROOT, "../bot/data/bot.db");
     if (existsSync(dbPath)) {
-      // dynamic import avoid hard dep if missing
-      const { Database } = require("bun:sqlite") as typeof import("bun:sqlite");
       const db = new Database(dbPath, { readonly: true });
       const rows = db
         .query(`SELECT id, name, url FROM db_sources WHERE url LIKE 'http%'`)

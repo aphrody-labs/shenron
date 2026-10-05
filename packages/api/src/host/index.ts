@@ -454,6 +454,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
           mark(request, server);
           return api.fetch(request, server);
         },
+        // Explicit: Bun derives the default from NODE_ENV, which a host may leave unset.
+        development: false,
         idleTimeout: 120,
       } as unknown as Bun.Serve.Options<ChatSocketData>;
     },

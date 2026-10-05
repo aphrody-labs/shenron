@@ -27,7 +27,7 @@
  * indépendantes, décision confirmée, aucune anomalie. Un JSONL PP-OCR seul
  * n'est jamais déposable.
  */
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { basename, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { SHENRON_MANGA_CANDIDATE_SCHEMA, type MangaReviewCandidateInput } from "../src/koharu";
@@ -90,7 +90,7 @@ function detectionsDuLot(): Map<string, MangaOcrDetectionLine> {
   const chemin = join(dossierLot, "detections.jsonl");
   const index = new Map<string, MangaOcrDetectionLine>();
   if (!existsSync(chemin)) return index;
-  const brut = require("node:fs").readFileSync(chemin, "utf8") as string;
+  const brut = readFileSync(chemin, "utf8");
   for (const ligne of brut.split(/\r?\n/)) {
     if (!ligne.trim()) continue;
     try {

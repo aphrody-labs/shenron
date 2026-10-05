@@ -152,6 +152,8 @@ export async function serveSite(
   const front = Bun.serve({
     hostname: options.hostname,
     port: options.port,
+    // Explicit: Bun derives the default from NODE_ENV, which only the Next child sets.
+    development: false,
     idleTimeout: 120,
     async fetch(request) {
       const url = new URL(request.url);
