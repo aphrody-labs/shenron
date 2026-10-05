@@ -75,9 +75,9 @@ describe("/api/timeline : liens d'API", () => {
   test("chaque `api` mène à une route servie", async () => {
     const res = await GET(new Request("http://localhost/api/timeline"));
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { entrees: { kind: string; id: number; api: string }[] };
-    expect(body.entrees).toHaveLength(3);
-    for (const entry of body.entrees) {
+    const body = (await res.json()) as { entries: { kind: string; id: number; api: string }[] };
+    expect(body.entries).toHaveLength(3);
+    for (const entry of body.entries) {
       const { pathname } = new URL(entry.api);
       expect(pathname).not.toMatch(/^\/api\/(episodes|movies)\/\d+$/);
       const served = routeFile(pathname);
@@ -90,7 +90,7 @@ describe("/api/timeline : liens d'API", () => {
         expect(id).toBe(String(entry.id));
       }
     }
-    const byKind = Object.fromEntries(body.entrees.map((e) => [e.kind, new URL(e.api).pathname]));
+    const byKind = Object.fromEntries(body.entries.map((e) => [e.kind, new URL(e.api).pathname]));
     expect(byKind).toEqual({
       episode: "/api/public/wiki/episodes/5",
       movie: "/api/public/wiki/movies/7",

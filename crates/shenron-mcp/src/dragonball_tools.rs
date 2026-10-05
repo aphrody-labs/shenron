@@ -806,8 +806,36 @@ pub(crate) struct TimelineRequest {
     pub kind: Option<String>,
 }
 
-pub(crate) async fn timeline(r: TimelineRequest) -> CallToolResult {
-    done(site_get("/api/timeline", vec![("era", r.era), ("kind", r.kind)]).await)
+/// `legacy`: the deprecated alias `dragonball.chronologie` keeps the French duplicates of the
+/// site answer, the current tool drops them (the whole timeline is a large answer).
+pub(crate) async fn timeline(r: TimelineRequest, legacy: bool) -> CallToolResult {
+    match site_get("/api/timeline", vec![("era", r.era), ("kind", r.kind)]).await {
+        Ok(mut response) => {
+            if !legacy {
+                drop_french_timeline_names(&mut response);
+            }
+            ok(response)
+        },
+        Err(e) => err(e),
+    }
+}
+
+/// Removes the deprecated French names from a `/api/timeline` answer that carries the English
+/// ones (`entries`); an answer from a site that predates the rename is left untouched.
+fn drop_french_timeline_names(response: &mut Value) {
+    let Some(object) = response.as_object_mut() else { return };
+    if !object.contains_key("entries") {
+        return;
+    }
+    object.remove("entrees");
+    object.remove("totalFrise");
+    if let Some(entries) = object.get_mut("entries").and_then(Value::as_array_mut) {
+        for entry in entries.iter_mut().filter_map(Value::as_object_mut) {
+            for name in ["rang", "titre", "titreJa", "serie", "ere", "ereLabel", "numero"] {
+                entry.remove(name);
+            }
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -1519,6 +1547,29 @@ mod tests {
         assert_eq!(detail["transcribedPages"], 2);
         assert!(detail.get("pages").is_none());
         assert!(detail.get("truncatedPages").is_none() && detail.get("pagesTronquees").is_none());
+    }
+
+    #[test]
+    fn the_current_timeline_tool_drops_the_french_duplicates() {
+        let site = json!({
+            "total": 1, "timelineTotal": 2, "totalFrise": 2,
+            "entries": [{ "rank": 2, "title": "Dragon Ball", "rang": 2, "titre": "Dragon Ball", "era": "DB", "ere": "DB" }],
+            "entrees": [{ "rank": 2, "rang": 2 }]
+        });
+        let mut current = site.clone();
+        drop_french_timeline_names(&mut current);
+        assert!(current.get("entrees").is_none() && current.get("totalFrise").is_none());
+        assert_eq!(
+            current["entries"][0],
+            json!({ "rank": 2, "title": "Dragon Ball", "era": "DB" })
+        );
+        assert_eq!(current["timelineTotal"], 2);
+
+        // A site that predates the rename answers French names only: nothing to drop.
+        let mut old = json!({ "total": 1, "totalFrise": 2, "entrees": [{ "rang": 2 }] });
+        let before = old.clone();
+        drop_french_timeline_names(&mut old);
+        assert_eq!(old, before);
     }
 
     #[test]

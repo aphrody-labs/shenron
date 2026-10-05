@@ -71,12 +71,16 @@ describe("API Canon (/api/canon) — Doctrine & Requêtes Vides", () => {
     for (const tier of data.tiers) {
       expect(CANON_TIERS).toContain(tier.id);
       expect(tier.label).toBeString();
-      expect(tier.court).toBeString();
-      expect(tier.couleur).toMatch(/^#[0-9a-f]{3,8}$/i);
+      expect(tier.shortLabel).toBeString();
+      expect(tier.color).toMatch(/^#[0-9a-f]{3,8}$/i);
       expect(tier.score).toBeNumber();
       expect(tier.definition).toBeString();
-      expect(tier.inclut).toBeArray();
-      expect(tier.inclut.length).toBeGreaterThan(0);
+      expect(tier.includes).toBeArray();
+      expect(tier.includes.length).toBeGreaterThan(0);
+      // The former French names stay served, as deprecated duplicates until 1.4.0.
+      expect(tier.court).toBe(tier.shortLabel);
+      expect(tier.couleur).toBe(tier.color);
+      expect(tier.inclut).toEqual(tier.includes);
     }
 
     // Doctrine
@@ -84,10 +88,12 @@ describe("API Canon (/api/canon) — Doctrine & Requêtes Vides", () => {
     expect(data.doctrine.length).toBeGreaterThan(0);
 
     // Sources admises vs interdites (anti-fandom)
-    expect(data.sourcesAdmises).toBeArray();
-    expect(data.sourcesAdmises.length).toBeGreaterThan(0);
-    expect(data.sourcesInterdites).toBeArray();
-    expect(data.sourcesInterdites.length).toBeGreaterThan(0);
+    expect(data.admittedSources).toBeArray();
+    expect(data.admittedSources.length).toBeGreaterThan(0);
+    expect(data.forbiddenSources).toBeArray();
+    expect(data.forbiddenSources.length).toBeGreaterThan(0);
+    expect(data.sourcesAdmises).toEqual(data.admittedSources);
+    expect(data.sourcesInterdites).toEqual(data.forbiddenSources);
 
     // Sujets et règles
     expect(data.entries).toBeArray();
@@ -99,7 +105,8 @@ describe("API Canon (/api/canon) — Doctrine & Requêtes Vides", () => {
     expect(data.stats).toBeDefined();
     expect(data.stats.references).toBeNumber();
     expect(data.stats.references).toBeGreaterThanOrEqual(0);
-    expect(data.stats.parProvenance).toBeObject();
+    expect(data.stats.byProvenance).toBeObject();
+    expect(data.stats.parProvenance).toEqual(data.stats.byProvenance);
   });
 
   test("GET /api/canon?q=   (espaces seuls) est traité comme requête vide", async () => {
@@ -124,7 +131,12 @@ describe("API Canon (/api/canon) — Requêtes Canoniques Claires", () => {
     expect(data.verdict.tier).toBe("CANON_ABSOLU");
     expect(data.verdict.score).toBe(100);
     expect(data.verdict.nature).toBe("verdict");
-    expect(data.verdict.origine).toBe("entry:goku-saiyan-kakarotto");
+    expect(data.verdict.origin).toBe("entry:goku-saiyan-kakarotto");
+    expect(data.verdict.origine).toBe(data.verdict.origin); // deprecated duplicate (1.4.0)
+    expect(data.plates).toBeArray();
+    expect(data.planches).toEqual(data.plates);
+    expect(data.records).toBeArray();
+    expect(data.fiches).toEqual(data.records);
     expect(data.verdict.sources).toContain("Manga Dragon Ball Tome 17 (Chapitre 195)");
     expect(data.verdict.toriyamaQuote).toBeDefined();
     expect(data.verdict.toriyamaQuote.text).toContain("Saiyan");
@@ -150,7 +162,7 @@ describe("API Canon (/api/canon) — Requêtes Canoniques Claires", () => {
     const data = await res.json();
     expect(data.verdict.tier).toBe("CANON_ABSOLU");
     expect(data.verdict.score).toBe(100);
-    expect(data.verdict.origine).toBe("entry:destruction-planete-vegeta");
+    expect(data.verdict.origin).toBe("entry:destruction-planete-vegeta");
     expect(data.verdict.sources).toContain("Manga Dragon Ball Tome 22 (Chapitre 257)");
   });
 
@@ -196,7 +208,7 @@ describe("API Canon (/api/canon) — Requêtes Canoniques Claires", () => {
     const data = await res.json();
     expect(data.verdict.tier).toBe("CANON_SUPERVISE");
     expect(data.verdict.score).toBe(98);
-    expect(data.verdict.origine).toBe("entry:daima");
+    expect(data.verdict.origin).toBe("entry:daima");
   });
 });
 
@@ -209,7 +221,7 @@ describe("API Canon (/api/canon) — Requêtes Non-Canoniques & Fillers Toei", (
     const data = await res.json();
     expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
     expect(data.verdict.score).toBe(20);
-    expect(data.verdict.origine).toBe("entry:broly-dbz-1993");
+    expect(data.verdict.origin).toBe("entry:broly-dbz-1993");
     expect(data.verdict.verdict).toContain("Non-canonique");
   });
 
@@ -274,7 +286,7 @@ describe("API Canon (/api/canon) — Retcons, Débats Complexes & Comparaisons",
     const data = await res.json();
     expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
     expect(data.verdict.score).toBe(30);
-    expect(data.verdict.origine).toBe("entry:bardock-tv-special-1990");
+    expect(data.verdict.origin).toBe("entry:bardock-tv-special-1990");
     expect(data.verdict.explanation).toContain("Minus");
   });
 
@@ -297,7 +309,7 @@ describe("API Canon (/api/canon) — Retcons, Débats Complexes & Comparaisons",
     const data = await res.json();
     expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
     expect(data.verdict.score).toBe(20);
-    expect(data.verdict.origine).toBe("entry:gregory-kaio");
+    expect(data.verdict.origin).toBe("entry:gregory-kaio");
     expect(data.verdict.explanation).toContain("Bubbles");
   });
 
@@ -308,7 +320,7 @@ describe("API Canon (/api/canon) — Retcons, Débats Complexes & Comparaisons",
 
     const data = await res.json();
     expect(data.verdict.tier).toBe("EXTENSION_OFFICIELLE");
-    expect(data.verdict.origine).toBe("entry:fusion-potara-vs-metamol-puissance");
+    expect(data.verdict.origin).toBe("entry:fusion-potara-vs-metamol-puissance");
     expect(data.verdict.verdict).toContain("Potaras");
   });
 
@@ -319,7 +331,7 @@ describe("API Canon (/api/canon) — Retcons, Débats Complexes & Comparaisons",
 
     const data = await res.json();
     expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
-    expect(data.verdict.origine).toBe("entry:ssj4-vs-ssjg");
+    expect(data.verdict.origin).toBe("entry:ssj4-vs-ssjg");
     expect(data.verdict.verdict).toContain("Super Saiyan God est Canon Supervisé");
   });
 });
@@ -332,7 +344,7 @@ describe("API Canon (/api/canon) — Cas Limites, Typographie & Trolls", () => {
 
     const data = await res.json();
     expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
-    expect(data.verdict.origine).toBe("entry:broly-dbz-1993");
+    expect(data.verdict.origin).toBe("entry:broly-dbz-1993");
   });
 
   test("Accents et casses hétérogènes : mÈrE dE gOkU ???", async () => {
@@ -342,7 +354,7 @@ describe("API Canon (/api/canon) — Cas Limites, Typographie & Trolls", () => {
 
     const data = await res.json();
     expect(data.verdict.tier).toBe("CANON_ABSOLU");
-    expect(data.verdict.origine).toBe("entry:gine");
+    expect(data.verdict.origin).toBe("entry:gine");
   });
 
   test("Typographie japonaise pleine chasse (Zenkaku) : Ｂｒｏｌｙ ＤＢＺ １９９３ ？？", async () => {
@@ -354,7 +366,7 @@ describe("API Canon (/api/canon) — Cas Limites, Typographie & Trolls", () => {
 
     const data = await res.json();
     expect(data.verdict.tier).toBe("NON_CANON_DERIVE");
-    expect(data.verdict.origine).toBe("entry:broly-dbz-1993");
+    expect(data.verdict.origin).toBe("entry:broly-dbz-1993");
   });
 
   test("Katakana japonais avec particule : ブロリーは正史ですか？", async () => {
@@ -366,7 +378,7 @@ describe("API Canon (/api/canon) — Cas Limites, Typographie & Trolls", () => {
 
     const data = await res.json();
     expect(data.verdict.tier).toBe("CANON_SUPERVISE");
-    expect(data.verdict.origine).toBe("entry:broly");
+    expect(data.verdict.origin).toBe("entry:broly");
   });
 
   test("Requête très longue (> 400 caractères) : tronquée proprement sans erreur 500", async () => {
@@ -391,7 +403,7 @@ describe("API Canon (/api/canon) — Cas Limites, Typographie & Trolls", () => {
     const data = await res.json();
     expect(data.verdict.nature).toBe("troll");
     expect(data.verdict.tier).toBe("APOCRYPHE_FANON");
-    expect(data.verdict.origine).toBe("troll:crossover");
+    expect(data.verdict.origin).toBe("troll:crossover");
     expect(data.verdict.explanation).toContain("Aucune source officielle");
   });
 
@@ -402,7 +414,7 @@ describe("API Canon (/api/canon) — Cas Limites, Typographie & Trolls", () => {
 
     const data = await res.json();
     expect(data.verdict.nature).toBe("troll");
-    expect(data.verdict.origine).toBe("troll:invention");
+    expect(data.verdict.origin).toBe("troll:invention");
   });
 });
 

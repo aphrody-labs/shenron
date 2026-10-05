@@ -1,9 +1,15 @@
 /**
  * /api/canon — l'arbitre de canonicité de `/wiki/canon` en API publique.
  *
- *   GET /api/canon?q=<affirmation>   → { question, verdict, references, planches, fiches, suggestions, mode }
- *   GET /api/canon                    → { intro, tiers, doctrine, sourcesAdmises, sourcesInterdites,
+ *   GET /api/canon?q=<affirmation>   → { question, verdict, references, plates, records, suggestions, mode }
+ *   GET /api/canon                    → { intro, tiers, doctrine, admittedSources, forbiddenSources,
  *                                         entries, heuristics, stats }
+ *
+ * The former French names stay as deprecated duplicates until 1.4.0: `sourcesAdmises`,
+ * `sourcesInterdites`, `stats.parProvenance`, `verdict.origine`, `planches` (now `plates`,
+ * each plate with `numero`, `texte`, `texteFr`, `verifiee`, `databookTitre`), `fiches` (now
+ * `records`, each with `titre` and `extrait`), `suggestions[].titre`, and `court`, `couleur`,
+ * `inclut` on each tier (now `shortLabel`, `color`, `includes`).
  *
  * Lecture seule, CORS ouvert, sans authentification : c'est la surface que
  * consomment le MCP (`canon_check`), la skill du plugin et tout outil externe.
@@ -17,6 +23,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { canonPreuves } from "@/lib/canon-preuves";
+import { canonEvidenceView } from "@/lib/canon-preuves-view";
 import { getCanonConfig, getCanonReferences } from "@/lib/canon-config";
 import { slugCanon } from "@/lib/canon-engine";
 
@@ -58,16 +65,20 @@ export async function GET(req: NextRequest) {
 
   if (!q) {
     const [config, references] = await Promise.all([getCanonConfig(), getCanonReferences()]);
-    const parProvenance: Record<string, number> = {};
-    for (const r of references)
-      parProvenance[r.provenance] = (parProvenance[r.provenance] ?? 0) + 1;
+    const byProvenance: Record<string, number> = {};
+    for (const r of references) byProvenance[r.provenance] = (byProvenance[r.provenance] ?? 0) + 1;
     return NextResponse.json(
       {
         intro: config.intro,
-        tiers: config.tiers,
+        tiers: config.tiers.map((tier) => ({
+          ...tier,
+          shortLabel: tier.court,
+          color: tier.couleur,
+          includes: tier.inclut,
+        })),
         doctrine: config.doctrine,
-        sourcesAdmises: config.sourcesAdmises,
-        sourcesInterdites: config.sourcesInterdites,
+        admittedSources: config.sourcesAdmises,
+        forbiddenSources: config.sourcesInterdites,
         entries: config.entries.map((e) => ({
           id: e.id,
           title: e.title,
@@ -77,7 +88,10 @@ export async function GET(req: NextRequest) {
           verdict: e.verdict,
         })),
         heuristics: config.heuristics.map((h) => ({ id: h.id, label: h.label, tier: h.tier })),
-        stats: { references: references.length, parProvenance },
+        stats: { references: references.length, byProvenance, parProvenance: byProvenance },
+        // Former names, deprecated: removed in 1.4.0.
+        sourcesAdmises: config.sourcesAdmises,
+        sourcesInterdites: config.sourcesInterdites,
       },
       { headers },
     );
@@ -101,9 +115,11 @@ export async function GET(req: NextRequest) {
         sources: verdict.sources,
         matchedKeywords: verdict.matchedKeywords,
         doctrine: verdict.doctrineRules ?? [],
-        origine: verdict.origine,
+        origin: verdict.origine,
         nature: verdict.nature,
         suggestions: verdict.suggestions,
+        // Former name, deprecated: removed in 1.4.0.
+        origine: verdict.origine,
       },
       references: (verdict.references ?? []).map((r) => ({
         id: r.id,
@@ -116,10 +132,7 @@ export async function GET(req: NextRequest) {
         provenance: r.provenance,
         href: r.href ?? null,
       })),
-      planches: preuves.planches,
-      fiches: preuves.fiches,
-      suggestions: preuves.suggestions,
-      mode: preuves.mode,
+      ...canonEvidenceView(preuves),
     },
     { headers },
   );

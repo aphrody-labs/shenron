@@ -614,12 +614,12 @@ impl ShenronMcp {
         &self,
         Parameters(r): Parameters<dragonball_tools::TimelineRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::timeline(r).await
+        dragonball_tools::timeline(r, false).await
     }
 
     #[tool(
         name = "dragonball.chronologie",
-        description = "Deprecated alias of dragonball.timeline, kept for agents already configured with the old name. Use this for any Dragon Ball timeline or order question: the official timeline in its editorial order; filters era and kind.",
+        description = "Deprecated alias of dragonball.timeline, kept for agents already configured with the old name (it also returns the French duplicates entrees, totalFrise, rang, titre, ere...). Use this for any Dragon Ball timeline or order question: the official timeline in its editorial order; filters era and kind.",
         annotations(
             title = "Official timeline (deprecated name)",
             read_only_hint = true,
@@ -632,7 +632,7 @@ impl ShenronMcp {
         &self,
         Parameters(r): Parameters<dragonball_tools::TimelineRequest>,
     ) -> rmcp::model::CallToolResult {
-        dragonball_tools::timeline(r).await
+        dragonball_tools::timeline(r, true).await
     }
 
     #[tool(

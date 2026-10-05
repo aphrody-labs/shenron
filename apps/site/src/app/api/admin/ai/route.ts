@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { getCanonConfig, saveCanonConfig } from "@/lib/canon-config";
 import { DEFAULT_CANON_CONFIG, analyzeCanon } from "@/lib/canon-engine";
 import { canonPreuves } from "@/lib/canon-preuves";
+import { canonEvidenceView } from "@/lib/canon-preuves-view";
 import { chercherPlanches } from "@/lib/manga-api";
 import { sendAdminLabMessage } from "@/lib/admin-lab";
 import { collectIaCockpit, describeError, probeSource } from "@/lib/ia-cockpit";
@@ -116,7 +117,7 @@ export async function POST(req: NextRequest) {
               page: p.page,
               excerpt: p.excerpt,
               score: p.score,
-              // Former names, deprecated for one version.
+              // Former names, deprecated until 1.4.0.
               tome: p.tome,
               planche: p.planche,
               extrait: p.extrait,
@@ -130,7 +131,15 @@ export async function POST(req: NextRequest) {
         backend,
         latencyMs: Math.round(performance.now() - t0),
         rag,
-        canon: canonVerdict ? { ...canonVerdict, preuves: canonRefs } : null,
+        canon: canonVerdict
+          ? {
+              ...canonVerdict,
+              origin: canonVerdict.origine,
+              evidence: canonRefs ? { ...canonRefs, ...canonEvidenceView(canonRefs) } : null,
+              // Former names, deprecated: removed in 1.4.0.
+              preuves: canonRefs,
+            }
+          : null,
         manga,
       });
     }

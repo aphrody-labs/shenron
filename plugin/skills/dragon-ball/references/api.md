@@ -89,7 +89,7 @@ curl -s "https://bot.dragonballfr.com/api/public/wiki/search?q=kamehameha&limit=
 | `GET /api/public/manga/color/{channelId}/{attachmentId}/{file}` | path         | redirection 302 vers l'image « Full Color » (ancien chemin `couleur` encore servi)          |
 
 Les anciens noms de champs (`tomes`, `tome`, `planche`, `planches`, `planchesWithJa`,
-`plancheRange`) restent servis en doublon déprécié le temps d'une version.
+`plancheRange`) restent servis en doublon déprécié jusqu'à la version 1.4.0.
 
 ```bash
 curl -s "https://bot.dragonballfr.com/api/public/manga/search?q=kamehameha&limit=5" | jq
@@ -101,14 +101,16 @@ Base : `https://dragonballfr.com` (API du site, pas du bot). Lecture seule, CORS
 
 | Méthode & chemin            | Paramètres                                                                    | Renvoie                                                                                                    |
 | --------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `GET /api/canon`            | —                                                                             | la doctrine : `tiers`, `doctrine`, `sourcesAdmises`, `sourcesInterdites`, `heuristics`, `entries`, `stats` |
-| `GET /api/canon?q=`         | `q` (≤ 400 car.)                                                              | `{ question, verdict, references, planches, fiches, suggestions, mode }`                                   |
+| `GET /api/canon`            | —                                                                             | la doctrine : `tiers`, `doctrine`, `admittedSources`, `forbiddenSources`, `heuristics`, `entries`, `stats` |
+| `GET /api/canon?q=`         | `q` (≤ 400 car.)                                                              | `{ question, verdict, references, plates, records, suggestions, mode }`                                    |
 | `GET /api/canon/references` | `q`, `provenance` (aphrody\|databooks\|manuel\|manga), `limit` ≤100, `offset` | `{ total, items: CanonReference[] }`                                                                       |
 
-`verdict` = `{ tier, tierLabel, tierDefinition, score (0-100), verdict, explanation, sources, matchedKeywords, doctrine, origine, nature, color, toriyamaQuote, suggestions }` (clés relevées le 2026-10-01 ; `references` et `planches` peuvent être vides, ce qui ne prouve rien : cite alors seulement la doctrine).
-`origine` ∈ `entry:<id>` (sujet tranché) · `heuristic:<id>` (famille de formulations) · `fallback` (la doctrine ne sait pas — ne pas inventer).
+`verdict` = `{ tier, tierLabel, tierDefinition, score (0-100), verdict, explanation, sources, matchedKeywords, doctrine, origin, nature, color, toriyamaQuote, suggestions }` (clés relevées le 2026-10-05 ; `references` et `plates` peuvent être vides, ce qui ne prouve rien : cite alors seulement la doctrine).
+`origin` ∈ `entry:<id>` (sujet tranché) · `heuristic:<id>` (famille de formulations) · `fallback` (la doctrine ne sait pas — ne pas inventer).
 Les cinq rangs, par autorité décroissante, avec leur score **par défaut** dans `canon-engine.ts` : `CANON_ABSOLU` (100), `CANON_SUPERVISE` (88), `EXTENSION_OFFICIELLE` (70), `NON_CANON_DERIVE` (20), `APOCRYPHE_FANON` (0). Ce score de rang ne sert que de défaut : **chaque sujet tranché porte son propre score** (par exemple `broly` 85, `daima` 98 en `CANON_SUPERVISE` ; `db-gt` 15, `bardock-tv-special-1990` 30 en `NON_CANON_DERIVE`), chaque famille de formulations aussi (`supervision-officielle` 85, `jeux-video` 15), et le repli `fallback` vaut 50 sans établir aucun rang. Lire le `score` du verdict, jamais celui du rang. **Ce que chaque rang contient est une doctrine éditée à la main et elle change** : la liste complète des sujets et de leurs scores est dans la [doctrine embarquée](../../dragon-ball-canon/references/doctrine.md). Deux niveaux coexistent dans `/api/canon` : `entries[]` (un verdict par sujet : `{id, title, tier, score}`, 44 entrées le 2026-10-01, ex. `db-gt` = `NON_CANON_DERIVE`, `daima` et `broly` = `CANON_SUPERVISE`) et `tiers[].inclut` (description générale de chaque rang). Le 2026-10-01 ces deux niveaux n'étaient pas parfaitement cohérents (`tiers` rangeait GT dans la « trame principale » alors que l'entrée `db-gt` le classait `NON_CANON_DERIVE`) : cite le verdict et l'`origine` renvoyés pour le sujet, signale l'écart s'il y en a un, et ne tranche pas toi-même.
-`references[]` = `{ id, subject, text (original), textFr, source, year, lang, provenance, href }` — les déclarations de Toriyama et les planches de databooks traduites qui parlent du sujet. `planches[]` porte l'image, la transcription japonaise, la traduction et l'ancre `/wiki/databooks/{id}#planche-{n}`.
+`references[]` = `{ id, subject, text (original), textFr, source, year, lang, provenance, href }` — les déclarations de Toriyama et les planches de databooks traduites qui parlent du sujet. `plates[]` porte l'image, la transcription japonaise (`text`), la traduction (`textFr`), `verified` et l'ancre `/wiki/databooks/{id}#planche-{n}` ; `records[]` les fiches du wiki (`title`, `excerpt`).
+
+Les anciens noms restent servis en doublon déprécié jusqu'à la version 1.4.0 : `sourcesAdmises`, `sourcesInterdites`, `stats.parProvenance`, `verdict.origine`, `planches` (items `numero`, `texte`, `texteFr`, `verifiee`, `databookTitre`), `fiches` (items `titre`, `extrait`), `suggestions[].titre` et, sur chaque rang de `tiers`, `court`, `couleur`, `inclut` (maintenant `shortLabel`, `color`, `includes`).
 
 ```bash
 curl -s "https://dragonballfr.com/api/canon?q=Broly+est-il+canon" | jq '.verdict.tier, .references[0].source'

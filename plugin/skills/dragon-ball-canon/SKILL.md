@@ -27,7 +27,7 @@ verdict, explication, citation et sources.
 
 Statut à citer :
 
-- `origine: entry:<id>` → **établi (instantané)** : décision curée pour ce sujet.
+- `origine: entry:<id>` → **établi (instantané)** : décision curée pour ce sujet (le moteur embarqué rend `origine` ; `/api/canon` rend `origin`, avec `origine` en alias déprécié jusqu'à la version 1.4.0).
 - `origine: heuristic:<id>` → **non établi** : rang seulement présumé par une
   famille de formulations ; le dire.
 - `origine: fallback` → **non établi** : la doctrine n'a pas tranché ; aucun rang à
@@ -46,7 +46,7 @@ instantané se signale, avec les deux origines. Preuves : `dragonball_canon_refe
 
 ## Règles
 
-- Si `entries[]` et `tiers[].inclut` divergent, citer le verdict du sujet avec son
+- Si `entries[]` et `tiers[].includes` (ancien `inclut`) divergent, citer le verdict du sujet avec son
   origine et signaler l'écart sans décider soi-même.
 - `score` exprime l'autorité du rang ou du sujet, pas une probabilité ; chaque sujet
   porte son propre score. Une déclaration d'auteur est une pièce publiée, pas
