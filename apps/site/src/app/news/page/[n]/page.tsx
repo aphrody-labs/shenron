@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JournalIndex, journalPageCount, journalHref } from "../../_journal";
@@ -7,6 +8,7 @@ export const dynamicParams = true;
 
 /** Pages 2..N prérendues — la page 1 reste `/news` (pas de doublon). */
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	const pages = await journalPageCount().catch(() => 1);
 	return Array.from({ length: Math.max(0, pages - 1) }, (_, i) => ({ n: String(i + 2) }));
 }

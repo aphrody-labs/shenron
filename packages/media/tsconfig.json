@@ -3,11 +3,23 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ESNext", "DOM"],
-    "types": ["bun"],
+    "lib": [
+      "ESNext"
+    ],
+    "types": [
+      "bun"
+    ],
     "strict": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "undici-types": [
+        "./node_modules/undici-types"
+      ]
+    }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ]
 }

@@ -14,12 +14,23 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"verbatimModuleSyntax": false,
-		"jsx": "react-jsx",
-		"lib": ["ESNext", "DOM", "DOM.Iterable"],
-		"types": ["bun", "react", "react-dom"],
+		"lib": [
+			"ESNext"
+		],
+		"types": [
+			"bun"
+		],
 		"paths": {
-			"~/*": ["./src/*"]
+			"~/*": [
+				"./src/*"
+			],
+			"undici-types": [
+				"./node_modules/undici-types"
+			]
 		}
 	},
-	"include": ["src/**/*", "drizzle.config.ts"]
+	"include": [
+		"src/**/*",
+		"drizzle.config.ts"
+	]
 }

@@ -12,8 +12,7 @@
     "start": "bun src/index.ts",
     "build": "bash scripts/build-bundle.sh",
     "compile": "bun build src/entry-standalone.ts --compile --minify --sourcemap --outfile=dist/shenron",
-    "type-check": "tsc --noEmit",
-    "lint": "oxlint",
+    "lint": "oxlint -c ../../.oxlintrc.json src",
     "lint:fix": "oxlint --fix",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
     "ids": "bun scripts/discover-ids.ts",
@@ -41,7 +40,7 @@
     "db:push": "drizzle-kit push",
     "db:seed-xv2-char-meta": "bun src/db/seed-xv2-char-meta.ts",
     "db:seed-xv2-all": "bun src/db/seed-xv2-techniques.ts && bun src/db/seed-xv2-characters.ts && bun src/db/seed-xv2-char-meta.ts && bun src/db/seed-xv2-portraits.ts && bun src/db/seed-xv2-transformations.ts && bun src/db/seed-xv2-char-techniques.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aphrody/discord-kit": "0.1.0",
@@ -73,7 +72,8 @@
     "@shenron/media": "workspace:*"
   },
   "devDependencies": {
-    "drizzle-kit": "catalog:"
+    "drizzle-kit": "catalog:",
+    "undici-types": "~8.9.0"
   },
   "engines": {
     "bun": ">=1.4.2"

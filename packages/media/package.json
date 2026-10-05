@@ -14,14 +14,16 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "lint": "oxlint -c ../../.oxlintrc.json src"
   },
   "dependencies": {
     "@aphrody/http": "0.1.0"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "undici-types": "~8.9.0"
   },
   "engines": {
     "bun": ">=1.4.2"

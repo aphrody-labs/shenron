@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { WikiEntitySections } from "@/components/wiki/WikiEntitySections";
@@ -29,6 +30,7 @@ import { hlsMasterUrl } from "@/lib/assets";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const r = await dbUniverse.movies();
 	return (r?.movies ?? []).map((m) => ({ slug: m.slug }));

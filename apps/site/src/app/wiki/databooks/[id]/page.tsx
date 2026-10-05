@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WikiDrawer } from "@/components/wiki/WikiDrawer";
@@ -106,6 +107,7 @@ function plainText(md: string, max = 160): string {
 // Utilise `databookIds()` pour ne transférer que les entiers d'identifiants sans charger
 // les gros payloads JSONB (pages, transcriptions textuelles) en mémoire de build.
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const ids = await dbUniverse.databookIds();
 	return (ids ?? []).map((id) => ({ id: String(id) }));

@@ -62,11 +62,47 @@ const nextConfig: NextConfig = {
 	// Au runtime, aucun slot ne pose la variable : `next start` lit bien `.next`.
 	distDir: process.env.NEXT_DIST_DIR ?? ".next",
 
-	// PAS de `output: "standalone"` — testé le 2026-08-14, refusé pour cause de
-	// mémoire : le file tracing (nft) sur ce monorepo fait passer le build de
-	// ~8,1 à ~10,4 Gio de RSS et le fait tuer par l'OOM killer sur ce VPS (11 Gio).
-	// L'artefact est ensuite consommé par `aphrody-infra`, qui gère les releases
-	// et le rollback. Le dépôt Shenron ne bascule pas de slot localement.
+	// `output: "standalone"` seulement pour le binaire autonome (`bun run build:server`,
+	// NEXT_OUTPUT=standalone) : le file tracing (nft) monte le build de ~8,1 à ~10,4 Gio
+	// de RSS (mesuré le 2026-08-14), trop pour le VPS de 11 Gio ; il est donc fait sur
+	// la machine de build. Le build classique (`next start`) reste inchangé.
+	...(process.env.NEXT_OUTPUT === "standalone"
+		? {
+				output: "standalone" as const,
+				outputFileTracingRoot: monorepoRoot,
+				// Dynamic fs access in shared packages must never drag the repository (sources, tests,
+				// databases, corpora) into the server. Globs are relative to apps/site.
+				outputFileTracingExcludes: {
+					"*": [
+						"../../crates/**",
+						"../../target/**",
+						"../../data/**",
+						"../../var/**",
+						"../../docs/**",
+						"../../plugin/**",
+						"../../scripts/**",
+						"../../deploy/**",
+						"../../apps/bot/**",
+						"../../packages/*/test/**",
+						"../../packages/*/scripts/**",
+						"./tests/**",
+						"./src/**",
+						"./scripts/**",
+						"./data/**",
+						"./shenron-media-masters/**",
+						"./.next-build/**",
+						"./.next-dev/**",
+						"./public/**",
+						"**/*.db",
+						"**/*.db-*",
+						"**/*.sqlite*",
+						"**/*.env*",
+						"**/*.tsbuildinfo",
+						"**/*.map",
+					],
+				},
+			}
+		: {}),
 
 	// View Transitions API (React `<ViewTransition>`) — morph d'élément partagé
 	// grille→fiche, slides directionnels. Sans support navigateur, navigation
@@ -80,7 +116,8 @@ const nextConfig: NextConfig = {
 	// validateTurboNextConfig et supporter les builds turbopack sans conflit)
 	// `@shenron/images` est consommé depuis ses sources TypeScript (pas de dist) :
 	// Turbopack doit le transpiler comme du code du site.
-	transpilePackages: ["@shenron/koharu", "@shenron/media", "@shenron/images", "@shenron/db", "@shenron/auth", "@shenron/pipeline", "@shenron/api", "@shenron/ui", "@shenron/config"],
+	// Published @aphrody/* packages ship TypeScript sources: Turbopack transpiles them too.
+	transpilePackages: ["@aphrody/api", "@aphrody/discord-kit", "@aphrody/http", "@aphrody/inference", "@aphrody/m3-primitives", "@aphrody/m3-reader", "@aphrody/m3-theme", "@aphrody/paths", "@aphrody/plugin-opener", "@aphrody/runtime-sdk", "@aphrody/sql", "@shenron/koharu", "@shenron/media", "@shenron/images", "@shenron/db", "@shenron/auth", "@shenron/pipeline", "@shenron/api", "@shenron/ui", "@shenron/config"],
 
 	turbopack: {
 		root: monorepoRoot,
@@ -122,6 +159,9 @@ const nextConfig: NextConfig = {
 	// Docs : https://nextjs.org/docs/app/api-reference/components/image#formats
 	// Note : chaque format est caché séparément (storage ↑ mais latence ↓ après warm).
 	images: {
+		// The autonomous binary (public/desktop builds, SHENRON_IMAGES_UNOPTIMIZED=1) serves the
+		// sources as they are: no platform-specific image optimizer in the payload.
+		unoptimized: process.env.SHENRON_IMAGES_UNOPTIMIZED === "1",
 		// Optimisation RÉTABLIE (elle était coupée globalement). Le motif d'origine
 		// — sur Vercel, une image remplacée depuis l'admin restait figée à jamais —
 		// ne s'applique plus depuis l'auto-hébergement : l'optimiseur local expire

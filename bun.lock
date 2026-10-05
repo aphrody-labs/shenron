@@ -46,6 +46,19 @@
       },
       "devDependencies": {
         "drizzle-kit": "catalog:",
+        "undici-types": "~8.9.0",
+      },
+    },
+    "apps/server": {
+      "name": "@shenron/server",
+      "version": "1.0.0",
+      "bin": {
+        "shenron-server": "./src/cli.ts",
+      },
+      "devDependencies": {
+        "@types/bun": "catalog:",
+        "typescript": "catalog:",
+        "undici-types": "~8.9.0",
       },
     },
     "apps/site": {
@@ -227,6 +240,7 @@
       "devDependencies": {
         "@types/bun": "catalog:",
         "typescript": "catalog:",
+        "undici-types": "~8.9.0",
       },
     },
     "packages/native": {
@@ -1046,6 +1060,8 @@
     "@shenron/native": ["@shenron/native@workspace:packages/native"],
 
     "@shenron/pipeline": ["@shenron/pipeline@workspace:packages/pipeline"],
+
+    "@shenron/server": ["@shenron/server@workspace:apps/server"],
 
     "@shenron/site": ["@shenron/site@workspace:apps/site"],
 

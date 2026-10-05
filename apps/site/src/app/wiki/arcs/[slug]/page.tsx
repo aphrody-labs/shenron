@@ -14,11 +14,12 @@ import { GatedLink } from "@/components/GatedLink";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
+import { hasEditorialDatabase } from "@/lib/prerender";
 
 export const revalidate = 3600;
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
+	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1" || !hasEditorialDatabase()) return [];
 	const data = await dbUniverse.sagas();
 	const sagas = data?.sagas ?? [];
 	const sagaDetails = await Promise.all(sagas.map((s) => dbUniverse.saga(s.slug)));

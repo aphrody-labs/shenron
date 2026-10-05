@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GatedLink, GatedWrap } from "@/components/GatedLink";
@@ -18,6 +19,7 @@ interface ItemDetailPageProps {
 }
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const items = await dbUniverse.items();
 	return (items ?? []).map((it) => ({ slug: it.slug }));

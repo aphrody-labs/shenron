@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { Suspense } from "react";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
@@ -23,6 +24,7 @@ import type { CreativeWork, WithContext } from "schema-dts";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const r = await dbUniverse.sagas();
 	return (r?.sagas ?? []).map((s) => ({ slug: s.slug }));

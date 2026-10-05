@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { GameMediaGallery } from "@/components/wiki/GameMediaGallery";
@@ -17,6 +18,7 @@ import type { VideoGame, WithContext } from "schema-dts";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const r = await dbUniverse.games();
 	return (r?.games ?? []).map((g) => ({ slug: g.slug }));

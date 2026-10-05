@@ -16,8 +16,9 @@
  * The Aphrody checkout is only read through `git show <rev>:Cargo.toml`.
  */
 import { $ } from "bun";
+import { join } from "node:path";
 
-const ROOT = new URL("../../../", import.meta.url).pathname;
+const ROOT = `${join(import.meta.dir, "../../..")}/`;
 const args = process.argv.slice(2);
 const flag = (name: string) => {
   const i = args.indexOf(name);

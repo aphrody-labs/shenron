@@ -1,0 +1,26 @@
+{
+  "name": "@shenron/server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "shenron-server: the Shenron front app (Next 16 standalone) and local APIs in one autonomous Bun binary.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "shenron-server": "./src/cli.ts"
+  },
+  "scripts": {
+    "dev": "bun src/cli.ts serve",
+    "test": "bun test",
+    "build": "bun ../../scripts/build/server.ts",
+    "lint": "oxlint -c ../../.oxlintrc.json src",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:",
+    "undici-types": "~8.9.0"
+  },
+  "engines": {
+    "bun": ">=1.4.2"
+  }
+}

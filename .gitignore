@@ -9,9 +9,11 @@ node_modules/
 /target/
 **/*.rs.bk
 dist/
+/apps/server/.build/
 .next/
 .next-build/
 .next-dev/
+.next-standalone/
 out/
 coverage/
 .turbo/

@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import Link from "next/link";
 import { Suspense } from "react";
 import { dbUniverse } from "@/lib/db-universe";
@@ -24,6 +25,7 @@ export const revalidate = 3600;
 // Pré-rend les tomes principaux au build → cache CDN (évite l'OOM de Next 16 sur 200+ tomes).
 // dynamicParams=true permet aux autres éditions (Kanzenban, Anime Comics, etc.) d'être servies on-demand puis cachées par l'ISR.
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const readable = await dbUniverse.readableMangaChapters();
 	const volIds = new Set(

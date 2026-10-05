@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
@@ -41,6 +42,7 @@ export const revalidate = 3600;
 const PRERENDU = 100;
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const ids = await getShenronCharacterIds(PRERENDU);
 	return capParams(

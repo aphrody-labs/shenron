@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { dbUniverse } from "@/lib/db-universe";
@@ -41,6 +42,7 @@ export const revalidate = 3600;
 // Utilise `episodeIds()` pour ne transférer que les entiers d'identifiants sans charger
 // les gros payloads JSONB (synopsis, players, frames) en mémoire de build.
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const ids = await dbUniverse.episodeIds();
 	return (ids ?? []).map((id) => ({ id: String(id) }));

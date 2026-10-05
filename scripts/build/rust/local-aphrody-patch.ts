@@ -15,8 +15,9 @@
  *        bun scripts/build/rust/local-aphrody-patch.ts --remove
  */
 import { mkdirSync, rmSync } from "node:fs";
+import { join } from "node:path";
 
-const ROOT = new URL("../../../", import.meta.url).pathname;
+const ROOT = `${join(import.meta.dir, "../../..")}/`;
 const target = `${ROOT}.cargo/config.toml`;
 if (process.argv.includes("--remove")) {
   rmSync(target, { force: true });

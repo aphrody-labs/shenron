@@ -41,10 +41,9 @@
     }
   },
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "lint": "oxlint -c ../.oxlintrc.json",
+    "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "bun test",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@shenron/config": "workspace:*"

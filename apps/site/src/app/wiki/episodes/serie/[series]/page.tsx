@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { EpisodeSeriesGrid } from "./EpisodeSeriesGrid";
 import Link from "next/link";
@@ -28,6 +29,7 @@ export const revalidate = 3600;
 const MAX_EPISODES = 1000; // couvre la plus longue série (DBZ ~291)
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const rows = await getEpisodeSeriesCached().catch(() => null);
 	return orderSeries(rows).map((series) => ({ series }));

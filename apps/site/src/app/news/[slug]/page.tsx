@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { db } from "@/lib/db";
 import { posts as postsTable } from "@/db/schema";
 import { and, desc, eq, ne } from "drizzle-orm";
@@ -31,6 +32,7 @@ export const revalidate = 300;
  * `revalidate` — cf. le piège documenté dans CLAUDE.md.
  */
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	const rows = await db
 		.select({ slug: postsTable.slug })
 		.from(postsTable)

@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +12,7 @@ export const revalidate = 60;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	try {
 		const lists = await listTierlists(100);
 		return lists.map((t) => ({ slug: t.slug }));

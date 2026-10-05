@@ -312,7 +312,7 @@ async function checkPackage(name: string, relDir: string): Promise<void> {
 	}
 
 	// 2. scripts, private, no build output.
-	for (const script of ["type-check", "lint", "test"]) {
+	for (const script of ["typecheck", "lint", "test"]) {
 		if (!manifest.scripts?.[script]) report(name, "scripts", `missing script "${script}"`);
 	}
 	if (manifest.private !== true) report(name, "manifest", "private is not true");

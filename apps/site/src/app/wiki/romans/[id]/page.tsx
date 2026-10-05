@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -30,6 +31,7 @@ function absoluteCover(cover: string | null | undefined): string | undefined {
 }
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	const novels = await dbUniverse.mediaPublications("light_novel");
 	return (novels ?? []).map((n) => ({ id: String(n.id) }));
 }

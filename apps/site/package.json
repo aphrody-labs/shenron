@@ -13,9 +13,8 @@
     "prebuild": "bun ../../packages/ui/scripts/sync-assets.ts --to public",
     "build": "NEXT_DIST_DIR=.next-build next build --turbopack",
     "start": "next start",
-    "lint": "oxlint -c .oxlintrc.json",
+    "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "bun test --isolate --path-ignore-patterns='**/*.live.test.ts' tests/",
-    "type-check": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json",
     "type-check:tests": "tsc --noEmit -p tsconfig.tests.json",
     "wiki:repair-interviews": "bun scripts/repair-interview-databook-links.ts",
     "manga:populate": "bun scripts/populate-manga-pages.ts",
@@ -23,7 +22,7 @@
     "db:push": "echo \"db:push est interdit : migrations via le runbook aphrody-infra (docs/STACK.md D5)\" >&2 && exit 1",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json"
   },
   "dependencies": {
     "@aphrody/paths": "0.1.0",

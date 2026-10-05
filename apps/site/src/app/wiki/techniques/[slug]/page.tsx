@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { WikiFicheVide } from "@/components/wiki/WikiFicheVide";
@@ -24,6 +25,7 @@ import { pickBestImage } from "@/lib/image-variants";
 
 export const revalidate = 3600;
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const list = await getShenronTechniques();
 	// 825 fiches pour une rubrique tout juste ouverte : on prérend les plus

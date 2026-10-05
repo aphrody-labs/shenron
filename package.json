@@ -120,7 +120,7 @@
     }
   },
   "scripts": {
-    "typecheck": "bun run --filter '*' type-check",
+    "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run --filter '*' test",
     "lint": "oxlint -c .oxlintrc.json apps packages scripts",
     "format:check": "oxfmt --check apps packages scripts",

@@ -1,0 +1,104 @@
+// SPDX-License-Identifier: Apache-2.0
+/**
+ * `shenron-server`: the Shenron front app (site, Koharu editor, studio, administration) and
+ * the local APIs in one autonomous binary.
+ *
+ *   shenron-server [serve] [--port N] [--host H]   serve the front app (default)
+ *   shenron-server serve all                       front app + the sibling shenron-bot binary
+ *   shenron-server paths | doctor | init | version | help
+ */
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
+import { ensureDirectories, initEnvFile, loadEnvironment, resolvePaths, secretPresence } from "./config";
+import { extract } from "./payload";
+import { serveSite } from "./site";
+
+export const VERSION = "1.0.0";
+
+const HELP = `shenron-server ${VERSION} — Shenron (dragonballfr.com) en un binaire
+
+Usage:
+  shenron-server [serve] [--port N] [--host H]   front app (site, éditeur Koharu, studio, admin)
+  shenron-server serve all                       front app + bot Discord (binaire shenron-bot voisin)
+  shenron-server paths                           dossiers résolus (SHENRON_HOME)
+  shenron-server doctor                          profil et présence des secrets (jamais leurs valeurs)
+  shenron-server init                            crée config/shenron.env (privé) s'il n'existe pas
+  shenron-server version
+
+Environnement : SHENRON_HOME, SHENRON_PROFILE (production|desktop|public), SHENRON_ENV_FILE,
+PORT, HOSTNAME, SHENRON_SITE_DIR. Le processus l'emporte sur config/shenron.env, puis sur les
+valeurs publiques par défaut (dragonballfr.com).`;
+
+function option(args: string[], name: string): string | undefined {
+  const index = args.indexOf(name);
+  return index >= 0 ? args[index + 1] : undefined;
+}
+
+export async function main(argv: string[], options: { embeddedPayload?: string } = {}): Promise<void> {
+  const startedAt = performance.now();
+  const [command = "serve", ...rest] = argv;
+  if (command === "help" || command === "--help" || command === "-h") {
+    console.log(HELP);
+    return;
+  }
+  if (command === "version" || command === "--version" || command === "-v") {
+    console.log(`shenron-server ${VERSION} (Bun ${Bun.version})`);
+    return;
+  }
+  const paths = resolvePaths();
+  if (command === "paths") {
+    console.log(JSON.stringify(paths, null, 2));
+    return;
+  }
+  if (command === "init") {
+    ensureDirectories(paths);
+    console.log(initEnvFile(paths) ? `créé : ${paths.envFile}` : `existe déjà : ${paths.envFile}`);
+    return;
+  }
+  const { profile, fromFile } = loadEnvironment(paths);
+  if (command === "doctor") {
+    console.log(
+      JSON.stringify(
+        { version: VERSION, profile, home: paths.home, envFile: paths.envFile, fromFile, secrets: secretPresence() },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+  if (command !== "serve") {
+    console.error(`commande inconnue : ${command}\n\n${HELP}`);
+    process.exit(64);
+  }
+  ensureDirectories(paths);
+  if (options.embeddedPayload && !process.env.SHENRON_SITE_DIR) {
+    const payload = await extract(options.embeddedPayload, paths.cache);
+    process.env.SHENRON_SITE_DIR = join(payload.dir, "site");
+    if (!process.env.SHENRON_FFI_LIB) {
+      const lib = ["libshenron_ffi.so", "shenron_ffi.dll", "libshenron_ffi.dylib"]
+        .map((name) => join(payload.dir, "native", name))
+        .find((path) => existsSync(path));
+      if (lib) process.env.SHENRON_FFI_LIB = lib;
+    }
+    console.error(JSON.stringify({ event: "shenron.payload", dir: payload.dir, extracted: payload.extracted, ms: payload.ms }));
+  }
+  const port = Number(option(rest, "--port") ?? process.env.PORT ?? 3000);
+  const hostname = option(rest, "--host") ?? process.env.HOSTNAME ?? "127.0.0.1";
+  const site = await serveSite(paths, { hostname, port, startedAt });
+  let bot: ReturnType<typeof Bun.spawn> | undefined;
+  if (rest[0] === "all") {
+    const name = process.platform === "win32" ? "shenron-bot.exe" : "shenron-bot";
+    const binary = join(paths.exeDir, name);
+    if (!existsSync(binary)) throw new Error(`${name} introuvable à côté de shenron-server`);
+    bot = Bun.spawn([binary], { stdio: ["ignore", "inherit", "inherit"], env: process.env });
+  }
+  const stop = () => {
+    site.stop();
+    bot?.kill();
+    process.exit(0);
+  };
+  process.on("SIGINT", stop);
+  process.on("SIGTERM", stop);
+  console.log(`Shenron : ${site.url} (profil ${profile})`);
+}

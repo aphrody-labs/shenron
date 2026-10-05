@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { dbUniverse, assetUrl } from "@/lib/db-universe";
 import { MangaReader } from "@/components/manga/MangaReader";
 import { ogMeta } from "@/lib/og";
@@ -22,6 +23,7 @@ export const revalidate = 3600;
 // Pré-rend les chapitres principaux au build → cache CDN (sans ça, Next 16 rend la
 // route dynamiquement, no-store). dynamicParams=true : nouveaux chapitres on-demand.
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const data = await dbUniverse.readableMangaChapters();
 	// Les éditions volumineuses (Full Color 520 chapitres, Kanzenban, Anime Comics, etc.)

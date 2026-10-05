@@ -14,7 +14,7 @@
 
 ## Checklist
 
-- [ ] `bun run type-check` passe
+- [ ] `bun run typecheck` passe
 - [ ] `bun run lint` passe
 - [ ] `bun run test` passe
 - [ ] `bun run gen:entries` lancé si nouvelle commande/event

@@ -1,0 +1,91 @@
+// SPDX-License-Identifier: Apache-2.0
+/**
+ * Self-contained payload of the server binary: the front app build, its public assets and
+ * the native library, packed into one zstd archive embedded in the executable and extracted
+ * once per version into the cache directory.
+ *
+ * Format (before zstd): "SHENRONPAK1\n", u32 LE manifest length, manifest JSON
+ * `{ entries: [{ path, size, mode }] }`, then the file bytes in manifest order.
+ */
+import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, relative, sep } from "node:path";
+
+const MAGIC = "SHENRONPAK1\n";
+
+export interface PackEntry {
+  path: string;
+  size: number;
+  mode: number;
+}
+
+function* walk(dir: string): Generator<string> {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) yield* walk(full);
+    else if (entry.isFile() || entry.isSymbolicLink()) yield full;
+  }
+}
+
+/** Pack `sources` (archive prefix -> directory or file) into a zstd-compressed payload. */
+export function pack(sources: Record<string, string>, level = 12): Uint8Array {
+  const entries: PackEntry[] = [];
+  const chunks: Uint8Array[] = [];
+  for (const [prefix, source] of Object.entries(sources)) {
+    const files = statSync(source).isDirectory() ? [...walk(source)] : [source];
+    for (const file of files.sort()) {
+      const stat = statSync(file);
+      const rel = statSync(source).isDirectory() ? relative(source, file).split(sep).join("/") : "";
+      const path = [prefix, rel].filter(Boolean).join("/");
+      const bytes = readFileSync(file);
+      entries.push({ path, size: bytes.byteLength, mode: stat.mode & 0o777 });
+      chunks.push(bytes);
+    }
+  }
+  const manifest = new TextEncoder().encode(JSON.stringify({ entries }));
+  const header = new Uint8Array(MAGIC.length + 4);
+  header.set(new TextEncoder().encode(MAGIC));
+  new DataView(header.buffer).setUint32(MAGIC.length, manifest.byteLength, true);
+  const total = header.byteLength + manifest.byteLength + chunks.reduce((n, c) => n + c.byteLength, 0);
+  const raw = new Uint8Array(total);
+  let offset = 0;
+  for (const part of [header, manifest, ...chunks]) {
+    raw.set(part, offset);
+    offset += part.byteLength;
+  }
+  return Bun.zstdCompressSync(raw, { level });
+}
+
+/**
+ * Extract `payload` into `<cacheDir>/<id>` unless already complete; returns the directory.
+ * Extraction goes to a temporary sibling first, so an interrupted run never looks complete.
+ */
+export async function extract(payloadFile: string, cacheDir: string): Promise<{ dir: string; extracted: boolean; ms: number }> {
+  const started = performance.now();
+  const compressed = new Uint8Array(await Bun.file(payloadFile).arrayBuffer());
+  const id = new Bun.CryptoHasher("sha256").update(compressed).digest("hex").slice(0, 16);
+  const dir = join(cacheDir, `payload-${id}`);
+  if (existsSync(join(dir, ".complete"))) return { dir, extracted: false, ms: Math.round(performance.now() - started) };
+  const raw = Bun.zstdDecompressSync(compressed);
+  const magic = new TextDecoder().decode(raw.subarray(0, MAGIC.length));
+  if (magic !== MAGIC) throw new Error("corrupted Shenron payload (bad magic)");
+  const length = new DataView(raw.buffer, raw.byteOffset).getUint32(MAGIC.length, true);
+  let offset = MAGIC.length + 4;
+  const { entries } = JSON.parse(new TextDecoder().decode(raw.subarray(offset, offset + length))) as {
+    entries: PackEntry[];
+  };
+  offset += length;
+  const temporary = `${dir}.tmp-${process.pid}`;
+  rmSync(temporary, { recursive: true, force: true });
+  for (const entry of entries) {
+    if (entry.path.split("/").includes("..")) throw new Error(`unsafe payload path ${entry.path}`);
+    const target = join(temporary, ...entry.path.split("/"));
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, raw.subarray(offset, offset + entry.size));
+    if (process.platform !== "win32") chmodSync(target, entry.mode || 0o644);
+    offset += entry.size;
+  }
+  writeFileSync(join(temporary, ".complete"), `${new Date().toISOString()}\n`);
+  rmSync(dir, { recursive: true, force: true });
+  renameSync(temporary, dir);
+  return { dir, extracted: true, ms: Math.round(performance.now() - started) };
+}

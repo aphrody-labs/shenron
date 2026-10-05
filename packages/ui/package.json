@@ -109,8 +109,7 @@
     }
   },
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "lint": "oxlint -c ../.oxlintrc.json",
+    "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "bun test --path-ignore-patterns='test/koharu/**' && bun test/koharu/run.ts",
     "tokens": "bun scripts/generate-tokens.ts",
     "tokens:check": "bun scripts/generate-tokens.ts --check",
@@ -119,7 +118,7 @@
     "assets:sync": "bun scripts/sync-assets.ts",
     "build:check": "bun scripts/production-check.ts",
     "portability:check": "bun scripts/check-portability.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aphrody/api": "3.0.0-alpha.2",

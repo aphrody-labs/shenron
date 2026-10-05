@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { db } from "@/lib/db";
 import { posts as postsTable } from "@/db/schema";
 import { and, desc, sql } from "drizzle-orm";
@@ -56,6 +57,7 @@ function decodeTag(raw: string): string | null {
 }
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	const rows = await db
 		.select({ tags: postsTable.tags })
 		.from(postsTable)

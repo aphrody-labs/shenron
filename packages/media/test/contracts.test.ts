@@ -185,7 +185,7 @@ test("shared HTTP client uses explicit auth and rejects redirects without forwar
     port: 0,
     fetch: (request) => {
       expect(request.headers.get("authorization")).toBe("Bearer fixture-token");
-      return Response.redirect(target.url);
+      return Response.redirect(target.url.href);
     },
   });
   try {

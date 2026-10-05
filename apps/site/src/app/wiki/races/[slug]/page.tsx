@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { WikiArticle } from "@/components/wiki/WikiArticle";
@@ -15,6 +16,7 @@ import { ogMeta } from "@/lib/og";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const list = await getShenronRaces();
 	return list.map((r) => ({ slug: r.slug }));

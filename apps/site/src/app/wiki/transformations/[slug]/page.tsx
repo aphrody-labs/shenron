@@ -1,3 +1,4 @@
+import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
@@ -18,6 +19,7 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
+	if (!hasEditorialDatabase()) return [];
 	if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
 	const list = await getTransformationsAvecArticle();
 	return list.map((t) => ({ slug: t.slug }));
