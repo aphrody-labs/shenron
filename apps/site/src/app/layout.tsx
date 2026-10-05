@@ -172,15 +172,6 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://s4.anilist.co" />
         <link rel="dns-prefetch" href={DISCORD_CDN} />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
-        {/* Préchargement critique de la police principale Google Sans Flex */}
-        <link
-          rel="preload"
-          href="/fonts/google-sans-flex.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-
         {/* Préférences du shell (barre latérale repliée, fenêtre Tauri) avant la première
 				    peinture : sans elles, la barre se déplierait puis se replierait. */}
         <ShellBoot />
