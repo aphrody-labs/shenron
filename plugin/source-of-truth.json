@@ -9,6 +9,7 @@
     }
   ],
   "knowledge": [
+    "GEMINI.md",
     "agents/dbfr-ocr.md",
     "agents/dbfr-traducteur.md",
     "agents/dbfr-wiki.md",
