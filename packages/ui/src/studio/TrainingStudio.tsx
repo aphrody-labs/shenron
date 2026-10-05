@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-// Read-only native training environment and events. The existing start owner still invokes
-// the Python training process, so this UI does not expose that launch path.
+// Read-only native training environment (`studio_shenron_training`) and the `studio://train`
+// events of crates/shenron-studio/src/studio.rs. `studio_shenron_train_start` still runs the
+// Python training process, so this UI does not expose that launch path.
 import { useEffect, useState } from "react";
-import { Button, Card } from "@aphrody/m3-primitives";
+import { StudioHeader } from "./StudioHeader";
+import { DesktopOnly, ErrorNote, ghostButtonClass, panelClass } from "./StudioKit";
 import { isTauri } from "./tauri-bridge";
 import { shenron, training, type ShenronTraining, type TrainEvent } from "./studio-bridge";
 
@@ -81,55 +83,45 @@ export function TrainingStudio({ services = backend }: { services?: TrainingStud
 
   if (!desktop) {
     return (
-      <p className="text-body-large text-on-surface-variant">
-        L'état de l'entraînement est disponible dans l'application Aphrody.
-      </p>
+      <DesktopOnly>
+        L'état de l'entraînement est disponible dans l'application de bureau Shenron.
+      </DesktopOnly>
     );
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="space-y-2">
-        <p className="text-label-large font-medium text-primary">Shenron</p>
-        <h1 className="text-headline-large font-semibold text-on-surface">Entraînement</h1>
-        <p className="text-body-large text-on-surface-variant">
-          Environnement et événements des candidats embeddings et reranker
-        </p>
-      </header>
-      <Card className="flex flex-col gap-3 p-6 text-body-large">
-        <h2 className="text-title-large font-medium">Environnement</h2>
+      <StudioHeader
+        eyebrow="Candidats RAG"
+        title="Entraînement"
+        subtitle="Environnement et événements des candidats embeddings et reranker"
+      />
+      <section className={panelClass}>
+        <h3 className="text-[18px] font-bold">Environnement</h3>
         {loading && <p role="status">Lecture de l'environnement d'entraînement…</p>}
         {env && (
           <>
             <p>GPU détectés : {env.gpu_count}</p>
             <p>Candidats : {env.candidate_root}</p>
             <p>Projet d'entraînement : {env.python_project ?? "introuvable"}</p>
-            <p className="text-on-surface-variant">{env.rag_promotion}</p>
+            <p className="text-os/75">{env.rag_promotion}</p>
           </>
         )}
-        {environmentError && (
-          <p role="alert" className="text-error">
-            Environnement indisponible : {environmentError}
-          </p>
-        )}
-      </Card>
-      <Card className="flex flex-col gap-3 p-6 text-body-large">
-        <h2 className="text-title-large font-medium">Événements reçus</h2>
+        {environmentError && <ErrorNote>Environnement indisponible : {environmentError}</ErrorNote>}
+      </section>
+      <section className={panelClass}>
+        <h3 className="text-[18px] font-bold">Événements reçus</h3>
         {eventError ? (
-          <p role="alert" className="text-error">
-            Flux d'événements indisponible : {eventError}
-          </p>
+          <ErrorNote>Flux d'événements indisponible : {eventError}</ErrorNote>
         ) : !listening ? (
           <p role="status">Connexion aux événements d'entraînement…</p>
         ) : events.length === 0 ? (
-          <p className="text-on-surface-variant">
-            Aucun événement reçu depuis l'ouverture de cette vue.
-          </p>
+          <p className="text-os/75">Aucun événement reçu depuis l'ouverture de cette vue.</p>
         ) : null}
         {events.length > 0 && (
           <ol className="flex flex-col gap-2">
             {events.map((event, index) => (
-              <li key={index} className="rounded-medium bg-surface-container-high p-3">
+              <li key={index} className="rounded-lg border border-os/12 p-3">
                 {event.state === "started"
                   ? `Démarré : ${event.kind}, ${event.steps} pas, ${event.baseModel}`
                   : event.state === "finished"
@@ -139,15 +131,15 @@ export function TrainingStudio({ services = backend }: { services?: TrainingStud
             ))}
           </ol>
         )}
-      </Card>
+      </section>
       {(environmentError || eventError) && (
-        <Button
-          variant="tonal"
-          className="self-start"
+        <button
+          type="button"
+          className={`${ghostButtonClass} self-start`}
           onClick={() => setReload((value) => value + 1)}
         >
           Réessayer
-        </Button>
+        </button>
       )}
     </div>
   );

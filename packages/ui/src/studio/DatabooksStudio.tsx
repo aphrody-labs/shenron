@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-// Databooks & corpus: offline search of the Shenron corpus (aphrody-rag::dragonball::LocalCorpus)
-// and grounded answers from the desktop's local chat model, rendered with @shenron/ui.
+// Databooks & corpus: offline search of the Shenron corpus (shenron_rag::dragonball::LocalCorpus,
+// `studio_corpus_*` in crates/shenron-studio/src/studio.rs) and grounded answers from the
+// desktop's local chat model when one is ready.
 import { useEffect, useState } from "react";
-import { Button, Card } from "@aphrody/m3-primitives";
-import { StudioHeader } from "./StudioHeader";
 import { SectionHeading } from "../layout/SectionHeading";
+import { StudioHeader } from "./StudioHeader";
+import { DesktopOnly, ErrorNote, fieldClass, panelClass, primaryButtonClass } from "./StudioKit";
 import { isTauri } from "./tauri-bridge";
 import { corpus, type CorpusHit } from "./studio-bridge";
 
@@ -15,20 +16,16 @@ const KINDS: Array<[string, string]> = [
   ["wiki", "Wiki"],
 ];
 
-const buttonClass = "min-h-12 px-5 text-[18px]";
-const fieldClass =
-  "min-h-12 rounded-xl border border-outline bg-surface-container px-4 text-[18px]";
-
 function HitList({ hits }: { hits: CorpusHit[] }) {
   return (
     <ol className="flex flex-col gap-3">
       {hits.map((hit) => (
-        <li key={`${hit.rowid}-${hit.url}`} className="rounded-xl bg-surface-container p-4">
-          <p className="text-[18px] font-semibold">
+        <li key={`${hit.rowid}-${hit.url}`} className={panelClass}>
+          <p className="font-semibold">
             [{hit.kind}] {hit.title}
           </p>
-          <p className="mt-1 text-[16px] text-on-surface-variant">{hit.snippet}</p>
-          <p className="mt-1 text-[14px] text-on-surface-variant">
+          <p className="text-os/75">{hit.snippet}</p>
+          <p className="break-all text-[14px] text-os/60 tabular-nums">
             {hit.url} · score {hit.score.toFixed(2)}
           </p>
         </li>
@@ -59,9 +56,7 @@ export function DatabooksStudio() {
 
   if (!isTauri()) {
     return (
-      <p className="text-[18px] text-on-surface-variant">
-        Les databooks nécessitent l’application Aphrody.
-      </p>
+      <DesktopOnly>Les databooks fonctionnent dans l’application de bureau Shenron.</DesktopOnly>
     );
   }
 
@@ -96,20 +91,16 @@ export function DatabooksStudio() {
   return (
     <div className="flex flex-col gap-8">
       <StudioHeader
-        eyebrow="Shenron"
+        eyebrow="Hors ligne"
         title="Databooks & corpus"
         subtitle={documents === null ? "Chargement du corpus…" : `${documents} documents en local`}
       />
-      {error ? (
-        <p role="alert" className="text-[18px] text-error">
-          {error}
-        </p>
-      ) : null}
+      {error ? <ErrorNote>{error}</ErrorNote> : null}
 
       <section className="flex flex-col gap-4">
-        <SectionHeading level={2} title="Recherche" />
+        <SectionHeading level={3} title="Recherche" />
         <form
-          className="flex flex-wrap gap-3"
+          className="flex flex-col gap-3 sm:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             if (query.trim().length >= 2) void search();
@@ -117,7 +108,7 @@ export function DatabooksStudio() {
         >
           <select
             aria-label="Type de document"
-            className={fieldClass}
+            className={`${fieldClass} sm:w-auto`}
             value={kind}
             onChange={(event) => setKind(event.target.value)}
           >
@@ -134,21 +125,25 @@ export function DatabooksStudio() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <Button className={buttonClass} type="submit" disabled={busy || query.trim().length < 2}>
+          <button
+            className={primaryButtonClass}
+            type="submit"
+            disabled={busy || query.trim().length < 2}
+          >
             Rechercher
-          </Button>
+          </button>
         </form>
         <HitList hits={hits} />
       </section>
 
       <section className="flex flex-col gap-4">
         <SectionHeading
-          level={2}
+          level={3}
           title="Question sourcée"
           standfirst="Réponse du modèle local à partir des passages du corpus"
         />
         <form
-          className="flex gap-3"
+          className="flex flex-col gap-3 sm:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             if (question.trim().length >= 2) void ask();
@@ -161,22 +156,22 @@ export function DatabooksStudio() {
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
           />
-          <Button
-            className={buttonClass}
+          <button
+            className={primaryButtonClass}
             type="submit"
             disabled={busy || question.trim().length < 2}
           >
             Demander
-          </Button>
+          </button>
         </form>
         {answer ? (
-          <Card className="flex flex-col gap-3 p-6">
-            <p className="whitespace-pre-wrap text-[18px]">{answer.text}</p>
+          <div className={panelClass}>
+            <p className="max-w-[72ch] whitespace-pre-wrap">{answer.text}</p>
             {answer.model ? (
-              <p className="text-[14px] text-on-surface-variant">Modèle : {answer.model}</p>
+              <p className="text-[14px] text-os/60">Modèle : {answer.model}</p>
             ) : null}
             <HitList hits={answer.hits} />
-          </Card>
+          </div>
         ) : null}
       </section>
     </div>

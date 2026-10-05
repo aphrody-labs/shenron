@@ -1,14 +1,21 @@
 // SPDX-License-Identifier: Apache-2.0
-// Shenron administration: the complete admin dashboard opens in a native window that talks to the
-// desktop's local models through `window.aphrodyNative` (crates/ui/app/src/studio.rs).
+// Shenron administration: the complete admin dashboard opens in its own native window
+// (`studio_open_shenron_admin`), where `window.aphrodyNative` reaches the desktop's local
+// models (`studio_native_*`, crates/shenron-studio/src/studio.rs). Outside the desktop app the
+// dashboard opens in place.
 import { useCallback, useEffect, useState } from "react";
-import { Button, Card } from "@aphrody/m3-primitives";
+import { adminUrl } from "@shenron/config/admin";
 import { StudioHeader } from "./StudioHeader";
+import {
+  ErrorNote,
+  fieldClass,
+  ghostButtonClass,
+  panelClass,
+  primaryButtonClass,
+  StatusChip,
+} from "./StudioKit";
 import { isTauri } from "./tauri-bridge";
 import { nativeAi, type NativeAiStatus } from "./studio-bridge";
-import { adminUrl } from "@shenron/config/admin";
-
-const buttonClass = "min-h-12 px-5 text-[18px]";
 
 export function AdminStudio() {
   const [status, setStatus] = useState<NativeAiStatus | null>(null);
@@ -47,22 +54,15 @@ export function AdminStudio() {
   return (
     <div className="flex flex-col gap-6">
       <StudioHeader
-        eyebrow="Aphrody · Shenron"
+        eyebrow="Fenêtre native"
         title="Administration"
-        subtitle="Bot, site, manga, transcriptions et accès"
+        subtitle="Bot, site, manga, transcriptions et accès, avec les modèles locaux du bureau"
       />
-      <Card className="flex flex-col gap-4 p-6">
+      <div className={panelClass}>
         {isTauri() && (
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {roles.map(([label, role]) => (
-              <span
-                key={label}
-                className={
-                  role?.ready
-                    ? "rounded-full bg-primary-container px-3 py-1 text-[16px] text-on-primary-container"
-                    : "rounded-full bg-surface-container px-3 py-1 text-[16px] text-on-surface-variant"
-                }
-              >
+              <StatusChip key={label} ok={role?.ready === true}>
                 {label} :{" "}
                 {status
                   ? role?.ready
@@ -71,17 +71,17 @@ export function AdminStudio() {
                   : error
                     ? "indisponible"
                     : "lecture en cours"}
-              </span>
+              </StatusChip>
             ))}
-            <Button className={buttonClass} variant="tonal" onClick={refresh}>
+            <button type="button" className={ghostButtonClass} onClick={refresh}>
               Actualiser
-            </Button>
+            </button>
           </div>
         )}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <input
             aria-label="URL de l’administration"
-            className="min-h-12 flex-1 rounded-xl border border-outline bg-surface-container px-4 text-[18px]"
+            className={`${fieldClass} flex-1`}
             placeholder={adminUrl()}
             value={url}
             onChange={(event) => {
@@ -89,16 +89,12 @@ export function AdminStudio() {
               setError(null);
             }}
           />
-          <Button className={buttonClass} onClick={() => void open()}>
+          <button type="button" className={primaryButtonClass} onClick={() => void open()}>
             Ouvrir l’administration
-          </Button>
+          </button>
         </div>
-        {error ? (
-          <p role="alert" className="text-[18px] text-error">
-            {error}
-          </p>
-        ) : null}
-      </Card>
+        {error ? <ErrorNote>{error}</ErrorNote> : null}
+      </div>
     </div>
   );
 }

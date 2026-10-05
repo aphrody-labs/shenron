@@ -1,10 +1,24 @@
 // SPDX-License-Identifier: Apache-2.0
-// Shenron studio: health, RAG corpus and training environment rendered natively with @shenron/ui
-// layout components over the typed Studio commands (logic owned by aphrody-command::shenron_cmd).
+// Shenron studio of the desktop app: one page, four tabs over the Studio commands that
+// shenron-desktop registers (crates/shenron-studio, logic owned by shenron-cli::shenron_cmd):
+// service health and RAG corpus, the offline databooks corpus, training, administration.
 import { useCallback, useEffect, useState } from "react";
-import { Button, Card } from "@aphrody/m3-primitives";
-import { StudioHeader } from "./StudioHeader";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "../components/tabs";
 import { SectionHeading } from "../layout/SectionHeading";
+import { AdminStudio } from "./AdminStudio";
+import { DatabooksStudio } from "./DatabooksStudio";
+import { StudioHeader } from "./StudioHeader";
+import {
+  DesktopOnly,
+  ErrorNote,
+  fieldClass,
+  ghostButtonClass,
+  panelClass,
+  primaryButtonClass,
+  rowClass,
+  StatusChip,
+} from "./StudioKit";
+import { TrainingStudio } from "./TrainingStudio";
 import { isTauri } from "./tauri-bridge";
 import {
   shenron,
@@ -12,141 +26,93 @@ import {
   type ShenronProbe,
   type ShenronRagHit,
   type ShenronRagStats,
-  type ShenronTraining,
 } from "./studio-bridge";
 
-const buttonClass = "min-h-12 px-5 text-[18px]";
+const TABS = [
+  ["pilotage", "Pilotage"],
+  ["databooks", "Databooks"],
+  ["entrainement", "Entraînement"],
+  ["administration", "Administration"],
+] as const;
 
 function message(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function StatusPill({ ok, label }: { ok: boolean; label: string }) {
-  return (
-    <span
-      className={
-        ok
-          ? "rounded-full bg-primary-container px-3 py-1 text-[16px] text-on-primary-container"
-          : "rounded-full bg-error-container px-3 py-1 text-[16px] text-on-error-container"
-      }
-    >
-      {label}
-    </span>
-  );
-}
-
 function ProbeRow({ name, probe }: { name: string; probe: ShenronProbe }) {
   const ok = probe.reachable === true;
   return (
-    <li className="flex items-center justify-between gap-3 rounded-xl bg-surface-container p-3 text-[18px]">
+    <li className={rowClass}>
       <span>{name}</span>
-      <StatusPill
-        ok={ok}
-        label={probe.configured === false ? "non configuré" : ok ? "joignable" : "injoignable"}
-      />
+      <StatusChip ok={ok}>
+        {probe.configured === false ? "non configuré" : ok ? "joignable" : "injoignable"}
+      </StatusChip>
     </li>
   );
 }
 
-export function ShenronStudio() {
-  const [health, setHealth] = useState<ShenronHealth | null>(null);
-  const [stats, setStats] = useState<ShenronRagStats | null>(null);
-  const [training, setTraining] = useState<ShenronTraining | null>(null);
+/** Last health and corpus reports; a failed read keeps its message, never a stale value. */
+interface Reports {
+  health: ShenronHealth | null;
+  stats: ShenronRagStats | null;
+  errors: { health?: string; stats?: string };
+}
+
+/** Health of the services and the serving RAG corpus (`studio_shenron_*`). */
+function Pilotage({
+  reports: { health, stats, errors },
+  refreshing,
+  onRefresh,
+}: {
+  reports: Reports;
+  refreshing: boolean;
+  onRefresh: () => void;
+}) {
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<ShenronRagHit[]>([]);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  const capture = useCallback(
-    async <T,>(key: string, task: () => Promise<T>, apply: (value: T) => void) => {
-      try {
-        apply(await task());
-        setErrors((current) => {
-          const { [key]: _removed, ...rest } = current;
-          return rest;
-        });
-      } catch (cause) {
-        setErrors((current) => ({ ...current, [key]: message(cause) }));
-      }
-    },
-    [],
-  );
-
-  const refresh = useCallback(async () => {
-    setBusy(true);
-    await Promise.all([
-      capture("health", shenron.health, setHealth),
-      capture("stats", shenron.ragStats, setStats),
-      capture("training", shenron.training, setTraining),
-    ]);
-    setBusy(false);
-  }, [capture]);
-
-  useEffect(() => {
-    if (isTauri()) void refresh();
-  }, [refresh]);
-
-  if (!isTauri()) {
-    return (
-      <p className="text-[18px] text-on-surface-variant">
-        Shenron nécessite l’application Aphrody.
-      </p>
-    );
-  }
 
   const search = async () => {
     setBusy(true);
-    await capture(
-      "search",
-      () => shenron.ragSearch(query.trim(), 10),
-      (response) => setHits(response.results),
-    );
-    setBusy(false);
+    setSearchError(null);
+    try {
+      setHits((await shenron.ragSearch(query.trim(), 10)).results);
+    } catch (cause) {
+      setSearchError(message(cause));
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="flex flex-col gap-8">
-      <StudioHeader
-        eyebrow="Shenron"
-        title="Pilotage"
-        subtitle={
-          health ? (health.status === "operational" ? "Opérationnel" : "Dégradé") : "Chargement…"
-        }
-      />
-
       <section className="flex flex-col gap-4">
         <SectionHeading
-          level={2}
-          title="Santé"
+          level={3}
+          title="Santé des services"
           actions={
-            <Button
-              className={buttonClass}
-              variant="tonal"
-              disabled={busy}
-              onClick={() => void refresh()}
+            <button
+              type="button"
+              className={ghostButtonClass}
+              disabled={refreshing}
+              onClick={onRefresh}
             >
               Actualiser
-            </Button>
+            </button>
           }
         />
-        {errors.health ? (
-          <p role="alert" className="text-[18px] text-error">
-            {errors.health}
-          </p>
-        ) : null}
+        {errors.health ? <ErrorNote>{errors.health}</ErrorNote> : null}
         {health ? (
           <ul className="grid gap-3 md:grid-cols-2">
             <ProbeRow name="Site" probe={health.site} />
             <ProbeRow name="Bot" probe={health.bot} />
             <ProbeRow name="IA Aphrody" probe={health.aphrody_ai_http} />
-            <li className="flex items-center justify-between gap-3 rounded-xl bg-surface-container p-3 text-[18px]">
+            <li className={rowClass}>
               <span>Agent Home dbfr</span>
-              <StatusPill
-                ok={health.agent_home.valid}
-                label={
-                  health.agent_home.valid ? `${health.agent_home.files ?? 0} fichiers` : "invalide"
-                }
-              />
+              <StatusChip ok={health.agent_home.valid}>
+                {health.agent_home.valid ? `${health.agent_home.files ?? 0} fichiers` : "invalide"}
+              </StatusChip>
             </li>
           </ul>
         ) : null}
@@ -154,18 +120,14 @@ export function ShenronStudio() {
 
       <section className="flex flex-col gap-4">
         <SectionHeading
-          level={2}
+          level={3}
           title="Corpus RAG"
           standfirst={health ? `Moteur : ${health.rag_backend}` : undefined}
         />
-        {errors.stats ? (
-          <p role="alert" className="text-[18px] text-error">
-            {errors.stats}
-          </p>
-        ) : null}
+        {errors.stats ? <ErrorNote>{errors.stats}</ErrorNote> : null}
         {stats ? (
-          <Card className="flex flex-col gap-3 p-6 text-[18px]">
-            <p>
+          <div className={panelClass}>
+            <p className="tabular-nums">
               {stats.chunks} passages · {stats.vectors} vecteurs
             </p>
             {stats.sources?.length ? (
@@ -173,17 +135,17 @@ export function ShenronStudio() {
                 {stats.sources.map((source) => (
                   <li
                     key={`${source.kind}:${source.sourceId}`}
-                    className="rounded-xl bg-surface-container p-3"
+                    className="rounded-lg border border-os/12 p-3 tabular-nums"
                   >
                     [{source.kind}] {source.sourceId} : {source.count}
                   </li>
                 ))}
               </ul>
             ) : null}
-          </Card>
+          </div>
         ) : null}
         <form
-          className="flex gap-3"
+          className="flex flex-col gap-3 sm:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             void search();
@@ -191,56 +153,106 @@ export function ShenronStudio() {
         >
           <input
             aria-label="Recherche dans le corpus Shenron"
-            className="min-h-12 flex-1 rounded-xl border border-outline bg-surface-container px-4 text-[18px]"
+            className={`${fieldClass} flex-1`}
             placeholder="Rechercher (ex. Goku Super Saiyan)"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <Button className={buttonClass} type="submit" disabled={busy || query.trim().length < 2}>
+          <button
+            className={primaryButtonClass}
+            type="submit"
+            disabled={busy || query.trim().length < 2}
+          >
             Rechercher
-          </Button>
+          </button>
         </form>
-        {errors.search ? (
-          <p role="alert" className="text-[18px] text-error">
-            {errors.search}
-          </p>
-        ) : null}
+        {searchError ? <ErrorNote>{searchError}</ErrorNote> : null}
         <ol className="flex flex-col gap-3">
           {hits.map((hit, index) => (
-            <li
-              key={`${hit.url ?? hit.title}-${index}`}
-              className="rounded-xl bg-surface-container p-4"
-            >
-              <p className="text-[18px] font-semibold">
+            <li key={`${hit.url ?? hit.title}-${index}`} className={panelClass}>
+              <p className="font-semibold">
                 [{hit.kind ?? "document"}] {hit.title ?? "Sans titre"}
               </p>
-              {hit.snippet ? (
-                <p className="mt-1 text-[16px] text-on-surface-variant">{hit.snippet}</p>
-              ) : null}
-              {hit.url ? (
-                <p className="mt-1 text-[14px] text-on-surface-variant">{hit.url}</p>
-              ) : null}
+              {hit.snippet ? <p className="text-os/75">{hit.snippet}</p> : null}
+              {hit.url ? <p className="break-all text-[14px] text-os/60">{hit.url}</p> : null}
             </li>
           ))}
         </ol>
       </section>
+    </div>
+  );
+}
 
-      <section className="flex flex-col gap-4">
-        <SectionHeading level={2} title="Entraînement" />
-        {errors.training ? (
-          <p role="alert" className="text-[18px] text-error">
-            {errors.training}
-          </p>
-        ) : null}
-        {training ? (
-          <Card className="flex flex-col gap-2 p-6 text-[18px]">
-            <p>GPU détectés : {training.gpu_count}</p>
-            <p>Candidats : {training.candidate_root}</p>
-            <p>Projet Python : {training.python_project ?? "introuvable"}</p>
-            <p className="text-on-surface-variant">{training.rag_promotion}</p>
-          </Card>
-        ) : null}
-      </section>
+async function settle<T>(task: () => Promise<T>): Promise<[T | null, string | undefined]> {
+  try {
+    return [await task(), undefined];
+  } catch (cause) {
+    return [null, message(cause)];
+  }
+}
+
+export function ShenronStudio() {
+  const [reports, setReports] = useState<Reports>({ health: null, stats: null, errors: {} });
+  const [busy, setBusy] = useState(false);
+
+  const refresh = useCallback(async () => {
+    setBusy(true);
+    const [[health, healthError], [stats, statsError]] = await Promise.all([
+      settle(shenron.health),
+      settle(shenron.ragStats),
+    ]);
+    setReports({ health, stats, errors: { health: healthError, stats: statsError } });
+    setBusy(false);
+  }, []);
+
+  useEffect(() => {
+    if (isTauri()) void refresh();
+  }, [refresh]);
+
+  if (!isTauri()) {
+    return (
+      <DesktopOnly>Le studio Shenron fonctionne dans l’application de bureau Shenron.</DesktopOnly>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <StudioHeader
+        level={1}
+        eyebrow="Shenron"
+        title="Studio"
+        subtitle={
+          reports.errors.health
+            ? "Santé indisponible"
+            : reports.health
+              ? reports.health.status === "operational"
+                ? "Opérationnel"
+                : "Dégradé"
+              : "Chargement…"
+        }
+      />
+
+      <Tabs defaultValue="pilotage">
+        <TabsList aria-label="Sections du studio">
+          {TABS.map(([value, label]) => (
+            <TabsTab key={value} value={value} className="min-h-11">
+              {label}
+            </TabsTab>
+          ))}
+        </TabsList>
+        <TabsPanel value="pilotage">
+          <Pilotage reports={reports} refreshing={busy} onRefresh={() => void refresh()} />
+        </TabsPanel>
+        <TabsPanel value="databooks">
+          <DatabooksStudio />
+        </TabsPanel>
+        <TabsPanel value="entrainement">
+          <TrainingStudio />
+        </TabsPanel>
+        <TabsPanel value="administration">
+          <AdminStudio />
+        </TabsPanel>
+      </Tabs>
     </div>
   );
 }
