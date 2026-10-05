@@ -1,9 +1,11 @@
-import { ContributeRail } from "@/components/kit";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { ContributeRail, StatTiles } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
+import { PageBanner } from "@/components/media/PageBanner";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import { dbUniverse } from "@/lib/db-universe";
-import { PageHero } from "@/components/PageHero";
 import { pageHero } from "@/lib/banner-config";
 import { MangaVolumeGrid } from "@/components/manga/MangaVolumeGrid";
 import { MangaInfoSection } from "@/components/manga/MangaInfoSection";
@@ -148,145 +150,97 @@ export default async function MangaIndexPage() {
   ).length;
   const coveredVolumes = completeCatalog.filter((volume) => Boolean(volume.cover?.trim())).length;
 
-  return (
-    <div>
-      <PageHero
-        eyebrow="Manga"
-        title="Lecteur de scan"
-        lead={
-          readableVolumeCount > 0
-            ? `${readableVolumeCount.toLocaleString("fr-FR")} tomes à lire et ${allChapters.length.toLocaleString("fr-FR")} chapitres disponibles, parmi ${completeCatalog.length.toLocaleString("fr-FR")} tomes répertoriés.`
-            : `${completeCatalog.length.toLocaleString("fr-FR")} tomes répertoriés — les lectures disponibles apparaîtront ici au fur et à mesure de leur publication.`
-        }
-        image={heroImage}
-        imageAlt="Couverture du manga Dragon Ball"
-        imagePosition="top"
-      />
+  const lead =
+    readableVolumeCount > 0
+      ? `${readableVolumeCount.toLocaleString("fr-FR")} tomes à lire et ${allChapters.length.toLocaleString("fr-FR")} chapitres disponibles, parmi ${completeCatalog.length.toLocaleString("fr-FR")} tomes répertoriés.`
+      : `${completeCatalog.length.toLocaleString("fr-FR")} tomes répertoriés — les lectures disponibles apparaîtront ici au fur et à mesure de leur publication.`;
 
-      <div className="wiki-container">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs items={[{ label: "Manga" }]} />
-          <WikiDrawer />
-        </div>
-        <ContinueRail kinds={["chapter"]} titleKey="history.resumeReading" />
-        <MangaDialogueSearch />
-        <section
-          className="my-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-          aria-label="Couverture du catalogue manga"
-        >
-          <Metric
-            label="Tomes répertoriés"
-            value={completeCatalog.length}
-            note={`${coveredVolumes} avec couverture disponible`}
-          />
-          <Metric
-            label="Tomes lisibles"
-            value={readableVolumeCount}
-            note="lecture et assets réellement servis"
-          />
-          <Metric
-            label="Chapitres indexés"
-            value={allChapters.length}
-            note={`${colorChapters.length} en édition couleur`}
-          />
+  return (
+    <PageShell rhythm="tight">
+      <Breadcrumbs className="mb-4" items={[{ label: "Manga" }]} />
+      <PageHeader eyebrow="Manga" title="Lecteur de scan" subtitle={lead} className="mb-6" />
+      <PageBanner src={heroImage} alt="Couverture du manga Dragon Ball" position="top" />
+      <ContinueRail kinds={["chapter"]} titleKey="history.resumeReading" />
+      <MangaDialogueSearch />
+      <section aria-label="Couverture du catalogue manga" className="my-8 space-y-3">
+        <StatTiles
+          items={[
+            {
+              label: "Tomes répertoriés",
+              value: completeCatalog.length,
+              hint: `${coveredVolumes} avec couverture`,
+            },
+            { label: "Tomes lisibles", value: readableVolumeCount, hint: "planches servies ici" },
+            { label: "Chapitres indexés", value: allChapters.length },
+            { label: "Chapitres en couleur", value: colorChapters.length },
+          ]}
+        />
+        <p className="text-sm text-white/60">
+          Éditeurs, archives et corpus attribués :{" "}
           <Link
             href="/sources/dragon-ball"
-            className="dbz-panel group p-4 transition-colors hover:border-dbz-orange"
+            className="inline-flex min-h-11 items-center font-semibold text-dbz-orange hover:text-white"
           >
-            <div className="text-xs font-bold uppercase tracking-widest text-dbz-orange">
-              Sources vérifiées
-            </div>
-            <div className="mt-1 font-display text-lg font-bold text-white group-hover:text-dbz-orange">
-              Explorer la provenance →
-            </div>
-            <div className="mt-1 text-xs text-white/55">
-              Éditeurs, archives et corpus attribués du wiki.
-            </div>
+            provenance des sources
           </Link>
-        </section>
+        </p>
+      </section>
 
-        {mediaWork?.editions && mediaWork.editions.length > 0 && (
-          <section
-            aria-label="Éditions du manga"
-            className="mb-8 rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-md"
-          >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-orange-400">
-                    Matrice Ontologique Média
-                  </span>
-                  <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] text-white/70">
-                    Sprint 1 · SHA-256
-                  </span>
-                </div>
-                <h2 className="mt-1 font-saiyan text-xl text-white tracking-wide">
-                  Éditions Référencées · {mediaWork.title}
-                </h2>
-              </div>
-              <Link
+      {mediaWork?.editions && mediaWork.editions.length > 0 && (
+        <section aria-label="Éditions du manga" className="mb-10 space-y-4">
+          <SectionHeading
+            level={3}
+            title={`Éditions référencées — ${mediaWork.title}`}
+            actions={
+              // Point d’entrée JSON du même inventaire : un lien interne ordinaire, pas un
+              // nouvel onglet (sous Tauri, `target=_blank` ouvrirait une fenêtre orpheline).
+              <a
                 href="/api/wiki/media?series=DB"
-                target="_blank"
-                className="inline-flex items-center gap-1 text-xs text-orange-400 hover:text-white font-mono transition-colors"
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange hover:text-white"
               >
-                Endpoint REST /api/wiki/media →
-              </Link>
-            </div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {mediaWork.editions.map((ed) => (
-                <div
-                  key={ed.id}
-                  className="rounded-xl border border-white/5 bg-white/[0.02] p-3 hover:border-white/20 transition-colors"
-                >
-                  <div className="flex items-center justify-between gap-2 text-[10px]">
-                    <span className="font-mono uppercase text-white/50">{ed.edition}</span>
-                    <span className="font-bold text-orange-400 uppercase">{ed.language}</span>
-                  </div>
-                  <div className="mt-1 text-xs font-bold text-white line-clamp-1">{ed.label}</div>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-white/60">
-                    <span>{ed.publisher ?? "Éditeur officiel"}</span>
-                    <span className="font-mono text-white/80 font-bold">
-                      {ed.volumes_count > 0 ? `${ed.volumes_count} tomes` : "Indexé"}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+                Données JSON (/api/wiki/media)
+              </a>
+            }
+          />
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {mediaWork.editions.map((ed) => (
+              <li key={ed.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="flex items-center justify-between gap-2 text-[12px] text-white/55">
+                  <span>{ed.edition}</span>
+                  <span className="font-semibold text-dbz-orange">{ed.language}</span>
+                </p>
+                <p className="mt-1 font-display font-semibold text-white">{ed.label}</p>
+                <p className="mt-2 flex items-center justify-between gap-2 text-[13px] text-white/60">
+                  <span>{ed.publisher ?? "Éditeur officiel"}</span>
+                  <span className="tabular-nums text-white/80">
+                    {ed.volumes_count > 0 ? `${ed.volumes_count} tomes` : "Indexé"}
+                  </span>
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
-        <MangaVolumeGrid
-          dbVolumes={dbVolumes}
-          dbsVolumes={dbsVolumes}
-          kanzenbanVolumes={kanzenbanVolumes}
-          soshuhenVolumes={soshuhenVolumes}
-          animeZVolumes={animeZVolumes}
-          animeMovieVolumes={animeMovieVolumes}
-          dbgtAnimeVolumes={dbgtAnimeVolumes}
-          dbsAnimeVolumes={dbsAnimeVolumes}
-          dbjpVolumes={dbjpVolumes}
-          araleVolumes={araleVolumes}
-          otherVolumes={otherVolumes}
-          readableChapters={readableChapters}
-          colorVolumeIds={colorVolumeIds}
-          colorChapterCount={colorChapters.length}
-        />
+      <MangaVolumeGrid
+        dbVolumes={dbVolumes}
+        dbsVolumes={dbsVolumes}
+        kanzenbanVolumes={kanzenbanVolumes}
+        soshuhenVolumes={soshuhenVolumes}
+        animeZVolumes={animeZVolumes}
+        animeMovieVolumes={animeMovieVolumes}
+        dbgtAnimeVolumes={dbgtAnimeVolumes}
+        dbsAnimeVolumes={dbsAnimeVolumes}
+        dbjpVolumes={dbjpVolumes}
+        araleVolumes={araleVolumes}
+        otherVolumes={otherVolumes}
+        readableChapters={readableChapters}
+        colorVolumeIds={colorVolumeIds}
+        colorChapterCount={colorChapters.length}
+      />
 
-        <MangaInfoSection />
-        <ContributeRail className="mt-14" quoiKey="kit.contribute.what.volume" />
-      </div>
-    </div>
-  );
-}
-
-function Metric({ label, value, note }: { label: string; value: number; note: string }) {
-  return (
-    <div className="dbz-panel p-4">
-      <div className="text-xs font-bold uppercase tracking-widest text-white/50">{label}</div>
-      <div className="mt-1 font-saiyan text-3xl text-dbz-yellow">
-        {value.toLocaleString("fr-FR")}
-      </div>
-      <div className="mt-1 text-xs text-white/55">{note}</div>
-    </div>
+      <MangaInfoSection />
+      <ContributeRail className="mt-14" quoiKey="kit.contribute.what.volume" />
+    </PageShell>
   );
 }

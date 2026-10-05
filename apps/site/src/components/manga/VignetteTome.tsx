@@ -1,3 +1,4 @@
+import { ExternalLink } from "@shenron/ui/navigation/external";
 import Link from "next/link";
 import Image from "next/image";
 import { assetUrl } from "@/lib/assets";
@@ -44,7 +45,7 @@ export function VignetteTome({
     <div className="group" style={{ animationDelay: `${idx * 0.02}s` }}>
       <Link
         href={href}
-        className={`block transition-transform duration-300 hover:scale-105 ${couleur ? "hover:brightness-110" : ""}`}
+        className={`block transition-transform duration-300 ${couleur ? "hover:brightness-110" : ""}`}
       >
         <CadreCase largeur={220} className="overflow-visible">
           <div className="relative aspect-[2/3] overflow-hidden bg-dbz-bg">
@@ -55,24 +56,24 @@ export function VignetteTome({
                 alt={titre}
                 fill
                 sizes="(max-width: 768px) 50vw, 16vw"
-                className="object-cover opacity-90 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100"
+                className="object-cover opacity-90 transition-all duration-500 group-hover:opacity-100"
                 priority={priority}
               />
             ) : (
               <div className="grid h-full w-full place-items-center bg-zinc-900">
-                <span className="font-saiyan select-none text-5xl text-white/20">
+                <span className="font-display select-none text-5xl text-white/20">
                   {volume.volumeNumber}
                 </span>
               </div>
             )}
             <div className="absolute inset-0 z-20 bg-gradient-to-t from-black via-black/35 to-transparent" />
             {couleur && (
-              <span className="absolute top-2 left-2 z-30 rounded bg-gradient-to-r from-fuchsia-500 to-amber-400 px-2 py-0.5 font-mono text-[9px] font-black tracking-wider text-black uppercase">
+              <span className="absolute top-2 left-2 z-30 rounded bg-fuchsia-400 px-2 py-0.5 text-[11px] font-black text-black">
                 Couleur
               </span>
             )}
             {status === "to-complete" && (
-              <span className="absolute top-2 right-2 z-30 rounded bg-black/80 px-2 py-0.5 font-mono text-[9px] font-bold tracking-wider text-white/80 uppercase">
+              <span className="absolute top-2 right-2 z-30 rounded bg-black/80 px-2 py-0.5 text-[11px] font-bold text-white/80">
                 À compléter
               </span>
             )}
@@ -90,14 +91,12 @@ export function VignetteTome({
         </CadreCase>
       </Link>
       {volume.sourceUrl && (
-        <a
+        <ExternalLink
           href={volume.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 block text-center font-mono text-[10px] font-bold uppercase tracking-wider text-dbz-orange hover:text-white"
+          className="mt-1 flex min-h-11 items-center justify-center text-center text-[12px] font-semibold text-dbz-orange hover:text-white"
         >
           {volume.sourceLabel ?? "Source bibliographique"} ↗
-        </a>
+        </ExternalLink>
       )}
     </div>
   );

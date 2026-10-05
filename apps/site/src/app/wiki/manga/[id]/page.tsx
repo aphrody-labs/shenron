@@ -9,7 +9,9 @@ import { ShareButton } from "@/components/ShareButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import Link from "next/link";
 import { Livre, Palette } from "@shenron/ui/icones";
-import { estChapitreCouleur, langueDe, SERIE_COULEUR } from "@/lib/manga-editions";
+import { estChapitreCouleur, langueDe, libelleSerie, SERIE_COULEUR } from "@/lib/manga-editions";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import { idDeFiche } from "../../_id-fiche";
 import { JsonLd } from "@/components/JsonLd";
 import { AccesApi } from "@/components/manga/AccesApi";
@@ -116,8 +118,13 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
       : undefined,
   };
 
+  const serie = libelleSerie(chapter.series ?? "");
+  const generique = isGenericTitle(chapter.title);
+
   return (
-    <div className="wiki-container overflow-x-hidden">
+    // `min-w-0` : le carrousel paginé du lecteur (Swiper) impose sinon sa largeur
+    // min-content à la colonne et fait défiler la page horizontalement sur mobile.
+    <PageShell rhythm="tight" className="min-w-0">
       <JsonLd data={jsonLd} />
       <TrackHistory
         kind="chapter"
@@ -127,13 +134,30 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         caption={`${chapter.series ?? "Manga"} · chapitre ${chapter.chapter_number}`}
       />
       <Breadcrumbs
-        className="mb-8"
+        className="mb-4"
         items={[
           { label: "Manga", href: "/wiki/manga" },
           { label: `Chapitre ${chapter.chapter_number}` },
         ]}
       />
-      <div className="mb-8 flex flex-wrap items-center gap-3">
+      <PageHeader
+        size="md"
+        className="mb-6"
+        eyebrow={serie}
+        title={
+          generique ? (
+            <>
+              Chapitre <span className="tabular-nums">{chapter.chapter_number}</span>
+            </>
+          ) : (
+            chapter.title
+          )
+        }
+        subtitle={
+          planches > 0 ? `${planches} planches, lecture japonaise (de droite à gauche).` : undefined
+        }
+      />
+      <div className="mb-6 flex flex-wrap items-center gap-3">
         <FavoriteButton
           kind="chapter"
           id={chapter.id}
@@ -146,43 +170,25 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
           text={`${chapter.series ?? "Manga"} — chapitre ${chapter.chapter_number}`}
           path={`/wiki/manga/${chapter.id}`}
         />
-        {/* Passerelle entre éditions. Elle vise la fiche du TOME et non un
-				    chapitre précis : la correspondance exacte n'existe pas dans un
-				    sens (un tome noir et blanc = une douzaine de chapitres couleur),
-				    et proposer un chapitre au hasard vaudrait moins que de laisser
-				    choisir. */}
+        {/* Passerelle entre éditions. Elle vise la fiche du TOME et non un chapitre
+            précis : la correspondance exacte n’existe pas dans un sens (un tome noir et
+            blanc = une douzaine de chapitres couleur), et proposer un chapitre au hasard
+            vaudrait moins que de laisser choisir. */}
         {chapter.volume_id !== null &&
           (chapter.series === "DB" || chapter.series === SERIE_COULEUR) && (
             <Link
               href={`/wiki/manga/volume/${chapter.volume_id}?edition=${couleur ? "nb" : "couleur"}`}
-              className={`inline-flex h-11 items-center gap-2 rounded px-4 font-display text-sm font-semibold tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 ${
-                couleur
-                  ? "border border-white/10 bg-black/40 text-white/80 hover:text-white"
-                  : "bg-gradient-to-r from-fuchsia-500 to-amber-400 text-black"
-              }`}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 font-display text-sm font-semibold text-white/85 transition-colors hover:border-dbz-orange/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             >
               {couleur ? (
                 <Livre className="h-4 w-4" aria-hidden="true" />
               ) : (
                 <Palette className="h-4 w-4" aria-hidden="true" />
               )}
-              {couleur ? "Lire en noir & blanc" : "Lire en couleur"}
+              {couleur ? "Lire en noir et blanc" : "Lire en couleur"}
             </Link>
           )}
       </div>
-
-      <header className="mb-10">
-        {/* Eyebrow « Chapitre N » uniquement quand le titre est un vrai sous-titre :
-				    sinon le h1 porte déjà « Chapitre N » (pas de doublon). */}
-        {!isGenericTitle(chapter.title) && (
-          <span className="scouter-text text-xl text-dbz-orange block mb-2">
-            Chapitre {chapter.chapter_number}
-          </span>
-        )}
-        <h1 className="font-saiyan text-2xl sm:text-4xl lg:text-6xl text-white tracking-widest leading-tight break-words">
-          {isGenericTitle(chapter.title) ? `Chapitre ${chapter.chapter_number}` : chapter.title}
-        </h1>
-      </header>
 
       <MangaReader
         pages={chapter.pages}
@@ -192,9 +198,6 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         prevPages={chapter.prevPages}
         nextPages={chapter.nextPages}
         chapterId={chapter.id}
-        chapterNumber={chapter.chapter_number}
-        series={chapter.series}
-        chapterTitle={chapter.title}
       />
 
       <AccesApi
@@ -210,6 +213,6 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
           },
         ]}
       />
-    </div>
+    </PageShell>
   );
 }

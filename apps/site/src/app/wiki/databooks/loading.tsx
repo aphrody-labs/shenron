@@ -1,10 +1,10 @@
-import { GridSkeleton, IndexSkeleton } from "@/components/wiki/WikiSkeleton";
+import { GridSkeleton, MediaIndexSkeleton } from "@/components/media/MediaSkeletons";
 
 export default function Loading() {
   return (
-    <IndexSkeleton>
-      {/* Les databooks s'affichent en couvertures : proportion d'affiche. */}
-      <GridSkeleton count={18} ratio="aspect-[2/3]" />
-    </IndexSkeleton>
+    <MediaIndexSkeleton>
+      {/* Les databooks s’affichent en couvertures : proportion d’affiche. */}
+      <GridSkeleton count={10} />
+    </MediaIndexSkeleton>
   );
 }

@@ -9,7 +9,6 @@
  * Un seul filtre actif à la fois + tri date + recherche.
  */
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { Pagination } from "@/components/kit/Pagination";
 import { Bibliotheque, DragonRadar, Livre, Micro, Palette, Tendance } from "@shenron/ui/icones";
 import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
@@ -108,7 +107,7 @@ const tabBtn =
   // `min-h-11` (44 px) : les onglets mesuraient 34 px de haut sur mobile, sous
   // la cible tactile recommandée. `shrink-0` + `snap-start` servent au rail
   // défilant qui remplace le retour à la ligne sur petit écran.
-  "inline-flex shrink-0 snap-start items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors min-h-11 sm:min-h-0 sm:py-1.5";
+  "inline-flex min-h-11 shrink-0 snap-start items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
 const tabActive = "border-dbz-orange bg-dbz-orange/10 text-white";
 const tabIdle = "border-dbz-border text-white/60 hover:border-dbz-orange/40 hover:text-white";
 
@@ -190,37 +189,6 @@ export function DatabookGrid({
 
   return (
     <div className="space-y-6">
-      {/* Arborescence des Archives Imprimées Dragon Ball */}
-      <nav
-        aria-label="Sections des publications imprimées"
-        className="flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-black/40 p-2 backdrop-blur-md"
-      >
-        <Link
-          href="/wiki/manga"
-          className="flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-        >
-          <span className="text-sm">📖</span> Manga Canonique (42 Tomes)
-        </Link>
-        <div
-          aria-current="page"
-          className="flex items-center gap-2 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3.5 py-2 text-xs font-bold text-orange-300 shadow-sm"
-        >
-          <span className="text-sm">📚</span> Databooks & Guides
-        </div>
-        <Link
-          href="/wiki/romans"
-          className="flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-        >
-          <span className="text-sm">📑</span> Romans & Light Novels
-        </Link>
-        <Link
-          href="/wiki/interviews"
-          className="flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-        >
-          <span className="text-sm">🎙️</span> Interviews Toriyama
-        </Link>
-      </nav>
-
       {/* Une seule rangée de filtres, tous au même plan (même taille / style). */}
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         {/* Rail défilant sur mobile : les 11 catégories occupaient 4 lignes
@@ -228,7 +196,7 @@ export function DatabookGrid({
 				    maintenant sur une ligne que l'on fait glisser, et reprennent le
 				    retour à la ligne dès `sm`. */}
         <div
-          className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 scrollbar-thin sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+          className="-mx-[var(--shell-pad,1.5rem)] flex snap-x snap-mandatory gap-2 overflow-x-auto px-[var(--shell-pad,1.5rem)] pb-1 scrollbar-thin sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
           role="group"
           aria-label="Filtrer par catégorie"
         >
@@ -290,7 +258,7 @@ export function DatabookGrid({
             <input
               type="search"
               enterKeyHint="search"
-              className="min-h-11 w-full rounded-lg border border-dbz-border bg-dbz-bg px-3 py-2 pl-8 text-base text-white focus:border-dbz-orange focus:outline-none sm:min-h-0 sm:py-1.5 sm:text-sm"
+              className="min-h-11 w-full rounded-lg border border-dbz-border bg-dbz-bg px-3 py-2 pl-8 text-base text-white focus:border-dbz-orange focus:outline-none sm:text-sm"
               placeholder="Rechercher un guide…"
               value={q}
               onChange={(e) => setQ(e.target.value)}

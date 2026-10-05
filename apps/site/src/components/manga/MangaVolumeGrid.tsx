@@ -39,13 +39,6 @@ interface Chapter {
   volume_id?: number | null;
 }
 
-interface LastReadChapter {
-  id: number;
-  chapter_number: number;
-  title: string | null;
-  series: string;
-}
-
 interface Achievement {
   id: string;
   title: string;
@@ -122,14 +115,14 @@ function ColorSectionHeader({ count }: { count: number }) {
     <>
       <div className="flex items-center gap-3">
         <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
-        <h3 className="font-saiyan text-2xl text-white tracking-widest">
+        <h3 className="font-display text-2xl text-white">
           <Etoile taille={14} className="mr-2 align-baseline text-[var(--color-logo-rouge)]" />
           Édition Couleur
         </h3>
-        <span className="text-[9px] px-2 py-0.5 rounded bg-gradient-to-r from-fuchsia-500 to-amber-400 text-black font-mono font-black uppercase tracking-wider">
+        <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-400 text-black font-black">
           Full Color
         </span>
-        <div className="h-px flex-1 bg-gradient-to-r from-fuchsia-500/40 to-transparent" />
+        <div className="h-px flex-1 bg-white/12" />
       </div>
       <p className="text-xs text-white/50 max-w-2xl font-display">
         L&apos;œuvre originale d&apos;Akira Toriyama en couleur
@@ -171,7 +164,7 @@ function MangaChapterCard({ chapter, idx }: { chapter: Chapter; idx: number }) {
       href={`/wiki/manga/${chapter.id}`}
       onMouseEnter={prefetch}
       onTouchStart={prefetch}
-      className={`group dbz-panel overflow-hidden transition-all duration-300 hover:scale-105 ${color ? "border-fuchsia-500/30 hover:border-fuchsia-400" : "hover:border-dbz-orange"}`}
+      className={`group dbz-panel overflow-hidden transition-all duration-300 ${color ? "border-fuchsia-500/30 hover:border-fuchsia-400" : "hover:border-dbz-orange"}`}
       style={{ animationDelay: `${idx * 0.03}s` }}
     >
       <div className="relative aspect-[3/4] bg-dbz-bg overflow-hidden">
@@ -182,7 +175,7 @@ function MangaChapterCard({ chapter, idx }: { chapter: Chapter; idx: number }) {
             alt={chapter.title ?? `Chapitre ${chapter.chapter_number}`}
             fill
             sizes="(max-width: 768px) 50vw, 16vw"
-            className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
+            className="object-cover opacity-90 group-hover:opacity-100 transition-all duration-700"
             priority={idx < 6}
           />
         ) : (
@@ -191,16 +184,16 @@ function MangaChapterCard({ chapter, idx }: { chapter: Chapter; idx: number }) {
           </div>
         )}
         {color && (
-          <span className="absolute top-2 right-2 z-30 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-black shadow-[0_0_10px_rgba(217,70,239,0.5)]">
+          <span className="absolute top-2 right-2 z-30 inline-flex items-center gap-1 rounded-full bg-fuchsia-400 px-2 py-0.5 text-[11px] font-black text-black">
             <Palette className="w-2.5 h-2.5" /> Couleur
           </span>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-20" />
         <div className="absolute inset-x-0 bottom-0 p-4 z-30">
           <span
-            className={`scouter-text text-xs block mb-1 font-mono ${color ? "text-fuchsia-300" : "text-dbz-orange"}`}
+            className={`tabular-nums text-xs block mb-1 ${color ? "text-fuchsia-300" : "text-dbz-orange"}`}
           >
-            {color ? "Dragon Ball · Couleur" : `${chapter.series} #${chapter.chapter_number}`}
+            {color ? "Dragon Ball, couleur" : `${chapter.series} #${chapter.chapter_number}`}
           </span>
           <p className="font-display font-bold text-sm text-white group-hover:text-dbz-orange transition-colors line-clamp-2">
             {chapter.title ?? `Chapitre ${chapter.chapter_number}`}
@@ -247,7 +240,6 @@ export function MangaVolumeGrid({
 }: MangaVolumeGridProps) {
   // L'inventaire complet s'ouvre en premier ; les onglets suivants sont des raccourcis d'édition.
   const [tab, setTab] = useState<MangaTab>("all");
-  const [lastRead, setLastRead] = useState<LastReadChapter | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [readChapterIds, setReadChapterIds] = useState<number[]>([]);
   const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>("all");
@@ -275,14 +267,6 @@ export function MangaVolumeGrid({
 
   useEffect(() => {
     try {
-      const savedLast = localStorage.getItem("dbfr_last_read_chapter");
-      if (savedLast) {
-        const parsed = JSON.parse(savedLast);
-        if (parsed && typeof parsed === "object" && "id" in parsed) {
-          setLastRead(parsed as LastReadChapter);
-        }
-      }
-
       const savedRead = localStorage.getItem("dbfr_read_chapters");
       if (savedRead) {
         const parsed = JSON.parse(savedRead);
@@ -389,41 +373,10 @@ export function MangaVolumeGrid({
 
   return (
     <div className="space-y-10">
-      {/* Banner "Reprendre la lecture" */}
-      {lastRead && (
-        <div className="reveal-up toriyama-card p-5 bg-[#0e0e11] border-2 border-dbz-orange rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[4px_4px_0px_#000]">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-dbz-orange text-black rounded-lg border-2 border-black shadow-[2px_2px_0px_#000]">
-              <Livre className="w-5 h-5" />
-            </div>
-            <div className="space-y-1 text-center sm:text-left">
-              <span className="text-xs text-dbz-orange block tracking-wider font-mono font-bold uppercase">
-                Reprendre la lecture
-              </span>
-              <p className="font-display font-extrabold text-white text-base">
-                {lastRead.series === "DB" ? "Dragon Ball" : "Dragon Ball Super"} · Chapitre{" "}
-                {lastRead.chapter_number}
-                {lastRead.title && (
-                  <span className="text-white/60 font-normal"> — {lastRead.title}</span>
-                )}
-              </p>
-            </div>
-          </div>
-          <Link
-            href={`/wiki/manga/${lastRead.id}`}
-            className="toriyama-btn !min-h-10 !px-5 !py-2 text-xs !shadow-[3px_3px_0px_#000]"
-          >
-            Continuer la lecture →
-          </Link>
-        </div>
-      )}
-
       {/* Catalogue complet et filtre de lecture, partageables via `?etat=`. */}
-      <div className="toriyama-panel flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-xl border border-white/12 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="font-scouter text-[10px] uppercase tracking-[0.18em] text-dbz-yellow font-extrabold">
-            Catalogue complet
-          </p>
+          <p className="text-[10px] text-dbz-yellow font-extrabold">Catalogue complet</p>
           <p className="mt-1 text-sm text-white/80 font-bold">
             {catalogVolumes.filter(volumeIsAvailable).length} / {catalogVolumes.length} tomes — tous
             affichés
@@ -462,7 +415,7 @@ export function MangaVolumeGrid({
               <Bibliotheque className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-saiyan text-xl text-white tracking-wider">
+              <h3 className="font-display text-xl text-white">
                 Collections &amp; Éditions du Manga
               </h3>
               <p className="text-xs text-white/50">
@@ -478,12 +431,12 @@ export function MangaVolumeGrid({
                 <DragonRadar className="w-4 h-4" />
               </span>
               <input
-                type="text"
+                type="search"
                 aria-label="Rechercher un tome ou un chapitre"
                 placeholder="Rechercher un tome ou chapitre..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-black/60 border border-white/10 rounded-xl py-2 pl-9 pr-4 text-xs text-white placeholder-white/40 focus:border-dbz-orange focus:ring-1 focus:ring-dbz-orange outline-none transition-all font-display font-medium shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]"
+                className="h-11 w-full rounded-xl border border-white/10 bg-black/60 pl-9 pr-4 text-base text-white placeholder-white/40 outline-none transition-colors focus:border-dbz-orange focus:ring-1 focus:ring-dbz-orange sm:text-sm"
               />
             </div>
           )}
@@ -494,7 +447,7 @@ export function MangaVolumeGrid({
           role="tablist"
           aria-label="Collections du manga"
           onKeyDown={onTablistKeyDown}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+          className="-mx-[var(--shell-pad,1.5rem)] flex snap-x gap-2 overflow-x-auto px-[var(--shell-pad,1.5rem)] pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-3 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
         >
           {[
             {
@@ -587,9 +540,9 @@ export function MangaVolumeGrid({
                 aria-selected={isSelected}
                 tabIndex={isSelected ? 0 : -1}
                 onClick={() => setTab(col.id)}
-                className={`group relative flex flex-col justify-between p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
+                className={`group relative flex min-h-11 w-44 shrink-0 snap-start flex-col justify-between rounded-xl border p-3 text-left transition-colors duration-200 lg:w-auto lg:p-3.5 ${
                   isSelected
-                    ? "border-dbz-orange bg-gradient-to-b from-orange-950/40 via-black/80 to-black text-white shadow-[0_0_16px_rgba(231,130,32,0.35)] ring-1 ring-dbz-orange/50"
+                    ? "border-dbz-orange bg-dbz-orange/10 text-white"
                     : "border-white/10 bg-white/[0.03] text-white/70 hover:border-white/25 hover:bg-white/[0.06] hover:text-white"
                 }`}
               >
@@ -604,7 +557,7 @@ export function MangaVolumeGrid({
                     <IconComp className="w-4 h-4" />
                   </div>
                   <span
-                    className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                    className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
                       isSelected
                         ? "border-orange-400/50 bg-orange-500/20 text-orange-200"
                         : "border-white/10 bg-white/5 text-white/50"
@@ -619,7 +572,9 @@ export function MangaVolumeGrid({
                   >
                     {col.title}
                   </div>
-                  <div className="text-[11px] text-white/50 line-clamp-1 mt-0.5">{col.desc}</div>
+                  <div className="mt-0.5 hidden text-[11px] text-white/50 line-clamp-1 lg:block">
+                    {col.desc}
+                  </div>
                 </div>
               </button>
             );
@@ -632,22 +587,19 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-all"
           aria-labelledby="manga-tab-all"
-          className="space-y-12 reveal-up"
+          className="space-y-12"
         >
           {allVolumeGroups.map(([series, volumes]) => (
             <section key={series} className="space-y-5" aria-labelledby={`manga-series-${series}`}>
               <div className="flex items-center gap-3">
                 <Livre className="h-5 w-5 text-dbz-orange" aria-hidden="true" />
-                <h3
-                  id={`manga-series-${series}`}
-                  className="font-saiyan text-2xl tracking-widest text-white"
-                >
+                <h3 id={`manga-series-${series}`} className="font-display text-2xl text-white">
                   {libelleSerie(series)}
                 </h3>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-white/50">
+                <span className="text-[10px] font-bold text-white/50">
                   {volumes.length} {volumes.length === 1 ? "tome" : "tomes"}
                 </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+                <div className="h-px flex-1 bg-white/12" />
               </div>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {volumes.map((vol, idx) => (
@@ -667,13 +619,10 @@ export function MangaVolumeGrid({
             <section className="space-y-5" aria-labelledby="manga-unattached-chapters">
               <div className="flex items-center gap-3">
                 <Livre className="h-5 w-5 text-dbz-orange" aria-hidden="true" />
-                <h3
-                  id="manga-unattached-chapters"
-                  className="font-saiyan text-2xl tracking-widest text-white"
-                >
+                <h3 id="manga-unattached-chapters" className="font-display text-2xl text-white">
                   Planches hors tome
                 </h3>
-                <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+                <div className="h-px flex-1 bg-white/12" />
               </div>
               <p className="text-xs text-white/50">
                 Bonus et préfaces conservés à leur adresse propre.
@@ -699,7 +648,7 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-db"
           aria-labelledby="manga-tab-db"
-          className="space-y-12 reveal-up"
+          className="space-y-12"
         >
           {/* Dragon Ball original — édition couleur, présentée par tome. */}
           {(colorVolumes.length > 0 || dbColorChapters.length > 0) && (
@@ -745,18 +694,18 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-full-color"
           aria-labelledby="manga-tab-full-color"
-          className="space-y-12 reveal-up"
+          className="space-y-12"
         >
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
               <div>
                 <div className="flex items-center gap-3">
                   <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
-                  <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                  <h3 className="font-display text-2xl text-white">
                     Dragon Ball Full Color (フルカラー)
                   </h3>
-                  <span className="text-[9px] px-2 py-0.5 rounded bg-gradient-to-r from-fuchsia-500/20 to-amber-500/20 text-fuchsia-300 font-mono font-bold uppercase tracking-wider border border-fuchsia-500/30">
-                    {colorVolumes.length || 42} tomes · {colorChapterCount || 520} chapitres
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-500/15 text-fuchsia-300 font-bold border border-fuchsia-500/30">
+                    {colorVolumes.length || 42} tomes, {colorChapterCount || 520} chapitres
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
@@ -770,7 +719,7 @@ export function MangaVolumeGrid({
 
             {colorChapters.length > 0 && (
               <div className="space-y-4 pt-6 border-t border-white/10">
-                <h4 className="font-display font-bold text-sm uppercase tracking-wider text-fuchsia-300">
+                <h4 className="font-display font-bold text-sm text-fuchsia-300">
                   Tous les chapitres Full Color ({colorChapters.length})
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
@@ -790,17 +739,15 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-kanzenban"
           aria-labelledby="manga-tab-kanzenban"
-          className="space-y-8 reveal-up"
+          className="space-y-8"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div>
               <div className="flex items-center gap-3">
                 <Livre className="w-5 h-5 text-amber-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
-                  Dragon Ball Kanzenban (完全版)
-                </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold uppercase tracking-wider border border-amber-500/30">
-                  34 tomes · Pages Couleur Originales
+                <h3 className="font-display text-2xl text-white">Dragon Ball Kanzenban (完全版)</h3>
+                <span className="text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+                  34 tomes, pages couleur d&apos;origine
                 </span>
               </div>
               <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
@@ -837,17 +784,17 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-soshuhen"
           aria-labelledby="manga-tab-soshuhen"
-          className="space-y-8 reveal-up"
+          className="space-y-8"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div>
               <div className="flex items-center gap-3">
                 <Couches className="w-5 h-5 text-purple-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Dragon Ball Sōshūhen (総集編 超悟空伝)
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold uppercase tracking-wider border border-purple-500/30">
-                  18 Legends · Grand Format B5 Jump
+                <span className="text-[11px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">
+                  18 Legends, grand format B5 Jump
                 </span>
               </div>
               <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
@@ -884,20 +831,20 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id={`manga-panel-${tab}`}
           aria-labelledby={`manga-tab-${tab}`}
-          className="space-y-12 reveal-up"
+          className="space-y-12"
         >
           {/* TV Anime Comics Z */}
           {tab === "anime_z" && filteredAnimeZ.length > 0 && (
             <div className="space-y-5">
               <div className="flex items-center gap-3">
                 <Palette className="w-5 h-5 text-emerald-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Dragon Ball Z — TV Anime Comics
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold uppercase tracking-wider border border-emerald-500/30">
-                  39 tomes · Tout en Couleur
+                <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                  39 tomes en couleur
                 </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-emerald-500/30 to-transparent" />
+                <div className="h-px flex-1 bg-white/12" />
               </div>
               <p className="text-xs text-white/50 max-w-2xl font-display">
                 L&apos;adaptation manga intégrale de la série animée DBZ capture par capture :
@@ -923,13 +870,13 @@ export function MangaVolumeGrid({
             <div className="space-y-5">
               <div className="flex items-center gap-3">
                 <Palette className="w-5 h-5 text-sky-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Films &amp; Téléfilms — Anime Comics
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-mono font-bold uppercase tracking-wider border border-sky-500/30">
-                  20 tomes · Films &amp; TV Spéciaux
+                <span className="text-[11px] px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">
+                  20 tomes, films et téléfilms
                 </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-sky-500/30 to-transparent" />
+                <div className="h-px flex-1 bg-white/12" />
               </div>
               <p className="text-xs text-white/50 max-w-2xl font-display">
                 Tous les films classiques Dragon Ball et DBZ (Broly, Cooler, Fusion, Janemba,
@@ -955,13 +902,13 @@ export function MangaVolumeGrid({
             <div className="space-y-5">
               <div className="flex items-center gap-3">
                 <Palette className="w-5 h-5 text-amber-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Dragon Ball GT — TV Anime Comics
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold uppercase tracking-wider border border-amber-500/30">
-                  3 tomes · Arc Voyage dans l&apos;espace &amp; Baby
+                <span className="text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+                  3 tomes, arcs Voyage dans l&apos;espace et Baby
                 </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-amber-500/30 to-transparent" />
+                <div className="h-px flex-1 bg-white/12" />
               </div>
               <p className="text-xs text-white/50 max-w-2xl font-display">
                 L&apos;intégrale des tomes Dragon Ball GT Anime Comics publiés par Shueisha : de la
@@ -988,13 +935,13 @@ export function MangaVolumeGrid({
             <div className="space-y-5">
               <div className="flex items-center gap-3">
                 <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Films Récents — DB Super Anime Comics
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 font-mono font-bold uppercase tracking-wider border border-fuchsia-500/30">
-                  3 tomes · Battle of Gods, Broly &amp; Super Hero
+                <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 font-bold border border-fuchsia-500/30">
+                  3 tomes : Battle of Gods, Broly et Super Hero
                 </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-fuchsia-500/30 to-transparent" />
+                <div className="h-px flex-1 bg-white/12" />
               </div>
               <p className="text-xs text-white/50 max-w-2xl font-display">
                 Les films de l&apos;ère moderne scénarisés par Akira Toriyama adaptés en bande
@@ -1033,17 +980,17 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-light-novels"
           aria-labelledby="manga-tab-light_novels"
-          className="space-y-8 reveal-up"
+          className="space-y-8"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div>
               <div className="flex items-center gap-3">
                 <Livre className="w-5 h-5 text-indigo-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Romans &amp; Light Novels Officiels
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold uppercase tracking-wider border border-indigo-500/30">
-                  3 romans recensés · Mirai Bunko &amp; Jump j-Books
+                <span className="text-[11px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
+                  3 romans recensés (Mirai Bunko, Jump j-Books)
                 </span>
               </div>
               <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
@@ -1080,7 +1027,7 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-dbs"
           aria-labelledby="manga-tab-dbs"
-          className="space-y-10 reveal-up"
+          className="space-y-10"
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {filteredDbs.map((vol, idx) => (
@@ -1103,7 +1050,7 @@ export function MangaVolumeGrid({
             <div className="space-y-4 pt-6 border-t border-white/10">
               <div className="flex items-center gap-3">
                 <Couches className="w-5 h-5 text-dbz-orange" aria-hidden="true" />
-                <h4 className="font-display font-bold text-sm uppercase tracking-wider text-dbz-orange">
+                <h4 className="font-display font-bold text-sm text-dbz-orange">
                   Chapitres Dragon Ball Super ({dbsChapters.length})
                 </h4>
               </div>
@@ -1123,17 +1070,17 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-jp"
           aria-labelledby="manga-tab-jp"
-          className="space-y-8 reveal-up"
+          className="space-y-8"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div>
               <div className="flex items-center gap-3">
                 <Livre className="w-5 h-5 text-red-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Dragon Ball — Édition Japonaise Originale (ドラゴンボール)
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-mono font-bold uppercase tracking-wider border border-red-500/30">
-                  42 tomes · Tankōbon Jump Comics
+                <span className="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-bold border border-red-500/30">
+                  42 tomes Tankōbon Jump Comics
                 </span>
               </div>
               <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
@@ -1169,17 +1116,17 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-arale"
           aria-labelledby="manga-tab-arale"
-          className="space-y-8 reveal-up"
+          className="space-y-8"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div>
               <div className="flex items-center gap-3">
                 <Kame className="w-5 h-5 text-pink-400" aria-hidden="true" />
-                <h3 className="font-saiyan text-2xl text-white tracking-widest">
+                <h3 className="font-display text-2xl text-white">
                   Dr. Slump (Dr.スランプ — アラレちゃん)
                 </h3>
-                <span className="text-[9px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-mono font-bold uppercase tracking-wider border border-pink-500/30">
-                  18 tomes · L&apos;Œuvre Fondatrice
+                <span className="text-[11px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-bold border border-pink-500/30">
+                  18 tomes, l&apos;œuvre fondatrice
                 </span>
               </div>
               <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
@@ -1214,7 +1161,7 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-scans"
           aria-labelledby="manga-tab-scans"
-          className="space-y-12 reveal-up"
+          className="space-y-12"
         >
           {/* Édition couleur (Full Color) mise en avant, par tome. */}
           {(colorVolumes.length > 0 || colorChapters.length > 0) && (
@@ -1254,29 +1201,25 @@ export function MangaVolumeGrid({
           role="tabpanel"
           id="manga-panel-achievements"
           aria-labelledby="manga-tab-achievements"
-          className="reveal-up space-y-8"
+          className="space-y-8"
         >
           <div className="dbz-panel p-6 bg-black/40 border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1">
-              <span className="text-xs text-dbz-orange block tracking-wider font-mono font-bold uppercase">
+              <span className="text-xs text-dbz-orange block font-bold">
                 Progression de lecture
               </span>
               <p className="font-display font-black text-2xl text-white">Statistiques de Lecture</p>
             </div>
             <div className="grid grid-cols-2 gap-8 text-center md:text-left">
               <div>
-                <span className="block text-[10px] uppercase text-white/50 tracking-wider font-mono">
-                  Chapitres Lus
-                </span>
-                <span className="font-saiyan text-3xl text-dbz-orange tracking-widest leading-none">
+                <span className="block text-[10px] text-white/50">Chapitres Lus</span>
+                <span className="font-display text-3xl text-dbz-orange leading-none">
                   {totalReadChapters}
                 </span>
               </div>
               <div>
-                <span className="block text-[10px] uppercase text-white/50 tracking-wider font-mono">
-                  Rang Débloqué
-                </span>
-                <span className="font-saiyan text-2xl text-white tracking-widest leading-none block mt-1">
+                <span className="block text-[10px] text-white/50">Rang Débloqué</span>
+                <span className="font-display text-2xl text-white leading-none block mt-1">
                   {currentRank}
                 </span>
               </div>
@@ -1291,7 +1234,7 @@ export function MangaVolumeGrid({
                   key={ach.id}
                   className={`dbz-panel p-6 border transition-all duration-300 relative overflow-hidden group ${
                     isUnlocked
-                      ? "border-dbz-orange/30 bg-dbz-card shadow-[0_0_15px_rgba(255,178,0,0.05)] hover:border-dbz-orange"
+                      ? "border-dbz-orange/30 bg-dbz-card hover:border-dbz-orange"
                       : "border-white/5 bg-zinc-950/20 opacity-60"
                   }`}
                 >
@@ -1312,7 +1255,7 @@ export function MangaVolumeGrid({
                           {ach.title}
                         </h4>
                         <span
-                          className={`text-[8px] font-bold px-1.5 py-0.5 rounded font-mono uppercase ${
+                          className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${
                             isUnlocked
                               ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                               : "bg-zinc-800 text-zinc-500"

@@ -1,5 +1,5 @@
-import { IndexSkeleton } from "@/components/wiki/WikiSkeleton";
+import { MediaIndexSkeleton } from "@/components/media/MediaSkeletons";
 
 export default function Loading() {
-  return <IndexSkeleton />;
+  return <MediaIndexSkeleton />;
 }

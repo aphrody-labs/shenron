@@ -79,19 +79,17 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
                 type="button"
                 onClick={() => setEdition(e)}
                 aria-pressed={actif}
-                className={`inline-flex h-11 items-center gap-2 rounded px-4 font-display text-sm font-semibold tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 ${
+                className={`inline-flex h-11 items-center gap-2 rounded-xl px-4 font-display text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 ${
                   actif
                     ? e === "couleur"
-                      ? "bg-gradient-to-r from-fuchsia-500 to-amber-400 text-black"
+                      ? "bg-fuchsia-400 text-black"
                       : "bg-dbz-orange text-black"
                     : "border border-white/10 bg-black/40 text-white/70 hover:text-white"
                 }`}
               >
                 <Icone className="h-4 w-4" aria-hidden="true" />
                 {LIBELLE_EDITION[e]}
-                <span className="font-mono text-[10px] opacity-70 tabular-nums">
-                  {parEdition[e].length}
-                </span>
+                <span className="text-[12px] opacity-70 tabular-nums">{parEdition[e].length}</span>
               </button>
             );
           })}
@@ -100,21 +98,24 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
 
       {/* Barre de progression style Scouter Toriyama */}
       {readableChapters.length > 0 && (
-        <div className="scouter-hud p-4 border-2 border-black bg-[#0d0d0f] shadow-[3px_3px_0px_#000] space-y-2">
-          <div className="flex justify-between items-center text-xs font-mono">
-            <span className="scouter-text text-dbz-orange tracking-wider font-extrabold">
-              PROGRESSION_LECTURE //
-            </span>
-            <span className="toriyama-badge bg-dbz-yellow text-black px-2 py-0.5 text-[10px] font-black">
-              <span>
-                {readReadableChapters.length} / {readableChapters.length} CHAPITRES (
-                {progressPercent}%)
-              </span>
+        <div className="space-y-2 rounded-xl border border-white/12 p-4">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="font-semibold text-white/80">Progression de lecture</span>
+            <span className="tabular-nums text-white/70">
+              {readReadableChapters.length} sur {readableChapters.length} chapitres (
+              {progressPercent} %)
             </span>
           </div>
-          <div className="h-2.5 w-full bg-black rounded overflow-hidden border-2 border-black/80 relative">
+          <div
+            className="h-2 w-full overflow-hidden rounded-full bg-white/10"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progressPercent}
+            aria-label="Chapitres lus dans ce tome"
+          >
             <div
-              className="h-full bg-gradient-to-r from-dbz-orange to-dbz-yellow transition-all duration-500 ease-out"
+              className="h-full bg-dbz-orange transition-[width] duration-500 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -134,11 +135,11 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
                   img.src = assetUrl(page);
                 });
               }}
-              className={`toriyama-card p-4 md:p-5 flex items-center justify-between transition-all group ${isRead ? "border-emerald-600/70" : ""}`}
+              className={`group flex min-h-11 items-center justify-between gap-3 rounded-xl border p-3 transition-colors hover:border-dbz-orange/60 md:p-4 ${isRead ? "border-emerald-600/70" : "border-white/12"}`}
             >
               <div className="flex items-center gap-4 md:gap-6 min-w-0">
                 <span
-                  className={`scouter-text text-lg md:text-xl min-w-[54px] font-black ${isRead ? "text-emerald-400" : "text-dbz-orange"}`}
+                  className={`tabular-nums text-base md:text-lg min-w-[3.5rem] font-bold ${isRead ? "text-emerald-400" : "text-dbz-orange"}`}
                 >
                   #{ch.chapter_number}
                 </span>
@@ -147,20 +148,26 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
                   <Etoile taille={10} className="text-[var(--color-logo-rouge)] shrink-0" />
                   <span className="truncate">{ch.title || `Chapitre ${ch.chapter_number}`}</span>
                   {isRead && (
-                    <span className="inline-flex shrink-0 items-center gap-1 text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/40">
+                    <span className="inline-flex shrink-0 items-center gap-1 text-[12px] text-emerald-400 font-bold bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/40">
                       <Coche className="w-2.5 h-2.5" /> Lu
                     </span>
                   )}
                 </p>
               </div>
-              <span className="shrink-0 px-3.5 py-1.5 bg-dbz-orange text-black border-2 border-black rounded text-[11px] uppercase font-black tracking-wider shadow-[2px_2px_0px_#000] transition-transform group-hover:scale-105 group-active:translate-x-px group-active:translate-y-px">
-                LIRE
+              <span className="shrink-0 rounded-full bg-dbz-orange px-3.5 py-1.5 text-[13px] font-bold text-black">
+                Lire
               </span>
             </Link>
           );
         })}
         {readableChapters.length === 0 && (
-          <p className="text-white/50 italic">Chapitres de ce tome en cours d&apos;ajout.</p>
+          <p className="text-white/60">
+            Les chapitres de ce tome ne sont pas encore lisibles ici. Signale une source depuis{" "}
+            <Link href="/wiki/contribuer" className="text-dbz-orange hover:text-white">
+              la page Contribuer
+            </Link>
+            .
+          </p>
         )}
       </div>
 
@@ -169,13 +176,11 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
           <div className="flex items-center gap-3">
             <h3
               id="indexed-chapters-title"
-              className="font-display text-sm font-bold uppercase tracking-wider text-white/70"
+              className="font-display text-sm font-bold text-white/70"
             >
               Sources et planches à raccorder
             </h3>
-            <span className="font-mono text-[10px] text-white/45">
-              {chapitresEnCoursIndexation.length}
-            </span>
+            <span className="text-[12px] text-white/45">{chapitresEnCoursIndexation.length}</span>
             <div className="h-px flex-1 bg-white/10" />
           </div>
           <p className="text-xs leading-relaxed text-white/50">
@@ -189,11 +194,10 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
                 className="flex items-center justify-between gap-4 rounded border border-white/10 bg-black/20 p-3 text-sm"
               >
                 <span className="min-w-0 truncate font-display font-semibold text-white/75">
-                  #{ch.chapter_number} · {ch.title || `Chapitre ${ch.chapter_number}`}
+                  <span className="mr-2 tabular-nums">#{ch.chapter_number}</span>
+                  {ch.title || `Chapitre ${ch.chapter_number}`}
                 </span>
-                <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-white/40">
-                  À compléter
-                </span>
+                <span className="shrink-0 text-[12px] text-white/40">À compléter</span>
               </div>
             ))}
           </div>

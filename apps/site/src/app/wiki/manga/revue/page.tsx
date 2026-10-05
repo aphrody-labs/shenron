@@ -10,7 +10,8 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { botAdmin, BotAdminError } from "@/lib/bot-admin";
 import { requireAdmin } from "@/lib/session";
-import { PageShell } from "@/components/kit";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -70,11 +71,14 @@ export default async function RevueTraductionsPage() {
   const { candidats, erreur } = await chargerCandidats();
 
   return (
-    <PageShell as="main">
-      <h1 className="text-2xl font-semibold">Relecture des traductions</h1>
-      <p className="mt-1 text-sm opacity-70">
-        {candidats.length} proposition{candidats.length > 1 ? "s" : ""} en attente.
-      </p>
+    <PageShell rhythm="tight">
+      <PageHeader
+        size="md"
+        className="mb-6"
+        eyebrow="Manga"
+        title="Relecture des traductions"
+        subtitle={`${candidats.length} proposition${candidats.length > 1 ? "s" : ""} en attente.`}
+      />
       {erreur ? (
         <p role="alert" className="mt-4 rounded border border-red-500/40 p-3 text-sm">
           {erreur}
@@ -85,7 +89,7 @@ export default async function RevueTraductionsPage() {
       ) : null}
       <ul className="mt-6 space-y-4">
         {candidats.map((c) => (
-          <li key={String(c.id)} className="rounded-lg border border-white/10 p-4">
+          <li key={String(c.id)} className="rounded-xl border border-white/10 p-4">
             <div className="mb-2 text-xs opacity-60">
               Proposition {String(c.id)}
               {` · page ${c.pageId} · ${c.pairs.length} bulle${c.pairs.length > 1 ? "s" : ""}`}
@@ -108,7 +112,7 @@ export default async function RevueTraductionsPage() {
                 type="submit"
                 name="decision"
                 value="approve"
-                className="rounded bg-green-600 px-3 py-1 text-sm text-white"
+                className="min-h-11 rounded-xl bg-green-600 px-4 text-sm font-semibold text-white"
               >
                 Approuver
               </button>
@@ -116,7 +120,7 @@ export default async function RevueTraductionsPage() {
                 type="submit"
                 name="decision"
                 value="reject"
-                className="rounded bg-red-600 px-3 py-1 text-sm text-white"
+                className="min-h-11 rounded-xl bg-red-600 px-4 text-sm font-semibold text-white"
               >
                 Rejeter
               </button>

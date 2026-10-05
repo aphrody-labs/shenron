@@ -96,8 +96,8 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
         initialChapter={initialChapter}
         emptyLabel="Les planches numérisées de ce volume sont en cours d’acquisition."
         contentsLabel="Sommaire"
-        previousLabel="← Chapitre précédent"
-        nextLabel="Chapitre suivant →"
+        previousLabel="Chapitre précédent"
+        nextLabel="Chapitre suivant"
         onSelectionChange={onSelectionChange}
         renderChapter={(edition, selected, index) => {
           const chapter = chapters.find((item) => item.id === selected.id);
@@ -113,9 +113,6 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
               title={`${volume.title || `Tome ${volume.volume_number}`} — ${formatChapterTitle(chapter)}`}
               direction="rtl"
               chapterId={chapter.id}
-              chapterNumber={chapter.chapter_number}
-              series={chapter.series}
-              chapterTitle={chapter.title}
               prevHref={
                 previous ? `?chapter=${previous.chapter_number}&edition=${edition.id}` : null
               }

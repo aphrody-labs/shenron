@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
 import { apiUrl } from "@/lib/config";
 import { DragonBallLoader } from "@shenron/ui/toriyama";
 import { DragonRadar } from "@shenron/ui/icones";
@@ -77,23 +78,20 @@ export function MangaDialogueSearch() {
   }, []);
 
   return (
-    <section className="mb-16 lg:mb-24" aria-labelledby={`${inputId}-title`}>
-      <header className="mb-6">
-        <span className="font-display text-xs font-bold uppercase tracking-[0.2em] text-dbz-orange block mb-2">
-          Recherche de répliques
-        </span>
-        <h2
-          id={`${inputId}-title`}
-          className="font-saiyan text-2xl tracking-widest text-white sm:text-3xl"
-        >
-          Cherche une réplique
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-white/75 leading-relaxed">
-          Retrouve n'importe quelle ligne de dialogue à travers tout le manga (transcriptions
-          bilingues français et japonais). Ex. <em>Kamehameha</em>, <em>Petit cœur</em>,{" "}
-          <em>悟空</em>.
-        </p>
-      </header>
+    <section className="my-10" aria-label="Recherche de répliques">
+      <SectionHeading
+        id={`${inputId}-title`}
+        level={2}
+        rule={false}
+        className="mb-4"
+        title="Cherche une réplique"
+        standfirst={
+          <>
+            Retrouve n’importe quelle ligne de dialogue du manga (transcriptions française et
+            japonaise). Ex. <em>Kamehameha</em>, <em>Petit cœur</em>, <em>悟空</em>.
+          </>
+        }
+      />
 
       <form
         onSubmit={(e) => {
@@ -115,7 +113,7 @@ export function MangaDialogueSearch() {
             onChange={(e) => setQ(e.target.value)}
             placeholder="Rechercher un dialogue…"
             aria-label="Rechercher un dialogue du manga"
-            className="w-full rounded-lg border border-white/10 bg-black/40 py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/50 focus:border-dbz-orange focus:outline-none"
+            className="h-11 w-full rounded-xl border border-white/10 bg-black/40 pl-10 pr-4 text-base text-white placeholder:text-white/50 focus:border-dbz-orange focus:outline-none sm:text-sm"
           />
         </div>
         <button
@@ -123,7 +121,7 @@ export function MangaDialogueSearch() {
           disabled={loading || q.trim().length < 2}
           aria-label="Chercher"
           aria-busy={loading}
-          className="rounded-lg bg-dbz-orange px-5 py-3 text-sm font-bold uppercase tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="min-h-11 rounded-xl bg-dbz-orange px-5 text-sm font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-40"
         >
           {loading ? <DragonBallLoader size={18} stars={4} decorative /> : "Chercher"}
         </button>
@@ -145,11 +143,11 @@ export function MangaDialogueSearch() {
               className="rounded-lg border border-white/5 bg-black/30 p-4 transition-colors hover:border-white/20"
             >
               <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-                <span className="rounded bg-dbz-orange/20 px-2 py-0.5 font-bold uppercase tracking-wider text-dbz-orange">
+                <span className="rounded bg-dbz-orange/20 px-2 py-0.5 font-bold text-dbz-orange">
                   {r.series}
                 </span>
                 <span className="text-white/60">
-                  {tomeLabel(r.tome)} · Planche {r.planche}
+                  {tomeLabel(r.tome)}, planche <span className="tabular-nums">{r.planche}</span>
                 </span>
                 {hasCjk(r.snippet) && (
                   <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/70">

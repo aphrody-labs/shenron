@@ -1,9 +1,16 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
-import Link from "next/link";
+import Image from "next/image";
 import { Suspense } from "react";
 import { dbUniverse } from "@/lib/db-universe";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WikiDrawer } from "@/components/wiki/WikiDrawer";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { ExternalLink } from "@shenron/ui/navigation/external";
+import { MediaFacts } from "@/components/media/MediaFacts";
+import { MediaPager } from "@/components/media/MediaPager";
+import { MediaTitle } from "@/components/media/MediaTitle";
+import { isEditableAsset } from "@/lib/images";
 import { assetUrl } from "@/lib/db-universe";
 import { ogMeta } from "@/lib/og";
 import { notFound } from "next/navigation";
@@ -12,7 +19,7 @@ import type { Book as BookSchema, WithContext } from "schema-dts";
 import { JsonLd } from "@/components/JsonLd";
 import { VolumeChaptersList } from "@/components/manga/VolumeChaptersList";
 import { UnifiedVolumeReader } from "@/components/manga/UnifiedVolumeReader";
-import { BancNuages, CadreCase, Etoile, PastilleTome } from "@shenron/ui/toriyama/MotifsCouverture";
+import { CadreCase, PastilleTome } from "@shenron/ui/toriyama/MotifsCouverture";
 import { idDeFiche } from "../../../_id-fiche";
 import { AccesApi } from "@/components/manga/AccesApi";
 import { SITE_URL } from "@/lib/config";
@@ -138,52 +145,53 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
     })),
   };
 
+  const serie = LIBELLE_SERIE[volume.series] ?? volume.series;
+  const pager = (v: typeof prevVolume, label: string) =>
+    v
+      ? {
+          href: `/wiki/manga/volume/${v.id}`,
+          label,
+          title: v.title?.trim() || `Tome ${v.volume_number}`,
+          meta: `Tome ${v.volume_number}`,
+          image: v.cover,
+        }
+      : null;
+
   return (
     <>
       <JsonLd data={jsonLd} />
-      <div className="wiki-container">
-        <div className="mb-12 flex flex-wrap items-center justify-between gap-4">
-          <Breadcrumbs
-            items={[
-              { label: "Manga", href: "/wiki/manga" },
-              { label: `Tome ${volume.volume_number}` },
-            ]}
-          />
-          <div className="flex items-center gap-2">
-            {prevVolume && (
-              <Link
-                href={`/wiki/manga/volume/${prevVolume.id}`}
-                className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-white/80 transition-colors hover:border-orange-500/40 hover:bg-orange-950/20 hover:text-white"
-                title={`Tome ${prevVolume.volume_number}`}
-              >
-                ← Tome {prevVolume.volume_number}
-              </Link>
-            )}
-            {nextVolume && (
-              <Link
-                href={`/wiki/manga/volume/${nextVolume.id}`}
-                className="inline-flex items-center gap-1 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-1.5 text-xs font-semibold text-orange-300 transition-colors hover:border-orange-400 hover:bg-orange-500/20 hover:text-white"
-                title={`Tome ${nextVolume.volume_number}`}
-              >
-                Tome {nextVolume.volume_number} →
-              </Link>
-            )}
-            <WikiDrawer />
-          </div>
-        </div>
+      {/* `min-w-0` : le carrousel du lecteur ne doit pas élargir la colonne (mobile). */}
+      <PageShell rhythm="tight" className="min-w-0">
+        <Breadcrumbs
+          className="mb-4"
+          items={[
+            { label: "Manga", href: "/wiki/manga" },
+            { label: `Tome ${volume.volume_number}` },
+          ]}
+        />
+        <PageHeader
+          size="md"
+          className="mb-8"
+          eyebrow={serie}
+          title={<MediaTitle title={titre} titleJa={volume.title_ja} />}
+        />
 
-        <div className="flex flex-col md:flex-row gap-12 lg:gap-20 min-w-0 max-w-full">
-          <div className="w-full md:w-1/3 lg:w-1/4 shrink-0">
-            {/* Cadre de case mesuré sur le support : encre, liseré jaune, encre,
-						    coins vifs — et la pastille de numéro à sa place de tankōbon. */}
-            <CadreCase largeur={300} className="group bg-dbz-card">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
+          <aside className="min-w-0 space-y-6">
+            {/* Cadre de case mesuré sur le support : encre, liseré jaune, encre, coins
+                vifs — et la pastille de numéro à sa place de tankōbon. */}
+            <CadreCase largeur={300} className="mx-auto max-w-[220px] bg-dbz-card lg:max-w-none">
               <div className="relative overflow-hidden">
-                <div className="absolute inset-0 halftone z-20 opacity-20" />
                 {volume.cover ? (
-                  <img
+                  <Image
                     src={assetUrl(volume.cover)}
-                    alt={`Volume ${volume.volume_number}`}
-                    className="relative z-10 h-auto w-full object-contain"
+                    alt={`Couverture du tome ${volume.volume_number}`}
+                    width={300}
+                    height={450}
+                    sizes="(min-width: 1024px) 260px, 220px"
+                    priority
+                    unoptimized={isEditableAsset(volume.cover)}
+                    className="h-auto w-full object-contain"
                   />
                 ) : (
                   <div className="flex aspect-[2/3] items-center justify-center bg-zinc-900">
@@ -200,102 +208,67 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
               />
             </CadreCase>
 
-            {/* Métadonnées du Tome */}
-            <div className="mt-8 space-y-4 border-t border-white/10 pt-6 font-display text-xs">
-              <div className="flex items-center justify-between gap-3">
-                <span className="shrink-0 text-white/50">Série&nbsp;:</span>
-                <span className="text-right font-bold text-white">
-                  {LIBELLE_SERIE[volume.series] ?? volume.series}
-                </span>
+            <MediaFacts
+              facts={[
+                { label: "Série", value: serie },
+                volume.published_at && {
+                  label: "Publication",
+                  value: new Date(volume.published_at * 1000).toLocaleDateString("fr-FR", {
+                    year: "numeric",
+                    month: "long",
+                  }),
+                },
+                volume.isbn && {
+                  label: "ISBN",
+                  value: <span className="font-mono break-all">{volume.isbn}</span>,
+                },
+                volume.source_url && {
+                  label: "Source",
+                  value: (
+                    <ExternalLink
+                      href={volume.source_url}
+                      className="inline-flex min-h-11 items-center gap-1 text-dbz-orange hover:text-white"
+                    >
+                      Catalogue Shueisha{" "}
+                      <LienExterne className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    </ExternalLink>
+                  ),
+                },
+              ]}
+            />
+
+            {volume.series === "DB" && (
+              <div className="space-y-2">
+                <p className="text-[13px] text-white/55">Éditions répertoriées :</p>
+                <ul className="flex flex-wrap gap-1.5 text-[12px] font-semibold">
+                  <li className="rounded-md border border-dbz-orange/30 bg-dbz-orange/10 px-2 py-1 text-dbz-orange">
+                    Glénat FR (42)
+                  </li>
+                  <li className="rounded-md border border-fuchsia-500/30 bg-fuchsia-500/10 px-2 py-1 text-fuchsia-200">
+                    Full Color (42)
+                  </li>
+                  <li className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70">
+                    Tankōbon JA
+                  </li>
+                  <li className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70">
+                    Kanzenban
+                  </li>
+                </ul>
               </div>
-              {volume.title_ja && (
-                <div className="flex items-center justify-between gap-3">
-                  <span className="shrink-0 text-white/50">Titre Original&nbsp;:</span>
-                  {/* `font-jp` et non `font-mono` : JetBrains Mono est chargée en
-									    sous-ensemble LATIN, elle n'a aucun glyphe japonais et rendait
-									    « ドラゴンボール超 1 » en huit tofus sur la page de tome. */}
-                  <span className="text-right font-jp font-bold text-white">{volume.title_ja}</span>
-                </div>
-              )}
-              {volume.published_at && (
-                <div className="flex items-center justify-between gap-3">
-                  <span className="shrink-0 text-white/50">Publication&nbsp;:</span>
-                  <span className="text-right font-bold text-white capitalize">
-                    {new Date(volume.published_at * 1000).toLocaleDateString("fr-FR", {
-                      year: "numeric",
-                      month: "long",
-                    })}
-                  </span>
-                </div>
-              )}
-              {volume.isbn && (
-                <div className="flex items-center justify-between gap-3">
-                  <span className="shrink-0 text-white/50">ISBN&nbsp;:</span>
-                  <span className="text-right font-mono font-bold text-white break-all">
-                    {volume.isbn}
-                  </span>
-                </div>
-              )}
-              {volume.source_url && (
-                <div className="flex items-center justify-between gap-3">
-                  <span className="shrink-0 text-white/50">Source&nbsp;:</span>
-                  <a
-                    href={volume.source_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-w-0 items-center gap-1 text-right font-bold text-dbz-orange hover:text-white"
-                  >
-                    Catalogue Shueisha{" "}
-                    <LienExterne className="h-3 w-3 shrink-0" aria-hidden="true" />
-                  </a>
-                </div>
-              )}
-              {volume.series === "DB" && (
-                <div className="pt-3 border-t border-white/5 space-y-1.5">
-                  <span className="text-white/50 block text-[11px]">Éditions répertoriées :</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="inline-flex items-center gap-1 rounded bg-orange-950/40 border border-orange-500/30 px-2 py-0.5 text-[10px] font-bold text-orange-300">
-                      Glénat FR (42)
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded bg-fuchsia-950/40 border border-fuchsia-500/30 px-2 py-0.5 text-[10px] font-bold text-fuchsia-300">
-                      Full Color (42)
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] text-white/60">
-                      Tankōbon JA
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] text-white/60">
-                      Kanzenban
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+            )}
+          </aside>
 
-          <div className="flex-1 min-w-0 max-w-full space-y-10">
-            <header>
-              {/* L'étoile ouvre la ligne de titre secondaire, comme sur la couverture. */}
-              <p className="font-display mb-4 inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.3em] text-dbz-orange uppercase">
-                <Etoile taille={11} className="text-[var(--color-logo-rouge)]" />
-                {LIBELLE_SERIE[volume.series] ?? volume.series} · Volume {volume.volume_number}
-              </p>
-              <h1 className="font-saiyan text-5xl lg:text-7xl text-white mb-6 tracking-widest leading-tight">
-                {volume.title || `VOLUME ${volume.volume_number}`}
-              </h1>
-              <div className="h-1 w-24 bg-dbz-orange" />
-            </header>
-
-            {/* Lecteur Manga Unifié (Original N&B / Full Color) */}
-            {/* `UnifiedVolumeReader` lit `useSearchParams()` (chapitre et édition
-						    demandés). Sans frontière `Suspense` à lui, Next abandonnait le rendu
-						    serveur de TOUTE la route (`BAILOUT_TO_CLIENT_SIDE_RENDERING`) : le HTML
-						    servi ne contenait que le squelette de chargement — ni `<h1>`, ni
-						    sommaire des chapitres. La frontière limite le rendu client au lecteur. */}
+          <div className="min-w-0 space-y-10">
+            {/* `UnifiedVolumeReader` lit `useSearchParams()` (chapitre et édition demandés).
+                Sans frontière `Suspense` à lui, Next abandonnait le rendu serveur de TOUTE
+                la route (`BAILOUT_TO_CLIENT_SIDE_RENDERING`) : le HTML servi ne contenait que
+                le squelette — ni `<h1>`, ni sommaire. La frontière limite le rendu client
+                au lecteur. */}
             {planchesTotal > 0 && (
-              <section className="space-y-4">
+              <section aria-label="Lecteur du tome" className="min-w-0">
                 <Suspense
                   fallback={
-                    <div className="aspect-[2/3] w-full max-w-md animate-pulse rounded-lg bg-white/[0.04]" />
+                    <div className="aspect-[2/3] w-full max-w-md animate-pulse rounded-xl bg-white/[0.04]" />
                   }
                 >
                   <UnifiedVolumeReader volume={volume} />
@@ -303,16 +276,8 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
               </section>
             )}
 
-            <section className="space-y-6">
-              {/* Banc de volutes du fond de case, en frise de séparation. */}
-              <BancNuages hauteur={64} opacite={0.85} className="rounded-sm" retourne />
-              <div className="flex items-center gap-6">
-                <h2 className="font-saiyan text-3xl text-white uppercase tracking-widest">
-                  Sommaire des Chapitres
-                </h2>
-                <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
-              </div>
-
+            <section aria-label="Sommaire des chapitres" className="space-y-5">
+              <SectionHeading level={3} title="Sommaire des chapitres" />
               <VolumeChaptersList chapters={volume.chapters} />
             </section>
 
@@ -339,56 +304,15 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
               }
             />
 
-            {/* Transition fluide de fin de tome */}
-            {(prevVolume || nextVolume) && (
-              <nav
-                aria-label="Navigation entre tomes"
-                className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-t border-white/10 pt-6"
-              >
-                {prevVolume ? (
-                  <Link
-                    href={`/wiki/manga/volume/${prevVolume.id}`}
-                    className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 transition-all hover:border-white/30 hover:bg-white/[0.04]"
-                  >
-                    <span className="text-xl transition-transform group-hover:-translate-x-1">
-                      ←
-                    </span>
-                    <div>
-                      <div className="text-[10px] text-white/40 uppercase tracking-wider font-bold">
-                        Tome précédent
-                      </div>
-                      <div className="text-sm font-bold text-white">
-                        Tome {prevVolume.volume_number}
-                      </div>
-                    </div>
-                  </Link>
-                ) : (
-                  <div />
-                )}
-
-                {nextVolume && (
-                  <Link
-                    href={`/wiki/manga/volume/${nextVolume.id}`}
-                    className="group flex items-center justify-end gap-3 rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-950/20 to-black/60 p-4 transition-all hover:border-orange-400 hover:bg-orange-950/30 text-right"
-                  >
-                    <div>
-                      <div className="text-[10px] text-orange-400/70 uppercase tracking-wider font-bold">
-                        Tome suivant
-                      </div>
-                      <div className="text-sm font-bold text-white">
-                        Tome {nextVolume.volume_number}
-                      </div>
-                    </div>
-                    <span className="text-xl text-orange-400 transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </Link>
-                )}
-              </nav>
-            )}
+            <MediaPager
+              ariaLabel="Navigation entre tomes"
+              ratio="poster"
+              prev={pager(prevVolume, "Tome précédent")}
+              next={pager(nextVolume, "Tome suivant")}
+            />
           </div>
         </div>
-      </div>
+      </PageShell>
     </>
   );
 }

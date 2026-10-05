@@ -14,9 +14,6 @@ export type MangaReaderProps = Pick<
   "pages" | "title" | "direction" | "prevHref" | "nextHref" | "prevPages" | "nextPages"
 > & {
   chapterId?: number;
-  chapterNumber?: number;
-  series?: string;
-  chapterTitle?: string | null;
 };
 
 const renderChapterLink: NonNullable<ReaderProps["renderChapterLink"]> = ({
@@ -30,13 +27,7 @@ const renderChapterLink: NonNullable<ReaderProps["renderChapterLink"]> = ({
   </Link>
 );
 
-export function MangaReader({
-  chapterId,
-  chapterNumber,
-  series,
-  chapterTitle,
-  ...props
-}: MangaReaderProps) {
+export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
   const [initialPage, setInitialPage] = useState(1);
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -50,20 +41,13 @@ export function MangaReader({
       const read = JSON.parse(localStorage.getItem("dbfr_read_chapters") ?? "[]");
       const ids: number[] = Array.isArray(read) ? read.map(Number) : [];
       if (!ids.includes(chapterId)) ids.push(chapterId);
+      // Progression chapitre par chapitre (succès, coches du sommaire). Le « reprendre la
+      // lecture » passe par l’historique transverse (`TrackHistory` → `ContinueRail`).
       localStorage.setItem("dbfr_read_chapters", JSON.stringify(ids));
-      localStorage.setItem(
-        "dbfr_last_read_chapter",
-        JSON.stringify({
-          id: chapterId,
-          chapter_number: chapterNumber ?? 0,
-          title: chapterTitle || null,
-          series: series || "DBS",
-        }),
-      );
     } catch (error) {
       console.error("Failed to save read chapter", error);
     }
-  }, [chapterId, chapterNumber, series, chapterTitle]);
+  }, [chapterId]);
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => setCurrentPage(initialPage), [initialPage]);
   const onPageChange = useCallback(
