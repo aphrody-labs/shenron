@@ -14,10 +14,10 @@
  */
 import { createAphrodyCompute } from "@shenron/pipeline/ai/aphrody";
 import {
-	requireAiHttpToken,
-	requireAiHttpUrl,
-	requireEmbedBaseUrl,
-	SHENRON_E5,
+  requireAiHttpToken,
+  requireAiHttpUrl,
+  requireEmbedBaseUrl,
+  SHENRON_E5,
 } from "@shenron/pipeline/ai/config";
 import type { EmbedKind } from "@shenron/pipeline/ai/embeddings";
 
@@ -30,13 +30,13 @@ const LOOPBACK_HOSTS = new Set(["127.0.0.1", "[::1]", "localhost"]);
 export type ShenronEmbedKind = EmbedKind;
 
 export interface ShenronEmbeddingsOptions {
-	/** Aphrody `aphrody-ai-http` URL; defaults to `APHRODY_AI_HTTP_URL` (or its aliases). */
-	baseUrl?: string;
-	/** Bearer token; defaults to `APHRODY_AI_HTTP_TOKEN` (or its aliases). */
-	token?: string;
-	fetcher?: typeof fetch;
-	/** Environment read for the defaults (`process.env` when omitted). */
-	env?: Record<string, string | undefined>;
+  /** Aphrody `aphrody-ai-http` URL; defaults to `APHRODY_AI_HTTP_URL` (or its aliases). */
+  baseUrl?: string;
+  /** Bearer token; defaults to `APHRODY_AI_HTTP_TOKEN` (or its aliases). */
+  token?: string;
+  fetcher?: typeof fetch;
+  /** Environment read for the defaults (`process.env` when omitted). */
+  env?: Record<string, string | undefined>;
 }
 
 /**
@@ -46,24 +46,24 @@ export interface ShenronEmbeddingsOptions {
  * `@shenron/pipeline/ai/config`. Throws on a missing, malformed or non-loopback address.
  */
 export function resolveShenronEmbeddingsBaseUrl(
-	options: { baseUrl?: string } = {},
-	env: Record<string, string | undefined> = process.env
+  options: { baseUrl?: string } = {},
+  env: Record<string, string | undefined> = process.env,
 ): URL {
-	if (options.baseUrl === undefined) return requireEmbedBaseUrl(env);
-	const url = new URL(options.baseUrl);
-	if (
-		url.protocol !== "http:" ||
-		!LOOPBACK_HOSTS.has(url.hostname) ||
-		url.username ||
-		url.password
-	) {
-		throw new Error("Shenron embeddings URL must use loopback HTTP");
-	}
-	const path = url.pathname.replace(/\/+$/, "");
-	url.pathname = path.endsWith("/v1") ? path : `${path}/v1`;
-	url.search = "";
-	url.hash = "";
-	return url;
+  if (options.baseUrl === undefined) return requireEmbedBaseUrl(env);
+  const url = new URL(options.baseUrl);
+  if (
+    url.protocol !== "http:" ||
+    !LOOPBACK_HOSTS.has(url.hostname) ||
+    url.username ||
+    url.password
+  ) {
+    throw new Error("Shenron embeddings URL must use loopback HTTP");
+  }
+  const path = url.pathname.replace(/\/+$/, "");
+  url.pathname = path.endsWith("/v1") ? path : `${path}/v1`;
+  url.search = "";
+  url.hash = "";
+  return url;
 }
 
 /**
@@ -80,44 +80,44 @@ export function resolveShenronEmbeddingsBaseUrl(
  * Aphrody address; callers should pass the Aphrody URL or nothing.
  */
 export class ShenronEmbeddingsClient {
-	/** Origin of `aphrody-ai-http` (requests go to `${baseUrl}api/v1/shenron/embed`). */
-	readonly baseUrl: URL;
-	private readonly token: string;
-	private readonly fetcher?: typeof fetch;
+  /** Origin of `aphrody-ai-http` (requests go to `${baseUrl}api/v1/shenron/embed`). */
+  readonly baseUrl: URL;
+  private readonly token: string;
+  private readonly fetcher?: typeof fetch;
 
-	constructor(options: ShenronEmbeddingsOptions = {}) {
-		const env = options.env ?? process.env;
-		this.baseUrl =
-			options.baseUrl === undefined
-				? requireAiHttpUrl(env)
-				: requireAiHttpUrl({ APHRODY_AI_HTTP_URL: options.baseUrl });
-		this.token = options.token ?? requireAiHttpToken(env);
-		this.fetcher = options.fetcher;
-	}
+  constructor(options: ShenronEmbeddingsOptions = {}) {
+    const env = options.env ?? process.env;
+    this.baseUrl =
+      options.baseUrl === undefined
+        ? requireAiHttpUrl(env)
+        : requireAiHttpUrl({ APHRODY_AI_HTTP_URL: options.baseUrl });
+    this.token = options.token ?? requireAiHttpToken(env);
+    this.fetcher = options.fetcher;
+  }
 
-	async embed(
-		texts: string[],
-		kind: ShenronEmbedKind,
-		options: { timeoutMs?: number } = {}
-	): Promise<number[][]> {
-		if (texts.some((text) => !text.trim())) throw new Error("Shenron embedding input is empty");
-		if (texts.length === 0) return [];
-		// Built per call so that, without `fetcher`, the global fetch is read at call time.
-		const compute = createAphrodyCompute(
-			{ baseUrl: this.baseUrl, token: this.token },
-			{
-				timeouts: { embed: options.timeoutMs ?? DEFAULT_TIMEOUT_MS },
-				...(this.fetcher ? { fetch: this.fetcher } : {}),
-			}
-		);
-		const result = await compute.embed({ texts, kind });
-		if (result.ok) return result.value.vectors;
-		if (result.kind === "http") throw new Error(`Shenron embeddings HTTP ${result.status}`);
-		if (result.kind === "invalid_response" || result.kind === "invalid_json") {
-			throw new Error("Shenron returned invalid embedding vectors");
-		}
-		const error = new Error(`Shenron embeddings ${result.detail}`);
-		if (result.kind === "timeout") error.name = "TimeoutError";
-		throw error;
-	}
+  async embed(
+    texts: string[],
+    kind: ShenronEmbedKind,
+    options: { timeoutMs?: number } = {},
+  ): Promise<number[][]> {
+    if (texts.some((text) => !text.trim())) throw new Error("Shenron embedding input is empty");
+    if (texts.length === 0) return [];
+    // Built per call so that, without `fetcher`, the global fetch is read at call time.
+    const compute = createAphrodyCompute(
+      { baseUrl: this.baseUrl, token: this.token },
+      {
+        timeouts: { embed: options.timeoutMs ?? DEFAULT_TIMEOUT_MS },
+        ...(this.fetcher ? { fetch: this.fetcher } : {}),
+      },
+    );
+    const result = await compute.embed({ texts, kind });
+    if (result.ok) return result.value.vectors;
+    if (result.kind === "http") throw new Error(`Shenron embeddings HTTP ${result.status}`);
+    if (result.kind === "invalid_response" || result.kind === "invalid_json") {
+      throw new Error("Shenron returned invalid embedding vectors");
+    }
+    const error = new Error(`Shenron embeddings ${result.detail}`);
+    if (result.kind === "timeout") error.name = "TimeoutError";
+    throw error;
+  }
 }

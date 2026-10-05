@@ -11,14 +11,14 @@ export type { EnvSource } from "./config";
 
 /** Any Drizzle PostgreSQL database (postgres-js, Bun.SQL, mock) over schema `S`. */
 export type ShenronPgDatabase<S extends Record<string, unknown> = FullSchema> = PgDatabase<
-	PgQueryResultHKT,
-	S
+  PgQueryResultHKT,
+  S
 >;
 
 /** Raw parameterised query function (`$1`, `$2`… placeholders). */
 export type SqlQuery = <T = Record<string, unknown>>(
-	text: string,
-	params?: readonly unknown[]
+  text: string,
+  params?: readonly unknown[],
 ) => Promise<T[]>;
 
 /** Row types re-exported for consumers that only need shapes. */

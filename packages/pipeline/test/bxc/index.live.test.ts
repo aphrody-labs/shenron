@@ -6,7 +6,9 @@ import { FramesService } from "../../src/bxc/services";
 
 process.env.DRAGONBALLCN_SNAPSHOT_DIR = resolve(import.meta.dir, "fixtures/dragonballcn");
 const framesFixture = resolve(import.meta.dir, "fixtures/bxc-frames-stats.mjs");
-const hasBxcScraper = Boolean(Bun.which("bxc") || (process.env.BXC_BIN && existsSync(process.env.BXC_BIN)));
+const hasBxcScraper = Boolean(
+  Bun.which("bxc") || (process.env.BXC_BIN && existsSync(process.env.BXC_BIN)),
+);
 
 describe("BxcBridge Native Client Suite", () => {
   it("resolves valid bxc path", () => {
@@ -20,50 +22,65 @@ describe("BxcBridge Native Client Suite", () => {
     expect(v).toMatch(/bxc|aphrody/i);
   });
 
-  it.skipIf(!hasBxcScraper)("Anime-Sama: search and getEpisodes typings and execution", async () => {
-    const results = await bxc.animesama.search("inazuma");
-    expect(Array.isArray(results)).toBe(true);
-    expect(results.length).toBeGreaterThan(0);
-    const item = results[0];
-    expect(item).toHaveProperty("slug");
-    expect(item).toHaveProperty("titre");
-    expect(item).toHaveProperty("url");
+  it.skipIf(!hasBxcScraper)(
+    "Anime-Sama: search and getEpisodes typings and execution",
+    async () => {
+      const results = await bxc.animesama.search("inazuma");
+      expect(Array.isArray(results)).toBe(true);
+      expect(results.length).toBeGreaterThan(0);
+      const item = results[0];
+      expect(item).toHaveProperty("slug");
+      expect(item).toHaveProperty("titre");
+      expect(item).toHaveProperty("url");
 
-    // Test episodes
-    const eps = await bxc.animesama.getEpisodes(item.slug, { season: "saison1", lang: "vf" });
-    expect(eps).toHaveProperty("episodes");
-    expect(Array.isArray(eps.episodes)).toBe(true);
-    expect(eps.episodes.length).toBeGreaterThan(0);
-    expect(eps.episodes[0]).toHaveProperty("lecteurs");
-  });
+      // Test episodes
+      const eps = await bxc.animesama.getEpisodes(item.slug, { season: "saison1", lang: "vf" });
+      expect(eps).toHaveProperty("episodes");
+      expect(Array.isArray(eps.episodes)).toBe(true);
+      expect(eps.episodes.length).toBeGreaterThan(0);
+      expect(eps.episodes[0]).toHaveProperty("lecteurs");
+    },
+  );
 
-  it.skipIf(!hasBxcScraper)("VoirAnime: search and getAnime", async () => {
-    const results = await bxc.voiranime.search("inazuma");
-    expect(Array.isArray(results)).toBe(true);
-    expect(results.length).toBeGreaterThan(0);
-    const first = results[0];
-    expect(first).toHaveProperty("slug");
-    expect(first).toHaveProperty("title");
+  it.skipIf(!hasBxcScraper)(
+    "VoirAnime: search and getAnime",
+    async () => {
+      const results = await bxc.voiranime.search("inazuma");
+      expect(Array.isArray(results)).toBe(true);
+      expect(results.length).toBeGreaterThan(0);
+      const first = results[0];
+      expect(first).toHaveProperty("slug");
+      expect(first).toHaveProperty("title");
 
-    const info = await bxc.voiranime.getAnime(first.slug);
-    expect(info).toHaveProperty("title");
-    expect(info).toHaveProperty("slug");
-    expect(Array.isArray(info.episodes)).toBe(true);
-  }, 30000);
+      const info = await bxc.voiranime.getAnime(first.slug);
+      expect(info).toHaveProperty("title");
+      expect(info).toHaveProperty("slug");
+      expect(Array.isArray(info.episodes)).toBe(true);
+    },
+    30000,
+  );
 
-  it.skipIf(!hasBxcScraper)("MediaWiki: search and markdown", async () => {
-    // Wiki MediaWiki hors Fandom (source interdite dans ce dépôt) ; l'API de
-    // recherche de Wikipédia ne répond pas à cet endpoint, wiki.gg oui.
-    const results = await bxc.wiki.search("https://terraria.wiki.gg/wiki/Terraria_Wiki", "boss", 5);
-    expect(Array.isArray(results)).toBe(true);
-    expect(results.length).toBeGreaterThan(0);
-    expect(results[0]).toHaveProperty("titre");
-    expect(results[0]).toHaveProperty("url");
+  it.skipIf(!hasBxcScraper)(
+    "MediaWiki: search and markdown",
+    async () => {
+      // Wiki MediaWiki hors Fandom (source interdite dans ce dépôt) ; l'API de
+      // recherche de Wikipédia ne répond pas à cet endpoint, wiki.gg oui.
+      const results = await bxc.wiki.search(
+        "https://terraria.wiki.gg/wiki/Terraria_Wiki",
+        "boss",
+        5,
+      );
+      expect(Array.isArray(results)).toBe(true);
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0]).toHaveProperty("titre");
+      expect(results[0]).toHaveProperty("url");
 
-    const md = await bxc.wiki.markdown("https://terraria.wiki.gg/wiki/Bosses");
-    expect(typeof md).toBe("string");
-    expect(md.length).toBeGreaterThan(100);
-  }, 30000);
+      const md = await bxc.wiki.markdown("https://terraria.wiki.gg/wiki/Bosses");
+      expect(typeof md).toBe("string");
+      expect(md.length).toBeGreaterThan(100);
+    },
+    30000,
+  );
 
   it.skipIf(!hasBxcScraper)("Aphrody Translate: respects the requested target", async () => {
     const res = await bxc.google.translate("Bonjour le monde", "en", "fr");
@@ -116,7 +133,12 @@ describe("BxcBridge Native Client Suite", () => {
     expect(payload.pages).toEqual([]);
 
     const normalizedPlayers = bxc.db.formatEpisodePlayers([
-      { name: "Sibnet", provider: "sibnet", embedUrl: "https://video.sibnet.ru/shell.php?videoid=1234", lang: "vf" },
+      {
+        name: "Sibnet",
+        provider: "sibnet",
+        embedUrl: "https://video.sibnet.ru/shell.php?videoid=1234",
+        lang: "vf",
+      },
     ]);
     expect(normalizedPlayers.length).toBe(1);
     expect(normalizedPlayers[0].name).toBe("Sibnet");

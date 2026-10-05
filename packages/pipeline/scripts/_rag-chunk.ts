@@ -2,10 +2,13 @@
 import { shenronRagChunk } from "@shenron/native/shenron";
 
 export interface Chunk {
-	content: string;
-	section: string;
+  content: string;
+  section: string;
 }
 
 export function chunkDocument(markdown: string, maxChunkChars = 1400, overlapPct = 0.15): Chunk[] {
-	return shenronRagChunk(markdown, maxChunkChars, overlapPct).map(({ content, section }) => ({ content, section }));
+  return shenronRagChunk(markdown, maxChunkChars, overlapPct).map(({ content, section }) => ({
+    content,
+    section,
+  }));
 }

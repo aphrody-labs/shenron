@@ -24,18 +24,18 @@ const srcChunks = (db.query("SELECT count(*) n FROM src.rag_chunks").get() as { 
 const srcVec = (db.query("SELECT count(*) n FROM src.vec_chunks").get() as { n: number }).n;
 console.log(`source: rag_chunks=${srcChunks} vec_chunks=${srcVec}`);
 if (srcChunks === 0 || srcVec === 0) {
-	console.error("✗ copie vide — abandon (pas de swap)");
-	process.exit(1);
+  console.error("✗ copie vide — abandon (pas de swap)");
+  process.exit(1);
 }
 
 db.exec("BEGIN");
 // rag_chunks (FTS5)
 db.run("DROP TABLE IF EXISTS rag_chunks");
 db.run(
-	"CREATE VIRTUAL TABLE rag_chunks USING fts5(kind, title, url, content, lang, source_id, entity, tokenize='unicode61 remove_diacritics 2')"
+  "CREATE VIRTUAL TABLE rag_chunks USING fts5(kind, title, url, content, lang, source_id, entity, tokenize='unicode61 remove_diacritics 2')",
 );
 db.run(
-	"INSERT INTO rag_chunks(rowid, kind, title, url, content, lang, source_id, entity) SELECT rowid, kind, title, url, content, lang, source_id, entity FROM src.rag_chunks"
+  "INSERT INTO rag_chunks(rowid, kind, title, url, content, lang, source_id, entity) SELECT rowid, kind, title, url, content, lang, source_id, entity FROM src.rag_chunks",
 );
 // vec_chunks (vec0)
 db.run("DROP TABLE IF EXISTS vec_chunks");

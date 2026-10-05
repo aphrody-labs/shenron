@@ -7,7 +7,6 @@ const { stats } = await requireLiveRag();
 console.log(`Real Shenron RAG: ${stats.chunks} passages, ${stats.vectors} current E5 vectors`);
 const root = resolve(import.meta.dir, "../../..");
 const tests = [
-
   "apps/site/tests/databook-features.test.ts",
   "packages/pipeline/src/testing/live-rag.live.test.ts",
   "packages/pipeline/test/aphrody/compute.live.test.ts",

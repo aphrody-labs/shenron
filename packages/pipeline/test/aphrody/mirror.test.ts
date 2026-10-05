@@ -67,7 +67,10 @@ console.log(${JSON.stringify(JSON.stringify({ ...partialReport, failures: [] }))
   it("propagates CLI failures and rejects malformed reports", async () => {
     const failed = fixture("mirror-failed", 'console.error("transport failed");process.exit(6);');
     await expect(
-      aphrodyWebMirror({ url: "https://wiki.example/", outputDir: tempPath("mirror") }, { bin: failed }),
+      aphrodyWebMirror(
+        { url: "https://wiki.example/", outputDir: tempPath("mirror") },
+        { bin: failed },
+      ),
     ).rejects.toThrow("exited 6");
 
     const invalid = fixture(

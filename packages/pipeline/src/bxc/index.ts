@@ -1,12 +1,12 @@
 import {
-	AnimesamaService,
-	BxcDbBridge,
-	DragonballCnService,
-	FramesService,
-	GoogleTranslateService,
-	MediaStreamService,
-	VoiranimeService,
-	WikiService,
+  AnimesamaService,
+  BxcDbBridge,
+  DragonballCnService,
+  FramesService,
+  GoogleTranslateService,
+  MediaStreamService,
+  VoiranimeService,
+  WikiService,
 } from "./services";
 import { resolveBxcPath, execBxc } from "./spawn";
 import type { BxcSpawnOptions } from "./types";
@@ -14,14 +14,6 @@ import type { BxcSpawnOptions } from "./types";
 export * from "./types";
 export * from "./spawn";
 export * from "./services";
-
-
-
-
-
-
-
-
 
 /**
  * Client universel Bxc pour le backend Shenron (apps/site, apps/bot, worker)

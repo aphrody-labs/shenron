@@ -13,11 +13,11 @@
   "scripts": {
     "type-check": "tsc --noEmit -p ."
   },
+  "dependencies": {
+    "@shenron/media": "workspace:*"
+  },
   "devDependencies": {
     "@types/bun": "catalog:",
     "typescript": "catalog:"
-  },
-  "dependencies": {
-    "@shenron/media": "workspace:*"
   }
 }

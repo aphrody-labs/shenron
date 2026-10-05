@@ -23,14 +23,14 @@
 
 /** Casse, accents, ponctuation et pluriel : `Céréaliens` == `cerealien`. */
 export function normaliserRace(valeur: string): string {
-	return valeur
-		.normalize("NFD")
-		.replace(/[̀-ͯ]/g, "")
-		.toLowerCase()
-		.replace(/[’']/g, "'")
-		.replace(/\s+/g, " ")
-		.trim()
-		.replace(/s$/, "");
+  return valeur
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[’']/g, "'")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/s$/, "");
 }
 
 /**
@@ -41,43 +41,43 @@ export function normaliserRace(valeur: string): string {
  */
 const PAR_GRAPHIE: Record<string, string> = {};
 const ALIAS: Record<string, string[]> = {
-	saiyan: ["Saiyan", "Saiyan (corps)"],
-	// « Terrien » et ses variantes de genre/parenthèse. `50%Terrienne` est une
-	// valeur réelle (personnage hybride saisi ainsi côté import).
-	human: [
-		"Terrien",
-		"Terrienne",
-		"Humaine",
-		"Human",
-		"Terrien (type animal)",
-		"Terrien (anciennement)",
-		"Terrienne (anciennement)",
-		"Humain",
-		"50%Terrienne",
-	],
-	namekian: ["Namek", "Namekian", "Namek (race)"],
-	// Les androïdes du manga sont des « humains artificiels » (人造人間) : c'est
-	// le même peuple, pas trois races distinctes.
-	android: ["Android", "Androïde", "Cyborg", "Humain Artificiel"],
-	"frieza-race": ["Race de Freezer", "Frieza Race"],
-	angel: ["Ange", "Angel", "Ange (anciennement)"],
-	demon: ["Démon", "Diable"],
-	majin: ["Majin", "Majin (race)"],
-	cerealian: ["Cerealien", "Céréalien"],
-	yardrat: ["Yardrat"],
-	// Les Dieux de la Destruction n'ont pas de peuple nommé dans le manga : la
-	// fiche les rattache à leur fonction, seule identité que la source donne.
-	"god-of-destruction": ["Dieu de la Destruction"],
-	// Vérifié sur les fiches : ce sont les Shinron (Shenron Noir et les sept
-	// dragons maléfiques de GT, plus leurs doubles Xeno).
-	"namek-shenron": ["Dragon", "Dragon Maléfique", "Dragon obscur Xeno"],
-	// `Glind` ne ressemble à rien du nom canonique, mais les personnages qui la
-	// portent sont Chronoa, Gowasu, Aeos, le Dai Kaïo Shin… : ce sont bien les
-	// Kaïoshin. Rattachement établi sur les fiches, pas sur la graphie.
-	kaioshin: ["Glind", "Glind type Kaiô Shin", "Glind de type Kaio", "Glind (anciennement)"],
+  saiyan: ["Saiyan", "Saiyan (corps)"],
+  // « Terrien » et ses variantes de genre/parenthèse. `50%Terrienne` est une
+  // valeur réelle (personnage hybride saisi ainsi côté import).
+  human: [
+    "Terrien",
+    "Terrienne",
+    "Humaine",
+    "Human",
+    "Terrien (type animal)",
+    "Terrien (anciennement)",
+    "Terrienne (anciennement)",
+    "Humain",
+    "50%Terrienne",
+  ],
+  namekian: ["Namek", "Namekian", "Namek (race)"],
+  // Les androïdes du manga sont des « humains artificiels » (人造人間) : c'est
+  // le même peuple, pas trois races distinctes.
+  android: ["Android", "Androïde", "Cyborg", "Humain Artificiel"],
+  "frieza-race": ["Race de Freezer", "Frieza Race"],
+  angel: ["Ange", "Angel", "Ange (anciennement)"],
+  demon: ["Démon", "Diable"],
+  majin: ["Majin", "Majin (race)"],
+  cerealian: ["Cerealien", "Céréalien"],
+  yardrat: ["Yardrat"],
+  // Les Dieux de la Destruction n'ont pas de peuple nommé dans le manga : la
+  // fiche les rattache à leur fonction, seule identité que la source donne.
+  "god-of-destruction": ["Dieu de la Destruction"],
+  // Vérifié sur les fiches : ce sont les Shinron (Shenron Noir et les sept
+  // dragons maléfiques de GT, plus leurs doubles Xeno).
+  "namek-shenron": ["Dragon", "Dragon Maléfique", "Dragon obscur Xeno"],
+  // `Glind` ne ressemble à rien du nom canonique, mais les personnages qui la
+  // portent sont Chronoa, Gowasu, Aeos, le Dai Kaïo Shin… : ce sont bien les
+  // Kaïoshin. Rattachement établi sur les fiches, pas sur la graphie.
+  kaioshin: ["Glind", "Glind type Kaiô Shin", "Glind de type Kaio", "Glind (anciennement)"],
 };
 for (const [slug, graphies] of Object.entries(ALIAS)) {
-	for (const g of graphies) PAR_GRAPHIE[normaliserRace(g)] = slug;
+  for (const g of graphies) PAR_GRAPHIE[normaliserRace(g)] = slug;
 }
 
 /**
@@ -97,19 +97,19 @@ const NUCLEICO = new Set(["nucleico", "nucleico benigno"]);
  * qu'on ne les « rattrape » pas un jour par inadvertance.
  */
 export const AMBIGUËS: Record<string, string> = {
-	extraterrestre: "fourre-tout : Butta, Ganos, Chevil… aucune race canonique commune",
-	unknown: "valeur de remplissage d'import",
-	evil: "qualificatif moral, pas une race",
-	god: "mélange Dieux de la Destruction, Kaïoshin et Pride Troopers",
-	saibaimen: "créature invoquée, pas un peuple",
-	"neko majin": "parodie autonome de Toriyama, distincte des Majin",
-	"race de zarbon": "peuple propre, distinct de la race de Freezer",
-	"race de zabon": "même peuple que Zarbon, graphie « Zâbon » de l'import",
-	// Machines à part entière : ni 人造人間 (humains modifiés), ni cyborgs.
-	robot: "machine, pas un humain artificiel",
-	"robots og": "machine, pas un humain artificiel",
-	metalman: "machine, pas un humain artificiel",
-	"machine mutante": "machine, pas un humain artificiel",
+  extraterrestre: "fourre-tout : Butta, Ganos, Chevil… aucune race canonique commune",
+  unknown: "valeur de remplissage d'import",
+  evil: "qualificatif moral, pas une race",
+  god: "mélange Dieux de la Destruction, Kaïoshin et Pride Troopers",
+  saibaimen: "créature invoquée, pas un peuple",
+  "neko majin": "parodie autonome de Toriyama, distincte des Majin",
+  "race de zarbon": "peuple propre, distinct de la race de Freezer",
+  "race de zabon": "même peuple que Zarbon, graphie « Zâbon » de l'import",
+  // Machines à part entière : ni 人造人間 (humains modifiés), ni cyborgs.
+  robot: "machine, pas un humain artificiel",
+  "robots og": "machine, pas un humain artificiel",
+  metalman: "machine, pas un humain artificiel",
+  "machine mutante": "machine, pas un humain artificiel",
 };
 
 /**
@@ -119,25 +119,25 @@ export const AMBIGUËS: Record<string, string> = {
  * @param nom   Nom du personnage — sert uniquement à départager `Nucleico`.
  */
 export function slugDeRace(brute: string | null | undefined, nom = ""): string | null {
-	if (!brute) return null;
-	// Une valeur qui énumère plusieurs races (« Terrien, Zombie, Humain
-	// artificiel ») ne rattache à aucune : la compter partout gonflerait tous les
-	// comptes à la fois.
-	if (/[,/]/.test(brute)) return null;
-	const cle = normaliserRace(brute);
-	if (NUCLEICO.has(cle)) {
-		const n = normaliserRace(nom);
-		return n.includes("shin") || n.includes("kibito") ? "kaioshin" : "kaio";
-	}
-	return PAR_GRAPHIE[cle] ?? null;
+  if (!brute) return null;
+  // Une valeur qui énumère plusieurs races (« Terrien, Zombie, Humain
+  // artificiel ») ne rattache à aucune : la compter partout gonflerait tous les
+  // comptes à la fois.
+  if (/[,/]/.test(brute)) return null;
+  const cle = normaliserRace(brute);
+  if (NUCLEICO.has(cle)) {
+    const n = normaliserRace(nom);
+    return n.includes("shin") || n.includes("kibito") ? "kaioshin" : "kaio";
+  }
+  return PAR_GRAPHIE[cle] ?? null;
 }
 
 /** Toutes les graphies brutes susceptibles d'appartenir à `slug`. */
 export function graphiesDeRace(slug: string, nomCanonique?: string): string[] {
-	const base = ALIAS[slug] ?? [];
-	const nucleico = slug === "kaio" || slug === "kaioshin" ? ["Nucleico", "Nucleico benigno"] : [];
-	// Le nom canonique reste candidat : une future race saisie à l'identique des
-	// deux côtés se rattache sans passer par la table.
-	const canon = nomCanonique ? [nomCanonique] : [];
-	return [...new Set([...base, ...nucleico, ...canon])];
+  const base = ALIAS[slug] ?? [];
+  const nucleico = slug === "kaio" || slug === "kaioshin" ? ["Nucleico", "Nucleico benigno"] : [];
+  // Le nom canonique reste candidat : une future race saisie à l'identique des
+  // deux côtés se rattache sans passer par la table.
+  const canon = nomCanonique ? [nomCanonique] : [];
+  return [...new Set([...base, ...nucleico, ...canon])];
 }

@@ -21,7 +21,10 @@ const SYMBOLS = {
   shenron_run_json: { args: [FFIType.cstring], returns: FFIType.i32 },
   shenron_run: { args: [FFIType.i32, FFIType.ptr], returns: FFIType.i32 },
   shenron_run_captured: { args: [FFIType.cstring], returns: FFIType.ptr },
-  shenron_rag_search: { args: [FFIType.cstring, FFIType.i32, FFIType.cstring], returns: FFIType.ptr },
+  shenron_rag_search: {
+    args: [FFIType.cstring, FFIType.i32, FFIType.cstring],
+    returns: FFIType.ptr,
+  },
   shenron_rag_stats: { args: [], returns: FFIType.ptr },
   shenron_rag_chunk: { args: [FFIType.cstring, FFIType.i32, FFIType.f32], returns: FFIType.ptr },
   shenron_auth_status: { args: [], returns: FFIType.ptr },
@@ -35,8 +38,14 @@ const SYMBOLS = {
   },
   manga_pipeline_run: { args: [FFIType.ptr, "usize", FFIType.cstring], returns: FFIType.ptr },
   manga_scanlate_cdn: { args: [FFIType.cstring, FFIType.cstring], returns: FFIType.ptr },
-  manga_scanlate_databook: { args: [FFIType.u64, FFIType.u32, FFIType.cstring], returns: FFIType.ptr },
-  manga_scanlate_chapter: { args: [FFIType.u64, FFIType.u32, FFIType.cstring], returns: FFIType.ptr },
+  manga_scanlate_databook: {
+    args: [FFIType.u64, FFIType.u32, FFIType.cstring],
+    returns: FFIType.ptr,
+  },
+  manga_scanlate_chapter: {
+    args: [FFIType.u64, FFIType.u32, FFIType.cstring],
+    returns: FFIType.ptr,
+  },
   manga_string_free: { args: [FFIType.ptr], returns: FFIType.void },
 } as const;
 
@@ -55,16 +64,24 @@ export function cstr(text: string): Uint8Array {
 export function resolveNativeLibraryPath(): string | undefined {
   const override = process.env.SHENRON_FFI_LIB;
   if (override) {
-    if (!existsSync(override)) throw new Error(`SHENRON_FFI_LIB points to a missing file: ${override}`);
+    if (!existsSync(override))
+      throw new Error(`SHENRON_FFI_LIB points to a missing file: ${override}`);
     return resolve(override);
   }
   const file = `${process.platform === "win32" ? "" : "lib"}shenron_ffi.${suffix}`;
   const packageRoot = join(import.meta.dir, "..");
-  const candidates = [join(packageRoot, "native", `${process.platform}-${process.arch}`, file), join(packageRoot, "native", file)];
+  const candidates = [
+    join(packageRoot, "native", `${process.platform}-${process.arch}`, file),
+    join(packageRoot, "native", file),
+  ];
   if (process.env.SHENRON_FFI_DEV === "1") {
     const repoRoot = join(packageRoot, "..", "..");
     const configured = process.env.CARGO_TARGET_DIR;
-    const target = configured ? (isAbsolute(configured) ? configured : resolve(repoRoot, configured)) : join(repoRoot, "target");
+    const target = configured
+      ? isAbsolute(configured)
+        ? configured
+        : resolve(repoRoot, configured)
+      : join(repoRoot, "target");
     for (const profile of ["release", "debug"]) candidates.push(join(target, profile, file));
   }
   return candidates.find(existsSync);
@@ -75,7 +92,9 @@ export function loadLib(): NativeLibrary {
   if (library) return library;
   const path = resolveNativeLibraryPath();
   if (!path)
-    throw new Error("shenron-ffi native library not found; set SHENRON_FFI_LIB or SHENRON_FFI_DEV=1 for a local build");
+    throw new Error(
+      "shenron-ffi native library not found; set SHENRON_FFI_LIB or SHENRON_FFI_DEV=1 for a local build",
+    );
   let loaded: NativeLibrary;
   try {
     loaded = dlopen(path, SYMBOLS);
@@ -166,19 +185,30 @@ export function shenronRun(args: string[]): number {
 /** Run a Shenron command and capture stdout and stderr without spawning a process. */
 export function shenronRunCaptured(args: string[]): CapturedResult {
   validateCliArgs(args);
-  return parseCapturedResult(readOwnedString(loadLib().symbols.shenron_run_captured(cstr(JSON.stringify(args)))), "Shenron");
+  return parseCapturedResult(
+    readOwnedString(loadLib().symbols.shenron_run_captured(cstr(JSON.stringify(args)))),
+    "Shenron",
+  );
 }
 
 /** Search Shenron RAG; the returned JSON carries the CLI code, stdout and stderr. */
 export function shenronRagSearch(query: string, limit = 10, kind?: string): CapturedResult {
-  if (!Number.isInteger(limit) || limit < 1) throw new RangeError("RAG limit must be a positive integer");
-  const pointer = loadLib().symbols.shenron_rag_search(cstr(query), limit, kind === undefined ? null : cstr(kind));
+  if (!Number.isInteger(limit) || limit < 1)
+    throw new RangeError("RAG limit must be a positive integer");
+  const pointer = loadLib().symbols.shenron_rag_search(
+    cstr(query),
+    limit,
+    kind === undefined ? null : cstr(kind),
+  );
   return parseCapturedResult(readOwnedString(pointer), "Shenron RAG search");
 }
 
 /** Read Shenron RAG statistics; the returned JSON carries code/stdout/stderr. */
 export function shenronRagStats(): CapturedResult {
-  return parseCapturedResult(readOwnedString(loadLib().symbols.shenron_rag_stats()), "Shenron RAG stats");
+  return parseCapturedResult(
+    readOwnedString(loadLib().symbols.shenron_rag_stats()),
+    "Shenron RAG stats",
+  );
 }
 
 /** Chunk Markdown with the Shenron-parity chunker of the Aphrody RAG core. */
@@ -187,17 +217,23 @@ export function shenronRagChunk(
   maxChars = 1400,
   overlapPct = 0.15,
 ): Array<{ content: string; section: string }> {
-  if (!Number.isInteger(maxChars) || maxChars < 1) throw new RangeError("maxChars must be positive");
+  if (!Number.isInteger(maxChars) || maxChars < 1)
+    throw new RangeError("maxChars must be positive");
   if (!Number.isFinite(overlapPct) || overlapPct < 0 || overlapPct > 1)
     throw new RangeError("overlapPct must be between zero and one");
-  const result = JSON.parse(readOwnedString(loadLib().symbols.shenron_rag_chunk(cstr(markdown), maxChars, overlapPct))) as unknown;
+  const result = JSON.parse(
+    readOwnedString(loadLib().symbols.shenron_rag_chunk(cstr(markdown), maxChars, overlapPct)),
+  ) as unknown;
   if (!Array.isArray(result)) throw new Error("Shenron RAG chunker returned an invalid response");
   return result as Array<{ content: string; section: string }>;
 }
 
 /** Read sanitized Shenron authentication status; secret values are never returned. */
 export function shenronAuthStatus(): CapturedResult {
-  return parseCapturedResult(readOwnedString(loadLib().symbols.shenron_auth_status()), "Shenron auth status");
+  return parseCapturedResult(
+    readOwnedString(loadLib().symbols.shenron_auth_status()),
+    "Shenron auth status",
+  );
 }
 
 /** Read the canonical local Shenron persona prompt. */
@@ -209,5 +245,8 @@ export function shenronPersonaPrompt(): string {
 
 /** Ask the Shenron persona; result carries code/stdout/stderr. */
 export function shenronPersonaAsk(question: string): CapturedResult {
-  return parseCapturedResult(readOwnedString(loadLib().symbols.shenron_persona_ask(cstr(question))), "Shenron persona");
+  return parseCapturedResult(
+    readOwnedString(loadLib().symbols.shenron_persona_ask(cstr(question))),
+    "Shenron persona",
+  );
 }

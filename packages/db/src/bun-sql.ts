@@ -20,22 +20,22 @@ export type ShenronFullBunDb = BunSQLDatabase<FullSchema>;
 export const DEFAULT_MAX_LIFETIME_SECONDS = 1800;
 
 export interface BunSqlOptions extends PgClientOptions {
-	/** Default 1800 s. */
-	maxLifetimeSeconds?: number;
+  /** Default 1800 s. */
+  maxLifetimeSeconds?: number;
 }
 
 /** Bun.SQL constructor options derived from {@link BunSqlOptions} (no connection). */
 export function bunSqlOptions(options: BunSqlOptions) {
-	const resolved = resolvePgClientOptions(options);
-	return {
-		url: resolved.url,
-		max: resolved.max,
-		idleTimeout: resolved.idleTimeoutSeconds,
-		connectionTimeout: resolved.connectTimeoutSeconds,
-		maxLifetime: options.maxLifetimeSeconds ?? DEFAULT_MAX_LIFETIME_SECONDS,
-		prepare: resolved.prepare,
-		connection: { application_name: resolved.applicationName },
-	};
+  const resolved = resolvePgClientOptions(options);
+  return {
+    url: resolved.url,
+    max: resolved.max,
+    idleTimeout: resolved.idleTimeoutSeconds,
+    connectionTimeout: resolved.connectTimeoutSeconds,
+    maxLifetime: options.maxLifetimeSeconds ?? DEFAULT_MAX_LIFETIME_SECONDS,
+    prepare: resolved.prepare,
+    connection: { application_name: resolved.applicationName },
+  };
 }
 
 /**
@@ -43,27 +43,27 @@ export function bunSqlOptions(options: BunSqlOptions) {
  * every option explicit; TLS stays with the URL (historical contract).
  */
 export function createBunSql(options: BunSqlOptions): SQL {
-	const { url, ...rest } = bunSqlOptions(options);
-	return createSql(url, { ...rest, tls: "inherit" });
+  const { url, ...rest } = bunSqlOptions(options);
+  return createSql(url, { ...rest, tls: "inherit" });
 }
 
 export interface CreateBunDbOptions extends Partial<BunSqlOptions> {
-	schema?: "public" | "full";
+  schema?: "public" | "full";
 }
 
 export function createBunDb(options: CreateBunDbOptions & { schema: "full" }): {
-	db: ShenronFullBunDb;
-	client: SQL;
+  db: ShenronFullBunDb;
+  client: SQL;
 };
 export function createBunDb(options?: CreateBunDbOptions): { db: ShenronBunDb; client: SQL };
 export function createBunDb(options: CreateBunDbOptions = {}): {
-	db: ShenronBunDb | ShenronFullBunDb;
-	client: SQL;
+  db: ShenronBunDb | ShenronFullBunDb;
+  client: SQL;
 } {
-	const client = createBunSql({
-		...options,
-		applicationName: options.applicationName ?? "shenron-bun",
-	});
-	if (options.schema === "full") return { db: drizzle({ client, schema: fullSchema }), client };
-	return { db: drizzle({ client, schema }), client };
+  const client = createBunSql({
+    ...options,
+    applicationName: options.applicationName ?? "shenron-bun",
+  });
+  if (options.schema === "full") return { db: drizzle({ client, schema: fullSchema }), client };
+  return { db: drizzle({ client, schema }), client };
 }

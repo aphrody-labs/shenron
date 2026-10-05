@@ -9,29 +9,29 @@ import { PROMPT_VERSION } from "./prompts";
 
 /** Full chunk text by hit id (bot: `rag_chunks` SQLite; Aphrody: `hit.content`). */
 export interface ChunkContentPort {
-	contentFor(hitIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
+  contentFor(hitIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
 }
 
 export interface HistoryTurn {
-	role: "user" | "assistant";
-	content: string;
+  role: "user" | "assistant";
+  content: string;
 }
 
 /** Conversation memory per session (bot: Redis list). */
 export interface HistoryPort {
-	load(sessionId: string, turns: number): Promise<readonly HistoryTurn[]>;
-	append(sessionId: string, turn: { q: string; a: string }): Promise<void>;
+  load(sessionId: string, turns: number): Promise<readonly HistoryTurn[]>;
+  append(sessionId: string, turn: { q: string; a: string }): Promise<void>;
 }
 
 /** Semantic answer cache; `scope` already binds model, prompt version, persona and evidence. */
 export interface SemanticCachePort {
-	lookup(scope: string, question: string): Promise<string | null>;
-	store(scope: string, question: string, answer: string): Promise<void>;
+  lookup(scope: string, question: string): Promise<string | null>;
+  store(scope: string, question: string, answer: string): Promise<void>;
 }
 
 /** Concurrency gate; resolves `"busy"` when no slot is available. */
 export interface ConcurrencyPort {
-	run<T>(fn: () => Promise<T>): Promise<T | "busy">;
+  run<T>(fn: () => Promise<T>): Promise<T | "busy">;
 }
 
 const encoder = new TextEncoder();
@@ -42,13 +42,13 @@ const encoder = new TextEncoder();
  * (new `PROMPT_VERSION`) therefore never reuses a cached answer (B7).
  */
 export async function semanticCacheScope(
-	modelId: string,
-	context: string,
-	promptVersion: string = PROMPT_VERSION
+  modelId: string,
+  context: string,
+  promptVersion: string = PROMPT_VERSION,
 ): Promise<string> {
-	const data = encoder.encode(`${modelId}\u0000${promptVersion}\u0000${context}`);
-	const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", data));
-	let hex = "";
-	for (const byte of digest) hex += byte.toString(16).padStart(2, "0");
-	return hex.slice(0, 24);
+  const data = encoder.encode(`${modelId}\u0000${promptVersion}\u0000${context}`);
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", data));
+  let hex = "";
+  for (const byte of digest) hex += byte.toString(16).padStart(2, "0");
+  return hex.slice(0, 24);
 }

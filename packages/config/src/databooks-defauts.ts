@@ -39,7 +39,7 @@ const HAN = /[一-鿿]/;
  * leurs légendes, sans acquitter un simple titre court ambigu.
  */
 const CHINOIS_TRADITIONNEL_FORTS =
-	/[們嗎與傳發為這來國臺萬專業廣畫學書圖貼冊卷歐戰關號總從經裏體實變戰擊頭稱參數組織極歡樂駕滅敵聽處讓對]/u;
+  /[們嗎與傳發為這來國臺萬專業廣畫學書圖貼冊卷歐戰關號總從經裏體實變戰擊頭稱參數組織極歡樂駕滅敵聽處讓對]/u;
 /**
  * Segment de 4 à 40 signes répété au moins trois fois d'affilée — le segment
  * devant compter au moins DEUX signes distincts. Une file d'un même caractère
@@ -66,14 +66,14 @@ export const contientAlphabetEtranger = (texte: string): boolean => ETRANGER.tes
  * avec le japonais ne suffit jamais à lever le signal.
  */
 export const estChinoisTraditionnel = (texte: string): boolean => {
-	if (!HAN.test(texte) || KANA.test(texte)) return false;
-	const graphies = new Set(Array.from(texte).filter((c) => CHINOIS_TRADITIONNEL_FORTS.test(c)));
-	return graphies.size >= 1 && Array.from(texte).length >= 20;
+  if (!HAN.test(texte) || KANA.test(texte)) return false;
+  const graphies = new Set(Array.from(texte).filter((c) => CHINOIS_TRADITIONNEL_FORTS.test(c)));
+  return graphies.size >= 1 && Array.from(texte).length >= 20;
 };
 
 /** Idéogrammes sans un seul kana : du chinois inventé sur une page japonaise. */
 export const estHanSansKana = (texte: string): boolean =>
-	HAN.test(texte) && !KANA.test(texte) && !estChinoisTraditionnel(texte);
+  HAN.test(texte) && !KANA.test(texte) && !estChinoisTraditionnel(texte);
 /**
  * Séparateur de tableau markdown (`|---|---|---|`) : c'est une répétition
  * LÉGITIME, et la seule que produise une transcription correcte. Sans ce
@@ -93,32 +93,32 @@ const MOTIF_PONCTUATION = /^[\s・･、。…‥ー—–\-~～]+$/u;
  * où la boucle du modèle reste réellement discriminante.
  */
 function motifDeMiseEnPage(motif: string): boolean {
-	if (MOTIF_PONCTUATION.test(motif)) return true;
-	if (motif.trim() === "次Pへ") return true;
-	const lignes = motif
-		.split("\n")
-		.map((ligne) => ligne.trim())
-		.filter(Boolean);
-	return lignes.length >= 2 && lignes.every((ligne) => Array.from(ligne).length <= 15);
+  if (MOTIF_PONCTUATION.test(motif)) return true;
+  if (motif.trim() === "次Pへ") return true;
+  const lignes = motif
+    .split("\n")
+    .map((ligne) => ligne.trim())
+    .filter(Boolean);
+  return lignes.length >= 2 && lignes.every((ligne) => Array.from(ligne).length <= 15);
 }
 
 /** Le modèle a bouclé : un même segment rendu en rafale. */
 export const contientBoucle = (texte: string): boolean => {
-	const sansTableau = texte.replace(SEPARATEUR_TABLEAU, "");
-	const monosigne = BOUCLE_MONOSIGNE.exec(sansTableau);
-	if (monosigne && /[\p{L}\p{N}]/u.test(monosigne[1]!)) return true;
-	BOUCLE.lastIndex = 0;
-	for (let m = BOUCLE.exec(sansTableau); m; m = BOUCLE.exec(sansTableau)) {
-		const motif = m[1];
-		if (!motif) continue;
-		// Un motif fait d'un seul signe répété est une mise en page, pas une
-		// boucle — on continue de chercher au lieu de conclure.
-		if (!/^(.)\1*$/s.test(motif) && !motifDeMiseEnPage(motif)) {
-			BOUCLE.lastIndex = 0;
-			return true;
-		}
-	}
-	return false;
+  const sansTableau = texte.replace(SEPARATEUR_TABLEAU, "");
+  const monosigne = BOUCLE_MONOSIGNE.exec(sansTableau);
+  if (monosigne && /[\p{L}\p{N}]/u.test(monosigne[1]!)) return true;
+  BOUCLE.lastIndex = 0;
+  for (let m = BOUCLE.exec(sansTableau); m; m = BOUCLE.exec(sansTableau)) {
+    const motif = m[1];
+    if (!motif) continue;
+    // Un motif fait d'un seul signe répété est une mise en page, pas une
+    // boucle — on continue de chercher au lieu de conclure.
+    if (!/^(.)\1*$/s.test(motif) && !motifDeMiseEnPage(motif)) {
+      BOUCLE.lastIndex = 0;
+      return true;
+    }
+  }
+  return false;
 };
 /** Signes que le modèle n'a pas su lire (U+FFFD). */
 export const compteRemplacements = (texte: string): number => (texte.match(/�/g) ?? []).length;
@@ -128,13 +128,13 @@ export const SEUIL_COURT = 15;
 
 /** Le défaut d'un texte, ou `null` s'il ne porte aucune signature d'échec. */
 export function classerDefaut(texte: string): Defaut | null {
-	if (texte === "") return "vide";
-	if (texte.includes("�")) return "remplacement";
-	if (contientAlphabetEtranger(texte)) return "etranger";
-	if (estHanSansKana(texte)) return "han-sans-kana";
-	if (contientBoucle(texte)) return "boucle";
-	if (texte.length < SEUIL_COURT) return "courte";
-	return null;
+  if (texte === "") return "vide";
+  if (texte.includes("�")) return "remplacement";
+  if (contientAlphabetEtranger(texte)) return "etranger";
+  if (estHanSansKana(texte)) return "han-sans-kana";
+  if (contientBoucle(texte)) return "boucle";
+  if (texte.length < SEUIL_COURT) return "courte";
+  return null;
 }
 
 /**
@@ -146,25 +146,25 @@ export function classerDefaut(texte: string): Defaut | null {
  * toujours une sortie qui a abandonné en route.
  */
 export function noteQualite(texte: string): number {
-	const defaut = classerDefaut(texte);
-	const rang: Record<Defaut, number> = {
-		vide: 0,
-		remplacement: 1,
-		boucle: 1,
-		"han-sans-kana": 2,
-		etranger: 2,
-		courte: 3,
-	};
-	const base = defaut === null ? 10 : rang[defaut];
-	// La longueur ne départage qu'à l'intérieur d'un même rang (facteur borné).
-	return base * 1_000_000 + Math.min(texte.length, 999_999);
+  const defaut = classerDefaut(texte);
+  const rang: Record<Defaut, number> = {
+    vide: 0,
+    remplacement: 1,
+    boucle: 1,
+    "han-sans-kana": 2,
+    etranger: 2,
+    courte: 3,
+  };
+  const base = defaut === null ? 10 : rang[defaut];
+  // La longueur ne départage qu'à l'intérieur d'un même rang (facteur borné).
+  return base * 1_000_000 + Math.min(texte.length, 999_999);
 }
 
 /** Nombre de signes fautifs — sert à trier « le pire d'abord » dans la file. */
 export function gravite(texte: string, defaut: Defaut): number {
-	if (defaut === "remplacement") return compteRemplacements(texte);
-	if (defaut === "etranger") return (texte.match(/[Ѐ-ӿ؀-ۿ฀-๿가-힯]/g) ?? []).length;
-	return 1;
+  if (defaut === "remplacement") return compteRemplacements(texte);
+  if (defaut === "etranger") return (texte.match(/[Ѐ-ӿ؀-ۿ฀-๿가-힯]/g) ?? []).length;
+  return 1;
 }
 
 /**
@@ -186,8 +186,8 @@ export const CLE_VERIFIEE = "verifiee";
 
 /** Cette planche a-t-elle été acquittée à la main par un relecteur ? */
 export function estPlancheVerifiee(planche: unknown): boolean {
-	if (!planche || typeof planche !== "object") return false;
-	return (planche as Record<string, unknown>)[CLE_VERIFIEE] === true;
+  if (!planche || typeof planche !== "object") return false;
+  return (planche as Record<string, unknown>)[CLE_VERIFIEE] === true;
 }
 
 /**
@@ -200,7 +200,7 @@ export function estPlancheVerifiee(planche: unknown): boolean {
  * voir.
  */
 export function defautDePlanche(planche: unknown, texte: string): Defaut | null {
-	const defaut = classerDefaut(texte);
-	if (defaut === "vide") return defaut;
-	return estPlancheVerifiee(planche) ? null : defaut;
+  const defaut = classerDefaut(texte);
+  if (defaut === "vide") return defaut;
+  return estPlancheVerifiee(planche) ? null : defaut;
 }

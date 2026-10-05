@@ -5,39 +5,39 @@ import { AphrodyTranslateService } from "../aphrody/translate";
 import { AphrodyFramesClient } from "../aphrody/frames";
 import { AphrodyWikiService } from "../aphrody/wiki";
 import {
-	AnimesamaSearchResultSchema,
-	AnimesamaAnimeInfoSchema,
-	AnimesamaSeasonEpisodesSchema,
-	type AnimesamaSearchResult,
-	type AnimesamaAnimeInfo,
-	type AnimesamaSeasonEpisodes,
-	type AnimesamaGetEpisodesOptions,
-	VoiranimeSearchResultSchema,
-	VoiranimeAnimeInfoSchema,
-	VoiranimeResolvedSourceSchema,
-	type VoiranimeSearchResult,
-	type VoiranimeAnimeInfo,
-	type VoiranimeResolvedSource,
-	type WikiSearchResult,
-	type WikiPageDossier,
-	type TranslationResult,
-	type TranslateOptions,
-	DbcnVolumeItemSchema,
-	DbcnVolumeInfoSchema,
-	DbcnSinglePageViewSchema,
-	type DbcnCatalogCategory,
-	type DbcnVolumeItem,
-	type DbcnVolumeInfo,
-	type DbcnSinglePageView,
-	BxcSearchOutputSchema,
-	BxcVectorOutputSchema,
-	BxcFramesStatsSchema,
-	type BxcSearchOutput,
-	type BxcVectorOutput,
-	type BxcFramesStats,
-	type PlayerEmbed,
-	type FrameMatch,
-	type BxcSpawnOptions,
+  AnimesamaSearchResultSchema,
+  AnimesamaAnimeInfoSchema,
+  AnimesamaSeasonEpisodesSchema,
+  type AnimesamaSearchResult,
+  type AnimesamaAnimeInfo,
+  type AnimesamaSeasonEpisodes,
+  type AnimesamaGetEpisodesOptions,
+  VoiranimeSearchResultSchema,
+  VoiranimeAnimeInfoSchema,
+  VoiranimeResolvedSourceSchema,
+  type VoiranimeSearchResult,
+  type VoiranimeAnimeInfo,
+  type VoiranimeResolvedSource,
+  type WikiSearchResult,
+  type WikiPageDossier,
+  type TranslationResult,
+  type TranslateOptions,
+  DbcnVolumeItemSchema,
+  DbcnVolumeInfoSchema,
+  DbcnSinglePageViewSchema,
+  type DbcnCatalogCategory,
+  type DbcnVolumeItem,
+  type DbcnVolumeInfo,
+  type DbcnSinglePageView,
+  BxcSearchOutputSchema,
+  BxcVectorOutputSchema,
+  BxcFramesStatsSchema,
+  type BxcSearchOutput,
+  type BxcVectorOutput,
+  type BxcFramesStats,
+  type PlayerEmbed,
+  type FrameMatch,
+  type BxcSpawnOptions,
 } from "./types";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
@@ -84,7 +84,7 @@ export class AnimesamaService {
   async getEpisodes(
     slug: string,
     opts: AnimesamaGetEpisodesOptions = {},
-    options?: BxcSpawnOptions
+    options?: BxcSpawnOptions,
   ): Promise<AnimesamaSeasonEpisodes> {
     const trimmed = slug.trim();
     if (!trimmed) throw new Error("Anime slug is required");
@@ -92,15 +92,7 @@ export class AnimesamaService {
     const season = opts.season || "saison1";
     const lang = opts.lang || "vostfr";
 
-    const args = [
-      "animesama",
-      "episodes",
-      trimmed,
-      "--season",
-      season,
-      "--lang",
-      lang,
-    ];
+    const args = ["animesama", "episodes", trimmed, "--season", season, "--lang", lang];
 
     if (opts.profile) {
       args.push("--profile", opts.profile);
@@ -200,7 +192,12 @@ export class WikiService {
     if (!trimmed) throw new Error("Wiki URL is required");
 
     const timeoutMs = options?.timeoutMs ?? this.defaultOptions.timeoutMs;
-    return new AphrodyWikiService({ ...(timeoutMs === undefined ? {} : { timeoutMs }), ...(options?.aphrodyBin ?? this.defaultOptions.aphrodyBin ? { bin: options?.aphrodyBin ?? this.defaultOptions.aphrodyBin } : {}) }).markdown(trimmed);
+    return new AphrodyWikiService({
+      ...(timeoutMs === undefined ? {} : { timeoutMs }),
+      ...((options?.aphrodyBin ?? this.defaultOptions.aphrodyBin)
+        ? { bin: options?.aphrodyBin ?? this.defaultOptions.aphrodyBin }
+        : {}),
+    }).markdown(trimmed);
   }
 
   /**
@@ -218,7 +215,7 @@ export class WikiService {
     wikiUrl: string,
     query: string,
     limit = 20,
-    options?: BxcSpawnOptions
+    options?: BxcSpawnOptions,
   ): Promise<WikiSearchResult[]> {
     const trimmedUrl = wikiUrl.trim();
     const trimmedQuery = query.trim();
@@ -226,7 +223,12 @@ export class WikiService {
     if (!trimmedQuery) return [];
 
     const timeoutMs = options?.timeoutMs ?? this.defaultOptions.timeoutMs;
-    return new AphrodyWikiService({ ...(timeoutMs === undefined ? {} : { timeoutMs }), ...(options?.aphrodyBin ?? this.defaultOptions.aphrodyBin ? { bin: options?.aphrodyBin ?? this.defaultOptions.aphrodyBin } : {}) }).search(trimmedUrl, trimmedQuery, limit);
+    return new AphrodyWikiService({
+      ...(timeoutMs === undefined ? {} : { timeoutMs }),
+      ...((options?.aphrodyBin ?? this.defaultOptions.aphrodyBin)
+        ? { bin: options?.aphrodyBin ?? this.defaultOptions.aphrodyBin }
+        : {}),
+    }).search(trimmedUrl, trimmedQuery, limit);
   }
 
   /**
@@ -238,7 +240,12 @@ export class WikiService {
     if (!trimmed) throw new Error("Wiki URL is required");
 
     const timeoutMs = options?.timeoutMs ?? this.defaultOptions.timeoutMs;
-    return new AphrodyWikiService({ ...(timeoutMs === undefined ? {} : { timeoutMs }), ...(options?.aphrodyBin ?? this.defaultOptions.aphrodyBin ? { bin: options?.aphrodyBin ?? this.defaultOptions.aphrodyBin } : {}) }).page(trimmed);
+    return new AphrodyWikiService({
+      ...(timeoutMs === undefined ? {} : { timeoutMs }),
+      ...((options?.aphrodyBin ?? this.defaultOptions.aphrodyBin)
+        ? { bin: options?.aphrodyBin ?? this.defaultOptions.aphrodyBin }
+        : {}),
+    }).page(trimmed);
   }
 }
 
@@ -246,9 +253,17 @@ export class WikiService {
 export class GoogleTranslateService {
   private readonly translator: AphrodyTranslateService;
   constructor(defaultOptions: BxcSpawnOptions = {}) {
-    this.translator = new AphrodyTranslateService({ timeoutMs: defaultOptions.timeoutMs, bin: defaultOptions.aphrodyBin });
+    this.translator = new AphrodyTranslateService({
+      timeoutMs: defaultOptions.timeoutMs,
+      bin: defaultOptions.aphrodyBin,
+    });
   }
-  translate(text: string, target = "en", source = "auto", options: Partial<TranslateOptions> & BxcSpawnOptions = {}): Promise<TranslationResult> {
+  translate(
+    text: string,
+    target = "en",
+    source = "auto",
+    options: Partial<TranslateOptions> & BxcSpawnOptions = {},
+  ): Promise<TranslationResult> {
     return this.translator.translate(text, target, source, {
       ...(options.timeoutMs === undefined ? {} : { timeoutMs: options.timeoutMs }),
       ...(options.format === undefined ? {} : { format: options.format }),
@@ -257,80 +272,80 @@ export class GoogleTranslateService {
 }
 
 type SnapshotPage = {
-	n: number;
-	fichier: string;
-	poids: string | null;
-	image_url?: string | null;
-	thumb_url?: string | null;
+  n: number;
+  fichier: string;
+  poids: string | null;
+  image_url?: string | null;
+  thumb_url?: string | null;
 };
 type SnapshotVolume = {
-	did: string;
-	titre: string | null;
-	url_fiche: string;
-	premiere_edition: string | null;
-	couverture: { source_url: string } | null;
+  did: string;
+  titre: string | null;
+  url_fiche: string;
+  premiere_edition: string | null;
+  couverture: { source_url: string } | null;
 };
 type SnapshotCollection = { slug: string; titre: string; ouvrages: SnapshotVolume[] };
 type CatalogueSnapshot = { collections: SnapshotCollection[] };
 
 const CATEGORY_TO_COLLECTION: Record<Exclude<DbcnCatalogCategory, "all">, string> = {
-	full_color: "dragonball_full_color",
-	jp_original: "dragonball_jp_original",
-	zh_cn: "dragonball_zh_cn",
-	zh_hk: "dragonball_zh_hk_ultimate",
-	taiwan: "dragonball_zh_tw",
-	kanzenban: "dragonball_jp_kanzenban",
-	anime_movie: "dragonball_anime_movie",
-	anime_z: "dragonball_anime_z",
-	arale_cn: "arale_cn",
-	arale_jp: "arale_jp_lib",
-	arale_hk: "arale_zh_hk",
+  full_color: "dragonball_full_color",
+  jp_original: "dragonball_jp_original",
+  zh_cn: "dragonball_zh_cn",
+  zh_hk: "dragonball_zh_hk_ultimate",
+  taiwan: "dragonball_zh_tw",
+  kanzenban: "dragonball_jp_kanzenban",
+  anime_movie: "dragonball_anime_movie",
+  anime_z: "dragonball_anime_z",
+  arale_cn: "arale_cn",
+  arale_jp: "arale_jp_lib",
+  arale_hk: "arale_zh_hk",
 };
 
 function snapshotPath(fileName: string): string {
-	const configured = process.env.DRAGONBALLCN_SNAPSHOT_DIR?.trim();
-	if (configured) return resolve(configured, fileName);
+  const configured = process.env.DRAGONBALLCN_SNAPSHOT_DIR?.trim();
+  if (configured) return resolve(configured, fileName);
 
-	const candidates = [
-		resolve(process.cwd(), "apps/bot", fileName),
-		resolve(process.cwd(), "../apps/bot", fileName),
-		// apps/site runs with cwd = apps/site (systemd WorkingDirectory): the bot is a sibling.
-		resolve(process.cwd(), "../bot", fileName),
-	];
-	const existing = candidates.find((candidate) => existsSync(candidate));
-	if (existing) return existing;
-	throw new Error(
-		"DragonBallCN snapshot not found. Set DRAGONBALLCN_SNAPSHOT_DIR to the directory containing assets/dragonballcn and data/catalogues."
-	);
+  const candidates = [
+    resolve(process.cwd(), "apps/bot", fileName),
+    resolve(process.cwd(), "../apps/bot", fileName),
+    // apps/site runs with cwd = apps/site (systemd WorkingDirectory): the bot is a sibling.
+    resolve(process.cwd(), "../bot", fileName),
+  ];
+  const existing = candidates.find((candidate) => existsSync(candidate));
+  if (existing) return existing;
+  throw new Error(
+    "DragonBallCN snapshot not found. Set DRAGONBALLCN_SNAPSHOT_DIR to the directory containing assets/dragonballcn and data/catalogues.",
+  );
 }
 
 async function readSnapshot(): Promise<{
-	catalogue: CatalogueSnapshot;
-	pages: Record<string, SnapshotPage[]>;
+  catalogue: CatalogueSnapshot;
+  pages: Record<string, SnapshotPage[]>;
 }> {
-	const [catalogue, pages] = await Promise.all([
-		Bun.file(snapshotPath("assets/dragonballcn/index.json")).json() as Promise<CatalogueSnapshot>,
-		Bun.file(snapshotPath("data/catalogues/dragonballcn-inventaire.json")).json() as Promise<
-			Record<string, SnapshotPage[]>
-		>,
-	]);
-	return { catalogue, pages };
+  const [catalogue, pages] = await Promise.all([
+    Bun.file(snapshotPath("assets/dragonballcn/index.json")).json() as Promise<CatalogueSnapshot>,
+    Bun.file(snapshotPath("data/catalogues/dragonballcn-inventaire.json")).json() as Promise<
+      Record<string, SnapshotPage[]>
+    >,
+  ]);
+  return { catalogue, pages };
 }
 
 function collectionFor(
-	category: DbcnCatalogCategory,
-	collections: SnapshotCollection[]
+  category: DbcnCatalogCategory,
+  collections: SnapshotCollection[],
 ): SnapshotCollection[] {
-	if (category === "all") return collections;
-	const slug = CATEGORY_TO_COLLECTION[category];
-	return collections.filter((collection) => collection.slug === slug);
+  if (category === "all") return collections;
+  const slug = CATEGORY_TO_COLLECTION[category];
+  return collections.filter((collection) => collection.slug === slug);
 }
 
 function categoryFor(collection: SnapshotCollection): string {
-	return (
-		Object.entries(CATEGORY_TO_COLLECTION).find(([, slug]) => slug === collection.slug)?.[0] ??
-		collection.slug
-	);
+  return (
+    Object.entries(CATEGORY_TO_COLLECTION).find(([, slug]) => slug === collection.slug)?.[0] ??
+    collection.slug
+  );
 }
 
 /**
@@ -343,80 +358,78 @@ function categoryFor(collection: SnapshotCollection): string {
  * the snapshot provides them; otherwise the public fiche URL remains available.
  */
 export class DragonballCnService {
-	
+  async catalog(
+    category: DbcnCatalogCategory = "full_color",
+    _options?: BxcSpawnOptions,
+  ): Promise<DbcnVolumeItem[]> {
+    const { catalogue } = await readSnapshot();
+    return collectionFor(category, catalogue.collections).flatMap((collection) =>
+      collection.ouvrages.map((volume) =>
+        DbcnVolumeItemSchema.parse({
+          id: volume.did,
+          title: volume.titre ?? volume.did,
+          category: categoryFor(collection),
+          categoryTitle: collection.titre,
+          coverUrl: volume.couverture?.source_url,
+          url: volume.url_fiche,
+          date: volume.premiere_edition ?? undefined,
+        }),
+      ),
+    );
+  }
 
-	async catalog(
-		category: DbcnCatalogCategory = "full_color",
-		_options?: BxcSpawnOptions
-	): Promise<DbcnVolumeItem[]> {
-		const { catalogue } = await readSnapshot();
-		return collectionFor(category, catalogue.collections).flatMap((collection) =>
-			collection.ouvrages.map((volume) =>
-				DbcnVolumeItemSchema.parse({
-					id: volume.did,
-					title: volume.titre ?? volume.did,
-					category: categoryFor(collection),
-					categoryTitle: collection.titre,
-					coverUrl: volume.couverture?.source_url,
-					url: volume.url_fiche,
-					date: volume.premiere_edition ?? undefined,
-				})
-			)
-		);
-	}
+  async info(did: string, _options?: BxcSpawnOptions): Promise<DbcnVolumeInfo> {
+    const trimmed = did.trim();
+    if (!trimmed) throw new Error("Volume DID is required (e.g. '0-10-1')");
 
-	async info(did: string, _options?: BxcSpawnOptions): Promise<DbcnVolumeInfo> {
-		const trimmed = did.trim();
-		if (!trimmed) throw new Error("Volume DID is required (e.g. '0-10-1')");
+    const { catalogue, pages } = await readSnapshot();
+    const volume = catalogue.collections
+      .flatMap((collection) => collection.ouvrages)
+      .find((item) => item.did === trimmed);
+    if (!volume)
+      throw new Error(`DragonBallCN volume not found in the versioned snapshot: ${trimmed}`);
 
-		const { catalogue, pages } = await readSnapshot();
-		const volume = catalogue.collections
-			.flatMap((collection) => collection.ouvrages)
-			.find((item) => item.did === trimmed);
-		if (!volume)
-			throw new Error(`DragonBallCN volume not found in the versioned snapshot: ${trimmed}`);
+    const entries = pages[trimmed] ?? [];
+    return DbcnVolumeInfoSchema.parse({
+      id: volume.did,
+      title: volume.titre ?? volume.did,
+      totalPages: entries.length,
+      pages: entries.map((page) => ({
+        pageNumber: page.n,
+        name: page.fichier,
+        size: page.poids ?? undefined,
+        thumbUrl: page.thumb_url ?? "",
+        imageUrl: page.image_url ?? "",
+        pageUrl: volume.url_fiche,
+      })),
+    });
+  }
 
-		const entries = pages[trimmed] ?? [];
-		return DbcnVolumeInfoSchema.parse({
-			id: volume.did,
-			title: volume.titre ?? volume.did,
-			totalPages: entries.length,
-			pages: entries.map((page) => ({
-				pageNumber: page.n,
-				name: page.fichier,
-				size: page.poids ?? undefined,
-				thumbUrl: page.thumb_url ?? "",
-				imageUrl: page.image_url ?? "",
-				pageUrl: volume.url_fiche,
-			})),
-		});
-	}
+  async view(
+    did: string,
+    pageNumber?: number,
+    _options?: BxcSpawnOptions,
+  ): Promise<DbcnVolumeInfo | DbcnSinglePageView> {
+    const volume = await this.info(did);
+    if (pageNumber === undefined) return volume;
+    if (!Number.isInteger(pageNumber) || pageNumber < 1)
+      throw new Error("Page number must be a positive integer");
+    const page = volume.pages.find((item) => item.pageNumber === pageNumber);
+    if (!page) throw new Error(`Page ${pageNumber} not found in DragonBallCN volume ${volume.id}`);
+    return DbcnSinglePageViewSchema.parse(page);
+  }
 
-	async view(
-		did: string,
-		pageNumber?: number,
-		_options?: BxcSpawnOptions
-	): Promise<DbcnVolumeInfo | DbcnSinglePageView> {
-		const volume = await this.info(did);
-		if (pageNumber === undefined) return volume;
-		if (!Number.isInteger(pageNumber) || pageNumber < 1)
-			throw new Error("Page number must be a positive integer");
-		const page = volume.pages.find((item) => item.pageNumber === pageNumber);
-		if (!page) throw new Error(`Page ${pageNumber} not found in DragonBallCN volume ${volume.id}`);
-		return DbcnSinglePageViewSchema.parse(page);
-	}
+  async download(
+    _did: string,
+    _opts: { page?: number; out?: string } = {},
+    _options?: BxcSpawnOptions,
+  ): Promise<string> {
+    throw new Error("No direct DragonBallCN image URL is present in the loaded snapshot.");
+  }
 
-	async download(
-		_did: string,
-		_opts: { page?: number; out?: string } = {},
-		_options?: BxcSpawnOptions
-	): Promise<string> {
-		throw new Error("No direct DragonBallCN image URL is present in the loaded snapshot.");
-	}
-
-	async crawl(_opts: { out?: string } = {}, _options?: BxcSpawnOptions): Promise<DbcnVolumeItem[]> {
-		return this.catalog("all");
-	}
+  async crawl(_opts: { out?: string } = {}, _options?: BxcSpawnOptions): Promise<DbcnVolumeItem[]> {
+    return this.catalog("all");
+  }
 }
 
 export interface FramesSearchOptions {
@@ -441,8 +454,15 @@ export class FramesService {
     return BxcVectorOutputSchema.parse(await this.client(options).vector(imagePath));
   }
 
-  async search(imagePath: string, mode: "--local" | "--remote" = "--local", opts: FramesSearchOptions = {}, options?: BxcSpawnOptions): Promise<BxcSearchOutput> {
-    return BxcSearchOutputSchema.parse(await this.client(options).search(imagePath, { ...opts, mode }));
+  async search(
+    imagePath: string,
+    mode: "--local" | "--remote" = "--local",
+    opts: FramesSearchOptions = {},
+    options?: BxcSpawnOptions,
+  ): Promise<BxcSearchOutput> {
+    return BxcSearchOutputSchema.parse(
+      await this.client(options).search(imagePath, { ...opts, mode }),
+    );
   }
 
   async stats(options?: BxcSpawnOptions): Promise<BxcFramesStats> {
@@ -470,10 +490,7 @@ export class MediaStreamService {
   /**
    * Résout une URL d'embed vidéo (vido, sibnet, sendvid, etc.) vers son flux direct (HLS ou MP4)
    */
-  async resolveEmbed(
-    embedUrl: string,
-    options?: BxcSpawnOptions
-  ): Promise<unknown> {
+  async resolveEmbed(embedUrl: string, options?: BxcSpawnOptions): Promise<unknown> {
     const trimmed = embedUrl.trim();
     if (!trimmed) throw new Error("Embed URL is required");
 
@@ -498,7 +515,9 @@ export class MediaStreamService {
     ]);
     // Both catalogues down (e.g. bxc binary missing) is an outage, not "no match".
     if (asResults.status === "rejected" && vaResults.status === "rejected") {
-      throw asResults.reason instanceof Error ? asResults.reason : new Error(String(asResults.reason));
+      throw asResults.reason instanceof Error
+        ? asResults.reason
+        : new Error(String(asResults.reason));
     }
 
     return {
@@ -511,7 +530,13 @@ export class MediaStreamService {
    * Extrait les lecteurs tiers et les standardise au format PlayerEmbed de nos bases
    */
   normalizePlayers(
-    players: Array<{ name?: string; provider?: string; url?: string; embedUrl?: string; lang?: "vf" | "vostfr" }>
+    players: Array<{
+      name?: string;
+      provider?: string;
+      url?: string;
+      embedUrl?: string;
+      lang?: "vf" | "vostfr";
+    }>,
   ): PlayerEmbed[] {
     return players
       .map((p) => {
@@ -561,10 +586,7 @@ export class BxcDbBridge {
    * Résout directement la liste ordonnée des URLs d'images d'un tome ou chapitre
    * pour alimentation immédiate de la colonne `pages` (jsonb dans Postgres / Neon).
    */
-  async resolveMangaPages(
-    did: string,
-    _options?: { highResOnly?: boolean }
-  ): Promise<string[]> {
+  async resolveMangaPages(did: string, _options?: { highResOnly?: boolean }): Promise<string[]> {
     const volumeInfo: DbcnVolumeInfo = await this.dragonballcn.info(did, this.options);
     if (!volumeInfo.pages || volumeInfo.pages.length === 0) {
       return [];
@@ -578,7 +600,7 @@ export class BxcDbBridge {
    * Construit le payload d'insertion / mise à jour pour `bot.db_manga_chapters`
    */
   async buildChapterPagesPayload(
-    did: string
+    did: string,
   ): Promise<{ pages: string[]; totalPages: number; title: string }> {
     const volumeInfo = await this.dragonballcn.info(did, this.options);
     const pages = volumeInfo.pages.map((p) => p.imageUrl || p.thumbUrl).filter(Boolean);

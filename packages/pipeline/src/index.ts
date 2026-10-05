@@ -5,10 +5,6 @@
  * Délègue l'interface utilisateur native au shell Aphrody.
  */
 
-
-
-
-
 export * from "./bridge/index";
 export * from "./execution";
 export * from "./workflows";

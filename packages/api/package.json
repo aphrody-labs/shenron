@@ -14,22 +14,25 @@
   },
   "scripts": {
     "type-check": "tsc --noEmit",
-    "lint": "oxlint -c ../.oxlintrc.json",
+    "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test --path-ignore-patterns='**/*.live.test.ts'",
     "openapi": "bun scripts/openapi.ts",
     "openapi:check": "bun scripts/openapi.ts --check",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@aphrody/http": "0.1.0",
     "@hono/zod-openapi": "catalog:",
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
     "hono": "catalog:",
-    "zod": "catalog:",
-    "@aphrody/http": "0.1.0"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "drizzle-orm": "catalog:"
+  },
+  "engines": {
+    "bun": ">=1.4.2"
   },
   "shenron": {
     "runtime": {
@@ -40,8 +43,5 @@
       "./next": "server",
       "./openapi.json": "json"
     }
-  },
-  "engines": {
-    "bun": ">=1.4.2"
   }
 }

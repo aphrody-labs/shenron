@@ -11,12 +11,12 @@ export const ZENI_SYMBOL = "Ƶ";
 
 /** `1250` → `1 250 Ƶ` (format fr-FR, espace insécable). */
 export function formatZeni(n: number | null | undefined): string {
-	const v = typeof n === "number" && Number.isFinite(n) ? n : 0;
-	return `${v.toLocaleString("fr-FR")}\u00a0${ZENI_SYMBOL}`;
+  const v = typeof n === "number" && Number.isFinite(n) ? n : 0;
+  return `${v.toLocaleString("fr-FR")}\u00a0${ZENI_SYMBOL}`;
 }
 
 /** Montant signé pour un gain ou une perte : `+100 Ƶ`, `−50 Ƶ`. */
 export function formatZeniDelta(n: number): string {
-	const signe = n > 0 ? "+" : n < 0 ? "−" : "";
-	return `${signe}${formatZeni(Math.abs(n))}`;
+  const signe = n > 0 ? "+" : n < 0 ? "−" : "";
+  return `${signe}${formatZeni(Math.abs(n))}`;
 }

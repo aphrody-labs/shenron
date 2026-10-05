@@ -19,46 +19,55 @@
 import { type EnvSource, envFirst, envString } from "./env";
 
 export const INTERNAL_SERVICE_ENV = {
-	redis: ["REDIS_URL", "VALKEY_URL"],
-	siteInternal: ["SITE_INTERNAL_URL"],
-	libreTranslate: ["LIBRETRANSLATE_URL"],
-	relectureOcr: ["RELECTURE_OCR_URL"],
+  redis: ["REDIS_URL", "VALKEY_URL"],
+  siteInternal: ["SITE_INTERNAL_URL"],
+  libreTranslate: ["LIBRETRANSLATE_URL"],
+  relectureOcr: ["RELECTURE_OCR_URL"],
 } as const satisfies Record<string, readonly string[]>;
 
 export const DEFAULT_INTERNAL_SERVICES = {
-	redis: "redis://127.0.0.1:6379",
-	siteInternal: "http://127.0.0.1:5011",
-	botApiHost: "127.0.0.1",
-	botApiPort: 5006,
-	libreTranslate: "http://127.0.0.1:5000",
-	relectureOcr: "http://127.0.0.1:8791",
+  redis: "redis://127.0.0.1:6379",
+  siteInternal: "http://127.0.0.1:5011",
+  botApiHost: "127.0.0.1",
+  botApiPort: 5006,
+  libreTranslate: "http://127.0.0.1:5000",
+  relectureOcr: "http://127.0.0.1:8791",
 } as const;
 
 const trimSlash = (u: string): string => u.replace(/\/+$/, "");
 
 /** Redis/Valkey connection URL. */
 export function resolveRedisUrl(env: EnvSource): string {
-	return envFirst(env, INTERNAL_SERVICE_ENV.redis)?.value ?? DEFAULT_INTERNAL_SERVICES.redis;
+  return envFirst(env, INTERNAL_SERVICE_ENV.redis)?.value ?? DEFAULT_INTERNAL_SERVICES.redis;
 }
 
 /** Internal site origin (bot → site calls), without trailing slash. */
 export function resolveSiteInternalUrl(env: EnvSource): string {
-	return trimSlash(envFirst(env, INTERNAL_SERVICE_ENV.siteInternal)?.value ?? DEFAULT_INTERNAL_SERVICES.siteInternal);
+  return trimSlash(
+    envFirst(env, INTERNAL_SERVICE_ENV.siteInternal)?.value ??
+      DEFAULT_INTERNAL_SERVICES.siteInternal,
+  );
 }
 
 /** Internal bot API origin, built from the same `API_HOST`/`API_PORT` as its bind. */
 export function resolveBotApiInternalUrl(env: EnvSource): string {
-	const host = envString(env, "API_HOST") ?? DEFAULT_INTERNAL_SERVICES.botApiHost;
-	const port = envString(env, "API_PORT") ?? String(DEFAULT_INTERNAL_SERVICES.botApiPort);
-	return `http://${host.includes(":") && !host.startsWith("[") ? `[${host}]` : host}:${port}`;
+  const host = envString(env, "API_HOST") ?? DEFAULT_INTERNAL_SERVICES.botApiHost;
+  const port = envString(env, "API_PORT") ?? String(DEFAULT_INTERNAL_SERVICES.botApiPort);
+  return `http://${host.includes(":") && !host.startsWith("[") ? `[${host}]` : host}:${port}`;
 }
 
 /** LibreTranslate origin, without trailing slash. */
 export function resolveLibreTranslateUrl(env: EnvSource): string {
-	return trimSlash(envFirst(env, INTERNAL_SERVICE_ENV.libreTranslate)?.value ?? DEFAULT_INTERNAL_SERVICES.libreTranslate);
+  return trimSlash(
+    envFirst(env, INTERNAL_SERVICE_ENV.libreTranslate)?.value ??
+      DEFAULT_INTERNAL_SERVICES.libreTranslate,
+  );
 }
 
 /** Relecture OCR sidecar origin, without trailing slash. */
 export function resolveRelectureOcrUrl(env: EnvSource): string {
-	return trimSlash(envFirst(env, INTERNAL_SERVICE_ENV.relectureOcr)?.value ?? DEFAULT_INTERNAL_SERVICES.relectureOcr);
+  return trimSlash(
+    envFirst(env, INTERNAL_SERVICE_ENV.relectureOcr)?.value ??
+      DEFAULT_INTERNAL_SERVICES.relectureOcr,
+  );
 }

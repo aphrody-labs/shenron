@@ -15,20 +15,20 @@ export const DISCORD_PROVIDER_ID = "discord";
 
 /** Query builder, exposed for `.toSQL()` inspection. */
 export function discordAccountQuery(db: AnyDb, baUserId: string) {
-	return db
-		.select({ accountId: baAccount.accountId })
-		.from(baAccount)
-		.where(and(eq(baAccount.userId, baUserId), eq(baAccount.providerId, DISCORD_PROVIDER_ID)))
-		.limit(1);
+  return db
+    .select({ accountId: baAccount.accountId })
+    .from(baAccount)
+    .where(and(eq(baAccount.userId, baUserId), eq(baAccount.providerId, DISCORD_PROVIDER_ID)))
+    .limit(1);
 }
 
 export function createDiscordAccountLookup(db: AnyDb) {
-	return {
-		async discordIdForUser(baUserId: string): Promise<string | null> {
-			const [row] = await discordAccountQuery(db, baUserId);
-			return row?.accountId || null;
-		},
-	};
+  return {
+    async discordIdForUser(baUserId: string): Promise<string | null> {
+      const [row] = await discordAccountQuery(db, baUserId);
+      return row?.accountId || null;
+    },
+  };
 }
 
 export type DiscordAccountLookupRepository = ReturnType<typeof createDiscordAccountLookup>;

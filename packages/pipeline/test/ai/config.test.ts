@@ -110,7 +110,9 @@ describe("resolveAiConfig", () => {
   test("a direct embed URL never selects a transport: Aphrody only", () => {
     const cfg = ok({ APHRODY_AI_EMBED_BASE_URL: `${E5}/` });
     expect(cfg.embed).toBeNull();
-    expect(cfg.disabled.find((d) => d.capability === "embed")?.reason).toContain("APHRODY_AI_HTTP_URL");
+    expect(cfg.disabled.find((d) => d.capability === "embed")?.reason).toContain(
+      "APHRODY_AI_HTTP_URL",
+    );
     // An invalid direct URL is ignored, not an issue.
     expect(resolveAiConfig({ APHRODY_AI_EMBED_BASE_URL: E5_ORIGIN }).ok).toBe(true);
     const both = ok({

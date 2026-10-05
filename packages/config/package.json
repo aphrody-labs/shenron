@@ -31,7 +31,7 @@
   },
   "scripts": {
     "type-check": "tsc --noEmit",
-    "lint": "oxlint -c ../.oxlintrc.json",
+    "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

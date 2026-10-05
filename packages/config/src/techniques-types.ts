@@ -15,11 +15,11 @@
 
 /** Libellés français des slots de compétence Xenoverse 2. */
 export const LIBELLES_TYPE: Record<string, string> = {
-	super: "Attaques spéciales",
-	ultimate: "Attaques ultimes",
-	evasive: "Esquives et déplacements",
-	awoken: "Éveils et transformations",
-	Autre: "Non classées",
+  super: "Attaques spéciales",
+  ultimate: "Attaques ultimes",
+  evasive: "Esquives et déplacements",
+  awoken: "Éveils et transformations",
+  Autre: "Non classées",
 };
 
 /**
@@ -30,15 +30,15 @@ export const LIBELLES_TYPE: Record<string, string> = {
  * leur inventerait une provenance.
  */
 export function libelleType(type: string | null | undefined): string {
-	const t = type?.trim();
-	if (!t) return "Capacité";
-	return LIBELLES_TYPE[t] ?? t;
+  const t = type?.trim();
+  if (!t) return "Capacité";
+  return LIBELLES_TYPE[t] ?? t;
 }
 
 /** Vrai si la valeur vient bien du classement de jeu (et non d'une saisie libre). */
 export function estTypeDeJeu(type: string | null | undefined): boolean {
-	const t = type?.trim();
-	return !!t && t !== "Autre" && t in LIBELLES_TYPE;
+  const t = type?.trim();
+  return !!t && t !== "Autre" && t in LIBELLES_TYPE;
 }
 
 /**
@@ -47,4 +47,4 @@ export function estTypeDeJeu(type: string | null | undefined): boolean {
  * pour la même réserve donnent l'impression que l'une des deux est facultative.
  */
 export const NOTE_PROVENANCE =
-	"Ce classement reprend les catégories de compétence des jeux Xenoverse 2, pas une taxonomie de l'œuvre.";
+  "Ce classement reprend les catégories de compétence des jeux Xenoverse 2, pas une taxonomie de l'œuvre.";

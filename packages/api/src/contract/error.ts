@@ -8,17 +8,17 @@
 import { z } from "zod";
 
 export const ApiErrorCode = z
-	.enum([
-		"not_found",
-		"invalid_request",
-		"rate_limited",
-		"unauthenticated",
-		"forbidden",
-		"pg_unavailable",
-		"upstream_unavailable",
-		"internal",
-	])
-	.meta({ id: "ApiErrorCode" });
+  .enum([
+    "not_found",
+    "invalid_request",
+    "rate_limited",
+    "unauthenticated",
+    "forbidden",
+    "pg_unavailable",
+    "upstream_unavailable",
+    "internal",
+  ])
+  .meta({ id: "ApiErrorCode" });
 
 export type ApiErrorCode = z.infer<typeof ApiErrorCode>;
 
@@ -27,11 +27,11 @@ export type ApiErrorCode = z.infer<typeof ApiErrorCode>;
  * `{ "error": "Not found" }` returned by the bot and the site today.
  */
 export const ErrorEnvelope = z
-	.object({
-		error: z.string(),
-		code: ApiErrorCode.optional(),
-		message: z.string().optional(),
-	})
-	.meta({ id: "ErrorEnvelope" });
+  .object({
+    error: z.string(),
+    code: ApiErrorCode.optional(),
+    message: z.string().optional(),
+  })
+  .meta({ id: "ErrorEnvelope" });
 
 export type ErrorEnvelope = z.infer<typeof ErrorEnvelope>;

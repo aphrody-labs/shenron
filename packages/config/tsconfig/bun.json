@@ -1,6 +1,6 @@
 {
-	"extends": "./base.json",
-	"compilerOptions": {
-		"types": ["bun"]
-	}
+  "extends": "./base.json",
+  "compilerOptions": {
+    "types": ["bun"]
+  }
 }

@@ -25,8 +25,8 @@ import postgres from "postgres";
 
 const PG_URL = process.env.DATABASE_URL;
 if (!PG_URL) {
-	console.error("✗ DATABASE_URL (PostgreSQL local) requis.");
-	process.exit(1);
+  console.error("✗ DATABASE_URL (PostgreSQL local) requis.");
+  process.exit(1);
 }
 const DRY = process.argv.includes("--dry-run");
 
@@ -47,132 +47,132 @@ const isImg = (f: string) => /\.(webp|jpe?g|png)$/i.test(f);
  * manque (défensif). Retourne le nombre de tomes réécrits.
  */
 async function reconstructDbRegularVolumes(): Promise<number> {
-	const regularRoot = join(MANGA_ROOT, "DB", "regular");
-	let volDirs: string[] = [];
-	try {
-		volDirs = (await readdir(regularRoot, { withFileTypes: true }))
-			.filter((d) => d.isDirectory() && /^vol\d+$/.test(d.name))
-			.map((d) => d.name);
-	} catch {
-		return 0; // pas de dossier regular → rien à faire
-	}
+  const regularRoot = join(MANGA_ROOT, "DB", "regular");
+  let volDirs: string[] = [];
+  try {
+    volDirs = (await readdir(regularRoot, { withFileTypes: true }))
+      .filter((d) => d.isDirectory() && /^vol\d+$/.test(d.name))
+      .map((d) => d.name);
+  } catch {
+    return 0; // pas de dossier regular → rien à faire
+  }
 
-	// volume_number → id des 42 tomes canoniques « Dragon Ball Vol. N ».
-	const vols = await sql<{ id: number | string; volume_number: number | string }[]>`
+  // volume_number → id des 42 tomes canoniques « Dragon Ball Vol. N ».
+  const vols = await sql<{ id: number | string; volume_number: number | string }[]>`
 		SELECT id, volume_number FROM bot.db_manga_volumes WHERE title LIKE 'Dragon Ball Vol. %'`;
-	const volIdByNum = new Map(vols.map((v) => [Number(v.volume_number), Number(v.id)]));
+  const volIdByNum = new Map(vols.map((v) => [Number(v.volume_number), Number(v.id)]));
 
-	let written = 0;
-	for (const dir of volDirs.toSorted((a, b) => Number(a.slice(3)) - Number(b.slice(3)))) {
-		const n = Number(dir.slice(3));
-		const volId = volIdByNum.get(n);
-		if (!volId) {
-			console.warn(
-				`! regular/vol${n} sur disque mais pas de « Dragon Ball Vol. ${n} » en base — skip`
-			);
-			continue;
-		}
-		const files = (await readdir(join(regularRoot, dir)))
-			.filter(isImg)
-			.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-		if (files.length === 0) continue;
-		const pages = files.map((f) => `./assets/manga/DB/regular/${dir}/${f}`);
+  let written = 0;
+  for (const dir of volDirs.toSorted((a, b) => Number(a.slice(3)) - Number(b.slice(3)))) {
+    const n = Number(dir.slice(3));
+    const volId = volIdByNum.get(n);
+    if (!volId) {
+      console.warn(
+        `! regular/vol${n} sur disque mais pas de « Dragon Ball Vol. ${n} » en base — skip`,
+      );
+      continue;
+    }
+    const files = (await readdir(join(regularRoot, dir)))
+      .filter(isImg)
+      .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    if (files.length === 0) continue;
+    const pages = files.map((f) => `./assets/manga/DB/regular/${dir}/${f}`);
 
-		if (!DRY) {
-			// UPDATE du chapitre « Tome N » existant ; sinon INSERT (modèle ingest).
-			const upd = await sql`
+    if (!DRY) {
+      // UPDATE du chapitre « Tome N » existant ; sinon INSERT (modèle ingest).
+      const upd = await sql`
 				UPDATE bot.db_manga_chapters
 				SET pages = ${sql.json(pages)}, cover = COALESCE(cover, ${pages[0]})
 				WHERE series = 'DB' AND volume_id = ${volId} AND title = ${`Tome ${n}`}`;
-			if (upd.count === 0) {
-				await sql`
+      if (upd.count === 0) {
+        await sql`
 					INSERT INTO bot.db_manga_chapters (series, chapter_number, title, cover, pages, volume_id)
 					VALUES ('DB', ${n}, ${`Tome ${n}`}, ${pages[0]}, ${sql.json(pages)}, ${volId})`;
-			}
-		}
-		written++;
-		if (written <= 3 || written % 10 === 0) {
-			console.log(`${DRY ? "·" : "✓"} Tome ${n} (vol_id ${volId}) → ${pages.length} pages`);
-		}
-	}
-	console.log(`${written} tomes DB (regular/vol) réécrits`);
-	return written;
+      }
+    }
+    written++;
+    if (written <= 3 || written % 10 === 0) {
+      console.log(`${DRY ? "·" : "✓"} Tome ${n} (vol_id ${volId}) → ${pages.length} pages`);
+    }
+  }
+  console.log(`${written} tomes DB (regular/vol) réécrits`);
+  return written;
 }
 
 async function main() {
-	// Chapitres connus en base (id → series) pour ne réécrire que les ids valides.
-	// NB: postgres-js rend les colonnes bigint en STRING → coercer en Number pour
-	// que la lookup par id numérique (parsé du nom de dossier `ch<id>`) matche.
-	const chapters = await sql<{ id: number | string; series: string }[]>`
+  // Chapitres connus en base (id → series) pour ne réécrire que les ids valides.
+  // NB: postgres-js rend les colonnes bigint en STRING → coercer en Number pour
+  // que la lookup par id numérique (parsé du nom de dossier `ch<id>`) matche.
+  const chapters = await sql<{ id: number | string; series: string }[]>`
 		SELECT id, series FROM bot.db_manga_chapters`;
-	const seriesById = new Map(chapters.map((c) => [Number(c.id), c.series]));
+  const seriesById = new Map(chapters.map((c) => [Number(c.id), c.series]));
 
-	// Parcours du disque : assets/manga/<SERIES>/ch<id>/*.webp
-	let seriesDirs: string[] = [];
-	try {
-		seriesDirs = (await readdir(MANGA_ROOT, { withFileTypes: true }))
-			.filter((d) => d.isDirectory() && d.name !== "transcripts")
-			.map((d) => d.name);
-	} catch (e) {
-		console.error(`✗ ${MANGA_ROOT} illisible: ${(e as Error).message}`);
-		process.exit(1);
-	}
+  // Parcours du disque : assets/manga/<SERIES>/ch<id>/*.webp
+  let seriesDirs: string[] = [];
+  try {
+    seriesDirs = (await readdir(MANGA_ROOT, { withFileTypes: true }))
+      .filter((d) => d.isDirectory() && d.name !== "transcripts")
+      .map((d) => d.name);
+  } catch (e) {
+    console.error(`✗ ${MANGA_ROOT} illisible: ${(e as Error).message}`);
+    process.exit(1);
+  }
 
-	let written = 0;
-	let skippedUnknown = 0;
-	let totalPages = 0;
+  let written = 0;
+  let skippedUnknown = 0;
+  let totalPages = 0;
 
-	for (const series of seriesDirs) {
-		const seriesDir = join(MANGA_ROOT, series);
-		const chDirs = (await readdir(seriesDir, { withFileTypes: true }))
-			.filter((d) => d.isDirectory() && /^ch\d+$/.test(d.name))
-			.map((d) => d.name);
+  for (const series of seriesDirs) {
+    const seriesDir = join(MANGA_ROOT, series);
+    const chDirs = (await readdir(seriesDir, { withFileTypes: true }))
+      .filter((d) => d.isDirectory() && /^ch\d+$/.test(d.name))
+      .map((d) => d.name);
 
-		for (const chName of chDirs) {
-			const chId = Number(chName.slice(2));
-			const files = (await readdir(join(seriesDir, chName)))
-				.filter(isImg)
-				.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-			if (files.length === 0) continue;
+    for (const chName of chDirs) {
+      const chId = Number(chName.slice(2));
+      const files = (await readdir(join(seriesDir, chName)))
+        .filter(isImg)
+        .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      if (files.length === 0) continue;
 
-			const dbSeries = seriesById.get(chId);
-			if (dbSeries === undefined) {
-				skippedUnknown++;
-				console.warn(`! ch${chId} (${series}) sur disque mais absent de la base — skip`);
-				continue;
-			}
-			// Le chemin utilise la série du dossier disque (= ce qu'a écrit selfhost).
-			const pages = files.map((f) => `./assets/manga/${series}/${chName}/${f}`);
-			totalPages += pages.length;
+      const dbSeries = seriesById.get(chId);
+      if (dbSeries === undefined) {
+        skippedUnknown++;
+        console.warn(`! ch${chId} (${series}) sur disque mais absent de la base — skip`);
+        continue;
+      }
+      // Le chemin utilise la série du dossier disque (= ce qu'a écrit selfhost).
+      const pages = files.map((f) => `./assets/manga/${series}/${chName}/${f}`);
+      totalPages += pages.length;
 
-			if (!DRY) {
-				await sql`UPDATE bot.db_manga_chapters SET pages = ${sql.json(pages)} WHERE id = ${chId}`;
-			}
-			written++;
-			if (written <= 5 || written % 25 === 0) {
-				console.log(`${DRY ? "·" : "✓"} ch${chId} (${series}) → ${pages.length} pages`);
-			}
-		}
-	}
+      if (!DRY) {
+        await sql`UPDATE bot.db_manga_chapters SET pages = ${sql.json(pages)} WHERE id = ${chId}`;
+      }
+      written++;
+      if (written <= 5 || written % 25 === 0) {
+        console.log(`${DRY ? "·" : "✓"} ch${chId} (${series}) → ${pages.length} pages`);
+      }
+    }
+  }
 
-	// Pass 2 — Dragon Ball original (42 tomes, modèle un-chapitre-par-volume).
-	const tomes = await reconstructDbRegularVolumes();
+  // Pass 2 — Dragon Ball original (42 tomes, modèle un-chapitre-par-volume).
+  const tomes = await reconstructDbRegularVolumes();
 
-	const [{ withpages }] = await sql`
+  const [{ withpages }] = await sql`
 		SELECT count(*)::int AS withpages FROM bot.db_manga_chapters
 		WHERE pages IS NOT NULL AND jsonb_array_length(pages) > 0`;
-	void tomes;
+  void tomes;
 
-	console.log(
-		`\n${written} chapitres réécrits · ${totalPages} pages · ${skippedUnknown} dossiers inconnus`
-	);
-	console.log(`base : ${withpages} chapitres avec pages non vides${DRY ? " (avant dry-run)" : ""}`);
+  console.log(
+    `\n${written} chapitres réécrits · ${totalPages} pages · ${skippedUnknown} dossiers inconnus`,
+  );
+  console.log(`base : ${withpages} chapitres avec pages non vides${DRY ? " (avant dry-run)" : ""}`);
 
-	await sql.end();
-	console.log(`✓ Reconstruction manga pages depuis disque${DRY ? " (dry-run)" : ""} terminée.`);
+  await sql.end();
+  console.log(`✓ Reconstruction manga pages depuis disque${DRY ? " (dry-run)" : ""} terminée.`);
 }
 
 main().catch((e) => {
-	console.error(e);
-	process.exit(1);
+  console.error(e);
+  process.exit(1);
 });

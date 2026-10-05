@@ -15,64 +15,64 @@ import { type EnvSource, resolveDatabaseUrl } from "./config";
 export { lastAssignment };
 
 export type DatabaseUrlSource =
-	| { kind: "env"; name: string }
-	| { kind: "file"; path: string; varName: string };
+  | { kind: "env"; name: string }
+  | { kind: "file"; path: string; varName: string };
 
 export type LoadDatabaseUrlResult =
-	| { ok: true; url: string; source: DatabaseUrlSource }
-	| { ok: false; reason: string };
+  | { ok: true; url: string; source: DatabaseUrlSource }
+  | { ok: false; reason: string };
 
 export interface LoadDatabaseUrlOptions {
-	env?: EnvSource;
-	/** Variable names tried in order. Default `["DATABASE_URL"]`. */
-	varNames?: readonly string[];
-	/** Dotenv-style files tried in order after the environment. */
-	fallbackFiles?: readonly { path: string; varName?: string }[];
+  env?: EnvSource;
+  /** Variable names tried in order. Default `["DATABASE_URL"]`. */
+  varNames?: readonly string[];
+  /** Dotenv-style files tried in order after the environment. */
+  fallbackFiles?: readonly { path: string; varName?: string }[];
 }
 
 function validate(raw: string): string | null {
-	try {
-		return resolveDatabaseUrl(raw);
-	} catch {
-		return null;
-	}
+  try {
+    return resolveDatabaseUrl(raw);
+  } catch {
+    return null;
+  }
 }
 
 export function loadDatabaseUrl(options: LoadDatabaseUrlOptions = {}): LoadDatabaseUrlResult {
-	const env = options.env ?? process.env;
-	const varNames = options.varNames?.length ? options.varNames : ["DATABASE_URL"];
-	const rejected: string[] = [];
+  const env = options.env ?? process.env;
+  const varNames = options.varNames?.length ? options.varNames : ["DATABASE_URL"];
+  const rejected: string[] = [];
 
-	for (const name of varNames) {
-		const raw = env[name];
-		if (raw === undefined || raw.trim() === "") continue;
-		const url = validate(raw);
-		if (url) return { ok: true, url, source: { kind: "env", name } };
-		rejected.push(`env ${name} invalide`);
-	}
+  for (const name of varNames) {
+    const raw = env[name];
+    if (raw === undefined || raw.trim() === "") continue;
+    const url = validate(raw);
+    if (url) return { ok: true, url, source: { kind: "env", name } };
+    rejected.push(`env ${name} invalide`);
+  }
 
-	for (const file of options.fallbackFiles ?? []) {
-		let text: string;
-		try {
-			text = readFileSync(file.path, "utf8");
-		} catch {
-			continue; // missing or unreadable file: ignored
-		}
-		const names = file.varName ? [file.varName] : varNames;
-		for (const varName of names) {
-			const raw = lastAssignment(text, varName);
-			if (raw === undefined || raw === "") continue;
-			const url = validate(raw);
-			if (url) return { ok: true, url, source: { kind: "file", path: file.path, varName } };
-			rejected.push(`${file.path}:${varName} invalide`);
-		}
-	}
+  for (const file of options.fallbackFiles ?? []) {
+    let text: string;
+    try {
+      text = readFileSync(file.path, "utf8");
+    } catch {
+      continue; // missing or unreadable file: ignored
+    }
+    const names = file.varName ? [file.varName] : varNames;
+    for (const varName of names) {
+      const raw = lastAssignment(text, varName);
+      if (raw === undefined || raw === "") continue;
+      const url = validate(raw);
+      if (url) return { ok: true, url, source: { kind: "file", path: file.path, varName } };
+      rejected.push(`${file.path}:${varName} invalide`);
+    }
+  }
 
-	const tried = varNames.join(", ");
-	return {
-		ok: false,
-		reason: rejected.length
-			? `URL PostgreSQL invalide (${rejected.join("; ")}) : une URL postgres:// est requise.`
-			: `Aucune URL PostgreSQL trouvée (${tried}).`,
-	};
+  const tried = varNames.join(", ");
+  return {
+    ok: false,
+    reason: rejected.length
+      ? `URL PostgreSQL invalide (${rejected.join("; ")}) : une URL postgres:// est requise.`
+      : `Aucune URL PostgreSQL trouvée (${tried}).`,
+  };
 }

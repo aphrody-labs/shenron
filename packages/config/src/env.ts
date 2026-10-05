@@ -17,9 +17,9 @@ export type EnvSource = Readonly<Record<string, string | undefined>>;
 
 /** Problem found while reading the environment. Never carries a value. */
 export interface EnvIssue {
-	readonly name: string;
-	readonly problem: "missing" | "invalid" | "mismatch" | "deprecated";
-	readonly hint?: string;
+  readonly name: string;
+  readonly problem: "missing" | "invalid" | "mismatch" | "deprecated";
+  readonly hint?: string;
 }
 
 /** Values that shell interpolation accidents produce and that mean "unset". */
@@ -30,27 +30,27 @@ const UNSET_LITERALS = new Set(["", "undefined", "null"]);
  * or holds the literal strings `"undefined"` / `"null"`.
  */
 export function envString(env: EnvSource, name: string): string | undefined {
-	const raw = env[name];
-	if (typeof raw !== "string") return undefined;
-	const value = raw.trim();
-	return UNSET_LITERALS.has(value) ? undefined : value;
+  const raw = env[name];
+  if (typeof raw !== "string") return undefined;
+  const value = raw.trim();
+  return UNSET_LITERALS.has(value) ? undefined : value;
 }
 
 /** First variable of `names` that holds a usable value (see {@link envString}). */
 export function envFirst(
-	env: EnvSource,
-	names: readonly string[]
+  env: EnvSource,
+  names: readonly string[],
 ): { name: string; value: string } | undefined {
-	for (const name of names) {
-		const value = envString(env, name);
-		if (value !== undefined) return { name, value };
-	}
-	return undefined;
+  for (const name of names) {
+    const value = envString(env, name);
+    if (value !== undefined) return { name, value };
+  }
+  return undefined;
 }
 
 /** `true` only when `NODE_ENV` is exactly `production` (after trimming). */
 export function isProduction(env: EnvSource): boolean {
-	return envString(env, "NODE_ENV") === "production";
+  return envString(env, "NODE_ENV") === "production";
 }
 
 /**
@@ -58,10 +58,10 @@ export function isProduction(env: EnvSource): boolean {
  * first name of each tuple is the canonical one.
  */
 export const ENV_ALIASES = {
-	adminToken: ["SHENRON_ADMIN_TOKEN", "API_ADMIN_TOKEN"],
-	actingUserSecret: ["SHENRON_USER_SECRET", "API_USER_SECRET"],
-	coordDir: ["A2A_COORD_DIR", "COORD_DIR"],
-	ragGold: ["RAG_GOLD_PATH", "RAG_GOLD"],
+  adminToken: ["SHENRON_ADMIN_TOKEN", "API_ADMIN_TOKEN"],
+  actingUserSecret: ["SHENRON_USER_SECRET", "API_USER_SECRET"],
+  coordDir: ["A2A_COORD_DIR", "COORD_DIR"],
+  ragGold: ["RAG_GOLD_PATH", "RAG_GOLD"],
 } as const satisfies Record<string, readonly [string, string]>;
 
 /**
@@ -69,27 +69,27 @@ export const ENV_ALIASES = {
  * values, `null` otherwise. The issue names the variables, never the values.
  */
 export function checkAlias(env: EnvSource, names: readonly string[]): EnvIssue | null {
-	const set: { name: string; value: string }[] = [];
-	for (const name of names) {
-		const value = envString(env, name);
-		if (value !== undefined) set.push({ name, value });
-	}
-	const first = set[0];
-	if (!first) return null;
-	const other = set.find((entry) => entry.value !== first.value);
-	if (!other) return null;
-	return {
-		name: first.name,
-		problem: "mismatch",
-		hint: `${first.name} and ${other.name} are both set with different values; set one value for ${names.join(", ")}`,
-	};
+  const set: { name: string; value: string }[] = [];
+  for (const name of names) {
+    const value = envString(env, name);
+    if (value !== undefined) set.push({ name, value });
+  }
+  const first = set[0];
+  if (!first) return null;
+  const other = set.find((entry) => entry.value !== first.value);
+  if (!other) return null;
+  return {
+    name: first.name,
+    problem: "mismatch",
+    hint: `${first.name} and ${other.name} are both set with different values; set one value for ${names.join(", ")}`,
+  };
 }
 
 /** Minimal view of a zod issue: only the fields this module reads. */
 interface ZodIssueLike {
-	readonly code: string;
-	readonly path: readonly PropertyKey[];
-	readonly message: string;
+  readonly code: string;
+  readonly path: readonly PropertyKey[];
+  readonly message: string;
 }
 
 /**
@@ -97,12 +97,12 @@ interface ZodIssueLike {
  * characters are not scrubbed: they cannot be secrets and would shred hints.
  */
 function scrub(text: string, secrets: readonly string[]): string {
-	let out = text;
-	for (const secret of secrets) {
-		if (secret.length < 3) continue;
-		out = out.split(secret).join("[redacted]");
-	}
-	return out;
+  let out = text;
+  for (const secret of secrets) {
+    if (secret.length < 3) continue;
+    out = out.split(secret).join("[redacted]");
+  }
+  return out;
 }
 
 /**
@@ -111,30 +111,30 @@ function scrub(text: string, secrets: readonly string[]): string {
  * one (defaults and `.optional()` apply). Issues carry variable names only.
  */
 export function parseEnv<S extends z.ZodType>(
-	schema: S,
-	env: EnvSource
+  schema: S,
+  env: EnvSource,
 ): { ok: true; value: z.infer<S> } | { ok: false; issues: readonly EnvIssue[] } {
-	const normalised: Record<string, string | undefined> = {};
-	for (const name of Object.keys(env)) {
-		const value = envString(env, name);
-		if (value !== undefined) normalised[name] = value;
-	}
-	const result = schema.safeParse(normalised);
-	if (result.success) return { ok: true, value: result.data as z.infer<S> };
+  const normalised: Record<string, string | undefined> = {};
+  for (const name of Object.keys(env)) {
+    const value = envString(env, name);
+    if (value !== undefined) normalised[name] = value;
+  }
+  const result = schema.safeParse(normalised);
+  if (result.success) return { ok: true, value: result.data as z.infer<S> };
 
-	const issues: EnvIssue[] = [];
-	const seen = new Set<string>();
-	for (const issue of result.error.issues as readonly ZodIssueLike[]) {
-		const head = issue.path[0];
-		const name = typeof head === "string" ? head : head === undefined ? "(root)" : String(head);
-		const raw = typeof head === "string" ? env[head] : undefined;
-		const secrets = typeof raw === "string" ? [raw, raw.trim()] : [];
-		const missing = typeof head === "string" && normalised[head] === undefined;
-		const problem: EnvIssue["problem"] = missing ? "missing" : "invalid";
-		const key = `${name}\u0000${problem}`;
-		if (seen.has(key)) continue;
-		seen.add(key);
-		issues.push({ name, problem, hint: scrub(issue.message, secrets) });
-	}
-	return { ok: false, issues };
+  const issues: EnvIssue[] = [];
+  const seen = new Set<string>();
+  for (const issue of result.error.issues as readonly ZodIssueLike[]) {
+    const head = issue.path[0];
+    const name = typeof head === "string" ? head : head === undefined ? "(root)" : String(head);
+    const raw = typeof head === "string" ? env[head] : undefined;
+    const secrets = typeof raw === "string" ? [raw, raw.trim()] : [];
+    const missing = typeof head === "string" && normalised[head] === undefined;
+    const problem: EnvIssue["problem"] = missing ? "missing" : "invalid";
+    const key = `${name}\u0000${problem}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    issues.push({ name, problem, hint: scrub(issue.message, secrets) });
+  }
+  return { ok: false, issues };
 }

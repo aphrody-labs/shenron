@@ -27,7 +27,7 @@
   },
   "scripts": {
     "type-check": "tsc --noEmit",
-    "lint": "oxlint -c ../.oxlintrc.json",
+    "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test",
     "audit:migrations": "bun scripts/migration-audit.ts --check",
     "typecheck": "tsc -p tsconfig.json --noEmit"
@@ -35,9 +35,12 @@
   "dependencies": {
     "@aphrody/sql": "0.1.0",
     "@paralleldrive/cuid2": "catalog:",
+    "@shenron/config": "workspace:*",
     "drizzle-orm": "catalog:",
-    "postgres": "catalog:",
-    "@shenron/config": "workspace:*"
+    "postgres": "catalog:"
+  },
+  "engines": {
+    "bun": ">=1.4.2"
   },
   "shenron": {
     "runtime": {
@@ -60,8 +63,5 @@
       "./guards": "server",
       "./redis": "bun"
     }
-  },
-  "engines": {
-    "bun": ">=1.4.2"
   }
 }

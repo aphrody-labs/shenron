@@ -43,16 +43,16 @@ const CIBLES = args.filter((a) => !a.startsWith("--"));
 const SOURCES = Object.keys(PG_SOURCES);
 
 if (LISTE || (CIBLES.length === 0 && !TOUTES && !REPARER)) {
-	console.log(`Sources resynchronisables :\n  ${SOURCES.join("\n  ")}`);
-	console.log(
-		"\n  --toutes pour synchroniser toutes les sources · --reparer pour forcer une passe complète · --appliquer pour écrire · --report=PATH pour un rapport JSON\n"
-	);
-	process.exit(LISTE ? 0 : 1);
+  console.log(`Sources resynchronisables :\n  ${SOURCES.join("\n  ")}`);
+  console.log(
+    "\n  --toutes pour synchroniser toutes les sources · --reparer pour forcer une passe complète · --appliquer pour écrire · --report=PATH pour un rapport JSON\n",
+  );
+  process.exit(LISTE ? 0 : 1);
 }
 const inconnues = CIBLES.filter((c) => !SOURCES.includes(c));
 if (inconnues.length > 0) {
-	console.error(`✗ Source inconnue : ${inconnues.join(", ")}. Connues : ${SOURCES.join(", ")}.`);
-	process.exit(1);
+  console.error(`✗ Source inconnue : ${inconnues.join(", ")}. Connues : ${SOURCES.join(", ")}.`);
+  process.exit(1);
 }
 
 // Embeddings et index : uniquement Aphrody (/api/v1/shenron/rag/ingest puis /rag/sync/finish).

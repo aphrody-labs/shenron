@@ -6,16 +6,16 @@
  */
 
 export interface RecordedCall {
-	method: string;
-	url: string;
-	headers: Headers;
-	body: string | null;
+  method: string;
+  url: string;
+  headers: Headers;
+  body: string | null;
 }
 
 export type RecordingRouteHandler = (req: Request) => Response | Promise<Response>;
 
 function abortReason(signal: AbortSignal): unknown {
-	return signal.reason ?? new DOMException("The operation was aborted.", "AbortError");
+  return signal.reason ?? new DOMException("The operation was aborted.", "AbortError");
 }
 
 /**
@@ -24,21 +24,21 @@ function abortReason(signal: AbortSignal): unknown {
  * without the method, then the catch-all `"*"`. The URL keys ignore the hash.
  */
 function routeKeys(request: Request): string[] {
-	const url = new URL(request.url);
-	url.hash = "";
-	const full = url.href;
-	const originPath = `${url.origin}${url.pathname}`;
-	const path = url.pathname;
-	const method = request.method.toUpperCase();
-	return [
-		`${method} ${full}`,
-		`${method} ${originPath}`,
-		`${method} ${path}`,
-		full,
-		originPath,
-		path,
-		"*",
-	];
+  const url = new URL(request.url);
+  url.hash = "";
+  const full = url.href;
+  const originPath = `${url.origin}${url.pathname}`;
+  const path = url.pathname;
+  const method = request.method.toUpperCase();
+  return [
+    `${method} ${full}`,
+    `${method} ${originPath}`,
+    `${method} ${path}`,
+    full,
+    originPath,
+    path,
+    "*",
+  ];
 }
 
 /**
@@ -53,50 +53,50 @@ function routeKeys(request: Request): string[] {
  * its reason, before or while the handler runs.
  */
 export function createRecordingFetch(routes: Record<string, RecordingRouteHandler>): {
-	fetch: typeof fetch;
-	calls: RecordedCall[];
+  fetch: typeof fetch;
+  calls: RecordedCall[];
 } {
-	const calls: RecordedCall[] = [];
+  const calls: RecordedCall[] = [];
 
-	const recordingFetch = async (
-		input: string | URL | Request,
-		init?: RequestInit
-	): Promise<Response> => {
-		const request = new Request(input, init);
-		const body = request.body === null ? null : await request.clone().text();
-		calls.push({
-			method: request.method.toUpperCase(),
-			url: request.url,
-			headers: new Headers(request.headers),
-			body,
-		});
-		if (request.signal.aborted) throw abortReason(request.signal);
+  const recordingFetch = async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request = new Request(input, init);
+    const body = request.body === null ? null : await request.clone().text();
+    calls.push({
+      method: request.method.toUpperCase(),
+      url: request.url,
+      headers: new Headers(request.headers),
+      body,
+    });
+    if (request.signal.aborted) throw abortReason(request.signal);
 
-		const key = routeKeys(request).find((candidate) => Object.hasOwn(routes, candidate));
-		const handler = key === undefined ? undefined : routes[key];
-		if (!handler) {
-			throw new TypeError(
-				`createRecordingFetch: no route for ${request.method.toUpperCase()} ${request.url}`
-			);
-		}
+    const key = routeKeys(request).find((candidate) => Object.hasOwn(routes, candidate));
+    const handler = key === undefined ? undefined : routes[key];
+    if (!handler) {
+      throw new TypeError(
+        `createRecordingFetch: no route for ${request.method.toUpperCase()} ${request.url}`,
+      );
+    }
 
-		const signal = request.signal;
-		let onAbort: (() => void) | undefined;
-		const aborted = new Promise<never>((_, reject) => {
-			onAbort = () => reject(abortReason(signal));
-			signal.addEventListener("abort", onAbort, { once: true });
-		});
-		try {
-			return await Promise.race([Promise.resolve(handler(request)), aborted]);
-		} finally {
-			if (onAbort) signal.removeEventListener("abort", onAbort);
-		}
-	};
+    const signal = request.signal;
+    let onAbort: (() => void) | undefined;
+    const aborted = new Promise<never>((_, reject) => {
+      onAbort = () => reject(abortReason(signal));
+      signal.addEventListener("abort", onAbort, { once: true });
+    });
+    try {
+      return await Promise.race([Promise.resolve(handler(request)), aborted]);
+    } finally {
+      if (onAbort) signal.removeEventListener("abort", onAbort);
+    }
+  };
 
-	const fetchLike = Object.assign(recordingFetch, {
-		preconnect(_url: string | URL, _options?: unknown): void {
-			/* nothing to warm up: no network is involved */
-		},
-	});
-	return { fetch: fetchLike as unknown as typeof fetch, calls };
+  const fetchLike = Object.assign(recordingFetch, {
+    preconnect(_url: string | URL, _options?: unknown): void {
+      /* nothing to warm up: no network is involved */
+    },
+  });
+  return { fetch: fetchLike as unknown as typeof fetch, calls };
 }

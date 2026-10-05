@@ -127,13 +127,25 @@ export type VoiranimeResolvedSource = z.infer<typeof VoiranimeResolvedSourceSche
 // 3. MEDIAWIKI SCHEMAS & TYPES
 // ==========================================
 
-export { WikiSectionSchema, WikiSearchResultSchema, WikiPageDossierSchema, type WikiSection, type WikiSearchResult, type WikiPageDossier } from "../aphrody/wiki";
+export {
+  WikiSectionSchema,
+  WikiSearchResultSchema,
+  WikiPageDossierSchema,
+  type WikiSection,
+  type WikiSearchResult,
+  type WikiPageDossier,
+} from "../aphrody/wiki";
 
 // ==========================================
 // 4. GOOGLE TRANSLATE SCHEMAS & TYPES
 // ==========================================
 
-export { TranslateOptionsSchema, TranslationResultSchema, type TranslateOptions, type TranslationResult } from "../aphrody/translate";
+export {
+  TranslateOptionsSchema,
+  TranslationResultSchema,
+  type TranslateOptions,
+  type TranslationResult,
+} from "../aphrody/translate";
 
 // ==========================================
 // 5. DRAGONBALLCN SCHEMAS & TYPES
@@ -307,4 +319,3 @@ export interface BxcSpawnOptions {
   retries?: number;
   retryDelayMs?: number;
 }
-

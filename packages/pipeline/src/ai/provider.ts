@@ -19,28 +19,28 @@ export type ShenronLanguageModelId = "chat" | "chat-flash-lite" | "chat-pro";
 export type ShenronEmbeddingModelId = "e5-query" | "e5-passage";
 
 export function createShenronProvider(
-	cfg: Pick<AiConfig, "chatModel" | "embed">,
-	deps: { compute: AphrodyCompute | null; fetch?: typeof fetch }
+  cfg: Pick<AiConfig, "chatModel" | "embed">,
+  deps: { compute: AphrodyCompute | null; fetch?: typeof fetch },
 ) {
-	const languageModels: Partial<Record<ShenronLanguageModelId, LanguageModelV4>> = {};
-	if (deps.compute) {
-		languageModels.chat = createAphrodyChatModel(deps.compute, { modelId: cfg.chatModel });
-		languageModels["chat-flash-lite"] = createAphrodyChatModel(deps.compute, {
-			modelId: "gemini-web/flash-lite",
-		});
-		languageModels["chat-pro"] = createAphrodyChatModel(deps.compute, {
-			modelId: "gemini-web/pro",
-		});
-	}
-	const embeddingModels: Partial<Record<ShenronEmbeddingModelId, EmbeddingModelV4>> = {};
-	const query = selectEmbeddingModel(cfg, "query", deps);
-	const passage = selectEmbeddingModel(cfg, "passage", deps);
-	if (query) embeddingModels["e5-query"] = query;
-	if (passage) embeddingModels["e5-passage"] = passage;
-	return customProvider({
-		languageModels: languageModels as Record<string, LanguageModelV4>,
-		embeddingModels: embeddingModels as Record<string, EmbeddingModelV4>,
-	});
+  const languageModels: Partial<Record<ShenronLanguageModelId, LanguageModelV4>> = {};
+  if (deps.compute) {
+    languageModels.chat = createAphrodyChatModel(deps.compute, { modelId: cfg.chatModel });
+    languageModels["chat-flash-lite"] = createAphrodyChatModel(deps.compute, {
+      modelId: "gemini-web/flash-lite",
+    });
+    languageModels["chat-pro"] = createAphrodyChatModel(deps.compute, {
+      modelId: "gemini-web/pro",
+    });
+  }
+  const embeddingModels: Partial<Record<ShenronEmbeddingModelId, EmbeddingModelV4>> = {};
+  const query = selectEmbeddingModel(cfg, "query", deps);
+  const passage = selectEmbeddingModel(cfg, "passage", deps);
+  if (query) embeddingModels["e5-query"] = query;
+  if (passage) embeddingModels["e5-passage"] = passage;
+  return customProvider({
+    languageModels: languageModels as Record<string, LanguageModelV4>,
+    embeddingModels: embeddingModels as Record<string, EmbeddingModelV4>,
+  });
 }
 
 export type ShenronProvider = ReturnType<typeof createShenronProvider>;
@@ -50,16 +50,16 @@ export type ShenronProvider = ReturnType<typeof createShenronProvider>;
  * into {@link createShenronProvider}: Aphrody does not expose such a route yet.
  */
 export function createOpenAICompatibleChat(o: {
-	baseUrl: URL;
-	token: string;
-	modelId: string;
-	fetch?: typeof fetch;
+  baseUrl: URL;
+  token: string;
+  modelId: string;
+  fetch?: typeof fetch;
 }): LanguageModelV4 {
-	const provider = createOpenAICompatible({
-		name: "aphrody-openai",
-		baseURL: o.baseUrl.href.replace(/\/+$/, ""),
-		apiKey: o.token,
-		...(o.fetch ? { fetch: o.fetch } : {}),
-	});
-	return provider.chatModel(o.modelId);
+  const provider = createOpenAICompatible({
+    name: "aphrody-openai",
+    baseURL: o.baseUrl.href.replace(/\/+$/, ""),
+    apiKey: o.token,
+    ...(o.fetch ? { fetch: o.fetch } : {}),
+  });
+  return provider.chatModel(o.modelId);
 }

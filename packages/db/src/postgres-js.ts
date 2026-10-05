@@ -12,14 +12,14 @@ export type ShenronFullDb = PostgresJsDatabase<FullSchema>;
 
 /** Legacy options of the root `createDb` (kept byte-compatible). */
 export interface CreateDbOptions extends PgClientOptions {
-	/** Defaults to `process.env.DATABASE_URL`. */
-	url?: string;
-	/** Defaults to `process.env.DATABASE_POOL_MAX` (capped). */
-	max?: number;
-	/** `application_name` reported to PostgreSQL (pg_stat_activity). */
-	applicationName: string;
-	/** Relational schema given to Drizzle: `public` (default) or `full` (public + bot). */
-	schema?: "public" | "full";
+  /** Defaults to `process.env.DATABASE_URL`. */
+  url?: string;
+  /** Defaults to `process.env.DATABASE_POOL_MAX` (capped). */
+  max?: number;
+  /** `application_name` reported to PostgreSQL (pg_stat_activity). */
+  applicationName: string;
+  /** Relational schema given to Drizzle: `public` (default) or `full` (public + bot). */
+  schema?: "public" | "full";
 }
 
 /**
@@ -29,18 +29,18 @@ export interface CreateDbOptions extends PgClientOptions {
  * The returned client has Drizzle's identity serializers: use `createSql` for raw SQL.
  */
 export function createDb(options: CreateDbOptions & { schema: "full" }): {
-	db: ShenronFullDb;
-	client: postgres.Sql;
+  db: ShenronFullDb;
+  client: postgres.Sql;
 };
 export function createDb(options: CreateDbOptions): { db: ShenronDb; client: postgres.Sql };
 export function createDb(options: CreateDbOptions): {
-	db: ShenronDb | ShenronFullDb;
-	client: postgres.Sql;
+  db: ShenronDb | ShenronFullDb;
+  client: postgres.Sql;
 } {
-	const resolved = resolvePgClientOptions(options);
-	const client = postgres(resolved.url, postgresJsOptions(resolved));
-	if (options.schema === "full") {
-		return { db: drizzle(client, { schema: fullSchema, logger: false }), client };
-	}
-	return { db: drizzle(client, { schema, logger: false }), client };
+  const resolved = resolvePgClientOptions(options);
+  const client = postgres(resolved.url, postgresJsOptions(resolved));
+  if (options.schema === "full") {
+    return { db: drizzle(client, { schema: fullSchema, logger: false }), client };
+  }
+  return { db: drizzle(client, { schema, logger: false }), client };
 }
