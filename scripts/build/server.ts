@@ -20,8 +20,11 @@
  *    pass the public guard (profile public, no private node or passage, no conversation, no
  *    embedded node); without it the API reports its VFS groups unavailable. Plus the public
  *    agent home template (agent-home/SOUL.md, IDENTITY.md) for the chat persona.
+ * 3c. Public editorial data (scripts/build/server-data.ts): the versioned canonical lexicon
+ *    data/lexique-db-canonique.json, checked, as data/ (Koharu's glossary for French
+ *    translation, which shenron-manga looks up through SHENRON_LEXIQUE).
  * 4. One zstd payload embedded in a `bun build --compile` executable (unless --no-embed,
- *    which keeps site/, the library, vfs/ and home/ beside the binary).
+ *    which keeps site/, the library, vfs/, home/ and data/ beside the binary).
  * 5. dist/cdn/: what the nginx CDN adds (additively, never --delete) to /srv/shenron-cdn:
  *    _next/static/ and site/ (public/ of the site).
  *
@@ -42,6 +45,7 @@ import { join, resolve } from "node:path";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
+import { privateFiles, stagePublicData } from "./server-data.ts";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const args = process.argv.slice(2);
@@ -193,10 +197,7 @@ cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "sta
 for (const map of [...new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true })])
   rmSync(join(siteOut, map));
 // Nothing private may ship: no database, env file or key.
-const forbidden = new Bun.Glob("**/*.{db,db-wal,db-shm,sqlite,sqlite3,pem,key,p12,pfx}");
-const leaks = [...forbidden.scanSync({ cwd: siteOut, dot: true })].concat([
-  ...new Bun.Glob("**/.env*").scanSync({ cwd: siteOut, dot: true }),
-]);
+const leaks = privateFiles(siteOut);
 if (leaks.length)
   throw new Error(`private files in the release tree: ${leaks.slice(0, 10).join(", ")}`);
 
@@ -240,6 +241,10 @@ mkdirSync(homeOut, { recursive: true });
 for (const name of ["SOUL.md", "IDENTITY.md"])
   cpSync(join(ROOT, "agent-home", name), join(homeOut, name));
 
+// 3c. Public editorial data: only the listed, checked files of data/ (never data/home/ or a base).
+const dataOut = join(OUT, "data");
+const dataShipped = stagePublicData(ROOT, dataOut);
+
 // 4. Binary.
 const buildDir = join(ROOT, "apps/server/.build");
 mkdirSync(buildDir, { recursive: true });
@@ -251,6 +256,7 @@ if (embed) {
     ...(libCandidates[0] ? { native: nativeOut } : {}),
     ...(vfsShipped ? { vfs: vfsOut } : {}),
     home: homeOut,
+    data: dataOut,
   });
   writeFileSync(join(buildDir, "payload.pak.zst"), payload);
   writeFileSync(
@@ -285,7 +291,7 @@ await measured(
   ROOT,
 );
 if (embed) {
-  for (const dir of [siteOut, nativeOut, vfsOut, homeOut])
+  for (const dir of [siteOut, nativeOut, vfsOut, homeOut, dataOut])
     rmSync(dir, { recursive: true, force: true });
 }
 
@@ -306,6 +312,7 @@ console.log(
     sizeMiB: Math.round(size / 1048576),
     embedded: embed,
     vfs: vfsShipped,
+    data: dataShipped,
     buildId,
     cdn,
   }),
