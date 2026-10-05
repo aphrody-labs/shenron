@@ -4,7 +4,7 @@
  * (data manuelle vérifiée, source = kanzenshuu + Daizenshuu).
  */
 import { db } from "./_db";
-import { dbRaces, dbSagas, dbArcs, dbGames } from "../../src/db/schema";
+import { dbRaces, dbSagas, dbGames } from "../../src/db/schema";
 import { eq } from "drizzle-orm";
 
 const RACES = [

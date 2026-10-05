@@ -35,7 +35,6 @@ import {
 	Client,
 	GatewayIntentBits,
 	ChannelType,
-	type TextChannel,
 	type GuildTextBasedChannel,
 } from "discord.js";
 import { env } from "~/lib/env";
@@ -135,7 +134,6 @@ const fusionHits: FusionHit[] = [];
 // ─── Regex parsing helpers ──────────────────────────────────────────────
 const RX_USER_MENTION = /<@!?(\d{17,20})>/g;
 const RX_NIVEAU = /[Nn]iveau\s*(\d{1,2})/;
-const RX_XP_NUMBER = /(\d[\d\s,.]*)\s*[Xx][Pp]/;
 
 function extractMentions(s: string): string[] {
 	const ids: string[] = [];
@@ -260,14 +258,9 @@ async function scanChannel(channel: GuildTextBasedChannel): Promise<{
 				stoppedReason = "empty_channel";
 				break;
 			}
-			let allOldEnough = true;
 			for (const m of messages.values()) {
 				totalScanned++;
-				if (m.createdTimestamp < CUTOFF_MS) {
-					allOldEnough = true;
-					continue;
-				}
-				allOldEnough = false;
+				if (m.createdTimestamp < CUTOFF_MS) continue;
 				// USER message
 				if (!m.author.bot) {
 					const id = m.author.id;

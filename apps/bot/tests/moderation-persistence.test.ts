@@ -2,8 +2,8 @@ import "./setup"; // must be first
 import { describe, expect, test, mock } from "bun:test";
 import { container } from "tsyringe";
 import { DatabaseService } from "~/db/index";
-import { warns, jails, actionLogs, bans } from "~/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { jails, actionLogs, bans } from "~/db/schema";
+import { eq } from "drizzle-orm";
 
 const { ModerationService } = await import("~/services/ModerationService");
 const { JoinLeaveEvent } = await import("~/events/JoinLeave");

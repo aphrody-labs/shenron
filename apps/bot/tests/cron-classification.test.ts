@@ -33,16 +33,13 @@ describe("S3 — Job Classification, Idempotence & Metrics", () => {
 
 	it("classifies startup jobs via registerStartupJob without recurring timer", () => {
 		const registry = new CronRegistry();
-		let ran = false;
 
 		registry.registerStartupJob({
 			name: "wiki-auto-seed",
 			description: "Auto-seed wiki si DB vide",
 			owner: "wiki",
 			idempotent: true,
-			fn: () => {
-				ran = true;
-			},
+			fn: () => {},
 		});
 
 		const jobs = registry.list();

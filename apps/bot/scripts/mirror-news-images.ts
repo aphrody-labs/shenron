@@ -60,7 +60,7 @@ for (const r of rows) {
 				console.log(`  ✓ news#${r.id} mirroré (${ct}, ${buf.byteLength} o)`);
 			}
 		}
-	} catch (e) {
+	} catch {
 		/* mort → null ci-dessous */
 	}
 	if (!ok) {

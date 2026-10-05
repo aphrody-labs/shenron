@@ -2,8 +2,8 @@ import "reflect-metadata";
 import "~/db/wiki-write-guard";
 import { container } from "tsyringe";
 import { DatabaseService } from "~/db/index";
-import { dbCharacters, dbTransformations } from "~/db/schema";
-import { eq, and } from "drizzle-orm";
+import { dbCharacters } from "~/db/schema";
+import { eq } from "drizzle-orm";
 import { logger } from "~/lib/logger";
 
 const SLEEP = (ms: number) => new Promise((r) => setTimeout(r, ms));

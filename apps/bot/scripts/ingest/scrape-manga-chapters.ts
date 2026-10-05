@@ -44,7 +44,7 @@ async function runBxcRecon(url: string): Promise<string[]> {
 
 		// Filtrer les images d'assets
 		return data.assets.filter((a: any) => a.type === "image").map((a: any) => a.url);
-	} catch (err) {
+	} catch {
 		return [];
 	}
 }
@@ -60,7 +60,7 @@ async function scrapeChapter(chapterNum: number): Promise<string[]> {
 			console.log(`   ✓ ${scanUrls.length} pages trouvées sur scan-vf.net`);
 			return scanUrls;
 		}
-	} catch (e) {
+	} catch {
 		console.log(`   ✗ Échec de récupération sur scan-vf.net`);
 	}
 
@@ -74,7 +74,7 @@ async function scrapeChapter(chapterNum: number): Promise<string[]> {
 			console.log(`   ✓ ${scanUrls.length} pages trouvées sur lelscanfr.com`);
 			return scanUrls;
 		}
-	} catch (e) {
+	} catch {
 		console.log(`   ✗ Échec de récupération sur lelscanfr.com`);
 	}
 

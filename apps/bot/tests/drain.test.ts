@@ -2,7 +2,6 @@ import "./setup";
 import { describe, expect, it } from "bun:test";
 import { CronRegistry } from "../src/api/cron-registry";
 import { ApiServer } from "../src/api/server";
-import { container } from "tsyringe";
 
 describe("S1 — Drain on SIGTERM (CronRegistry & ApiServer)", () => {
 	describe("CronRegistry drain", () => {

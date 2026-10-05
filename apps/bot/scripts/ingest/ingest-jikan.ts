@@ -5,7 +5,7 @@
  * Rate-limit : 3 req/s — délai 400ms entre requêtes.
  */
 import { db } from "./_db";
-import { dbEpisodes, dbMovies, dbMangaVolumes, dbMangaChapters } from "../../src/db/schema";
+import { dbEpisodes, dbMovies, dbMangaVolumes } from "../../src/db/schema";
 import { eq, and } from "drizzle-orm";
 
 const SLEEP = (ms: number) => new Promise((r) => setTimeout(r, ms));

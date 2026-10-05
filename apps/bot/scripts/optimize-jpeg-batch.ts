@@ -6,7 +6,7 @@
  * Usage: bun run scripts/optimize-jpeg-batch.ts apps/bot/public/db
  */
 import { readdirSync, statSync, readFileSync, writeFileSync } from "node:fs";
-import { join, extname } from "node:path";
+import { join } from "node:path";
 import sharp from "sharp";
 
 const ROOT = process.argv[2] ?? "apps/bot/public/db";

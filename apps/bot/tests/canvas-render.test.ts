@@ -2,14 +2,13 @@ import { tempPath } from "@aphrody/paths";
 import "./setup";
 import "reflect-metadata";
 import { describe, expect, test } from "bun:test";
-import { container, DependencyContainer } from "tsyringe";
+import { container } from "tsyringe";
 import { writeFileSync } from "node:fs";
 import "~/lib/canvas-kit";
 
 import { CardService } from "~/services/CardService";
 import { GaugeService } from "~/services/GaugeService";
 import { LeaderboardService } from "~/services/LeaderboardService";
-import { FusionService } from "~/services/FusionService";
 
 const fakeUser = (id: string, name: string) =>
 	({

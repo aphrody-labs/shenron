@@ -5,7 +5,7 @@
  * Ne couvre pas la correctness métier (pour ça, tester les services).
  */
 import "./setup"; // doit être en premier
-import { beforeAll, describe, expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { container } from "tsyringe";
 import { makeInteraction, makeUser, assertResponded, type MockInteraction } from "./_mock";
 
