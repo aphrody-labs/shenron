@@ -810,7 +810,7 @@ async fn push(
         }
         sent = Some(
             serde_json::from_str::<serde_json::Value>(&text)
-                .unwrap_or_else(|_| serde_json::Value::String(text)),
+                .unwrap_or(serde_json::Value::String(text)),
         );
     }
 
