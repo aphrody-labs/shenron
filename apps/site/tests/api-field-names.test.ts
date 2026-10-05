@@ -67,9 +67,15 @@ mock.module("@/lib/wiki-admin", () => ({
 }));
 mock.module("@/lib/admin-guard", () => ({ isAdminUserOrToken: async () => isAdmin }));
 
+// --- Japanese anomalies of a databook ---------------------------------------
+let anomalies: { total: number; planches: Record<number, unknown[]> } = { total: 0, planches: {} };
+mock.module("@/lib/ja", () => ({ anomaliesOuvrage: async () => anomalies }));
+mock.module("@/lib/ja/dictionnaire", () => ({ analyseur: async () => null }));
+
 beforeEach(() => {
   isAdmin = true;
   executeResults = [];
+  anomalies = { total: 0, planches: {} };
 });
 
 describe("/api/manga", () => {
@@ -236,6 +242,43 @@ describe("/api/databooks/:id/ocr-review", () => {
     } finally {
       globalThis.fetch = realFetch;
     }
+  });
+});
+
+async function callAnomalies() {
+  const { GET } = await import("../src/app/api/databooks/[id]/anomalies/route");
+  return GET(new Request("http://x/api/databooks/4/anomalies"), {
+    params: Promise.resolve({ id: "4" }),
+  });
+}
+
+describe("/api/databooks/:id/anomalies", () => {
+  const finding = {
+    lu: "ベジ-タ",
+    attendu: "ベジータ",
+    fr: "Végéta",
+    kind: "character",
+    distance: 1,
+  };
+
+  test("serves pages with read/expected and analysisPossible, the French fields as duplicates", async () => {
+    anomalies = { total: 1, planches: { 3: [finding] } };
+    const body = (await (await callAnomalies()).json()) as Record<string, any>;
+    expect(body).toMatchObject({ id: 4, total: 1, analysisPossible: true, analysePossible: true });
+    expect(body.pages).toEqual({ "3": [{ ...finding, read: "ベジ-タ", expected: "ベジータ" }] });
+    // The former container keeps its former shape.
+    expect(body.planches).toEqual({ "3": [finding] });
+  });
+
+  test("a databook that could not be analysed says so instead of reporting no finding", async () => {
+    const body = (await (await callAnomalies()).json()) as Record<string, any>;
+    expect(body).toMatchObject({
+      total: 0,
+      pages: {},
+      planches: {},
+      analysisPossible: false,
+      analysePossible: false,
+    });
   });
 });
 

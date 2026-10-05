@@ -15,6 +15,11 @@
  *
  * Réservé aux administrateurs : la lecture charge un dictionnaire
  * morphologique et un index de 464 819 graphies.
+ *
+ * Response: `{ id, total, pages, analysisPossible }`, where `pages` maps a plate
+ * number to its findings `{ read, expected, fr, kind, distance }`. The former
+ * French fields (`planches`, `analysePossible`, and `lu`/`attendu` on each finding)
+ * stay as deprecated duplicates for one version.
  */
 import { NextResponse } from "next/server";
 import { isAdminUserOrToken } from "@/lib/admin-guard";
@@ -40,15 +45,29 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   // texte — une faute y est rare, une graphie juste s'y répète de planche en
   // planche. Analyser page par page referait le même travail à chaque fois.
   const { total, planches: parPlanche } = await anomaliesOuvrage(fiche.pages);
+  const pages = Object.fromEntries(
+    Object.entries(parPlanche).map(([plate, findings]) => [
+      plate,
+      findings.map((finding) => ({
+        ...finding,
+        read: finding.lu,
+        expected: finding.attendu,
+      })),
+    ]),
+  );
+  // L'absence de dictionnaire n'est pas une absence de faute : sans ce
+  // drapeau, le relecteur afficherait « aucune anomalie » sur un ouvrage
+  // qui n'a simplement pas pu être analysé.
+  const analysisPossible = total > 0 || (await estAnalysable());
 
   return NextResponse.json({
     id,
     total,
+    pages,
+    analysisPossible,
+    // Former names, deprecated for one version.
     planches: parPlanche,
-    // L'absence de dictionnaire n'est pas une absence de faute : sans ce
-    // drapeau, le relecteur afficherait « aucune anomalie » sur un ouvrage
-    // qui n'a simplement pas pu être analysé.
-    analysePossible: total > 0 || (await estAnalysable()),
+    analysePossible: analysisPossible,
   });
 }
 

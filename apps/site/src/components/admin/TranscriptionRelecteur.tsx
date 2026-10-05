@@ -52,8 +52,8 @@ type Filtre = "toutes" | "a-transcrire" | "transcrites" | "suspectes";
 
 /** Une graphie jugée fautive, telle que la rend `/api/databooks/:id/anomalies`. */
 interface AnomalieJa {
-  lu: string;
-  attendu: string;
+  read: string;
+  expected: string;
   fr: string;
   kind: string;
   distance: number;
@@ -61,8 +61,8 @@ interface AnomalieJa {
 
 interface AnomaliesReponse {
   total: number;
-  planches: Record<number, AnomalieJa[]>;
-  analysePossible: boolean;
+  pages: Record<number, AnomalieJa[]>;
+  analysisPossible: boolean;
 }
 
 /**
@@ -222,7 +222,7 @@ export function TranscriptionRelecteur({
     setBrouillon(courante?.texte ?? "");
   }
 
-  const anomaliesPlanche = anomaliesJa.data?.planches?.[numeroCourant] ?? [];
+  const anomaliesPlanche = anomaliesJa.data?.pages?.[numeroCourant] ?? [];
   const modifie = (courante?.texte ?? "") !== brouillon;
   const anomalies = diagnostiquerPlanche(brouillon);
   const nettoyable = aBesoinDeNettoyage(brouillon);
@@ -400,7 +400,7 @@ export function TranscriptionRelecteur({
               const vide = p.texte.trim().length === 0;
               const alerte = !vide && estSuspecte(p);
               const active = p.numero === numeroCourant;
-              const aDesFautesJa = (anomaliesJa.data?.planches?.[p.numero]?.length ?? 0) > 0;
+              const aDesFautesJa = (anomaliesJa.data?.pages?.[p.numero]?.length ?? 0) > 0;
               return (
                 <li key={p.numero}>
                   <button
@@ -415,7 +415,7 @@ export function TranscriptionRelecteur({
                           ? `Planche ${p.numero} — à vérifier`
                           : `Planche ${p.numero} — transcrite`,
                       aDesFautesJa
-                        ? `${anomaliesJa.data!.planches[p.numero].length} graphie(s) japonaise(s) douteuse(s)`
+                        ? `${anomaliesJa.data!.pages[p.numero].length} graphie(s) japonaise(s) douteuse(s)`
                         : null,
                     ]
                       .filter(Boolean)
@@ -601,24 +601,27 @@ export function TranscriptionRelecteur({
                   </p>
                   <ul className="space-y-1">
                     {anomaliesPlanche.map((a) => {
-                      const present = brouillon.includes(a.lu);
+                      const present = brouillon.includes(a.read);
                       return (
-                        <li key={a.lu} className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <li
+                          key={a.read}
+                          className="flex flex-wrap items-center gap-1.5 text-[11px]"
+                        >
                           <code className="font-jp rounded bg-red-500/15 px-1 text-red-200">
-                            {a.lu}
+                            {a.read}
                           </code>
                           <span className="text-white/35">→</span>
                           <code className="font-jp rounded bg-green-500/15 px-1 text-green-200">
-                            {a.attendu}
+                            {a.expected}
                           </code>
                           <span className="text-white/45">{a.fr}</span>
                           <button
                             type="button"
                             disabled={!present}
-                            onClick={() => setBrouillon((t) => t.replaceAll(a.lu, a.attendu))}
+                            onClick={() => setBrouillon((t) => t.replaceAll(a.read, a.expected))}
                             title={
                               present
-                                ? `Remplacer « ${a.lu} » par « ${a.attendu} » dans cette planche`
+                                ? `Remplacer « ${a.read} » par « ${a.expected} » dans cette planche`
                                 : "Graphie absente du texte affiché"
                             }
                             className="ml-auto inline-flex items-center gap-1 rounded border border-dbz-border/60 px-1.5 py-0.5 font-semibold text-dbz-blue-light transition-colors hover:border-dbz-orange hover:text-dbz-orange disabled:cursor-not-allowed disabled:opacity-30"
