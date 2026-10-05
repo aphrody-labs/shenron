@@ -33,6 +33,7 @@ import {
   sql,
   type SQL,
 } from "drizzle-orm";
+import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { wikiRevisions } from "@/db/schema";
 import * as botSchema from "@/db/bot-schema";
@@ -237,7 +238,7 @@ export async function listWiki(
   );
   const term = (q ?? "").trim();
   // Échappe les métacaractères LIKE (% _ \) → "100%" cherche bien le littéral.
-  const safe = term.replace(/[\\%_]/g, (c) => `\\${c}`);
+  const safe = escapeLike(term);
   const where =
     term && labelCols.length
       ? or(...labelCols.map((k) => ilike(spec.table[k], `%${safe}%`)))
@@ -508,7 +509,7 @@ export async function listWikiVisibility(
   if (extraKey) sel.extra = spec.table[extraKey];
 
   const term = (q ?? "").trim();
-  const safeTerm = term.replace(/[\\%_]/g, (c) => `\\${c}`);
+  const safeTerm = escapeLike(term);
   const where = term ? ilike(spec.table[labelKey], `%${safeTerm}%`) : undefined;
 
   const rows = (await db
@@ -1130,7 +1131,7 @@ export async function listAssets(
 			)`,
     );
   if (filtres.recherche?.trim()) {
-    const motif = `%${filtres.recherche.trim()}%`;
+    const motif = `%${escapeLike(filtres.recherche.trim())}%`;
     const ou = or(
       ilike(t.path, motif),
       ilike(t.role, motif),

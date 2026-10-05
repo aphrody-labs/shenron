@@ -1,5 +1,6 @@
 import "server-only";
 import { and, asc, eq, like, ne, sql, inArray, count } from "drizzle-orm";
+import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import {
   botCharacters,
@@ -595,7 +596,7 @@ export async function getShenronCharacterCards(query?: string): Promise<DBCharac
       ? await base
           .where(
             and(
-              like(sql`lower(${botCharacters.name})`, `%${q.toLowerCase()}%`),
+              like(sql`lower(${botCharacters.name})`, `%${escapeLike(q.toLowerCase())}%`),
               eq(botCharacters.visible, true),
             ),
           )
@@ -961,7 +962,7 @@ export async function getShenronCharacter(
     const aff = (c.affiliation ?? "").trim();
     // Préfixe insensible casse+accents : « Végéta (futur) » est bien candidat de
     // « Vegeta ». `%`, `_` et l'antislash sont échappés pour LIKE.
-    const versionPrefix = rootRaw.replace(/[\\%_]/g, (m) => `\\${m}`) + "%";
+    const versionPrefix = `${escapeLike(rootRaw)}%`;
 
     const [
       transfoRows,

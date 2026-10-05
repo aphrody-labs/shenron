@@ -14,6 +14,7 @@ import "server-only";
 import { cache } from "react";
 import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
+import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { API_URL } from "@/lib/config";
 import { chatAphrodyRag, searchAphrodyRag, usesAphrodyRag } from "@/lib/site-rag";
@@ -938,7 +939,7 @@ const FUZZY_THRESHOLD = 0.3;
 // OU proximité trigramme, le tout insensible casse + accents (unaccent).
 // Tables wiki ~dizaines de lignes → seq-scan sub-ms, aucun index requis.
 function fuzzyWhere(term: string, cols: PgColumn[]) {
-  const pat = `%${term}%`;
+  const pat = `%${escapeLike(term)}%`;
   return or(
     ...cols.flatMap((c) => [
       ilike(c, pat),

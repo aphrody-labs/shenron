@@ -8,7 +8,7 @@
  */
 import type { Database } from "bun:sqlite";
 import { WIKI_CATEGORIES, type WikiCategoryName } from "../constants";
-import { WIKI_LIST_DEFAULT_LIMIT, WIKI_LIST_MAX_LIMIT } from "../repos/wiki";
+import { WIKI_LIST_DEFAULT_LIMIT, WIKI_LIST_MAX_LIMIT, escapeLike } from "../repos/wiki";
 
 export interface VfsWikiRow {
   category: WikiCategoryName;
@@ -22,10 +22,6 @@ export interface VfsWikiRow {
 function clamp(limit: number): number {
   if (!Number.isFinite(limit)) return WIKI_LIST_DEFAULT_LIMIT;
   return Math.min(WIKI_LIST_MAX_LIMIT, Math.max(1, Math.trunc(limit)));
-}
-
-function escapeLike(value: string): string {
-  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
 export function createVfsWikiReadPort(db: Database) {

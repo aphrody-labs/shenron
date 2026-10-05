@@ -1,6 +1,7 @@
 import "server-only";
 import { createId } from "@paralleldrive/cuid2";
 import { and, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { tierlists, tierlistVotes, type TierlistItem, type TierlistTier } from "@/db/schema";
 import { botCharacters } from "@/db/bot-schema";
@@ -348,7 +349,7 @@ export async function listAllTierlistsAdmin(
   else if (filter === "community") conds.push(eq(tierlists.official, false));
   else if (filter === "featured") conds.push(eq(tierlists.featured, true));
   else if (filter === "hidden") conds.push(eq(tierlists.published, false));
-  if (q) conds.push(ilike(tierlists.title, `%${q}%`));
+  if (q) conds.push(ilike(tierlists.title, `%${escapeLike(q)}%`));
   const where = conds.length ? and(...conds) : undefined;
 
   const lists = await db.query.tierlists.findMany({

@@ -22,6 +22,7 @@ import { dirname, join } from "node:path";
  * à chaque mesure live.
  */
 import { sql } from "drizzle-orm";
+import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 
 /** Progression d'un ouvrage. */
@@ -501,11 +502,6 @@ export interface RechercheResultat {
   fiches: number;
 }
 
-/** Neutralise les jokers `LIKE` d'un terme saisi par l'utilisateur. */
-function echapperLike(terme: string): string {
-  return terme.replace(/[\\%_]/g, (c) => `\\${c}`);
-}
-
 /**
  * Cherche une chaîne dans le texte des planches.
  *
@@ -526,7 +522,7 @@ export async function chercherDansPlanches(
   if (!cible) return { items: [], total: 0, fiches: 0 };
 
   const limit = Math.min(200, Math.max(1, opts.limit ?? 50));
-  const motif = `%${echapperLike(cible)}%`;
+  const motif = `%${escapeLike(cible)}%`;
   const visibles = opts.includeHidden ? sql`true` : sql`coalesce(d.visible, true)`;
   const uneFiche = opts.databookId ? sql`AND d.id = ${opts.databookId}` : sql``;
 
