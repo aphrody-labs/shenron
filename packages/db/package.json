@@ -23,7 +23,11 @@
     "./repos/agent-keys": "./src/repos/agent-keys.ts",
     "./repos/accounts": "./src/repos/accounts.ts",
     "./guards": "./src/guards.ts",
-    "./redis": "./src/redis.ts"
+    "./redis": "./src/redis.ts",
+    "./vfs": "./src/vfs/index.ts",
+    "./conversations": "./src/conversations/index.ts",
+    "./conversations/types": "./src/conversations/types.ts",
+    "./conversations/redact": "./src/conversations/redact.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -60,7 +64,11 @@
       "./repos/agent-keys": "pure",
       "./repos/accounts": "pure",
       "./guards": "server",
-      "./redis": "bun"
+      "./redis": "bun",
+      "./vfs": "bun",
+      "./conversations": "bun",
+      "./conversations/types": "pure",
+      "./conversations/redact": "pure"
     }
   }
 }
