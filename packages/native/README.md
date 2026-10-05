@@ -3,11 +3,11 @@
 Seul paquet autorisé à charger du code natif : la liaison `bun:ffi` de `shenron-ffi`
 (`crates/shenron-ffi`, voir son README pour l'ABI).
 
-| Export | Classe | Rôle |
-| --- | --- | --- |
-| `./shenron` | `bun` | API synchrone (thread appelant) : chargement, build info, commandes, recherche locale, découpage, persona |
-| `./engine` | `bun` | idem, plus les primitives internes |
-| `./worker` | `bun` | API à promesses des appels longs, sur un pool de workers, annulables par `AbortSignal` |
+| Export      | Classe | Rôle                                                                                                      |
+| ----------- | ------ | --------------------------------------------------------------------------------------------------------- |
+| `./shenron` | `bun`  | API synchrone (thread appelant) : chargement, build info, commandes, recherche locale, découpage, persona |
+| `./engine`  | `bun`  | idem, plus les primitives internes                                                                        |
+| `./worker`  | `bun`  | API à promesses des appels longs, sur un pool de workers, annulables par `AbortSignal`                    |
 
 ## Chargement et refus
 

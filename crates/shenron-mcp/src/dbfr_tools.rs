@@ -214,11 +214,8 @@ pub(crate) async fn textes(req: DatabookTextesRequest, elevated: bool) -> String
         return error("the API serves at most 40 plates per call; split the request");
     }
     let list = req.pages.iter().map(ToString::to_string).collect::<Vec<_>>().join(",");
-    match get_json(
-        &format!("/api/databooks/{}/texts?pages={}", req.id, urlencode(&list)),
-        elevated,
-    )
-    .await
+    match get_json(&format!("/api/databooks/{}/texts?pages={}", req.id, urlencode(&list)), elevated)
+        .await
     {
         Ok(json) => json.to_string(),
         Err(message) => message,
