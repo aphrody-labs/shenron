@@ -18,6 +18,7 @@ pub mod dbfr_tools;
 pub mod dragonball_tools;
 pub mod guide;
 pub mod http;
+pub mod lexicon_tools;
 pub mod site_tools;
 
 use rmcp::handler::server::router::tool::ToolRouter;
@@ -705,6 +706,24 @@ impl ShenronMcp {
         Parameters(r): Parameters<dragonball_tools::CanonCheckRequest>,
     ) -> rmcp::model::CallToolResult {
         dragonball_tools::canon_check(r).await
+    }
+
+    #[tool(
+        name = "dragonball.lexicon_search",
+        description = "Use this for any Dragon Ball name, technique, place or term to translate or spell: Shenron's one Japanese/French/English lexicon (official Japanese form, French form of the wiki, English form when a source establishes it, aliases), searched in any language and labelled in lang. Offline. API: /api/public/lexicon.",
+        annotations(
+            title = "Search the lexicon",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = false
+        )
+    )]
+    async fn dragonball_lexicon_search(
+        &self,
+        Parameters(r): Parameters<lexicon_tools::LexiconSearchRequest>,
+    ) -> rmcp::model::CallToolResult {
+        lexicon_tools::lexicon_search(r)
     }
 
     #[tool(
@@ -1576,6 +1595,7 @@ mod tests {
                 "dragonball.databooks_get",
                 "dragonball.canon_check",
                 "dragonball.canon_references",
+                "dragonball.lexicon_search",
                 "dragonball.a2a_send",
                 "dragonball.a2a_task_status",
                 "dragonball.a2a_task_list",

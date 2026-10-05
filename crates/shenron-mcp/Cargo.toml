@@ -34,6 +34,7 @@ rustls = { workspace = true }
 schemars = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+shenron-lexicon = { workspace = true }
 shenron-manga = { workspace = true }
 shenron-rag = { workspace = true }
 tokio = { workspace = true }

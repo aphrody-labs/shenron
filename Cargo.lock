@@ -9257,6 +9257,7 @@ dependencies = [
  "schemars 1.2.2",
  "serde",
  "serde_json",
+ "shenron-lexicon",
  "shenron-manga",
  "shenron-rag",
  "tokio",
