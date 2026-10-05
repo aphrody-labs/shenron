@@ -179,7 +179,7 @@ export interface PublicFallbackOptions {
   api: ShenronApi;
   buckets: PublicRateBuckets;
   graphql: (request: Request) => Response | Promise<Response>;
-  /** Revue Koharu → Shenron (`/api/manga/candidates*`, `/api/manga/planche/*`). */
+  /** Revue Koharu → Shenron (`/api/manga/candidates*`, `/api/manga/page/*`, ancien `/api/manga/planche/*`). */
   manga?: MangaReviewApi | null;
   corsOrigins?: readonly string[];
   now?: () => number;
@@ -279,7 +279,9 @@ export interface MangaReviewApi {
 
 const CANDIDATES_PATH = "/api/manga/candidates";
 const CANDIDATE_ACTION = /^\/api\/manga\/candidates\/([1-9][0-9]{0,15})\/(approve|reject)$/;
-const PLANCHE_TRADUCTION = /^\/api\/manga\/planche\/([^/]+)\/traduction$/;
+/** `/api/manga/page/:pageId/translation`, et l'ancien `/api/manga/planche/:pageId/traduction` servi en alias. */
+const PAGE_TRANSLATION =
+  /^\/api\/manga\/(?:page\/([^/]+)\/translation|planche\/([^/]+)\/traduction)$/;
 const MAX_CANDIDATE_BODY = 2 * 1024 * 1024;
 
 /** Vue API d'un candidat (charge utile complète + paires extraites). */
@@ -322,26 +324,26 @@ export function createMangaReviewApi(o: MangaReviewApiOptions): MangaReviewApi {
       return (
         pathname === CANDIDATES_PATH ||
         CANDIDATE_ACTION.test(pathname) ||
-        PLANCHE_TRADUCTION.test(pathname)
+        PAGE_TRANSLATION.test(pathname)
       );
     },
     async fetch(request) {
       const url = new URL(request.url);
       const path = url.pathname;
 
-      const planche = PLANCHE_TRADUCTION.exec(path);
-      if (planche) {
+      const translationRoute = PAGE_TRANSLATION.exec(path);
+      if (translationRoute) {
         const cors = publicCorsHeaders(request, o.corsOrigins);
         if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
         if (request.method !== "GET") return json({ error: "Méthode non autorisée." }, 405, cors);
         let pageId: string;
         try {
-          pageId = decodeURIComponent(planche[1] ?? "");
+          pageId = decodeURIComponent(translationRoute[1] ?? translationRoute[2] ?? "");
         } catch {
-          return json({ error: "Identifiant de planche invalide." }, 400, cors);
+          return json({ error: "Identifiant de page invalide." }, 400, cors);
         }
         if (!isMangaPageId(pageId))
-          return json({ error: "Identifiant de planche invalide." }, 400, cors);
+          return json({ error: "Identifiant de page invalide." }, 400, cors);
         const sqlite = o.sqlite();
         if (!sqlite) return json({ error: "Base indisponible." }, 503, cors);
         const translation = getPublishedMangaTranslation(sqlite, pageId);

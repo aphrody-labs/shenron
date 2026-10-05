@@ -22,7 +22,12 @@ export async function GET(req: Request) {
   const q = (params.get("q") ?? "").trim();
   if (q.length < 2) {
     return NextResponse.json(
-      { error: "Paramètre `q` requis (2 caractères minimum).", exemple: "?q=kamehameha" },
+      {
+        error: "Paramètre `q` requis (2 caractères minimum).",
+        example: "?q=kamehameha",
+        /** @deprecated Ancien nom de `example`. */
+        exemple: "?q=kamehameha",
+      },
       { status: 400, headers: CORS_MANGA },
     );
   }
@@ -47,7 +52,7 @@ export async function GET(req: Request) {
       surligner,
     });
     return NextResponse.json(
-      { q, count: resultats.length, resultats },
+      { q, count: resultats.length, results: resultats, resultats },
       { headers: { ...CORS_MANGA, "Cache-Control": "public, max-age=60, s-maxage=600" } },
     );
   } catch (e) {

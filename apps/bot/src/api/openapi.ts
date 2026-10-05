@@ -42,7 +42,7 @@ const ragFilterParams = [
 
 // Schémas réutilisables (composants).
 const schemas = {
-  MangaPlancheTranslation: {
+  MangaPageTranslation: {
     type: "object",
     properties: {
       pageId: { type: "string" },
@@ -251,8 +251,10 @@ const schemas = {
     type: "object",
     properties: {
       series: { type: "string", description: "DB | DBS" },
-      tome: { type: "string", description: "vol1 | ch1321 | t901" },
-      planche: { type: "integer" },
+      volume: { type: "string", description: "vol1 | ch1321 | t901" },
+      page: { type: "integer" },
+      tome: { type: "string", deprecated: true, description: "Ancien nom de `volume`." },
+      planche: { type: "integer", deprecated: true, description: "Ancien nom de `page`." },
       lang: { type: "string", enum: ["fr", "ja"] },
       hasJa: { type: "boolean" },
       lineCount: { type: "integer" },
@@ -264,15 +266,30 @@ const schemas = {
       text: { type: "string" },
     },
   },
-  MangaTome: {
+  MangaVolume: {
     type: "object",
     properties: {
       series: { type: "string" },
-      tome: { type: "string" },
-      planches: { type: "integer" },
+      volume: { type: "string" },
+      pages: { type: "integer" },
       lines: { type: "integer" },
-      planchesWithJa: { type: "integer" },
-      plancheRange: { type: "array", items: { type: "integer" }, minItems: 2, maxItems: 2 },
+      pagesWithJa: { type: "integer" },
+      pageRange: { type: "array", items: { type: "integer" }, minItems: 2, maxItems: 2 },
+      tome: { type: "string", deprecated: true, description: "Ancien nom de `volume`." },
+      planches: { type: "integer", deprecated: true, description: "Ancien nom de `pages`." },
+      planchesWithJa: {
+        type: "integer",
+        deprecated: true,
+        description: "Ancien nom de `pagesWithJa`.",
+      },
+      plancheRange: {
+        type: "array",
+        items: { type: "integer" },
+        minItems: 2,
+        maxItems: 2,
+        deprecated: true,
+        description: "Ancien nom de `pageRange`.",
+      },
     },
   },
 } as const;
@@ -356,7 +373,13 @@ export const openapiSpec = {
                   type: "object",
                   properties: {
                     count: { type: "integer" },
-                    tomes: { type: "array", items: { $ref: "#/components/schemas/MangaTome" } },
+                    volumes: { type: "array", items: { $ref: "#/components/schemas/MangaVolume" } },
+                    tomes: {
+                      type: "array",
+                      deprecated: true,
+                      description: "Ancien nom de `volumes`.",
+                      items: { $ref: "#/components/schemas/MangaVolume" },
+                    },
                   },
                 },
               },
@@ -365,13 +388,13 @@ export const openapiSpec = {
         },
       },
     },
-    "/api/public/manga/tomes/{series}/{tome}": {
+    "/api/public/manga/tomes/{series}/{volume}": {
       get: {
         tags: ["Manga"],
-        summary: "Planches d'un tome (ordre de lecture)",
+        summary: "Pages d'un volume (ordre de lecture)",
         parameters: [
           { name: "series", in: "path", required: true, schema: { type: "string" } },
-          { name: "tome", in: "path", required: true, schema: { type: "string" } },
+          { name: "volume", in: "path", required: true, schema: { type: "string" } },
         ],
         responses: {
           "200": {
@@ -382,8 +405,10 @@ export const openapiSpec = {
                   type: "object",
                   properties: {
                     series: { type: "string" },
-                    tome: { type: "string" },
-                    planches: { type: "integer" },
+                    volume: { type: "string" },
+                    pageCount: { type: "integer" },
+                    tome: { type: "string", deprecated: true },
+                    planches: { type: "integer", deprecated: true },
                     pages: { type: "array", items: { $ref: "#/components/schemas/MangaPage" } },
                   },
                 },
@@ -394,22 +419,24 @@ export const openapiSpec = {
         },
       },
     },
-    "/api/public/manga/page/{series}/{tome}/{planche}": {
+    "/api/public/manga/page/{series}/{volume}/{page}": {
       get: {
         tags: ["Manga"],
-        summary: "Une planche précise",
+        summary: "Une page précise",
         parameters: [
           { name: "series", in: "path", required: true, schema: { type: "string" } },
-          { name: "tome", in: "path", required: true, schema: { type: "string" } },
-          { name: "planche", in: "path", required: true, schema: { type: "integer" } },
+          { name: "volume", in: "path", required: true, schema: { type: "string" } },
+          { name: "page", in: "path", required: true, schema: { type: "integer" } },
         ],
         responses: itemResp("MangaPage"),
       },
     },
-    "/api/manga/planche/{pageId}/traduction": {
+    "/api/manga/page/{pageId}/translation": {
       get: {
         tags: ["Manga"],
-        summary: "Traduction publiée d'une planche (revue staff Koharu)",
+        summary: "Traduction publiée d'une page (revue staff Koharu)",
+        description:
+          "Ancien chemin `/api/manga/planche/{pageId}/traduction`, toujours servi en alias (déprécié).",
         parameters: [
           {
             name: "pageId",
@@ -426,7 +453,7 @@ export const openapiSpec = {
               "application/json": {
                 schema: {
                   type: "object",
-                  properties: { data: { $ref: "#/components/schemas/MangaPlancheTranslation" } },
+                  properties: { data: { $ref: "#/components/schemas/MangaPageTranslation" } },
                 },
               },
             },
@@ -553,8 +580,10 @@ export const openapiSpec = {
                         type: "object",
                         properties: {
                           series: { type: "string" },
-                          tome: { type: "string" },
-                          planche: { type: "integer" },
+                          volume: { type: "string" },
+                          page: { type: "integer" },
+                          tome: { type: "string", deprecated: true },
+                          planche: { type: "integer", deprecated: true },
                           lang: { type: "string" },
                           snippet: { type: "string" },
                         },

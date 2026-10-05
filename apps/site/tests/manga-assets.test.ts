@@ -106,9 +106,9 @@ describe("publication des médias manga", () => {
 
   test("adresse une planche par rang avant son numéro imprimé", () => {
     const pages = [
-      { index: 1, planche: 1 },
-      { index: 2, planche: 0 },
-      { index: 3, planche: 1 },
+      { index: 1, page: 1 },
+      { index: 2, page: 0 },
+      { index: 3, page: 1 },
     ];
     expect(resolveMangaPage(pages, 1)).toBe(pages[0]);
     expect(resolveMangaPage(pages, 3)).toBe(pages[2]);
@@ -116,8 +116,8 @@ describe("publication des médias manga", () => {
 
   test("conserve le numéro imprimé comme repli hors de la plage des rangs", () => {
     const pages = [
-      { index: 1, planche: 42 },
-      { index: 2, planche: 43 },
+      { index: 1, page: 42 },
+      { index: 2, page: 43 },
     ];
     expect(resolveMangaPage(pages, 42)).toBe(pages[0]);
   });

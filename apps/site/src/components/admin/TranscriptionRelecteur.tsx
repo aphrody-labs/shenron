@@ -70,19 +70,19 @@ interface AnomaliesReponse {
  * `/api/databooks/:id/ocr-review`.
  */
 interface RegionLue {
-  texte: string;
+  text: string;
   score: number;
-  boite: Array<[number, number]> | null;
+  box: Array<[number, number]> | null;
 }
 
 interface RelectureReponse {
-  planche: number;
+  page: number;
   regions: RegionLue[];
-  texte?: string;
-  secondes?: number;
+  text?: string;
+  seconds?: number;
   cache?: boolean;
-  indisponible?: boolean;
-  sansScan?: boolean;
+  unavailable?: boolean;
+  noScan?: boolean;
   detail?: string;
 }
 
@@ -644,9 +644,9 @@ export function TranscriptionRelecteur({
                     <ScanText className="h-3 w-3" />
                     Seconde lecture
                   </p>
-                  {relecture.data?.secondes !== undefined && (
+                  {relecture.data?.seconds !== undefined && (
                     <span className="text-[10px] text-white/30">
-                      {relecture.data.cache ? "en cache" : `lue en ${relecture.data.secondes} s`}
+                      {relecture.data.cache ? "en cache" : `lue en ${relecture.data.seconds} s`}
                     </span>
                   )}
                   <button
@@ -673,9 +673,9 @@ export function TranscriptionRelecteur({
                     il ne peut écrire ni caractère étranger intrus, ni boucle. En revanche il ne
                     restitue pas la mise en page — à lire comme un avis, pas comme un remplacement.
                   </p>
-                ) : relecture.data?.sansScan ? (
+                ) : relecture.data?.noScan ? (
                   <p className="text-[11px] text-white/40">Aucun scan pour cette planche.</p>
-                ) : relecture.data?.indisponible ? (
+                ) : relecture.data?.unavailable ? (
                   <p className="text-[11px] text-amber-300/70">
                     Service de seconde lecture indisponible.
                     {relecture.data.detail ? ` (${relecture.data.detail})` : ""}
@@ -689,12 +689,9 @@ export function TranscriptionRelecteur({
                 ) : relecture.data ? (
                   <ul className="max-h-64 space-y-0.5 overflow-y-auto pr-1">
                     {relecture.data.regions.map((r, i) => {
-                      const deja = brouillon.includes(r.texte);
+                      const deja = brouillon.includes(r.text);
                       return (
-                        <li
-                          key={`${i}-${r.texte}`}
-                          className="flex items-start gap-1.5 text-[11px]"
-                        >
+                        <li key={`${i}-${r.text}`} className="flex items-start gap-1.5 text-[11px]">
                           <span
                             className={`mt-[3px] shrink-0 tabular-nums ${
                               r.score >= 0.9
@@ -713,13 +710,13 @@ export function TranscriptionRelecteur({
                             }`}
                             title={deja ? "Déjà présent dans le texte" : undefined}
                           >
-                            {r.texte}
+                            {r.text}
                           </code>
                           <button
                             type="button"
                             onClick={() =>
                               setBrouillon((t) =>
-                                t.trimEnd() ? `${t.trimEnd()}\n${r.texte}` : r.texte,
+                                t.trimEnd() ? `${t.trimEnd()}\n${r.text}` : r.text,
                               )
                             }
                             title="Ajouter cette région à la fin du texte"

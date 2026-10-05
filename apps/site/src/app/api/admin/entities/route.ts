@@ -5,7 +5,10 @@ import { isCurrentUserAdmin } from "@/lib/session";
  * Recherche d'entités du wiki pour rattacher un média depuis la galerie
  * (`/admin/db-universe/assets`). Lecture seule, réservée aux administrateurs.
  *
- * GET /api/admin/entities?type=character&q=goku → { entites: [{ id, nom }] }
+ * GET /api/admin/entities?type=character&q=goku → { entities: [{ id, name }] }
+ *
+ * Les anciens champs (`entites`, `nom`) restent en doublon déprécié le temps
+ * d'une version.
  */
 export const dynamic = "force-dynamic";
 
@@ -19,6 +22,8 @@ export async function GET(req: Request) {
   if (!TYPES_RATTACHABLES.includes(type)) {
     return Response.json({ error: `Type inconnu : ${type}` }, { status: 400 });
   }
-  if (q.trim().length < 2) return Response.json({ entites: [] });
-  return Response.json({ entites: await chercheEntites(type, q) });
+  if (q.trim().length < 2) return Response.json({ entities: [], entites: [] });
+  const found = await chercheEntites(type, q);
+  const entities = found.map((e) => ({ id: e.id, name: e.nom, nom: e.nom }));
+  return Response.json({ entities, entites: entities });
 }

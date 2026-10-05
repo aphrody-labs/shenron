@@ -39,7 +39,10 @@ describe("API revue manga", () => {
     const { api } = harness();
     expect(api.handles("/api/manga/candidates")).toBe(true);
     expect(api.handles("/api/manga/candidates/3/approve")).toBe(true);
+    expect(api.handles("/api/manga/page/DB:vol1:12/translation")).toBe(true);
+    // Ancien chemin français, servi en alias.
     expect(api.handles("/api/manga/planche/DB:vol1:12/traduction")).toBe(true);
+    expect(api.handles("/api/manga/page/DB:vol1:12/traduction")).toBe(false);
     expect(api.handles("/api/manga/status")).toBe(false);
     expect(api.handles("/api/manga/candidates/3/delete")).toBe(false);
   });
@@ -70,7 +73,7 @@ describe("API revue manga", () => {
 
     const before = await call(
       "GET",
-      "/api/manga/planche/DB%3Avol1%3A12/traduction",
+      "/api/manga/page/DB%3Avol1%3A12/translation",
       undefined,
       false,
     );
@@ -87,13 +90,19 @@ describe("API revue manga", () => {
     expect((await call("POST", `/api/manga/candidates/${data.id}/reject`)).status).toBe(409);
     expect((await call("POST", "/api/manga/candidates/999/approve")).status).toBe(404);
 
-    const pub = await call("GET", "/api/manga/planche/DB:vol1:12/traduction", undefined, false);
+    const pub = await call("GET", "/api/manga/page/DB:vol1:12/translation", undefined, false);
     expect(pub.status).toBe(200);
+    const legacy = await call("GET", "/api/manga/planche/DB:vol1:12/traduction", undefined, false);
+    expect(legacy.status).toBe(200);
+    expect(await legacy.json()).toEqual(await pub.clone().json());
     const body = (await pub.json()) as {
       data: { pairs: { translatedText: string }[]; publishedAt: number };
     };
     expect(body.data.pairs.map((p) => p.translatedText)).toEqual(["Goku", "Kamé Hamé Ha !"]);
     expect(body.data.publishedAt).toBe(42);
+    expect((await call("GET", "/api/manga/page/nope/translation", undefined, false)).status).toBe(
+      400,
+    );
     expect((await call("GET", "/api/manga/planche/nope/traduction", undefined, false)).status).toBe(
       400,
     );

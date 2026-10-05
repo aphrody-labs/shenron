@@ -84,11 +84,11 @@ export interface MangaInspection {
   query: string;
   count: number;
   latencyMs: number;
-  resultats: {
+  results: {
     series: string;
-    tome: string;
-    planche: number;
-    extrait: string;
+    volume: string;
+    page: number;
+    excerpt: string;
     href: string;
     score: number;
   }[];
@@ -351,7 +351,7 @@ export class TrainingService {
     if (opts?.series) params.set("series", opts.series);
     if (opts?.tome) params.set("tome", opts.tome);
 
-    let json: any = { count: 0, resultats: [] };
+    let json: any = { count: 0, results: [] };
     try {
       const res = await fetch(`${SITE_INTERNAL}/api/manga/search?${params.toString()}`, {
         signal: AbortSignal.timeout(4000),
@@ -365,11 +365,12 @@ export class TrainingService {
       query,
       count: json.count ?? 0,
       latencyMs: Math.round(performance.now() - start),
-      resultats: (json.resultats ?? []).slice(0, 5).map((r: any) => ({
+      // Champs anglais ; anciens noms en repli face à un site plus ancien.
+      results: (json.results ?? json.resultats ?? []).slice(0, 5).map((r: any) => ({
         series: r.series,
-        tome: r.tome,
-        planche: r.planche,
-        extrait: r.extrait,
+        volume: r.volume ?? r.tome,
+        page: r.page ?? r.planche,
+        excerpt: r.excerpt ?? r.extrait,
         href: r.href,
         score: r.score,
       })),

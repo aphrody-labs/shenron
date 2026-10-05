@@ -139,7 +139,7 @@ export function GalerieMedias({ medias, bucket }: { medias: Media[]; bucket: str
   // ── Rattachement ───────────────────────────────────────────────────────────
   const [type, setType] = useState("character");
   const [recherche, setRecherche] = useState("");
-  const [resultats, setResultats] = useState<{ id: number; nom: string }[]>([]);
+  const [resultats, setResultats] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
     if (recherche.trim().length < 2) {
@@ -151,7 +151,7 @@ export function GalerieMedias({ medias, bucket }: { medias: Media[]; bucket: str
         `/api/admin/entities?type=${type}&q=${encodeURIComponent(recherche)}`,
       ).catch(() => null);
       if (!r?.ok) return;
-      setResultats(((await r.json()) as { entites: { id: number; nom: string }[] }).entites);
+      setResultats(((await r.json()) as { entities: { id: number; name: string }[] }).entities);
     }, 250);
     return () => clearTimeout(minuteur);
   }, [type, recherche]);
@@ -253,7 +253,7 @@ export function GalerieMedias({ medias, bucket }: { medias: Media[]; bucket: str
                         onClick={() => rattacher(r.id)}
                         className="w-full text-left px-3 py-2 text-sm text-white hover:bg-dbz-orange/20"
                       >
-                        {r.nom} <span className="text-white/40">#{r.id}</span>
+                        {r.name} <span className="text-white/40">#{r.id}</span>
                       </button>
                     </li>
                   ))}

@@ -38,8 +38,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   if (new URL(req.url).searchParams.get("format") === "text") {
     const entete = `# ${chapitre.series} — chapitre ${chapitre.chapter_number}${
       chapitre.title ? ` : ${chapitre.title}` : ""
-    }\n# ${chapitre.pages} planches, ${chapitre.transcrites} transcrites\n# ${chapitre.href}\n`;
-    const corps = chapitre.planches
+    }\n# ${chapitre.pages} planches, ${chapitre.transcribed} transcrites\n# ${chapitre.href}\n`;
+    const corps = chapitre.pageList
       .map((p) => `\n--- planche ${p.index} (${p.api}) ---\n${p.text ?? "[non transcrite]"}`)
       .join("\n");
     return new NextResponse(entete + corps, {

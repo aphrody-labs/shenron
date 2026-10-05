@@ -438,9 +438,9 @@ export class TrainCommands {
     try {
       const diag = await this.training.inspectManga(citation, { series });
 
-      const planchesLines = diag.resultats.map((p, i) => {
-        const snip = p.extrait.replace(/\s+/g, " ").trim();
-        return `**[${i + 1}] ${p.series} — ${p.tome}, planche ${p.planche}** (Score: ${p.score.toFixed(1)})\n> *${snip}*\n🔗 [Consulter la planche](${p.href})`;
+      const planchesLines = diag.results.map((p, i) => {
+        const snip = p.excerpt.replace(/\s+/g, " ").trim();
+        return `**[${i + 1}] ${p.series} — ${p.volume}, planche ${p.page}** (Score: ${p.score.toFixed(1)})\n> *${snip}*\n🔗 [Consulter la planche](${p.href})`;
       });
 
       const embed = new EmbedBuilder()

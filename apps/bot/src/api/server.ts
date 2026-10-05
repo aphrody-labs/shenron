@@ -147,7 +147,7 @@ import { getLevelThresholds, levelForXP, nextThresholdFrom, type LevelThreshold 
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { generateLlmAnswer, isFallbackAnswer } from "~/lib/llm";
+import { generateLlmGrounded, isFallbackAnswer, rankRagHits } from "~/lib/llm";
 import { graphqlHandler } from "~/api/graphql";
 import {
   countVisibleWiki,
@@ -1394,6 +1394,9 @@ export class ApiServer {
               }
             } catch {}
             return Response.json({
+              totalPages: countResult?.count ?? 0,
+              pagesWithText: countResult?.with_text ?? 0,
+              // Anciens noms, dépréciés : retirés à la prochaine version.
               totalPlanches: countResult?.count ?? 0,
               planchesAvecTexte: countResult?.with_text ?? 0,
               currentRun: ocrRun,
@@ -2526,13 +2529,13 @@ export class ApiServer {
         // `cache-control` court et `private` : c'est la REDIRECTION qui ne doit
         // pas être mise en cache au-delà de la validité de sa cible, l'image
         // elle-même étant mise en cache par le CDN de Discord.
-        "/api/public/manga/couleur/:salonId/:pieceJointeId/:fichier": async (req) => {
+        "/api/public/manga/couleur/:channelId/:attachmentId/:file": async (req) => {
           const cors = publicCorsHeaders(req);
           if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
           const nue = await urlNueDe({
-            salonId: String(req.params.salonId),
-            pieceJointeId: String(req.params.pieceJointeId),
-            fichier: String(req.params.fichier),
+            salonId: String(req.params.channelId),
+            pieceJointeId: String(req.params.attachmentId),
+            fichier: String(req.params.file),
           });
           if (!nue) return new Response("Planche couleur inconnue", { status: 404, headers: cors });
           const signee = await urlSignee(nue);
@@ -2566,26 +2569,29 @@ export class ApiServer {
               first: number;
               last: number;
             }[];
-            return {
-              count: rows.length,
-              tomes: rows.map((r) => ({
-                series: r.series,
-                tome: r.tome,
-                planches: r.planches,
-                lines: r.lines,
-                planchesWithJa: r.planches_ja,
-                plancheRange: [r.first, r.last],
-              })),
-            };
+            const volumes = rows.map((r) => ({
+              series: r.series,
+              volume: r.tome,
+              pages: r.planches,
+              lines: r.lines,
+              pagesWithJa: r.planches_ja,
+              pageRange: [r.first, r.last],
+              // Anciens noms, dépréciés : retirés à la prochaine version.
+              tome: r.tome,
+              planches: r.planches,
+              planchesWithJa: r.planches_ja,
+              plancheRange: [r.first, r.last],
+            }));
+            return { count: rows.length, volumes, tomes: volumes };
           }),
 
         // Toutes les planches d'un tome (bulles `lines` en ordre de lecture + texte).
-        "/api/public/manga/tomes/:series/:tome": (req) =>
+        "/api/public/manga/tomes/:series/:volume": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
             const series = String(req.params.series).toUpperCase();
-            const tome = String(req.params.tome);
+            const tome = String(req.params.volume);
             if (!/^[A-Z]{1,6}$/.test(series)) throw new HttpError(400, "series invalide");
-            if (!/^[\w-]{1,32}$/.test(tome)) throw new HttpError(400, "tome invalide");
+            if (!/^[\w-]{1,32}$/.test(tome)) throw new HttpError(400, "volume invalide");
             const dbs = container.resolve(DatabaseService);
             const pages = await dbs.db.query.dbMangaPages.findMany({
               where: (p, { eq, and }) => and(eq(p.series, series), eq(p.tome, tome)),
@@ -2594,9 +2600,13 @@ export class ApiServer {
             if (!pages.length) throw new HttpError(404, "Tome introuvable");
             return {
               series,
+              volume: tome,
+              pageCount: pages.length,
+              // Anciens noms, dépréciés : retirés à la prochaine version.
               tome,
               planches: pages.length,
               pages: pages.map((p) => ({
+                page: p.planche,
                 planche: p.planche,
                 lang: p.lang,
                 hasJa: p.hasJa,
@@ -2608,13 +2618,13 @@ export class ApiServer {
           }),
 
         // Une planche précise.
-        "/api/public/manga/page/:series/:tome/:planche": (req) =>
+        "/api/public/manga/page/:series/:volume/:page": (req) =>
           publicCachedJson(req, 60 * 60_000, async () => {
             const series = String(req.params.series).toUpperCase();
-            const tome = String(req.params.tome);
-            const planche = Number(req.params.planche);
+            const tome = String(req.params.volume);
+            const planche = Number(req.params.page);
             if (!Number.isInteger(planche) || planche < 0)
-              throw new HttpError(400, "planche invalide");
+              throw new HttpError(400, "page invalide");
             const dbs = container.resolve(DatabaseService);
             const page = await dbs.db.query.dbMangaPages.findFirst({
               where: (p, { eq, and }) =>
@@ -2623,6 +2633,9 @@ export class ApiServer {
             if (!page) throw new HttpError(404, "Planche introuvable");
             return {
               series: page.series,
+              volume: page.tome,
+              page: page.planche,
+              // Anciens noms, dépréciés : retirés à la prochaine version.
               tome: page.tome,
               planche: page.planche,
               lang: page.lang,
@@ -2718,8 +2731,13 @@ export class ApiServer {
                 )
                 .replace(/\s{2,}/g, " ")
                 .trim();
-            for (const r of rows) r.snippet = cleanSnip(r.snippet);
-            return { q, count: rows.length, results: rows };
+            const results = rows.map((r) => ({
+              ...r,
+              snippet: cleanSnip(r.snippet),
+              volume: r.tome,
+              page: r.planche,
+            }));
+            return { q, count: results.length, results };
           }),
 
         // Endpoint de chat génératif RAG-grounded avec injection de contexte page-level
@@ -2797,21 +2815,26 @@ export class ApiServer {
               });
             }
 
-            const answer = await generateLlmAnswer(
-              dbs.sqlite,
-              q,
-              hits,
-              persona,
-              session ? { sessionId: `site:${session}` } : {},
-            );
+            // Fiches « document collecté » derrière le canon : ordre vu par le modèle et rendu.
+            const ranked = rankRagHits(results);
+            const grounded = await generateLlmGrounded(dbs.sqlite, q, rankRagHits(hits), persona, {
+              ...(session ? { sessionId: `site:${session}` } : {}),
+              ...(lang ? { lang } : {}),
+            });
+            const { answer, citations, refusal } = grounded;
             // Persona fallback = LLM backend down: signal it instead of a 200.
             if (isFallbackAnswer(answer)) {
               return Response.json(
-                { answer, hits: results, mode, error: "llm_unavailable" },
+                { answer, hits: ranked, mode, error: "llm_unavailable" },
                 { status: 503, headers: { ...chatCors, "Retry-After": "30" } },
               );
             }
-            return Response.json({ answer, hits: results, mode }, { headers: chatCors });
+            // `citations` : passages cités par `[n]` dans la réponse, tous issus de `hits` ;
+            // `refusal` : « non établi dans les sources » (aucune invention).
+            return Response.json(
+              { answer, citations, refusal, lang: grounded.lang, hits: ranked, mode },
+              { headers: chatCors },
+            );
           } catch (err) {
             console.error("Erreur API rag/chat:", err);
             return Response.json(

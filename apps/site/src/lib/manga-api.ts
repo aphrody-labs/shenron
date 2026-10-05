@@ -39,6 +39,8 @@ export type PlancheApi = {
   /** Rang de lecture dans le chapitre, 1..n — c'est LUI qui sert d'adresse. */
   index: number;
   /** Numéro imprimé/numérisé (nom de fichier), quand il diffère du rang. */
+  page: number;
+  /** @deprecated Ancien nom de `page`, doublon gardé le temps d'une version. */
   planche: number;
   image: string;
   /** Texte OCR de la planche (`null` quand la transcription n'existe pas). */
@@ -52,20 +54,37 @@ export type PlancheApi = {
   api: string;
 };
 
+/** Édition d'une série : langue et colorisation, avec les anciens noms en doublon. */
+export type EditionApi = {
+  language: string;
+  /** `bw` ou `color`. */
+  colorization: string;
+  /** @deprecated Ancien nom de `language`. */
+  langue: string;
+  /** @deprecated Ancien nom de `colorization` (`nb` ou `couleur`). */
+  colorisation: string;
+};
+
 export type ChapitreApi = {
   id: number;
   series: string;
   chapter_number: number;
   title: string | null;
   volume_id: number | null;
-  edition: { langue: string; colorisation: string };
+  edition: EditionApi;
+  /** Nombre de pages du chapitre ; la liste est `pageList`. */
   pages: number;
-  /** Planches transcrites sur `pages` (0 quand l'OCR n'a pas tourné). */
+  /** Pages transcrites sur `pages` (0 quand l'OCR n'a pas tourné). */
+  transcribed: number;
+  /** @deprecated Ancien nom de `transcribed`. */
   transcrites: number;
   prev: number | null;
   next: number | null;
   href: string;
   api: string;
+  /** Les pages, dans l'ordre de lecture. */
+  pageList: PlancheApi[];
+  /** @deprecated Ancien nom de `pageList`. */
   planches: PlancheApi[];
 };
 
@@ -148,6 +167,7 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
     const t = ocr.get(numero) ?? null;
     return {
       index: i + 1,
+      page: numero,
       planche: numero,
       image: assetUrl(chemin),
       text: t?.text?.trim() ? t.text : null,
@@ -158,6 +178,7 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
     };
   });
 
+  const transcribed = planches.filter((p) => p.text !== null).length;
   return {
     id: chapter.id,
     series: chapter.series,
@@ -166,17 +187,25 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
     volume_id: chapter.volume_id,
     edition: editionDe(chapter.series),
     pages: planches.length,
-    transcrites: planches.filter((p) => p.text !== null).length,
+    transcribed,
+    transcrites: transcribed,
     prev: chapter.prev,
     next: chapter.next,
     href: `${SITE_URL}/wiki/manga/${chapter.id}`,
     api: `${SITE_URL}/api/manga/chapter/${chapter.id}`,
+    pageList: planches,
     planches,
   };
 }
 
-function editionDe(series: string): { langue: string; colorisation: string } {
-  return EDITION_PAR_SERIE[series] ?? { langue: "fr", colorisation: "nb" };
+function editionDe(series: string): EditionApi {
+  const e = EDITION_PAR_SERIE[series] ?? { langue: "fr", colorisation: "nb" };
+  return {
+    language: e.langue,
+    colorization: e.colorisation === "couleur" ? "color" : "bw",
+    langue: e.langue,
+    colorisation: e.colorisation,
+  };
 }
 
 /** Une planche seule + ses voisines (navigation sans recharger le chapitre). */
@@ -198,7 +227,7 @@ export async function plancheApi(
   // sert de repli qu'en dehors de cette plage : dans un tome contenant à la
   // fois `000` puis `001`, chercher le numéro imprimé en premier faisait pointer
   // `/pages/1` vers la 42e image au lieu de la couverture.
-  const p = resolveMangaPage(ch.planches, index);
+  const p = resolveMangaPage(ch.pageList, index);
   if (!p) return null;
   const rang = p.index;
   return {
@@ -253,8 +282,16 @@ export async function tomeApi(id: number): Promise<TomeApi | null> {
 
 export type ResultatPlanche = {
   series: string;
+  /** Clé de volume de l'OCR (`vol13`, `ch42`). */
+  volume: string;
+  /** @deprecated Ancien nom de `volume`. */
   tome: string;
+  /** Numéro de page (celui du fichier). */
+  page: number;
+  /** @deprecated Ancien nom de `page`. */
   planche: number;
+  excerpt: string;
+  /** @deprecated Ancien nom de `excerpt`. */
   extrait: string;
   snippet: string;
   chapter_id: number | null;
@@ -265,6 +302,8 @@ export type ResultatPlanche = {
   /** Scan de la planche, quand le chapitre du site la contient. */
   image: string | null;
   /** Rang de lecture dans le chapitre (adresse du lecteur), `null` si inconnu. */
+  index: number | null;
+  /** @deprecated Ancien nom de `index`. */
   rang: number | null;
 };
 
@@ -367,8 +406,9 @@ export async function totalPlanchesPourRequete(
  * pour « kamehameha » et les rendait dans l'ordre de rangement, pas de
  * pertinence.
  *
- * Le contrat historique (`series`, `tome`, `planche`, `extrait`, `chapter_id`,
- * `href`, `api`) est conservé : le serveur MCP (`manga_recherche`) le consomme.
+ * Les champs anglais (`volume`, `page`, `excerpt`, `index`) sont la forme
+ * courante ; les anciens (`tome`, `planche`, `extrait`, `rang`) restent en doublon
+ * déprécié le temps d'une version.
  */
 export async function chercherPlanches(
   q: string,
@@ -537,17 +577,22 @@ export async function chercherPlanches(
     const extraitBrut = extraitAutour(r.text, terme);
     const extraitSurligne = extraitAutour(r.text, terme, { surligner: true });
 
+    const excerpt = surligner ? extraitSurligne : extraitBrut;
     return {
       series: r.series,
+      volume: r.tome,
       tome: r.tome,
+      page: numero,
       planche: numero,
-      extrait: surligner ? extraitSurligne : extraitBrut,
+      excerpt,
+      extrait: excerpt,
       snippet: extraitSurligne,
       chapter_id: chapterId,
       href: chapterId ? `${SITE_URL}/wiki/manga/${chapterId}?page=${rang ?? numero}` : null,
       api: chapterId ? `${SITE_URL}/api/manga/chapter/${chapterId}/pages/${rang ?? numero}` : null,
       score: d.score,
       image: chap && idx >= 0 ? assetUrl(chap.pages[idx]!) : null,
+      index: rang,
       rang,
     };
   });
@@ -572,15 +617,24 @@ export async function pageIdDePlanche(chapterId: number, index: number): Promise
   const ch = await chapitreApi(chapterId);
   if (!ch) return null;
   const cle = cleTomeOcr(ch);
-  const p = resolveMangaPage(ch.planches, index);
+  const p = resolveMangaPage(ch.pageList, index);
   if (!cle || !p) return null;
   // Même clé que le pipeline Koharu et le bot : `DB:vol1:3`, `DBS:ch12:4`.
-  return `${cle.series}:${cle.tome}:${p.planche}`;
+  return `${cle.series}:${cle.tome}:${p.page}`;
 }
+
+/** GET JSON sur l'API publique du bot, revalidé toutes les 5 minutes. */
+const botGet = (path: string) =>
+  fetch(`${BOT_API_URL}${path}`, {
+    headers: { accept: "application/json" },
+    next: { revalidate: 300 },
+  });
 
 /**
  * Traductions FR publiées d'une planche, lues sur l'API publique du bot
- * (`GET /api/manga/planche/:pageId/traduction`). `null` quand rien n'est publié.
+ * (`GET /api/manga/page/:pageId/translation`, ancien chemin
+ * `/api/manga/planche/:pageId/traduction` en repli face à un bot plus ancien).
+ * `null` quand rien n'est publié.
  */
 export async function traductionPlanche(
   chapterId: number,
@@ -589,13 +643,12 @@ export async function traductionPlanche(
   const pageId = await pageIdDePlanche(chapterId, index);
   if (pageId == null) return null;
   try {
-    const res = await fetch(
-      `${BOT_API_URL}/api/manga/planche/${encodeURIComponent(pageId)}/traduction`,
-      {
-        headers: { accept: "application/json" },
-        next: { revalidate: 300 },
-      },
-    );
+    const key = encodeURIComponent(pageId);
+    let res = await botGet(`/api/manga/page/${key}/translation`);
+    // Un bot d'avant le renommage répond 404 hors JSON : on retente l'ancien chemin.
+    if (res.status === 404 && !(res.headers.get("content-type") ?? "").includes("json")) {
+      res = await botGet(`/api/manga/planche/${key}/traduction`);
+    }
     if (!res.ok) return null;
     // Le bot répond `{data: {pairs: [...]}}` (PublishedMangaTranslation).
     const body = (await res.json()) as {

@@ -20,20 +20,43 @@ export function OPTIONS() {
 }
 
 export async function GET() {
-  let series: Array<{ series: string; tomes: number; chapitres: number; planches: number }> = [];
-  let catalogue: Array<{
+  let series: Array<{
+    series: string;
+    volumes: number;
+    chapters: number;
+    pages: number;
+    /** @deprecated Ancien nom de `volumes`. */
+    tomes: number;
+    /** @deprecated Ancien nom de `chapters`. */
+    chapitres: number;
+    /** @deprecated Ancien nom de `pages`. */
+    planches: number;
+  }> = [];
+  let catalog: Array<{
     id: number;
     series: string;
-    numero: number | null;
-    titre: string | null;
-    titreJa: string | null;
-    datePublication: number | null;
+    number: number | null;
+    title: string | null;
+    titleJa: string | null;
+    publishedAt: number | null;
     isbn: string | null;
-    couverture: string | null;
+    cover: string | null;
     url: string;
+    readableHere: boolean;
+    /** @deprecated Ancien nom de `number`. */
+    numero: number | null;
+    /** @deprecated Ancien nom de `title`. */
+    titre: string | null;
+    /** @deprecated Ancien nom de `titleJa`. */
+    titreJa: string | null;
+    /** @deprecated Ancien nom de `publishedAt`. */
+    datePublication: number | null;
+    /** @deprecated Ancien nom de `cover`. */
+    couverture: string | null;
+    /** @deprecated Ancien nom de `readableHere`. */
     lectureDisponibleIci: boolean;
   }> = [];
-  let transcrites = 0;
+  let transcribed = 0;
   try {
     const rows = await db.execute<{
       series: string;
@@ -53,12 +76,20 @@ export async function GET() {
 			WHERE visible IS NOT false GROUP BY series
 		`);
     const parSerie = new Map(tomes.map((t) => [t.series, Number(t.tomes)]));
-    series = rows.map((r) => ({
-      series: r.series,
-      tomes: parSerie.get(r.series) ?? 0,
-      chapitres: Number(r.chapitres),
-      planches: Number(r.planches),
-    }));
+    series = rows.map((r) => {
+      const volumes = parSerie.get(r.series) ?? 0;
+      const chapters = Number(r.chapitres);
+      const pages = Number(r.planches);
+      return {
+        series: r.series,
+        volumes,
+        chapters,
+        pages,
+        tomes: volumes,
+        chapitres: chapters,
+        planches: pages,
+      };
+    });
     const catalogueRows = await db.execute<{
       id: number;
       series: string;
@@ -85,54 +116,88 @@ export async function GET() {
 			WHERE v.visible IS NOT FALSE
 			ORDER BY v.series, v.volume_number NULLS LAST, v.id
 		`);
-    catalogue = catalogueRows.map((volume) => ({
-      id: Number(volume.id),
-      series: volume.series,
-      numero: volume.volume_number == null ? null : Number(volume.volume_number),
-      titre: volume.title,
-      titreJa: volume.title_ja,
-      datePublication: volume.published_at == null ? null : Number(volume.published_at),
-      isbn: volume.isbn,
-      couverture: volume.cover,
-      url: `${SITE_URL}/api/manga/volume/${volume.id}`,
-      lectureDisponibleIci: Boolean(volume.readable_here),
-    }));
+    catalog = catalogueRows.map((volume) => {
+      const number = volume.volume_number == null ? null : Number(volume.volume_number);
+      const publishedAt = volume.published_at == null ? null : Number(volume.published_at);
+      const readableHere = Boolean(volume.readable_here);
+      return {
+        id: Number(volume.id),
+        series: volume.series,
+        number,
+        title: volume.title,
+        titleJa: volume.title_ja,
+        publishedAt,
+        isbn: volume.isbn,
+        cover: volume.cover,
+        url: `${SITE_URL}/api/manga/volume/${volume.id}`,
+        readableHere,
+        numero: number,
+        titre: volume.title,
+        titreJa: volume.title_ja,
+        datePublication: publishedAt,
+        couverture: volume.cover,
+        lectureDisponibleIci: readableHere,
+      };
+    });
     const ocr = await db.execute<{ n: number }>(sql`
 			SELECT count(*)::int AS n FROM bot.db_manga_pages
 			WHERE nullif(btrim(text), '') IS NOT NULL
 		`);
-    transcrites = Number(ocr[0]?.n ?? 0);
+    transcribed = Number(ocr[0]?.n ?? 0);
   } catch (e) {
     console.error("[api/manga] index indisponible:", e);
   }
 
+  const name = "Manga Dragon Ball — API de lecture";
+  const description =
+    "Tomes, chapitres et planches du manga. Chaque planche est une ressource : " +
+    "son image, sa transcription, et l'URL de la page de lecture correspondante.";
+  const license =
+    "Catalogue, couvertures et ressources de lecture. Les droits et les statuts de publication restent attachés à chaque source.";
+  const routes = {
+    volume: `${SITE_URL}/api/manga/volume/{id}`,
+    chapter: `${SITE_URL}/api/manga/chapter/{id}`,
+    page: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}`,
+    pageImage: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}?format=image`,
+    pageText: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}?format=text`,
+    search: `${SITE_URL}/api/manga/search?q={text}`,
+    timeline: `${SITE_URL}/api/timeline`,
+    readableVolumes: `${SITE_URL}/wiki/manga`,
+  };
+  const examples = [
+    `curl ${SITE_URL}/api/manga/search?q=kamehameha`,
+    `curl ${SITE_URL}/api/manga/chapter/1421`,
+    `curl ${SITE_URL}/api/manga/chapter/1421/pages/12`,
+    `curl -L -o page.webp "${SITE_URL}/api/manga/chapter/1421/pages/12?format=image"`,
+  ];
+
   return NextResponse.json(
     {
-      nom: "Manga Dragon Ball — API de lecture",
-      description:
-        "Tomes, chapitres et planches du manga. Chaque planche est une ressource : " +
-        "son image, sa transcription, et l'URL de la page de lecture correspondante.",
-      licence:
-        "Catalogue, couvertures et ressources de lecture. Les droits et les statuts de publication restent attachés à chaque source.",
+      name,
+      description,
+      license,
       series,
-      catalogue,
-      planchesTranscrites: transcrites,
+      catalog,
+      transcribedPages: transcribed,
       routes: {
-        tome: `${SITE_URL}/api/manga/volume/{id}`,
-        chapitre: `${SITE_URL}/api/manga/chapter/{id}`,
-        planche: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}`,
-        plancheImage: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}?format=image`,
-        plancheTexte: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}?format=text`,
+        ...routes,
+        // Anciens noms, gardés en doublon déprécié le temps d'une version.
+        tome: routes.volume,
+        chapitre: routes.chapter,
+        planche: routes.page,
+        plancheImage: routes.pageImage,
+        plancheTexte: routes.pageText,
         recherche: `${SITE_URL}/api/manga/search?q={texte}`,
-        chronologie: `${SITE_URL}/api/timeline`,
-        tomesLisibles: `${SITE_URL}/wiki/manga`,
+        chronologie: routes.timeline,
+        tomesLisibles: routes.readableVolumes,
       },
-      exemples: [
-        `curl ${SITE_URL}/api/manga/search?q=kamehameha`,
-        `curl ${SITE_URL}/api/manga/chapter/1421`,
-        `curl ${SITE_URL}/api/manga/chapter/1421/pages/12`,
-        `curl -L -o planche.webp "${SITE_URL}/api/manga/chapter/1421/pages/12?format=image"`,
-      ],
+      examples,
+      /** @deprecated Anciens noms des champs ci-dessus. */
+      nom: name,
+      licence: license,
+      catalogue: catalog,
+      planchesTranscrites: transcribed,
+      exemples: examples,
       // Pas de champ `mcp` : `mcp.dragonballfr.com` a été retiré le 2026-09-25
       // (shenron-mcp fusionné dans les outils `aphrody-mcp` dragonball.*, qui ne
       // sont pas exposés en HTTP public — cf. yolo

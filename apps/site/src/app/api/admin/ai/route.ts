@@ -112,10 +112,14 @@ export async function POST(req: NextRequest) {
           run: async () =>
             (await chercherPlanches(query, { limit: 5 })).map((p: any) => ({
               series: p.series,
+              volume: p.volume,
+              page: p.page,
+              excerpt: p.excerpt,
+              score: p.score,
+              // Anciens noms, dépréciés le temps d'une version.
               tome: p.tome,
               planche: p.planche,
               extrait: p.extrait,
-              score: p.score,
             })),
         }),
       ]);

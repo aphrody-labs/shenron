@@ -4,6 +4,9 @@
  *   GET /api/databooks/:id/ocr-review?page=12   (admin connecté ou jeton)
  *
  * Ancienne adresse servie : `/api/databooks/:id/relecture-ocr?planche=12`.
+ * Réponse : `page`, `noScan`, `unavailable`, `regions[].{text,score,box}`, `text`,
+ * `seconds`, `cache` ; les anciens champs (`planche`, `sansScan`, `indisponible`,
+ * `texte`, `secondes`, `regions[].{texte,boite}`) restent en doublon déprécié.
  *
  * Le corpus est transcrit par dots.ocr, un modèle de vision autorégressif.
  * Cette route en fournit une **seconde lecture par un moteur d'une autre
@@ -43,10 +46,19 @@ const SERVICE = resolveRelectureOcrUrl(process.env);
 /** Où vivent les scans : `./assets/wiki/...` en base, `public/wiki/...` sur disque. */
 const RACINE_SCANS = path.join(process.cwd(), "public");
 
+/** Une région telle que la rend le service de relecture (champs français). */
 interface RegionLue {
   texte: string;
   score: number;
   boite: Array<[number, number]> | null;
+}
+
+/**
+ * Une région dans la réponse de la route : `text` et `box`, avec `texte` et
+ * `boite` en doublon déprécié le temps d'une version.
+ */
+function regionRendue(r: RegionLue) {
+  return { text: r.texte, score: r.score, box: r.boite, texte: r.texte, boite: r.boite };
 }
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -71,7 +83,15 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   if (!planche.image) {
     // Sans scan il n'y a rien à relire, et ce n'est pas une erreur : beaucoup
     // d'emplacements existent avant que la page ne soit numérisée.
-    return NextResponse.json({ id, planche: numero, sansScan: true, regions: [] });
+    return NextResponse.json({
+      id,
+      page: numero,
+      noScan: true,
+      regions: [],
+      // Anciens noms, dépréciés.
+      planche: numero,
+      sansScan: true,
+    });
   }
 
   // `./assets/wiki/databooks/x.jpg` → `<cwd>/public/wiki/databooks/x.jpg`.
@@ -97,10 +117,13 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     return NextResponse.json(
       {
         id,
-        planche: numero,
-        indisponible: true,
+        page: numero,
+        unavailable: true,
         detail: e instanceof Error ? e.message : String(e),
         regions: [],
+        // Anciens noms, dépréciés.
+        planche: numero,
+        indisponible: true,
       },
       { status: 200 },
     );
@@ -109,7 +132,16 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   if (!reponse.ok) {
     const detail = await reponse.text().catch(() => "");
     return NextResponse.json(
-      { id, planche: numero, indisponible: true, detail: detail.slice(0, 300), regions: [] },
+      {
+        id,
+        page: numero,
+        unavailable: true,
+        detail: detail.slice(0, 300),
+        regions: [],
+        // Anciens noms, dépréciés.
+        planche: numero,
+        indisponible: true,
+      },
       { status: 200 },
     );
   }
@@ -123,10 +155,14 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
 
   return NextResponse.json({
     id,
+    page: numero,
+    regions: lu.regions.map(regionRendue),
+    text: lu.texte,
+    seconds: lu.secondes,
+    cache: lu.cache,
+    // Anciens noms, dépréciés.
     planche: numero,
-    regions: lu.regions,
     texte: lu.texte,
     secondes: lu.secondes,
-    cache: lu.cache,
   });
 }

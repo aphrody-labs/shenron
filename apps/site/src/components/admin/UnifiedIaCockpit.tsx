@@ -59,9 +59,9 @@ type IaDashboardData = IaCockpitReport & {
 
 interface MangaHit {
   series: string;
-  tome: string;
-  planche: number;
-  extrait: string;
+  volume: string;
+  page: number;
+  excerpt: string;
   score: number;
 }
 
@@ -1125,14 +1125,14 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                           >
                             <div className="flex items-center justify-between font-medium text-white">
                               <span className="text-emerald-400 font-bold">
-                                {m.series.toUpperCase()} {m.tome} — Planche {m.planche}
+                                {m.series.toUpperCase()} {m.volume} — Planche {m.page}
                               </span>
                               <span className="font-mono text-[10px] text-white/40">
                                 Score: {m.score.toFixed(1)}
                               </span>
                             </div>
                             <p className="text-[11px] text-white/70 line-clamp-3 leading-relaxed [&>mark]:bg-dbz-orange/40 [&>mark]:text-white [&>mark]:px-0.5 rounded">
-                              {splitMarkedExcerpt(m.extrait).map((part, i) =>
+                              {splitMarkedExcerpt(m.excerpt).map((part, i) =>
                                 part.marked ? <mark key={i}>{part.text}</mark> : part.text,
                               )}
                             </p>

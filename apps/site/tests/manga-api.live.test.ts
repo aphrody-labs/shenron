@@ -24,9 +24,9 @@ describe("chercherPlanches & totalPlanchesPourRequete — citations françaises"
     const premier = resultats[0]!;
     expect(premier.series).toBe("DB");
     expect(premier.score).toBeGreaterThan(80);
-    expect(premier.extrait.toLowerCase()).toContain("kamehameha");
+    expect(premier.excerpt.toLowerCase()).toContain("kamehameha");
     expect(premier.snippet).toContain("<mark>");
-    expect(premier.planche).toBeGreaterThan(0);
+    expect(premier.page).toBeGreaterThan(0);
     expect(premier.href).toContain("/wiki/manga/");
     expect(premier.api).toContain("/api/manga/chapter/");
   });
@@ -37,7 +37,7 @@ describe("chercherPlanches & totalPlanchesPourRequete — citations françaises"
 
     // Doit retrouver la réplique culte face à Freezer dans le tome 27
     const trouve = resultats.some(
-      (r) => r.tome === "vol27" || r.extrait.toLowerCase().includes("super saiyan"),
+      (r) => r.volume === "vol27" || r.excerpt.toLowerCase().includes("super saiyan"),
     );
     expect(trouve).toBe(true);
     expect(resultats[0]!.score).toBeGreaterThan(25);
@@ -49,7 +49,7 @@ describe("chercherPlanches & totalPlanchesPourRequete — citations françaises"
     expect(resultats.length).toBeGreaterThan(0);
 
     // Les résultats doivent mentionner Freezer
-    const mentionFreezer = resultats.some((r) => r.extrait.toLowerCase().includes("freezer"));
+    const mentionFreezer = resultats.some((r) => r.excerpt.toLowerCase().includes("freezer"));
     expect(mentionFreezer).toBe(true);
   });
 
@@ -113,7 +113,7 @@ describe("tolérance à la ponctuation française et japonaise", () => {
     expect(brut.length).toBeGreaterThan(0);
     expect(avecGuillemets.length).toBe(brut.length);
     expect(avecGuillemetsDroits.length).toBe(brut.length);
-    expect(avecGuillemets[0]!.planche).toBe(brut[0]!.planche);
+    expect(avecGuillemets[0]!.page).toBe(brut[0]!.page);
     expect(avecGuillemets[0]!.score).toBe(brut[0]!.score);
   });
 
@@ -130,8 +130,8 @@ describe("tolérance à la ponctuation française et japonaise", () => {
 
     expect(brut.length).toBeGreaterThan(0);
     expect(avecPonct.length).toBe(brut.length);
-    expect(avecPonct[0]!.tome).toBe(brut[0]!.tome);
-    expect(avecPonct[0]!.planche).toBe(brut[0]!.planche);
+    expect(avecPonct[0]!.volume).toBe(brut[0]!.volume);
+    expect(avecPonct[0]!.page).toBe(brut[0]!.page);
   });
 });
 
@@ -160,13 +160,13 @@ describe("filtrage par série, par tome et pagination", () => {
     const parTomeVol = await chercherPlanches("Kamehameha", { limit: 10, tome: "vol2" });
     expect(parTomeVol.length).toBeGreaterThan(0);
     for (const p of parTomeVol) {
-      expect(p.tome).toBe("vol2");
+      expect(p.volume).toBe("vol2");
     }
 
     const parTomeNum = await chercherPlanches("Kamehameha", { limit: 10, tome: "2", series: "db" });
     expect(parTomeNum.length).toBeGreaterThan(0);
     for (const p of parTomeNum) {
-      expect(p.tome).toBe("vol2");
+      expect(p.volume).toBe("vol2");
     }
 
     const totalTome2 = await totalPlanchesPourRequete("Kamehameha", { tome: "vol2" });
@@ -182,8 +182,8 @@ describe("filtrage par série, par tome et pagination", () => {
     expect(page2.length).toBe(3);
 
     // Les deux pages doivent être disjointes
-    const clesPage1 = page1.map((p) => `${p.series}:${p.tome}:${p.planche}`);
-    const clesPage2 = page2.map((p) => `${p.series}:${p.tome}:${p.planche}`);
+    const clesPage1 = page1.map((p) => `${p.series}:${p.volume}:${p.page}`);
+    const clesPage2 = page2.map((p) => `${p.series}:${p.volume}:${p.page}`);
     for (const k of clesPage1) {
       expect(clesPage2).not.toContain(k);
     }
@@ -196,8 +196,8 @@ describe("filtrage par série, par tome et pagination", () => {
 
     expect(p1.length).toBe(2);
     expect(p2.length).toBe(2);
-    expect(p2[0]!.planche).toBe(off2[0]!.planche);
-    expect(p2[0]!.tome).toBe(off2[0]!.tome);
+    expect(p2[0]!.page).toBe(off2[0]!.page);
+    expect(p2[0]!.volume).toBe(off2[0]!.volume);
   });
 });
 
@@ -210,18 +210,18 @@ describe("mise en valeur des extraits (snippets avec <mark>)", () => {
     }
   });
 
-  test("option surligner: true applique les balises aussi dans extrait", async () => {
+  test("option surligner: true applique les balises aussi dans excerpt", async () => {
     const sansOpt = await chercherPlanches("Kamehameha", { limit: 1, surligner: false });
     const avecOpt = await chercherPlanches("Kamehameha", { limit: 1, surligner: true });
 
-    expect(sansOpt[0]!.extrait).not.toContain("<mark>");
-    expect(avecOpt[0]!.extrait).toContain("<mark>");
+    expect(sansOpt[0]!.excerpt).not.toContain("<mark>");
+    expect(avecOpt[0]!.excerpt).toContain("<mark>");
     expect(sansOpt[0]!.snippet).toContain("<mark>");
   });
 });
 
 describe("Route API HTTP GET /api/manga/search", () => {
-  test("renvoie un JSON valide avec les champs q, count et resultats", async () => {
+  test("renvoie un JSON valide avec les champs q, count et results", async () => {
     const req = new Request("http://localhost:3000/api/manga/search?q=kamehameha&limit=2");
     const res = await GET(req);
     expect(res.status).toBe(200);
@@ -229,8 +229,8 @@ describe("Route API HTTP GET /api/manga/search", () => {
     const data = await res.json();
     expect(data.q).toBe("kamehameha");
     expect(data.count).toBe(2);
-    expect(Array.isArray(data.resultats)).toBe(true);
-    expect(data.resultats[0].snippet).toContain("<mark>");
+    expect(Array.isArray(data.results)).toBe(true);
+    expect(data.results[0].snippet).toContain("<mark>");
   });
 
   test("filtre par série et tome via query parameters", async () => {
@@ -241,9 +241,9 @@ describe("Route API HTTP GET /api/manga/search", () => {
     expect(res.status).toBe(200);
 
     const data = await res.json();
-    for (const r of data.resultats) {
+    for (const r of data.results) {
       expect(r.series).toBe("DB");
-      expect(r.tome).toBe("vol2");
+      expect(r.volume).toBe("vol2");
     }
   });
 

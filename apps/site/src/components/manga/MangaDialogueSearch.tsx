@@ -13,11 +13,15 @@ import { useCallback, useId, useState } from "react";
  */
 interface Result {
   series: string;
-  tome: string;
-  planche: number;
+  volume: string;
+  page: number;
   lang: string;
   snippet: string;
 }
+
+/** Ligne de l'API : champs anglais, anciens `tome`/`planche` en repli d'un bot plus ancien. */
+type ApiResult = Omit<Result, "volume" | "page"> &
+  Partial<Pick<Result, "volume" | "page">> & { tome?: string; planche?: number };
 
 function tomeLabel(tome: string): string {
   const n = tome.replace(/\D/g, "");
@@ -67,8 +71,12 @@ export function MangaDialogueSearch() {
         apiUrl(`api/public/manga/search?q=${encodeURIComponent(query.trim())}&limit=24`),
       );
       if (!res.ok) throw new Error(String(res.status));
-      const data = (await res.json()) as { results?: Result[] };
-      setResults(data.results ?? []);
+      const data = (await res.json()) as { results?: ApiResult[] };
+      setResults(
+        (data.results ?? []).map((r) =>
+          Object.assign(r, { volume: r.volume ?? r.tome ?? "", page: r.page ?? r.planche ?? 0 }),
+        ),
+      );
     } catch {
       setError(true);
       setResults([]);
@@ -139,7 +147,7 @@ export function MangaDialogueSearch() {
           {results.map((r, i) => (
             <li
               // oxlint-disable-next-line no-array-index-key
-              key={`${r.series}-${r.tome}-${r.planche}-${i}`}
+              key={`${r.series}-${r.volume}-${r.page}-${i}`}
               className="rounded-lg border border-white/5 bg-black/30 p-4 transition-colors hover:border-white/20"
             >
               <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
@@ -147,7 +155,7 @@ export function MangaDialogueSearch() {
                   {r.series}
                 </span>
                 <span className="text-white/60">
-                  {tomeLabel(r.tome)}, planche <span className="tabular-nums">{r.planche}</span>
+                  {tomeLabel(r.volume)}, planche <span className="tabular-nums">{r.page}</span>
                 </span>
                 {hasCjk(r.snippet) && (
                   <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/70">

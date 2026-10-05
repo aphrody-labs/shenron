@@ -201,11 +201,11 @@ export function publishedMangaPageCount(
  * sans ambiguïté le rang de lecture ; le numéro imprimé est un repli historique
  * réservé aux valeurs situées hors de cette plage.
  */
-export function resolveMangaPage<T extends { index: number; planche: number }>(
+export function resolveMangaPage<T extends { index: number; page: number }>(
   pages: readonly T[],
   address: number,
 ): T | undefined {
-  return pages[address - 1] ?? pages.find((page) => page.planche === address);
+  return pages[address - 1] ?? pages.find((entry) => entry.page === address);
 }
 
 /**
