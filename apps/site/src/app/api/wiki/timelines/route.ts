@@ -23,7 +23,14 @@ export function OPTIONS() {
 
 export async function GET(_req: NextRequest) {
   try {
-    const timelines = (await dbUniverse.narrativeTimelines()) ?? [];
+    // `null` = lecture PostgreSQL échouée (`safe`) : une panne, jamais un `[]` en 200.
+    const timelines = await dbUniverse.narrativeTimelines();
+    if (timelines === null) {
+      return NextResponse.json(
+        { error: "Timelines narratives momentanément indisponibles." },
+        { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
+      );
+    }
 
     return NextResponse.json(
       {

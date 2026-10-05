@@ -86,20 +86,19 @@ export async function GET(req: NextRequest) {
     Math.max(1, parseInt(url.searchParams.get("limit") ?? "24", 10) || 24),
   );
 
+  // `null` = lecture PostgreSQL échouée (`safe`) : une source manquante est une
+  // panne (503), jamais une liste partielle ou vide servie en 200.
   const [battles, tournaments, timelineEvents] = await Promise.all([
-    dbUniverse
-      .battles()
-      .then((r) => r ?? [])
-      .catch(() => []),
-    dbUniverse
-      .tournaments()
-      .then((r) => r ?? [])
-      .catch(() => []),
-    dbUniverse
-      .timelineEvents()
-      .then((r) => r ?? [])
-      .catch(() => []),
+    dbUniverse.battles(),
+    dbUniverse.tournaments(),
+    dbUniverse.timelineEvents(),
   ]);
+  if (battles === null || tournaments === null || timelineEvents === null) {
+    return NextResponse.json(
+      { error: "Événements narratifs momentanément indisponibles." },
+      { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
+    );
+  }
 
   // Transformer en liste unifiée
   type UnifiedItem = NarrativeEventApiResponse["data"][number];

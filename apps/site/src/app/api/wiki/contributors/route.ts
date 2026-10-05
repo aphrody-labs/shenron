@@ -73,8 +73,14 @@ export async function GET(req: NextRequest) {
     Math.max(1, parseInt(url.searchParams.get("limit") ?? "24", 10) || 24),
   );
 
-  const rawContributors = await dbUniverse.contributors().catch(() => []);
-  const allContributors = rawContributors ?? [];
+  // `null` = lecture PostgreSQL échouée (`safe`) : une panne, jamais un `[]` en 200.
+  const allContributors = await dbUniverse.contributors();
+  if (allContributors === null) {
+    return NextResponse.json(
+      { error: "Contributeurs momentanément indisponibles." },
+      { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
+    );
+  }
 
   // Calcul des facettes avant filtrage restrictif
   const categoriesFacet: Record<string, number> = {};

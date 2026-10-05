@@ -44,34 +44,39 @@ export async function GET(req: NextRequest) {
   }
   const where = sql.join(filtres, sql` and `);
 
-  const rows = await db.execute<{
-    id: string;
-    subject: string;
-    keywords: string[];
-    text: string;
-    text_fr: string | null;
-    source: string;
-    year: number | null;
-    document: string;
-    lang: string;
-    provenance: string;
-    href: string | null;
-    updated_at: Date;
-    total: number;
-  }>(sql`
-		select id, subject, keywords, text, text_fr, source, year, document, lang, provenance, href, updated_at,
-		       count(*) over() as total
+  // Total compté à part : `count(*) over()` ne voit que les lignes de la page, et
+  // un offset au-delà de la fin rendait `total: 0` pour un corpus non vide.
+  const [rows, counted] = await Promise.all([
+    db.execute<{
+      id: string;
+      subject: string;
+      keywords: string[];
+      text: string;
+      text_fr: string | null;
+      source: string;
+      year: number | null;
+      document: string;
+      lang: string;
+      provenance: string;
+      href: string | null;
+      updated_at: Date;
+    }>(sql`
+		select id, subject, keywords, text, text_fr, source, year, document, lang, provenance, href, updated_at
 		from public.canon_references
 		where ${where}
 		order by (text_fr is not null) desc, year desc nulls last, id
 		limit ${limit} offset ${offset}
-	`);
+	`),
+    db.execute<{ total: number }>(
+      sql`select count(*)::int as total from public.canon_references where ${where}`,
+    ),
+  ]);
 
   return NextResponse.json(
     {
       q,
       provenance: PROVENANCES.has(provenance) ? provenance : null,
-      total: Number(rows[0]?.total ?? 0),
+      total: Number(counted[0]?.total ?? 0),
       limit,
       offset,
       items: rows.map((r) => ({

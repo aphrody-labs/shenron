@@ -36,7 +36,14 @@ export async function GET(req: NextRequest) {
   const edition = url.searchParams.get("edition") || undefined;
 
   try {
-    const works = (await dbUniverse.mediaWorks({ kind, series, slug })) ?? [];
+    // `null` = lecture PostgreSQL échouée (`safe`) : une panne, jamais un `[]` en 200.
+    const works = await dbUniverse.mediaWorks({ kind, series, slug });
+    if (works === null) {
+      return NextResponse.json(
+        { error: "Œuvres média momentanément indisponibles." },
+        { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
+      );
+    }
 
     // Si filtrage par édition demandé, filtrer les éditions imbriquées
     const filteredWorks = works
