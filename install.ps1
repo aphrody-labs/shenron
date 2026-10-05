@@ -19,6 +19,9 @@
 .PARAMETER Version
   Version précise à installer (ex. 1.0.0) ; par défaut la dernière version publiée.
 
+.PARAMETER NoLaunch
+  N'ouvre pas Shenron à la fin de l'installation.
+
 .EXAMPLE
   irm https://raw.githubusercontent.com/aphrody-labs/shenron/main/install.ps1 | iex
 #>
@@ -75,7 +78,7 @@ if (-not $InstallerPath) {
   Write-Step "Recherche de la version de $AppName…"
   $release = Invoke-RestMethod -Uri $api -Headers @{ 'User-Agent' = 'shenron-install' }
   $asset = $release.assets | Where-Object { $_.name -match '_x64-setup\.exe$' } | Select-Object -First 1
-  $sums = $release.assets | Where-Object { $_.name -eq 'SHA256SUMS' } | Select-Object -First 1
+  $sums = $release.assets | Where-Object { $_.name -match '^SHA256SUMS(\.txt)?$' } | Select-Object -First 1
   if (-not $asset -or -not $sums) { throw "La version $($release.tag_name) ne contient pas d'installeur Windows." }
   $InstallerPath = Join-Path $env:TEMP $asset.name
   Write-Step "Téléchargement de $($asset.name) ($([math]::Round($asset.size / 1MB)) Mo)…"

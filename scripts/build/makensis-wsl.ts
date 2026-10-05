@@ -15,14 +15,14 @@ const localAppData = process.env.SHENRON_WINDOWS_LOCALAPPDATA ?? "/mnt/c/Users/"
 const makensis = `${localAppData}/tauri/NSIS/makensis.exe`;
 if (!existsSync(makensis)) throw new Error(`Windows NSIS toolset missing: ${makensis}`);
 
-export function windowsPath(path: string): string {
+function windowsPath(path: string): string {
   const drive = /^\/mnt\/([a-z])(\/.*)?$/.exec(path);
   if (drive) return `${drive[1]!.toUpperCase()}:${(drive[2] ?? "\\").replaceAll("/", "\\")}`;
   return `\\\\wsl.localhost\\${distro}${path.replaceAll("/", "\\")}`;
 }
 
 /** Quoted absolute Linux paths of an NSIS script become Windows paths. */
-export function translateScript(text: string): string {
+function translateScript(text: string): string {
   return text.replace(/"(\/(?:home|tmp|root|usr|opt|var|mnt)\/[^"\n]*)"/g, (_match, path: string) => `"${windowsPath(path)}"`);
 }
 

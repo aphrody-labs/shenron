@@ -25,6 +25,15 @@ export default function robots(): MetadataRoute.Robots {
 				// sans raison.
 				disallow: ["/admin/", "/api/", "/profil/"],
 			},
+			// Robots et agents d'IA : bienvenus sur tout le contenu public, y compris les API
+			// publiques en lecture annoncées par /llms.txt et le serveur MCP. Une règle nommée
+			// remplace `*` : les chemins privés sont repris, et la règle la plus longue
+			// l'emporte, donc les préfixes publics restent ouverts sous `Disallow: /api/`.
+			{
+				userAgent: [...AI_CRAWLERS],
+				allow: ["/", ...PUBLIC_API_PREFIXES, "/mcp", "/.well-known/"],
+				disallow: ["/admin/", "/api/", "/profil/"],
+			},
 			// Robots publicitaires Google. Ils n'indexent RIEN : ils explorent la page
 			// pour en déduire le ciblage contextuel (Mediapartners-Google = AdSense) ou
 			// pour contrôler la qualité de la page de destination (AdsBot). Les laisser
@@ -32,14 +41,6 @@ export default function robots(): MetadataRoute.Robots {
 			// et donc le revenu — et fait remonter « erreurs d'exploration » côté
 			// AdSense. Une règle nommée remplace intégralement `*` pour ces agents,
 			// d'où la reprise explicite des chemins privés.
-			// Robots et agents d'IA : bienvenus sur tout le contenu public, y compris les API
-			// publiques en lecture annoncées par /llms.txt (une règle nommée remplace `*`,
-			// d'où la reprise des chemins privés).
-			{
-				userAgent: [...AI_CRAWLERS],
-				allow: ["/", ...PUBLIC_API_PREFIXES, "/mcp", "/.well-known/"],
-				disallow: ["/admin/", "/api/admin/", "/api/auth/", "/profil/"],
-			},
 			{
 				userAgent: ["Mediapartners-Google", "AdsBot-Google", "AdsBot-Google-Mobile"],
 				allow: "/",

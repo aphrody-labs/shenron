@@ -38,9 +38,6 @@ export const PUBLIC_API_PREFIXES = [
 	"/api/chronologie",
 ] as const;
 
-/** Private areas, never crawled. */
-export const PRIVATE_PATHS = ["/admin/", "/api/", "/profil/", "/koharu", "/studio"] as const;
-
 /** Upstream of the public MCP endpoint, or null when it is not deployed. */
 export function mcpUpstream(env: NodeJS.ProcessEnv = process.env): URL | null {
 	const raw = env.SHENRON_MCP_URL?.trim();

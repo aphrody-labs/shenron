@@ -6,7 +6,8 @@
  * named by APHRODY_CARGO_SERIAL when set (shared build lock, bounded jobs, sccache).
  */
 const args = process.argv.slice(2);
-const target = args[args.indexOf("--target") + 1] ?? "";
+const targetIndex = args.indexOf("--target");
+const target = targetIndex >= 0 ? (args[targetIndex + 1] ?? "") : "";
 const crossMsvc = process.platform !== "win32" && target.endsWith("-pc-windows-msvc");
 const serial = process.env.APHRODY_CARGO_SERIAL?.trim();
 const command = serial
