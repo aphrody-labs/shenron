@@ -12,8 +12,8 @@
  * visite et jamais mis en cache CDN. Ici chaque combinaison onglet/page est une
  * route prérendable :
  *
- *     /news/feed                     → tout, page 1
- *     /news/feed/page/2              → tout, page 2
+ *     /news/feed                     → tout (`all`), page 1
+ *     /news/feed/page/2              → tout (`all`), page 2
  *     /news/feed/discussions         → onglet discussions, page 1
  *     /news/feed/discussions/page/3  → onglet discussions, page 3
  */
@@ -43,13 +43,13 @@ function parseSegments(
   segments: string[] | undefined,
 ): { filter: FeedFilter; page: number } | null {
   const parts = segments ?? [];
-  if (parts.length === 0) return { filter: "tout", page: 1 };
+  if (parts.length === 0) return { filter: "all", page: 1 };
 
-  let filter: FeedFilter = "tout";
+  let filter: FeedFilter = "all";
   let rest = parts;
   if (isFeedFilter(parts[0])) {
-    // `/news/feed/tout` serait un doublon de `/news/feed` : forme canonique unique.
-    if (parts[0] === "tout") return null;
+    // `/news/feed/all` serait un doublon de `/news/feed` : forme canonique unique.
+    if (parts[0] === "all") return null;
     filter = parts[0];
     rest = parts.slice(1);
   }
@@ -65,7 +65,7 @@ function parseSegments(
 
 /** Onglets prérendus : la page 1 de chaque nature. Les pages suivantes sont ISR. */
 export function generateStaticParams(): Array<{ path: string[] }> {
-  return FEED_FILTERS.filter((f) => f !== "tout").map((f) => ({ path: [f] }));
+  return FEED_FILTERS.filter((f) => f !== "all").map((f) => ({ path: [f] }));
 }
 
 export async function generateMetadata({
@@ -79,7 +79,7 @@ export async function generateMetadata({
   const label = FEED_FILTER_LABELS[filter];
   const suffix = page > 1 ? ` — page ${page}` : "";
   return {
-    title: filter === "tout" ? `Fil d'actualité Dragon Ball${suffix}` : `Fil — ${label}${suffix}`,
+    title: filter === "all" ? `Fil d'actualité Dragon Ball${suffix}` : `Fil — ${label}${suffix}`,
     description:
       "Les parutions de la rédaction et les discussions de la communauté, dans l'ordre où elles arrivent.",
     alternates: { canonical: feedHref(filter, page) },
@@ -113,7 +113,7 @@ export default async function FeedPage({ params }: { params: Promise<{ path?: st
         items={[
           { label: "Actualités", href: "/news" },
           { label: "Fil", href: "/news/feed" },
-          ...(filter === "tout" ? [] : [{ label: FEED_FILTER_LABELS[filter] }]),
+          ...(filter === "all" ? [] : [{ label: FEED_FILTER_LABELS[filter] }]),
           ...(page > 1 ? [{ label: `Page ${page}` }] : []),
         ]}
       />

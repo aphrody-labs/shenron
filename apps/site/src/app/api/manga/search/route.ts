@@ -33,7 +33,8 @@ export async function GET(req: Request) {
   const pageRaw = params.get("page");
   const page = pageRaw !== null ? Number(pageRaw) : undefined;
   const series = params.get("series") ?? undefined;
-  const tome = params.get("tome") ?? undefined;
+  // `volume` ; l'ancien `tome` reste accepté (comme `surligner` pour `highlight`).
+  const tome = params.get("volume") ?? params.get("tome") ?? undefined;
   const surligner = params.get("surligner") === "true" || params.get("highlight") === "true";
 
   try {

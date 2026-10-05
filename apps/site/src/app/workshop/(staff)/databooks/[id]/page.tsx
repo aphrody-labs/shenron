@@ -26,14 +26,27 @@ export const dynamic = "force-dynamic";
 
 type Filtre = "toutes" | "a-transcrire" | "transcrites" | "suspectes";
 
-const FILTRES = new Set<Filtre>(["toutes", "a-transcrire", "transcrites", "suspectes"]);
+/**
+ * `?filter=` (anglais) → filtre du relecteur. Les anciennes valeurs françaises
+ * (`?filtre=suspectes`, liens des anciennes adresses `/admin/databooks/:id`) restent lues.
+ */
+const FILTER_IN_URL: Record<string, Filtre> = {
+  all: "toutes",
+  untranscribed: "a-transcrire",
+  transcribed: "transcrites",
+  suspect: "suspectes",
+  toutes: "toutes",
+  "a-transcrire": "a-transcrire",
+  transcrites: "transcrites",
+  suspectes: "suspectes",
+};
 
 export default async function RelecturePage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ filtre?: string; planche?: string }>;
+  searchParams: Promise<{ filter?: string; page?: string; filtre?: string; planche?: string }>;
 }) {
   await requireAdmin();
   const id = parseDatabookId((await params).id);
@@ -42,9 +55,12 @@ export default async function RelecturePage({
   const fiche = await getDatabook(id);
   if (!fiche) notFound();
 
-  const { filtre, planche } = await searchParams;
-  const filtreInitial = FILTRES.has(filtre as Filtre) ? (filtre as Filtre) : "toutes";
-  const nPlanche = Number(planche);
+  const sp = await searchParams;
+  const filtreDemande = sp.filter ?? sp.filtre ?? "";
+  const filtreInitial = Object.hasOwn(FILTER_IN_URL, filtreDemande)
+    ? FILTER_IN_URL[filtreDemande]!
+    : "toutes";
+  const nPlanche = Number(sp.page ?? sp.planche);
 
   const planches: PlancheRelecture[] = fiche.pages.map((p) => ({
     numero: p.number,

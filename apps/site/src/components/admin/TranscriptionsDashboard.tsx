@@ -557,7 +557,7 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <Link
-                          href={`/workshop/databooks/${item.databookId}?planche=${item.pageNumber}`}
+                          href={`/workshop/databooks/${item.databookId}?page=${item.pageNumber}`}
                           className="text-xs font-bold text-dbz-orange hover:underline"
                         >
                           #{item.databookId} {item.databookTitle} · p.{item.pageNumber}
@@ -585,7 +585,7 @@ export function TranscriptionsDashboard({ initialData }: { initialData: Transcri
 
                     <div className="mt-3 flex items-center justify-between">
                       <Link
-                        href={`/workshop/databooks/${item.databookId}?planche=${item.pageNumber}`}
+                        href={`/workshop/databooks/${item.databookId}?page=${item.pageNumber}`}
                         className="text-[11px] text-white/50 hover:text-white"
                       >
                         Inspecter scan &rarr;

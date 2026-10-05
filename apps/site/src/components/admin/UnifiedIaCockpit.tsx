@@ -237,7 +237,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
     const ticket = ++latestFetch.current;
     if (!silent) setIsRefreshing(true);
     try {
-      const res = await fetch("/api/admin/ia", { cache: "no-store" });
+      const res = await fetch("/api/admin/ai", { cache: "no-store" });
       const json = await res.json().catch(() => null);
       if (ticket !== latestFetch.current) return;
       if (!res.ok) {
@@ -268,7 +268,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
   /** POST an action; surfaces the server error or notice instead of failing silently. */
   const postAction = async (payload: Record<string, unknown>): Promise<any | null> => {
     try {
-      const res = await fetch("/api/admin/ia", {
+      const res = await fetch("/api/admin/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -330,7 +330,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
       text: `Évaluation en cours sur ${evalSampleSize > 0 ? `${evalSampleSize} cas dorés` : "tout le jeu doré"}…`,
     });
     try {
-      const res = await fetch("/api/admin/ia", {
+      const res = await fetch("/api/admin/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "evaluate_rag", samples: evalSampleSize }),
@@ -602,7 +602,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
           className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-xs ${STATUS_CLASS.unavailable}`}
         >
           <span>
-            Cockpit non actualisé — /api/admin/ia : {loadFailure.text}
+            Cockpit non actualisé — /api/admin/ai : {loadFailure.text}
             {data ? ` (dernières données : ${fmtDate(data.timestamp)})` : ""}
           </span>
           {loadFailure.kind === "unauthenticated" || loadFailure.kind === "forbidden" ? (

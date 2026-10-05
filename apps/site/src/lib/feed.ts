@@ -48,8 +48,18 @@ export type FeedKind = (typeof FEED_KINDS)[number];
  * deux sources existent toujours (`FEED_KINDS`) et alimentent les écrans
  * d'équipe ; seules les natures listées ici ont une URL publique.
  */
-export const FEED_FILTERS = ["tout", "articles", "discussions"] as const;
+export const FEED_FILTERS = ["all", "articles", "discussions"] as const;
 export type FeedFilter = (typeof FEED_FILTERS)[number];
+
+/** Ancienne valeur française du filtre (`?filter=tout` de l'API agent), encore acceptée. */
+const LEGACY_FEED_FILTERS: Readonly<Record<string, FeedFilter>> = { tout: "all" };
+
+/** Filtre reçu par une API (`?filter=`) : valeur actuelle ou ancienne, sinon `null`. */
+export function parseFeedFilter(value: string | null | undefined): FeedFilter | null {
+  if (value == null || value === "") return "all";
+  if (isFeedFilter(value)) return value;
+  return Object.hasOwn(LEGACY_FEED_FILTERS, value) ? LEGACY_FEED_FILTERS[value]! : null;
+}
 
 export function isFeedFilter(value: unknown): value is FeedFilter {
   return typeof value === "string" && (FEED_FILTERS as readonly string[]).includes(value);
@@ -58,18 +68,18 @@ export function isFeedFilter(value: unknown): value is FeedFilter {
 /**
  * Types d'événements inclus par chaque onglet.
  *
- * `tout` ne veut PAS dire « toutes les natures existantes » : il vaut la réunion
+ * `all` ne veut PAS dire « toutes les natures existantes » : il vaut la réunion
  * des onglets publics. Écrire `FEED_KINDS` ici remettrait les révisions du wiki
  * dans le fil du lecteur par le simple fait d'ajouter une nature plus tard.
  */
 const FILTER_KINDS: Record<FeedFilter, readonly FeedKind[]> = {
-  tout: ["article", "discussion"],
+  all: ["article", "discussion"],
   articles: ["article"],
   discussions: ["discussion"],
 };
 
 export const FEED_FILTER_LABELS: Record<FeedFilter, string> = {
-  tout: "Tout",
+  all: "Tout",
   articles: "Articles",
   discussions: "Discussions",
 };
@@ -112,7 +122,7 @@ export interface FeedPage {
 
 /** URL canonique d'une page du fil (page 1 = la racine de l'onglet). */
 export function feedHref(filter: FeedFilter, page = 1): string {
-  const base = filter === "tout" ? "/news/feed" : `/news/feed/${filter}`;
+  const base = filter === "all" ? "/news/feed" : `/news/feed/${filter}`;
   return page <= 1 ? base : `${base}/page/${page}`;
 }
 
@@ -299,7 +309,7 @@ const SOURCES: Record<FeedKind, (limit: number) => Promise<FeedEntry[]>> = {
 export async function listFeed(
   opts: { filter?: FeedFilter; page?: number; perPage?: number } = {},
 ): Promise<FeedPage> {
-  const filter = opts.filter ?? "tout";
+  const filter = opts.filter ?? "all";
   const perPage = Math.min(50, Math.max(5, opts.perPage ?? FEED_PER_PAGE));
   const page = Math.max(1, Math.min(FEED_MAX_PAGES, Math.trunc(opts.page ?? 1)));
 

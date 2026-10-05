@@ -9,7 +9,7 @@
  * Portée requise : `read`.
  */
 import { agentError, agentOk, readInt, withAgent } from "@/lib/agent-api";
-import { isFeedFilter, listFeed } from "@/lib/feed";
+import { parseFeedFilter, listFeed } from "@/lib/feed";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,17 +17,15 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   return withAgent(req, "read", async () => {
     const url = new URL(req.url);
-    const filterParam = url.searchParams.get("filter") ?? "tout";
-    if (!isFeedFilter(filterParam)) {
-      return agentError(
-        "bad_request",
-        "Filtre inconnu (tout|articles|wiki|communaute|discussions).",
-      );
+    // `all` (ancien `tout`, encore accepté), `articles` ou `discussions`.
+    const filter = parseFeedFilter(url.searchParams.get("filter"));
+    if (!filter) {
+      return agentError("bad_request", "Filtre inconnu (all|articles|discussions).");
     }
     const page = readInt(url.searchParams.get("page"), { min: 1, max: 25, fallback: 1 });
     const perPage = readInt(url.searchParams.get("perPage"), { min: 5, max: 50, fallback: 20 });
 
-    const data = await listFeed({ filter: filterParam, page, perPage });
+    const data = await listFeed({ filter, page, perPage });
     return agentOk(data);
   });
 }

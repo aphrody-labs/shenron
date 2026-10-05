@@ -5,7 +5,7 @@ import { isCurrentUserAdmin } from "@/lib/session";
  * Recherche d'entités du wiki pour rattacher un média depuis la galerie
  * (`/admin/db-universe/assets`). Lecture seule, réservée aux administrateurs.
  *
- * GET /api/admin/entites?type=character&q=goku → { entites: [{ id, nom }] }
+ * GET /api/admin/entities?type=character&q=goku → { entites: [{ id, nom }] }
  */
 export const dynamic = "force-dynamic";
 

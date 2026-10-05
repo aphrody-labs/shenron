@@ -16,7 +16,7 @@
  *     films et tomes de manga (l'ordre de l'ère touchée est épinglé).
  *
  * Sans aucune curation, l'ordre reste identique au tri auto « ère ». L'écriture
- * passe par PUT /api/chronologie-config (gate admin) qui revalide la page publique.
+ * passe par PUT /api/timeline-config (gate admin) qui revalide la page publique.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -58,7 +58,7 @@ interface LoadResponse {
 }
 
 async function loadData(): Promise<LoadResponse> {
-  const r = await fetch("/api/chronologie-config", { credentials: "same-origin" });
+  const r = await fetch("/api/timeline-config", { credentials: "same-origin" });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 }
@@ -66,7 +66,7 @@ async function loadData(): Promise<LoadResponse> {
 async function saveData(
   config: ChronologyConfig,
 ): Promise<{ ok: boolean; config: ChronologyConfig }> {
-  const r = await fetch("/api/chronologie-config", {
+  const r = await fetch("/api/timeline-config", {
     method: "PUT",
     credentials: "same-origin",
     headers: { "content-type": "application/json" },

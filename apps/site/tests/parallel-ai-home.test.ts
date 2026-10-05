@@ -63,7 +63,7 @@ const {
   EVAL_DEFAULT_SAMPLES,
   EVAL_MAX_SAMPLES,
 } = await import("../src/lib/ia-aphrody");
-const { GET, POST } = await import("../src/app/api/admin/ia/route");
+const { GET, POST } = await import("../src/app/api/admin/ai/route");
 const { NextRequest } = await import("next/server");
 
 function account(id: string, username: string, roleAdmin: boolean): CurrentUser {
@@ -84,7 +84,7 @@ const unlinked: CurrentUser = { sessionUserId: "s-u3", discordId: "", user: null
 
 function post(body: BodyInit | null) {
   return POST(
-    new NextRequest("http://site.test/api/admin/ia", {
+    new NextRequest("http://site.test/api/admin/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body,
@@ -119,7 +119,7 @@ describe("iaAccess", () => {
   });
 });
 
-describe("/api/admin/ia — accès", () => {
+describe("/api/admin/ai — accès", () => {
   test("session absente : 401 avec défi Bearer et sans cache", async () => {
     me = null;
     for (const res of [
@@ -152,7 +152,7 @@ describe("/api/admin/ia — accès", () => {
   });
 });
 
-describe("/api/admin/ia — corps", () => {
+describe("/api/admin/ai — corps", () => {
   test("un corps JSON null, tableau ou illisible donne 400 et non 500", async () => {
     for (const body of ["null", "[]", "42", '"x"', "{pas du json"]) {
       const res = await post(body);

@@ -116,7 +116,20 @@ export const STAFF_ROUTE_RENAMES: readonly RouteRename[] = [
  * Site API paths kept as aliases of their English handler. `:name` segments are
  * carried over; anything after the prefix too.
  */
-export const API_ROUTE_ALIASES: readonly { readonly from: string; readonly to: string }[] = [];
+export const API_ROUTE_ALIASES: readonly { readonly from: string; readonly to: string }[] = [
+  { from: "/api/chronologie", to: "/api/timeline" },
+  { from: "/api/chronologie-config", to: "/api/timeline-config" },
+  { from: "/api/admin/entites", to: "/api/admin/entities" },
+  { from: "/api/admin/ia", to: "/api/admin/ai" },
+  { from: "/api/admin/databooks/campagne", to: "/api/admin/databooks/campaign" },
+  { from: "/api/databooks/:id/textes", to: "/api/databooks/:id/texts" },
+  { from: "/api/databooks/:id/relecture-ocr", to: "/api/databooks/:id/ocr-review" },
+  {
+    from: "/api/manga/chapter/:id/planche/:n/traduction",
+    to: "/api/manga/chapter/:id/pages/:n/translation",
+  },
+  { from: "/api/manga/chapter/:id/planche", to: "/api/manga/chapter/:id/pages" },
+];
 
 const within = (pathname: string, prefix: string) =>
   pathname === prefix || pathname.startsWith(`${prefix}/`);

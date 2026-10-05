@@ -1,5 +1,5 @@
 /**
- * GET /api/chronologie — la frise officielle, telle qu'elle est publiée.
+ * GET /api/timeline — la frise officielle, telle qu'elle est publiée.
  *
  * La chronologie est une DÉCISION éditoriale (curation admin appliquée par
  * `applyChronology`), pas un tri que l'on peut refaire chez soi : un agent qui

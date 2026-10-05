@@ -384,7 +384,7 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
           {/* Les numéros éditoriaux exacts sont conservés (les slots vides
 					    sont filtrés dans le reader), mais la transcription n'est
 					    embarquée que pour les premières planches : le reste arrive
-					    de `/api/databooks/:id/textes` au fil de la lecture. */}
+					    de `/api/databooks/:id/texts` au fil de la lecture. */}
           <DatabookReader pages={pagesDuLecteur} title={book.title} bookId={book.id} />
         </section>
       )}

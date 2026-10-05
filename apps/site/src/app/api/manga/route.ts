@@ -120,18 +120,18 @@ export async function GET() {
       routes: {
         tome: `${SITE_URL}/api/manga/volume/{id}`,
         chapitre: `${SITE_URL}/api/manga/chapter/{id}`,
-        planche: `${SITE_URL}/api/manga/chapter/{id}/planche/{n}`,
-        plancheImage: `${SITE_URL}/api/manga/chapter/{id}/planche/{n}?format=image`,
-        plancheTexte: `${SITE_URL}/api/manga/chapter/{id}/planche/{n}?format=text`,
+        planche: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}`,
+        plancheImage: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}?format=image`,
+        plancheTexte: `${SITE_URL}/api/manga/chapter/{id}/pages/{n}?format=text`,
         recherche: `${SITE_URL}/api/manga/search?q={texte}`,
-        chronologie: `${SITE_URL}/api/chronologie`,
+        chronologie: `${SITE_URL}/api/timeline`,
         tomesLisibles: `${SITE_URL}/wiki/manga`,
       },
       exemples: [
         `curl ${SITE_URL}/api/manga/search?q=kamehameha`,
         `curl ${SITE_URL}/api/manga/chapter/1421`,
-        `curl ${SITE_URL}/api/manga/chapter/1421/planche/12`,
-        `curl -L -o planche.webp "${SITE_URL}/api/manga/chapter/1421/planche/12?format=image"`,
+        `curl ${SITE_URL}/api/manga/chapter/1421/pages/12`,
+        `curl -L -o planche.webp "${SITE_URL}/api/manga/chapter/1421/pages/12?format=image"`,
       ],
       // Pas de champ `mcp` : `mcp.dragonballfr.com` a été retiré le 2026-09-25
       // (shenron-mcp fusionné dans les outils `aphrody-mcp` dragonball.*, qui ne

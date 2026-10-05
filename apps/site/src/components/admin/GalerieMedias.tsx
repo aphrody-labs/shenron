@@ -148,7 +148,7 @@ export function GalerieMedias({ medias, bucket }: { medias: Media[]; bucket: str
     }
     const minuteur = setTimeout(async () => {
       const r = await fetch(
-        `/api/admin/entites?type=${type}&q=${encodeURIComponent(recherche)}`,
+        `/api/admin/entities?type=${type}&q=${encodeURIComponent(recherche)}`,
       ).catch(() => null);
       if (!r?.ok) return;
       setResultats(((await r.json()) as { entites: { id: number; nom: string }[] }).entites);

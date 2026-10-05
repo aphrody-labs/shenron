@@ -153,8 +153,8 @@ export async function chapitreApi(id: number): Promise<ChapitreApi | null> {
       text: t?.text?.trim() ? t.text : null,
       lines: decodeLignes(t?.lines ?? null),
       lang: t?.lang ?? null,
-      href: `${SITE_URL}/wiki/manga/${chapter.id}?planche=${i + 1}`,
-      api: `${SITE_URL}/api/manga/chapter/${chapter.id}/planche/${i + 1}`,
+      href: `${SITE_URL}/wiki/manga/${chapter.id}?page=${i + 1}`,
+      api: `${SITE_URL}/api/manga/chapter/${chapter.id}/pages/${i + 1}`,
     };
   });
 
@@ -197,7 +197,7 @@ export async function plancheApi(
   // L'adresse publique est d'abord le RANG de lecture. Le numéro imprimé ne
   // sert de repli qu'en dehors de cette plage : dans un tome contenant à la
   // fois `000` puis `001`, chercher le numéro imprimé en premier faisait pointer
-  // `/planche/1` vers la 42e image au lieu de la couverture.
+  // `/pages/1` vers la 42e image au lieu de la couverture.
   const p = resolveMangaPage(ch.planches, index);
   if (!p) return null;
   const rang = p.index;
@@ -210,8 +210,8 @@ export async function plancheApi(
       title: ch.title,
     },
     total: ch.pages,
-    prev: rang > 1 ? `${SITE_URL}/api/manga/chapter/${ch.id}/planche/${rang - 1}` : null,
-    next: rang < ch.pages ? `${SITE_URL}/api/manga/chapter/${ch.id}/planche/${rang + 1}` : null,
+    prev: rang > 1 ? `${SITE_URL}/api/manga/chapter/${ch.id}/pages/${rang - 1}` : null,
+    next: rang < ch.pages ? `${SITE_URL}/api/manga/chapter/${ch.id}/pages/${rang + 1}` : null,
   };
 }
 
@@ -544,10 +544,8 @@ export async function chercherPlanches(
       extrait: surligner ? extraitSurligne : extraitBrut,
       snippet: extraitSurligne,
       chapter_id: chapterId,
-      href: chapterId ? `${SITE_URL}/wiki/manga/${chapterId}?planche=${rang ?? numero}` : null,
-      api: chapterId
-        ? `${SITE_URL}/api/manga/chapter/${chapterId}/planche/${rang ?? numero}`
-        : null,
+      href: chapterId ? `${SITE_URL}/wiki/manga/${chapterId}?page=${rang ?? numero}` : null,
+      api: chapterId ? `${SITE_URL}/api/manga/chapter/${chapterId}/pages/${rang ?? numero}` : null,
       score: d.score,
       image: chap && idx >= 0 ? assetUrl(chap.pages[idx]!) : null,
       rang,

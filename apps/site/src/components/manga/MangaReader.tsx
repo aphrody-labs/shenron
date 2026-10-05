@@ -31,7 +31,9 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
   const [initialPage, setInitialPage] = useState(1);
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    const requested = Number(new URLSearchParams(window.location.search).get("planche"));
+    // `?page=` ; l'ancien `?planche=` (liens déjà partagés) reste lu.
+    const query = new URLSearchParams(window.location.search);
+    const requested = Number(query.get("page") ?? query.get("planche"));
     if (Number.isFinite(requested) && requested >= 1) setInitialPage(Math.trunc(requested));
     setReady(true);
   }, []);
@@ -55,14 +57,15 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
       setCurrentPage(page);
       if (!chapterId || !ready) return;
       const url = new URL(window.location.href);
-      if (url.searchParams.get("planche") === String(page)) return;
-      url.searchParams.set("planche", String(page));
+      if (url.searchParams.get("page") === String(page) && !url.searchParams.has("planche")) return;
+      url.searchParams.delete("planche");
+      url.searchParams.set("page", String(page));
       window.history.replaceState(null, "", url.toString());
     },
     [chapterId, ready],
   );
   const apiPageHref = useCallback(
-    (page: number) => (chapterId ? `/api/manga/chapter/${chapterId}/planche/${page}` : null),
+    (page: number) => (chapterId ? `/api/manga/chapter/${chapterId}/pages/${page}` : null),
     [chapterId],
   );
   const resolveMirrorUrl = useCallback(
@@ -101,7 +104,7 @@ function TraductionFr({ chapterId, page }: { chapterId: number; page: number }) 
   useEffect(() => {
     if (!active || state?.key === key) return;
     const ctrl = new AbortController();
-    fetch(`/api/manga/chapter/${chapterId}/planche/${page}/traduction`, { signal: ctrl.signal })
+    fetch(`/api/manga/chapter/${chapterId}/pages/${page}/translation`, { signal: ctrl.signal })
       .then(async (res) =>
         res.ok ? (((await res.json()) as { texts?: TexteTraduit[] }).texts ?? []) : [],
       )

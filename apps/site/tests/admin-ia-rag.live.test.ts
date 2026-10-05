@@ -73,7 +73,7 @@ mock.module("@/lib/ia-cockpit-server", () => ({
   }),
 }));
 
-const { GET, POST } = await import("../src/app/api/admin/ia/route");
+const { GET, POST } = await import("../src/app/api/admin/ai/route");
 const { NextRequest } = await import("next/server");
 
 let live: LiveRag;
@@ -83,7 +83,7 @@ beforeAll(async () => {
 
 function post(body: unknown) {
   return POST(
-    new NextRequest("http://127.0.0.1:5011/api/admin/ia", {
+    new NextRequest("http://127.0.0.1:5011/api/admin/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

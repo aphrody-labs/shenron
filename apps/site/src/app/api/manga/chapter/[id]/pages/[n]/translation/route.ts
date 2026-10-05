@@ -1,5 +1,5 @@
 /**
- * GET /api/manga/chapter/:id/planche/:n/traduction — traductions FR publiées
+ * GET /api/manga/chapter/:id/pages/:n/translation — traductions FR publiées
  * d'une planche (bulles dans l'ordre de lecture, cadres optionnels).
  *
  * Résout `(chapitre, rang)` vers l'identifiant de page du bot, puis relaie
@@ -22,7 +22,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string; n:
   const n = Number(nBrut);
   if (!Number.isSafeInteger(id) || id <= 0 || !Number.isSafeInteger(n) || n <= 0) {
     return NextResponse.json(
-      { error: "Adresse invalide : /api/manga/chapter/{id}/planche/{n}/traduction." },
+      { error: "Adresse invalide : /api/manga/chapter/{id}/pages/{n}/translation." },
       { status: 400, headers: CORS_MANGA },
     );
   }

@@ -39,7 +39,7 @@ export function DatabooksCatalogManager({
   const { data: campagne } = useQuery<CampagneStats>({
     queryKey: ["admin", "databooks", "campagne"],
     queryFn: async () => {
-      const res = await fetch("/api/admin/databooks/campagne");
+      const res = await fetch("/api/admin/databooks/campaign");
       if (!res.ok) throw new Error("Erreur de chargement de la campagne");
       return res.json();
     },
@@ -50,7 +50,7 @@ export function DatabooksCatalogManager({
   // Redis reindex mutation
   const reindexMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/admin/databooks/campagne", {
+      const res = await fetch("/api/admin/databooks/campaign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "reindex-redis" }),

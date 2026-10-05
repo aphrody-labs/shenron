@@ -129,8 +129,9 @@ export function buildOpenApiDocument(origin: string): Record<string, unknown> {
               in: "query",
               schema: {
                 type: "string",
-                enum: ["tout", "articles", "wiki", "communaute", "discussions"],
-                default: "tout",
+                enum: ["all", "articles", "discussions"],
+                default: "all",
+                description: "Ancienne valeur `tout` encore acceptée.",
               },
             },
             { name: "page", in: "query", schema: { type: "integer", minimum: 1, maximum: 25 } },

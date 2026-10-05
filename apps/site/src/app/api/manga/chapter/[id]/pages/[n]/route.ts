@@ -1,5 +1,5 @@
 /**
- * GET /api/manga/chapter/:id/planche/:n — UNE planche.
+ * GET /api/manga/chapter/:id/pages/:n — UNE planche.
  *
  * Trois formes, choisies par `?format=` :
  *   - (défaut) `json`  : image, transcription, voisines, lien de lecture ;
@@ -26,7 +26,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string; n: 
   const n = Number(nBrut);
   if (!Number.isSafeInteger(id) || id <= 0 || !Number.isSafeInteger(n) || n <= 0) {
     return NextResponse.json(
-      { error: "Adresse invalide : /api/manga/chapter/{id}/planche/{n}." },
+      { error: "Adresse invalide : /api/manga/chapter/{id}/pages/{n}." },
       { status: 400, headers: CORS_MANGA },
     );
   }

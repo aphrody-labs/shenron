@@ -4092,7 +4092,7 @@ exports[`15 routes admin-ou-jeton : instantané statut/corps canon-config (GET, 
 }
 `;
 
-exports[`15 routes admin-ou-jeton : instantané statut/corps chronologie-config (GET, PUT) 1`] = `
+exports[`15 routes admin-ou-jeton : instantané statut/corps timeline-config (GET, PUT) 1`] = `
 {
   "GET anonymous": {
     "body": {
@@ -4233,7 +4233,7 @@ exports[`15 routes admin-ou-jeton : instantané statut/corps databooks/[id]/page
 }
 `;
 
-exports[`15 routes admin-ou-jeton : instantané statut/corps databooks/[id]/relecture-ocr (GET) 1`] = `
+exports[`15 routes admin-ou-jeton : instantané statut/corps databooks/[id]/ocr-review (GET) 1`] = `
 {
   "GET anonymous": {
     "body": {

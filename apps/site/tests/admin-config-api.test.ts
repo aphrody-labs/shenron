@@ -76,7 +76,7 @@ mock.module("next/cache", () => ({
 const home = await import("../src/app/api/home-config/route");
 const banners = await import("../src/app/api/banner-config/route");
 const theme = await import("../src/app/api/theme-config/route");
-const chronology = await import("../src/app/api/chronologie-config/route");
+const chronology = await import("../src/app/api/timeline-config/route");
 const canon = await import("../src/app/api/canon-config/route");
 const launch = await import("../src/app/api/wiki-launch/route");
 

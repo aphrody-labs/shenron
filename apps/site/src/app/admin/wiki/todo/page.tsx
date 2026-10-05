@@ -39,11 +39,14 @@ function editHref(row: IncompleteRow): string {
     : `/admin/database/${row.table}?q=${encodeURIComponent(row.searchTerm)}`;
 }
 
-/** URL de la page en conservant les options (masquées, table dépliée). */
+/**
+ * URL de la page en conservant les options (masquées, table dépliée) : `?hidden=1` et
+ * `?expand=<table>`. Les anciens noms (`?masquees=`, `?tout=`) restent lus.
+ */
 function todoHref({ masquees, tout }: { masquees: boolean; tout: string | null }): string {
   const qs = new URLSearchParams();
-  if (masquees) qs.set("masquees", "1");
-  if (tout) qs.set("tout", tout);
+  if (masquees) qs.set("hidden", "1");
+  if (tout) qs.set("expand", tout);
   const s = qs.toString();
   return s ? `/admin/wiki/todo?${s}` : "/admin/wiki/todo";
 }
@@ -228,8 +231,8 @@ function GroupSection({
 
 export default async function WikiTodoPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const masquees = one(params.masquees) === "1";
-  const tout = one(params.tout);
+  const masquees = (one(params.hidden) ?? one(params.masquees)) === "1";
+  const tout = one(params.expand) ?? one(params.tout);
   const { groups, totals } = await listIncompleteContent({
     perTable: PER_TABLE,
     includeHidden: masquees,

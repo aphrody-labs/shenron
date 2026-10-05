@@ -20,7 +20,7 @@ import type { ItemList, WithContext } from "schema-dts";
 // cache CDN, sur une page publique et immuable entre deux éditions admin.
 //
 // Les deux raisons qui avaient motivé `force-dynamic` sont traitées autrement :
-//   1. fraîcheur de la curation → `/api/chronologie-config` (PUT) appelle déjà
+//   1. fraîcheur de la curation → `/api/timeline-config` (PUT) appelle déjà
 //      `revalidatePath("/wiki/timeline")` : la purge est immédiate à
 //      l'enregistrement, la revalidation périodique n'est qu'un filet ;
 //   2. 404 figé par un build lancé pendant une indispo DB → on ne renvoie PLUS

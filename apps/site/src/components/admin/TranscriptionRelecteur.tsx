@@ -67,7 +67,7 @@ interface AnomaliesReponse {
 
 /**
  * Une region lue par le second moteur OCR, telle que la rend
- * `/api/databooks/:id/relecture-ocr`.
+ * `/api/databooks/:id/ocr-review`.
  */
 interface RegionLue {
   texte: string;
@@ -164,10 +164,10 @@ export function TranscriptionRelecteur({
    */
   const [plancheRelue, setPlancheRelue] = useState<number | null>(null);
   const relecture = useQuery({
-    queryKey: ["databook-relecture-ocr", databookId, plancheRelue],
+    queryKey: ["databook-ocr-review", databookId, plancheRelue],
     enabled: plancheRelue !== null,
     queryFn: async (): Promise<RelectureReponse> => {
-      const r = await fetch(`/api/databooks/${databookId}/relecture-ocr?planche=${plancheRelue}`, {
+      const r = await fetch(`/api/databooks/${databookId}/ocr-review?page=${plancheRelue}`, {
         cache: "no-store",
       });
       if (!r.ok) throw new Error("seconde lecture indisponible");

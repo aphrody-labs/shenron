@@ -206,10 +206,10 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         legende={`${planches} planches adressables une à une`}
         variantes={[
           { label: "Texte", chemin: `/api/manga/chapter/${chapter.id}?format=text` },
-          { label: "Planche 1", chemin: `/api/manga/chapter/${chapter.id}/planche/1` },
+          { label: "Planche 1", chemin: `/api/manga/chapter/${chapter.id}/pages/1` },
           {
             label: "Image",
-            chemin: `/api/manga/chapter/${chapter.id}/planche/1?format=image`,
+            chemin: `/api/manga/chapter/${chapter.id}/pages/1?format=image`,
           },
         ]}
       />

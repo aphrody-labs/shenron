@@ -297,7 +297,7 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
                       },
                       {
                         label: "Planche 1",
-                        chemin: `/api/manga/chapter/${chapitresLisibles[0].id}/planche/1`,
+                        chemin: `/api/manga/chapter/${chapitresLisibles[0].id}/pages/1`,
                       },
                     ]
                   : []

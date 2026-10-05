@@ -146,12 +146,12 @@ async function botWrite(botPath: string, body: unknown) {
   return { ok: true as const, goal: { id: 30 } };
 }
 
-const { GET, POST } = await import("../src/app/api/admin/ia/route");
+const { GET, POST } = await import("../src/app/api/admin/ai/route");
 const { NextRequest } = await import("next/server");
 
 function post(body: unknown) {
   return POST(
-    new NextRequest("http://127.0.0.1:5011/api/admin/ia", {
+    new NextRequest("http://127.0.0.1:5011/api/admin/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -170,10 +170,10 @@ afterEach(() => {
   expect(retrievalCalls).toEqual([]);
 });
 
-describe("Cockpit Admin IA — route /api/admin/ia", () => {
+describe("Cockpit Admin IA — route /api/admin/ai", () => {
   test("la route n'ouvre plus la base SQLite du bot", () => {
     const source = readFileSync(
-      path.resolve(import.meta.dir, "../src/app/api/admin/ia/route.ts"),
+      path.resolve(import.meta.dir, "../src/app/api/admin/ai/route.ts"),
       "utf8",
     );
     expect(source).not.toContain("bun:sqlite");
@@ -332,7 +332,7 @@ describe("Cockpit Admin IA — route /api/admin/ia", () => {
     );
     expect(botCalls).toEqual([]);
     const source = readFileSync(
-      path.resolve(import.meta.dir, "../src/app/api/admin/ia/route.ts"),
+      path.resolve(import.meta.dir, "../src/app/api/admin/ai/route.ts"),
       "utf8",
     );
     expect(source).toContain("@shenron/api/contract");

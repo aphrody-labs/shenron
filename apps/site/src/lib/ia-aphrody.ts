@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Pure decisions of the admin IA API (`/api/admin/ia`): who may call it, how a body is read and how
+// Pure decisions of the admin IA API (`/api/admin/ai`): who may call it, how a body is read and how
 // the evaluation sample size is validated. The route stays a thin dispatcher on top of them.
 //
 // No `import "server-only"`: like admin-guard.ts this module only reaches the session through the

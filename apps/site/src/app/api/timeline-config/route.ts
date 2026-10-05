@@ -1,5 +1,5 @@
 /**
- * /api/chronologie-config — curation de la chronologie universelle (gate admin).
+ * /api/timeline-config — curation de la chronologie universelle (gate admin).
  *
  *   GET → { config, items }   config résolue + dataset brut (épisodes + films)
  *                             pour alimenter l'éditeur `/admin/timeline`

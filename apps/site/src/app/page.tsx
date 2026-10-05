@@ -64,7 +64,7 @@ export const metadata: Metadata = {
  */
 async function getHomeFeed() {
   try {
-    return (await listFeed({ filter: "tout", perPage: 7 })).entries;
+    return (await listFeed({ filter: "all", perPage: 7 })).entries;
   } catch (e) {
     console.error("Failed to fetch home feed:", e);
     return [];

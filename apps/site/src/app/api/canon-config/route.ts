@@ -6,7 +6,7 @@
  *   PUT → { ok, config }        enregistre le document et purge `/wiki/canon`
  *
  * Le gate réutilise `isCurrentUserAdmin` / `getCurrentUser` (Better Auth +
- * users.roleAdmin), comme /api/chronologie-config.
+ * users.roleAdmin), comme /api/timeline-config.
  */
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { getCanonConfig, saveCanonConfig } from "@/lib/canon-config";

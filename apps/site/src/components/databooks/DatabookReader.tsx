@@ -18,7 +18,7 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   const loadTranscriptions = useCallback(
     async (numbers: number[], signal: AbortSignal): Promise<Record<string, string>> => {
       if (bookId == null) return {};
-      const response = await fetch(`/api/databooks/${bookId}/textes?pages=${numbers.join(",")}`, {
+      const response = await fetch(`/api/databooks/${bookId}/texts?pages=${numbers.join(",")}`, {
         signal,
       });
       if (!response.ok) return {};

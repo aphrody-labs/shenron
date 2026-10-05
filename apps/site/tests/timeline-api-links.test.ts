@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { endpoints } from "@shenron/api/contract";
 import { isWikiCategoryName } from "@shenron/db/constants";
 
-// `/api/chronologie` annonce pour chaque entrée une API de fiche : elle doit
+// `/api/timeline` annonce pour chaque entrée une API de fiche : elle doit
 // mener à une route réelle, pas à `/api/episodes/{id}` (seul `/download` existe).
 mock.module("server-only", () => ({}));
 mock.module("@/lib/chronology-config", () => ({
@@ -47,7 +47,7 @@ mock.module("@/lib/db-universe", () => ({
   },
 }));
 
-const { GET } = await import("../src/app/api/chronologie/route");
+const { GET } = await import("../src/app/api/timeline/route");
 
 const APP = join(import.meta.dir, "..", "src", "app");
 
@@ -71,9 +71,9 @@ function routeFile(pathname: string): string | null {
   return existsSync(join(dir, "route.ts")) ? "route.ts" : null;
 }
 
-describe("/api/chronologie : liens d'API", () => {
+describe("/api/timeline : liens d'API", () => {
   test("chaque `api` mène à une route servie", async () => {
-    const res = await GET(new Request("http://localhost/api/chronologie"));
+    const res = await GET(new Request("http://localhost/api/timeline"));
     expect(res.status).toBe(200);
     const body = (await res.json()) as { entrees: { kind: string; id: number; api: string }[] };
     expect(body.entrees).toHaveLength(3);

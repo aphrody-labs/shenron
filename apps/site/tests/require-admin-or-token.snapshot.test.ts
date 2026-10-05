@@ -173,9 +173,9 @@ const routes: RouteCase[] = [
     body: "{}",
   },
   {
-    name: "chronologie-config",
-    mod: await import("../src/app/api/chronologie-config/route"),
-    url: "/api/chronologie-config",
+    name: "timeline-config",
+    mod: await import("../src/app/api/timeline-config/route"),
+    url: "/api/timeline-config",
     body: "{}",
   },
   {
@@ -192,9 +192,9 @@ const routes: RouteCase[] = [
     body: "{}",
   },
   {
-    name: "databooks/[id]/relecture-ocr",
-    mod: await import("../src/app/api/databooks/[id]/relecture-ocr/route"),
-    url: "/api/databooks/999/relecture-ocr",
+    name: "databooks/[id]/ocr-review",
+    mod: await import("../src/app/api/databooks/[id]/ocr-review/route"),
+    url: "/api/databooks/999/ocr-review",
     params: { id: "999" },
   },
   {

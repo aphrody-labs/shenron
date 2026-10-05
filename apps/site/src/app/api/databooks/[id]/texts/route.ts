@@ -1,7 +1,7 @@
 /**
  * API Databooks — transcriptions d'un lot de planches, à la demande.
  *
- *   GET /api/databooks/:id/textes?pages=12,13,14
+ *   GET /api/databooks/:id/texts?pages=12,13,14
  *
  * Pourquoi cette route existe : la fiche publique envoyait au navigateur la
  * transcription des planches de l'ouvrage ENTIER, alors qu'on en lit une à la

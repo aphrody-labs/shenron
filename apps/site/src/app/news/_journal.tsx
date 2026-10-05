@@ -186,7 +186,7 @@ export async function JournalIndex({
         standfirst={<T k="communaute.news.standfirst" />}
         actions={
           <>
-            <Link href={feedHref("tout")} className="toriyama-btn !text-[0.75rem]">
+            <Link href={feedHref("all")} className="toriyama-btn !text-[0.75rem]">
               <T k="communaute.news.viewFeed" />
             </Link>
             <a href="/news/rss.xml" className="toriyama-btn-secondary !text-[0.75rem]">
@@ -293,7 +293,7 @@ export async function JournalIndex({
               title="Les dernières discussions"
               standfirst="Les dernières discussions de la communauté. Le fil complet vit sur sa propre page."
               actions={
-                <Link href={feedHref("tout")} className="toriyama-btn-secondary !text-[0.75rem]">
+                <Link href={feedHref("all")} className="toriyama-btn-secondary !text-[0.75rem]">
                   <T k="communaute.news.viewFeed" />
                 </Link>
               }

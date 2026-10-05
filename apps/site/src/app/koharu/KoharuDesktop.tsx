@@ -4,13 +4,16 @@ import { ThemeProvider } from "next-themes";
 import { Providers } from "@shenron/ui/koharu/providers";
 import { KoharuApp } from "@shenron/ui/koharu/components/app/KoharuApp";
 
-/** The full editor, loaded only inside the desktop app (see `KoharuEditor`). */
-export default function KoharuDesktop() {
+/**
+ * The full editor, loaded only where its engine is local (see `KoharuEditor`). `embedded`: in
+ * a browser tab, without the window controls of the desktop app.
+ */
+export default function KoharuDesktop({ embedded = false }: { embedded?: boolean }) {
   return (
     <div className="fixed inset-0 z-[100]" data-koharu-host>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <Providers>
-          <KoharuApp />
+          <KoharuApp embedded={embedded} />
         </Providers>
       </ThemeProvider>
     </div>

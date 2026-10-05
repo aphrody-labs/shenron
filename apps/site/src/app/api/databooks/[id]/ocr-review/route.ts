@@ -1,7 +1,9 @@
 /**
  * API Databooks — seconde lecture OCR d'une planche.
  *
- *   GET /api/databooks/:id/relecture-ocr?planche=12   (admin connecté ou jeton)
+ *   GET /api/databooks/:id/ocr-review?page=12   (admin connecté ou jeton)
+ *
+ * Ancienne adresse servie : `/api/databooks/:id/relecture-ocr?planche=12`.
  *
  * Le corpus est transcrit par dots.ocr, un modèle de vision autorégressif.
  * Cette route en fournit une **seconde lecture par un moteur d'une autre
@@ -55,7 +57,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   const id = parseDatabookId((await ctx.params).id);
   if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
 
-  const numero = Number(new URL(req.url).searchParams.get("planche"));
+  const query = new URL(req.url).searchParams;
+  const numero = Number(query.get("page") ?? query.get("planche"));
   if (!Number.isSafeInteger(numero) || numero <= 0) {
     return NextResponse.json({ error: "Numéro de planche invalide." }, { status: 400 });
   }
