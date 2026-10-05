@@ -26,19 +26,6 @@ function getOrCreateDb(): { client: postgres.Sql; db: ShenronDb } {
 	return { client: globalForDb.pgClient, db: globalForDb.pgDb };
 }
 
-// Proxies defer createDb until first access, so importing db does not throw when DATABASE_URL is unset
-const client: postgres.Sql = new Proxy({} as postgres.Sql, {
-	get(_target, prop, receiver) {
-		const actual = getOrCreateDb().client;
-		const value = Reflect.get(actual as any, prop, receiver);
-		return typeof value === "function" ? value.bind(actual) : value;
-	},
-	apply(_target, thisArg, argArray) {
-		const actual = getOrCreateDb().client;
-		return Reflect.apply(actual as any, thisArg, argArray);
-	},
-});
-
 export const db: ShenronDb = new Proxy({} as ShenronDb, {
 	get(_target, prop, receiver) {
 		const actual = getOrCreateDb().db;

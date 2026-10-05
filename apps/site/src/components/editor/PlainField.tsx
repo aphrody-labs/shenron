@@ -39,7 +39,6 @@ export type PlainFieldProps = {
 	/** Clé de sauvegarde locale (brouillon anti-perte). */
 	draftKey?: string;
 	className?: string;
-	autoFocus?: boolean;
 	spellCheck?: boolean;
 	id?: string;
 };
@@ -65,7 +64,6 @@ export function PlainField({
 	monospace,
 	draftKey,
 	className,
-	autoFocus,
 	spellCheck = true,
 	id,
 }: PlainFieldProps) {
@@ -152,7 +150,6 @@ export function PlainField({
 				required={required}
 				disabled={disabled}
 				readOnly={readOnly}
-				
 				spellCheck={spellCheck}
 				aria-describedby={hint || maxLength ? `${fieldId}-desc` : undefined}
 				className={cn(

@@ -234,26 +234,4 @@ export async function forgetDatabook(id: number): Promise<void> {
 	}
 }
 
-/** Lit une fiche indexée. `null` si absente ou si Redis est indisponible. */
-async function readIndexedDatabook(id: number): Promise<Record<string, unknown> | null> {
-	const r = await redis();
-	if (!r) return null;
-	try {
-		const brut = await r.get(cleFiche(id));
-		return brut ? (JSON.parse(brut) as Record<string, unknown>) : null;
-	} catch {
-		return null;
-	}
-}
 
-/** Compte des entrées indexées — sonde de santé de l'index. */
-async function databookIndexStats(): Promise<{ total: number; disponible: boolean }> {
-	const r = await redis();
-	if (!r) return { total: 0, disponible: false };
-	try {
-		const n = await r.scard(CLE_TOUS);
-		return { total: Number(n) || 0, disponible: true };
-	} catch {
-		return { total: 0, disponible: false };
-	}
-}

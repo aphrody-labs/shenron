@@ -236,14 +236,6 @@ export async function countByStatus(): Promise<Record<string, number>> {
 	return Object.fromEntries(rows.map((r) => [r.status, Number(r.n)]));
 }
 
-async function getContribution(id: string): Promise<ContributionView | null> {
-	const [r] = await db
-		.select()
-		.from(wikiContributions)
-		.where(eq(wikiContributions.id, id))
-		.limit(1);
-	return r ? toView(r) : null;
-}
 
 /**
  * Accepte une proposition : applique la valeur au wiki et journalise la

@@ -12,8 +12,7 @@ import {
 	Globe,
 	Quote,
 	Building2,
-	Film,
-} from "lucide-react";
+	} from "lucide-react";
 
 export type StaffTier =
 	| "all"

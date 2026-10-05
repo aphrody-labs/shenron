@@ -290,14 +290,6 @@ async function getRevision(id: string): Promise<WikiRevision | null> {
 	return row ?? null;
 }
 
-/** Nombre de révisions d'une entité (badge « historique » du studio). */
-async function countRevisions(table: string, rowId: string): Promise<number> {
-	const [{ value = 0 } = { value: 0 }] = await db
-		.select({ value: count() })
-		.from(wikiRevisions)
-		.where(and(eq(wikiRevisions.tableName, table), eq(wikiRevisions.rowId, rowId)));
-	return Number(value);
-}
 
 /**
  * Retour arrière : restaure l'état `before` de la révision `id`. Enregistre une

@@ -103,6 +103,3 @@ export async function resolveVisitor(request: NextRequest): Promise<Visitor> {
 	return { isAdmin, authenticated: true, discordId };
 }
 
-async function isRequestAdmin(request: NextRequest): Promise<boolean> {
-	return (await resolveVisitor(request)).isAdmin;
-}

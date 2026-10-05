@@ -4,7 +4,7 @@
  * Expose les 4 timelines narratives (manga-canon, anime-toei, movies-dbz, xenoverse)
  * et leur décompte d'événements rattachés conformément au Sprint 3 de la refonte.
  */
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 
 export const runtime = "nodejs";
@@ -21,7 +21,7 @@ export function OPTIONS() {
 	return new NextResponse(null, { status: 204, headers: CORS });
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
 	try {
 		const timelines = (await dbUniverse.narrativeTimelines()) ?? [];
 

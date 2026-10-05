@@ -95,7 +95,3 @@ export function createMemoryRateLimiter({
 	};
 }
 
-const rateLimitHeaders = (decision: RateLimitDecision): Record<string, string> => ({
-	"Retry-After": String(decision.retryAfter),
-	"X-RateLimit-Remaining": String(decision.remaining),
-});

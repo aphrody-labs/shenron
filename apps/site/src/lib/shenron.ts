@@ -8,9 +8,7 @@ import {
 	botBattles,
 	botEpisodes,
 	botVoiceActors,
-	botGames,
 	botMangaChapters,
-	botMangaVolumes,
 	botMovies,
 	botPlanets,
 	botRaces,
@@ -237,27 +235,7 @@ export interface DBTechnique extends WithArticle {
 	}>;
 }
 
-interface DBGame {
-	id: number;
-	slug: string;
-	title: string;
-	titleJa: string | null;
-	platforms: string | null;
-	releaseDate: string | number | null;
-	publisher: string | null;
-	developer: string | null;
-	description: string | null;
-	cover: string | null;
-	officialUrl: string | null;
-}
 
-interface DBMangaVolume {
-	id: number;
-	series: string;
-	volumeNumber: number;
-	title: string | null;
-	cover: string | null;
-}
 
 export interface DBRace extends WithArticle {
 	id: number;
@@ -519,24 +497,7 @@ export async function getShenronUserResult(discordId: string): Promise<ShenronUs
 	}
 }
 
-/** Variante historique : `null` couvre indistinctement absent et indisponible. */
-async function getShenronUser(discordId: string): Promise<ShenronUser | null> {
-	const r = await getShenronUserResult(discordId);
-	return r.status === "ok" ? r.user : null;
-}
 
-async function getShenronShop(): Promise<ShenronShopItem[]> {
-	try {
-		const res = await fetch(`${SHENRON_API_URL}/api/public/shop`, {
-			next: { revalidate: 60 },
-		});
-		if (!res.ok) return [];
-		const data = await res.json();
-		return data.items || [];
-	} catch {
-		return [];
-	}
-}
 
 /** Catalogue + état économique (indice des prix, repères canon). */
 export async function getShenronShopCatalog(): Promise<{
@@ -679,28 +640,6 @@ export async function getShenronCharacterIds(limite?: number): Promise<number[]>
 	}
 }
 
-/** Variante complète (articles compris). Réservée à ce qui lit vraiment l'article. */
-async function getShenronCharacters(query?: string): Promise<DBCharacter[]> {
-	try {
-		const q = query?.trim();
-		const rows = q
-			? await db
-					.select()
-					.from(botCharacters)
-					.where(
-						and(
-							like(sql`lower(${botCharacters.name})`, `%${q.toLowerCase()}%`),
-							eq(botCharacters.visible, true)
-						)
-					)
-					.limit(25)
-			: await db.select().from(botCharacters).where(eq(botCharacters.visible, true));
-		return rows.map(mapCharacter);
-	} catch (e) {
-		console.error("[shenron] getShenronCharacters a échoué:", e);
-		return [];
-	}
-}
 
 export async function getShenronMovies(): Promise<DBMovie[]> {
 	try {
@@ -711,19 +650,6 @@ export async function getShenronMovies(): Promise<DBMovie[]> {
 	}
 }
 
-async function getShenronMovie(id: number): Promise<DBMovie | null> {
-	try {
-		const [m] = await db
-			.select()
-			.from(botMovies)
-			.where(and(eq(botMovies.id, id), eq(botMovies.visible, true)))
-			.limit(1);
-		return (m as DBMovie) ?? null;
-	} catch (e) {
-		console.error("[shenron] getShenronMovie a échoué:", e);
-		return null;
-	}
-}
 
 /**
  * Une version d'un personnage à une saga (`bot.db_character_variants`), déjà
@@ -1451,55 +1377,8 @@ export async function getShenronTechnique(slug: string): Promise<DBTechnique | n
 	}
 }
 
-async function getShenronGames(): Promise<DBGame[]> {
-	try {
-		return (await db.select().from(botGames).where(eq(botGames.visible, true))) as DBGame[];
-	} catch (e) {
-		console.error("[shenron] getShenronGames a échoué:", e);
-		return [];
-	}
-}
 
-/**
- * Fiche de jeu par slug. Le filtre `visible` n'est pas décoratif : c'est la
- * suppression logique du wiki (jamais de DELETE éditorial). Sans lui, cette
- * fonction était la seule lecture par clé de tout le module à rendre une fiche
- * masquée — tous ses voisins (`getShenronMovie`, `getShenronTechnique`,
- * `getShenronRace`, `getShenronPlanet`) le portent, comme `dbUniverse.game`.
- */
-async function getShenronGame(slug: string): Promise<DBGame | null> {
-	try {
-		const [g] = await db
-			.select()
-			.from(botGames)
-			.where(and(eq(botGames.slug, slug), eq(botGames.visible, true)))
-			.limit(1);
-		return (g as DBGame) ?? null;
-	} catch (e) {
-		console.error("[shenron] getShenronGame a échoué:", e);
-		return null;
-	}
-}
 
-async function getShenronManga(): Promise<DBMangaVolume[]> {
-	try {
-		const rows = await db
-			.select()
-			.from(botMangaVolumes)
-			.where(and(eq(botMangaVolumes.series, "DB"), eq(botMangaVolumes.visible, true)))
-			.orderBy(asc(botMangaVolumes.volumeNumber));
-		return rows.map((r) => ({
-			id: r.id,
-			series: r.series,
-			volumeNumber: r.volumeNumber ?? 0,
-			title: r.title,
-			cover: r.cover,
-		}));
-	} catch (e) {
-		console.error("[shenron] getShenronManga a échoué:", e);
-		return [];
-	}
-}
 
 export async function getShenronRaces(): Promise<DBRace[]> {
 	try {
@@ -1554,25 +1433,6 @@ export async function getTransformationsAvecArticle(): Promise<Array<{ id: numbe
 	}
 }
 
-/**
- * TOUTES les transformations visibles (id + slug), pour prérendre la rubrique
- * en entier — pas seulement les 23 qui portent un article. Une fiche sans
- * article rend désormais le même état vide que les autres rubriques
- * (`WikiFicheVide`) plutôt qu'un 404 : `getTransformationsAvecArticle` reste
- * utilisée là où seule l'existence d'un texte compte (index, cartes).
- */
-async function getShenronTransformationIds(): Promise<Array<{ id: number; slug: string }>> {
-	try {
-		const rows = await db
-			.select({ id: botTransformations.id, name: botTransformations.name })
-			.from(botTransformations)
-			.where(eq(botTransformations.visible, true));
-		return rows.map((r) => ({ id: r.id, slug: formatTransformationSlug(r) }));
-	} catch (e) {
-		console.error("[shenron] getShenronTransformationIds a échoué:", e);
-		return [];
-	}
-}
 
 export async function getShenronTransformation(
 	idOrSlug: number | string
@@ -1701,14 +1561,6 @@ export async function getShenronRace(
 	}
 }
 
-async function getShenronPlanets(): Promise<DBPlanet[]> {
-	try {
-		return (await db.select().from(botPlanets).where(eq(botPlanets.visible, true))).map(mapPlanet);
-	} catch (e) {
-		console.error("[shenron] getShenronPlanets a échoué:", e);
-		return [];
-	}
-}
 
 export async function getShenronPlanet(
 	idOrSlug: number | string
@@ -1751,51 +1603,8 @@ export async function getShenronPlanet(
 	}
 }
 
-/** Races dont le monde d'origine (`db_races.home_planet_id`) est cette planète. */
-async function getShenronPlanetRaces(planetId: number): Promise<DBRace[]> {
-	try {
-		return (await db
-			.select()
-			.from(botRaces)
-			.where(and(eq(botRaces.homePlanetId, planetId), eq(botRaces.visible, true)))) as DBRace[];
-	} catch (e) {
-		console.error("[shenron] getShenronPlanetRaces a échoué:", e);
-		return [];
-	}
-}
 
-/** Bornes manga/anime d'une saga (`bot.db_sagas`) — non portées par `dbUniverse.saga()`. */
-interface SagaBounds {
-	mangaVolumeStart: number | null;
-	mangaVolumeEnd: number | null;
-	mangaChapterStart: number | null;
-	mangaChapterEnd: number | null;
-	episodeSeries: string | null;
-	episodeStart: number | null;
-	episodeEnd: number | null;
-}
 
-async function getShenronSagaBounds(sagaId: number): Promise<SagaBounds | null> {
-	try {
-		const [s] = await db
-			.select({
-				mangaVolumeStart: botSagas.mangaVolumeStart,
-				mangaVolumeEnd: botSagas.mangaVolumeEnd,
-				mangaChapterStart: botSagas.mangaChapterStart,
-				mangaChapterEnd: botSagas.mangaChapterEnd,
-				episodeSeries: botSagas.episodeSeries,
-				episodeStart: botSagas.episodeStart,
-				episodeEnd: botSagas.episodeEnd,
-			})
-			.from(botSagas)
-			.where(and(eq(botSagas.id, sagaId), eq(botSagas.visible, true)))
-			.limit(1);
-		return s ?? null;
-	} catch (e) {
-		console.error("[shenron] getShenronSagaBounds a échoué:", e);
-		return null;
-	}
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // Runtime du bot (XP/zeni/shop/personas live) — reste sur l'API REST : ces

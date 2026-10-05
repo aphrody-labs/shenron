@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Flame, Shield, Layers } from "lucide-react";
+import { Layers } from "lucide-react";
 
 interface EvolutionTreeNode {
 	name: string;

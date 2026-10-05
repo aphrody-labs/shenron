@@ -399,17 +399,6 @@ export async function listReplies(
 	);
 }
 
-/** Nombre de commentaires visibles d'une cible (badge, listes, SSR). */
-async function countComments(target: SocialTarget): Promise<number> {
-	return db.$count(
-		contentComments,
-		and(
-			eq(contentComments.targetKind, target.kind),
-			eq(contentComments.targetId, target.id),
-			eq(contentComments.status, "visible")
-		)
-	);
-}
 
 /** Compteurs de commentaires pour un lot de cibles du même `kind`. */
 export async function countCommentsBatch(

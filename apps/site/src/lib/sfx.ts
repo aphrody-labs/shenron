@@ -224,74 +224,8 @@ function stop(key: SfxKey) {
 	if (h) h.stop();
 }
 
-const DEFAULT_FILE: Record<SfxKey, string | null> = { ...FILE };
 
-const SFX_KEY_ALIASES: Record<string, SfxKey> = {
-	click: "click",
-	select: "select",
-	whoosh: "whoosh",
-	kiCharge: "kiCharge",
-	"ki-charge": "kiCharge",
-	kamehameha: "kamehameha",
-	powerUp: "powerUp",
-	"power-up": "powerUp",
-	teleport: "teleport",
-	hit: "hit",
-	punch: "punch",
-	finalFlash: "finalFlash",
-	"final-flash": "finalFlash",
-	galick: "galick",
-	over9000: "over9000",
-	nimbus: "nimbus",
-	scream: "scream",
-	tapion: "tapion",
-};
 
-function configureSfx(
-	map: Partial<Record<string, string | null>> | null | undefined,
-	opts?: { volume?: number; enabled?: boolean; muted?: boolean; resetDefaults?: boolean }
-) {
-	if (opts?.volume != null) masterVolume = Math.max(0, Math.min(1, opts.volume));
-	if (opts?.enabled != null) enabled = opts.enabled;
-	if (opts?.muted != null) muted = opts.muted;
-	if (opts?.resetDefaults) {
-		for (const k of Object.keys(DEFAULT_FILE) as SfxKey[]) {
-			FILE[k] = DEFAULT_FILE[k];
-		}
-		howls.forEach((h) => {
-			try {
-				h.unload();
-			} catch {
-				/* ignore */
-			}
-		});
-		howls.clear();
-	}
-	if (map) {
-		for (const [k, v] of Object.entries(map)) {
-			const key = SFX_KEY_ALIASES[k] ?? (k as SfxKey);
-			if (!(key in FILE)) continue;
-			if (v !== undefined) {
-				// null → synth only (pas de fichier)
-				FILE[key] = v;
-				const old = howls.get(key);
-				if (old) {
-					old.unload();
-					howls.delete(key);
-				}
-			}
-		}
-	}
-	// re-apply volumes
-	for (const [key, h] of howls) {
-		h.volume((VOL[key] ?? 0.2) * masterVolume);
-	}
-	try {
-		howlerMod?.Howler.mute(muted || !enabled);
-	} catch {
-		/* ignore */
-	}
-}
 
 function unlockSfx() {
 	if (unlocked) {
@@ -379,4 +313,3 @@ export const sfx = {
 	draw: () => play("draw"),
 };
 
-type SfxName = keyof typeof sfx;

@@ -15,4 +15,3 @@ export function botAsset(path: string): string {
 	return `${ASSET_BASE}/assets/${sub}`;
 }
 
-const BOT_ASSETS_BASE = ASSET_BASE;

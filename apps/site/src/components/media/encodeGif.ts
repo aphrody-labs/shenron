@@ -89,22 +89,3 @@ export async function encodeFramesToGif(options: EncodeGifOptions): Promise<Blob
 	});
 }
 
-/**
- * Helper pratique : encode une suite de canvases (même dimension) en GIF.
- */
-async function encodeCanvasesToGif(
-	canvases: HTMLCanvasElement[],
-	opts?: { delay?: number; maxColors?: number; dither?: EncodeGifOptions["dither"] }
-): Promise<Blob> {
-	const first = canvases[0];
-	if (!first) {
-		throw new Error("encodeCanvasesToGif(): liste de canvases vide.");
-	}
-	return encodeFramesToGif({
-		width: first.width,
-		height: first.height,
-		maxColors: opts?.maxColors,
-		dither: opts?.dither,
-		frames: canvases.map((c) => ({ data: c, delay: opts?.delay ?? 100 })),
-	});
-}

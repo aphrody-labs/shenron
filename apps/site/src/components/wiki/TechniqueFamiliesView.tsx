@@ -3,15 +3,14 @@
 import { useMemo, useState } from "react";
 
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import { Sparkles, Flame, Zap, Shield, Swords, Layers, ChevronDown, ChevronUp } from "lucide-react";
+import { Layers, ChevronDown, ChevronUp } from "lucide-react";
 import type { TechniqueCard } from "./TechniqueGrid";
 
 interface TechniqueFamily {
 	id: string;
 	name: string;
 	school: string;
-	description: string;
-	icon: any;
+	description: string;
 	color: string;
 	badge: string;
 	filterRegex: RegExp;
@@ -23,8 +22,7 @@ const FAMILIES: TechniqueFamily[] = [
 		name: "Lignée & Variantes du Kaméhaméha",
 		school: "École Tortue (Kamé Sennin)",
 		description:
-			"L'attaque emblématique de l'univers Dragon Ball. Créée par Maître Roshi après 50 ans de méditation, perfectionnée par Son Goku, Gohan, Krillin, Yamcha et déclinée en plus de 30 variantes dévastatrices.",
-		icon: Zap,
+			"L'attaque emblématique de l'univers Dragon Ball. Créée par Maître Roshi après 50 ans de méditation, perfectionnée par Son Goku, Gohan, Krillin, Yamcha et déclinée en plus de 30 variantes dévastatrices.",
 		color: "from-blue-950/40 via-cyan-950/20 to-black border-cyan-500/30 text-cyan-300",
 		badge: "32+ Variantes Répertoriées",
 		filterRegex: /kamehameha|kaméhaméha/i,
@@ -34,8 +32,7 @@ const FAMILIES: TechniqueFamily[] = [
 		name: "Arbre d'Attaque Royal Saiyan (Vegeta)",
 		school: "Lignée Royale Saiyan",
 		description:
-			"L'arsenal destructeur du Prince des Saiyans : du Galick Gun terrestre au Final Flash capable de transpercer la croûte planétaire, en passant par le Big Bang Attack et le Gamma Burst Flash.",
-		icon: Flame,
+			"L'arsenal destructeur du Prince des Saiyans : du Galick Gun terrestre au Final Flash capable de transpercer la croûte planétaire, en passant par le Big Bang Attack et le Gamma Burst Flash.",
 		color: "from-amber-950/40 via-yellow-950/20 to-black border-amber-500/30 text-amber-300",
 		badge: "Arsenal du Prince",
 		filterRegex: /galick|final flash|big bang|gamma burst|explosion finale|canon garric/i,
@@ -45,8 +42,7 @@ const FAMILIES: TechniqueFamily[] = [
 		name: "Enseignements Divins de Maître Kaiō",
 		school: "Royaume des Morts (Kaiō du Nord)",
 		description:
-			"Les arts martiaux cosmiques enseignés à Son Goku : le Kaiō-ken (multiplication de ki mettant le corps à rude épreuve) et le Genkidama (concentration de l'énergie vitale de la nature et des êtres vivants).",
-		icon: Sparkles,
+			"Les arts martiaux cosmiques enseignés à Son Goku : le Kaiō-ken (multiplication de ki mettant le corps à rude épreuve) et le Genkidama (concentration de l'énergie vitale de la nature et des êtres vivants).",
 		color: "from-red-950/40 via-rose-950/20 to-black border-rose-500/30 text-rose-300",
 		badge: "Arts Divins du Ki",
 		filterRegex: /kaioken|kaiō-ken|genkidama|genki dama|sphère genki/i,
@@ -56,8 +52,7 @@ const FAMILIES: TechniqueFamily[] = [
 		name: "Lignée Démoniaque & Namek (Piccolo / Gohan)",
 		school: "Clan Démon & Guerriers Nameks",
 		description:
-			"Attaques perçantes et concentrées de Piccolo et Gohan : le redoutable Makankōsappō (perceur d'armure), le Masenkō hérité par Gohan enfant, et la Grenade Infernale (Gekiretsu Kōdan).",
-		icon: Swords,
+			"Attaques perçantes et concentrées de Piccolo et Gohan : le redoutable Makankōsappō (perceur d'armure), le Masenkō hérité par Gohan enfant, et la Grenade Infernale (Gekiretsu Kōdan).",
 		color: "from-purple-950/40 via-indigo-950/20 to-black border-purple-500/30 text-purple-300",
 		badge: "Attaques Perçantes",
 		filterRegex: /makanko|makankōsappō|masenko|masenkō|grenade infernale|gekiretsu|bakuriki/i,
@@ -67,8 +62,7 @@ const FAMILIES: TechniqueFamily[] = [
 		name: "École de la Grue (Tsuru-sen-nin)",
 		school: "Dojo de Maître Shen (Tenshinhan & Chaozu)",
 		description:
-			"Le rival ancestral de l'École Tortue : le Dodonpa létal, la danse de l'air (Bukūjutsu) et le terrible Kikōhō (Canon de l'Esprit) capable de repousser des ennemis infiniment plus puissants au prix de l'énergie vitale.",
-		icon: Shield,
+			"Le rival ancestral de l'École Tortue : le Dodonpa létal, la danse de l'air (Bukūjutsu) et le terrible Kikōhō (Canon de l'Esprit) capable de repousser des ennemis infiniment plus puissants au prix de l'énergie vitale.",
 		color: "from-emerald-950/40 via-green-950/20 to-black border-emerald-500/30 text-emerald-300",
 		badge: "École Rivale",
 		filterRegex: /dodonpa|kikoho|kikōhō|shiyoken|shiyōken|bukuujutsu|canon de l'esprit/i,
@@ -78,8 +72,7 @@ const FAMILIES: TechniqueFamily[] = [
 		name: "Lignée Impériale de Freezer (Clan Cold)",
 		school: "Armée Galactique de Freezer",
 		description:
-			"Attaques sadiques et impériales d'extermination de planètes : le Rayon de la Mort (Death Beam) tiré du bout du doigt, la Supernova qui réduisit la planète Vegeta en cendres, et la Death Ball.",
-		icon: Zap,
+			"Attaques sadiques et impériales d'extermination de planètes : le Rayon de la Mort (Death Beam) tiré du bout du doigt, la Supernova qui réduisit la planète Vegeta en cendres, et la Death Ball.",
 		color: "from-fuchsia-950/40 via-purple-950/20 to-black border-fuchsia-500/30 text-fuchsia-300",
 		badge: "Extermination Cosmique",
 		filterRegex: /death beam|death ball|supernova|rayon de la mort|boule de la mort|cage de la mort/i,
@@ -115,8 +108,7 @@ export function TechniqueFamiliesView({
 			</div>
 
 			<div className="space-y-4">
-				{FAMILIES.map((fam) => {
-					const Icon = fam.icon;
+				{FAMILIES.map((fam) => {
 					const list = grouped.get(fam.id) ?? [];
 					const isExpanded = expandedFamily === fam.id;
 

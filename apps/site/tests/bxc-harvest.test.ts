@@ -12,18 +12,17 @@ const INV = join(ROOT, "scripts/inventaires/bxc-asset-inventory.json");
 const SCRIPT = join(ROOT, "scripts/bxc-asset-harvest.ts");
 
 describe("vrai bxc monorepo", () => {
-	test("script harvest existe et référence execBxc / BXC_DIR / rag-harvest pattern", () => {
+	test("script harvest existe et passe par Aphrody Web (rag-harvest pattern)", () => {
 		expect(existsSync(SCRIPT)).toBe(true);
 		const src = readFileSync(SCRIPT, "utf8");
-		expect(src.includes("BXC_DIR")).toBe(true);
-		expect(src.includes("execBxc")).toBe(true);
+		expect(src.includes("@shenron/pipeline/aphrody")).toBe(true);
 		expect(src.includes("rag-harvest")).toBe(true);
 		// Doit invoquer les sous-commandes bxc réelles
 		expect(src.includes('"scrape"') || src.includes("scrape")).toBe(true);
 		expect(src.includes('"recon"') || src.includes("recon")).toBe(true);
 		expect(src.includes('"mirror"') || src.includes("mirror")).toBe(true);
 		// Ne doit PAS se contenter d'un fetch raw comme moteur principal
-		expect(src.includes("BXC_BIN")).toBe(true);
+		expect(src.includes("aphrodyWebScrape")).toBe(true);
 	});
 
 	test("inventaire bxc-asset-inventory prouve un run réel via bxc", async () => {

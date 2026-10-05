@@ -1,14 +1,3 @@
-/**
- * Japonais — normalisation et détection d'écriture. Règles pures.
- *
- * Le corpus des databooks est japonais à 60 % (mesuré sur 300 planches,
- * 243 633 signes). Aucune des trois écritures ne se comporte comme du latin :
- * pas d'espaces entre les mots, deux syllabaires plus les idéogrammes, et une
- * ponctuation propre qui varie d'une source à l'autre.
- */
-
-/** Hiragana — syllabaire des mots grammaticaux et des lectures. */
-const HIRAGANA = /[ぁ-ゟ]/;
 /** Katakana — emprunts, onomatopées, et l'essentiel des noms propres de fiction. */
 export const KATAKANA = /[゠-ヿｦ-ﾟ]/;
 /** Idéogrammes (kanji), plage unifiée CJK. */

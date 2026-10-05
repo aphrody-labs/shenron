@@ -81,7 +81,3 @@ export async function indexLexiqueDomaine(): Promise<IndexLexique> {
 	return cache!.index;
 }
 
-/** Vide le cache — à appeler après une édition du wiki qui touche `name_ja`. */
-function oublierLexique(): void {
-	cache = null;
-}

@@ -13,7 +13,7 @@ import {
 	corrigerSosiesEtIntrusions,
 	signalerIntrusions,
 	SOSIES_VALIDES_A_LA_MAIN,
-} from "./sosies-intrusions";
+} from "../src/lib/databooks-ocr/sosies-intrusions";
 
 /**
  * Oracle de test : un lexique fermé qui tient lieu de kuromoji + JMdict.

@@ -64,8 +64,7 @@ export function VoiceActorsGrid({
 				.some((value) => value!.toLowerCase().includes(q));
 		});
 	}, [voiceActors, query, selectedNat, selectedSeries]);
-
-	const roleCount = voiceActors.reduce((total, actor) => total + actor.roles.length, 0);
+
 	const vfCount = voiceActors.filter((actor) => actor.nationality === "fr").length;
 	const voCount = voiceActors.filter((actor) => actor.nationality === "ja").length;
 	const vaCount = voiceActors.filter((actor) => actor.nationality === "en").length;

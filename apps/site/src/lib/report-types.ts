@@ -12,9 +12,7 @@ export const REPORT_CATEGORIES = [
 	{ key: "autre", label: "Autre" },
 ] as const;
 
-type ReportCategory = (typeof REPORT_CATEGORIES)[number]["key"];
 
-const REPORT_CATEGORY_KEYS = REPORT_CATEGORIES.map((c) => c.key) as ReportCategory[];
 
 export function reportCategoryLabel(key: string): string {
 	return REPORT_CATEGORIES.find((c) => c.key === key)?.label ?? key;
@@ -27,9 +25,7 @@ export const REPORT_STATUSES = [
 	{ key: "closed", label: "Fermé", tone: "muted" },
 ] as const;
 
-type ReportStatus = (typeof REPORT_STATUSES)[number]["key"];
 
-const REPORT_STATUS_KEYS = REPORT_STATUSES.map((s) => s.key) as ReportStatus[];
 
 export function reportStatusLabel(key: string): string {
 	return REPORT_STATUSES.find((s) => s.key === key)?.label ?? key;

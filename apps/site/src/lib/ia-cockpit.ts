@@ -18,9 +18,7 @@
 import {
 	firstHitRank,
 	type GoldCase as SharedGoldCase,
-	isHit,
 	ndcgAtK,
-	normalizeUrl,
 	RANKS,
 } from "@shenron/pipeline/ai/eval";
 
@@ -431,9 +429,6 @@ export function goldCaseView(c: GoldCase): GoldCaseView {
 	return { q: c.q, expected };
 }
 
-/** Comparable URL path: no origin, no trailing slash, lower case. */
-const normalizeRagUrl: (url: string) => string = normalizeUrl;
-
 export interface RetrievalHit {
 	title: string;
 	snippet: string;
@@ -443,10 +438,6 @@ export interface RetrievalHit {
 
 function evalHit(hit: RetrievalHit): { title: string; snippet: string; url: string } {
 	return { title: hit.title, snippet: hit.snippet, url: hit.url ?? "" };
-}
-
-function isGoldHit(hit: RetrievalHit, c: GoldCase): boolean {
-	return isHit(evalHit(hit), c);
 }
 
 const EVAL_RANKS = RANKS;

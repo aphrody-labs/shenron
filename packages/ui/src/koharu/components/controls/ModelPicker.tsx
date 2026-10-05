@@ -114,7 +114,7 @@ export function ModelPicker({
         viewportClassName='h-auto max-h-64 min-w-0 overscroll-contain'
       >
         <div className='grid min-w-0 gap-0.5 py-0.5'>
-          {options.map(({ model, quantization }, index) => {
+          {options.map(({ model, quantization }) => {
             const key = modelKey(model)
             const expandable = !quantization && model.quantizations.length > 0
             const downloaded =

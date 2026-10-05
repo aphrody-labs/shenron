@@ -6,7 +6,7 @@ import { T } from "@/components/T";
 /**
  * L'arbitre de canonicité sur l'accueil.
  *
- * Un `<form method="get">` vers `/wiki/canon` — même contrat que `BarreCanon` :
+ * Un `<form method="get">` vers `/wiki/canon` (`/wiki/canon?q=…`) :
  * navigation faite par le navigateur, résultat rendu côté serveur, page
  * partageable par son URL, lisible sans JavaScript. Le bloc est un composant
  * serveur pur : il reçoit la doctrine déjà lue par la page (pas de cookie, pas

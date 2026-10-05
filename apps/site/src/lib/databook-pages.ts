@@ -103,19 +103,6 @@ export async function ecrireTranscription(
 	return res.length > 0;
 }
 
-/**
- * Lit la traduction française d'UNE planche (`null` si elle n'en a pas).
- */
-async function lireTraduction(bookId: string, numero: number): Promise<string | null> {
-	const idx = await indexDePlanche(bookId, numero);
-	if (idx < 0) return null;
-	const [r] = (await db.execute(sql`
-		select pages->${idx}::int->>'text_fr' as texte
-		from bot.db_databooks
-		where id = ${bookId}::bigint
-	`)) as unknown as Array<{ texte: string | null }>;
-	return r?.texte ?? null;
-}
 
 /**
  * Écrit — ou retire — la traduction française d'UNE planche.
@@ -160,61 +147,4 @@ export async function ecrireTraduction(
 	return res.length > 0;
 }
 
-/**
- * Pose — ou retire — le drapeau « relue à l'image » sur UNE planche.
- *
- * Même écriture chirurgicale que la transcription, et pour la même raison : ce
- * geste arrive pendant qu'un dépôt de transcription tourne peut-être sur le
- * même ouvrage.
- *
- * Retirer le drapeau efface les trois clés au lieu d'écrire `false` : le juge
- * (`estPlancheVerifiee`) ne lit que la présence de `verifiee === true`, et
- * laisser derrière soi le nom du relecteur d'un acquittement annulé
- * raconterait une histoire fausse.
- */
-async function marquerPlancheVerifiee(
-	bookId: string,
-	numero: number,
-	verifiee: boolean,
-	par: string
-): Promise<boolean> {
-	assertDatabooksWritable();
-	const idx = await indexDePlanche(bookId, numero);
-	if (idx < 0) return false;
-	const chemin = `{${idx}}`;
-	const res = (await db.execute(
-		verifiee
-			? sql`
-				update bot.db_databooks
-				set pages = jsonb_set(
-					pages, ${chemin}::text[],
-					(pages->${idx}::int) || jsonb_build_object(
-						'verifiee', true,
-						'verifiee_par', ${par}::text,
-						'verifiee_le', ${Date.now()}::bigint), true)
-				where id = ${bookId}::bigint
-				  and jsonb_typeof(pages->${idx}::int) = 'object'
-				returning id`
-			: sql`
-				update bot.db_databooks
-				set pages = jsonb_set(
-					pages, ${chemin}::text[],
-					(pages->${idx}::int) - 'verifiee' - 'verifiee_par' - 'verifiee_le', true)
-				where id = ${bookId}::bigint
-				  and jsonb_typeof(pages->${idx}::int) = 'object'
-				returning id`
-	)) as unknown as Array<{ id: unknown }>;
-	return res.length > 0;
-}
 
-/** La planche porte-t-elle le drapeau de relecture ? (`null` si elle n'existe pas) */
-async function lireVerifiee(bookId: string, numero: number): Promise<boolean | null> {
-	const idx = await indexDePlanche(bookId, numero);
-	if (idx < 0) return null;
-	const [r] = (await db.execute(sql`
-		select (pages->${idx}::int->>'verifiee') = 'true' as verifiee
-		from bot.db_databooks
-		where id = ${bookId}::bigint
-	`)) as unknown as Array<{ verifiee: boolean | null }>;
-	return r?.verifiee === true;
-}

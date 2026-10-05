@@ -94,10 +94,6 @@ export function apiUrl(path = ""): string {
 	return joinUrl(API_URL, path);
 }
 
-/** Construit une URL absolue sur l'hôte des assets bot. */
-function assetBaseUrl(path = ""): string {
-	return joinUrl(ASSET_BASE, path);
-}
 
 /**
  * Base de l'API du bot pour les appels **serveur** (client admin

@@ -12,7 +12,7 @@
 import fr from "../../../messages/fr.json";
 import en from "../../../messages/en.json";
 import ja from "../../../messages/ja.json";
-import { DEFAULT_LOCALE, LOCALES_INFO, type SupportedLocale } from "./types";
+import { DEFAULT_LOCALE, type SupportedLocale } from "./types";
 
 export * from "./types";
 
@@ -26,10 +26,6 @@ export function getDictionary(locale?: string | null): Dictionary {
 	return DICTIONARIES[loc] ?? DICTIONARIES[DEFAULT_LOCALE];
 }
 
-/** All dictionaries, for a client provider that switches without a reload. */
-function getAllDictionaries(): Record<SupportedLocale, Dictionary> {
-	return DICTIONARIES;
-}
 
 /** Normalises and validates a language code against the supported list. */
 export function normalizeLocale(locale?: string | null): SupportedLocale {
@@ -61,8 +57,5 @@ export function negotiateLocale(acceptLanguage?: string | null): SupportedLocale
 	return DEFAULT_LOCALE;
 }
 
-function getLocaleInfo(locale?: string | null) {
-	return LOCALES_INFO[normalizeLocale(locale)];
-}
 
 export const COOKIE_LOCALE_NAME = "NEXT_LOCALE";

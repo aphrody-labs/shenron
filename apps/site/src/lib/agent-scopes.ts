@@ -20,10 +20,6 @@ export const SCOPE_DESCRIPTIONS: Record<AgentScope, string> = {
 	moderate: "Lire la file de modération, masquer ou épingler un message.",
 };
 
-function isAgentScope(value: unknown): value is AgentScope {
-	return typeof value === "string" && (AGENT_SCOPES as readonly string[]).includes(value);
-}
-
 /**
  * Normalise une liste de portées venue d'un formulaire ou d'un appel d'API.
  *

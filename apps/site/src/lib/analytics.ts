@@ -29,12 +29,6 @@ export function isAnalyticsRange(v: unknown): v is AnalyticsRange {
 	return typeof v === "string" && (ANALYTICS_RANGES as readonly string[]).includes(v);
 }
 
-const RANGE_LABELS: Record<AnalyticsRange, string> = {
-	today: "Aujourd'hui",
-	"7d": "7 jours",
-	"30d": "30 jours",
-	"90d": "90 jours",
-};
 
 /** Condition SQL de la fenêtre courante (range vient d'une whitelist → sûr). */
 function currentWindow(range: AnalyticsRange): SQL {

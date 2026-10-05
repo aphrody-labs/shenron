@@ -387,11 +387,6 @@ export function MangaVolumeGrid({
 	else if (totalReadChapters >= 10) currentRank = "Guerrier Saiyan";
 	else if (totalReadChapters >= 1) currentRank = "Disciple de Tortue Géniale";
 
-	const tabBtn =
-		"flex items-center gap-2 px-4 py-2 border-2 border-transparent text-xs font-sans font-extrabold uppercase tracking-wider text-white/70 hover:text-white transition-all whitespace-nowrap rounded-lg";
-	const tabBtnActive =
-		"flex items-center gap-2 px-4 py-2 border-2 border-black bg-dbz-orange text-black text-xs font-sans font-extrabold uppercase tracking-wider shadow-[2.5px_2.5px_0px_#000] transition-all whitespace-nowrap rounded-lg";
-
 	return (
 		<div className="space-y-10">
 			{/* Banner "Reprendre la lecture" */}

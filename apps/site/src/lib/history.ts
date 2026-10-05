@@ -93,15 +93,6 @@ export function forgetHistory(kind: HistoryKind, id: string): void {
 	}
 }
 
-function clearHistory(): void {
-	if (typeof window === "undefined") return;
-	try {
-		window.localStorage.removeItem(KEY);
-		window.dispatchEvent(new CustomEvent(HISTORY_EVENT));
-	} catch {
-		/* ignore */
-	}
-}
 
 /** Événement émis à chaque écriture — écouté par les rails montés. */
 export const HISTORY_EVENT = "dbfr:history";

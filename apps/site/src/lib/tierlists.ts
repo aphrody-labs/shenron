@@ -70,8 +70,6 @@ export function getTierlistTemplate(key: string): TierlistTemplate | undefined {
 	return TIERLIST_TEMPLATES.find((t) => t.key === key);
 }
 
-/** Libellé de la catégorie « ajouts perso » (images uploadées / URL / texte). */
-const CUSTOM_CATEGORY = "Mes ajouts";
 
 /**
  * Range un personnage du wiki dans une catégorie française lisible à partir de
@@ -215,7 +213,6 @@ export async function getAdminCharacterPool(limit = 400): Promise<TierlistItem[]
 	}
 }
 
-type TierlistWithAuthor = Awaited<ReturnType<typeof listTierlists>>[number];
 
 export async function listTierlists(limit = 60) {
 	return db.query.tierlists.findMany({

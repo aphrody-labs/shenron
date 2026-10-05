@@ -1906,13 +1906,7 @@ export function analyzeCanon(
 	};
 }
 
-function getTierLabel(tier: CanonTier, config: CanonConfig = DEFAULT_CANON_CONFIG): string {
-	return rangConfig(config, tier).label;
-}
 
-function getTierColor(tier: CanonTier, config: CanonConfig = DEFAULT_CANON_CONFIG): string {
-	return rangConfig(config, tier).couleur;
-}
 
 // ── Résolution défensive du document stocké ─────────────────────────────────
 

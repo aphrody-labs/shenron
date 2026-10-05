@@ -225,7 +225,3 @@ export async function listExternalSourceSitemapRecords(): Promise<ExternalSource
 	}
 }
 
-/** Compatibilité : alimentation du rail de provenance sans filtre. */
-function readExternalSourceCatalog(limit = 18): Promise<ExternalSourceCatalog> {
-	return searchExternalSources({ limit });
-}

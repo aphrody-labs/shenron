@@ -627,4 +627,3 @@ export const botAdmin = {
 		botRequest(`/api/levels/rewards/${level}`, { method: "DELETE" }),
 };
 
-const BOT_API_URL = API;

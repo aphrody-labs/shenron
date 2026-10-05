@@ -6,7 +6,6 @@ import { ClientGatedWrap } from "@/components/GatedClientLink";
 import {
 	DragonRadar,
 	Livre,
-	Etoile,
 	Kame,
 } from "@/components/icones";
 import { assetUrl } from "@/lib/assets";

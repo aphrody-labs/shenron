@@ -25,12 +25,6 @@ const VARIANTS = variantsJson as Record<string, VariantRecord>;
 
 const key = (p: string) => p.trim().replace(/^\.?\/+/, "");
 
-/** Known dimensions of a DB path, or null. */
-function knownDimensions(path: string | null | undefined): { w: number; h: number } | null {
-	if (!path) return null;
-	const r = VARIANTS[key(path)];
-	return r ? { w: r.w, h: r.h } : null;
-}
 
 /**
  * Picks the best resolution among candidate DB paths (and their recorded larger

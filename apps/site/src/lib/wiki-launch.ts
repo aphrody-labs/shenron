@@ -522,16 +522,7 @@ export function effectiveOpenKeys(stored: readonly string[]): Set<string> {
 	return new Set([...ALWAYS_OPEN_KEYS, ...stored]);
 }
 
-/** Tous les préfixes d'URL ouverts pour un ensemble de clés. */
-function openPrefixes(stored: readonly string[]): string[] {
-	const open = effectiveOpenKeys(stored);
-	return LAUNCH_CATEGORIES.filter((c) => open.has(c.key)).flatMap((c) => c.prefixes);
-}
 
-/** Un pathname /wiki est-il publiquement ouvert selon les clés fournies ? */
-function isPathOpen(pathname: string, stored: readonly string[]): boolean {
-	return openPrefixes(stored).some((p) => pathname === p || pathname.startsWith(`${p}/`));
-}
 
 /**
  * Configuration d'accès minimale nécessaire pour trancher « cette URL est-elle

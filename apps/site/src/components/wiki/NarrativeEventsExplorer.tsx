@@ -13,12 +13,9 @@ import {
 	Search,
 	X,
 	ShieldAlert,
-	Flame,
 	GitBranch,
 	LayoutGrid,
-	ExternalLink,
-	Film,
-} from "lucide-react";
+	} from "lucide-react";
 
 export interface TournamentItem {
 	id: number;

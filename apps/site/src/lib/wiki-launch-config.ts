@@ -16,7 +16,6 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { wikiLaunch } from "@/db/schema";
-import { decideAccess, type AccessVerdict } from "@shenron/auth/policy";
 import {
 	ALL_ENTRIES,
 	ALWAYS_OPEN_KEYS,
@@ -151,26 +150,3 @@ export async function saveLaunchConfig(
 	return data;
 }
 
-/** Persiste l'ensemble des clés ouvertes (compat : /api/wiki-launch historique). */
-async function saveOpenCategoryKeys(keys: string[], by?: string | null): Promise<string[]> {
-	const saved = await saveLaunchConfig({ openKeys: keys }, by);
-	return saved.openKeys;
-}
-
-/** Visiteur tel que le proxy le résout (`resolveVisitor`) plus ses rôles Discord. */
-interface LaunchVisitor {
-	isAdmin: boolean;
-	authenticated: boolean;
-	discordId?: string | null;
-	roleIds?: readonly string[];
-}
-
-/**
- * Décision d'accès à une rubrique (`decideAccess`, `@shenron/auth/policy`).
- * Mode « rôles » sans aucun rôle → retombe sur « connectés » (`emptyRoles:
- * "members"`), comme `sanitizeAccess`. `deny-anonymous` permet au proxy de
- * proposer la connexion plutôt qu'un refus sec.
- */
-function decideLaunchAccess(rule: AccessRule, visitor: LaunchVisitor): AccessVerdict {
-	return decideAccess(rule, visitor, { emptyRoles: "members" });
-}

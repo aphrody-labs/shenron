@@ -87,8 +87,3 @@ export function WikiAdminActions({
 	);
 }
 
-/**
- * @deprecated Utiliser `WikiEditBar`, qui rend ces actions ET le chemin de
- * contribution communautaire. Conservé le temps que les pages migrent.
- */
-const WikiAdminBar = WikiAdminActions;

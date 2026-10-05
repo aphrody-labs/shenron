@@ -51,7 +51,6 @@ import {
 	botContributorCredits,
 	botNarrativeTimelines,
 	botNarrativeEvents,
-	botNarrativeEventRelations,
 	botMediaWorks,
 	botMediaEditions,
 	botMediaVolumes,

@@ -72,7 +72,6 @@ export interface DatabookQuery {
 ;
 ;
 
-const DATABOOK_KINDS = ["databook", "interview", "artbook"] as const;
 export const DATABOOK_LIMIT_MAX = 200;
 const LIMIT_DEFAUT = 50;
 

@@ -3,10 +3,8 @@ import { FlecheCoin } from "@/components/icones";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { assetUrl } from "@/lib/assets";
 import type { HomeJourneyConfig } from "@/lib/home-scenes";
-import { MOBILE_MENU_DESTINATIONS } from "@/lib/site-menu";
 import type { AccessSnapshot } from "@/lib/wiki-launch";
 
-const HOME_MENU_HREFS = MOBILE_MENU_DESTINATIONS.map((destination) => destination.href);
 
 /**
  * Atlas des destinations non-média. Les quatre supports ont leurs vrais rails

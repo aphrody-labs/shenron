@@ -164,17 +164,3 @@ export function domainForPath(pathname: string): SiteDomain | null {
 	return best;
 }
 
-/** Domaine correspondant à un chemin d'administration (barre de retour public). */
-function domainForAdminPath(pathname: string): SiteDomain | null {
-	let best: SiteDomain | null = null;
-	let bestLen = -1;
-	for (const d of SITE_DOMAINS) {
-		const a = d.adminHref;
-		if (!a) continue;
-		if ((pathname === a || pathname.startsWith(`${a}/`)) && a.length > bestLen) {
-			best = d;
-			bestLen = a.length;
-		}
-	}
-	return best;
-}
