@@ -6,6 +6,21 @@
  * (honojs/middleware#952). Runtime class: `pure`.
  */
 import { z } from "zod";
+import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
+import {
+  ConversationDetail,
+  ConversationListResponse,
+  SyncPullQuery,
+  SyncPullResponse,
+  SyncPushBody,
+  SyncPushResponse,
+  VfsInfoResponse,
+  VfsListResponse,
+  VfsPathQuery,
+  VfsQueryBody,
+  VfsQueryResponse,
+  VfsStatResponse,
+} from "./sync";
 import {
   BotAdminStats,
   BotEconomyStats,
@@ -36,7 +51,8 @@ import {
   WikiListResponse,
 } from "./schemas";
 
-export type EndpointAuth = "public" | "admin" | "acting-user";
+/** `owner`: the host resolves the conversation owner (session, signed bot user, local desktop). */
+export type EndpointAuth = "public" | "admin" | "acting-user" | "owner";
 export type EndpointCache = { maxAgeSeconds: number } | "no-store";
 
 export interface EndpointSpec {
@@ -51,6 +67,14 @@ export interface EndpointSpec {
   cache?: EndpointCache;
   /** Response is a page (`rows`/`items` + `total`/`limit`/`offset`), read leniently by the client. */
   paginated?: boolean;
+  /** Server-sent events (`text/event-stream`); `response` is the non-streaming JSON form. */
+  stream?: "sse";
+  /** Raw bytes (`response` documents the error envelope only). */
+  binary?: boolean;
+  /** WebSocket upgrade route. */
+  websocket?: boolean;
+  /** Served by the backend API server (`@shenron/api/server`); false for bot-owned historical routes. */
+  native?: boolean;
 }
 
 /** `{category}` path parameter. */
@@ -60,6 +84,10 @@ export const WikiEntityParams = z.object({
   category: WikiCategoryName,
   idOrSlug: z.string().min(1).max(200),
 });
+/** `{id}` of a conversation. */
+export const ConversationParams = z.object({ id: z.string().regex(/^[A-Za-z0-9_:-]{8,64}$/) });
+/** `{streamId}` of a chat stream (resumption). */
+export const StreamParams = z.object({ streamId: z.string().regex(/^[A-Za-z0-9_-]{8,64}$/) });
 /** Numeric `{id}` path parameter of the cockpit routes. */
 export const NumericIdParams = z.object({ id: z.number().int().positive() });
 /** `{table}` path parameter of the bot table explorer. */
@@ -68,8 +96,168 @@ export const TableParams = z.object({ table: z.string().min(1).max(100) });
 const WIKI_CACHE = { maxAgeSeconds: 3600 } as const;
 
 export const endpoints = {
+  openApi: {
+    id: "openApi",
+    method: "get",
+    path: "/api/public/openapi.json",
+    auth: "public",
+    response: z.looseObject({ openapi: z.string() }).meta({ id: "OpenApiDocument" }),
+    cache: { maxAgeSeconds: 3600 },
+    native: true,
+  },
+  chat: {
+    id: "chat",
+    method: "post",
+    path: "/api/v1/chat",
+    auth: "owner",
+    body: ChatRequest,
+    response: ChatResponse,
+    cache: "no-store",
+    stream: "sse",
+    native: true,
+  },
+  chatResume: {
+    id: "chatResume",
+    method: "get",
+    path: "/api/v1/chat/streams/{streamId}",
+    auth: "owner",
+    params: StreamParams,
+    response: ChatResponse,
+    cache: "no-store",
+    stream: "sse",
+    native: true,
+  },
+  chatCancel: {
+    id: "chatCancel",
+    method: "post",
+    path: "/api/v1/chat/streams/{streamId}/cancel",
+    auth: "owner",
+    params: StreamParams,
+    response: z.object({ ok: z.literal(true) }).meta({ id: "CancelResponse" }),
+    cache: "no-store",
+    native: true,
+  },
+  chatSocket: {
+    id: "chatSocket",
+    method: "get",
+    path: "/api/v1/chat/ws",
+    auth: "owner",
+    response: z.object({}).meta({ id: "WebSocketUpgrade" }),
+    cache: "no-store",
+    websocket: true,
+    native: true,
+  },
+  models: {
+    id: "models",
+    method: "get",
+    path: "/api/v1/models",
+    auth: "public",
+    response: ModelsResponse,
+    cache: { maxAgeSeconds: 10 },
+    native: true,
+  },
+  ocr: {
+    id: "ocr",
+    method: "post",
+    path: "/api/v1/ocr",
+    auth: "owner",
+    body: OcrRequest,
+    response: OcrResponse,
+    cache: "no-store",
+    native: true,
+  },
+  syncPush: {
+    id: "syncPush",
+    method: "post",
+    path: "/api/v1/sync/conversations",
+    auth: "owner",
+    body: SyncPushBody,
+    response: SyncPushResponse,
+    cache: "no-store",
+    native: true,
+  },
+  syncPull: {
+    id: "syncPull",
+    method: "get",
+    path: "/api/v1/sync/conversations",
+    auth: "owner",
+    query: SyncPullQuery,
+    response: SyncPullResponse,
+    cache: "no-store",
+    native: true,
+  },
+  conversations: {
+    id: "conversations",
+    method: "get",
+    path: "/api/v1/conversations",
+    auth: "owner",
+    response: ConversationListResponse,
+    cache: "no-store",
+    native: true,
+  },
+  conversation: {
+    id: "conversation",
+    method: "get",
+    path: "/api/v1/conversations/{id}",
+    auth: "owner",
+    params: ConversationParams,
+    response: ConversationDetail,
+    cache: "no-store",
+    native: true,
+  },
+  vfsInfo: {
+    id: "vfsInfo",
+    method: "get",
+    path: "/api/v1/vfs",
+    auth: "public",
+    response: VfsInfoResponse,
+    cache: { maxAgeSeconds: 60 },
+    native: true,
+  },
+  vfsStat: {
+    id: "vfsStat",
+    method: "get",
+    path: "/api/v1/vfs/stat",
+    auth: "public",
+    query: VfsPathQuery,
+    response: VfsStatResponse,
+    cache: { maxAgeSeconds: 60 },
+    native: true,
+  },
+  vfsList: {
+    id: "vfsList",
+    method: "get",
+    path: "/api/v1/vfs/list",
+    auth: "public",
+    query: VfsPathQuery,
+    response: VfsListResponse,
+    cache: { maxAgeSeconds: 60 },
+    native: true,
+  },
+  vfsFile: {
+    id: "vfsFile",
+    method: "get",
+    path: "/api/v1/vfs/file",
+    auth: "public",
+    query: VfsPathQuery,
+    response: z.instanceof(Uint8Array).meta({ id: "Bytes" }),
+    cache: { maxAgeSeconds: 86_400 },
+    binary: true,
+    native: true,
+  },
+  vfsQuery: {
+    id: "vfsQuery",
+    method: "post",
+    path: "/api/v1/vfs/query",
+    auth: "admin",
+    body: VfsQueryBody,
+    response: VfsQueryResponse,
+    cache: "no-store",
+    native: true,
+  },
   health: {
     id: "health",
+    native: true,
     method: "get",
     path: "/health",
     auth: "public",
@@ -78,6 +266,7 @@ export const endpoints = {
   },
   apiHealth: {
     id: "apiHealth",
+    native: true,
     method: "get",
     path: "/api/health",
     auth: "public",
@@ -94,6 +283,7 @@ export const endpoints = {
   },
   ragSearch: {
     id: "ragSearch",
+    native: true,
     method: "get",
     path: "/api/public/rag/search",
     auth: "public",
@@ -103,6 +293,7 @@ export const endpoints = {
   },
   ragContext: {
     id: "ragContext",
+    native: true,
     method: "get",
     path: "/api/public/rag/context",
     auth: "public",
@@ -112,6 +303,7 @@ export const endpoints = {
   },
   wikiCategories: {
     id: "wikiCategories",
+    native: true,
     method: "get",
     path: "/api/public/wiki/categories",
     auth: "public",
@@ -120,6 +312,7 @@ export const endpoints = {
   },
   wikiList: {
     id: "wikiList",
+    native: true,
     method: "get",
     path: "/api/public/wiki/{category}",
     auth: "public",
@@ -131,6 +324,7 @@ export const endpoints = {
   },
   wikiEntity: {
     id: "wikiEntity",
+    native: true,
     method: "get",
     path: "/api/public/wiki/{category}/{idOrSlug}",
     auth: "public",

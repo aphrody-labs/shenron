@@ -20,6 +20,8 @@ export const env = createEnv({
 		DISCORD_CLIENT_ID: z.string().trim().min(10),
 		DISCORD_CLIENT_SECRET: z.string().trim().min(10),
 		SHENRON_API_URL: z.string().trim().url().default(DEFAULT_PUBLIC_ORIGINS.api),
+		// Read-only Shenron MCP server behind /mcp (shenron-mcp --http <addr> --public).
+		SHENRON_MCP_URL: z.string().trim().url().optional(),
 		SHENRON_ADMIN_TOKEN: z.string().trim().min(16).optional(),
 		SHENRON_USER_SECRET: z.string().trim().min(32).optional(),
 		OWNER_ID: z

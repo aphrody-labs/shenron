@@ -97,7 +97,8 @@
     "ai": "catalog:",
     "prosemirror-transform": "catalog:",
     "@aphrody/discord-kit": "0.1.0",
-    "next-themes": "catalog:"
+    "next-themes": "catalog:",
+    "@aphrody/plugin-opener": "3.0.0-alpha.2"
   },
   "devDependencies": {
     "@huggingface/transformers": "catalog:",

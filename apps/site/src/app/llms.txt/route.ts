@@ -17,6 +17,7 @@
  * que personne ne le voie (il annonçait un sous-domaine et des chemins disparus).
  */
 import { SITE_URL } from "@/lib/config";
+import { mcpUpstream } from "@/lib/ai-access";
 import { buildSiteMap } from "@/lib/site-map";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
@@ -79,6 +80,17 @@ export async function GET(): Promise<Response> {
 			lines.push(`- [${item.label}](${SITE_URL}${item.href})${blurb}`);
 		}
 		lines.push("");
+	}
+
+	if (mcpUpstream()) {
+		lines.push(
+			"## Agents IA (MCP)",
+			"",
+			`- Serveur MCP public en lecture seule (Streamable HTTP, sans authentification) : ${SITE_URL}/mcp`,
+			"  Recherche sourcée, contexte prêt à citer, wiki, manga, databooks, chronologie, canon.",
+			`  Carte de découverte : ${SITE_URL}/.well-known/mcp.json`,
+			""
+		);
 	}
 
 	lines.push(

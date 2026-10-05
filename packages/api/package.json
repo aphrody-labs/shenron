@@ -10,7 +10,9 @@
     "./http": "./src/http.ts",
     "./server": "./src/server/index.ts",
     "./next": "./src/next.ts",
-    "./openapi.json": "./openapi/public.json"
+    "./openapi.json": "./openapi/public.json",
+    "./chat": "./src/chat/index.ts",
+    "./host": "./src/host/index.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -25,7 +27,9 @@
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
     "hono": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@shenron/pipeline": "workspace:*",
+    "@shenron/auth": "workspace:*"
   },
   "devDependencies": {
     "drizzle-orm": "catalog:"
@@ -38,9 +42,11 @@
       "./contract": "pure",
       "./client": "pure",
       "./http": "pure",
-      "./server": "hono",
+      "./server": "bun",
       "./next": "server",
-      "./openapi.json": "json"
+      "./openapi.json": "json",
+      "./chat": "bun",
+      "./host": "bun"
     }
   }
 }

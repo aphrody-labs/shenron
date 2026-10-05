@@ -264,6 +264,7 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 [[package]]
 name = "aphrody-agent-home"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-config",
  "aphrody-models",
@@ -281,6 +282,7 @@ dependencies = [
 [[package]]
 name = "aphrody-config"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "serde",
  "serde_json",
@@ -291,6 +293,7 @@ dependencies = [
 [[package]]
 name = "aphrody-infer"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-models",
  "dirs 7.0.0",
@@ -303,6 +306,7 @@ dependencies = [
 [[package]]
 name = "aphrody-llama-server"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-models",
  "aphrody-proc",
@@ -318,6 +322,7 @@ dependencies = [
 [[package]]
 name = "aphrody-models"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-secrets",
  "chrono",
@@ -337,6 +342,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-ocr-core",
  "aphrody-ocr-onnx",
@@ -346,6 +352,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr-core"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-agent-home",
  "chrono",
@@ -358,6 +365,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr-onnx"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-infer",
  "aphrody-models",
@@ -372,6 +380,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr-vlm"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-infer",
  "aphrody-models",
@@ -387,6 +396,7 @@ dependencies = [
 [[package]]
 name = "aphrody-proc"
 version = "1.0.0-canary"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "rustix 1.1.5",
  "serde",
@@ -399,6 +409,7 @@ dependencies = [
 [[package]]
 name = "aphrody-rag"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-config",
  "aphrody-models",
@@ -425,6 +436,7 @@ dependencies = [
 [[package]]
 name = "aphrody-rag-core"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "blake3",
  "ndarray",
@@ -443,6 +455,7 @@ dependencies = [
 [[package]]
 name = "aphrody-secrets"
 version = "1.0.0-canary"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -460,6 +473,7 @@ dependencies = [
 [[package]]
 name = "aphrody-sql"
 version = "0.1.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "deadpool-postgres",
  "pgvector",
@@ -477,6 +491,7 @@ dependencies = [
 [[package]]
 name = "aphrody-stdio-capture"
 version = "1.0.0-canary"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "rustix 1.1.5",
  "tempfile",
@@ -486,6 +501,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tao"
 version = "0.37.1"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tao-macros",
  "bitflags 2.13.2",
@@ -523,6 +539,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tao-macros"
 version = "0.1.4"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -532,6 +549,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri"
 version = "3.0.0-alpha.4"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "aphrody-tauri-build",
@@ -579,6 +597,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-build"
 version = "3.0.0-alpha.3"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "aphrody-tauri-utils",
@@ -598,6 +617,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-codegen"
 version = "3.0.0-alpha.3"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri-utils",
  "base64 0.22.1",
@@ -623,6 +643,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-macros"
 version = "3.0.0-alpha.3"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri-codegen",
  "aphrody-tauri-utils",
@@ -635,6 +656,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin"
 version = "3.0.0-alpha.3"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "aphrody-tauri-utils",
@@ -649,6 +671,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-log"
 version = "3.0.0-alpha.2"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "android_logger",
  "aphrody-tauri",
@@ -668,6 +691,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-opener"
 version = "3.0.0-alpha.2"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-plugin",
@@ -688,6 +712,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-process"
 version = "3.0.0-alpha.2"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-plugin",
@@ -696,6 +721,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-single-instance"
 version = "3.0.0-alpha.2"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri",
  "serde",
@@ -710,6 +736,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-window-state"
 version = "3.0.0-alpha.2"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-plugin",
@@ -723,6 +750,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-runtime"
 version = "3.0.0-alpha.3"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri-utils",
  "cookie",
@@ -742,6 +770,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-runtime-wry"
 version = "3.0.0-alpha.4"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tao",
  "aphrody-tauri",
@@ -768,6 +797,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-specta"
 version = "2.0.0-rc.25"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-specta-macros",
@@ -784,6 +814,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-specta-macros"
 version = "2.0.0-rc.25"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "darling 0.23.0",
  "heck 0.5.0",
@@ -795,6 +826,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-utils"
 version = "3.0.0-alpha.3"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "brotli 9.0.0",
@@ -831,6 +863,7 @@ dependencies = [
 [[package]]
 name = "aphrody-toolcall"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "async-trait",
  "schemars 1.2.2",
@@ -842,6 +875,7 @@ dependencies = [
 [[package]]
 name = "aphrody-toolchains"
 version = "1.0.0-canary"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "serde_json",
  "thiserror 2.0.21",
@@ -851,6 +885,7 @@ dependencies = [
 [[package]]
 name = "aphrody-translate"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "clap",
@@ -874,6 +909,7 @@ dependencies = [
 [[package]]
 name = "aphrody-wry"
 version = "0.57.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-tao-macros",
  "base64 0.22.1",
@@ -3900,7 +3936,7 @@ dependencies = [
  "log",
  "presser",
  "thiserror 2.0.21",
- "windows 0.61.3",
+ "windows 0.62.2",
 ]
 
 [[package]]
@@ -4461,7 +4497,7 @@ dependencies = [
  "js-sys",
  "log",
  "wasm-bindgen",
- "windows-core 0.61.2",
+ "windows-core 0.62.2",
 ]
 
 [[package]]
@@ -5249,6 +5285,7 @@ dependencies = [
 [[package]]
 name = "koharu-bindgen"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "bindgen",
@@ -5277,6 +5314,7 @@ dependencies = [
 [[package]]
 name = "koharu-config"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "atomicwrites",
@@ -5306,6 +5344,7 @@ dependencies = [
 [[package]]
 name = "koharu-diffusion"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "image",
  "koharu-diffusion-sys",
@@ -5316,6 +5355,7 @@ dependencies = [
 [[package]]
 name = "koharu-diffusion-sys"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "koharu-bindgen",
@@ -5368,6 +5408,7 @@ dependencies = [
 [[package]]
 name = "koharu-llama"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "encoding_rs",
  "enumflags2",
@@ -5382,6 +5423,7 @@ dependencies = [
 [[package]]
 name = "koharu-llama-sys"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "koharu-bindgen",
@@ -5538,6 +5580,7 @@ dependencies = [
 [[package]]
 name = "koharu-runtime"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "backon",
@@ -5623,6 +5666,7 @@ dependencies = [
 [[package]]
 name = "koharu-torch"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "half",
  "koharu-torch-sys",
@@ -5638,6 +5682,7 @@ dependencies = [
 [[package]]
 name = "koharu-torch-sys"
 version = "0.83.5"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "anyhow",
  "koharu-bindgen",
@@ -6975,8 +7020,7 @@ checksum = "13c45bb4a6ae1280ec0803b1ef9d3455eb50f01efbbe1447ab020f1d54fba9d8"
 [[package]]
 name = "oxc_allocator"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f24a6005a6ff29f17c8782d1088772db6329b50cf8ad264f66df542215df7c2f"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "allocator-api2",
  "hashbrown 0.17.1",
@@ -6987,8 +7031,7 @@ dependencies = [
 [[package]]
 name = "oxc_ast"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d07280aa0e456352d72a1a98d2a91a127358177d8b246feee615b99b778ea1f"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "bitflags 2.13.2",
  "oxc_allocator",
@@ -7005,8 +7048,7 @@ dependencies = [
 [[package]]
 name = "oxc_ast_macros"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ce1a0ca39332490e992eca47e20501f3774740718713b7ff53644ec590e2016"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "phf 0.14.0",
  "proc-macro2",
@@ -7017,14 +7059,12 @@ dependencies = [
 [[package]]
 name = "oxc_data_structures"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac3f0180ce8b10906ae03adcd76cbc3f67cc162459372197edbc978baf5ae7f9"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 
 [[package]]
 name = "oxc_diagnostics"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14144d3bdedc81c60fd465ae46ea16018f4a2ca11df8f4cfe85d6bcb320af9b9"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "bytecount",
  "cow-utils",
@@ -7041,8 +7081,7 @@ dependencies = [
 [[package]]
 name = "oxc_ecmascript"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "143f70d2c47792bcdd3e8c3e3fbdc24506043499c50d092c752afba1c6103620"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "dragonbox_ecma",
  "itoa",
@@ -7057,8 +7096,7 @@ dependencies = [
 [[package]]
 name = "oxc_estree"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc212d653c5ee92487e637b9b44a51b8430cd48040d5f4abdce933a2f9a5edd3"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 
 [[package]]
 name = "oxc_index"
@@ -7073,8 +7111,7 @@ dependencies = [
 [[package]]
 name = "oxc_parser"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2193499addde2689649d31816af73dc10c32f1855dba40d61cee17d341b05d9e"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "bitflags 2.13.2",
  "cow-utils",
@@ -7097,8 +7134,7 @@ dependencies = [
 [[package]]
 name = "oxc_regular_expression"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8330be1634468fdb3c9b850d831e1d82ded5c413d1154a46c0fc62eba2389bc"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "bitflags 2.13.2",
  "oxc_allocator",
@@ -7114,8 +7150,7 @@ dependencies = [
 [[package]]
 name = "oxc_span"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f32dae5b09cc262867e383533cdc822c40bccb09d84bbdc889716c99265197a1"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "compact_str 0.10.0",
  "oxc_allocator",
@@ -7127,8 +7162,7 @@ dependencies = [
 [[package]]
 name = "oxc_str"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49552c2eeb7cbfa118d55485fb38c6689be5ce1b313af7e0116e5d8da0dc22e0"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "compact_str 0.10.0",
  "hashbrown 0.17.1",
@@ -7139,8 +7173,7 @@ dependencies = [
 [[package]]
 name = "oxc_syntax"
 version = "0.152.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87b3087c9e6f2039a4a46af8b0a9f9a5108ee3390a1fc8d98b24a5461e47888d"
+source = "git+https://github.com/oxc-project/oxc.git?rev=8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a#8c5a04ea0d5ca56e0d2d925f51f6b45669aa5e2a"
 dependencies = [
  "bitflags 2.13.2",
  "cow-utils",

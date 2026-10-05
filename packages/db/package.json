@@ -27,7 +27,8 @@
     "./vfs": "./src/vfs/index.ts",
     "./conversations": "./src/conversations/index.ts",
     "./conversations/types": "./src/conversations/types.ts",
-    "./conversations/redact": "./src/conversations/redact.ts"
+    "./conversations/redact": "./src/conversations/redact.ts",
+    "./vfs/build": "./src/vfs/build.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -68,7 +69,8 @@
       "./vfs": "bun",
       "./conversations": "bun",
       "./conversations/types": "pure",
-      "./conversations/redact": "pure"
+      "./conversations/redact": "pure",
+      "./vfs/build": "bun"
     }
   }
 }

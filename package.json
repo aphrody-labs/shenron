@@ -124,7 +124,15 @@
     "test": "bun run --filter '*' test",
     "lint": "oxlint -c .oxlintrc.json apps packages scripts",
     "format:check": "oxfmt --check apps packages scripts",
-    "shenron": "bun scripts/cli.ts"
+    "shenron": "bun scripts/cli.ts",
+    "build": "bun scripts/build/server.ts && bun scripts/build/bot.ts",
+    "build:server": "bun scripts/build/server.ts",
+    "build:bot": "bun scripts/build/bot.ts",
+    "check:rust": "cargo check --workspace --all-targets",
+    "clippy:rust": "cargo clippy --workspace --all-targets -- -D warnings",
+    "test:rust": "cargo test -p shenron-rag -p shenron-translate -p shenron-manga -p shenron-cli -p shenron-mcp -p shenron-ffi -p shenron-studio",
+    "test:live": "bun run --filter @shenron/pipeline rag:test",
+    "audit:assets": "bun scripts/audit/assets-dedup.ts"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

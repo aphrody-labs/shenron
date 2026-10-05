@@ -10,6 +10,8 @@ node_modules/
 **/*.rs.bk
 dist/
 /apps/server/.build/
+/crates/shenron-desktop/binaries/
+/crates/shenron-desktop/tauri.bundle.json
 .next/
 .next-build/
 .next-dev/

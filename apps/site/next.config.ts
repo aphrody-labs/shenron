@@ -364,6 +364,8 @@ const nextConfig: NextConfig = {
 		// « Extension non autorisée »). En `fallback`, il ne se déclenche que si
 		// AUCUNE page (statique ou dynamique) ne matche → les fiches restent à Next.
 		return {
+			// Discovery card of the public MCP server (served by /api/mcp/card when deployed).
+			beforeFiles: [{ source: "/.well-known/mcp.json", destination: "/api/mcp/card" }],
 			fallback: [
 				{
 					source: "/wiki/:path*",

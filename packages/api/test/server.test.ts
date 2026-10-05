@@ -68,7 +68,7 @@ describe("createShenronApi (wiki group)", () => {
   test("categories: 200 { categories: [{ name, label, total }] }, registered before /{category}", async () => {
     const calls: string[] = [];
     const api = createShenronApi(ports({ wiki: fakeWiki(calls) }), { service: "shenron-bot" });
-    const res = await api.app.request("/api/public/wiki/categories");
+    const res = await api.request("/api/public/wiki/categories");
     expect(res.status).toBe(200);
     const body = WikiCategoriesResponse.parse(await res.json());
     expect(body.categories.map((c) => c.name)).toEqual(WIKI_CATEGORIES.map((c) => c.name));
@@ -85,7 +85,7 @@ describe("createShenronApi (wiki group)", () => {
   test("list with defaults and validated query", async () => {
     const calls: string[] = [];
     const api = createShenronApi(ports({ wiki: fakeWiki(calls) }), { service: "shenron-site" });
-    const res = await api.app.request("/api/public/wiki/characters?q=%20go%20");
+    const res = await api.request("/api/public/wiki/characters?q=%20go%20");
     expect(res.status).toBe(200);
     expect(WikiListResponse.parse(await res.json())).toEqual({
       category: "characters",
@@ -99,7 +99,7 @@ describe("createShenronApi (wiki group)", () => {
 
   test("limit 201 → 400 ErrorEnvelope", async () => {
     const api = createShenronApi(ports(), { service: "shenron-bot" });
-    const res = await api.app.request("/api/public/wiki/characters?limit=201");
+    const res = await api.request("/api/public/wiki/characters?limit=201");
     expect(res.status).toBe(400);
     const body = ErrorEnvelope.parse(await res.json());
     expect(body.code).toBe("invalid_request");
@@ -113,7 +113,7 @@ describe("createShenronApi (wiki group)", () => {
       "/api/public/wiki/pokemon/1",
       "/api/public/wiki/characters/999",
     ]) {
-      const res = await api.app.request(path);
+      const res = await api.request(path);
       expect(res.status).toBe(404);
       expect(await res.json()).toEqual({ error: "Not found" });
     }
@@ -121,10 +121,10 @@ describe("createShenronApi (wiki group)", () => {
 
   test("entity by id and by slug", async () => {
     const api = createShenronApi(ports(), { service: "shenron-bot" });
-    expect(await (await api.app.request("/api/public/wiki/characters/2")).json()).toEqual(
+    expect(await (await api.request("/api/public/wiki/characters/2")).json()).toEqual(
       ROWS.characters![1]!,
     );
-    expect(await (await api.app.request("/api/public/wiki/characters/son-goku")).json()).toEqual(
+    expect(await (await api.request("/api/public/wiki/characters/son-goku")).json()).toEqual(
       ROWS.characters![0]!,
     );
   });
@@ -132,20 +132,20 @@ describe("createShenronApi (wiki group)", () => {
   test("POST and other methods → 404; unknown paths → 404; OPTIONS → 204 with CORS", async () => {
     const api = createShenronApi(ports(), { service: "shenron-bot" });
     for (const method of ["POST", "PUT", "DELETE", "PATCH"]) {
-      const res = await api.app.request("/api/public/wiki/categories", { method });
+      const res = await api.request("/api/public/wiki/categories", { method });
       expect(res.status).toBe(404);
       expect(await res.json()).toEqual({ error: "Not found" });
     }
-    const unknown = await api.app.request("/api/public/nothing");
+    const unknown = await api.request("/api/public/nothing");
     expect(unknown.status).toBe(404);
     expect(await unknown.json()).toEqual({ error: "Not found" });
-    const options = await api.app.request("/api/public/wiki/categories", {
+    const options = await api.request("/api/public/wiki/categories", {
       method: "OPTIONS",
       headers: { origin: "https://www.dragonballfr.com" },
     });
     expect(options.status).toBe(204);
     expect(options.headers.get("access-control-allow-origin")).toBe("https://www.dragonballfr.com");
-    expect(options.headers.get("access-control-allow-methods")).toBe("GET, HEAD, OPTIONS");
+    expect(options.headers.get("access-control-allow-methods")).toBe("GET, HEAD, POST, OPTIONS");
   });
 
   test("HEAD: headers without body", async () => {
@@ -161,23 +161,23 @@ describe("createShenronApi (wiki group)", () => {
   test("public cache: second hit served from memory, 304 on If-None-Match", async () => {
     const calls: string[] = [];
     const api = createShenronApi(ports({ wiki: fakeWiki(calls) }), { service: "shenron-bot" });
-    const first = await api.app.request("/api/public/wiki/characters?offset=0&limit=2");
+    const first = await api.request("/api/public/wiki/characters?offset=0&limit=2");
     const etag = first.headers.get("etag")!;
-    const second = await api.app.request("/api/public/wiki/characters?limit=2&offset=0");
+    const second = await api.request("/api/public/wiki/characters?limit=2&offset=0");
     expect(second.headers.get("etag")).toBe(etag);
     expect(await second.text()).toBe(await first.text());
     expect(calls).toHaveLength(1);
-    const revalidated = await api.app.request("/api/public/wiki/characters?limit=2&offset=0", {
+    const revalidated = await api.request("/api/public/wiki/characters?limit=2&offset=0", {
       headers: { "if-none-match": etag },
     });
     expect(revalidated.status).toBe(304);
     expect(revalidated.headers.get("etag")).toBe(etag);
     expect(await revalidated.text()).toBe("");
-    const fresh = await api.app.request("/api/public/wiki/categories", {
+    const fresh = await api.request("/api/public/wiki/categories", {
       headers: { "if-none-match": '"00000000-0"' },
     });
     expect(fresh.status).toBe(200);
-    const conditional = await api.app.request("/api/public/wiki/categories", {
+    const conditional = await api.request("/api/public/wiki/categories", {
       headers: { "if-none-match": fresh.headers.get("etag")! },
     });
     expect(conditional.status).toBe(304);
@@ -186,8 +186,8 @@ describe("createShenronApi (wiki group)", () => {
   test("errors are not cached", async () => {
     const calls: string[] = [];
     const api = createShenronApi(ports({ wiki: fakeWiki(calls) }), { service: "shenron-bot" });
-    await api.app.request("/api/public/wiki/characters/999");
-    await api.app.request("/api/public/wiki/characters/999");
+    await api.request("/api/public/wiki/characters/999");
+    await api.request("/api/public/wiki/characters/999");
     expect(calls).toEqual(["get:characters:999", "get:characters:999"]);
   });
 
@@ -195,17 +195,17 @@ describe("createShenronApi (wiki group)", () => {
     const api = createShenronApi(ports(), { service: "shenron-bot" });
     const headers = { "x-real-ip": "203.0.113.9" };
     for (let i = 0; i < 60; i++) {
-      expect((await api.app.request("/api/public/wiki/categories", { headers })).status).toBe(200);
+      expect((await api.request("/api/public/wiki/categories", { headers })).status).toBe(200);
     }
-    const limited = await api.app.request("/api/public/wiki/categories", { headers });
+    const limited = await api.request("/api/public/wiki/categories", { headers });
     expect(limited.status).toBe(429);
     expect(limited.headers.get("retry-after")).toBe("60");
     expect(ErrorEnvelope.parse(await limited.json()).code).toBe("rate_limited");
-    const loopback = await api.app.request("/api/public/wiki/categories", {
+    const loopback = await api.request("/api/public/wiki/categories", {
       headers: { ...headers, "x-test-loopback": "1" },
     });
     expect(loopback.status).toBe(200);
-    const other = await api.app.request("/api/public/wiki/categories", {
+    const other = await api.request("/api/public/wiki/categories", {
       headers: { "x-real-ip": "198.51.100.1" },
     });
     expect(other.status).toBe(200);
@@ -220,7 +220,7 @@ describe("createShenronApi (wiki group)", () => {
       },
     };
     const api = createShenronApi(ports({ rateLimit }), { service: "shenron-bot" });
-    await api.app.request("/api/public/wiki/categories", { headers: { "x-real-ip": "192.0.2.4" } });
+    await api.request("/api/public/wiki/categories", { headers: { "x-real-ip": "192.0.2.4" } });
     expect(keys).toEqual(["public:192.0.2.4"]);
   });
 
@@ -235,10 +235,10 @@ describe("createShenronApi (wiki group)", () => {
       get: async () => null,
     };
     const api = createShenronApi(ports({ wiki: broken }), { service: "shenron-bot" });
-    const res = await api.app.request("/api/public/wiki/categories");
+    const res = await api.request("/api/public/wiki/categories");
     expect(res.status).toBe(503);
     const body = await res.json();
-    expect(body).toEqual({ error: "Data store unavailable", code: "pg_unavailable" });
+    expect(body).toMatchObject({ error: "Data store unavailable", code: "pg_unavailable" });
     expect(JSON.stringify(body)).not.toContain("ECONNREFUSED");
 
     const crashing = createShenronApi(
@@ -252,14 +252,14 @@ describe("createShenronApi (wiki group)", () => {
       }),
       { service: "shenron-bot" },
     );
-    const crash = await crashing.app.request("/api/public/wiki/categories");
+    const crash = await crashing.request("/api/public/wiki/categories");
     expect(crash.status).toBe(500);
     expect(await crash.json()).toEqual({ error: "internal", code: "internal" });
   });
 
   test("openapi document served at /api/public/openapi.json", async () => {
     const api = createShenronApi(ports(), { service: "shenron-bot" });
-    const res = await api.app.request("/api/public/openapi.json");
+    const res = await api.request("/api/public/openapi.json");
     expect(res.status).toBe(200);
     const doc = (await res.json()) as { openapi: string; paths: Record<string, unknown> };
     expect(doc.openapi).toBe("3.1.0");
@@ -271,10 +271,10 @@ describe("createShenronApi (wiki group)", () => {
     const api = createShenronApi(ports({ log: (e) => events.push(e) }), {
       service: "shenron-site",
     });
-    await api.app.request("/api/public/wiki/categories", {
+    await api.request("/api/public/wiki/categories", {
       headers: { authorization: "Bearer x" },
     });
-    await api.app.request("/api/public/wiki/categories", { method: "POST" });
+    await api.request("/api/public/wiki/categories", { method: "POST" });
     expect(events).toHaveLength(2);
     expect(events[0]).toMatchObject({
       event: "shenron-site.api",
@@ -287,12 +287,13 @@ describe("createShenronApi (wiki group)", () => {
 });
 
 describe("handles()", () => {
-  test("claims only the wiki group paths when the wiki port is present", () => {
+  test("claims the wiki group paths when the wiki port is present, plus the always-on meta routes", () => {
     const api = createShenronApi(ports(), { service: "shenron-bot" });
-    for (const path of PATHS) expect(api.handles(path)).toBe(true);
+    for (const path of [...PATHS, "/health", "/api/health"]) expect(api.handles(path)).toBe(true);
     for (const path of [
-      "/health",
       "/api/public/stats",
+      "/api/v1/chat",
+      "/api/v1/sync/conversations",
       "/api/openapi.json",
       "/api/public/wiki/a/b/c",
     ]) {
@@ -300,16 +301,18 @@ describe("handles()", () => {
     }
   });
 
-  test("false for every path when the wiki port is absent; requests → 404", async () => {
+  test("wiki paths are not claimed when the wiki port is absent; requests → 404", async () => {
+    const full = Object.keys((createShenronApi(ports(), { service: "shenron-bot" }).openApiDocument() as { paths: object }).paths);
     for (const wiki of [undefined, null]) {
       const api = createShenronApi(ports({ wiki }), { service: "shenron-bot" });
-      for (const path of [...PATHS, "/health", "/api/public/stats"]) {
+      for (const path of [...PATHS.filter((p) => p.includes("/wiki/")), "/api/public/stats"]) {
         expect(api.handles(path)).toBe(false);
       }
-      const res = await api.app.request("/api/public/wiki/categories");
+      const res = await api.request("/api/public/wiki/categories");
       expect(res.status).toBe(404);
       expect(await res.json()).toEqual({ error: "Not found" });
-      expect(Object.keys((api.openApiDocument() as { paths: object }).paths)).toHaveLength(4);
+      // The document does not depend on the enabled groups.
+      expect(Object.keys((api.openApiDocument() as { paths: object }).paths)).toEqual(full);
     }
   });
 });

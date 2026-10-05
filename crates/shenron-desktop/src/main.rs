@@ -4,7 +4,7 @@
 //!
 //! Start-up: the window opens on the bundled splash (`frontendDist`), the server
 //! starts (or `SHENRON_DESKTOP_URL` names one already running), and the window
-//! navigates to it once `/api/health` answers. Without a local server the window
+//! navigates to its `/bureau` start page once it answers. Without a local server the window
 //! shows the public site, which receives no IPC access.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
@@ -17,6 +17,18 @@ use tauri::{Manager as _, WebviewUrl};
 const PUBLIC_SITE: &str = "https://dragonballfr.com";
 
 fn main() {
+    // One Tokio runtime for Tauri and the in-process engines; the main thread enters it so
+    // libraries that capture `Handle::current()` during setup (the Koharu renderer) find it.
+    let runtime = match tokio::runtime::Builder::new_multi_thread().enable_all().build() {
+        Ok(runtime) => runtime,
+        Err(error) => {
+            eprintln!("shenron-desktop: cannot start the async runtime: {error}");
+            std::process::exit(1);
+        },
+    };
+    tauri::async_runtime::set(runtime.handle().clone());
+    let _runtime_context = runtime.enter();
+
     let builder = tauri::Builder::default()
         .runtime(tauri_runtime_wry::Wry::default())
         // A second launch focuses the existing window instead of starting a second server.
@@ -45,22 +57,27 @@ fn main() {
         .plugin(tauri_plugin_process::init())
         .manage(server::LocalServer::default())
         .setup(|app| {
-            #[cfg(feature = "koharu")]
-            {
-                app.manage(shenron_studio::koharu::KoharuBroker::new(app.handle().clone()));
-                // The Koharu editor runs on koharu-app's commands and state, in this process.
-                koharu_app::setup(app, false)?;
-            }
             let window = tauri::WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
                 .title("Shenron")
                 .inner_size(1280.0, 860.0)
                 .min_inner_size(900.0, 600.0)
                 .center()
                 .build()?;
+            #[cfg(feature = "koharu")]
+            {
+                app.manage(shenron_studio::koharu::KoharuBroker::new(app.handle().clone()));
+                // The Koharu editor runs on koharu-app's commands and state, in this process. Its
+                // failure (no usable renderer) leaves the site, studio and local APIs running:
+                // the editor reports itself unavailable.
+                if let Err(error) = koharu_app::setup(app, false) {
+                    log::error!("Koharu editor unavailable: {error:#}");
+                }
+            }
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 let target = match server::start(&handle).await {
-                    Ok(url) => url,
+                    // The desktop start page works offline (local corpus, editor, studio).
+                    Ok(url) => format!("{url}/bureau"),
                     Err(error) => {
                         log::error!("local Shenron server unavailable: {error}");
                         PUBLIC_SITE.to_owned()

@@ -62,7 +62,8 @@
     "./bxc": "./src/bxc/index.ts",
     "./aphrody/embeddings": "./src/aphrody/shenron-embeddings.ts",
     "./testing/live-rag": "./src/testing/live-rag.ts",
-    "./ai/native": "./src/ai/native.ts"
+    "./ai/native": "./src/ai/native.ts",
+    "./agent-home": "./src/agent-home.ts"
   },
   "scripts": {
     "pipeline": "bun src/cli.ts",
@@ -147,7 +148,8 @@
       "./bxc": "bun",
       "./aphrody/embeddings": "server",
       "./testing/live-rag": "bun",
-      "./ai/native": "bun"
+      "./ai/native": "bun",
+      "./agent-home": "server"
     }
   }
 }

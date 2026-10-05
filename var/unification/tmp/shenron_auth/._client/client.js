@@ -186,7 +186,7 @@ var BetterAuthError = class extends Error {
   }
 };
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/utils/url.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/utils/url.mjs
 var SLASH_CHAR_CODE = 47;
 function trimTrailingSlashes(value) {
   let end = value.length;
@@ -277,7 +277,7 @@ function getOrigin(url) {
   }
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/parser.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/parser.mjs
 var PROTO_POLLUTION_PATTERNS = {
   proto: /"(?:_|\\u0{2}5[Ff]){2}(?:p|\\u0{2}70)(?:r|\\u0{2}72)(?:o|\\u0{2}6[Ff])(?:t|\\u0{2}74)(?:o|\\u0{2}6[Ff])(?:_|\\u0{2}5[Ff]){2}"\s*:/,
   constructor: /"(?:c|\\u0063)(?:o|\\u006[Ff])(?:n|\\u006[Ee])(?:s|\\u0073)(?:t|\\u0074)(?:r|\\u0072)(?:u|\\u0075)(?:c|\\u0063)(?:t|\\u0074)(?:o|\\u006[Ff])(?:r|\\u0072)"\s*:/,
@@ -371,7 +371,7 @@ function isSafeUrlScheme(value) {
   return !DANGEROUS_URL_SCHEMES.includes(parsed.protocol);
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/fetch-plugins.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/fetch-plugins.mjs
 var redirectPlugin = {
   id: "redirect",
   name: "Redirect",
@@ -631,7 +631,7 @@ function listenKeys($store, keys, listener) {
     }
   });
 }
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/equality.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/equality.mjs
 function isPlainObject(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -668,7 +668,7 @@ function withEquality(store, isEqual) {
   });
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/query-atom.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/query-atom.mjs
 var kAuthQuery = Symbol.for("better-auth:auth-query");
 function isAuthQueryStore(store) {
   return kAuthQuery in store && store[kAuthQuery] === true;
@@ -679,7 +679,7 @@ function createAuthQueryAtom(initialValue) {
   return queryAtom;
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/broadcast-channel.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/broadcast-channel.mjs
 var kBroadcastChannel = Symbol.for("better-auth:broadcast-channel");
 var now = () => Math.floor(Date.now() / 1000);
 var WindowBroadcastChannel = class {
@@ -727,7 +727,7 @@ function getGlobalBroadcastChannel(name = "better-auth.message") {
   return globalThis[kBroadcastChannel];
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/focus-manager.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/focus-manager.mjs
 var kFocusManager = Symbol.for("better-auth:focus-manager");
 var WindowFocusManager = class {
   listeners = /* @__PURE__ */ new Set;
@@ -759,7 +759,7 @@ function getGlobalFocusManager() {
   return globalThis[kFocusManager];
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/online-manager.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/online-manager.mjs
 var kOnlineManager = Symbol.for("better-auth:online-manager");
 var WindowOnlineManager = class {
   listeners = /* @__PURE__ */ new Set;
@@ -793,7 +793,7 @@ function getGlobalOnlineManager() {
   return globalThis[kOnlineManager];
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/session-refresh.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/session-refresh.mjs
 var now2 = () => Math.floor(Date.now() / 1000);
 var FOCUS_REFETCH_RATE_LIMIT_SECONDS = 5;
 function createSessionRefreshManager(opts) {
@@ -925,7 +925,7 @@ function createSessionRefreshManager(opts) {
   };
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/session-atom.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/session-atom.mjs
 var isServer = () => typeof window === "undefined";
 var SESSION_MOUNT_DEDUPE_INTERVAL = STORE_UNMOUNT_DELAY;
 function hydrateSessionAtom(sessionAtom, session) {
@@ -1789,7 +1789,7 @@ var createFetch = (config) => {
   return $fetch;
 };
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/config.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/config.mjs
 var resolvePublicAuthUrl = (basePath) => {
   if (typeof process === "undefined")
     return;
@@ -1908,7 +1908,7 @@ var getClientConfig = (options, loadEnv) => {
   };
 };
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/utils/is-atom.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/utils/is-atom.mjs
 function isAtom(value) {
   return typeof value === "object" && value !== null && "get" in value && typeof value.get === "function" && "lc" in value && typeof value.lc === "number";
 }
@@ -1926,7 +1926,7 @@ function toKebabCase(input) {
   return splitWords(input).map((word) => word.toLowerCase()).join("-");
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/proxy.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/proxy.mjs
 function getMethod2(path, knownPathMethods, args) {
   const method = knownPathMethods[path];
   const { fetchOptions, query: _query, ...body } = args || {};
@@ -2008,7 +2008,7 @@ function createDynamicPathProxy(routes, client, knownPathMethods, atoms, atomLis
   return createProxy();
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/react/react-store.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/react/react-store.mjs
 import { useCallback, useRef, useSyncExternalStore } from "react";
 function useStore(store, options = {}) {
   const snapshotRef = useRef(store.get());
@@ -2029,7 +2029,7 @@ function useStore(store, options = {}) {
   return useSyncExternalStore(subscribe, get, isAuthQueryStore(store) ? () => store.init : get);
 }
 
-// ../../node_modules/.bun/better-auth@1.7.6+f778b6e2dc8fac2f/node_modules/better-auth/dist/client/react/index.mjs
+// ../../node_modules/.bun/better-auth@1.7.6+0c65d330d50c2e13/node_modules/better-auth/dist/client/react/index.mjs
 function getAtomKey(str) {
   return `use${capitalizeFirstLetter(str)}`;
 }

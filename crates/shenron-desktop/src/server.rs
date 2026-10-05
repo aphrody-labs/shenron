@@ -56,7 +56,8 @@ fn free_port() -> std::io::Result<u16> {
 async fn wait_healthy(base: &str, timeout: Duration) -> Result<(), String> {
     let client = reqwest_lite::Client::new();
     let deadline = Instant::now() + timeout;
-    let health = format!("{base}/api/health");
+    // robots.txt is served without the editorial database, by the binary and by `next dev`.
+    let health = format!("{base}/robots.txt");
     loop {
         if client.get_ok(&health).await {
             return Ok(());
@@ -68,7 +69,7 @@ async fn wait_healthy(base: &str, timeout: Duration) -> Result<(), String> {
     }
 }
 
-/// Start (or locate) the local server and return its base URL once it is healthy.
+/// Start (or locate) the local server and return the desktop start page once it is healthy.
 pub async fn start(app: &AppHandle) -> Result<String, String> {
     if let Ok(url) = std::env::var("SHENRON_DESKTOP_URL") {
         let url = url.trim_end_matches('/').to_owned();
