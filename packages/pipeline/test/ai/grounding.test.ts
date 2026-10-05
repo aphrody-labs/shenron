@@ -4,6 +4,7 @@ import type { LanguageModelV4GenerateResult } from "@ai-sdk/provider";
 import { MockLanguageModelV4 } from "ai/test";
 import { generateGroundedAnswer, type GroundedHit, lexiconAliases } from "../../src/ai/generate";
 import {
+  anchorPassage,
   citationsOf,
   detectLang,
   extractEntities,
@@ -227,6 +228,31 @@ describe("citations", () => {
       p,
     );
     expect(inline.answer).toBe("Kid Buu est la forme originelle de Majin Buu [1].");
+  });
+
+  test("a French answer on Japanese passages cites the passage that names the entity", () => {
+    const ja = passages([
+      {
+        id: "j1",
+        title: "魔人ブウ",
+        url: "/ja/1",
+        content: "魔人ブウは魔導士ビビディが造り出した魔物。",
+      },
+      { id: "j2", title: "孫悟空", url: "/ja/2", content: "孫悟空はサイヤ人。" },
+    ]);
+    const anchor = anchorPassage(["魔人ブウ"], ja, lexiconAliases);
+    expect(anchor).toBe(1);
+    const out = verifyAnswer(
+      "Le monstre est né de la magie de Bibidi.",
+      "魔人ブウとは何ですか？",
+      ja,
+      {
+        lang: "fr",
+        anchor,
+      },
+    );
+    expect(out.answer).toBe("Le monstre est né de la magie de Bibidi [1].");
+    expect(out.citations.map((c) => c.url)).toEqual(["/ja/1"]);
   });
 
   test("markers read back and stripped", () => {

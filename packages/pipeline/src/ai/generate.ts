@@ -21,6 +21,7 @@ import { semanticCacheScope } from "./ports";
 import {
   citationsOf,
   dominantLang,
+  anchorPassage,
   type EntityAliases,
   extractEntities,
   type FidelityReport,
@@ -326,8 +327,12 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
   let refusal = false;
   if (strict) {
     const answerLang = dominantLang(raw);
+    const anchor = anchorPassage(entities, passages, i.aliases ?? lexiconAliases);
     const sameLanguage = answerLang === dominantLang(passages.map((p) => p.text).join(" "));
-    const verified = verifyAnswer(raw, i.question, passages, { lang: answerLang });
+    const verified = verifyAnswer(raw, i.question, passages, {
+      lang: answerLang,
+      ...(anchor === undefined ? {} : { anchor }),
+    });
     fidelity = verified.report;
     citations = verified.citations;
     answer = verified.answer;

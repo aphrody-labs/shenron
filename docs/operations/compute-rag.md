@@ -74,3 +74,85 @@ un statut autre que 200 ou zéro résultat (`index_unavailable`) fait échouer l
 PostgreSQL 18 (`shenron_site`, sauvegarde quotidienne `shenron-pg-backup` vers
 `/var/backups/shenron-pg`, 14 dumps) et Redis (`maxmemory 4gb`, politique `noeviction`,
 instantané RDB). Rien d'autre n'y tourne.
+
+## Fidélité du chat RAG
+
+`POST /api/public/rag/chat` (bot) répond depuis des passages numérotés `[n]` et ne sort jamais
+de ce périmètre. Le contrôle est déterministe (`@shenron/pipeline/ai/grounding`, sans appel
+modèle) :
+
+- **Rappel** : le bot demande 12 hits, puis classe : canon d'abord (`db_*`, `canon_references`,
+  `databooks`, `manga`), autres sources ensuite, fiches `wiki_pages` marquées « Cette fiche décrit
+  un document collecté. Elle ne constitue pas une assertion canonique. » en dernier. Elles ne
+  quittent pas l'index ; elles ne sont envoyées au modèle que s'il y a moins de 3 autres passages,
+  et seules elles n'établissent rien (refus). La réponse renvoie les 8 premiers hits classés.
+- **Citations** : le prompt impose `[n]` en fin d'affirmation. Une citation hors des passages
+  fournis est supprimée ; une citation que le passage n'appuie pas est remplacée par le passage le
+  plus proche (mots de contenu communs, au moins 2 en français) ; une phrase sans citation reçoit
+  le passage le plus proche ; une phrase qui apporte un nom propre absent de tous les passages est
+  retirée. La réponse JSON porte `citations` (`n`, `id`, `title`, `url`, `sourceId`), tous issus
+  de `hits`. Réponse et passages dans deux langues (ex. réponse française sur des passages
+  japonais) : un seul mot commun suffit et aucune phrase n'est retirée, la vérification est plus
+  faible.
+- **Refus** : `refusal: true` et « Non établi dans les sources » (fr, en, ja, selon `lang` puis
+  la langue de la question) quand aucun passage n'existe, quand seules des fiches collectées
+  existent, quand aucune entité de la question (mots capitalisés, katakana, kanji ; noms ja/fr/en
+  du lexique) n'apparaît dans les passages, ou quand aucune phrase de la réponse n'est appuyée.
+  Le refus ne coûte aucune génération.
+- Le cache sémantique est rangé par `PROMPT_VERSION` (2) : l'ancien cache ne sert plus.
+
+Mesures du 2026-10-05 (20 questions, GPU, adaptateur actif ; « après » = trois passages du code
+livré, le bot de production n'étant pas redéployé par ce lot) :
+
+| Mesure                                  | Avant (production) | Après                                              |
+| --------------------------------------- | ------------------ | -------------------------------------------------- |
+| Réponses avec citation valide (∈ hits)  | 0 / 20             | 100 %                                              |
+| Entités hors corpus refusées (6)        | 0 / 6 (inventées)  | 6 / 6                                              |
+| Faux refus (14 questions répondables)   | 0                  | 0 à 7 %                                            |
+| Mots attendus dans la réponse           | 100 %              | 86 à 93 %                                          |
+| Fiches collectées dans le top 3 (moyen) | 0,95               | 0,35                                               |
+| Latence p50 / p95 (GPU)                 | 1,9 s / 3,3 s      | 0,5 à 0,8 s / 1,2 à 1,6 s (le refus ne génère pas) |
+
+Avant le passage sur GPU, le même jeu ne passait pas : le chat dépassait les 30 s du proxy du
+vps (503 « maintenance » sur les 20 questions). Limites : le modèle de 4 milliards de paramètres
+répond parfois en français à une question en ja ou en anglais (la vérification lexicale est alors
+plus faible, voir ci-dessus) ; les noms que le lexique ne connaît pas dans une autre langue que
+celle des passages peuvent donner un faux refus.
+
+Mesure : `bun scripts/ops/eval-rag-faithfulness.ts [--url <chat>] [--label x]` (20 questions fr, en,
+ja, dont 6 entités hors corpus, dans `packages/pipeline/test/ai/fixtures/eval/rag-faithfulness.json`)
+écrit `var/reports/rag-faithfulness-<label>-<date>.json` : citations valides (source ∈ hits),
+références inventées (« épisode 142 »), refus correct, faux refus, mots attendus, fiches collectées
+dans le top 3, latence.
+
+## Inférence : adaptateur LoRA et GPU
+
+- **Adaptateur** : `APHRODY_SHENRON_CHAT_LORA` est appliqué. Preuves : `llama-server` est lancé
+  avec `--lora …/shenron-chat-v2/adapter.gguf --lora-init-without-apply`, puis le superviseur
+  Aphrody l'active (`GET /lora-adapters` sur le port du serveur renvoie `scale: 1.0`) ; sur un
+  serveur éphémère, les mêmes prompts (température 0, graine fixe) donnent des textes différents
+  à `scale: 0` et `scale: 1` (14 réponses sur 20 de l'évaluation). Effet mesuré : style plus bref
+  et plus proche des passages ; refus et citations inchangés (ils sont contrôlés dans le code).
+- **GPU** : le `llama-server` installé (`~/.local/bin`, b11312, GNU 11.4) est une compilation
+  CPU seule (`--list-devices` : aucun appareil) ; `--fit on` n'avait donc rien à décharger
+  (7 tokens/s, GPU à 422 MiB). Réglage : compilation CUDA (sm_89, statique) de la même version
+  dans `~/.aphrody/bin/llama-cuda/llama-server`, déclarée par `APHRODY_LLAMA_BIN` dans
+  `ai-http.env` (sauvegarde `ai-http.env.before-p2d`, droits 0600). Après redémarrage de
+  `aphrody-ai-http` : 5,8 Go de VRAM, 90 à 110 tokens/s, réponse du chat en 1 à 3 s au lieu de
+  20 à 30 s.
+
+```sh
+# recompiler (WSL, cuda dans /usr/local/cuda, nice : charge élevée pendant 20 min)
+git clone --depth 1 --branch b11312 https://github.com/ggml-org/llama.cpp.git && cd llama.cpp
+PATH=/usr/local/cuda/bin:$PATH cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON \
+  -DCMAKE_CUDA_ARCHITECTURES=89 -DBUILD_SHARED_LIBS=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF \
+  -DLLAMA_BUILD_EXAMPLES=OFF && nice -n 19 cmake --build build --target llama-server -j 4
+```
+
+Contrôle : `~/.aphrody/bin/llama-cuda/llama-server --list-devices` liste `CUDA0`, et
+`nvidia-smi` montre le modèle en mémoire après la première requête de chat. Le service exige
+le nom de fichier `llama-server` (`APHRODY_LLAMA_BIN`).
+
+À savoir : l'unité `aphrody-compute-vps-tunnel` sort aussitôt avec le code 0 (la connexion
+partagée `ControlMaster` de `~/.ssh/config` porte déjà la redirection) et systemd la relance
+toutes les 5 s ; la redirection tient, mais le compteur de redémarrage grimpe.

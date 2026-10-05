@@ -336,6 +336,34 @@ export function uncoveredEntities(
   });
 }
 
+/**
+ * First passage that names an entity of the question (or one of its aliases): the citation of an
+ * answer that shares no word with its passages because it is written in another language.
+ */
+export function anchorPassage(
+  entities: readonly string[],
+  passages: readonly PassageText[],
+  aliasesOf?: EntityAliases,
+): number | undefined {
+  for (const passage of passages) {
+    for (const entity of entities) {
+      const names = [entity, ...(aliasesOf?.(entity) ?? [])];
+      if (names.some((name) => hasName(name, passage))) {
+        return passage.n;
+      }
+    }
+  }
+  return undefined;
+}
+
+function hasName(name: string, passage: PassageText): boolean {
+  const text = `${passage.hit.title} ${passage.text}`;
+  if (KANA_HAN.test(name)) return text.includes(name);
+  const key = fold(name);
+  const hay = fold(text);
+  return hay.includes(key) || hay.includes(stem(key));
+}
+
 // ── Citations ───────────────────────────────────────────────────────────────────────────────
 
 export interface GroundedCitation {
@@ -439,7 +467,7 @@ export function verifyAnswer(
   answer: string,
   question: string,
   passages: readonly PassageText[],
-  options: { lang?: AnswerLang } = {},
+  options: { lang?: AnswerLang; anchor?: number } = {},
 ): VerifiedAnswer {
   // An answer can be compared with the passages word for word only when both are in the same
   // language. Otherwise they share little more than names: one shared word supports a citation,
@@ -509,6 +537,11 @@ export function verifyAnswer(
       }
     } else if (best.shared >= minSupport) {
       final = [best.n]; // the model cited nothing: attach the closest passage
+    }
+    // Another language than the passages: nothing to compare word for word, so the passage that
+    // names the entity of the question stands for the evidence.
+    if (!strict && final.length === 0 && options.anchor !== undefined && byN.has(options.anchor)) {
+      final = [options.anchor];
     }
     if (final.length > 0) {
       report.cited++;
