@@ -5,10 +5,12 @@
     "": {
       "name": "shenron",
       "devDependencies": {
+        "@shenron/pipeline": "workspace:*",
         "@types/bun": "catalog:",
         "@types/node": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
+        "postgres": "catalog:",
         "typescript": "catalog:",
       },
     },
