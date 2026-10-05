@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { Noto_Sans_JP, Newsreader, JetBrains_Mono } from "next/font/google";
+import "./fonts.css";
 import "./globals.css";
+import { FONT_PRELOADS } from "@/lib/font-preloads";
 // Conséquences de la barre de navigation basse (réserve sous le contenu,
 // remontée des pastilles flottantes et du bandeau de consentement).
 import "@shenron/ui/barre-nav.css";
@@ -16,7 +16,7 @@ import { PageViewTracker } from "@/components/PageViewTracker";
 import { ConsentGate } from "@/components/ConsentGate";
 import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { DISCORD_CDN } from "@shenron/config/public-urls";
-import { API_ORIGIN, ASSET_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
+import { API_ORIGIN, ASSET_ORIGIN, CDN_ORIGIN, SITE_URL, STATIC_PREFIX } from "@/lib/config";
 import { env } from "@/lib/env";
 import { getSiteTheme } from "@/lib/theme-config";
 import { themeCssVars } from "@/lib/site-theme";
@@ -31,53 +31,9 @@ const DiscordInviteFAB = dynamic(() =>
 // Bouton flottant « Signaler une erreur » (îlot client, jamais critical).
 const ReportButton = dynamic(() => import("@/components/ReportButton").then((m) => m.ReportButton));
 
-// Google Sans Flex — police officielle Google, open-source 2025 (variable font,
-// axes opsz 6→144 + wght 1→1000). Servie en local depuis le woff2 v20 de
-// fonts.gstatic.com (next/font/google ne l'a pas encore dans son registry).
-// Sert à la fois de corps (--font-sans) ET de police d'affichage (--font-display,
-// mappé dans globals.css) : hiérarchie pilotée par le poids, façon design Google.
-const sansFlex = localFont({
-  src: "../../public/fonts/google-sans-flex.woff2",
-  variable: "--font-sans",
-  display: "swap",
-  weight: "1 1000", // axe wght variable
-  // Best practices next/font : préchargé (défaut), fallback à métriques
-  // ajustées (`size-adjust` auto sur Arial) → zéro layout shift au swap.
-  fallback: ["system-ui", "arial"],
-  adjustFontFallback: "Arial",
-});
-
-// Newsreader — serif éditoriale variable (axe opsz + wght, italique vrai).
-// Police d'affichage du wiki : le contraste serif/sans est ce qui fait passer
-// une fiche d'un « bloc de texte » à un article. Preload (elle porte les H1/H2
-// au-dessus de la ligne de flottaison), fallback métrique sur Times.
-const newsreader = Newsreader({
-  variable: "--font-serif-src",
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  style: ["normal", "italic"],
-  adjustFontFallback: true,
-});
-
-// JetBrains Mono — métadonnées, chiffres, code, libellés HUD (`font-scouter`).
-// Chargée en 400/500 seulement : elle ne sert jamais à du corps de texte.
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono-src",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-  preload: false,
-});
-
-// Noto Sans JP — corps japonais (noms natifs 孫悟空…). Pas de preload : chargé
-// seulement quand du texte JP est présent, pour ne pas peser sur le LCP latin.
-const notoJP = Noto_Sans_JP({
-  variable: "--font-jp",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
-  preload: false,
-});
+// Polices : servies par le CDN (`public/fonts`, `./fonts.css` généré par
+// `scripts/fonts.ts`), plus par `next/font` — le build Next ne télécharge ni ne traite
+// aucune police. Variables `--font-*` posées sur `:root` par la feuille.
 
 // SaiyanSans + DBSScouter ne sont plus chargées : les tokens `font-saiyan` et
 // `font-scouter` sont remappés sur Google Sans Flex (globals.css) pour la
@@ -185,6 +141,17 @@ export default async function RootLayout({
   return (
     <html lang="fr" className="dark">
       <head>
+        {/* Polices critiques depuis le CDN : même URL que celle que résout `fonts.css`. */}
+        {FONT_PRELOADS.map((href) => (
+          <link
+            key={href}
+            rel="preload"
+            href={`${STATIC_PREFIX}${href}`}
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+        ))}
         {/* Toutes les images, vidéos et cartes de profil du site viennent du bot :
 				    100 requêtes vers cette origine sur une page de liste. Sans
 				    `preconnect`, le navigateur paie DNS + TCP + TLS avant la PREMIÈRE
@@ -254,9 +221,7 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
       )}
-      <body
-        className={`${sansFlex.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${notoJP.variable} antialiased min-h-screen relative flex flex-col font-sans bg-dbz-bg text-white`}
-      >
+      <body className="antialiased min-h-screen relative flex flex-col font-sans bg-dbz-bg text-white">
         {/* GTM noscript — fallback sans JS, juste après l'ouverture de <body>. */}
         <noscript>
           <iframe

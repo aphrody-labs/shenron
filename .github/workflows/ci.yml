@@ -45,6 +45,9 @@ jobs:
       - name: UI tokens are up to date
         run: bun packages/ui/scripts/generate-tokens.ts --check
 
+      - name: CDN fonts are up to date
+        run: bun apps/site/scripts/fonts.ts --check
+
       - name: AI contracts
         run: bun packages/pipeline/scripts/ai/check-contracts.ts
 

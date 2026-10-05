@@ -12,6 +12,8 @@
     "packages/koharu/src/protocol.ts",
     "plugin/references/**",
     "packages/ui/src/tokens.ts",
-    "packages/api/openapi/public.json"
+    "packages/api/openapi/public.json",
+    "apps/site/src/app/fonts.css",
+    "apps/site/scripts/fonts.lock.json"
   ]
 }

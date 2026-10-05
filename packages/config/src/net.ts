@@ -183,7 +183,10 @@ function ipv6ToBigInt(ip: string): bigint | null {
 
 /** Adresse IP (v4, v6, v4 mappée en v6) en bloc /32 ou /128, ou `null`. */
 export function parseIp(raw: string): IpRange | null {
-  const ip = raw.trim().replace(/^\[|\]$/g, "").replace(/%.*$/, "");
+  const ip = raw
+    .trim()
+    .replace(/^\[|\]$/g, "")
+    .replace(/%.*$/, "");
   const v4 = ipv4ToBigInt(ip);
   if (v4 !== null) return { family: 4, base: v4, prefix: 32 };
   const v6 = ipv6ToBigInt(ip);

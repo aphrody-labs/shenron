@@ -1,10 +1,13 @@
 import path from "node:path";
 import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
 import { ownImageRemotePatterns, resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
 import { sitePublicRedirects } from "@shenron/images/resolve";
 
-const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+// next-intl : son plugin ne fait, pour cette configuration, que poser l'alias
+// `next-intl/config` ; il chargeait en plus `@swc/core` (addon natif de 30 Mio) et
+// `@parcel/watcher` dans chaque processus qui lit la config. L'alias est posé ici.
+// À revérifier à chaque montée de next-intl (var/reports/turbopack-swc-bun-2026-10-05.md).
+const nextIntlRequest = "./src/i18n/request.ts";
 
 const monorepoRoot = path.resolve(__dirname, "../..");
 const prosemirrorTransform = path.resolve(__dirname, "node_modules/prosemirror-transform");
@@ -24,6 +27,7 @@ const nextConfig: NextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       "prosemirror-transform": prosemirrorTransform,
+      "next-intl/config": path.resolve(__dirname, nextIntlRequest),
     };
     if (!dev && process.env.SHENRON_BUILD_LOW_MEMORY === "1") {
       config.optimization.minimize = false;
@@ -56,6 +60,8 @@ const nextConfig: NextConfig = {
   // Désactivation explicite des source maps navigateur en production :
   // évite la surconsommation de mémoire au build Turbopack et supprime les fichiers .map.
   productionBrowserSourceMaps: false,
+  // Source maps du prérendu : mêmes règles que les source maps serveur (`experimental`).
+  enablePrerenderSourceMaps: process.env.SHENRON_SERVER_SOURCEMAPS === "1",
 
   // Répertoire de sortie pilotable par env. Le workflow `site-artifact` bâtit
   // dans `.next-build` hors VPS pour garder la release active indépendante du
@@ -146,7 +152,10 @@ const nextConfig: NextConfig = {
 
   turbopack: {
     root: monorepoRoot,
-    resolveAlias: { "prosemirror-transform": "./node_modules/prosemirror-transform" },
+    resolveAlias: {
+      "prosemirror-transform": "./node_modules/prosemirror-transform",
+      "next-intl/config": nextIntlRequest,
+    },
   },
 
   experimental: {
@@ -167,11 +176,12 @@ const nextConfig: NextConfig = {
     // cache filesystem quand `.next/cache` n'est jamais restauré : l'écrire ne
     // ferait qu'ajouter des E/S et du disque sans accélérer le build suivant.
     turbopackFileSystemCacheForBuild: false,
+    // Source maps serveur : 101,6 Mio sur 184,4 Mio de `.next-build`. Coupées par défaut ;
+    // `SHENRON_SERVER_SOURCEMAPS=1` les rallume pour un build de diagnostic.
+    serverSourceMaps: process.env.SHENRON_SERVER_SOURCEMAPS === "1",
+    // `lucide-react` et `date-fns` sont déjà dans la liste par défaut de Next ;
+    // `schema-dts` (types) et `postgres` (serveur) ne sont pas des barils clients.
     optimizePackageImports: [
-      "lucide-react",
-      "schema-dts",
-      "postgres",
-      "date-fns",
       "@tanstack/react-query",
       "motion",
       "better-auth",
@@ -515,4 +525,4 @@ const nextConfig: NextConfig = {
 
 // Next.js 16 Turbopack : analyse de bundle intégrée via `next build --turbopack --experimental-analyze`
 // qui écrit les métriques dans `.next/diagnostics/analyze` sans injecter de wrapper Webpack.
-export default withNextIntl(nextConfig);
+export default nextConfig;

@@ -73,6 +73,13 @@ export const ASSET_ORIGIN = originOf(ASSET_BASE);
 /** Origine de l'API bot (indices de connexion, repli d'assets). */
 export const API_ORIGIN = originOf(API_URL);
 
+/**
+ * Préfixe des fichiers statiques (`assetPrefix` de next.config : `NEXT_PUBLIC_CDN_URL`), sans
+ * slash final : le CDN en production, vide en développement. Une URL racine (`/fonts/…`) d'une
+ * feuille servie sous ce préfixe se résout sur le même hôte : les préchargements le reprennent.
+ */
+export const STATIC_PREFIX = (process.env.NEXT_PUBLIC_CDN_URL ?? "").trim().replace(/\/+$/, "");
+
 /** Origine du CDN objet (planches manga, illustrations wiki). */
 export const CDN_ORIGIN: string = DEFAULT_PUBLIC_ORIGINS.cdn;
 
