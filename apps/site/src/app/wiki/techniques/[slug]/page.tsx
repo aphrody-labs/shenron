@@ -111,7 +111,7 @@ export default async function TechniqueDetailPage({
             {tech.battles.map((b) => (
               <GatedWrap
                 key={b.slug}
-                href={`/wiki/battles/${b.slug}`}
+                href="/wiki/events"
                 className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-orange-500/40 hover:bg-orange-500/[0.04] space-y-2"
               >
                 <div className="flex items-center justify-between text-xs">

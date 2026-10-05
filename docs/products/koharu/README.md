@@ -15,7 +15,7 @@ MIT/Apache-2.0 d'origine : [`docs/licenses/koharu/`](../../licenses/koharu/).
 **Shenron Studio** (`crates/shenron-desktop`, Tauri 3, identifiant `com.dragonballfr.shenron`)
 est la seule application de bureau et le seul binaire graphique. Elle lance le sidecar
 `shenron-server` (`apps/server`) et ouvre le site dans sa fenêtre : éditeur, studio, page
-d'accueil `/bureau` et pilotage. Le moteur de l'éditeur tourne **dans son processus** :
+d'accueil `/desktop` et pilotage `/desktop/control`. Le moteur de l'éditeur tourne **dans son processus** :
 `koharu-app` n'est qu'une bibliothèque de commandes Tauri (Specta), sans binaire ni
 `tauri::Builder` propre, et `shenron-desktop` les enregistre sous leurs noms d'origine
 (`koharu_app::COMMAND_NAMES`) à côté des commandes du studio (`crates/shenron-studio` :
@@ -34,16 +34,16 @@ retirée ; les durées d'étapes et de pipeline restent des événements `tracin
 | Application | `shenron-desktop` (« Shenron Studio »), fonctionnalité `koharu` par défaut |
 | Socle ML | `koharu-{llama,torch,diffusion,runtime,config}`, fournis par Aphrody (voir [`APHRODY-ECOSYSTEM.md`](../../architecture/APHRODY-ECOSYSTEM.md)) |
 | Client Bun | `@shenron/koharu` (`packages/koharu`) : `./protocol` (généré, transport `src/transport.ts`), `./native` (`koharu-sdk` pour `@shenron/pipeline`), `./canvas` (WASM de `koharu-canvas`) |
-| Interface | `@shenron/ui/koharu`, montée par le site sous `/koharu` (onglet de l'espace Bibliothèque) |
+| Interface | `@shenron/ui/koharu`, montée par le site sous `/studio` (onglet de l'espace Bibliothèque) |
 
 ## Où l'éditeur s'ouvre
 
-`apps/site/src/app/koharu/KoharuEditor.tsx` monte l'éditeur partout où son moteur est local :
+`apps/site/src/app/studio/StudioEditor.tsx` monte l'éditeur partout où son moteur est local :
 
 - **dans Shenron Studio** : le transport du protocole (`packages/koharu/src/transport.ts`)
   parle Tauri IPC au moteur du processus ;
 - **dans un navigateur sur un site servi par `shenron-server`** (par exemple
-  `http://127.0.0.1:<port>/koharu`), quand `GET /api/local/health` annonce le groupe
+  `http://127.0.0.1:<port>/studio`), quand `GET /api/local/health` annonce le groupe
   `koharu` : le transport parle au pont `/api/local/koharu` du serveur
   (`apps/server/src/koharu.ts`), qui relaie vers un processus enfant `koharu-sdk` démarré au
   premier usage (`POST /api/local/koharu/invoke`, `{ command, args }` avec l'en-tête

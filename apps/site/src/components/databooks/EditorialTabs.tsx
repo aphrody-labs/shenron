@@ -12,7 +12,7 @@ import { EditorialTabsView, type EditorialTab } from "./EditorialTabsView";
  */
 const TABS: readonly EditorialTab[] = [
   { href: "/wiki/databooks", labelKey: "wiki.editorialNav.databooks" },
-  { href: "/wiki/novels", labelKey: "wikiMedias.editorialNav.romans" },
+  { href: "/wiki/manga", labelKey: "wiki.editorialNav.novels" },
   { href: "/wiki/interviews", labelKey: "wiki.editorialNav.interviews" },
   { href: "/wiki/toriyama", labelKey: "wiki.editorialNav.toriyama" },
 ];

@@ -6,7 +6,7 @@ import { LibraryTabs } from "./LibraryTabs";
 export { WorkshopNav } from "./LibraryTabs";
 
 /**
- * Les onglets de l'espace Bibliothèque (manga, databooks, atelier, Koharu), communs à leurs
+ * Les onglets de l'espace Bibliothèque (manga, databooks, atelier, Studio), communs à leurs
  * quatre pages. Une rubrique refermée depuis /admin/launch n'y figure pas : un onglet ne
  * mène jamais à une impasse. Config illisible : tous les onglets restent.
  */

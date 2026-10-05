@@ -2,6 +2,6 @@
 import "@shenron/ui/koharu.css";
 
 /** The editor's stylesheet is scoped to `[data-koharu-ui]`; only this route loads it. */
-export default function KoharuLayout({ children }: { children: React.ReactNode }) {
+export default function StudioLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

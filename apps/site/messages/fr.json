@@ -266,7 +266,7 @@
       "label": "Transcription et traduction",
       "blurb": "Où en sont les planches du manga et des databooks"
     },
-    "koharu": {
+    "studio": {
       "label": "Shenron Studio",
       "blurb": "L'éditeur de traduction manga de Shenron"
     }
@@ -525,7 +525,9 @@
       "properties": "Fiche & Propriétés"
     },
     "editorialNav": {
+      "label": "Parcours éditorial",
       "databooks": "Databooks",
+      "novels": "Romans",
       "interviews": "Interviews",
       "toriyama": "Page Akira Toriyama",
       "catalogue": "Catalogue des databooks"
@@ -1023,8 +1025,8 @@
     "brandLabel": "Dragon Ball France, accueil",
     "staff": "Rubriques fermées (staff)",
     "backToSite": "Retour au site",
-    "bureau": "Bureau",
-    "bureauHint": "L’application de bureau : corpus local, éditeur, studio.",
+    "desktop": "Bureau",
+    "desktopHint": "L’application de bureau : corpus local, éditeur, studio.",
     "journeys": {
       "decouvrir": "Découvrir",
       "encyclopedie": "Encyclopédie",
@@ -1418,7 +1420,7 @@
       "manga": "Manga",
       "databooks": "Databooks",
       "workshop": "Transcription et traduction",
-      "koharu": "Shenron Studio"
+      "studio": "Shenron Studio"
     },
     "workshop": {
       "label": "Atelier des planches",
@@ -1448,7 +1450,7 @@
           "label": "Traduction",
           "text": "Le français, appuyé sur le lexique canonique de DBFR pour les noms et les techniques."
         },
-        "koharu": {
+        "studio": {
           "label": "Shenron Studio",
           "text": "Bulles nettoyées, texte lettré et planche exportée dans l'éditeur Shenron Studio."
         }
@@ -1471,7 +1473,7 @@
         "bxc": "Campagnes BXC"
       }
     },
-    "koharu": {
+    "studio": {
       "title": "Shenron Studio, l'éditeur de traduction manga",
       "lead": "Shenron Studio détecte les bulles, transcrit le japonais, traduit avec le lexique canonique de Shenron, nettoie la planche et la relettre, jusqu'à l'export PSD. Le moteur tourne en local, dans l'application de bureau Shenron.",
       "featuresTitle": "Ce que fait Shenron Studio",

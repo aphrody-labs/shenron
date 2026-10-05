@@ -22,7 +22,7 @@ export function EditorialTabsView({
   const t = useT();
   return (
     <TabNav
-      ariaLabel={t("wikiMedias.editorialNav.label")}
+      ariaLabel={t("wiki.editorialNav.label")}
       active={active}
       className={className}
       items={tabs.map((tab) => ({ href: tab.href, label: t(tab.labelKey) }))}

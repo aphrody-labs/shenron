@@ -170,7 +170,7 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     blurb: "Daizenshuu, Chōzenshū et artbooks officiels",
   },
   // L'espace Bibliothèque (`lib/library.ts`) : manga et databooks ci-dessus, puis
-  // l'atelier (avancement public, outils staff gardés par le proxy) et l'éditeur Koharu.
+  // l'atelier (avancement public, outils staff gardés par le proxy) et l'éditeur Shenron Studio.
   {
     key: "workshop",
     label: "Transcription et traduction",
@@ -183,10 +183,10 @@ export const LAUNCH_CATEGORIES: LaunchCategory[] = [
     blurb: "Où en sont les planches du manga et des databooks",
   },
   {
-    key: "koharu",
+    key: "studio",
     label: "Shenron Studio",
-    href: "/koharu",
-    prefixes: ["/koharu"],
+    href: "/studio",
+    prefixes: ["/studio"],
     alwaysOpen: true,
     scope: "site",
     defaultMode: "public",
@@ -487,6 +487,7 @@ export const LEGACY_ENTRY_KEYS: Readonly<Record<string, string>> = {
   planetes: "planets",
   personnages: "characters",
   jeux: "games",
+  koharu: "studio",
   atelier: "workshop",
   puissances: "power-levels",
   objets: "items",

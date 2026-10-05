@@ -266,7 +266,7 @@
       "label": "Transcription & translation",
       "blurb": "Progress on the manga and databook pages"
     },
-    "koharu": {
+    "studio": {
       "label": "Shenron Studio",
       "blurb": "Shenron's manga translation editor"
     }
@@ -525,7 +525,9 @@
       "properties": "Profile & Properties"
     },
     "editorialNav": {
+      "label": "Editorial path",
       "databooks": "Databooks",
+      "novels": "Novels",
       "interviews": "Interviews",
       "toriyama": "Akira Toriyama page",
       "catalogue": "Databook catalogue"
@@ -1023,8 +1025,8 @@
     "brandLabel": "Dragon Ball France, home",
     "staff": "Closed sections (staff)",
     "backToSite": "Back to the site",
-    "bureau": "Desktop",
-    "bureauHint": "The desktop app: local corpus, editor, studio.",
+    "desktop": "Desktop",
+    "desktopHint": "The desktop app: local corpus, editor, studio.",
     "journeys": {
       "decouvrir": "Discover",
       "encyclopedie": "Encyclopedia",
@@ -1418,7 +1420,7 @@
       "manga": "Manga",
       "databooks": "Databooks",
       "workshop": "Transcription & translation",
-      "koharu": "Shenron Studio"
+      "studio": "Shenron Studio"
     },
     "workshop": {
       "label": "Page workshop",
@@ -1448,7 +1450,7 @@
           "label": "Translation",
           "text": "The French text, backed by DBFR's canonical lexicon for names and techniques."
         },
-        "koharu": {
+        "studio": {
           "label": "Shenron Studio",
           "text": "Balloons cleaned, text lettered and the page exported in the Shenron Studio editor."
         }
@@ -1471,7 +1473,7 @@
         "bxc": "BXC campaigns"
       }
     },
-    "koharu": {
+    "studio": {
       "title": "Shenron Studio, the manga translation editor",
       "lead": "Shenron Studio detects balloons, transcribes the Japanese, translates with Shenron's canonical lexicon, cleans the page and letters it again, all the way to a PSD export. The engine runs locally, in the Shenron desktop app.",
       "featuresTitle": "What Shenron Studio does",

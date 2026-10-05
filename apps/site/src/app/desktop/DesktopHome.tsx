@@ -148,14 +148,14 @@ export function DesktopHome() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3" aria-label="Outils">
-        <Link href="/koharu" className="card flex flex-col gap-2 p-6">
+        <Link href="/studio" className="card flex flex-col gap-2 p-6">
           <span className="text-lg font-bold">Éditeur de traduction manga</span>
           <span className="text-sm">
-            Détection, OCR, traduction, nettoyage et export PSD des planches (Koharu).
+            Détection, OCR, traduction, nettoyage et export PSD des planches (Shenron Studio).
           </span>
         </Link>
-        <Link href="/studio" className="card flex flex-col gap-2 p-6">
-          <span className="text-lg font-bold">Studio</span>
+        <Link href="/desktop/control" className="card flex flex-col gap-2 p-6">
+          <span className="text-lg font-bold">Pilotage</span>
           <span className="text-sm">
             Santé des services, corpus, modèles locaux et entraînement.
           </span>

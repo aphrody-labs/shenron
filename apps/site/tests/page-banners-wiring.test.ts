@@ -20,17 +20,14 @@ const routes: Record<(typeof PAGE_HERO_KEYS)[number], string> = {
   jeux: "../src/app/wiki/games/page.tsx",
   manga: "../src/app/wiki/manga/page.tsx",
   databooks: "../src/app/wiki/databooks/page.tsx",
-  combats: "../src/app/wiki/battles/page.tsx",
+  combats: "../src/app/wiki/events/page.tsx",
   dragons: "../src/app/wiki/dragons/page.tsx",
   lieux: "../src/app/wiki/locations/page.tsx",
   musiques: "../src/app/wiki/music/page.tsx",
   objets: "../src/app/wiki/items/page.tsx",
   puissances: "../src/app/wiki/power-levels/page.tsx",
-  tournois: "../src/app/wiki/tournaments/page.tsx",
-  voix: "../src/app/wiki/voice-actors/page.tsx",
   news: "../src/app/news/page.tsx",
   tools: "../src/app/wiki/tools/page.tsx",
-  romans: "../src/app/wiki/novels/page.tsx",
   staff: "../src/app/wiki/staff/page.tsx",
 };
 

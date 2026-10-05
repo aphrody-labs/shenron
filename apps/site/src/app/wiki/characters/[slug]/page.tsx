@@ -363,7 +363,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
             {character.battles.map((b) => (
               <GatedWrap
                 key={b.id}
-                href={`/wiki/battles/${b.slug}`}
+                href="/wiki/events"
                 className="dbz-panel p-5 hover:border-dbz-red/50 transition-all group flex flex-col justify-between"
               >
                 <div>
@@ -550,7 +550,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
                         : `Voix (${va.nationality.toUpperCase()})`}
                   </span>
                   <span className="wiki-infobox-value text-dbz-orange">
-                    <GatedWrap href={`/wiki/voice-actors/${va.slug}`} className="hover:underline">
+                    <GatedWrap href="/wiki/staff?tier=voice" className="hover:underline">
                       {va.name}{" "}
                       {va.nameJa && (
                         <span lang="ja" className="font-jp text-xs opacity-75">

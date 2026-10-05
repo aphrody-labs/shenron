@@ -189,7 +189,7 @@ describe("desktop profile: the front mounts the API host", () => {
     expect(await (await fetch(`${app.base}/hello.txt`)).text()).toBe("bonjour");
     expect(await (await fetch(`${app.base}/_next/static/chunks/app.js`)).text()).toBe("chunk");
     expect(await (await fetch(`${app.base}/assets/logo.txt`)).text()).toBe("logo du VFS");
-    for (const path of ["/wiki/personnages", "/bureau", "/api/health", "/api/chat"])
+    for (const path of ["/wiki/personnages", "/desktop", "/api/health", "/api/chat"])
       expect(await json(await fetch(`${app.base}${path}`))).toEqual({ next: path });
   });
 

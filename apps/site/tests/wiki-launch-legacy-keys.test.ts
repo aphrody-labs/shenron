@@ -71,6 +71,20 @@ describe("lecture de la configuration enregistrée avec les anciennes clés", ()
     });
   });
 
+  test("la clé \u00ab koharu \u00bb (nom de code) est lue comme \u00ab studio \u00bb", async () => {
+    stored = {
+      openKeys: ["koharu"],
+      order: ["koharu", "atelier"],
+      access: { koharu: { mode: "members", roleIds: [] } },
+    };
+    const cfg = await readConfig();
+    expect(cfg.openKeys).toContain("studio");
+    expect(cfg.openKeys).not.toContain("koharu");
+    expect(cfg.order).toEqual(["studio", "workshop"]);
+    // Rubrique toujours ouverte : sa règle d'accès n'est pas retenue (ni sous l'ancienne clé, ni sous la nouvelle).
+    expect(cfg.access).toEqual({});
+  });
+
   test("une règle enregistrée sous la clé actuelle l'emporte sur l'ancienne", async () => {
     stored = {
       openKeys: [],

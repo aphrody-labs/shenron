@@ -26,7 +26,7 @@ out.write(
 const isHeader = (line: string) => /^-- (Name|Data for Name): /.test(line);
 const isRagBlock = (line: string) =>
   /^-- (Name|Data for Name): .*Schema: aphrody_ai;/.test(line) ||
-  /^-- Name: SCHEMA aphrody_ai; Type: ACL/.test(line);
+  line.startsWith("-- Name: SCHEMA aphrody_ai; Type: ACL");
 
 let capturing = false;
 let inCopy = false;
@@ -66,7 +66,7 @@ for await (const line of lines) {
     continue;
   }
   out.write(`${line}\n`);
-  if (/^COPY aphrody_ai\./.test(line)) {
+  if (line.startsWith("COPY aphrody_ai.")) {
     inCopy = true;
     copies++;
   }

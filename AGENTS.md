@@ -135,11 +135,13 @@ Lancer et construire :
   historiques (plus `/graphql` en lecture seule). L'OpenAPI 3.1 est dérivée du contrat.
 - **Site** : Next 16 App Router, Turbopack ; `src/proxy.ts` remplace le middleware (host
   canonique, garde admin) ; next-intl par cookie `NEXT_LOCALE`, sans segment `[locale]`
-  (`messages/{fr,en,ja}.json`). `/koharu`, `/studio`, `/bureau` montent `@shenron/ui`.
+  (`messages/{fr,en,ja}.json`). `/studio` (Shenron Studio, l'éditeur de traduction manga), `/desktop` (accueil de
+  l'application de bureau) et `/desktop/control` (son pilotage) montent `@shenron/ui`.
   Espace Bibliothèque (`src/lib/library.ts`) : `/wiki/manga`, `/wiki/databooks`, `/workshop`
   (avancement public ; outils staff `/workshop/{transcription,translation,databooks/[id]}`, gardés
-  par `proxy.ts` comme `/admin`) et `/koharu` partagent leurs onglets. Les anciennes adresses
-  françaises vivent dans `src/lib/legacy-routes.ts` : 308 de `next.config.ts` (pages publiques),
+  par `proxy.ts` comme `/admin`) et `/studio` partagent leurs onglets. Les anciennes adresses
+  (françaises, `/koharu`, `/bureau`) vivent dans `src/lib/legacy-routes.ts` : 308 de
+  `next.config.ts` (pages publiques),
   308 du proxy après la garde (admin, outils staff), `rewrite` vers le handler anglais (API) ;
   `tests/english-routes.test.ts` refuse tout nouveau segment français.
   `/mcp` relaie vers `shenron-mcp --http --public`.
@@ -167,7 +169,7 @@ Lancer et construire :
 - **Application de bureau** : **Shenron Studio** (`crates/shenron-desktop`, Tauri 3) est le
   seul binaire graphique, un identifiant, un dossier de données (`SHENRON_HOME`), un installeur
   (`scripts/build/desktop.ts`). Elle lance `shenron-server` en sidecar (avec `shenron-mcp` et
-  `koharu-sdk` à côté) et ouvre `/bureau` ; le moteur de l'éditeur (`koharu-library`,
+  `koharu-sdk` à côté) et ouvre `/desktop` ; le moteur de l'éditeur (`koharu-library`,
   propriétaire unique de l'état) tourne dans son processus derrière `koharu-app`, simple
   bibliothèque de commandes Specta (`docs/products/koharu/README.md`).
 - **Natif** : `@shenron/native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;

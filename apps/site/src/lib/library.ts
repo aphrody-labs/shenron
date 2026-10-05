@@ -1,13 +1,13 @@
 /**
  * library — l'espace unique des planches : lire (manga, databooks), transcrire, traduire
- * et éditer (Koharu).
+ * et éditer (Shenron Studio).
  *
  * Six écrans parlaient des mêmes planches sans se connaître : le lecteur manga, le catalogue
  * public des databooks, son double d'administration (catalogue et campagnes de traduction),
- * l'écran des transcriptions, l'éditeur Koharu et, au milieu, aucune page qui dise au lecteur
+ * l'écran des transcriptions, l'éditeur Shenron Studio et, au milieu, aucune page qui dise au lecteur
  * où en est le travail. Ils forment désormais un seul espace, à onglets-liens :
  *
- *   Manga · Databooks · Transcription et traduction (`/workshop`) · Koharu
+ *   Manga · Databooks · Transcription et traduction (`/workshop`) · Studio
  *
  * Les adresses publiques du manga et des databooks ne bougent pas (elles sont indexées) ;
  * les outils staff quittent `/admin` pour l'atelier (`/workshop`), où le proxy les garde
@@ -35,7 +35,7 @@ export const LIBRARY_TABS: readonly LibraryTab[] = [
     prefixes: ["/wiki/databooks"],
   },
   { href: "/workshop", labelKey: "library.tabs.workshop", prefixes: ["/workshop"] },
-  { href: "/koharu", labelKey: "library.tabs.koharu", prefixes: ["/koharu"] },
+  { href: "/studio", labelKey: "library.tabs.studio", prefixes: ["/studio"] },
 ];
 
 export interface WorkshopTab {

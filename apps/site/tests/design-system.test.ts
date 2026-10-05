@@ -136,23 +136,14 @@ describe("système de design — un seul vocabulaire", () => {
   });
 
   test("les index encyclopédiques d'expansion partagent leur coque wiki", () => {
-    for (const page of [
-      "battles",
-      "dragons",
-      "locations",
-      "music",
-      "items",
-      "power-levels",
-      "tournaments",
-      "voice-actors",
-    ]) {
+    for (const page of ["dragons", "locations", "music", "items", "power-levels"]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "page.tsx"), "utf8");
       expect(src, `wiki/${page}`).toContain("WikiPageShell");
     }
   });
 
   test("les fiches d'expansion partagent la coque de leur index", () => {
-    for (const page of ["battles", "locations", "items", "tournaments", "voice-actors"]) {
+    for (const page of ["locations", "items"]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "[slug]", "page.tsx"), "utf8");
       expect(src, `wiki/${page}/[slug]`).toContain("WikiPageShell");
     }
@@ -160,11 +151,8 @@ describe("système de design — un seul vocabulaire", () => {
 
   test("les fiches d'expansion exposent le même point d'entrée de correction", () => {
     for (const [page, table] of [
-      ["battles", "db_battles"],
       ["locations", "db_locations"],
       ["items", "db_items"],
-      ["tournaments", "db_tournaments"],
-      ["voice-actors", "db_voice_actors"],
     ]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "[slug]", "page.tsx"), "utf8");
       expect(src, `wiki/${page}/[slug]`).toMatch(new RegExp(`<WikiEditBar\\s+table="${table}"`));
@@ -172,16 +160,7 @@ describe("système de design — un seul vocabulaire", () => {
   });
 
   test("les index d'expansion exposent une invitation contributive", () => {
-    for (const page of [
-      "battles",
-      "dragons",
-      "locations",
-      "music",
-      "items",
-      "power-levels",
-      "tournaments",
-      "voice-actors",
-    ]) {
+    for (const page of ["dragons", "locations", "music", "items", "power-levels"]) {
       const src = readFileSync(join(APP_DIR, "wiki", page, "page.tsx"), "utf8");
       expect(src, `wiki/${page}`).toContain("ContributeRail");
     }

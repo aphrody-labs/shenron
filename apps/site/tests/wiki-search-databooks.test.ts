@@ -53,14 +53,14 @@ describe("wiki search databooks and novels integration", () => {
   });
 
   test("filter logic preserves databooks and novels when routes are accessible", () => {
-    const allowedPaths = new Set(["/wiki/databooks", "/wiki/novels"]);
+    const allowedPaths = new Set(["/wiki/databooks", "/wiki/manga"]);
     const isPathPublic = (probe: string) => allowedPaths.has(probe);
 
     const keep = <T>(list: T[], probe: string): T[] => (isPathPublic(probe) ? list : []);
 
     const dummyData = [{ id: 1, title: "Test Item" }];
     expect(keep(dummyData, "/wiki/databooks")).toEqual(dummyData);
-    expect(keep(dummyData, "/wiki/novels")).toEqual(dummyData);
+    expect(keep(dummyData, "/wiki/manga")).toEqual(dummyData);
     expect(keep(dummyData, "/wiki/secret")).toEqual([]);
   });
 });

@@ -6,7 +6,7 @@
  *
  * Ce que le serveur ne peut pas savoir sans perdre le cache CDN se décide ici, après
  * l'hydratation : l'espace membre n'apparaît qu'une fois connecté, les rubriques fermées
- * seulement pour le staff, l'entrée « Bureau » seulement dans la fenêtre Tauri.
+ * seulement pour le staff, l'entrée « Bureau » (`/desktop`) seulement dans la fenêtre Tauri.
  */
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -59,7 +59,7 @@ const JOURNEY_ICONS: Partial<Record<Journey, ReactNode>> = {
 
 const TAB_ICONS: Record<string, { icon: ReactNode; activeIcon?: ReactNode }> = {
   "/": { icon: <Maison size={22} />, activeIcon: <MaisonPleine size={22} /> },
-  "/bureau": { icon: <Scouter size={22} /> },
+  "/desktop": { icon: <Scouter size={22} /> },
   "/wiki": { icon: <DragonRadar size={22} /> },
   "/wiki/episodes": { icon: <Tv size={22} /> },
   "/wiki/movies": { icon: <Film size={22} /> },
@@ -143,13 +143,18 @@ export function SiteShellClient({
     }));
     if (desktop) {
       const discover = out.find((section) => section.id === "decouvrir");
-      const bureau: ShellNavItem = {
-        href: "/bureau",
-        label: dico.shell.bureau,
-        description: dico.shell.bureauHint,
+      const desktopHome: ShellNavItem = {
+        href: "/desktop",
+        label: dico.shell.desktop,
+        description: dico.shell.desktopHint,
       };
-      if (discover) discover.items = [bureau, ...discover.items];
-      else out.unshift({ id: "decouvrir", label: dico.shell.journeys.decouvrir, items: [bureau] });
+      if (discover) discover.items = [desktopHome, ...discover.items];
+      else
+        out.unshift({
+          id: "decouvrir",
+          label: dico.shell.journeys.decouvrir,
+          items: [desktopHome],
+        });
     }
     if (me?.isAdmin) {
       out.push({
@@ -168,10 +173,10 @@ export function SiteShellClient({
   const tabs = useMemo<ShellNavItem[]>(
     () =>
       MOBILE_PRIMARY_DESTINATIONS.map((destination) => {
-        const href = desktop && destination.href === "/" ? "/bureau" : destination.href;
+        const href = desktop && destination.href === "/" ? "/desktop" : destination.href;
         const label =
-          href === "/bureau"
-            ? dico.shell.bureau
+          href === "/desktop"
+            ? dico.shell.desktop
             : rubrique(href, { label: destination.label }).label;
         return { href, label, ...TAB_ICONS[href] };
       }),
@@ -182,7 +187,7 @@ export function SiteShellClient({
     <AppShell
       pathname={pathname}
       brand={{
-        href: desktop ? "/bureau" : "/",
+        href: desktop ? "/desktop" : "/",
         label: dico.shell.brandLabel,
         mark: <KintoUn hauteur={22} decorative />,
         name: "Dragon Ball",

@@ -533,7 +533,7 @@ export default function CommandPalette({
               <Item
                 key={`battle-${b.id}`}
                 value={`battle-${b.id}-${b.name}`}
-                onSelect={() => go(`/wiki/battles/${b.slug}`)}
+                onSelect={() => go("/wiki/events")}
                 title={b.name}
                 subtitle={b.name_ja ?? b.saga ?? undefined}
                 kind="Combat"
@@ -566,7 +566,7 @@ export default function CommandPalette({
               <Item
                 key={`tourn-${t.id}`}
                 value={`tourn-${t.id}-${t.name}`}
-                onSelect={() => go(`/wiki/tournaments/${t.slug}`)}
+                onSelect={() => go("/wiki/events")}
                 title={t.name}
                 subtitle={t.name_ja ?? t.saga ?? undefined}
                 kind="Tournoi"
@@ -582,7 +582,7 @@ export default function CommandPalette({
               <Item
                 key={`va-${va.id}`}
                 value={`va-${va.id}-${va.name}`}
-                onSelect={() => go(`/wiki/voice-actors/${va.slug}`)}
+                onSelect={() => go("/wiki/staff")}
                 title={va.name}
                 subtitle={
                   va.name_ja ?? (va.nationality === "ja" ? "Seiyū (VO)" : "Doublage Français (VF)")

@@ -26,7 +26,7 @@ describe("espace Bibliothèque", () => {
       "/wiki/manga",
       "/wiki/databooks",
       "/workshop",
-      "/koharu",
+      "/studio",
     ]);
   });
 
@@ -35,7 +35,7 @@ describe("espace Bibliothèque", () => {
     expect(libraryTabFor("/wiki/manga/volume/82")).toBe("/wiki/manga");
     expect(libraryTabFor("/wiki/databooks/4")).toBe("/wiki/databooks");
     expect(libraryTabFor("/workshop/databooks/19")).toBe("/workshop");
-    expect(libraryTabFor("/koharu")).toBe("/koharu");
+    expect(libraryTabFor("/studio")).toBe("/studio");
     expect(libraryTabFor("/wiki/mangaka")).toBeNull();
     expect(libraryTabFor("/wiki/characters")).toBeNull();
   });
@@ -80,8 +80,8 @@ describe("espace Bibliothèque", () => {
     expect(staffLegacyRedirect("/admin/dashboard")).toBeNull();
   });
 
-  test("l'atelier et Koharu sont des rubriques publiques du menu « Manga & Guides »", () => {
-    for (const key of ["workshop", "koharu"]) {
+  test("l'atelier et Shenron Studio sont des rubriques publiques du menu « Manga & Guides »", () => {
+    for (const key of ["workshop", "studio"]) {
       const entry = ALL_ENTRIES.find((e) => e.key === key);
       expect(entry?.group).toBe("archives");
       expect(entry?.defaultMode).toBe("public");

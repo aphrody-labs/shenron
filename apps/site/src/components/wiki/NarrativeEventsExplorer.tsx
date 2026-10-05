@@ -216,7 +216,7 @@ export function NarrativeEventsExplorer({
         canon: b.canon,
         timeline,
         timelineLabel,
-        href: `/wiki/battles/${b.slug}`,
+        href: "/wiki/events",
         sagaSlug: saga?.slug,
         sagaName: saga?.name,
         arcSlug: arc?.slug,
@@ -260,7 +260,7 @@ export function NarrativeEventsExplorer({
         canon: t.canon,
         timeline,
         timelineLabel,
-        href: `/wiki/tournaments/${t.slug}`,
+        href: "/wiki/events",
         sagaSlug,
         sagaName,
       });

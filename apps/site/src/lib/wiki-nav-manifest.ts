@@ -30,7 +30,7 @@ export interface WikiNavGroup {
 export const WIKI_NAVIGATION_MANIFEST: WikiNavGroup[] = [
   {
     // Un seul groupe pour l'espace Bibliothèque (`lib/library.ts`) : le manga et les
-    // databooks se lisent côte à côte ; l'atelier et Koharu sont dans la nav principale.
+    // databooks se lisent côte à côte ; l'atelier et Studio sont dans la nav principale.
     id: "library",
     title: "Bibliothèque : manga & databooks",
     titleJa: "書庫：原作漫画・資料集",

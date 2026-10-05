@@ -65,12 +65,9 @@ const ALLOWED = [
  * la règle générale.
  */
 const OWN_SECTION_COMPONENTS: Record<string, string> = {
-  "components/wiki/BattlesGrid.tsx": "battles",
   "components/wiki/GamesExplorer.tsx": "games",
   "components/wiki/ItemsGrid.tsx": "items",
   "components/wiki/LocationsGrid.tsx": "locations",
-  "components/wiki/TournamentsGrid.tsx": "tournaments",
-  "components/wiki/VoiceActorsGrid.tsx": "voice-actors",
 };
 
 /**

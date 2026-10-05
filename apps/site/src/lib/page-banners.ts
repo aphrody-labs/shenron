@@ -29,11 +29,8 @@ export const PAGE_HERO_KEYS = [
   "musiques",
   "objets",
   "puissances",
-  "tournois",
-  "voix",
   "news",
   "tools",
-  "romans",
   "staff",
 ] as const;
 
@@ -59,11 +56,8 @@ export const PAGE_HERO_LABELS: Record<PageHeroKey, string> = {
   musiques: "Musiques et génériques",
   objets: "Objets et technologies",
   puissances: "Niveaux de puissance",
-  tournois: "Tournois",
-  voix: "Casting vocal",
   news: "Actualités / news wiki",
   tools: "Outils communautaires",
-  romans: "Romans & Light Novels",
   staff: "Autour de Dragon Ball (Staff & Toriyama)",
 };
 
@@ -152,11 +146,8 @@ export const DEFAULT_PAGE_BANNERS: PageBannersConfig = {
     musiques: HD_DBZ_WARRIORS,
     objets: HD_DB_GOKU_SHENRON,
     puissances: HD_DBZ_NAMEK,
-    tournois: HD_DBZ_WARRIORS,
-    voix: HD_DBZ_WARRIORS,
     news: HD_NEWS,
     tools: HD_GAMES,
-    romans: "/banners/banner-14.jpg",
     staff: HD_DB_GOKU_SHENRON,
   },
   series: {

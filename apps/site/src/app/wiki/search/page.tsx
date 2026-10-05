@@ -775,7 +775,7 @@ export default async function SearchPage({
                 {results.battles.map((b) => (
                   <Link
                     key={b.id}
-                    href={`/wiki/battles/${b.slug}`}
+                    href="/wiki/events"
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-dbz-red mb-1">{b.saga}</p>
@@ -831,7 +831,7 @@ export default async function SearchPage({
                 {results.tournaments.map((t) => (
                   <Link
                     key={t.id}
-                    href={`/wiki/tournaments/${t.slug}`}
+                    href="/wiki/events"
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-dbz-orange mb-1">{t.saga}</p>
@@ -859,7 +859,7 @@ export default async function SearchPage({
                 {results.voiceActors.map((va) => (
                   <Link
                     key={va.id}
-                    href={`/wiki/voice-actors/${va.slug}`}
+                    href="/wiki/staff?tier=voice"
                     className="block dbz-panel p-4 hover:bg-white/5 transition-colors group"
                   >
                     <p className="scouter-text text-[10px] text-purple-400 mb-1">
@@ -1051,7 +1051,7 @@ export default async function SearchPage({
                 {results.novels.map((n) => (
                   <Link
                     key={n.id}
-                    href={`/wiki/novels/${n.id}`}
+                    href="/wiki/manga"
                     className="group dbz-panel overflow-hidden hover:scale-105 transition-all duration-300 flex flex-col"
                   >
                     <div className="relative aspect-[3/4] bg-zinc-950 overflow-hidden">
@@ -1183,16 +1183,16 @@ function filterGated(r: SearchResults, cfg: AccessSnapshot | null): SearchResult
     games: keep(r.games, "/wiki/games/x"),
     mangaVolumes: keep(r.mangaVolumes, "/wiki/manga/volume/1"),
     mangaChapters: keep(r.mangaChapters, "/wiki/manga/1"),
-    battles: keep(r.battles, "/wiki/battles"),
+    battles: keep(r.battles, "/wiki/events"),
     locations: keep(r.locations, "/wiki/locations"),
-    tournaments: keep(r.tournaments, "/wiki/tournaments"),
-    voiceActors: keep(r.voiceActors, "/wiki/voice-actors"),
+    tournaments: keep(r.tournaments, "/wiki/events"),
+    voiceActors: keep(r.voiceActors, "/wiki/staff"),
     soundtracks: keep(r.soundtracks, "/wiki/music"),
     powerLevels: keep(r.powerLevels, "/wiki/power-levels"),
     items: keep(r.items, "/wiki/items"),
     dragons: keep(r.dragons, "/wiki/dragons"),
     databooks: keep(r.databooks, "/wiki/databooks"),
-    novels: keep(r.novels, "/wiki/novels"),
+    novels: keep(r.novels, "/wiki/manga"),
     contributors: keep(r.contributors, "/wiki/staff"),
   };
 }

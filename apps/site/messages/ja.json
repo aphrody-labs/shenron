@@ -266,7 +266,7 @@
       "label": "文字起こしと翻訳",
       "blurb": "漫画と資料集の原稿の進捗"
     },
-    "koharu": {
+    "studio": {
       "label": "Shenron Studio（翻訳エディタ）",
       "blurb": "Shenron の漫画翻訳エディタ"
     }
@@ -525,7 +525,9 @@
       "properties": "プロフィールと詳細"
     },
     "editorialNav": {
+      "label": "編集コンテンツ",
       "databooks": "データブック",
+      "novels": "小説",
       "interviews": "インタビュー",
       "toriyama": "鳥山明のページ",
       "catalogue": "データブック一覧"
@@ -1023,8 +1025,8 @@
     "brandLabel": "ドラゴンボール・フランス ホーム",
     "staff": "非公開セクション（スタッフ）",
     "backToSite": "サイトに戻る",
-    "bureau": "デスクトップ",
-    "bureauHint": "デスクトップアプリ：ローカルコーパス、エディター、スタジオ。",
+    "desktop": "デスクトップ",
+    "desktopHint": "デスクトップアプリ：ローカルコーパス、エディター、スタジオ。",
     "journeys": {
       "decouvrir": "見つける",
       "encyclopedie": "百科事典",
@@ -1418,7 +1420,7 @@
       "manga": "漫画",
       "databooks": "資料集",
       "workshop": "文字起こしと翻訳",
-      "koharu": "Shenron Studio（翻訳エディタ）"
+      "studio": "Shenron Studio（翻訳エディタ）"
     },
     "workshop": {
       "label": "原稿工房",
@@ -1448,7 +1450,7 @@
           "label": "翻訳",
           "text": "人名や技名は DBFR の正典用語集に沿ったフランス語訳。"
         },
-        "koharu": {
+        "studio": {
           "label": "Shenron Studio",
           "text": "Shenron Studio エディタで吹き出しを消し、写植し、原稿を書き出します。"
         }
@@ -1471,7 +1473,7 @@
         "bxc": "BXC キャンペーン"
       }
     },
-    "koharu": {
+    "studio": {
       "title": "Shenron Studio：漫画翻訳エディタ",
       "lead": "Shenron Studio は吹き出しを検出し、日本語を文字起こしし、Shenron の正典用語集で翻訳し、原稿を修復して写植し、PSD まで書き出します。エンジンは Shenron デスクトップアプリ内でローカルに動作します。",
       "featuresTitle": "Shenron Studio の機能",

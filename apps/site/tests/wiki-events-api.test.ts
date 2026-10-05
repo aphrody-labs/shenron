@@ -51,7 +51,7 @@ describe("/api/wiki/events — Moteur d'événements et facettes", () => {
     expect(Array.isArray(json.data)).toBe(true);
     for (const item of json.data) {
       expect(item.kind).toBe("battle");
-      expect(item.href).toStartWith("/wiki/battles/");
+      expect(item.href).toBe("/wiki/events");
     }
   });
 
@@ -63,7 +63,7 @@ describe("/api/wiki/events — Moteur d'événements et facettes", () => {
     expect(json.data.length).toBeGreaterThan(0);
     for (const item of json.data) {
       expect(item.kind).toBe("tournament");
-      expect(item.href).toStartWith("/wiki/tournaments/");
+      expect(item.href).toBe("/wiki/events");
     }
   });
 

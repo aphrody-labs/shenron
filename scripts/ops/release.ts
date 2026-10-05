@@ -239,6 +239,8 @@ async function probes(): Promise<void> {
     "/",
     "/games",
     "/wiki/characters",
+    "/studio",
+    "/desktop",
     "/llms.txt",
     "/plugin.json",
     "/api/public/plugin",
@@ -281,12 +283,12 @@ async function ragProbe(): Promise<string[]> {
 }
 
 /**
- * Le viewport de l'éditeur (`/koharu`) compile son WASM en streaming : le fichier référencé par
+ * Le viewport de l'éditeur (`/studio`) compile son WASM en streaming : le fichier référencé par
  * les chunks de la page doit sortir en `application/wasm`, immuable, valide, depuis le site
  * (URL résolue par le navigateur) et depuis le CDN (miroir de `_next/static`, CORS ouvert).
  */
 async function koharuWasmProbe(): Promise<string[]> {
-  const html = await fetch(`${SITE}/koharu`)
+  const html = await fetch(`${SITE}/studio`)
     .then((r) => (r.ok ? r.text() : ""))
     .catch(() => "");
   const chunk = /["']((?:https?:\/\/[^"'/]+)?\/_next\/static\/chunks\/[\w.-]+\.js)/g;
@@ -304,8 +306,8 @@ async function koharuWasmProbe(): Promise<string[]> {
     for (const m of js.matchAll(/static\/chunks\/[\w.-]+\.js/g)) queue.push(`/_next/${m[0]}`);
   }
   if (!wasm) {
-    console.log(`ERR WASM koharu : aucun chunk de /koharu ne le référence (${seen.size} lus)`);
-    return ["/koharu (wasm)"];
+    console.log(`ERR WASM koharu : aucun chunk de /studio ne le référence (${seen.size} lus)`);
+    return ["/studio (wasm)"];
   }
   const failures: string[] = [];
   for (const url of [SITE + wasm, CDN + wasm]) {

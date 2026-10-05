@@ -15,7 +15,7 @@ import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react
 import type { LocalHealthResponse } from "@shenron/api/contract";
 import { isTauri } from "@shenron/ui/studio/tauri-bridge";
 
-const KoharuDesktop = dynamic(() => import("./KoharuDesktop"), { ssr: false });
+const StudioDesktop = dynamic(() => import("./StudioDesktop"), { ssr: false });
 
 /** `LOCAL_HEALTH_PATH` of the contract (a type import keeps zod out of this bundle). */
 const LOCAL_HEALTH_PATH = "/api/local/health";
@@ -35,7 +35,7 @@ async function localEngine(signal: AbortSignal): Promise<boolean> {
   }
 }
 
-export function KoharuEditor({ fallback }: { fallback: ReactNode }) {
+export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   // The server and the hydration pass render the presentation; the client snapshot then
   // switches to the editor inside Tauri. Being in Tauri never changes during a session.
   const desktop = useSyncExternalStore(noSubscription, isTauri, notDesktop);
@@ -59,6 +59,6 @@ export function KoharuEditor({ fallback }: { fallback: ReactNode }) {
       .catch(() => undefined);
   }, [active]);
 
-  if (desktop) return <KoharuDesktop />;
-  return bridge ? <KoharuDesktop embedded /> : fallback;
+  if (desktop) return <StudioDesktop />;
+  return bridge ? <StudioDesktop embedded /> : fallback;
 }

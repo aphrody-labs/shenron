@@ -32,6 +32,7 @@ const FRENCH_WORDS = new Set([
   "bibliotheque",
   "bientot",
   "boutique",
+  "bureau",
   "campagne",
   "campagnes",
   "chapitre",
@@ -89,15 +90,8 @@ const FRENCH_WORDS = new Set([
   "voix",
 ]);
 
-/**
- * Segments tolérés, chacun avec sa raison. `bureau` est français : il attend le lot
- * « Shenron Studio », qui renomme `/koharu`, `/studio` et `/bureau` ensemble.
- */
-const EXCEPTIONS: Readonly<Record<string, string>> = {
-  koharu: "nom de code interne, renommé par le lot Shenron Studio",
-  studio: "renommé par le lot Shenron Studio",
-  bureau: "renommé par le lot Shenron Studio",
-};
+/** Segments tolérés, chacun avec sa raison (aucun aujourd'hui). */
+const EXCEPTIONS: Readonly<Record<string, string>> = {};
 
 /** Mots d'un segment de route, crochets, groupes et interceptions retirés. */
 function wordsOf(segment: string): string[] {
@@ -192,6 +186,13 @@ describe("anciennes adresses publiques : 308 de next.config", () => {
     // Les outils staff de l'atelier ne sont PAS redirigés par next.config (garde d'abord).
     expect(followRedirects("/atelier/traduction").hops).toBe(0);
     expect(followRedirects("/atelier").target).toBe("/workshop");
+    // Shenron Studio : l'éditeur quitte son nom de code, le bureau passe en anglais, et
+    // `/studio` (désormais l'éditeur) ne redirige pas : le pilotage est `/desktop/control`.
+    expect(followRedirects("/koharu").target).toBe("/studio");
+    expect(followRedirects("/bureau").target).toBe("/desktop");
+    expect(followRedirects("/bureau/control?x=1").target).toBe("/desktop/control?x=1");
+    expect(followRedirects("/studio").hops).toBe(0);
+    expect(followRedirects("/desktop/control").hops).toBe(0);
   });
 });
 

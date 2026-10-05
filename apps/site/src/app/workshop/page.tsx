@@ -40,7 +40,7 @@ const ETAPES = [
   { cle: "scan", href: "/wiki/manga" },
   { cle: "transcription", href: "/wiki/databooks" },
   { cle: "translation", href: "/wiki/databooks" },
-  { cle: "koharu", href: "/koharu" },
+  { cle: "studio", href: "/studio" },
 ] as const;
 
 export default async function WorkshopPage() {

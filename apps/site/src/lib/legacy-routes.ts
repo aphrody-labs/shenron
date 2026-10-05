@@ -78,6 +78,11 @@ export const PUBLIC_ROUTE_RENAMES: readonly RouteRename[] = [
   { from: "/news/fil", to: "/news/feed" },
   // Only the public overview of the workshop: its staff tools move in the proxy.
   { from: "/atelier", to: "/workshop", exact: true },
+  // Shenron Studio: the translation editor left its code name (`/koharu`) for `/studio`; the
+  // desktop home (`/bureau`) is `/desktop`. The former `/studio` (desktop control page) is
+  // now `/desktop/control` and cannot be redirected: `/studio` is the editor.
+  { from: "/koharu", to: "/studio" },
+  { from: "/bureau", to: "/desktop" },
 ];
 
 /** Staff tools of the workshop (guarded like `/admin`). */

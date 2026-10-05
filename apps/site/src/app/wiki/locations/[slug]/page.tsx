@@ -150,7 +150,7 @@ export default async function LocationDetailPage({
             {locBattles.map((b) => (
               <GatedWrap
                 key={b.slug}
-                href={`/wiki/battles/${b.slug}`}
+                href="/wiki/events"
                 className="block rounded-2xl border border-white/10 bg-white/[0.03] p-5 space-y-2 hover:border-orange-500/40 hover:bg-orange-500/[0.04] transition-all"
               >
                 <div className="flex items-center justify-between text-xs">
