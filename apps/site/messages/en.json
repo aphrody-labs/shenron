@@ -497,7 +497,8 @@
     "noticeClosedOthers": "All other sessions have been closed.",
     "noticeCloseFailed": "Unable to close this session.",
     "noticeClosed": "The session has been closed.",
-    "noticeDeleteFailed": "The deletion could not be performed. Try again after logging in again."
+    "noticeDeleteFailed": "The deletion could not be performed. Try again after logging in again.",
+    "sections": "Settings sections"
   },
   "error": {
     "lead": "Display failed. It's often temporary — trying again is usually enough.",
@@ -795,6 +796,10 @@
       "waysTranscribeTitle": "Transcribe a board",
       "waysTranscribeText": "Databooks are scanned; their pages are waiting to be read, transcribed and translated.",
       "footnote": "A question, a doubt about a source? The “Report an error” button at the bottom of each page goes through the same channel."
+    },
+    "reader": {
+      "all": "All",
+      "toc": "Contents"
     }
   },
   "kit": {

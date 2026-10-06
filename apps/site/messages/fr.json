@@ -497,7 +497,8 @@
     "noticeClosedOthers": "Toutes les autres sessions ont été fermées.",
     "noticeCloseFailed": "Impossible de fermer cette session.",
     "noticeClosed": "La session a été fermée.",
-    "noticeDeleteFailed": "La suppression n’a pas pu être effectuée. Réessayez après vous être reconnecté."
+    "noticeDeleteFailed": "La suppression n’a pas pu être effectuée. Réessayez après vous être reconnecté.",
+    "sections": "Rubriques des paramètres"
   },
   "error": {
     "lead": "L'affichage a échoué. C'est souvent passager — réessayer suffit en général.",
@@ -795,6 +796,10 @@
       "waysTranscribeTitle": "Transcrire une planche",
       "waysTranscribeText": "Les databooks sont scannés ; leurs pages attendent d'être lues, transcrites et traduites.",
       "footnote": "Une question, un doute sur une source ? Le bouton « Signaler une erreur » en bas de chaque page passe par le même canal."
+    },
+    "reader": {
+      "all": "Tout",
+      "toc": "Sommaire"
     }
   },
   "kit": {

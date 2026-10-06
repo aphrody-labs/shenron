@@ -26,13 +26,13 @@ export default function ConfidentialitePage() {
     <PageShell width="narrow" rhythm="loose">
       <PageHeader
         eyebrow={<T k="legal.eyebrow" />}
-        title={<T k="confidentialite.title" />}
-        subtitle={<T k="confidentialite.subtitle" />}
+        title={<T k="privacy.title" />}
+        subtitle={<T k="privacy.subtitle" />}
       />
 
       <div className="prose prose-invert prose-headings:font-display prose-headings:font-bold prose-headings:text-white prose-h2:text-[24px] prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2 prose-h3:text-[18px] prose-h3:mt-8 prose-p:text-white/75 prose-p:leading-relaxed prose-p:text-[15px] prose-a:text-dbz-orange prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-li:text-white/75 prose-li:text-[15px] max-w-none">
         <h2>
-          <T k="confidentialite.s1" />
+          <T k="privacy.s1" />
         </h2>
         <p>
           DBFR (<strong>dragonballfr.com</strong>) est édité bénévolement par l'équipe de la
@@ -51,7 +51,7 @@ export default function ConfidentialitePage() {
         </p>
 
         <h2>
-          <T k="confidentialite.s2" />
+          <T k="privacy.s2" />
         </h2>
         <p>
           Consulter le wiki, les épisodes, les films ou le manga{" "}
@@ -70,7 +70,7 @@ export default function ConfidentialitePage() {
         </ul>
 
         <h2>
-          <T k="confidentialite.s3" />
+          <T k="privacy.s3" />
         </h2>
         <p>
           La mesure d'audience (pages vues, parcours, contenus populaires) n'est déclenchée{" "}
@@ -99,7 +99,7 @@ export default function ConfidentialitePage() {
         </ul>
 
         <h2>
-          <T k="confidentialite.s4" />
+          <T k="privacy.s4" />
         </h2>
         <p>
           DBFR est gratuit et le restera. Pour couvrir l'hébergement, le nom de domaine et la bande
@@ -130,7 +130,7 @@ export default function ConfidentialitePage() {
           </li>
         </ul>
         <p>
-          <T k="confidentialite.s4Further" />
+          <T k="privacy.s4Further" />
         </p>
         <ul>
           <li>
@@ -169,10 +169,10 @@ export default function ConfidentialitePage() {
         </ul>
 
         <h2>
-          <T k="confidentialite.s5" />
+          <T k="privacy.s5" />
         </h2>
         <p>
-          <T k="confidentialite.s5Text" />
+          <T k="privacy.s5Text" />
         </p>
         <p>
           Elles ne sont <strong>ni revendues, ni transmises à des annonceurs</strong>. Elles sont
@@ -181,7 +181,7 @@ export default function ConfidentialitePage() {
         </p>
 
         <h2>
-          <T k="confidentialite.s6" />
+          <T k="privacy.s6" />
         </h2>
         <ul>
           <li>
@@ -204,7 +204,7 @@ export default function ConfidentialitePage() {
         </p>
 
         <h2>
-          <T k="confidentialite.s7" />
+          <T k="privacy.s7" />
         </h2>
         <p>
           Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de
@@ -218,7 +218,7 @@ export default function ConfidentialitePage() {
         </p>
 
         <h2>
-          <T k="confidentialite.s8" />
+          <T k="privacy.s8" />
         </h2>
         <p>
           {/* L'âge minimum reste écrit ici : « 13 ans » déclenche la garde
@@ -230,7 +230,7 @@ export default function ConfidentialitePage() {
         </p>
 
         <h2>
-          <T k="confidentialite.s9" />
+          <T k="privacy.s9" />
         </h2>
         <p>
           Cette politique peut évoluer, notamment si de nouveaux services sont ajoutés. La version

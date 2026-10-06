@@ -17,13 +17,13 @@ export default function LicencePage() {
     <PageShell width="narrow" rhythm="loose">
       <PageHeader
         eyebrow={<T k="legal.eyebrow" />}
-        title={<T k="licence.title" />}
-        subtitle={<T k="licence.subtitle" />}
+        title={<T k="license.title" />}
+        subtitle={<T k="license.subtitle" />}
       />
 
       <div className="prose prose-invert prose-headings:font-display prose-headings:font-bold prose-headings:text-white prose-h2:text-[24px] prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2 prose-h3:text-[18px] prose-h3:mt-8 prose-p:text-white/75 prose-p:leading-relaxed prose-p:text-[15px] prose-a:text-dbz-orange prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-li:text-white/75 prose-li:text-[15px] max-w-none">
         <h2>
-          <T k="licence.s1" />
+          <T k="license.s1" />
         </h2>
         <p>
           DBFR est un projet associatif, édité bénévolement par des fans francophones de Dragon
@@ -42,7 +42,7 @@ export default function LicencePage() {
         </p>
 
         <h2>
-          <T k="licence.s2" />
+          <T k="license.s2" />
         </h2>
         <p>
           Dragon Ball, Dragon Ball Z, Dragon Ball Super, Dragon Ball GT, Dragon Ball Daima, Dragon
@@ -52,16 +52,16 @@ export default function LicencePage() {
         </p>
         <ul>
           <li>
-            <T k="licence.s2Original" />
+            <T k="license.s2Original" />
           </li>
           <li>
-            <T k="licence.s2Manga" />
+            <T k="license.s2Manga" />
           </li>
           <li>
-            <T k="licence.s2Anime" />
+            <T k="license.s2Anime" />
           </li>
           <li>
-            <T k="licence.s2Games" />
+            <T k="license.s2Games" />
           </li>
         </ul>
         <p>
@@ -72,7 +72,7 @@ export default function LicencePage() {
         </p>
 
         <h2>
-          <T k="licence.s3" />
+          <T k="license.s3" />
         </h2>
         <p>
           Le contenu rédactionnel original (articles de news, résumés de sagas, classements, code
@@ -85,14 +85,14 @@ export default function LicencePage() {
             Creative Commons BY-SA 4.0
           </a>{" "}
           (attribution + partage à l'identique). Tu peux reprendre, citer et modifier ce contenu en
-          créditant DBFR et en redistribuant sous la même licence.
+          créditant DBFR et en redistribuant sous la même license.
         </p>
 
         <h2>
-          <T k="licence.s4" />
+          <T k="license.s4" />
         </h2>
         <h3>
-          <T k="licence.s4Wikis" />
+          <T k="license.s4Wikis" />
         </h3>
         <p>
           DBFR n'utilise plus les wikis de fans comme source éditoriale. Les références qui
@@ -110,11 +110,11 @@ export default function LicencePage() {
           >
             CC-BY-SA 3.0
           </a>
-          , il reste couvert par cette licence. Signale-nous tout passage à créditer ou à retirer :
+          , il reste couvert par cette license. Signale-nous tout passage à créditer ou à retirer :
           nous le traitons comme une demande de retrait (section 6).
         </p>
         <h3>
-          <T k="licence.s4Api" />
+          <T k="license.s4Api" />
         </h3>
         <p>
           Les fiches personnages et planètes proviennent de l'API open-source{" "}
@@ -125,7 +125,7 @@ export default function LicencePage() {
         </p>
 
         <h2>
-          <T k="licence.s5" />
+          <T k="license.s5" />
         </h2>
         <p>
           Site hébergé sur un serveur dédié <a href="https://www.ovhcloud.com/">OVHcloud</a>{" "}
@@ -137,7 +137,7 @@ export default function LicencePage() {
         </p>
 
         <h2 id="takedown">
-          <T k="licence.s6" />
+          <T k="license.s6" />
         </h2>
         <p>
           Si vous êtes ayant droit et estimez qu'un contenu publié sur DBFR porte atteinte à vos
@@ -145,7 +145,7 @@ export default function LicencePage() {
           motivée. Aucun recours juridique préalable n'est nécessaire.
         </p>
         <p>
-          <T k="licence.s6Instructions" />
+          <T k="license.s6Instructions" />
         </p>
         <ul>
           <li>
@@ -156,16 +156,16 @@ export default function LicencePage() {
             (canal #admin)
           </li>
           <li>
-            <T k="licence.s6Email" />
+            <T k="license.s6Email" />
           </li>
         </ul>
 
         <h2>
-          <T k="licence.s7" />
+          <T k="license.s7" />
         </h2>
         <p>
           <T
-            k="licence.s7Text"
+            k="license.s7Text"
             values={{
               date: new Date().toLocaleDateString("fr-FR", {
                 day: "numeric",
@@ -179,14 +179,14 @@ export default function LicencePage() {
 
       <div className="mt-16 p-8 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex flex-wrap items-center justify-between gap-4">
         <p className="text-[14px] text-white/70 max-w-md">
-          <T k="licence.askBefore" /> <code className="text-dbz-orange">#admin</code>{" "}
-          <T k="licence.askAfter" />
+          <T k="license.askBefore" /> <code className="text-dbz-orange">#admin</code>{" "}
+          <T k="license.askAfter" />
         </p>
         <Link
           href="/credits"
           className="inline-flex items-center h-10 px-5 rounded-full border border-white/20 hover:border-dbz-orange hover:text-dbz-orange text-white font-display font-semibold text-[13px] tracking-[0.10em] uppercase transition-colors"
         >
-          <T k="licence.seeCredits" />
+          <T k="license.seeCredits" />
         </Link>
       </div>
     </PageShell>

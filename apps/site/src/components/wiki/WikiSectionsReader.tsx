@@ -101,8 +101,8 @@ export function WikiSectionsReader({
   children?: ReactNode;
 }) {
   const t = useT();
-  const tout = allLabel ?? (t("wikiCoeur.reader.all") || "Tout");
-  const titreSommaire = t("wikiCoeur.reader.toc") || "Sommaire";
+  const tout = allLabel ?? t("wiki.reader.all");
+  const titreSommaire = t("wiki.reader.toc");
   const [active, setActive] = useState<string>("all");
   const [subActive, setSubActive] = useState<string>("all");
   const contentRef = useRef<HTMLDivElement>(null);

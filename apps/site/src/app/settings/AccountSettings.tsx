@@ -336,7 +336,7 @@ export default function AccountSettings({ initial }: Props) {
           {avis.texte}
         </p>
       )}
-      <h2 className="sr-only">{t("communaute.membre.settingsSections")}</h2>
+      <h2 className="sr-only">{t("settings.sections")}</h2>
       <ResponsiveSections
         sections={[
           { id: "identite", title: t("settings.identityTitle"), content: identity },
