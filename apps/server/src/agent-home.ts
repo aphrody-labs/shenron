@@ -21,11 +21,17 @@
  *   PATCH /api/local/agent-home            `{ name?, language?, timezone?, preferences? }`
  *   POST  /api/local/agent-home/login      `{ open?: boolean }` → `{ url }` (opens the browser)
  *   GET   /api/local/agent-home/callback   `?state=&code=` → 302 `/desktop?agentHome=…`
+ *   POST  /api/local/agent-home/logout     forget the site session (the home and memory stay)
+ *
+ * Persistent session: the `sessionToken` the site's verify step may return is kept in
+ * `<SHENRON_HOME>/config/session` (mode 600). At start the cached identity shows at once
+ * (`session: "cached"`), then `GET <auth>/api/auth/get-session` (Bearer; `<auth>` = `SHENRON_HOST_URL`, else the public site) validates it in the
+ * background: 401 → `signedOut`, without opening the browser; a network error keeps `cached`.
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { isDirectLoopback } from "@shenron/config/net";
-import { resolveSiteUrl } from "@shenron/config/public-urls";
+import { resolveAuthUrl, resolveSiteUrl } from "@shenron/config/public-urls";
 import {
   type AgentHomeSnapshot,
   type AgentHomeTemplate,
@@ -47,6 +53,22 @@ import type { ServerPaths } from "./config";
 export const AGENTS_DIR = "agents";
 const ACTIVE_FILE = "active.json";
 const MEMORY_FILE = "memory.sqlite";
+const SESSION_FILE = join("config", "session");
+const SESSION_PATH = "/api/auth/get-session";
+
+/**
+ * Site session of the desktop: `none` (never stored; a home linked before session tokens
+ * counts as signed in), `cached` (stored, not checked yet), `valid`, `signedOut`.
+ */
+export type DesktopSessionState = "none" | "cached" | "valid" | "signedOut";
+
+interface StoredSession {
+  token: string | null;
+  agentId: string | null;
+  signedOut?: boolean;
+  savedAt: string;
+}
+
 /** Sign-ins pending their callback (state → expiry). */
 const PENDING_TTL_MS = 10 * 60_000;
 
@@ -76,6 +98,9 @@ export interface AgentHomes {
   handle(request: Request, url: URL, peer: string | null | undefined): Promise<Response | null>;
   /** Complete a sign-in with an identity the site vouched for (the callback's last step). */
   link(identity: DesktopLinkIdentity): Promise<AgentHomeSnapshot>;
+  /** State of the site session; `validated` settles once the start-up check is done. */
+  session(): DesktopSessionState;
+  validated: Promise<void>;
 }
 
 /** The platform opener of the system browser (no shell: the URL is one argument). */
@@ -152,6 +177,50 @@ export function openAgentHomes(
   if (!existsSync(activePath) || readActive() !== activeId) setActive(activeId);
   else env.SHENRON_LOCAL_OWNER = activeId;
 
+  const sessionPath = join(paths.home, SESSION_FILE);
+  const readSession = (): StoredSession | null => {
+    try {
+      const value = JSON.parse(readFileSync(sessionPath, "utf8")) as StoredSession;
+      return value && typeof value === "object" ? value : null;
+    } catch {
+      return null;
+    }
+  };
+  const writeSession = (value: StoredSession) => {
+    mkdirSync(join(paths.home, "config"), { recursive: true });
+    writeJsonAtomic(sessionPath, value);
+  };
+  const stored = readSession();
+  let sessionState: DesktopSessionState = stored?.signedOut
+    ? "signedOut"
+    : stored?.token
+      ? "cached"
+      : "none";
+  const signOut = () => {
+    sessionState = "signedOut";
+    writeSession({ token: null, agentId: activeId, signedOut: true, savedAt: now().toISOString() });
+  };
+  // Background check of the cached token: never blocks the start, never opens the browser.
+  const validated: Promise<void> =
+    sessionState === "cached" && stored?.token
+      ? (async () => {
+          try {
+            const response = await doFetch(new URL(SESSION_PATH, resolveAuthUrl(env)), {
+              headers: { authorization: `Bearer ${stored.token}` },
+              signal: AbortSignal.timeout(15_000),
+            });
+            if (response.status === 401 || response.status === 403) signOut();
+            else if (response.ok) {
+              const body = (await response.json().catch(() => null)) as unknown;
+              if (body === null) signOut();
+              else sessionState = "valid";
+            }
+          } catch {
+            // offline: the cached identity stays
+          }
+        })()
+      : Promise.resolve();
+
   async function link(identity: DesktopLinkIdentity): Promise<AgentHomeSnapshot> {
     const target = `discord:${identity.discordId}`;
     if (!isAgentHomeId(target)) throw new Error("invalid Discord id");
@@ -168,6 +237,8 @@ export function openAgentHomes(
   const view = (home: AgentHomeSnapshot) => ({
     agentId: home.agentId,
     linked: discordIdOf(home.agentId) !== null,
+    session: sessionState,
+    signedIn: discordIdOf(home.agentId) !== null && sessionState !== "signedOut",
     profile: home.profile,
     templateRevision: home.templateRevision,
     createdAt: home.createdAt,
@@ -197,6 +268,8 @@ export function openAgentHomes(
       ),
     memoryAliases: (agentId) => (agentId.startsWith("discord:") ? [LOCAL_AGENT_ID] : []),
     link,
+    session: () => sessionState,
+    validated,
     async handle(request, url, peer) {
       if (
         url.pathname !== "/api/local/agent-home" &&
@@ -218,6 +291,11 @@ export function openAgentHomes(
         const home = updateAgentHome(store.readSync(activeId)!, patch, now());
         store.writeSync(home);
         return json(view(home));
+      }
+      if (route === "/logout" && request.method === "POST") {
+        if (foreignOrigin(request, url)) return json({ error: "forbidden_origin" }, 403);
+        signOut();
+        return json(view(store.readSync(activeId)!));
       }
       if (route === "/login" && request.method === "POST") {
         if (foreignOrigin(request, url)) return json({ error: "forbidden_origin" }, 403);
@@ -249,7 +327,17 @@ export function openAgentHomes(
             signal: AbortSignal.timeout(15_000),
           });
           if (!response.ok) return back("refused");
-          await link((await response.json()) as DesktopLinkIdentity);
+          const verified = (await response.json()) as DesktopLinkIdentity & {
+            sessionToken?: unknown;
+          };
+          const home = await link(verified);
+          // `sessionToken` comes with the site's persistent desktop session; older sites omit it.
+          const token =
+            typeof verified.sessionToken === "string" && verified.sessionToken
+              ? verified.sessionToken
+              : null;
+          writeSession({ token, agentId: home.agentId, savedAt: now().toISOString() });
+          sessionState = token ? "valid" : "none";
           return back("linked");
         } catch (error) {
           console.error(

@@ -39,6 +39,8 @@ export const PUBLIC_URL_ENV = {
     "SHENRON_API_URL",
   ],
   assets: ["NEXT_PUBLIC_SHENRON_ASSETS_URL", "SHENRON_PUBLIC_ASSETS_URL"],
+  /** Origin of the Bun host (`shenron-server`) serving `/api/auth/*` and `/api/public/*`. */
+  host: ["SHENRON_HOST_URL"],
 } as const satisfies Record<string, readonly string[]>;
 
 /** Fallback origins used only when no variable is set. */
@@ -72,6 +74,16 @@ function firstSet(env: PublicUrlEnv, names: readonly string[]): string | undefin
 /** Public site origin, without trailing slash. */
 export function resolveSiteUrl(env: PublicUrlEnv): string {
   return firstSet(env, PUBLIC_URL_ENV.site) ?? DEFAULT_PUBLIC_ORIGINS.site;
+}
+
+/** Origin of the Bun host when one is configured (opt-in: absent, no consumer switches to it). */
+export function resolveHostUrl(env: PublicUrlEnv): string | undefined {
+  return firstSet(env, PUBLIC_URL_ENV.host);
+}
+
+/** Origin serving `/api/auth/*`: the Bun host when configured, else the public site. */
+export function resolveAuthUrl(env: PublicUrlEnv): string {
+  return resolveHostUrl(env) ?? resolveSiteUrl(env);
 }
 
 /** Public bot API origin, without trailing slash. */

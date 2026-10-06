@@ -93,3 +93,12 @@ describe("ownImageRemotePatterns and Discord helpers", () => {
     expect(discordEmbedAvatar(3)).toBe("https://cdn.discordapp.com/embed/avatars/3.png");
   });
 });
+
+test("host URL is opt-in and drives the auth origin", async () => {
+  const { resolveAuthUrl, resolveHostUrl } = await import("../src/public-urls");
+  expect(resolveHostUrl({})).toBeUndefined();
+  expect(resolveAuthUrl({ NEXT_PUBLIC_SITE_URL: "https://s.test" })).toBe("https://s.test");
+  expect(resolveAuthUrl({ SHENRON_HOST_URL: "http://127.0.0.1:4000/" })).toBe(
+    "http://127.0.0.1:4000",
+  );
+});

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -109,5 +109,39 @@ describe("agent homes of the desktop", () => {
     expect(body.profile).toMatchObject({ name: "Bulma", preferences: ["sans spoilers"] });
     const [other, otherUrl] = req("/api/local/health");
     expect(await homes.handle(other, otherUrl, loopback)).toBeNull();
+  });
+
+  test("the cached Bearer session is checked on the auth origin (host first, else the site)", async () => {
+    const check = async (env: Record<string, string | undefined>, status: number) => {
+      const root = home();
+      mkdirSync(join(root, "config"), { recursive: true });
+      writeFileSync(
+        join(root, "config", "session"),
+        JSON.stringify({ token: "tok", agentId: "local", savedAt: "2026-01-01T00:00:00Z" }),
+      );
+      const seen: { url: string; auth: string | null }[] = [];
+      const homes = openAgentHomes({ home: root }, env, {
+        fetch: (async (input: URL, init?: RequestInit) => {
+          seen.push({
+            url: String(input),
+            auth: new Headers(init?.headers).get("authorization"),
+          });
+          return status === 200
+            ? Response.json({ user: { id: "u" } })
+            : new Response("", { status });
+        }) as unknown as typeof fetch,
+      });
+      expect(homes.session()).toBe("cached");
+      await homes.validated;
+      return { seen, state: homes.session() };
+    };
+    const onHost = await check({ SHENRON_HOST_URL: "http://127.0.0.1:4100" }, 200);
+    expect(onHost.seen).toEqual([
+      { url: "http://127.0.0.1:4100/api/auth/get-session", auth: "Bearer tok" },
+    ]);
+    expect(onHost.state).toBe("valid");
+    const onSite = await check({ NEXT_PUBLIC_SITE_URL: "https://site.test" }, 401);
+    expect(onSite.seen[0]!.url).toBe("https://site.test/api/auth/get-session");
+    expect(onSite.state).toBe("signedOut");
   });
 });
