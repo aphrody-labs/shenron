@@ -212,23 +212,27 @@ vivent sous `$SHENRON_HOME/data/koharu/projects`, ses modèles sous
 
 ## Mémoire persistante du chat — `@shenron/config/memory`, `apps/server/src/memory.ts`
 
-L'hôte de l'API (`shenron-server`, Shenron Studio) garde la mémoire de chaque propriétaire
-dans le fournisseur SQLite d'Aphrody (`aphrody-memory`, `SqliteLocalProvider`), atteint par
-`shenron-ffi` (ABI 3, `@shenron/native`). À chaque tour, les souvenirs pertinents sont joints
-à la question (comme données, jamais comme sources ni instructions) ; après la réponse, les
-faits saillants du message (« je m'appelle… », préférences, « souviens-toi que… ») sont
-écrits. Un agent-id par propriétaire, le même quel que soit le modèle. `memoryOptIn: false`
-dans la requête de chat tient le tour à l'écart. Routes : `GET /api/v1/memory`,
-`POST /api/v1/memory/{id}/delete`, `POST /api/v1/memory/clear` ; sans bibliothèque native,
-le groupe `memory` de `/api/local/health` est indisponible et le serveur continue.
+L'hôte de l'API (`shenron-server`, Shenron Studio) garde une mémoire par agent home dans le
+fournisseur SQLite d'Aphrody (`aphrody-memory`, `SqliteLocalProvider`), atteint par
+`shenron-ffi` (ABI 3, `@shenron/native`). L'agent-id est celui de l'agent home de
+l'utilisateur : `discord:<user_id>` quand l'utilisateur Discord est connu, `local` sinon ; le
+même pour tous les modèles. À chaque tour, les souvenirs pertinents sont joints à la question
+(comme données, jamais comme sources ni instructions) ; après la réponse, les faits saillants
+du message (« je m'appelle… », préférences, « souviens-toi que… ») sont écrits.
+`memoryOptIn: false` dans la requête de chat tient le tour à l'écart. Le résolveur d'agent
+home choisit la base de chaque home (`memoryLocation` de `createLocalApi`, option de
+`startBackend`) ; sans lui, toutes partagent le fichier par défaut. Les enregistrements
+`shenron/<propriétaire>` de la première version sont déplacés une fois dans le home au premier
+accès. Routes : `GET /api/v1/memory`, `POST /api/v1/memory/{id}/delete`,
+`POST /api/v1/memory/clear` ; sans bibliothèque native, le groupe `memory` de
+`/api/local/health` est indisponible et le serveur continue.
 
-| Variable                | Rôle                                                                    | Défaut                            |
-| ----------------------- | ----------------------------------------------------------------------- | --------------------------------- |
-| `SHENRON_MEMORY`        | `off` coupe la mémoire (rappel et écriture)                             | active                            |
-| `SHENRON_MEMORY_DB`     | fichier SQLite de la mémoire (créé en mode 600)                         | `$SHENRON_DATA_DIR/memory.sqlite` |
-| `SHENRON_MEMORY_AGENT`  | préfixe de l'agent-id : `<préfixe>/<propriétaire>`                      | `shenron`                         |
-| `SHENRON_MEMORY_RECALL` | souvenirs joints à un tour (0–20 ; 0 écrit sans rappeler)               | `5`                               |
-| `SHENRON_MEMORY_REMOTE` | `on` laisse les backends distants (`gemini-web`) recevoir les souvenirs | coupé : backends locaux seulement |
+| Variable                | Rôle                                                                      | Défaut                            |
+| ----------------------- | ------------------------------------------------------------------------- | --------------------------------- |
+| `SHENRON_MEMORY`        | `off` coupe la mémoire (rappel et écriture)                               | active                            |
+| `SHENRON_MEMORY_DB`     | fichier SQLite par défaut (homes sans base propre ; créé en mode 600)     | `$SHENRON_DATA_DIR/memory.sqlite` |
+| `SHENRON_MEMORY_RECALL` | souvenirs joints à un tour (0–20 ; 0 écrit sans rappeler)                 | `5`                               |
+| `SHENRON_MEMORY_REMOTE` | `off` retire les souvenirs du prompt des backends distants (`gemini-web`) | active : tous les backends        |
 
 ## Bot Discord — `apps/bot/src/lib/env.ts`
 

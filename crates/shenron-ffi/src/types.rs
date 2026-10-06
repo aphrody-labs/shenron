@@ -224,7 +224,7 @@ pub struct BuildInfo {
 pub struct MemoryEntry {
     /// Provider id (UUID v4).
     pub id: String,
-    /// Owner of the record (`shenron/<owner>`).
+    /// Owner of the record (agent home id: `discord:<user_id>`, `local`).
     pub agent_id: String,
     /// The remembered fact.
     pub content: String,

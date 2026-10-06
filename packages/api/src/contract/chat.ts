@@ -135,7 +135,7 @@ export const ChatDone = z
     stored: z.boolean(),
     /**
      * Persistent memory of the turn, when the server has one: memories given to the model that
-     * answered (none for a remote backend unless SHENRON_MEMORY_REMOTE=on) and facts stored.
+     * answered (none for a remote backend with SHENRON_MEMORY_REMOTE=off) and facts stored.
      */
     memory: z
       .object({ recalled: z.number().int().min(0), stored: z.number().int().min(0) })

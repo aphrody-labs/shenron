@@ -107,7 +107,7 @@ export type LocalSearchResponse = {
 export type MemoryEntry = {
 	/**  Provider id (UUID v4). */
 	id: string,
-	/**  Owner of the record (`shenron/<owner>`). */
+	/**  Owner of the record (agent home id: `discord:<user_id>`, `local`). */
 	agentId: string,
 	/**  The remembered fact. */
 	content: string,

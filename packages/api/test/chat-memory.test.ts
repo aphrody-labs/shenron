@@ -18,7 +18,7 @@ import {
   MemoryListResponse,
   type MemoryEntry,
 } from "../src/contract";
-import { createLocalApi, type LocalApi } from "../src/host";
+import { createLocalApi, type LocalApi, type MemorySettings } from "../src/host";
 import { createShenronApi, type MemoryPort } from "../src/server";
 import { ALICE, BOB, basePorts } from "./support/ports";
 
@@ -200,7 +200,7 @@ describe("chat engine with a memory", () => {
     expect((await turn(engine, "Je m'appelle Yohan.")).done.memory?.stored).toBe(0);
   });
 
-  test("a remote backend gets no memory unless allowed; the memory is the same for every model", async () => {
+  test("every backend reads the memory, remote ones unless memoryRemote: false", async () => {
     const memory = fakeMemory();
     memory.port.remember("alice", {
       content: "Je m'appelle Yohan",
@@ -210,18 +210,24 @@ describe("chat engine with a memory", () => {
     const remote = recordingBackend();
     const gemini = { ...remote.backend, id: "gemini-web", stream: remote.backend.stream };
     const local = recordingBackend();
-    const cut = createChatEngine({ rag: null, backends: [gemini], home, memory: memory.port });
-    const first = await turn(cut, "Bonjour");
-    expect(remote.prompts[0]!.at(-1)!.content).toBe("Bonjour");
-    expect(first.done.memory).toEqual({ recalled: 0, stored: 0 });
-    const allowed = createChatEngine({
+    const byDefault = createChatEngine({
       rag: null,
       backends: [gemini],
       home,
       memory: memory.port,
-      memoryRemote: true,
     });
-    expect((await turn(allowed, "Bonjour")).done.memory?.recalled).toBe(1);
+    expect((await turn(byDefault, "Bonjour")).done.memory?.recalled).toBe(1);
+    expect(remote.prompts[0]!.at(-1)!.content).toContain("- Je m'appelle Yohan");
+    const cut = createChatEngine({
+      rag: null,
+      backends: [gemini],
+      home,
+      memory: memory.port,
+      memoryRemote: false,
+    });
+    const first = await turn(cut, "Bonjour");
+    expect(remote.prompts[1]!.at(-1)!.content).toBe("Bonjour");
+    expect(first.done.memory).toEqual({ recalled: 0, stored: 0 });
     const onLocal = createChatEngine({
       rag: null,
       backends: [local.backend],
@@ -373,19 +379,34 @@ describe("host memory group", () => {
     return created;
   };
 
-  test("the factory opens <data>/memory.sqlite with one agent id per owner", () => {
+  test("agent home ids, the default file or the agent home's location, the former ids", () => {
     const e = env();
-    let seen: { dbPath: string; agent: string } | null = null;
-    const api = host(e, {
-      memory: (settings) => {
-        seen = { dbPath: settings.dbPath, agent: settings.agentId("local") };
-        return { port: fakeMemory().port };
+    const seen: unknown[] = [];
+    const memory = (settings: MemorySettings) => {
+      seen.push({
+        agents: [settings.agentId("local"), settings.agentId("discord:42")],
+        db: settings.dbPath("discord:42"),
+        aliases: settings.aliases("discord:42"),
+        legacy: [settings.legacy.dbPath, settings.legacy.agentId("local")],
+      });
+      return { port: fakeMemory().port };
+    };
+    const api = host(e, { memory });
+    host(e, {
+      memory,
+      memoryLocation: (agentId: string) => `/homes/${agentId}/memory.sqlite`,
+      memoryAliases: (agentId: string) => (agentId === "local" ? [] : ["local"]),
+    });
+    const legacy = [`${e.SHENRON_DATA_DIR}/memory.sqlite`, "shenron/local"];
+    expect(seen).toEqual([
+      { agents: ["local", "discord:42"], db: legacy[0], aliases: [], legacy },
+      {
+        agents: ["local", "discord:42"],
+        db: "/homes/discord:42/memory.sqlite",
+        aliases: ["local"],
+        legacy,
       },
-    });
-    expect(seen!).toEqual({
-      dbPath: `${e.SHENRON_DATA_DIR}/memory.sqlite`,
-      agent: "shenron/local",
-    });
+    ]);
     expect(api.groups.memory).toEqual({ available: true });
     expect(api.handles("/api/v1/memory")).toBe(true);
   });

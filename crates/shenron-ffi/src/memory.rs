@@ -36,7 +36,7 @@ const CLEAR_BATCH: u32 = 500;
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct MemoryAdd {
-    /// Owner of the record (`shenron/<owner>`).
+    /// Owner of the record (agent home id: `discord:<user_id>`, `local`).
     pub agent_id: String,
     /// The remembered fact.
     pub content: String,

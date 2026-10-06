@@ -1276,9 +1276,10 @@ qui l'embarque garde son 404 historique (bot sans PostgreSQL, site sans base).
 Variables de `./host` (lues à l'appel, jamais au chargement) : `SHENRON_DATA_DIR`,
 `SHENRON_VFS_DB`, `SHENRON_PROFILE=public` ou `SHENRON_VFS_PUBLIC_ONLY=1`,
 `SHENRON_CHAT_STORE` (`off` le coupe), `SHENRON_CHAT_PG_URL`/`_SCHEMA`,
-`SHENRON_MEMORY{,_DB,_AGENT,_RECALL,_REMOTE}` (mémoire persistante du chat,
+`SHENRON_MEMORY{,_DB,_RECALL,_REMOTE}` (mémoire persistante du chat par agent home,
 `@shenron/config/memory` ; le processus hôte l'ouvre par l'option `memory` de
-`createLocalApi`, `apps/server/src/memory.ts` sur `aphrody-memory` via `shenron-ffi`),
+`createLocalApi`, `apps/server/src/memory.ts` sur `aphrody-memory` via `shenron-ffi` ; le
+résolveur d'agent home place chaque base par `memoryLocation`),
 `APHRODY_AI_EMBED_BASE_URL`/`_MODEL`, `SHENRON_CHAT_BACKENDS`
 (`gemini-web,local` par défaut), `APHRODY_GEMINI_WEB_BIN`, `SHENRON_GEMINI_MODEL`,
 `APHRODY_AI_CHAT_BASE_URL`/`_MODEL`/`_API_KEY`, `SHENRON_MCP_BIN`,

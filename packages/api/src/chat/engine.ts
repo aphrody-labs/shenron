@@ -47,7 +47,7 @@ export interface ChatEngineDeps {
   memory?: MemoryPort | null;
   /** Memories recalled into one turn (default 5; 0 writes without recalling). */
   memoryRecall?: number;
-  /** `true` lets remote backends (`remoteBackends`) read the recalled memories; default false. */
+  /** `false` keeps the recalled memories from remote backends (`remoteBackends`); default true. */
   memoryRemote?: boolean;
   /** Backends that send the prompt off this machine (default `gemini-web`). */
   remoteBackends?: ReadonlySet<string>;
@@ -61,7 +61,7 @@ const CITATION_RULE =
   "Appuie chaque fait sur les sources numérotées et cite-les entre crochets, par exemple [1] ou [2][3]. " +
   "N'invente ni fait ni numéro de source ; si les sources ne répondent pas, dis-le.";
 
-/** Backends answering from a remote service: no memory in their prompt by default. */
+/** Backends answering from a remote service: no memory in their prompt with `memoryRemote: false`. */
 export const REMOTE_BACKENDS: ReadonlySet<string> = new Set(["gemini-web"]);
 
 /** Newest memories of the owner a turn scans for recall and duplicates. */
@@ -324,8 +324,8 @@ export function createChatEngine(deps: ChatEngineDeps) {
       ];
     };
     const messages = promptFor(true);
-    // Memories stay on this machine unless the owner allows remote backends to read them.
-    const remoteMessages = deps.memoryRemote === true ? messages : promptFor(false);
+    // Every backend reads the memories, unless SHENRON_MEMORY_REMOTE=off keeps them local.
+    const remoteMessages = deps.memoryRemote === false ? promptFor(false) : messages;
     const remote = deps.remoteBackends ?? REMOTE_BACKENDS;
     let injected = false;
 

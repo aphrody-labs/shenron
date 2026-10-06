@@ -29,7 +29,11 @@ import {
   type EnvSource,
   isProduction,
 } from "@shenron/config/env";
-import { chatMemoryAgentId, resolveChatMemory } from "@shenron/config/memory";
+import {
+  chatMemoryAgentId,
+  legacyChatMemoryAgentId,
+  resolveChatMemory,
+} from "@shenron/config/memory";
 import { clientIpFromHeaders, isDirectLoopback } from "@shenron/config/net";
 import { DEV_SITE_ORIGIN, originOf, resolveSiteUrl } from "@shenron/config/public-urls";
 import { resolveShenronApiBind } from "@shenron/config/services";
@@ -303,13 +307,33 @@ export interface LocalApiOptions {
    * `@shenron/config/memory`. Absent or `null`: the memory group stays disabled.
    */
   memory?: MemoryFactory | null;
+  /**
+   * Injection point of the agent home resolver: the memory database of one agent home
+   * (`discord:<user_id>`, `local`). Absent: every home shares the default file
+   * (SHENRON_MEMORY_DB, else `<data>/memory.sqlite`), records scoped by agent id.
+   */
+  memoryLocation?: MemoryLocation | null;
+  /**
+   * Earlier agent ids of one agent home whose records sit in its database (`local` before the
+   * desktop signs in as `discord:<user_id>`): moved to the current id on first use.
+   */
+  memoryAliases?: ((agentId: string) => readonly string[]) | null;
   fetch?: typeof fetch;
 }
 
-/** Where the memory lives and whose it is: `dbPath` and the agent id of each owner. */
+/** SQLite file of the memory of agent home `agentId` (absolute path). */
+export type MemoryLocation = (agentId: string) => string;
+
+/** Where each memory lives and whose it is. */
 export interface MemorySettings {
-  dbPath: string;
+  /** Agent id of an owner: the id of their agent home (`discord:<user_id>`, `local`). */
   agentId(owner: string): string;
+  /** Database of an agent home (`memoryLocation`, else the default file). */
+  dbPath(agentId: string): string;
+  /** Earlier agent ids of the same home, in its database (`memoryAliases`; default none). */
+  aliases(agentId: string): readonly string[];
+  /** Records written before the agent homes (`shenron/<owner>` in the default file). */
+  legacy: { dbPath: string; agentId(owner: string): string };
 }
 
 /** Open the memory: its port, or the short French reason it is unavailable. */
@@ -446,9 +470,13 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   if (!memorySettings.dbPath) memoryReason = "mémoire du chat désactivée";
   else if (options.memory) {
     try {
+      const defaultDb = memorySettings.dbPath;
+      const location = options.memoryLocation ?? null;
       const opened = options.memory({
-        dbPath: memorySettings.dbPath,
-        agentId: (owner) => chatMemoryAgentId(memorySettings, owner),
+        agentId: chatMemoryAgentId,
+        dbPath: (agentId) => location?.(agentId) ?? defaultDb,
+        aliases: (agentId) => options.memoryAliases?.(agentId) ?? [],
+        legacy: { dbPath: defaultDb, agentId: legacyChatMemoryAgentId },
       });
       if ("port" in opened) memory = opened.port;
       else memoryReason = opened.reason;

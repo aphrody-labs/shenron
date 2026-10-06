@@ -18,7 +18,8 @@
  *                  started on first use by `/api/local/koharu` (./koharu.ts); never in production
  *   lexicon        SHENRON_LEXIQUE, else the payload's `data/lexique-db-canonique.json` (the
  *                  canonical glossary of French translation and of the editor's agent)
- *   memory         `<home>/data/memory.sqlite` (SHENRON_MEMORY_DB, SHENRON_MEMORY=off): Aphrody's
+ *   memory         one per agent home (`discord:<id>`, `local`): `memoryLocation`, else
+ *                  `<home>/data/memory.sqlite` (SHENRON_MEMORY_DB, SHENRON_MEMORY=off); Aphrody's
  *                  aphrody-memory through the native library (./memory.ts); none → group disabled
  *   chat           SHENRON_CHAT_BACKENDS (default `local` outside production): the
  *                  OpenAI-compatible server declared by APHRODY_AI_CHAT_BASE_URL,
@@ -33,7 +34,7 @@
  */
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { createLocalApi, type LocalApi as HostApi } from "@shenron/api/host";
+import { createLocalApi, type LocalApi as HostApi, type MemoryLocation } from "@shenron/api/host";
 import type { LocalApiGroups } from "@shenron/api/contract";
 import { CHAT_BASE_MODEL } from "@shenron/config/chat-model";
 
@@ -215,6 +216,8 @@ export async function startBackend(
     payloadDir?: string;
     createHost?: typeof createLocalApi;
     spawnEngine?: Parameters<typeof koharuBridge>[0]["spawn"];
+    /** Memory database of each agent home (agent home resolver); default `<home>/data/memory.sqlite`. */
+    memoryLocation?: MemoryLocation;
   } = {},
 ): Promise<Backend> {
   const plan = planBackend(paths, env, o);
@@ -245,6 +248,7 @@ export async function startBackend(
       service: profile === "desktop" ? "shenron-desktop" : "shenron-server",
       wiki: plan.wiki,
       memory: nativeMemory(paths, plan.env),
+      ...(o.memoryLocation ? { memoryLocation: o.memoryLocation } : {}),
     });
   } catch (error) {
     console.error(JSON.stringify({ event: "shenron.api.unavailable", error: String(error) }));
