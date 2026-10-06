@@ -90,6 +90,23 @@ describe("private downloads", () => {
     expect(exe.headers.get("content-disposition")).toStartWith("attachment");
   });
 
+  test("the ETag is the checksum and If-None-Match answers 304", async () => {
+    const { servePrivateDownload } = await lib();
+    const res = await servePrivateDownload(req("/x", admin), "studio.exe");
+    const etag = res.headers.get("etag");
+    expect(etag).toBe(`"${"a".repeat(32)}"`);
+    const again = await servePrivateDownload(
+      req("/x", { ...admin, "if-none-match": etag! }),
+      "studio.exe",
+    );
+    expect(again.status).toBe(304);
+    const anonymous = await servePrivateDownload(
+      req("/x", { "if-none-match": etag! }),
+      "studio.exe",
+    );
+    expect(anonymous.status).toBe(404);
+  });
+
   test("Range resumes a download", async () => {
     const { servePrivateDownload, parseRange } = await lib();
     const res = await servePrivateDownload(

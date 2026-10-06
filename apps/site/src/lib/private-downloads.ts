@@ -140,7 +140,12 @@ export async function servePrivateDownload(request: Request, name: string): Prom
     "x-checksum-sha256": sha256,
     "x-accel-buffering": "no",
     "last-modified": info.mtime.toUTCString(),
+    etag: `"${sha256.slice(0, 32)}"`,
   };
+  const ifNoneMatch = request.headers.get("if-none-match");
+  if (ifNoneMatch && ifNoneMatch.split(",").some((tag) => tag.trim() === headers.etag)) {
+    return new Response(null, { status: 304, headers });
+  }
   const range = parseRange(request.headers.get("range"), size);
   if (range === "invalid") {
     return new Response(null, {
