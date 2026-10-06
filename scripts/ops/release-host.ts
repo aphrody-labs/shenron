@@ -63,9 +63,13 @@ function syncOrigin(ref = "origin/main"): string {
   return step("commit", ["git", "rev-parse", "HEAD"]).trim();
 }
 
-/** Produits de cargo : `shenron-mcp` et le WASM du viewport Koharu. */
+/**
+ * Produits de cargo : `shenron-mcp`, `libshenron_ffi.so` (mémoire du chat du bot, `SHENRON_FFI_LIB`)
+ * et le WASM du viewport Koharu.
+ */
 function cargoProducts(): void {
   step("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
+  step("shenron-ffi", ["cargo", "build", "--release", "-p", "shenron-ffi", "--lib"]);
   step("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
 }
 

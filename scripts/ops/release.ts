@@ -135,7 +135,7 @@ async function buildOnDbfr(): Promise<string> {
   // 2. produits de cargo : vps → dbfr
   await relay(
     "vps",
-    "tar -C ~/shenron -cf - target/release/shenron-mcp packages/koharu/src/wasm",
+    "tar -C ~/shenron -cf - target/release/shenron-mcp target/release/libshenron_ffi.so packages/koharu/src/wasm",
     "dbfr",
     `mkdir -p ${BUILD_REPO} && tar -C ${BUILD_REPO} -xf -`,
   );

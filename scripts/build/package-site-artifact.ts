@@ -10,10 +10,10 @@
  * SORTIE (défaut `artifacts/site-build.tar.gz`) : `artifact-manifest.json` + `build/`.
  * `--release-dir` écrit, depuis le commit propre courant, le répertoire `shenron/` d'un bundle :
  * `source.tar.gz` (git archive + bot compilé en `apps/bot/dist/shenron` + serveur MCP en
- * `bin/shenron-mcp`), `site-build.tar.gz`, `systemd/shenron-{site,bot,mcp-http}.service` (rendus
+ * `bin/shenron-mcp`, mémoire native en `bin/libshenron_ffi.so`), `site-build.tar.gz`, `systemd/shenron-{site,bot,mcp-http}.service` (rendus
  * par le CLI hôte d'Aphrody), `nginx/shenron.conf`,
  * `release.json` (`repository: "shenron"`, `sourceLayout: "legacy"`) et `SHA256SUMS`.
- * Préalables : `bun scripts/build/bot.ts`, `cargo build --release -p shenron-mcp` et le build
+ * Préalables : `bun scripts/build/bot.ts`, `cargo build --release -p shenron-mcp`, `-p shenron-ffi --lib` et le build
  * Next (`NEXT_DIST_DIR=.next-build`).
  * Aucun processus d'exécution, aucune migration ni base : l'emballage ne fait que copier.
  */
@@ -45,6 +45,12 @@ const mcpBinary = join(
   process.env.CARGO_TARGET_DIR?.trim() || join(repo, "target"),
   "release",
   "shenron-mcp",
+);
+// Mémoire du chat du bot (`@shenron/native`) : `SHENRON_FFI_LIB=/srv/shenron/current/bin/libshenron_ffi.so`.
+const ffiLibrary = join(
+  process.env.CARGO_TARGET_DIR?.trim() || join(repo, "target"),
+  "release",
+  "libshenron_ffi.so",
 );
 
 const args = process.argv.slice(2);
@@ -147,6 +153,10 @@ if (releaseArg !== undefined) {
     throw new Error(
       "serveur MCP absent : lancer `cargo build --release -p shenron-mcp` avant l'emballage",
     );
+  if (!existsSync(ffiLibrary))
+    throw new Error(
+      "bibliothèque native absente : lancer `cargo build --release -p shenron-ffi --lib` avant l'emballage",
+    );
   const payload = await artifactPath(store, `${releaseArg}.staging`);
   if (existsSync(payload)) throw new Error("le répertoire de préparation de release existe déjà");
   // Le répertoire de release est le `shenron/` d'un bundle : `assemble DOSSIER`.
@@ -168,6 +178,9 @@ if (releaseArg !== undefined) {
     const mcp = join(source, "bin", "shenron-mcp");
     await Bun.write(mcp, Bun.file(mcpBinary));
     run(["chmod", "0755", mcp]);
+    const ffi = join(source, "bin", "libshenron_ffi.so");
+    await Bun.write(ffi, Bun.file(ffiLibrary));
+    run(["chmod", "0644", ffi]);
     run(["tar", "-czf", join(shenron, "source.tar.gz"), "-C", source, "."]);
     await rm(source, { recursive: true });
     await Bun.write(join(shenron, "site-build.tar.gz"), Bun.file(output));
