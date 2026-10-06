@@ -175,6 +175,8 @@ interface Slot {
   detail: string | null;
   model: ShenronLlamaArtifact | null;
   lora: ShenronLlamaArtifact | null;
+  /** Raw `llama-server` arguments of this model. */
+  extraArgs?: string[];
 }
 
 export interface ChatModel {
@@ -255,6 +257,7 @@ export function routerConfig(slots: readonly Slot[], ctx: number): unknown {
           ? [{ spec: slot.lora.spec, ...(slot.lora.sha256 ? { sha256: slot.lora.sha256 } : {}) }]
           : [],
         ctx,
+        ...(slot.extraArgs?.length ? { extra_args: slot.extraArgs } : {}),
       })),
   };
 }
@@ -308,6 +311,9 @@ export function startChatModel(
                 ? { spec: gemma.url, ...(gemma.sha256 ? { sha256: gemma.sha256 } : {}) }
                 : { spec: GEMMA_MODEL.aphrodyId },
           lora: null,
+          // Gemma 4 thinks before answering by default: tens of seconds per turn on a laptop,
+          // and an empty answer when the budget runs out first. The chat wants the answer.
+          extraArgs: ["--reasoning", "off"],
         };
   const slots = [shenron, ...(gemmaSlot ? [gemmaSlot] : [])];
   const aborts = new AbortController();

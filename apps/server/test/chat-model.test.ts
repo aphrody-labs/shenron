@@ -42,6 +42,7 @@ interface RouterModel {
   model: string;
   sha256?: string;
   lora: { spec: string; sha256?: string }[];
+  extra_args?: string[];
 }
 
 /**
@@ -195,6 +196,7 @@ describe("startChatModel", () => {
     expect(router!.request.modelsDir).toBe(join(paths.home, "models"));
     expect(router!.request.searchDirs).toContain(paths.exeDir);
     expect(router!.request.daemon.args).toContain(LLAMA_DAEMON_VERB);
+    expect(router!.models.map((m) => m.extra_args)).toEqual([undefined, ["--reasoning", "off"]]);
     expect(router!.models.map((m) => [m.id, m.model, m.lora])).toEqual([
       [
         CHAT_MODEL_IDS.shenron,
