@@ -174,7 +174,13 @@ describe("chat engine with a memory", () => {
   test("a turn writes its facts; the next one recalls them beside the question", async () => {
     const memory = fakeMemory();
     const { backend, prompts } = recordingBackend();
-    const engine = createChatEngine({ rag: null, backends: [backend], home, memory: memory.port });
+    const engine = createChatEngine({
+      refuseWhenEmpty: false,
+      rag: null,
+      backends: [backend],
+      home,
+      memory: memory.port,
+    });
 
     const first = await turn(engine, "Je m'appelle Yohan. Mon personnage préféré est Piccolo.");
     expect(first.done.memory).toEqual({ recalled: 0, stored: 2 });
@@ -211,6 +217,7 @@ describe("chat engine with a memory", () => {
     const gemini = { ...remote.backend, id: "gemini-web", stream: remote.backend.stream };
     const local = recordingBackend();
     const byDefault = createChatEngine({
+      refuseWhenEmpty: false,
       rag: null,
       backends: [gemini],
       home,
@@ -219,6 +226,7 @@ describe("chat engine with a memory", () => {
     expect((await turn(byDefault, "Bonjour")).done.memory?.recalled).toBe(1);
     expect(remote.prompts[0]!.at(-1)!.content).toContain("- Je m'appelle Yohan");
     const cut = createChatEngine({
+      refuseWhenEmpty: false,
       rag: null,
       backends: [gemini],
       home,
@@ -229,6 +237,7 @@ describe("chat engine with a memory", () => {
     expect(remote.prompts[1]!.at(-1)!.content).toBe("Bonjour");
     expect(first.done.memory).toEqual({ recalled: 0, stored: 0 });
     const onLocal = createChatEngine({
+      refuseWhenEmpty: false,
       rag: null,
       backends: [local.backend],
       home,
@@ -246,7 +255,13 @@ describe("chat engine with a memory", () => {
       metadata: {},
     });
     const { backend, prompts } = recordingBackend();
-    const engine = createChatEngine({ rag: null, backends: [backend], home, memory: memory.port });
+    const engine = createChatEngine({
+      refuseWhenEmpty: false,
+      rag: null,
+      backends: [backend],
+      home,
+      memory: memory.port,
+    });
     const { done } = await turn(engine, "J'aime Goku.", { memoryOptIn: false });
     expect(done.memory).toBeUndefined();
     expect(prompts[0]!.at(-1)!.content).toBe("J'aime Goku.");
@@ -265,7 +280,13 @@ describe("chat engine with a memory", () => {
       forget: () => false,
       clear: () => 0,
     };
-    const engine = createChatEngine({ rag: null, backends: [backend], home, memory: broken });
+    const engine = createChatEngine({
+      refuseWhenEmpty: false,
+      rag: null,
+      backends: [backend],
+      home,
+      memory: broken,
+    });
     const { events, done } = await turn(engine, "Je m'appelle Yohan.");
     expect(done.finishReason).toBe("stop");
     expect(done.memory).toEqual({ recalled: 0, stored: 0 });

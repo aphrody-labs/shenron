@@ -64,6 +64,10 @@ export interface ChatEngineDeps {
   defaultPersona?: string;
   maxContextChars?: number;
   maxTokens?: number;
+  /** Sampling temperature (default `CHAT_TEMPERATURE`). */
+  temperature?: number;
+  /** `false` lets the model answer a factual question without any source; default true (refuse). */
+  refuseWhenEmpty?: boolean;
   log?: (event: Record<string, unknown>) => void;
 }
 
@@ -128,6 +132,27 @@ export function sourcesBlock(
   return out.trim();
 }
 
+/** Dragon Ball facts come only from the numbered sources; never from model memory. */
+export const STRICT_GROUNDING_RULE =
+  "Tout fait sur Dragon Ball (personnage, technique, transformation, lieu, date, chiffre, citation) doit venir des sources numérotées fournies, jamais de ta mémoire. Si les sources ne contiennent pas la réponse, réponds seulement que tu ne sais pas. Le manga et Akira Toriyama priment ; Fandom n'est pas une source.";
+
+/** Short, plain answers by default. */
+export const BREVITY_RULE =
+  "Réponds en trois phrases au plus, sauf demande explicite de détail. Pas de formule d'introduction ni de conclusion, pas d'émoji, pas de ton promotionnel.";
+
+/** Fixed answer when retrieval found nothing for a factual question (no model call). */
+export const NO_SOURCE_ANSWER =
+  "Je ne sais pas : aucune source de la base Shenron ne répond à cette question.";
+
+/** True when a factual question must be refused: no source at all reached the prompt. */
+export function mustRefuse(chitchat: boolean, sourceCount: number): boolean {
+  return !chitchat && sourceCount === 0;
+}
+
+/** Sampling defaults: low temperature against invention, short answers. */
+export const CHAT_MAX_TOKENS = 400;
+export const CHAT_TEMPERATURE = 0.1;
+
 export function systemPrompt(
   persona: string,
   surface: ChatRequestParsed["surface"],
@@ -138,11 +163,12 @@ export function systemPrompt(
   const base =
     surface === "bot"
       ? buildGroundingInstructions(id, undefined, { chitchat })
-      : buildGroundingInstructions(id, "site-long");
+      : buildGroundingInstructions(id, "site-short");
   const body = base.endsWith(INJECTION_GUARD)
     ? base.slice(0, -INJECTION_GUARD.length).trimEnd()
     : base;
-  const withRule = `${body}\n${CITATION_RULE} ${INJECTION_GUARD}`;
+  const rules = chitchat ? BREVITY_RULE : `${STRICT_GROUNDING_RULE}\n${BREVITY_RULE}`;
+  const withRule = `${body}\n${rules}\n${CITATION_RULE} ${INJECTION_GUARD}`;
   const withPersona = home.persona ? withHomePersona(withRule, home.persona) : withRule;
   const user = homeUserNote(home.user ?? null);
   if (!user) return withPersona;
@@ -451,19 +477,27 @@ export function createChatEngine(deps: ChatEngineDeps) {
     // 6. Generation with fallback.
     const fallbacks: { backend: string; error: string }[] = [];
     const routed = request.model ? route(request.model) : null;
-    const order = request.model
-      ? routed
-        ? [routed.backend]
-        : []
-      : request.backend === "auto"
-        ? deps.backends
-        : deps.backends.filter((b) => b.id === request.backend);
-    if (request.model && !routed)
+    const refuse = deps.refuseWhenEmpty !== false && mustRefuse(chitchat, citations.length);
+    const order = refuse
+      ? []
+      : request.model
+        ? routed
+          ? [routed.backend]
+          : []
+        : request.backend === "auto"
+          ? deps.backends
+          : deps.backends.filter((b) => b.id === request.backend);
+    if (request.model && !routed && !refuse)
       fallbacks.push({ backend: request.model, error: "unknown model on this server" });
     let answer = "";
     let used: LlmBackend | null = null;
     let firstTokenMs: number | null = null;
     let finishReason: "stop" | "length" | "aborted" | "error" = "stop";
+    if (refuse) {
+      answer = NO_SOURCE_ANSWER;
+      firstTokenMs = Math.round(performance.now() - started);
+      yield { type: "delta", data: { text: answer } };
+    }
     for (const backend of order) {
       if (signal.aborted) break;
       try {
@@ -472,7 +506,8 @@ export function createChatEngine(deps: ChatEngineDeps) {
         for await (const delta of backend.stream(
           prompt,
           {
-            maxTokens: deps.maxTokens ?? 700,
+            maxTokens: deps.maxTokens ?? CHAT_MAX_TOKENS,
+            temperature: deps.temperature ?? CHAT_TEMPERATURE,
             ...(routed?.backend === backend && routed.model ? { model: routed.model } : {}),
           },
           signal,
@@ -520,7 +555,7 @@ export function createChatEngine(deps: ChatEngineDeps) {
     const usedModel =
       used && routed?.backend === used && routed.model ? routed.model : (used?.model ?? null);
     if (signal.aborted) finishReason = "aborted";
-    if (!used && finishReason === "stop") {
+    if (!used && !refuse && finishReason === "stop") {
       yield {
         type: "error",
         data: {

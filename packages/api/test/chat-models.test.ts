@@ -91,6 +91,7 @@ describe("chat models", () => {
     const local = backend("local", "shenron-chat-v2");
     const gemini = backend("gemini-web", "gemini-web/flash");
     const engine = createChatEngine({
+      refuseWhenEmpty: false,
       rag: null,
       backends: [gemini.backend, local.backend],
       home,
@@ -107,6 +108,7 @@ describe("chat models", () => {
 
   test("without a catalog, the configured local backend is one model", async () => {
     const engine = createChatEngine({
+      refuseWhenEmpty: false,
       rag: null,
       backends: [backend("local", "qwen3", false).backend],
       home,
@@ -122,6 +124,7 @@ describe("chat models", () => {
     const local = backend("local", "shenron-chat-v2");
     const gemini = backend("gemini-web", "gemini-web/flash");
     const engine = createChatEngine({
+      refuseWhenEmpty: false,
       rag: null,
       backends: [gemini.backend, local.backend],
       home,
@@ -148,6 +151,7 @@ describe("chat models", () => {
 
   test("a model this server does not have is an error, not another model", async () => {
     const engine = createChatEngine({
+      refuseWhenEmpty: false,
       rag: null,
       backends: [backend("gemini-web", "gemini-web/flash").backend],
       home,
