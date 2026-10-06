@@ -1,0 +1,150 @@
+# SPDX-License-Identifier: Apache-2.0
+# Shenron Studio (crates/shenron-desktop, Tauri 3): builds the installers for windows-x64 (NSIS)
+# and linux-x64 (deb, AppImage) through scripts/build/desktop.ts, which also builds the sidecars
+# (shenron-server via scripts/build/server.ts, shenron-mcp, koharu-sdk) exactly as on a
+# workstation, then attaches them to a draft GitHub release (private repository, nothing
+# published elsewhere). Pattern: https://v2.tauri.app/fr/distribute/pipelines/github/ ; the
+# repository script replaces tauri-action because it stages the sidecars and the bundle config.
+#
+# Secrets:
+#   APHRODY_GIT_TOKEN              required: read access to aphrody-labs/aphrody (git deps).
+#   TAURI_SIGNING_PRIVATE_KEY      optional: updater artifact signing (with _PASSWORD).
+#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD
+name: Desktop
+
+on:
+  push:
+    tags: ["desktop-v*"]
+  workflow_dispatch:
+    inputs:
+      chat_model:
+        description: "Ship the local chat model runtime (llama-server + adapter)"
+        type: boolean
+        default: false
+      release:
+        description: "Create a draft release (otherwise artifacts only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  NEXT_TELEMETRY_DISABLED: "1"
+  # Build on the runner itself, never through the VPS tunnel.
+  SHENRON_CARGO_REMOTE: "off"
+
+jobs:
+  build:
+    name: Build (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x64
+            os: ubuntu-22.04
+          - target: windows-x64
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Check Aphrody access
+        shell: bash
+        env:
+          APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
+        run: |
+          if [ -z "$APHRODY_GIT_TOKEN" ]; then
+            echo "::error::APHRODY_GIT_TOKEN is required (private Aphrody git dependencies)"
+            exit 1
+          fi
+          git config --global \
+            url."https://x-access-token:${APHRODY_GIT_TOKEN}@github.com/aphrody-labs/".insteadOf \
+            "https://github.com/aphrody-labs/"
+
+      - name: Linux system dependencies (WebKitGTK, AppImage)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev \
+            patchelf libssl-dev build-essential file
+
+      # rust-toolchain.toml: channel and targets.
+      - name: Rust toolchain
+        shell: bash
+        run: rustup toolchain install
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: desktop-${{ matrix.target }}
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: tauri-cli
+
+      # setup-bun reads the exact version from package.json#packageManager.
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun downloads
+        uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: desktop-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install exact dependencies
+        run: bun ci
+
+      - name: Build Shenron Studio
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          CHAT_MODEL: ${{ inputs.chat_model && 'true' || 'false' }}
+        run: |
+          [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
+          extra=()
+          [ "$CHAT_MODEL" = "true" ] || extra+=(--skip-chat-model)
+          bun scripts/build/desktop.ts --target "${{ matrix.target }}" "${extra[@]}"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: shenron-studio-${{ matrix.target }}
+          path: dist/desktop/${{ matrix.target }}/
+          if-no-files-found: error
+
+  release:
+    name: Draft release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/desktop-v') || inputs.release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          pattern: shenron-studio-*
+
+      - name: Merge checksums
+        run: |
+          for d in dist/shenron-studio-*; do
+            mv "$d/SHA256SUMS" "$d/SHA256SUMS-${d##*/shenron-studio-}"
+          done
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          prerelease: false
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('desktop-dev-{0}', github.run_number) }}
+          name: Shenron Studio ${{ github.ref_name }}
+          files: dist/shenron-studio-*/*
+          fail_on_unmatched_files: true
