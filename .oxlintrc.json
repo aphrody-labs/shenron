@@ -25,6 +25,9 @@
   },
   "rules": {
     "no-console": "off",
+    "no-await-in-loop": "off",
+    "import/no-unassigned-import": "off",
+    "unicorn/consistent-function-scoping": "off",
     "no-debugger": "error",
     "no-underscore-dangle": "off",
     "react/react-in-jsx-scope": "off",
