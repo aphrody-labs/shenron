@@ -1540,7 +1540,7 @@
   "desktop": {
     "meta": {
       "title": "Shenron Studio",
-      "description": "Shenron sur votre ordinateur : discussion avec le modèle Dragon Ball local, recherche dans le corpus, éditeur de traduction manga et studio."
+      "description": "Shenron sur votre ordinateur : discussion locale, recherche et éditeur de traduction."
     },
     "title": "Shenron sur votre ordinateur",
     "status": {
@@ -1558,7 +1558,7 @@
       "historyUnavailable": "L’historique des discussions n’est pas disponible sur ce serveur.",
       "untitled": "Discussion sans titre",
       "welcomeTitle": "Demandez à Shenron",
-      "welcomeBody": "Posez une question sur Dragon Ball : le modèle local répond en citant le manga, les databooks et le wiki. Vos discussions restent sur cet ordinateur.",
+      "welcomeBody": "Posez une question sur Dragon Ball. Les réponses citent leurs sources ; tout reste sur cet ordinateur.",
       "placeholder": "Votre question sur Dragon Ball…",
       "you": "Vous",
       "assistant": "Shenron",
@@ -1567,7 +1567,7 @@
       "openSource": "Ouvrir la source",
       "checking": "Vérification du modèle local…",
       "unavailableTitle": "Modèle indisponible",
-      "unavailableBody": "Aucun modèle de discussion n’est chargé sur ce serveur. Déclarez le modèle local dans le pilotage, puis relancez l’application.",
+      "unavailableBody": "Aucun modèle chargé. Déclarez-le dans le pilotage, puis relancez.",
       "truncated": "Réponse tronquée (longueur maximale atteinte).",
       "stopped": "Réponse interrompue.",
       "dismiss": "Fermer",
@@ -1604,7 +1604,7 @@
     },
     "memory": {
       "title": "Mémoire",
-      "description": "Ce que Shenron a retenu de vos discussions et réutilise dans ses réponses. Rien ne quitte cet ordinateur sans votre accord.",
+      "description": "Ce que Shenron a retenu de vos discussions. Tout reste sur cet ordinateur.",
       "searchLabel": "Chercher dans la mémoire",
       "searchPlaceholder": "Chercher un souvenir…",
       "empty": "Shenron n’a encore rien mémorisé.",
@@ -1660,9 +1660,9 @@
       "checksum": "Empreinte SHA-256 :",
       "help": {
         "title": "Installer en trois étapes",
-        "step1": "Ouvrez le fichier téléchargé (double-clic) : l'installation se fait pour vous seul, sans droits administrateur.",
+        "step1": "Ouvrez le fichier téléchargé. L'installation ne demande pas de droits administrateur.",
         "step2": "Lancez Shenron Studio depuis le menu Démarrer ou le raccourci du Bureau.",
-        "step3": "Au premier lancement, laissez l'application télécharger ses modèles (environ 6 Go) : la discussion est prête ensuite."
+        "step3": "Au premier lancement, laissez l'application télécharger ses modèles (environ 6 Go)."
       },
       "smartscreen": {
         "title": "Si Windows affiche « Windows a protégé votre ordinateur »",

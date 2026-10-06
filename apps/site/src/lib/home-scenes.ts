@@ -386,25 +386,25 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     kanji: "番付",
     eyebrow: "Classement des membres",
     title: "Les membres les plus actifs",
-    subtitle: "Le classement de la communauté et l'activité des membres en direct.",
+    subtitle: "Classement et activité en direct.",
     defaultEnabled: true,
   },
   universe: {
     navLabel: "L'univers",
     kanji: "宇宙",
     eyebrow: "L'encyclopédie",
-    title: "Voyage à travers l'univers",
+    title: "L'univers",
     subtitle:
-      "Personnages, planètes, sagas, épisodes, films et chapitres : explorez chaque recoin de l'œuvre d'Akira Toriyama.",
+      "Personnages, sagas, épisodes, films et chapitres.",
     defaultEnabled: true,
   },
   bestof: {
     navLabel: "Best of sagas",
     kanji: "伝",
     eyebrow: "L'anthologie",
-    title: "Les sagas légendaires & l'anthologie",
+    title: "Les sagas",
     subtitle:
-      "Choisis ta saga et explore tous les médias : épisodes, films, manga et guides officiels.",
+      "Épisodes, films, manga et guides, saga par saga.",
     defaultEnabled: true,
   },
   tops: {
@@ -413,7 +413,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     eyebrow: "Les classements",
     title: "Les Top 3 de la communauté",
     subtitle:
-      "Épisodes DB → Kai, arcs, films et jeux — classés par vos notes. Note ton favori pour le propulser (et décrocher le badge #1).",
+      "Épisodes, arcs, films et jeux classés par vos notes.",
     defaultEnabled: true,
   },
   // Panneaux dont la destination dépend du gating (/admin/launch). Un panneau
@@ -426,7 +426,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     eyebrow: "Figures de légende",
     title: "Personnages de la saga",
     subtitle:
-      "Saiyans, dieux, démons et terriens : explorez les figures qui ont façonné Dragon Ball, fiche par fiche.",
+      "Une fiche par personnage.",
     defaultEnabled: true,
   },
   sagas: {
@@ -435,7 +435,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     eyebrow: "La chronologie",
     title: "Le voyage à travers les sagas",
     subtitle:
-      "Des origines à la divinité — suis la saga complète : Dragon Ball, Z, Super et GT, arc après arc.",
+      "Dragon Ball, Z, Super et GT, arc par arc.",
     // Fusionné avec l'anthologie de bestof par défaut.
     defaultEnabled: false,
   },
@@ -444,7 +444,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     kanji: "神",
     eyebrow: "L'écosystème",
     title: "Les gardiens de la communauté",
-    subtitle: "Des rôles thématiques pour animer le serveur Discord et veiller sur le wiki.",
+    subtitle: "Les rôles du serveur Discord et du wiki.",
     defaultEnabled: true,
   },
   community: {
@@ -452,7 +452,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     kanji: "仲間",
     eyebrow: "La communauté",
     title: "Des milliers de guerriers",
-    subtitle: "Chiffres réels, mis à jour en direct depuis le bot.",
+    subtitle: "Chiffres en direct du bot.",
     defaultEnabled: true,
   },
   play: {
@@ -461,7 +461,7 @@ export const SECTION_META: Record<HomeSectionId, HomeSectionMeta> = {
     eyebrow: "Le terrain",
     title: "Combats, économie, fusions",
     subtitle:
-      "Le bot transforme le serveur en terrain de jeu : gagne de l'XP, dépense tes zénis, grimpe au classement.",
+      "XP, zénis et classement sur le serveur.",
     defaultEnabled: true,
   },
   news: {
@@ -642,7 +642,7 @@ export interface HomeClip {
 }
 
 export const DEFAULT_HERO_LEDE =
-  "Un voyage à travers tout l'univers Dragon Ball : personnages, planètes, sagas, films et manga — en français, sourcé canon. Et six gardiens qui veillent sur la communauté.";
+  "L'encyclopédie Dragon Ball en français, sourcée sur le manga.";
 
 const CLIP_MAX = { desktop: 8, tablet: 6 } as const;
 
@@ -706,7 +706,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
     eyebrow: "Tout l'univers Dragon Ball",
     title: "Explorer le catalogue",
     subtitle:
-      "Regarder un épisode ou un film, reprendre le manga et ouvrir les guides officiels, depuis un même point de départ.",
+      "Épisodes, films, manga et guides officiels.",
     destinations: [
       { href: "/wiki/episodes", enabled: true },
       { href: "/wiki/movies", enabled: true },
@@ -719,7 +719,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
     eyebrow: "Est-ce canon ?",
     title: "Vérifier une affirmation, preuves à l'appui",
     subtitle:
-      "Un verdict en cinq rangs, tranché par une doctrine éditée à la main et appuyé sur les déclarations d'Akira Toriyama, les planches de databooks traduites et les fiches du wiki. Rien d'inventé : quand la doctrine ne sait pas, elle le dit.",
+      "Un verdict en cinq rangs, appuyé sur Toriyama, les databooks et le wiki.",
     sujets: 6,
     placeholder: "Broly est-il canon ?",
   },
@@ -732,7 +732,7 @@ export const DEFAULT_HOME_CONFIG: HomeConfig = {
     eyebrow: "Le menu complet",
     title: "Chaque chemin mène à une aventure",
     subtitle:
-      "Du récit canon à votre progression communautaire, toutes les destinations du menu ont leur porte d'entrée.",
+      "Toutes les rubriques du site.",
     destinations: [
       {
         href: "/wiki",

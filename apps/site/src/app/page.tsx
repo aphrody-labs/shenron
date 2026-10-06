@@ -43,14 +43,14 @@ export const revalidate = 900;
 
 export const metadata: Metadata = {
   title: {
-    absolute: "DBFR — Le voyage dans l'univers Dragon Ball",
+    absolute: "DBFR — L'encyclopédie Dragon Ball",
   },
   description:
-    "Explore l'univers Dragon Ball en français : personnages, sagas, planètes, films, jeux, manga et actualités anime. Une communauté et un bot Discord unifié pour vivre Dragon Ball.",
+    "Dragon Ball en français : personnages, sagas, films, manga et actualités, sourcés sur le manga.",
   ...ogMeta({
-    title: "DBFR — Le voyage dans l'univers Dragon Ball",
+    title: "DBFR — L'encyclopédie Dragon Ball",
     description:
-      "Explore l'univers Dragon Ball en français : personnages, sagas, planètes, films, jeux et actualités.",
+      "Dragon Ball en français : personnages, sagas, films, manga et actualités.",
     type: "website",
     canonical: "/",
   }),

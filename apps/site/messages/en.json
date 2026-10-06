@@ -1540,7 +1540,7 @@
   "desktop": {
     "meta": {
       "title": "Shenron Studio",
-      "description": "Shenron on your computer: chat with the local Dragon Ball model, corpus search, the manga translation editor and the studio."
+      "description": "Shenron on your computer: local chat, search and translation editor."
     },
     "title": "Shenron on your computer",
     "status": {
@@ -1558,7 +1558,7 @@
       "historyUnavailable": "Chat history is not available on this server.",
       "untitled": "Untitled chat",
       "welcomeTitle": "Ask Shenron",
-      "welcomeBody": "Ask anything about Dragon Ball: the local model answers and cites the manga, the databooks and the wiki. Your chats stay on this computer.",
+      "welcomeBody": "Ask a question about Dragon Ball. Answers cite their sources; everything stays on this computer.",
       "placeholder": "Your Dragon Ball question…",
       "you": "You",
       "assistant": "Shenron",
@@ -1567,7 +1567,7 @@
       "openSource": "Open source",
       "checking": "Checking the local model…",
       "unavailableTitle": "Model unavailable",
-      "unavailableBody": "No chat model is loaded on this server. Declare the local model in the control panel, then restart the app.",
+      "unavailableBody": "No model loaded. Declare it in the control panel, then restart.",
       "truncated": "Answer cut short (maximum length reached).",
       "stopped": "Answer stopped.",
       "dismiss": "Dismiss",
@@ -1604,7 +1604,7 @@
     },
     "memory": {
       "title": "Memory",
-      "description": "What Shenron kept from your chats and reuses in its answers. Nothing leaves this computer without your consent.",
+      "description": "What Shenron remembers from your chats. Everything stays on this computer.",
       "searchLabel": "Search the memory",
       "searchPlaceholder": "Search a memory…",
       "empty": "Shenron has not remembered anything yet.",
@@ -1660,9 +1660,9 @@
       "checksum": "SHA-256 fingerprint:",
       "help": {
         "title": "Install in three steps",
-        "step1": "Open the downloaded file (double-click): it installs for you only, without administrator rights.",
+        "step1": "Open the downloaded file. Installation needs no administrator rights.",
         "step2": "Start Shenron Studio from the Start menu or the desktop shortcut.",
-        "step3": "On first launch, let the app download its models (about 6 GB): the chat is ready afterwards."
+        "step3": "On first launch, let the app download its models (about 6 GB)."
       },
       "smartscreen": {
         "title": "If Windows shows “Windows protected your PC”",
