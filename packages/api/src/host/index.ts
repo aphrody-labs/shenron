@@ -2,7 +2,8 @@
 /**
  * `@shenron/api/host` — composition of the single Shenron API server from an explicit
  * environment record: VFS database (file or embedded), RAG with the corpus embedder, chat
- * engine (Gemini web → local llama-server), MCP tools (`shenron-mcp`), OCR
+ * engine (Gemini web → local llama-server) with the owner's persistent memory when the host
+ * process provides it, MCP tools (`shenron-mcp`), OCR
  * (`aphrody ocr ppocr`), conversation store (SQLite or PostgreSQL), owner/admin auth, static
  * assets with precompressed siblings and the MCP reverse proxy. `serveShenronApi(env)` starts
  * it with `Bun.serve`; a front server mounts it with `handles()`, `fetch()` and `websocket`.
@@ -28,6 +29,7 @@ import {
   type EnvSource,
   isProduction,
 } from "@shenron/config/env";
+import { chatMemoryAgentId, resolveChatMemory } from "@shenron/config/memory";
 import { clientIpFromHeaders, isDirectLoopback } from "@shenron/config/net";
 import { DEV_SITE_ORIGIN, originOf, resolveSiteUrl } from "@shenron/config/public-urls";
 import { resolveShenronApiBind } from "@shenron/config/services";
@@ -53,6 +55,7 @@ import {
   type AuthPort,
   type ChatSocketData,
   createShenronApi,
+  type MemoryPort,
   type RagPort,
   type ShenronApi,
   type ShenronApiService,
@@ -294,8 +297,23 @@ export interface LocalApiOptions {
   conversations?: ConversationStore | null;
   /** `false` leaves the wiki routes to another host (the site on PostgreSQL in production). */
   wiki?: boolean;
+  /**
+   * Persistent chat memory (Aphrody `aphrody-memory`), opened by the host process (`bun:ffi`
+   * lives in `@shenron/native`, outside this package) from the settings of
+   * `@shenron/config/memory`. Absent or `null`: the memory group stays disabled.
+   */
+  memory?: MemoryFactory | null;
   fetch?: typeof fetch;
 }
+
+/** Where the memory lives and whose it is: `dbPath` and the agent id of each owner. */
+export interface MemorySettings {
+  dbPath: string;
+  agentId(owner: string): string;
+}
+
+/** Open the memory: its port, or the short French reason it is unavailable. */
+export type MemoryFactory = (settings: MemorySettings) => { port: MemoryPort } | { reason: string };
 
 export interface LocalApi {
   api: ShenronApi;
@@ -421,6 +439,28 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const ocr = createCliOcr({ binary: envString(env, "APHRODY_BIN") ?? "aphrody" });
   const ocrPort = ocr.available() ? ocr : null;
 
+  // Persistent chat memory: off by SHENRON_MEMORY=off, else opened by the host process.
+  const memorySettings = resolveChatMemory(env, paths.data);
+  let memory: MemoryPort | null = null;
+  let memoryReason = "mémoire du chat non disponible sur ce serveur";
+  if (!memorySettings.dbPath) memoryReason = "mémoire du chat désactivée";
+  else if (options.memory) {
+    try {
+      const opened = options.memory({
+        dbPath: memorySettings.dbPath,
+        agentId: (owner) => chatMemoryAgentId(memorySettings, owner),
+      });
+      if ("port" in opened) memory = opened.port;
+      else memoryReason = opened.reason;
+    } catch (error) {
+      // The cause (path, library error) stays in the log.
+      console.error(
+        JSON.stringify({ event: "shenron.api.memory_unavailable", error: String(error) }),
+      );
+      memoryReason = "mémoire du chat inaccessible";
+    }
+  }
+
   // Only the backends this host can call: none disables the chat and models routes.
   const backends = usableChatBackends(env);
   const engine = createChatEngine({
@@ -436,6 +476,9 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     mcp,
     ocr: ocrPort,
     store: conversations,
+    memory,
+    memoryRecall: memorySettings.recall,
+    memoryRemote: memorySettings.remote,
     defaultPersona: envString(env, "SHENRON_CHAT_PERSONA") ?? "shenron",
     log: (event) => console.error(JSON.stringify(event)),
   });
@@ -454,6 +497,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       rag: opened ? createVfsRagPort(opened, embedder?.query ?? null, publicOnly) : null,
       chat,
       conversations,
+      memory,
       vfs: opened ? createVfsPort(opened, { publicOnly, assetsDir }) : null,
       ocr: ocrPort,
       auth: createEnvAuth(env, isLoopback),
@@ -524,6 +568,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     ocr: ocrPort ? available() : unavailable("aphrody introuvable : OCR indisponible"),
     mcp: mcpUrl ? available() : unavailable("serveur MCP non configuré"),
     models: { ...chatGroup },
+    memory: memory ? available() : unavailable(memoryReason),
   };
   const servesAssets = assetsDir !== null || opened !== null;
   const isAsset = (pathname: string) => servesAssets && pathname.startsWith("/assets/");

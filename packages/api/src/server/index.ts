@@ -4,7 +4,7 @@
  * endpoint catalogue (`../contract/endpoints`), served by `Bun.serve({ routes, websocket })` or
  * embedded through `fetch(request)` (Next route handler, the bot's legacy server, tests).
  * Groups are enabled by their ports: wiki, RAG, chat (SSE, WebSocket, resumable streams),
- * conversation sync, VFS, OCR. With no group enabled the API claims no path at all, meta
+ * conversation sync, chat memory, VFS, OCR. With no group enabled the API claims no path at all, meta
  * routes included, so an embedding host keeps its historical 404. Runtime class: `server`
  * (`bun` appears in type positions only: the site's Next runtime loads it too).
  *
@@ -26,6 +26,7 @@ import {
 } from "../contract/chat";
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
+import type { MemoryEntry, MemoryListQuery } from "../contract/memory";
 import type { RagContextResponse, RagHit, RagMode, RagSearchQuery } from "../contract/schemas";
 import type { VfsInfoResponse, VfsStatResponse } from "../contract/sync";
 import {
@@ -101,6 +102,27 @@ export interface AuthPort {
   admin(request: Request): Promise<boolean>;
 }
 
+/**
+ * Persistent chat memory of each owner (Aphrody `aphrody-memory`, through `shenron-ffi` in
+ * `shenron-server`). The port maps an owner onto its agent id; ids are the provider's.
+ */
+export interface MemoryPort {
+  /** Memories of `owner`, newest first. */
+  list(
+    owner: string,
+    query: { q?: string; tags?: string[]; limit: number },
+  ): Promise<MemoryEntry[]> | MemoryEntry[];
+  /** Store one memory. */
+  remember(
+    owner: string,
+    memory: { content: string; tags: string[]; metadata: Record<string, string> },
+  ): Promise<MemoryEntry> | MemoryEntry;
+  /** Delete memory `id` of `owner`; `false` when the owner has no such memory. */
+  forget(owner: string, id: string): Promise<boolean> | boolean;
+  /** Delete every memory of `owner`; returns how many were deleted. */
+  clear(owner: string): Promise<number> | number;
+}
+
 /** Reverse proxy of the MCP server (`shenron-mcp --http`), so `/mcp` goes through this server too. */
 export interface McpProxyPort {
   url: string;
@@ -119,6 +141,8 @@ export interface ShenronApiPorts {
   rag?: RagPort | null;
   chat?: ChatEnginePort | null;
   conversations?: ConversationStore | null;
+  /** Persistent chat memory (`/api/v1/memory*`); absent → group disabled. */
+  memory?: MemoryPort | null;
   vfs?: VfsPort | null;
   ocr?: OcrPort | null;
   auth?: AuthPort | null;
@@ -378,6 +402,7 @@ export function createShenronApi(
     ports.rag,
     ports.chat,
     ports.conversations,
+    ports.memory,
     ports.vfs,
     ports.ocr,
     ports.mcp,
@@ -700,6 +725,27 @@ export function createShenronApi(
     const detail = await fromPort(() => store!.get(ctx.ownerId!, ctx.params.id ?? ""));
     return detail ? json(detail, 200) : json(NOT_FOUND, 404);
   });
+
+  // ── Memory ────────────────────────────────────────────────────────────────
+  const memory = ports.memory ?? null;
+  add(endpoints.memoryList, memory !== null, async (ctx) => {
+    const query = ctx.query as MemoryListQuery;
+    const memories = await fromPort(() =>
+      memory!.list(ctx.ownerId!, {
+        limit: query.limit,
+        ...(query.q ? { q: query.q } : {}),
+        ...(query.tag ? { tags: [query.tag] } : {}),
+      }),
+    );
+    return json({ memories, total: memories.length }, 200);
+  });
+  add(endpoints.memoryDelete, memory !== null, async (ctx) => {
+    const deleted = await fromPort(() => memory!.forget(ctx.ownerId!, ctx.params.id ?? ""));
+    return deleted ? json({ ok: true }, 200) : json(NOT_FOUND, 404);
+  });
+  add(endpoints.memoryClear, memory !== null, async (ctx) =>
+    json({ deleted: await fromPort(() => memory!.clear(ctx.ownerId!)) }, 200),
+  );
 
   // ── VFS ───────────────────────────────────────────────────────────────────
   const vfs = ports.vfs ?? null;

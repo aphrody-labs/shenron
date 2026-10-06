@@ -9,7 +9,7 @@
 import { FFIType } from "bun:ffi";
 
 /** ABI revision of this table: `shenron_abi_version()` of a compatible library. */
-export const SHENRON_FFI_ABI = 2;
+export const SHENRON_FFI_ABI = 3;
 
 /** Version of the shenron-ffi crate the table was generated from (the workspace version). */
 export const SHENRON_FFI_VERSION = "1.3.0";
@@ -182,4 +182,30 @@ export const SYMBOLS = {
    * `shenron_sleep_job(job: u64, ms: u32) -> owned_str`, since ABI 2.
    */
   shenron_sleep_job: { args: [FFIType.u64, FFIType.u32], returns: FFIType.ptr },
+  /**
+   * Store one memory in the SQLite memory at `db_path` (created on first use, mode 600):
+   * owned `JobOutcome<MemoryEntry>` JSON. `request_json`: `{agentId, content, tags?, metadata?}`.
+   *
+   * `shenron_memory_add(db_path: cstr, request_json: cstr) -> owned_str`, since ABI 3.
+   */
+  shenron_memory_add: { args: [FFIType.cstring, FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Memories of one agent, newest first: owned `JobOutcome<MemoryEntry[]>` JSON.
+   * `request_json`: `{agentId, q?, tags?, limit?}`.
+   *
+   * `shenron_memory_search(db_path: cstr, request_json: cstr) -> owned_str`, since ABI 3.
+   */
+  shenron_memory_search: { args: [FFIType.cstring, FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Delete one memory of `agent_id`: owned `JobOutcome<boolean>` JSON (`false`: none such).
+   *
+   * `shenron_memory_delete(db_path: cstr, agent_id: cstr, id: cstr) -> owned_str`, since ABI 3.
+   */
+  shenron_memory_delete: { args: [FFIType.cstring, FFIType.cstring, FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Delete every memory of `agent_id`: owned `JobOutcome<number>` JSON (the count deleted).
+   *
+   * `shenron_memory_clear(db_path: cstr, agent_id: cstr) -> owned_str`, since ABI 3.
+   */
+  shenron_memory_clear: { args: [FFIType.cstring, FFIType.cstring], returns: FFIType.ptr },
 } as const;

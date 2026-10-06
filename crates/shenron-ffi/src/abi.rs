@@ -13,7 +13,10 @@
 /// - 2: adds cancellable jobs (`shenron_job_new`, `shenron_cancel`, `shenron_job_release`,
 ///   `shenron_job_count`, the `*_job` exports) and `shenron_build_info`. Every revision-1
 ///   symbol keeps its signature, ownership and JSON shape.
-pub const ABI_VERSION: u32 = 2;
+/// - 3: adds the persistent chat memory (`shenron_memory_add`, `shenron_memory_search`,
+///   `shenron_memory_delete`, `shenron_memory_clear`) over Aphrody's `aphrody-memory`. Every
+///   revision-2 symbol is unchanged.
+pub const ABI_VERSION: u32 = 3;
 
 /// Status codes set by the boundary: `JobOutcome.status`, and the `code` of a captured result
 /// when the call fails before the command runs. A wrapped command may return any exit code.
@@ -266,4 +269,14 @@ ffi_table! {
     [2] fn shenron_persona_ask_job(job: u64, question: cstr) -> owned_str;
     /// Diagnostic: hold a job for `ms` milliseconds without I/O: owned `JobOutcome<number>` JSON.
     [2] fn shenron_sleep_job(job: u64, ms: u32) -> owned_str;
+    /// Store one memory in the SQLite memory at `db_path` (created on first use, mode 600):
+    /// owned `JobOutcome<MemoryEntry>` JSON. `request_json`: `{agentId, content, tags?, metadata?}`.
+    [3] fn shenron_memory_add(db_path: cstr, request_json: cstr) -> owned_str;
+    /// Memories of one agent, newest first: owned `JobOutcome<MemoryEntry[]>` JSON.
+    /// `request_json`: `{agentId, q?, tags?, limit?}`.
+    [3] fn shenron_memory_search(db_path: cstr, request_json: cstr) -> owned_str;
+    /// Delete one memory of `agent_id`: owned `JobOutcome<boolean>` JSON (`false`: none such).
+    [3] fn shenron_memory_delete(db_path: cstr, agent_id: cstr, id: cstr) -> owned_str;
+    /// Delete every memory of `agent_id`: owned `JobOutcome<number>` JSON (the count deleted).
+    [3] fn shenron_memory_clear(db_path: cstr, agent_id: cstr) -> owned_str;
 }

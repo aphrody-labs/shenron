@@ -320,6 +320,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "aphrody-memory"
+version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
+dependencies = [
+ "aphrody-agent-home",
+ "aphrody-models",
+ "aphrody-rag-core",
+ "aphrody-sql",
+ "async-trait",
+ "chrono",
+ "futures",
+ "reqwest",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "time",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "aphrody-models"
 version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
@@ -9206,6 +9229,7 @@ name = "shenron-ffi"
 version = "1.3.0"
 dependencies = [
  "aphrody-agent-home",
+ "aphrody-memory",
  "aphrody-rag-core",
  "aphrody-stdio-capture",
  "serde",

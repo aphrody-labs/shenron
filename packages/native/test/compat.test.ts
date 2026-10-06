@@ -96,8 +96,8 @@ describe("Bun runtime", () => {
 });
 
 describe("generated table", () => {
-  test("is ABI 2 of the workspace version", async () => {
-    expect(SHENRON_FFI_ABI).toBe(2);
+  test("is ABI 3 of the workspace version", async () => {
+    expect(SHENRON_FFI_ABI).toBe(3);
     const cargo = await Bun.file(join(import.meta.dir, "../../../Cargo.toml")).text();
     expect(cargo).toContain(`version = "${SHENRON_FFI_VERSION}"`);
   });

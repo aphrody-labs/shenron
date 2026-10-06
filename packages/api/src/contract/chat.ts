@@ -57,7 +57,11 @@ export const ChatRequest = z
     attachments: z.array(ChatAttachment).max(4).optional(),
     /** `false` → one JSON `ChatResponse` instead of an event stream. */
     stream: z.boolean().default(true),
-    /** Owner preferences recorded on the conversation. */
+    /**
+     * Owner preferences recorded on the conversation. `memoryOptIn: false` also keeps this turn
+     * out of the persistent memory (no recall, no writing); absent or true uses it when the
+     * server has one.
+     */
     memoryOptIn: z.boolean().optional(),
     ragOptIn: z.boolean().optional(),
   })
@@ -129,6 +133,13 @@ export const ChatDone = z
     usage: ChatUsage,
     finishReason: z.enum(["stop", "length", "aborted", "error"]),
     stored: z.boolean(),
+    /**
+     * Persistent memory of the turn, when the server has one: memories given to the model that
+     * answered (none for a remote backend unless SHENRON_MEMORY_REMOTE=on) and facts stored.
+     */
+    memory: z
+      .object({ recalled: z.number().int().min(0), stored: z.number().int().min(0) })
+      .optional(),
   })
   .meta({ id: "ChatDone" });
 export type ChatDone = z.infer<typeof ChatDone>;

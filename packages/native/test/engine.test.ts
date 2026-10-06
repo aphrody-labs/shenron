@@ -129,7 +129,7 @@ describe.if(builtLibrary !== undefined)("with the built shenron-ffi library", ()
     expect(shenronLoad(join(scratch, "other", SHENRON_FFI_FILE))).toBe(path);
     expect(shenron.shenronAbiVersion()).toBe(shenron.EXPECTED_SHENRON_ABI_VERSION);
     const info = shenron.shenronBuildInfo();
-    expect(info.abi).toBe(2);
+    expect(info.abi).toBe(shenron.SHENRON_FFI_ABI);
     expect(info.version).toBe(shenron.SHENRON_FFI_VERSION);
     expect(["debug", "release"]).toContain(info.profile);
   });
@@ -142,6 +142,29 @@ describe.if(builtLibrary !== undefined)("with the built shenron-ffi library", ()
     expect(answer.total).toBe(answer.results.length);
     // An empty kind searches every kind, like an absent one.
     expect(shenronLocalSearch("Goku", 2, "").mode).toBe(answer.mode);
+  });
+
+  test("the chat memory stores, finds and deletes per agent (aphrody-memory)", () => {
+    shenronLoad(builtLibrary as string);
+    const db = join(scratch, "memory", "memory.sqlite");
+    const added = shenron.shenronMemoryAdd(db, {
+      agentId: "shenron/local",
+      content: "Je préfère Piccolo",
+      tags: ["preference"],
+      metadata: { source: "chat" },
+    });
+    expect(added.id.length).toBeGreaterThan(0);
+    expect(added.createdAtMs).toBeGreaterThan(0);
+    expect(added.metadata).toEqual({ source: "chat" });
+    shenron.shenronMemoryAdd(db, { agentId: "shenron/other", content: "Vegeta" });
+    const found = shenron.shenronMemorySearch(db, { agentId: "shenron/local", q: "piccolo" });
+    expect(found.map((m) => m.id)).toEqual([added.id]);
+    expect(shenron.shenronMemoryDelete(db, "shenron/other", added.id)).toBe(false);
+    expect(shenron.shenronMemoryDelete(db, "shenron/local", added.id)).toBe(true);
+    expect(shenron.shenronMemoryClear(db, "shenron/other")).toBe(1);
+    expect(() => shenron.shenronMemoryAdd(db, { agentId: "", content: "x" })).toThrow(
+      shenron.ShenronMemoryError,
+    );
   });
 
   test("captured runs capture stdout outside the Rust test harness", () => {

@@ -25,7 +25,9 @@ import type {
   BuildInfo,
   CapturedResult,
   FfiError,
+  JobOutcome,
   LocalSearchResponse,
+  MemoryEntry,
   RagChunk,
 } from "./generated/types";
 
@@ -369,5 +371,83 @@ export function shenronPersonaAsk(question: string): CapturedResult {
   return parseCapturedResult(
     readOwnedString(loadLib().symbols.shenron_persona_ask(cstr(question))),
     "Shenron persona",
+  );
+}
+
+// --- ABI 3: persistent chat memory (Aphrody `aphrody-memory`, SQLite provider) ---
+
+/** A stored memory; `createdAtMs` is always a number here. */
+export type ShenronMemory = Omit<MemoryEntry, "createdAtMs"> & { createdAtMs: number };
+
+/** Request of `shenronMemoryAdd`: tags are `[a-z0-9:_-]{1,32}`, metadata string values. */
+export interface ShenronMemoryAdd {
+  agentId: string;
+  content: string;
+  tags?: string[];
+  metadata?: Record<string, string>;
+}
+
+/** Request of `shenronMemorySearch`: `q` is a substring of the content; newest first. */
+export interface ShenronMemorySearch {
+  agentId: string;
+  q?: string;
+  tags?: string[];
+  limit?: number;
+}
+
+/** Raised for a memory call that produced no value (`status`: `SHENRON_STATUS`). */
+export class ShenronMemoryError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ShenronMemoryError";
+  }
+}
+
+function memoryOutcome<T>(pointer: PointerReturn, operation: string): T {
+  const outcome = JSON.parse(readOwnedString(pointer, operation)) as JobOutcome<T>;
+  if (outcome.status !== SHENRON_STATUS.ok || outcome.value === null)
+    throw new ShenronMemoryError(outcome.status, outcome.error ?? `${operation} failed`);
+  return outcome.value;
+}
+
+const memoryOf = (entry: MemoryEntry): ShenronMemory => ({
+  ...entry,
+  createdAtMs: entry.createdAtMs ?? 0,
+});
+
+/** Store one memory in the SQLite memory at `dbPath` (created on first use, mode 600). */
+export function shenronMemoryAdd(dbPath: string, request: ShenronMemoryAdd): ShenronMemory {
+  return memoryOf(
+    memoryOutcome<MemoryEntry>(
+      loadLib().symbols.shenron_memory_add(cstr(dbPath), cstr(JSON.stringify(request))),
+      "shenron_memory_add",
+    ),
+  );
+}
+
+/** Memories of one agent, newest first. */
+export function shenronMemorySearch(dbPath: string, request: ShenronMemorySearch): ShenronMemory[] {
+  return memoryOutcome<MemoryEntry[]>(
+    loadLib().symbols.shenron_memory_search(cstr(dbPath), cstr(JSON.stringify(request))),
+    "shenron_memory_search",
+  ).map(memoryOf);
+}
+
+/** Delete memory `id` of `agentId`; `false` when the agent has no such memory. */
+export function shenronMemoryDelete(dbPath: string, agentId: string, id: string): boolean {
+  return memoryOutcome<boolean>(
+    loadLib().symbols.shenron_memory_delete(cstr(dbPath), cstr(agentId), cstr(id)),
+    "shenron_memory_delete",
+  );
+}
+
+/** Delete every memory of `agentId`; returns how many were deleted. */
+export function shenronMemoryClear(dbPath: string, agentId: string): number {
+  return memoryOutcome<number>(
+    loadLib().symbols.shenron_memory_clear(cstr(dbPath), cstr(agentId)),
+    "shenron_memory_clear",
   );
 }

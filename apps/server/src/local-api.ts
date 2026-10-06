@@ -46,7 +46,7 @@ const NATIVE: LocalNative = {
     shenronWorkerPool().localSearch(query, { limit, kind, signal }),
 };
 
-function libraryPath(paths: ServerPaths, env: NodeJS.ProcessEnv): string | null {
+export function libraryPath(paths: ServerPaths, env: NodeJS.ProcessEnv): string | null {
   const candidates = [
     env.SHENRON_FFI_LIB?.trim(),
     join(paths.exeDir, SHENRON_FFI_FILE),

@@ -58,6 +58,7 @@ anyhow = "1.0.104"
 aphrody-agent-home = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "1.0.0" }
 aphrody-config = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "1.0.0" }
 aphrody-llama-server = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "1.0.0" }
+aphrody-memory = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "1.0.0" }
 aphrody-models = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "1.0.0" }
 aphrody-ocr = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "1.0.0" }
 aphrody-ocr-core = { git = "https://github.com/aphrody-labs/aphrody", rev = "df3ff0dd30d42c83e62ef3016b784b60e2f447ed", version = "1.0.0" }

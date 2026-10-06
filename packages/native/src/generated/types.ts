@@ -100,6 +100,25 @@ export type LocalSearchResponse = {
 	results: LocalHit[],
 };
 
+/**
+ *  One memory of the persistent chat memory (`shenron_memory_*`, ABI 3): a record of Aphrody's
+ *  `aphrody-memory` SQLite provider.
+ */
+export type MemoryEntry = {
+	/**  Provider id (UUID v4). */
+	id: string,
+	/**  Owner of the record (`shenron/<owner>`). */
+	agentId: string,
+	/**  The remembered fact. */
+	content: string,
+	/**  Labels (`fact`, `preference`, `remember`, …). */
+	tags: string[],
+	/**  Creation time, epoch milliseconds (UTC). */
+	createdAtMs: number | null,
+	/**  String metadata (conversation, persona, source). */
+	metadata: { [key in string]: string },
+};
+
 /**  One Markdown chunk (`shenron_rag_chunk`). */
 export type RagChunk = {
 	/**  Chunk text. */

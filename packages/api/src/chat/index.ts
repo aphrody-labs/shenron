@@ -4,4 +4,5 @@ export * from "./engine";
 export * from "./home";
 export * from "./llm";
 export * from "./mcp";
+export * from "./memory";
 export * from "./ocr";

@@ -7,6 +7,9 @@
 //!   (`shenron_job_new`, `shenron_cancel`, `shenron_job_release`, `shenron_job_count` and the
 //!   `*_job` variants of the long calls, which answer a [`types::JobOutcome`]) and the library
 //!   identity (`shenron_build_info`).
+//! - ABI 3 keeps every ABI 2 symbol unchanged and adds the persistent chat memory
+//!   (`shenron_memory_{add,search,delete,clear}`), Aphrody's `aphrody-memory` SQLite provider
+//!   ([`memory`]), each answering a [`types::JobOutcome`].
 //!
 //! Memory: an owned string is allocated here by the Rust global allocator and released by the
 //! caller, exactly once, with `shenron_string_free` (from any thread); static strings are never
@@ -29,6 +32,8 @@
 pub mod abi;
 #[cfg(not(target_arch = "wasm32"))]
 mod jobs;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod memory;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod types;
 
@@ -784,6 +789,107 @@ mod native {
         }))
     }
 
+    // --- ABI 3: persistent chat memory ---
+
+    /// Run one memory operation on the shared runtime: `JobOutcome<T>` JSON (an internal job,
+    /// so the envelope, panic capture and status codes are those of the `*_job` exports).
+    fn memory_call<T: Serialize, F: std::future::Future<Output = Result<T, String>>>(
+        operation: &str,
+        db_path: *const c_char,
+        work: impl FnOnce(std::sync::Arc<aphrody_memory::SqliteLocalProvider>) -> Result<F, String>,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(jobs::create(), operation, |job| {
+            let path = unsafe { required_str(db_path, "db_path") }.map_err(JobError::Usage)?;
+            let provider = crate::memory::provider(path).map_err(JobError::Failed)?;
+            let future = work(provider).map_err(JobError::Usage)?;
+            match job.block_on(|| future) {
+                None => Err(JobError::Cancelled),
+                Some(result) => result.map_err(JobError::Failed),
+            }
+        }))
+    }
+
+    /// # Safety
+    /// `ptr` must be NULL or a valid NUL-terminated string.
+    unsafe fn json_request<T: serde::de::DeserializeOwned>(
+        ptr: *const c_char,
+        name: &str,
+    ) -> Result<T, String> {
+        let text = unsafe { required_str(ptr, name) }?;
+        serde_json::from_str(text).map_err(|error| format!("{name}: {error}"))
+    }
+
+    /// Store one memory in the database at `db_path` (created on first use, mode 600):
+    /// `JobOutcome<MemoryEntry>` JSON. `request_json` is `{agentId, content, tags?, metadata?}`.
+    ///
+    /// # Safety
+    /// Both arguments must be valid NUL-terminated UTF-8 strings, read during the call. Free the
+    /// result once with `shenron_string_free`.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_memory_add(
+        db_path: *const c_char,
+        request_json: *const c_char,
+    ) -> *mut c_char {
+        memory_call("shenron_memory_add", db_path, |provider| {
+            let request = unsafe { json_request(request_json, "request_json") }?;
+            Ok(async move { crate::memory::add(&provider, request).await })
+        })
+    }
+
+    /// Memories of one agent, newest first: `JobOutcome<MemoryEntry[]>` JSON. `request_json` is
+    /// `{agentId, q?, tags?, limit?}` (`q`: substring of the content).
+    ///
+    /// # Safety
+    /// As `shenron_memory_add`.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_memory_search(
+        db_path: *const c_char,
+        request_json: *const c_char,
+    ) -> *mut c_char {
+        memory_call("shenron_memory_search", db_path, |provider| {
+            let request = unsafe { json_request(request_json, "request_json") }?;
+            Ok(async move { crate::memory::search(&provider, request).await })
+        })
+    }
+
+    /// Delete memory `id` of `agent_id`: `JobOutcome<boolean>` JSON (`false`: no such memory
+    /// for this agent).
+    ///
+    /// # Safety
+    /// Every argument must be a valid NUL-terminated UTF-8 string, read during the call. Free
+    /// the result once.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_memory_delete(
+        db_path: *const c_char,
+        agent_id: *const c_char,
+        id: *const c_char,
+    ) -> *mut c_char {
+        memory_call("shenron_memory_delete", db_path, |provider| {
+            let agent = unsafe { required_str(agent_id, "agent_id") }?.to_owned();
+            let id = unsafe { required_str(id, "id") }?.to_owned();
+            Ok(async move { crate::memory::delete(&provider, &agent, &id).await })
+        })
+    }
+
+    /// Delete every memory of `agent_id`: `JobOutcome<number>` JSON (the count deleted).
+    ///
+    /// # Safety
+    /// As `shenron_memory_delete`.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_memory_clear(
+        db_path: *const c_char,
+        agent_id: *const c_char,
+    ) -> *mut c_char {
+        memory_call("shenron_memory_clear", db_path, |provider| {
+            let agent = unsafe { required_str(agent_id, "agent_id") }?.to_owned();
+            Ok(async move { crate::memory::clear(&provider, &agent).await })
+        })
+    }
+
     /// Diagnostic: hold job `job` for `ms` milliseconds without I/O, then answer
     /// `JobOutcome<number>` (the duration). Measures the boundary and its cancellation; `0`
     /// yields once instead of arming a timer (whose resolution is 1 ms).
@@ -817,7 +923,7 @@ mod tests {
     #[test]
     fn shenron_abi_and_version_are_valid() {
         assert_eq!(shenron_abi_version(), abi::ABI_VERSION);
-        assert_eq!(abi::ABI_VERSION, 2);
+        assert_eq!(abi::ABI_VERSION, 3);
         let ptr = shenron_version();
         assert!(!ptr.is_null());
         let text = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap();
@@ -874,6 +980,40 @@ mod tests {
         let job = shenron_job_new();
         assert!(shenron_cancel(job));
         assert_eq!(owned(shenron_sleep_job(job, 60_000))["status"], abi::Status::Cancelled.code());
+    }
+
+    #[test]
+    fn memory_exports_round_trip_through_the_c_abi() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = CString::new(dir.path().join("memory.sqlite").to_str().unwrap()).unwrap();
+        let request = CString::new(
+            r#"{"agentId":"shenron/local","content":"Je préfère Piccolo","tags":["preference"]}"#,
+        )
+        .unwrap();
+        let added = owned(unsafe { shenron_memory_add(db.as_ptr(), request.as_ptr()) });
+        assert_eq!(added["status"], 0, "{added}");
+        let id = added["value"]["id"].as_str().unwrap().to_owned();
+        assert_eq!(added["value"]["agentId"], "shenron/local");
+        assert!(added["value"]["createdAtMs"].as_f64().unwrap() > 0.0);
+
+        let query = CString::new(r#"{"agentId":"shenron/local","q":"piccolo"}"#).unwrap();
+        let found = owned(unsafe { shenron_memory_search(db.as_ptr(), query.as_ptr()) });
+        assert_eq!(found["value"][0]["id"], id.as_str(), "{found}");
+
+        let agent = CString::new("shenron/local").unwrap();
+        let other = CString::new("shenron/other").unwrap();
+        let id_c = CString::new(id).unwrap();
+        let refused =
+            owned(unsafe { shenron_memory_delete(db.as_ptr(), other.as_ptr(), id_c.as_ptr()) });
+        assert_eq!(refused["value"], false);
+        let cleared = owned(unsafe { shenron_memory_clear(db.as_ptr(), agent.as_ptr()) });
+        assert_eq!(cleared["value"], 1);
+
+        let bad = CString::new("{not json").unwrap();
+        let usage = owned(unsafe { shenron_memory_add(db.as_ptr(), bad.as_ptr()) });
+        assert_eq!(usage["status"], abi::Status::Usage.code());
+        let null = owned(unsafe { shenron_memory_clear(std::ptr::null(), agent.as_ptr()) });
+        assert_eq!(null["error"], "db_path pointer is null");
     }
 
     #[test]

@@ -216,3 +216,22 @@ pub struct BuildInfo {
     /// `rustc --version` of the compiler that built the library.
     pub rustc: String,
 }
+
+/// One memory of the persistent chat memory (`shenron_memory_*`, ABI 3): a record of Aphrody's
+/// `aphrody-memory` SQLite provider.
+#[derive(Debug, Clone, PartialEq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct MemoryEntry {
+    /// Provider id (UUID v4).
+    pub id: String,
+    /// Owner of the record (`shenron/<owner>`).
+    pub agent_id: String,
+    /// The remembered fact.
+    pub content: String,
+    /// Labels (`fact`, `preference`, `remember`, …).
+    pub tags: Vec<String>,
+    /// Creation time, epoch milliseconds (UTC).
+    pub created_at_ms: f64,
+    /// String metadata (conversation, persona, source).
+    pub metadata: std::collections::BTreeMap<String, String>,
+}

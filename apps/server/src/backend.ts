@@ -18,6 +18,8 @@
  *                  started on first use by `/api/local/koharu` (./koharu.ts); never in production
  *   lexicon        SHENRON_LEXIQUE, else the payload's `data/lexique-db-canonique.json` (the
  *                  canonical glossary of French translation and of the editor's agent)
+ *   memory         `<home>/data/memory.sqlite` (SHENRON_MEMORY_DB, SHENRON_MEMORY=off): Aphrody's
+ *                  aphrody-memory through the native library (./memory.ts); none → group disabled
  *   chat           SHENRON_CHAT_BACKENDS (default `local` outside production): the
  *                  OpenAI-compatible server declared by APHRODY_AI_CHAT_BASE_URL,
  *                  APHRODY_SHENRON_LLM_BASE_URL or APHRODY_LOCAL_MODEL_URL (llama-server,
@@ -39,6 +41,7 @@ import { type ChatModel, type ChatModelPlan, planChatModel, startChatModel } fro
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
 import { koharuBridge, type KoharuBridge } from "./koharu";
+import { nativeMemory } from "./memory";
 
 export const VFS_FILE = "shenron-vfs.sqlite";
 /** Canonical lexicon shipped in the payload (`data/`, scripts/build/server-data.ts). */
@@ -190,6 +193,7 @@ export function unavailableGroups(reason: string): LocalApiGroups {
     ocr: { ...status },
     mcp: { ...status },
     models: { ...status },
+    memory: { ...status },
   };
 }
 
@@ -240,6 +244,7 @@ export async function startBackend(
     host = (o.createHost ?? createLocalApi)(plan.env, {
       service: profile === "desktop" ? "shenron-desktop" : "shenron-server",
       wiki: plan.wiki,
+      memory: nativeMemory(paths, plan.env),
     });
   } catch (error) {
     console.error(JSON.stringify({ event: "shenron.api.unavailable", error: String(error) }));

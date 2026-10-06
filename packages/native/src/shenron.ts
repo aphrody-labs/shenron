@@ -23,6 +23,14 @@ export {
   shenronAuthStatus,
   shenronPersonaPrompt,
   shenronPersonaAsk,
+  shenronMemoryAdd,
+  shenronMemorySearch,
+  shenronMemoryDelete,
+  shenronMemoryClear,
+  ShenronMemoryError,
+  type ShenronMemory,
+  type ShenronMemoryAdd,
+  type ShenronMemorySearch,
 } from "./engine";
 export { ShenronLibraryMismatch, type MismatchReason } from "./compat";
 export type { CapturedResult as ShenronCapturedResult } from "./engine";
@@ -33,6 +41,7 @@ export type {
   JobOutcome,
   LocalHit,
   LocalSearchResponse,
+  MemoryEntry,
   RagChunk,
   RagHit,
   RagSearchResponse,

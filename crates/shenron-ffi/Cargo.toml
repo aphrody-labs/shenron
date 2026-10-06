@@ -19,6 +19,7 @@ workspace = true
 
 [dependencies]
 aphrody-agent-home = { workspace = true }
+aphrody-memory = { workspace = true }
 aphrody-rag-core = { workspace = true }
 aphrody-stdio-capture = { workspace = true }
 serde = { workspace = true }

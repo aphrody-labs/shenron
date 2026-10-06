@@ -4,7 +4,9 @@
  * (corpus, agent home, opted-in conversations), the `dragonball.*` MCP tools, a grounded
  * prompt (persona doctrine of `@shenron/pipeline/ai/prompts` + agent home tone), generation by
  * the first available backend (Gemini web, local llama-server, extractive), numbered
- * citations and storage of both turns in the conversation store. Runtime class: `bun`.
+ * citations, storage of both turns in the conversation store and the persistent memory of the
+ * owner (relevant memories recalled beside the sources, salient facts of the message written
+ * after the answer). Runtime class: `bun`.
  */
 import type { ConversationStore, Message, StoredCitation } from "@shenron/db/conversations/types";
 import type { QueryEmbedder, RagHit as VfsHit, VfsRag } from "@shenron/db/vfs";
@@ -23,9 +25,12 @@ import type {
   ModelsResponse,
   OcrResponse,
 } from "../contract/chat";
+import type { MemoryEntry } from "../contract/memory";
+import type { MemoryPort } from "../server";
 import type { AgentHome } from "./home";
 import { BackendUnavailable, type LlmBackend, type LlmMessage } from "./llm";
 import { type McpClient, pickTools, toolItems } from "./mcp";
+import { extractFacts, memoryBlock, newFacts, rankMemories } from "./memory";
 
 export interface ChatEngineDeps {
   rag: VfsRag | null;
@@ -38,6 +43,14 @@ export interface ChatEngineDeps {
   mcp?: McpClient | null;
   ocr?: { recognize(bytes: Uint8Array, mediaType: string): Promise<OcrResponse> } | null;
   store?: ConversationStore | null;
+  /** Persistent memory of each owner: recalled into the prompt, salient facts written after. */
+  memory?: MemoryPort | null;
+  /** Memories recalled into one turn (default 5; 0 writes without recalling). */
+  memoryRecall?: number;
+  /** `true` lets remote backends (`remoteBackends`) read the recalled memories; default false. */
+  memoryRemote?: boolean;
+  /** Backends that send the prompt off this machine (default `gemini-web`). */
+  remoteBackends?: ReadonlySet<string>;
   defaultPersona?: string;
   maxContextChars?: number;
   maxTokens?: number;
@@ -47,6 +60,12 @@ export interface ChatEngineDeps {
 const CITATION_RULE =
   "Appuie chaque fait sur les sources numérotées et cite-les entre crochets, par exemple [1] ou [2][3]. " +
   "N'invente ni fait ni numéro de source ; si les sources ne répondent pas, dis-le.";
+
+/** Backends answering from a remote service: no memory in their prompt by default. */
+export const REMOTE_BACKENDS: ReadonlySet<string> = new Set(["gemini-web"]);
+
+/** Newest memories of the owner a turn scans for recall and duplicates. */
+const MEMORY_SCAN = 200;
 
 const uid = (prefix: string) => `${prefix}-${Bun.randomUUIDv7()}`;
 
@@ -205,6 +224,31 @@ export function createChatEngine(deps: ChatEngineDeps) {
       }
     }
 
+    // 3b. Persistent memory: the owner's memories this message recalls (data, never sources).
+    const useMemory = deps.memory != null && request.memoryOptIn !== false;
+    let known: MemoryEntry[] = [];
+    let recalled: MemoryEntry[] = [];
+    if (useMemory) {
+      const t0 = performance.now();
+      try {
+        known = await deps.memory!.list(ownerId, { limit: MEMORY_SCAN });
+        recalled = rankMemories(known, request.message, deps.memoryRecall ?? 5);
+        tools.push({
+          name: "memory:recall",
+          ok: true,
+          ms: Math.round(performance.now() - t0),
+          hits: recalled.length,
+        });
+      } catch (error) {
+        tools.push({
+          name: "memory:recall",
+          ok: false,
+          ms: Math.round(performance.now() - t0),
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     // 4. Numbered citations.
     const citations: Citation[] = [];
     const promptItems: { n: number; title: string; url: string | null; text: string }[] = [];
@@ -265,16 +309,25 @@ export function createChatEngine(deps: ChatEngineDeps) {
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content.slice(0, 4000) }));
     }
     const sources = sourcesBlock(promptItems, deps.maxContextChars ?? 7000);
-    const messages: LlmMessage[] = [
-      { role: "system", content: systemPrompt(persona, request.surface, home(), chitchat) },
-      ...history.slice(-8),
-      {
-        role: "user",
-        content: sources
-          ? `Sources :\n\n${sources}\n\nQuestion : ${request.message}`
-          : request.message,
-      },
-    ];
+    const promptFor = (withMemories: boolean): LlmMessage[] => {
+      const memories = withMemories ? memoryBlock(recalled) : "";
+      const context = [memories, sources ? `Sources :\n\n${sources}` : ""].filter(Boolean);
+      return [
+        { role: "system", content: systemPrompt(persona, request.surface, home(), chitchat) },
+        ...history.slice(-8),
+        {
+          role: "user",
+          content: context.length
+            ? `${context.join("\n\n")}\n\nQuestion : ${request.message}`
+            : request.message,
+        },
+      ];
+    };
+    const messages = promptFor(true);
+    // Memories stay on this machine unless the owner allows remote backends to read them.
+    const remoteMessages = deps.memoryRemote === true ? messages : promptFor(false);
+    const remote = deps.remoteBackends ?? REMOTE_BACKENDS;
+    let injected = false;
 
     // 6. Generation with fallback.
     const fallbacks: { backend: string; error: string }[] = [];
@@ -290,14 +343,16 @@ export function createChatEngine(deps: ChatEngineDeps) {
       if (signal.aborted) break;
       try {
         let started_ = false;
+        const prompt = remote.has(backend.id) ? remoteMessages : messages;
         for await (const delta of backend.stream(
-          messages,
+          prompt,
           { maxTokens: deps.maxTokens ?? 700 },
           signal,
         )) {
           if (!started_) {
             started_ = true;
             used = backend;
+            injected = prompt === messages && recalled.length > 0;
             firstTokenMs = Math.round(performance.now() - started);
             yield { type: "backend", data: { backend: backend.id, model: backend.model } };
           }
@@ -412,6 +467,27 @@ export function createChatEngine(deps: ChatEngineDeps) {
       }
     }
 
+    // 8. Salient facts of the message, written once the turn is over (not when cancelled).
+    let remembered = 0;
+    if (useMemory && !signal.aborted) {
+      for (const fact of newFacts(extractFacts(request.message), known)) {
+        try {
+          await deps.memory!.remember(ownerId, {
+            content: fact.content,
+            tags: fact.tags,
+            metadata: { source: "chat", conversationId, persona },
+          });
+          remembered += 1;
+        } catch (error) {
+          deps.log?.({
+            event: "chat.memory_failed",
+            error: error instanceof Error ? error.message : String(error),
+          });
+          break;
+        }
+      }
+    }
+
     yield {
       type: "done",
       data: {
@@ -429,6 +505,9 @@ export function createChatEngine(deps: ChatEngineDeps) {
         },
         finishReason,
         stored,
+        ...(useMemory
+          ? { memory: { recalled: injected ? recalled.length : 0, stored: remembered } }
+          : {}),
       },
     };
   }

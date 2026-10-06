@@ -2,11 +2,17 @@
 
 ABI C de Shenron (`libshenron_ffi`) pour `bun:ffi` (`@shenron/native`) et tout hôte C : la
 commande `shenron` en processus, la recherche RAG, le corpus local, le découpage Markdown, la
-persona, la présence des identifiants et, depuis l'ABI 2, des tâches annulables.
+persona, la présence des identifiants, depuis l'ABI 2 des tâches annulables et, depuis l'ABI 3,
+la mémoire persistante du chat (`aphrody-memory`).
 
 ## Versions
 
-- `shenron_abi_version()` vaut `abi::ABI_VERSION` (**2**). L'ABI 2 garde tous les symboles de
+- `shenron_abi_version()` vaut `abi::ABI_VERSION` (**3**). L'ABI 3 garde tous les symboles de
+  l'ABI 2 et ajoute `shenron_memory_{add,search,delete,clear}` : le fournisseur SQLite local
+  d'Aphrody (`aphrody_memory::SqliteLocalProvider`, un par fichier pour la vie du processus,
+  fichier créé en mode 600), chaque appel rendant `JobOutcome<…>` ; Shenron ne stocke rien
+  lui-même, il valide la requête et cantonne lecture et suppression à un `agentId`.
+- L'ABI 2 garde tous les symboles de
   l'ABI 1 (mêmes signatures, même propriété, même JSON ; seule nuance : un résultat du corpus
   local porte toujours `entity`, à `null` quand il manque) et ajoute `shenron_build_info`,
   `shenron_job_new`, `shenron_cancel`, `shenron_job_release`, `shenron_job_count` et les
