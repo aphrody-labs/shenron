@@ -18,9 +18,9 @@
       "name": "@shenron/bot",
       "version": "1.3.0",
       "dependencies": {
-        "@aphrody/discord-kit": "0.1.0",
-        "@aphrody/messaging": "0.1.0",
-        "@aphrody/paths": "0.1.0",
+        "@aphrody/discord-kit": "catalog:",
+        "@aphrody/messaging": "catalog:",
+        "@aphrody/paths": "catalog:",
         "@discordx/di": "catalog:",
         "@discordx/pagination": "catalog:",
         "@napi-rs/canvas": "catalog:",
@@ -74,10 +74,10 @@
       "name": "@shenron/site",
       "version": "1.3.0",
       "dependencies": {
-        "@aphrody/discord-kit": "0.1.0",
-        "@aphrody/messaging": "0.1.0",
-        "@aphrody/paths": "0.1.0",
-        "@aphrody/plugin-opener": "3.0.0-alpha.2",
+        "@aphrody/discord-kit": "catalog:",
+        "@aphrody/messaging": "catalog:",
+        "@aphrody/paths": "catalog:",
+        "@aphrody/plugin-opener": "catalog:",
         "@codemirror/lang-markdown": "catalog:",
         "@codemirror/language-data": "catalog:",
         "@codemirror/state": "catalog:",
@@ -166,7 +166,7 @@
       "name": "@shenron/api",
       "version": "0.4.0",
       "dependencies": {
-        "@aphrody/http": "0.1.0",
+        "@aphrody/http": "catalog:",
         "@shenron/auth": "workspace:*",
         "@shenron/config": "workspace:*",
         "@shenron/db": "workspace:*",
@@ -207,7 +207,7 @@
       "name": "@shenron/config",
       "version": "0.4.0",
       "dependencies": {
-        "@aphrody/paths": "0.1.0",
+        "@aphrody/paths": "catalog:",
         "zod": "catalog:",
       },
     },
@@ -215,7 +215,7 @@
       "name": "@shenron/db",
       "version": "0.4.0",
       "dependencies": {
-        "@aphrody/sql": "0.1.0",
+        "@aphrody/sql": "catalog:",
         "@paralleldrive/cuid2": "catalog:",
         "@shenron/config": "workspace:*",
         "drizzle-orm": "catalog:",
@@ -252,7 +252,7 @@
       "name": "@shenron/media",
       "version": "0.4.0",
       "dependencies": {
-        "@aphrody/http": "0.1.0",
+        "@aphrody/http": "catalog:",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -276,10 +276,10 @@
       "dependencies": {
         "@ai-sdk/openai-compatible": "catalog:",
         "@ai-sdk/provider": "catalog:",
-        "@aphrody/http": "0.1.0",
-        "@aphrody/inference": "0.1.0",
-        "@aphrody/paths": "0.1.0",
-        "@aphrody/runtime-sdk": "0.1.0",
+        "@aphrody/http": "catalog:",
+        "@aphrody/inference": "catalog:",
+        "@aphrody/paths": "catalog:",
+        "@aphrody/runtime-sdk": "catalog:",
         "@shenron/config": "workspace:*",
         "@shenron/db": "workspace:*",
         "@shenron/koharu": "workspace:*",
@@ -297,13 +297,13 @@
       "name": "@shenron/ui",
       "version": "0.4.0",
       "dependencies": {
-        "@aphrody/api": "3.0.0-alpha.2",
-        "@aphrody/m3-ai": "3.3.4",
-        "@aphrody/m3-primitives": "3.3.4",
-        "@aphrody/m3-reader": "3.3.4",
-        "@aphrody/m3-theme": "3.3.4",
-        "@aphrody/m3-tokens": "3.3.4",
-        "@aphrody/plugin-opener": "3.0.0-alpha.2",
+        "@aphrody/api": "catalog:",
+        "@aphrody/m3-ai": "catalog:",
+        "@aphrody/m3-primitives": "catalog:",
+        "@aphrody/m3-reader": "catalog:",
+        "@aphrody/m3-theme": "catalog:",
+        "@aphrody/m3-tokens": "catalog:",
+        "@aphrody/plugin-opener": "catalog:",
         "@base-ui/react": "catalog:",
         "@shenron/config": "workspace:*",
         "@shenron/koharu": "workspace:*",
@@ -327,7 +327,7 @@
         "zustand": "catalog:",
       },
       "devDependencies": {
-        "@aphrody/bun-test-dom": "0.1.0",
+        "@aphrody/bun-test-dom": "catalog:",
         "@tailwindcss/postcss": "catalog:",
         "@testing-library/jest-dom": "catalog:",
         "@testing-library/react": "catalog:",
@@ -361,6 +361,21 @@
   "catalog": {
     "@ai-sdk/openai-compatible": "^3.0.59",
     "@ai-sdk/provider": "4.0.19",
+    "@aphrody/api": "3.0.0-alpha.2",
+    "@aphrody/bun-test-dom": "0.1.0",
+    "@aphrody/discord-kit": "0.1.0",
+    "@aphrody/http": "0.1.0",
+    "@aphrody/inference": "0.1.0",
+    "@aphrody/m3-ai": "3.3.6",
+    "@aphrody/m3-primitives": "3.3.6",
+    "@aphrody/m3-reader": "3.3.4",
+    "@aphrody/m3-theme": "3.3.6",
+    "@aphrody/m3-tokens": "3.3.6",
+    "@aphrody/messaging": "0.1.0",
+    "@aphrody/paths": "0.1.0",
+    "@aphrody/plugin-opener": "3.0.0-alpha.2",
+    "@aphrody/runtime-sdk": "0.1.0",
+    "@aphrody/sql": "0.1.0",
     "@base-ui/react": "^1.8.0",
     "@codemirror/lang-markdown": "^6.5.2",
     "@codemirror/language-data": "^6.5.2",
@@ -501,17 +516,17 @@
 
     "@aphrody/inference": ["@aphrody/inference@0.1.0", "", { "dependencies": { "@aphrody/paths": "0.1.0" } }, "sha512-y7vbEjrNrFc08kaAwgJK6Z8kbx/cvro96TFe3w8sWIlhpKEh6IfSINWwmXkhL9FfHNMXHcz3MnTFNnLzoI3sfA=="],
 
-    "@aphrody/m3-ai": ["@aphrody/m3-ai@3.3.4", "", { "dependencies": { "@aphrody/ag-ui": "1.0.1", "@aphrody/m3-motion": "3.3.4", "@aphrody/m3-primitives": "3.3.4", "@aphrody/mcp-ui": "7.1.1-aphrody.1", "clsx": "^2.1.1", "motion": "^13.4.4", "react-markdown": "^10.1.0", "rehype-raw": "^7.0.0", "remark-gfm": "^4.0.1" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-yb81XHO1uEOhPYfGFhBm9Q8NI0EPL9lTs4sjelx9VATGXQhVlKv42aWgL0795ImGJB4xnF1LNKimqTccArrneg=="],
+    "@aphrody/m3-ai": ["@aphrody/m3-ai@3.3.6", "", { "dependencies": { "@aphrody/ag-ui": "1.0.1", "@aphrody/m3-motion": "3.3.6", "@aphrody/m3-primitives": "3.3.6", "@aphrody/mcp-ui": "7.1.1-aphrody.1", "clsx": "^2.1.1", "motion": "^13.4.4", "react-markdown": "^10.1.0", "rehype-raw": "^7.0.0", "remark-gfm": "^4.0.1" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-+Re4CM5erm7tQagSu/a6QzuEVQodiuBv9Iw+ByvzZbDamCoS43628VHc/6Wve5cEuk0WJL8sp1r4C0k0v6et+w=="],
 
-    "@aphrody/m3-motion": ["@aphrody/m3-motion@3.3.4", "", { "dependencies": { "motion": "^13.4.4" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-QZGKPueWFJPRUku/9acxEt0IwftSi1b8jYF7p+9t1vcHrj3LYrFFx9hQBGwuQPMKTutcza+xR3c1hhcYDFGjlg=="],
+    "@aphrody/m3-motion": ["@aphrody/m3-motion@3.3.6", "", { "dependencies": { "motion": "^13.4.4" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-4P7sxMYnV4Jlf6m3NyOo0+GbHoRhrEwZahIXXJnHHOQfqeYy42QW9zcLPryQofb+n28D3qpBynxdi9DgZUEqnw=="],
 
-    "@aphrody/m3-primitives": ["@aphrody/m3-primitives@3.3.4", "", { "dependencies": { "@aphrody/m3-motion": "3.3.4", "@base-ui/react": "^1.8.0", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "motion": "^13.4.4", "react-hook-form": "^7.89.0", "react-resizable-layout": "^0.7.3", "sonner": "^2.0.8", "zod": "^4.6.5" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-btNYvQ1jNy5jDr94atIW2zr7ki2gYqIWKABiKwPs63sfncdQGyQlqLmPiSVyU6t9ypSqXa7EzYwhFd0Tg8hyXQ=="],
+    "@aphrody/m3-primitives": ["@aphrody/m3-primitives@3.3.6", "", { "dependencies": { "@aphrody/m3-motion": "3.3.6", "@base-ui/react": "^1.8.0", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "motion": "^13.4.4", "react-hook-form": "^7.89.0", "react-resizable-layout": "^0.7.3", "sonner": "^2.0.8", "zod": "^4.6.5" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-/oGkyANHqqJEuK/RwdQz+LsytuXNuZLKmS0hBJSVxzetbKPrSHW70vEz9DGHjnnLXeJocoYSgy0olQ84r1teSw=="],
 
     "@aphrody/m3-reader": ["@aphrody/m3-reader@3.3.4", "", { "dependencies": { "@tanstack/react-virtual": "^3.14.13", "lucide-react": "^1.48.0", "swiper": "^14.3.0" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-M5gkhKWhqSGYuqvc90GfppZRShOMc5Yf4HtTG2tTH96Kvlg87qTiZjq4mQ/wF+wg8NNfELLgrhyVs2JR78D9Eg=="],
 
-    "@aphrody/m3-theme": ["@aphrody/m3-theme@3.3.4", "", { "dependencies": { "@aphrody/m3-tokens": "3.3.4" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-7a+dpk152MjgngBZGKwLbkH9S3SFf9OWBFu6JzJzMjV0TngFX19UnCt6cXQp+G8XhWPIPUdpGRVVRefWe6syxg=="],
+    "@aphrody/m3-theme": ["@aphrody/m3-theme@3.3.6", "", { "dependencies": { "@aphrody/m3-tokens": "3.3.6" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-/XlItMrHaZmpQts+lg24FNsGRjc9TNRit19Bla4qb/9thsvL99LgahWXP0OhOXHKnbeKH9EtEPz19plLFsz3dA=="],
 
-    "@aphrody/m3-tokens": ["@aphrody/m3-tokens@3.3.4", "", { "dependencies": { "@material/material-color-utilities": "^0.4.0" } }, "sha512-qmpsyPbmmljxv0cGQwh3FHwjp6L+EHeSXFyAEcZXquo55I7Boy9C5LyZonp0Se2eqxe7ZUabhW3rnyIEwX3QVg=="],
+    "@aphrody/m3-tokens": ["@aphrody/m3-tokens@3.3.6", "", { "dependencies": { "@material/material-color-utilities": "^0.4.0" } }, "sha512-XdHsWtNegay/Cdpklmbz0FP+CA4reXtchaAP7zShNHxKXj1yJExdlqYuIgeFhPICK9xTm8Hb8CPDG/n3zR5XZw=="],
 
     "@aphrody/mcp-ui": ["@aphrody/mcp-ui@7.1.1-aphrody.1", "", { "dependencies": { "@modelcontextprotocol/client": "^2.2.0", "@modelcontextprotocol/core": "^2.2.0", "@modelcontextprotocol/ext-apps": "^2.0.3", "@modelcontextprotocol/sdk": "^1.32.0", "zod": "^3.25.76 || ^4.0.0" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0" } }, "sha512-nvi/YuU8lSKjc0bPCZzOfpNU/w3NrgmygN2VaI3ptd2eN4yydFUmpNQivgUp01cApjjndGN3kgGa4YZYM1MDXw=="],
 

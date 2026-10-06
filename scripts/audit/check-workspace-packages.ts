@@ -542,10 +542,13 @@ function checkCycles(): void {
 
 /**
  * Aphrody capabilities are consumed as published `@aphrody/*` packages, pinned exactly
- * (bunfig.toml); no manifest links an external Aphrody checkout or a path outside the repo.
+ * (bunfig.toml), directly or through the root `workspaces.catalog`; no manifest links an external Aphrody checkout or a path outside the repo.
  */
 function checkDependencyDirection(): void {
-  const root = readJson<{ workspaces?: { packages?: string[] } }>(join(ROOT, "package.json"));
+  const root = readJson<{
+    workspaces?: { packages?: string[]; catalog?: Record<string, string> };
+  }>(join(ROOT, "package.json"));
+  const catalog = root?.workspaces?.catalog ?? {};
   for (const workspace of root?.workspaces?.packages ?? []) {
     if (workspace.startsWith("../"))
       report("workspace", "direction", `workspace glob ${workspace} leaves the repository`);
@@ -574,11 +577,12 @@ function checkDependencyDirection(): void {
             "direction",
             `${where} links ${name} outside the repository (${version})`,
           );
-        if (name.startsWith("@aphrody/") && !exact.test(version))
+        const pinned = version === "catalog:" ? (catalog[name] ?? version) : version;
+        if (name.startsWith("@aphrody/") && !exact.test(pinned))
           report(
             "workspace",
             "direction",
-            `${where} depends on ${name}@${version}, not an exact pin`,
+            `${where} depends on ${name}@${pinned}, not an exact pin`,
           );
       }
     }

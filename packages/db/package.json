@@ -40,7 +40,7 @@
     "check:agent-home-template": "bun scripts/agent-home-template.ts --check"
   },
   "dependencies": {
-    "@aphrody/sql": "0.1.0",
+    "@aphrody/sql": "catalog:",
     "@paralleldrive/cuid2": "catalog:",
     "@shenron/config": "workspace:*",
     "drizzle-orm": "catalog:",

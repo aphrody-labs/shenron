@@ -38,7 +38,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@aphrody/paths": "0.1.0",
+    "@aphrody/paths": "catalog:",
     "zod": "catalog:"
   },
   "engines": {

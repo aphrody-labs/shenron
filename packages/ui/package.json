@@ -72,13 +72,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aphrody/api": "3.0.0-alpha.2",
-    "@aphrody/m3-ai": "3.3.4",
-    "@aphrody/m3-primitives": "3.3.4",
-    "@aphrody/m3-reader": "3.3.4",
-    "@aphrody/m3-theme": "3.3.4",
-    "@aphrody/m3-tokens": "3.3.4",
-    "@aphrody/plugin-opener": "3.0.0-alpha.2",
+    "@aphrody/api": "catalog:",
+    "@aphrody/m3-ai": "catalog:",
+    "@aphrody/m3-primitives": "catalog:",
+    "@aphrody/m3-reader": "catalog:",
+    "@aphrody/m3-theme": "catalog:",
+    "@aphrody/m3-tokens": "catalog:",
+    "@aphrody/plugin-opener": "catalog:",
     "@base-ui/react": "catalog:",
     "@shenron/config": "workspace:*",
     "@shenron/koharu": "workspace:*",
@@ -102,7 +102,7 @@
     "zustand": "catalog:"
   },
   "devDependencies": {
-    "@aphrody/bun-test-dom": "0.1.0",
+    "@aphrody/bun-test-dom": "catalog:",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",

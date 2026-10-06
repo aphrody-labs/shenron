@@ -41,9 +41,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json"
   },
   "dependencies": {
-    "@aphrody/discord-kit": "0.1.0",
-    "@aphrody/messaging": "0.1.0",
-    "@aphrody/paths": "0.1.0",
+    "@aphrody/discord-kit": "catalog:",
+    "@aphrody/messaging": "catalog:",
+    "@aphrody/paths": "catalog:",
     "@discordx/di": "catalog:",
     "@discordx/pagination": "catalog:",
     "@napi-rs/canvas": "catalog:",

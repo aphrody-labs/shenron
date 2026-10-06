@@ -15,7 +15,7 @@
     "lint": "oxlint -c ../../.oxlintrc.json src"
   },
   "dependencies": {
-    "@aphrody/http": "0.1.0"
+    "@aphrody/http": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
