@@ -2,7 +2,7 @@
 // Export the open project's page results to Shenron as unreviewed manga candidates, through
 // the editor commands (`get_pages`, `get_page_result`, `get_page_source_sha256`) of the
 // engine the editor runs on (Tauri IPC or the local bridge).
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { commands, type PageSummary } from "@shenron/koharu/protocol";
 import {
   mapNativeKoharuPageResult,
@@ -68,18 +68,18 @@ export function ShenronExportPanel(_props: { host?: ShenronExportHost } = {}) {
   const [error, setError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setError(null);
     try {
       setPages(await commands.getPages());
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     }
-  };
+  }, []);
 
   useEffect(() => {
     void refresh();
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     try {

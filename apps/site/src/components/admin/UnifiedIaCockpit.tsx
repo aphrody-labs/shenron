@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { NativeAiPanel } from "./NativeAiPanel";
@@ -233,7 +233,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
   const [ocrResult, setOcrResult] = useState<string | null>(null);
   const [ocrBusy, setOcrBusy] = useState(false);
 
-  const fetchData = async (silent = false) => {
+  const fetchData = useCallback(async (silent = false) => {
     const ticket = ++latestFetch.current;
     if (!silent) setIsRefreshing(true);
     try {
@@ -251,11 +251,11 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
     } finally {
       if (ticket === latestFetch.current) setIsRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   useEffect(() => {
     if (autoRefreshInterval <= 0) return;
@@ -263,7 +263,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
       fetchData(true);
     }, autoRefreshInterval);
     return () => clearInterval(timer);
-  }, [autoRefreshInterval]);
+  }, [autoRefreshInterval, fetchData]);
 
   /** POST an action; surfaces the server error or notice instead of failing silently. */
   const postAction = async (payload: Record<string, unknown>): Promise<any | null> => {

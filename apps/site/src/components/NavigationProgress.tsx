@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { KintoUnLoader } from "@shenron/ui/toriyama";
 
 type Status = "idle" | "loading" | "done";
@@ -19,12 +19,12 @@ export function NavigationProgress() {
   const guardTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(false);
 
-  function finish() {
+  const finish = useCallback(() => {
     if (guardTimer.current) clearTimeout(guardTimer.current);
     setStatus((s) => (s === "loading" ? "done" : s));
     if (doneTimer.current) clearTimeout(doneTimer.current);
     doneTimer.current = setTimeout(() => setStatus("idle"), 260);
-  }
+  }, []);
 
   useEffect(() => {
     function start() {
@@ -55,7 +55,7 @@ export function NavigationProgress() {
     }
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, []);
+  }, [finish]);
 
   useEffect(() => {
     if (!mounted.current) {
@@ -63,7 +63,7 @@ export function NavigationProgress() {
       return;
     } // ignore le mount
     finish();
-  }, [pathname]);
+  }, [pathname, finish]);
 
   useEffect(
     () => () => {
