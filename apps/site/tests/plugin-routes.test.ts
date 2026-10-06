@@ -64,6 +64,37 @@ describe("plugin servi par le site", () => {
     expect(index.formats.md).toBe(`${ORIGIN}/api/public/plugin/export/md`);
   });
 
+  test("derrière nginx (origine interne localhost), les liens restent sur l'URL publique", async () => {
+    const { SITE_URL } = await import("../src/lib/config");
+    const GET = (await import("../src/app/plugin.json/route")).GET;
+    const text = await (await GET(new Request("https://localhost:5011/plugin.json"))).text();
+    expect(text).not.toContain("localhost:5011");
+    const index = JSON.parse(text) as { archive: string; skills: { url: string }[] };
+    expect(index.archive).toBe(`${SITE_URL}/api/public/plugin/archive.tar.gz`);
+    expect(index.skills.every((s) => s.url.startsWith(`${SITE_URL}/`))).toBe(true);
+  });
+
+  test("/plugin.tar.gz sert l'archive gzip du plugin sous shenron/, avec ETag", async () => {
+    const GET = (await import("../src/app/plugin.tar.gz/route")).GET;
+    const res = await GET(new Request(`${ORIGIN}/plugin.tar.gz`));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/gzip");
+    const etag = res.headers.get("etag")!;
+    expect(etag).toMatch(/^"[0-9a-f]{64}"$/);
+    const files = await new Bun.Archive(await res.bytes()).files();
+    for (const path of [
+      "shenron/plugin.json",
+      "shenron/mcp_config.json",
+      "shenron/.claude-plugin/plugin.json",
+      "shenron/skills/dragon-ball/SKILL.md",
+    ])
+      expect(files.has(path)).toBe(true);
+    const again = await GET(
+      new Request(`${ORIGIN}/plugin.tar.gz`, { headers: { "if-none-match": etag } }),
+    );
+    expect(again.status).toBe(304);
+  });
+
   test("llms.txt annonce le plugin dans ses quatre formats", async () => {
     const source = await Bun.file(new URL("../src/app/llms.txt/route.ts", import.meta.url)).text();
     for (const path of [

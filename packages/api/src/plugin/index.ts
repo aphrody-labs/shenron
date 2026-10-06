@@ -50,7 +50,18 @@ export interface PluginBundle {
 
 export interface PluginPort {
   load(): Promise<PluginBundle>;
+  /**
+   * Gzipped tarball of `bundle` under `shenron/` (`pluginArchiveEntries`); absent when the
+   * host gave no archiver: `/api/public/plugin/archive.tar.gz` is then not served.
+   */
+  archive?(bundle: PluginBundle): Promise<Uint8Array<ArrayBuffer>>;
 }
+
+/**
+ * Builds a gzipped tarball from `path → text` entries. Injected by the Bun host
+ * (`new Bun.Archive(entries, { compress: "gzip" }).bytes()`): this module stays portable.
+ */
+export type PluginArchiver = (entries: Record<string, string>) => Promise<Uint8Array<ArrayBuffer>>;
 
 export interface Rendered {
   body: string;
@@ -59,6 +70,17 @@ export interface Rendered {
 
 const MANIFEST = ".claude-plugin/plugin.json";
 const SKIPPED = new Set([".gitignore", ".DS_Store"]);
+/**
+ * Files never served nor archived, even if one lands in `plugin/` by mistake: secrets,
+ * local settings and databases (the plugin only carries public Markdown, JSON and scripts).
+ */
+const PRIVATE =
+  /^(?:\.env(?:\..*)?|.*\.(?:pem|key|p12|pfx|sqlite3?|db|local\.md|local\.json)|\.npmrc|id_[a-z0-9]+)$/i;
+
+/** `true` for a file name the plugin must never publish. */
+export function isPrivatePluginFile(name: string): boolean {
+  return PRIVATE.test(name);
+}
 
 /**
  * Racine du plugin : `SHENRON_PLUGIN_DIR`, sinon le premier `plugin/` (porteur de
@@ -87,6 +109,7 @@ async function listFiles(root: string, dir = root): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (SKIPPED.has(entry.name) || entry.name === "node_modules") continue;
+    if (isPrivatePluginFile(entry.name)) continue;
     const full = join(dir, entry.name);
     if (entry.isDirectory()) out.push(...(await listFiles(root, full)));
     else if (entry.isFile()) out.push(relative(root, full).split(sep).join("/"));
@@ -163,10 +186,29 @@ export async function readPluginBundle(root: string): Promise<PluginBundle> {
  * pour suivre un déploiement en direct, assez long pour qu'une rafale de requêtes ne relise
  * pas quarante fichiers à chaque appel.
  */
-export function createPluginPort(root: string, o: { ttlMs?: number } = {}): PluginPort {
+export function createPluginPort(
+  root: string,
+  o: { ttlMs?: number; archiver?: PluginArchiver } = {},
+): PluginPort {
   const ttl = o.ttlMs ?? 10_000;
   let cached: { at: number; bundle: Promise<PluginBundle> } | null = null;
+  const archiver = o.archiver;
+  let archived: { sha256: string; bytes: Promise<Uint8Array<ArrayBuffer>> } | null = null;
   return {
+    ...(archiver
+      ? {
+          archive(bundle: PluginBundle) {
+            // Built once per revision of the bundle.
+            if (archived?.sha256 === bundle.sha256) return archived.bytes;
+            const entry = { sha256: bundle.sha256, bytes: archiver(pluginArchiveEntries(bundle)) };
+            archived = entry;
+            entry.bytes.catch(() => {
+              if (archived === entry) archived = null;
+            });
+            return entry.bytes;
+          },
+        }
+      : {}),
     load() {
       const now = Date.now();
       if (!cached || now - cached.at > ttl) {
@@ -185,9 +227,42 @@ export function createPluginPort(root: string, o: { ttlMs?: number } = {}): Plug
 
 export const PLUGIN_API_PATH = "/api/public/plugin";
 
+const LOOPBACK_HOST = /^(?:localhost|127(?:\.\d+){3}|\[::1\]|::1|0\.0\.0\.0)(?::\d+)?$/i;
+
+/** `true` when `origin` (`scheme://host[:port]`) names a loopback host. */
+export function isLoopbackOrigin(origin: string): boolean {
+  try {
+    return LOOPBACK_HOST.test(new URL(origin).host);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Public origin for the absolute links of the plugin (index, exports, archive).
+ *
+ * 1. `configured` (the site passes its `SITE_URL`, `@shenron/config/public-urls`) wins;
+ * 2. otherwise, on a request that reached the process through a loopback origin (reverse
+ *    proxy in front of it), `X-Forwarded-Host` and `X-Forwarded-Proto` give the public
+ *    host; they are ignored on a direct request, where a client could forge them;
+ * 3. otherwise the request origin itself (desktop or standalone binary served locally).
+ */
+export function pluginPublicOrigin(request: Request, configured?: string | null): string {
+  const fixed = configured?.trim().replace(/\/+$/, "");
+  if (fixed) return fixed;
+  const own = new URL(request.url).origin;
+  if (!isLoopbackOrigin(own)) return own;
+  const host = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  if (!host || !/^[a-z0-9.-]+(?::\d+)?$/i.test(host) || LOOPBACK_HOST.test(host)) return own;
+  const proto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().toLowerCase();
+  return `${proto === "http" ? "http" : "https"}://${host}`;
+}
+
 export interface PluginUrls {
   index: string;
   exports: Record<PluginFormat, string>;
+  /** Gzipped tarball of the whole plugin, rooted at `shenron/`. */
+  archive: string;
   file(path: string, format?: PluginFormat | "raw"): string;
 }
 
@@ -202,6 +277,7 @@ export function pluginApiUrls(origin: string): PluginUrls {
       txt: `${base}/export/txt`,
       html: `${base}/export/html`,
     },
+    archive: `${base}/archive.tar.gz`,
     file: (path, format) =>
       `${base}/file?path=${encodeURIComponent(path)}${format && format !== "raw" ? `&format=${format}` : ""}`,
   };
@@ -252,6 +328,11 @@ export function pluginIndex(bundle: PluginBundle, origin: string) {
     usage:
       "Shenron is the Dragon Ball plugin of dragonballfr.com. Use its skills and references to answer any Dragon Ball question, and query https://dragonballfr.com for live, sourced answers.",
     formats: urls.exports,
+    archive: urls.archive,
+    install: {
+      claude: "claude plugin marketplace add <repository> && claude plugin install shenron@shenron",
+      agy: `mkdir -p ~/.shenron-plugin && curl -fsSL ${urls.archive} | tar -xz -C ~/.shenron-plugin && agy plugin install ~/.shenron-plugin/${PLUGIN_ARCHIVE_ROOT}`,
+    },
     skills: bundle.entries
       .filter((e) => e.kind === "skill")
       .map((e) => ({ ...e, url: urls.file(e.path) })),
@@ -423,6 +504,20 @@ export function renderPluginFile(
         contentType: MIME.html!,
       };
   }
+}
+
+// ── Archive ───────────────────────────────────────────────────────────────────
+
+/** Root folder of the archive: `tar -xz` yields `shenron/`, ready for `agy plugin install`. */
+export const PLUGIN_ARCHIVE_ROOT = "shenron";
+
+export const PLUGIN_ARCHIVE_CONTENT_TYPE = "application/gzip";
+
+/** Entries of the archive: exactly the files of `bundle` (same guard as the index), under `shenron/`. */
+export function pluginArchiveEntries(bundle: PluginBundle): Record<string, string> {
+  const entries: Record<string, string> = {};
+  for (const file of bundle.files) entries[`${PLUGIN_ARCHIVE_ROOT}/${file.path}`] = file.text;
+  return entries;
 }
 
 /** Le fichier `path` du plugin, ou `null` (chemin inconnu : aucune lecture hors de l'index). */

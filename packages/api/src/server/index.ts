@@ -40,7 +40,10 @@ import {
 } from "../http";
 import {
   findPluginFile,
+  PLUGIN_ARCHIVE_CONTENT_TYPE,
+  PLUGIN_ARCHIVE_ROOT,
   pluginIndex,
+  pluginPublicOrigin,
   renderPluginExport,
   renderPluginFile,
   type PluginFormat,
@@ -149,6 +152,12 @@ export interface ShenronApiPorts {
   mcp?: McpProxyPort | null;
   /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@shenron/api/plugin`). */
   plugin?: PluginPort | null;
+  /**
+   * Public origin of the absolute links the API writes (plugin index and exports), e.g. the
+   * site's `SITE_URL`. Absent: trusted `X-Forwarded-*` behind a loopback proxy, then the
+   * request origin (`pluginPublicOrigin`).
+   */
+  publicOrigin?: string | null;
   /**
    * Trilingual lexicon (`/api/public/lexicon*`), served beside any other group: the embedded
    * `@shenron/lexicon` when absent, `null` to disable it.
@@ -434,16 +443,37 @@ export function createShenronApi(
       headers: { ...headers, "Content-Type": out.contentType },
     });
   };
+  const pluginOrigin = (ctx: Ctx) => pluginPublicOrigin(ctx.request, ports.publicOrigin);
   add(endpoints.pluginIndex, plugin !== null, async (ctx) => {
     const bundle = await fromPort(() => plugin!.load());
-    return json(pluginIndex(bundle, ctx.url.origin), 200);
+    return json(pluginIndex(bundle, pluginOrigin(ctx)), 200);
+  });
+  add(endpoints.pluginArchive, typeof plugin?.archive === "function", async (ctx) => {
+    const bundle = await fromPort(() => plugin!.load());
+    const etag = `"${bundle.sha256}"`;
+    const headers: Record<string, string> = {
+      ...ctx.cors,
+      ...publicCacheHeaders(300),
+      ETag: etag,
+    };
+    if (ctx.request.headers.get("if-none-match") === etag)
+      return new Response(null, { status: 304, headers });
+    const bytes = await fromPort(() => plugin!.archive!(bundle));
+    return new Response(bytes, {
+      status: 200,
+      headers: {
+        ...headers,
+        "Content-Type": PLUGIN_ARCHIVE_CONTENT_TYPE,
+        "Content-Disposition": `attachment; filename="${PLUGIN_ARCHIVE_ROOT}-plugin-${bundle.version}.tar.gz"`,
+      },
+    });
   });
   add(endpoints.pluginExport, plugin !== null, async (ctx) => {
     const format = ctx.params.format as PluginFormat;
     const full = (ctx.query as { full?: boolean }).full === true;
     const bundle = await fromPort(() => plugin!.load());
     return pluginText(ctx, `"${bundle.sha256}-${format}${full ? "-full" : ""}"`, () =>
-      renderPluginExport(bundle, format, { origin: ctx.url.origin, full }),
+      renderPluginExport(bundle, format, { origin: pluginOrigin(ctx), full }),
     );
   });
   add(endpoints.pluginFile, plugin !== null, async (ctx) => {
@@ -453,7 +483,7 @@ export function createShenronApi(
     if (!file) return json(NOT_FOUND, 404);
     const format = query.format ?? "raw";
     return pluginText(ctx, `"${file.sha256}-${format}"`, () =>
-      renderPluginFile(file, format, ctx.url.origin),
+      renderPluginFile(file, format, pluginOrigin(ctx)),
     );
   });
 

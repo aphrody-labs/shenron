@@ -235,6 +235,77 @@
         ]
       }
     },
+    "/api/public/plugin/archive.tar.gz": {
+      "get": {
+        "operationId": "pluginArchive",
+        "tags": [
+          "plugin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/public/plugin/file": {
       "get": {
         "operationId": "pluginFile",
@@ -4155,6 +4226,25 @@
             ],
             "additionalProperties": false
           },
+          "archive": {
+            "type": "string"
+          },
+          "install": {
+            "type": "object",
+            "properties": {
+              "claude": {
+                "type": "string"
+              },
+              "agy": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "claude",
+              "agy"
+            ],
+            "additionalProperties": false
+          },
           "skills": {
             "type": "array",
             "items": {
@@ -4267,6 +4357,8 @@
           "loadedAt",
           "usage",
           "formats",
+          "archive",
+          "install",
           "skills",
           "agents",
           "files"

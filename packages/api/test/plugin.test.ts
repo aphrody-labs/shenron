@@ -7,6 +7,8 @@ import {
   createPluginPort,
   findPluginFile,
   frontmatter,
+  isPrivatePluginFile,
+  pluginPublicOrigin,
   pluginIndex,
   readPluginBundle,
   renderPluginExport,
@@ -150,8 +152,11 @@ describe("plugin bundle", () => {
   });
 });
 
+const archiver = (entries: Record<string, string>) =>
+  new Bun.Archive(entries, { compress: "gzip", level: 9 }).bytes();
+
 describe("plugin endpoints", () => {
-  const api = createShenronApi(basePorts({ plugin: createPluginPort(REPO_PLUGIN) }), {
+  const api = createShenronApi(basePorts({ plugin: createPluginPort(REPO_PLUGIN, { archiver }) }), {
     service: "shenron-site",
   });
 
@@ -187,8 +192,90 @@ describe("plugin endpoints", () => {
     expect((await api.request("/api/public/plugin/file?path=../CLAUDE.md")).status).toBe(404);
   });
 
+  test("the archive is a gzipped tarball of the same files under shenron/, with the bundle ETag", async () => {
+    const res = await api.request("https://dragonballfr.com/api/public/plugin/archive.tar.gz");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/gzip");
+    const bundle = await readPluginBundle(REPO_PLUGIN);
+    const etag = res.headers.get("etag")!;
+    expect(etag).toBe(`"${bundle.sha256}"`);
+    const files = await new Bun.Archive(await res.bytes()).files();
+    const paths = [...files.keys()].filter((p) => !p.endsWith("/")).toSorted();
+    expect(paths).toEqual(bundle.files.map((f) => `shenron/${f.path}`).toSorted());
+    expect(paths).toContain("shenron/plugin.json");
+    expect(paths).toContain("shenron/mcp_config.json");
+    expect(await files.get("shenron/.claude-plugin/plugin.json")!.text()).toBe(
+      bundle.files.find((f) => f.path === ".claude-plugin/plugin.json")!.text,
+    );
+    const again = await api.request("/api/public/plugin/archive.tar.gz", {
+      headers: { "if-none-match": etag },
+    });
+    expect(again.status).toBe(304);
+  });
+
+  test("absolute links use the configured public origin, never the internal one", async () => {
+    const site = createShenronApi(
+      basePorts({
+        plugin: createPluginPort(REPO_PLUGIN),
+        publicOrigin: "https://dragonballfr.com/",
+      }),
+      { service: "shenron-site" },
+    );
+    const res = await site.request("https://localhost:5011/api/public/plugin");
+    const text = await res.text();
+    expect(text).not.toContain("localhost");
+    const body = JSON.parse(text) as {
+      formats: Record<string, string>;
+      archive: string;
+      skills: { url: string }[];
+    };
+    expect(body.formats.json).toBe("https://dragonballfr.com/api/public/plugin/export/json");
+    expect(body.archive).toBe("https://dragonballfr.com/api/public/plugin/archive.tar.gz");
+    expect(body.skills.every((s) => s.url.startsWith("https://dragonballfr.com/"))).toBe(true);
+    const md = await site.request("https://localhost:5011/api/public/plugin/export/md");
+    expect(await md.text()).not.toContain("localhost");
+  });
+
+  test("without a configured origin: forwarded headers only behind a loopback proxy", () => {
+    const behind = new Request("https://localhost:5011/api/public/plugin", {
+      headers: { "x-forwarded-host": "dragonballfr.com", "x-forwarded-proto": "https" },
+    });
+    expect(pluginPublicOrigin(behind)).toBe("https://dragonballfr.com");
+    expect(pluginPublicOrigin(behind, "https://example.org")).toBe("https://example.org");
+    const direct = new Request("https://dragonballfr.com/api/public/plugin", {
+      headers: { "x-forwarded-host": "evil.example" },
+    });
+    expect(pluginPublicOrigin(direct)).toBe("https://dragonballfr.com");
+    const local = new Request("http://127.0.0.1:4000/api/public/plugin");
+    expect(pluginPublicOrigin(local)).toBe("http://127.0.0.1:4000");
+    const spoofed = new Request("http://127.0.0.1:4000/", {
+      headers: { "x-forwarded-host": "bad host/<x>" },
+    });
+    expect(pluginPublicOrigin(spoofed)).toBe("http://127.0.0.1:4000");
+  });
+
+  test("private file names are never served", () => {
+    for (const name of [
+      ".env",
+      ".env.local",
+      "id_ed25519",
+      "bot.db",
+      "x.sqlite",
+      "a.pem",
+      "s.local.md",
+    ])
+      expect(isPrivatePluginFile(name)).toBe(true);
+    for (const name of ["plugin.json", "mcp_config.json", "SKILL.md", "faits.json", "canon.js"])
+      expect(isPrivatePluginFile(name)).toBe(false);
+  });
+
   test("without a plugin port the routes are not claimed", () => {
     const bare = createShenronApi(basePorts(), { service: "shenron-site" });
     expect(bare.handles("/api/public/plugin")).toBe(false);
+    const noArchiver = createShenronApi(basePorts({ plugin: createPluginPort(REPO_PLUGIN) }), {
+      service: "shenron-site",
+    });
+    expect(noArchiver.handles("/api/public/plugin")).toBe(true);
+    expect(noArchiver.handles("/api/public/plugin/archive.tar.gz")).toBe(false);
   });
 });

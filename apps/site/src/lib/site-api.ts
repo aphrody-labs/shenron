@@ -31,6 +31,9 @@ function createSiteShenronApi(wiki: WikiReadPort | null): ShenronApi {
       wiki,
       // Le plugin « shenron » relu depuis `plugin/` : `/api/public/plugin*` (cf. `@/lib/plugin`).
       plugin: sitePluginPort(),
+      // Liens absolus du plugin sur l'URL publique configurée, jamais l'origine interne
+      // (`https://localhost:5011` derrière nginx).
+      publicOrigin: SITE_URL,
       rateLimit: createMemoryRateLimiter(),
       publicCache: createPublicCache(),
       invalidation: noopInvalidation,

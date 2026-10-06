@@ -503,7 +503,11 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   // Le binaire autonome ne sert le plugin que si `SHENRON_PLUGIN_DIR` le désigne.
   const pluginDir = envString(env, "SHENRON_PLUGIN_DIR");
   const pluginRoot = pluginDir ? resolvePluginRoot({ SHENRON_PLUGIN_DIR: pluginDir }) : null;
-  const pluginPort = pluginRoot ? createPluginPort(pluginRoot) : null;
+  const pluginPort = pluginRoot
+    ? createPluginPort(pluginRoot, {
+        archiver: (entries) => new Bun.Archive(entries, { compress: "gzip", level: 9 }).bytes(),
+      })
+    : null;
   const engine = createChatEngine({
     rag: opened?.rag ?? null,
     embed: embedder?.query ?? null,

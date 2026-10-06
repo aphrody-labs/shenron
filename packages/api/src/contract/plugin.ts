@@ -25,6 +25,10 @@ export const PluginIndexResponse = z
     loadedAt: z.string(),
     usage: z.string(),
     formats: z.object({ json: z.string(), md: z.string(), txt: z.string(), html: z.string() }),
+    /** Gzipped tarball of the plugin, rooted at `shenron/` (`agy plugin install`). */
+    archive: z.string(),
+    /** Install commands per agent CLI. */
+    install: z.object({ claude: z.string(), agy: z.string() }),
     skills: z.array(PluginEntrySchema),
     agents: z.array(PluginEntrySchema),
     files: z.array(

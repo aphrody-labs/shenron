@@ -148,6 +148,16 @@ export const endpoints = {
     binary: true,
     native: true,
   },
+  pluginArchive: {
+    id: "pluginArchive",
+    method: "get",
+    path: "/api/public/plugin/archive.tar.gz",
+    auth: "public",
+    response: z.string().meta({ id: "PluginArchive" }),
+    cache: { maxAgeSeconds: 300 },
+    binary: true,
+    native: true,
+  },
   pluginFile: {
     id: "pluginFile",
     method: "get",
