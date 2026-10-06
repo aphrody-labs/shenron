@@ -338,7 +338,7 @@ export class ShenronWorkerPool {
       slot.task = task;
       slot.worker.ref();
       const request: WorkerRequest = { type: "call", id: task.id, job, ...task.call };
-      slot.worker.postMessage(request);
+      slot.worker.postMessage(request, []);
     }
   }
 
@@ -372,7 +372,7 @@ export class ShenronWorkerPool {
       symbols: SYMBOLS,
       status: SHENRON_STATUS,
     };
-    worker.postMessage(open);
+    worker.postMessage(open, []);
     this.#slots.push(slot);
     return slot;
   }
@@ -437,7 +437,7 @@ export class ShenronWorkerPool {
 
   #stop(slot: Slot): Promise<void> {
     const timer = setTimeout(() => slot.worker.terminate(), CLOSE_GRACE_MS);
-    slot.worker.postMessage({ type: "close" } satisfies WorkerRequest);
+    slot.worker.postMessage({ type: "close" } satisfies WorkerRequest, []);
     return slot.exited.finally(() => clearTimeout(timer));
   }
 }

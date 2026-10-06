@@ -133,10 +133,10 @@ async function runProfiling() {
   const indexingApiLatencies: number[] = [];
 
   const workerFinished = new Promise<void>((resolve) => {
-    worker.onmessage = () => resolve();
+    worker.addEventListener("message", () => resolve());
   });
 
-  worker.postMessage("start");
+  worker.postMessage("start", []);
 
   for (let i = 0; i < 50; i++) {
     const t0 = performance.now();

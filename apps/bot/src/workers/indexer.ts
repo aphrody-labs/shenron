@@ -263,7 +263,7 @@ function upsertUser(
   promises.push(r().sadd("dbz:users", id));
 }
 
-self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
+self.addEventListener("message", async (event: MessageEvent<WorkerMessage>) => {
   const { type, data } = event.data;
   console.log(`[WORKER] type=${type}, items=${data?.length}`);
   try {
@@ -361,9 +361,9 @@ self.onmessage = async (event: MessageEvent<WorkerMessage>) => {
     }
 
     await Promise.all(promises);
-    self.postMessage({ status: "success", type, count: data.length });
+    self.postMessage({ status: "success", type, count: data.length }, []);
   } catch (err) {
     console.error(`[WORKER] Erreur fatale :`, err);
-    self.postMessage({ status: "fatal", error: String(err), type });
+    self.postMessage({ status: "fatal", error: String(err), type }, []);
   }
-};
+});

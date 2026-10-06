@@ -108,7 +108,7 @@ export class RedisIndexerService {
           parentId: ch.parentId,
         }));
         if (channels.length > 0) {
-          this.worker.postMessage({ type: "INDEX_CHANNELS", data: channels });
+          this.worker.postMessage({ type: "INDEX_CHANNELS", data: channels }, []);
         }
 
         // 2. Membres (bonus, seulement si l'intent GuildMembers est dispo — sinon ignoré sans erreur).
@@ -122,7 +122,7 @@ export class RedisIndexerService {
             joinedAt: m.joinedAt?.toISOString() || null,
           }));
           for (let i = 0; i < users.length; i += 100) {
-            this.worker.postMessage({ type: "INDEX_USERS", data: users.slice(i, i + 100) });
+            this.worker.postMessage({ type: "INDEX_USERS", data: users.slice(i, i + 100) }, []);
           }
         } catch {
           // Pas d'intent GuildMembers -> on s'appuiera sur les auteurs de messages (ci-dessous).
@@ -150,7 +150,7 @@ export class RedisIndexerService {
                 authorDisplay: m.member?.displayName ?? m.author.globalName ?? m.author.username,
                 authorBot: m.author.bot,
               }));
-              this.worker.postMessage({ type: "INDEX_MESSAGES", data: messages });
+              this.worker.postMessage({ type: "INDEX_MESSAGES", data: messages }, []);
               fetched += batch.size;
               before = batch.last()?.id; // le plus ancien du lot -> page vers le passé
               if (batch.size < 100) break;
@@ -178,20 +178,23 @@ export class RedisIndexerService {
     author?: IndexedAuthor,
   ) {
     if (!this.worker) return;
-    this.worker.postMessage({
-      type: "INDEX_MESSAGES",
-      data: [
-        {
-          id: msgId,
-          content,
-          authorId,
-          channelId,
-          createdAt: createdAt.toISOString(),
-          authorName: author?.username,
-          authorDisplay: author?.displayName,
-          authorBot: author?.bot,
-        },
-      ],
-    });
+    this.worker.postMessage(
+      {
+        type: "INDEX_MESSAGES",
+        data: [
+          {
+            id: msgId,
+            content,
+            authorId,
+            channelId,
+            createdAt: createdAt.toISOString(),
+            authorName: author?.username,
+            authorDisplay: author?.displayName,
+            authorBot: author?.bot,
+          },
+        ],
+      },
+      [],
+    );
   }
 }
