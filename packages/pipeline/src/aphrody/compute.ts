@@ -16,6 +16,7 @@
  * Registered behaviour change B18: `embed()` collapses whitespace, sends at
  * most 16 texts per request and rejects any vector that is not 384-dimensional.
  */
+import { JsonTransportError, requestJson } from "@aphrody/http";
 import {
   type AiFailure,
   type AiResult,
@@ -260,21 +261,29 @@ export function createOpenAiChat(
   const url = new URL(`${endpoint.baseUrl.href.replace(/\/+$/, "")}/chat/completions`);
   return async (messages, model) => {
     const id = model?.trim() || endpoint.model;
-    const doFetch = options.fetcher ?? fetch;
-    const res = await doFetch(url, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        model: id,
-        messages,
-        stream: false,
-        // Bounded generation: on a CPU-only server the answer length is the latency.
-        ...(options.maxTokens ? { max_tokens: options.maxTokens } : {}),
-      }),
-      signal: AbortSignal.timeout(options.timeoutMs ?? chatTimeoutMs(id)),
+    // One deadline over the request and the body read; redirects are refused.
+    const { response, value } = await requestJson(
+      url,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          model: id,
+          messages,
+          stream: false,
+          // Bounded generation: on a CPU-only server the answer length is the latency.
+          ...(options.maxTokens ? { max_tokens: options.maxTokens } : {}),
+        }),
+      },
+      { timeoutMs: options.timeoutMs ?? chatTimeoutMs(id), fetch: options.fetcher },
+    ).catch((error: unknown) => {
+      // A body that is not JSON reads as an empty answer, as before.
+      if (error instanceof JsonTransportError && error.stage === "json")
+        return { response: { ok: true, status: 200 }, value: null };
+      throw error;
     });
-    if (!res.ok) throw new Error(`Aphrody compute HTTP ${res.status} on ${url.pathname}`);
-    const body = (await res.json().catch(() => null)) as {
+    if (!response.ok) throw new Error(`Aphrody compute HTTP ${response.status} on ${url.pathname}`);
+    const body = value as {
       model?: unknown;
       choices?: { message?: { content?: unknown } }[];
     } | null;

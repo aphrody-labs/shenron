@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Authenticated crawl jobs and index access owned by Aphrody Web. */
+import { requestJson } from "@aphrody/http";
 import { runAphrodyCli, type AphrodyCliOptions, type CliResult } from "./cli";
 
 export interface AphrodyWebScrapeOptions extends Omit<AphrodyCliOptions, "json"> {
@@ -57,18 +58,22 @@ export async function scrapeWithAphrody(
     origin.port === "3007" &&
     ["127.0.0.1", "[::1]", "localhost"].includes(origin.hostname);
   const endpoint = new URL(localListener ? "/api/v1/scrape" : "/api/v1/web/scrape", origin);
-  const response = await (options.fetcher ?? fetch)(endpoint, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${token}`,
-      accept: "application/json",
-      "content-type": "application/json",
+  // The bearer token never follows a redirect; one deadline covers the request and the body.
+  const { response, value } = await requestJson(
+    endpoint,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ url: target.href, profile: options.profile ?? "static" }),
     },
-    body: JSON.stringify({ url: target.href, profile: options.profile ?? "static" }),
-    signal: AbortSignal.timeout(60_000),
-  });
+    { timeoutMs: 60_000, fetch: options.fetcher },
+  );
   if (!response.ok) throw new Error(`Aphrody Web scrape HTTP ${response.status}`);
-  const result = (await response.json()) as Partial<AphrodyScrapeResult>;
+  const result = (value ?? {}) as Partial<AphrodyScrapeResult>;
   if (
     result.url !== target.href ||
     typeof result.status !== "number" ||
