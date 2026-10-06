@@ -32,10 +32,14 @@ import {
 import { createPluginPort, resolvePluginRoot } from "@shenron/api/plugin";
 import {
   createShenronApi,
+  type AuthPort,
   type PluginPort,
   type ShenronApi,
   type WikiReadPort,
 } from "@shenron/api/server";
+import { verifyActingUser } from "@shenron/auth/acting-user";
+import { PgConversationStore, type ConversationStore } from "@shenron/db/conversations";
+import { resolveBotDatabaseUrl } from "~/db/pg-url";
 import type { Database } from "bun:sqlite";
 import {
   MANGA_CANDIDATE_STATUSES,
@@ -134,6 +138,41 @@ export interface BotShenronApiOptions {
   remoteAddress?: (request: Request) => string | null | undefined;
   now?: () => number;
   log?: (event: { event: string; path: string; status?: number; ms?: number }) => void;
+  /**
+   * Store cloud des conversations (schéma `chat`, migration 0022) ; le site y accède par son
+   * proxy signé `/api/bot-user/v1/*`. Absent → groupe conversations désactivé.
+   */
+  conversations?: ConversationStore | null;
+  /** Secret `x-acting-*` partagé avec le site (`API_USER_SECRET`). */
+  actingUserSecret?: string | null;
+}
+
+/** Store PostgreSQL des conversations sur la base du site (`SHENRON_CHAT_PG_URL`, sinon celle du bot). */
+export function botConversationStore(env: NodeJS.ProcessEnv = process.env): ConversationStore | null {
+  if (env.SHENRON_CHAT_STORE === "off") return null;
+  const url = env.SHENRON_CHAT_PG_URL?.trim() || resolveBotDatabaseUrl(env);
+  if (!url) return null;
+  try {
+    return new PgConversationStore(new Bun.SQL(url), {
+      schema: env.SHENRON_CHAT_PG_SCHEMA?.trim() || "chat",
+    });
+  } catch {
+    console.error("[shenron-api] store des conversations indisponible");
+    return null;
+  }
+}
+
+/** Propriétaire = utilisateur Discord signé par le site (`discord:<id>`) ; jamais admin. */
+export function actingUserAuth(secret: string | null | undefined): AuthPort {
+  return {
+    async owner(request) {
+      const acting = verifyActingUser(request.headers, { secret });
+      return acting.ok ? `discord:${acting.discordId}` : null;
+    },
+    async admin() {
+      return false;
+    },
+  };
 }
 
 function wikiPortFrom(o: BotShenronApiOptions): WikiReadPort | null {
@@ -158,6 +197,8 @@ export function createBotShenronApi(o: BotShenronApiOptions): ShenronApi {
     {
       wiki: wikiPortFrom(o),
       plugin: pluginPortFrom(o),
+      conversations: o.conversations ?? null,
+      auth: o.conversations ? actingUserAuth(o.actingUserSecret) : null,
       rateLimit: bucketRateLimiter(o.buckets, o.now),
       publicCache: createPublicCache(),
       invalidation: noopInvalidation,

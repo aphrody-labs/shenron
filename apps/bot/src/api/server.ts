@@ -163,6 +163,7 @@ import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth
 import { EventBusService } from "~/services/EventBusService";
 import { PgService } from "~/db/pg";
 import {
+  botConversationStore,
   createBotShenronApi,
   createPublicFallback,
   createRemoteAddressRegistry,
@@ -1181,6 +1182,8 @@ export class ApiServer {
         buckets: publicRateBuckets,
         remoteAddress: (request) => remoteAddresses.lookup(request),
         corsOrigins: PUBLIC_CORS_ORIGIN_LIST,
+        conversations: botConversationStore(),
+        actingUserSecret: process.env.API_USER_SECRET ?? process.env.SHENRON_USER_SECRET ?? null,
       }),
       buckets: publicRateBuckets,
       corsOrigins: PUBLIC_CORS_ORIGIN_LIST,
