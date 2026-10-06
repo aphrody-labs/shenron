@@ -152,7 +152,7 @@ export function daemonLauncher(
   argv = process.argv,
   main = Bun.main,
 ): { program: string; args: string[] } {
-  const compiled = main.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/i.test(main);
+  const compiled = main.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(main);
   const verb = [LLAMA_DAEMON_VERB, ...(library ? ["--library", library] : [])];
   return compiled
     ? { program: execPath, args: verb }

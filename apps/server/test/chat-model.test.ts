@@ -173,6 +173,17 @@ describe("planChatModel", () => {
     expect(
       daemonLauncher(null, "/usr/bin/bun", ["/usr/bin/bun", "/src/cli.ts", "serve"], "/src/cli.ts"),
     ).toEqual({ program: "/usr/bin/bun", args: ["/src/cli.ts", LLAMA_DAEMON_VERB] });
+    // Windows: Bun reports the compiled entry with forward slashes (B:/~BUN/root/…).
+    for (const main of ["B:/~BUN/root/shenron-server.exe", "B:\\~BUN\\root\\shenron-server.exe"]) {
+      expect(
+        daemonLauncher(
+          null,
+          "C:\\S\\shenron-server.exe",
+          ["C:\\S\\shenron-server.exe", main],
+          main,
+        ),
+      ).toEqual({ program: "C:\\S\\shenron-server.exe", args: [LLAMA_DAEMON_VERB] });
+    }
   });
 });
 

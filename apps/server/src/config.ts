@@ -62,7 +62,7 @@ function platformHome(): string {
 export function executableDir(): string {
   // A compiled Bun binary runs from a virtual root; its real location is process.execPath.
   const compiled =
-    import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/.test(import.meta.path);
+    import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(import.meta.path);
   return compiled ? dirname(process.execPath) : resolve(import.meta.dir, "..");
 }
 

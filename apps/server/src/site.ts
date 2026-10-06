@@ -59,7 +59,7 @@ export function locateSite(paths: ServerPaths, env: NodeJS.ProcessEnv = process.
 
 /** Whether this process is a `bun build --compile` executable (virtual module root). */
 const COMPILED =
-  import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/.test(import.meta.path);
+  import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(import.meta.path);
 
 /**
  * Start the Next standalone server on a loopback port, in a child Bun runtime: the same
