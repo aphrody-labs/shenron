@@ -70,7 +70,27 @@ fn main() {
                 .inner_size(1280.0, 860.0)
                 .min_inner_size(900.0, 600.0)
                 .center()
+                // Frameless: the front app draws the Dragon Ball title bar (drag region, buttons).
+                .decorations(false)
+                .shadow(true)
+                // Shown once the splash has painted: no white flash before the first frame.
+                .visible(false)
+                .on_page_load(|window, payload| {
+                    if matches!(payload.event(), tauri::webview::PageLoadEvent::Finished)
+                        && !window.is_visible().unwrap_or(true)
+                    {
+                        let _ = window.show();
+                    }
+                })
                 .build()?;
+            // Fallback: never leave the window hidden if the splash load event is missed.
+            let fallback = window.clone();
+            tauri::async_runtime::spawn(async move {
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                if !fallback.is_visible().unwrap_or(true) {
+                    let _ = fallback.show();
+                }
+            });
             // The Koharu editor engine (koharu-library) runs in this process behind koharu-app's
             // commands, its projects and models under the same home as the local server. Its
             // failure (no usable renderer) leaves the site, studio and local APIs running: the

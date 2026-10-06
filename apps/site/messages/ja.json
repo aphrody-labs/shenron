@@ -1671,6 +1671,12 @@
         "step2": "続いて「実行」をクリックします。",
         "alt": "SmartScreen の画面：「詳細情報」リンク、続いて「実行」ボタン。"
       }
+    },
+    "titleBar": {
+      "title": "Shenron Studio",
+      "minimize": "最小化",
+      "maximize": "最大化／元に戻す",
+      "close": "閉じる"
     }
   }
 }

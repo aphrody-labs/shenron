@@ -1671,6 +1671,12 @@
         "step2": "Puis sur « Exécuter quand même ».",
         "alt": "Fenêtre SmartScreen : le lien « Informations complémentaires » puis le bouton « Exécuter quand même »."
       }
+    },
+    "titleBar": {
+      "title": "Shenron Studio",
+      "minimize": "Réduire",
+      "maximize": "Agrandir ou restaurer",
+      "close": "Fermer"
     }
   }
 }

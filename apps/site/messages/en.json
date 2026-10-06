@@ -1671,6 +1671,12 @@
         "step2": "Then “Run anyway”.",
         "alt": "SmartScreen window: the “More info” link, then the “Run anyway” button."
       }
+    },
+    "titleBar": {
+      "title": "Shenron Studio",
+      "minimize": "Minimize",
+      "maximize": "Maximize or restore",
+      "close": "Close"
     }
   }
 }

@@ -1,0 +1,52 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+.desktop-titlebar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding-inline-start: 10px;
+  background: var(--color-surface, #0b0b10);
+  color: var(--color-on-surface, #f4f1e8);
+  border-block-end: 2px solid var(--color-primary, #f7a21e);
+  user-select: none;
+  -webkit-user-select: none;
+  font:
+    600 13px/1 system-ui,
+    sans-serif;
+}
+.desktop-titlebar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.desktop-titlebar__buttons {
+  display: inline-flex;
+  height: 100%;
+}
+.desktop-titlebar__buttons button {
+  width: 46px;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  display: grid;
+  place-items: center;
+  cursor: default;
+}
+.desktop-titlebar__buttons button:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.desktop-titlebar__buttons button.desktop-titlebar__close:hover {
+  background: #e81f23;
+  color: #fff;
+}
+.desktop-titlebar__buttons svg {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
