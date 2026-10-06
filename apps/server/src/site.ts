@@ -12,9 +12,9 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-import { startBackend } from "./backend";
+import { type Backend, startBackend } from "./backend";
 import type { ServerPaths } from "./config";
-import { freePort, serveFront } from "./front";
+import { type FrontHost, freePort, serveFront } from "./front";
 import { localApi } from "./local-api";
 
 export interface SiteLayout {
@@ -106,6 +106,20 @@ export interface RunningSite {
   stop(): void;
 }
 
+/** The host as the front sees it: `/mcp` falls back to Next once the MCP sidecar is down. */
+export function frontHost(backend: Backend): FrontHost | null {
+  const host = backend.host;
+  if (!host) return null;
+  return {
+    handles: (pathname) =>
+      (pathname === "/mcp" || pathname.startsWith("/mcp/")) && !backend.mcpRouted()
+        ? false
+        : host.handles(pathname),
+    fetch: (request, server) => host.fetch(request, server),
+    websocket: host.websocket,
+  };
+}
+
 /** Serve the front app on `hostname:port` (port 0 picks a free one). */
 export async function serveSite(
   paths: ServerPaths,
@@ -131,7 +145,7 @@ export async function serveSite(
     port: options.port,
     layout,
     local: api,
-    host: backend.host,
+    host: frontHost(backend),
     nextPort,
     ready: () => ready,
   });

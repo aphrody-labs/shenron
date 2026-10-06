@@ -161,6 +161,19 @@ async function relay(
   });
 }
 
+/** Page shown while Next starts: HTML navigations reload themselves, other requests retry. */
+const STARTING_PAGE = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="1"><title>Shenron</title><style>html,body{height:100%;margin:0;display:grid;place-items:center;background:#0b0b10;color:#f5f5f5;font-family:system-ui,sans-serif}.s{width:40px;height:40px;border:4px solid #ffffff33;border-top-color:#f5a623;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(1turn)}}</style></head><body><div class="s" role="progressbar" aria-busy="true"></div></body></html>`;
+
+export function startingResponse(request: Request): Response {
+  const headers = { "retry-after": "1", "cache-control": "no-store" };
+  if (request.method === "GET" && (request.headers.get("accept") ?? "").includes("text/html"))
+    return new Response(STARTING_PAGE, {
+      status: 503,
+      headers: { ...headers, "content-type": "text/html; charset=utf-8" },
+    });
+  return new Response("Shenron démarre…", { status: 503, headers });
+}
+
 /** No API host: a socket can still open on another path, it is closed at once. */
 const NO_WEBSOCKET: WebSocketHandler<ChatSocketData> = {
   message(ws: ServerWebSocket<ChatSocketData>) {
@@ -188,8 +201,7 @@ export function serveFront(o: FrontOptions): Bun.Server<ChatSocketData> {
       if (asset) return asset;
       if (host && url.pathname.startsWith("/assets/") && host.handles(url.pathname))
         return host.fetch(request, server);
-      if (!o.ready())
-        return new Response("Shenron démarre…", { status: 503, headers: { "retry-after": "1" } });
+      if (!o.ready()) return startingResponse(request);
       return relay(request, url, o.nextPort, peer);
     },
   });

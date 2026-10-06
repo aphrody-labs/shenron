@@ -227,13 +227,24 @@ fn free_port() -> std::io::Result<u16> {
     Ok(listener.local_addr()?.port())
 }
 
-async fn wait_healthy(base: &str, timeout: Duration) -> Result<(), String> {
+/// Probe of an external dev URL (`next dev`): robots.txt needs no editorial database.
+const DEV_PROBE: &str = "/robots.txt";
+/// Probe of the bundled server: its front answers `/api/local/health` as soon as it listens,
+/// before Next is ready (pages show a self-reloading loading page meanwhile).
+const FRONT_PROBE: &str = "/api/local/health";
+
+async fn wait_healthy(base: &str, probe: &str, timeout: Duration) -> Result<(), String> {
     let client = reqwest_lite::Client::new();
     let deadline = Instant::now() + timeout;
-    // robots.txt is served without the editorial database, by the binary and by `next dev`.
-    let health = format!("{base}/robots.txt");
+    let health = format!("{base}{probe}");
     loop {
-        if client.get_ok(&health).await {
+        // The bundled front answers 503 on its health until Next is ready: answering is enough.
+        let healthy = if probe == FRONT_PROBE {
+            client.get_answers(&health).await
+        } else {
+            client.get_ok(&health).await
+        };
+        if healthy {
             return Ok(());
         }
         if Instant::now() > deadline {
@@ -247,7 +258,7 @@ async fn wait_healthy(base: &str, timeout: Duration) -> Result<(), String> {
 pub async fn start(app: &AppHandle) -> Result<String, String> {
     if let Ok(url) = std::env::var("SHENRON_DESKTOP_URL") {
         let url = url.trim_end_matches('/').to_owned();
-        wait_healthy(&url, Duration::from_secs(60)).await?;
+        wait_healthy(&url, DEV_PROBE, Duration::from_secs(60)).await?;
         *app.state::<LocalServer>().url.lock().map_err(|e| e.to_string())? = Some(url.clone());
         return Ok(url);
     }
@@ -297,7 +308,7 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
             *state.run_file.lock().map_err(|e| e.to_string())? = Some(record);
         }
     }
-    wait_healthy(&url, Duration::from_secs(90)).await?;
+    wait_healthy(&url, FRONT_PROBE, Duration::from_secs(90)).await?;
     log::info!("local Shenron server ready on {url} in {} ms", started.elapsed().as_millis());
     *state.url.lock().map_err(|e| e.to_string())? = Some(url.clone());
     Ok(url)
@@ -331,7 +342,16 @@ mod reqwest_lite {
 
         /// `true` when `GET url` on a loopback `http://host:port/path` answers 2xx.
         pub async fn get_ok(&self, url: &str) -> bool {
-            let Some(rest) = url.strip_prefix("http://") else { return false };
+            self.get_status(url).await.is_some_and(|status| (200..300).contains(&status))
+        }
+
+        /// Whether the server answers at all (any HTTP status, a 503 "starting" included).
+        pub async fn get_answers(&self, url: &str) -> bool {
+            self.get_status(url).await.is_some()
+        }
+
+        async fn get_status(&self, url: &str) -> Option<u16> {
+            let Some(rest) = url.strip_prefix("http://") else { return None };
             let (authority, path) =
                 rest.split_once('/').map_or((rest, "/".to_owned()), |(a, p)| (a, format!("/{p}")));
             let Ok(Ok(mut stream)) = tokio::time::timeout(
@@ -340,22 +360,23 @@ mod reqwest_lite {
             )
             .await
             else {
-                return false;
+                return None;
             };
             let request =
                 format!("GET {path} HTTP/1.1\r\nHost: {authority}\r\nConnection: close\r\n\r\n");
             if stream.write_all(request.as_bytes()).await.is_err() {
-                return false;
+                return None;
             }
             let mut head = [0_u8; 16];
             let Ok(Ok(read)) =
                 tokio::time::timeout(std::time::Duration::from_secs(5), stream.read(&mut head))
                     .await
             else {
-                return false;
+                return None;
             };
             let status = std::str::from_utf8(&head[..read]).unwrap_or("");
-            status.starts_with("HTTP/1.1 2") || status.starts_with("HTTP/1.0 2")
+            let code = status.strip_prefix("HTTP/1.1 ").or_else(|| status.strip_prefix("HTTP/1.0 "))?;
+            code.get(..3)?.parse().ok()
         }
     }
 }

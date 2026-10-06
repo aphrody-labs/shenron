@@ -77,11 +77,45 @@ export async function extract(
   cacheDir: string,
 ): Promise<{ dir: string; extracted: boolean; ms: number }> {
   const started = performance.now();
+  // Cheap path: the payload file has the size and mtime recorded by the last launch.
+  const stampFile = join(cacheDir, "payload-stamp.json");
+  const info = statSync(payloadFile);
+  try {
+    const stamp = JSON.parse(readFileSync(stampFile, "utf8")) as {
+      file: string;
+      size: number;
+      mtimeMs: number;
+      dir: string;
+    };
+    if (
+      stamp.file === payloadFile &&
+      stamp.size === info.size &&
+      stamp.mtimeMs === info.mtimeMs &&
+      typeof stamp.dir === "string" &&
+      existsSync(join(stamp.dir, ".complete"))
+    )
+      return { dir: stamp.dir, extracted: false, ms: Math.round(performance.now() - started) };
+  } catch {
+    // no stamp yet
+  }
+  const writeStamp = (dir: string) => {
+    try {
+      mkdirSync(cacheDir, { recursive: true });
+      writeFileSync(
+        stampFile,
+        JSON.stringify({ file: payloadFile, size: info.size, mtimeMs: info.mtimeMs, dir }),
+      );
+    } catch {
+      // the stamp is an optimisation only
+    }
+  };
   const compressed = new Uint8Array(await Bun.file(payloadFile).arrayBuffer());
   const id = new Bun.CryptoHasher("sha256").update(compressed).digest("hex").slice(0, 16);
   const dir = join(cacheDir, `payload-${id}`);
-  if (existsSync(join(dir, ".complete")))
+  if (existsSync(join(dir, ".complete"))) {
+    writeStamp(dir);
     return { dir, extracted: false, ms: Math.round(performance.now() - started) };
+  }
   const raw = Bun.zstdDecompressSync(compressed);
   const magic = new TextDecoder().decode(raw.subarray(0, MAGIC.length));
   if (magic !== MAGIC) throw new Error("corrupted Shenron payload (bad magic)");
@@ -106,6 +140,7 @@ export async function extract(
   writeFileSync(join(temporary, ".complete"), `${new Date().toISOString()}\n`);
   rmSync(dir, { recursive: true, force: true });
   renameSync(temporary, dir);
+  writeStamp(dir);
   return { dir, extracted: true, ms: Math.round(performance.now() - started) };
 }
 

@@ -161,6 +161,21 @@ export async function startMcpSidecar(
   binary: string,
   o: { env?: Record<string, string | undefined>; timeoutMs?: number } = {},
 ): Promise<McpSidecar> {
+  const spawned = spawnMcpSidecar(binary, o);
+  await spawned.ready;
+  return spawned;
+}
+
+export interface SpawnedMcpSidecar extends McpSidecar {
+  /** Resolves once `/health` answers; rejects (and stops the child) on exit or timeout. */
+  ready: Promise<void>;
+}
+
+/** Spawn the sidecar without waiting: its URL is known at once, `ready` settles later. */
+export function spawnMcpSidecar(
+  binary: string,
+  o: { env?: Record<string, string | undefined>; timeoutMs?: number } = {},
+): SpawnedMcpSidecar {
   const port = freePort();
   const url = `http://127.0.0.1:${port}`;
   const child = Bun.spawn([binary, "--http", `127.0.0.1:${port}`, "--public"], {
@@ -169,30 +184,29 @@ export async function startMcpSidecar(
     // No console window of its own beside the desktop app (Windows).
     windowsHide: true,
   });
+  const exited = () => child.exitCode !== null || child.signalCode !== null;
   const stop = () => {
-    if (child.exitCode === null && child.signalCode === null) child.kill();
+    if (!exited()) child.kill();
   };
   process.once("exit", stop);
-  const deadline = Date.now() + (o.timeoutMs ?? 15_000);
-  while (Date.now() < deadline) {
-    if (child.exitCode !== null || child.signalCode !== null)
-      throw new Error(`shenron-mcp exited with ${child.exitCode ?? child.signalCode}`);
-    try {
-      const response = await fetch(`${url}/health`, { signal: AbortSignal.timeout(1_000) });
-      if (response.ok) {
-        return {
-          url,
-          exited: () => child.exitCode !== null || child.signalCode !== null,
-          stop,
-        };
+  const timeoutMs = o.timeoutMs ?? 15_000;
+  const ready = (async () => {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (exited())
+        throw new Error(`shenron-mcp exited with ${child.exitCode ?? child.signalCode}`);
+      try {
+        const response = await fetch(`${url}/health`, { signal: AbortSignal.timeout(1_000) });
+        if (response.ok) return;
+      } catch {
+        // not listening yet
       }
-    } catch {
-      // not listening yet
+      await Bun.sleep(50);
     }
-    await Bun.sleep(50);
-  }
-  stop();
-  throw new Error(`shenron-mcp did not answer /health within ${o.timeoutMs ?? 15_000} ms`);
+    stop();
+    throw new Error(`shenron-mcp did not answer /health within ${timeoutMs} ms`);
+  })();
+  return { url, exited, stop, ready };
 }
 
 const API_DOWN = "API locale indisponible";
@@ -224,6 +238,10 @@ export interface Backend {
   agentHomes: AgentHomes | null;
   /** Variables the Next child adds to the process environment (the sidecar MCP URL). */
   nextEnv: Record<string, string>;
+  /** Settles once the background MCP sidecar is healthy or has failed (never rejects). */
+  mcpSettled: Promise<void>;
+  /** Whether the host may answer `/mcp` (false once the sidecar failed or exited). */
+  mcpRouted(): boolean;
   /** Availability of each API group, the MCP sidecar's liveness included. */
   groups(): LocalApiGroups;
   stop(): Promise<void>;
@@ -266,17 +284,33 @@ export async function startBackend(
   const chatModel: ChatModel | null = plan.chatModel
     ? startChatModel(plan.chatModel, plan.env, { library: libraryPath(paths, plan.env) })
     : null;
-  let sidecar: McpSidecar | null = null;
-  let sidecarFailed = false;
+  // The MCP sidecar starts in the background: its URL is fixed before the host reads the
+  // environment, and its group turns available once `/health` answers.
+  let sidecar: SpawnedMcpSidecar | null = null;
+  let sidecarState: "starting" | "ready" | "failed" = "starting";
   if (plan.mcpSidecar) {
     try {
-      sidecar = await startMcpSidecar(plan.mcpSidecar, { env: plan.env });
+      sidecar = spawnMcpSidecar(plan.mcpSidecar, { env: plan.env });
       plan.env.SHENRON_MCP_URL = sidecar.url;
+      sidecar.ready.then(
+        () => {
+          sidecarState = "ready";
+          return undefined;
+        },
+        (error: unknown) => {
+          sidecarState = "failed";
+          console.error(
+            JSON.stringify({ event: "shenron.mcp.sidecar_failed", error: String(error) }),
+          );
+        },
+      );
     } catch (error) {
-      sidecarFailed = true;
+      sidecar = null;
+      sidecarState = "failed";
       console.error(JSON.stringify({ event: "shenron.mcp.sidecar_failed", error: String(error) }));
     }
   }
+  const sidecarFailed = () => plan.mcpSidecar !== null && sidecarState === "failed";
   let host: HostApi | null = null;
   try {
     host = (o.createHost ?? createLocalApi)(plan.env, {
@@ -303,12 +337,17 @@ export async function startBackend(
     chatModel,
     agentHomes,
     nextEnv: sidecar ? { SHENRON_MCP_URL: sidecar.url } : {},
+    mcpSettled: sidecar ? sidecar.ready.catch(() => undefined) : Promise.resolve(),
+    mcpRouted: () => !sidecarFailed() && !sidecar?.exited(),
     groups() {
       if (!host) return unavailableGroups(API_DOWN);
       const groups = { ...host.groups };
-      if (sidecar?.exited()) groups.mcp = { available: false, reason: "serveur MCP local arrêté" };
-      else if (sidecarFailed)
+      if (sidecarFailed())
         groups.mcp = { available: false, reason: "serveur MCP local injoignable" };
+      else if (sidecar?.exited())
+        groups.mcp = { available: false, reason: "serveur MCP local arrêté" };
+      else if (sidecar && sidecarState === "starting")
+        groups.mcp = { available: false, reason: "serveur MCP local en démarrage" };
       if (chatModel) {
         groups.chat = chatModel.status();
         groups.models = { ...groups.chat };

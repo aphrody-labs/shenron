@@ -13,7 +13,8 @@ import { SSE_KEEPALIVE_MS } from "@shenron/api/server";
 
 import { type Backend, planBackend, startBackend, startMcpSidecar } from "../src/backend";
 import type { ServerPaths } from "../src/config";
-import { FRONT_IDLE_TIMEOUT_S, serveFront } from "../src/front";
+import { FRONT_IDLE_TIMEOUT_S, serveFront, startingResponse } from "../src/front";
+import { frontHost } from "../src/site";
 import { localApi } from "../src/local-api";
 import { testPaths, writeTestVfs } from "./support";
 
@@ -96,7 +97,7 @@ async function start(
       () => ({ site: true, buildId: name, groups: backend.groups() }),
       fullEnv,
     ),
-    host: backend.host,
+    host: frontHost(backend),
     nextPort: next.port!,
     ready: () => true,
     ...(o.idleTimeout ? { idleTimeout: o.idleTimeout } : {}),
@@ -349,6 +350,7 @@ Bun.serve({
       { SHENRON_PROFILE: "desktop" },
       { vfs: false, mcpScript: SCRIPT },
     );
+    await app.backend.mcpSettled;
     const health = LocalHealthResponse.parse(
       await (await fetch(`${app.base}/api/local/health`)).json(),
     );
@@ -372,6 +374,7 @@ Bun.serve({
       { SHENRON_PROFILE: "desktop" },
       { vfs: false, mcpScript: "process.exit(3);\n" },
     );
+    await app.backend.mcpSettled;
     expect(app.backend.groups().mcp).toEqual({
       available: false,
       reason: "serveur MCP local injoignable",
@@ -395,5 +398,19 @@ Bun.serve({
     await expect(startMcpSidecar(binary, { timeoutMs: 5_000 })).rejects.toThrow(
       "shenron-mcp exited with 2",
     );
+  });
+});
+
+describe("front while Next starts", () => {
+  test("HTML navigations get a self-reloading page, other requests a retryable 503", async () => {
+    const page = startingResponse(
+      new Request("http://127.0.0.1/", { headers: { accept: "text/html" } }),
+    );
+    expect(page.status).toBe(503);
+    expect(page.headers.get("content-type")).toContain("text/html");
+    expect(await page.text()).toContain('http-equiv="refresh"');
+    const api = startingResponse(new Request("http://127.0.0.1/x.json"));
+    expect(api.status).toBe(503);
+    expect(api.headers.get("retry-after")).toBe("1");
   });
 });
