@@ -15,13 +15,7 @@ import { clientIpFromHeaders } from "@shenron/config/net";
 import { createWikiReadRepository } from "@shenron/db/repos/wiki";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "@shenron/api/http";
 import type { FetchableApi } from "@shenron/api/next";
-import {
-  createShenronApi,
-  type AuthPort,
-  type ShenronApi,
-  type WikiReadPort,
-} from "@shenron/api/server";
-import { PgConversationStore, type ConversationStore } from "@shenron/db/conversations";
+import { createShenronApi, type ShenronApi, type WikiReadPort } from "@shenron/api/server";
 import { SITE_HOST, SITE_URL } from "@/lib/config";
 import { sitePluginPort } from "@/lib/plugin";
 
@@ -31,16 +25,10 @@ const SITE_PUBLIC_CORS_ORIGINS: readonly string[] = [
 ];
 
 /** Application `@shenron/api` du site sur un port wiki donné (`null` → groupe désactivé). */
-function createSiteShenronApi(
-  wiki: WikiReadPort | null,
-  conversations: ConversationStore | null = null,
-): ShenronApi {
+function createSiteShenronApi(wiki: WikiReadPort | null): ShenronApi {
   return createShenronApi(
     {
       wiki,
-      // Historique de chat partagé site/desktop/bot (schéma `chat`, migration 0022).
-      conversations,
-      auth: conversations ? siteAuthPort : null,
       // Le plugin « shenron » relu depuis `plugin/` : `/api/public/plugin*` (cf. `@/lib/plugin`).
       plugin: sitePluginPort(),
       // Liens absolus du plugin sur l'URL publique configurée, jamais l'origine interne
@@ -85,40 +73,9 @@ async function siteWikiPort(): Promise<WikiReadPort | null> {
   }
 }
 
-/**
- * Propriétaire des conversations : la session du site (`discord:<id>`), comme le bot
- * (utilisateur signé) et le desktop lié. Aucun administrateur par ce port.
- */
-const siteAuthPort: AuthPort = {
-  async owner() {
-    const { getSessionUser } = await import("@/lib/session");
-    const me = await getSessionUser();
-    return me?.discordId ? `discord:${me.discordId}` : null;
-  },
-  async admin() {
-    return false;
-  },
-};
-
-/** Store PostgreSQL des conversations sur la base du site ; `null` hors runtime Bun ou sans base. */
-function siteConversationStore(): ConversationStore | null {
-  const url = process.env.SHENRON_CHAT_PG_URL ?? process.env.DATABASE_URL;
-  if (!url || typeof Bun === "undefined") return null;
-  try {
-    return new PgConversationStore(new Bun.SQL(url), {
-      schema: process.env.SHENRON_CHAT_PG_SCHEMA ?? "chat",
-    });
-  } catch {
-    console.error("[shenron-site.api] store des conversations indisponible");
-    return null;
-  }
-}
-
 /** Application partagée du process, construite à la première requête. */
 function getSiteShenronApi(): Promise<ShenronApi> {
-  pending ??= siteWikiPort().then((wiki) =>
-    createSiteShenronApi(wiki, injectedWiki === undefined ? siteConversationStore() : null),
-  );
+  pending ??= siteWikiPort().then(createSiteShenronApi);
   return pending;
 }
 
