@@ -80,7 +80,9 @@ describe("accueil et menu complet", () => {
     const client = await source("../src/components/SiteShellClient.tsx");
     expect(client).toContain("MOBILE_PRIMARY_DESTINATIONS.map");
     const shell = await source("../src/components/SiteShell.tsx");
-    expect(shell).toContain("buildSiteMap");
-    expect(shell).toContain("isPathPublic");
+    expect(shell).toContain("publicShellJourneys");
+    const nav = await source("../src/lib/shell-nav.ts");
+    expect(nav).toContain("buildSiteMap");
+    expect(nav).toContain("isPathPublic");
   });
 });

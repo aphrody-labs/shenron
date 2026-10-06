@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { SignOut } from "@/components/SignOut";
-import { Curseurs, DragonBall, Rouage } from "@shenron/ui/icones";
+import { Curseurs, DragonBall } from "@shenron/ui/icones";
 import { useMe } from "@/lib/use-me";
 import { useLangue } from "@/lib/i18n/client";
 
@@ -14,8 +14,10 @@ import { useLangue } from "@/lib/i18n/client";
  *
  * - `sidebar` : pied de la barre latérale desktop — avatar, pseudo, réglages, déconnexion ;
  * - `compact` : barre du haut mobile — l'avatar seul (44 px), ou l'entrée de connexion ;
- * - `sheet`   : bas de la feuille « Plus » — tableau de bord staff, réglages, déconnexion,
- *   seule porte de ces actions sur mobile.
+ * - `sheet`   : bas de la feuille « Plus » — réglages, déconnexion, seule porte de ces
+ *   actions sur mobile.
+ *
+ * Aucune entrée d'administration dans le shell public : l'admin a sa propre navigation.
  */
 const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-dbz-orange";
@@ -84,12 +86,6 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
     const row = `flex min-h-12 items-center gap-3 rounded-xl px-4 font-display text-[0.875rem] font-semibold text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white ${FOCUS}`;
     return (
       <div className="flex flex-col">
-        {me.isAdmin && (
-          <Link href="/admin/dashboard" className={row}>
-            <Rouage size={18} className="text-dbz-orange" />
-            {dico.common.dashboard}
-          </Link>
-        )}
         <Link href="/settings" className={row}>
           <Curseurs size={18} />
           {dico.mobileNav.accountSettings}
@@ -125,16 +121,6 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
           {me.username ?? dico.common.mySpace}
         </span>
       </Link>
-      {me.isAdmin && (
-        <Link
-          href="/admin/dashboard"
-          aria-label={dico.nav.admin}
-          title={dico.nav.admin}
-          className={`${ICON} text-dbz-orange/80 hover:text-dbz-orange ${FOCUS}`}
-        >
-          <Rouage size={18} />
-        </Link>
-      )}
       <Link
         href="/settings"
         aria-label={dico.common.settings}

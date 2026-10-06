@@ -5,8 +5,9 @@
  * préchargés à l'intention), langue, compte, palette ⌘K et application de bureau.
  *
  * Ce que le serveur ne peut pas savoir sans perdre le cache CDN se décide ici, après
- * l'hydratation : l'espace membre n'apparaît qu'une fois connecté, les rubriques fermées
- * seulement pour le staff, l'entrée « Bureau » (`/desktop`) seulement dans la fenêtre Tauri.
+ * l'hydratation : l'espace membre n'apparaît qu'une fois connecté, l'entrée « Bureau »
+ * (`/desktop`) seulement dans la fenêtre Tauri. Aucune entrée d'administration : l'admin a
+ * sa propre navigation (`AdminSidebar`), qui remplace celle-ci sous `/admin`.
  */
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -19,7 +20,6 @@ import {
   type ShellNavSection,
 } from "@shenron/ui/navigation/AppShell";
 import {
-  Cadenas,
   CapsuleCorp,
   Crayon,
   DragonRadar,
@@ -39,13 +39,10 @@ import { NavAuth } from "@/components/NavAuth";
 import { useLangue, useRubrique } from "@/lib/i18n/client";
 import { MOBILE_PRIMARY_DESTINATIONS } from "@/lib/site-menu";
 import type { Journey } from "@/lib/site-map";
+import type { ShellJourney } from "@/lib/shell-nav";
 import { useMe } from "@/lib/use-me";
 
-export interface ShellJourney {
-  key: Journey;
-  label: string;
-  items: { href: string; label: string; description?: string; member: boolean }[];
-}
+export type { ShellJourney };
 
 const JOURNEY_ICONS: Partial<Record<Journey, ReactNode>> = {
   decouvrir: <Maison size={18} />,
@@ -91,12 +88,10 @@ function NavLink({ href, children, ...rest }: ShellLinkProps) {
 
 export function SiteShellClient({
   journeys,
-  staff,
   footer,
   children,
 }: {
   journeys: readonly ShellJourney[];
-  staff: readonly { href: string; label: string }[];
   footer?: ReactNode;
   children: ReactNode;
 }) {
@@ -156,19 +151,8 @@ export function SiteShellClient({
           items: [desktopHome],
         });
     }
-    if (me?.isAdmin) {
-      out.push({
-        id: "staff",
-        label: dico.shell.staff,
-        icon: <Cadenas size={18} />,
-        items: [
-          { href: "/admin/dashboard", label: dico.nav.admin },
-          ...staff.map((item) => translate(item)),
-        ],
-      });
-    }
-    return out;
-  }, [journeys, staff, me, dico, rubrique, desktop]);
+    return out.filter((section) => section.items.length > 0);
+  }, [journeys, me, dico, rubrique, desktop]);
 
   const tabs = useMemo<ShellNavItem[]>(
     () =>

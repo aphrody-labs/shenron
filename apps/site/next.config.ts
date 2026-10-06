@@ -2,8 +2,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import type { NextConfig } from "next";
+import { PHASE_PRODUCTION_SERVER } from "next/constants";
 import { ownImageRemotePatterns, resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
 import { sitePublicRedirects } from "@shenron/images/resolve";
+import { readBuiltClientConfig } from "./src/lib/build-frozen-config";
 import { PUBLIC_ROUTE_RENAMES, nextApiRewrites, nextRedirectsOf } from "./src/lib/legacy-routes";
 
 // next-intl : son plugin ne fait, pour cette configuration, que poser l'alias
@@ -588,4 +590,21 @@ const nextConfig: NextConfig = {
 
 // Next.js 16 Turbopack : analyse de bundle intégrée via `next build --turbopack --experimental-analyze`
 // qui écrit les métriques dans `.next/diagnostics/analyze` sans injecter de wrapper Webpack.
-export default nextConfig;
+//
+// `next start` reprend le préfixe d'assets et l'identifiant de déploiement du BUILD
+// (`src/lib/build-frozen-config.ts`) : relus dans l'environnement du service, ils divergeaient
+// de ceux gravés dans le runtime Turbopack, et le site ne s'hydratait plus (2026-10-06).
+export default function config(phase: string): NextConfig {
+  if (phase !== PHASE_PRODUCTION_SERVER) return nextConfig;
+  const built = readBuiltClientConfig(path.resolve(__dirname, nextConfig.distDir ?? ".next"));
+  if (!built) return nextConfig;
+  if ((cdnUrl ?? "") !== built.assetPrefix)
+    console.warn(
+      `[next.config] assetPrefix of the build (${built.assetPrefix || "none"}) kept over NEXT_PUBLIC_CDN_URL (${cdnUrl || "none"})`,
+    );
+  return {
+    ...nextConfig,
+    assetPrefix: built.assetPrefix || undefined,
+    deploymentId: built.deploymentId,
+  };
+}

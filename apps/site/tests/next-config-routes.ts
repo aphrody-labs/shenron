@@ -8,7 +8,9 @@ import { readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 import { prepareDestination } from "next/dist/shared/lib/router/utils/prepare-destination";
-import nextConfig from "../next.config";
+import config from "../next.config";
+
+const nextConfig = config("phase-test");
 
 interface Rule {
   source: string;
