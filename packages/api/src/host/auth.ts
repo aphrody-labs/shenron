@@ -20,12 +20,14 @@ import {
 import { siteAllowedHosts, siteTrustedOrigins } from "@shenron/auth/origins";
 import { type EnvSource, envString, isProduction } from "@shenron/config/env";
 import { resolveSiteUrl } from "@shenron/config/public-urls";
+import { staffPolicyFromEnv } from "@shenron/auth/staff";
 import { createBunDb } from "@shenron/db/bun-sql";
 import { baAccount, baSession, baUser, baVerification } from "@shenron/db/schema";
+import { createDiscordAccountLookup } from "@shenron/db/repos/accounts";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { bearer } from "better-auth/plugins";
-import type { BetterAuthPort } from "../server";
+import type { BetterAuthPort, HostSession } from "../server";
 
 const list = (raw: string | undefined): string[] =>
   (raw ?? "")
@@ -116,13 +118,22 @@ export function createHostAuth(env: EnvSource): AuthAvailability {
   );
   if ("reason" in options) return options;
   const auth = betterAuth(options);
+  const accounts = createDiscordAccountLookup(db);
+  const staff = staffPolicyFromEnv(env, "site");
   return {
     port: {
       handler: (request) => auth.handler(request),
       session: async (headers) => {
         try {
           const found = await auth.api.getSession({ headers });
-          return found ? { userId: found.user.id } : null;
+          if (!found) return null;
+          const discordId = await accounts.discordIdForUser(found.user.id).catch(() => null);
+          const session: HostSession = {
+            userId: found.user.id,
+            discordId,
+            staff: staff.isStaff(discordId),
+          };
+          return session;
         } catch {
           return null;
         }

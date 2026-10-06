@@ -82,3 +82,33 @@ test("createShenronApi claims /api/auth only with a port, and hands the request 
   expect(await response.text()).toBe("/api/auth/callback/discord");
   expect(Object.keys(on.routes)).toContain("/api/auth/*");
 });
+
+test("the AuthPort resolves the owner and admin from a Better Auth session", async () => {
+  const { createEnvAuth } = await import("../src/host");
+  const sessions: Record<string, { userId: string; discordId?: string | null; staff?: boolean }> = {
+    linked: { userId: "u1", discordId: "123456789012345678", staff: false },
+    plain: { userId: "u2", discordId: null },
+    staff: { userId: "u3", discordId: "223456789012345678", staff: true },
+  };
+  const auth = createEnvAuth(
+    { SHENRON_ADMIN_TOKEN: "adm" },
+    () => true,
+    async (headers) => sessions[headers.get("authorization")?.slice(7) ?? ""] ?? null,
+  );
+  const req = (token?: string) =>
+    new Request("http://x/", { headers: token ? { authorization: `Bearer ${token}` } : {} });
+  expect(await auth.owner(req("linked"))).toBe("discord:123456789012345678");
+  expect(await auth.owner(req("plain"))).toBe("user:u2");
+  expect(await auth.owner(req())).toBe("local"); // loopback fallback without a session
+  expect(await auth.admin(req("staff"))).toBe(true);
+  expect(await auth.admin(req("linked"))).toBe(false);
+  expect(await auth.admin(req("adm"))).toBe(true);
+  const failing = createEnvAuth(
+    {},
+    () => false,
+    async () => {
+      throw new Error("db down");
+    },
+  );
+  expect(await failing.owner(req("x"))).toBeNull();
+});

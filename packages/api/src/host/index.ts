@@ -60,6 +60,7 @@ import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "..
 import {
   type AuthPort,
   type BetterAuthPort,
+  type HostSession,
   type ChatSocketData,
   createShenronApi,
   type MemoryPort,
@@ -96,11 +97,25 @@ export function signOwner(
 
 /**
  * Owner resolution, first match wins: signed owner headers (`SHENRON_OWNER_SECRET`), signed
- * Discord acting user (`SHENRON_USER_SECRET`/`API_USER_SECRET`, owner `discord:<id>`), then —
+ * Discord acting user (`SHENRON_USER_SECRET`/`API_USER_SECRET`, owner `discord:<id>`), Better
+ * Auth session of the host (cookie or Bearer: `discord:<id>` or `user:<id>`), then —
  * direct loopback only — the local desktop owner (`SHENRON_LOCAL_OWNER`, default `local`; an
- * empty value disables it). Admin: Bearer equal to `SHENRON_ADMIN_TOKEN`/`API_ADMIN_TOKEN`.
+ * empty value disables it). Admin: Bearer equal to `SHENRON_ADMIN_TOKEN`/`API_ADMIN_TOKEN`, or a staff session
+ * (`OWNER_ID` ∪ `OAUTH_ALLOWED_USERS`).
  */
-export function createEnvAuth(env: EnvSource, isLoopback: (request: Request) => boolean): AuthPort {
+export function createEnvAuth(
+  env: EnvSource,
+  isLoopback: (request: Request) => boolean,
+  session?: BetterAuthPort["session"] | null,
+): AuthPort {
+  const sessionOf = async (request: Request): Promise<HostSession | null> => {
+    if (!session) return null;
+    try {
+      return await session(request.headers);
+    } catch {
+      return null;
+    }
+  };
   return {
     async owner(request) {
       const ownerSecret = envString(env, "SHENRON_OWNER_SECRET");
@@ -119,6 +134,12 @@ export function createEnvAuth(env: EnvSource, isLoopback: (request: Request) => 
         secret: envFirst(env, ENV_ALIASES.actingUserSecret)?.value,
       });
       if (acting.ok) return `discord:${acting.discordId}`;
+      // Better Auth session (cookie or bearer): the Discord id when linked, else the user id.
+      const found = await sessionOf(request);
+      if (found) {
+        const id = found.discordId ? `discord:${found.discordId}` : `user:${found.userId}`;
+        if (OWNER_ID.test(id)) return id;
+      }
       if (isLoopback(request) && env.SHENRON_LOCAL_OWNER !== "") {
         return envString(env, "SHENRON_LOCAL_OWNER") ?? "local";
       }
@@ -127,7 +148,9 @@ export function createEnvAuth(env: EnvSource, isLoopback: (request: Request) => 
     async admin(request) {
       const token = envFirst(env, ENV_ALIASES.adminToken)?.value;
       const presented = parseBearer(request.headers, { caseSensitive: true });
-      return Boolean(token) && presented !== null && timingSafeEqualString(presented, token!);
+      if (Boolean(token) && presented !== null && timingSafeEqualString(presented, token!))
+        return true;
+      return (await sessionOf(request))?.staff === true;
     },
   };
 }
@@ -562,7 +585,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       memory,
       vfs: opened ? createVfsPort(opened, { publicOnly, assetsDir }) : null,
       ocr: ocrPort,
-      auth: createEnvAuth(env, isLoopback),
+      auth: createEnvAuth(env, isLoopback, betterAuthPort?.session),
       betterAuth: betterAuthPort,
       mcp: mcpUrl ? { url: mcpUrl } : null,
       // `/api/public/plugin*` quand `SHENRON_PLUGIN_DIR` désigne un plugin lisible.

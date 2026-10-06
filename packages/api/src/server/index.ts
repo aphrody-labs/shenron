@@ -104,10 +104,19 @@ export interface VfsPort {
  * Better Auth of the host (`@shenron/api/host`): `/api/auth/*` is handed to `handler` as is
  * (every method, Better Auth owns its CORS, cookies and rate limit). Absent: no route.
  */
+export interface HostSession {
+  userId: string;
+  discordId?: string | null;
+  staff?: boolean;
+}
+
 export interface BetterAuthPort {
   handler(request: Request): Promise<Response>;
-  /** Better Auth user id of the session in `headers` (cookie or bearer), or null. */
-  session?(headers: Headers): Promise<{ userId: string } | null>;
+  /**
+   * Better Auth session in `headers` (cookie or bearer), or null: user id, linked Discord id
+   * (the owner `discord:<id>` of the conversations) and staff status (site policy).
+   */
+  session?(headers: Headers): Promise<HostSession | null>;
 }
 
 /** Base path of {@link BetterAuthPort}. */
