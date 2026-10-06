@@ -27,6 +27,11 @@ docs = "doc --workspace --no-deps"
 # Repository root for tests and build scripts reading fixtures shared with the Bun packages
 # (`data/`, `packages/*/test/fixtures`). An exported variable of the same name wins.
 CARGO_WORKSPACE_DIR = { value = "", relative = true }
+# Windows (MSVC ABI, clang-cl through cargo-xwin): libwebp-sys (webp, koharu engine) compiles its
+# *_sse41.c sources without -msse4.1 for an MSVC-like compiler, and clang-cl then refuses their
+# intrinsics. SSE4.1 is a Windows 11 baseline (x86-64-v2), so it is enabled for the C code of the
+# target. An exported CFLAGS_x86_64_pc_windows_msvc wins.
+CFLAGS_x86_64_pc_windows_msvc = "-msse4.1"
 
 [net]
 # aphrody-labs/aphrody is private: fetch it with the git CLI so its credential helpers and

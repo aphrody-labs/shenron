@@ -9,10 +9,16 @@
 //! The server inherits only the variables it needs plus loopback defaults; no
 //! production configuration is read or required. Its data and cache live in the
 //! app data directory.
+//!
+//! Lifetime: on Windows the server joins a job object that kills it and every process it
+//! started (Next, llama-server, shenron-mcp, koharu-sdk) when the app exits, crashes or is
+//! killed, so no orphan survives. On every platform `<data>/run/server.json` records the URL
+//! and process id of the running server (for local tools); a server left by a previous run is
+//! stopped before a new one starts.
 
 use std::{
     net::{Ipv4Addr, SocketAddrV4, TcpListener},
-    path::PathBuf,
+    path::{Path, PathBuf},
     process::{Child, Command, Stdio},
     sync::Mutex,
     time::{Duration, Instant},
@@ -25,15 +31,183 @@ use tauri::{AppHandle, Manager as _};
 pub struct LocalServer {
     child: Mutex<Option<Child>>,
     url: Mutex<Option<String>>,
+    run_file: Mutex<Option<PathBuf>>,
+    #[cfg(windows)]
+    job: Mutex<Option<job::Job>>,
 }
 
 impl LocalServer {
-    /// Stop the bundled server if this process started it.
+    /// Stop the bundled server (and, on Windows, every process it started) if this process
+    /// started it.
     pub fn stop(&self) {
+        #[cfg(windows)]
+        if let Some(job) = self.job.lock().unwrap_or_else(std::sync::PoisonError::into_inner).take()
+        {
+            job.terminate();
+        }
         let mut child = self.child.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(mut child) = child.take() {
             let _ = child.kill();
             let _ = child.wait();
+        }
+        if let Some(path) =
+            self.run_file.lock().unwrap_or_else(std::sync::PoisonError::into_inner).take()
+        {
+            let _ = std::fs::remove_file(path);
+        }
+    }
+}
+
+/// `<data>/run/server.json`: URL and process id of the server this app started.
+fn run_file(data: &Path) -> PathBuf {
+    data.join("run").join("server.json")
+}
+
+/// Stop a server recorded by a previous run that did not exit cleanly (the job object already
+/// covers Windows; this also covers Linux and a server started by an older version).
+fn stop_previous(data: &Path) {
+    let path = run_file(data);
+    let Ok(text) = std::fs::read_to_string(&path) else { return };
+    let _ = std::fs::remove_file(&path);
+    let Some(pid) = serde_json::from_str::<serde_json::Value>(&text)
+        .ok()
+        .and_then(|value| value.get("pid").and_then(serde_json::Value::as_u64))
+        .and_then(|pid| u32::try_from(pid).ok())
+    else {
+        return;
+    };
+    if pid == std::process::id() {
+        return;
+    }
+    log::info!("stopping the local server left by a previous run (pid {pid})");
+    kill_pid(pid);
+}
+
+#[cfg(windows)]
+fn kill_pid(pid: u32) {
+    // `/T` takes the children too; only a process still named shenron-server is stopped.
+    let mut command = Command::new("taskkill");
+    command
+        .args(["/F", "/T", "/FI", "IMAGENAME eq shenron-server.exe", "/PID", &pid.to_string()])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null());
+    std::os::windows::process::CommandExt::creation_flags(&mut command, 0x0800_0000);
+    let _ = command.status();
+}
+
+#[cfg(not(windows))]
+fn kill_pid(pid: u32) {
+    let comm = std::fs::read_to_string(format!("/proc/{pid}/comm")).unwrap_or_default();
+    if comm.trim().starts_with("shenron-server") {
+        let _ = Command::new("kill").arg(pid.to_string()).status();
+    }
+}
+
+/// Windows job object: every process of the job dies when its last handle closes.
+#[cfg(windows)]
+mod job {
+    use std::{ffi::c_void, os::windows::io::AsRawHandle as _, process::Child};
+
+    type Handle = *mut c_void;
+
+    #[repr(C)]
+    #[derive(Default)]
+    struct IoCounters {
+        read_operation_count: u64,
+        write_operation_count: u64,
+        other_operation_count: u64,
+        read_transfer_count: u64,
+        write_transfer_count: u64,
+        other_transfer_count: u64,
+    }
+
+    #[repr(C)]
+    #[derive(Default)]
+    struct BasicLimitInformation {
+        per_process_user_time_limit: i64,
+        per_job_user_time_limit: i64,
+        limit_flags: u32,
+        minimum_working_set_size: usize,
+        maximum_working_set_size: usize,
+        active_process_limit: u32,
+        affinity: usize,
+        priority_class: u32,
+        scheduling_class: u32,
+    }
+
+    #[repr(C)]
+    #[derive(Default)]
+    struct ExtendedLimitInformation {
+        basic: BasicLimitInformation,
+        io: IoCounters,
+        process_memory_limit: usize,
+        job_memory_limit: usize,
+        peak_process_memory_used: usize,
+        peak_job_memory_used: usize,
+    }
+
+    const JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE: u32 = 0x2000;
+    const JOB_OBJECT_EXTENDED_LIMIT_INFORMATION: i32 = 9;
+
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn CreateJobObjectW(attributes: *const c_void, name: *const u16) -> Handle;
+        fn SetInformationJobObject(job: Handle, class: i32, info: *const c_void, len: u32) -> i32;
+        fn AssignProcessToJobObject(job: Handle, process: Handle) -> i32;
+        fn TerminateJobObject(job: Handle, exit_code: u32) -> i32;
+        fn CloseHandle(handle: Handle) -> i32;
+    }
+
+    pub struct Job(Handle);
+
+    // SAFETY: a job handle may be used and closed from any thread.
+    unsafe impl Send for Job {}
+    // SAFETY: the job API is thread-safe; the handle is only read after creation.
+    unsafe impl Sync for Job {}
+
+    impl Job {
+        /// A kill-on-close job holding `child` (and the processes it starts from now on).
+        pub fn attach(child: &Child) -> std::io::Result<Self> {
+            // SAFETY: plain Win32 calls on handles we own; `info` outlives the call.
+            unsafe {
+                let handle = CreateJobObjectW(std::ptr::null(), std::ptr::null());
+                if handle.is_null() {
+                    return Err(std::io::Error::last_os_error());
+                }
+                let job = Self(handle);
+                let mut info = ExtendedLimitInformation::default();
+                info.basic.limit_flags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+                let size = u32::try_from(std::mem::size_of::<ExtendedLimitInformation>())
+                    .unwrap_or(u32::MAX);
+                if SetInformationJobObject(
+                    job.0,
+                    JOB_OBJECT_EXTENDED_LIMIT_INFORMATION,
+                    (&raw const info).cast(),
+                    size,
+                ) == 0
+                    || AssignProcessToJobObject(job.0, child.as_raw_handle().cast()) == 0
+                {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(job)
+            }
+        }
+
+        pub fn terminate(&self) {
+            // SAFETY: the handle is a live job handle owned by `self`.
+            unsafe {
+                TerminateJobObject(self.0, 1);
+            }
+        }
+    }
+
+    impl Drop for Job {
+        fn drop(&mut self) {
+            // SAFETY: closing the handle we own exactly once.
+            unsafe {
+                CloseHandle(self.0);
+            }
         }
     }
 }
@@ -81,6 +255,7 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
     let port = free_port().map_err(|error| format!("no free loopback port: {error}"))?;
     let data = app.path().app_data_dir().map_err(|error| error.to_string())?;
     std::fs::create_dir_all(&data).map_err(|error| error.to_string())?;
+    stop_previous(&data);
     let started = Instant::now();
     let mut command = Command::new(&binary);
     command
@@ -105,8 +280,23 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
     let child =
         command.spawn().map_err(|error| format!("cannot start {}: {error}", binary.display()))?;
     let state = app.state::<LocalServer>();
+    #[cfg(windows)]
+    match job::Job::attach(&child) {
+        Ok(job) => *state.job.lock().map_err(|e| e.to_string())? = Some(job),
+        Err(error) => log::warn!("the local server runs outside a job object: {error}"),
+    }
+    let pid = child.id();
     *state.child.lock().map_err(|e| e.to_string())? = Some(child);
     let url = format!("http://127.0.0.1:{port}");
+    let record = run_file(&data);
+    if let Some(dir) = record.parent()
+        && std::fs::create_dir_all(dir).is_ok()
+    {
+        let body = serde_json::json!({ "url": url, "pid": pid, "port": port });
+        if std::fs::write(&record, body.to_string()).is_ok() {
+            *state.run_file.lock().map_err(|e| e.to_string())? = Some(record);
+        }
+    }
     wait_healthy(&url, Duration::from_secs(90)).await?;
     log::info!("local Shenron server ready on {url} in {} ms", started.elapsed().as_millis());
     *state.url.lock().map_err(|e| e.to_string())? = Some(url.clone());
