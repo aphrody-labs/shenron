@@ -27,6 +27,21 @@ import {
   putRemoteTask,
 } from "./a2a-remote";
 import {
+  A2A_V1_ERRORS,
+  A2A_V1_PROTOCOL_VERSION,
+  toV1Task,
+  v1Error,
+  v1SendToLegacy,
+} from "./a2a-v1";
+import {
+  appendFileEnvelope,
+  fileStoreEnabled,
+  getFileTask,
+  listFileEnvelopes,
+  listFileTasks,
+  putFileTask,
+} from "./a2a-file-store";
+import {
   defaultA2AProbes,
   resolveCoordDir,
   type A2AProbes,
@@ -201,19 +216,34 @@ export interface A2AAgentSkill {
   id: string;
   name: string;
   description: string;
+  tags: string[];
+  examples?: string[];
   parameters?: Record<string, unknown>;
 }
 
+/**
+ * Agent Card: the A2A 1.0 fields (`supportedInterfaces`, modes, skill tags) plus the pre-1.0 ones
+ * (`url`, `protocolVersion`, `preferredTransport`) still read by older peers.
+ */
 export interface A2AAgentCard {
   name: string;
   description: string;
   version: string;
   url: string;
+  protocolVersion: string;
+  preferredTransport: string;
+  supportedInterfaces: Array<{ url: string; protocolBinding: string; protocolVersion: string }>;
+  provider: { organization: string; url: string };
+  documentationUrl: string;
   capabilities: {
     streaming: boolean;
     pushNotifications: boolean;
+    extendedAgentCard: boolean;
     yoloMode: boolean;
   };
+  securitySchemes: Record<string, unknown>;
+  defaultInputModes: string[];
+  defaultOutputModes: string[];
   supportedTargets: A2ATarget[];
   skills: A2AAgentSkill[];
 }
@@ -355,56 +385,72 @@ class CoordMailboxStore {
 
 export const coordMailboxStore = new CoordMailboxStore();
 
-function requireDurableStoreInProduction(): void {
-  if (!aphrodyA2aStoreEnabled() && process.env.NODE_ENV === "production") {
-    throw new Error("APHRODY_A2A_COORD_API is required for durable Shenron A2A in production");
+type DurableStore = "remote" | "file" | "memory";
+
+/**
+ * Where tasks and envelopes are kept: Aphrody's coord API when `APHRODY_A2A_COORD_API` is set,
+ * else the local file store (`a2a-file-store.ts`, `A2A_COORD_DIR` in production), else memory,
+ * which production refuses.
+ */
+function durableStore(): DurableStore {
+  if (process.env.APHRODY_A2A_COORD_API?.trim() && aphrodyA2aStoreEnabled()) return "remote";
+  if (fileStoreEnabled()) return "file";
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "A durable A2A store is required in production: set A2A_COORD_DIR, SHENRON_A2A_STORE_DIR or APHRODY_A2A_COORD_API",
+    );
   }
+  return "memory";
 }
 
 async function storeEnvelope(envelope: A2AEnvelope): Promise<string> {
   coordMailboxStore.append(envelope);
-  if (aphrodyA2aStoreEnabled()) {
+  const store = durableStore();
+  const id = encodeURIComponent(envelope.id);
+  if (store === "remote") {
     await appendRemoteEnvelope(envelope);
-    return `aphrody-a2a://${SHENRON_A2A_AGENT_ID}/envelopes/${encodeURIComponent(envelope.id)}`;
+    return `aphrody-a2a://${SHENRON_A2A_AGENT_ID}/envelopes/${id}`;
   }
-  requireDurableStoreInProduction();
-  return `memory://${SHENRON_A2A_AGENT_ID}/envelopes/${encodeURIComponent(envelope.id)}`;
+  if (store === "file") {
+    await appendFileEnvelope(envelope);
+    return `file://${SHENRON_A2A_AGENT_ID}/envelopes/${id}`;
+  }
+  return `memory://${SHENRON_A2A_AGENT_ID}/envelopes/${id}`;
 }
 
 async function loadTask(taskId: string): Promise<A2ATask | undefined> {
-  if (aphrodyA2aStoreEnabled()) {
-    const remote = await getRemoteTask(taskId);
-    if (remote) return a2aTaskStore.hydrate(remote);
-  }
-  requireDurableStoreInProduction();
+  const store = durableStore();
+  const durable =
+    store === "remote"
+      ? await getRemoteTask(taskId)
+      : store === "file"
+        ? await getFileTask(taskId)
+        : undefined;
+  if (durable) return a2aTaskStore.hydrate(durable);
   return a2aTaskStore.get(taskId);
 }
 
 async function loadTasks(target?: A2ATarget): Promise<A2ATask[]> {
-  if (aphrodyA2aStoreEnabled()) {
-    const remote = await listRemoteTasks(target);
-    return remote.map((task) => a2aTaskStore.hydrate(task));
-  }
-  requireDurableStoreInProduction();
-  return a2aTaskStore.list(target);
+  const store = durableStore();
+  if (store === "memory") return a2aTaskStore.list(target);
+  const durable = store === "remote" ? await listRemoteTasks(target) : await listFileTasks(target);
+  return durable.map((task) => a2aTaskStore.hydrate(task));
 }
 
 async function persistTask(task: A2ATask, create = false): Promise<void> {
-  if (!aphrodyA2aStoreEnabled()) {
-    requireDurableStoreInProduction();
-    return;
-  }
+  const store = durableStore();
+  if (store === "file") return putFileTask(task);
+  if (store !== "remote") return;
   if (create) await createRemoteTask(task);
   else await putRemoteTask(task);
 }
 
 async function loadEnvelopes(limit: number): Promise<A2AEnvelope[]> {
-  if (!aphrodyA2aStoreEnabled()) {
-    requireDurableStoreInProduction();
-    return coordMailboxStore.list(limit);
-  }
-  const remote = await listRemoteEnvelopes(limit);
-  coordMailboxStore.merge(remote);
+  const store = durableStore();
+  if (store === "memory") return coordMailboxStore.list(limit);
+  const durable =
+    store === "remote" ? await listRemoteEnvelopes(limit) : await listFileEnvelopes(limit);
+  coordMailboxStore.merge(durable);
   return coordMailboxStore.list(limit);
 }
 
@@ -617,49 +663,80 @@ export class ShenronA2AHub {
    * Retourne l'AgentCard officielle A2A de Shenron.
    */
   static getAgentCard(baseUrl = "https://dragonballfr.com"): A2AAgentCard {
+    const url = `${baseUrl}/api/a2a`;
+    const skill = (
+      id: string,
+      name: string,
+      description: string,
+      tags: string[],
+      examples: string[],
+    ): A2AAgentSkill => ({ id, name, description, tags, examples });
     return {
       name: SHENRON_A2A_AGENT_ID,
       description:
-        "Hub A2A Dragon Ball : RAG sourcé réel, état mesuré OCR/traduction, et boîte d'ordres pour Codex, agycli, Claude, workers locaux et sous-agents (résultat seulement quand le pair le poste).",
+        "Dragon Ball A2A hub of dragonballfr.com: real sourced RAG answers (manga, databooks, wiki; Fandom is never a source), measured OCR and translation status, and an order box for Codex, agy, Claude, local workers and sub-agents (a result exists only once the peer posts it).",
       version: A2A_PROTOCOL_VERSION,
-      url: `${baseUrl}/api/a2a`,
+      url,
+      protocolVersion: A2A_V1_PROTOCOL_VERSION,
+      preferredTransport: "JSONRPC",
+      supportedInterfaces: [
+        { url, protocolBinding: "JSONRPC", protocolVersion: A2A_V1_PROTOCOL_VERSION },
+      ],
+      provider: { organization: "Dragon Ball FR", url: baseUrl },
+      documentationUrl: `${baseUrl}/llms.txt`,
       capabilities: {
         streaming: false,
         pushNotifications: false,
+        extendedAgentCard: false,
         yoloMode: true,
       },
+      securitySchemes: {
+        bearer: {
+          httpAuthSecurityScheme: {
+            scheme: "Bearer",
+            description: "SHENRON_A2A_TOKEN, required for writes when SHENRON_A2A_ENFORCE is on",
+          },
+        },
+      },
+      defaultInputModes: ["text/plain", "application/json"],
+      defaultOutputModes: ["text/markdown", "application/json"],
       supportedTargets: [...A2A_TARGETS],
       skills: [
-        {
-          id: "rag_query",
-          name: "RAG Canonique",
-          description:
-            "Recherche hybride réelle sur l'index Shenron : passages, titres et URL absolues. FAIT seulement si au moins un passage revient.",
-        },
-        {
-          id: "ocr_dispatch",
-          name: "État OCR & traduction",
-          description:
-            "Statut mesuré (bot.db_databooks, systemd, results.db, heartbeat worker) ; un ordre OCR reste en attente jusqu'au résultat d'un worker.",
-        },
-        {
-          id: "subagent_task",
-          name: "Délégation d'ordres",
-          description:
-            "Dépôt d'un ordre dans la boîte Aphrody A2A namespacée pour un agent ou des sous-agents ; tâche submitted/INCOMPLET jusqu'au résultat du pair.",
-        },
-        {
-          id: "model_infer",
-          name: "Ordre pour worker local",
-          description:
-            "Dépôt d'un ordre pour un modèle local ; aucun modèle ni état VRAM n'est affirmé sans résultat du worker.",
-        },
-        {
-          id: "task_update",
-          name: "Clôture par un pair",
-          description:
-            "tasks/update, message/send avec taskId, ou enveloppe via l'API namespacée avec re : statut + verdict (FAIT exige au moins un artefact).",
-        },
+        skill(
+          "rag_query",
+          "Sourced Dragon Ball RAG",
+          'Real hybrid search over the Shenron index: passages, titles and absolute URLs. FAIT only when at least one passage comes back. Route with metadata.target = "rag" or an @rag: prefix.',
+          ["dragon-ball", "rag", "search", "citations"],
+          ["@rag: Who trained Goku on King Kai's planet?"],
+        ),
+        skill(
+          "ocr_dispatch",
+          "OCR and translation status",
+          "Measured status (databooks, systemd, results.db, worker heartbeat); an OCR order stays pending until a worker posts its result.",
+          ["ocr", "translation", "status"],
+          ["@ocr: status"],
+        ),
+        skill(
+          "subagent_task",
+          "Order delegation",
+          "Drops an order in the A2A box for an agent or sub-agents (codex, agycli, claude, subagents); the task stays submitted/INCOMPLET until the peer posts its result.",
+          ["delegation", "agents"],
+          ["@agycli: review the latest wiki contributions"],
+        ),
+        skill(
+          "model_infer",
+          "Order for a local worker",
+          "Drops an order for a local model worker; no model nor VRAM state is claimed without the worker's result.",
+          ["local-model", "worker"],
+          ["@local_model: summarise chapter 1"],
+        ),
+        skill(
+          "task_update",
+          "Closure by a peer",
+          "SendMessage (or message/send) with taskId, tasks/update, or an envelope with re: status plus verdict (FAIT needs at least one artifact).",
+          ["tasks", "honest-delivery"],
+          [],
+        ),
       ],
     };
   }
@@ -1403,6 +1480,71 @@ ${body}`.slice(0, 4000),
 
     try {
       switch (req.method) {
+        case "SendMessage": {
+          const converted = v1SendToLegacy(req.params, A2A_TARGETS);
+          if ("error" in converted)
+            return v1Error(id, A2A_V1_ERRORS.invalidParams, converted.error);
+          const legacy = await this.handleJsonRpc({
+            jsonrpc: "2.0",
+            id: id ?? 0,
+            method: "message/send",
+            params: converted.params,
+          });
+          if ("error" in legacy) return { ...legacy, id };
+          const taskId = (legacy.result as { taskId?: string }).taskId;
+          const task = taskId ? await this.getTask(taskId) : undefined;
+          if (!task) return v1Error(id, -32603, "task vanished after SendMessage");
+          return { jsonrpc: "2.0", id: id!, result: { task: toV1Task(task) } };
+        }
+
+        case "GetTask": {
+          const params = (req.params ?? {}) as { id?: unknown; historyLength?: unknown };
+          if (typeof params.id !== "string" || !params.id) {
+            return v1Error(id, A2A_V1_ERRORS.invalidParams, "params.id is required");
+          }
+          const task = await this.getTask(params.id);
+          if (!task) return v1Error(id, A2A_V1_ERRORS.taskNotFound, `Task not found: ${params.id}`);
+          const historyLength =
+            typeof params.historyLength === "number" ? params.historyLength : undefined;
+          return { jsonrpc: "2.0", id: id!, result: toV1Task(task, historyLength) };
+        }
+
+        case "ListTasks": {
+          const params = (req.params ?? {}) as {
+            status?: unknown;
+            contextId?: unknown;
+            pageSize?: unknown;
+            metadata?: { target?: unknown };
+          };
+          const wanted = params.metadata?.target;
+          const target =
+            typeof wanted === "string" && (A2A_TARGETS as readonly string[]).includes(wanted)
+              ? (wanted as A2ATarget)
+              : undefined;
+          const pageSize =
+            typeof params.pageSize === "number" && params.pageSize > 0
+              ? Math.min(100, Math.trunc(params.pageSize))
+              : 50;
+          const all = (await this.listTasks(target))
+            .map((task) => toV1Task(task, 0))
+            .filter(
+              (task) =>
+                (typeof params.status !== "string" ||
+                  (task.status as { state: string }).state === params.status) &&
+                (typeof params.contextId !== "string" || task.contextId === params.contextId),
+            );
+          return {
+            jsonrpc: "2.0",
+            id: id!,
+            result: {
+              tasks: all.slice(0, pageSize),
+              nextPageToken: "",
+              pageSize,
+              totalSize: all.length,
+            },
+          };
+        }
+
         case "agent/card":
         case "agent/getCard": {
           const card = this.getAgentCard();

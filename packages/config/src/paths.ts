@@ -18,7 +18,8 @@ export type DataPathKey =
   | "adminDocsDir"
   | "coordDir"
   | "databooksFreezeFile"
-  | "ragLexique";
+  | "ragLexique"
+  | "privateDownloadsDir";
 
 /** Variables that may relocate each path, in priority order (first set wins). */
 export const DATA_PATH_ENV: Readonly<Record<DataPathKey, readonly string[]>> = Object.freeze({
@@ -27,7 +28,14 @@ export const DATA_PATH_ENV: Readonly<Record<DataPathKey, readonly string[]>> = O
   coordDir: Object.freeze(["A2A_COORD_DIR", "COORD_DIR"]),
   databooksFreezeFile: Object.freeze(["DATABOOKS_FREEZE_FILE"]),
   ragLexique: Object.freeze(["RAG_LEXIQUE"]),
+  privateDownloadsDir: Object.freeze(["SHENRON_PRIVATE_DOWNLOADS_DIR"]),
 });
+
+/**
+ * Admin-only downloads of the site (`/api/private-downloads`): Shenron Studio installers and
+ * other private files handed to administrators. Outside every release, so a deploy keeps them.
+ */
+export const DEFAULT_PRIVATE_DOWNLOADS_DIR = "/srv/shenron/shared/private-downloads";
 
 export interface DataPath {
   key: DataPathKey;

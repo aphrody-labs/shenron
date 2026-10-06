@@ -18,19 +18,21 @@
 //!   `SHENRON_DATABOOKS_API_TOKEN`, `SHENRON_AGENT_API_KEY`); the anonymous tier never uses them;
 //! - a bearer token that is present but invalid is a `401` with `WWW-Authenticate: Bearer`.
 //!
-//! A session opened with elevated access stays on the full service: replaying its session id
-//! without credentials is refused (`401`), never served by the read-only service.
+//! # Stateless
+//!
+//! The endpoint keeps no MCP session: every POST is authorized and answered on its own, as plain
+//! `application/json` for request/response tools. A release restarts the process several times a
+//! day; with in-memory sessions every connected client then got an empty `404` until it
+//! re-initialized. Without sessions a restart is invisible, a stale `mcp-session-id` sent by a
+//! client is ignored, and the tier of each request comes from its own credentials, so an elevated
+//! request can never be replayed anonymously. A POST whose `Accept` omits one of the two media
+//! types the transport requires is completed rather than refused with `406`.
 //!
 //! The non-public server (`--http` on loopback without `--public`) serves every tool to every
 //! caller. Inbound `Host` headers are checked against `SHENRON_MCP_ALLOWED_HOSTS` (comma-separated;
 //! loopback and dragonballfr.com by default) to stop DNS rebinding.
 
-use std::{
-    collections::HashSet,
-    net::SocketAddr,
-    sync::{Arc, Mutex},
-    time::Duration,
-};
+use std::{net::SocketAddr, sync::Arc, time::Duration};
 
 use axum::{
     Json, Router,
@@ -52,9 +54,6 @@ use crate::{ShenronMcp, access::Access};
 pub const DEFAULT_ALLOWED_HOSTS: &[&str] =
     &["localhost", "127.0.0.1", "[::1]", "dragonballfr.com", "mcp.dragonballfr.com"];
 
-/// Elevated sessions remembered for the "no downgrade" rule (the set is dropped when full).
-const MAX_ELEVATED_SESSIONS: usize = 10_000;
-
 type Service = StreamableHttpService<ShenronMcp, LocalSessionManager>;
 
 fn allowed_hosts() -> Vec<String> {
@@ -70,6 +69,7 @@ fn allowed_hosts() -> Vec<String> {
 fn service(server: ShenronMcp) -> Service {
     let mut config = StreamableHttpServerConfig::default();
     config.allowed_hosts = allowed_hosts();
+    config.legacy_session_mode = false;
     config.json_response = true;
     config.sse_keep_alive = Some(Duration::from_secs(15));
     StreamableHttpService::new(move || Ok(server), LocalSessionManager::default().into(), config)
@@ -115,8 +115,6 @@ struct AppState {
     access: Arc<Access>,
     public: Service,
     full: Service,
-    /// Session ids opened on the full service.
-    elevated_sessions: Arc<Mutex<HashSet<String>>>,
     card: Arc<Value>,
 }
 
@@ -133,46 +131,38 @@ fn unauthorized(message: &str) -> Response {
     response
 }
 
-fn session_id(request: &Request) -> Option<String> {
-    request.headers().get("mcp-session-id").and_then(|value| value.to_str().ok()).map(str::to_owned)
+/// The media types a Streamable HTTP POST must accept.
+const MCP_ACCEPT: &str = "application/json, text/event-stream";
+
+/// Complete the `Accept` header of a POST that omits JSON or SSE (`*/*`, `application/json`,
+/// none): the reply is plain JSON whenever the tool allows it, so such clients are served.
+fn complete_accept(request: &mut Request) {
+    if request.method() != Method::POST {
+        return;
+    }
+    let accept = request
+        .headers()
+        .get(header::ACCEPT)
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    if !(accept.contains("application/json") && accept.contains("text/event-stream")) {
+        request.headers_mut().insert(header::ACCEPT, HeaderValue::from_static(MCP_ACCEPT));
+    }
 }
 
 async fn mcp(
     State(state): State<AppState>,
     ConnectInfo(peer): ConnectInfo<SocketAddr>,
-    request: Request,
+    mut request: Request,
 ) -> Response {
     let decision = state.access.authorize(peer.ip(), request.headers());
     if decision == crate::access::Decision::Invalid {
         return unauthorized("invalid bearer token");
     }
-    let elevated = decision.is_elevated();
-    let session = session_id(&request);
-    let known_elevated = session.as_ref().is_some_and(|id| {
-        state.elevated_sessions.lock().map(|set| set.contains(id)).unwrap_or(false)
-    });
-    if !elevated && known_elevated {
-        return unauthorized("this session was opened with elevated access; send its credentials");
-    }
-    let method = request.method().clone();
-    let service = if elevated { &state.full } else { &state.public };
-    let response = service.handle(request).await;
-    if elevated && let Ok(mut set) = state.elevated_sessions.lock() {
-        if let Some(opened) =
-            response.headers().get("mcp-session-id").and_then(|value| value.to_str().ok())
-        {
-            if set.len() >= MAX_ELEVATED_SESSIONS {
-                set.clear();
-            }
-            set.insert(opened.to_owned());
-        }
-        if method == Method::DELETE
-            && let Some(id) = &session
-        {
-            set.remove(id);
-        }
-    }
-    response.map(Body::new)
+    complete_accept(&mut request);
+    let service = if decision.is_elevated() { &state.full } else { &state.public };
+    service.handle(request).await.map(Body::new)
 }
 
 fn cors() -> CorsLayer {
@@ -209,7 +199,6 @@ pub fn app_with(server: ShenronMcp, access: Access) -> Router {
         access: Arc::new(access),
         public: service(if tiered { ShenronMcp::public() } else { ShenronMcp::full() }),
         full: service(ShenronMcp::full()),
-        elevated_sessions: Arc::new(Mutex::new(HashSet::new())),
         card: Arc::new(discovery_card(tiered)),
     };
     let card = Arc::clone(&state.card);
@@ -273,12 +262,12 @@ mod tests {
         request
     }
 
-    /// Open a session; returns its id, or the refusing status.
+    /// Initialize; returns the session id (none: the server is stateless), or the refusing status.
     async fn initialize(
         client: &reqwest::Client,
         base: &str,
         extra: &[(&str, &str)],
-    ) -> Result<String, reqwest::StatusCode> {
+    ) -> Result<Option<String>, reqwest::StatusCode> {
         let mut request = post(client, base, None).json(&json!({
             "jsonrpc": "2.0", "id": 1, "method": "initialize",
             "params": {
@@ -297,9 +286,8 @@ mod tests {
             .headers()
             .get("mcp-session-id")
             .and_then(|value| value.to_str().ok())
-            .expect("session id")
-            .to_owned();
-        let mut ack = post(client, base, Some(&session))
+            .map(str::to_owned);
+        let mut ack = post(client, base, session.as_deref())
             .json(&json!({ "jsonrpc": "2.0", "method": "notifications/initialized" }));
         for (name, value) in extra {
             ack = ack.header(*name, *value);
@@ -311,10 +299,10 @@ mod tests {
     async fn tool_names_of(
         client: &reqwest::Client,
         base: &str,
-        session: &str,
+        session: Option<&str>,
         extra: &[(&str, &str)],
     ) -> Vec<String> {
-        let mut request = post(client, base, Some(session))
+        let mut request = post(client, base, session)
             .json(&json!({ "jsonrpc": "2.0", "id": 2, "method": "tools/list" }));
         for (name, value) in extra {
             request = request.header(*name, *value);
@@ -332,7 +320,7 @@ mod tests {
         let base = spawn(access).await;
         let client = reqwest::Client::new();
         let session = initialize(&client, &base, extra).await.map_err(|s| s.as_u16())?;
-        Ok(tool_names_of(&client, &base, &session, extra).await)
+        Ok(tool_names_of(&client, &base, session.as_deref(), extra).await)
     }
 
     /// The JSON-RPC message of a response, whether sent as plain JSON or as one SSE event.
@@ -428,7 +416,7 @@ mod tests {
         let client = reqwest::Client::new();
         let session = initialize(&client, &base, &[]).await.expect("session");
         let body = json_of(
-            post(&client, &base, Some(&session))
+            post(&client, &base, session.as_deref())
                 .json(&json!({
                     "jsonrpc": "2.0", "id": 3, "method": "tools/call",
                     "params": { "name": "dbfr_deposit", "arguments": { "id": 1, "pages": [] } }
@@ -442,22 +430,61 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn an_elevated_session_is_never_served_without_credentials() {
+    async fn every_request_is_tiered_on_its_own_credentials() {
         let access = Access::new(&[TOKEN], &[], &["127.0.0.0/8"]);
         let base = spawn(access).await;
         let client = reqwest::Client::new();
         let bearer = format!("Bearer {TOKEN}");
         let session =
-            initialize(&client, &base, &[("authorization", &bearer)]).await.expect("session");
-        let replay = post(&client, &base, Some(&session))
-            .json(&json!({ "jsonrpc": "2.0", "id": 9, "method": "tools/list" }))
+            initialize(&client, &base, &[("authorization", &bearer)]).await.expect("initialize");
+        assert!(session.is_none(), "the endpoint is stateless");
+        let anonymous = tool_names_of(&client, &base, None, &[]).await;
+        assert!(!has(&anonymous, "dbfr_deposit"));
+        let elevated = tool_names_of(&client, &base, None, &[("authorization", &bearer)]).await;
+        assert!(has(&elevated, "dbfr_deposit"));
+    }
+
+    #[tokio::test]
+    async fn a_restart_or_a_stale_session_id_is_invisible_to_clients() {
+        // No initialize on this instance: a client resuming after a release must still be served.
+        let base = spawn(Access::default()).await;
+        let response = post(&reqwest::Client::new(), &base, Some("00000000-0000-0000-0000-0"))
+            .json(&json!({
+                "jsonrpc": "2.0", "id": 7, "method": "tools/call",
+                "params": { "name": "dragonball.lexicon_search", "arguments": { "query": "Goku" } }
+            }))
             .send()
             .await
-            .expect("replay");
-        assert_eq!(replay.status(), reqwest::StatusCode::UNAUTHORIZED);
-        assert!(replay.headers().contains_key("www-authenticate"));
-        let again = tool_names_of(&client, &base, &session, &[("authorization", &bearer)]).await;
-        assert!(has(&again, "dbfr_deposit"));
+            .expect("call");
+        assert_eq!(response.status(), reqwest::StatusCode::OK);
+        let content_type = response
+            .headers()
+            .get("content-type")
+            .and_then(|value| value.to_str().ok())
+            .unwrap_or_default()
+            .to_owned();
+        assert!(content_type.starts_with("application/json"), "content-type: {content_type}");
+        let body = json_of(response).await;
+        assert_eq!(body["id"], 7);
+        assert!(body.get("result").is_some() || body.get("error").is_some(), "{body}");
+    }
+
+    #[tokio::test]
+    async fn a_post_that_only_accepts_json_is_served() {
+        let base = spawn(Access::default()).await;
+        for accept in ["application/json", "*/*"] {
+            let response = reqwest::Client::new()
+                .post(format!("{base}/mcp"))
+                .header("accept", accept)
+                .header("content-type", "application/json")
+                .json(&json!({ "jsonrpc": "2.0", "id": 8, "method": "tools/list" }))
+                .send()
+                .await
+                .expect("tools/list");
+            assert_eq!(response.status(), reqwest::StatusCode::OK, "accept: {accept}");
+            let body = json_of(response).await;
+            assert!(body["result"]["tools"].as_array().is_some_and(|tools| !tools.is_empty()));
+        }
     }
 
     #[tokio::test]
@@ -466,7 +493,7 @@ mod tests {
         let client = reqwest::Client::new();
         let session = initialize(&client, &base, &[]).await.expect("session");
         let resources = json_of(
-            post(&client, &base, Some(&session))
+            post(&client, &base, session.as_deref())
                 .json(&json!({ "jsonrpc": "2.0", "id": 4, "method": "resources/list" }))
                 .send()
                 .await
@@ -475,7 +502,7 @@ mod tests {
         .await;
         assert!(resources["result"]["resources"].as_array().is_some_and(|list| !list.is_empty()));
         let guide = json_of(
-            post(&client, &base, Some(&session))
+            post(&client, &base, session.as_deref())
                 .json(&json!({
                     "jsonrpc": "2.0", "id": 5, "method": "resources/read",
                     "params": { "uri": "shenron://guide" }
@@ -487,7 +514,7 @@ mod tests {
         .await;
         assert!(guide.to_string().contains("any Dragon Ball question"));
         let prompts = json_of(
-            post(&client, &base, Some(&session))
+            post(&client, &base, session.as_deref())
                 .json(&json!({ "jsonrpc": "2.0", "id": 6, "method": "prompts/list" }))
                 .send()
                 .await

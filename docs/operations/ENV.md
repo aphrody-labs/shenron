@@ -63,8 +63,21 @@ défaut.
 | Jeu gold RAG                  | `RAG_GOLD_PATH`       | `RAG_GOLD`        |
 
 `DATA_PATH_ENV` (chemins de données inscriptibles, défaut relatif au dépôt) : `RAG_GOLD_PATH`,
-`SHENRON_ADMIN_DOCS_DIR`, `A2A_COORD_DIR`, `DATABOOKS_FREEZE_FILE`, `RAG_LEXIQUE`. En production,
-un chemin encore issu du défaut est signalé une fois par processus.
+`SHENRON_ADMIN_DOCS_DIR`, `A2A_COORD_DIR`, `DATABOOKS_FREEZE_FILE`, `RAG_LEXIQUE`,
+`SHENRON_PRIVATE_DOWNLOADS_DIR`. En production, un chemin encore issu du défaut est signalé une
+fois par processus.
+
+- `SHENRON_PRIVATE_DOWNLOADS_DIR` (défaut `/srv/shenron/shared/private-downloads`, hors release) :
+  fichiers réservés aux administrateurs, servis par `GET /api/private-downloads` (index) et
+  `GET /api/private-downloads/<nom>` (reprise par `Range`). Seuls les fichiers listés dans le
+  `SHA256SUMS` du dossier sont servis ; garde `hasValidApiToken` (jeton admin ou IP de
+  `SHENRON_ADMIN_IPS`), sinon `404`. `.md`, `.txt` et `.json` sont servis en ligne.
+- A2A : sans `APHRODY_A2A_URL` (cas de la production depuis le retrait du service Aphrody du
+  2026-09-25), `/api/a2a` est servi par le hub Shenron du site (A2A 1.0 `SendMessage`, `GetTask`,
+  `ListTasks` et dialecte historique). Stockage durable : `APHRODY_A2A_COORD_API` s'il est posé,
+  sinon `SHENRON_A2A_STORE_DIR`, sinon `<A2A_COORD_DIR>/shenron-dragonball` en production. Les
+  écritures exigent `SHENRON_A2A_TOKEN`, un jeton admin ou une IP d'administration. Le bot relaie
+  carte et JSON-RPC au site et diffuse ses événements publics sur `/api/a2a/events`.
 
 ## Base de données — `@shenron/db`
 
@@ -87,7 +100,7 @@ un chemin encore issu du défaut est signalé une fois par processus.
 
 ## Serveur MCP — `apps/site/src/lib/ai-access.ts` et `crates/shenron-mcp`
 
-`shenron-mcp --http <adresse> --public` sert deux paliers sur `/mcp` : les appelants anonymes ne voient et n'appellent que les outils en lecture seule ; un appelant **élevé** reçoit tous les outils (lecture, écriture, admin). Est élevé : un `Authorization: Bearer <jeton>` accepté, ou une IP cliente de `SHENRON_MCP_ALLOWED_IPS`. Un jeton présent mais inconnu donne `401` avec `WWW-Authenticate: Bearer` (jamais de repli silencieux en anonyme, même depuis une IP autorisée). Une session ouverte avec élévation exige ses identifiants à chaque requête (`401` sinon). La carte `/.well-known/mcp.json` annonce `authentication: { read: "none", write: "bearer token or allow-listed IP" }`, les outils publics (`tools`) et les outils élevés (`elevatedTools`, `elevatedToolCount`).
+`shenron-mcp --http <adresse> --public` sert deux paliers sur `/mcp` : les appelants anonymes ne voient et n'appellent que les outils en lecture seule ; un appelant **élevé** reçoit tous les outils (lecture, écriture, admin). Est élevé : un `Authorization: Bearer <jeton>` accepté, ou une IP cliente de `SHENRON_MCP_ALLOWED_IPS`. Un jeton présent mais inconnu donne `401` avec `WWW-Authenticate: Bearer` (jamais de repli silencieux en anonyme, même depuis une IP autorisée). Le transport est sans session (`application/json`, aucun `mcp-session-id`) : chaque requête est classée sur ses propres identifiants, un redémarrage (release) reste invisible aux clients et un `mcp-session-id` périmé est ignoré ; un `Accept` incomplet est complété. La carte `/.well-known/mcp.json` annonce `authentication: { read: "none", write: "bearer token or allow-listed IP" }`, les outils publics (`tools`) et les outils élevés (`elevatedTools`, `elevatedToolCount`).
 
 | Variable                                | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -40,6 +40,7 @@ import {
   isDirectLoopback,
 } from "./request-guards";
 import {
+  A2A_URL_ENV,
   fetchAgentCard,
   fetchCoordStream,
   postJsonRpc,
@@ -6650,11 +6651,106 @@ async function mapLimitDeadline<T, R>(
 }
 
 // ── A2A bridge ────────────────────────────────────────────────────────────
-// Le bot n'implémente plus A2A : tout est relayé vers le serveur Rust
-// `aphrody a2a serve` (APHRODY_A2A_URL, défaut http://127.0.0.1:8788), comme
-// le site (`apps/site/src/lib/a2a-hub.ts`). Voir ./a2a-proxy.ts.
+// Le bot n'implémente pas A2A. Avec APHRODY_A2A_URL, tout est relayé vers le
+// serveur Rust `aphrody a2a serve` (./a2a-proxy.ts). Sans lui (production depuis
+// le retrait du service Aphrody), la carte et le JSON-RPC sont relayés au hub du
+// site (`/api/a2a`, seul propriétaire des tâches) et `/api/a2a/events` diffuse
+// les événements publics du bot (EventBus) : le flux de la home.
 
 const A2A_CORS = { "Access-Control-Allow-Origin": "*" } as const;
+
+function a2aUpstreamConfigured(): boolean {
+  return Boolean(Bun.env[A2A_URL_ENV]?.trim());
+}
+
+/** Relays one request to the site hub (`/api/a2a`), credentials included. */
+async function siteA2A(init: {
+  method: "GET" | "POST";
+  body?: string;
+  authorization?: string | null;
+}) {
+  const headers: Record<string, string> = { accept: "application/json" };
+  if (init.body !== undefined) headers["content-type"] = "application/json";
+  if (init.authorization) headers.authorization = init.authorization;
+  try {
+    const res = await fetch(`${resolveSiteUrl(Bun.env)}/api/a2a`, {
+      method: init.method,
+      headers,
+      body: init.body,
+      signal: AbortSignal.timeout(30_000),
+    });
+    const text = await res.text();
+    let body: unknown = null;
+    try {
+      body = text ? JSON.parse(text) : null;
+    } catch {
+      body = { error: "a2a_site_non_json", status: res.status };
+    }
+    return { status: res.status, body };
+  } catch (err) {
+    return {
+      status: 502,
+      body: { error: "a2a_site_unreachable", message: (err as Error).message ?? String(err) },
+    };
+  }
+}
+
+/** Public projection of a bot event for the home feed, or `null` to keep it private. */
+export function publicBotEvent(event: { name: string; payload: unknown; ts: number }) {
+  const payload = (event.payload ?? {}) as Record<string, unknown>;
+  if (event.name === "user:level-up" && typeof payload.newLevel === "number") {
+    return { type: "level-up", data: { level: payload.newLevel }, ts: event.ts };
+  }
+  if (event.name === "economy:changed" && payload.kind === "xp") {
+    return { type: "xp", data: {}, ts: event.ts };
+  }
+  return null;
+}
+
+/** SSE of the public bot events (level-ups, XP), with a keep-alive every 25 s. */
+function botEventsStream(req: Request): Response {
+  const bus = container.resolve(EventBusService);
+  const encoder = new TextEncoder();
+  let cleanup = () => {};
+  const stream = new ReadableStream({
+    start(controller) {
+      const send = (data: object) => {
+        try {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        } catch {
+          cleanup();
+        }
+      };
+      send({ type: "ping", ts: Date.now() });
+      const unsub = bus.subscribe((event) => {
+        const visible = publicBotEvent(event);
+        if (visible) send(visible);
+      });
+      const keepAlive = setInterval(() => send({ type: "ping", ts: Date.now() }), 25_000);
+      cleanup = () => {
+        clearInterval(keepAlive);
+        unsub();
+      };
+      req.signal.addEventListener("abort", () => {
+        cleanup();
+        try {
+          controller.close();
+        } catch {}
+      });
+    },
+    cancel() {
+      cleanup();
+    },
+  });
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Accel-Buffering": "no",
+      ...A2A_CORS,
+    },
+  });
+}
 
 function a2aRpcError(id: unknown, code: number, message: string): Response {
   return Response.json({ jsonrpc: "2.0", id, error: { code, message } });
@@ -6684,7 +6780,7 @@ export async function a2aAgentCard(req: Request): Promise<Response> {
   if (req.method !== "GET" && req.method !== "HEAD") {
     return new Response("Method Not Allowed", { status: 405, headers: cors });
   }
-  const reply = await fetchAgentCard();
+  const reply = a2aUpstreamConfigured() ? await fetchAgentCard() : await siteA2A({ method: "GET" });
   const headers: Record<string, string> = { ...cors };
   if (reply.status === 200) headers["Cache-Control"] = "public, max-age=300";
   return a2aReply(reply, headers);
@@ -6722,6 +6818,15 @@ export async function a2aJsonRpc(req: Request): Promise<Response> {
   if (method === "message/send" && !params?.message?.parts?.length) {
     return a2aRpcError(id, -32602, "params.message.parts required");
   }
+  if (!a2aUpstreamConfigured()) {
+    // The site hub owns tasks (tasks/update included) and guards its writes itself.
+    const reply = await siteA2A({
+      method: "POST",
+      body: JSON.stringify(body),
+      authorization: req.headers.get("authorization"),
+    });
+    return a2aReply(reply);
+  }
   if (method === "tasks/update") {
     return a2aRpcError(
       id,
@@ -6749,6 +6854,7 @@ export async function a2aEventsStream(req: Request): Promise<Response> {
       },
     });
   }
+  if (!a2aUpstreamConfigured()) return botEventsStream(req);
   return a2aStreamResponse(await fetchCoordStream());
 }
 

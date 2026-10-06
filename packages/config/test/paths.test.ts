@@ -18,6 +18,7 @@ describe("DATA_PATH_ENV", () => {
       coordDir: ["A2A_COORD_DIR", "COORD_DIR"],
       databooksFreezeFile: ["DATABOOKS_FREEZE_FILE"],
       ragLexique: ["RAG_LEXIQUE"],
+      privateDownloadsDir: ["SHENRON_PRIVATE_DOWNLOADS_DIR"],
     });
   });
 });

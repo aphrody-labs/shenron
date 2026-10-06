@@ -2,17 +2,30 @@
 /**
  * route.ts — Route API A2A de Dragon Ball FR (Next.js 16 App Router).
  *
- * Proxy mince vers le serveur A2A Rust servi par `aphrody a2a serve`
- * (base `APHRODY_A2A_URL`, défaut http://127.0.0.1:8788, voir `@/lib/a2a-hub`) :
- * - GET  /api/a2a                 → AgentCard amont (`/.well-known/agent-card.json`).
- * - GET  /api/a2a?envelopes=1     → boîte aux lettres amont (`/coord`), `{ envelopes, total }`.
- * - POST /api/a2a (enveloppe)     → `/msg`.
- * - POST /api/a2a (JSON-RPC)      → `message/send` vers `/a2a`, méthodes A2A 1.0 vers `/`.
- * Amont injoignable : 502 `a2a_upstream_unreachable`.
+ * Avec `APHRODY_A2A_URL` : proxy mince vers le serveur A2A Rust (`aphrody a2a serve`) ; amont
+ * injoignable : 502 `a2a_upstream_unreachable`. Sans lui (production) : le hub Shenron en
+ * processus répond (`@/lib/a2a-hub`), dialecte historique et A2A 1.0 (`SendMessage`, `GetTask`,
+ * `ListTasks`), stockage durable sous `A2A_COORD_DIR`.
+ * - GET  /api/a2a                 → AgentCard.
+ * - GET  /api/a2a?envelopes=1     → boîte aux lettres, `{ envelopes, total }`.
+ * - POST /api/a2a (enveloppe)     → dépôt d'enveloppe.
+ * - POST /api/a2a (JSON-RPC)      → méthodes A2A.
+ *
+ * Hub en processus : les lectures (`tasks/get`, `tasks/list`, `GetTask`, `ListTasks`, carte)
+ * sont publiques ; toute écriture (ordre, clôture, enveloppe) et la boîte aux lettres exigent
+ * `Bearer SHENRON_A2A_TOKEN`, un jeton admin ou une IP de `SHENRON_ADMIN_IPS`, même sans
+ * `SHENRON_A2A_ENFORCE` : un ordre déposé là s'écrit sur le disque du serveur.
  */
 
 import { NextResponse } from "next/server";
-import { fetchAgentCard, fetchEnvelopes, postEnvelope, postJsonRpc } from "@/lib/a2a-hub";
+import {
+  a2aUpstreamConfigured,
+  fetchAgentCard,
+  fetchEnvelopes,
+  postEnvelope,
+  postJsonRpc,
+} from "@/lib/a2a-hub";
+import { hasValidApiToken } from "@/lib/api-token";
 import { A2A_TOKEN_ENV, a2aDeniedBody, a2aEnforced, decideA2AWrite } from "@shenron/auth/a2a";
 
 export const runtime = "nodejs";
@@ -31,11 +44,29 @@ const CORS_HEADERS = {
  * un avertissement par processus. L'AgentCard et OPTIONS restent publics.
  * Environnement lu à chaque requête, jamais au chargement du module.
  */
-function a2aGuard(request: Request): NextResponse | null {
+/** JSON-RPC methods that only read the in-process hub. */
+const READ_METHODS: ReadonlySet<string> = new Set([
+  "tasks/get",
+  "tasks/list",
+  "GetTask",
+  "ListTasks",
+  "agent/card",
+  "agent/getCard",
+]);
+
+function a2aGuard(request: Request, write = true): NextResponse | null {
   const decision = decideA2AWrite(request.headers, {
     token: process.env[A2A_TOKEN_ENV],
     enforce: a2aEnforced(process.env),
   });
+  if (decision.ok && !a2aUpstreamConfigured() && write) {
+    // In-process hub: writes always need credentials (see the module comment).
+    if (decision.authenticated || hasValidApiToken(request)) return null;
+    return NextResponse.json(
+      { error: "a2a_unauthorized" },
+      { status: 401, headers: { ...CORS_HEADERS, "WWW-Authenticate": "Bearer" } },
+    );
+  }
   if (decision.ok) return null;
   return NextResponse.json(a2aDeniedBody(decision), {
     status: decision.status,
@@ -86,8 +117,6 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const denied = a2aGuard(request);
-  if (denied) return denied;
   let body: unknown;
   try {
     body = await request.json();
@@ -104,6 +133,10 @@ export async function POST(request: Request) {
 
   const isEnvelope =
     !!body && typeof body === "object" && ("kind" in body || "topic" in body || "subject" in body);
+  const method =
+    !isEnvelope && body && typeof body === "object" ? (body as { method?: unknown }).method : null;
+  const denied = a2aGuard(request, !(typeof method === "string" && READ_METHODS.has(method)));
+  if (denied) return denied;
   const reply = isEnvelope ? await postEnvelope(body) : await postJsonRpc(body);
   const status = reply.status >= 300 ? reply.status : isRpcError(reply.body) ? 400 : 200;
   return NextResponse.json(reply.body, { status, headers: CORS_HEADERS });

@@ -2,13 +2,15 @@
  * S5 (docs/architecture/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `aphrody a2a serve`.
  * L'amont Rust est simulé par un serveur Bun local (APHRODY_A2A_URL).
  */
-import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import {
   A2A_ENFORCE_ENV,
   A2A_OPEN_WARNING,
   A2A_TOKEN_ENV,
   resetA2AOpenWarning,
 } from "@shenron/auth/a2a";
+
+mock.module("server-only", () => ({}));
 
 const calls: string[] = [];
 const upstream = Bun.serve({

@@ -10,11 +10,16 @@
  * - POST /a2a                          legacy JSON-RPC `message/send` bridge
  * - POST /                             A2A 1.0 JSON-RPC (SendMessage, GetTask, ListTasks, ...)
  *
- * Base URL: `APHRODY_A2A_URL`, default `http://127.0.0.1:8788` (the `serve --bind`
- * default). Read per call, never at module load.
+ * Base URL: `APHRODY_A2A_URL`. Read per call, never at module load.
+ *
+ * Without `APHRODY_A2A_URL` (production since the Aphrody A2A service was retired on 2026-09-25),
+ * the site answers itself with the in-process Shenron hub (`@shenron/pipeline/aphrody/a2a`):
+ * legacy `message/send`, `tasks/*` and the A2A 1.0 `SendMessage`, `GetTask`, `ListTasks`, with
+ * tasks and envelopes kept in the durable store of `A2A_COORD_DIR`.
  */
 
 import { ShenronA2AHub, type AdminNotifier } from "@shenron/pipeline/aphrody/a2a";
+import { resolveSiteUrl } from "@shenron/config/public-urls";
 import {
   A2A_DEFAULT_URL,
   A2A_URL_ENV,
@@ -37,29 +42,54 @@ export const LEGACY_METHOD_ALIASES: Readonly<Record<string, string>> = {
   "tasks/cancel": "CancelTask",
 };
 
-/** Agent card of the upstream server. */
+/** `true` when an external A2A server is configured; otherwise the in-process hub answers. */
+export function a2aUpstreamConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+  return Boolean(env[A2A_URL_ENV]?.trim());
+}
+
+async function local(run: () => Promise<unknown> | unknown): Promise<UpstreamReply> {
+  try {
+    return { status: 200, body: await run() };
+  } catch (err) {
+    return {
+      status: 503,
+      body: {
+        error: "a2a_store_unavailable",
+        message: err instanceof Error ? err.message : String(err),
+      },
+    };
+  }
+}
+
+/** Agent card: the upstream one, or the hub card on the public site origin. */
 export function fetchAgentCard(): Promise<UpstreamReply> {
-  return fetchA2AAgentCard({ noStore: true });
+  if (a2aUpstreamConfigured()) return fetchA2AAgentCard({ noStore: true });
+  return local(() => getA2AHub().getAgentCard(resolveSiteUrl(process.env)));
 }
 
-/** Last `limit` mailbox envelopes from the upstream JSONL snapshot. */
+/** Last `limit` mailbox envelopes (upstream JSONL snapshot, or the hub store). */
 export function fetchEnvelopes(limit = 100): Promise<UpstreamReply> {
-  return fetchA2AEnvelopes(limit, "application/x-ndjson", { noStore: true });
+  if (a2aUpstreamConfigured()) {
+    return fetchA2AEnvelopes(limit, "application/x-ndjson", { noStore: true });
+  }
+  return local(() => getA2AHub().listStoredEnvelopes(limit));
 }
 
-/** Raw `.coord` envelope → upstream `/msg`. */
+/** Raw `.coord` envelope → upstream `/msg`, or the hub. */
 export function postEnvelope(envelope: unknown): Promise<UpstreamReply> {
-  return postA2AEnvelope(envelope, { noStore: true });
+  if (a2aUpstreamConfigured()) return postA2AEnvelope(envelope, { noStore: true });
+  return local(() => getA2AHub().handleMsgEnvelope(envelope));
 }
 
-/** JSON-RPC: legacy `message/send` → `/a2a`, other methods → A2A 1.0 root. */
+/** JSON-RPC: upstream (legacy `message/send` → `/a2a`, other methods → root), or the hub. */
 export function postJsonRpc(body: unknown): Promise<UpstreamReply> {
-  return postA2AJsonRpc(body, LEGACY_METHOD_ALIASES, { noStore: true });
+  if (a2aUpstreamConfigured())
+    return postA2AJsonRpc(body, LEGACY_METHOD_ALIASES, { noStore: true });
+  return local(() => getA2AHub().handleJsonRpc(body));
 }
 
 // ---------------------------------------------------------------------------
-// In-process hub, still read by `api/admin/dashboard-live` (envelopes/tasks
-// from `.coord`). The public `/api/a2a` route no longer uses it.
+// In-process hub: `/api/a2a` without upstream, and `api/admin/dashboard-live`.
 // ---------------------------------------------------------------------------
 
 let configured = false;

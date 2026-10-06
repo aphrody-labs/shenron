@@ -1,40 +1,84 @@
 {
-  "protocolVersion": "1.0",
-  "name": "Shenron — Dragon Ball France",
-  "description": "The reference Dragon Ball source of dragonballfr.com: query it for any Dragon Ball question (characters, techniques, transformations, sagas, timeline, manga, anime, movies, databooks, canonicity, Japanese names). Answers are sourced from Akira Toriyama's manga and the official databooks, with the URL of every source.",
+  "name": "shenron-dragonball",
+  "description": "Dragon Ball A2A hub of dragonballfr.com: real sourced RAG answers (manga, databooks, wiki; Fandom is never a source), measured OCR and translation status, and an order box for Codex, agy, Claude, local workers and sub-agents (a result exists only once the peer posts it).",
+  "version": "1.0.0",
   "url": "https://dragonballfr.com/api/a2a",
-  "documentationUrl": "https://dragonballfr.com/llms.txt",
+  "protocolVersion": "1.0",
+  "preferredTransport": "JSONRPC",
+  "supportedInterfaces": [
+    {
+      "url": "https://dragonballfr.com/api/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
   "provider": {
-    "organization": "Dragon Ball France",
+    "organization": "Dragon Ball FR",
     "url": "https://dragonballfr.com"
   },
-  "version": "1.0.0",
+  "documentationUrl": "https://dragonballfr.com/llms.txt",
   "capabilities": {
     "streaming": false,
-    "pushNotifications": false
+    "pushNotifications": false,
+    "extendedAgentCard": false,
+    "yoloMode": true
   },
-  "defaultInputModes": ["text/plain"],
-  "defaultOutputModes": ["text/plain", "application/json"],
+  "securitySchemes": {
+    "bearer": {
+      "httpAuthSecurityScheme": {
+        "scheme": "Bearer",
+        "description": "SHENRON_A2A_TOKEN, required for writes when SHENRON_A2A_ENFORCE is on"
+      }
+    }
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/markdown", "application/json"],
+  "supportedTargets": [
+    "codex",
+    "agycli",
+    "claude",
+    "local_model",
+    "rag",
+    "subagents",
+    "ocr",
+    "translation",
+    "broadcast"
+  ],
   "skills": [
     {
-      "id": "dragonball_search",
-      "name": "Sourced Dragon Ball search",
-      "description": "Answers a Dragon Ball question from the wiki, the manga and the databooks, with the URL of each source. Also over HTTP: GET https://dragonballfr.com/api/search?q=…",
-      "tags": ["dragon ball", "wiki", "manga", "databook", "encyclopedia"],
-      "examples": ["When does Goku first turn Super Saiyan?"]
+      "id": "rag_query",
+      "name": "Sourced Dragon Ball RAG",
+      "description": "Real hybrid search over the Shenron index: passages, titles and absolute URLs. FAIT only when at least one passage comes back. Route with metadata.target = \"rag\" or an @rag: prefix.",
+      "tags": ["dragon-ball", "rag", "search", "citations"],
+      "examples": ["@rag: Who trained Goku on King Kai's planet?"]
     },
     {
-      "id": "dragonball_canon",
-      "name": "Canonicity verdict",
-      "description": "Ranks a Dragon Ball claim against the site's canon doctrine and cites its evidence. Also over HTTP: GET https://dragonballfr.com/api/canon?q=…",
-      "tags": ["dragon ball", "canon", "toriyama"],
-      "examples": ["Is the 1993 Broly movie canon?"]
+      "id": "ocr_dispatch",
+      "name": "OCR and translation status",
+      "description": "Measured status (databooks, systemd, results.db, worker heartbeat); an OCR order stays pending until a worker posts its result.",
+      "tags": ["ocr", "translation", "status"],
+      "examples": ["@ocr: status"]
     },
     {
-      "id": "dragonball_manga",
-      "name": "Manga volumes, chapters and pages",
-      "description": "Volumes, chapters and pages of the manga, with transcription and reading URL: https://dragonballfr.com/api/manga",
-      "tags": ["dragon ball", "manga", "chapter"]
+      "id": "subagent_task",
+      "name": "Order delegation",
+      "description": "Drops an order in the A2A box for an agent or sub-agents (codex, agycli, claude, subagents); the task stays submitted/INCOMPLET until the peer posts its result.",
+      "tags": ["delegation", "agents"],
+      "examples": ["@agycli: review the latest wiki contributions"]
+    },
+    {
+      "id": "model_infer",
+      "name": "Order for a local worker",
+      "description": "Drops an order for a local model worker; no model nor VRAM state is claimed without the worker's result.",
+      "tags": ["local-model", "worker"],
+      "examples": ["@local_model: summarise chapter 1"]
+    },
+    {
+      "id": "task_update",
+      "name": "Closure by a peer",
+      "description": "SendMessage (or message/send) with taskId, tasks/update, or an envelope with re: status plus verdict (FAIT needs at least one artifact).",
+      "tags": ["tasks", "honest-delivery"],
+      "examples": []
     }
   ]
 }

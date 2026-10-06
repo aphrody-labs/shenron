@@ -1170,13 +1170,23 @@ pub(crate) async fn canon_references(r: CanonReferencesRequest) -> CallToolResul
 // A2A (the task registry stays on the Shenron site, `/api/a2a`)
 // ---------------------------------------------------------------------------
 
+/// Bearer sent to the site's `/api/a2a`: `SHENRON_A2A_TOKEN`, else the site admin token.
+fn a2a_token() -> Option<String> {
+    ["SHENRON_A2A_TOKEN", "SHENRON_ADMIN_TOKEN", "SHENRON_API_ADMIN_TOKEN"]
+        .into_iter()
+        .find_map(process_env)
+}
+
 async fn a2a_rpc(method: &str, params: Value) -> Result<Value, String> {
     static NEXT_ID: AtomicU64 = AtomicU64::new(1);
     let body = json!({ "jsonrpc": "2.0", "id": NEXT_ID.fetch_add(1, Ordering::Relaxed), "method": method, "params": params });
     let url = format!("{}/api/a2a", site_api_base());
-    let response = client()?
-        .post(&url)
-        .json(&body)
+    let mut request = client()?.post(&url).json(&body);
+    // The site hub accepts writes from its A2A token or an admin token; reads need neither.
+    if let Some(token) = a2a_token() {
+        request = request.bearer_auth(token);
+    }
+    let response = request
         .timeout(DEFAULT_TIMEOUT)
         .send()
         .await
