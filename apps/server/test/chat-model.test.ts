@@ -193,7 +193,10 @@ describe("startChatModel", () => {
     expect(argv[argv.indexOf("--models-max") + 1]).toBe("1");
     const preset = await Bun.file(join(dir, "preset.ini")).text();
     expect(preset).toContain(`[${CHAT_MODEL_IDS.shenron}]\nmodel = ${base}\nlora = ${adapter}`);
-    expect(preset).not.toContain(GEMMA_MODEL.id);
+    // Gemma 4 E2B not yet on disk is declared at its download path: no router restart later.
+    expect(preset).toContain(
+      `[${GEMMA_MODEL.id}]\nmodel = ${join(paths.home, "models", GEMMA_MODEL.file)}`,
+    );
 
     const catalog = await model.catalog();
     expect(catalog.map((e) => [e.id, e.state, e.default, e.available])).toEqual([

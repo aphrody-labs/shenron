@@ -259,6 +259,11 @@ export async function startBackend(
     env: plan.env,
     spawn: o.spawnEngine,
   });
+  // The chat model (download, llama-server, warm-up) is the longest step of a cold start: it
+  // begins before the MCP sidecar is awaited, and needs nothing from it.
+  const chatModel: ChatModel | null = plan.chatModel
+    ? startChatModel(plan.chatModel, plan.env)
+    : null;
   let sidecar: McpSidecar | null = null;
   let sidecarFailed = false;
   if (plan.mcpSidecar) {
@@ -270,9 +275,6 @@ export async function startBackend(
       console.error(JSON.stringify({ event: "shenron.mcp.sidecar_failed", error: String(error) }));
     }
   }
-  const chatModel: ChatModel | null = plan.chatModel
-    ? startChatModel(plan.chatModel, plan.env)
-    : null;
   let host: HostApi | null = null;
   try {
     host = (o.createHost ?? createLocalApi)(plan.env, {

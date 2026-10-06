@@ -336,6 +336,8 @@ export function startChatModel(
           lora: null,
         };
   const slots = [shenron, ...(gemmaSlot ? [gemmaSlot] : [])];
+  /** Where the server's own downloader puts Gemma 4 E2B (declared to the router in advance). */
+  const gemmaPath = join(plan.modelsDir, GEMMA_MODEL.file);
   let router: ReturnType<typeof Bun.spawn> | null = null;
   let routerUp = false;
   let stopped = false;
@@ -404,7 +406,13 @@ export function startChatModel(
     await Bun.write(
       presets,
       routerPresets(
-        slots.filter((slot) => slot.state === "ready"),
+        [
+          ...slots.filter((slot) => slot.state === "ready"),
+          // Gemma 4 E2B still downloading is declared at its final path: the router loads it on
+          // demand once the file is there, so the end of its download never restarts the router
+          // (which would unload and reload the default model).
+          ...(gemmaSlot && gemmaSlot.state !== "ready" ? [{ ...gemmaSlot, model: gemmaPath }] : []),
+        ],
         config.ctx,
       ),
     );
@@ -549,8 +557,11 @@ export function startChatModel(
         gemmaSlot.state = "ready";
         gemmaSlot.progress = null;
         gemmaSlot.detail = null;
-        // The router reads its presets at start: restart it with the new model.
-        if (shenron.state === "ready" && (await startRouter())) await warmUp();
+        // The router reads its presets at start: it already knows the file at gemmaPath;
+        // a model found elsewhere (the Aphrody store) needs a restart with the new presets.
+        if (path !== gemmaPath || !routerUp || !alive()) {
+          if (shenron.state === "ready" && (await startRouter())) await warmUp();
+        }
         return gemmaSlot.state === "ready";
       } catch (error) {
         fail(gemmaSlot, `téléchargement : ${String(error).slice(0, 160)}`);

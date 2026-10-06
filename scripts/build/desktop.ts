@@ -62,68 +62,61 @@ async function run(command: string[], cwd: string, env: Record<string, string> =
   if ((await child.exited) !== 0) throw new Error(`${command.slice(0, 3).join(" ")} failed`);
 }
 
-// 1. Sidecar: the autonomous server binary of the same target.
+const withMcp = !args.includes("--skip-mcp");
+const withKoharuSdk = !args.includes("--skip-koharu-sdk");
+const withServer = !args.includes("--skip-server");
+const release = join(ROOT, "target", SPEC.triple, "release");
+
+// 0. Every Rust artifact of the target in one Cargo invocation (one lock, one feature
+// resolution, one remote job from WSL): the native library of shenron-server (shenron-ffi:
+// local RAG, chat memory), the MCP sidecar with the scanlation tools (`koharu`), the editor
+// engine sidecar with native file pickers (koharu-sdk, `desktop`) and the app itself
+// (`custom-protocol`, as `cargo tauri build` asks). The runner reuses these artifacts when the
+// Tauri build asks for the app again from the same worktree.
+await run(
+  [
+    process.execPath,
+    runner,
+    "build",
+    "--release",
+    "-p",
+    "shenron-desktop",
+    "--bin",
+    "shenron-desktop",
+    ...(withServer ? ["-p", "shenron-ffi", "--lib"] : []),
+    ...(withMcp ? ["-p", "shenron-mcp", "--bin", "shenron-mcp"] : []),
+    ...(withKoharuSdk ? ["-p", "koharu-library", "--bin", "koharu-sdk"] : []),
+    "--features",
+    [
+      "shenron-desktop/custom-protocol",
+      ...(withMcp ? ["shenron-mcp/koharu"] : []),
+      ...(withKoharuSdk ? ["koharu-library/desktop"] : []),
+    ].join(","),
+    "--target",
+    SPEC.triple,
+  ],
+  ROOT,
+  env,
+);
+
+// 1. Sidecar: the autonomous server binary of the same target (it embeds the fresh shenron-ffi).
 const server = join(ROOT, "dist/server", target, `shenron-server${SPEC.exe}`);
-if (!args.includes("--skip-server") || !existsSync(server)) {
+if (withServer || !existsSync(server)) {
   await run([process.execPath, join(ROOT, "scripts/build/server.ts"), "--target", target], ROOT);
 }
 const binaries = join(CRATE, "binaries");
 mkdirSync(binaries, { recursive: true });
 copyFileSync(server, join(binaries, `shenron-server-${SPEC.triple}${SPEC.exe}`));
 
-// 1b. MCP sidecar of the same target (cargo, or cargo-xwin for MSVC from Linux, via the runner).
-// The desktop ships the Koharu engine, so its sidecar registers the scanlation tools (`koharu`).
-const withMcp = !args.includes("--skip-mcp");
+// 1b. MCP sidecar: shenron-server starts it from beside itself.
 const mcpSidecar = join(binaries, `shenron-mcp-${SPEC.triple}${SPEC.exe}`);
 rmSync(mcpSidecar, { force: true });
-if (withMcp) {
-  await run(
-    [
-      process.execPath,
-      runner,
-      "build",
-      "--release",
-      "-p",
-      "shenron-mcp",
-      "--features",
-      "koharu",
-      "--target",
-      SPEC.triple,
-    ],
-    ROOT,
-    env,
-  );
-  copyFileSync(join(ROOT, "target", SPEC.triple, "release", `shenron-mcp${SPEC.exe}`), mcpSidecar);
-}
+if (withMcp) copyFileSync(join(release, `shenron-mcp${SPEC.exe}`), mcpSidecar);
 
-// 1c. Editor engine sidecar (koharu-sdk, with native file pickers) of the same target.
-const withKoharuSdk = !args.includes("--skip-koharu-sdk");
+// 1c. Editor engine sidecar.
 const koharuSidecar = join(binaries, `koharu-sdk-${SPEC.triple}${SPEC.exe}`);
 rmSync(koharuSidecar, { force: true });
-if (withKoharuSdk) {
-  await run(
-    [
-      process.execPath,
-      runner,
-      "build",
-      "--release",
-      "-p",
-      "koharu-library",
-      "--bin",
-      "koharu-sdk",
-      "--features",
-      "desktop",
-      "--target",
-      SPEC.triple,
-    ],
-    ROOT,
-    env,
-  );
-  copyFileSync(
-    join(ROOT, "target", SPEC.triple, "release", `koharu-sdk${SPEC.exe}`),
-    koharuSidecar,
-  );
-}
+if (withKoharuSdk) copyFileSync(join(release, `koharu-sdk${SPEC.exe}`), koharuSidecar);
 
 // 1d. Local chat model: the pinned llama.cpp runtime and the digest-checked Shenron adapter,
 // installed as resources (`llama/`, `models/`); shenron-server finds them through
