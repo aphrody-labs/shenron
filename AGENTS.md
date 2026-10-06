@@ -10,7 +10,7 @@ traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de 
 et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
 et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
 auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
-Sessions cloud et locales : aucun outil n'est interdit (Cargo, Git, Bun, Python via `uv`, utilitaires shell), sans hook ni confirmation ; depuis WSL, le Cargo lourd passe par le VPS. Les règles de données (`db:push`, sources éditoriales) restent en vigueur.
+Sessions cloud et locales : aucun outil n'est interdit (Cargo, Git, Bun, Python via `uv`, utilitaires shell), sans hook ni confirmation ; depuis WSL, le Cargo lourd passe par les deux VPS de build (tunnel `vps-cargo.ts` d'Aphrody, voir `docs/development/rust.md`) et WSL ne fait que le Bun. Les règles de données (`db:push`, sources éditoriales) restent en vigueur.
 
 Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) indexe le code localement, sans LLM (`.graphifyignore`). `graphify update .` construit ou rafraîchit le graphe ; préférer `graphify query "<question>"`, `graphify explain` ou `graphify path` aux greps larges quand `graphify-out/graph.json` existe (sortie locale, ignorée par Git).
 
@@ -192,5 +192,6 @@ Lancer et construire :
 - Manga, scans et déclarations d'Akira Toriyama priment ; Fandom est interdit comme source.
   Aucune écriture OCR/traduction pendant un gel des databooks ; `rag:build` jamais au premier
   plan ni sur le bot de production.
+- Accueil et shell du site : logo style DB Super, nuage Kinto'un et vidéos par section restent ; admin séparé du public ; nouvelles puis mini-jeux en bas ; rien de visible ne se supprime sans accord (`docs/products/accueil-et-shell.md`).
 - Données privées (bases, corpus, identifiants, `data/home/`, `.env`) : jamais dans Git ni
   dans un artefact public ; le build public passe une garde (`scripts/build/server.ts`).

@@ -175,6 +175,22 @@ tenus ici.
   terminées ; contrôler l'espace disque avant `bxc crawl-worker` ; exclure
   images, CSS, JavaScript et binaires des files éditoriales.
 
+## Paquets et builds (mesurés le 2026-10-06)
+
+- **`@aphrody/m3-motion` 3.3.4 casse le build Next** : ses sources importent
+  `./components/M3Collapse.js` alors que seul le `.tsx` est livré. `apps/site/next.config.ts`
+  résout m3-motion, m3-theme et m3-tokens sur leur `dist/` ; la 3.3.6 corrige les imports.
+- **`scripts/ops/release.ts` ne gère pas `--help`** : il lance une vraie release. Lire le
+  script, jamais l'appeler pour son aide.
+- **Le WASM de koharu-canvas n'est pas suivi par Git** : sur un arbre propre (CI, worktree,
+  installeur), `packages/koharu/src/wasm/` reste vide tant que
+  `bun --filter @shenron/koharu build:wasm` n'a pas tourné, et `/studio` comme l'audit des
+  paquets cassent.
+- **`minimumReleaseAge` bloque une version `@aphrody/*` publiée le jour même** : l'exclusion
+  se déclare dans `bunfig.toml`.
+- **Un sprint UI peut effacer l'identité du site** : voir
+  [`products/accueil-et-shell.md`](../products/accueil-et-shell.md).
+
 ## Outils
 
 - **Le répertoire courant persiste entre appels du shell d'agent** : enfermer

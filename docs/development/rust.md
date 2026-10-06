@@ -126,8 +126,17 @@ Next exclues.
   `APHRODY_CARGO_SERIAL=~/aphrody/scripts/build/rust/cargo-serial.sh` : `bun run *:rust`, `just`
   et le runner de `cargo tauri build` (`scripts/build/rust/cargo-runner.ts`) passent alors par lui
   (`scripts/build/rust/cargo.ts`).
-- Sous WSL, ce wrapper refuse les commandes lourdes (build, test, clippy…) qui relèvent de la
-  fabrique d'Aphrody ; les compilations de Shenron sont locales : `APHRODY_LOCAL_CARGO=1`.
+- Sous WSL, ce wrapper refuse les commandes lourdes (build, test, clippy…). Le Rust lourd de
+  Shenron passe par le tunnel Cargo d'Aphrody (`vps-cargo.ts run --repo shenron`, dans
+  `~/aphrody/scripts/build/rust/`), qui compile l'arbre de travail exact sur les deux VPS de
+  build déclarés dans `~/aphrody/config/host/vps-cargo.json`. Le runner de `cargo tauri build`
+  (`scripts/build/rust/cargo-runner.ts`) choisit le dépôt du tunnel qui correspond à l'arbre
+  de travail. Répartir les jobs indépendants sur les deux hôtes (une cible par hôte). Le second
+  hôte porte la base de production : ses builds tournent sous cgroup (`MemoryMax=7G`,
+  `CPUQuota=450%`), sans accès GitHub (les dépendances git d'Aphrody passent par le tunnel).
+  WSL ne fait que le Bun (installation, tests, typecheck, `build:server`).
+  `APHRODY_LOCAL_CARGO=1` force une compilation locale, réservée aux crates légères à cache
+  chaud.
 - sccache reste un réglage local (`RUSTC_WRAPPER=sccache` ou `build.rustc-wrapper` dans
   `~/.cargo/config.toml`), comme le nombre de jobs (`CARGO_BUILD_JOBS`).
 - nextest se limite à 6 processus par défaut (`-j` ou `NEXTEST_TEST_THREADS` pour changer).
