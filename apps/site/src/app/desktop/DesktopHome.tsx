@@ -225,29 +225,64 @@ export function DesktopHome() {
   );
   // The chat selector reloads only when the set of usable models changes, not at every poll.
   const usableModels = useRef("");
-  const onModelsChange = useCallback((models: ChatModelView[]) => {
-    const usable = models
-      .filter((m) => m.available)
-      .map((m) => m.id)
-      .join(",");
-    if (usable === usableModels.current) return;
-    usableModels.current = usable;
-    setModelsKey((n) => n + 1);
-  }, []);
+  // First launch: every local model downloads by itself, one after the other (the default one
+  // first, started by the server), without a click. Once per model and per window.
+  const autoInstalled = useRef(new Set<string>());
+  const onModelsChange = useCallback(
+    (models: ChatModelView[]) => {
+      if (!models.some((m) => m.state === "downloading" || m.state === "loading")) {
+        const next = models.find(
+          (m) =>
+            !m.remote &&
+            m.state === "installable" &&
+            m.installUrl &&
+            !autoInstalled.current.has(m.id),
+        );
+        if (next) {
+          autoInstalled.current.add(next.id);
+          void modelsTransport.install(next);
+        }
+      }
+      const usable = models
+        .filter((m) => m.available)
+        .map((m) => m.id)
+        .join(",");
+      if (usable === usableModels.current) return;
+      usableModels.current = usable;
+      setModelsKey((n) => n + 1);
+    },
+    [modelsTransport],
+  );
   const formatDate = useMemo(() => {
     const format = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" });
     return (iso: string) => format.format(new Date(iso));
   }, [locale]);
 
-  useEffect(() => {
-    fetch("/api/local/health", { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok && response.status !== 503) throw new Error(`HTTP ${response.status}`);
-        setHealth((await response.json()) as Health);
-        return undefined;
-      })
-      .catch(() => setOffline(true));
+  const loadHealth = useCallback(async () => {
+    try {
+      const response = await fetch("/api/local/health", { cache: "no-store" });
+      if (!response.ok && response.status !== 503) throw new Error(`HTTP ${response.status}`);
+      setHealth((await response.json()) as Health);
+      setOffline(false);
+    } catch {
+      setOffline(true);
+    }
   }, []);
+
+  useEffect(() => {
+    void loadHealth();
+  }, [loadHealth]);
+
+  // While the chat model downloads or loads, its state (and the percentage of its reason) moves:
+  // re-read the health until chat and models are available.
+  const settling =
+    health !== null &&
+    (health.groups?.chat?.available === false || health.groups?.models?.available === false);
+  useEffect(() => {
+    if (!settling) return;
+    const timer = setInterval(() => void loadHealth(), 3000);
+    return () => clearInterval(timer);
+  }, [settling, loadHealth]);
 
   // Without the local server (plain browser) or without `groups` (older server), the chat
   // and its history count as unavailable rather than checking forever.
