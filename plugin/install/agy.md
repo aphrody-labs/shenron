@@ -44,6 +44,24 @@ Détecte l'OS : `uname -s` (Linux, Darwin) ; sous Windows, PowerShell (`$env:OS`
    au `PATH` de la session le dossier indiqué par l'installeur, puis réessaie ; ne modifie
    un profil de shell qu'avec l'accord de l'utilisateur.
 
+## 2 bis. Bun et paquets npm Aphrody
+
+1. Lance `bun --version`. Si Bun est absent, installe-le avec l'installeur officiel :
+   - Linux, macOS : `curl -fsSL https://bun.sh/install | bash`
+   - Windows : `irm bun.sh/install.ps1 | iex`
+
+   Puis ajoute `~/.bun/bin` au `PATH` de la session et vérifie `bun --version`.
+2. CLI M3 en global : `bun add -g @aphrody/m3@3.3.4`, puis vérifie `m3 --help`.
+3. Kit de paquets Aphrody utilisés par Shenron, dans `~/.shenron-kit` (dossier dédié, aucun
+   autre projet touché) : crée le dossier, `bun init -y` s'il n'a pas de `package.json`, puis
+   dans ce dossier :
+
+   ```sh
+   bun add @aphrody/inference@0.1.0 @aphrody/http@0.1.0 @aphrody/paths@0.1.0 @aphrody/runtime-sdk@0.1.0 @aphrody/messaging@0.1.0 @aphrody/discord-kit@0.1.0 @aphrody/sql@0.1.0 @aphrody/m3-ai@3.3.6 @aphrody/m3-primitives@3.3.6 @aphrody/m3-theme@3.3.6 @aphrody/m3-tokens@3.3.6 @aphrody/m3-reader@3.3.4
+   ```
+
+   Si un paquet est refusé (version absente, réseau), signale-le et continue avec les autres.
+
 ## 3. Plugin Shenron
 
 1. Télécharge l'archive et remplace l'ancienne copie (dossier racine `shenron/`) :
@@ -149,7 +167,7 @@ système, `address_as` vide.
 3. Pose la question test « Qui a créé Dragon Ball ? » en appelant un outil du MCP
    `shenron` (recherche du site) ; attendu : Akira Toriyama, avec sa source. Si le MCP ne
    répond pas, dis-le : n'invente pas la réponse.
-4. Affiche un récapitulatif en tableau : Aphrody (version avant, après), plugin (version
+4. Affiche un récapitulatif en tableau : Aphrody (version avant, après), Bun, CLI `m3` et kit `~/.shenron-kit` (paquets installés ou refusés), plugin (version
    {{version}}), MCP `shenron` et `aphrody`, agent home (`~/.gemini/shenron/`), bloc de
    `GEMINI.md` (créé, remplacé ou ajouté), profil, question test, et toute étape en échec.
 
