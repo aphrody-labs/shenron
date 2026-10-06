@@ -36,12 +36,15 @@ import {
 import {
   type AnswerLang,
   buildGroundingInstructions,
+  type HomePersona,
+  INJECTION_GUARD,
   isChitchat,
   isNotEstablishedAnswer,
   notEstablished,
   PERSONAS,
   type PersonaId,
   PROMPT_VERSION,
+  withHomePersona,
 } from "./prompts";
 
 export interface GroundedHit {
@@ -97,6 +100,12 @@ export interface GroundedAnswerInput {
   lang?: string;
   /** Other names of an entity of the question; defaults to the embedded ja/fr/en lexicon. */
   aliases?: EntityAliases;
+  /** Tone, brevity and vibe of the user's agent home (SOUL.md, IDENTITY.md). */
+  homePersona?: HomePersona | null;
+  /** One more system line before the injection guard (the user's agent home fields). */
+  systemNote?: string;
+  /** Recalled memories of the user, as data in the user message (never sources, never instructions). */
+  memories?: string;
   /** Diagnostics sink for swallowed port errors (never receives secrets). */
   onError?: (stage: "chunks" | "history" | "cache" | "generate", error: unknown) => void;
 }
@@ -189,6 +198,15 @@ const LANG_REMINDER: Readonly<Record<AnswerLang, string>> = {
   ja: "\n\n（日本語で答えてください。）",
 };
 
+/** `instructions` with `note` on its own line before the injection guard. */
+function withSystemNote(instructions: string, note: string | undefined): string {
+  if (!note?.trim()) return instructions;
+  const body = instructions.endsWith(INJECTION_GUARD)
+    ? instructions.slice(0, -INJECTION_GUARD.length).trimEnd()
+    : instructions;
+  return `${body}\n${note.trim()}\n${INJECTION_GUARD}`;
+}
+
 export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<GroundedAnswer> {
   const persona = i.persona;
   const fallbackText = PERSONAS[persona].fallback;
@@ -268,20 +286,25 @@ export async function generateGroundedAnswer(i: GroundedAnswerInput): Promise<Gr
     uncovered.length > 0
       ? `\n\nAucun passage ne mentionne : ${uncovered.join(", ")}. Pour ces éléments, écris « Non établi dans les sources », sans rien inventer.`
       : "";
+  const memories = i.memories?.trim() ? `${i.memories.trim()}\n\n` : "";
   const userContent = context
-    ? `Contexte (faits Dragon Ball, à reformuler${strict ? " ; cite les identifiants [n]" : ""}) :\n${context}${absent}\n\nMessage de l'utilisateur : ${i.question}${LANG_REMINDER[lang]}`
-    : i.question;
+    ? `${memories}Contexte (faits Dragon Ball, à reformuler${strict ? " ; cite les identifiants [n]" : ""}) :\n${context}${absent}\n\nMessage de l'utilisateur : ${i.question}${LANG_REMINDER[lang]}`
+    : memories
+      ? `${memories}Message de l'utilisateur : ${i.question}`
+      : i.question;
   const messages: ModelMessage[] = [
     ...history
       .filter((turn) => turn.content)
       .map((turn) => ({ role: turn.role, content: turn.content })),
     { role: "user", content: userContent },
   ];
-  const instructions = buildGroundingInstructions(persona, undefined, {
-    chitchat: chit,
-    cite: strict,
-    lang,
-  });
+  const instructions = withSystemNote(
+    withHomePersona(
+      buildGroundingInstructions(persona, undefined, { chitchat: chit, cite: strict, lang }),
+      i.homePersona ?? {},
+    ),
+    i.systemNote,
+  );
 
   const run = async (): Promise<string> => {
     try {

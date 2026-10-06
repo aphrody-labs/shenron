@@ -276,6 +276,35 @@ accès. Routes : `GET /api/v1/memory`, `POST /api/v1/memory/{id}/delete`,
 | `SHENRON_MEMORY_RECALL` | souvenirs joints à un tour (0–20 ; 0 écrit sans rappeler)                 | `5`                               |
 | `SHENRON_MEMORY_REMOTE` | `off` retire les souvenirs du prompt des backends distants (`gemini-web`) | active : tous les backends        |
 
+## Chat du bot en messages privés — `@shenron/config/dm-chat`, `apps/bot/src/events/DirectMessageRelay.ts`
+
+Tout membre de la guilde `GUILD_ID` reçoit une réponse du modèle en DM (persona Shenron, agent
+home `discord:<id>` et sa mémoire) ; un non-membre, banni compris, reçoit un refus unique. Le
+modèle de production (Gemma 4 E2B sur CPU, environ 15 tokens/s) sert peu de requêtes à la fois :
+chaque DM passe par une file globale bornée, un utilisateur n'a qu'une requête en cours et un
+quota par fenêtre ; les owners ne sont pas limités et passent en tête de file. Pas de streaming
+(le serveur de chat répond d'un bloc) : l'indicateur « en train d'écrire » reste affiché
+pendant la génération. Textes visibles : `apps/bot/src/locales/{fr,en,ja}.json`, langue
+détectée dans le message.
+
+| Variable                     | Rôle                                                           | Défaut |
+| ---------------------------- | -------------------------------------------------------------- | ------ |
+| `SHENRON_DM_CHAT`            | `off` : seuls les owners obtiennent une réponse du modèle      | active |
+| `SHENRON_DM_CONCURRENCY`     | générations simultanées, toutes conversations confondues (1–8) | `2`    |
+| `SHENRON_DM_QUEUE_MAX`       | demandes en attente au-delà (0–200) ; position annoncée        | `20`   |
+| `SHENRON_DM_USER_MESSAGES`   | réponses par utilisateur et par fenêtre (1–100)                | `5`    |
+| `SHENRON_DM_USER_WINDOW_S`   | durée de cette fenêtre, en secondes (10–86400)                 | `600`  |
+| `SHENRON_DM_TIMEOUT_S`       | délai d'une génération, attente en file exclue (5–600)         | `90`   |
+| `SHENRON_DM_MAX_TOKENS`      | `max_tokens` envoyé au serveur de chat direct (32–2048)        | `320`  |
+| `SHENRON_DM_MAX_CHARS`       | longueur de la réponse envoyée, coupée à une phrase (200–2000) | `1800` |
+| `SHENRON_DM_MAX_INPUT_CHARS` | caractères du message gardés pour la génération (100–4000)     | `1000` |
+
+Mémoire : celle de l'agent home (`aphrody-memory` via `shenron-ffi`), active seulement quand
+`SHENRON_FFI_LIB` désigne la bibliothèque native ; fichier `SHENRON_MEMORY_DB`, sinon
+`memory.sqlite` à côté de `DATABASE_PATH` (`SHENRON_MEMORY`, `SHENRON_MEMORY_RECALL` comme
+ci-dessus). Sans elle, le chat répond sans mémoire persistante (l'historique Redis de session
+reste).
+
 ## Bot Discord — `apps/bot/src/lib/env.ts`
 
 Validées par zod ; un identifiant absent désactive la fonctionnalité concernée. Modèle commenté :

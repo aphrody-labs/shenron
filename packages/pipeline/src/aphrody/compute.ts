@@ -255,7 +255,7 @@ export function aphrodyComputeFromChat(chat: ChatFn): AphrodyCompute {
  */
 export function createOpenAiChat(
   endpoint: Pick<DirectChatEndpoint, "baseUrl" | "model">,
-  options: { fetcher?: typeof fetch; timeoutMs?: number } = {},
+  options: { fetcher?: typeof fetch; timeoutMs?: number; maxTokens?: number } = {},
 ): ChatFn {
   const url = new URL(`${endpoint.baseUrl.href.replace(/\/+$/, "")}/chat/completions`);
   return async (messages, model) => {
@@ -264,7 +264,13 @@ export function createOpenAiChat(
     const res = await doFetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ model: id, messages, stream: false }),
+      body: JSON.stringify({
+        model: id,
+        messages,
+        stream: false,
+        // Bounded generation: on a CPU-only server the answer length is the latency.
+        ...(options.maxTokens ? { max_tokens: options.maxTokens } : {}),
+      }),
       signal: AbortSignal.timeout(options.timeoutMs ?? chatTimeoutMs(id)),
     });
     if (!res.ok) throw new Error(`Aphrody compute HTTP ${res.status} on ${url.pathname}`);

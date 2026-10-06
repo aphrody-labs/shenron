@@ -247,3 +247,32 @@ describe("generateGroundedAnswer", () => {
     expect(prompt[1]).toMatchObject({ role: "user", content: [{ type: "text", text: "Bonjour" }] });
   });
 });
+
+describe("generateGroundedAnswer — agent home and memories", () => {
+  test("home persona and system note precede the injection guard; memories reach the user turn", async () => {
+    let prompt: unknown[] = [];
+    const model = new MockLanguageModelV4({
+      modelId: "gemma4-e2b",
+      doGenerate: async (options) => {
+        prompt = options.prompt;
+        return result("Bonjour !");
+      },
+    });
+    await generateGroundedAnswer({
+      model,
+      persona: "shenron",
+      question: "bonjour",
+      hits: [],
+      chunks: { contentFor: async () => new Map() },
+      homePersona: { tone: "chaleureux" },
+      systemNote: 'Agent home of the user: Address the user as "Kakarot".',
+      memories: "Souvenirs : - j'adore Piccolo",
+    });
+    const [system, user] = prompt as { role: string; content: unknown }[];
+    const instructions = String(system?.content);
+    expect(instructions).toContain("chaleureux");
+    expect(instructions).toContain('"Kakarot"');
+    expect(instructions.endsWith(INJECTION_GUARD)).toBe(true);
+    expect(JSON.stringify(user?.content)).toContain("j'adore Piccolo");
+  });
+});

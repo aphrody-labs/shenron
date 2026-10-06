@@ -98,3 +98,15 @@ export function agentHomeFromDir(dir: string): AgentHome {
   };
   return fromTexts(read("SOUL.md"), read("IDENTITY.md"), "dir", read("USER.md"));
 }
+
+/** Agent home from a stored snapshot (`@shenron/db/agent-homes`: cloud PostgreSQL, bot). */
+export function agentHomeFromSnapshot(home: {
+  files: Partial<Record<"SOUL.md" | "IDENTITY.md" | "USER.md", string>>;
+}): AgentHome {
+  return fromTexts(
+    home.files["SOUL.md"] ?? null,
+    home.files["IDENTITY.md"] ?? null,
+    "dir",
+    home.files["USER.md"] ?? null,
+  );
+}

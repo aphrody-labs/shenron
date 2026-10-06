@@ -1,0 +1,12 @@
+{
+  "dm": {
+    "notMember": "This private chat is for members of the Dragon Ball FR server. Join it to talk with me.",
+    "busy": "I am still answering your previous message: wait a moment before sending another one.",
+    "rateLimited": "You reached the limit of {limit} messages in {minutes} min. Try again in {wait} min.",
+    "queued": "Several people are talking to me right now: you are number {position} in the queue, I will answer as soon as I can.",
+    "queueFull": "Too many requests right now. Try again in a few minutes.",
+    "timeout": "The answer took too long. Ask a shorter question or try again later.",
+    "unavailable": "The model is unavailable for the moment. Try again a little later.",
+    "attachmentOnly": "I only read the text of private messages: write me your question."
+  }
+}

@@ -42,8 +42,27 @@ import {
   resolvePersona,
 } from "@shenron/pipeline/ai/prompts";
 import { createResilientRedis, type ResilientRedis } from "@shenron/db/redis";
+import type { HomePersona } from "@shenron/pipeline/ai/prompts";
 import type { RagHit } from "./rag";
 import { resolveRedisUrl } from "@shenron/config/services";
+
+/** Options of one generation; the DM relay adds the user's agent home and bounds. */
+export interface LlmOptions {
+  sessionId?: string;
+  cache?: SemanticCachePort;
+  lang?: string;
+  /** Tone, brevity and vibe of the user's agent home. */
+  homePersona?: HomePersona | null;
+  /** System line of the user's agent home fields (`homeUserNote`). */
+  systemNote?: string;
+  /** Recalled memories, as data (`memoryBlock`). */
+  memories?: string;
+  /** Tokens the direct chat server may generate. */
+  maxTokens?: number;
+  /** Timeout of the direct chat request, in milliseconds. */
+  timeoutMs?: number;
+  abortSignal?: AbortSignal;
+}
 
 type SemanticCachePort = Pick<
   typeof import("./semantic-cache"),
@@ -212,7 +231,7 @@ export async function generateLlmAnswer(
   query: string,
   hits: RagHit[],
   personaId = "shenron",
-  opts: { sessionId?: string; cache?: SemanticCachePort; lang?: string } = {},
+  opts: LlmOptions = {},
 ): Promise<string> {
   const result = await generateLlmGrounded(db, query, hits, personaId, opts);
   return stripCitationMarkers(result.answer);
@@ -224,7 +243,7 @@ export async function generateLlmGrounded(
   query: string,
   hits: RagHit[],
   personaId = "shenron",
-  opts: { sessionId?: string; cache?: SemanticCachePort; lang?: string } = {},
+  opts: LlmOptions = {},
 ): Promise<GroundedAnswer> {
   const pid = resolvePersona(personaId);
   // Gemma réside dans le processus Bun et utilise le SOUL dbfr. Le transport HTTP
@@ -244,9 +263,17 @@ export async function generateLlmGrounded(
       if (!direct.ok)
         throw new Error(direct.issues.map((i) => `${i.name} ${i.problem}`).join("; "));
       model = direct.value
-        ? createAphrodyChatModel(aphrodyComputeFromChat(createOpenAiChat(direct.value)), {
-            modelId: direct.value.model,
-          })
+        ? createAphrodyChatModel(
+            aphrodyComputeFromChat(
+              createOpenAiChat(direct.value, {
+                ...(opts.timeoutMs ? { timeoutMs: opts.timeoutMs } : {}),
+                ...(opts.maxTokens ? { maxTokens: opts.maxTokens } : {}),
+              }),
+            ),
+            {
+              modelId: direct.value.model,
+            },
+          )
         : createAphrodyChatModel(new AphrodyComputeClient().compute, {
             modelId: aphrodyModel(),
           });
@@ -305,6 +332,10 @@ export async function generateLlmGrounded(
     contextLimits: { perHit: CONTEXT_CHARS_PER_HIT, total: CONTEXT_CHARS_TOTAL },
     historyTurns: HISTORY_TURNS,
     ...(opts.lang ? { lang: opts.lang } : {}),
+    ...(opts.homePersona ? { homePersona: opts.homePersona } : {}),
+    ...(opts.systemNote ? { systemNote: opts.systemNote } : {}),
+    ...(opts.memories ? { memories: opts.memories } : {}),
+    ...(opts.abortSignal ? { abortSignal: opts.abortSignal } : {}),
     onError: (stage, err) => {
       const message = err instanceof Error ? err.message : String(err);
       if (stage === "generate") console.error("[LLM] Échec génération Aphrody:", message);

@@ -1,0 +1,12 @@
+{
+  "dm": {
+    "notMember": "Ce chat privé est réservé aux membres du serveur Dragon Ball FR. Rejoins-le pour discuter avec moi.",
+    "busy": "Je réponds encore à ton message précédent : patiente un instant avant d'en envoyer un autre.",
+    "rateLimited": "Tu as atteint la limite de {limit} messages en {minutes} min. Réessaie dans {wait} min.",
+    "queued": "Plusieurs personnes me parlent en ce moment : tu es en position {position} dans la file, je te réponds dès que possible.",
+    "queueFull": "Trop de demandes en ce moment. Réessaie dans quelques minutes.",
+    "timeout": "La réponse a pris trop de temps. Pose une question plus courte ou réessaie plus tard.",
+    "unavailable": "Le modèle est momentanément indisponible. Réessaie un peu plus tard.",
+    "attachmentOnly": "Je ne lis que le texte des messages privés : écris-moi ta question."
+  }
+}

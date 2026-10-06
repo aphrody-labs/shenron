@@ -6,7 +6,16 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";
 import { dmContacts, dmMessages } from "~/db/schema";
 import { logger } from "~/lib/logger";
-import { isBotOwner } from "~/lib/env";
+import { env, isBotOwner } from "~/lib/env";
+import { resolveDmChat } from "@shenron/config/dm-chat";
+import { homeUserNote, agentHomeFromSnapshot } from "@shenron/api/chat";
+import type { AgentHomeSnapshot } from "@shenron/db/agent-homes";
+import { resolveAnswerLang, stripCitationMarkers } from "@shenron/pipeline/ai/grounding";
+import { boundReply, DmChatGate, DmTimeoutError, keepTyping, withTimeout } from "~/lib/dm-chat";
+import { type DmMemory, nativeDmMemory } from "~/lib/dm-memory";
+import { t } from "~/lib/i18n";
+import { generateLlmGrounded } from "~/lib/llm";
+import { hybridSearch } from "~/lib/rag";
 import { StatsService } from "~/services/StatsService";
 import { DatabooksService, type Databook, type PlateHit } from "~/services/DatabooksService";
 import { AgentHomeService } from "~/lib/agent-home";
@@ -18,13 +27,44 @@ const OWNER_DISCORD_IDS = new Set([
   "1323725494184841256", // Ancien compte Omar (@trape17_10161)
 ]);
 
+/** Membership of the guild, re-checked after this delay. */
+const MEMBER_TTL_MS = 10 * 60_000;
+
+/** Words of an owner message that ask for the live status report. */
+const STATUS_TRIGGERS = [
+  "etat",
+  "état",
+  "status",
+  "statut",
+  "vps",
+  "ram",
+  "cpu",
+  "build",
+  "push",
+  "db",
+  "base",
+  "ocr",
+  "wiki",
+  "avancée",
+  "avancee",
+  "situation",
+  "rapport",
+  "health",
+  "uptime",
+  "services",
+  "manga",
+  "databook",
+];
+
 /**
- * Relais de messages privés — réception et automatisation interactive pour les owners.
+ * Relais de messages privés — réception, automatisation pour les owners et chat avec le modèle
+ * pour tout membre de la guilde (persona Shenron, agent home et mémoire de l'utilisateur),
+ * derrière une file bornée et des quotas par utilisateur (`@shenron/config/dm-chat`).
  *
  * Shenron sert de canal direct entre les porteurs du projet et l'infrastructure :
  * - Les owners obtiennent des rapports de diagnostic temps réel (VPS, services, OCR, PostgreSQL).
  * - Les messages autorisés sont enregistrés et archivés dans `dm_messages`.
- * - Les utilisateurs inconnus reçoivent un refus poli unique.
+ * - Les membres de la guilde discutent avec le modèle ; les autres reçoivent un refus unique.
  */
 @Discord()
 @Bot("shenron")
@@ -36,6 +76,11 @@ export class DirectMessageRelay {
     @inject(DatabooksService) private databooks: DatabooksService,
     @inject(AgentHomeService) private agentHomes: AgentHomeService,
   ) {}
+
+  private readonly dm = resolveDmChat(process.env);
+  private readonly gate = new DmChatGate(this.dm);
+  private readonly members = new Map<string, { at: number; member: boolean }>();
+  private memoryPromise: Promise<DmMemory | null> | null = null;
 
   /**
    * Extrait une demande explicite adressée à la base de databooks.
@@ -245,6 +290,124 @@ export class DirectMessageRelay {
     ].join("\n");
   }
 
+  /** Text sent in DM, never mentioning anyone; falls back to a plain DM when replying fails. */
+  private async send(message: ArgsOf<"messageCreate">[0], content: string): Promise<void> {
+    const payload = { content, allowedMentions: { parse: [], repliedUser: false } };
+    await message.reply(payload).catch(async () => {
+      await message.author.send(payload).catch(() => undefined);
+    });
+  }
+
+  private async record(userId: string, content: string): Promise<void> {
+    await this.dbs.db
+      .insert(dmMessages)
+      .values({ userId, direction: "out", content, persona: "shenron" })
+      .catch(() => undefined);
+  }
+
+  /**
+   * Member of the guild (`GUILD_ID`), cached ten minutes. A guild ban removes the membership:
+   * banned users get no model reply. `null`: Discord could not say (not cached).
+   */
+  private async isMember(message: ArgsOf<"messageCreate">[0]): Promise<boolean | null> {
+    const userId = message.author.id;
+    const cached = this.members.get(userId);
+    if (cached && Date.now() - cached.at < MEMBER_TTL_MS) return cached.member;
+    const guild = message.client.guilds.cache.get(env.GUILD_ID);
+    if (!guild) return null;
+    let member: boolean;
+    try {
+      member = Boolean(await guild.members.fetch(userId));
+    } catch (error) {
+      // 10007 Unknown Member, 10013 Unknown User: not a member. Anything else: unknown.
+      const code = (error as { code?: unknown }).code;
+      if (code !== 10007 && code !== 10013) return null;
+      member = false;
+    }
+    if (this.members.size > 10_000) this.members.clear();
+    this.members.set(userId, { at: Date.now(), member });
+    return member;
+  }
+
+  /** One model reply in DM, through the gate (queue, quotas, timeout, bounded length). */
+  private async answerWithModel(
+    message: ArgsOf<"messageCreate">[0],
+    question: string,
+    owner: boolean,
+    home: AgentHomeSnapshot | null,
+  ): Promise<void> {
+    const userId = message.author.id;
+    const lang = resolveAnswerLang(question);
+    const settings = this.dm;
+    const admission = this.gate.admit(userId, owner);
+    if (!admission.ok) {
+      const text =
+        admission.reason === "busy"
+          ? t(lang, "dm.busy")
+          : admission.reason === "full"
+            ? t(lang, "dm.queueFull")
+            : t(lang, "dm.rateLimited", {
+                limit: settings.userMessages,
+                minutes: Math.round(settings.userWindowMs / 60_000),
+                wait: Math.max(1, Math.ceil(admission.retryMs / 60_000)),
+              });
+      await this.send(message, text);
+      return;
+    }
+    const { ticket } = admission;
+    const agentId = home?.agentId ?? null;
+    try {
+      if (ticket.position > 0)
+        await this.send(message, t(lang, "dm.queued", { position: ticket.position }));
+      await ticket.ready;
+      const stopTyping = keepTyping(() => message.channel.sendTyping());
+      try {
+        const query = question.slice(0, settings.maxInputChars);
+        const homeView = home ? agentHomeFromSnapshot(home) : null;
+        const memory = await this.memory();
+        const [hits, memories] = await Promise.all([
+          hybridSearch(this.dbs.sqlite, query, 5)
+            .then((r) => r.results)
+            .catch(() => []),
+          memory && agentId ? memory.recall(agentId, query).catch(() => "") : Promise.resolve(""),
+        ]);
+        const result = await withTimeout(settings.timeoutMs, (signal) =>
+          generateLlmGrounded(this.dbs.sqlite, query, hits, "shenron", {
+            sessionId: `discord:dm:${userId}`,
+            lang,
+            homePersona: homeView?.persona ?? null,
+            systemNote: homeUserNote(homeView?.user ?? null),
+            memories,
+            maxTokens: settings.maxTokens,
+            timeoutMs: settings.timeoutMs,
+            abortSignal: signal,
+          }),
+        );
+        const reply = result.fallback
+          ? t(lang, "dm.unavailable")
+          : boundReply(stripCitationMarkers(result.answer), settings.maxChars);
+        await this.send(message, reply);
+        await this.record(userId, reply);
+        if (memory && agentId && !result.fallback)
+          void memory.learn(agentId, query).catch(() => undefined);
+      } finally {
+        stopTyping();
+      }
+    } catch (error) {
+      const timeout = error instanceof DmTimeoutError;
+      logger.warn({ err: error instanceof Error ? error.message : String(error) }, "[DM] reply");
+      await this.send(message, t(lang, timeout ? "dm.timeout" : "dm.unavailable"));
+    } finally {
+      ticket.release();
+    }
+  }
+
+  /** The native memory of the DM chat, opened once (`null` when unavailable). */
+  private memory(): Promise<DmMemory | null> {
+    this.memoryPromise ??= nativeDmMemory(env.DATABASE_PATH);
+    return this.memoryPromise;
+  }
+
   @On({ event: "messageCreate" })
   @Guard(NotBot)
   async onDirectMessage([message]: ArgsOf<"messageCreate">) {
@@ -261,7 +424,7 @@ export class DirectMessageRelay {
 
     // The user's agent home (persona, profile, shared memory) exists in the cloud from their
     // first DM on, whatever the relay answers; a missing store never blocks the relay.
-    void this.agentHomes.forDiscordUser({
+    const home = this.agentHomes.forDiscordUser({
       id: userId,
       username,
       globalName: displayName,
@@ -291,6 +454,9 @@ export class DirectMessageRelay {
         .where(eq(dmContacts.userId, userId))
         .limit(1);
       const autorise = isOwner || contact?.allowed === true;
+      // Model replies are open to every member of the guild (SHENRON_DM_CHAT), owners always.
+      const member = isOwner || !this.dm.enabled ? null : await this.isMember(message);
+      const chat = isOwner || (this.dm.enabled && member === true);
 
       // Archivage du message entrant
       await db.insert(dmMessages).values({
@@ -299,130 +465,120 @@ export class DirectMessageRelay {
         content: texte,
         persona: "shenron",
         messageId: message.id,
-        readAt: autorise ? null : new Date(),
+        readAt: autorise || chat ? null : new Date(),
       });
 
       if (autorise) {
         await message.react("✅").catch(() => undefined);
         logger.info(`[DM] message reçu de ${username} (${userId}) : "${texte.slice(0, 80)}"`);
+      }
 
-        // Automatisation de discussion et monitoring pour les owners du projet
-        if (isOwner) {
-          const isDev = userId === "281114294152724491"; // Shawn / Yoyo
-          const normalise = texte.toLowerCase();
-          const demandeDatabook = this.databookQuery(texte);
+      // Automatisation de discussion et monitoring pour les owners du projet
+      if (isOwner) {
+        const isDev = userId === "281114294152724491"; // Shawn / Yoyo
+        const normalise = texte.toLowerCase();
+        const demandeDatabook = this.databookQuery(texte);
 
-          if (demandeDatabook) {
-            const reponse = await this.buildDatabookReply(demandeDatabook).catch((error) => {
-              logger.warn({ error }, "[DM] recherche databook indisponible");
-              return "La consultation privée des databooks a échoué momentanément. Les données publiques restent intactes.";
-            });
-            await message.reply(reponse).catch(async () => {
-              await message.author.send(reponse).catch(() => undefined);
-            });
-            await db.insert(dmMessages).values({
-              userId,
-              direction: "out",
-              content: reponse,
-              persona: "shenron",
-            });
-            await db
-              .update(dmMessages)
-              .set({ readAt: new Date() })
-              .where(and(eq(dmMessages.userId, userId), isNull(dmMessages.readAt)));
-            return;
-          }
-
-          const triggersStatus = [
-            "etat",
-            "état",
-            "status",
-            "statut",
-            "vps",
-            "ram",
-            "cpu",
-            "build",
-            "push",
-            "db",
-            "base",
-            "ocr",
-            "wiki",
-            "avancée",
-            "avancee",
-            "situation",
-            "rapport",
-            "health",
-            "uptime",
-            "services",
-            "manga",
-            "databook",
-          ];
-
-          const demandeStatus = triggersStatus.some((t) => normalise.includes(t));
-
-          if (demandeStatus) {
-            const rapport = await this.buildLiveStatusReport(isDev);
-            await message.reply(rapport).catch(async () => {
-              await message.author.send(rapport).catch(() => undefined);
-            });
-
-            // Tracer la réponse envoyée
-            await db.insert(dmMessages).values({
-              userId,
-              direction: "out",
-              content: rapport,
-              persona: "shenron",
-            });
-            // Marquer les messages comme traités
-            await db
-              .update(dmMessages)
-              .set({ readAt: new Date() })
-              .where(and(eq(dmMessages.userId, userId), isNull(dmMessages.readAt)));
-            return;
-          }
-
-          // Salutation ou message général d'un owner
-          if (/^(salut|bonjour|yo|hello|coucou|aide|help|shenron)/i.test(normalise)) {
-            const accueil = isDev
-              ? `Salutations Shawn. Je surveille l'infra et les pipelines. Envoie **statut**, **vps**, **services**, **ocr**, ou **db** pour le diag système.`
-              : `Bonjour Omar ! L'univers Dragon Ball FR est sous contrôle. Envoie-moi **état**, **databooks**, **manga**, ou **wiki** pour voir l'avancée de la bibliothèque et du sprint.`;
-
-            await message.reply(accueil).catch(async () => {
-              await message.author.send(accueil).catch(() => undefined);
-            });
-            await db.insert(dmMessages).values({
-              userId,
-              direction: "out",
-              content: accueil,
-              persona: "shenron",
-            });
-            return;
-          }
+        if (demandeDatabook) {
+          const reponse = await this.buildDatabookReply(demandeDatabook).catch((error) => {
+            logger.warn({ error }, "[DM] recherche databook indisponible");
+            return "La consultation privée des databooks a échoué momentanément. Les données publiques restent intactes.";
+          });
+          await message.reply(reponse).catch(async () => {
+            await message.author.send(reponse).catch(() => undefined);
+          });
+          await db.insert(dmMessages).values({
+            userId,
+            direction: "out",
+            content: reponse,
+            persona: "shenron",
+          });
+          await db
+            .update(dmMessages)
+            .set({ readAt: new Date() })
+            .where(and(eq(dmMessages.userId, userId), isNull(dmMessages.readAt)));
+          return;
         }
 
+        const demandeStatus = STATUS_TRIGGERS.some((word) => normalise.includes(word));
+
+        if (demandeStatus) {
+          const rapport = await this.buildLiveStatusReport(isDev);
+          await message.reply(rapport).catch(async () => {
+            await message.author.send(rapport).catch(() => undefined);
+          });
+
+          // Tracer la réponse envoyée
+          await db.insert(dmMessages).values({
+            userId,
+            direction: "out",
+            content: rapport,
+            persona: "shenron",
+          });
+          // Marquer les messages comme traités
+          await db
+            .update(dmMessages)
+            .set({ readAt: new Date() })
+            .where(and(eq(dmMessages.userId, userId), isNull(dmMessages.readAt)));
+          return;
+        }
+
+        // Salutation ou message général d'un owner
+        if (/^(salut|bonjour|yo|hello|coucou|aide|help|shenron)$/i.test(normalise)) {
+          const accueil = isDev
+            ? `Salutations Shawn. Je surveille l'infra et les pipelines. Envoie **statut**, **vps**, **services**, **ocr**, ou **db** pour le diag système.`
+            : `Bonjour Omar ! L'univers Dragon Ball FR est sous contrôle. Envoie-moi **état**, **databooks**, **manga**, ou **wiki** pour voir l'avancée de la bibliothèque et du sprint.`;
+
+          await message.reply(accueil).catch(async () => {
+            await message.author.send(accueil).catch(() => undefined);
+          });
+          await db.insert(dmMessages).values({
+            userId,
+            direction: "out",
+            content: accueil,
+            persona: "shenron",
+          });
+          return;
+        }
+      }
+
+      if (!isOwner && this.dm.enabled && member === null) {
+        await this.send(message, t(resolveAnswerLang(texte), "dm.unavailable"));
         return;
       }
 
-      // Inconnu non autorisé : avertissement unique
+      if (chat) {
+        const lang = resolveAnswerLang(texte);
+        if (!contenu) {
+          await this.send(message, t(lang, "dm.attachmentOnly"));
+          return;
+        }
+        await this.answerWithModel(message, contenu, isOwner, await home);
+        await db
+          .update(dmMessages)
+          .set({ readAt: new Date() })
+          .where(and(eq(dmMessages.userId, userId), isNull(dmMessages.readAt)));
+        return;
+      }
+
+      if (autorise) return;
+
+      // Ni owner ni membre (ou DM fermés) : avertissement unique
       const [{ n }] = await db
         .select({ n: sql<number>`count(*)` })
         .from(dmMessages)
         .where(and(eq(dmMessages.userId, userId), eq(dmMessages.direction, "out")));
 
       if (Number(n) === 0) {
-        const reponse =
-          "Bonjour — ce salon privé est un relais réservé. Votre message a bien été " +
-          "enregistré, mais je ne peux pas y répondre tant que l'accès ne vous a pas " +
-          "été ouvert. Si vous êtes attendu, prévenez la personne qui vous a orienté ici.";
-        await message.author.send(reponse).catch(() => undefined);
-        await db.insert(dmMessages).values({
-          userId,
-          direction: "out",
-          content: reponse,
-          persona: "shenron",
-        });
+        const reponse = t(resolveAnswerLang(texte), "dm.notMember");
+        await message.author
+          .send({ content: reponse, allowedMentions: { parse: [] } })
+          .catch(() => undefined);
+        await this.record(userId, reponse);
       }
-      logger.warn(`[DM] message d'un correspondant non autorisé : ${username} (${userId})`);
+      logger.warn(
+        `[DM] message d'un correspondant sans accès au chat (membre: ${String(member)}) : ${username} (${userId})`,
+      );
     } catch (e) {
       logger.error(e as Error, "[DM] échec du relais de message privé");
     }
