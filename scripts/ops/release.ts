@@ -15,10 +15,13 @@
  *
  * 1. `release-host.ts build` tourne détaché sur le `vps` (~/shenron sur origin/main) : il
  *    survit à une coupure SSH ; ce script suit son journal jusqu'à la ligne de résultat.
- * 2. `aphrody-infra deploy --target vps --stack shenron --release … --apply` : sondes de santé
+ * 2. `release-host.ts cdn <release>` : `public/` et `.next-build/static` de la NOUVELLE release
+ *    sur cdn.dragonballfr.com, AVANT la bascule : le site est construit avec le CDN comme préfixe
+ *    des chunks, aucun ne doit manquer au moment où la release s'active.
+ * 3. `aphrody-infra deploy --target vps --stack shenron --release … --apply` : sondes de santé
  *    et retour arrière automatique côté adaptateur.
- * 3. `release-host.ts cdn` : `public/` et `.next-build/static` sur cdn.dragonballfr.com.
- * 4. Sondes publiques (pages, API, plugin, MCP, WASM de l'éditeur Koharu) ; code de sortie non
+ * 4. `release-host.ts cdn` sur la release active : rattrapage idempotent (rsync sans suppression).
+ * 5. Sondes publiques (pages, API, plugin, MCP, WASM de l'éditeur Koharu) ; code de sortie non
  *    nul au premier échec.
  *
  * Le dépôt ne touche aucun hôte autrement que par `aphrody-infra` (ssh exec, deploy).
@@ -32,6 +35,15 @@ const LOG = "$HOME/shenron-release.log";
 const SITE = "https://dragonballfr.com";
 const CDN = "https://cdn.dragonballfr.com";
 const args = new Set(process.argv.slice(2));
+
+export type ReleaseStep = "build" | "cdn:release" | "deploy" | "cdn:current" | "probes";
+
+/** Ordre des étapes d'une mise en production selon les options de la ligne de commande. */
+export function releasePlan(flags: ReadonlySet<string>): ReleaseStep[] {
+  if (flags.has("--cdn-only")) return ["cdn:current", "probes"];
+  if (flags.has("--no-deploy")) return ["build"];
+  return ["build", "cdn:release", "deploy", "cdn:current", "probes"];
+}
 
 function ssh(command: string, timeoutSecs = 300, host = HOST): { code: number; out: string } {
   const p = Bun.spawnSync(["aphrody-infra", "ssh", "exec", "--host", host, "-c", command], {
@@ -226,9 +238,10 @@ function deploy(release: string): void {
     throw new Error(`activation : ${out.slice(-2000)}`);
 }
 
-async function cdn(): Promise<void> {
+/** Publie sur le CDN une release assemblée (`release`) ou, sans argument, la release active. */
+async function cdn(release?: string): Promise<void> {
   await upload();
-  const r = ssh(`$HOME/.bun/bin/bun ${REMOTE} cdn`, 900);
+  const r = ssh(`$HOME/.bun/bin/bun ${REMOTE} cdn${release ? ` ${release}` : ""}`, 900);
   console.log(r.out.trim().split("\n").slice(-3).join("\n"));
   if (r.code !== 0) throw new Error("publication CDN en échec");
 }
@@ -323,15 +336,15 @@ async function koharuWasmProbe(): Promise<string[]> {
   return failures;
 }
 
-if (args.has("--cdn-only")) {
-  await cdn();
-  await probes();
-} else {
-  const release = await build();
-  console.log(`release prête : ${release}`);
-  if (!args.has("--no-deploy")) {
-    deploy(release);
-    await cdn();
-    await probes();
+if (import.meta.main) {
+  let release = "";
+  for (const step of releasePlan(args)) {
+    if (step === "build") {
+      release = await build();
+      console.log(`release prête : ${release}`);
+    } else if (step === "cdn:release") await cdn(release);
+    else if (step === "deploy") deploy(release);
+    else if (step === "cdn:current") await cdn();
+    else await probes();
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { browserReloadDeps, recoverFromChunkError } from "@/lib/chunk-reload";
 
 export default function GlobalError({
   error,
@@ -11,6 +12,8 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
+    // A chunk of a former release, caught while rendering: reload once onto the current build.
+    if (recoverFromChunkError(error, browserReloadDeps())) return;
     console.error(error);
   }, [error]);
 

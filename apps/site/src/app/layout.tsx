@@ -15,6 +15,7 @@ import { PageTransition } from "@/components/PageTransition";
 import { NavigationProgress } from "@/components/NavigationProgress";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { ConsentGate } from "@/components/ConsentGate";
+import { ChunkReloadGuard } from "@/components/ChunkReloadGuard";
 import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { DISCORD_CDN } from "@shenron/config/public-urls";
 import { API_ORIGIN, ASSET_ORIGIN, CDN_ORIGIN, SITE_URL, STATIC_PREFIX } from "@/lib/config";
@@ -244,6 +245,8 @@ export default async function RootLayout({
 				    clavier ou au lecteur d'écran retraverse toute la nav (+ le menu
 				    « Plus ») à chaque page avant d'atteindre le contenu. Il est rendu
 				    dans `LocaleProvider` (ci-dessous), qui traduit son libellé. */}
+        {/* Un onglet ouvert avant une release recharge une fois si un chunk a disparu. */}
+        <ChunkReloadGuard />
         <NavigationProgress />
         <PageViewTracker />
         {/* La langue d'interface vit dans un contexte CLIENT : lire le cookie

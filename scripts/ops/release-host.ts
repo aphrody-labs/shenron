@@ -5,7 +5,7 @@
  * `sudo -n` pour l'adaptateur et l'environnement), depuis n'importe quel dossier.
  *
  *   bun release-host.ts build   # main → artifacts/releases/<sha>, assemblé sous /srv/shenron/releases
- *   bun release-host.ts cdn     # publie la release active sur le CDN
+ *   bun release-host.ts cdn [dir] # publie une release sur le CDN (défaut : la release active)
  *
  * Build réparti (`release.ts --build-host dbfr`) : `cargo [ref]` (vps : shenron-mcp et WASM),
  * `bundle <sha>` (dbfr : bot, site, emballage), puis `assemble <sha>` (vps) sur la release relayée.
@@ -17,8 +17,14 @@
  * l'environnement du site, jamais affichée), emballage puis `aphrody-infra-deploy-shenron
  * assemble`. Dernière ligne : `{"commit": …, "release": …}`.
  *
- * `cdn` : décharge Next de tout le statique. `apps/site/public/` (hors `wiki/`, déjà servi par
- * le CDN) et `.next-build/static/` de la release active vont dans le miroir source du CDN
+ * Le site est construit avec `NEXT_PUBLIC_CDN_URL` de l'environnement du site : le préfixe des
+ * chunks est gravé dans le runtime Turbopack et `next start` le reprend du build
+ * (`apps/site/src/lib/build-frozen-config.ts`). Servis par l'origine, les chunks d'une release
+ * disparaissaient à la suivante et un onglet ouvert avant la bascule tombait en ChunkLoadError ;
+ * le CDN, lui, garde tous les anciens chunks.
+ *
+ * `cdn [dir]` : décharge Next de tout le statique. `apps/site/public/` (hors `wiki/`, déjà servi
+ * par le CDN) et `.next-build/static/` de la release `dir` (défaut : la release active) vont dans le miroir source du CDN
  * (`/srv/shenron-cdn-src`) et, pour ce qui n'y est pas encore, directement dans l'arbre servi
  * (`/srv/shenron-cdn`) : disponibles tout de suite, ré-encodés ensuite par
  * `aphrody-cdn-optimize`. Jamais de suppression : une page en cache garde ses anciens fichiers.
@@ -74,17 +80,33 @@ function cargoProducts(): void {
 }
 
 /** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
+/** Une variable d'un fichier d'environnement (`NOM=valeur`, guillemets facultatifs). */
+export function envValue(text: string, name: string): string | undefined {
+  const match = new RegExp(`^${name}=["']?([^"'\\n]+)["']?$`, "m").exec(text);
+  return match?.[1]?.trim() || undefined;
+}
+
+/**
+ * L'environnement du build du site, tiré de celui du service : la base de lecture et le CDN.
+ * Sans CDN déclaré, le build garde `/_next/` et l'origine sert les chunks.
+ */
+export function siteBuildEnv(envText: string): Record<string, string> {
+  const database = envValue(envText, "DATABASE_URL");
+  if (!database) throw new Error("DATABASE_URL introuvable dans l'environnement du site");
+  const cdn = envValue(envText, "NEXT_PUBLIC_CDN_URL");
+  return { SITE_BUILD_DATABASE_URL: database, ...(cdn ? { NEXT_PUBLIC_CDN_URL: cdn } : {}) };
+}
+
 function bundleSite(commit: string): string {
   step("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
-  const database = /^DATABASE_URL=["']?([^"'\n]+)["']?$/m.exec(envFile.stdout.toString())?.[1];
-  if (!database) throw new Error("DATABASE_URL introuvable dans l'environnement du site");
+  const buildEnv = siteBuildEnv(envFile.stdout.toString());
   const release = join("artifacts", "releases", commit);
   step("site", ["rm", "-rf", release, `${release}.staging`]);
   step(
     "site + emballage",
     ["bun", "scripts/build/build-site-external.ts", "--release-dir", release],
-    { SITE_BUILD_DATABASE_URL: database },
+    buildEnv,
   );
   return release;
 }
@@ -122,8 +144,17 @@ function bundle(ref: string): void {
   console.log(JSON.stringify({ commit, release: join(REPO, release) }));
 }
 
-async function cdn(): Promise<void> {
-  const site = join(CURRENT, "apps", "site");
+/** Arbre publié par `cdn` : une release assemblée sous /srv/shenron/releases, sinon l'active. */
+export function cdnSource(dir: string | undefined): string {
+  if (!dir) return CURRENT;
+  if (!/^\/srv\/shenron\/releases\/[0-9a-f]{40}$/.test(dir))
+    throw new Error(`cdn : release inattendue ${dir}`);
+  return dir;
+}
+
+async function cdn(dir?: string): Promise<void> {
+  const tree = cdnSource(dir);
+  const site = join(tree, "apps", "site");
   const rsync = (from: string, to: string, extra: string[] = []) => [
     "rsync",
     "-rlt",
@@ -155,7 +186,11 @@ async function cdn(): Promise<void> {
     {},
     "/",
   );
-  const commit = (await Bun.file(join(CURRENT, "RELEASE_SHA")).text()).trim();
+  // Une release pas encore activée n'a pas forcément `RELEASE_SHA` : son dossier porte le sha.
+  const shaFile = Bun.file(join(tree, "RELEASE_SHA"));
+  const commit = (await shaFile.exists())
+    ? (await shaFile.text()).trim()
+    : (tree.split("/").pop() ?? "");
   console.log(JSON.stringify({ cdn: "published", commit }));
 }
 
@@ -173,14 +208,16 @@ function clean(): void {
   ]);
 }
 
-const [command, ref] = process.argv.slice(2);
-if (command === "build") build();
+const [command, ref] = import.meta.main ? process.argv.slice(2) : [];
+if (!import.meta.main) {
+  // importé par les tests : aucune commande
+} else if (command === "build") build();
 else if (command === "cargo") cargo(ref ?? "origin/main");
 else if (command === "bundle" && ref) bundle(ref);
 else if (command === "assemble" && ref) assemble(join("artifacts", "releases", ref), ref);
 else if (command === "clean") clean();
-else if (command === "cdn") await cdn();
+else if (command === "cdn") await cdn(ref);
 else
   throw new Error(
-    "usage: release-host.ts build | cargo [ref] | bundle <sha> | assemble <sha> | clean | cdn",
+    "usage: release-host.ts build | cargo [ref] | bundle <sha> | assemble <sha> | clean | cdn [dir]",
   );
