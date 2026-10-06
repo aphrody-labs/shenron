@@ -195,10 +195,12 @@ export function TranscriptionRelecteur({
   const courante = planches.find((p) => p.numero === numeroCourant) ?? null;
   const indexVisible = visibles.findIndex((p) => p.numero === numeroCourant);
 
-  // Dernière position connue dans la liste filtrée. Mémorisée pendant le rendu,
+  // Dernière position connue dans la liste filtrée. Mémorisée après chaque rendu,
   // donc encore valide au rendu suivant, où la planche a pu sortir du filtre.
   const dernierIndexVisible = useRef(0);
-  if (indexVisible >= 0) dernierIndexVisible.current = indexVisible;
+  useEffect(() => {
+    if (indexVisible >= 0) dernierIndexVisible.current = indexVisible;
+  }, [indexVisible]);
 
   // Le filtre peut faire disparaître la planche affichée — c'est le cas normal
   // après un enregistrement en mode « À transcrire » / « À vérifier ». Retomber

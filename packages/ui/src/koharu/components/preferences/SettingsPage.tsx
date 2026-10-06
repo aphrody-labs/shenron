@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { PipelinePreferences } from "./PipelinePreferences";
@@ -52,10 +52,12 @@ export function SettingsPage() {
   const saveQueue = useRef<Promise<void>>(Promise.resolve());
   const lastPending = useRef<{ serialized: string; promise: Promise<Preferences> } | null>(null);
   const currentDraft = useRef<string | null>(null);
-  currentDraft.current =
-    pipeline && providers && typesetting
-      ? JSON.stringify([pipeline, providers, typesetting])
-      : null;
+  useLayoutEffect(() => {
+    currentDraft.current =
+      pipeline && providers && typesetting
+        ? JSON.stringify([pipeline, providers, typesetting])
+        : null;
+  });
 
   const saveDraft = useCallback(
     async (

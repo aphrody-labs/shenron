@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useColorSampling } from "../controls/ColorSampling";
@@ -891,13 +891,13 @@ function useFrameCommand<Value>(
   execute: (value: Value) => void | Promise<unknown>,
   merge?: (current: Value, next: Value) => Value,
 ): FrameCommand<Value> {
-  const executeRef = useRef(execute);
-  executeRef.current = execute;
-  const command = useRef<FrameCommand<Value> | null>(null);
-  command.current ??= new FrameCommand((value) => executeRef.current(value), merge);
+  const [command] = useState(() => new FrameCommand(execute, merge));
+  useLayoutEffect(() => {
+    command.execute = execute;
+  });
 
-  useEffect(() => () => command.current?.clear(), []);
-  return command.current;
+  useEffect(() => () => command.clear(), [command]);
+  return command;
 }
 
 class FrameCommand<Value> {
@@ -905,7 +905,7 @@ class FrameCommand<Value> {
   private frame: number | null = null;
 
   constructor(
-    private readonly execute: (value: Value) => void | Promise<unknown>,
+    public execute: (value: Value) => void | Promise<unknown>,
     private readonly merge: (current: Value, next: Value) => Value = (_current, next) => next,
   ) {}
 

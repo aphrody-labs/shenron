@@ -20,6 +20,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useLayoutEffect,
 } from "react";
 
 export type ZoomState = { scale: number; x: number; y: number };
@@ -94,12 +95,16 @@ export function usePinchZoom({ onSwipe, resetKey }: PinchZoomOptions = {}) {
   }, []);
   const [zoom, setZoom] = useState<ZoomState>(IDENTITY);
   const zoomRef = useRef(zoom);
-  zoomRef.current = zoom;
+  useLayoutEffect(() => {
+    zoomRef.current = zoom;
+  });
   const pointers = useRef(new Map<number, Point>());
   const gesture = useRef<Gesture>({ kind: "idle" });
   const lastTap = useRef<{ at: number; point: Point } | null>(null);
   const onSwipeRef = useRef(onSwipe);
-  onSwipeRef.current = onSwipe;
+  useLayoutEffect(() => {
+    onSwipeRef.current = onSwipe;
+  });
 
   useEffect(() => {
     setZoom(IDENTITY);

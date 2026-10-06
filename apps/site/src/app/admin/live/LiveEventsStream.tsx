@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import { useLiveEvents, type BotEvent } from "@/lib/use-live-events";
 
 const STATUS_LABEL = {
@@ -41,6 +40,17 @@ const EVENT_TYPE_COLOR: Record<string, string> = {
   hello: "text-green-400 border-green-400/60",
 };
 
+const cles = new WeakMap<BotEvent, number>();
+let compteurCles = 0;
+function cleEvenement(e: BotEvent): number {
+  let cle = cles.get(e);
+  if (cle === undefined) {
+    cle = ++compteurCles;
+    cles.set(e, cle);
+  }
+  return cle;
+}
+
 export function LiveEventsStream() {
   const { events, status } = useLiveEvents({ max: 200 });
 
@@ -49,17 +59,6 @@ export function LiveEventsStream() {
   // couleur en cours de transition) d'un événement au suivant à chaque arrivée.
   // On rattache donc un numéro d'ordre stable à l'IDENTITÉ de l'objet reçu ;
   // la WeakMap le libère avec l'événement lorsqu'il sort du tampon.
-  const clesRef = useRef(new WeakMap<BotEvent, number>());
-  const compteurRef = useRef(0);
-  const cleDe = (e: BotEvent): number => {
-    let cle = clesRef.current.get(e);
-    if (cle === undefined) {
-      cle = ++compteurRef.current;
-      clesRef.current.set(e, cle);
-    }
-    return cle;
-  };
-
   // Filtrer les pings de keepalive pour ne pas polluer l'affichage
   const visibleEvents = events.filter((e) => e.name !== "ping");
 
@@ -105,7 +104,7 @@ export function LiveEventsStream() {
           const label = EVENT_TYPE_LABEL[e.name] ?? e.name;
           return (
             <div
-              key={cleDe(e)}
+              key={cleEvenement(e)}
               className={`border-l-2 pl-2 py-1 hover:bg-dbz-blue-light/5 transition-colors ${colorClass.split(" ")[1] ?? "border-dbz-border"}`}
             >
               <div className="flex items-center gap-3">

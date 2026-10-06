@@ -129,6 +129,7 @@ export function ModelsPanel({
   const [importError, setImportError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const rates = useRef(new Map<string, RateSample>());
+  const [samples, setSamples] = useState<ReadonlyMap<string, RateSample>>(() => new Map());
   const on = group?.available === true;
 
   const load = useCallback(async () => {
@@ -144,6 +145,7 @@ export function ModelsPanel({
         rates.current.set(m.id, nextRateSample(rates.current.get(m.id), m.progress.received, now));
       } else rates.current.delete(m.id);
     }
+    setSamples(new Map(rates.current));
     setModels(list);
     onChange?.(list);
   }, [transport, onChange]);
@@ -293,7 +295,7 @@ export function ModelsPanel({
                       {labels.progress(m.progress.received, m.progress.total)}
                       {(() => {
                         const left = labels.eta
-                          ? etaSeconds(rates.current.get(m.id), m.progress.total)
+                          ? etaSeconds(samples.get(m.id), m.progress.total)
                           : null;
                         return left !== null && labels.eta ? ` · ${labels.eta(left)}` : null;
                       })()}

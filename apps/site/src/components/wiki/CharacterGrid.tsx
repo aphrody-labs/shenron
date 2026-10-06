@@ -102,16 +102,15 @@ export function CharacterGrid({
    * On ne lit ici qu'une valeur rangée dans une ref : le rendu, lui, reste
    * identique à celui du serveur, donc aucun écart d'hydratation.
    */
-  const initial = useRef<{ vue: "fiches" | "versions"; page: number } | null>(null);
-  if (initial.current === null) {
+  const [initial] = useState<{ vue: "fiches" | "versions"; page: number }>(() => {
     const params =
       typeof window === "undefined" ? null : new URLSearchParams(window.location.search);
     const p = Number(params?.get("p"));
-    initial.current = {
+    return {
       vue: (params?.get("view") ?? params?.get("vue")) === "versions" ? "versions" : "fiches",
       page: Number.isFinite(p) && p > 1 ? Math.floor(p) : 1,
     };
-  }
+  });
   // Chargées au premier passage en mode « Versions », puis gardées.
   const [variants, setVariants] = useState<GridVariant[]>([]);
   /**
@@ -146,8 +145,8 @@ export function CharacterGrid({
       .catch(() => setEtatVersions("erreur"));
   }, [vue, etatVersions]);
   useEffect(() => {
-    if (initial.current?.vue === "versions") setVue("versions");
-  }, []);
+    if (initial.vue === "versions") setVue("versions");
+  }, [initial.vue]);
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete("vue");
@@ -276,9 +275,9 @@ export function CharacterGrid({
   const [page, setPage] = useState(1);
   // Page reprise de l'URL (cf. `initial`), appliquée une fois montée.
   useEffect(() => {
-    const p = initial.current?.page ?? 1;
+    const p = initial.page;
     if (p > 1) setPage(p);
-  }, []);
+  }, [initial.page]);
   /**
    * Tout changement de filtre ramène à la première page : rester en page 7
    * d'une liste qui vient d'en perdre 6 affiche un vide inexplicable.
@@ -291,18 +290,18 @@ export function CharacterGrid({
    *    — sans quoi `?view=versions&p=3` perdait sa page au montage.
    */
   const filtresPrecedents = useRef<string | null>(null);
-  const restauration = useRef((initial.current?.page ?? 1) > 1);
+  const restauration = useRef(initial.page > 1);
   useEffect(() => {
     const cle = JSON.stringify([query, races, techniques, arcs, vue, tri]);
     if (filtresPrecedents.current === cle) return;
     const premier = filtresPrecedents.current === null;
     filtresPrecedents.current = cle;
     if (restauration.current) {
-      if (vue === initial.current?.vue) restauration.current = false;
+      if (vue === initial.vue) restauration.current = false;
       return;
     }
     if (!premier) setPage(1);
-  }, [query, races, techniques, arcs, vue, tri]);
+  }, [query, races, techniques, arcs, vue, tri, initial.vue]);
   const pages = Math.max(1, Math.ceil(liste.length / PAGE));
   const pageSure = Math.min(page, pages);
   const visible = useMemo(

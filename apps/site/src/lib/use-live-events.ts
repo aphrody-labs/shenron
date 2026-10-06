@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 
 export type BotEvent = {
   name: string;
@@ -29,9 +29,13 @@ export function useLiveEvents({ max = 100, filter }: Options = {}) {
   // reconnexion : c'est un simple plafond appliqué à la réception. Les deux
   // passent donc par une ref, et l'effet n'ouvre le flux qu'une seule fois.
   const filterRef = useRef(filter);
-  filterRef.current = filter;
+  useLayoutEffect(() => {
+    filterRef.current = filter;
+  });
   const maxRef = useRef(max);
-  maxRef.current = max;
+  useLayoutEffect(() => {
+    maxRef.current = max;
+  });
 
   useEffect(() => {
     const es = new EventSource("/api/bot-admin/events");

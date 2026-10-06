@@ -164,17 +164,18 @@ function useTextesPlanches(
     for (let i = de; i < a; i++) {
       const it = items[i];
       if (!it || !it.aDuTexte || it.text !== null) continue;
-      if (charges.has(it.number) || demandes.current.has(it.number)) continue;
+      if (charges.has(it.number)) continue;
       out.push(it.number);
     }
     return out;
   }, [loadTranscriptions, items, current, charges]);
 
   useEffect(() => {
-    if (manquants.length === 0) return;
-    for (const n of manquants) demandes.current.add(n);
+    const aDemander = manquants.filter((n) => !demandes.current.has(n));
+    if (aDemander.length === 0) return;
+    for (const n of aDemander) demandes.current.add(n);
     const stop = new AbortController();
-    loadTranscriptions!(manquants, stop.signal)
+    loadTranscriptions!(aDemander, stop.signal)
       .then((textes) => ({ textes }))
       .then((d: { textes?: Record<string, string> }) => {
         const recus = Object.entries(d.textes ?? {});
@@ -285,7 +286,7 @@ export function DatabookReader({
       if (mode === "paged") swiperRef.current?.slideTo(i);
       else virtualizer.scrollToIndex(i, { align: "start" });
     },
-    [mode, total, virtualizer],
+    [mode, total, virtualizer, swiperRef],
   );
 
   useVerticalScrollSync(mode, scrollParentRef, virtualizer, setCurrent);

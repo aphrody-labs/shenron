@@ -46,15 +46,16 @@ export function LinkDialog({
 }) {
   const [href, setHref] = useState("");
   const [label, setLabel] = useState("");
-  const hadSelection = useRef(false);
+  const [hadSelection, setHadSelection] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     const current = (editor.getAttributes("link").href as string) ?? "";
     const { from, to } = editor.state.selection;
-    hadSelection.current = from !== to;
+    const selected = from !== to;
+    setHadSelection(selected);
     setHref(current);
-    setLabel(hadSelection.current ? editor.state.doc.textBetween(from, to, " ") : "");
+    setLabel(selected ? editor.state.doc.textBetween(from, to, " ") : "");
   }, [editor, open]);
 
   const apply = () => {
@@ -66,7 +67,7 @@ export function LinkDialog({
     }
     // Une saisie sans protocole vise le web public, pas une route locale.
     const normalized = /^(https?:|mailto:|\/|#)/i.test(url) ? url : `https://${url}`;
-    if (!hadSelection.current && label.trim()) {
+    if (!hadSelection && label.trim()) {
       editor
         .chain()
         .focus()
@@ -107,7 +108,7 @@ export function LinkDialog({
         </>
       }
     >
-      {!hadSelection.current && (
+      {!hadSelection && (
         <PanelField label="Texte affiché">
           <input
             className={panelInputClass}

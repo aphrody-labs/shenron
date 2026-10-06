@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useLayoutEffect } from "react";
 
 import {
   activateCanvas,
@@ -42,8 +42,10 @@ export function useCanvas(
     generation: number;
   } | null>(null);
   const request = useRef<object | null>(null);
-  generationRef.current = generation;
-  revisionRef.current = revision;
+  useLayoutEffect(() => {
+    generationRef.current = generation;
+    revisionRef.current = revision;
+  });
 
   const updateHasFrame = useCallback((value: boolean) => {
     hasFrameRef.current = value;

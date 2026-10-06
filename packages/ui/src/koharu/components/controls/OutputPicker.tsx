@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { orderedLanguageChoices } from "../../lib/translation";
@@ -48,7 +48,9 @@ export function OutputPicker({
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const latest = useRef({ changed, disabled, draft, onChange, saving });
   const submitted = useRef<OutputDraft | null>(null);
-  latest.current = { changed, disabled, draft, onChange, saving };
+  useLayoutEffect(() => {
+    latest.current = { changed, disabled, draft, onChange, saving };
+  });
   const languageChoices = useMemo(() => orderedLanguageChoices(languages), [languages]);
 
   const submit = useCallback(

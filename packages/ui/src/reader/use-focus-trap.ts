@@ -8,7 +8,7 @@
  * Keeps Tab inside the panel, closes on Escape, and restores focus on exit.
  * A click on non-focusable text moves focus back into the panel on the next Tab.
  */
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useRef, type RefObject, useLayoutEffect } from "react";
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -50,7 +50,9 @@ export function useFocusTrap(
   // rendait plus le focus au bon endroit. On garde la fonction dans une ref :
   // l'effet ne dépend plus que de ce qui doit réellement le rejouer.
   const onEscapeRef = useRef(onEscape);
-  onEscapeRef.current = onEscape;
+  useLayoutEffect(() => {
+    onEscapeRef.current = onEscape;
+  });
 
   useEffect(() => {
     if (!active) return;
