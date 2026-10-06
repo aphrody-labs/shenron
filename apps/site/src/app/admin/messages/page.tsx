@@ -223,9 +223,9 @@ function EventEditor({ entry }: { entry: EventEntry }) {
 
         {/* Salon de destination */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+          <span className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
             Salon de destination
-          </label>
+          </span>
           <p className="text-xs text-white/50 mb-2">
             Choisissez dans quel salon Discord ce message sera envoyé.
           </p>
@@ -246,9 +246,9 @@ function EventEditor({ entry }: { entry: EventEntry }) {
 
         {/* Template */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+          <span className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
             Contenu du message
-          </label>
+          </span>
           <p className="text-xs text-white/50 mb-2">
             Utilisez <code className="text-dbz-yellow">{"{nom}"}</code> pour insérer des valeurs
             dynamiques (voir la liste ci-dessous).

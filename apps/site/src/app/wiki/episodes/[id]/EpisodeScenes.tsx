@@ -468,9 +468,9 @@ export function EpisodeScenes({
             {/* Formulaire de soumission d'image */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-white/70 block">
+                <span className="text-xs font-semibold text-white/70 block">
                   URL d&apos;une image ou capture
-                </label>
+                </span>
                 <div className="flex gap-2">
                   <input
                     type="url"
@@ -492,9 +492,9 @@ export function EpisodeScenes({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-white/70 block">
+                <span className="text-xs font-semibold text-white/70 block">
                   Ou téléverser un fichier local
-                </label>
+                </span>
                 <label className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-black/30 p-2 text-xs text-white/60 hover:border-dbz-orange/50 hover:text-white cursor-pointer transition-colors">
                   <Upload className="h-3.5 w-3.5" />
                   <span>

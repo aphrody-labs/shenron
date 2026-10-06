@@ -848,11 +848,15 @@ function ShopItemEditor({
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <label className="block text-xs text-zinc-400 mb-1">
+            <label
+              htmlFor="page-identifiant-unique-slug-minusc"
+              className="block text-xs text-zinc-400 mb-1"
+            >
               Identifiant unique (slug)
               <span className="ml-1 text-zinc-500">— minuscules et tirets</span>
             </label>
             <input
+              id="page-identifiant-unique-slug-minusc"
               className="input w-full font-mono text-xs"
               value={draft.key}
               onChange={(e) => setDraft({ ...draft, key: e.target.value })}
@@ -868,8 +872,11 @@ function ShopItemEditor({
           </div>
 
           <div>
-            <label className="block text-xs text-zinc-400 mb-1">Type d&apos;article</label>
+            <label htmlFor="page-type-d-apos-article" className="block text-xs text-zinc-400 mb-1">
+              Type d&apos;article
+            </label>
             <select
+              id="page-type-d-apos-article"
               className="input w-full"
               value={draft.type}
               onChange={(e) => setDraft({ ...draft, type: e.target.value as ShopItem["type"] })}
@@ -887,8 +894,14 @@ function ShopItemEditor({
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs text-zinc-400 mb-1">Nom affiché dans la boutique</label>
+            <label
+              htmlFor="page-nom-affiche-dans-la-boutique"
+              className="block text-xs text-zinc-400 mb-1"
+            >
+              Nom affiché dans la boutique
+            </label>
             <input
+              id="page-nom-affiche-dans-la-boutique"
               className="input w-full"
               value={draft.name}
               onChange={(e) => setDraft({ ...draft, name: e.target.value })}
@@ -941,7 +954,7 @@ function ShopItemEditor({
           )}
 
           <div className="sm:col-span-2">
-            <label className="block text-xs text-zinc-400 mb-1">Description (optionnelle)</label>
+            <span className="block text-xs text-zinc-400 mb-1">Description (optionnelle)</span>
             <PlainField
               value={draft.description ?? ""}
               onChange={(v) => setDraft({ ...draft, description: v })}
@@ -952,8 +965,11 @@ function ShopItemEditor({
           </div>
 
           <div>
-            <label className="block text-xs text-zinc-400 mb-1">Prix en zénis</label>
+            <label htmlFor="page-prix-en-zenis" className="block text-xs text-zinc-400 mb-1">
+              Prix en zénis
+            </label>
             <input
+              id="page-prix-en-zenis"
               className="input w-full font-mono"
               type="number"
               min={0}
@@ -963,7 +979,7 @@ function ShopItemEditor({
           </div>
 
           <div>
-            <label className="block text-xs text-zinc-400 mb-1">Visibilité dans la boutique</label>
+            <span className="block text-xs text-zinc-400 mb-1">Visibilité dans la boutique</span>
             <button
               type="button"
               className={`btn ${draft.enabled ? "btn-primary" : "btn-ghost"} w-full justify-center`}
@@ -1000,10 +1016,10 @@ function ShopItemEditor({
           )}
 
           <div className="sm:col-span-2">
-            <label className="block text-xs text-zinc-400 mb-1">
+            <span className="block text-xs text-zinc-400 mb-1">
               Données Méta (JSON optionnel)
               <span className="ml-1 text-zinc-500">— badgePath, bannerPath, themeId, accent…</span>
-            </label>
+            </span>
             <PlainField
               value={draft.meta ?? ""}
               onChange={(v) => setDraft({ ...draft, meta: v || null })}

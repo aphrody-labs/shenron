@@ -131,8 +131,11 @@ export default function AuditInternalPage() {
         {/* Filtres */}
         <div className="mt-3 grid gap-2 sm:grid-cols-3">
           <div>
-            <label className="mb-1 block text-xs text-zinc-500">Type d&apos;action</label>
+            <label htmlFor="page-type-d-apos-action" className="mb-1 block text-xs text-zinc-500">
+              Type d&apos;action
+            </label>
             <select
+              id="page-type-d-apos-action"
               className="input w-full"
               value={action}
               onChange={(e) => {
@@ -149,10 +152,14 @@ export default function AuditInternalPage() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs text-zinc-500">
+            <label
+              htmlFor="page-filtrer-par-membre-identifiant"
+              className="mb-1 block text-xs text-zinc-500"
+            >
               Filtrer par membre (identifiant Discord)
             </label>
             <input
+              id="page-filtrer-par-membre-identifiant"
               className="input w-full font-mono text-xs"
               value={userId}
               onChange={(e) => {

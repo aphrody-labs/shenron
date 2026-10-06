@@ -397,7 +397,7 @@ function SectionCard({
               />
             </label>
           </div>
-          <label className="block text-xs text-zinc-400">
+          <span className="block text-xs text-zinc-400">
             Sous-titre
             <PlainField
               value={section.subtitle}
@@ -405,7 +405,7 @@ function SectionCard({
               minRows={2}
               maxRows={8}
             />
-          </label>
+          </span>
           {isCustom && (
             <div className="block text-xs text-zinc-400">
               Contenu (éditeur riche — mise en forme, images/gifs, embeds, aperçu live ; même moteur
@@ -464,7 +464,7 @@ function BlockHeadingEditor({
           onChange={(event) => onChange({ title: event.target.value })}
         />
       </label>
-      <label className="text-xs text-zinc-400 sm:col-span-2">
+      <span className="text-xs text-zinc-400 sm:col-span-2">
         Sous-titre
         <PlainField
           value={value.subtitle}
@@ -472,7 +472,7 @@ function BlockHeadingEditor({
           minRows={2}
           maxRows={6}
         />
-      </label>
+      </span>
     </div>
   );
 }
@@ -916,7 +916,7 @@ export default function HomeEditor() {
       <div className="card p-4">
         <h3 className="mb-3 font-semibold text-dbz-yellow">Héro (premier panneau)</h3>
         <div className="grid gap-3 sm:grid-cols-3">
-          <label className="text-xs text-zinc-400 sm:col-span-3">
+          <span className="text-xs text-zinc-400 sm:col-span-3">
             Accroche (lede)
             <PlainField
               value={config.hero.lede}
@@ -924,7 +924,7 @@ export default function HomeEditor() {
               minRows={2}
               maxRows={8}
             />
-          </label>
+          </span>
           <label className="text-xs text-zinc-400">
             Bouton — libellé
             <input

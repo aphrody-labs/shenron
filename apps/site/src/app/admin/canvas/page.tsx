@@ -640,10 +640,14 @@ function ThemeEditor({
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-identifiant-slug"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 Identifiant (slug)
               </label>
               <input
+                id="page-identifiant-slug"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-xs font-mono disabled:opacity-50"
                 value={draft.id}
                 disabled={!isCreate}
@@ -652,10 +656,14 @@ function ThemeEditor({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-nom-affiche"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 Nom affiché
               </label>
               <input
+                id="page-nom-affiche"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={draft.name}
                 onChange={(e) => set({ name: e.target.value })}
@@ -675,9 +683,9 @@ function ThemeEditor({
             />
 
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
                 Visibilité
-              </label>
+              </span>
               <button
                 type="button"
                 onClick={() => set({ enabled: !draft.enabled })}
@@ -700,10 +708,14 @@ function ThemeEditor({
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-ombre-de-texte-rgba"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 Ombre de texte (rgba)
               </label>
               <input
+                id="page-ombre-de-texte-rgba"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-xs font-mono"
                 value={draft.textShadow}
                 onChange={(e) => set({ textShadow: e.target.value })}
@@ -712,9 +724,9 @@ function ThemeEditor({
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
                 Dégradé de fond (3 stops + angle)
-              </label>
+              </span>
               <GradientBar
                 stops={[draft.bgGrad1, draft.bgGrad2, draft.bgGrad3]}
                 angle={draft.gradientAngle}
@@ -726,12 +738,12 @@ function ThemeEditor({
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
                 Image de fond (optionnelle)
                 <span className="ml-1 normal-case text-white/50">
                   — vide = dégradé seul · ex : une bannière comme fond
                 </span>
-              </label>
+              </span>
               <div className="flex gap-1.5">
                 <input
                   className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-xs font-mono"
@@ -1034,10 +1046,14 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
               onChange={(v) => setParams({ ...params, userId: v })}
             />
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-theme-de-carte"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 Thème de carte
               </label>
               <select
+                id="page-theme-de-carte"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.theme ?? "default"}
                 onChange={(e) => setParams({ ...params, theme: e.target.value })}
@@ -1068,10 +1084,14 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
               onChange={(v) => setParams({ ...params, userId: v })}
             />
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-type-de-scouter"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 Type de scouter
               </label>
               <select
+                id="page-type-de-scouter"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.type ?? "gay"}
                 onChange={(e) => setParams({ ...params, type: e.target.value })}
@@ -1109,10 +1129,14 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
               onChange={(v) => setParams({ ...params, b: v })}
             />
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-etat-de-la-fusion"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 État de la fusion
               </label>
               <select
+                id="page-etat-de-la-fusion"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.state ?? "success"}
                 onChange={(e) => setParams({ ...params, state: e.target.value })}
@@ -1122,10 +1146,14 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-nom-de-fusion"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 Nom de fusion
               </label>
               <input
+                id="page-nom-de-fusion"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.name ?? ""}
                 onChange={(e) => setParams({ ...params, name: e.target.value })}
@@ -1138,10 +1166,14 @@ function CanvasPreview({ def, members }: { def: CanvasDef; members: DiscordMembe
         {def.id === "leaderboard" && (
           <>
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1">
+              <label
+                htmlFor="page-classement"
+                className="block text-[10px] font-bold uppercase tracking-widest text-dbz-blue-light mb-1"
+              >
                 Classement
               </label>
               <select
+                id="page-classement"
                 className="w-full bg-dbz-bg border-2 border-dbz-border focus:border-dbz-orange p-2 text-sm"
                 value={params.metric ?? "xp"}
                 onChange={(e) => setParams({ ...params, metric: e.target.value })}

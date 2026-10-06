@@ -1129,8 +1129,11 @@ function RewardForm({
       )}
       <div className="grid gap-3 sm:grid-cols-4">
         <div>
-          <label className="mb-1 block text-xs text-zinc-400">Niveau</label>
+          <label htmlFor="page-niveau" className="mb-1 block text-xs text-zinc-400">
+            Niveau
+          </label>
           <input
+            id="page-niveau"
             className="input"
             type="number"
             min="1"
@@ -1140,12 +1143,15 @@ function RewardForm({
           />
         </div>
         <div className="sm:col-span-3">
-          <label className="mb-1 block text-xs text-zinc-400">Rôle Discord à attribuer</label>
+          <span className="mb-1 block text-xs text-zinc-400">Rôle Discord à attribuer</span>
           <RolePicker value={roleId} onChange={setRoleId} />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-zinc-400">Seuil XP requis</label>
+          <label htmlFor="page-seuil-xp-requis" className="mb-1 block text-xs text-zinc-400">
+            Seuil XP requis
+          </label>
           <input
+            id="page-seuil-xp-requis"
             className="input"
             type="number"
             min="0"
@@ -1155,8 +1161,11 @@ function RewardForm({
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-zinc-400">Bonus zénis offerts</label>
+          <label htmlFor="page-bonus-zenis-offerts" className="mb-1 block text-xs text-zinc-400">
+            Bonus zénis offerts
+          </label>
           <input
+            id="page-bonus-zenis-offerts"
             className="input"
             type="number"
             min="0"
@@ -1323,8 +1332,15 @@ function RaceRewardsCard({ rewards, loading }: { rewards: RaceReward[]; loading:
         )}
         <div className="grid gap-3 sm:grid-cols-4">
           <div>
-            <label className="mb-1 block text-xs text-zinc-400">Race</label>
-            <select className="input" value={race} onChange={(e) => setRace(e.target.value)}>
+            <label htmlFor="page-race" className="mb-1 block text-xs text-zinc-400">
+              Race
+            </label>
+            <select
+              id="page-race"
+              className="input"
+              value={race}
+              onChange={(e) => setRace(e.target.value)}
+            >
               {RACE_OPTIONS.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.label}
@@ -1333,8 +1349,11 @@ function RaceRewardsCard({ rewards, loading }: { rewards: RaceReward[]; loading:
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs text-zinc-400">Niveau (palier)</label>
+            <label htmlFor="page-niveau-palier" className="mb-1 block text-xs text-zinc-400">
+              Niveau (palier)
+            </label>
             <input
+              id="page-niveau-palier"
               className="input"
               type="number"
               min="1"
@@ -1344,7 +1363,7 @@ function RaceRewardsCard({ rewards, loading }: { rewards: RaceReward[]; loading:
             />
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs text-zinc-400">Rôle Discord à attribuer</label>
+            <span className="mb-1 block text-xs text-zinc-400">Rôle Discord à attribuer</span>
             <RolePicker value={roleId} onChange={setRoleId} />
           </div>
         </div>
@@ -1602,12 +1621,18 @@ function ManualActionsCard() {
       </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
-          <label className="mb-1 block text-xs text-zinc-400">Identifiant Discord du joueur</label>
+          <span className="mb-1 block text-xs text-zinc-400">Identifiant Discord du joueur</span>
           <UserSelect value={userId} onChange={setUserId} />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-zinc-400">Ce que l&apos;on modifie</label>
+          <label
+            htmlFor="page-ce-que-l-apos-on-modifie"
+            className="mb-1 block text-xs text-zinc-400"
+          >
+            Ce que l&apos;on modifie
+          </label>
           <select
+            id="page-ce-que-l-apos-on-modifie"
             className="input"
             value={target}
             onChange={(e) => setTarget(e.target.value as "xp" | "zeni")}
@@ -1617,8 +1642,11 @@ function ManualActionsCard() {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-zinc-400">Opération</label>
+          <label htmlFor="page-operation" className="mb-1 block text-xs text-zinc-400">
+            Opération
+          </label>
           <select
+            id="page-operation"
             className="input"
             value={mode}
             onChange={(e) => setMode(e.target.value as "add" | "set")}
@@ -1628,8 +1656,14 @@ function ManualActionsCard() {
           </select>
         </div>
         <div className="lg:col-span-2">
-          <label className="mb-1 block text-xs text-zinc-400">Montant (négatif pour retirer)</label>
+          <label
+            htmlFor="page-montant-negatif-pour-retirer"
+            className="mb-1 block text-xs text-zinc-400"
+          >
+            Montant (négatif pour retirer)
+          </label>
           <input
+            id="page-montant-negatif-pour-retirer"
             className="input"
             type="number"
             value={amount}

@@ -938,7 +938,7 @@ function EntryRow({
               className="input mt-1"
             />
           </label>
-          <label className="text-xs text-zinc-400 sm:col-span-2">
+          <span className="text-xs text-zinc-400 sm:col-span-2">
             Note éditoriale (affichée sous l'entrée)
             <PlainField
               className="mt-1"
@@ -948,7 +948,7 @@ function EntryRow({
               maxRows={8}
               placeholder="Ex. « À regarder après le film 3 », contexte canon/filler…"
             />
-          </label>
+          </span>
           <div className="sm:col-span-2 flex items-center justify-between">
             <span className="text-[10px] text-zinc-600 font-mono">{timelineKey(it)}</span>
             <div className="flex items-center gap-2">

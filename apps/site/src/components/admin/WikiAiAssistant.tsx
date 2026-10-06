@@ -162,9 +162,9 @@ export function WikiAiAssistant({
           </div>
 
           <div>
-            <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-white/50">
+            <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-white/50">
               Brouillon (markdown, sourcé) — relis/édite avant d&apos;insérer
-            </label>
+            </span>
             <PlainField
               value={markdown}
               onChange={setMarkdown}

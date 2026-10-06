@@ -89,8 +89,11 @@ export default function WebhooksPage() {
 
       <div className="dbz-panel p-3 flex flex-wrap items-end gap-3">
         <div className="min-w-[200px] flex-1">
-          <label className="mb-1 block text-xs text-zinc-400">Filtrer par salon</label>
+          <label htmlFor="page-filtrer-par-salon" className="mb-1 block text-xs text-zinc-400">
+            Filtrer par salon
+          </label>
           <select
+            id="page-filtrer-par-salon"
             className="w-full bg-dbz-bg border border-dbz-border rounded px-2 py-1.5 text-sm text-zinc-200 focus:border-dbz-orange outline-none"
             value={filterChannel}
             onChange={(e) => setFilterChannel(e.target.value)}
@@ -115,8 +118,11 @@ export default function WebhooksPage() {
         className="dbz-panel p-4 grid gap-3 sm:grid-cols-3"
       >
         <div>
-          <label className="mb-1 block text-xs text-zinc-400">Salon cible</label>
+          <label htmlFor="page-salon-cible" className="mb-1 block text-xs text-zinc-400">
+            Salon cible
+          </label>
           <select
+            id="page-salon-cible"
             className="w-full bg-dbz-bg border border-dbz-border rounded px-2 py-1.5 text-sm text-zinc-200 focus:border-dbz-orange outline-none"
             value={createForm.channel_id}
             onChange={(e) => setCreateForm({ ...createForm, channel_id: e.target.value })}
@@ -131,8 +137,11 @@ export default function WebhooksPage() {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-zinc-400">Nom du webhook</label>
+          <label htmlFor="page-nom-du-webhook" className="mb-1 block text-xs text-zinc-400">
+            Nom du webhook
+          </label>
           <input
+            id="page-nom-du-webhook"
             className="w-full bg-dbz-bg border border-dbz-border rounded px-2 py-1.5 text-sm text-zinc-200 focus:border-dbz-orange outline-none"
             value={createForm.name}
             onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
@@ -304,10 +313,14 @@ function ExecuteModal({ webhook, onClose }: { webhook: Webhook; onClose: () => v
         <div className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs text-zinc-400">
+              <label
+                htmlFor="page-nom-d-affichage-optionnel"
+                className="mb-1 block text-xs text-zinc-400"
+              >
                 Nom d'affichage (optionnel)
               </label>
               <input
+                id="page-nom-d-affichage-optionnel"
                 className="w-full bg-dbz-bg border border-dbz-border rounded px-2 py-1.5 text-sm text-zinc-200 focus:border-dbz-orange outline-none"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -316,10 +329,14 @@ function ExecuteModal({ webhook, onClose }: { webhook: Webhook; onClose: () => v
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-zinc-400">
+              <label
+                htmlFor="page-url-de-l-avatar-optionnel"
+                className="mb-1 block text-xs text-zinc-400"
+              >
                 URL de l'avatar (optionnel)
               </label>
               <input
+                id="page-url-de-l-avatar-optionnel"
                 className="w-full bg-dbz-bg border border-dbz-border rounded px-2 py-1.5 text-sm text-zinc-200 focus:border-dbz-orange outline-none"
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
@@ -329,9 +346,9 @@ function ExecuteModal({ webhook, onClose }: { webhook: Webhook; onClose: () => v
           </div>
 
           <div>
-            <label className="mb-1 block text-xs text-zinc-400">
+            <span className="mb-1 block text-xs text-zinc-400">
               Texte du message (max 2 000 caractères)
-            </label>
+            </span>
             <PlainField
               value={content}
               onChange={setContent}
@@ -362,8 +379,11 @@ function ExecuteModal({ webhook, onClose }: { webhook: Webhook; onClose: () => v
               placeholder="Contenu de l'encart"
             />
             <div className="flex items-center gap-2">
-              <label className="text-xs text-zinc-400">Couleur de la barre</label>
+              <label htmlFor="page-couleur-de-la-barre" className="text-xs text-zinc-400">
+                Couleur de la barre
+              </label>
               <input
+                id="page-couleur-de-la-barre"
                 type="color"
                 value={embedColor}
                 onChange={(e) => setEmbedColor(e.target.value)}

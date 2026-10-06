@@ -255,7 +255,7 @@ export function PageRail() {
 
         {pages.length > 0 && (
           <div className="border-b px-2 py-1.5">
-            <label className="flex h-6 items-center gap-1.5 rounded-md border border-input bg-background/70 px-1.5">
+            <span className="flex h-6 items-center gap-1.5 rounded-md border border-input bg-background/70 px-1.5">
               <Search className="size-3 text-muted-foreground" />
               <Input
                 value={query}
@@ -264,7 +264,7 @@ export function PageRail() {
                 className="h-5 min-w-0 border-0 bg-transparent p-0 text-[11px] shadow-none focus-visible:ring-0 md:text-[11px]"
                 onChange={(event) => setQuery(event.currentTarget.value)}
               />
-            </label>
+            </span>
           </div>
         )}
 

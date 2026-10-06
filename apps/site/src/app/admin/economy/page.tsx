@@ -596,23 +596,27 @@ function BulkGiveForm({
         <div className="grid gap-2 sm:grid-cols-3">
           {mode === "user" && (
             <div>
-              <label className="mb-1 block text-xs text-zinc-400">
+              <span className="mb-1 block text-xs text-zinc-400">
                 Identifiant Discord du membre
-              </label>
+              </span>
               <UserSelect value={userId} onChange={setUserId} />
             </div>
           )}
           {mode === "role" && (
             <div>
-              <label className="mb-1 block text-xs text-zinc-400">
-                Identifiant Discord du rôle
-              </label>
+              <span className="mb-1 block text-xs text-zinc-400">Identifiant Discord du rôle</span>
               <RoleSelect value={roleId} onChange={setRoleId} />
             </div>
           )}
           <div>
-            <label className="mb-1 block text-xs text-zinc-400">Montant (négatif = retrait)</label>
+            <label
+              htmlFor="page-montant-negatif-retrait"
+              className="mb-1 block text-xs text-zinc-400"
+            >
+              Montant (négatif = retrait)
+            </label>
             <input
+              id="page-montant-negatif-retrait"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}

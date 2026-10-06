@@ -198,10 +198,14 @@ export function A2AViewer() {
         <form onSubmit={handleSend} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1">
+              <label
+                htmlFor="a2aviewer-cible-a2a"
+                className="text-xs font-semibold text-muted-foreground block mb-1"
+              >
                 Cible A2A
               </label>
               <select
+                id="a2aviewer-cible-a2a"
                 value={target}
                 onChange={(e) => {
                   const next = A2A_ADMIN_TARGETS.find((entry) => entry.id === e.target.value);
@@ -217,10 +221,14 @@ export function A2AViewer() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1">
+              <label
+                htmlFor="a2aviewer-nature-de-l-ordre"
+                className="text-xs font-semibold text-muted-foreground block mb-1"
+              >
                 Nature de l'ordre
               </label>
               <select
+                id="a2aviewer-nature-de-l-ordre"
                 value={kind}
                 onChange={(e) => {
                   const next = A2A_ADMIN_KINDS.find((entry) => entry.id === e.target.value);

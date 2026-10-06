@@ -362,11 +362,15 @@ function TriggerEditor({
         )}
         <div className="grid gap-2 sm:grid-cols-2">
           <div>
-            <label className="block text-xs text-zinc-500">
+            <label
+              htmlFor="page-code-du-succes-identifiant-uni"
+              className="block text-xs text-zinc-500"
+            >
               Code du succès
               <span className="ml-1 text-zinc-600">— identifiant unique</span>
             </label>
             <input
+              id="page-code-du-succes-identifiant-uni"
               className="input w-full font-mono text-xs"
               value={draft.code}
               onChange={(e) => setDraft({ ...draft, code: e.target.value })}
@@ -375,7 +379,7 @@ function TriggerEditor({
             />
           </div>
           <div>
-            <label className="block text-xs text-zinc-500">Actif</label>
+            <span className="block text-xs text-zinc-500">Actif</span>
             <button
               type="button"
               className={`btn ${draft.enabled ? "btn-primary" : "btn-ghost"} w-full`}
@@ -385,10 +389,14 @@ function TriggerEditor({
             </button>
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-xs text-zinc-500">
+            <label
+              htmlFor="page-description-explique-quand-ce-"
+              className="block text-xs text-zinc-500"
+            >
               Description (explique quand ce succès est déclenché)
             </label>
             <input
+              id="page-description-explique-quand-ce-"
               className="input w-full"
               value={draft.description ?? ""}
               onChange={(e) => setDraft({ ...draft, description: e.target.value })}
@@ -396,8 +404,14 @@ function TriggerEditor({
             />
           </div>
           <div>
-            <label className="block text-xs text-zinc-500">Expression régulière (pattern)</label>
+            <label
+              htmlFor="page-expression-reguliere-pattern"
+              className="block text-xs text-zinc-500"
+            >
+              Expression régulière (pattern)
+            </label>
             <input
+              id="page-expression-reguliere-pattern"
               className="input w-full font-mono text-xs"
               value={draft.pattern}
               onChange={(e) => setDraft({ ...draft, pattern: e.target.value })}
@@ -405,11 +419,12 @@ function TriggerEditor({
             />
           </div>
           <div>
-            <label className="block text-xs text-zinc-500">
+            <label htmlFor="page-options-flags-ex-i-gi-im" className="block text-xs text-zinc-500">
               Options (flags)
               <span className="ml-1 text-zinc-600">— ex. i, gi, im</span>
             </label>
             <input
+              id="page-options-flags-ex-i-gi-im"
               className="input w-full font-mono text-xs"
               value={draft.flags ?? ""}
               onChange={(e) => setDraft({ ...draft, flags: e.target.value })}
@@ -487,8 +502,11 @@ function RegexTester() {
       </p>
       <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_120px]">
         <div>
-          <label className="mb-1 block text-xs text-zinc-500">Expression (pattern)</label>
+          <label htmlFor="page-expression-pattern" className="mb-1 block text-xs text-zinc-500">
+            Expression (pattern)
+          </label>
           <input
+            id="page-expression-pattern"
             className="input w-full font-mono text-xs"
             value={pattern}
             onChange={(e) => setPattern(e.target.value)}
@@ -496,8 +514,11 @@ function RegexTester() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-zinc-500">Options (flags)</label>
+          <label htmlFor="page-options-flags" className="mb-1 block text-xs text-zinc-500">
+            Options (flags)
+          </label>
           <input
+            id="page-options-flags"
             className="input w-full font-mono text-xs"
             value={flags}
             onChange={(e) => setFlags(e.target.value)}
@@ -506,7 +527,7 @@ function RegexTester() {
         </div>
       </div>
       <div className="mt-2">
-        <label className="mb-1 block text-xs text-zinc-500">Message à tester</label>
+        <span className="mb-1 block text-xs text-zinc-500">Message à tester</span>
         <PlainField
           value={sample}
           onChange={setSample}
