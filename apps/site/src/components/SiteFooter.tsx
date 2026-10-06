@@ -27,7 +27,7 @@ const FOOTER_COLUMNS: Array<{
 }> = [
   {
     titleKey: "footer.columns.explore",
-    journeys: ["decouvrir", "encyclopedie", "oeuvres", "archives"],
+    journeys: ["encyclopedie", "oeuvres", "archives"],
   },
   {
     titleKey: "footer.columns.community",

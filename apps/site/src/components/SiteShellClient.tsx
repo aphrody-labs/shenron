@@ -147,7 +147,7 @@ export function SiteShellClient({
       else
         out.unshift({
           id: "decouvrir",
-          label: dico.shell.journeys.decouvrir,
+          label: dico.shell.desktop,
           items: [desktopHome],
         });
     }

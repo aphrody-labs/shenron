@@ -14,7 +14,6 @@ import { isPathPublic, type AccessSnapshot } from "@/lib/wiki-launch";
 
 /** Journeys rendered in the sidebar; « Le site » (legal pages) lives in the footer. */
 export const SIDEBAR_JOURNEYS: readonly Journey[] = [
-  "decouvrir",
   "encyclopedie",
   "oeuvres",
   "archives",

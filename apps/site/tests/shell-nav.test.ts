@@ -30,7 +30,7 @@ describe("public shell navigation", () => {
       expect(hrefs.length).toBeGreaterThan(5);
       expect(hrefs.filter(isAdminHref)).toEqual([]);
       expect(hrefs.filter((href) => SHELL_HIDDEN_HREFS.has(href))).toEqual([]);
-      expect(hrefs).toContain("/");
+      expect(hrefs).toContain("/wiki/characters");
       expect(hrefs).toContain("/wiki/characters");
     });
   }
