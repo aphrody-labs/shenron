@@ -39,6 +39,11 @@
   .assistant-fab {
     bottom: calc(var(--barre-nav-total) + 0.75rem) !important;
   }
+  /* L'invitation Discord et le signalement partagent le bord gauche : réécrits au même
+	   `bottom`, ils se superposaient. L'invitation monte d'une pastille. */
+  .fab-discord {
+    bottom: calc(var(--barre-nav-total) + 4.25rem) !important;
+  }
 
   /* Le bandeau de consentement occupe le bas de l'écran ; sans ce décalage il
 	   recouvre la barre, et le visiteur ne peut plus naviguer tant qu'il n'a pas
@@ -53,6 +58,19 @@
 	   scène. Purement graphiques, mais ils clignotaient derrière la barre. */
   .home-scroll-hint {
     bottom: calc(var(--barre-nav-total) + 1rem);
+  }
+}
+
+/* Au-dessus de 1024 px, la barre latérale du shell occupe le bord gauche (17rem, 4,5rem
+   repliée) : les pastilles flottantes de gauche se posaient sur son pied — connexion,
+   réglages, « Replier la barre latérale » — et en volaient les clics. Elles longent
+   désormais le bord du contenu. */
+@media (min-width: 1024px) {
+  .fab-secondary {
+    left: calc(17rem + 1.25rem) !important;
+  }
+  html[data-shell-sidebar="collapsed"] .fab-secondary {
+    left: calc(4.5rem + 1.25rem) !important;
   }
 }
 

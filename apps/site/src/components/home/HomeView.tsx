@@ -2,11 +2,11 @@
  * L'accueil — une page d'entrée d'application, pensée pour le téléphone d'abord.
  *
  * Ordre de lecture (celui du DOM, donc celui du téléphone et du lecteur
- * d'écran) : chercher, choisir une rubrique, reprendre, jouer, s'informer, puis
- * l'activité du serveur et les blocs éditoriaux. Sur grand
- * écran, la même séquence se pose sur une grille de douze colonnes : l'en-tête
- * et le direct du serveur se partagent le premier rang, l'actualité et le
- * classement le suivant, puis les blocs éditoriaux se rangent par paires.
+ * d'écran) : le héros (wordmark de couverture, Kinto-Un, clips, recherche),
+ * choisir une rubrique, reprendre, l'activité du serveur, les blocs éditoriaux
+ * chacun sur son clip, « Explorer aussi », puis TOUT EN BAS les dernières
+ * nouvelles et enfin les mini-jeux. Sur grand écran, la même séquence se pose
+ * sur une grille de douze colonnes.
  *
  * Ce qui reste piloté par `/admin/home` : la phrase et le lien de l'en-tête,
  * l'activation, l'ordre, les titres et les textes des blocs éditoriaux, les
@@ -47,6 +47,7 @@ import { HomeMenuJourney } from "./HomeMenuJourney";
 import { HomeQuickAccess, QUICK_ACCESS } from "./HomeQuickAccess";
 import { HomeSection } from "./HomeSection";
 import { SagaBestOf } from "./SagaBestOf";
+import { SectionScene } from "./SectionScene";
 import type { FeaturedCharacter, SagaTeaser, WikiCounts } from "./types";
 import type { BotStats, PersonaLive, PresenceState, TopMember } from "./useLiveBotState";
 
@@ -74,7 +75,7 @@ const FIXED: ReadonlySet<string> = new Set(["universe", "news", "pantheon", "com
 /** Largeur d'un bloc éditorial sur la grille de douze colonnes. */
 const SPAN: Record<string, string> = {
   bestof: "lg:col-span-12",
-  tops: "lg:col-span-7",
+  tops: "lg:col-span-12",
   personnages: "lg:col-span-12",
   sagas: "lg:col-span-12",
   guardians: "lg:col-span-6",
@@ -139,8 +140,11 @@ export function HomeView(props: HomeViewProps) {
   const tops = flow.findIndex((s) => s.id === "tops");
   const canonAt = tops >= 0 ? tops + 1 : flow.length;
 
+  // Chaque bloc éditorial se pose sur son clip (`section.scene`), chargé à l'approche.
   const blocks = flow.map((s) => (
-    <EditorialBlock key={s.id} section={s} {...props} className={SPAN[s.id] ?? "lg:col-span-12"} />
+    <SectionScene key={s.id} scene={s.scene} className={SPAN[s.id] ?? "lg:col-span-12"}>
+      <EditorialBlock section={s} {...props} className="" />
+    </SectionScene>
   ));
   if (config.canon.enabled) {
     blocks.splice(
@@ -151,7 +155,7 @@ export function HomeView(props: HomeViewProps) {
         config={config.canon}
         doctrine={props.canon.doctrine}
         references={props.canon.references}
-        className={tops >= 0 ? "lg:col-span-5" : "lg:col-span-12"}
+        className="lg:col-span-12"
       />,
     );
   }
@@ -163,10 +167,9 @@ export function HomeView(props: HomeViewProps) {
       topMembers={props.topMembers}
       presence={props.presence}
     >
+      <HomeHero hero={config.hero} />
       <PageShell width="wide" rhythm="tight">
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-12 lg:gap-y-10">
-          <HomeHero hero={config.hero} className="lg:col-span-8 lg:row-start-1" />
-
           <HomeQuickAccess
             counts={props.wikiCounts}
             access={access}
@@ -176,28 +179,13 @@ export function HomeView(props: HomeViewProps) {
 
           <ContinueRail wiki flush limit={16} className="min-w-0 lg:col-span-12" />
 
-          <HomeGames className="lg:col-span-12" />
-
-          {news && shown.has("news") && (
-            <HomeSection
-              id="actualites"
-              title={label(news, "Actualités")}
-              subtitle={news.subtitle || undefined}
-              moreHref="/news"
-              moreLabel={<T k="home.news.all" />}
-              className={pantheon && shown.has("pantheon") ? "lg:col-span-8" : "lg:col-span-12"}
-            >
-              <HomeNews entries={feed} />
-            </HomeSection>
-          )}
-
           <HomeLivePanel
             showCommunity={shown.has("community")}
-            className="lg:col-span-4 lg:col-start-9 lg:row-start-1"
+            className={pantheon && shown.has("pantheon") ? "lg:col-span-8" : "lg:col-span-12"}
           />
 
           {pantheon && shown.has("pantheon") && (
-            <HomePantheon title={label(pantheon, "Classement")} className="lg:col-span-4" />
+            <HomePantheon title={label(pantheon, "")} className="lg:col-span-4" />
           )}
 
           {blocks}
@@ -208,6 +196,22 @@ export function HomeView(props: HomeViewProps) {
             covered={coveredDestinations(config, shown)}
             className="lg:col-span-12"
           />
+
+          {/* Tout en bas, dans cet ordre : les dernières nouvelles, puis les mini-jeux. */}
+          {news && shown.has("news") && (
+            <HomeSection
+              id="actualites"
+              title={label(news, "") || <T k="home.news.index.title" />}
+              subtitle={news.subtitle || undefined}
+              moreHref="/news"
+              moreLabel={<T k="home.news.all" />}
+              className="lg:col-span-12"
+            >
+              <HomeNews entries={feed} />
+            </HomeSection>
+          )}
+
+          <HomeGames className="lg:col-span-12" />
         </div>
       </PageShell>
     </HomeLiveProvider>

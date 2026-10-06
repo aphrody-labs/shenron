@@ -192,6 +192,7 @@ export function HomePantheon({
   limit = 8,
   className = "",
 }: {
+  /** Title from `/admin/home`; empty, the dictionary label is used. */
   title: string;
   limit?: number;
   className?: string;
@@ -205,7 +206,7 @@ export function HomePantheon({
     >
       <div className="flex items-baseline justify-between gap-3">
         <h2 id="accueil-pantheon-titre" className={blockTitle}>
-          {title}
+          {title || t("profile.leaderboard")}
         </h2>
         <Link
           href="/leaderboard"

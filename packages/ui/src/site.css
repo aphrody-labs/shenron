@@ -2976,6 +2976,21 @@ main:focus {
     animation: none;
   }
 }
+/* Dans le shell, la fenêtre commence après la barre latérale (17rem, 4,5rem repliée) : le
+   nuage longe le bord du CONTENU, pas celui de l'écran, et passe sous la barre (z 40). */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .kt-volant {
+    left: 17rem;
+  }
+  html[data-shell-sidebar="collapsed"] .kt-volant {
+    left: 4.5rem;
+  }
+}
+/* Le wordmark de l'accueil dans le shell : la colonne est celle du contenu (sans la barre
+   latérale), le corps suit donc une largeur plus étroite que le plein écran d'origine. */
+.home-wordmark--stage {
+  font-size: clamp(2.6rem, 7.4vw, 8rem);
+}
 .home-hero {
   min-height: calc(100svh - var(--home-section-nav));
 }

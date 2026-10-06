@@ -10,6 +10,7 @@ import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { ShellBoot } from "@shenron/ui/navigation/ShellBoot";
 import { SiteShell } from "@/components/SiteShell";
 import { LocaleProvider } from "@/lib/i18n/client";
+import { T } from "@/components/T";
 import { PageTransition } from "@/components/PageTransition";
 import { NavigationProgress } from "@/components/NavigationProgress";
 import { PageViewTracker } from "@/components/PageViewTracker";
@@ -241,15 +242,16 @@ export default async function RootLayout({
         {/* Évitement de navigation (WCAG 2.4.1) — premier élément focusable du
 				    document, visible seulement au clavier. Sans lui, un utilisateur au
 				    clavier ou au lecteur d'écran retraverse toute la nav (+ le menu
-				    « Plus ») à chaque page avant d'atteindre le contenu. */}
-        <a href="#contenu" className="skip-link">
-          Aller au contenu
-        </a>
+				    « Plus ») à chaque page avant d'atteindre le contenu. Il est rendu
+				    dans `LocaleProvider` (ci-dessous), qui traduit son libellé. */}
         <NavigationProgress />
         <PageViewTracker />
         {/* La langue d'interface vit dans un contexte CLIENT : lire le cookie
 				    ici rendrait tout le site dynamique et tuerait le cache CDN. */}
         <LocaleProvider>
+          <a href="#contenu" className="skip-link">
+            <T k="shell.skipToContent" />
+          </a>
           {/* La coque unique : barre latérale (desktop), onglets et feuille (mobile),
 				    palette ⌘K, fil d'Ariane, barre de titre Tauri. Elle porte le `main#contenu`
 				    et le pied de page ; les onglets mobiles viennent après dans le DOM (ordre
