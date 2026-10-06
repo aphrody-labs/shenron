@@ -145,8 +145,26 @@ vecteurs par les scripts (`requireScriptEmbeddingSpace`) : l'index `shenron-rag`
 `rag_meta` de l'index SQLite sinon. Un écart est une erreur fatale : le bot refuse de démarrer,
 le script s'arrête avant d'écrire. Changer d'espace impose une réindexation.
 
-Non lus par Shenron : `APHRODY_AI_CHAT_BASE_URL` et `APHRODY_AI_VISION_BASE_URL` (la génération
-et la vision passent par `aphrody-ai-http`, jamais directement par un serveur de modèle).
+**Serveur de chat direct (Gemma 4 E2B du vps).** `APHRODY_AI_CHAT_BASE_URL` (forme `base`,
+alias lus ensuite : `APHRODY_SHENRON_LLM_BASE_URL`, `APHRODY_OSS_BASE_URL`, puis
+`APHRODY_LOCAL_MODEL_URL` de forme `origin`) désigne un serveur OpenAI-compatible
+(`POST <base>/chat/completions`) ; résolu par `resolveDirectChat`, appelé par
+`createOpenAiChat` (`@shenron/pipeline/aphrody/compute`). Déclaré, il sert la génération du
+chat du site (`/api/chat`, `chatAphrodyRag`) et du bot (`APHRODY_SHENRON_INFERENCE=http`) à la
+place de `/llm/chat` ; la recherche RAG reste sur `aphrody-ai-http`. Aucune adresse par défaut ;
+le modèle envoyé est `APHRODY_AI_CHAT_MODEL` (ou ses alias), sinon `gemma4-e2b`
+(`DIRECT_CHAT_MODEL_ID` de `@shenron/config/services`). En production, l'unité
+`aphrody-llama-gemma4` d'`aphrody-infra` (llama.cpp, Gemma 4 E2B IT Q4_K_M préchargé et
+verrouillé en RAM, alias `gemma4-e2b`) écoute `127.0.0.1:8798` sur le vps, sans exposition
+nginx, avec un `GET /health` :
+
+```sh
+APHRODY_AI_CHAT_BASE_URL=http://127.0.0.1:8798/v1
+APHRODY_AI_CHAT_MODEL=gemma4-e2b
+```
+
+Non lu par Shenron : `APHRODY_AI_VISION_BASE_URL` (la vision passe par `aphrody-ai-http`,
+jamais directement par un serveur de modèle).
 
 Autres variables Aphrody :
 

@@ -14,7 +14,8 @@
 import type { Database } from "bun:sqlite";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import { createAphrodyChatModel } from "@shenron/pipeline/ai/chat";
-import { resolveChatModel } from "@shenron/pipeline/ai/config";
+import { resolveChatModel, resolveDirectChat } from "@shenron/pipeline/ai/config";
+import { aphrodyComputeFromChat, createOpenAiChat } from "@shenron/pipeline/aphrody/compute";
 import { createNativeShenronChatModel, SHENRON_NATIVE_MODEL } from "@shenron/pipeline/ai/native";
 import {
   generateGroundedAnswer,
@@ -237,9 +238,18 @@ export async function generateLlmGrounded(
         ...(process.env.APHRODY_NATIVE_LORA ? { lora: process.env.APHRODY_NATIVE_LORA } : {}),
       });
     } else if (backend === "http") {
-      model = createAphrodyChatModel(new AphrodyComputeClient().compute, {
-        modelId: aphrodyModel(),
-      });
+      // Serveur de chat direct (Gemma 4 E2B préchargé du vps) quand APHRODY_AI_CHAT_BASE_URL
+      // est déclaré, sinon aphrody-ai-http.
+      const direct = resolveDirectChat(process.env);
+      if (!direct.ok)
+        throw new Error(direct.issues.map((i) => `${i.name} ${i.problem}`).join("; "));
+      model = direct.value
+        ? createAphrodyChatModel(aphrodyComputeFromChat(createOpenAiChat(direct.value)), {
+            modelId: direct.value.model,
+          })
+        : createAphrodyChatModel(new AphrodyComputeClient().compute, {
+            modelId: aphrodyModel(),
+          });
     } else {
       throw new Error("APHRODY_SHENRON_INFERENCE must be native or http");
     }

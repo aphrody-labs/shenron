@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, it } from "bun:test";
-import { AphrodyComputeClient } from "./compute";
+import { AphrodyComputeClient, createOpenAiChat, directChatFromEnv } from "./compute";
 import { AphrodyWebClient } from "./web";
 
 // B18 (docs/architecture/STACK.md §2.2): the embed path now checks 384-dimensional vectors.
@@ -128,5 +128,55 @@ describe("AphrodyWebClient", () => {
     expect(job.status).toBe("running");
     expect((await client.status(job.id)).status).toBe("completed");
     expect(paths).toEqual(["/api/v1/web/crawl", "/api/v1/web/crawl/stats"]);
+  });
+});
+
+describe("createOpenAiChat", () => {
+  it("posts an OpenAI chat completion to the direct server", async () => {
+    let url = "";
+    let payload: { model?: string; stream?: boolean } = {};
+    const chat = createOpenAiChat(
+      { baseUrl: new URL("http://127.0.0.1:8798/v1"), model: "gemma4-e2b" },
+      {
+        fetcher: (async (input: RequestInfo | URL, init?: RequestInit) => {
+          url = String(input);
+          payload = JSON.parse(String(init?.body));
+          return Response.json({
+            model: "gemma4-e2b",
+            choices: [{ message: { role: "assistant", content: " Kamehameha " } }],
+          });
+        }) as unknown as typeof fetch,
+      },
+    );
+    expect(await chat([{ role: "user", content: "Goku ?" }])).toEqual({
+      answer: "Kamehameha",
+      model: "gemma4-e2b",
+    });
+    expect(url).toBe("http://127.0.0.1:8798/v1/chat/completions");
+    expect(payload.model).toBe("gemma4-e2b");
+    expect(payload.stream).toBe(false);
+  });
+
+  it("rejects an HTTP error and an empty answer", async () => {
+    const base = { baseUrl: new URL("http://127.0.0.1:8798/v1"), model: "gemma4-e2b" };
+    const failing = createOpenAiChat(base, {
+      fetcher: (async () => new Response("down", { status: 503 })) as unknown as typeof fetch,
+    });
+    await expect(failing([{ role: "user", content: "?" }])).rejects.toThrow("HTTP 503");
+    const empty = createOpenAiChat(base, {
+      fetcher: (async () =>
+        Response.json({ choices: [{ message: { content: "" } }] })) as unknown as typeof fetch,
+    });
+    await expect(empty([{ role: "user", content: "?" }])).rejects.toThrow("empty LLM answer");
+  });
+
+  it("is built from the environment only when a base URL is declared", () => {
+    expect(directChatFromEnv({})).toBeNull();
+    expect(
+      directChatFromEnv({ APHRODY_AI_CHAT_BASE_URL: "http://127.0.0.1:8798/v1" }),
+    ).toBeFunction();
+    expect(() =>
+      directChatFromEnv({ APHRODY_AI_CHAT_BASE_URL: "https://example.com/v1" }),
+    ).toThrow();
   });
 });

@@ -1,10 +1,12 @@
 import "server-only";
+import { AiConfigError, resolveChatModel, resolveDirectChat } from "@shenron/pipeline/ai/config";
 import {
   AphrodyComputeClient,
   aphrodyComputeFromChat,
   type AphrodyRagHit,
+  type ChatFn,
+  createOpenAiChat,
 } from "@shenron/pipeline/aphrody/compute";
-import { resolveChatModel } from "@shenron/pipeline/ai/config";
 import { buildGroundingInstructions } from "@shenron/pipeline/ai/prompts";
 import { createShenronProvider } from "@shenron/pipeline/ai/provider";
 import { generateText } from "ai";
@@ -28,16 +30,26 @@ export async function searchAphrodyRag(
 }
 
 /**
- * Fournisseur Shenron dont le modèle `chat` passe par le client injecté (façade
- * ou double de test) : les adresses et le jeton restent ceux de la façade.
+ * Fournisseur Shenron dont le modèle `chat` passe par la fonction injectée : le serveur
+ * de chat direct (Gemma 4 E2B préchargé du vps, `APHRODY_AI_CHAT_BASE_URL`) s'il est
+ * déclaré, sinon la façade `aphrody-ai-http` (ou un double de test).
  */
-function chatProvider(client: Pick<AphrodyComputeClient, "chat">, chatModel: string) {
+function chatProvider(chat: ChatFn, chatModel: string) {
   return createShenronProvider(
     { embed: null, chatModel },
-    {
-      compute: aphrodyComputeFromChat((messages, model) => client.chat(messages, model)),
-    },
+    { compute: aphrodyComputeFromChat(chat) },
   );
+}
+
+/** Chat function and model id: the direct server when declared, else the facade. */
+function chatRoute(client: Pick<AphrodyComputeClient, "chat">): { chat: ChatFn; model: string } {
+  const direct = resolveDirectChat(process.env);
+  if (!direct.ok) throw new AiConfigError("direct chat server", direct.issues);
+  if (direct.value) return { chat: createOpenAiChat(direct.value), model: direct.value.model };
+  return {
+    chat: (messages, model) => client.chat(messages, model),
+    model: resolveChatModel(process.env),
+  };
 }
 
 export async function chatAphrodyRag(
@@ -61,15 +73,16 @@ export async function chatAphrodyRag(
   const context = options.context?.trim()
     ? `[Page consultée] ${options.context.trim().slice(0, 2600)}\n\n${sources}`
     : sources;
+  // Serveur direct déclaré (APHRODY_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
   // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
-  const chatModel = resolveChatModel(process.env);
+  const route = chatRoute(client);
   // Voix « Whis » pour le persona whis, « Shenron » sinon (règle historique du site).
   const instructions = buildGroundingInstructions(
     persona === "whis" ? "whis" : "shenron",
     "site-short",
   );
   const { text } = await generateText({
-    model: chatProvider(client, chatModel).languageModel("chat"),
+    model: chatProvider(route.chat, route.model).languageModel("chat"),
     instructions,
     messages: [{ role: "user", content: `Sources :\n${context}\n\nQuestion : ${query}` }],
     maxRetries: 0,

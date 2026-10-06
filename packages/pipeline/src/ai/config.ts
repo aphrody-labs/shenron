@@ -23,6 +23,7 @@ import type {
 } from "@ai-sdk/provider";
 import { envString, type EnvIssue, type EnvSource } from "@shenron/config/env";
 import { parseLoopbackHttpUrl } from "@shenron/config/net";
+import { DIRECT_CHAT_MODEL_ID } from "@shenron/config/services";
 import type { generateText } from "ai";
 
 /** The multilingual E5 embedder served by Aphrody (`aphrody-shenron-embed`). */
@@ -109,9 +110,11 @@ export interface AiEnvSetting {
 
 /**
  * Every AI variable Shenron reads: canonical name, then the legacy aliases in
- * the contract order. `APHRODY_AI_CHAT_BASE_URL` and `APHRODY_AI_VISION_BASE_URL`
- * are deliberately absent: generation and vision go through `aphrody-ai-http`,
- * never to a model server directly.
+ * the contract order. `APHRODY_AI_CHAT_BASE_URL` (and aliases) selects a direct
+ * OpenAI-compatible chat server (the preloaded Gemma 4 E2B of the vps,
+ * {@link resolveDirectChat}); without it, generation goes through `aphrody-ai-http`.
+ * `APHRODY_AI_VISION_BASE_URL` is deliberately absent: vision always goes through
+ * `aphrody-ai-http`.
  */
 export const AI_ENV = Object.freeze({
   httpUrl: {
@@ -126,6 +129,15 @@ export const AI_ENV = Object.freeze({
   chatModel: {
     canonical: "APHRODY_AI_CHAT_MODEL",
     aliases: [{ name: "APHRODY_LLM_MODEL" }, { name: "APHRODY_SHENRON_LLM_MODEL" }],
+  },
+  chatBaseUrl: {
+    canonical: "APHRODY_AI_CHAT_BASE_URL",
+    form: "base",
+    aliases: [
+      { name: "APHRODY_SHENRON_LLM_BASE_URL", form: "base" },
+      { name: "APHRODY_OSS_BASE_URL", form: "base" },
+      { name: "APHRODY_LOCAL_MODEL_URL", form: "origin" },
+    ],
   },
   visionModel: {
     canonical: "APHRODY_AI_VISION_MODEL",
@@ -480,6 +492,33 @@ function modelId(
 /** Chat model id sent to `aphrody-ai-http` (`APHRODY_AI_CHAT_MODEL` or aliases, else the default). */
 export function resolveChatModel(env: EnvSource): AphrodyChatModelId {
   return modelId(env, AI_ENV.chatModel, DEFAULT_CHAT_MODEL, []);
+}
+
+// ── Direct OpenAI-compatible chat (optional) ──
+
+export interface DirectChatEndpoint {
+  /** Base URL (`…/v1`); requests go to `<base>/chat/completions`. */
+  baseUrl: URL;
+  /** Model id sent to the server (`APHRODY_AI_CHAT_MODEL` or aliases, else `gemma4-e2b`). */
+  model: string;
+  /** Variable the base URL was read from. */
+  source: string;
+}
+
+/**
+ * Direct chat server (llama-server, OpenAI-compatible) when `APHRODY_AI_CHAT_BASE_URL`
+ * or an alias is set, else `null` (generation then goes through `aphrody-ai-http`).
+ * The URL must be loopback HTTP, like every other AI address.
+ */
+export function resolveDirectChat(env: EnvSource): Resolved<DirectChatEndpoint | null> {
+  const hit = readAiEnv(env, AI_ENV.chatBaseUrl);
+  if (!hit) return { ok: true, value: null };
+  const base = toBaseUrl(hit, "/chat/completions");
+  if (!base.ok) return base;
+  const issues: EnvIssue[] = [];
+  const model = modelId(env, AI_ENV.chatModel, DIRECT_CHAT_MODEL_ID, issues);
+  if (issues.length > 0) return { ok: false, issues };
+  return { ok: true, value: { baseUrl: base.value, model, source: hit.name } };
 }
 
 /** Vision model id sent to `aphrody-ai-http` (`APHRODY_AI_VISION_MODEL` or alias, else the default). */

@@ -15,6 +15,9 @@
  * | relecture OCR  | `RELECTURE_OCR_URL`             | `http://127.0.0.1:8791`   |
  * | Shenron API    | `SHENRON_API_HOST` + `_PORT`    | `127.0.0.1:8797` (bind)   |
  *
+ * The direct chat server (`APHRODY_AI_CHAT_BASE_URL`, read by `@shenron/pipeline/ai/config`)
+ * has no default address; only its default model id lives here.
+ *
  * Runtime class: `pure` (takes an explicit env record).
  */
 import { type EnvSource, envFirst, envString } from "./env";
@@ -36,6 +39,13 @@ export const DEFAULT_INTERNAL_SERVICES = {
   shenronApiHost: "127.0.0.1",
   shenronApiPort: 8797,
 } as const;
+
+/**
+ * Model id of the direct OpenAI-compatible chat server when `APHRODY_AI_CHAT_MODEL` is unset:
+ * Gemma 4 E2B instruct preloaded on the vps (aphrody-infra unit `aphrody-llama-gemma4`,
+ * llama-server alias `gemma4-e2b`).
+ */
+export const DIRECT_CHAT_MODEL_ID = "gemma4-e2b";
 
 const trimSlash = (u: string): string => u.replace(/\/+$/, "");
 

@@ -17,6 +17,7 @@ import {
   requireEmbeddingSpace,
   resolveAiConfig,
   resolveChatModel,
+  resolveDirectChat,
   resolveEmbedBaseUrl,
   resolveRerank,
   resolveVisionModel,
@@ -344,5 +345,30 @@ describe("source hygiene", () => {
         offenders.push(file);
     }
     expect(offenders).toEqual([]);
+  });
+});
+
+describe("resolveDirectChat", () => {
+  test("is off without a chat base URL", () => {
+    expect(resolveDirectChat({})).toEqual({ ok: true, value: null });
+  });
+
+  test("reads the canonical base and defaults the model to gemma4-e2b", () => {
+    const r = resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1` });
+    expect(r.ok && r.value?.baseUrl.href).toBe(`${LOOP}/v1`);
+    expect(r.ok && r.value?.model).toBe("gemma4-e2b");
+    expect(r.ok && r.value?.source).toBe("APHRODY_AI_CHAT_BASE_URL");
+  });
+
+  test("an origin alias gets /v1 and the configured model wins", () => {
+    const r = resolveDirectChat({ APHRODY_LOCAL_MODEL_URL: LOOP, APHRODY_AI_CHAT_MODEL: "m1" });
+    expect(r.ok && r.value?.baseUrl.href).toBe(`${LOOP}/v1`);
+    expect(r.ok && r.value?.model).toBe("m1");
+  });
+
+  test("refuses a public address", () => {
+    expect(resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: "https://example.com/v1" }).ok).toBe(
+      false,
+    );
   });
 });

@@ -22,7 +22,14 @@ import {
   type AphrodyCompute,
   createAphrodyCompute,
 } from "@shenron/pipeline/ai/aphrody";
-import { requireAiHttpToken, requireAiHttpUrl } from "@shenron/pipeline/ai/config";
+import {
+  AiConfigError,
+  chatTimeoutMs,
+  type DirectChatEndpoint,
+  requireAiHttpToken,
+  requireAiHttpUrl,
+  resolveDirectChat,
+} from "@shenron/pipeline/ai/config";
 
 /** Private Shenron workload boundary served by the Aphrody AI process. */
 export interface AphrodyComputeOptions {
@@ -203,7 +210,7 @@ export class AphrodyComputeClient {
   }
 }
 
-type ChatFn = (
+export type ChatFn = (
   messages: AphrodyChatMessage[],
   model?: string,
 ) => Promise<{ answer: string; model: string }>;
@@ -238,4 +245,50 @@ export function aphrodyComputeFromChat(chat: ChatFn): AphrodyCompute {
     ocr: unavailable,
     visionStructured: unavailable,
   };
+}
+
+/**
+ * Legacy-shaped chat function over a direct OpenAI-compatible server
+ * (`POST <base>/chat/completions`, non-streaming): the preloaded Gemma 4 E2B
+ * `llama-server` of the vps. The endpoint model id is used unless the caller names
+ * one. Errors carry the same messages as {@link AphrodyComputeClient.chat}.
+ */
+export function createOpenAiChat(
+  endpoint: Pick<DirectChatEndpoint, "baseUrl" | "model">,
+  options: { fetcher?: typeof fetch; timeoutMs?: number } = {},
+): ChatFn {
+  const url = new URL(`${endpoint.baseUrl.href.replace(/\/+$/, "")}/chat/completions`);
+  return async (messages, model) => {
+    const id = model?.trim() || endpoint.model;
+    const doFetch = options.fetcher ?? fetch;
+    const res = await doFetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ model: id, messages, stream: false }),
+      signal: AbortSignal.timeout(options.timeoutMs ?? chatTimeoutMs(id)),
+    });
+    if (!res.ok) throw new Error(`Aphrody compute HTTP ${res.status} on ${url.pathname}`);
+    const body = (await res.json().catch(() => null)) as {
+      model?: unknown;
+      choices?: { message?: { content?: unknown } }[];
+    } | null;
+    const answer = body?.choices?.[0]?.message?.content;
+    if (typeof answer !== "string" || !answer.trim()) {
+      throw new Error("Aphrody returned an empty LLM answer");
+    }
+    return { answer: answer.trim(), model: typeof body?.model === "string" ? body.model : id };
+  };
+}
+
+/**
+ * Direct chat function from the environment (`APHRODY_AI_CHAT_BASE_URL` or an alias),
+ * or `null` when none is set. A malformed value throws an {@link AiConfigError}.
+ */
+export function directChatFromEnv(
+  env: Record<string, string | undefined> = process.env,
+  options: { fetcher?: typeof fetch } = {},
+): ChatFn | null {
+  const resolved = resolveDirectChat(env);
+  if (!resolved.ok) throw new AiConfigError("direct chat server", resolved.issues);
+  return resolved.value ? createOpenAiChat(resolved.value, options) : null;
 }
