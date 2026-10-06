@@ -372,7 +372,11 @@ impl CanvasRenderer {
         };
         let sample = self.sample.take().expect("ready sample exists");
         let result = ready.and_then(|()| {
-            let mapped = sample.buffer.slice(..).get_mapped_range();
+            let mapped = sample
+                .buffer
+                .slice(..)
+                .get_mapped_range()
+                .map_err(|error| format!("mapped color sample is unreadable: {error}"))?;
             let color = (mapped.len() >= 4)
                 .then(|| [mapped[0], mapped[1], mapped[2], mapped[3]])
                 .ok_or_else(|| "mapped color sample is truncated".to_owned());
@@ -906,7 +910,7 @@ impl BrowserGpu {
         let source = (!self.canvas.size.is_empty()).then_some(&self.canvas.gpu.target.view);
         self.blitter.copy(&self.device, &mut encoder, source, &target);
         self.queue.submit([encoder.finish()]);
-        surface_texture.present();
+        self.queue.present(surface_texture);
         if suboptimal {
             self.surface.configure(&self.device, &self.config);
         }
@@ -1001,6 +1005,7 @@ pub async fn create_canvas(element: HtmlCanvasElement) -> Result<WebCanvas, JsVa
             power_preference: wgpu::PowerPreference::HighPerformance,
             force_fallback_adapter: false,
             compatible_surface: Some(&surface),
+            apply_limit_buckets: false,
         })
         .await
         .map_err(js_error)?;
