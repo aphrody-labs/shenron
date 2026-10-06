@@ -121,9 +121,27 @@ const HOP_BY_HOP = new Set([
   "proxy-connection",
 ]);
 
-async function relay(request: Request, url: URL, nextPort: number): Promise<Response> {
+/** IPv4-mapped IPv6 form of a socket address (`::ffff:127.0.0.1` reported by dual-stack listeners). */
+function plainAddress(address: string): string {
+  return address.startsWith("::ffff:") ? address.slice(7) : address;
+}
+
+/**
+ * The relay is the trust boundary of the front app: the client address it forwards is the socket
+ * peer, never a header the caller sent (`x-real-ip` / `x-forwarded-for` feed the admin-by-address
+ * rule of the site, `SHENRON_ADMIN_IPS`, which the desktop profile sets to the loopback).
+ */
+async function relay(
+  request: Request,
+  url: URL,
+  nextPort: number,
+  peer?: string,
+): Promise<Response> {
   const headers = new Headers(request.headers);
   for (const name of HOP_BY_HOP) headers.delete(name);
+  headers.delete("x-real-ip");
+  headers.delete("x-forwarded-for");
+  if (peer) headers.set("x-real-ip", plainAddress(peer));
   headers.set("x-forwarded-host", url.host);
   headers.set("x-forwarded-proto", url.protocol.replace(":", ""));
   const upstream = await fetch(`http://127.0.0.1:${nextPort}${url.pathname}${url.search}`, {
@@ -161,7 +179,8 @@ export function serveFront(o: FrontOptions): Bun.Server<ChatSocketData> {
     websocket: host?.websocket ?? NO_WEBSOCKET,
     async fetch(request, server) {
       const url = new URL(request.url);
-      const local = await o.local(request, url, o.ready(), server.requestIP(request)?.address);
+      const peer = server.requestIP(request)?.address;
+      const local = await o.local(request, url, o.ready(), peer);
       if (local) return local;
       // The host returns no response once it has upgraded the chat WebSocket.
       if (host && hostClaims(host, url.pathname)) return host.fetch(request, server);
@@ -171,7 +190,7 @@ export function serveFront(o: FrontOptions): Bun.Server<ChatSocketData> {
         return host.fetch(request, server);
       if (!o.ready())
         return new Response("Shenron démarre…", { status: 503, headers: { "retry-after": "1" } });
-      return relay(request, url, o.nextPort);
+      return relay(request, url, o.nextPort, peer);
     },
   });
 }

@@ -153,6 +153,10 @@ export function loadEnvironment(
     // editor, the studio and the local APIs run without it.
     env.SKIP_ENV_VALIDATION ??= "1";
   }
+  // The desktop app is one user on their own machine: the loopback is the staff workstation, so
+  // the guarded pages (workshop tools, admin, rubriques still closed to the public) open in the
+  // window. The front relay forwards the socket peer, never a caller-supplied address.
+  if (profile === "desktop") env.SHENRON_ADMIN_IPS ??= "127.0.0.1,::1";
   env.SHENRON_PROFILE = profile;
   env.SHENRON_HOME = paths.home;
   env.DATABASE_PATH ??= join(paths.data, "bot.db");
