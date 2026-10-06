@@ -1,7 +1,7 @@
 {
 	"journal": {
-		"entries": 14,
-		"files": 22,
+		"entries": 15,
+		"files": 23,
 		"journaled": [
 			"0000_dark_johnny_blaze",
 			"0001_natural_switch",
@@ -16,7 +16,8 @@
 			"0016_page_banners",
 			"0017_wiki_media_publications",
 			"0020_chat_agent_homes",
-			"0021_ba_account_provider_unique"
+			"0021_ba_account_provider_unique",
+			"0022_chat_conversations"
 		],
 		"unjournaled": [
 			"0007_post_cms",
@@ -113,6 +114,12 @@
 				"tag": "0021_ba_account_provider_unique",
 				"when": 1791400000000,
 				"breakpoints": true
+			},
+			{
+				"idx": 14,
+				"tag": "0022_chat_conversations",
+				"when": 1791410000000,
+				"breakpoints": true
 			}
 		]
 	},
@@ -175,6 +182,7 @@
 		"0018_media_works_and_editions": "1edccccf62d9a65a80160a63c743cad8ad1436ddcc560e51c18f1a4733e96341",
 		"0019_narrative_graph_and_contributors": "000efc01951e6932946fe147dd8839ae4f2ba335a97bce5420d8b836e12341eb",
 		"0020_chat_agent_homes": "26ac2ce54873a510db43f3e7efaf09fa5a3f4912d8bff7f2eba1411c82e0a6e7",
-		"0021_ba_account_provider_unique": "0d032590e10c47c2fde0a45c36cc2d8a1eacd4c26af4ad222ef07782960b0536"
+		"0021_ba_account_provider_unique": "0d032590e10c47c2fde0a45c36cc2d8a1eacd4c26af4ad222ef07782960b0536",
+		"0022_chat_conversations": "a7b524ace2c8e3fbc1166af56837533f5abaedfde2e9999a8dec117d41cf59c8"
 	}
 }
