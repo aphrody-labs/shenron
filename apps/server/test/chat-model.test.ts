@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, describe, expect, test } from "bun:test";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -9,13 +9,15 @@ import {
   CHAT_MODEL_IDS,
   GEMMA_MODEL,
 } from "@shenron/config/chat-model";
+import type { ShenronLlamaProvision, ShenronLlamaRouterStart } from "@shenron/native/shenron";
 
 import { planBackend } from "../src/backend";
 import {
-  downloadArtifact,
+  daemonLauncher,
   INSTALL_PATH,
+  LLAMA_DAEMON_VERB,
+  type LocalChatNative,
   planChatModel,
-  resolveLlamaServer,
   startChatModel,
 } from "../src/chat-model";
 import { testPaths } from "./support";
@@ -35,62 +37,91 @@ function touch(path: string, text = "x"): string {
   return path;
 }
 
-const none = () => null;
-/** A no-op Aphrody CLI: the store lookup finds nothing. */
-const noAphrody = { APHRODY_BIN: "/nonexistent/aphrody" };
-
-/**
- * A fake `llama-server` in router mode: reads its presets, answers /health, /v1/models,
- * /models/load and /lora-adapters on --port, and records its argv and presets.
- */
-function fakeLlama(dir: string, o: { exitAtOnce?: boolean } = {}): string {
-  const path = join(dir, "llama", "llama-server");
-  touch(
-    path,
-    o.exitAtOnce
-      ? "#!/bin/sh\nexit 3\n"
-      : `#!${process.execPath}
-const args = process.argv.slice(2);
-const preset = await Bun.file(args[args.indexOf("--models-preset") + 1]).text();
-await Bun.write(${JSON.stringify(join(dir, "argv.json"))}, JSON.stringify(args));
-await Bun.write(${JSON.stringify(join(dir, "preset.ini"))}, preset);
-const sections = [...preset.matchAll(/^\\[(.+)\\]\\n([^[]*)/gm)].map(([, id, body]) => ({ id, lora: /^lora = /m.test(body) }));
-const loaded = new Set();
-const port = Number(args[args.indexOf("--port") + 1]);
-Bun.serve({ hostname: "127.0.0.1", port, async fetch(req) {
-  const url = new URL(req.url);
-  if (url.pathname === "/health") return Response.json({ status: "ok" });
-  if (url.pathname === "/v1/models")
-    return Response.json({ data: sections.map((s) => ({ id: s.id, status: { value: loaded.has(s.id) ? "loaded" : "unloaded" } })) });
-  if (url.pathname === "/models/load") { loaded.add((await req.json()).model); return Response.json({ success: true }); }
-  if (url.pathname === "/lora-adapters") {
-    const s = sections.find((x) => x.id === url.searchParams.get("model"));
-    return Response.json(s?.lora ? [{ id: 0, scale: 1 }] : []);
-  }
-  return new Response("no", { status: 404 });
-} });
-`,
-  );
-  chmodSync(path, 0o755);
-  return path;
+interface RouterModel {
+  id: string;
+  model: string;
+  sha256?: string;
+  lora: { spec: string; sha256?: string }[];
 }
 
-describe("resolveLlamaServer", () => {
-  test("explicit file or directory, then shipped llama/, then PATH", () => {
-    const { dir } = setup();
-    expect(resolveLlamaServer(null, [dir], none)).toBe(null);
-    expect(resolveLlamaServer(null, [dir], () => "/usr/bin/llama-server")).toBe(
-      "/usr/bin/llama-server",
-    );
-    const shipped = touch(join(dir, "llama", "llama-server"));
-    expect(resolveLlamaServer(null, [dir], none)).toBe(shipped);
-    const own = touch(join(dir, "own", "bin", "llama-server"));
-    expect(resolveLlamaServer(join(dir, "own"), [dir], none)).toBe(own);
-    expect(resolveLlamaServer(own, [dir], none)).toBe(own);
-    // An explicit path that does not exist falls back to the shipped one.
-    expect(resolveLlamaServer(join(dir, "absent"), [dir], none)).toBe(shipped);
-  });
-});
+/**
+ * The native local chat of shenron-ffi, faked: provisioning marks a spec present (after one
+ * progress report), the router answers /health and /v1/chat/completions on the requested port
+ * from the router.json it was given, a llama model being available once provisioned.
+ */
+function fakeNative(o: { llamaBin?: string | null; present?: string[]; failChat?: boolean } = {}) {
+  const present = new Set(o.present ?? []);
+  const provisions: ShenronLlamaProvision[] = [];
+  const routers: { request: ShenronLlamaRouterStart; models: RouterModel[] }[] = [];
+  const chats: { model: string }[] = [];
+  let server: ReturnType<typeof Bun.serve> | null = null;
+  const native: LocalChatNative = {
+    async provision(request, onProgress) {
+      provisions.push(request);
+      onProgress({ role: "weights", spec: request.model!.spec, downloaded: 50, total: 100 });
+      await Bun.sleep(5);
+      present.add(request.model!.spec);
+      return {
+        modelId: request.model!.spec,
+        weights: "/w.gguf",
+        lora: (request.lora ?? []).map((l) => l.spec),
+        transferred: true,
+      };
+    },
+    startRouter(request) {
+      void server?.stop(true);
+      const config = JSON.parse(readFileSync(request.config, "utf8")) as {
+        models: RouterModel[];
+      };
+      routers.push({ request, models: config.models });
+      const port = Number(request.bind!.split(":")[1]);
+      server = Bun.serve({
+        hostname: "127.0.0.1",
+        port,
+        async fetch(req) {
+          const url = new URL(req.url);
+          if (url.pathname === "/health")
+            return Response.json({
+              status: "ok",
+              backends: config.models.map((m) => ({
+                id: m.id,
+                backend: "llama",
+                available: present.has(m.model),
+                running: false,
+                reason: present.has(m.model) ? null : "model files not provisioned",
+              })),
+            });
+          if (url.pathname === "/v1/chat/completions") {
+            const body = (await req.json()) as { model: string };
+            chats.push(body);
+            if (o.failChat)
+              return Response.json(
+                { error: { message: "llama-server exited (code 3)" } },
+                { status: 503 },
+              );
+            return Response.json({ choices: [{ message: { role: "assistant", content: "p" } }] });
+          }
+          return new Response("no", { status: 404 });
+        },
+      });
+      const base = `http://127.0.0.1:${port}`;
+      return {
+        url: base,
+        baseUrl: `${base}/v1`,
+        healthUrl: `${base}/health`,
+        models: config.models.map((m) => m.id),
+        llamaBin: o.llamaBin === undefined ? "/opt/llama/llama-server" : o.llamaBin,
+      };
+    },
+    stopRouter() {
+      const had = server !== null;
+      void server?.stop(true);
+      server = null;
+      return had;
+    },
+  };
+  return { native, provisions, routers, chats };
+}
 
 describe("planChatModel", () => {
   test("on by default in the desktop profile only, off when the chat is external", () => {
@@ -109,94 +140,76 @@ describe("planChatModel", () => {
     const desktop = planChatModel(paths, { SHENRON_PROFILE: "desktop" });
     expect(desktop?.url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
     expect(desktop?.modelsDir).toBe(join(paths.home, "models"));
+    expect(desktop?.stateDir).toBe(join(paths.home, "llama"));
     // Opt-in outside the desktop profile.
     expect(planChatModel(paths, { SHENRON_CHAT_MODEL: "auto" })).not.toBe(null);
   });
 
-  test("planBackend declares the local model URL when llama-server is shipped", () => {
+  test("planBackend declares the local model URL of the router", () => {
     const { paths } = setup();
-    const resources = join(paths.exeDir, "..", "resources");
-    const env = { SHENRON_PROFILE: "desktop", SHENRON_RESOURCE_DIR: resources, PATH: "" };
-    expect(planBackend(paths, env).env.APHRODY_LOCAL_MODEL_URL).toBeUndefined();
-    touch(join(resources, "llama", "llama-server"));
+    const env = { SHENRON_PROFILE: "desktop" };
     const plan = planBackend(paths, env);
-    expect(plan.chatModel?.binary).toBe(join(resources, "llama", "llama-server"));
     expect(plan.env.APHRODY_LOCAL_MODEL_URL).toBe(plan.chatModel!.url);
     expect(plan.env.APHRODY_AI_CHAT_MODEL).toBe(CHAT_MODEL_IDS.shenron);
     expect(
       planBackend(paths, { ...env, APHRODY_AI_CHAT_MODEL: "own" }).env.APHRODY_AI_CHAT_MODEL,
     ).toBe("own");
+    expect(planBackend(paths, {}).env.APHRODY_LOCAL_MODEL_URL).toBeUndefined();
   });
-});
 
-describe("downloadArtifact", () => {
-  const body = new TextEncoder().encode("gguf-bytes-".repeat(100));
-  const sha256 = new Bun.CryptoHasher("sha256").update(body).digest("hex");
-  const server = Bun.serve({
-    port: 0,
-    hostname: "127.0.0.1",
-    fetch(request) {
-      const range = request.headers.get("range")?.match(/^bytes=(\d+)-$/);
-      if (range) {
-        const start = Number(range[1]);
-        return new Response(body.slice(start), {
-          status: 206,
-          headers: { "content-length": String(body.length - start) },
-        });
-      }
-      return new Response(body, { headers: { "content-length": String(body.length) } });
-    },
-  });
-  afterAll(() => server.stop(true));
-  const url = `http://127.0.0.1:${server.port}/model.gguf`;
-
-  test("downloads, resumes a partial file and checks the digest", async () => {
-    const { dir } = setup();
-    const dest = join(dir, "models", "a.gguf");
-    const seen: number[] = [];
-    await downloadArtifact(url, dest, { sha256, onProgress: (p) => seen.push(p.received) });
-    expect(await Bun.file(dest).bytes()).toEqual(body);
-    expect(seen.at(-1)).toBe(body.length);
-
-    const resumed = join(dir, "models", "b.gguf");
-    touch(`${resumed}.part`, new TextDecoder().decode(body.slice(0, 300)));
-    await downloadArtifact(url, resumed, { sha256 });
-    expect(await Bun.file(resumed).bytes()).toEqual(body);
-    expect(existsSync(`${resumed}.part`)).toBe(false);
-
-    const wrong = join(dir, "models", "c.gguf");
-    expect(downloadArtifact(url, wrong, { sha256: "0".repeat(64) })).rejects.toThrow(/digest/);
+  test("the supervisor re-executes this server as its daemon", () => {
+    expect(
+      daemonLauncher(
+        "/app/lib.so",
+        "/app/shenron-server",
+        ["/app/shenron-server"],
+        "/$bunfs/root/x",
+      ),
+    ).toEqual({
+      program: "/app/shenron-server",
+      args: [LLAMA_DAEMON_VERB, "--library", "/app/lib.so"],
+    });
+    expect(
+      daemonLauncher(null, "/usr/bin/bun", ["/usr/bin/bun", "/src/cli.ts", "serve"], "/src/cli.ts"),
+    ).toEqual({ program: "/usr/bin/bun", args: ["/src/cli.ts", LLAMA_DAEMON_VERB] });
   });
 });
 
 describe("startChatModel", () => {
-  test("one router over the models on disk, the adapter applied, the catalog listed", async () => {
-    const { dir, paths } = setup();
-    const binary = fakeLlama(dir);
-    const env = {
-      SHENRON_PROFILE: "desktop",
-      SHENRON_LLAMA_BIN: binary,
-      SHENRON_GEMMA_MODEL: "manual",
-      ...noAphrody,
-    };
-    const base = touch(join(paths.home, "models", CHAT_BASE_MODEL.file));
+  test("router over both models, the default provisioned and warmed, Gemma installable", async () => {
+    const { paths } = setup();
+    const env = { SHENRON_PROFILE: "desktop", SHENRON_GEMMA_MODEL: "manual" };
     const adapter = touch(join(paths.exeDir, "models", CHAT_ADAPTER.file));
-    const model = startChatModel(planChatModel(paths, env)!, env);
+    const fake = fakeNative();
+    const plan = planChatModel(paths, env)!;
+    const model = startChatModel(plan, env, { native: fake.native });
     expect(model.status().available).toBe(false);
     expect(await model.ready).toBe(true);
     expect(model.status()).toEqual({
       available: true,
       reason: `${CHAT_BASE_MODEL.label} + ${CHAT_ADAPTER.id}`,
     });
-    const argv = (await Bun.file(join(dir, "argv.json")).json()) as string[];
-    expect(argv[argv.indexOf("--host") + 1]).toBe("127.0.0.1");
-    expect(argv[argv.indexOf("--models-max") + 1]).toBe("1");
-    const preset = await Bun.file(join(dir, "preset.ini")).text();
-    expect(preset).toContain(`[${CHAT_MODEL_IDS.shenron}]\nmodel = ${base}\nlora = ${adapter}`);
-    // Gemma 4 E2B not yet on disk is declared at its download path: no router restart later.
-    expect(preset).toContain(
-      `[${GEMMA_MODEL.id}]\nmodel = ${join(paths.home, "models", GEMMA_MODEL.file)}`,
-    );
+    // router.json: catalog ids of aphrody-models, the shipped adapter used in place, digest pinned.
+    const [router] = fake.routers;
+    expect(router!.request.bind).toBe(`127.0.0.1:${plan.port}`);
+    expect(router!.request.modelsDir).toBe(join(paths.home, "models"));
+    expect(router!.request.searchDirs).toContain(paths.exeDir);
+    expect(router!.request.daemon.args).toContain(LLAMA_DAEMON_VERB);
+    expect(router!.models.map((m) => [m.id, m.model, m.lora])).toEqual([
+      [
+        CHAT_MODEL_IDS.shenron,
+        CHAT_BASE_MODEL.id,
+        [{ spec: `file:${adapter}`, sha256: CHAT_ADAPTER.sha256 }],
+      ],
+      [GEMMA_MODEL.id, GEMMA_MODEL.aphrodyId, []],
+    ]);
+    // Provisioned with the router's own request (its first start then finds everything there).
+    expect(fake.provisions[0]).toMatchObject({
+      modelsDir: join(paths.home, "models"),
+      model: { spec: CHAT_BASE_MODEL.id },
+      lora: [{ spec: `file:${adapter}` }],
+    });
+    expect(fake.chats.map((c) => c.model)).toEqual([CHAT_MODEL_IDS.shenron]);
 
     const catalog = await model.catalog();
     expect(catalog.map((e) => [e.id, e.state, e.default, e.available])).toEqual([
@@ -212,6 +225,11 @@ describe("startChatModel", () => {
       "10.0.0.2",
     );
     expect(remote?.status).toBe(403);
+    expect(await model.install(GEMMA_MODEL.id)).toBe(true);
+    expect((await model.catalog()).find((e) => e.id === GEMMA_MODEL.id)?.state).toBe("ready");
+    expect(model.status().reason).toContain(GEMMA_MODEL.id);
+    // Gemma joined without a router restart.
+    expect(fake.routers).toHaveLength(1);
     const list = await model.handle(
       new Request("http://127.0.0.1/api/local/models"),
       new URL("http://127.0.0.1/api/local/models"),
@@ -220,48 +238,74 @@ describe("startChatModel", () => {
     model.stop();
   });
 
-  test("Gemma 4 E2B on disk joins the router; gemma off leaves the list", async () => {
-    const { dir, paths } = setup();
-    touch(join(paths.home, "models", CHAT_BASE_MODEL.file));
+  test("files of an earlier release are used in place; gemma off leaves the list", async () => {
+    const { paths } = setup();
+    const base = touch(join(paths.home, "models", CHAT_BASE_MODEL.file));
     const gemma = touch(join(paths.home, "models", GEMMA_MODEL.file));
-    const env = {
-      SHENRON_PROFILE: "desktop",
-      SHENRON_LLAMA_BIN: fakeLlama(dir),
-      SHENRON_CHAT_LORA: "off",
-      ...noAphrody,
-    };
-    const model = startChatModel(planChatModel(paths, env)!, env);
+    const env = { SHENRON_PROFILE: "desktop", SHENRON_CHAT_LORA: "off" };
+    const fake = fakeNative({ present: [`file:${gemma}`] });
+    const model = startChatModel(planChatModel(paths, env)!, env, { native: fake.native });
     expect(await model.ready).toBe(true);
-    expect(await Bun.file(join(dir, "preset.ini")).text()).toContain(
-      `[${GEMMA_MODEL.id}]\nmodel = ${gemma}`,
-    );
+    expect(fake.routers[0]!.models.map((m) => [m.model, m.sha256])).toEqual([
+      [`file:${base}`, CHAT_BASE_MODEL.sha256],
+      [`file:${gemma}`, GEMMA_MODEL.sha256],
+    ]);
     expect((await model.catalog()).find((e) => e.id === GEMMA_MODEL.id)?.state).toBe("ready");
     expect(model.status().reason).toContain("sans adaptateur");
     model.stop();
 
     const off = { ...env, SHENRON_GEMMA_MODEL: "off" };
-    const without = startChatModel(planChatModel(setup().paths, off)!, off);
+    const without = startChatModel(planChatModel(setup().paths, off)!, off, {
+      native: fakeNative().native,
+    });
     expect((await without.catalog()).map((e) => e.id)).toEqual([CHAT_MODEL_IDS.shenron]);
     without.stop();
   });
 
-  test("failures are reported, never thrown", async () => {
-    const crash = setup();
-    touch(join(crash.paths.home, "models", CHAT_BASE_MODEL.file));
-    const crashing = {
-      SHENRON_PROFILE: "desktop",
-      SHENRON_LLAMA_BIN: fakeLlama(crash.dir, { exitAtOnce: true }),
-      SHENRON_GEMMA_MODEL: "off",
-      ...noAphrody,
+  test("download progress is reported while provisioning", async () => {
+    const { paths } = setup();
+    const env = { SHENRON_PROFILE: "desktop", SHENRON_GEMMA_MODEL: "off" };
+    const fake = fakeNative();
+    const slow: LocalChatNative = {
+      ...fake.native,
+      async provision(request, onProgress, signal) {
+        onProgress({ role: "weights", spec: request.model!.spec, downloaded: 25, total: 100 });
+        await new Promise((resolve) => setTimeout(resolve, 60));
+        return fake.native.provision(request, () => {}, signal);
+      },
     };
-    const failed = startChatModel(planChatModel(crash.paths, crashing)!, crashing);
-    expect(await failed.ready).toBe(false);
-    expect(failed.status()).toEqual({ available: false, reason: "llama-server arrêté (code 3)" });
+    const model = startChatModel(planChatModel(paths, env)!, env, { native: slow });
+    await Bun.sleep(20);
+    expect(model.status()).toEqual({ available: false, reason: "téléchargement du modèle (25 %)" });
+    expect((await model.catalog())[0]).toMatchObject({
+      state: "downloading",
+      progress: { received: 25, total: 100 },
+    });
+    expect(await model.ready).toBe(true);
+    model.stop();
+  });
 
-    const missing = setup();
-    const noBinary = { SHENRON_PROFILE: "desktop", PATH: "", ...noAphrody };
-    const absent = startChatModel(planChatModel(missing.paths, noBinary)!, noBinary);
+  test("failures are reported, never thrown", async () => {
+    const env = { SHENRON_PROFILE: "desktop", SHENRON_GEMMA_MODEL: "off" };
+    const crashing = startChatModel(planChatModel(setup().paths, env)!, env, {
+      native: fakeNative({ failChat: true }).native,
+    });
+    expect(await crashing.ready).toBe(false);
+    expect(crashing.status()).toEqual({
+      available: false,
+      reason: "llama-server exited (code 3)",
+    });
+    crashing.stop();
+
+    const absent = startChatModel(planChatModel(setup().paths, env)!, env, {
+      native: fakeNative({ llamaBin: null }).native,
+    });
     expect(await absent.ready).toBe(false);
     expect(absent.status().reason).toContain("llama-server absent");
+    absent.stop();
+
+    const noLibrary = startChatModel(planChatModel(setup().paths, env)!, env, { library: null });
+    expect(await noLibrary.ready).toBe(false);
+    expect(noLibrary.status().reason).toContain("bibliothèque native absente");
   });
 });

@@ -15,7 +15,8 @@ export type JobCall =
   | { op: "rag_stats"; args: [] }
   | { op: "local_search"; args: [query: string, limit: number, kind: string | null] }
   | { op: "persona_ask"; args: [question: string] }
-  | { op: "sleep"; args: [ms: number] };
+  | { op: "sleep"; args: [ms: number] }
+  | { op: "llama_provision"; args: [requestJson: string] };
 
 export type JobOperation = JobCall["op"];
 

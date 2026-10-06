@@ -10,8 +10,9 @@ use std::{fmt::Write as _, path::PathBuf};
 use shenron_ffi::{
     abi::{ABI_VERSION, FfiKind, SYMBOLS, Status},
     types::{
-        AuthStatus, BuildInfo, CapturedResult, FfiError, JobOutcome, LocalSearchResponse,
-        MemoryEntry, RagChunk, RagSearchResponse, RagStats,
+        AuthStatus, BuildInfo, CapturedResult, FfiError, JobOutcome, LlamaProgress,
+        LlamaProvisioned, LlamaRouterInfo, LocalSearchResponse, MemoryEntry, RagChunk,
+        RagSearchResponse, RagStats,
     },
 };
 use specta::Types;
@@ -123,7 +124,10 @@ fn types_ts() -> String {
         .register::<FfiError>()
         .register::<AuthStatus>()
         .register::<BuildInfo>()
-        .register::<MemoryEntry>();
+        .register::<MemoryEntry>()
+        .register::<LlamaProgress>()
+        .register::<LlamaProvisioned>()
+        .register::<LlamaRouterInfo>();
     let body = Typescript::default()
         .header(format!(
             "{HEADER}//\n// JSON payloads of the shenron-ffi C ABI, from crates/shenron-ffi/src/types.rs.\n"

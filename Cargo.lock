@@ -267,7 +267,7 @@ version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-config",
- "aphrody-models",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "arc-swap",
  "blake3",
  "memmap2",
@@ -277,6 +277,14 @@ dependencies = [
  "thiserror 2.0.21",
  "tracing",
  "unicode-segmentation",
+]
+
+[[package]]
+name = "aphrody-boq"
+version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d#30b0e8a4147d0d07415ea7b47a458d3772317b4d"
+dependencies = [
+ "serde_json",
 ]
 
 [[package]]
@@ -291,11 +299,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "aphrody-gemini-web"
+version = "0.2.1"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d#30b0e8a4147d0d07415ea7b47a458d3772317b4d"
+dependencies = [
+ "aphrody-boq",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2 0.11.0",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "aphrody-infer"
 version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
- "aphrody-models",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "dirs 7.0.0",
  "ort",
  "serde",
@@ -306,10 +331,28 @@ dependencies = [
 [[package]]
 name = "aphrody-llama-server"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d#30b0e8a4147d0d07415ea7b47a458d3772317b4d"
+dependencies = [
+ "aphrody-gemini-web",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d)",
+ "aphrody-proc 1.0.0-canary (git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d)",
+ "axum",
+ "reqwest",
+ "rustls",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "aphrody-llama-server"
+version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
- "aphrody-models",
- "aphrody-proc",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
+ "aphrody-proc 1.0.0-canary (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "reqwest",
  "rustls",
  "serde",
@@ -325,7 +368,7 @@ version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-agent-home",
- "aphrody-models",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "aphrody-rag-core",
  "aphrody-sql",
  "async-trait",
@@ -345,9 +388,29 @@ dependencies = [
 [[package]]
 name = "aphrody-models"
 version = "1.0.0"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d#30b0e8a4147d0d07415ea7b47a458d3772317b4d"
+dependencies = [
+ "aphrody-secrets 1.0.0-canary (git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d)",
+ "chrono",
+ "dirs 7.0.0",
+ "futures-util",
+ "hex",
+ "hf-hub",
+ "nvml-wrapper",
+ "reqwest",
+ "rustls",
+ "serde",
+ "serde_json",
+ "sha2 0.11.0",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "aphrody-models"
+version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
- "aphrody-secrets",
+ "aphrody-secrets 1.0.0-canary (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "chrono",
  "dirs 7.0.0",
  "futures-util",
@@ -391,7 +454,7 @@ version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-infer",
- "aphrody-models",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "aphrody-ocr-core",
  "image",
  "ndarray",
@@ -406,7 +469,7 @@ version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-infer",
- "aphrody-models",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "aphrody-ocr-core",
  "reqwest",
  "rustls",
@@ -414,6 +477,19 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tracing",
+]
+
+[[package]]
+name = "aphrody-proc"
+version = "1.0.0-canary"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d#30b0e8a4147d0d07415ea7b47a458d3772317b4d"
+dependencies = [
+ "rustix 1.1.5",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tracing",
+ "windows 0.62.2",
 ]
 
 [[package]]
@@ -435,7 +511,7 @@ version = "1.0.0"
 source = "git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed#df3ff0dd30d42c83e62ef3016b784b60e2f447ed"
 dependencies = [
  "aphrody-config",
- "aphrody-models",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "aphrody-rag-core",
  "aphrody-sql",
  "aphrody-toolcall",
@@ -473,6 +549,24 @@ dependencies = [
  "serde_json",
  "syn 3.0.6",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "aphrody-secrets"
+version = "1.0.0-canary"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d#30b0e8a4147d0d07415ea7b47a458d3772317b4d"
+dependencies = [
+ "aes-gcm",
+ "argon2",
+ "async-trait",
+ "base64 0.23.1",
+ "rand 0.10.3",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+ "zeroize",
 ]
 
 [[package]]
@@ -9185,7 +9279,7 @@ version = "1.3.0"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-config",
- "aphrody-models",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "aphrody-ocr",
  "aphrody-rag",
  "aphrody-toolchains",
@@ -9229,9 +9323,12 @@ name = "shenron-ffi"
 version = "1.3.0"
 dependencies = [
  "aphrody-agent-home",
+ "aphrody-llama-server 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d)",
  "aphrody-memory",
+ "aphrody-models 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=30b0e8a4147d0d07415ea7b47a458d3772317b4d)",
  "aphrody-rag-core",
  "aphrody-stdio-capture",
+ "axum",
  "serde",
  "serde_json",
  "shenron-cli",
@@ -9313,7 +9410,7 @@ dependencies = [
 name = "shenron-studio"
 version = "1.3.0"
 dependencies = [
- "aphrody-llama-server",
+ "aphrody-llama-server 1.0.0 (git+https://github.com/aphrody-labs/aphrody?rev=df3ff0dd30d42c83e62ef3016b784b60e2f447ed)",
  "aphrody-tauri",
  "reqwest",
  "serde",

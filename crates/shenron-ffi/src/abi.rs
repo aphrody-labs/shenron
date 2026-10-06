@@ -16,7 +16,10 @@
 /// - 3: adds the persistent chat memory (`shenron_memory_add`, `shenron_memory_search`,
 ///   `shenron_memory_delete`, `shenron_memory_clear`) over Aphrody's `aphrody-memory`. Every
 ///   revision-2 symbol is unchanged.
-pub const ABI_VERSION: u32 = 3;
+/// - 4: adds the local chat models (`shenron_llama_provision_job`, `shenron_llama_progress`,
+///   `shenron_llama_router_start`, `shenron_llama_router_stop`, `shenron_llama_daemon`) over
+///   Aphrody's `aphrody-llama-server`. Every revision-3 symbol is unchanged.
+pub const ABI_VERSION: u32 = 4;
 
 /// Status codes set by the boundary: `JobOutcome.status`, and the `code` of a captured result
 /// when the call fails before the command runs. A wrapped command may return any exit code.
@@ -279,4 +282,19 @@ ffi_table! {
     [3] fn shenron_memory_delete(db_path: cstr, agent_id: cstr, id: cstr) -> owned_str;
     /// Delete every memory of `agent_id`: owned `JobOutcome<number>` JSON (the count deleted).
     [3] fn shenron_memory_clear(db_path: cstr, agent_id: cstr) -> owned_str;
+    /// Provision chat model files as job `job` (blocks for the transfer): owned
+    /// `JobOutcome<LlamaProvisioned>` JSON. `request_json`: `{modelsDir, catalog?, model?, lora?,
+    /// force?}`.
+    [4] fn shenron_llama_provision_job(job: u64, request_json: cstr) -> owned_str;
+    /// Latest progress of provisioning job `job`: owned `LlamaProgress` JSON or `null`. Any
+    /// thread, never blocks.
+    [4] fn shenron_llama_progress(job: u64) -> owned_str;
+    /// Serve the chat router (one per process, replaced on restart): owned
+    /// `JobOutcome<LlamaRouterInfo>` JSON once it listens.
+    [4] fn shenron_llama_router_start(request_json: cstr) -> owned_str;
+    /// Stop the router and the model server it started; true if one was serving. Blocks.
+    [4] fn shenron_llama_router_stop() -> bool;
+    /// Run the model supervisor daemon with a JSON array of arguments; returns its exit code.
+    /// Blocks until the daemon exits (a process re-executed as the daemon launcher).
+    [4] fn shenron_llama_daemon(args_json: cstr) -> i32;
 }

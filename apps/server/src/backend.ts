@@ -27,8 +27,9 @@
  *                  OpenAI-compatible server declared by APHRODY_AI_CHAT_BASE_URL,
  *                  APHRODY_SHENRON_LLM_BASE_URL or APHRODY_LOCAL_MODEL_URL (llama-server,
  *                  aphrody-llama-daemon); none → the chat and models groups stay disabled.
- *                  Desktop profile without such a URL: the managed model of ./chat-model.ts
- *                  (Qwen3-4B + LoRA shenron-chat-v2 on a `llama-server` child; SHENRON_CHAT_MODEL)
+ *                  Desktop profile without such a URL: the managed models of ./chat-model.ts
+ *                  (Qwen3-4B + LoRA shenron-chat-v2, Gemma 4 E2B; Aphrody's local chat router in
+ *                  the native library, ABI 4; SHENRON_CHAT_MODEL)
  *
  * Production keeps the editorial wiki on the site (PostgreSQL), serves only public VFS nodes
  * and has no implicit loopback owner (nginx forwards every request from 127.0.0.1).
@@ -45,6 +46,7 @@ import { type ChatModel, type ChatModelPlan, planChatModel, startChatModel } fro
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
 import { koharuBridge, type KoharuBridge } from "./koharu";
+import { libraryPath } from "./local-api";
 import { nativeMemory } from "./memory";
 
 export const VFS_FILE = "shenron-vfs.sqlite";
@@ -117,7 +119,7 @@ export function planBackend(
   // Local models first, then the Gemini web app when its client and cookies exist (remote).
   if (profile !== "production") out.SHENRON_CHAT_BACKENDS ??= DEFAULT_LOCAL_CHAT_BACKENDS;
   const chatModel = planChatModel(paths, env);
-  if (chatModel?.binary) {
+  if (chatModel) {
     // Declared now (the groups are fixed at host creation); the model answers once loaded.
     out.APHRODY_LOCAL_MODEL_URL = chatModel.url;
     out.APHRODY_AI_CHAT_MODEL ??= DEFAULT_CHAT_MODEL_ID;
@@ -262,7 +264,7 @@ export async function startBackend(
   // The chat model (download, llama-server, warm-up) is the longest step of a cold start: it
   // begins before the MCP sidecar is awaited, and needs nothing from it.
   const chatModel: ChatModel | null = plan.chatModel
-    ? startChatModel(plan.chatModel, plan.env)
+    ? startChatModel(plan.chatModel, plan.env, { library: libraryPath(paths, plan.env) })
     : null;
   let sidecar: McpSidecar | null = null;
   let sidecarFailed = false;

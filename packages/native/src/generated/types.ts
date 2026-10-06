@@ -66,6 +66,44 @@ export type JobOutcome<T> = {
 	error: string | null,
 };
 
+/**  Progress of a running `shenron_llama_provision_job` (`shenron_llama_progress`, ABI 4). */
+export type LlamaProgress = {
+	/**  File role (`weights`, `lora`, `mmproj`). */
+	role: string,
+	/**  Spec being transferred (catalog id or reference). */
+	spec: string,
+	/**  Bytes on disk. */
+	downloaded: number | null,
+	/**  Size, when the source announced one. */
+	total: number | null,
+};
+
+/**  Files a provisioning made present (`shenron_llama_provision_job`, ABI 4). */
+export type LlamaProvisioned = {
+	/**  Base model spec. */
+	modelId: string,
+	/**  Path of the base weights. */
+	weights: string,
+	/**  Paths of the adapters, in request order. */
+	lora: string[],
+	/**  `true` when anything was downloaded (else everything was already there). */
+	transferred: boolean,
+};
+
+/**  The chat router this process serves (`shenron_llama_router_start`, ABI 4). */
+export type LlamaRouterInfo = {
+	/**  Origin (`http://127.0.0.1:<port>`). */
+	url: string,
+	/**  OpenAI root (`<url>/v1`). */
+	baseUrl: string,
+	/**  Per-backend availability (`<url>/health`). */
+	healthUrl: string,
+	/**  Configured model ids, in listing order. */
+	models: string[],
+	/**  `llama-server` the router starts, `null` when none was found. */
+	llamaBin: string | null,
+};
+
 /**  One passage of the local corpus (`shenron_local_search`). */
 export type LocalHit = {
 	/**  Document id. */

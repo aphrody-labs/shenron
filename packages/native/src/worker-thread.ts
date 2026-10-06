@@ -47,6 +47,8 @@ function invoke(lib: Library, request: CallRequest): Pointer | bigint | null {
       return native.shenron_persona_ask_job(job, cstr(request.args[0]));
     case "sleep":
       return native.shenron_sleep_job(job, request.args[0]);
+    case "llama_provision":
+      return native.shenron_llama_provision_job(job, cstr(request.args[0]));
   }
   throw new Error(`unknown job operation ${String((request as { op: unknown }).op)}`);
 }

@@ -10,6 +10,9 @@
 //! - ABI 3 keeps every ABI 2 symbol unchanged and adds the persistent chat memory
 //!   (`shenron_memory_{add,search,delete,clear}`), Aphrody's `aphrody-memory` SQLite provider
 //!   ([`memory`]), each answering a [`types::JobOutcome`].
+//! - ABI 4 keeps every ABI 3 symbol unchanged and adds the local chat models
+//!   (`shenron_llama_{provision_job,progress,router_start,router_stop,daemon}`), Aphrody's
+//!   `aphrody-llama-server` local chat in process ([`llama`]).
 //!
 //! Memory: an owned string is allocated here by the Rust global allocator and released by the
 //! caller, exactly once, with `shenron_string_free` (from any thread); static strings are never
@@ -32,6 +35,8 @@
 pub mod abi;
 #[cfg(not(target_arch = "wasm32"))]
 mod jobs;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod llama;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod memory;
 #[cfg(not(target_arch = "wasm32"))]
@@ -890,6 +895,89 @@ mod native {
         })
     }
 
+    // --- ABI 4: local chat models ---
+
+    /// Provision the chat model files of `request_json` (`{modelsDir, catalog?, model?, lora?,
+    /// force?}`, each file `{spec, sha256?, scale?}`) as job `job`: `JobOutcome<LlamaProvisioned>`
+    /// JSON. Blocks the caller for the whole transfer; `shenron_llama_progress(job)` reads its
+    /// progress from another thread meanwhile. Cancelling stops at the next chunk (resumable).
+    ///
+    /// # Safety
+    /// `request_json` must be a valid NUL-terminated UTF-8 string, read during the call. `job`
+    /// comes from `shenron_job_new` and is consumed. Free the result once.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_llama_provision_job(
+        job: u64,
+        request_json: *const c_char,
+    ) -> *mut c_char {
+        string_to_c(jobs::run(job, "shenron_llama_provision_job", |job| {
+            let request: crate::llama::ProvisionRequest =
+                unsafe { json_request(request_json, "request_json") }.map_err(JobError::Usage)?;
+            let request = request.to_aphrody().map_err(JobError::Usage)?;
+            let id = job.id();
+            match job.block_on(|| crate::llama::provision(id, request)) {
+                None => Err(JobError::Cancelled),
+                Some(result) => result.map_err(JobError::Failed),
+            }
+        }))
+    }
+
+    /// Latest progress of the running provisioning job `job`: owned `LlamaProgress` JSON, or
+    /// `null` before the first byte and once the job ended. Any thread, never blocks.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_llama_progress(job: u64) -> *mut c_char {
+        let value = catch_unwind(|| crate::llama::progress(job)).ok().flatten();
+        string_to_c(serde_json::to_string(&value).unwrap_or_else(|_| "null".to_owned()))
+    }
+
+    /// Serve the chat router of `request_json` (`{config, modelsDir, stateDir, llamaBin?,
+    /// searchDirs?, bind?, daemon: {program, args?}}`) on the library's runtime, replacing the
+    /// one this process already serves: `JobOutcome<LlamaRouterInfo>` JSON once it listens.
+    ///
+    /// # Safety
+    /// As `shenron_memory_add` for `request_json`. Free the result once.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_llama_router_start(request_json: *const c_char) -> *mut c_char {
+        string_to_c(jobs::run(jobs::create(), "shenron_llama_router_start", |job| {
+            let request: crate::llama::RouterRequest =
+                unsafe { json_request(request_json, "request_json") }.map_err(JobError::Usage)?;
+            match job.block_on(|| crate::llama::start(request)) {
+                None => Err(JobError::Cancelled),
+                Some(result) => result.map_err(JobError::Failed),
+            }
+        }))
+    }
+
+    /// Stop the router of this process and the model server it started (at most 5 s for the
+    /// open requests); `true` if one was serving. Blocks the caller.
+    #[unsafe(no_mangle)]
+    pub extern "C" fn shenron_llama_router_stop() -> bool {
+        catch_unwind(|| runtime().block_on(crate::llama::stop())).unwrap_or(false)
+    }
+
+    /// Run the model supervisor's daemon with the JSON array `args_json` (the arguments after
+    /// the host's own launcher arguments) until it exits; returns its exit code. For a host that
+    /// re-executes itself as the daemon launcher of `shenron_llama_router_start`. Blocks.
+    ///
+    /// # Safety
+    /// `args_json` must be a valid NUL-terminated UTF-8 string, read during the call.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub unsafe extern "C" fn shenron_llama_daemon(args_json: *const c_char) -> c_int {
+        let args = match unsafe { parse_json_args(args_json) } {
+            Ok(args) => args,
+            Err(message) => {
+                set_last_error(message);
+                return Status::Usage.code();
+            },
+        };
+        catch_unwind(AssertUnwindSafe(|| crate::llama::daemon(args)))
+            .unwrap_or(Status::Software.code())
+    }
+
     /// Diagnostic: hold job `job` for `ms` milliseconds without I/O, then answer
     /// `JobOutcome<number>` (the duration). Measures the boundary and its cancellation; `0`
     /// yields once instead of arming a timer (whose resolution is 1 ms).
@@ -923,7 +1011,7 @@ mod tests {
     #[test]
     fn shenron_abi_and_version_are_valid() {
         assert_eq!(shenron_abi_version(), abi::ABI_VERSION);
-        assert_eq!(abi::ABI_VERSION, 3);
+        assert_eq!(abi::ABI_VERSION, 4);
         let ptr = shenron_version();
         assert!(!ptr.is_null());
         let text = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap();

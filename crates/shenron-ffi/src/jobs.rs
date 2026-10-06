@@ -95,6 +95,11 @@ impl Job {
         }
     }
 
+    /// Id of the job (as returned by `shenron_job_new`).
+    pub(crate) const fn id(&self) -> u64 {
+        self.id
+    }
+
     fn is_cancelled(&self) -> bool {
         *self.cancel.borrow()
     }

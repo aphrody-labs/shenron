@@ -2,12 +2,20 @@
 
 ABI C de Shenron (`libshenron_ffi`) pour `bun:ffi` (`@shenron/native`) et tout hôte C : la
 commande `shenron` en processus, la recherche RAG, le corpus local, le découpage Markdown, la
-persona, la présence des identifiants, depuis l'ABI 2 des tâches annulables et, depuis l'ABI 3,
-la mémoire persistante du chat (`aphrody-memory`).
+persona, la présence des identifiants, depuis l'ABI 2 des tâches annulables, depuis l'ABI 3
+la mémoire persistante du chat (`aphrody-memory`) et, depuis l'ABI 4, les modèles de chat locaux
+(`aphrody-llama-server`).
 
 ## Versions
 
-- `shenron_abi_version()` vaut `abi::ABI_VERSION` (**3**). L'ABI 3 garde tous les symboles de
+- `shenron_abi_version()` vaut `abi::ABI_VERSION` (**4**). L'ABI 4 garde tous les symboles de
+  l'ABI 3 et ajoute le chat local d'Aphrody (`aphrody-llama-server`, contrat `LOCAL-CHAT.md`),
+  en processus : `shenron_llama_provision_job` (catalogue, téléchargements repris et vérifiés
+  dans un magasin choisi par l'appelant, progression lue par `shenron_llama_progress`),
+  `shenron_llama_router_start` / `shenron_llama_router_stop` (un routeur OpenAI par processus,
+  un `llama-server` à la fois) et `shenron_llama_daemon` (le démon du superviseur, pour un hôte
+  qui se relance lui-même comme lanceur : `shenron-server llama-daemon`).
+- L'ABI 3 garde tous les symboles de
   l'ABI 2 et ajoute `shenron_memory_{add,search,delete,clear}` : le fournisseur SQLite local
   d'Aphrody (`aphrody_memory::SqliteLocalProvider`, un par fichier pour la vie du processus,
   fichier créé en mode 600), chaque appel rendant `JobOutcome<…>` ; Shenron ne stocke rien
@@ -37,12 +45,12 @@ Un test vérifie aussi que `SYMBOLS` liste exactement les fonctions `#[unsafe(no
 
 ## Mémoire
 
-| Genre | Type Rust | Propriétaire |
-| --- | --- | --- |
-| `cstr` (entrée) | `*const c_char` | l'appelant ; lu pendant l'appel seulement |
-| `owned_str` (retour) | `*mut c_char` | alloué ici (allocateur global Rust), libéré une fois par l'appelant avec `shenron_string_free`, depuis n'importe quel thread |
-| `static_str` | `*const c_char` | la bibliothèque, pour la vie du processus ; jamais libéré |
-| `thread_str` (`shenron_last_error`) | `*const c_char` | le thread appelant, jusqu'à son appel suivant ; jamais libéré |
+| Genre                               | Type Rust       | Propriétaire                                                                                                                 |
+| ----------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `cstr` (entrée)                     | `*const c_char` | l'appelant ; lu pendant l'appel seulement                                                                                    |
+| `owned_str` (retour)                | `*mut c_char`   | alloué ici (allocateur global Rust), libéré une fois par l'appelant avec `shenron_string_free`, depuis n'importe quel thread |
+| `static_str`                        | `*const c_char` | la bibliothèque, pour la vie du processus ; jamais libéré                                                                    |
+| `thread_str` (`shenron_last_error`) | `*const c_char` | le thread appelant, jusqu'à son appel suivant ; jamais libéré                                                                |
 
 Chaque export attrape les paniques (`catch_unwind`) : rien ne déroule à travers la frontière.
 

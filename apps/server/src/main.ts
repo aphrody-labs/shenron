@@ -20,6 +20,8 @@ import {
   resolvePaths,
   secretPresence,
 } from "./config";
+import { LLAMA_DAEMON_VERB } from "./chat-model";
+import { libraryPath } from "./local-api";
 import { extract } from "./payload";
 import { serveSite } from "./site";
 import { VERSION } from "./version";
@@ -63,6 +65,20 @@ export async function main(
     return;
   }
   const paths = resolvePaths();
+  if (command === LLAMA_DAEMON_VERB) {
+    // The model supervisor of the local chat (./chat-model.ts) re-executes this server as its
+    // daemon: Aphrody's daemon in the native library (`--library` from the parent, else the
+    // usual resolution).
+    const named = rest[0] === "--library" ? rest[1] : undefined;
+    const library = named ?? libraryPath(paths, process.env);
+    if (!library) {
+      console.error("shenron-server llama-daemon : bibliothèque native absente (SHENRON_FFI_LIB)");
+      process.exit(70);
+    }
+    const { shenronLoad, shenronLlamaDaemon } = await import("@shenron/native/shenron");
+    shenronLoad(library);
+    process.exit(shenronLlamaDaemon(named ? rest.slice(2) : rest));
+  }
   if (command === "paths") {
     console.log(JSON.stringify(paths, null, 2));
     return;

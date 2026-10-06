@@ -26,10 +26,15 @@ import type {
   CapturedResult,
   FfiError,
   JobOutcome,
+  LlamaProgress,
+  LlamaProvisioned,
+  LlamaRouterInfo,
   LocalSearchResponse,
   MemoryEntry,
   RagChunk,
 } from "./generated/types";
+
+export type { LlamaProgress, LlamaProvisioned, LlamaRouterInfo };
 
 export { SHENRON_FFI_ABI, SHENRON_FFI_VERSION, SHENRON_STATUS };
 
@@ -450,4 +455,84 @@ export function shenronMemoryClear(dbPath: string, agentId: string): number {
     loadLib().symbols.shenron_memory_clear(cstr(dbPath), cstr(agentId)),
     "shenron_memory_clear",
   );
+}
+
+// --- ABI 4: local chat models (Aphrody `aphrody-llama-server` local chat, in process) ---
+
+/** One model file: catalog id or reference (`hf:`, `https://`, `file:`) with its digest. */
+export interface ShenronLlamaArtifact {
+  spec: string;
+  sha256?: string;
+  /** Adapter scale (adapters only, default 1). */
+  scale?: number;
+}
+
+/** Request of `ShenronWorkerPool.llamaProvision` (`shenron_llama_provision_job`). */
+export interface ShenronLlamaProvision {
+  modelsDir: string;
+  catalog?: string;
+  model?: ShenronLlamaArtifact;
+  lora?: ShenronLlamaArtifact[];
+  force?: boolean;
+}
+
+/** Request of `shenronLlamaRouterStart`. */
+export interface ShenronLlamaRouterStart {
+  /** `router.json` (crates/ai/llama-server/LOCAL-CHAT.md in Aphrody). */
+  config: string;
+  modelsDir: string;
+  stateDir: string;
+  llamaBin?: string;
+  /** Directories holding `llama/` or `llama-server` (the app's resources). */
+  searchDirs?: string[];
+  bind?: string;
+  /** How the supervisor starts its daemon: `program args… <daemon args>`. */
+  daemon: { program: string; args?: string[] };
+}
+
+/** Raised for a local chat call that produced no value (`status`: `SHENRON_STATUS`). */
+export class ShenronLlamaError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ShenronLlamaError";
+  }
+}
+
+/** Latest progress of the running provisioning job `job`, or `null`. */
+export function shenronLlamaProgress(job: number): LlamaProgress | null {
+  return JSON.parse(
+    readOwnedString(loadLib().symbols.shenron_llama_progress(job), "shenron_llama_progress"),
+  ) as LlamaProgress | null;
+}
+
+/** Serve the chat router in this process (replacing a previous one); resolves once it listens. */
+export function shenronLlamaRouterStart(request: ShenronLlamaRouterStart): LlamaRouterInfo {
+  const outcome = JSON.parse(
+    readOwnedString(
+      loadLib().symbols.shenron_llama_router_start(cstr(JSON.stringify(request))),
+      "shenron_llama_router_start",
+    ),
+  ) as JobOutcome<LlamaRouterInfo>;
+  if (outcome.status !== SHENRON_STATUS.ok || outcome.value === null)
+    throw new ShenronLlamaError(
+      outcome.status,
+      outcome.error ?? "shenron_llama_router_start failed",
+    );
+  return outcome.value;
+}
+
+/** Stop the router of this process and the model server it started; `true` if one served. */
+export function shenronLlamaRouterStop(): boolean {
+  return loadLib().symbols.shenron_llama_router_stop();
+}
+
+/**
+ * Run the model supervisor's daemon with `args` until it exits (a process re-executed as the
+ * daemon launcher of `shenronLlamaRouterStart`); returns its exit code. Blocks the thread.
+ */
+export function shenronLlamaDaemon(args: readonly string[]): number {
+  return loadLib().symbols.shenron_llama_daemon(cstr(JSON.stringify(args)));
 }

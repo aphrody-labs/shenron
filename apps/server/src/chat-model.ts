@@ -1,24 +1,30 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * The local chat model of `shenron-server` (Shenron Studio): Qwen3-4B Instruct 2507 with the
- * Shenron LoRA adapter `shenron-chat-v2`, served by a `llama-server` child on a loopback port
- * (OpenAI-compatible, `APHRODY_LOCAL_MODEL_URL` of the chat backend). Pinned sources, digests
- * and defaults live in `@shenron/config/chat-model`.
+ * The local chat models of `shenron-server` (Shenron Studio), on Aphrody's local chat
+ * (`aphrody-llama-server`, contract `crates/ai/llama-server/LOCAL-CHAT.md`) linked in the native
+ * library (`shenron-ffi` ABI 4, `@shenron/native`): nothing of it is reimplemented here.
  *
- *   llama-server  SHENRON_LLAMA_BIN, APHRODY_LLAMA_BIN, `llama/` shipped beside the app
- *                 (SHENRON_RESOURCE_DIR, then the executable's directory), then PATH
- *   base GGUF     SHENRON_CHAT_MODEL (a path), `<home>/models/`, the Aphrody model store
- *                 (`aphrody model path <id>`, used in place), else downloaded once from
- *                 SHENRON_CHAT_MODEL_URL into `<home>/models/` (resumed, digest-checked)
- *   adapter       SHENRON_CHAT_LORA (a path, `off` for the base only), `<home>/models/`,
- *                 `models/` shipped beside the app, APHRODY_SHENRON_CHAT_LORA (Aphrody
- *                 training output), else SHENRON_CHAT_LORA_URL when declared
+ *   provisioning  `shenron_llama_provision_job` on the worker pool: catalog ids of
+ *                 aphrody-models (pinned revision and digest), resumed and digest-checked
+ *                 downloads into the store `<SHENRON_HOME>/models` (`registry.json`)
+ *   router        `shenron_llama_router_start`: one OpenAI-compatible endpoint on the loopback
+ *                 port of `APHRODY_LOCAL_MODEL_URL`, over `shenron-chat-v2` (Qwen3-4B + the
+ *                 Shenron LoRA) and `gemma4-e2b`; one `llama-server` at a time, started on first
+ *                 use, `/health` per model
+ *   daemon        the supervisor re-executes this server as `llama-daemon` (`main.ts`), so no
+ *                 Aphrody executable ships beside it
+ *
+ * Shenron decides only which files: the base GGUF (SHENRON_CHAT_MODEL path, a file left in
+ * `<home>/models/` by an earlier release, SHENRON_CHAT_MODEL_URL, else the catalog id), the
+ * adapter (SHENRON_CHAT_LORA, `<home>/models/`, `models/` shipped beside the app,
+ * APHRODY_SHENRON_CHAT_LORA, SHENRON_CHAT_LORA_URL), Gemma 4 E2B alike. `llama-server` is
+ * SHENRON_LLAMA_BIN, else Aphrody's lookup (APHRODY_LLAMA_BIN, `llama/` in SHENRON_RESOURCE_DIR
+ * or beside the executable, Aphrody runtimes, PATH).
  *
  * Nothing blocks the server: provisioning and loading run in the background and the chat
  * group reports the step (download progress, loading, failure) until the model answers.
  */
-import { copyFileSync, existsSync, mkdirSync, renameSync, statSync } from "node:fs";
-import { open } from "node:fs/promises";
+import { copyFileSync, existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ChatModelEntry, ChatModelState, LocalApiGroupStatus } from "@shenron/api/contract";
 import {
@@ -31,15 +37,21 @@ import {
   resolveChatModelConfig,
   resolveGemmaConfig,
 } from "@shenron/config/chat-model";
+import type {
+  LlamaProgress,
+  LlamaProvisioned,
+  LlamaRouterInfo,
+  ShenronLlamaArtifact,
+  ShenronLlamaProvision,
+  ShenronLlamaRouterStart,
+} from "@shenron/native/shenron";
 
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
 import { local as isLocalRequest } from "./koharu";
 
-const exe = (name: string) => (process.platform === "win32" ? `${name}.exe` : name);
 const isFile = (path: string | undefined | null): path is string =>
   Boolean(path) && existsSync(path!) && statSync(path!).isFile();
-const isDir = (path: string): boolean => existsSync(path) && statSync(path).isDirectory();
 
 /** Variables that already point the chat at a server: no managed model then. */
 const EXTERNAL_CHAT_URLS = [
@@ -48,15 +60,18 @@ const EXTERNAL_CHAT_URLS = [
   "APHRODY_LOCAL_MODEL_URL",
 ] as const;
 
+/** Verb of `main.ts` under which the model supervisor re-executes this server as its daemon. */
+export const LLAMA_DAEMON_VERB = "llama-daemon";
+
 export interface ChatModelPlan {
   config: ChatModelConfig;
-  /** `llama-server` to run; `null` when none is installed (the chat group says so). */
-  binary: string | null;
-  /** Loopback origin the server will listen on (`APHRODY_LOCAL_MODEL_URL`). */
+  /** Loopback origin the router listens on (`APHRODY_LOCAL_MODEL_URL`). */
   url: string;
   port: number;
+  /** Aphrody model store (`registry.json` and the files). */
   modelsDir: string;
-  logFile: string;
+  /** Router configuration and per-model server state. */
+  stateDir: string;
   /** Directories of the files shipped with the app (`llama/`, `models/`). */
   shippedDirs: string[];
 }
@@ -72,29 +87,6 @@ export function shippedDirs(
   return [...new Set(dirs)];
 }
 
-/** The `llama-server` to run: explicit (file or directory), shipped, then PATH. */
-export function resolveLlamaServer(
-  explicit: string | null,
-  dirs: readonly string[],
-  which: (name: string) => string | null = (name) => Bun.which(name),
-): string | null {
-  const name = exe("llama-server");
-  if (explicit) {
-    if (isFile(explicit)) return explicit;
-    if (isDir(explicit)) {
-      const inside = [join(explicit, name), join(explicit, "bin", name)].find(isFile);
-      if (inside) return inside;
-    }
-  }
-  for (const dir of dirs) {
-    const found = [join(dir, "llama", name), join(dir, name), join(dir, "binaries", name)].find(
-      isFile,
-    );
-    if (found) return found;
-  }
-  return which("llama-server");
-}
-
 /** Resolve what the managed chat model runs on; `null` when it is off or the chat is external. */
 export function planChatModel(
   paths: ServerPaths,
@@ -105,83 +97,66 @@ export function planChatModel(
   // Only for the `local` chat backend (the default outside production).
   const backends = (env.SHENRON_CHAT_BACKENDS ?? "local").split(",").map((id) => id.trim());
   if (!backends.includes("local")) return null;
-  const dirs = shippedDirs(paths, env);
   const port = freePort();
   return {
     config,
-    binary: resolveLlamaServer(config.llamaBin, dirs, (name) =>
-      Bun.which(name, env.PATH === undefined ? {} : { PATH: env.PATH }),
-    ),
     url: `http://127.0.0.1:${port}`,
     port,
     modelsDir: join(paths.home, "models"),
-    logFile: join(paths.logs, "llama-server.log"),
-    shippedDirs: dirs,
+    stateDir: join(paths.home, "llama"),
+    shippedDirs: shippedDirs(paths, env),
   };
 }
 
-/** The `aphrody` CLI (APHRODY_BIN, else PATH); `null` when absent (installed desktop). */
-function aphrodyCli(env: Readonly<Record<string, string | undefined>>): string | null {
-  const cli = env.APHRODY_BIN?.trim() || Bun.which("aphrody");
-  return !cli || (/[\\/]/.test(cli) && !isFile(cli)) ? null : cli;
+/** The local chat calls of the native library (`@shenron/native` by default; a fake in tests). */
+export interface LocalChatNative {
+  provision(
+    request: ShenronLlamaProvision,
+    onProgress: (progress: LlamaProgress) => void,
+    signal: AbortSignal,
+  ): Promise<LlamaProvisioned>;
+  startRouter(request: ShenronLlamaRouterStart): LlamaRouterInfo;
+  stopRouter(): boolean;
 }
 
 /**
- * Path of a catalog model in the Aphrody store, through the `aphrody` CLI (aphrody-models);
- * `mustExist: false` returns where a pull would put it.
+ * The native library of `libraryPath`, or the reason it is unusable. Loaded lazily so a server
+ * without it (tests, a source checkout without the Rust build) still starts.
  */
-async function aphrodyStorePath(
-  env: Readonly<Record<string, string | undefined>>,
-  id: string,
-  mustExist = true,
-): Promise<string | null> {
-  const cli = aphrodyCli(env);
-  if (!cli) return null;
+export async function nativeLocalChat(library: string | null): Promise<LocalChatNative | string> {
+  if (!library) return "bibliothèque native absente : modèle de chat local indisponible";
   try {
-    const child = Bun.spawn([cli, "model", "path", id], {
-      stdio: ["ignore", "pipe", "ignore"],
-      env: { ...env },
-      windowsHide: true,
-      timeout: 10_000,
-    });
-    const [out, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
-    const path = out.trim().split("\n").at(-1)?.trim();
-    return code === 0 && path && (!mustExist || isFile(path)) ? path : null;
-  } catch {
-    return null;
+    const native = await import("@shenron/native/shenron");
+    const { shenronWorkerPool } = await import("@shenron/native/worker");
+    native.shenronLoad(library);
+    if (native.shenronAbiVersion() < 4)
+      return "bibliothèque native trop ancienne (ABI 4 requise) : modèle de chat local indisponible";
+    return {
+      provision: (request, onProgress, signal) =>
+        shenronWorkerPool().llamaProvision(request, { onProgress, signal }),
+      startRouter: native.shenronLlamaRouterStart,
+      stopRouter: native.shenronLlamaRouterStop,
+    };
+  } catch (error) {
+    return `bibliothèque native : ${String(error).slice(0, 160)}`;
   }
 }
 
 /**
- * Pull a catalog model with `aphrody model pull` (resumed, digest pinned by the catalog) into
- * the store under `aphrodyHome` (`<SHENRON_HOME>/models/aphrody`); progress is the size of
- * its `.part` file. `null` when the CLI is absent or the pull fails.
+ * How the supervisor re-executes this server as its daemon (compiled binary or `bun cli.ts`),
+ * with the native library to open (`--library`: the payload copy is not in the environment).
  */
-export async function aphrodyPull(
-  env: Readonly<Record<string, string | undefined>>,
-  id: string,
-  aphrodyHome: string,
-  o: { total?: number; onProgress?: (progress: DownloadProgress) => void } = {},
-): Promise<string | null> {
-  const cli = aphrodyCli(env);
-  if (!cli) return null;
-  const childEnv = { ...env, APHRODY_HOME: aphrodyHome };
-  const target = await aphrodyStorePath(childEnv, id, false);
-  if (!target) return null;
-  const child = Bun.spawn([cli, "model", "pull", id, "--json"], {
-    stdio: ["ignore", "ignore", "ignore"],
-    env: childEnv,
-    windowsHide: true,
-  });
-  const timer = setInterval(() => {
-    const part = `${target}.part`;
-    if (isFile(part)) o.onProgress?.({ received: statSync(part).size, total: o.total ?? null });
-  }, 1_000);
-  try {
-    return (await child.exited) === 0 && isFile(target) ? target : null;
-  } finally {
-    clearInterval(timer);
-  }
+export function daemonLauncher(
+  library: string | null,
+  execPath = process.execPath,
+  argv = process.argv,
+  main = Bun.main,
+): { program: string; args: string[] } {
+  const compiled = main.startsWith("/$bunfs/") || /^[A-Z]:\\~BUN\\/i.test(main);
+  const verb = [LLAMA_DAEMON_VERB, ...(library ? ["--library", library] : [])];
+  return compiled
+    ? { program: execPath, args: verb }
+    : { program: execPath, args: [argv[1] ?? main, ...verb] };
 }
 
 export interface DownloadProgress {
@@ -189,69 +164,17 @@ export interface DownloadProgress {
   total: number | null;
 }
 
-/**
- * Download `url` into `dest` through `dest.part`, resuming a partial file with a Range request;
- * the digest, when given, is checked before the file takes its final name.
- */
-export async function downloadArtifact(
-  url: string,
-  dest: string,
-  o: {
-    sha256?: string | null;
-    onProgress?: (progress: DownloadProgress) => void;
-    fetch?: typeof fetch;
-  } = {},
-): Promise<string> {
-  mkdirSync(join(dest, ".."), { recursive: true });
-  const part = `${dest}.part`;
-  let offset = isFile(part) ? statSync(part).size : 0;
-  const response = await (o.fetch ?? fetch)(url, {
-    headers: offset ? { Range: `bytes=${offset}-` } : {},
-    redirect: "follow",
-  });
-  if (response.status === 200) offset = 0;
-  else if (response.status !== 206 || !response.body)
-    throw new Error(`download failed: HTTP ${response.status}`);
-  const length = Number(response.headers.get("content-length"));
-  const total = Number.isFinite(length) && length > 0 ? offset + length : null;
-  const hasher = new Bun.CryptoHasher("sha256");
-  if (offset && o.sha256) {
-    for await (const chunk of Bun.file(part).stream()) hasher.update(chunk);
-  }
-  const handle = await open(part, offset ? "a" : "w");
-  let received = offset;
-  try {
-    for await (const chunk of response.body!) {
-      await handle.write(chunk);
-      if (o.sha256) hasher.update(chunk);
-      received += chunk.byteLength;
-      o.onProgress?.({ received, total });
-    }
-  } finally {
-    await handle.close();
-  }
-  if (o.sha256) {
-    const digest = hasher.digest("hex");
-    if (digest !== o.sha256) {
-      await Bun.file(part).delete();
-      throw new Error(`digest mismatch for ${url}`);
-    }
-  }
-  renameSync(part, dest);
-  return dest;
-}
+type SlotState = "pending" | "downloading" | "loading" | "ready" | "installable" | "failed";
 
-type SlotState = "pending" | "downloading" | "ready" | "installable" | "failed";
-
-/** One model of the router: its files, then its state on this machine. */
+/** One model of the router: what it is made of, then its state on this machine. */
 interface Slot {
   id: string;
   label: string;
   state: SlotState;
   progress: DownloadProgress | null;
   detail: string | null;
-  model: string | null;
-  lora: string | null;
+  model: ShenronLlamaArtifact | null;
+  lora: ShenronLlamaArtifact | null;
 }
 
 export interface ChatModel {
@@ -284,35 +207,78 @@ export const IMPORT_PATH = (id: string) => `/api/local/models/${encodeURICompone
 const percent = (p: DownloadProgress | null) =>
   p?.total ? ` (${Math.floor((p.received / p.total) * 100)} %)` : "";
 
-/** llama-server router presets (one section per model, loaded on demand). */
-export function routerPresets(
-  slots: readonly Pick<Slot, "id" | "model" | "lora">[],
-  ctx: number,
-): string {
-  return slots
-    .filter((slot) => slot.model)
-    .map((slot) =>
-      [
-        `[${slot.id}]`,
-        `model = ${slot.model}`,
-        ...(slot.lora ? [`lora = ${slot.lora}`] : []),
-        `ctx-size = ${ctx}`,
-        "",
-      ].join("\n"),
-    )
-    .join("\n");
+const fileSpec = (path: string, sha256?: string | null): ShenronLlamaArtifact => ({
+  spec: `file:${path}`,
+  ...(sha256 ? { sha256 } : {}),
+});
+
+/** The base model: explicit path, a file of an earlier release, a custom URL, else the catalog. */
+export function baseModelSpec(config: ChatModelConfig, modelsDir: string): ShenronLlamaArtifact {
+  if (config.modelPath) return fileSpec(config.modelPath);
+  const legacy = join(modelsDir, CHAT_BASE_MODEL.file);
+  if (isFile(legacy)) return fileSpec(legacy, CHAT_BASE_MODEL.sha256);
+  if (config.modelUrl !== CHAT_BASE_MODEL.url)
+    return { spec: config.modelUrl, ...(config.modelSha256 ? { sha256: config.modelSha256 } : {}) };
+  return { spec: CHAT_BASE_MODEL.id };
+}
+
+/** The Shenron adapter on this machine (or its download source), `null` when there is none. */
+export function adapterSpec(
+  config: ChatModelConfig,
+  plan: Pick<ChatModelPlan, "modelsDir" | "shippedDirs">,
+  env: Readonly<Record<string, string | undefined>>,
+): ShenronLlamaArtifact | null {
+  if (!config.lora) return null;
+  if (isFile(config.loraPath)) return fileSpec(config.loraPath);
+  const found = [
+    join(plan.modelsDir, CHAT_ADAPTER.file),
+    ...plan.shippedDirs.map((dir) => join(dir, "models", CHAT_ADAPTER.file)),
+    env.APHRODY_SHENRON_CHAT_LORA?.trim(),
+  ].find(isFile);
+  if (found) return fileSpec(found, config.loraSha256);
+  return config.loraUrl
+    ? { spec: config.loraUrl, ...(config.loraSha256 ? { sha256: config.loraSha256 } : {}) }
+    : null;
+}
+
+/** `router.json` of the Aphrody router (LOCAL-CHAT.md) over the slots that have a model. */
+export function routerConfig(slots: readonly Slot[], ctx: number): unknown {
+  return {
+    models: slots
+      .filter((slot) => slot.model)
+      .map((slot) => ({
+        backend: "llama",
+        id: slot.id,
+        model: slot.model!.spec,
+        ...(slot.model!.sha256 ? { sha256: slot.model!.sha256 } : {}),
+        lora: slot.lora
+          ? [{ spec: slot.lora.spec, ...(slot.lora.sha256 ? { sha256: slot.lora.sha256 } : {}) }]
+          : [],
+        ctx,
+      })),
+  };
+}
+
+interface RouterHealth {
+  backends?: { id: string; available: boolean; running: boolean; reason: string | null }[];
 }
 
 /**
- * Provision the models, run one `llama-server` in router mode over every model on disk
- * (restarted when another model finishes downloading) and follow it, in the background.
+ * Start the router over the models, provision the default one, warm it up, then Gemma 4 E2B,
+ * in the background.
  */
 export function startChatModel(
   plan: ChatModelPlan,
   env: Readonly<Record<string, string | undefined>>,
-  o: { fetch?: typeof fetch; readyTimeoutMs?: number } = {},
+  o: {
+    native?: LocalChatNative | Promise<LocalChatNative | string>;
+    library?: string | null;
+    fetch?: typeof fetch;
+    readyTimeoutMs?: number;
+  } = {},
 ): ChatModel {
   const { config } = plan;
+  const http = o.fetch ?? fetch;
   const gemma = resolveGemmaConfig(env);
   const shenron: Slot = {
     id: CHAT_MODEL_IDS.shenron,
@@ -320,9 +286,11 @@ export function startChatModel(
     state: "pending",
     progress: null,
     detail: null,
-    model: null,
-    lora: null,
+    model: baseModelSpec(config, plan.modelsDir),
+    lora: adapterSpec(config, plan, env),
   };
+  if (!shenron.lora) shenron.label = `${CHAT_BASE_MODEL.label} (sans adaptateur)`;
+  const legacyGemma = join(plan.modelsDir, GEMMA_MODEL.file);
   const gemmaSlot: Slot | null =
     gemma.mode === "off"
       ? null
@@ -332,210 +300,135 @@ export function startChatModel(
           state: "pending",
           progress: null,
           detail: null,
-          model: null,
+          model: isFile(gemma.path)
+            ? fileSpec(gemma.path)
+            : isFile(legacyGemma)
+              ? fileSpec(legacyGemma, GEMMA_MODEL.sha256)
+              : gemma.url !== GEMMA_MODEL.url
+                ? { spec: gemma.url, ...(gemma.sha256 ? { sha256: gemma.sha256 } : {}) }
+                : { spec: GEMMA_MODEL.aphrodyId },
           lora: null,
         };
   const slots = [shenron, ...(gemmaSlot ? [gemmaSlot] : [])];
-  /** Where the server's own downloader puts Gemma 4 E2B (declared to the router in advance). */
-  const gemmaPath = join(plan.modelsDir, GEMMA_MODEL.file);
-  let router: ReturnType<typeof Bun.spawn> | null = null;
-  let routerUp = false;
+  const aborts = new AbortController();
+  let native: LocalChatNative | null = null;
+  let router: LlamaRouterInfo | null = null;
   let stopped = false;
-  const alive = () => router !== null && router.exitCode === null && router.signalCode === null;
-  const kill = async () => {
-    routerUp = false;
-    if (alive()) {
-      router!.kill();
-      await router!.exited;
-    }
-  };
   const stop = () => {
+    if (stopped) return;
     stopped = true;
-    routerUp = false;
-    if (alive()) router!.kill();
+    aborts.abort();
+    if (router) native?.stopRouter();
+    router = null;
   };
   process.once("exit", stop);
 
-  const download = async (
-    slot: Slot,
-    source: {
-      url: string | null;
-      sha256: string | null;
-      file: string;
-      /** aphrody-models catalog id of the same pinned file: pulled by Aphrody when it is here. */
-      catalog?: { id: string; url: string; bytes: number };
-    },
-  ): Promise<string | null> => {
-    if (!source.url) return null;
-    slot.state = "downloading";
-    slot.progress = null;
-    if (source.catalog && source.url === source.catalog.url) {
-      const pulled = await aphrodyPull(env, source.catalog.id, join(plan.modelsDir, "aphrody"), {
-        total: source.catalog.bytes,
-        onProgress: (progress) => {
-          slot.progress = progress;
-        },
-      });
-      if (pulled) return pulled;
-    }
-    return downloadArtifact(source.url, join(plan.modelsDir, source.file), {
-      sha256: source.sha256,
-      onProgress: (progress) => {
-        slot.progress = progress;
-      },
-      ...(o.fetch ? { fetch: o.fetch } : {}),
-    });
-  };
-  /** A catalog model in the user's Aphrody store (used in place), then in SHENRON_HOME's. */
-  const inStores = async (id: string): Promise<string | null> =>
-    (await aphrodyStorePath(env, id)) ??
-    (await aphrodyStorePath({ ...env, APHRODY_HOME: join(plan.modelsDir, "aphrody") }, id));
   const fail = (slot: Slot, detail: string) => {
     slot.state = "failed";
     slot.detail = detail;
     slot.progress = null;
   };
-
-  /** (Re)start the router over the models on disk and wait for its /health. */
-  const startRouter = async (): Promise<boolean> => {
-    await kill();
-    if (stopped || !plan.binary) return false;
-    const presets = join(plan.modelsDir, "llama-presets.ini");
-    mkdirSync(plan.modelsDir, { recursive: true });
-    mkdirSync(join(plan.logFile, ".."), { recursive: true });
-    await Bun.write(
-      presets,
-      routerPresets(
-        [
-          ...slots.filter((slot) => slot.state === "ready"),
-          // Gemma 4 E2B still downloading is declared at its final path: the router loads it on
-          // demand once the file is there, so the end of its download never restarts the router
-          // (which would unload and reload the default model).
-          ...(gemmaSlot && gemmaSlot.state !== "ready" ? [{ ...gemmaSlot, model: gemmaPath }] : []),
-        ],
-        config.ctx,
-      ),
-    );
-    router = Bun.spawn(
-      [
-        plan.binary,
-        "--models-preset",
-        presets,
-        // One model in memory at a time: switching unloads the other.
-        "--models-max",
-        "1",
-        "--host",
-        "127.0.0.1",
-        "--port",
-        String(plan.port),
-        "--no-webui",
-      ],
-      { env: { ...env }, stdio: ["ignore", "ignore", Bun.file(plan.logFile)], windowsHide: true },
-    );
-    const deadline = Date.now() + (o.readyTimeoutMs ?? 300_000);
-    const poll = async (): Promise<boolean> => {
-      if (stopped || Date.now() >= deadline) return false;
-      if (!alive()) return false;
-      const ok = await fetch(`${plan.url}/health`, { signal: AbortSignal.timeout(1_000) }).then(
-        (response) => response.ok,
-        () => false,
-      );
-      if (ok) return true;
-      await Bun.sleep(250);
-      return poll();
-    };
-    routerUp = await poll();
-    if (!routerUp && !stopped) {
-      const reason = alive()
-        ? "le serveur de modèles n'a pas démarré à temps"
-        : `llama-server arrêté (code ${router.exitCode ?? router.signalCode})`;
-      for (const slot of slots) if (slot.state === "ready") fail(slot, reason);
-      await kill();
-    }
-    return routerUp;
-  };
-
-  /** Load the default model now (the router would on the first request) and check its adapter. */
-  const warmUp = async () => {
-    const load = await fetch(`${plan.url}/models/load`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ model: shenron.id }),
-    }).catch(() => null);
-    if (!load) return;
-    const deadline = Date.now() + (o.readyTimeoutMs ?? 300_000);
-    const loaded = async (): Promise<boolean> => {
-      if (stopped || Date.now() >= deadline || !alive()) return false;
-      const states = await routerStates();
-      if (states.get(shenron.id) === "loaded") return true;
-      await Bun.sleep(250);
-      return loaded();
-    };
-    if ((await loaded()) && shenron.lora && !(await loraApplied(plan.url, shenron.id)))
-      shenron.detail = "adaptateur chargé sans être appliqué";
-  };
-
-  /** Router status of each model (`loaded`, `loading`, `unloaded`, `failed`). */
-  const routerStates = async (): Promise<Map<string, string>> => {
-    const states = new Map<string, string>();
-    if (!routerUp) return states;
+  const provisionRequest = (slot: Slot): ShenronLlamaProvision => ({
+    modelsDir: plan.modelsDir,
+    ...(slot.model ? { model: slot.model } : {}),
+    lora: slot.lora ? [slot.lora] : [],
+  });
+  /** Make the files of `slot` present; `true` once they are. */
+  const provision = async (slot: Slot): Promise<boolean> => {
+    if (!native) return false;
+    slot.state = "downloading";
+    slot.progress = null;
     try {
-      const response = await fetch(`${plan.url}/v1/models`, { signal: AbortSignal.timeout(2_000) });
-      const body = (await response.json()) as {
-        data?: { id: string; status?: { value?: string } }[];
-      };
-      for (const model of body.data ?? []) states.set(model.id, model.status?.value ?? "unloaded");
+      await native.provision(
+        provisionRequest(slot),
+        (progress) => {
+          slot.progress = { received: progress.downloaded ?? 0, total: progress.total };
+        },
+        aborts.signal,
+      );
+      slot.progress = null;
+      return true;
+    } catch (error) {
+      if (!stopped) fail(slot, `téléchargement : ${String(error).slice(0, 160)}`);
+      return false;
+    }
+  };
+
+  /** (Re)start the router over the slots on the plan's port. */
+  const startRouter = (): boolean => {
+    if (!native || stopped) return false;
+    mkdirSync(plan.stateDir, { recursive: true });
+    const file = join(plan.stateDir, "router.json");
+    writeFileSync(file, `${JSON.stringify(routerConfig(slots, config.ctx), null, 2)}\n`);
+    try {
+      router = native.startRouter({
+        config: file,
+        modelsDir: plan.modelsDir,
+        stateDir: plan.stateDir,
+        ...(config.llamaBin ? { llamaBin: config.llamaBin } : {}),
+        searchDirs: plan.shippedDirs,
+        bind: `127.0.0.1:${plan.port}`,
+        daemon: daemonLauncher(o.library ?? null),
+      });
+      if (!router.llamaBin)
+        for (const slot of slots)
+          fail(slot, "llama-server absent : modèle de chat local indisponible");
+      return router.llamaBin !== null;
+    } catch (error) {
+      for (const slot of slots) fail(slot, `routeur de modèles : ${String(error).slice(0, 160)}`);
+      router = null;
+      return false;
+    }
+  };
+
+  /** Per-model availability reported by the router (`/health`). */
+  const routerHealth = async (): Promise<Map<string, { available: boolean; running: boolean }>> => {
+    const states = new Map<string, { available: boolean; running: boolean }>();
+    if (!router) return states;
+    try {
+      const response = await http(router.healthUrl, { signal: AbortSignal.timeout(5_000) });
+      const body = (await response.json()) as RouterHealth;
+      for (const backend of body.backends ?? []) states.set(backend.id, backend);
     } catch {
       // the router is restarting
     }
     return states;
   };
 
-  const provisionShenron = async (): Promise<boolean> => {
-    if (config.modelPath && !isFile(config.modelPath)) {
-      fail(shenron, "SHENRON_CHAT_MODEL ne désigne aucun fichier");
+  /** Start the default model now (the router would on the first request): one-token answer. */
+  const warmUp = async (): Promise<boolean> => {
+    if (!router) return false;
+    shenron.state = "loading";
+    try {
+      const response = await http(`${router.baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          model: shenron.id,
+          messages: [{ role: "user", content: "ping" }],
+          max_tokens: 1,
+          stream: false,
+        }),
+        signal: AbortSignal.any([aborts.signal, AbortSignal.timeout(o.readyTimeoutMs ?? 300_000)]),
+      });
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as {
+          error?: { message?: string };
+        } | null;
+        fail(shenron, body?.error?.message ?? `le serveur de modèles a répondu ${response.status}`);
+        return false;
+      }
+      shenron.state = "ready";
+      shenron.detail ??=
+        !shenron.lora && config.lora
+          ? `adaptateur ${CHAT_ADAPTER.id} introuvable : importez son fichier`
+          : null;
+      return true;
+    } catch (error) {
+      if (!stopped) fail(shenron, `chargement du modèle : ${String(error).slice(0, 160)}`);
       return false;
     }
-    const base =
-      [config.modelPath, join(plan.modelsDir, CHAT_BASE_MODEL.file)].find(isFile) ??
-      (await inStores(CHAT_BASE_MODEL.id)) ??
-      (await download(shenron, {
-        url: config.modelUrl,
-        sha256: config.modelSha256,
-        file: CHAT_BASE_MODEL.file,
-        catalog: { id: CHAT_BASE_MODEL.id, url: CHAT_BASE_MODEL.url, bytes: CHAT_BASE_MODEL.bytes },
-      }));
-    if (!base) {
-      fail(shenron, "modèle de chat introuvable");
-      return false;
-    }
-    const lora = config.lora
-      ? ([
-          config.loraPath,
-          join(plan.modelsDir, CHAT_ADAPTER.file),
-          ...plan.shippedDirs.map((dir) => join(dir, "models", CHAT_ADAPTER.file)),
-          env.APHRODY_SHENRON_CHAT_LORA?.trim(),
-        ].find(isFile) ??
-        (await download(shenron, {
-          url: config.loraUrl,
-          sha256: config.loraSha256,
-          file: CHAT_ADAPTER.file,
-        })))
-      : null;
-    shenron.model = base;
-    shenron.lora = lora;
-    if (!lora) shenron.label = `${CHAT_BASE_MODEL.label} (sans adaptateur)`;
-    if (!lora && config.lora)
-      shenron.detail = `adaptateur ${CHAT_ADAPTER.id} introuvable : importez son fichier`;
-    shenron.state = "ready";
-    shenron.progress = null;
-    return true;
   };
-
-  /** Gemma 4 E2B already on disk (explicit path, SHENRON_HOME, the Aphrody store). */
-  const findGemma = async (): Promise<string | null> =>
-    [gemma.path, join(plan.modelsDir, GEMMA_MODEL.file)].find(isFile) ??
-    (await inStores(GEMMA_MODEL.aphrodyId));
 
   let installing: Promise<boolean> | null = null;
   const install = (id: string): Promise<boolean> => {
@@ -543,29 +436,11 @@ export function startChatModel(
     if (gemmaSlot.state === "ready") return Promise.resolve(true);
     installing ??= (async () => {
       try {
-        const path = await download(gemmaSlot, {
-          url: gemma.url,
-          sha256: gemma.sha256,
-          file: GEMMA_MODEL.file,
-          catalog: { id: GEMMA_MODEL.aphrodyId, url: GEMMA_MODEL.url, bytes: GEMMA_MODEL.bytes },
-        });
-        if (!path) {
-          fail(gemmaSlot, "aucune source de téléchargement");
-          return false;
-        }
-        gemmaSlot.model = path;
+        // The router finds the files on its next request: no restart.
+        if (!(await provision(gemmaSlot))) return false;
         gemmaSlot.state = "ready";
-        gemmaSlot.progress = null;
         gemmaSlot.detail = null;
-        // The router reads its presets at start: it already knows the file at gemmaPath;
-        // a model found elsewhere (the Aphrody store) needs a restart with the new presets.
-        if (path !== gemmaPath || !routerUp || !alive()) {
-          if (shenron.state === "ready" && (await startRouter())) await warmUp();
-        }
-        return gemmaSlot.state === "ready";
-      } catch (error) {
-        fail(gemmaSlot, `téléchargement : ${String(error).slice(0, 160)}`);
-        return false;
+        return true;
       } finally {
         installing = null;
       }
@@ -584,32 +459,30 @@ export function startChatModel(
     mkdirSync(plan.modelsDir, { recursive: true });
     const dest = join(plan.modelsDir, CHAT_ADAPTER.file);
     if (path !== dest) copyFileSync(path, dest);
-    shenron.lora = dest;
+    shenron.lora = fileSpec(dest, config.loraSha256);
     shenron.label = `${CHAT_BASE_MODEL.label} + ${CHAT_ADAPTER.id}`;
     shenron.detail = null;
-    if (shenron.state === "ready" && (await startRouter())) await warmUp();
+    if (shenron.state === "ready" && startRouter() && (await provision(shenron))) await warmUp();
     return { ok: true };
   };
 
   const run = async (): Promise<boolean> => {
-    if (!plan.binary) {
-      for (const slot of slots)
-        fail(slot, "llama-server absent : modèle de chat local indisponible");
+    const loaded = await (o.native ?? nativeLocalChat(o.library ?? null));
+    if (typeof loaded === "string") {
+      for (const slot of slots) fail(slot, loaded);
       return false;
     }
+    native = loaded;
+    if (!startRouter()) return false;
     if (gemmaSlot) {
-      const found = await findGemma();
-      if (found) {
-        gemmaSlot.model = found;
-        gemmaSlot.state = "ready";
-      } else gemmaSlot.state = "installable";
+      const health = await routerHealth();
+      gemmaSlot.state = health.get(gemmaSlot.id)?.available ? "ready" : "installable";
     }
-    if (!(await provisionShenron()) || stopped) return false;
-    if (!(await startRouter())) return false;
-    await warmUp();
+    if (!(await provision(shenron)) || stopped) return false;
+    if (!(await warmUp())) return false;
     // Gemma 4 E2B follows the default model on the first launch (`manual`: on request).
     if (gemmaSlot?.state === "installable" && gemma.mode === "auto") void install(gemmaSlot.id);
-    return shenron.state === "ready" && routerUp;
+    return shenron.state === "ready";
   };
 
   const ready = run().catch((error: unknown) => {
@@ -622,17 +495,15 @@ export function startChatModel(
     ),
   );
 
-  const entryOf = (slot: Slot, states: Map<string, string>): ChatModelEntry => {
-    const routed = states.get(slot.id);
+  const entryOf = (
+    slot: Slot,
+    health: Map<string, { available: boolean; running: boolean }>,
+  ): ChatModelEntry => {
     const state: ChatModelState =
       slot.state === "ready"
-        ? !routerUp || !alive()
-          ? "loading"
-          : routed === "loading"
-            ? "loading"
-            : routed === "failed"
-              ? "failed"
-              : "ready"
+        ? router && health.get(slot.id)?.available !== false
+          ? "ready"
+          : "loading"
         : slot.state === "pending"
           ? "loading"
           : slot.state;
@@ -640,7 +511,7 @@ export function startChatModel(
       id: slot.id,
       label: slot.label,
       backend: "local",
-      available: state === "ready" || (state === "loading" && slot.state === "ready" && routerUp),
+      available: state === "ready",
       default: slot.id === DEFAULT_CHAT_MODEL_ID,
       remote: false,
       state,
@@ -655,8 +526,8 @@ export function startChatModel(
     };
   };
   const catalog = async () => {
-    const states = await routerStates();
-    return slots.map((slot) => entryOf(slot, states));
+    const health = await routerHealth();
+    return slots.map((slot) => entryOf(slot, health));
   };
 
   return {
@@ -703,9 +574,9 @@ export function startChatModel(
             ? ` ; ${gemmaSlot.id}`
             : ""
         : "";
-      if (shenron.state === "ready" && routerUp && alive())
+      if (shenron.state === "ready" && router)
         return { available: true, reason: `${shenron.label}${extra}` };
-      if (shenron.state === "ready" && routerUp)
+      if (shenron.state === "ready")
         return { available: false, reason: "modèle de chat local arrêté" };
       switch (shenron.state) {
         case "downloading":
@@ -720,18 +591,4 @@ export function startChatModel(
       }
     },
   };
-}
-
-/** `true` when llama-server reports an adapter of `model` loaded with a non-zero scale. */
-async function loraApplied(url: string, model: string): Promise<boolean> {
-  try {
-    const response = await fetch(`${url}/lora-adapters?model=${encodeURIComponent(model)}`, {
-      signal: AbortSignal.timeout(2_000),
-    });
-    if (!response.ok) return false;
-    const adapters = (await response.json()) as { scale?: number }[];
-    return Array.isArray(adapters) && adapters.some((adapter) => (adapter.scale ?? 0) > 0);
-  } catch {
-    return false;
-  }
 }

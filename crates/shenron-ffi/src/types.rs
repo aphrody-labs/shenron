@@ -235,3 +235,47 @@ pub struct MemoryEntry {
     /// String metadata (conversation, persona, source).
     pub metadata: std::collections::BTreeMap<String, String>,
 }
+
+/// Progress of a running `shenron_llama_provision_job` (`shenron_llama_progress`, ABI 4).
+#[derive(Debug, Clone, PartialEq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct LlamaProgress {
+    /// File role (`weights`, `lora`, `mmproj`).
+    pub role: String,
+    /// Spec being transferred (catalog id or reference).
+    pub spec: String,
+    /// Bytes on disk.
+    pub downloaded: f64,
+    /// Size, when the source announced one.
+    pub total: Option<f64>,
+}
+
+/// Files a provisioning made present (`shenron_llama_provision_job`, ABI 4).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct LlamaProvisioned {
+    /// Base model spec.
+    pub model_id: String,
+    /// Path of the base weights.
+    pub weights: String,
+    /// Paths of the adapters, in request order.
+    pub lora: Vec<String>,
+    /// `true` when anything was downloaded (else everything was already there).
+    pub transferred: bool,
+}
+
+/// The chat router this process serves (`shenron_llama_router_start`, ABI 4).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct LlamaRouterInfo {
+    /// Origin (`http://127.0.0.1:<port>`).
+    pub url: String,
+    /// OpenAI root (`<url>/v1`).
+    pub base_url: String,
+    /// Per-backend availability (`<url>/health`).
+    pub health_url: String,
+    /// Configured model ids, in listing order.
+    pub models: Vec<String>,
+    /// `llama-server` the router starts, `null` when none was found.
+    pub llama_bin: Option<String>,
+}

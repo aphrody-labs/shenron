@@ -9,7 +9,7 @@
 import { FFIType } from "bun:ffi";
 
 /** ABI revision of this table: `shenron_abi_version()` of a compatible library. */
-export const SHENRON_FFI_ABI = 3;
+export const SHENRON_FFI_ABI = 4;
 
 /** Version of the shenron-ffi crate the table was generated from (the workspace version). */
 export const SHENRON_FFI_VERSION = "1.3.0";
@@ -208,4 +208,39 @@ export const SYMBOLS = {
    * `shenron_memory_clear(db_path: cstr, agent_id: cstr) -> owned_str`, since ABI 3.
    */
   shenron_memory_clear: { args: [FFIType.cstring, FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Provision chat model files as job `job` (blocks for the transfer): owned
+   * `JobOutcome<LlamaProvisioned>` JSON. `request_json`: `{modelsDir, catalog?, model?, lora?,
+   * force?}`.
+   *
+   * `shenron_llama_provision_job(job: u64, request_json: cstr) -> owned_str`, since ABI 4.
+   */
+  shenron_llama_provision_job: { args: [FFIType.u64, FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Latest progress of provisioning job `job`: owned `LlamaProgress` JSON or `null`. Any
+   * thread, never blocks.
+   *
+   * `shenron_llama_progress(job: u64) -> owned_str`, since ABI 4.
+   */
+  shenron_llama_progress: { args: [FFIType.u64], returns: FFIType.ptr },
+  /**
+   * Serve the chat router (one per process, replaced on restart): owned
+   * `JobOutcome<LlamaRouterInfo>` JSON once it listens.
+   *
+   * `shenron_llama_router_start(request_json: cstr) -> owned_str`, since ABI 4.
+   */
+  shenron_llama_router_start: { args: [FFIType.cstring], returns: FFIType.ptr },
+  /**
+   * Stop the router and the model server it started; true if one was serving. Blocks.
+   *
+   * `shenron_llama_router_stop() -> bool`, since ABI 4.
+   */
+  shenron_llama_router_stop: { args: [], returns: FFIType.bool },
+  /**
+   * Run the model supervisor daemon with a JSON array of arguments; returns its exit code.
+   * Blocks until the daemon exits (a process re-executed as the daemon launcher).
+   *
+   * `shenron_llama_daemon(args_json: cstr) -> i32`, since ABI 4.
+   */
+  shenron_llama_daemon: { args: [FFIType.cstring], returns: FFIType.i32 },
 } as const;

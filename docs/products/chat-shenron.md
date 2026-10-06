@@ -14,8 +14,12 @@ variables se trouvent dans [`operations/ENV.md`](../operations/ENV.md), les proc
 | `gemma4-e2b`       | Gemma 4 E2B instruct Q4_K_M (Unsloth, Apache-2.0)       | bureau (téléchargé à la demande), site et bot (production) |
 | `gemini-web/flash` | application web Gemini, session Google de l'opérateur   | distant, facultatif                                        |
 
-- **Bureau** : un seul `llama-server` en mode routeur (`apps/server/src/chat-model.ts`,
-  défauts épinglés dans `@shenron/config/chat-model`), un modèle en mémoire à la fois.
+- **Bureau** : le routeur et le provisionnement d'Aphrody (`aphrody-llama-server`, contrat
+  `LOCAL-CHAT.md`) tournent dans `shenron-server`, liés dans `libshenron_ffi` (ABI 4,
+  `shenron_llama_*`) ; `apps/server/src/chat-model.ts` ne choisit que les fichiers (défauts
+  épinglés dans `@shenron/config/chat-model`). Un `llama-server` à la fois, démarré au
+  premier usage ; le superviseur relance `shenron-server llama-daemon` comme démon, aucun
+  binaire Aphrody n'est livré. Magasin : `<SHENRON_HOME>/models` (`registry.json`).
   L'installeur livre le runtime llama.cpp (Vulkan) et l'adaptateur LoRA ; la base Qwen
   (2,5 Go) et Gemma (3,1 Go) se téléchargent au premier lancement ou en un clic, depuis
   Hugging Face à une révision épinglée, avec reprise et vérification SHA-256. Sans adaptateur,
@@ -94,9 +98,10 @@ variables se trouvent dans [`operations/ENV.md`](../operations/ENV.md), les proc
   Face à une révision épinglée.
 - Les capacités Aphrody se consomment, elles ne se réimplémentent pas. La règle du propriétaire
   d'Aphrody : WASM pour le web, binaire pour le bureau, FFI `bun:ffi` pour le backend Bun.
-  Le routeur (`aphrody llama router`), le provisionnement (`aphrody llama provision`) et la
-  mémoire (`aphrody memory …`, `aphrody_memory::local_ops`) d'Aphrody remplaceront le code de
-  `apps/server/src/chat-model.ts` et de `crates/shenron-ffi/src/memory.rs`.
+  Le routeur et le provisionnement d'Aphrody sont liés dans `libshenron_ffi` (révision
+  `30b0e8a4`, en avance sur le bloc généré, qu'ils rejoindront à sa montée) ; la mémoire
+  reste le fournisseur SQLite d'`aphrody-memory` de la même bibliothèque (même fichier que
+  `aphrody memory --db`), `local_ops` arrivant avec cette montée.
 
 ## Pistes ouvertes
 

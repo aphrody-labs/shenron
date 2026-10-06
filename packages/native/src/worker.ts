@@ -25,13 +25,17 @@ import {
   holdLib,
   loadLib,
   shenronLibraryPath,
+  shenronLlamaProgress,
   validateCliArgs,
   type NativeLibrary,
+  type ShenronLlamaProvision,
 } from "./engine";
 import { SHENRON_STATUS, SYMBOLS } from "./generated/symbols";
 import type {
   CapturedResult,
   JobOutcome,
+  LlamaProgress,
+  LlamaProvisioned,
   LocalSearchResponse,
   RagSearchResponse,
   RagStats,
@@ -91,6 +95,8 @@ interface Task {
   signal?: AbortSignal;
   onAbort?: () => void;
   job?: number;
+  /** Called with the native job id once the call is handed to a worker. */
+  onStart?: (job: number) => void;
   settled: boolean;
 }
 
@@ -213,6 +219,37 @@ export class ShenronWorkerPool {
   }
 
   /**
+   * Make the chat model files of `request` present (Aphrody local chat provisioning: catalog,
+   * resumed and digest-checked transfers). `onProgress` receives the latest progress every
+   * `progressMs` (default 500) while the transfer runs; aborting stops it (resumable).
+   */
+  llamaProvision(
+    request: ShenronLlamaProvision,
+    options: NativeCallOptions & {
+      onProgress?: (progress: LlamaProgress) => void;
+      progressMs?: number;
+    } = {},
+  ): Promise<LlamaProvisioned> {
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const onStart = options.onProgress
+      ? (job: number) => {
+          timer = setInterval(() => {
+            const progress = shenronLlamaProgress(job);
+            if (progress) options.onProgress?.(progress);
+          }, options.progressMs ?? 500);
+        }
+      : undefined;
+    return this.#call<LlamaProvisioned>(
+      () => {
+        checkText(request.modelsDir, "modelsDir");
+        return { op: "llama_provision", args: [JSON.stringify(request)] };
+      },
+      options.signal,
+      onStart,
+    ).finally(() => clearInterval(timer));
+  }
+
+  /**
    * Cancel every queued and running call (their promises reject with an `AbortError`), close
    * each worker's handle and stop the workers. Idempotent.
    */
@@ -234,7 +271,11 @@ export class ShenronWorkerPool {
     return this.#closing;
   }
 
-  #call<T>(build: () => JobCall, signal: AbortSignal | undefined): Promise<T> {
+  #call<T>(
+    build: () => JobCall,
+    signal: AbortSignal | undefined,
+    onStart?: (job: number) => void,
+  ): Promise<T> {
     if (this.#closing) return Promise.reject(abortError("@shenron/native worker pool closed"));
     let call: JobCall;
     try {
@@ -254,6 +295,7 @@ export class ShenronWorkerPool {
       resolve: resolve as (value: unknown) => void,
       reject,
       settled: false,
+      ...(onStart ? { onStart } : {}),
     };
     if (signal) {
       task.signal = signal;
@@ -292,6 +334,7 @@ export class ShenronWorkerPool {
         continue;
       }
       task.job = job;
+      task.onStart?.(job);
       slot.task = task;
       slot.worker.ref();
       const request: WorkerRequest = { type: "call", id: task.id, job, ...task.call };
