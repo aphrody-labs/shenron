@@ -1004,6 +1004,29 @@
         "cell": "{row} 行目、{col} 列目：{state}",
         "empty": "空きマス"
       }
+    },
+    "classements": {
+      "rank1": "1位",
+      "rank2": "2位",
+      "rank3": "3位",
+      "freeSlot": "空き",
+      "firstVote": "評価して最初の席をつかもう。",
+      "rateCta": "評価する",
+      "votesOne": "{count}票",
+      "votesMany": "{count}票",
+      "ratedOne": "{count}件評価",
+      "ratedMany": "{count}件評価",
+      "noVotes": "まだ評価がありません。最初の評価で表彰台が開きます。",
+      "freeLeftOne": "表彰台の空きはあと{count}つ。",
+      "freeLeftMany": "表彰台の空きはあと{count}つ。",
+      "rankCol": "順位",
+      "memberCol": "メンバー",
+      "levelCol": "レベル",
+      "xpCol": "XP",
+      "zeniCol": "ゼニー",
+      "reviewsCol": "レビュー",
+      "commentsCol": "コメント",
+      "ratingsCol": "評価"
     }
   },
   "shell": {

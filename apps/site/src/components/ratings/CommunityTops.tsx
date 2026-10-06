@@ -22,9 +22,18 @@ export { PODIUM_ORDER } from "./Podium";
 const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
 
-function TopEntryCard({ board, rank }: { board: CommunityTopBoard; rank: PodiumRank }) {
+function TopEntryCard({
+  board,
+  rank,
+  compact,
+}: {
+  board: CommunityTopBoard;
+  rank: PodiumRank;
+  compact: boolean;
+}) {
   const entry = board.entries.find((e) => e.rank === rank);
-  if (!entry) return <PodiumEmpty rank={rank} href={board.def.browseHref} />;
+  // On the home (`compact`), an open spot is not drawn: no empty podium step on the page.
+  if (!entry) return compact ? null : <PodiumEmpty rank={rank} href={board.def.browseHref} />;
 
   return (
     <PodiumCard rank={rank} href={entry.href}>
@@ -74,7 +83,7 @@ function TopEntryCard({ board, rank }: { board: CommunityTopBoard; rank: PodiumR
   );
 }
 
-function BoardPodium({ board }: { board: CommunityTopBoard }) {
+function BoardPodium({ board, compact }: { board: CommunityTopBoard; compact: boolean }) {
   const free = 3 - board.entries.length;
   return (
     <div className="space-y-6">
@@ -92,22 +101,34 @@ function BoardPodium({ board }: { board: CommunityTopBoard }) {
         {board.ratedCount > 0 ? (
           <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[0.8125rem] tabular-nums text-white/60">
             <li>
-              <span className="font-bold text-white">{board.ratedCount}</span> noté
-              {board.ratedCount > 1 ? "s" : ""}
+              <T
+                k={
+                  board.ratedCount > 1
+                    ? "communaute.classements.ratedMany"
+                    : "communaute.classements.ratedOne"
+                }
+                values={{ count: board.ratedCount }}
+              />
             </li>
             <li>
-              <span className="font-bold text-white">{board.totalVotes}</span> vote
-              {board.totalVotes > 1 ? "s" : ""}
+              <T
+                k={
+                  board.totalVotes > 1
+                    ? "communaute.classements.votesMany"
+                    : "communaute.classements.votesOne"
+                }
+                values={{ count: board.totalVotes }}
+              />
             </li>
           </ul>
         ) : (
           <p className="mt-2 text-[0.8125rem] text-white/60">
-            Aucun vote encore : le premier à noter ouvre le podium.
+            <T k="communaute.classements.noVotes" />
           </p>
         )}
       </div>
 
-      <Podium render={(rank) => <TopEntryCard board={board} rank={rank} />} />
+      <Podium render={(rank) => <TopEntryCard board={board} rank={rank} compact={compact} />} />
 
       <div className="flex flex-wrap items-center gap-3">
         <Link
@@ -116,9 +137,16 @@ function BoardPodium({ board }: { board: CommunityTopBoard }) {
         >
           <T k="communaute.classements.rateCta" />
         </Link>
-        {free > 0 && free < 3 && (
+        {!compact && free > 0 && free < 3 && (
           <p className="text-[0.8125rem] text-white/60">
-            Encore {free} place{free > 1 ? "s" : ""} à prendre sur le podium.
+            <T
+              k={
+                free > 1
+                  ? "communaute.classements.freeLeftMany"
+                  : "communaute.classements.freeLeftOne"
+              }
+              values={{ count: free }}
+            />
           </p>
         )}
       </div>
@@ -225,7 +253,7 @@ export function CommunityTops({
         aria-labelledby={`${baseId}-tab-${board.def.id}`}
         className="rounded-lg border border-white/12 p-4 sm:p-6"
       >
-        <BoardPodium board={board} />
+        <BoardPodium board={board} compact={compact} />
       </div>
     </div>
   );
@@ -241,7 +269,7 @@ export function CommunityTopsFull({ data }: { data: CommunityTopsPayload }) {
           id={board.def.id}
           className="scroll-mt-24 rounded-lg border border-white/12 p-4 sm:p-6"
         >
-          <BoardPodium board={board} />
+          <BoardPodium board={board} compact={false} />
         </section>
       ))}
     </div>

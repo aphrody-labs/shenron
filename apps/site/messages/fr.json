@@ -1004,6 +1004,29 @@
         "cell": "Ligne {row}, colonne {col} : {state}",
         "empty": "case libre"
       }
+    },
+    "classements": {
+      "rank1": "1re place",
+      "rank2": "2e place",
+      "rank3": "3e place",
+      "freeSlot": "Place libre",
+      "firstVote": "Note une fiche pour la prendre.",
+      "rateCta": "Noter",
+      "votesOne": "{count} vote",
+      "votesMany": "{count} votes",
+      "ratedOne": "{count} noté",
+      "ratedMany": "{count} notés",
+      "noVotes": "Aucun vote encore : le premier à noter ouvre le podium.",
+      "freeLeftOne": "Encore {count} place à prendre sur le podium.",
+      "freeLeftMany": "Encore {count} places à prendre sur le podium.",
+      "rankCol": "Rang",
+      "memberCol": "Membre",
+      "levelCol": "Niveau",
+      "xpCol": "XP",
+      "zeniCol": "Zénis",
+      "reviewsCol": "Critiques",
+      "commentsCol": "Commentaires",
+      "ratingsCol": "Notes"
     }
   },
   "shell": {

@@ -1004,6 +1004,29 @@
         "cell": "Row {row}, column {col}: {state}",
         "empty": "empty square"
       }
+    },
+    "classements": {
+      "rank1": "1st place",
+      "rank2": "2nd place",
+      "rank3": "3rd place",
+      "freeSlot": "Open spot",
+      "firstVote": "Rate an entry to take it.",
+      "rateCta": "Rate",
+      "votesOne": "{count} vote",
+      "votesMany": "{count} votes",
+      "ratedOne": "{count} rated",
+      "ratedMany": "{count} rated",
+      "noVotes": "No votes yet: the first rating opens the podium.",
+      "freeLeftOne": "{count} spot left on the podium.",
+      "freeLeftMany": "{count} spots left on the podium.",
+      "rankCol": "Rank",
+      "memberCol": "Member",
+      "levelCol": "Level",
+      "xpCol": "XP",
+      "zeniCol": "Zeni",
+      "reviewsCol": "Reviews",
+      "commentsCol": "Comments",
+      "ratingsCol": "Ratings"
     }
   },
   "shell": {
