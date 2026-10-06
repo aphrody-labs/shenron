@@ -233,7 +233,7 @@ function TriggerCard({
 }) {
   const valid = useMemo(() => {
     try {
-      new RegExp(trigger.pattern, trigger.flags ?? "i");
+      RegExp(trigger.pattern, trigger.flags ?? "i");
       return true;
     } catch {
       return false;
@@ -301,7 +301,7 @@ function TriggerEditor({
 
   const regexValid = useMemo(() => {
     try {
-      new RegExp(draft.pattern, draft.flags ?? "i");
+      RegExp(draft.pattern, draft.flags ?? "i");
       return true;
     } catch (e) {
       return (e as Error).message;

@@ -16,13 +16,7 @@ export function isPublicDatabookImage(raw: string | null | undefined): boolean {
     return !/^[a-z][a-z0-9+.-]*:/i.test(value) && !value.startsWith("//");
   }
 
-  try {
-    new URL(value);
-  } catch {
-    return false;
-  }
-
-  return true;
+  return URL.canParse(value);
 }
 
 /** Référence normalisée à exposer au navigateur, ou `null` si elle est muette. */

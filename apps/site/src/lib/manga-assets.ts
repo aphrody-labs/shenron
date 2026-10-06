@@ -78,12 +78,7 @@ export function isReadableMangaPage(path: string | null | undefined): path is st
   if (!value) return false;
   if (!/^https?:\/\//i.test(value)) return true;
 
-  try {
-    new URL(value);
-    return true;
-  } catch {
-    return false;
-  }
+  return URL.canParse(value);
 }
 
 /** Retire seulement les références absentes ou malformées. */

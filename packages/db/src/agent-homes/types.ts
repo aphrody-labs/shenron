@@ -128,7 +128,7 @@ const clean = (value: string | null | undefined, max: number): string | null => 
 function validTimezone(tz: string | null): string | null {
   if (!tz) return null;
   try {
-    new Intl.DateTimeFormat("en", { timeZone: tz });
+    Intl.DateTimeFormat("en", { timeZone: tz });
     return tz;
   } catch {
     return null;

@@ -1254,7 +1254,7 @@ export class SettingsService {
     }
     if (key === "xp.night.timezone") {
       try {
-        new Intl.DateTimeFormat("fr-FR", { timeZone: value });
+        Intl.DateTimeFormat("fr-FR", { timeZone: value });
       } catch {
         throw new Error(`${key} attend un fuseau horaire IANA (ex: Europe/Paris).`);
       }

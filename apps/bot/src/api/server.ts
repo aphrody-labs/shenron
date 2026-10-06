@@ -2718,12 +2718,13 @@ export class ApiServer {
                 )
                 .replace(/\s{2,}/g, " ")
                 .trim();
-            const results = rows.map((r) => ({
-              ...r,
-              snippet: cleanSnip(r.snippet),
-              volume: r.tome,
-              page: r.planche,
-            }));
+            const results = rows.map((r) =>
+              Object.assign({}, r, {
+                snippet: cleanSnip(r.snippet),
+                volume: r.tome,
+                page: r.planche,
+              }),
+            );
             return { q, count: results.length, results };
           }),
 
@@ -3915,7 +3916,7 @@ export class ApiServer {
             }
             try {
               // Validate regex
-              new RegExp(body.pattern, body.flags ?? "i");
+              RegExp(body.pattern, body.flags ?? "i");
             } catch (err) {
               return Response.json(
                 { error: `regex invalide : ${err instanceof Error ? err.message : err}` },
@@ -3946,7 +3947,7 @@ export class ApiServer {
             if (!body) return Response.json({ error: "JSON body requis" }, { status: 400 });
             if (typeof body.pattern === "string") {
               try {
-                new RegExp(body.pattern, (body.flags as string) ?? "i");
+                RegExp(body.pattern, (body.flags as string) ?? "i");
               } catch (err) {
                 return Response.json(
                   { error: `regex invalide : ${err instanceof Error ? err.message : err}` },

@@ -50,7 +50,7 @@ export class AchievementAdmin {
     interaction: CommandInteraction,
   ) {
     try {
-      new RegExp(pattern, flags ?? "i");
+      RegExp(pattern, flags ?? "i");
     } catch (err) {
       await interaction.reply({
         embeds: [errorEmbed("Regex invalide", (err as Error).message)],
