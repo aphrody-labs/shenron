@@ -128,10 +128,13 @@ const nextConfig: NextConfig = {
   // Turbopack doit le transpiler comme du code du site.
   // Published @aphrody/* packages ship TypeScript sources: Turbopack transpiles them too.
   transpilePackages: [
+    "@aphrody/ag-ui",
     "@aphrody/api",
     "@aphrody/discord-kit",
     "@aphrody/http",
     "@aphrody/inference",
+    "@aphrody/m3-ai",
+    "@aphrody/m3-motion",
     "@aphrody/m3-primitives",
     "@aphrody/m3-reader",
     "@aphrody/m3-theme",

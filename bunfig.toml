@@ -9,16 +9,19 @@ minimumReleaseAge = 259200
 # Owner-published Aphrody packages are pinned exactly and released in step with this repository;
 # security fixes (next, nodemailer, undici) track upstream in real time.
 minimumReleaseAgeExcludes = [
+  "@aphrody/ag-ui",
   "@aphrody/api",
   "@aphrody/bun-test-dom",
   "@aphrody/discord-kit",
   "@aphrody/http",
   "@aphrody/inference",
+  "@aphrody/m3-ai",
   "@aphrody/m3-motion",
   "@aphrody/m3-primitives",
   "@aphrody/m3-reader",
   "@aphrody/m3-theme",
   "@aphrody/m3-tokens",
+  "@aphrody/mcp-ui",
   "@aphrody/messaging",
   "@aphrody/paths",
   "@aphrody/plugin-opener",

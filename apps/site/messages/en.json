@@ -1507,5 +1507,67 @@
       "desktopText": "The editor opens in the Shenron desktop app, which ships the models and works offline. Translated pages then join the workshop.",
       "workshopLink": "See the translation progress"
     }
+  },
+  "desktop": {
+    "meta": {
+      "title": "Shenron Studio",
+      "description": "Shenron on your computer: chat with the local Dragon Ball model, corpus search, the manga translation editor and the studio."
+    },
+    "title": "Shenron on your computer",
+    "status": {
+      "connecting": "Connecting to the local server…",
+      "offline": "The local Shenron server is not responding (desktop app required).",
+      "summary": "Local server {version} · profile {profile} · local search {rag}",
+      "ragOn": "available",
+      "ragOff": "unavailable"
+    },
+    "chat": {
+      "title": "Chat",
+      "newConversation": "New chat",
+      "conversations": "Chats",
+      "noConversations": "No saved chat yet.",
+      "historyUnavailable": "Chat history is not available on this server.",
+      "untitled": "Untitled chat",
+      "welcomeTitle": "Ask Shenron",
+      "welcomeBody": "Ask anything about Dragon Ball: the local model answers and cites the manga, the databooks and the wiki. Your chats stay on this computer.",
+      "placeholder": "Your Dragon Ball question…",
+      "you": "You",
+      "assistant": "Shenron",
+      "thinking": "Shenron is thinking…",
+      "sources": "Sources",
+      "openSource": "Open source",
+      "checking": "Checking the local model…",
+      "unavailableTitle": "Model unavailable",
+      "unavailableBody": "No chat model is loaded on this server. Declare the local model in the control panel, then restart the app.",
+      "truncated": "Answer cut short (maximum length reached).",
+      "stopped": "Answer stopped.",
+      "dismiss": "Dismiss",
+      "errors": {
+        "unavailable": "This server does not offer chat.",
+        "http": "The server refused the request.",
+        "error": "The generation failed.",
+        "aborted": "Generation stopped.",
+        "unreachable": "The local server stopped responding."
+      }
+    },
+    "search": {
+      "title": "Search the Dragon Ball corpus (offline)",
+      "label": "Question or keyword",
+      "placeholder": "E.g. Kamehameha, Frieza, Daizenshuu 2 databook",
+      "submit": "Search",
+      "searching": "Searching…",
+      "unavailable": "Local search unavailable: {reason}",
+      "failed": "Search failed: {reason}",
+      "count": "{count, plural, =0 {No passage} one {# passage} other {# passages}}",
+      "took": "{count, plural, =0 {No passage} one {# passage} other {# passages}} in {ms} ms"
+    },
+    "tools": {
+      "label": "Tools",
+      "studioTitle": "Manga translation editor",
+      "studioText": "Detection, OCR, translation, cleaning and PSD export of pages (Shenron Studio).",
+      "controlTitle": "Control panel",
+      "controlText": "Service health, corpus, local models and training.",
+      "siteText": "The full public site (wiki, manga, databooks, news) in your browser."
+    }
   }
 }

@@ -1507,5 +1507,67 @@
       "desktopText": "L'éditeur s'ouvre dans l'application de bureau Shenron, qui embarque les modèles et fonctionne hors ligne. Les planches traduites rejoignent ensuite l'atelier.",
       "workshopLink": "Voir l'avancement de la traduction"
     }
+  },
+  "desktop": {
+    "meta": {
+      "title": "Shenron Studio",
+      "description": "Shenron sur votre ordinateur : discussion avec le modèle Dragon Ball local, recherche dans le corpus, éditeur de traduction manga et studio."
+    },
+    "title": "Shenron sur votre ordinateur",
+    "status": {
+      "connecting": "Connexion au serveur local…",
+      "offline": "Le serveur local de Shenron ne répond pas (application de bureau requise).",
+      "summary": "Serveur local {version} · profil {profile} · recherche locale {rag}",
+      "ragOn": "disponible",
+      "ragOff": "indisponible"
+    },
+    "chat": {
+      "title": "Discussion",
+      "newConversation": "Nouvelle discussion",
+      "conversations": "Discussions",
+      "noConversations": "Aucune discussion enregistrée pour l’instant.",
+      "historyUnavailable": "L’historique des discussions n’est pas disponible sur ce serveur.",
+      "untitled": "Discussion sans titre",
+      "welcomeTitle": "Demandez à Shenron",
+      "welcomeBody": "Posez une question sur Dragon Ball : le modèle local répond en citant le manga, les databooks et le wiki. Vos discussions restent sur cet ordinateur.",
+      "placeholder": "Votre question sur Dragon Ball…",
+      "you": "Vous",
+      "assistant": "Shenron",
+      "thinking": "Shenron réfléchit…",
+      "sources": "Sources",
+      "openSource": "Ouvrir la source",
+      "checking": "Vérification du modèle local…",
+      "unavailableTitle": "Modèle indisponible",
+      "unavailableBody": "Aucun modèle de discussion n’est chargé sur ce serveur. Déclarez le modèle local dans le pilotage, puis relancez l’application.",
+      "truncated": "Réponse tronquée (longueur maximale atteinte).",
+      "stopped": "Réponse interrompue.",
+      "dismiss": "Fermer",
+      "errors": {
+        "unavailable": "Ce serveur ne propose pas la discussion.",
+        "http": "Le serveur a refusé la demande.",
+        "error": "La génération a échoué.",
+        "aborted": "Génération interrompue.",
+        "unreachable": "Le serveur local ne répond plus."
+      }
+    },
+    "search": {
+      "title": "Recherche dans le corpus Dragon Ball (hors ligne)",
+      "label": "Question ou mot-clé",
+      "placeholder": "Ex. : Kaméhaméha, Freezer, databook Daizenshû 2",
+      "submit": "Rechercher",
+      "searching": "Recherche…",
+      "unavailable": "Recherche locale indisponible : {reason}",
+      "failed": "Échec de la recherche : {reason}",
+      "count": "{count, plural, =0 {Aucun passage} one {# passage} other {# passages}}",
+      "took": "{count, plural, =0 {Aucun passage} one {# passage} other {# passages}} en {ms} ms"
+    },
+    "tools": {
+      "label": "Outils",
+      "studioTitle": "Éditeur de traduction manga",
+      "studioText": "Détection, OCR, traduction, nettoyage et export PSD des planches (Shenron Studio).",
+      "controlTitle": "Pilotage",
+      "controlText": "Santé des services, corpus, modèles locaux et entraînement.",
+      "siteText": "Le site public complet (wiki, manga, databooks, actualités) dans votre navigateur."
+    }
   }
 }

@@ -1507,5 +1507,67 @@
       "desktopText": "エディタは、モデルを同梱しオフラインで動く Shenron デスクトップアプリで開きます。翻訳した原稿はその後、工房に加わります。",
       "workshopLink": "翻訳の進捗を見る"
     }
+  },
+  "desktop": {
+    "meta": {
+      "title": "Shenron Studio",
+      "description": "パソコンで使う Shenron：ローカルのドラゴンボールモデルとのチャット、コーパス検索、漫画翻訳エディター、スタジオ。"
+    },
+    "title": "パソコンで使う Shenron",
+    "status": {
+      "connecting": "ローカルサーバーに接続しています…",
+      "offline": "Shenron のローカルサーバーが応答しません（デスクトップアプリが必要です）。",
+      "summary": "ローカルサーバー {version} · プロファイル {profile} · ローカル検索 {rag}",
+      "ragOn": "利用可能",
+      "ragOff": "利用不可"
+    },
+    "chat": {
+      "title": "チャット",
+      "newConversation": "新しいチャット",
+      "conversations": "チャット一覧",
+      "noConversations": "保存されたチャットはまだありません。",
+      "historyUnavailable": "このサーバーではチャット履歴を利用できません。",
+      "untitled": "無題のチャット",
+      "welcomeTitle": "Shenron に聞く",
+      "welcomeBody": "ドラゴンボールについて質問してください。ローカルモデルが漫画・データブック・Wiki を引用して答えます。チャットはこのパソコンに保存されます。",
+      "placeholder": "ドラゴンボールについての質問…",
+      "you": "あなた",
+      "assistant": "Shenron",
+      "thinking": "Shenron が考えています…",
+      "sources": "出典",
+      "openSource": "出典を開く",
+      "checking": "ローカルモデルを確認しています…",
+      "unavailableTitle": "モデルを利用できません",
+      "unavailableBody": "このサーバーにはチャットモデルが読み込まれていません。管理画面でローカルモデルを設定し、アプリを再起動してください。",
+      "truncated": "回答が途中で切れました（最大長に達しました）。",
+      "stopped": "回答を中断しました。",
+      "dismiss": "閉じる",
+      "errors": {
+        "unavailable": "このサーバーはチャットに対応していません。",
+        "http": "サーバーがリクエストを拒否しました。",
+        "error": "生成に失敗しました。",
+        "aborted": "生成を中断しました。",
+        "unreachable": "ローカルサーバーが応答しなくなりました。"
+      }
+    },
+    "search": {
+      "title": "ドラゴンボールコーパスを検索（オフライン）",
+      "label": "質問またはキーワード",
+      "placeholder": "例：かめはめ波、フリーザ、大全集 2",
+      "submit": "検索",
+      "searching": "検索中…",
+      "unavailable": "ローカル検索を利用できません：{reason}",
+      "failed": "検索に失敗しました：{reason}",
+      "count": "{count, plural, =0 {該当なし} other {# 件}}",
+      "took": "{count, plural, =0 {該当なし} other {# 件}}（{ms} ms）"
+    },
+    "tools": {
+      "label": "ツール",
+      "studioTitle": "漫画翻訳エディター",
+      "studioText": "ページの検出・OCR・翻訳・クリーニング・PSD 書き出し（Shenron Studio）。",
+      "controlTitle": "管理画面",
+      "controlText": "サービスの状態、コーパス、ローカルモデル、学習。",
+      "siteText": "公開サイトのすべて（Wiki・漫画・データブック・ニュース）をブラウザーで。"
+    }
   }
 }

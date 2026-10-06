@@ -56,6 +56,9 @@
     "./studio/*": "./src/studio/*.tsx",
     "./external": "./src/external/index.ts",
     "./external/open-external": "./src/external/open-external.ts",
+    "./chat": "./src/chat/index.ts",
+    "./chat/model": "./src/chat/model.ts",
+    "./chat.css": "./src/chat/chat.css",
     "./*": "./src/components/*.tsx"
   },
   "scripts": {
@@ -70,9 +73,11 @@
   },
   "dependencies": {
     "@aphrody/api": "3.0.0-alpha.2",
+    "@aphrody/m3-ai": "3.3.4",
     "@aphrody/m3-primitives": "3.3.4",
     "@aphrody/m3-reader": "3.3.4",
     "@aphrody/m3-theme": "3.3.4",
+    "@aphrody/m3-tokens": "3.3.4",
     "@aphrody/plugin-opener": "3.0.0-alpha.2",
     "@base-ui/react": "catalog:",
     "@shenron/config": "workspace:*",
@@ -167,6 +172,9 @@
       "./studio/*": "react",
       "./external": "react",
       "./external/open-external": "pure",
+      "./chat": "react",
+      "./chat/model": "pure",
+      "./chat.css": "css",
       "./*": "react"
     }
   }
