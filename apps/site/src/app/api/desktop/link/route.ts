@@ -28,10 +28,12 @@ export async function GET(request: Request) {
   const me = await getSessionUser();
   if (!me?.discordId) {
     const back = `${DESKTOP_LINK.sitePath}?state=${state}&port=${port}`;
-    return NextResponse.redirect(
-      new URL(`/signin?callbackURL=${encodeURIComponent(back)}`, request.url),
-      { status: 302, headers: noStore },
-    );
+    // Relative Location: behind nginx, `request.url` carries the internal origin
+    // (`https://localhost:5011`), not the public host (same fix as /wiki/random).
+    return new Response(null, {
+      status: 302,
+      headers: { ...noStore, location: `/signin?callbackURL=${encodeURIComponent(back)}` },
+    });
   }
   const locale = /(?:^|;\s*)NEXT_LOCALE=([^;]+)/.exec(request.headers.get("cookie") ?? "")?.[1];
   const code = signDesktopLink(
