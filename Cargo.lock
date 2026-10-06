@@ -9328,19 +9328,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "shenron-gpu"
-version = "1.3.0"
-dependencies = [
- "log",
- "pollster 1.0.1",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "vello",
- "wgpu",
-]
-
-[[package]]
 name = "shenron-lexicon"
 version = "1.3.0"
 dependencies = [
