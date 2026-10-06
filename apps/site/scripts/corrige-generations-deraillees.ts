@@ -88,8 +88,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
     .catch(() => "");
   const local = contenu
     .split("\n")
-    .filter((l) => l.startsWith(`${cle}=`))
-    .pop()
+    .findLast((l) => l.startsWith(`${cle}=`))
     ?.slice(cle.length + 1)
     .replace(/^"|"$/g, "")
     .trim();
@@ -100,8 +99,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
       .catch(() => "");
     return distant
       .split("\n")
-      .filter((l) => l.startsWith("REMOTE_DATABASE_URL="))
-      .pop()
+      .findLast((l) => l.startsWith("REMOTE_DATABASE_URL="))
       ?.slice("REMOTE_DATABASE_URL=".length)
       .replace(/^"|"$/g, "")
       .trim();

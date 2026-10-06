@@ -77,8 +77,7 @@ const XV2 =
 // dernière évite de lire une base décommissionnée.
 const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
   .split("\n")
-  .filter((l) => l.startsWith("DATABASE_URL="))
-  .pop()
+  .findLast((l) => l.startsWith("DATABASE_URL="))
   ?.slice("DATABASE_URL=".length)
   .replace(/^"|"$/g, "")
   .trim();

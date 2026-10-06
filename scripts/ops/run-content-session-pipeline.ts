@@ -31,8 +31,7 @@ async function databaseUrl(): Promise<string> {
     const content = await readFile(path, "utf8").catch(() => "");
     const value = content
       .split("\n")
-      .filter((line) => line.startsWith("DATABASE_URL="))
-      .at(-1)
+      .findLast((line) => line.startsWith("DATABASE_URL="))
       ?.slice("DATABASE_URL=".length)
       .trim()
       .replace(/^['"]|['"]$/g, "");
@@ -62,7 +61,7 @@ async function run(name: string, argv: string[]): Promise<void> {
     new Response(proc.stderr).text(),
   ]);
   const code = await proc.exited;
-  const detail = `${stdout}\n${stderr}`.trim().split("\n").filter(Boolean).at(-1) || `exit ${code}`;
+  const detail = `${stdout}\n${stderr}`.trim().split("\n").findLast(Boolean) || `exit ${code}`;
   steps.push({
     name,
     status: code === 0 ? "ok" : "failed",

@@ -58,8 +58,7 @@ export async function connect(): Promise<Sql> {
     // `.env` carries two DATABASE_URL lines (the dead Neon one first): take the last.
     url = text
       .split("\n")
-      .filter((l) => l.startsWith("DATABASE_URL="))
-      .pop()
+      .findLast((l) => l.startsWith("DATABASE_URL="))
       ?.slice("DATABASE_URL=".length)
       .trim()
       .replace(/^["']|["']$/g, "");

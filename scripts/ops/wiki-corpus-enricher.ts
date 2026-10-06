@@ -217,10 +217,7 @@ async function databaseUrl(): Promise<string> {
   const siteEnv = await Bun.file(join(import.meta.dir, "../../apps/site/.env"))
     .text()
     .catch(() => "");
-  const line = siteEnv
-    .split("\n")
-    .filter((value) => value.startsWith("DATABASE_URL="))
-    .at(-1);
+  const line = siteEnv.split("\n").findLast((value) => value.startsWith("DATABASE_URL="));
   const url = line
     ?.slice("DATABASE_URL=".length)
     .trim()

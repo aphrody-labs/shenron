@@ -382,10 +382,7 @@ async function databaseUrl(): Promise<string> {
     .text()
     .catch(() => "");
   // The file carries TWO DATABASE_URL lines (old Neon first): take the LAST one.
-  const line = text
-    .split("\n")
-    .filter((l) => l.startsWith("DATABASE_URL="))
-    .at(-1);
+  const line = text.split("\n").findLast((l) => l.startsWith("DATABASE_URL="));
   const value = line
     ?.slice("DATABASE_URL=".length)
     .trim()

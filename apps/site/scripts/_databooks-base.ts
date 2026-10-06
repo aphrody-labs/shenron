@@ -118,10 +118,7 @@ export async function jetonApi(): Promise<string> {
     .text()
     .catch(() => "");
   for (const nom of ["DATABOOKS_API_TOKEN", "SHENRON_ADMIN_TOKEN"]) {
-    const ligne = texte
-      .split("\n")
-      .filter((l) => l.startsWith(`${nom}=`))
-      .pop();
+    const ligne = texte.split("\n").findLast((l) => l.startsWith(`${nom}=`));
     const valeur = ligne
       ?.slice(nom.length + 1)
       .trim()

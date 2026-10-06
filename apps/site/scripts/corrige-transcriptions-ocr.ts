@@ -81,8 +81,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
       const contenu = await f.text();
       const val = contenu
         .split("\n")
-        .filter((l) => l.startsWith(`${cle}=`))
-        .pop()
+        .findLast((l) => l.startsWith(`${cle}=`))
         ?.slice(cle.length + 1)
         .replace(/^["']|["']$/g, "")
         .trim();

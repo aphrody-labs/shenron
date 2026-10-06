@@ -38,8 +38,7 @@ function noyau(nom: string): string {
 
 const url = (await Bun.file(`${import.meta.dir}/../.env`).text())
   .split("\n")
-  .filter((l) => l.startsWith("DATABASE_URL="))
-  .pop()
+  .findLast((l) => l.startsWith("DATABASE_URL="))
   ?.slice("DATABASE_URL=".length)
   .replace(/^["']|["']$/g, "");
 if (!url) throw new Error("DATABASE_URL introuvable dans apps/site/.env");

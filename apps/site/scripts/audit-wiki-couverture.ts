@@ -20,8 +20,7 @@ async function urlBase(): Promise<string> {
       .catch(() => "");
     return text
       .split("\n")
-      .filter((line) => line.startsWith(`${key}=`))
-      .at(-1)
+      .findLast((line) => line.startsWith(`${key}=`))
       ?.slice(key.length + 1)
       .trim()
       .replace(/^["']|["']$/g, "");

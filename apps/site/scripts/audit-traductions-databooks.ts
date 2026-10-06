@@ -238,11 +238,10 @@ try {
       // Dernière traduction antérieure d'un traducteur fiable, différente et saine.
       const anterieure = (historique.get(cle) ?? [])
         .filter((h) => h.valeur !== l.fr && FIABLES.test(h.editeur))
-        .filter(
+        .findLast(
           (h) =>
             auditerPlanche({ fr: h.valeur, src: srcDe.get(cle) ?? "" }, index).niveau === "sain",
-        )
-        .at(-1);
+        );
       const signature = anterieure
         ? (/\(([^)]+)\)/.exec(anterieure.editeur)?.[1] ?? "relecture")
         : null;

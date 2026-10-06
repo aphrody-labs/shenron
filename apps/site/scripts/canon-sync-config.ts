@@ -15,8 +15,7 @@ async function urlBase(): Promise<string> {
     .catch(() => "");
   const valeur = texte
     .split("\n")
-    .filter((l) => l.startsWith("DATABASE_URL="))
-    .at(-1)
+    .findLast((l) => l.startsWith("DATABASE_URL="))
     ?.slice("DATABASE_URL=".length)
     .trim()
     .replace(/^["']|["']$/g, "");

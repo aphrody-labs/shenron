@@ -16,10 +16,7 @@ if (!process.env.DATABASE_URL) {
     const envPath = join(import.meta.dir, "..", ".env");
     if (existsSync(envPath)) {
       const text = readFileSync(envPath, "utf-8");
-      const line = text
-        .split("\n")
-        .filter((l) => l.startsWith("DATABASE_URL="))
-        .at(-1);
+      const line = text.split("\n").findLast((l) => l.startsWith("DATABASE_URL="));
       if (line) {
         process.env.DATABASE_URL = line
           .slice("DATABASE_URL=".length)

@@ -61,10 +61,7 @@ async function urlBase(): Promise<string> {
   const texte = await Bun.file(join(import.meta.dir, "..", ".env"))
     .text()
     .catch(() => "");
-  const ligne = texte
-    .split("\n")
-    .filter((l) => l.startsWith("DATABASE_URL="))
-    .pop();
+  const ligne = texte.split("\n").findLast((l) => l.startsWith("DATABASE_URL="));
   const valeur = ligne
     ?.slice("DATABASE_URL=".length)
     .trim()

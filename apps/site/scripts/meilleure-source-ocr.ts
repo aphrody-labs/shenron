@@ -50,10 +50,7 @@ async function urlBase(): Promise<string> {
     .catch(() => "");
   // La DERNIÈRE ligne active gagne : `apps/site/.env` garde l'URL Neon
   // d'avant la migration, plus haut dans le fichier.
-  const ligne = texte
-    .split("\n")
-    .filter((l) => l.startsWith("DATABASE_URL="))
-    .pop();
+  const ligne = texte.split("\n").findLast((l) => l.startsWith("DATABASE_URL="));
   const valeur = ligne
     ?.slice("DATABASE_URL=".length)
     .trim()

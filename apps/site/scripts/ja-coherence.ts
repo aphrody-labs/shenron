@@ -67,8 +67,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
   const contenu = await Bun.file(new URL("../.env", import.meta.url)).text();
   return contenu
     .split("\n")
-    .filter((l) => l.startsWith(`${cle}=`))
-    .pop() // dernière ligne qui matche : la ligne Neon commentée précède la locale
+    .findLast((l) => l.startsWith(`${cle}=`)) // dernière ligne qui matche : la ligne Neon commentée précède la locale
     ?.slice(cle.length + 1)
     .replace(/^"|"$/g, "")
     .trim();

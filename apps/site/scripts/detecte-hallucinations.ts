@@ -735,8 +735,7 @@ async function readEnvValue(file: string, key: string): Promise<string | undefin
     .catch(() => "");
   return text
     .split("\n")
-    .filter((line) => line.trim().startsWith(`${key}=`))
-    .at(-1)
+    .findLast((line) => line.trim().startsWith(`${key}=`))
     ?.slice(key.length + 1)
     .trim()
     .replace(/^["']|["']$/g, "");

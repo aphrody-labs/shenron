@@ -28,8 +28,7 @@ async function databaseUrl(): Promise<string> {
     .catch(() => "");
   const value = text
     .split("\n")
-    .filter((l) => l.startsWith("DATABASE_URL="))
-    .at(-1)
+    .findLast((l) => l.startsWith("DATABASE_URL="))
     ?.slice("DATABASE_URL=".length)
     .trim()
     .replace(/^["']|["']$/g, "");

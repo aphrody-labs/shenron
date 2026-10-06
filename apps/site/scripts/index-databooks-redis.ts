@@ -26,8 +26,7 @@ async function getDatabaseUrl(): Promise<string> {
   const text = await envFile.text().catch(() => "");
   const valeur = text
     .split(/\r?\n/)
-    .filter((l) => l.startsWith("DATABASE_URL="))
-    .at(-1)
+    .findLast((l) => l.startsWith("DATABASE_URL="))
     ?.slice("DATABASE_URL=".length)
     .trim()
     .replace(/^["']|["']$/g, "");

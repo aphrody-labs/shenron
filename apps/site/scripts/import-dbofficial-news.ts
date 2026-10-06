@@ -24,8 +24,7 @@ async function databaseUrl(): Promise<string> {
   const content = await readFile(envPath, "utf8").catch(() => "");
   const value = content
     .split("\n")
-    .filter((line) => line.startsWith("DATABASE_URL="))
-    .at(-1)
+    .findLast((line) => line.startsWith("DATABASE_URL="))
     ?.slice("DATABASE_URL=".length)
     .trim()
     .replace(/^['"]|['"]$/g, "");

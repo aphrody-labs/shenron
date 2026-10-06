@@ -69,8 +69,7 @@ async function lireEnv(cle: string): Promise<string | undefined> {
   const contenu = await Bun.file(new URL("../.env", import.meta.url)).text();
   return contenu
     .split("\n")
-    .filter((l) => l.startsWith(cle + "="))
-    .pop()
+    .findLast((l) => l.startsWith(cle + "="))
     ?.slice(cle.length + 1)
     .replace(/^"|"$/g, "")
     .trim();

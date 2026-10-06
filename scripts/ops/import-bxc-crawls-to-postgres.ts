@@ -114,7 +114,7 @@ function extractMediaUrls(content: string | null): string[] {
 
 function mediaTitle(url: string): string {
   try {
-    const name = decodeURIComponent(new URL(url).pathname.split("/").filter(Boolean).at(-1) || url);
+    const name = decodeURIComponent(new URL(url).pathname.split("/").findLast(Boolean) || url);
     // Asset URLs lifted from raw HTML attributes carry `&amp;` into file names.
     return databaseText(decodeHtmlEntities(name)).slice(0, 1_000);
   } catch {
