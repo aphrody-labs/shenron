@@ -8,10 +8,18 @@
  *   bun packages/koharu/scripts/build-wasm.ts           # reconstruit si une entrée a changé
  *   bun packages/koharu/scripts/build-wasm.ts --force   # reconstruit sans consulter le tampon
  *   bun packages/koharu/scripts/build-wasm.ts --check   # code 1 si la sortie est absente ou périmée
+ *   bun packages/koharu/scripts/build-wasm.ts --module <koharu_canvas.wasm>
+ *       # module Cargo construit ailleurs (même arbre, même recette : profil en --config) :
+ *       # seuls wasm-bindgen et le tampon tournent ici
  *
- * Sortie : `packages/koharu/src/wasm/` (ignorée par Git), lue par `src/canvas.ts`. Le tampon
+ * Sortie : `packages/koharu/src/wasm/`, suivie par Git (2 Mio, lue par `src/canvas.ts`) : un
+ * arbre propre (CI Bun, worktree, build serveur, installeur) a le module sans Rust. Le tampon
  * `.build-stamp.json` y garde l'empreinte des entrées (sources de koharu-canvas et
- * koharu-rasterizer, manifestes, Cargo.lock, recette, rustc, wasm-bindgen) et des sorties.
+ * koharu-rasterizer, manifestes, Cargo.lock, recette, version de rustc indépendante de l'hôte,
+ * wasm-bindgen) et des sorties ; `rust.yml` refuse un module périmé (`--check`).
+ *
+ * Le Cargo passe par `scripts/build/rust/cargo-runner.ts` : sous WSL, il part sur le tunnel VPS
+ * d'Aphrody et le module revient dans `target/wasm` ; ailleurs, Cargo local.
  *
  * Outillage assuré sans root et de façon idempotente : cible `wasm32-unknown-unknown` (rustup)
  * et CLI `wasm-bindgen` de la version exacte de la crate dans Cargo.lock, installé au besoin par
@@ -31,7 +39,7 @@ export const GLUE_FILE = `${OUT_NAME}.js`;
 export const STAMP_FILE = ".build-stamp.json";
 const TARGET = "wasm32-unknown-unknown";
 const CRATE = "koharu-canvas";
-const SCHEMA = "shenron-koharu-wasm/v1";
+const SCHEMA = "shenron-koharu-wasm/v2";
 
 /** Profil release du seul build WASM : Cargo.toml (partagé) reste intact. */
 export const PROFILE: Readonly<Record<string, string>> = {
@@ -63,7 +71,7 @@ export const RECIPE = JSON.stringify({ schema: SCHEMA, target: TARGET, PROFILE, 
 export const INPUT_ROOTS = ["crates/koharu-canvas", "crates/koharu-rasterizer"] as const;
 
 export interface Toolchain {
-  /** Sortie de `rustc -vV`. */
+  /** Sortie de `rustc -V`. */
   rustc: string;
   /** Version de la crate wasm-bindgen verrouillée, égale à celle du CLI. */
   wasmBindgen: string;
@@ -255,10 +263,25 @@ function run(cmd: string[], env: Record<string, string> = {}, quiet = false): st
   return result.stdout.toString();
 }
 
+/** `rustc -V` : la version épinglée par rust-toolchain.toml, la même sur tout hôte. */
 function rustc(): string {
   if (!Bun.which("rustc") || !Bun.which("cargo"))
     throw new Error("Rust (rustc, cargo) introuvable : installer rustup (https://rustup.rs)");
-  return run(["rustc", "-vV"], {}, true).trim();
+  return run(["rustc", "-V"], {}, true).trim();
+}
+
+const CARGO_RUNNER = join(ROOT, "scripts", "build", "rust", "cargo-runner.ts");
+
+/** Le profil en `--config` : transmis tel quel au build distant (l'environnement ne l'est pas). */
+export function profileConfig(): string[] {
+  return Object.entries(PROFILE).flatMap(([name, value]) => {
+    const key = name
+      .replace(/^CARGO_PROFILE_RELEASE_/, "")
+      .toLowerCase()
+      .replaceAll("_", "-");
+    const literal = /^(true|false|\d+)$/.test(value) ? value : JSON.stringify(value);
+    return ["--config", `profile.release.${key}=${literal}`];
+  });
 }
 
 function ensureTarget(install: boolean): void {
@@ -318,15 +341,27 @@ export function formatBytes(bytes: number): string {
     : `${(bytes / 1024).toFixed(1)} Kio`;
 }
 
-async function build(toolchain: Toolchain, bindgen: string): Promise<Stamp> {
+async function build(
+  toolchain: Toolchain,
+  bindgen: string,
+  prebuilt: string | null,
+): Promise<Stamp> {
   const targetDir = join(ROOT, "target", "wasm");
   const inputs = await inputDigest(ROOT, toolchain);
+  const module = prebuilt ?? join(targetDir, TARGET, "release", `${OUT_NAME}.wasm`);
+  if (prebuilt) console.log(`▶ module Cargo fourni : ${prebuilt}`);
+  else cargoBuild(targetDir);
+  return bindgenInto(module, join(targetDir, "bindgen"), toolchain, bindgen, inputs);
+}
+
+function cargoBuild(targetDir: string): void {
   console.log(
     `▶ cargo build -p ${CRATE} --target ${TARGET} --release (${relative(ROOT, targetDir)})`,
   );
   run(
     [
-      "cargo",
+      process.execPath,
+      CARGO_RUNNER,
       "build",
       "-p",
       CRATE,
@@ -335,17 +370,22 @@ async function build(toolchain: Toolchain, bindgen: string): Promise<Stamp> {
       TARGET,
       "--release",
       "--locked",
-      "--target-dir",
-      targetDir,
+      ...profileConfig(),
     ],
-    { ...PROFILE, RUSTFLAGS: pathRemap() },
+    { CARGO_TARGET_DIR: targetDir, RUSTFLAGS: pathRemap() },
   );
-  const module = join(targetDir, TARGET, "release", `${OUT_NAME}.wasm`);
-  const staging = join(targetDir, "bindgen");
+}
+
+async function bindgenInto(
+  module: string,
+  staging: string,
+  toolchain: Toolchain,
+  bindgen: string,
+  inputs: string,
+): Promise<Stamp> {
   await rm(staging, { recursive: true, force: true });
   console.log(`▶ wasm-bindgen ${toolchain.wasmBindgen} --target web`);
   run([bindgen, module, "--out-dir", staging, ...BINDGEN_FLAGS]);
-  await Bun.write(join(staging, ".gitignore"), "*\n");
   const stamp = await writeStamp(staging, toolchain, inputs);
   await mkdir(join(OUT_DIR, ".."), { recursive: true });
   await rm(OUT_DIR, { recursive: true, force: true });
@@ -363,9 +403,17 @@ async function report(stamp: Stamp): Promise<void> {
 }
 
 export async function main(argv: string[]): Promise<number> {
-  const unknown = argv.filter((arg) => arg !== "--force" && arg !== "--check");
-  if (unknown.length || (argv.includes("--force") && argv.includes("--check"))) {
-    console.error("usage: build-wasm.ts [--force | --check]");
+  const moduleAt = argv.indexOf("--module");
+  const prebuilt = moduleAt >= 0 ? (argv[moduleAt + 1] ?? "") : null;
+  const flags = moduleAt >= 0 ? argv.toSpliced(moduleAt, 2) : argv;
+  const unknown = flags.filter((arg) => arg !== "--force" && arg !== "--check");
+  if (
+    unknown.length ||
+    prebuilt === "" ||
+    (argv.includes("--force") && argv.includes("--check")) ||
+    (prebuilt !== null && argv.includes("--check"))
+  ) {
+    console.error("usage: build-wasm.ts [--force | --check | --module <koharu_canvas.wasm>]");
     return 2;
   }
   const check = argv.includes("--check");
@@ -382,16 +430,16 @@ export async function main(argv: string[]): Promise<number> {
     console.error(`✗ WASM koharu-canvas ${status.reason} : ${status.detail}`);
     return 1;
   }
-  if (status.fresh && !argv.includes("--force")) {
+  if (status.fresh && !argv.includes("--force") && prebuilt === null) {
     console.log("✓ WASM koharu-canvas à jour : rien à reconstruire");
     await report(status.stamp);
     return 0;
   }
   if (!status.fresh) console.log(`▶ WASM koharu-canvas ${status.reason} : ${status.detail}`);
-  ensureTarget(true);
+  if (prebuilt === null) ensureTarget(true);
   const bindgen = ensureWasmBindgen(toolchain.wasmBindgen);
   const started = performance.now();
-  const stamp = await build(toolchain, bindgen);
+  const stamp = await build(toolchain, bindgen, prebuilt);
   await report(stamp);
   console.log(`✓ construit en ${((performance.now() - started) / 1000).toFixed(1)} s`);
   return 0;

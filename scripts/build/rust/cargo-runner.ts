@@ -57,6 +57,7 @@ export function artifactNames(
   pkg: Metadata["packages"][number],
   selection: { bins: readonly string[]; lib: boolean },
   windows: boolean,
+  wasm = false,
 ): string[] {
   const { bins, lib } = selection;
   const names: string[] = [];
@@ -65,7 +66,7 @@ export function artifactNames(
       names.push(`${t.name}${windows ? ".exe" : ""}`);
     if (t.kind.includes("cdylib") && (lib || bins.length === 0)) {
       const base = t.name.replaceAll("-", "_");
-      names.push(windows ? `${base}.dll` : `lib${base}.so`);
+      names.push(wasm ? `${base}.wasm` : windows ? `${base}.dll` : `lib${base}.so`);
     }
   }
   return names;
@@ -137,7 +138,7 @@ async function runRemote(): Promise<number> {
   const wanted = packages.flatMap((name) => {
     const pkg = meta.packages.find((p) => p.name === name);
     if (!pkg) throw new Error(`unknown package ${name}`);
-    return artifactNames(pkg, selection, windows);
+    return artifactNames(pkg, selection, windows, target.startsWith("wasm32"));
   });
   const config = (await Bun.file(join(aphrody, "config/host/vps-cargo.json")).json()) as VpsConfig;
   const stampFile = join(localDir, ".shenron-remote.json");

@@ -21,7 +21,7 @@ import { CANVAS_HANDLE_METHODS, preloadCanvasModule } from "../src/canvas.ts";
 const wasmPath = join(OUT_DIR, WASM_FILE);
 const gluePath = join(OUT_DIR, GLUE_FILE);
 const built = existsSync(wasmPath) && existsSync(gluePath);
-// CI sans Rust : la sortie de `bun run build:wasm` n'existe pas, les tests du module sautent.
+// Sortie suivie par Git (`bun run build:wasm`) : absente seulement en cours de reconstruction.
 const withWasm = test.skipIf(!built);
 
 interface Glue {

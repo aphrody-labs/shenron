@@ -1,0 +1,14 @@
+{
+  "schema": "shenron-koharu-wasm/v2",
+  "inputs": "05a18fa3879ad32dc079eb2f6739d5759aa8ba32775f5953d34231b983369e2e",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "wasmBindgen": "0.2.129",
+  "outputs": {
+    "koharu_canvas.d.ts": "a4f2d11467e69fa7d553a44f591ce5e154ebd16ad405ed29dfe7e23aa3413a68",
+    "koharu_canvas.js": "a2e2f6ce84527fe12d2e14ff217f3aa8460e193bdc437097bcc6effc7dd940fe",
+    "koharu_canvas_bg.wasm": "182f9e9afbb48081800f21529b1392b4d9e0488e6da3035d5cf4e571ff4c309f",
+    "koharu_canvas_bg.wasm.d.ts": "ab3a8aa86b659b26719a2e746db335fa3c3052a60ad87cfcfd9aa88cffdb5d8d"
+  },
+  "wasmBytes": 2023722,
+  "builtAt": "2026-10-06T17:39:39.574Z"
+}

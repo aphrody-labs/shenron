@@ -150,6 +150,11 @@ jobs:
       - name: koharu-canvas on wasm32 (cargo wasm)
         run: cargo wasm --locked
 
+      # The committed module (packages/koharu/src/wasm/) matches its sources, Cargo.lock and
+      # toolchain; rebuild it with `bun packages/koharu/scripts/build-wasm.ts` and commit it.
+      - name: Committed koharu-canvas WASM is up to date
+        run: bun packages/koharu/scripts/build-wasm.ts --check
+
       - name: Tests (nextest, ci profile)
         run: cargo nextest run --workspace --locked --profile ci
 
