@@ -484,7 +484,12 @@
   },
   "startup": {
     "description": "Loading local AI runtimes and preparing the workspace. First launch can take a moment.",
+    "errorFailed": "The editor engine is unavailable.",
+    "errorTimeout": "The editor engine is not responding.",
+    "errorTitle": "Shenron Studio could not start",
+    "logs": "Logs:",
     "opening": "Opening Shenron Studio…",
+    "retry": "Retry",
     "status": "Initializing local runtimes",
     "title": "Preparing Shenron Studio"
   },

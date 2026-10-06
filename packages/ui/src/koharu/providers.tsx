@@ -12,6 +12,7 @@ import { useSiteLocale } from "./lib/site-locale";
 import { pageKey, pagesKey, projectKey, queryClient, refresh } from "./lib/queries";
 import {
   receiveCanvas,
+  failStartup,
   receiveDownload,
   receiveStartupState,
   receiveJob,
@@ -30,6 +31,9 @@ import {
 import { Toaster } from "@aphrody/m3-primitives";
 import { TooltipProvider } from "@aphrody/m3-primitives";
 
+/** How long the editor waits for the engine's startup state before showing an error. */
+const STARTUP_TIMEOUT_MS = 30_000;
+
 /** `locale`: the site locale (`fr | en | ja`) the editor speaks; unset, it keeps its detected language. */
 export function Providers({ children, locale }: { children: ReactNode; locale?: string }) {
   useSiteLocale(locale);
@@ -47,6 +51,8 @@ export function Providers({ children, locale }: { children: ReactNode; locale?: 
         });
 
       void refreshTranslationModels().catch(() => undefined);
+      // Never wait forever on the engine: a missing or stuck engine becomes a visible error.
+      const watchdog = setTimeout(() => failStartup("timeout"), STARTUP_TIMEOUT_MS);
 
       void commands
         .subscribe(
@@ -78,10 +84,15 @@ export function Providers({ children, locale }: { children: ReactNode; locale?: 
           }),
         )
         .then((state) => {
+          clearTimeout(watchdog);
           if (lifecycle.active) receiveStartupState(state);
           return undefined;
         })
-        .catch(() => undefined);
+        .catch((error: unknown) => {
+          clearTimeout(watchdog);
+          console.error("Shenron Studio engine unavailable", error);
+          failStartup(error instanceof Error ? error.message : String(error));
+        });
     }
 
     return () => {

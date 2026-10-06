@@ -351,7 +351,7 @@ mod reqwest_lite {
         }
 
         async fn get_status(&self, url: &str) -> Option<u16> {
-            let Some(rest) = url.strip_prefix("http://") else { return None };
+            let rest = url.strip_prefix("http://")?;
             let (authority, path) =
                 rest.split_once('/').map_or((rest, "/".to_owned()), |(a, p)| (a, format!("/{p}")));
             let Ok(Ok(mut stream)) = tokio::time::timeout(

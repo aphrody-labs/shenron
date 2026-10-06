@@ -39,6 +39,8 @@ export const pipelineStages: readonly Stage[] = ["detection", "ocr", "translatio
 
 interface KoharuStore {
   initialized: boolean;
+  /** Why the engine never delivered its startup state (failure or timeout); `null` while waiting. */
+  startupError: string | null;
   preferences: Preferences | null;
   translationModels: Model[];
   resources: ModelResources | null;
@@ -87,6 +89,7 @@ export const defaultShortcuts: Shortcuts = {
 
 export const useKoharuStore = create<KoharuStore>()((set) => ({
   initialized: false,
+  startupError: null,
   preferences: null,
   translationModels: [],
   resources: null,
@@ -135,9 +138,15 @@ export const useKoharuStore = create<KoharuStore>()((set) => ({
     }),
 }));
 
+/** The engine failed (or never answered): the startup view turns into an error with a retry. */
+export function failStartup(reason: string): void {
+  if (!useKoharuStore.getState().initialized) useKoharuStore.setState({ startupError: reason });
+}
+
 export function receiveStartupState(state: StartupState): void {
   useKoharuStore.setState({
     initialized: true,
+    startupError: null,
     preferences: state.preferences,
     jobs: byId(state.jobs),
     ...canvasSnapshot(state.canvas),

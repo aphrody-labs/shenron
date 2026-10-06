@@ -3,11 +3,22 @@
 import { LoaderCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { useKoharuStore } from "../../lib/store";
 import { useMacOS, WindowControls } from "./WindowChrome";
+
+/** Where the desktop app writes its logs (tauri-plugin-log, app log dir). */
+function logDir(): string {
+  const id = "com.dragonballfr.shenron";
+  const ua = typeof navigator === "undefined" ? "" : navigator.userAgent;
+  if (ua.includes("Windows")) return `%LOCALAPPDATA%\\${id}\\logs`;
+  if (ua.includes("Mac")) return `~/Library/Logs/${id}`;
+  return `~/.local/share/${id}/logs`;
+}
 
 export function StartupView() {
   const { t } = useTranslation();
   const macOS = useMacOS();
+  const error = useKoharuStore((state) => state.startupError);
 
   return (
     <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-[var(--surface-titlebar)] text-foreground">
@@ -42,24 +53,55 @@ export function StartupView() {
           aria-live="polite"
           aria-labelledby="startup-title"
         >
-          <LoaderCircle
-            className="startup-spinner mx-auto size-11 text-primary"
-            aria-hidden="true"
-          />
-          <h1
-            id="startup-title"
-            className="mt-5 text-[24px] font-semibold tracking-[-0.025em] text-balance"
-          >
-            {t("startup.title")}
-          </h1>
-          <p className="mx-auto mt-2 max-w-[48ch] text-[13px] leading-5 text-muted-foreground">
-            {t("startup.description")}
-          </p>
+          {error ? (
+            <>
+              <h1
+                id="startup-title"
+                className="mt-5 text-[24px] font-semibold tracking-[-0.025em] text-balance"
+              >
+                {t("startup.errorTitle")}
+              </h1>
+              <p className="mx-auto mt-2 max-w-[48ch] text-[13px] leading-5 text-muted-foreground">
+                {error === "timeout" ? t("startup.errorTimeout") : t("startup.errorFailed")}
+              </p>
+              {error !== "timeout" && (
+                <pre className="mx-auto mt-3 max-w-[56ch] overflow-auto text-left text-[11px] text-muted-foreground whitespace-pre-wrap">
+                  {error}
+                </pre>
+              )}
+              <p className="mx-auto mt-3 text-[12px] text-muted-foreground">
+                {t("startup.logs")} <code>{logDir()}</code>
+              </p>
+              <button
+                type="button"
+                className="mt-6 rounded-md bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground"
+                onClick={() => window.location.reload()}
+              >
+                {t("startup.retry")}
+              </button>
+            </>
+          ) : (
+            <>
+              <LoaderCircle
+                className="startup-spinner mx-auto size-11 text-primary"
+                aria-hidden="true"
+              />
+              <h1
+                id="startup-title"
+                className="mt-5 text-[24px] font-semibold tracking-[-0.025em] text-balance"
+              >
+                {t("startup.title")}
+              </h1>
+              <p className="mx-auto mt-2 max-w-[48ch] text-[13px] leading-5 text-muted-foreground">
+                {t("startup.description")}
+              </p>
 
-          <div className="mx-auto mt-7 flex max-w-[480px] items-center justify-center gap-2.5 border-t border-border/80 pt-4 text-[12px] font-medium text-muted-foreground">
-            <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
-            {t("startup.status")}
-          </div>
+              <div className="mx-auto mt-7 flex max-w-[480px] items-center justify-center gap-2.5 border-t border-border/80 pt-4 text-[12px] font-medium text-muted-foreground">
+                <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
+                {t("startup.status")}
+              </div>
+            </>
+          )}
         </section>
       </main>
     </div>

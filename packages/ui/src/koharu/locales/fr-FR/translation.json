@@ -484,7 +484,12 @@
   },
   "startup": {
     "description": "Chargement des moteurs d’IA locaux et préparation de l’espace de travail. Le premier lancement peut prendre un moment.",
+    "errorFailed": "Le moteur de l’éditeur est indisponible.",
+    "errorTimeout": "Le moteur de l’éditeur ne répond pas.",
+    "errorTitle": "Shenron Studio n’a pas pu démarrer",
+    "logs": "Journaux :",
     "opening": "Ouverture de Shenron Studio…",
+    "retry": "Réessayer",
     "status": "Initialisation des moteurs locaux",
     "title": "Préparation de Shenron Studio"
   },

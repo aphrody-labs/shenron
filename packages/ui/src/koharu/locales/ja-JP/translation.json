@@ -484,7 +484,12 @@
   },
   "startup": {
     "description": "ローカル AI ランタイムを読み込み、ワークスペースを準備しています。初回起動には少し時間がかかる場合があります。",
+    "errorFailed": "エディターエンジンを利用できません。",
+    "errorTimeout": "エディターエンジンが応答しません。",
+    "errorTitle": "Shenron Studio を起動できませんでした",
+    "logs": "ログ：",
     "opening": "Shenron Studioを起動中…",
+    "retry": "再試行",
     "status": "ローカルランタイムを初期化しています",
     "title": "Shenron Studio を準備しています"
   },
