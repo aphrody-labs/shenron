@@ -1650,6 +1650,26 @@
       "importFailed": "Import failed",
       "progressKnown": "{received} of {total}",
       "progressUnknown": "{received} received"
+    },
+    "download": {
+      "title": "Download Shenron Studio",
+      "subtitle": "The desktop app for Windows: Shenron and its Dragon Ball model, on your computer.",
+      "button": "Download Shenron Studio",
+      "meta": "{name} · {size} MB · Windows 10 and 11 (64-bit)",
+      "checksum": "SHA-256 fingerprint:",
+      "help": {
+        "title": "Install in three steps",
+        "step1": "Open the downloaded file (double-click): it installs for you only, without administrator rights.",
+        "step2": "Start Shenron Studio from the Start menu or the desktop shortcut.",
+        "step3": "On first launch, let the app download its models (about 6 GB): the chat is ready afterwards."
+      },
+      "smartscreen": {
+        "title": "If Windows shows “Windows protected your PC”",
+        "why": "The installer is not signed yet: Windows SmartScreen flags it, which is expected.",
+        "step1": "Click “More info”.",
+        "step2": "Then “Run anyway”.",
+        "alt": "SmartScreen window: the “More info” link, then the “Run anyway” button."
+      }
     }
   }
 }

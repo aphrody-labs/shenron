@@ -1650,6 +1650,26 @@
       "importFailed": "取り込みに失敗しました",
       "progressKnown": "{received} / {total}",
       "progressUnknown": "{received} 受信"
+    },
+    "download": {
+      "title": "Shenron Studio をダウンロード",
+      "subtitle": "Windows 用デスクトップアプリ：神龍とドラゴンボールのモデルをあなたのパソコンで。",
+      "button": "Shenron Studio をダウンロード",
+      "meta": "{name} · {size} MB · Windows 10・11（64 ビット）",
+      "checksum": "SHA-256 フィンガープリント：",
+      "help": {
+        "title": "3 ステップでインストール",
+        "step1": "ダウンロードしたファイルを開きます（ダブルクリック）。管理者権限なしで、あなたのアカウントだけにインストールされます。",
+        "step2": "スタートメニューまたはデスクトップのショートカットから Shenron Studio を起動します。",
+        "step3": "初回起動時はモデル（約 6 GB）のダウンロードを待ってください。その後チャットが使えます。"
+      },
+      "smartscreen": {
+        "title": "「Windows によって PC が保護されました」と表示された場合",
+        "why": "インストーラーはまだ署名されていないため、Windows SmartScreen が警告します。想定どおりです。",
+        "step1": "「詳細情報」をクリックします。",
+        "step2": "続いて「実行」をクリックします。",
+        "alt": "SmartScreen の画面：「詳細情報」リンク、続いて「実行」ボタン。"
+      }
     }
   }
 }

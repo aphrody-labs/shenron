@@ -2,7 +2,7 @@
  * Admin-only downloads (`@/lib/private-downloads`): guard, index from SHA256SUMS, Range.
  */
 import { afterAll, beforeAll, describe, expect, mock, test } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -105,6 +105,19 @@ describe("private downloads", () => {
       "studio.exe",
     );
     expect(anonymous.status).toBe(404);
+  });
+
+  test("the download page sees the installer only for an admin", async () => {
+    const { studioInstallerFor, STUDIO_INSTALLER } = await lib();
+    await writeFile(join(dir, STUDIO_INSTALLER), "MZ");
+    await appendFile(join(dir, "SHA256SUMS"), `${"d".repeat(64)}  ${STUDIO_INSTALLER}\n`);
+    expect(await studioInstallerFor(new Headers())).toBeNull();
+    expect(await studioInstallerFor(new Headers({ "x-real-ip": "203.0.113.7" }))).toEqual({
+      name: STUDIO_INSTALLER,
+      size: 2,
+      sha256: "d".repeat(64),
+      url: `/api/private-downloads/${STUDIO_INSTALLER}`,
+    });
   });
 
   test("Range resumes a download", async () => {

@@ -166,3 +166,22 @@ export async function servePrivateDownload(request: Request, name: string): Prom
     headers,
   });
 }
+
+/** File name of the Shenron Studio installer in the private downloads. */
+export const STUDIO_INSTALLER = "Shenron-Studio-Setup.exe";
+
+/** The installer entry for a request allowed to see it, else `null` (page `/desktop/download`). */
+export async function studioInstallerFor(headers: Headers): Promise<PrivateDownload | null> {
+  if (!hasValidApiToken(new Request("https://dragonballfr.com/", { headers }))) return null;
+  const dir = privateDownloadsDir().path;
+  const sha256 = (await readSums(dir)).get(STUDIO_INSTALLER);
+  if (!sha256) return null;
+  const info = await stat(join(dir, STUDIO_INSTALLER)).catch(() => null);
+  if (!info?.isFile()) return null;
+  return {
+    name: STUDIO_INSTALLER,
+    size: info.size,
+    sha256,
+    url: `/api/private-downloads/${STUDIO_INSTALLER}`,
+  };
+}
