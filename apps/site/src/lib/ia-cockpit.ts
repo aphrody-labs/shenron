@@ -273,7 +273,7 @@ export function summarizeAphrodyRagStats(stats: {
     vectorsStored: stats.vectorsStored ?? null,
     sources: stats.sources.length,
     kinds: [...byKind]
-      .map(([kind, entry]) => ({ kind, ...entry }))
+      .map(([kind, entry]) => Object.assign({ kind }, entry))
       .toSorted((a, b) => b.count - a.count),
   };
 }

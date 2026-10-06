@@ -66,7 +66,7 @@ export function masquerVocabulaire(
     masque = r.text;
     for (const t of r.tokens) jetons.set(t.token, asLegacy(t.entry.value));
   }
-  const termesTrouves = [...jetons].map(([token, e]) => ({ token, ...e }));
+  const termesTrouves = [...jetons].map(([token, e]) => Object.assign({ token }, e));
   return { texteMasque: masque, termesTrouves, tokenMap: jetons };
 }
 

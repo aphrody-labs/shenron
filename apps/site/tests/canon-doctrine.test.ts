@@ -285,7 +285,7 @@ describe("identifiants et mots-clés", () => {
   test("une citation retirée par l'éditeur ne sort plus comme preuve", () => {
     const config = resolveCanonConfig({
       ...DEFAULT_CANON_CONFIG,
-      references: CORPUS.map((r) => ({ ...r, visible: false })),
+      references: CORPUS.map((r) => Object.assign({}, r, { visible: false })),
     });
     expect(referencesPour("pourquoi piccolo ?", config)).toHaveLength(0);
   });

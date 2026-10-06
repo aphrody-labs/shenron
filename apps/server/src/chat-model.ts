@@ -248,17 +248,24 @@ export function routerConfig(slots: readonly Slot[], ctx: number): unknown {
   return {
     models: slots
       .filter((slot) => slot.model)
-      .map((slot) => ({
-        backend: "llama",
-        id: slot.id,
-        model: slot.model!.spec,
-        ...(slot.model!.sha256 ? { sha256: slot.model!.sha256 } : {}),
-        lora: slot.lora
-          ? [{ spec: slot.lora.spec, ...(slot.lora.sha256 ? { sha256: slot.lora.sha256 } : {}) }]
-          : [],
-        ctx,
-        ...(slot.extraArgs?.length ? { extra_args: slot.extraArgs } : {}),
-      })),
+      .map((slot) =>
+        Object.assign(
+          { backend: "llama", id: slot.id, model: slot.model!.spec },
+          slot.model!.sha256 ? { sha256: slot.model!.sha256 } : {},
+          {
+            lora: slot.lora
+              ? [
+                  {
+                    spec: slot.lora.spec,
+                    ...(slot.lora.sha256 ? { sha256: slot.lora.sha256 } : {}),
+                  },
+                ]
+              : [],
+            ctx,
+          },
+          slot.extraArgs?.length ? { extra_args: slot.extraArgs } : {},
+        ),
+      ),
   };
 }
 

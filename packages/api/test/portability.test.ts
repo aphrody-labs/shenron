@@ -57,7 +57,7 @@ function bareImports(key: string): { file: string; specifier: string; typeOnly: 
   return closure(key).flatMap((file) =>
     importSpecifiers(readFileSync(file, "utf8"))
       .filter(({ specifier }) => !specifier.startsWith("."))
-      .map((ref) => ({ file: relative(PKG_DIR, file), ...ref })),
+      .map((ref) => Object.assign({ file: relative(PKG_DIR, file) }, ref)),
   );
 }
 

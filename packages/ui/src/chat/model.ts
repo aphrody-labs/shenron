@@ -288,11 +288,10 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         )
         .map((m) =>
           m.pending
-            ? {
-                ...m,
+            ? Object.assign({}, m, {
                 pending: false,
                 finishReason: failed?.kind === "aborted" ? "aborted" : "error",
-              }
+              })
             : m,
         ) as ChatMessageView[];
       return {

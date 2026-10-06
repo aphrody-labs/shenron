@@ -134,7 +134,7 @@ if (flag("ids")) {
         tomes: [...parTome]
           .filter(([, t]) => t.fautives > 0)
           .toSorted((a, b) => b[1].fautives - a[1].fautives)
-          .map(([tome, t]) => ({ tome, ...t })),
+          .map(([tome, t]) => Object.assign({ tome }, t)),
       },
       null,
       2,

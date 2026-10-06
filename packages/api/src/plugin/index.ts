@@ -372,10 +372,10 @@ export function pluginIndex(bundle: PluginBundle, origin: string) {
     },
     skills: bundle.entries
       .filter((e) => e.kind === "skill")
-      .map((e) => ({ ...e, url: urls.file(e.path) })),
+      .map((e) => Object.assign({}, e, { url: urls.file(e.path) })),
     agents: bundle.entries
       .filter((e) => e.kind === "agent")
-      .map((e) => ({ ...e, url: urls.file(e.path) })),
+      .map((e) => Object.assign({}, e, { url: urls.file(e.path) })),
     files: bundle.files.map((f) => ({
       path: f.path,
       bytes: f.bytes,

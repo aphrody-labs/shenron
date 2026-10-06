@@ -116,10 +116,11 @@ const columns: DataTableColumn[] = [
     mobile: "actions",
   },
 ];
-const withActions = rows.map((row) => ({
-  ...row,
-  cells: { ...row.cells, actions: <button type="button">Modifier</button> },
-}));
+const withActions = rows.map((row) =>
+  Object.assign({}, row, {
+    cells: { ...row.cells, actions: <button type="button">Modifier</button> },
+  }),
+);
 
 describe("DataTable : une seule structure, cartes sur mobile, tableau dense sur desktop", () => {
   const html = renderToStaticMarkup(

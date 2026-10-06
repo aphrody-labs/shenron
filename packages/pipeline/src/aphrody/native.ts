@@ -162,10 +162,11 @@ export class AphrodyNativeClient {
     const scores = ranked.map((row) => row.score);
     const min = Math.min(...scores);
     const max = Math.max(...scores);
-    return ranked.map((row) => ({
-      ...row,
-      score: max > min ? 0.4 + (0.6 * (row.score - min)) / (max - min) : 1,
-    }));
+    return ranked.map((row) =>
+      Object.assign({}, row, {
+        score: max > min ? 0.4 + (0.6 * (row.score - min)) / (max - min) : 1,
+      }),
+    );
   }
 
   /** Fetch RAG index corpus statistics (normalised by the library). */
@@ -180,12 +181,12 @@ export class AphrodyNativeClient {
       chunks: stats.chunks,
       vectors: stats.vectors,
       ...(stats.vectorsStored === null ? {} : { vectorsStored: stats.vectorsStored }),
-      sources: stats.sources.map((source) => ({
-        sourceId: source.sourceId,
-        kind: source.kind,
-        count: source.count,
-        ...(source.vectors === null ? {} : { vectors: source.vectors }),
-      })),
+      sources: stats.sources.map((source) =>
+        Object.assign(
+          { sourceId: source.sourceId, kind: source.kind, count: source.count },
+          source.vectors === null ? {} : { vectors: source.vectors },
+        ),
+      ),
     };
   }
 

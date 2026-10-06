@@ -187,7 +187,7 @@ beforeEach(() => {
     [
       ...IDS_FRAGILES.map((id) => citation(id, id.startsWith("seg") ? "aphrody" : "manga")),
       citation("planche-12-34", "databooks", { textFr: "Traduction relue" }),
-    ].map((l) => ({ ...l })),
+    ].map((l) => Object.assign({}, l)),
   );
   tables.set("CanonConfig", []);
   tables.set("wiki_revisions", []);
@@ -220,7 +220,9 @@ describe("saveCanonConfig et citations ingérées", () => {
   test("le retrait explicite masque la ligne et laisse une révision signée", async () => {
     const lu = await lecture();
     const cible = IDS_FRAGILES[0]!;
-    const references = lu.map((r) => (r.id === cible ? { ...r, visible: false } : r));
+    const references = lu.map((r) =>
+      r.id === cible ? Object.assign({}, r, { visible: false }) : r,
+    );
     const config = await saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "owner-discord");
     expect(ligne(cible).visible).toBe(false);
     expect(config.references.some((r) => r.id === cible)).toBe(false);
@@ -241,7 +243,9 @@ describe("saveCanonConfig et citations ingérées", () => {
     const lu = await lecture();
     // L'ingestion réécrit la ligne après la lecture de l'éditeur.
     Object.assign(ligne("planche-12-34"), { updatedAt: new Date("2026-10-01T08:15:00.000Z") });
-    const references = lu.map((r) => (r.id === "planche-12-34" ? { ...r, visible: false } : r));
+    const references = lu.map((r) =>
+      r.id === "planche-12-34" ? Object.assign({}, r, { visible: false }) : r,
+    );
     await saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "x");
     expect(ligne("planche-12-34").visible).toBe(true);
     expect(revisions()).toHaveLength(0);
@@ -254,7 +258,7 @@ describe("saveCanonConfig et citations ingérées", () => {
       updatedAt: new Date("2026-10-01T08:15:00.000Z"),
     });
     const references = lu.map((r) =>
-      r.id === "planche-12-34" ? { ...r, textFr: "Retouche de l'éditeur" } : r,
+      r.id === "planche-12-34" ? Object.assign({}, r, { textFr: "Retouche de l'éditeur" }) : r,
     );
     await saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "x");
     expect(ligne("planche-12-34").textFr).toBe("Traduction réingérée");
@@ -263,7 +267,7 @@ describe("saveCanonConfig et citations ingérées", () => {
   test("une traduction sur la version lue s'applique et se trace", async () => {
     const lu = await lecture();
     const references = lu.map((r) =>
-      r.id === "planche-12-34" ? { ...r, textFr: "Retouche de l'éditeur" } : r,
+      r.id === "planche-12-34" ? Object.assign({}, r, { textFr: "Retouche de l'éditeur" }) : r,
     );
     await saveCanonConfig({ ...DEFAULT_CANON_CONFIG, references }, "x");
     expect(ligne("planche-12-34").textFr).toBe("Retouche de l'éditeur");

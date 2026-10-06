@@ -499,11 +499,9 @@ try {
   >`select series, number_in_series, coalesce(synopsis_fr, synopsis) as synopsis
 	  from bot.db_episodes
 	  where coalesce(synopsis_fr, synopsis) is not null and number_in_series is not null`;
-  const corpusEpisodes: Texte[] = resumes.map((e) => ({
-    num: Number(e.number_in_series!),
-    serie: e.series,
-    ...indexer(e.synopsis),
-  }));
+  const corpusEpisodes: Texte[] = resumes.map((e) =>
+    Object.assign({ num: Number(e.number_in_series!), serie: e.series }, indexer(e.synopsis)),
+  );
 
   // Titres d'épisode : 122 des 826 nomment un personnage (« Sangoku dans le
   // grand nord », « Le dernier espoir de Piccolo »). C'est le seul contenu

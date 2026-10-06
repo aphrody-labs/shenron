@@ -161,19 +161,23 @@ export function createDesktopModelsTransport(
     async list() {
       const result = await client.call(endpoints.models, {});
       if (!result.ok) return null;
-      return result.value.models.map((m): ChatModelView => ({
-        id: m.id,
-        label: m.label,
-        backend: m.backend,
-        available: m.available,
-        default: m.default,
-        remote: m.remote,
-        state: m.state,
-        ...(m.progress ? { progress: m.progress } : {}),
-        ...(m.installUrl ? { installUrl: m.installUrl } : {}),
-        ...(m.importUrl ? { importUrl: m.importUrl } : {}),
-        ...(m.detail ? { detail: m.detail } : {}),
-      }));
+      return result.value.models.map((m): ChatModelView =>
+        Object.assign(
+          {
+            id: m.id,
+            label: m.label,
+            backend: m.backend,
+            available: m.available,
+            default: m.default,
+            remote: m.remote,
+            state: m.state,
+          },
+          m.progress ? { progress: m.progress } : {},
+          m.installUrl ? { installUrl: m.installUrl } : {},
+          m.importUrl ? { importUrl: m.importUrl } : {},
+          m.detail ? { detail: m.detail } : {},
+        ),
+      );
     },
     async install(model) {
       if (!model.installUrl) return false;

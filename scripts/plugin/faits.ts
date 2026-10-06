@@ -124,17 +124,21 @@ export async function genererFaits(
   }));
   const multiplicateurs = ps.multipliers
     .filter((x) => x.multiplier > 0 && x.source)
-    .map((x) => ({
-      forme: x.form,
-      multiplicateur: x.multiplier,
-      base: x.baseForm,
-      source: x.source,
-      rang_canon: x.canonTier,
-      precision: /\b(p\.|ch\.|chapitres?)\s*\d/i.test(x.source)
-        ? "page ou chapitre cité"
-        : "ouvrage cité sans page : à revérifier sur la planche",
-      ...(x.notes ? { note: x.notes } : {}),
-    }));
+    .map((x) =>
+      Object.assign(
+        {
+          forme: x.form,
+          multiplicateur: x.multiplier,
+          base: x.baseForm,
+          source: x.source,
+          rang_canon: x.canonTier,
+          precision: /\b(p\.|ch\.|chapitres?)\s*\d/i.test(x.source)
+            ? "page ou chapitre cité"
+            : "ouvrage cité sans page : à revérifier sur la planche",
+        },
+        x.notes ? { note: x.notes } : {},
+      ),
+    );
 
   const economie = {
     parite_zeni_yen: {
@@ -193,14 +197,18 @@ export async function genererFaits(
       review?: string;
     }[];
   }>(FICHIERS.graphies);
-  const graphies = graphiesBrutes.written.map((w) => ({
-    fiche: w.table.replace(/^db_/, ""),
-    nom_fr: w.frenchName,
-    ja: w.value,
-    preuve: preuveOuvrage(w.proof),
-    autres_preuves: (w.extraProofs ?? []).map(preuveOuvrage),
-    ...(w.review ? { revue: w.review } : {}),
-  }));
+  const graphies = graphiesBrutes.written.map((w) =>
+    Object.assign(
+      {
+        fiche: w.table.replace(/^db_/, ""),
+        nom_fr: w.frenchName,
+        ja: w.value,
+        preuve: preuveOuvrage(w.proof),
+        autres_preuves: (w.extraProofs ?? []).map(preuveOuvrage),
+      },
+      w.review ? { revue: w.review } : {},
+    ),
+  );
 
   const lieux = (
     await lireJson<
@@ -212,15 +220,19 @@ export async function genererFaits(
         note?: string;
       }[]
     >(FICHIERS.lieux)
-  ).map((l) => ({
-    type: l.table === "db_items" ? "objet" : l.table === "db_locations" ? "lieu" : l.table,
-    slug: l.slug,
-    serie: l.source.series === "DBFC" ? "Dragon Ball Full Color" : l.source.series,
-    chapitre: l.source.chapter,
-    planche: l.source.page,
-    attribution: l.attribution,
-    ...(l.note ? { note: l.note } : {}),
-  }));
+  ).map((l) =>
+    Object.assign(
+      {
+        type: l.table === "db_items" ? "objet" : l.table === "db_locations" ? "lieu" : l.table,
+        slug: l.slug,
+        serie: l.source.series === "DBFC" ? "Dragon Ball Full Color" : l.source.series,
+        chapitre: l.source.chapter,
+        planche: l.source.page,
+        attribution: l.attribution,
+      },
+      l.note ? { note: l.note } : {},
+    ),
+  );
 
   const derives = (
     await lireJson<{
@@ -238,30 +250,34 @@ export async function genererFaits(
   ).works
     // Une publication sans page d'éditeur n'est pas établie : elle n'est pas embarquée.
     .flatMap((w) => (w.source_url ? [{ ...w, source_url: w.source_url }] : []))
-    .map((w) => ({
-      titre: w.title,
-      ...(w.title_ja ? { titre_ja: w.title_ja } : {}),
-      ...(w.author ? { auteur: w.author } : {}),
-      ...(w.original_creator ? { createur_original: w.original_creator } : {}),
-      ...(w.isbn ? { isbn: w.isbn } : {}),
-      ...(w.published_at ? { parution: w.published_at } : {}),
-      ...(w.publisher ? { editeur: w.publisher } : {}),
-      source: w.source_url,
-    }))
+    .map((w) =>
+      Object.assign(
+        { titre: w.title },
+        w.title_ja ? { titre_ja: w.title_ja } : {},
+        w.author ? { auteur: w.author } : {},
+        w.original_creator ? { createur_original: w.original_creator } : {},
+        w.isbn ? { isbn: w.isbn } : {},
+        w.published_at ? { parution: w.published_at } : {},
+        w.publisher ? { editeur: w.publisher } : {},
+        { source: w.source_url },
+      ),
+    )
     .toSorted((a, b) => comparer(a.parution ?? "", b.parution ?? ""));
 
   const citations = (
     await lireJson<{ id: string; source: string; text: string; textFr?: string }[]>(
       FICHIERS.citations,
     )
-  ).map((x) => ({
-    id: x.id,
-    source: x.source,
-    texte: x.text,
-    ...(x.textFr ? { texte_fr: x.textFr } : {}),
-    attribution:
-      "Akira Toriyama / Shueisha ; traduction anglaise Kanzenshuu, traduction française dragonballfr.com",
-  }));
+  ).map((x) =>
+    Object.assign(
+      { id: x.id, source: x.source, texte: x.text },
+      x.textFr ? { texte_fr: x.textFr } : {},
+      {
+        attribution:
+          "Akira Toriyama / Shueisha ; traduction anglaise Kanzenshuu, traduction française dragonballfr.com",
+      },
+    ),
+  );
 
   const nonEmbarque = [
     {

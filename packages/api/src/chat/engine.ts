@@ -538,14 +538,12 @@ export function createChatEngine(deps: ChatEngineDeps) {
       const now = new Date().toISOString();
       const storedCitations: StoredCitation[] = citations
         .filter((c) => new RegExp(`\\[${c.n}\\]`).test(answer))
-        .map((c) => ({
-          n: c.n,
-          title: c.title,
-          url: c.url,
-          kind: c.kind,
-          source: c.source,
-          ...(c.snippet ? { snippet: c.snippet.slice(0, 600) } : {}),
-        }));
+        .map((c) =>
+          Object.assign(
+            { n: c.n, title: c.title, url: c.url, kind: c.kind, source: c.source },
+            c.snippet ? { snippet: c.snippet.slice(0, 600) } : {},
+          ),
+        );
       const existing = request.conversationId
         ? await deps.store.get(ownerId, conversationId).catch(() => null)
         : null;

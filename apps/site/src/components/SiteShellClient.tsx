@@ -162,7 +162,7 @@ export function SiteShellClient({
           href === "/desktop"
             ? dico.shell.desktop
             : rubrique(href, { label: destination.label }).label;
-        return { href, label, ...TAB_ICONS[href] };
+        return Object.assign({ href, label }, TAB_ICONS[href]);
       }),
     [desktop, dico, rubrique],
   );

@@ -207,19 +207,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const maintenant = Date.now();
   const rows: SiteEventInsert[] = parsed.events.map((e) => {
     const ts = horodatage(e.ts, maintenant);
-    return {
-      type: e.type,
-      userId,
-      anonId,
-      sessionId: e.sessionId,
-      entityType: e.entityType ?? null,
-      entityId: e.entityId ?? null,
-      path: cleanPath(e.path),
-      referrer: cleanReferrer(e.referrer),
-      visitorHash,
-      props: (e.props ?? null) as Record<string, unknown> | null,
-      ...(ts ? { ts } : {}),
-    };
+    return Object.assign(
+      {
+        type: e.type,
+        userId,
+        anonId,
+        sessionId: e.sessionId,
+        entityType: e.entityType ?? null,
+        entityId: e.entityId ?? null,
+        path: cleanPath(e.path),
+        referrer: cleanReferrer(e.referrer),
+        visitorHash,
+        props: (e.props ?? null) as Record<string, unknown> | null,
+      },
+      ts ? { ts } : {},
+    );
   });
 
   try {

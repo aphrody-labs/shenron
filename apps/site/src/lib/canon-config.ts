@@ -78,23 +78,29 @@ export const getCanonConfig = cache(async (): Promise<CanonConfig> => {
 export const getCanonReferences = cache(async (): Promise<CanonReference[]> => {
   try {
     const rows = await db.select().from(canonReferences).where(eq(canonReferences.visible, true));
-    return rows.map((r) => ({
-      id: r.id,
-      subject: r.subject,
-      keywords: Array.isArray(r.keywords) ? r.keywords : [],
-      text: r.text,
-      ...(r.textFr ? { textFr: r.textFr } : {}),
-      source: r.source,
-      ...(r.year ? { year: r.year } : {}),
-      document: r.document,
-      lang: r.lang === "en" || r.lang === "ja" ? r.lang : "fr",
-      provenance:
-        r.provenance === "aphrody" || r.provenance === "databooks" || r.provenance === "manga"
-          ? r.provenance
-          : "manuel",
-      ...(r.href ? { href: r.href } : {}),
-      ...(r.updatedAt instanceof Date ? { updatedAt: r.updatedAt.toISOString() } : {}),
-    }));
+    return rows.map((r) =>
+      Object.assign(
+        {
+          id: r.id,
+          subject: r.subject,
+          keywords: Array.isArray(r.keywords) ? r.keywords : [],
+          text: r.text,
+        },
+        r.textFr ? { textFr: r.textFr } : {},
+        { source: r.source },
+        r.year ? { year: r.year } : {},
+        {
+          document: r.document,
+          lang: r.lang === "en" || r.lang === "ja" ? r.lang : "fr",
+          provenance:
+            r.provenance === "aphrody" || r.provenance === "databooks" || r.provenance === "manga"
+              ? r.provenance
+              : "manuel",
+        },
+        r.href ? { href: r.href } : {},
+        r.updatedAt instanceof Date ? { updatedAt: r.updatedAt.toISOString() } : {},
+      ),
+    );
   } catch (e) {
     console.error("[canon-config] corpus canon_references illisible :", e);
     return [];

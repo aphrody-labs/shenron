@@ -83,7 +83,7 @@ export function homeCommunityTops(tops: CommunityTopsPayload | null): CommunityT
       ...board,
       entries: board.entries
         .filter((entry) => entry.count >= HOME_TOPS_MIN_ENTRY_VOTES)
-        .map((entry, index) => ({ ...entry, rank: (index + 1) as 1 | 2 | 3 })),
+        .map((entry, index) => Object.assign({}, entry, { rank: (index + 1) as 1 | 2 | 3 })),
     }))
     .filter((board) => board.entries.length > 0);
   return boards.length > 0 ? { ...tops, boards } : null;
