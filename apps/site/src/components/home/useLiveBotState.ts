@@ -195,8 +195,8 @@ export function useLiveBotState(initial: {
       } catch {
         return;
       }
-      es.onopen = () => setConnected(true);
-      es.onmessage = (e) => {
+      es.addEventListener("open", () => setConnected(true));
+      es.addEventListener("message", (e) => {
         let type = "event";
         let data: unknown = null;
         try {
@@ -214,8 +214,8 @@ export function useLiveBotState(initial: {
           label: labelForEvent(type, data),
         };
         setEvents((prev) => [ev, ...prev].slice(0, 6));
-      };
-      es.onerror = () => {
+      });
+      es.addEventListener("error", () => {
         setConnected(false);
         es?.close();
         // Un flux qui tombe peut notifier plusieurs erreurs d'affilée : sans
@@ -223,7 +223,7 @@ export function useLiveBotState(initial: {
         // ouvrait autant de `EventSource` concurrents vers le bot.
         if (retry) clearTimeout(retry);
         retry = setTimeout(connect, 8_000);
-      };
+      });
     };
     connect();
     return () => {

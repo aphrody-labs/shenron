@@ -38,9 +38,9 @@ export function EventsStream() {
 
   useEffect(() => {
     const es = new EventSource("/api/bot-admin/a2a/events");
-    es.onopen = () => setConnected(true);
-    es.onerror = () => setConnected(false);
-    es.onmessage = (e) => {
+    es.addEventListener("open", () => setConnected(true));
+    es.addEventListener("error", () => setConnected(false));
+    es.addEventListener("message", (e) => {
       try {
         const parsed = JSON.parse(e.data);
         counterRef.current++;
@@ -58,7 +58,7 @@ export function EventsStream() {
       } catch {
         /* ignore */
       }
-    };
+    });
     return () => es.close();
   }, []);
 

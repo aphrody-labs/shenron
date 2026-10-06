@@ -41,9 +41,9 @@ export function useLiveEvents({ max = 100, filter }: Options = {}) {
     const es = new EventSource("/api/bot-admin/events");
     sourceRef.current = es;
 
-    es.onopen = () => setStatus("open");
-    es.onerror = () => setStatus("closed");
-    es.onmessage = (msg) => {
+    es.addEventListener("open", () => setStatus("open"));
+    es.addEventListener("error", () => setStatus("closed"));
+    es.addEventListener("message", (msg) => {
       try {
         const data = JSON.parse(msg.data) as BotEvent;
         const garde = filterRef.current;
@@ -57,7 +57,7 @@ export function useLiveEvents({ max = 100, filter }: Options = {}) {
       } catch {
         /* malformed event, ignore */
       }
-    };
+    });
 
     return () => {
       es.close();

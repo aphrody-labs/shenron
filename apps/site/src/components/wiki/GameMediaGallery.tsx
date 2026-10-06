@@ -69,7 +69,7 @@ function useVideosIndisponibles(items: ReadonlyArray<ItemResolu>): ReadonlySet<s
 
   useEffect(() => {
     let actif = true;
-    const sondes: HTMLImageElement[] = [];
+    const sondes: { img: HTMLImageElement; charge: () => void; ecarter: () => void }[] = [];
     for (const item of items) {
       if (item.kind !== "youtube" || !item.thumb) continue;
       const img = new Image();
@@ -77,18 +77,19 @@ function useVideosIndisponibles(items: ReadonlyArray<ItemResolu>): ReadonlySet<s
         if (!actif) return;
         setAbsentes((prev) => (prev.has(item.key) ? prev : new Set(prev).add(item.key)));
       };
-      img.onload = () => {
+      const charge = () => {
         if (img.naturalWidth <= LARGEUR_VIGNETTE_ABSENTE) ecarter();
       };
-      img.onerror = ecarter;
+      img.addEventListener("load", charge);
+      img.addEventListener("error", ecarter);
       img.src = item.thumb;
-      sondes.push(img);
+      sondes.push({ img, charge, ecarter });
     }
     return () => {
       actif = false;
-      for (const img of sondes) {
-        img.onload = null;
-        img.onerror = null;
+      for (const { img, charge, ecarter } of sondes) {
+        img.removeEventListener("load", charge);
+        img.removeEventListener("error", ecarter);
       }
     };
   }, [items]);

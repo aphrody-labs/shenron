@@ -91,7 +91,7 @@ function loadFrameCanvas(src: string, width: number, height: number): Promise<HT
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.decoding = "async";
-    img.onload = () => {
+    img.addEventListener("load", () => {
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
@@ -115,8 +115,8 @@ function loadFrameCanvas(src: string, width: number, height: number): Promise<HT
       }
       ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
       resolve(canvas);
-    };
-    img.onerror = () => reject(new Error(`Frame illisible : ${src}`));
+    });
+    img.addEventListener("error", () => reject(new Error(`Frame illisible : ${src}`)));
     img.src = src;
   });
 }
