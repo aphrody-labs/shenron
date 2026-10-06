@@ -309,7 +309,7 @@ export class SqliteConversationStore implements ConversationStore {
     const merged = [
       ...conversations.map((row) => ({ seq: row.seq, row, kind: "c" as const })),
       ...messages.map((row) => ({ seq: row.seq, row, kind: "m" as const })),
-    ].sort((a, b) => a.seq - b.seq);
+    ].toSorted((a, b) => a.seq - b.seq);
     const page = merged.slice(0, max);
     const last = page.at(-1)?.seq ?? after;
     return {

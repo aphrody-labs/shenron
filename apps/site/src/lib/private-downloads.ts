@@ -89,7 +89,7 @@ export async function listPrivateDownloads(request: Request): Promise<Response> 
   const sums = await readSums(dir);
   const base = new URL("/api/private-downloads/", request.url);
   const files: PrivateDownload[] = [];
-  for (const [name, sha256] of [...sums].sort(([a], [b]) => a.localeCompare(b))) {
+  for (const [name, sha256] of [...sums].toSorted(([a], [b]) => a.localeCompare(b))) {
     const info = await stat(join(dir, name)).catch(() => null);
     if (info?.isFile())
       files.push({ name, size: info.size, sha256, url: new URL(name, base).toString() });

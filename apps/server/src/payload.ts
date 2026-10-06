@@ -44,7 +44,7 @@ export function pack(sources: Record<string, string>, level = 12): Uint8Array {
   const chunks: Uint8Array[] = [];
   for (const [prefix, source] of Object.entries(sources)) {
     const files = statSync(source).isDirectory() ? [...walk(source)] : [source];
-    for (const file of files.sort()) {
+    for (const file of files.toSorted()) {
       const stat = statSync(file);
       const rel = statSync(source).isDirectory() ? relative(source, file).split(sep).join("/") : "";
       const path = [prefix, rel].filter(Boolean).join("/");

@@ -316,7 +316,7 @@ export class VfsRag {
       entry.sim = similarity;
       fused.set(id, entry);
     });
-    const ordered = [...fused.entries()].sort((a, b) => b[1].score - a[1].score);
+    const ordered = [...fused.entries()].toSorted((a, b) => b[1].score - a[1].score);
     const rows = this.#rows(ordered.slice(0, candidates * 2).map(([id]) => id));
     const kinds = options.kinds?.length ? new Set(options.kinds) : null;
     const corpus = options.corpus?.length ? new Set(options.corpus) : null;

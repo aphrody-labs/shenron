@@ -286,7 +286,7 @@ export class PgConversationStore implements ConversationStore {
     const merged = [
       ...conversations.map((row) => ({ seq: Number(row.seq), row, kind: "c" as const })),
       ...messages.map((row) => ({ seq: Number(row.seq), row, kind: "m" as const })),
-    ].sort((a, b) => a.seq - b.seq);
+    ].toSorted((a, b) => a.seq - b.seq);
     const page = merged.slice(0, max);
     return {
       conversations: page.filter((e) => e.kind === "c").map((e) => toConversation(e.row)),

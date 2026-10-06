@@ -88,13 +88,13 @@ export async function listFileTasks(target?: A2ATarget): Promise<A2ATask[]> {
     return [];
   }
   // Ids start with `task-<epoch ms>`: a reverse sort reads the newest first.
-  names.sort().reverse();
+  const ordered = names.toSorted().reverse();
   const tasks: A2ATask[] = [];
-  for (const name of names.slice(0, MAX_LISTED_TASKS)) {
+  for (const name of ordered.slice(0, MAX_LISTED_TASKS)) {
     const task = await readTask(path.join(dir, name));
     if (task && (!target || task.target === target)) tasks.push(task);
   }
-  return tasks.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return tasks.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export async function appendFileEnvelope(envelope: A2AEnvelope): Promise<void> {

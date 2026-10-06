@@ -329,7 +329,7 @@ class TaskStore {
   }
 
   list(targetFilter?: A2ATarget): A2ATask[] {
-    const all = Array.from(this.tasks.values()).sort((a, b) =>
+    const all = Array.from(this.tasks.values()).toSorted((a, b) =>
       b.createdAt.localeCompare(a.createdAt),
     );
     return targetFilter ? all.filter((t) => t.target === targetFilter) : all;
@@ -371,7 +371,7 @@ class CoordMailboxStore {
 
   list(limit = 100): A2AEnvelope[] {
     return [...this.memoryEnvelopes]
-      .sort((a, b) => (b.ts || "").localeCompare(a.ts || ""))
+      .toSorted((a, b) => (b.ts || "").localeCompare(a.ts || ""))
       .slice(0, limit);
   }
 
@@ -1254,7 +1254,7 @@ export class ShenronA2AHub {
           e.kind !== "ask" &&
           e.kind !== "ping",
       )
-      .sort((a, b) => (a.ts || "").localeCompare(b.ts || ""));
+      .toSorted((a, b) => (a.ts || "").localeCompare(b.ts || ""));
     let current = task;
     for (const env of replies) {
       if (TERMINAL_STATUSES.has(current.status)) break;

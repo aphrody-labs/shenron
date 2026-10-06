@@ -43,7 +43,7 @@ for (const path of files) {
 }
 const duplicates = [...groups.entries()]
   .filter(([, g]) => g.paths.length > 1)
-  .sort((a, b) => b[1].size * (b[1].paths.length - 1) - a[1].size * (a[1].paths.length - 1));
+  .toSorted((a, b) => b[1].size * (b[1].paths.length - 1) - a[1].size * (a[1].paths.length - 1));
 const duplicateFiles = duplicates.reduce((n, [, g]) => n + g.paths.length - 1, 0);
 const recoverable = duplicates.reduce((n, [, g]) => n + g.size * (g.paths.length - 1), 0);
 const report = {
