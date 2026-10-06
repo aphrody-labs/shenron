@@ -6,8 +6,9 @@
 //!
 //! Start-up: the window opens on the bundled splash (`frontendDist`), the server
 //! starts (or `SHENRON_DESKTOP_URL` names one already running), and the window
-//! navigates to its `/desktop` start page once it answers. Without a local server the window
-//! shows the public site, which receives no IPC access.
+//! navigates to the home page of the local site (its full navigation, `/desktop` for the chat
+//! included) once it answers. Without a local server the window shows the public site, which
+//! receives no IPC access.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -90,14 +91,14 @@ fn main() {
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 let target = match server::start(&handle).await {
-                    // The desktop start page works offline (local corpus, editor, studio).
+                    // The local site works offline (public VFS, local corpus, editor, studio, chat).
                     Ok(url) => {
                         // The editor's agent searches the local corpus of this server.
                         #[cfg(feature = "koharu")]
                         if let Some(editor) = &editor {
                             editor.set_toolbox(Some(Arc::new(ShenronKnowledge::new(Some(url.clone())))));
                         }
-                        format!("{url}/desktop")
+                        format!("{url}/")
                     },
                     Err(error) => {
                         log::error!("local Shenron server unavailable: {error}");
