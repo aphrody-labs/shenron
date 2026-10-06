@@ -93,6 +93,11 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::inherit());
+    // The installer's resources (`llama/` runtime, `models/` adapter of the local chat model):
+    // beside the executable on Windows, under `/usr/lib/<product>` on Linux.
+    if let Ok(resources) = app.path().resource_dir() {
+        command.env("SHENRON_RESOURCE_DIR", resources);
+    }
     // The server is a console executable: started from the GUI app it would open its own
     // console window unless told not to (CREATE_NO_WINDOW).
     #[cfg(windows)]

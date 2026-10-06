@@ -6,14 +6,19 @@
  * and local APIs, one file), the shenron-mcp sidecar (MCP tools of the chat and the `/mcp`
  * endpoint), the koharu-sdk sidecar (the editor engine over JSON Lines, for a browser on the
  * local server through `/api/local/koharu` and for `@shenron/pipeline`; the app window itself
- * never uses it) and the platform bundle. shenron-server starts both sidecars from beside itself.
+ * never uses it), the local chat model runtime (llama.cpp `llama-server` and the Shenron LoRA
+ * adapter, scripts/build/chat-model-runtime.ts) and the platform bundle. shenron-server starts
+ * the sidecars from beside itself.
  *
  *   bun scripts/build/desktop.ts [--target windows-x64|linux-x64] [--skip-server] [--skip-mcp]
- *                                [--skip-koharu-sdk]
+ *                                [--skip-koharu-sdk] [--skip-chat-model] [--chat-lora <gguf>]
  *
  * --skip-mcp ships no MCP sidecar: the desktop then reports its MCP group unavailable.
  * --skip-koharu-sdk ships no engine sidecar: the local server then reports its koharu group
  * unavailable (the editor still runs in the app window).
+ * --skip-chat-model ships neither llama-server nor the adapter: the chat then needs a server
+ * declared by APHRODY_LOCAL_MODEL_URL. The base model (2.5 GB, too large for the installer) is
+ * downloaded by shenron-server into SHENRON_HOME on first launch, digest-checked.
  * windows-x64 from Linux/WSL: the app is cross-compiled with cargo-xwin and the NSIS
  * installer is produced by the Windows NSIS toolset through scripts/build/makensis-wsl.ts.
  * Outputs land in dist/desktop/<target>/ with their SHA-256 in SHA256SUMS.
@@ -29,6 +34,8 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join, resolve } from "node:path";
+
+import { adapterSource, stageAdapter, stageLlamaRuntime } from "./chat-model-runtime";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const CRATE = join(ROOT, "crates/shenron-desktop");
@@ -118,6 +125,17 @@ if (withKoharuSdk) {
   );
 }
 
+// 1d. Local chat model: the pinned llama.cpp runtime and the digest-checked Shenron adapter,
+// installed as resources (`llama/`, `models/`); shenron-server finds them through
+// SHENRON_RESOURCE_DIR, which shenron-desktop sets.
+const withChatModel = !args.includes("--skip-chat-model");
+const chatModelDir = join(binaries, "chat-model");
+rmSync(chatModelDir, { recursive: true, force: true });
+if (withChatModel) {
+  await stageLlamaRuntime(target, join(chatModelDir, "llama"));
+  await stageAdapter(adapterSource(args), join(chatModelDir, "models"));
+}
+
 // 2. Bundle configuration: the sidecars are declared only for bundling builds. Tauri installs
 // them beside the app, where shenron-server finds shenron-mcp and koharu-sdk.
 const bundleConfig = join(CRATE, "tauri.bundle.json");
@@ -126,7 +144,10 @@ const externalBin = [
   ...(withMcp ? ["binaries/shenron-mcp"] : []),
   ...(withKoharuSdk ? ["binaries/koharu-sdk"] : []),
 ];
-writeFileSync(bundleConfig, `${JSON.stringify({ bundle: { externalBin } }, null, 2)}\n`);
+const resources = withChatModel
+  ? { "binaries/chat-model/llama/": "llama/", "binaries/chat-model/models/": "models/" }
+  : {};
+writeFileSync(bundleConfig, `${JSON.stringify({ bundle: { externalBin, resources } }, null, 2)}\n`);
 
 // 3. NSIS from WSL: a `makensis` on PATH that drives the Windows toolset.
 if (target === "windows-x64" && process.platform !== "win32") {

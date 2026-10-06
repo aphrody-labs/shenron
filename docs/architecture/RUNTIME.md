@@ -9,14 +9,14 @@ de production n'est décrit ici.
 
 ## 1. Processus
 
-| Processus | Code | Rôle |
-| --- | --- | --- |
-| `shenron-server` | `apps/server` | Binaire autonome : un `Bun.serve` frontal répond à `/api/local/*`, monte l'API Shenron (`@shenron/api/host` : `/api/v1/*`, `/api/public/*` depuis le VFS, WebSocket du chat, relais `/mcp`), sert les assets statiques (`/_next/static`, `public/`, `/assets/*` du VFS) et relaie le reste vers le `server.js` standalone de Next, lancé en processus enfant sur une adresse de boucle locale. |
-| Site Next | `apps/site` | Next 16 App Router (standalone). `/koharu`, `/studio` et `/bureau` montent `@shenron/ui` ; `/mcp` relaie vers `shenron-mcp --http --public`. |
-| `shenron-bot` | `apps/bot` | Bot Discord (discordx + tsyringe) et API du bot dans un seul processus Bun. |
-| `shenron-mcp` | `crates/shenron-mcp` | Serveur MCP : stdio pour le plugin et les agents locaux (tous les outils), HTTP public en lecture seule derrière `/mcp` du site. |
-| `shenron-desktop` | `crates/shenron-desktop` | Application Tauri 3 : lance `shenron-server` en sidecar (qui démarre lui-même le sidecar `shenron-mcp` livré à côté) et ouvre `/bureau`. |
-| Lots | `scripts/ops/*`, `packages/pipeline/scripts/*` | Lancés à la main, hors runtime ; jamais `rag:build` au premier plan ni sur le bot de production. |
+| Processus         | Code                                           | Rôle                                                                                                                                                                                                                                                                                                                                                                                           |
+| ----------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `shenron-server`  | `apps/server`                                  | Binaire autonome : un `Bun.serve` frontal répond à `/api/local/*`, monte l'API Shenron (`@shenron/api/host` : `/api/v1/*`, `/api/public/*` depuis le VFS, WebSocket du chat, relais `/mcp`), sert les assets statiques (`/_next/static`, `public/`, `/assets/*` du VFS) et relaie le reste vers le `server.js` standalone de Next, lancé en processus enfant sur une adresse de boucle locale. |
+| Site Next         | `apps/site`                                    | Next 16 App Router (standalone). `/koharu`, `/studio` et `/bureau` montent `@shenron/ui` ; `/mcp` relaie vers `shenron-mcp --http --public`.                                                                                                                                                                                                                                                   |
+| `shenron-bot`     | `apps/bot`                                     | Bot Discord (discordx + tsyringe) et API du bot dans un seul processus Bun.                                                                                                                                                                                                                                                                                                                    |
+| `shenron-mcp`     | `crates/shenron-mcp`                           | Serveur MCP : stdio pour le plugin et les agents locaux (tous les outils), HTTP public en lecture seule derrière `/mcp` du site.                                                                                                                                                                                                                                                               |
+| `shenron-desktop` | `crates/shenron-desktop`                       | Application Tauri 3 : lance `shenron-server` en sidecar (qui démarre lui-même le sidecar `shenron-mcp` livré à côté) et ouvre `/bureau`.                                                                                                                                                                                                                                                       |
+| Lots              | `scripts/ops/*`, `packages/pipeline/scripts/*` | Lancés à la main, hors runtime ; jamais `rag:build` au premier plan ni sur le bot de production.                                                                                                                                                                                                                                                                                               |
 
 ## 2. `shenron-server`
 
@@ -52,7 +52,10 @@ shenron-server paths | doctor | init | version
   `./`, `./binaries/`) lancé en `--http 127.0.0.1:<port libre> --public` ; chat :
   `SHENRON_CHAT_BACKENDS` (défaut `local` hors production) sur l'URL compatible OpenAI
   déclarée (`APHRODY_AI_CHAT_BASE_URL`, `APHRODY_SHENRON_LLM_BASE_URL`,
-  `APHRODY_LOCAL_MODEL_URL` : llama-server, aphrody-llama-daemon). Une capacité absente
+  `APHRODY_LOCAL_MODEL_URL` : llama-server, aphrody-llama-daemon) ; sans elle, le profil
+  desktop lance son modèle géré (`apps/server/src/chat-model.ts` : Qwen3-4B Instruct 2507 et
+  l'adaptateur LoRA `shenron-chat-v2` sur un `llama-server` enfant, base téléchargée une fois
+  dans `<home>/models/`, voir `docs/operations/ENV.md`). Une capacité absente
   désactive son groupe sans arrêter le serveur. En production, le wiki reste au site
   (PostgreSQL), seuls les nœuds publics du VFS sont servis et aucun propriétaire implicite
   de boucle locale n'existe (`SHENRON_LOCAL_OWNER` vide).

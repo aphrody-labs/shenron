@@ -21,7 +21,9 @@
  *   chat           SHENRON_CHAT_BACKENDS (default `local` outside production): the
  *                  OpenAI-compatible server declared by APHRODY_AI_CHAT_BASE_URL,
  *                  APHRODY_SHENRON_LLM_BASE_URL or APHRODY_LOCAL_MODEL_URL (llama-server,
- *                  aphrody-llama-daemon); none → the chat and models groups stay disabled
+ *                  aphrody-llama-daemon); none → the chat and models groups stay disabled.
+ *                  Desktop profile without such a URL: the managed model of ./chat-model.ts
+ *                  (Qwen3-4B + LoRA shenron-chat-v2 on a `llama-server` child; SHENRON_CHAT_MODEL)
  *
  * Production keeps the editorial wiki on the site (PostgreSQL), serves only public VFS nodes
  * and has no implicit loopback owner (nginx forwards every request from 127.0.0.1).
@@ -31,7 +33,9 @@ import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createLocalApi, type LocalApi as HostApi } from "@shenron/api/host";
 import type { LocalApiGroups } from "@shenron/api/contract";
+import { CHAT_BASE_MODEL } from "@shenron/config/chat-model";
 
+import { type ChatModel, type ChatModelPlan, planChatModel, startChatModel } from "./chat-model";
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
 import { koharuBridge, type KoharuBridge } from "./koharu";
@@ -67,6 +71,8 @@ export interface BackendPlan {
   wiki: boolean;
   /** `koharu-sdk` behind `/api/local/koharu`; `null` when absent or in production. */
   koharuSdk: string | null;
+  /** Managed chat model (`llama-server` + adapter); `null` when off or the chat is external. */
+  chatModel: ChatModelPlan | null;
 }
 
 /** Resolve what the API host runs on (no process started, nothing written). */
@@ -102,6 +108,12 @@ export function planBackend(
   // The chat's own MCP tools (stdio) use the same shipped binary.
   if (mcp) out.SHENRON_MCP_BIN = mcp;
   if (profile !== "production") out.SHENRON_CHAT_BACKENDS ??= "local";
+  const chatModel = planChatModel(paths, env);
+  if (chatModel?.binary) {
+    // Declared now (the groups are fixed at host creation); the model answers once loaded.
+    out.APHRODY_LOCAL_MODEL_URL = chatModel.url;
+    out.APHRODY_AI_CHAT_MODEL ??= CHAT_BASE_MODEL.id;
+  }
   const lexique = o.payloadDir ? join(o.payloadDir, "data", LEXIQUE_FILE) : undefined;
   if (!env.SHENRON_LEXIQUE?.trim() && isFile(lexique)) out.SHENRON_LEXIQUE = lexique;
   const koharuSdk = siblingBinary(paths, "koharu-sdk", env.SHENRON_KOHARU_SDK_BIN);
@@ -114,6 +126,7 @@ export function planBackend(
     mcpSidecar: env.SHENRON_MCP_URL?.trim() ? null : mcp,
     wiki: profile !== "production",
     koharuSdk: profile === "production" ? null : koharuSdk,
+    chatModel,
   };
 }
 
@@ -219,6 +232,9 @@ export async function startBackend(
       console.error(JSON.stringify({ event: "shenron.mcp.sidecar_failed", error: String(error) }));
     }
   }
+  const chatModel: ChatModel | null = plan.chatModel
+    ? startChatModel(plan.chatModel, plan.env)
+    : null;
   let host: HostApi | null = null;
   try {
     host = (o.createHost ?? createLocalApi)(plan.env, {
@@ -238,11 +254,16 @@ export async function startBackend(
       if (sidecar?.exited()) groups.mcp = { available: false, reason: "serveur MCP local arrêté" };
       else if (sidecarFailed)
         groups.mcp = { available: false, reason: "serveur MCP local injoignable" };
+      if (chatModel) {
+        groups.chat = chatModel.status();
+        groups.models = { ...groups.chat };
+      }
       return groups;
     },
     async stop() {
       koharu.stop();
       sidecar?.stop();
+      chatModel?.stop();
       await host?.close();
     },
   };

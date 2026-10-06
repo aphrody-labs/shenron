@@ -106,7 +106,7 @@ Quand le serveur est élevé, les outils appellent les API avec les variables du
 | Variable                                                                                         | Utilisée par                                                                                                                                                                                                            |
 | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `DBFR_TOKEN` (repli `SHENRON_ADMIN_TOKEN`)                                                       | `dbfr_databooks` (`include_hidden`), `dbfr_deposit`                                                                                                                                                                     |
-| `SHENRON_DATABOOKS_API_TOKEN` (repli `DATABOOKS_API_TOKEN`, `SHENRON_ADMIN_TOKEN`, `DBFR_TOKEN`) | `dragonball.admin_databooks_deposit`, `databook_create/update/delete/page_edit/anomalies/ocr_review`, `site_config_get/put`, `reports_list/update` (jeton porteur du site, `apps/site/src/lib/api-token.ts`)         |
+| `SHENRON_DATABOOKS_API_TOKEN` (repli `DATABOOKS_API_TOKEN`, `SHENRON_ADMIN_TOKEN`, `DBFR_TOKEN`) | `dragonball.admin_databooks_deposit`, `databook_create/update/delete/page_edit/anomalies/ocr_review`, `site_config_get/put`, `reports_list/update` (jeton porteur du site, `apps/site/src/lib/api-token.ts`)            |
 | `SHENRON_API_ADMIN_TOKEN`                                                                        | `dragonball.admin_bot_*`, `admin_services`, `admin_service_action` (API bot)                                                                                                                                            |
 | `SHENRON_AGENT_API_KEY`                                                                          | `dragonball.agent_*` (`/api/agent/v1/*`) : clé `dbfr_agent_...` créée dans `/admin/agents`, ses portées (`read`, `write:articles`, `publish:articles`, `comment`, `moderate`, `contribute`) décident ce qui est permis. |
 | `SHENRON_API_URL`, `SHENRON_SITE_API_URL`, `SHENRON_SITE_URL`, `DBFR_BASE_URL`                   | Cibles des appels (défauts : bot et site publics).                                                                                                                                                                      |
@@ -157,6 +157,35 @@ Autres variables Aphrody :
 | `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN`        | API web/crawl d'Aphrody.                                                                    |
 | `APHRODY_BIN`                                         | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`.                                   |
 
+## Modèle de chat local (Shenron Studio) — `@shenron/config/chat-model`, `apps/server/src/chat-model.ts`
+
+Dans le profil `desktop`, sans URL de chat déclarée (`APHRODY_AI_CHAT_BASE_URL`,
+`APHRODY_SHENRON_LLM_BASE_URL`, `APHRODY_LOCAL_MODEL_URL`) et avec `local` dans
+`SHENRON_CHAT_BACKENDS`, `shenron-server` lance un `llama-server` enfant sur un port de
+boucle locale : Qwen3-4B Instruct 2507 (GGUF Q4_K_M, `qwen3-4b-instruct-2507-q4km`) et
+l'adaptateur LoRA `shenron-chat-v2`. Il pose `APHRODY_LOCAL_MODEL_URL` (et
+`APHRODY_AI_CHAT_MODEL` s'il est absent) pour l'hôte ; le groupe `chat` de
+`/api/local/health` donne l'étape (téléchargement en %, chargement, échec) puis le modèle servi.
+La base (2,5 Go) est téléchargée une fois dans `$SHENRON_HOME/models/` (reprise, empreinte
+SHA-256 vérifiée) ; l'installeur livre `llama/` (llama.cpp `b11312`, Vulkan) et
+`models/shenron-chat-v2.gguf` (`scripts/build/desktop.ts`, `--skip-chat-model` pour s'en
+passer). Journal : `$SHENRON_HOME/logs/llama-server.log`.
+
+| Variable                 | Rôle                                                                                                                         | Défaut                                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `SHENRON_CHAT_MODEL`     | `auto`, `off` ou chemin du GGUF de base. `auto` hors `desktop` l'active aussi (jamais en production).                        | `auto` en `desktop`, `off` sinon                                                     |
+| `SHENRON_CHAT_MODEL_URL` | Source de téléchargement de la base ; une source propre n'est pas vérifiée par empreinte.                                    | Hugging Face `unsloth/Qwen3-4B-Instruct-2507-GGUF`, révision épinglée                |
+| `SHENRON_CHAT_LORA`      | Chemin de l'adaptateur, `off` pour la base seule.                                                                            | `$SHENRON_HOME/models/`, `models/` de l'installeur, puis `APHRODY_SHENRON_CHAT_LORA` |
+| `SHENRON_CHAT_LORA_URL`  | Source de téléchargement de l'adaptateur (aucune publique : il vient de l'installeur).                                       | aucune                                                                               |
+| `SHENRON_LLAMA_BIN`      | `llama-server` à lancer (fichier ou dossier), avant `APHRODY_LLAMA_BIN`.                                                     | `llama/` de l'installeur, puis le `PATH`                                             |
+| `SHENRON_CHAT_CTX`       | Taille du contexte du serveur.                                                                                               | `8192`                                                                               |
+| `SHENRON_RESOURCE_DIR`   | Dossier des ressources de l'installeur (`llama/`, `models/`), posé par `shenron-desktop` ; sinon le dossier de l'exécutable. | dossier de l'exécutable                                                              |
+
+La base déjà présente dans le magasin d'Aphrody (`aphrody model path qwen3-4b-instruct-2507-q4km`)
+est utilisée en place, sans copie. Au build, l'adaptateur vient de `--chat-lora`,
+`SHENRON_CHAT_LORA` ou `APHRODY_SHENRON_CHAT_LORA` et doit avoir l'empreinte épinglée ; les
+poids n'entrent jamais dans Git.
+
 ## Traduction manga (Shenron Studio) — `crates/koharu-translator`, `crates/shenron-manga`
 
 Le glossaire protège les termes canoniques pendant la traduction : chaque terme source reconnu
@@ -180,6 +209,26 @@ dans son payload (extrait sous `$SHENRON_HOME/cache/payload-<id>/data/`). Les pr
 vivent sous `$SHENRON_HOME/data/koharu/projects`, ses modèles sous
 `$SHENRON_HOME/cache/koharu/packages` ; les réglages restent dans `~/.koharu/config.toml`
 (`koharu-config`, Aphrody, n'accepte pas d'autre emplacement).
+
+## Mémoire persistante du chat — `@shenron/config/memory`, `apps/server/src/memory.ts`
+
+L'hôte de l'API (`shenron-server`, Shenron Studio) garde la mémoire de chaque propriétaire
+dans le fournisseur SQLite d'Aphrody (`aphrody-memory`, `SqliteLocalProvider`), atteint par
+`shenron-ffi` (ABI 3, `@shenron/native`). À chaque tour, les souvenirs pertinents sont joints
+à la question (comme données, jamais comme sources ni instructions) ; après la réponse, les
+faits saillants du message (« je m'appelle… », préférences, « souviens-toi que… ») sont
+écrits. Un agent-id par propriétaire, le même quel que soit le modèle. `memoryOptIn: false`
+dans la requête de chat tient le tour à l'écart. Routes : `GET /api/v1/memory`,
+`POST /api/v1/memory/{id}/delete`, `POST /api/v1/memory/clear` ; sans bibliothèque native,
+le groupe `memory` de `/api/local/health` est indisponible et le serveur continue.
+
+| Variable                | Rôle                                                                    | Défaut                            |
+| ----------------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| `SHENRON_MEMORY`        | `off` coupe la mémoire (rappel et écriture)                             | active                            |
+| `SHENRON_MEMORY_DB`     | fichier SQLite de la mémoire (créé en mode 600)                         | `$SHENRON_DATA_DIR/memory.sqlite` |
+| `SHENRON_MEMORY_AGENT`  | préfixe de l'agent-id : `<préfixe>/<propriétaire>`                      | `shenron`                         |
+| `SHENRON_MEMORY_RECALL` | souvenirs joints à un tour (0–20 ; 0 écrit sans rappeler)               | `5`                               |
+| `SHENRON_MEMORY_REMOTE` | `on` laisse les backends distants (`gemini-web`) recevoir les souvenirs | coupé : backends locaux seulement |
 
 ## Bot Discord — `apps/bot/src/lib/env.ts`
 
