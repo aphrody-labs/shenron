@@ -15,6 +15,10 @@ import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
+import {
+  PUBLIC_TEMPLATE_DOCUMENTS,
+  templateProblems,
+} from "@shenron/db/agent-homes/public-template";
 
 export const PLUGIN_FORMATS = ["json", "md", "txt", "html"] as const;
 export type PluginFormat = (typeof PLUGIN_FORMATS)[number];
@@ -139,20 +143,48 @@ export function frontmatter(text: string): Record<string, string> {
 
 const sha256 = (data: string) => createHash("sha256").update(data).digest("hex");
 
-/** Lit tout le plugin sous `root`. */
-export async function readPluginBundle(root: string): Promise<PluginBundle> {
-  const paths = (await listFiles(root)).toSorted();
-  const files: PluginFile[] = await Promise.all(
-    paths.map(async (path) => {
-      const buffer = await readFile(join(root, path));
-      return {
-        path,
-        bytes: buffer.byteLength,
-        sha256: createHash("sha256").update(buffer).digest("hex"),
-        text: buffer.toString("utf8"),
-      };
-    }),
+/** Folder of the bundle (and of the archive under `shenron/`) carrying the public agent home. */
+export const PLUGIN_AGENT_HOME_DIR = "agent-home";
+
+const fileOf = (path: string, buffer: Buffer): PluginFile => ({
+  path,
+  bytes: buffer.byteLength,
+  sha256: createHash("sha256").update(buffer).digest("hex"),
+  text: buffer.toString("utf8"),
+});
+
+/**
+ * The public agent home template as plugin files under `agent-home/`, after the guard of every
+ * public artifact (`templateProblems`: no private entry, `USER.md` with no user filled in).
+ */
+export function agentHomeFiles(): PluginFile[] {
+  const problems = templateProblems(PUBLIC_TEMPLATE_DOCUMENTS);
+  if (problems.length)
+    throw new Error(`agent home template cannot be published: ${problems.join("; ")}`);
+  return Object.entries(PUBLIC_TEMPLATE_DOCUMENTS).map(([name, text]) =>
+    fileOf(`${PLUGIN_AGENT_HOME_DIR}/${name}`, Buffer.from(text, "utf8")),
   );
+}
+
+/**
+ * Lit tout le plugin sous `root`. `agentHome` y ajoute le gabarit public d'agent home sous
+ * `agent-home/` (servi, indexé et archivé comme le reste).
+ */
+export async function readPluginBundle(
+  root: string,
+  o: { agentHome?: boolean } = {},
+): Promise<PluginBundle> {
+  const paths = (await listFiles(root))
+    .filter((path) => !(o.agentHome && path.startsWith(`${PLUGIN_AGENT_HOME_DIR}/`)))
+    .toSorted();
+  const read: PluginFile[] = await Promise.all(
+    paths.map(async (path) => fileOf(path, await readFile(join(root, path)))),
+  );
+  const files = o.agentHome
+    ? [...read, ...agentHomeFiles()].toSorted((a, b) =>
+        a.path < b.path ? -1 : a.path > b.path ? 1 : 0,
+      )
+    : read;
   const manifestFile = files.find((f) => f.path === MANIFEST);
   const manifest = manifestFile
     ? (JSON.parse(manifestFile.text) as { name?: string; version?: string; description?: string })
@@ -188,7 +220,7 @@ export async function readPluginBundle(root: string): Promise<PluginBundle> {
  */
 export function createPluginPort(
   root: string,
-  o: { ttlMs?: number; archiver?: PluginArchiver } = {},
+  o: { ttlMs?: number; archiver?: PluginArchiver; agentHome?: boolean } = {},
 ): PluginPort {
   const ttl = o.ttlMs ?? 10_000;
   let cached: { at: number; bundle: Promise<PluginBundle> } | null = null;
@@ -212,7 +244,7 @@ export function createPluginPort(
     load() {
       const now = Date.now();
       if (!cached || now - cached.at > ttl) {
-        const bundle = readPluginBundle(root);
+        const bundle = readPluginBundle(root, { agentHome: o.agentHome });
         cached = { at: now, bundle };
         bundle.catch(() => {
           if (cached?.bundle === bundle) cached = null;
@@ -263,6 +295,8 @@ export interface PluginUrls {
   exports: Record<PluginFormat, string>;
   /** Gzipped tarball of the whole plugin, rooted at `shenron/`. */
   archive: string;
+  /** One-shot install and configuration prompt for agy (`install/agy.md`, rendered). */
+  agyPrompt: string;
   file(path: string, format?: PluginFormat | "raw"): string;
 }
 
@@ -278,6 +312,7 @@ export function pluginApiUrls(origin: string): PluginUrls {
       html: `${base}/export/html`,
     },
     archive: `${base}/archive.tar.gz`,
+    agyPrompt: `${base}/agy.md`,
     file: (path, format) =>
       `${base}/file?path=${encodeURIComponent(path)}${format && format !== "raw" ? `&format=${format}` : ""}`,
   };
@@ -332,6 +367,8 @@ export function pluginIndex(bundle: PluginBundle, origin: string) {
     install: {
       claude: "claude plugin marketplace add <repository> && claude plugin install shenron@shenron",
       agy: `mkdir -p ~/.shenron-plugin && curl -fsSL ${urls.archive} | tar -xz -C ~/.shenron-plugin && agy plugin install ~/.shenron-plugin/${PLUGIN_ARCHIVE_ROOT}`,
+      agyPrompt: urls.agyPrompt,
+      agyFull: `agy -i "$(curl -fsSL ${urls.agyPrompt})"`,
     },
     skills: bundle.entries
       .filter((e) => e.kind === "skill")
@@ -518,6 +555,34 @@ export function pluginArchiveEntries(bundle: PluginBundle): Record<string, strin
   const entries: Record<string, string> = {};
   for (const file of bundle.files) entries[`${PLUGIN_ARCHIVE_ROOT}/${file.path}`] = file.text;
   return entries;
+}
+
+// ── agy install prompt ────────────────────────────────────────────────────────
+
+/** Source of the agy prompt inside the plugin; `{{name}}` placeholders are filled when served. */
+export const PLUGIN_AGY_PROMPT = "install/agy.md";
+
+/**
+ * The agy install prompt for `origin`: placeholders `{{origin}}`, `{{archive}}`, `{{prompt}}`,
+ * `{{mcp}}`, `{{version}}`, `{{revision}}` filled, the leading maintainer comment dropped.
+ * `null` when the plugin carries no prompt.
+ */
+export function renderAgyPrompt(bundle: PluginBundle, origin: string): Rendered | null {
+  const source = findPluginFile(bundle, PLUGIN_AGY_PROMPT);
+  if (!source) return null;
+  const urls = pluginApiUrls(origin);
+  const values: Record<string, string> = {
+    origin: origin.replace(/\/+$/, ""),
+    archive: urls.archive,
+    prompt: urls.agyPrompt,
+    mcp: `${origin.replace(/\/+$/, "")}/mcp`,
+    version: bundle.version,
+    revision: bundle.sha256.slice(0, 12),
+  };
+  const body = source.text
+    .replace(/^<!--[\s\S]*?-->\s*/, "")
+    .replace(/\{\{(\w+)\}\}/g, (all, name: string) => values[name] ?? all);
+  return { body, contentType: MIME.md! };
 }
 
 /** Le fichier `path` du plugin, ou `null` (chemin inconnu : aucune lecture hors de l'index). */

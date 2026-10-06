@@ -28,7 +28,14 @@ export const PluginIndexResponse = z
     /** Gzipped tarball of the plugin, rooted at `shenron/` (`agy plugin install`). */
     archive: z.string(),
     /** Install commands per agent CLI. */
-    install: z.object({ claude: z.string(), agy: z.string() }),
+    install: z.object({
+      claude: z.string(),
+      agy: z.string(),
+      /** One prompt that makes agy install and configure everything (Aphrody, plugin, MCP, agent home). */
+      agyPrompt: z.string(),
+      /** `agy -i "$(curl …agy.md)"`. */
+      agyFull: z.string(),
+    }),
     skills: z.array(PluginEntrySchema),
     agents: z.array(PluginEntrySchema),
     files: z.array(

@@ -87,10 +87,29 @@ describe("plugin servi par le site", () => {
       "shenron/mcp_config.json",
       "shenron/.claude-plugin/plugin.json",
       "shenron/skills/dragon-ball/SKILL.md",
+      "shenron/agent-home/SOUL.md",
+      "shenron/agent-home/USER.md",
     ])
       expect(files.has(path)).toBe(true);
     const again = await GET(
       new Request(`${ORIGIN}/plugin.tar.gz`, { headers: { "if-none-match": etag } }),
+    );
+    expect(again.status).toBe(304);
+  });
+
+  test("/agy.md sert le prompt d'installation agy rendu sur l'URL publique, avec ETag", async () => {
+    const { SITE_URL } = await import("../src/lib/config");
+    const GET = (await import("../src/app/agy.md/route")).GET;
+    const res = await GET(new Request("https://localhost:5011/agy.md"));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toStartWith("text/markdown");
+    const text = await res.text();
+    expect(text).not.toMatch(/\{\{\w+\}\}|localhost:5011/);
+    expect(text).toContain(`${SITE_URL}/api/public/plugin/archive.tar.gz`);
+    expect(text).toContain("agy plugin install ~/.shenron-plugin/shenron");
+    const etag = res.headers.get("etag")!;
+    const again = await GET(
+      new Request(`${ORIGIN}/agy.md`, { headers: { "if-none-match": etag } }),
     );
     expect(again.status).toBe(304);
   });

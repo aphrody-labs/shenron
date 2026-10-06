@@ -506,6 +506,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const pluginPort = pluginRoot
     ? createPluginPort(pluginRoot, {
         archiver: (entries) => new Bun.Archive(entries, { compress: "gzip", level: 9 }).bytes(),
+        agentHome: true,
       })
     : null;
   const engine = createChatEngine({

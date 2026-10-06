@@ -15,6 +15,11 @@ import {
   renderPluginFile,
   resolvePluginRoot,
 } from "../src/plugin";
+import { AGENT_HOME_DOCUMENTS } from "@shenron/db/agent-homes/types";
+import {
+  PUBLIC_TEMPLATE_DOCUMENTS,
+  templateProblems,
+} from "@shenron/db/agent-homes/public-template";
 import { createShenronApi } from "../src/server";
 import { basePorts } from "./support/ports";
 
@@ -156,9 +161,12 @@ const archiver = (entries: Record<string, string>) =>
   new Bun.Archive(entries, { compress: "gzip", level: 9 }).bytes();
 
 describe("plugin endpoints", () => {
-  const api = createShenronApi(basePorts({ plugin: createPluginPort(REPO_PLUGIN, { archiver }) }), {
-    service: "shenron-site",
-  });
+  const api = createShenronApi(
+    basePorts({ plugin: createPluginPort(REPO_PLUGIN, { archiver, agentHome: true }) }),
+    {
+      service: "shenron-site",
+    },
+  );
 
   test("index, exports in four formats and files, with a revalidating ETag", async () => {
     const index = await api.request("https://dragonballfr.com/api/public/plugin");
@@ -196,7 +204,7 @@ describe("plugin endpoints", () => {
     const res = await api.request("https://dragonballfr.com/api/public/plugin/archive.tar.gz");
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toBe("application/gzip");
-    const bundle = await readPluginBundle(REPO_PLUGIN);
+    const bundle = await readPluginBundle(REPO_PLUGIN, { agentHome: true });
     const etag = res.headers.get("etag")!;
     expect(etag).toBe(`"${bundle.sha256}"`);
     const files = await new Bun.Archive(await res.bytes()).files();
@@ -204,6 +212,10 @@ describe("plugin endpoints", () => {
     expect(paths).toEqual(bundle.files.map((f) => `shenron/${f.path}`).toSorted());
     expect(paths).toContain("shenron/plugin.json");
     expect(paths).toContain("shenron/mcp_config.json");
+    for (const name of AGENT_HOME_DOCUMENTS) expect(paths).toContain(`shenron/agent-home/${name}`);
+    const user = await files.get("shenron/agent-home/USER.md")!.text();
+    expect(templateProblems({ ...PUBLIC_TEMPLATE_DOCUMENTS, "USER.md": user })).toEqual([]);
+    expect(user).toMatch(/^address_as: ""$/m);
     expect(await files.get("shenron/.claude-plugin/plugin.json")!.text()).toBe(
       bundle.files.find((f) => f.path === ".claude-plugin/plugin.json")!.text,
     );
@@ -234,6 +246,45 @@ describe("plugin endpoints", () => {
     expect(body.skills.every((s) => s.url.startsWith("https://dragonballfr.com/"))).toBe(true);
     const md = await site.request("https://localhost:5011/api/public/plugin/export/md");
     expect(await md.text()).not.toContain("localhost");
+  });
+
+  test("the agy prompt is rendered for the public origin, every placeholder filled, with an ETag", async () => {
+    const site = createShenronApi(
+      basePorts({
+        plugin: createPluginPort(REPO_PLUGIN),
+        publicOrigin: "https://dragonballfr.com",
+      }),
+      { service: "shenron-site" },
+    );
+    const res = await site.request("https://localhost:5011/api/public/plugin/agy.md");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toStartWith("text/markdown");
+    const text = await res.text();
+    expect(text).toStartWith("# Installer et configurer Shenron dans agy");
+    expect(text).not.toMatch(/\{\{\w+\}\}|localhost/);
+    for (const needle of [
+      "https://dragonballfr.com/api/public/plugin/archive.tar.gz",
+      "https://dragonballfr.com/mcp",
+      "https://downloads.aphrody.com/install.sh",
+      "https://downloads.aphrody.com/install.ps1",
+      "agy plugin install ~/.shenron-plugin/shenron",
+      "agy mcp add aphrody aphrody-mcp",
+      "<!-- shenron:begin",
+      "<!-- shenron:end -->",
+      "@./shenron/SOUL.md",
+      'agy -i "$(curl -fsSL https://dragonballfr.com/api/public/plugin/agy.md)"',
+    ])
+      expect(text).toContain(needle);
+    const etag = res.headers.get("etag")!;
+    const again = await site.request("/api/public/plugin/agy.md", {
+      headers: { "if-none-match": etag },
+    });
+    expect(again.status).toBe(304);
+    const index = (await (await site.request("/api/public/plugin")).json()) as {
+      install: { agyPrompt: string; agyFull: string };
+    };
+    expect(index.install.agyPrompt).toBe("https://dragonballfr.com/api/public/plugin/agy.md");
+    expect(index.install.agyFull).toContain(index.install.agyPrompt);
   });
 
   test("without a configured origin: forwarded headers only behind a loopback proxy", () => {

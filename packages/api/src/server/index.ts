@@ -11,6 +11,7 @@
  * Middleware order: client IP → CORS → method gate → rate limit (direct loopback exempt) →
  * owner/admin auth → zod validation → public cache (ETag, 304) → handler.
  */
+import { createHash } from "node:crypto";
 import type { Server, ServerWebSocket, WebSocketHandler } from "bun";
 import type { Kind, Lang, Lexicon, Term } from "@shenron/lexicon";
 import { lexicon as embeddedLexicon } from "@shenron/lexicon/data";
@@ -44,6 +45,7 @@ import {
   PLUGIN_ARCHIVE_ROOT,
   pluginIndex,
   pluginPublicOrigin,
+  renderAgyPrompt,
   renderPluginExport,
   renderPluginFile,
   type PluginFormat,
@@ -447,6 +449,13 @@ export function createShenronApi(
   add(endpoints.pluginIndex, plugin !== null, async (ctx) => {
     const bundle = await fromPort(() => plugin!.load());
     return json(pluginIndex(bundle, pluginOrigin(ctx)), 200);
+  });
+  add(endpoints.pluginAgyPrompt, plugin !== null, async (ctx) => {
+    const bundle = await fromPort(() => plugin!.load());
+    const rendered = renderAgyPrompt(bundle, pluginOrigin(ctx));
+    if (!rendered) return json(NOT_FOUND, 404);
+    const etag = `"${createHash("sha256").update(rendered.body).digest("hex")}"`;
+    return pluginText(ctx, etag, () => rendered);
   });
   add(endpoints.pluginArchive, typeof plugin?.archive === "function", async (ctx) => {
     const bundle = await fromPort(() => plugin!.load());

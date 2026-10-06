@@ -30,6 +30,7 @@
     "./conversations/redact": "./src/conversations/redact.ts",
     "./agent-homes": "./src/agent-homes/index.ts",
     "./agent-homes/types": "./src/agent-homes/types.ts",
+    "./agent-homes/public-template": "./src/agent-homes/public-template.ts",
     "./vfs/build": "./src/vfs/build.ts"
   },
   "scripts": {
@@ -75,6 +76,7 @@
       "./conversations/redact": "pure",
       "./agent-homes": "bun",
       "./agent-homes/types": "pure",
+      "./agent-homes/public-template": "pure",
       "./vfs/build": "bun"
     }
   }

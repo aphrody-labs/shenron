@@ -7,6 +7,8 @@
  * private data guard. Runtime class: `bun`.
  */
 import { TEMPLATE_DOCUMENTS } from "./template.generated";
+
+export { templateProblems } from "./public-template";
 import { AGENT_HOME_DOCUMENTS, type AgentHomeDocument, type AgentHomeTemplate } from "./types";
 
 /** Revision of a set of documents: sha256 over the ordered names and contents. */
@@ -37,35 +39,4 @@ export async function readAgentTemplate(dir: string): Promise<AgentHomeTemplate 
     files[name] = await file.text();
   }
   return template(files);
-}
-
-/**
- * Problems that keep a template out of a public artifact: a missing document, a private file
- * (`MEMORY.md`, `memory/`, a database), or a filled-in `USER.md` (a template carries no user).
- */
-export function templateProblems(
-  files: Partial<Record<string, string>>,
-  extraEntries: readonly string[] = [],
-): string[] {
-  const problems: string[] = [];
-  for (const name of AGENT_HOME_DOCUMENTS)
-    if (!files[name]?.trim()) problems.push(`missing ${name}`);
-  for (const entry of extraEntries)
-    if (/(?:^|\/)(?:MEMORY\.md|memory|\.aphrody)(?:\/|$)|\.(?:sqlite|db|env)$/i.test(entry))
-      problems.push(`private entry ${entry}`);
-  const userMd = files["USER.md"] ?? "";
-  for (const key of [
-    "agent_id",
-    "address_as",
-    "timezone",
-    "avatar",
-    "updated_at",
-    "template_revision",
-  ]) {
-    const value = new RegExp(`^${key}:\\s*(.*)$`, "m").exec(userMd)?.[1]?.trim() ?? "";
-    if (value && value !== '""' && value !== "''") problems.push(`USER.md ${key} is filled in`);
-  }
-  if (/^preferences:\s*(?:\n\s+- |\[\s*[^\]\s])/m.test(userMd))
-    problems.push("USER.md preferences are filled in");
-  return problems;
 }

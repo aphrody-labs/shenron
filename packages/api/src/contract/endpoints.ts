@@ -148,6 +148,16 @@ export const endpoints = {
     binary: true,
     native: true,
   },
+  pluginAgyPrompt: {
+    id: "pluginAgyPrompt",
+    method: "get",
+    path: "/api/public/plugin/agy.md",
+    auth: "public",
+    response: z.string().meta({ id: "PluginAgyPrompt" }),
+    cache: { maxAgeSeconds: 60 },
+    binary: true,
+    native: true,
+  },
   pluginArchive: {
     id: "pluginArchive",
     method: "get",

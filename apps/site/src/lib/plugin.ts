@@ -27,7 +27,7 @@ let port: PluginPort | null | undefined;
 export function sitePluginPort(): PluginPort | null {
   if (port === undefined) {
     const root = resolvePluginRoot(process.env);
-    port = root ? createPluginPort(root, { archiver: bunArchiver }) : null;
+    port = root ? createPluginPort(root, { archiver: bunArchiver, agentHome: true }) : null;
   }
   return port;
 }
