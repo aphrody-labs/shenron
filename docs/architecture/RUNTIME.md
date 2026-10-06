@@ -53,9 +53,10 @@ shenron-server paths | doctor | init | version
   `SHENRON_CHAT_BACKENDS` (défaut `local` hors production) sur l'URL compatible OpenAI
   déclarée (`APHRODY_AI_CHAT_BASE_URL`, `APHRODY_SHENRON_LLM_BASE_URL`,
   `APHRODY_LOCAL_MODEL_URL` : llama-server, aphrody-llama-daemon) ; sans elle, le profil
-  desktop lance son modèle géré (`apps/server/src/chat-model.ts` : Qwen3-4B Instruct 2507 et
-  l'adaptateur LoRA `shenron-chat-v2` sur un `llama-server` enfant, base téléchargée une fois
-  dans `<home>/models/`, voir `docs/operations/ENV.md`). Une capacité absente
+  desktop lance ses modèles gérés (`apps/server/src/chat-model.ts` : un `llama-server` enfant
+  en mode routeur, `shenron-chat-v2` = Qwen3-4B Instruct 2507 + adaptateur LoRA par défaut,
+  `gemma4-e2b` téléchargé dans `<home>/models/`, plus `gemini-web/flash` distant ; voir
+  `docs/operations/ENV.md`). Une capacité absente
   désactive son groupe sans arrêter le serveur. En production, le wiki reste au site
   (PostgreSQL), seuls les nœuds publics du VFS sont servis et aucun propriétaire implicite
   de boucle locale n'existe (`SHENRON_LOCAL_OWNER` vide).

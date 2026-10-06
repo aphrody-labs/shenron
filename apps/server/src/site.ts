@@ -114,13 +114,17 @@ export async function serveSite(
   const layout = locateSite(paths);
   const nextPort = freePort();
   const backend = await startBackend(paths, process.env, { payloadDir: options.payloadDir });
-  const api = localApi(
+  const base = localApi(
     paths,
     () => ({ site: true, buildId: layout.buildId, groups: backend.groups() }),
     process.env,
     undefined,
     backend.koharu,
+    backend.chatModel,
   );
+  // `/api/local/agent-home*` (the agent homes of this machine) before the other local APIs.
+  const api: typeof base = async (request, url, isReady, peer) =>
+    (await backend.agentHomes?.handle(request, url, peer)) ?? base(request, url, isReady, peer);
   let ready = false;
   const front = serveFront({
     hostname: options.hostname,

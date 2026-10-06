@@ -22,14 +22,16 @@ import type {
   ChatRequestParsed,
   ChatToolEvent,
   Citation,
+  ChatModelEntry,
   ModelsResponse,
   OcrResponse,
 } from "../contract/chat";
 import type { MemoryEntry } from "../contract/memory";
 import type { MemoryPort } from "../server";
-import type { AgentHome } from "./home";
+import { type AgentHome, homeUserNote } from "./home";
 import { BackendUnavailable, type LlmBackend, type LlmMessage } from "./llm";
 import { type McpClient, pickTools, toolItems } from "./mcp";
+import type { PluginPort } from "../plugin";
 import { extractFacts, memoryBlock, newFacts, rankMemories } from "./memory";
 
 export interface ChatEngineDeps {
@@ -39,7 +41,8 @@ export interface ChatEngineDeps {
   /** Only public VFS rows (public server); default false. */
   publicOnly?: boolean;
   backends: readonly LlmBackend[];
-  home: () => AgentHome;
+  /** Agent home of an owner (`discord:<user_id>`, `local`): persona and the user's fields. */
+  home: (ownerId: string) => AgentHome;
   mcp?: McpClient | null;
   ocr?: { recognize(bytes: Uint8Array, mediaType: string): Promise<OcrResponse> } | null;
   store?: ConversationStore | null;
@@ -49,6 +52,13 @@ export interface ChatEngineDeps {
   memoryRecall?: number;
   /** `false` keeps the recalled memories from remote backends (`remoteBackends`); default true. */
   memoryRemote?: boolean;
+  /**
+   * Local models this server manages (`shenron-chat-v2`, `gemma4-e2b` on the `local`
+   * backend), with their state; absent: one entry per configured `local` backend.
+   */
+  catalog?: (() => Promise<ChatModelEntry[]>) | null;
+  /** The `shenron` plugin: its index (skills, agents) joins the system prompt of every model. */
+  plugin?: PluginPort | null;
   /** Backends that send the prompt off this machine (default `gemini-web`). */
   remoteBackends?: ReadonlySet<string>;
   defaultPersona?: string;
@@ -63,6 +73,28 @@ const CITATION_RULE =
 
 /** Backends answering from a remote service: no memory in their prompt with `memoryRemote: false`. */
 export const REMOTE_BACKENDS: ReadonlySet<string> = new Set(["gemini-web"]);
+
+/** Backends whose models are listed by their own id (`gemini-web/flash`). */
+const REMOTE_MODEL_BACKENDS: ReadonlySet<string> = new Set(["gemini-web"]);
+
+/**
+ * The plugin index for the system prompt: what the `shenron` plugin offers (skills, agents),
+ * so every model answers as Shenron with the same references. Rebuilt when its SHA-256 changes.
+ */
+export function pluginBlock(bundle: {
+  name: string;
+  version: string;
+  entries: readonly { kind: string; name: string; description: string }[];
+}): string {
+  if (bundle.entries.length === 0) return "";
+  const lines = bundle.entries.map(
+    (e) => `- ${e.kind === "agent" ? "agent" : "skill"} ${e.name} : ${e.description.slice(0, 240)}`,
+  );
+  return [
+    `Plugin ${bundle.name} ${bundle.version} (dragonballfr.com) : tu disposes de ces compétences et références Dragon Ball ; applique leur doctrine (sources canoniques, citations, aucune invention).`,
+    ...lines,
+  ].join("\n");
+}
 
 /** Newest memories of the owner a turn scans for recall and duplicates. */
 const MEMORY_SCAN = 200;
@@ -111,17 +143,92 @@ export function systemPrompt(
     ? base.slice(0, -INJECTION_GUARD.length).trimEnd()
     : base;
   const withRule = `${body}\n${CITATION_RULE} ${INJECTION_GUARD}`;
-  return home.persona ? withHomePersona(withRule, home.persona) : withRule;
+  const withPersona = home.persona ? withHomePersona(withRule, home.persona) : withRule;
+  const user = homeUserNote(home.user ?? null);
+  if (!user) return withPersona;
+  const core = withPersona.endsWith(INJECTION_GUARD)
+    ? withPersona.slice(0, -INJECTION_GUARD.length).trimEnd()
+    : withPersona;
+  return `${core}\n${user}\n${INJECTION_GUARD}`;
 }
 
+const HOME_TTL_MS = 30_000;
+
 export function createChatEngine(deps: ChatEngineDeps) {
-  let cachedHome: AgentHome | null = null;
-  const home = () => (cachedHome ??= deps.home());
+  // One read of an owner's agent home per 30 s (its USER.md may be edited meanwhile).
+  const homes = new Map<string, { at: number; home: AgentHome }>();
+  const home = (ownerId: string): AgentHome => {
+    const cached = homes.get(ownerId);
+    if (cached && Date.now() - cached.at < HOME_TTL_MS) return cached.home;
+    const value = deps.home(ownerId);
+    if (homes.size > 1000) homes.clear();
+    homes.set(ownerId, { at: Date.now(), home: value });
+    return value;
+  };
+
+  async function catalog(
+    backends: { id: string; available: boolean; model: string | null; detail?: string }[],
+  ): Promise<ChatModelEntry[]> {
+    const local = backends.find((b) => b.id === "local");
+    const managed = deps.catalog ? await deps.catalog().catch(() => []) : null;
+    const entries: ChatModelEntry[] = [];
+    for (const entry of managed ?? []) entries.push({ ...entry, default: false });
+    if (!managed && local) {
+      entries.push({
+        id: local.model ?? "local",
+        label: local.model ?? "local",
+        backend: "local",
+        available: local.available,
+        default: false,
+        remote: false,
+        state: local.available ? "ready" : "unavailable",
+        ...(local.detail ? { detail: local.detail } : {}),
+      });
+    }
+    for (const b of backends.filter((backend) => REMOTE_MODEL_BACKENDS.has(backend.id))) {
+      entries.push({
+        id: b.model ?? b.id,
+        label: b.id === "gemini-web" ? "Gemini (web)" : b.id,
+        backend: b.id,
+        available: b.available,
+        default: false,
+        remote: true,
+        state: b.available ? "ready" : "unavailable",
+        ...(b.detail ? { detail: b.detail } : {}),
+      });
+    }
+    const first = entries.find((e) => e.available && !e.remote) ?? entries.find((e) => e.available);
+    if (first) first.default = true;
+    return entries.toSorted((a, b) => Number(b.default) - Number(a.default));
+  }
+
+  /** Backend and upstream model of `request.model`; `null`: no such model here. */
+  function route(model: string): { backend: LlmBackend; model: string | null } | null {
+    const remote = deps.backends.find((b) => REMOTE_MODEL_BACKENDS.has(b.id) && b.model === model);
+    if (remote) return { backend: remote, model: null };
+    const local = deps.backends.find((b) => b.id === "local");
+    if (!local) return null;
+    return { backend: local, model };
+  }
+
+  let pluginCache: { sha256: string; text: string } | null = null;
+  async function pluginContext(): Promise<string> {
+    if (!deps.plugin) return "";
+    try {
+      const bundle = await deps.plugin.load();
+      if (pluginCache?.sha256 !== bundle.sha256)
+        pluginCache = { sha256: bundle.sha256, text: pluginBlock(bundle) };
+      return pluginCache.text;
+    } catch {
+      return "";
+    }
+  }
 
   async function models(): Promise<ModelsResponse> {
     const backends = await Promise.all(
       deps.backends.map(async (b) => ({ id: b.id, ...(await b.status()) })),
     );
+    const listed = await catalog(backends);
     let embedder: ModelsResponse["embedder"] = {
       available: false,
       model: deps.embedderModel ?? "none",
@@ -138,7 +245,13 @@ export function createChatEngine(deps: ChatEngineDeps) {
         };
       }
     }
-    return { order: deps.backends.map((b) => b.id), backends, embedder };
+    return {
+      order: deps.backends.map((b) => b.id),
+      backends,
+      models: listed,
+      defaultModel: listed.find((m) => m.default)?.id ?? null,
+      embedder,
+    };
   }
 
   async function* run(
@@ -309,11 +422,17 @@ export function createChatEngine(deps: ChatEngineDeps) {
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content.slice(0, 4000) }));
     }
     const sources = sourcesBlock(promptItems, deps.maxContextChars ?? 7000);
+    const plugin = await pluginContext();
     const promptFor = (withMemories: boolean): LlmMessage[] => {
       const memories = withMemories ? memoryBlock(recalled) : "";
       const context = [memories, sources ? `Sources :\n\n${sources}` : ""].filter(Boolean);
       return [
-        { role: "system", content: systemPrompt(persona, request.surface, home(), chitchat) },
+        {
+          role: "system",
+          content: [systemPrompt(persona, request.surface, home(ownerId), chitchat), plugin]
+            .filter(Boolean)
+            .join("\n\n"),
+        },
         ...history.slice(-8),
         {
           role: "user",
@@ -331,10 +450,16 @@ export function createChatEngine(deps: ChatEngineDeps) {
 
     // 6. Generation with fallback.
     const fallbacks: { backend: string; error: string }[] = [];
-    const order =
-      request.backend === "auto"
+    const routed = request.model ? route(request.model) : null;
+    const order = request.model
+      ? routed
+        ? [routed.backend]
+        : []
+      : request.backend === "auto"
         ? deps.backends
         : deps.backends.filter((b) => b.id === request.backend);
+    if (request.model && !routed)
+      fallbacks.push({ backend: request.model, error: "unknown model on this server" });
     let answer = "";
     let used: LlmBackend | null = null;
     let firstTokenMs: number | null = null;
@@ -346,7 +471,10 @@ export function createChatEngine(deps: ChatEngineDeps) {
         const prompt = remote.has(backend.id) ? remoteMessages : messages;
         for await (const delta of backend.stream(
           prompt,
-          { maxTokens: deps.maxTokens ?? 700 },
+          {
+            maxTokens: deps.maxTokens ?? 700,
+            ...(routed?.backend === backend && routed.model ? { model: routed.model } : {}),
+          },
           signal,
         )) {
           if (!started_) {
@@ -354,7 +482,13 @@ export function createChatEngine(deps: ChatEngineDeps) {
             used = backend;
             injected = prompt === messages && recalled.length > 0;
             firstTokenMs = Math.round(performance.now() - started);
-            yield { type: "backend", data: { backend: backend.id, model: backend.model } };
+            yield {
+              type: "backend",
+              data: {
+                backend: backend.id,
+                model: routed?.backend === backend && routed.model ? routed.model : backend.model,
+              },
+            };
           }
           answer += delta;
           yield { type: "delta", data: { text: delta } };
@@ -382,6 +516,9 @@ export function createChatEngine(deps: ChatEngineDeps) {
         });
       }
     }
+    // The model that answered: the one requested on a shared server, else the backend's.
+    const usedModel =
+      used && routed?.backend === used && routed.model ? routed.model : (used?.model ?? null);
     if (signal.aborted) finishReason = "aborted";
     if (!used && finishReason === "stop") {
       yield {
@@ -441,7 +578,7 @@ export function createChatEngine(deps: ChatEngineDeps) {
         role: "assistant",
         content: answer,
         citations: storedCitations,
-        model: used?.model ?? used?.id ?? null,
+        model: usedModel ?? used?.id ?? null,
         createdAt: new Date(Date.parse(now) + 1).toISOString(),
         updatedAt: new Date(Date.parse(now) + 1).toISOString(),
         deletedAt: null,
@@ -494,7 +631,7 @@ export function createChatEngine(deps: ChatEngineDeps) {
         replyId,
         conversationId,
         backend: used?.id ?? "none",
-        model: used?.model ?? null,
+        model: usedModel,
         fallbacks,
         citations: citations.filter((c) => answer.includes(`[${c.n}]`)),
         usage: {

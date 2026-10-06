@@ -24,6 +24,8 @@ export interface LlmMessage {
 export interface LlmOptions {
   maxTokens?: number;
   temperature?: number;
+  /** Upstream model of this request (one server, several models: llama-server router mode). */
+  model?: string;
 }
 
 export interface LlmStatus {
@@ -139,7 +141,7 @@ export function createOpenAiBackend(o: {
           method: "POST",
           headers: headers(),
           body: JSON.stringify({
-            ...(o.model ? { model: o.model } : {}),
+            ...((options.model ?? o.model) ? { model: options.model ?? o.model } : {}),
             messages,
             stream: true,
             max_tokens: options.maxTokens ?? 700,

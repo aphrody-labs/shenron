@@ -8,8 +8,10 @@
  *                  `vfs/shenron-vfs.sqlite` (public build), `vfs/` beside the executable
  *   conversations  SHENRON_CHAT_PG_URL (PostgreSQL), else `<home>/data/conversations.sqlite`
  *                  (SHENRON_CHAT_STORE overrides the file, `off` disables it)
- *   agent home     the VFS `/home`, else APHRODY_WORKSPACE, else (outside production) the
- *                  public template of the payload (`home/`)
+ *   agent home     per user, outside production: `<home>/agents/<id>/` (./agent-home.ts: `local`
+ *                  until Discord sign-in, then `discord:<user_id>`; SHENRON_LOCAL_OWNER follows);
+ *                  shared persona: the VFS `/home`, else APHRODY_WORKSPACE, else (outside
+ *                  production) the public template of the payload (`home/`)
  *   OCR            APHRODY_BIN, else `aphrody` beside the executable, else on PATH
  *   MCP            SHENRON_MCP_URL, else the `shenron-mcp` sidecar shipped beside the
  *                  executable (SHENRON_MCP_BIN, `./`, `./binaries/`, as `shenron-desktop`
@@ -21,7 +23,7 @@
  *   memory         one per agent home (`discord:<id>`, `local`): `memoryLocation`, else
  *                  `<home>/data/memory.sqlite` (SHENRON_MEMORY_DB, SHENRON_MEMORY=off); Aphrody's
  *                  aphrody-memory through the native library (./memory.ts); none → group disabled
- *   chat           SHENRON_CHAT_BACKENDS (default `local` outside production): the
+ *   chat           SHENRON_CHAT_BACKENDS (default `local,gemini-web` outside production): the
  *                  OpenAI-compatible server declared by APHRODY_AI_CHAT_BASE_URL,
  *                  APHRODY_SHENRON_LLM_BASE_URL or APHRODY_LOCAL_MODEL_URL (llama-server,
  *                  aphrody-llama-daemon); none → the chat and models groups stay disabled.
@@ -36,8 +38,9 @@ import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createLocalApi, type LocalApi as HostApi, type MemoryLocation } from "@shenron/api/host";
 import type { LocalApiGroups } from "@shenron/api/contract";
-import { CHAT_BASE_MODEL } from "@shenron/config/chat-model";
+import { DEFAULT_CHAT_MODEL_ID, DEFAULT_LOCAL_CHAT_BACKENDS } from "@shenron/config/chat-model";
 
+import { type AgentHomes, openAgentHomes } from "./agent-home";
 import { type ChatModel, type ChatModelPlan, planChatModel, startChatModel } from "./chat-model";
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
@@ -111,12 +114,23 @@ export function planBackend(
   const mcp = siblingBinary(paths, "shenron-mcp", env.SHENRON_MCP_BIN);
   // The chat's own MCP tools (stdio) use the same shipped binary.
   if (mcp) out.SHENRON_MCP_BIN = mcp;
-  if (profile !== "production") out.SHENRON_CHAT_BACKENDS ??= "local";
+  // Local models first, then the Gemini web app when its client and cookies exist (remote).
+  if (profile !== "production") out.SHENRON_CHAT_BACKENDS ??= DEFAULT_LOCAL_CHAT_BACKENDS;
   const chatModel = planChatModel(paths, env);
   if (chatModel?.binary) {
     // Declared now (the groups are fixed at host creation); the model answers once loaded.
     out.APHRODY_LOCAL_MODEL_URL = chatModel.url;
-    out.APHRODY_AI_CHAT_MODEL ??= CHAT_BASE_MODEL.id;
+    out.APHRODY_AI_CHAT_MODEL ??= DEFAULT_CHAT_MODEL_ID;
+  }
+  // The `shenron` plugin (index in every chat prompt, `/api/public/plugin*`): the payload
+  // copy, beside the executable, else the checkout this source runs from.
+  if (!env.SHENRON_PLUGIN_DIR?.trim()) {
+    const plugin = [
+      o.payloadDir ? join(o.payloadDir, "plugin") : undefined,
+      join(paths.exeDir, "plugin"),
+      join(import.meta.dir, "..", "..", "..", "plugin"),
+    ].find((dir) => isFile(dir && join(dir, ".claude-plugin", "plugin.json")));
+    if (plugin) out.SHENRON_PLUGIN_DIR = plugin;
   }
   const lexique = o.payloadDir ? join(o.payloadDir, "data", LEXIQUE_FILE) : undefined;
   if (!env.SHENRON_LEXIQUE?.trim() && isFile(lexique)) out.SHENRON_LEXIQUE = lexique;
@@ -202,6 +216,10 @@ export interface Backend {
   host: HostApi | null;
   /** The editor engine bridge of `/api/local/koharu`. */
   koharu: KoharuBridge;
+  /** Managed local chat models (`/api/local/models`); `null` when off or external. */
+  chatModel: ChatModel | null;
+  /** Agent homes of this machine (`/api/local/agent-home`); `null` in production. */
+  agentHomes: AgentHomes | null;
   /** Variables the Next child adds to the process environment (the sidecar MCP URL). */
   nextEnv: Record<string, string>;
   /** Availability of each API group, the MCP sidecar's liveness included. */
@@ -218,10 +236,23 @@ export async function startBackend(
     spawnEngine?: Parameters<typeof koharuBridge>[0]["spawn"];
     /** Memory database of each agent home (agent home resolver); default `<home>/data/memory.sqlite`. */
     memoryLocation?: MemoryLocation;
+    /** Agent homes of this machine (default: opened under `<home>/agents` outside production). */
+    agentHomes?: AgentHomes | null;
   } = {},
 ): Promise<Backend> {
   const plan = planBackend(paths, env, o);
   const profile = profileOf(env);
+  // The active agent home sets the loopback owner (plan.env) before the host reads it.
+  let agentHomes: AgentHomes | null = o.agentHomes === undefined ? null : o.agentHomes;
+  if (o.agentHomes === undefined && profile !== "production") {
+    try {
+      agentHomes = openAgentHomes(paths, plan.env);
+    } catch (error) {
+      console.error(
+        JSON.stringify({ event: "shenron.agent_home.unavailable", error: String(error) }),
+      );
+    }
+  }
   const koharu = koharuBridge({
     binary: plan.koharuSdk,
     disabled: profile === "production" ? "désactivé en production" : undefined,
@@ -247,8 +278,17 @@ export async function startBackend(
     host = (o.createHost ?? createLocalApi)(plan.env, {
       service: profile === "desktop" ? "shenron-desktop" : "shenron-server",
       wiki: plan.wiki,
+      ...(chatModel ? { chatModels: chatModel.catalog } : {}),
       memory: nativeMemory(paths, plan.env),
-      ...(o.memoryLocation ? { memoryLocation: o.memoryLocation } : {}),
+      ...(agentHomes
+        ? {
+            agentHome: agentHomes.dirOf,
+            memoryLocation: o.memoryLocation ?? agentHomes.memoryLocation,
+            memoryAliases: agentHomes.memoryAliases,
+          }
+        : o.memoryLocation
+          ? { memoryLocation: o.memoryLocation }
+          : {}),
     });
   } catch (error) {
     console.error(JSON.stringify({ event: "shenron.api.unavailable", error: String(error) }));
@@ -256,6 +296,8 @@ export async function startBackend(
   return {
     host,
     koharu,
+    chatModel,
+    agentHomes,
     nextEnv: sidecar ? { SHENRON_MCP_URL: sidecar.url } : {},
     groups() {
       if (!host) return unavailableGroups(API_DOWN);

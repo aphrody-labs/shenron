@@ -136,7 +136,7 @@ const homeDir =
   profile === "complet"
     ? (process.env.APHRODY_WORKSPACE ??
       join(process.env.APHRODY_HOME ?? join(homedir(), ".aphrody"), "workspaces", "dbfr"))
-    : join(ROOT, "agent-home");
+    : join(ROOT, "templates/agent-home");
 const embedBase = process.env.APHRODY_AI_EMBED_BASE_URL;
 const embedder = embedBase ? createE5Embedder({ baseUrl: embedBase }) : null;
 if (!skip.has("home")) {
@@ -214,7 +214,7 @@ if (!skip.has("home")) {
   for (const p of pending) writer.add(p.row, visibility === "private" ? "private" : "public");
   writer.finish();
   report.home = {
-    dir: profile === "complet" ? "live agent home" : "agent-home/",
+    dir: profile === "complet" ? "live agent home" : "templates/agent-home/",
     files: docs.length,
     chunks: pending.length,
     embedded,

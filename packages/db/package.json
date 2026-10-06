@@ -28,13 +28,16 @@
     "./conversations": "./src/conversations/index.ts",
     "./conversations/types": "./src/conversations/types.ts",
     "./conversations/redact": "./src/conversations/redact.ts",
+    "./agent-homes": "./src/agent-homes/index.ts",
+    "./agent-homes/types": "./src/agent-homes/types.ts",
     "./vfs/build": "./src/vfs/build.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
     "test": "bun test",
     "audit:migrations": "bun scripts/migration-audit.ts --check",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check:agent-home-template": "bun scripts/agent-home-template.ts --check"
   },
   "dependencies": {
     "@aphrody/sql": "0.1.0",
@@ -70,6 +73,8 @@
       "./conversations": "bun",
       "./conversations/types": "pure",
       "./conversations/redact": "pure",
+      "./agent-homes": "bun",
+      "./agent-homes/types": "pure",
       "./vfs/build": "bun"
     }
   }

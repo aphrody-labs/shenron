@@ -52,6 +52,7 @@ import { backendsFromEnv, geminiCookieCandidates, type LlmBackend } from "../cha
 import { createStdioMcpClient } from "../chat/mcp";
 import { createPluginPort, resolvePluginRoot } from "../plugin";
 import { createCliOcr } from "../chat/ocr";
+import type { ChatModelEntry } from "../contract/chat";
 import type { LocalApiGroups, LocalApiGroupStatus } from "../contract/local";
 import type { RagHit, RagSearchQuery } from "../contract/schemas";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "../http";
@@ -318,7 +319,15 @@ export interface LocalApiOptions {
    * desktop signs in as `discord:<user_id>`): moved to the current id on first use.
    */
   memoryAliases?: ((agentId: string) => readonly string[]) | null;
+  /**
+   * Agent home resolver: the directory of an owner's own agent home (`discord:<user_id>`,
+   * `local`; native `aphrody-agent-home` layout), or `null` for the shared persona (the VFS
+   * `/home`, else APHRODY_WORKSPACE).
+   */
+  agentHome?: ((ownerId: string) => string | null) | null;
   fetch?: typeof fetch;
+  /** Local models the server manages (llama-server router of shenron-server), with their state. */
+  chatModels?: () => Promise<ChatModelEntry[]>;
 }
 
 /** SQLite file of the memory of agent home `agentId` (absolute path). */
@@ -491,22 +500,32 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
 
   // Only the backends this host can call: none disables the chat and models routes.
   const backends = usableChatBackends(env);
+  // Le binaire autonome ne sert le plugin que si `SHENRON_PLUGIN_DIR` le désigne.
+  const pluginDir = envString(env, "SHENRON_PLUGIN_DIR");
+  const pluginRoot = pluginDir ? resolvePluginRoot({ SHENRON_PLUGIN_DIR: pluginDir }) : null;
+  const pluginPort = pluginRoot ? createPluginPort(pluginRoot) : null;
   const engine = createChatEngine({
     rag: opened?.rag ?? null,
     embed: embedder?.query ?? null,
     embedderModel: embedModel,
     publicOnly,
     backends,
-    home: () =>
-      opened && opened.vfs.exists("/home/SOUL.md")
+    home: (ownerId) => {
+      const own = options.agentHome?.(ownerId);
+      if (own) return agentHomeFromDir(own);
+      return opened && opened.vfs.exists("/home/SOUL.md")
         ? agentHomeFromVfs(opened.vfs)
-        : agentHomeFromDir(paths.agentHome),
+        : agentHomeFromDir(paths.agentHome);
+    },
     mcp,
     ocr: ocrPort,
     store: conversations,
     memory,
     memoryRecall: memorySettings.recall,
     memoryRemote: memorySettings.remote,
+    // Every model reads the plugin index; the managed local models list themselves.
+    plugin: pluginPort,
+    catalog: options.chatModels ?? null,
     defaultPersona: envString(env, "SHENRON_CHAT_PERSONA") ?? "shenron",
     log: (event) => console.error(JSON.stringify(event)),
   });
@@ -515,10 +534,6 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const wiki = opened && options.wiki !== false ? opened.wiki : null;
   const assetsDir = envString(env, "SHENRON_ASSETS_DIR") ?? null;
   const mcpUrl = envString(env, "SHENRON_MCP_URL");
-  // Le binaire autonome ne sert le plugin que si `SHENRON_PLUGIN_DIR` le désigne.
-  const pluginDir = envString(env, "SHENRON_PLUGIN_DIR");
-  const pluginRoot = pluginDir ? resolvePluginRoot({ SHENRON_PLUGIN_DIR: pluginDir }) : null;
-  const pluginPort = pluginRoot ? createPluginPort(pluginRoot) : null;
   const api = createShenronApi(
     {
       wiki,

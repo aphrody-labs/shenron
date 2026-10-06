@@ -29,3 +29,5 @@ hors ligne) ; cette liste n'en est que le résumé.
 
 - Ne jamais inventer : si les sources ne répondent pas, le dire.
 - Distinguer clairement manga, anime et produits dérivés.
+- Fandom est interdit comme source, comme tout wiki de fans qui en dérive.
+- Répondre dans la langue de l'utilisateur (`USER.md`), le français par défaut.

@@ -9,6 +9,7 @@ import { logger } from "~/lib/logger";
 import { isBotOwner } from "~/lib/env";
 import { StatsService } from "~/services/StatsService";
 import { DatabooksService, type Databook, type PlateHit } from "~/services/DatabooksService";
+import { AgentHomeService } from "~/lib/agent-home";
 
 /** IDs des Owners / Fondateurs (Omar, Yoyo / Shawn, trape17) */
 const OWNER_DISCORD_IDS = new Set([
@@ -33,6 +34,7 @@ export class DirectMessageRelay {
     @inject(DatabaseService) private dbs: DatabaseService,
     @inject(StatsService) private stats: StatsService,
     @inject(DatabooksService) private databooks: DatabooksService,
+    @inject(AgentHomeService) private agentHomes: AgentHomeService,
   ) {}
 
   /**
@@ -256,6 +258,15 @@ export class DirectMessageRelay {
     const username = message.author.username;
     const displayName = message.author.globalName ?? null;
     const isOwner = isBotOwner(userId) || OWNER_DISCORD_IDS.has(userId);
+
+    // The user's agent home (persona, profile, shared memory) exists in the cloud from their
+    // first DM on, whatever the relay answers; a missing store never blocks the relay.
+    void this.agentHomes.forDiscordUser({
+      id: userId,
+      username,
+      globalName: displayName,
+      avatarUrl: message.author.displayAvatarURL({ extension: "png", size: 256 }),
+    });
 
     try {
       const db = this.dbs.db;

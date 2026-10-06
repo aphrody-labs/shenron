@@ -17,19 +17,24 @@
  * Nothing blocks the server: provisioning and loading run in the background and the chat
  * group reports the step (download progress, loading, failure) until the model answers.
  */
-import { existsSync, mkdirSync, renameSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, renameSync, statSync } from "node:fs";
 import { open } from "node:fs/promises";
 import { join } from "node:path";
-import type { LocalApiGroupStatus } from "@shenron/api/contract";
+import type { ChatModelEntry, ChatModelState, LocalApiGroupStatus } from "@shenron/api/contract";
 import {
   CHAT_ADAPTER,
   CHAT_BASE_MODEL,
+  CHAT_MODEL_IDS,
   type ChatModelConfig,
+  DEFAULT_CHAT_MODEL_ID,
+  GEMMA_MODEL,
   resolveChatModelConfig,
+  resolveGemmaConfig,
 } from "@shenron/config/chat-model";
 
 import { profileOf, type ServerPaths } from "./config";
 import { freePort } from "./front";
+import { local as isLocalRequest } from "./koharu";
 
 const exe = (name: string) => (process.platform === "win32" ? `${name}.exe` : name);
 const isFile = (path: string | undefined | null): path is string =>
@@ -115,13 +120,23 @@ export function planChatModel(
   };
 }
 
-/** Path of a catalog model in the Aphrody store, through the `aphrody` CLI (aphrody-models). */
+/** The `aphrody` CLI (APHRODY_BIN, else PATH); `null` when absent (installed desktop). */
+function aphrodyCli(env: Readonly<Record<string, string | undefined>>): string | null {
+  const cli = env.APHRODY_BIN?.trim() || Bun.which("aphrody");
+  return !cli || (/[\\/]/.test(cli) && !isFile(cli)) ? null : cli;
+}
+
+/**
+ * Path of a catalog model in the Aphrody store, through the `aphrody` CLI (aphrody-models);
+ * `mustExist: false` returns where a pull would put it.
+ */
 async function aphrodyStorePath(
   env: Readonly<Record<string, string | undefined>>,
   id: string,
+  mustExist = true,
 ): Promise<string | null> {
-  const cli = env.APHRODY_BIN?.trim() || Bun.which("aphrody");
-  if (!cli || (/[\\/]/.test(cli) && !isFile(cli))) return null;
+  const cli = aphrodyCli(env);
+  if (!cli) return null;
   try {
     const child = Bun.spawn([cli, "model", "path", id], {
       stdio: ["ignore", "pipe", "ignore"],
@@ -131,9 +146,41 @@ async function aphrodyStorePath(
     });
     const [out, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
     const path = out.trim().split("\n").at(-1)?.trim();
-    return code === 0 && isFile(path) ? path : null;
+    return code === 0 && path && (!mustExist || isFile(path)) ? path : null;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Pull a catalog model with `aphrody model pull` (resumed, digest pinned by the catalog) into
+ * the store under `aphrodyHome` (`<SHENRON_HOME>/models/aphrody`); progress is the size of
+ * its `.part` file. `null` when the CLI is absent or the pull fails.
+ */
+export async function aphrodyPull(
+  env: Readonly<Record<string, string | undefined>>,
+  id: string,
+  aphrodyHome: string,
+  o: { total?: number; onProgress?: (progress: DownloadProgress) => void } = {},
+): Promise<string | null> {
+  const cli = aphrodyCli(env);
+  if (!cli) return null;
+  const childEnv = { ...env, APHRODY_HOME: aphrodyHome };
+  const target = await aphrodyStorePath(childEnv, id, false);
+  if (!target) return null;
+  const child = Bun.spawn([cli, "model", "pull", id, "--json"], {
+    stdio: ["ignore", "ignore", "ignore"],
+    env: childEnv,
+    windowsHide: true,
+  });
+  const timer = setInterval(() => {
+    const part = `${target}.part`;
+    if (isFile(part)) o.onProgress?.({ received: statSync(part).size, total: o.total ?? null });
+  }, 1_000);
+  try {
+    return (await child.exited) === 0 && isFile(target) ? target : null;
+  } finally {
+    clearInterval(timer);
   }
 }
 
@@ -194,151 +241,368 @@ export async function downloadArtifact(
   return dest;
 }
 
-type Phase =
-  | { kind: "provisioning"; what: string; progress: DownloadProgress | null }
-  | { kind: "loading" }
-  | { kind: "ready"; lora: boolean }
-  | { kind: "failed"; reason: string };
+type SlotState = "pending" | "downloading" | "ready" | "installable" | "failed";
+
+/** One model of the router: its files, then its state on this machine. */
+interface Slot {
+  id: string;
+  label: string;
+  state: SlotState;
+  progress: DownloadProgress | null;
+  detail: string | null;
+  model: string | null;
+  lora: string | null;
+}
 
 export interface ChatModel {
   url: string;
-  /** Chat group status: the step until the model answers, then what it serves. */
+  /** Chat group status: the default model's step until it answers, then what it serves. */
   status(): LocalApiGroupStatus;
-  /** Resolves once the model answers (`true`) or failed (`false`). */
+  /** Selectable models with their state (`ModelsResponse.models`). */
+  catalog(): Promise<ChatModelEntry[]>;
+  /** Download a model that is `installable` (or `failed`); resolves when it is served. */
+  install(id: string): Promise<boolean>;
+  /**
+   * Import the Shenron adapter from a file the user chose (no public source): digest-checked,
+   * copied into `<home>/models/`, then served.
+   */
+  importAdapter(path: string): Promise<{ ok: boolean; error?: string }>;
+  /**
+   * `GET /api/local/models`, `POST /api/local/models/{id}/install` and
+   * `POST /api/local/models/shenron-chat-v2/import` (`{ "path": "<adapter.gguf>" }`); the
+   * writes answer this machine only (loopback peer and host).
+   */
+  handle(request: Request, url: URL, peer?: string | null): Promise<Response | null>;
+  /** Resolves once the default model answers (`true`) or failed (`false`). */
   ready: Promise<boolean>;
   stop(): void;
 }
 
+export const INSTALL_PATH = (id: string) => `/api/local/models/${encodeURIComponent(id)}/install`;
+export const IMPORT_PATH = (id: string) => `/api/local/models/${encodeURIComponent(id)}/import`;
+
 const percent = (p: DownloadProgress | null) =>
   p?.total ? ` (${Math.floor((p.received / p.total) * 100)} %)` : "";
 
-/** Provision the files, start `llama-server` with the adapter and follow it (background). */
+/** llama-server router presets (one section per model, loaded on demand). */
+export function routerPresets(
+  slots: readonly Pick<Slot, "id" | "model" | "lora">[],
+  ctx: number,
+): string {
+  return slots
+    .filter((slot) => slot.model)
+    .map((slot) =>
+      [
+        `[${slot.id}]`,
+        `model = ${slot.model}`,
+        ...(slot.lora ? [`lora = ${slot.lora}`] : []),
+        `ctx-size = ${ctx}`,
+        "",
+      ].join("\n"),
+    )
+    .join("\n");
+}
+
+/**
+ * Provision the models, run one `llama-server` in router mode over every model on disk
+ * (restarted when another model finishes downloading) and follow it, in the background.
+ */
 export function startChatModel(
   plan: ChatModelPlan,
   env: Readonly<Record<string, string | undefined>>,
   o: { fetch?: typeof fetch; readyTimeoutMs?: number } = {},
 ): ChatModel {
-  let phase: Phase = { kind: "loading" };
-  let child: ReturnType<typeof Bun.spawn> | null = null;
+  const { config } = plan;
+  const gemma = resolveGemmaConfig(env);
+  const shenron: Slot = {
+    id: CHAT_MODEL_IDS.shenron,
+    label: `${CHAT_BASE_MODEL.label} + ${CHAT_ADAPTER.id}`,
+    state: "pending",
+    progress: null,
+    detail: null,
+    model: null,
+    lora: null,
+  };
+  const gemmaSlot: Slot | null =
+    gemma.mode === "off"
+      ? null
+      : {
+          id: GEMMA_MODEL.id,
+          label: GEMMA_MODEL.label,
+          state: "pending",
+          progress: null,
+          detail: null,
+          model: null,
+          lora: null,
+        };
+  const slots = [shenron, ...(gemmaSlot ? [gemmaSlot] : [])];
+  let router: ReturnType<typeof Bun.spawn> | null = null;
+  let routerUp = false;
   let stopped = false;
-  const alive = () => child !== null && child.exitCode === null && child.signalCode === null;
+  const alive = () => router !== null && router.exitCode === null && router.signalCode === null;
+  const kill = async () => {
+    routerUp = false;
+    if (alive()) {
+      router!.kill();
+      await router!.exited;
+    }
+  };
   const stop = () => {
     stopped = true;
-    if (alive()) child!.kill();
+    routerUp = false;
+    if (alive()) router!.kill();
   };
   process.once("exit", stop);
 
-  const provision = async (
-    what: string,
-    candidates: (string | null | undefined)[],
-    source: { url: string | null; sha256: string | null; file: string },
+  const download = async (
+    slot: Slot,
+    source: {
+      url: string | null;
+      sha256: string | null;
+      file: string;
+      /** aphrody-models catalog id of the same pinned file: pulled by Aphrody when it is here. */
+      catalog?: { id: string; url: string; bytes: number };
+    },
   ): Promise<string | null> => {
-    const found = candidates.find((candidate) => isFile(candidate));
-    if (found) return found;
     if (!source.url) return null;
-    phase = { kind: "provisioning", what, progress: null };
+    slot.state = "downloading";
+    slot.progress = null;
+    if (source.catalog && source.url === source.catalog.url) {
+      const pulled = await aphrodyPull(env, source.catalog.id, join(plan.modelsDir, "aphrody"), {
+        total: source.catalog.bytes,
+        onProgress: (progress) => {
+          slot.progress = progress;
+        },
+      });
+      if (pulled) return pulled;
+    }
     return downloadArtifact(source.url, join(plan.modelsDir, source.file), {
       sha256: source.sha256,
       onProgress: (progress) => {
-        phase = { kind: "provisioning", what, progress };
+        slot.progress = progress;
       },
       ...(o.fetch ? { fetch: o.fetch } : {}),
     });
   };
+  /** A catalog model in the user's Aphrody store (used in place), then in SHENRON_HOME's. */
+  const inStores = async (id: string): Promise<string | null> =>
+    (await aphrodyStorePath(env, id)) ??
+    (await aphrodyStorePath({ ...env, APHRODY_HOME: join(plan.modelsDir, "aphrody") }, id));
+  const fail = (slot: Slot, detail: string) => {
+    slot.state = "failed";
+    slot.detail = detail;
+    slot.progress = null;
+  };
 
-  const run = async (): Promise<boolean> => {
-    const { config } = plan;
-    if (!plan.binary) {
-      phase = { kind: "failed", reason: "llama-server absent : modèle de chat local indisponible" };
-      return false;
-    }
-    if (config.modelPath && !isFile(config.modelPath)) {
-      phase = { kind: "failed", reason: "SHENRON_CHAT_MODEL ne désigne aucun fichier" };
-      return false;
-    }
-    const base = await provision(
-      "modèle",
-      [
-        config.modelPath,
-        join(plan.modelsDir, CHAT_BASE_MODEL.file),
-        await aphrodyStorePath(env, CHAT_BASE_MODEL.id),
-      ],
-      { url: config.modelUrl, sha256: config.modelSha256, file: CHAT_BASE_MODEL.file },
-    );
-    if (!base) {
-      phase = { kind: "failed", reason: "modèle de chat introuvable" };
-      return false;
-    }
-    const lora = config.lora
-      ? await provision(
-          "adaptateur",
-          [
-            config.loraPath,
-            join(plan.modelsDir, CHAT_ADAPTER.file),
-            ...plan.shippedDirs.map((dir) => join(dir, "models", CHAT_ADAPTER.file)),
-            env.APHRODY_SHENRON_CHAT_LORA?.trim(),
-          ],
-          { url: config.loraUrl, sha256: config.loraSha256, file: CHAT_ADAPTER.file },
-        )
-      : null;
-    if (stopped) return false;
-    phase = { kind: "loading" };
+  /** (Re)start the router over the models on disk and wait for its /health. */
+  const startRouter = async (): Promise<boolean> => {
+    await kill();
+    if (stopped || !plan.binary) return false;
+    const presets = join(plan.modelsDir, "llama-presets.ini");
+    mkdirSync(plan.modelsDir, { recursive: true });
     mkdirSync(join(plan.logFile, ".."), { recursive: true });
-    child = Bun.spawn(
+    await Bun.write(
+      presets,
+      routerPresets(
+        slots.filter((slot) => slot.state === "ready"),
+        config.ctx,
+      ),
+    );
+    router = Bun.spawn(
       [
         plan.binary,
-        "--model",
-        base,
-        ...(lora ? ["--lora", lora] : []),
-        "--alias",
-        CHAT_BASE_MODEL.id,
+        "--models-preset",
+        presets,
+        // One model in memory at a time: switching unloads the other.
+        "--models-max",
+        "1",
         "--host",
         "127.0.0.1",
         "--port",
         String(plan.port),
-        "--ctx-size",
-        String(config.ctx),
-        "--parallel",
-        "1",
         "--no-webui",
       ],
-      {
-        env: { ...env },
-        stdio: ["ignore", "ignore", Bun.file(plan.logFile)],
-        windowsHide: true,
-      },
+      { env: { ...env }, stdio: ["ignore", "ignore", Bun.file(plan.logFile)], windowsHide: true },
     );
     const deadline = Date.now() + (o.readyTimeoutMs ?? 300_000);
-    // Sequential polling until /health answers 200 (503 while the weights load).
-    const poll = async (): Promise<boolean | null> => {
-      if (stopped || Date.now() >= deadline) return null;
-      if (!alive()) {
-        phase = {
-          kind: "failed",
-          reason: `llama-server arrêté (code ${child!.exitCode ?? child!.signalCode})`,
-        };
-        return false;
-      }
+    const poll = async (): Promise<boolean> => {
+      if (stopped || Date.now() >= deadline) return false;
+      if (!alive()) return false;
       const ok = await fetch(`${plan.url}/health`, { signal: AbortSignal.timeout(1_000) }).then(
         (response) => response.ok,
         () => false,
       );
-      if (ok) {
-        phase = { kind: "ready", lora: Boolean(lora) && (await loraApplied(plan.url)) };
-        return true;
-      }
+      if (ok) return true;
       await Bun.sleep(250);
       return poll();
     };
-    const outcome = await poll();
-    if (outcome !== null) return outcome;
-    if (!stopped) phase = { kind: "failed", reason: "le modèle de chat n'a pas démarré à temps" };
-    stop();
-    return false;
+    routerUp = await poll();
+    if (!routerUp && !stopped) {
+      const reason = alive()
+        ? "le serveur de modèles n'a pas démarré à temps"
+        : `llama-server arrêté (code ${router.exitCode ?? router.signalCode})`;
+      for (const slot of slots) if (slot.state === "ready") fail(slot, reason);
+      await kill();
+    }
+    return routerUp;
+  };
+
+  /** Load the default model now (the router would on the first request) and check its adapter. */
+  const warmUp = async () => {
+    const load = await fetch(`${plan.url}/models/load`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ model: shenron.id }),
+    }).catch(() => null);
+    if (!load) return;
+    const deadline = Date.now() + (o.readyTimeoutMs ?? 300_000);
+    const loaded = async (): Promise<boolean> => {
+      if (stopped || Date.now() >= deadline || !alive()) return false;
+      const states = await routerStates();
+      if (states.get(shenron.id) === "loaded") return true;
+      await Bun.sleep(250);
+      return loaded();
+    };
+    if ((await loaded()) && shenron.lora && !(await loraApplied(plan.url, shenron.id)))
+      shenron.detail = "adaptateur chargé sans être appliqué";
+  };
+
+  /** Router status of each model (`loaded`, `loading`, `unloaded`, `failed`). */
+  const routerStates = async (): Promise<Map<string, string>> => {
+    const states = new Map<string, string>();
+    if (!routerUp) return states;
+    try {
+      const response = await fetch(`${plan.url}/v1/models`, { signal: AbortSignal.timeout(2_000) });
+      const body = (await response.json()) as {
+        data?: { id: string; status?: { value?: string } }[];
+      };
+      for (const model of body.data ?? []) states.set(model.id, model.status?.value ?? "unloaded");
+    } catch {
+      // the router is restarting
+    }
+    return states;
+  };
+
+  const provisionShenron = async (): Promise<boolean> => {
+    if (config.modelPath && !isFile(config.modelPath)) {
+      fail(shenron, "SHENRON_CHAT_MODEL ne désigne aucun fichier");
+      return false;
+    }
+    const base =
+      [config.modelPath, join(plan.modelsDir, CHAT_BASE_MODEL.file)].find(isFile) ??
+      (await inStores(CHAT_BASE_MODEL.id)) ??
+      (await download(shenron, {
+        url: config.modelUrl,
+        sha256: config.modelSha256,
+        file: CHAT_BASE_MODEL.file,
+        catalog: { id: CHAT_BASE_MODEL.id, url: CHAT_BASE_MODEL.url, bytes: CHAT_BASE_MODEL.bytes },
+      }));
+    if (!base) {
+      fail(shenron, "modèle de chat introuvable");
+      return false;
+    }
+    const lora = config.lora
+      ? ([
+          config.loraPath,
+          join(plan.modelsDir, CHAT_ADAPTER.file),
+          ...plan.shippedDirs.map((dir) => join(dir, "models", CHAT_ADAPTER.file)),
+          env.APHRODY_SHENRON_CHAT_LORA?.trim(),
+        ].find(isFile) ??
+        (await download(shenron, {
+          url: config.loraUrl,
+          sha256: config.loraSha256,
+          file: CHAT_ADAPTER.file,
+        })))
+      : null;
+    shenron.model = base;
+    shenron.lora = lora;
+    if (!lora) shenron.label = `${CHAT_BASE_MODEL.label} (sans adaptateur)`;
+    if (!lora && config.lora)
+      shenron.detail = `adaptateur ${CHAT_ADAPTER.id} introuvable : importez son fichier`;
+    shenron.state = "ready";
+    shenron.progress = null;
+    return true;
+  };
+
+  /** Gemma 4 E2B already on disk (explicit path, SHENRON_HOME, the Aphrody store). */
+  const findGemma = async (): Promise<string | null> =>
+    [gemma.path, join(plan.modelsDir, GEMMA_MODEL.file)].find(isFile) ??
+    (await inStores(GEMMA_MODEL.aphrodyId));
+
+  let installing: Promise<boolean> | null = null;
+  const install = (id: string): Promise<boolean> => {
+    if (!gemmaSlot || id !== gemmaSlot.id) return Promise.resolve(false);
+    if (gemmaSlot.state === "ready") return Promise.resolve(true);
+    installing ??= (async () => {
+      try {
+        const path = await download(gemmaSlot, {
+          url: gemma.url,
+          sha256: gemma.sha256,
+          file: GEMMA_MODEL.file,
+          catalog: { id: GEMMA_MODEL.aphrodyId, url: GEMMA_MODEL.url, bytes: GEMMA_MODEL.bytes },
+        });
+        if (!path) {
+          fail(gemmaSlot, "aucune source de téléchargement");
+          return false;
+        }
+        gemmaSlot.model = path;
+        gemmaSlot.state = "ready";
+        gemmaSlot.progress = null;
+        gemmaSlot.detail = null;
+        // The router reads its presets at start: restart it with the new model.
+        if (shenron.state === "ready" && (await startRouter())) await warmUp();
+        return gemmaSlot.state === "ready";
+      } catch (error) {
+        fail(gemmaSlot, `téléchargement : ${String(error).slice(0, 160)}`);
+        return false;
+      } finally {
+        installing = null;
+      }
+    })();
+    return installing;
+  };
+
+  const importAdapter = async (path: string): Promise<{ ok: boolean; error?: string }> => {
+    if (!isFile(path)) return { ok: false, error: "no such file" };
+    if (config.loraSha256) {
+      const hasher = new Bun.CryptoHasher("sha256");
+      for await (const chunk of Bun.file(path).stream()) hasher.update(chunk);
+      if (hasher.digest("hex") !== config.loraSha256)
+        return { ok: false, error: `not the ${CHAT_ADAPTER.id} adapter (SHA-256 differs)` };
+    }
+    mkdirSync(plan.modelsDir, { recursive: true });
+    const dest = join(plan.modelsDir, CHAT_ADAPTER.file);
+    if (path !== dest) copyFileSync(path, dest);
+    shenron.lora = dest;
+    shenron.label = `${CHAT_BASE_MODEL.label} + ${CHAT_ADAPTER.id}`;
+    shenron.detail = null;
+    if (shenron.state === "ready" && (await startRouter())) await warmUp();
+    return { ok: true };
+  };
+
+  const run = async (): Promise<boolean> => {
+    if (!plan.binary) {
+      for (const slot of slots)
+        fail(slot, "llama-server absent : modèle de chat local indisponible");
+      return false;
+    }
+    if (gemmaSlot) {
+      const found = await findGemma();
+      if (found) {
+        gemmaSlot.model = found;
+        gemmaSlot.state = "ready";
+      } else gemmaSlot.state = "installable";
+    }
+    if (!(await provisionShenron()) || stopped) return false;
+    if (!(await startRouter())) return false;
+    await warmUp();
+    // Gemma 4 E2B follows the default model on the first launch (`manual`: on request).
+    if (gemmaSlot?.state === "installable" && gemma.mode === "auto") void install(gemmaSlot.id);
+    return shenron.state === "ready" && routerUp;
   };
 
   const ready = run().catch((error: unknown) => {
-    phase = { kind: "failed", reason: `modèle de chat : ${String(error).slice(0, 160)}` };
+    fail(shenron, `modèle de chat : ${String(error).slice(0, 160)}`);
     return false;
   });
   ready.then((ok) =>
@@ -347,37 +611,112 @@ export function startChatModel(
     ),
   );
 
+  const entryOf = (slot: Slot, states: Map<string, string>): ChatModelEntry => {
+    const routed = states.get(slot.id);
+    const state: ChatModelState =
+      slot.state === "ready"
+        ? !routerUp || !alive()
+          ? "loading"
+          : routed === "loading"
+            ? "loading"
+            : routed === "failed"
+              ? "failed"
+              : "ready"
+        : slot.state === "pending"
+          ? "loading"
+          : slot.state;
+    return {
+      id: slot.id,
+      label: slot.label,
+      backend: "local",
+      available: state === "ready" || (state === "loading" && slot.state === "ready" && routerUp),
+      default: slot.id === DEFAULT_CHAT_MODEL_ID,
+      remote: false,
+      state,
+      ...(slot.progress ? { progress: { ...slot.progress } } : {}),
+      ...(state === "installable" || (state === "failed" && slot.id !== shenron.id)
+        ? { installUrl: INSTALL_PATH(slot.id) }
+        : {}),
+      ...(slot.id === shenron.id && config.lora && !slot.lora && slot.state === "ready"
+        ? { importUrl: IMPORT_PATH(slot.id) }
+        : {}),
+      ...(slot.detail ? { detail: slot.detail } : {}),
+    };
+  };
+  const catalog = async () => {
+    const states = await routerStates();
+    return slots.map((slot) => entryOf(slot, states));
+  };
+
   return {
     url: plan.url,
     ready,
     stop,
+    catalog,
+    install,
+    importAdapter,
+    async handle(request, url, peer = null) {
+      const headers = { "cache-control": "no-store" };
+      if (url.pathname === "/api/local/models" && request.method === "GET")
+        return Response.json({ models: await catalog() }, { headers });
+      const match = /^\/api\/local\/models\/([^/]+)\/(install|import)$/.exec(url.pathname);
+      if (!match) return null;
+      if (request.method !== "POST")
+        return Response.json({ error: "POST only" }, { status: 405, headers });
+      if (!isLocalRequest(request, url, peer))
+        return Response.json({ error: "this machine only" }, { status: 403, headers });
+      const id = decodeURIComponent(match[1]!);
+      if (match[2] === "import") {
+        if (id !== shenron.id)
+          return Response.json({ error: "unknown adapter" }, { status: 404, headers });
+        const body = (await request.json().catch(() => null)) as { path?: unknown } | null;
+        if (typeof body?.path !== "string" || !body.path.trim())
+          return Response.json({ error: "path is required" }, { status: 400, headers });
+        const result = await importAdapter(body.path.trim());
+        return Response.json(
+          result.ok ? (await catalog()).find((e) => e.id === id) : { error: result.error },
+          { status: result.ok ? 200 : 422, headers },
+        );
+      }
+      if (!slots.some((slot) => slot.id === id && slot.id !== shenron.id))
+        return Response.json({ error: "unknown model" }, { status: 404, headers });
+      void install(id);
+      const entry = (await catalog()).find((e) => e.id === id);
+      return Response.json(entry, { status: 202, headers });
+    },
     status(): LocalApiGroupStatus {
-      if (phase.kind === "ready" && !alive())
+      const extra = gemmaSlot
+        ? gemmaSlot.state === "downloading"
+          ? ` ; ${gemmaSlot.id} : téléchargement${percent(gemmaSlot.progress)}`
+          : gemmaSlot.state === "ready"
+            ? ` ; ${gemmaSlot.id}`
+            : ""
+        : "";
+      if (shenron.state === "ready" && routerUp && alive())
+        return { available: true, reason: `${shenron.label}${extra}` };
+      if (shenron.state === "ready" && routerUp)
         return { available: false, reason: "modèle de chat local arrêté" };
-      switch (phase.kind) {
-        case "ready":
-          return {
-            available: true,
-            reason: `${CHAT_BASE_MODEL.label}${phase.lora ? ` + ${CHAT_ADAPTER.id}` : " (sans adaptateur)"}`,
-          };
-        case "provisioning":
+      switch (shenron.state) {
+        case "downloading":
           return {
             available: false,
-            reason: `téléchargement du ${phase.what}${percent(phase.progress)}`,
+            reason: `téléchargement du modèle${percent(shenron.progress)}`,
           };
-        case "loading":
-          return { available: false, reason: "chargement du modèle de chat" };
         case "failed":
-          return { available: false, reason: phase.reason };
+          return { available: false, reason: shenron.detail ?? "modèle de chat indisponible" };
+        default:
+          return { available: false, reason: "chargement du modèle de chat" };
       }
     },
   };
 }
 
-/** `true` when llama-server reports an adapter loaded with a non-zero scale. */
-async function loraApplied(url: string): Promise<boolean> {
+/** `true` when llama-server reports an adapter of `model` loaded with a non-zero scale. */
+async function loraApplied(url: string, model: string): Promise<boolean> {
   try {
-    const response = await fetch(`${url}/lora-adapters`, { signal: AbortSignal.timeout(2_000) });
+    const response = await fetch(`${url}/lora-adapters?model=${encodeURIComponent(model)}`, {
+      signal: AbortSignal.timeout(2_000),
+    });
     if (!response.ok) return false;
     const adapters = (await response.json()) as { scale?: number }[];
     return Array.isArray(adapters) && adapters.some((adapter) => (adapter.scale ?? 0) > 0);

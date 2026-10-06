@@ -73,7 +73,7 @@ describe("planBackend", () => {
     const plan = planBackend(paths, env);
     expect(plan.env.SHENRON_DATA_DIR).toBe(paths.data);
     expect(plan.env.SHENRON_VFS_CACHE).toBe(join(paths.cache, "vfs"));
-    expect(plan.env.SHENRON_CHAT_BACKENDS).toBe("local");
+    expect(plan.env.SHENRON_CHAT_BACKENDS).toBe("local,gemini-web");
     expect(plan.wiki).toBe(true);
     expect(env).toEqual({ SHENRON_PROFILE: "desktop" });
   });

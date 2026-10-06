@@ -19,12 +19,14 @@
  *    `bun scripts/data/build-vfs.ts --profile public`): wiki, RAG and VFS routes offline. It must
  *    pass the public guard (profile public, no private node or passage, no conversation, no
  *    embedded node); without it the API reports its VFS groups unavailable. Plus the public
- *    agent home template (agent-home/SOUL.md, IDENTITY.md) for the chat persona.
+ *    agent home template (templates/agent-home: the seven native documents of aphrody-agent-home)
+ *    for the chat persona and the per-user homes, checked like the VFS (no private entry, no
+ *    filled-in USER.md, no database or env file).
  * 3c. Public editorial data (scripts/build/server-data.ts): the versioned canonical lexicon
  *    data/lexique-db-canonique.json, checked, as data/ (Koharu's glossary for French
  *    translation, which shenron-manga looks up through SHENRON_LEXIQUE).
  * 4. One zstd payload embedded in a `bun build --compile` executable (unless --no-embed,
- *    which keeps site/, the library, vfs/, home/ and data/ beside the binary).
+ *    which keeps site/, the library, vfs/, home/, data/ and plugin/ beside the binary).
  * 5. dist/cdn/: what the nginx CDN adds (additively, never --delete) to /srv/shenron-cdn:
  *    _next/static/ and site/ (public/ of the site).
  *
@@ -46,6 +48,8 @@ import { join, resolve } from "node:path";
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
+import { templateProblems } from "../../packages/db/src/agent-homes/template";
+import { AGENT_HOME_DOCUMENTS } from "../../packages/db/src/agent-homes/types";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const args = process.argv.slice(2);
@@ -238,8 +242,33 @@ if (!flag("--no-vfs")) {
 }
 const homeOut = join(OUT, "home");
 mkdirSync(homeOut, { recursive: true });
-for (const name of ["SOUL.md", "IDENTITY.md"])
-  cpSync(join(ROOT, "agent-home", name), join(homeOut, name));
+const templateDir = join(ROOT, "templates/agent-home");
+const templateFiles: Record<string, string> = {};
+for (const name of AGENT_HOME_DOCUMENTS) {
+  cpSync(join(templateDir, name), join(homeOut, name));
+  templateFiles[name] = readFileSync(join(homeOut, name), "utf8");
+}
+const homeProblems = [
+  ...templateProblems(
+    templateFiles,
+    readdirSync(templateDir, { recursive: true }).map((entry) =>
+      String(entry).replaceAll("\\", "/"),
+    ),
+  ),
+  ...privateFiles(homeOut).map((file) => `private file ${file}`),
+];
+if (homeProblems.length)
+  throw new Error(
+    `templates/agent-home cannot ship in a public payload: ${homeProblems.join("; ")}`,
+  );
+
+// 3b. The public `shenron` plugin (its index joins every chat prompt, `/api/public/plugin*`).
+const pluginOut = join(OUT, "plugin");
+rmSync(pluginOut, { recursive: true, force: true });
+cpSync(join(ROOT, "plugin"), pluginOut, { recursive: true });
+const pluginLeaks = privateFiles(pluginOut);
+if (pluginLeaks.length)
+  throw new Error(`private files in plugin/: ${pluginLeaks.slice(0, 10).join(", ")}`);
 
 // 3c. Public editorial data: only the listed, checked files of data/ (never data/home/ or a base).
 const dataOut = join(OUT, "data");
@@ -257,6 +286,7 @@ if (embed) {
     ...(vfsShipped ? { vfs: vfsOut } : {}),
     home: homeOut,
     data: dataOut,
+    plugin: pluginOut,
   });
   writeFileSync(join(buildDir, "payload.pak.zst"), payload);
   writeFileSync(

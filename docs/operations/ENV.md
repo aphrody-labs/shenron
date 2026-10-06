@@ -175,34 +175,58 @@ Autres variables Aphrody :
 | `APHRODY_WEB_API_URL`, `APHRODY_BXC_API_TOKEN`        | API web/crawl d'Aphrody.                                                                    |
 | `APHRODY_BIN`                                         | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`.                                   |
 
-## Modèle de chat local (Shenron Studio) — `@shenron/config/chat-model`, `apps/server/src/chat-model.ts`
+## Modèles de chat locaux (Shenron Studio) — `@shenron/config/chat-model`, `apps/server/src/chat-model.ts`
 
 Dans le profil `desktop`, sans URL de chat déclarée (`APHRODY_AI_CHAT_BASE_URL`,
 `APHRODY_SHENRON_LLM_BASE_URL`, `APHRODY_LOCAL_MODEL_URL`) et avec `local` dans
-`SHENRON_CHAT_BACKENDS`, `shenron-server` lance un `llama-server` enfant sur un port de
-boucle locale : Qwen3-4B Instruct 2507 (GGUF Q4_K_M, `qwen3-4b-instruct-2507-q4km`) et
-l'adaptateur LoRA `shenron-chat-v2`. Il pose `APHRODY_LOCAL_MODEL_URL` (et
-`APHRODY_AI_CHAT_MODEL` s'il est absent) pour l'hôte ; le groupe `chat` de
-`/api/local/health` donne l'étape (téléchargement en %, chargement, échec) puis le modèle servi.
-La base (2,5 Go) est téléchargée une fois dans `$SHENRON_HOME/models/` (reprise, empreinte
-SHA-256 vérifiée) ; l'installeur livre `llama/` (llama.cpp `b11312`, Vulkan) et
-`models/shenron-chat-v2.gguf` (`scripts/build/desktop.ts`, `--skip-chat-model` pour s'en
-passer). Journal : `$SHENRON_HOME/logs/llama-server.log`.
+`SHENRON_CHAT_BACKENDS` (défaut hors production : `local,gemini-web`), `shenron-server` lance
+un seul `llama-server` enfant en mode routeur (un préréglage par modèle,
+`$SHENRON_HOME/models/llama-presets.ini`, un modèle en mémoire à la fois, chargé à la demande)
+sur un port de boucle locale, et pose `APHRODY_LOCAL_MODEL_URL` (et `APHRODY_AI_CHAT_MODEL` à
+`shenron-chat-v2` s'il est absent). Modèles, par identifiant stable (`ChatRequest.model`) :
 
-| Variable                 | Rôle                                                                                                                         | Défaut                                                                               |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `SHENRON_CHAT_MODEL`     | `auto`, `off` ou chemin du GGUF de base. `auto` hors `desktop` l'active aussi (jamais en production).                        | `auto` en `desktop`, `off` sinon                                                     |
-| `SHENRON_CHAT_MODEL_URL` | Source de téléchargement de la base ; une source propre n'est pas vérifiée par empreinte.                                    | Hugging Face `unsloth/Qwen3-4B-Instruct-2507-GGUF`, révision épinglée                |
-| `SHENRON_CHAT_LORA`      | Chemin de l'adaptateur, `off` pour la base seule.                                                                            | `$SHENRON_HOME/models/`, `models/` de l'installeur, puis `APHRODY_SHENRON_CHAT_LORA` |
-| `SHENRON_CHAT_LORA_URL`  | Source de téléchargement de l'adaptateur (aucune publique : il vient de l'installeur).                                       | aucune                                                                               |
-| `SHENRON_LLAMA_BIN`      | `llama-server` à lancer (fichier ou dossier), avant `APHRODY_LLAMA_BIN`.                                                     | `llama/` de l'installeur, puis le `PATH`                                             |
-| `SHENRON_CHAT_CTX`       | Taille du contexte du serveur.                                                                                               | `8192`                                                                               |
-| `SHENRON_RESOURCE_DIR`   | Dossier des ressources de l'installeur (`llama/`, `models/`), posé par `shenron-desktop` ; sinon le dossier de l'exécutable. | dossier de l'exécutable                                                              |
+| Identifiant        | Modèle                                                                   | Provisionnement                                                                                                        |
+| ------------------ | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `shenron-chat-v2`  | Qwen3-4B Instruct 2507 (GGUF Q4_K_M) + adaptateur LoRA `shenron-chat-v2` | Défaut. Base téléchargée au premier lancement ; adaptateur livré par l'installeur ou importé (aucune source publique). |
+| `gemma4-e2b`       | Gemma 4 E2B instruct (GGUF Q4_K_M)                                       | Téléchargé après le défaut au premier lancement (`auto`), ou sur demande (`manual`).                                   |
+| `gemini-web/flash` | Application web Gemini (distante), cookies Google d'Aphrody, sans clé    | Présent quand `aphrody-gemini-web` et un magasin de cookies existent (`~/.aphrody/google-cookies.json`…).              |
 
-La base déjà présente dans le magasin d'Aphrody (`aphrody model path qwen3-4b-instruct-2507-q4km`)
-est utilisée en place, sans copie. Au build, l'adaptateur vient de `--chat-lora`,
-`SHENRON_CHAT_LORA` ou `APHRODY_SHENRON_CHAT_LORA` et doit avoir l'empreinte épinglée ; les
-poids n'entrent jamais dans Git.
+Les téléchargements passent par `aphrody model pull` (aphrody-models, magasin
+`$SHENRON_HOME/models/aphrody`) quand le CLI `aphrody` est présent, sinon par le
+téléchargeur du serveur : URL Hugging Face `resolve/<révision>` épinglée, reprise, SHA-256
+vérifié, dans `$SHENRON_HOME/models/`. Un modèle déjà dans le magasin Aphrody de l'utilisateur
+(`aphrody model path <id>`) est utilisé en place. Tous les modèles reçoivent le même prompt
+système (persona de l'agent home, index du plugin `shenron`, mémoire).
+
+`GET /api/v1/models` liste `models` (`ChatModelEntry` : `id`, `label`, `backend`,
+`available`, `default`, `remote`, `state` `ready | loading | downloading | installable |
+failed | unavailable`, `progress`, `installUrl`, `importUrl`, `detail`) et
+`defaultModel`. Sur la machine seulement : `GET /api/local/models`,
+`POST /api/local/models/gemma4-e2b/install` (téléchargement, 202) et
+`POST /api/local/models/shenron-chat-v2/import` (`{ "path": "<adapter.gguf>" }`, empreinte
+vérifiée, copie dans `$SHENRON_HOME/models/`). Le groupe `chat` de `/api/local/health` donne
+l'étape du modèle par défaut (téléchargement en %, chargement, échec) puis les modèles servis.
+L'installeur livre `llama/` (llama.cpp `b11312`, Vulkan) et `models/shenron-chat-v2.gguf`
+(`scripts/build/desktop.ts`, `--skip-chat-model` pour s'en passer). Journal :
+`$SHENRON_HOME/logs/llama-server.log`.
+
+| Variable                     | Rôle                                                                                                                         | Défaut                                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `SHENRON_CHAT_MODEL`         | `auto`, `off` ou chemin du GGUF de base. `auto` hors `desktop` l'active aussi (jamais en production).                        | `auto` en `desktop`, `off` sinon                                                     |
+| `SHENRON_CHAT_MODEL_URL`     | Source de téléchargement de la base ; une source propre n'est pas vérifiée par empreinte.                                    | Hugging Face `unsloth/Qwen3-4B-Instruct-2507-GGUF`, révision épinglée                |
+| `SHENRON_CHAT_LORA`          | Chemin de l'adaptateur, `off` pour la base seule.                                                                            | `$SHENRON_HOME/models/`, `models/` de l'installeur, puis `APHRODY_SHENRON_CHAT_LORA` |
+| `SHENRON_CHAT_LORA_URL`      | Source de téléchargement de l'adaptateur (aucune publique : installeur ou import).                                           | aucune                                                                               |
+| `SHENRON_GEMMA_MODEL`        | `auto` (téléchargé au premier lancement), `manual` (sur demande), `off` (absent de la liste) ou chemin du GGUF.              | `auto`                                                                               |
+| `SHENRON_GEMMA_MODEL_URL`    | Source de téléchargement de Gemma 4 E2B (URL fournie pour le VPS, sinon la valeur provisoire).                               | Hugging Face `unsloth/gemma-4-E2B-it-GGUF`, révision `0314792` (provisoire)          |
+| `SHENRON_GEMMA_MODEL_SHA256` | Empreinte de cette source ; sans elle, une URL propre n'est pas vérifiée.                                                    | empreinte épinglée du fichier Hugging Face                                           |
+| `SHENRON_LLAMA_BIN`          | `llama-server` à lancer (fichier ou dossier), avant `APHRODY_LLAMA_BIN`.                                                     | `llama/` de l'installeur, puis le `PATH`                                             |
+| `SHENRON_CHAT_CTX`           | Taille du contexte de chaque modèle.                                                                                         | `8192`                                                                               |
+| `SHENRON_RESOURCE_DIR`       | Dossier des ressources de l'installeur (`llama/`, `models/`), posé par `shenron-desktop` ; sinon le dossier de l'exécutable. | dossier de l'exécutable                                                              |
+| `SHENRON_PLUGIN_DIR`         | Plugin `shenron` (index dans le prompt de chaque modèle, `/api/public/plugin*`).                                             | `plugin/` du payload, à côté de l'exécutable, puis du dépôt                          |
+
+Au build, l'adaptateur vient de `--chat-lora`, `SHENRON_CHAT_LORA` ou
+`APHRODY_SHENRON_CHAT_LORA` et doit avoir l'empreinte épinglée ; les poids n'entrent jamais dans
+Git.
 
 ## Traduction manga (Shenron Studio) — `crates/koharu-translator`, `crates/shenron-manga`
 

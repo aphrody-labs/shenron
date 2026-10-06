@@ -84,6 +84,8 @@ export async function expectApiError(
 export const MODELS: ModelsResponse = {
   order: ["extractive"],
   backends: [{ id: "extractive", available: true, model: null }],
+  models: [],
+  defaultModel: null,
   embedder: { available: false, model: "none" },
 };
 

@@ -7,6 +7,8 @@
  *                                         of `@shenron/api/contract`)
  *   /api/local/koharu/*                   the editor engine of a browser on this machine
  *                                         (./koharu.ts), when the server has one
+ *   GET /api/local/models                 managed chat models and their state; POST
+ *   /api/local/models/{id}/install|import download Gemma 4 E2B, import the adapter (./chat-model.ts)
  *   GET /api/local/rag/search?q=&limit=&kind=
  *                                         offline Shenron corpus (embedded canon and guide, the
  *                                         configured corpus and the local RAG store) through
@@ -20,6 +22,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { LocalApiGroups, LocalHealthResponse } from "@shenron/api/contract";
+import type { ChatModel } from "./chat-model";
 import type { KoharuBridge } from "./koharu";
 import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
 import { shenronWorkerPool } from "@shenron/native/worker";
@@ -82,6 +85,7 @@ export function localApi(
   env: NodeJS.ProcessEnv = process.env,
   native: LocalNative = NATIVE,
   koharu: KoharuBridge | null = null,
+  chatModel: ChatModel | null = null,
 ): LocalApi {
   let loaded: boolean | undefined;
   let nativeError: string | null = null;
@@ -107,6 +111,8 @@ export function localApi(
     if (!url.pathname.startsWith("/api/local/")) return null;
     const engine = await koharu?.handle(request, url, peer);
     if (engine) return engine;
+    const models = await chatModel?.handle(request, url, peer);
+    if (models) return models;
     const headers = { "cache-control": "no-store", "access-control-allow-origin": "*" };
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (url.pathname === "/api/local/health") {

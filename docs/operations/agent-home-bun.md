@@ -59,3 +59,34 @@ préexistants. Le test `workflows-rag.live.test.ts` contrôle que les citations
 réellement récupérées atteignent le prompt ; seul le modèle de capture est
 simulé. Il exige le préchargement complet, sans contournement par des réponses
 RAG fabriquées. La qualification live reste ouverte pendant l'ingestion.
+
+## Agent homes par utilisateur
+
+Le gabarit public et versionné vit dans `templates/agent-home/` : les sept documents natifs
+d'`aphrody-agent-home` (`AGENTS`, `SOUL`, `IDENTITY`, `USER`, `TOOLS`, `HEARTBEAT`, `BOOT`),
+avec `USER.md` vide (frontmatter `agent_id`, `address_as`, `language`, `timezone`, `avatar`,
+`preferences`, `updated_at`, `template_revision`). `packages/db/scripts/agent-home-template.ts`
+l'embarque dans `@shenron/db/agent-homes` (`--check` en CI) ; `scripts/build/server.ts` le copie
+dans le payload (`home/`) et refuse tout document manquant, toute entrée privée (`MEMORY.md`,
+`memory/`, `.aphrody/`, base, `.env`) et tout `USER.md` rempli.
+
+- Identifiant : `discord:<user_id>`, sinon `local` ; dossier `sanitize_profile` d'Aphrody
+  (`discord-<user_id>`).
+- Shenron Studio : `<SHENRON_HOME>/agents/<id>/` au format natif (documents, `memory/`,
+  `skills/`, `.aphrody/workspace-state.json`, mémoire du chat `.aphrody/memory.sqlite`),
+  `agents/active.json` désigne le home actif. Premier démarrage : home `local` (langue et
+  fuseau du système). Connexion Discord : `POST /api/local/agent-home/login` ouvre le
+  navigateur système sur `/api/desktop/link` du site (Better Auth), qui redirige vers
+  `http://127.0.0.1:<port>/api/local/agent-home/callback` avec un code signé de deux minutes ;
+  le serveur local le vérifie par `POST /api/desktop/link/verify`, déplace le dossier `local`
+  vers `discord-<id>` (mémoire comprise) et bascule `SHENRON_LOCAL_OWNER`.
+- Bot : le premier message privé crée `discord:<user_id>` dans PostgreSQL
+  `chat.agent_homes` (migration `0020_chat_agent_homes.sql`), sinon dans
+  `<dossier de DATABASE_PATH>/agents/`.
+- Synchronisation (modèle, non branchée) : desktop et cloud échangent des instantanés complets
+  (sept documents, `updatedAt`) en last-writer-wins sur `updatedAt`, égalité départagée par le
+  contenu, comme le store de conversations (`newerHome`, `PgAgentHomeStore.put`, curseur
+  `chat.change_seq`).
+- Chat : `createLocalApi({ agentHome })` lit le home du propriétaire ; `USER.md` ajoute le nom,
+  la langue de réponse, le fuseau et les préférences (citées comme données) au prompt système
+  de tous les modèles.

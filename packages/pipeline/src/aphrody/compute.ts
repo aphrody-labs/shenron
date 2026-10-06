@@ -285,7 +285,7 @@ export function createOpenAiChat(
  * or `null` when none is set. A malformed value throws an {@link AiConfigError}.
  */
 export function directChatFromEnv(
-  env: Record<string, string | undefined> = process.env,
+  env: Record<string, string | undefined>,
   options: { fetcher?: typeof fetch } = {},
 ): ChatFn | null {
   const resolved = resolveDirectChat(env);

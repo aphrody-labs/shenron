@@ -49,6 +49,14 @@ export const ChatRequest = z
     history: z.array(ChatTurn).max(20).optional(),
     persona: z.string().max(32).optional(),
     backend: ChatBackendId.default("auto"),
+    /**
+     * Model of `GET /api/v1/models` (`models[].id`: `shenron-chat-v2`, `gemma4-e2b`,
+     * `gemini-web/flash`); it overrides `backend`. Absent: the default model, then fallbacks.
+     */
+    model: z
+      .string()
+      .regex(/^[a-z0-9][a-z0-9._/-]{0,63}$/)
+      .optional(),
     /** Retrieval: number of passages (default 6) and kinds filter. */
     topK: z.number().int().min(0).max(12).default(6),
     kinds: z.array(z.string().max(64)).max(16).optional(),
@@ -189,10 +197,45 @@ export const ChatBackendStatus = z
   })
   .meta({ id: "ChatBackendStatus" });
 
+/** Lifecycle of a chat model on this server. */
+export const ChatModelState = z
+  .enum(["ready", "loading", "downloading", "installable", "failed", "unavailable"])
+  .meta({ id: "ChatModelState" });
+export type ChatModelState = z.infer<typeof ChatModelState>;
+
+/** One selectable chat model, with a stable id. */
+export const ChatModelEntry = z
+  .object({
+    /** Stable id sent back as `ChatRequest.model`. */
+    id: z.string(),
+    label: z.string(),
+    /** Backend serving it (`local`, `gemini-web`). */
+    backend: z.string(),
+    /** `true`: a request can use it now (`ready`, or `loading` on demand). */
+    available: z.boolean(),
+    /** Model of requests that name none. */
+    default: z.boolean(),
+    /** The prompt leaves this machine (Gemini web). */
+    remote: z.boolean(),
+    state: ChatModelState,
+    /** Download progress (`downloading`), in bytes. */
+    progress: z.object({ received: z.number(), total: z.number().nullable() }).optional(),
+    /** `POST` here to download it (`installable`, `failed`), on the local server only. */
+    installUrl: z.string().optional(),
+    /** `POST { "path" }` here to import the adapter from a local file (no public source). */
+    importUrl: z.string().optional(),
+    detail: z.string().optional(),
+  })
+  .meta({ id: "ChatModelEntry" });
+export type ChatModelEntry = z.infer<typeof ChatModelEntry>;
+
 export const ModelsResponse = z
   .object({
     order: z.array(z.string()),
     backends: z.array(ChatBackendStatus),
+    /** Selectable models, the default first; only those this server has or can install. */
+    models: z.array(ChatModelEntry),
+    defaultModel: z.string().nullable(),
     embedder: z.object({
       available: z.boolean(),
       model: z.string(),

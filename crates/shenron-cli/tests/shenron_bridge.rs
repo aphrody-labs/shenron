@@ -79,14 +79,14 @@ fn copy_tree(from: &std::path::Path, to: &std::path::Path) {
     }
 }
 
-/// Runs on the repository's public agent home (`agent-home/`), copied into a temporary
+/// Runs on the repository's public agent home (`templates/agent-home/`), copied into a temporary
 /// `APHRODY_HOME`, instead of whatever `~/.aphrody/workspace-dbfr` the host happens to hold.
 #[test]
 fn shenron_persona_prompt_output() {
     let state = tempfile::tempdir().expect("temporary Aphrody home");
     let workspace = state.path().join("workspace-dbfr");
     std::fs::create_dir_all(&workspace).expect("workspace-dbfr");
-    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../agent-home");
+    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../templates/agent-home");
     copy_tree(&fixture, &workspace);
     shenron()
         .env("APHRODY_HOME", state.path())

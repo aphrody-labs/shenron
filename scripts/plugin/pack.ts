@@ -30,6 +30,8 @@ export interface Fichier {
 }
 
 const RACINE_PAQUET = "shenron-plugin";
+/** Gabarit public de l’agent home, servi sous `agent-home/` dans l’archive. */
+const GABARIT = "templates/agent-home";
 const texte = (s: string) => new TextEncoder().encode(s);
 const lireTexte = (f: Fichier) => new TextDecoder().decode(f.contenu);
 
@@ -79,9 +81,9 @@ export async function fichiersDuPaquet(): Promise<Fichier[]> {
       contenu: await Bun.file(join(RACINE, p)).bytes(),
     });
   }
-  for (const p of await suivis("agent-home")) {
+  for (const p of await suivis(GABARIT)) {
     sortie.push({
-      chemin: `${RACINE_PAQUET}/${p}`,
+      chemin: `${RACINE_PAQUET}/agent-home/${p.slice(GABARIT.length + 1)}`,
       contenu: await Bun.file(join(RACINE, p)).bytes(),
     });
   }
@@ -369,8 +371,8 @@ export async function construire(sortie: string) {
     _genere: "bun scripts/plugin/pack.ts — ne pas éditer",
     plugin: "shenron",
     version,
-    revision: git(["log", "-1", "--format=%h", "--", "plugin", "agent-home"]) || "inconnue",
-    date: git(["log", "-1", "--format=%cs", "--", "plugin", "agent-home"]) || "inconnue",
+    revision: git(["log", "-1", "--format=%h", "--", "plugin", GABARIT]) || "inconnue",
+    date: git(["log", "-1", "--format=%cs", "--", "plugin", GABARIT]) || "inconnue",
     usage: {
       gemini:
         "téléverser shenron-gemini.md (un fichier) ou shenron-plugin.zip, puis demander de suivre GEMINI.md",

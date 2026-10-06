@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 12,
-    "files": 20,
+    "entries": 13,
+    "files": 21,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -14,7 +14,8 @@
       "0013_canon_config",
       "0014_canon_tables",
       "0016_page_banners",
-      "0017_wiki_media_publications"
+      "0017_wiki_media_publications",
+      "0020_chat_agent_homes"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -99,6 +100,12 @@
         "tag": "0017_wiki_media_publications",
         "when": 1790001000000,
         "breakpoints": true
+      },
+      {
+        "idx": 12,
+        "tag": "0020_chat_agent_homes",
+        "when": 1791300000000,
+        "breakpoints": true
       }
     ]
   },
@@ -159,6 +166,7 @@
     "0016_page_banners": "abc1c21408cadbbf23d9e538c47bc4cd862f2644fec18d3631f4435fa494a125",
     "0017_wiki_media_publications": "f5c9b9d32ff5b48298d1b06d1585b967d8fb4cd9be9dfa78932d06fc3510be09",
     "0018_media_works_and_editions": "1edccccf62d9a65a80160a63c743cad8ad1436ddcc560e51c18f1a4733e96341",
-    "0019_narrative_graph_and_contributors": "000efc01951e6932946fe147dd8839ae4f2ba335a97bce5420d8b836e12341eb"
+    "0019_narrative_graph_and_contributors": "000efc01951e6932946fe147dd8839ae4f2ba335a97bce5420d8b836e12341eb",
+    "0020_chat_agent_homes": "26ac2ce54873a510db43f3e7efaf09fa5a3f4912d8bff7f2eba1411c82e0a6e7"
   }
 }

@@ -45,6 +45,9 @@ jobs:
       - name: UI tokens are up to date
         run: bun packages/ui/scripts/generate-tokens.ts --check
 
+      - name: Agent home template is embedded
+        run: bun packages/db/scripts/agent-home-template.ts --check
+
       - name: CDN fonts are up to date
         run: bun apps/site/scripts/fonts.ts --check
 

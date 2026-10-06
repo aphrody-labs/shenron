@@ -3149,6 +3149,81 @@
         ],
         "additionalProperties": false
       },
+      "ChatModelEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "backend": {
+            "type": "string"
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "default": {
+            "type": "boolean"
+          },
+          "remote": {
+            "type": "boolean"
+          },
+          "state": {
+            "$ref": "#/components/schemas/ChatModelState"
+          },
+          "progress": {
+            "type": "object",
+            "properties": {
+              "received": {
+                "type": "number"
+              },
+              "total": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "received",
+              "total"
+            ],
+            "additionalProperties": false
+          },
+          "installUrl": {
+            "type": "string"
+          },
+          "importUrl": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "backend",
+          "available",
+          "default",
+          "remote",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "ChatModelState": {
+        "type": "string",
+        "enum": [
+          "ready",
+          "loading",
+          "downloading",
+          "installable",
+          "failed",
+          "unavailable"
+        ]
+      },
       "ChatRequest": {
         "type": "object",
         "properties": {
@@ -3183,6 +3258,10 @@
           "backend": {
             "default": "auto",
             "$ref": "#/components/schemas/ChatBackendId"
+          },
+          "model": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._/-]{0,63}$"
           },
           "topK": {
             "default": 6,
@@ -3932,6 +4011,18 @@
               "$ref": "#/components/schemas/ChatBackendStatus"
             }
           },
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatModelEntry"
+            }
+          },
+          "defaultModel": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "embedder": {
             "type": "object",
             "properties": {
@@ -3955,6 +4046,8 @@
         "required": [
           "order",
           "backends",
+          "models",
+          "defaultModel",
           "embedder"
         ],
         "additionalProperties": false

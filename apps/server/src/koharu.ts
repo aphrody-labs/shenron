@@ -97,7 +97,7 @@ function isLoopback(address: string | null): boolean {
 }
 
 /** Loopback peer, loopback `Host`, and same-origin when the browser says where it comes from. */
-function local(request: Request, url: URL, peer: string | null): boolean {
+export function local(request: Request, url: URL, peer: string | null): boolean {
   if (!isLoopback(peer) || !LOOPBACK_HOSTS.has(url.hostname)) return false;
   const origin = request.headers.get("origin");
   if (origin && origin !== url.origin) return false;
