@@ -22,7 +22,8 @@ const TASK_ID = /^[A-Za-z0-9._-]{1,128}$/;
 const MAX_LISTED_TASKS = 500;
 
 /** The store directory, or `null` when the file store is off. Read per call. */
-export function fileStoreDir(env: NodeJS.ProcessEnv = process.env): string | null {
+export function fileStoreDir(source?: NodeJS.ProcessEnv): string | null {
+  const env = source ?? process.env;
   const explicit = env.SHENRON_A2A_STORE_DIR?.trim();
   if (explicit) return explicit;
   const coord = env.NODE_ENV === "production" ? env.A2A_COORD_DIR?.trim() : undefined;
