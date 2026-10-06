@@ -95,6 +95,21 @@ function worktreeTree(): string {
 }
 
 type Stamp = { tree: string; files: Record<string, string> };
+type VpsConfig = {
+  host: string;
+  controlPath: string;
+  repositories: Record<string, { root: string; remoteTargetDir: string }>;
+};
+
+/** The tunnel repository whose root is this worktree (`shenron`, or a release worktree). */
+function repositoryName(config: VpsConfig): string {
+  const top = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"]).stdout.toString().trim();
+  const found = Object.entries(config.repositories).find(
+    ([, repo]) => resolve(repo.root.replace(/^~/, homedir())) === resolve(top),
+  );
+  if (!found) throw new Error(`${top}: no repository of config/host/vps-cargo.json builds it`);
+  return found[0];
+}
 
 async function runRemote(): Promise<number> {
   const meta = metadata();
@@ -124,6 +139,7 @@ async function runRemote(): Promise<number> {
     if (!pkg) throw new Error(`unknown package ${name}`);
     return artifactNames(pkg, selection, windows);
   });
+  const config = (await Bun.file(join(aphrody, "config/host/vps-cargo.json")).json()) as VpsConfig;
   const stampFile = join(localDir, ".shenron-remote.json");
   const tree = worktreeTree();
   const stamp: Stamp = existsSync(stampFile)
@@ -143,12 +159,13 @@ async function runRemote(): Promise<number> {
     console.error(`[cargo-runner] ${wanted.join(", ")}: already built for this worktree`);
     return 0;
   }
+  const repo = repositoryName(config);
   const command = [
     process.execPath,
     vpsCargo,
     "run",
     "--repo",
-    "shenron",
+    repo,
     "--",
     ...(crossMsvc ? ["xwin"] : []),
     ...forwarded,
@@ -158,12 +175,7 @@ async function runRemote(): Promise<number> {
   if (code !== 0) return code;
 
   // Bring the artifacts back: same layout as a local build.
-  const config = (await Bun.file(join(aphrody, "config/host/vps-cargo.json")).json()) as {
-    host: string;
-    controlPath: string;
-    repositories: Record<string, { remoteTargetDir: string }>;
-  };
-  const remoteTarget = config.repositories.shenron!.remoteTargetDir;
+  const remoteTarget = config.repositories[repo]!.remoteTargetDir;
   mkdirSync(localDir, { recursive: true });
   const control = `ControlPath=${config.controlPath.replace(/^~/, homedir())}`;
   for (const file of wanted) {
