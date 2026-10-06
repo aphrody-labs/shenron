@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import { api } from "@/lib/admin-api";
 import { formatRelative } from "@/lib/admin-format";
+import { nowMs } from "@/lib/clock";
 
 // createdAt / expiresAt sont des entiers ms (timestamp_ms Drizzle → JSON → number)
 // mais si Drizzle retourne un Date, JSON.stringify le sérialise en ISO string.
@@ -568,7 +569,7 @@ function JailsCard({
             {rows.map((j) => {
               const createdMs = ts(j.createdAt);
               const expiresMs = j.expiresAt ? ts(j.expiresAt) : null;
-              const expired = expiresMs !== null && expiresMs < Date.now();
+              const expired = expiresMs !== null && expiresMs < nowMs();
               return (
                 <div
                   key={j.id}

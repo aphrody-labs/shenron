@@ -4,6 +4,7 @@ import { pageHero } from "@/lib/banner-config";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import type { Metadata } from "next";
+import { nowMs } from "@/lib/clock";
 
 export const revalidate = 3600;
 
@@ -62,7 +63,7 @@ export default async function ToolsPage() {
   const etat = (tool: { archived: boolean; pushed_at: number | null }) => {
     if (tool.archived)
       return { texte: "Archivé", titre: "Dépôt archivé en lecture seule sur GitHub" };
-    if (tool.pushed_at && Date.now() - tool.pushed_at > TROIS_ANS_MS) {
+    if (tool.pushed_at && nowMs() - tool.pushed_at > TROIS_ANS_MS) {
       const annee = new Date(tool.pushed_at).getFullYear();
       return { texte: `Dormant depuis ${annee}`, titre: `Dernière modification en ${annee}` };
     }

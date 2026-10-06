@@ -5,6 +5,7 @@ import { Badge } from "@shenron/ui/badge";
 import { Button } from "@shenron/ui/button";
 import { cn } from "@/lib/utils";
 import type { PostStatus } from "@/db/schema";
+import { nowDate } from "@/lib/clock";
 
 const dateCourte = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
@@ -40,7 +41,7 @@ export default async function AdminPosts({
     with: { author: true },
   });
 
-  const now = new Date();
+  const now = nowDate();
   /** Le statut *effectif* : un « publié » daté dans le futur est en réalité programmé. */
   const effectiveStatus = (p: { status: PostStatus; publishedAt: Date | null }): PostStatus =>
     p.status === "published" && p.publishedAt && p.publishedAt > now ? "scheduled" : p.status;

@@ -31,6 +31,7 @@ import { slugify } from "@/lib/slug";
 import { cn } from "@/lib/utils";
 import type { PostContentDoc, PostStatus } from "@/db/schema";
 import { checkSlug, deletePost, savePost, type PostInput } from "./_actions";
+import { isFuture as isDateFuture } from "@/lib/clock";
 
 /** Longueurs au-delà desquelles Google tronque en général l'affichage. */
 const SEO_TITLE_LIMIT = 60;
@@ -218,9 +219,7 @@ export function ArticleEditor({ initial, siteUrl }: { initial: ArticleDraft; sit
           <Button
             size="lg"
             disabled={pending || slugState === "taken"}
-            onClick={() =>
-              submit(dateInput && new Date(dateInput) > new Date() ? "scheduled" : "published")
-            }
+            onClick={() => submit(dateInput && isDateFuture(dateInput) ? "scheduled" : "published")}
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
             {dateInput && new Date(dateInput) > new Date() ? "Programmer" : "Publier"}
@@ -475,7 +474,7 @@ export function ArticleEditor({ initial, siteUrl }: { initial: ArticleDraft; sit
 /* -------------------------------------------------------------------------- */
 
 function StatusBadge({ status, publishedAt }: { status: PostStatus; publishedAt: string }) {
-  const isFuture = publishedAt ? new Date(publishedAt) > new Date() : false;
+  const isFuture = publishedAt ? isDateFuture(publishedAt) : false;
   if (status === "draft") return <Badge variant="secondary">Brouillon</Badge>;
   if (status === "scheduled" || isFuture) return <Badge variant="warning">Programmé</Badge>;
   return <Badge variant="success">Publié</Badge>;

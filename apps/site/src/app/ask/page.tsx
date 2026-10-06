@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Compass,
 } from "lucide-react";
+import { nowMs, randomId } from "@/lib/clock";
 
 const KiCanvas = dynamic(() => import("@/components/site/KiCanvas").then((m) => m.KiCanvas), {
   ssr: false,
@@ -248,7 +249,7 @@ export default function AskPage() {
     if (!textToSend.trim() || isLoading) return;
 
     const userMsg = textToSend.trim();
-    const userMsgId = Math.random().toString(36).substring(2);
+    const userMsgId = randomId();
     const conversationEnvoi = conversation.current;
 
     setInput("");
@@ -260,7 +261,7 @@ export default function AskPage() {
       if (typeof window !== "undefined") {
         sid = localStorage.getItem("dbfr_chat_session") || "";
         if (!sid) {
-          sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+          sid = randomId() + nowMs().toString(36);
           localStorage.setItem("dbfr_chat_session", sid);
         }
       }
@@ -286,7 +287,7 @@ export default function AskPage() {
       setActiveSources(extraits);
       setSearchMode(extraits.length > 0 ? data.mode || "hybrid" : "");
 
-      const botMsgId = Math.random().toString(36).substring(2);
+      const botMsgId = randomId();
       setMessages((prev) => [
         ...prev,
         {

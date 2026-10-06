@@ -8,6 +8,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Crown, Server, ShieldCheck, Mail, AlertCircle, ExternalLink } from "lucide-react";
 import { apiAt, ApiError } from "@/lib/admin-api";
+import { nowDate } from "@/lib/clock";
 const api = apiAt("/api/admin/account");
 
 interface DiscordUser {
@@ -259,7 +260,7 @@ export default function AccountPage() {
               <dt className="text-zinc-500">Statut</dt>
               <dd>
                 {member.data.member.communication_disabled_until &&
-                new Date(member.data.member.communication_disabled_until) > new Date() ? (
+                new Date(member.data.member.communication_disabled_until) > nowDate() ? (
                   <span className="badge badge-warning">timeout actif</span>
                 ) : member.data.member.pending ? (
                   <span className="badge">en attente</span>

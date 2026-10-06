@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import type { Metadata } from "next";
 import { DISCORD_INVITE } from "@/lib/config";
 import { T } from "@/components/T";
+import { nowDate } from "@/lib/clock";
 
 export const metadata: Metadata = {
   title: "Licence & usage",
@@ -167,7 +168,7 @@ export default function LicencePage() {
           <T
             k="license.s7Text"
             values={{
-              date: new Date().toLocaleDateString("fr-FR", {
+              date: nowDate().toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",

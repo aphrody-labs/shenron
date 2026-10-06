@@ -8,6 +8,7 @@ import { DISCORD_INVITE } from "@/lib/config";
 import { isPathPublic } from "@/lib/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { destinationsOf, type Journey } from "@/lib/site-map";
+import { nowDate } from "@/lib/clock";
 
 /**
  * Colonnes du pied de page — **dérivées** de la carte du site.
@@ -122,7 +123,7 @@ export async function SiteFooter() {
       <div className="border-t border-white/[0.06]">
         <div className="page-shell py-6 flex flex-wrap items-center justify-between gap-3 text-[12px] text-white/50">
           <p className="leading-relaxed max-w-3xl">
-            <T k="footer.copyright" values={{ year: new Date().getFullYear() }} />{" "}
+            <T k="footer.copyright" values={{ year: nowDate().getFullYear() }} />{" "}
             <Link
               href="/credits"
               className="underline decoration-white/30 hover:decoration-dbz-orange hover:text-white"

@@ -4,6 +4,7 @@ import { type MouseEvent, useCallback, useEffect, useState } from "react";
 import { Chargement, Coche, Crayon, Croix, Etincelle, Sac } from "@shenron/ui/icones";
 import Link from "next/link";
 import { formatZeni } from "@/lib/zeni";
+import { nowMs } from "@/lib/clock";
 
 interface EquippedState {
   card: string | null;
@@ -130,7 +131,7 @@ export function ProfileCardCustomizer({
   const [saving, setSaving] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [previewTs, setPreviewTs] = useState<number>(Date.now());
+  const [previewTs, setPreviewTs] = useState<number>(() => Date.now());
   const [cardUrl, setCardUrl] = useState<string>(initialCardUrl);
 
   // Chargement inventaire & catalogue boutique
@@ -193,7 +194,7 @@ export function ProfileCardCustomizer({
     const next = { ...draftEquipped, [type]: key };
     setDraftEquipped(next);
     setPreviewLoading(true);
-    setPreviewTs(Date.now());
+    setPreviewTs(nowMs());
   };
 
   // URL de prévisualisation dynamique (interroge Skia via l'API publique)
