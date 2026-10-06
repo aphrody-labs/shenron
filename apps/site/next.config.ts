@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import type { NextConfig } from "next";
 import { ownImageRemotePatterns, resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
@@ -12,6 +14,61 @@ const nextIntlRequest = "./src/i18n/request.ts";
 
 const monorepoRoot = path.resolve(__dirname, "../..");
 const prosemirrorTransform = path.resolve(__dirname, "node_modules/prosemirror-transform");
+/**
+ * Published `@aphrody/m3-*` packages export their TypeScript sources under `import`, and those
+ * sources import siblings as `./x.js` (TS NodeNext style) while only `x.ts`/`x.tsx` ship:
+ * Turbopack cannot resolve them (`m3-motion@3.3.4`, `m3-theme`, `m3-tokens`). Each export
+ * whose source has a built twin in `dist/` is aliased to it. Drop an entry once its package
+ * ships resolvable sources or exports `import` → `dist`.
+ */
+const DIST_ALIASED = ["@aphrody/m3-motion", "@aphrody/m3-theme", "@aphrody/m3-tokens"];
+
+function distAliases(): Record<string, string> {
+  // Resolved from @shenron/ui and from the m3 packages that depend on them (m3-motion is only
+  // a transitive dependency).
+  const fromUi = createRequire(path.join(monorepoRoot, "packages/ui/package.json"));
+  const resolvers = [fromUi];
+  for (const parent of ["@aphrody/m3-ai", "@aphrody/m3-primitives"]) {
+    try {
+      resolvers.push(createRequire(fromUi.resolve(parent)));
+    } catch {
+      // not installed
+    }
+  }
+  const resolve = (name: string): string | null => {
+    for (const r of resolvers) {
+      try {
+        return r.resolve(name);
+      } catch {
+        // next resolver
+      }
+    }
+    return null;
+  };
+  const aliases: Record<string, string> = {};
+  for (const name of DIST_ALIASED) {
+    const entry = resolve(name);
+    if (!entry) continue;
+    const marker = `${path.sep}node_modules${path.sep}${name.replace("/", path.sep)}${path.sep}`;
+    const at = entry.lastIndexOf(marker);
+    if (at === -1) continue;
+    const root = entry.slice(0, at + marker.length);
+    const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8")) as {
+      exports?: Record<string, string | Record<string, string>>;
+    };
+    for (const [key, target] of Object.entries(manifest.exports ?? {})) {
+      const source = typeof target === "string" ? target : target.import;
+      const match = source?.match(/^\.\/src\/(.+)\.tsx?$/);
+      if (!match) continue;
+      const dist = path.join(root, "dist", `${match[1]}.js`);
+      if (!existsSync(dist)) continue;
+      const request = key === "." ? name : `${name}/${key.slice(2)}`;
+      aliases[request] = path.relative(__dirname, dist).split(path.sep).join("/");
+    }
+  }
+  return aliases;
+}
+
 const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
@@ -134,7 +191,6 @@ const nextConfig: NextConfig = {
     "@aphrody/http",
     "@aphrody/inference",
     "@aphrody/m3-ai",
-    "@aphrody/m3-motion",
     "@aphrody/m3-primitives",
     "@aphrody/m3-reader",
     "@aphrody/m3-theme",
@@ -160,6 +216,7 @@ const nextConfig: NextConfig = {
     resolveAlias: {
       "prosemirror-transform": "./node_modules/prosemirror-transform",
       "next-intl/config": nextIntlRequest,
+      ...distAliases(),
     },
   },
 
