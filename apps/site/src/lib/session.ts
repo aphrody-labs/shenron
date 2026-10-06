@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { sessionAuth } from "@/lib/host-auth";
 import { db } from "@/lib/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -215,7 +215,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     }
   }
 
-  const session = await auth.api.getSession({ headers: reqHeaders });
+  const session = await sessionAuth.api.getSession({ headers: reqHeaders });
   if (!session?.user) {
     // Poste d'administration (`SHENRON_ADMIN_IPS`) sans session : l'admin par jeton,
     // tracé sous sa propre identité d'automatisation.

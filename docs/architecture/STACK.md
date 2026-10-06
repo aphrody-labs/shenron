@@ -1290,6 +1290,8 @@ Discord), `SHENRON_LOCAL_OWNER` (propriétaire loopback direct), `SHENRON_ADMIN_
 `API_ADMIN_TOKEN` (Bearer admin), `SHENRON_API_HOST`/`SHENRON_API_PORT`
 (`resolveShenronApiBind` de `@shenron/config/services`).
 
+Authentification de l'hôte : `/api/auth/*` (Better Auth, `packages/api/src/host/auth.ts`) est servi avant le relais Next. L'`AuthPort` du groupe `owner` résout, dans l'ordre : en-têtes signés, utilisateur Discord signé, session Better Auth (cookie ou Bearer : propriétaire `discord:<id>` si un compte Discord est lié, sinon `user:<id>`), puis le propriétaire local en boucle directe. `admin` : jeton d'administration ou session du staff du site (`staffPolicyFromEnv(env, "site")`). Consommateurs : le bureau (`apps/server/src/agent-home.ts`) et le site (`apps/site/src/lib/host-auth.ts`) quand `SHENRON_HOST_URL` est posée. Aucune arête nouvelle dans le graphe : `api` consomme déjà `auth`, `db` et `config` ; le site relaie en HTTP et ne dépend pas de `api/host`.
+
 ```ts
 // ./contract
 export const ApiErrorCode: z.ZodEnum<

@@ -21,6 +21,8 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string().trim().min(10),
     SHENRON_API_URL: z.string().trim().url().default(DEFAULT_PUBLIC_ORIGINS.api),
     // Read-only Shenron MCP server behind /mcp (shenron-mcp --http <addr> --public).
+    // Hôte Bun (`shenron-server`) : si posée, il sert `/api/auth/*` (relais) et la session.
+    SHENRON_HOST_URL: z.string().trim().url().optional(),
     SHENRON_MCP_URL: z.string().trim().url().optional(),
     SHENRON_ADMIN_TOKEN: z.string().trim().min(16).optional(),
     // Adresses ou CIDR d'administration (`@/lib/admin-ip`) : staff sans session ni jeton.

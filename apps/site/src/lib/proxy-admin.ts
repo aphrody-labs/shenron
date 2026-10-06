@@ -20,7 +20,7 @@
  */
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
+import { sessionAuth } from "@/lib/host-auth";
 import { db } from "@/lib/db";
 import { users } from "@/db/schema";
 import { getSessionSafe } from "@shenron/auth";
@@ -81,7 +81,7 @@ export async function resolveVisitor(request: NextRequest): Promise<Visitor> {
   }
 
   // 4) Session Discord (Better Auth) lue depuis les en-têtes de la requête.
-  const session = await getSessionSafe<{ user: { id: string } }>(auth, request.headers);
+  const session = await getSessionSafe<{ user: { id: string } }>(sessionAuth, request.headers);
   if (!session?.user) return { isAdmin: false, authenticated: false, discordId: null };
 
   // Discord ID lié (même lookup que `session.ts`) → clé du user métier et de
