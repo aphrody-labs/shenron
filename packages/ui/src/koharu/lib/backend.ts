@@ -65,6 +65,7 @@ export function refreshTranslationModels(force = false): Promise<void> {
   const request = call(commands.getTranslationModels)
     .then((models) => {
       if (generation === translationModelsGeneration) receiveTranslationModels(models);
+      return undefined;
     })
     .finally(() => {
       if (translationModelsRequest === request) translationModelsRequest = null;

@@ -312,6 +312,7 @@ export function startNativeClient(options: { binary?: string; root?: string } = 
         }
         closing = child.exited.then(() => {
           fail(new Error("The Koharu SDK process closed."));
+          return undefined;
         });
       }
       return closing;

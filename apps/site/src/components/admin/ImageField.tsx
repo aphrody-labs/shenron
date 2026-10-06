@@ -297,6 +297,7 @@ function GalleryPicker({
       .get<{ files: GalleryFile[] }>("/assets/list?dir=wiki")
       .then((data) => {
         if (alive) setFiles(data.files ?? []);
+        return undefined;
       })
       .catch((e: Error) => {
         if (alive) setError(e.message || "Chargement de la galerie échoué.");

@@ -46,6 +46,7 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
     const controller = new AbortController();
     void localEngine(controller.signal).then((available) => {
       if (available) setBridge(true);
+      return undefined;
     });
     return () => controller.abort();
   }, [desktop]);

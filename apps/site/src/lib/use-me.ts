@@ -52,6 +52,7 @@ export function useMe(): Me | undefined {
     let alive = true;
     void fetchMe().then((m) => {
       if (alive) setMe(m);
+      return undefined;
     });
     return () => {
       alive = false;

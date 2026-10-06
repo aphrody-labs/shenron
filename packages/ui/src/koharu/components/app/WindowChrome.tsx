@@ -50,6 +50,7 @@ function NativeWindowControls() {
     const synchronize = () => {
       void window.isMaximized().then((value) => {
         if (!disposed) setMaximized(value);
+        return undefined;
       });
     };
     synchronize();
@@ -58,6 +59,7 @@ function NativeWindowControls() {
       void window.onResized(synchronize).then((stop) => {
         if (disposed) void Promise.resolve(stop()).catch(() => undefined);
         else unlisten = stop;
+        return undefined;
       });
     });
     return () => {

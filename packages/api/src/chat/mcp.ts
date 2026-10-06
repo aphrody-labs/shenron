@@ -79,6 +79,7 @@ export function createStdioMcpClient(o: {
         child = null;
         ready = null;
         fail(new Error("MCP server exited"));
+        return undefined;
       });
       void (async () => {
         const reader = proc.stdout.getReader();

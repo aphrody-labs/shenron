@@ -151,6 +151,7 @@ function useRatingState(targetType: RatingTargetType, targetId: string | number)
       // Un échec de rafraîchissement ne doit pas effacer une valeur déjà à
       // l'écran : on n'affiche l'erreur que si on n'a rien à montrer.
       if (vivant && !frais && !connu) setLoadErr("Impossible de charger les notes.");
+      return undefined;
     });
     return () => {
       vivant = false;

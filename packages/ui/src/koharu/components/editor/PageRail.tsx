@@ -148,6 +148,7 @@ export function PageRail() {
           if (selectionRequest.current !== request) return;
           queryClient.setQueryData(projectKey, selection.project);
           queryClient.setQueryData(pageKey, selection.page);
+          return undefined;
         })
         .catch(() => {
           if (selectionRequest.current !== request) return;
@@ -190,6 +191,7 @@ export function PageRail() {
           return;
         }
         if (intentPrefetch.current === state) state.pages.delete(page);
+        return undefined;
       })
       .catch(() => {
         if (intentPrefetch.current === state) state.pages.delete(page);

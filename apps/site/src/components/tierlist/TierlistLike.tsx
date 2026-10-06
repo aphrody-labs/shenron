@@ -23,6 +23,7 @@ export function TierlistLike({ tierlistId }: { tierlistId: string }) {
           setCount(d.count);
           setLiked(!!d.liked);
         }
+        return undefined;
       })
       .catch(() => {});
     return () => {

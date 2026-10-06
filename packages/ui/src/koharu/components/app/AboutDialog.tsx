@@ -30,6 +30,7 @@ export function AboutDialog({
     void getVersion()
       .then((current) => {
         if (active) setVersion(current);
+        return undefined;
       })
       .catch(() => {
         if (active) setVersion(t("about.unavailable"));

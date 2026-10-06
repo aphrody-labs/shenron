@@ -66,6 +66,7 @@ export function LikeButton({
         if (!alive || !state) return;
         setLikes(state.likes);
         setLiked(state.liked);
+        return undefined;
       })
       .catch(() => {});
     return () => {

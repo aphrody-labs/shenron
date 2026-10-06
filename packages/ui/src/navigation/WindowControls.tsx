@@ -31,6 +31,7 @@ export function useUndecoratedWindow(tauri: boolean): boolean {
       .then((window) => window.isDecorated())
       .then((decorated) => {
         if (alive) setUndecorated(!decorated);
+        return undefined;
       })
       .catch(() => undefined);
     return () => {
@@ -51,11 +52,13 @@ export function WindowControls({ labels }: { labels: ShellLabels }) {
         const sync = () =>
           void window.isMaximized().then((value) => {
             if (alive) setMaximized(value);
+            return undefined;
           });
         sync();
         const unlisten = await window.onResized(sync);
         if (alive) stop = unlisten;
         else unlisten();
+        return undefined;
       })
       .catch(() => undefined);
     return () => {

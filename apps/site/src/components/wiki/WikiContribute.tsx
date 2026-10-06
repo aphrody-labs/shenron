@@ -123,6 +123,7 @@ export function WikiContribute({
       .then((r) => r.json())
       .then((d) => {
         if (!annule) setAutorise(d?.ok ? !!d.allowed : true);
+        return undefined;
       })
       // En cas d'échec on n'empêche pas d'essayer : la route de dépôt
       // tranchera, et refuser sur une erreur réseau serait pire que laisser
@@ -158,6 +159,7 @@ export function WikiContribute({
         setOrigine(data.value ?? "");
         setTexte(data.value ?? "");
         setPhase("idle");
+        return undefined;
       })
       .catch(() => {
         if (annule) return;

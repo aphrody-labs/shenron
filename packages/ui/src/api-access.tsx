@@ -25,6 +25,7 @@ export function ApiAccess({
     void navigator.clipboard?.writeText(value).then(() => {
       setCopied(key);
       setTimeout(() => setCopied((current) => (current === key ? null : current)), 1600);
+      return undefined;
     });
   }, []);
   const absolute = (value: string) =>

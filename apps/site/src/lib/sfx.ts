@@ -39,6 +39,7 @@ function ensureHowler(): void {
       } catch {
         /* ignore */
       }
+      return undefined;
     })
     .catch(() => {
       /* pack audio indisponible : la synthèse Web Audio prend le relais */

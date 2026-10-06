@@ -38,6 +38,7 @@ export function ContributionRightsPanel() {
       .then((r) => r.json())
       .then((d) => {
         if (vivant && d?.ok && d.rights) setRights(d.rights as ContributionRights);
+        return undefined;
       })
       .catch(() => {})
       .finally(() => vivant && setChargement(false));

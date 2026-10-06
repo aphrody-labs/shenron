@@ -300,6 +300,7 @@ export function CanvasWorkspace() {
           for (const page of prepared) {
             queryClient.setQueryData(preparedPageKey(page.page.id), page);
           }
+          return undefined;
         })
         .catch(() => undefined);
     }
@@ -664,6 +665,7 @@ export function CanvasWorkspace() {
                 .then((color) => {
                   const hex = rgbaToHex(color);
                   if (!colorSampling?.complete(hex)) setBrush({ ...brush, color: hex });
+                  return undefined;
                 })
                 .catch((error: unknown) => receiveError(errorMessage(error)));
             }

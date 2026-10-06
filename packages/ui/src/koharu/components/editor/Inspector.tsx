@@ -532,6 +532,7 @@ function LayersInspector() {
         queryClient.setQueryData(pageKey, next);
         setMovingLayer(null);
         void refresh(projectKey);
+        return undefined;
       },
       () => setMovingLayer(null),
     );

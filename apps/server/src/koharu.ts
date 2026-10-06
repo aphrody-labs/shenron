@@ -231,6 +231,7 @@ export function koharuBridge(o: KoharuOptions): KoharuBridge {
     })();
     void child.exited.then((code) => {
       if (engine === child) closed(`the Koharu engine exited (${code})`);
+      return undefined;
     });
     return child;
   };

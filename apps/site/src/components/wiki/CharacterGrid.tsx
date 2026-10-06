@@ -141,6 +141,7 @@ export function CharacterGrid({
       .then((d) => {
         setVariants(Array.isArray(d?.variants) ? d.variants : []);
         setEtatVersions("pret");
+        return undefined;
       })
       .catch(() => setEtatVersions("erreur"));
   }, [vue, etatVersions]);

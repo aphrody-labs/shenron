@@ -93,6 +93,7 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
       } else {
         videoRef.current.src = src;
       }
+      return undefined;
     });
 
     return () => {

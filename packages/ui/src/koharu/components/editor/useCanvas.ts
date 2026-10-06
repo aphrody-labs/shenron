@@ -79,6 +79,7 @@ export function useCanvas(
         }
         owned = created;
         setCanvas(created);
+        return undefined;
       })
       .catch((reason: unknown) => {
         if (!active) return;
@@ -147,6 +148,7 @@ export function useCanvas(
         updateHasFrame(true);
         setError(null);
         setStatus("ready");
+        return undefined;
       })
       .catch((reason: unknown) => {
         if (!current()) return;

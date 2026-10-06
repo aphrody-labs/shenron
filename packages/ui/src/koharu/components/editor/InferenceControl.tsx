@@ -154,6 +154,7 @@ function RuntimeSelector({
     void savePreferences(pipeline, preferences.providers, preferences.typesetting)
       .then((saved) => {
         receivePreferences(saved);
+        return undefined;
       })
       .catch(() => undefined)
       .finally(() => setSavingModel(null));
@@ -178,6 +179,7 @@ function RuntimeSelector({
     void savePreferences(pipeline, preferences.providers, preferences.typesetting)
       .then((saved) => {
         receivePreferences(saved);
+        return undefined;
       })
       .catch(() => undefined)
       .finally(() => setSavingOutput(false));

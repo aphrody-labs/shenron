@@ -153,6 +153,7 @@ function ReportCard({ report, onChanged }: { report: ReportRow; onChanged: () =>
         body: JSON.stringify({ id: report.id, ...body }),
       }).then((res) => {
         if (!res.ok) throw new Error(`patch ${res.status}`);
+        return undefined;
       }),
     onSuccess: onChanged,
   });
@@ -164,6 +165,7 @@ function ReportCard({ report, onChanged }: { report: ReportRow; onChanged: () =>
         credentials: "same-origin",
       }).then((res) => {
         if (!res.ok) throw new Error(`delete ${res.status}`);
+        return undefined;
       }),
     onSuccess: onChanged,
   });

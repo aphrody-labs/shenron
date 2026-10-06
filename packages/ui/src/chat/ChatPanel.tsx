@@ -226,6 +226,7 @@ export function ChatPanel({
           ? current
           : (result.defaultModel ?? result.models[0]?.id ?? null),
       );
+      return undefined;
     });
     return () => {
       live = false;

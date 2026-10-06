@@ -887,6 +887,7 @@ function AssetGrid({ dir, onPick }: { dir: string; onPick?: (path: string) => vo
       () => {
         setCopied(path);
         setTimeout(() => setCopied(null), 1500);
+        return undefined;
       },
       () => {},
     );

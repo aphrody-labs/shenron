@@ -79,6 +79,7 @@ export function Providers({ children, locale }: { children: ReactNode; locale?: 
         )
         .then((state) => {
           if (lifecycle.active) receiveStartupState(state);
+          return undefined;
         })
         .catch(() => undefined);
     }
