@@ -9,15 +9,17 @@
  */
 import { ChatComposer, MessageBubble } from "@aphrody/m3-ai";
 import { Banner, Button } from "@aphrody/m3-primitives";
-import { CircleAlert, ExternalLink, MessageSquare, Plus, X } from "lucide-react";
+import { Brain, CircleAlert, ExternalLink, MessageSquare, Plus, X } from "lucide-react";
 import { type MouseEvent, useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { safeMarkdownHref } from "../markdown";
 import {
   type ChatCitation,
   type ChatFailureKind,
   type ChatGroupStatus,
+  type ChatModelChoice,
   type ChatMessageView,
   type ChatTransport,
+  type ChatTurnMemory,
   chatReducer,
   historyOf,
   initialChatState,
@@ -46,6 +48,10 @@ export interface ChatLabels {
   stopped: string;
   dismiss: string;
   errors: Record<ChatFailureKind, string>;
+  /** Discreet note of the persistent memory of a turn (counts > 0 only). */
+  memoryUsed: (memory: ChatTurnMemory) => string;
+  /** Provider group of a model in the selector (`local` → on this computer, remote otherwise). */
+  modelProvider: (model: ChatModelChoice) => string;
 }
 
 export interface ChatPanelProps {
@@ -59,6 +65,10 @@ export interface ChatPanelProps {
   onOpenLink?: (url: string) => void;
   /** Formats `updatedAt` of a conversation (locale of the host). */
   formatDate?: (iso: string) => string;
+  /** After each settled turn, with its memory report (e.g. to refresh a memory panel). */
+  onTurnDone?: (memory: ChatTurnMemory | undefined) => void;
+  /** Changing it reloads the model selector (a model was installed or imported). */
+  modelsKey?: number;
   className?: string;
 }
 
@@ -154,6 +164,15 @@ function Message({ message, labels }: { message: ChatMessageView; labels: ChatLa
           ) : message.finishReason === "aborted" ? (
             <p className="m-0 px-1 text-body-small text-on-surface-variant">{labels.stopped}</p>
           ) : null}
+          {message.memory && (message.memory.recalled > 0 || message.memory.stored > 0) ? (
+            <p
+              className="m-0 inline-flex items-center gap-1.5 px-1 text-label-small text-on-surface-variant"
+              data-memory=""
+            >
+              <Brain aria-hidden size={14} />
+              {labels.memoryUsed(message.memory)}
+            </p>
+          ) : null}
           {message.model && !message.pending ? (
             <p className="m-0 px-1 text-label-small text-on-surface-variant">{message.model}</p>
           ) : null}
@@ -170,10 +189,14 @@ export function ChatPanel({
   conversations: history,
   onOpenLink,
   formatDate,
+  onTurnDone,
+  modelsKey = 0,
   className,
 }: ChatPanelProps) {
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const [draft, setDraft] = useState("");
+  const [models, setModels] = useState<ChatModelChoice[]>([]);
+  const [model, setModel] = useState<string | null>(null);
   const abort = useRef<AbortController | null>(null);
   const streamId = useRef<string | null>(null);
   const thread = useRef<HTMLOListElement | null>(null);
@@ -191,6 +214,23 @@ export function ChatPanel({
   useEffect(() => {
     if (historyOn) void refresh();
   }, [historyOn, refresh]);
+
+  useEffect(() => {
+    if (!chatOn || !transport.listModels) return;
+    let live = true;
+    void transport.listModels().then((result) => {
+      if (!live || !result) return;
+      setModels(result.models);
+      setModel((current) =>
+        current && result.models.some((m) => m.id === current)
+          ? current
+          : (result.defaultModel ?? result.models[0]?.id ?? null),
+      );
+    });
+    return () => {
+      live = false;
+    };
+  }, [chatOn, transport, modelsKey]);
 
   useEffect(() => () => abort.current?.abort(), []);
 
@@ -216,16 +256,24 @@ export function ChatPanel({
     const controller = new AbortController();
     abort.current = controller;
     streamId.current = null;
+    let turnMemory: ChatTurnMemory | undefined;
     const outcome = await transport.send(
-      { message, ...(conversationId ? { conversationId } : {}), history: turns },
+      {
+        message,
+        ...(conversationId ? { conversationId } : {}),
+        ...(model && models.length > 1 ? { model } : {}),
+        history: turns,
+      },
       (chatEvent) => {
         if (chatEvent.type === "meta") streamId.current = chatEvent.data.streamId;
+        if (chatEvent.type === "done") turnMemory = chatEvent.data.memory;
         dispatch({ type: "event", event: chatEvent });
       },
       controller.signal,
     );
     abort.current = null;
     dispatch({ type: "finish", outcome });
+    if (outcome.ok) onTurnDone?.(turnMemory);
     if (historyOn) void refresh();
   }
 
@@ -352,6 +400,19 @@ export function ChatPanel({
           onSend={() => void submit()}
           placeholder={chatOn ? labels.placeholder : labels.unavailableTitle}
           isSending={streaming || !chatOn}
+          {...(models.length > 1 && model
+            ? {
+                modelSelector: {
+                  value: model,
+                  options: models.map((m) => ({
+                    id: m.id,
+                    name: m.label,
+                    provider: labels.modelProvider(m),
+                  })),
+                  onChange: setModel,
+                },
+              }
+            : {})}
           {...(streaming ? { onStop: stop } : {})}
         />
       </section>

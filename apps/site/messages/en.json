@@ -1548,7 +1548,11 @@
         "error": "The generation failed.",
         "aborted": "Generation stopped.",
         "unreachable": "The local server stopped responding."
-      }
+      },
+      "memoryRecalled": "{count, plural, one {# memory used} other {# memories used}}",
+      "memoryStored": "{count, plural, one {# fact remembered} other {# facts remembered}}",
+      "modelLocal": "On this computer",
+      "modelRemote": "Online"
     },
     "search": {
       "title": "Search the Dragon Ball corpus (offline)",
@@ -1568,6 +1572,55 @@
       "controlTitle": "Control panel",
       "controlText": "Service health, corpus, local models and training.",
       "siteText": "The full public site (wiki, manga, databooks, news) in your browser."
+    },
+    "memory": {
+      "title": "Memory",
+      "description": "What Shenron kept from your chats and reuses in its answers. Nothing leaves this computer without your consent.",
+      "searchLabel": "Search the memory",
+      "searchPlaceholder": "Search a memory…",
+      "empty": "Shenron has not remembered anything yet.",
+      "noMatch": "No memory matches.",
+      "unavailable": "Persistent memory is not available on this server.",
+      "checking": "Checking the memory…",
+      "remove": "Forget",
+      "clear": "Forget everything",
+      "clearConfirm": "Confirm: forget everything",
+      "cancel": "Cancel",
+      "failed": "The memory could not be read or changed.",
+      "total": "{count, plural, =0 {No memory} one {# memory} other {# memories}}",
+      "tags": {
+        "profile": "Profile",
+        "preference": "Preference",
+        "remember": "To remember"
+      }
+    },
+    "models": {
+      "title": "Models",
+      "description": "The chat models of this computer. An online model sends your questions outside this machine.",
+      "checking": "Checking the models…",
+      "unavailable": "The model list is not available on this server.",
+      "failed": "The model list could not be read, or the action failed.",
+      "empty": "No model is declared on this server.",
+      "defaultBadge": "Default",
+      "local": "Local",
+      "remote": "Online",
+      "states": {
+        "ready": "Ready",
+        "loading": "Loading",
+        "downloading": "Downloading",
+        "installable": "Not installed",
+        "failed": "Failed",
+        "unavailable": "Unavailable"
+      },
+      "install": "Install",
+      "importAdapter": "Import the Dragon Ball fine-tuned adapter (.gguf file)",
+      "chooseFile": "Choose the file…",
+      "pathLabel": "Path of the adapter file",
+      "pathPlaceholder": "/path/to/shenron-chat-v2.gguf",
+      "importSubmit": "Import",
+      "importFailed": "Import failed",
+      "progressKnown": "{received} of {total}",
+      "progressUnknown": "{received} received"
     }
   }
 }

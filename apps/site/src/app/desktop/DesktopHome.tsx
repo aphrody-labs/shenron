@@ -8,11 +8,24 @@
  */
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LocalHealthResponse } from "@shenron/api/contract";
-import { ChatPanel, type ChatLabels } from "@shenron/ui/chat";
-import { isTauri } from "@shenron/ui/studio/tauri-bridge";
-import { createDesktopChatTransport } from "./desktop-chat-transport";
+import {
+  ChatPanel,
+  type ChatLabels,
+  type ChatModelView,
+  MemoryPanel,
+  type MemoryLabels,
+  type ModelsLabels,
+  ModelsPanel,
+  type PickAdapterPath,
+} from "@shenron/ui/chat";
+import { isTauri, nativeOpenDialog } from "@shenron/ui/studio/tauri-bridge";
+import {
+  createDesktopChatTransport,
+  createDesktopMemoryTransport,
+  createDesktopModelsTransport,
+} from "./desktop-chat-transport";
 
 const PUBLIC_SITE = "https://dragonballfr.com";
 
@@ -69,6 +82,101 @@ function useChatLabels(): ChatLabels {
         aborted: t("errors.aborted"),
         unreachable: t("errors.unreachable"),
       },
+      memoryUsed: ({ recalled, stored }) =>
+        [
+          recalled > 0 ? t("memoryRecalled", { count: recalled }) : null,
+          stored > 0 ? t("memoryStored", { count: stored }) : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      modelProvider: (model) => (model.remote ? t("modelRemote") : t("modelLocal")),
+    }),
+    [t],
+  );
+}
+
+/** Byte count in the reader's language ("1,2 Go", "850 MB"). */
+function formatBytes(locale: string, bytes: number): string {
+  const [value, unit] =
+    bytes >= 1e9
+      ? [bytes / 1e9, "gigabyte"]
+      : bytes >= 1e6
+        ? [bytes / 1e6, "megabyte"]
+        : [bytes / 1e3, "kilobyte"];
+  return new Intl.NumberFormat(locale, { style: "unit", unit, maximumFractionDigits: 1 }).format(
+    value,
+  );
+}
+
+function useModelsLabels(locale: string): ModelsLabels {
+  const t = useTranslations("desktop.models");
+  return useMemo(
+    () => ({
+      title: t("title"),
+      description: t("description"),
+      checking: t("checking"),
+      unavailable: t("unavailable"),
+      failed: t("failed"),
+      empty: t("empty"),
+      defaultBadge: t("defaultBadge"),
+      local: t("local"),
+      remote: t("remote"),
+      states: {
+        ready: t("states.ready"),
+        loading: t("states.loading"),
+        downloading: t("states.downloading"),
+        installable: t("states.installable"),
+        failed: t("states.failed"),
+        unavailable: t("states.unavailable"),
+      },
+      install: t("install"),
+      importAdapter: t("importAdapter"),
+      chooseFile: t("chooseFile"),
+      pathLabel: t("pathLabel"),
+      pathPlaceholder: t("pathPlaceholder"),
+      importSubmit: t("importSubmit"),
+      importFailed: t("importFailed"),
+      progress: (received: number, total: number | null) =>
+        total
+          ? t("progressKnown", {
+              received: formatBytes(locale, received),
+              total: formatBytes(locale, total),
+            })
+          : t("progressUnknown", { received: formatBytes(locale, received) }),
+    }),
+    [t, locale],
+  );
+}
+
+/** Native file dialog of Shenron Studio for the adapter; undefined outside Tauri. */
+const pickAdapterPath: PickAdapterPath = async () => {
+  const outcome = await nativeOpenDialog({ filters: [{ name: "GGUF", extensions: ["gguf"] }] });
+  if (outcome.status === "unavailable") return undefined;
+  return outcome.status === "picked" ? (outcome.value[0] ?? null) : null;
+};
+
+const MEMORY_TAGS = new Set(["profile", "preference", "remember"]);
+
+function useMemoryLabels(): MemoryLabels {
+  const t = useTranslations("desktop.memory");
+  return useMemo(
+    () => ({
+      title: t("title"),
+      description: t("description"),
+      searchLabel: t("searchLabel"),
+      searchPlaceholder: t("searchPlaceholder"),
+      empty: t("empty"),
+      noMatch: t("noMatch"),
+      unavailable: t("unavailable"),
+      checking: t("checking"),
+      remove: t("remove"),
+      clear: t("clear"),
+      clearConfirm: t("clearConfirm"),
+      cancel: t("cancel"),
+      failed: t("failed"),
+      total: (count) => t("total", { count }),
+      tag: (tag) =>
+        MEMORY_TAGS.has(tag) ? t(`tags.${tag as "profile" | "preference" | "remember"}`) : tag,
     }),
     [t],
   );
@@ -78,6 +186,12 @@ export function DesktopHome() {
   const t = useTranslations("desktop");
   const locale = useLocale();
   const labels = useChatLabels();
+  const memoryLabels = useMemoryLabels();
+  const [memoryRefresh, setMemoryRefresh] = useState(0);
+  const modelsLabels = useModelsLabels(locale);
+  const [modelsKey, setModelsKey] = useState(0);
+  const [tauri, setTauri] = useState(false);
+  useEffect(() => setTauri(isTauri()), []);
   const [health, setHealth] = useState<Health | null>(null);
   const [offline, setOffline] = useState(false);
   const [query, setQuery] = useState("");
@@ -94,6 +208,31 @@ export function DesktopHome() {
       }),
     [locale],
   );
+  const memoryTransport = useMemo(
+    () =>
+      createDesktopMemoryTransport({
+        baseUrl: typeof window === "undefined" ? "http://localhost" : window.location.origin,
+      }),
+    [],
+  );
+  const modelsTransport = useMemo(
+    () =>
+      createDesktopModelsTransport({
+        baseUrl: typeof window === "undefined" ? "http://localhost" : window.location.origin,
+      }),
+    [],
+  );
+  // The chat selector reloads only when the set of usable models changes, not at every poll.
+  const usableModels = useRef("");
+  const onModelsChange = useCallback((models: ChatModelView[]) => {
+    const usable = models
+      .filter((m) => m.available)
+      .map((m) => m.id)
+      .join(",");
+    if (usable === usableModels.current) return;
+    usableModels.current = usable;
+    setModelsKey((n) => n + 1);
+  }, []);
   const formatDate = useMemo(() => {
     const format = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" });
     return (iso: string) => format.format(new Date(iso));
@@ -118,6 +257,9 @@ export function DesktopHome() {
     : health
       ? (health.groups?.conversations ?? unknown)
       : null;
+
+  const modelsGroup = offline ? unknown : health ? (health.groups?.models ?? unknown) : null;
+  const memoryGroup = offline ? unknown : health ? (health.groups?.memory ?? unknown) : null;
 
   async function search(event: FormEvent) {
     event.preventDefault();
@@ -168,6 +310,26 @@ export function DesktopHome() {
         chat={chatGroup}
         conversations={historyGroup}
         onOpenLink={(url) => void openExternal(url)}
+        formatDate={formatDate}
+        onTurnDone={(memory) => {
+          if (memory && memory.stored > 0) setMemoryRefresh((n) => n + 1);
+        }}
+        modelsKey={modelsKey}
+      />
+
+      <ModelsPanel
+        transport={modelsTransport}
+        labels={modelsLabels}
+        models={modelsGroup}
+        {...(tauri ? { pickAdapterPath } : {})}
+        onChange={onModelsChange}
+      />
+
+      <MemoryPanel
+        transport={memoryTransport}
+        labels={memoryLabels}
+        memory={memoryGroup}
+        refreshKey={memoryRefresh}
         formatDate={formatDate}
       />
 

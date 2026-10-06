@@ -6,7 +6,11 @@ import en from "../messages/en.json";
 import fr from "../messages/fr.json";
 import ja from "../messages/ja.json";
 import type { ChatStreamEvent } from "@shenron/ui/chat/model";
-import { createDesktopChatTransport } from "../src/app/desktop/desktop-chat-transport";
+import {
+  createDesktopChatTransport,
+  createDesktopMemoryTransport,
+  createDesktopModelsTransport,
+} from "../src/app/desktop/desktop-chat-transport";
 
 const NOW = "2026-10-05T10:00:00.000Z";
 const conversation = (id: string, updatedAt: string, deletedAt: string | null = null) => ({
@@ -160,6 +164,139 @@ describe("createDesktopChatTransport", () => {
   });
 });
 
+const entry = (id: string, extra: Record<string, unknown>) => ({
+  id,
+  label: id,
+  backend: "local",
+  available: false,
+  default: false,
+  remote: false,
+  state: "installable",
+  ...extra,
+});
+const MODELS = {
+  order: ["local"],
+  backends: [],
+  models: [
+    entry("shenron-chat-v2", {
+      available: true,
+      default: true,
+      state: "ready",
+      importUrl: "/api/local/models/shenron-chat-v2/import",
+    }),
+    entry("gemma4-e2b", { installUrl: "/api/local/models/gemma4-e2b/install" }),
+    entry("gemini-web/flash", {
+      backend: "gemini-web",
+      remote: true,
+      available: true,
+      state: "ready",
+    }),
+  ],
+  defaultModel: "shenron-chat-v2",
+  embedder: { available: true, model: "e5" },
+};
+
+describe("createDesktopModelsTransport", () => {
+  test("lists the models, installs and imports through their local routes", async () => {
+    const seen: Request[] = [];
+    const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = new Request(input, init);
+      seen.push(request);
+      const path = new URL(request.url).pathname;
+      if (path === "/api/v1/models") return Response.json(MODELS);
+      if (path === "/api/local/models/gemma4-e2b/install")
+        return Response.json(MODELS.models[1], { status: 202 });
+      if (path === "/api/local/models/shenron-chat-v2/import") {
+        const body = (await request.json()) as { path: string };
+        return body.path.endsWith(".gguf")
+          ? Response.json(MODELS.models[0])
+          : Response.json({ error: "not a gguf adapter" }, { status: 422 });
+      }
+      return new Response("", { status: 404 });
+    }) as typeof fetch;
+    const t = createDesktopModelsTransport({ baseUrl: "http://127.0.0.1:4777", fetch: fetcher });
+    const models = (await t.list())!;
+    expect(models.map((m) => [m.id, m.state])).toEqual([
+      ["shenron-chat-v2", "ready"],
+      ["gemma4-e2b", "installable"],
+      ["gemini-web/flash", "ready"],
+    ]);
+    expect(await t.install(models[1]!)).toBe(true);
+    expect(seen.at(-1)!.method).toBe("POST");
+    expect(await t.importAdapter(models[0]!, "/x/adapter.bin")).toBe("not a gguf adapter");
+    expect(await t.importAdapter(models[0]!, "/x/shenron-chat-v2.gguf")).toBeNull();
+    expect(await t.install(models[0]!)).toBe(false);
+  });
+
+  test("the chat selector offers the available models and sends the chosen one", async () => {
+    const seen: Request[] = [];
+    const host = fakeHost(seen);
+    const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) =>
+      new URL(new Request(input, init).url).pathname === "/api/v1/models"
+        ? Response.json(MODELS)
+        : host(input, init)) as typeof fetch;
+    const t = createDesktopChatTransport({
+      baseUrl: "http://127.0.0.1:4777",
+      lang: "fr",
+      fetch: fetcher,
+    });
+    expect(await t.listModels!()).toEqual({
+      models: [
+        { id: "shenron-chat-v2", label: "shenron-chat-v2", backend: "local", remote: false },
+        { id: "gemini-web/flash", label: "gemini-web/flash", backend: "gemini-web", remote: true },
+      ],
+      defaultModel: "shenron-chat-v2",
+    });
+    await t.send(
+      { message: "Salut", model: "gemini-web/flash", history: [] },
+      () => {},
+      new AbortController().signal,
+    );
+    const post = seen.find((r) => r.method === "POST")!;
+    expect(await post.json()).toMatchObject({ model: "gemini-web/flash" });
+  });
+});
+
+describe("createDesktopMemoryTransport", () => {
+  test("lists, forgets and clears through /api/v1/memory", async () => {
+    const seen: Request[] = [];
+    const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = new Request(input, init);
+      seen.push(request);
+      const url = new URL(request.url);
+      if (url.pathname === "/api/v1/memory") {
+        return Response.json({
+          memories: [
+            {
+              id: "mem_00000001",
+              content: "Prefers Vegeta",
+              tags: ["preference"],
+              createdAt: NOW,
+              metadata: { source: "chat" },
+            },
+          ],
+          total: 1,
+        });
+      }
+      if (url.pathname === "/api/v1/memory/mem_00000001/delete") return Response.json({ ok: true });
+      if (url.pathname === "/api/v1/memory/clear") return Response.json({ deleted: 4 });
+      return new Response("", { status: 404 });
+    }) as typeof fetch;
+    const t = createDesktopMemoryTransport({ baseUrl: "http://127.0.0.1:4777", fetch: fetcher });
+    expect(await t.list({ q: "Vegeta" })).toEqual({
+      memories: [
+        { id: "mem_00000001", content: "Prefers Vegeta", tags: ["preference"], createdAt: NOW },
+      ],
+      total: 1,
+    });
+    expect(new URL(seen[0]!.url).searchParams.get("q")).toBe("Vegeta");
+    expect(await t.remove("mem_00000001")).toBe(true);
+    expect(seen[1]!.method).toBe("POST");
+    expect(await t.clear()).toBe(4);
+    expect(await t.remove("mem_00000009")).toBe(false);
+  });
+});
+
 const keys = (o: unknown, prefix = ""): string[] =>
   Object.entries(o as Record<string, unknown>).flatMap(([k, v]) =>
     typeof v === "string" ? [`${prefix}${k}`] : keys(v, `${prefix}${k}.`),
@@ -168,6 +305,8 @@ const keys = (o: unknown, prefix = ""): string[] =>
 test("the desktop dictionary is complete in the three languages", () => {
   const reference = keys(fr.desktop).toSorted();
   expect(reference).toContain("chat.unavailableTitle");
+  expect(reference).toContain("memory.tags.remember");
+  expect(reference).toContain("models.states.downloading");
   expect(keys(en.desktop).toSorted()).toEqual(reference);
   expect(keys(ja.desktop).toSorted()).toEqual(reference);
 });

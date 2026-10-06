@@ -1548,7 +1548,11 @@
         "error": "生成に失敗しました。",
         "aborted": "生成を中断しました。",
         "unreachable": "ローカルサーバーが応答しなくなりました。"
-      }
+      },
+      "memoryRecalled": "{count, plural, other {記憶を # 件使用}}",
+      "memoryStored": "{count, plural, other {# 件を記憶}}",
+      "modelLocal": "このパソコン",
+      "modelRemote": "オンライン"
     },
     "search": {
       "title": "ドラゴンボールコーパスを検索（オフライン）",
@@ -1568,6 +1572,55 @@
       "controlTitle": "管理画面",
       "controlText": "サービスの状態、コーパス、ローカルモデル、学習。",
       "siteText": "公開サイトのすべて（Wiki・漫画・データブック・ニュース）をブラウザーで。"
+    },
+    "memory": {
+      "title": "メモリー",
+      "description": "Shenron がチャットから覚え、回答に活かしている内容です。同意なしにこのパソコンの外へ出ることはありません。",
+      "searchLabel": "メモリーを検索",
+      "searchPlaceholder": "記憶を検索…",
+      "empty": "Shenron はまだ何も覚えていません。",
+      "noMatch": "一致する記憶はありません。",
+      "unavailable": "このサーバーでは永続メモリーを利用できません。",
+      "checking": "メモリーを確認しています…",
+      "remove": "忘れる",
+      "clear": "すべて忘れる",
+      "clearConfirm": "確認：すべて忘れる",
+      "cancel": "キャンセル",
+      "failed": "メモリーを読み込めないか、変更できませんでした。",
+      "total": "{count, plural, =0 {記憶なし} other {# 件}}",
+      "tags": {
+        "profile": "プロフィール",
+        "preference": "好み",
+        "remember": "覚えておくこと"
+      }
+    },
+    "models": {
+      "title": "モデル",
+      "description": "このパソコンのチャットモデルです。オンラインモデルは質問をこのマシンの外へ送信します。",
+      "checking": "モデルを確認しています…",
+      "unavailable": "このサーバーではモデル一覧を利用できません。",
+      "failed": "モデル一覧を読み込めないか、操作に失敗しました。",
+      "empty": "このサーバーにはモデルが登録されていません。",
+      "defaultBadge": "既定",
+      "local": "ローカル",
+      "remote": "オンライン",
+      "states": {
+        "ready": "準備完了",
+        "loading": "読み込み中",
+        "downloading": "ダウンロード中",
+        "installable": "未インストール",
+        "failed": "失敗",
+        "unavailable": "利用不可"
+      },
+      "install": "インストール",
+      "importAdapter": "ドラゴンボール用ファインチューニング済みアダプター（.gguf ファイル）を取り込む",
+      "chooseFile": "ファイルを選択…",
+      "pathLabel": "アダプターファイルのパス",
+      "pathPlaceholder": "/パス/shenron-chat-v2.gguf",
+      "importSubmit": "取り込む",
+      "importFailed": "取り込みに失敗しました",
+      "progressKnown": "{received} / {total}",
+      "progressUnknown": "{received} 受信"
     }
   }
 }

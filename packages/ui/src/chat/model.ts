@@ -31,7 +31,17 @@ export interface ChatMessageView {
   /** Still streaming. */
   pending?: boolean;
   finishReason?: "stop" | "length" | "aborted" | "error";
+  /** Persistent memory of the turn: memories given to the model, facts stored. */
+  memory?: ChatTurnMemory;
 }
+
+export interface ChatTurnMemory {
+  recalled: number;
+  stored: number;
+}
+
+/** Tool event name of the memory recall. */
+export const MEMORY_RECALL_TOOL = "memory:recall";
 
 /** Events of one generation (the subset of the contract stream the surface renders). */
 export type ChatStreamEvent =
@@ -40,7 +50,7 @@ export type ChatStreamEvent =
       data: { streamId: string; conversationId: string; messageId: string; replyId: string };
     }
   | { type: "sources"; data: { citations: ChatCitation[] } }
-  | { type: "tool"; data: { name: string; ok: boolean } }
+  | { type: "tool"; data: { name: string; ok: boolean; hits?: number } }
   | { type: "backend"; data: { backend: string; model: string | null } }
   | { type: "delta"; data: { text: string } }
   | {
@@ -52,6 +62,7 @@ export type ChatStreamEvent =
         model: string | null;
         citations: ChatCitation[];
         finishReason: "stop" | "length" | "aborted" | "error";
+        memory?: ChatTurnMemory;
       };
     }
   | { type: "error"; data: { code: string; message: string; retryable: boolean } };
@@ -60,8 +71,20 @@ export type ChatFailureKind = "unavailable" | "http" | "error" | "aborted" | "un
 
 export type ChatSendOutcome = { ok: true } | { ok: false; kind: ChatFailureKind; detail?: string };
 
+/** A chat model the reader can pick (`GET /api/v1/models`, available ones only). */
+export interface ChatModelChoice {
+  id: string;
+  label: string;
+  /** Backend serving it (`local`, `gemini-web`). */
+  backend: string;
+  /** The prompt leaves this machine. */
+  remote: boolean;
+}
+
 export interface ChatSendInput {
   message: string;
+  /** Model picked by the reader; absent: the server default. */
+  model?: string;
   /** Absent for a new conversation: the server assigns one (`meta.conversationId`). */
   conversationId?: string;
   history: Array<{ role: "user" | "assistant"; content: string }>;
@@ -76,6 +99,8 @@ export interface ChatTransport {
     onEvent: (event: ChatStreamEvent) => void,
     signal: AbortSignal,
   ): Promise<ChatSendOutcome>;
+  /** Selectable models and the server default; absent or `null`: no selector. */
+  listModels?(): Promise<{ models: ChatModelChoice[]; defaultModel: string | null } | null>;
   /** Stops the generation server-side (the stream id comes from `meta`). */
   cancel?(streamId: string): Promise<void>;
 }
@@ -192,6 +217,7 @@ function applyEvent(state: ChatState, event: ChatStreamEvent): ChatState {
           model: event.data.model,
           finishReason: event.data.finishReason,
           pending: false,
+          ...(event.data.memory ? { memory: event.data.memory } : {}),
         })),
         conversations: upsertConversation(
           state.conversations,
@@ -211,7 +237,15 @@ function applyEvent(state: ChatState, event: ChatStreamEvent): ChatState {
         })),
       };
     case "tool":
-      return state;
+      if (event.data.name !== MEMORY_RECALL_TOOL) return state;
+      return {
+        ...state,
+        // Provisional until `done` reports what the model actually received.
+        messages: updateReply(state.messages, (m) => ({
+          ...m,
+          memory: { recalled: event.data.ok ? (event.data.hits ?? 0) : 0, stored: 0 },
+        })),
+      };
   }
 }
 

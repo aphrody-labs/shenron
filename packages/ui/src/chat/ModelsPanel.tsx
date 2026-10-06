@@ -1,0 +1,331 @@
+// SPDX-License-Identifier: Apache-2.0
+"use client";
+/**
+ * Material 3 panel of the chat models of this server: the state of each one (ready, loading,
+ * downloading with its progress, installable, failed, unavailable), one-click install and the
+ * import of the fine-tuned adapter (native file dialog when the host has one, a path field
+ * otherwise). Transport, labels and the file picker are injected. Styles: `@shenron/ui/chat.css`.
+ */
+import { Banner, Button } from "@aphrody/m3-primitives";
+import { CircleAlert, Cpu, Globe } from "lucide-react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
+import type { ChatGroupStatus } from "./model";
+
+export type ChatModelStateName =
+  | "ready"
+  | "loading"
+  | "downloading"
+  | "installable"
+  | "failed"
+  | "unavailable";
+
+/** One chat model of `GET /api/v1/models` (structural mirror of the contract entry). */
+export interface ChatModelView {
+  id: string;
+  label: string;
+  backend: string;
+  available: boolean;
+  default: boolean;
+  remote: boolean;
+  state: ChatModelStateName;
+  progress?: { received: number; total: number | null };
+  installUrl?: string;
+  importUrl?: string;
+  detail?: string;
+}
+
+/** Every method resolves, never throws. */
+export interface ModelsTransport {
+  list(): Promise<ChatModelView[] | null>;
+  /** Starts the download (`installUrl`). */
+  install(model: ChatModelView): Promise<boolean>;
+  /** Imports the adapter from a local file (`importUrl`); the error text, or `null` on success. */
+  importAdapter(model: ChatModelView, path: string): Promise<string | null>;
+}
+
+export interface ModelsLabels {
+  title: string;
+  description: string;
+  checking: string;
+  unavailable: string;
+  failed: string;
+  empty: string;
+  defaultBadge: string;
+  local: string;
+  remote: string;
+  states: Record<ChatModelStateName, string>;
+  install: string;
+  importAdapter: string;
+  chooseFile: string;
+  pathLabel: string;
+  pathPlaceholder: string;
+  importSubmit: string;
+  importFailed: string;
+  /** Download progress: `received` and `total` bytes (`total` may be unknown). */
+  progress: (received: number, total: number | null) => string;
+}
+
+/** Result of the host file picker: a path, `null` when cancelled, `undefined` when it has none. */
+export type PickAdapterPath = () => Promise<string | null | undefined>;
+
+export interface ModelsPanelProps {
+  transport: ModelsTransport;
+  labels: ModelsLabels;
+  /** `models` group of the local health; `null` while it is being checked. */
+  models: ChatGroupStatus | null;
+  /** Native file dialog of the desktop app; absent: a path field. */
+  pickAdapterPath?: PickAdapterPath;
+  /** Polling period while a model downloads or loads (ms, default 2000). */
+  pollMs?: number;
+  /** Called after the list changed (e.g. so the chat refreshes its selector). */
+  onChange?: (models: ChatModelView[]) => void;
+  className?: string;
+}
+
+const BUSY: ReadonlySet<ChatModelStateName> = new Set(["downloading", "loading"]);
+
+export function ModelsPanel({
+  transport,
+  labels,
+  models: group,
+  pickAdapterPath,
+  pollMs = 2000,
+  onChange,
+  className,
+}: ModelsPanelProps) {
+  const [models, setModels] = useState<ChatModelView[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [pathField, setPathField] = useState(!pickAdapterPath);
+  const [path, setPath] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const on = group?.available === true;
+
+  const load = useCallback(async () => {
+    const list = await transport.list();
+    if (!list) {
+      setFailed(true);
+      return;
+    }
+    setFailed(false);
+    setModels(list);
+    onChange?.(list);
+  }, [transport, onChange]);
+
+  useEffect(() => {
+    if (on) void load();
+  }, [on, load]);
+
+  const polling = models?.some((m) => BUSY.has(m.state)) === true;
+  useEffect(() => {
+    if (!polling) return;
+    const timer = setInterval(() => void load(), pollMs);
+    return () => clearInterval(timer);
+  }, [polling, pollMs, load]);
+
+  async function install(model: ChatModelView) {
+    setBusy(true);
+    const ok = await transport.install(model);
+    setBusy(false);
+    if (!ok) setFailed(true);
+    await load();
+  }
+
+  async function importFrom(model: ChatModelView, from: string) {
+    setBusy(true);
+    setImportError(null);
+    const error = await transport.importAdapter(model, from);
+    setBusy(false);
+    if (error) setImportError(error);
+    else setPath("");
+    await load();
+  }
+
+  async function choose(model: ChatModelView) {
+    if (!pickAdapterPath) return setPathField(true);
+    const picked = await pickAdapterPath();
+    if (picked === undefined) return setPathField(true);
+    if (picked) await importFrom(model, picked);
+  }
+
+  function submitPath(event: FormEvent, model: ChatModelView) {
+    event.preventDefault();
+    const value = path.trim();
+    if (value) void importFrom(model, value);
+  }
+
+  return (
+    <section
+      className={[
+        "shenron-chat flex flex-col gap-3 rounded-extra-large bg-surface-container-low p-4 text-on-surface",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      data-shenron-chat=""
+      aria-labelledby="shenron-models-title"
+    >
+      <header className="flex items-start gap-3">
+        <Cpu aria-hidden size={24} className="mt-0.5 shrink-0 text-primary" />
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h2 id="shenron-models-title" className="m-0 text-title-large">
+            {labels.title}
+          </h2>
+          <p className="m-0 text-body-medium text-on-surface-variant">{labels.description}</p>
+        </div>
+      </header>
+
+      {group === null ? (
+        <output className="m-0 block text-body-medium text-on-surface-variant">
+          {labels.checking}
+        </output>
+      ) : !on && !models ? (
+        <Banner variant="default" showDot={false} icon={CircleAlert}>
+          <p className="m-0">{group.reason ?? labels.unavailable}</p>
+        </Banner>
+      ) : null}
+
+      {failed ? (
+        <Banner variant="error" showDot={false} icon={CircleAlert}>
+          <p className="m-0">{labels.failed}</p>
+        </Banner>
+      ) : null}
+
+      {models && models.length === 0 ? (
+        <p className="m-0 text-body-medium text-on-surface-variant">{labels.empty}</p>
+      ) : null}
+
+      {models && models.length > 0 ? (
+        <ul className="m-0 flex list-none flex-col gap-2 p-0">
+          {models.map((m) => {
+            const ratio =
+              m.state === "downloading" && m.progress?.total
+                ? Math.min(1, m.progress.received / m.progress.total)
+                : null;
+            return (
+              <li
+                key={m.id}
+                className="flex flex-col gap-2 rounded-large bg-surface-container px-4 py-3"
+                data-model={m.id}
+                data-state={m.state}
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  {m.remote ? (
+                    <Globe aria-hidden size={18} className="text-on-surface-variant" />
+                  ) : (
+                    <Cpu aria-hidden size={18} className="text-on-surface-variant" />
+                  )}
+                  <span className="text-title-medium">{m.label}</span>
+                  <span className="text-label-small text-on-surface-variant">
+                    {m.remote ? labels.remote : labels.local}
+                  </span>
+                  {m.default ? (
+                    <span className="rounded-small bg-tertiary-container px-2 py-0.5 text-label-small text-on-tertiary-container">
+                      {labels.defaultBadge}
+                    </span>
+                  ) : null}
+                  <span
+                    className={[
+                      "ml-auto rounded-small px-2 py-0.5 text-label-medium",
+                      m.state === "ready"
+                        ? "bg-secondary-container text-on-secondary-container"
+                        : m.state === "failed"
+                          ? "bg-error-container text-on-error-container"
+                          : "bg-surface-container-highest text-on-surface-variant",
+                    ].join(" ")}
+                  >
+                    {labels.states[m.state]}
+                  </span>
+                </div>
+
+                {m.state === "downloading" && m.progress ? (
+                  <div className="flex flex-col gap-1">
+                    <div
+                      className="h-1 overflow-hidden rounded-full bg-surface-container-highest"
+                      role="progressbar"
+                      aria-label={`${labels.states.downloading} ${m.label}`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      {...(ratio !== null ? { "aria-valuenow": Math.round(ratio * 100) } : {})}
+                    >
+                      <div
+                        className="h-full rounded-full bg-primary transition-[width] duration-300"
+                        style={{ width: ratio !== null ? `${ratio * 100}%` : "30%" }}
+                      />
+                    </div>
+                    <p className="m-0 text-label-small text-on-surface-variant">
+                      {labels.progress(m.progress.received, m.progress.total)}
+                    </p>
+                  </div>
+                ) : null}
+
+                {m.detail && m.state !== "ready" ? (
+                  <p className="m-0 text-body-small text-on-surface-variant">{m.detail}</p>
+                ) : null}
+
+                {m.installUrl ? (
+                  <Button
+                    variant="filled"
+                    size="md"
+                    className="self-start"
+                    disabled={busy}
+                    onClick={() => void install(m)}
+                  >
+                    {labels.install}
+                  </Button>
+                ) : null}
+
+                {m.importUrl ? (
+                  <div className="flex flex-col gap-2">
+                    <p className="m-0 text-label-large">{labels.importAdapter}</p>
+                    {pickAdapterPath && !pathField ? (
+                      <Button
+                        variant="tonal"
+                        size="md"
+                        className="self-start"
+                        disabled={busy}
+                        onClick={() => void choose(m)}
+                      >
+                        {labels.chooseFile}
+                      </Button>
+                    ) : (
+                      <form
+                        className="flex flex-col gap-2 sm:flex-row"
+                        onSubmit={(event) => submitPath(event, m)}
+                      >
+                        <label className="sr-only" htmlFor={`shenron-adapter-${m.id}`}>
+                          {labels.pathLabel}
+                        </label>
+                        <input
+                          id={`shenron-adapter-${m.id}`}
+                          className="h-10 flex-1 rounded-small border border-outline bg-transparent px-3 text-body-medium text-on-surface outline-none placeholder:text-on-surface-variant focus-visible:border-2 focus-visible:border-primary"
+                          value={path}
+                          maxLength={1024}
+                          placeholder={labels.pathPlaceholder}
+                          onChange={(event) => setPath(event.target.value)}
+                        />
+                        <Button
+                          type="submit"
+                          variant="filled"
+                          size="md"
+                          disabled={busy || !path.trim()}
+                        >
+                          {labels.importSubmit}
+                        </Button>
+                      </form>
+                    )}
+                    {importError ? (
+                      <p className="m-0 text-body-small text-error" role="alert">
+                        {labels.importFailed} ({importError})
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </section>
+  );
+}

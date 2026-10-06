@@ -32,6 +32,8 @@ const labels: ChatLabels = {
     aborted: "Aborted",
     unreachable: "Unreachable",
   },
+  memoryUsed: ({ recalled, stored }) => `memory ${recalled}/${stored}`,
+  modelProvider: (m) => (m.remote ? "Online" : "Local"),
 };
 
 const on = { available: true };
@@ -55,6 +57,7 @@ function transport(overrides: Partial<ChatTransport> = {}): ChatTransport {
           replyId: "r_1",
         },
       });
+      onEvent({ type: "tool", data: { name: "memory:recall", ok: true, hits: 2 } });
       onEvent({ type: "delta", data: { text: "Frieza rules [1]." } });
       onEvent({
         type: "done",
@@ -73,6 +76,7 @@ function transport(overrides: Partial<ChatTransport> = {}): ChatTransport {
             },
           ],
           finishReason: "stop",
+          memory: { recalled: 2, stored: 1 },
         },
       });
       return { ok: true as const };
@@ -97,6 +101,7 @@ describe("ChatPanel", () => {
   test("sends a question, streams the answer and shows its citations", async () => {
     const t = transport();
     const opened: string[] = [];
+    const turns: unknown[] = [];
     render(
       <ChatPanel
         transport={t}
@@ -104,6 +109,7 @@ describe("ChatPanel", () => {
         chat={on}
         conversations={on}
         onOpenLink={(url) => opened.push(url)}
+        onTurnDone={(memory) => turns.push(memory)}
       />,
     );
     const input = screen.getByPlaceholderText("Your question");
@@ -120,6 +126,27 @@ describe("ChatPanel", () => {
     fireEvent.click(chip);
     expect(opened).toEqual(["https://dragonballfr.com/d2"]);
     expect(screen.getByText("shenron-db")).toBeTruthy();
+    expect(screen.getByText("memory 2/1")).toBeTruthy();
+    expect(turns).toEqual([{ recalled: 2, stored: 1 }]);
+  });
+
+  test("sends the default model when the server offers several", async () => {
+    const t = transport({
+      listModels: mock(async () => ({
+        models: [
+          { id: "shenron-chat-v2", label: "Shenron chat v2", backend: "local", remote: false },
+          { id: "gemini-web/flash", label: "Gemini Flash", backend: "gemini-web", remote: true },
+        ],
+        defaultModel: "shenron-chat-v2",
+      })),
+    });
+    render(<ChatPanel transport={t} labels={labels} chat={on} conversations={on} />);
+    expect(await screen.findByText("Shenron chat v2")).toBeTruthy();
+    const input = screen.getByPlaceholderText("Your question");
+    fireEvent.change(input, { target: { value: "Hi" } });
+    await act(async () => fireEvent.keyDown(input, { key: "Enter" }));
+    const [sent] = (t.send as ReturnType<typeof mock>).mock.calls[0] as [{ model?: string }];
+    expect(sent.model).toBe("shenron-chat-v2");
   });
 
   test("an unavailable model blocks the composer and says why", () => {

@@ -85,6 +85,36 @@ describe("chatReducer", () => {
     expect(s.conversations[0]).toMatchObject({ id: "c_12345678", title: "Qui est Freezer ?" });
   });
 
+  test("the memory recall shows at once, done reports the final counts", () => {
+    let s = streamed();
+    s = chatReducer(s, {
+      type: "event",
+      event: { type: "tool", data: { name: "memory:recall", ok: true, hits: 3 } },
+    });
+    expect(s.messages.at(-1)?.memory).toEqual({ recalled: 3, stored: 0 });
+    s = chatReducer(s, {
+      type: "event",
+      event: { type: "tool", data: { name: "dragonball.search", ok: true, hits: 9 } },
+    });
+    expect(s.messages.at(-1)?.memory).toEqual({ recalled: 3, stored: 0 });
+    s = chatReducer(s, {
+      type: "event",
+      event: {
+        type: "done",
+        data: {
+          replyId: "r_1",
+          conversationId: "c_12345678",
+          backend: "local",
+          model: null,
+          citations: [],
+          finishReason: "stop",
+          memory: { recalled: 2, stored: 1 },
+        },
+      },
+    });
+    expect(s.messages.at(-1)?.memory).toEqual({ recalled: 2, stored: 1 });
+  });
+
   test("a failure before any token drops the empty reply and records the error", () => {
     let s = chatReducer(initialChatState, {
       type: "send",

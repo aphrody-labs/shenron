@@ -1548,7 +1548,11 @@
         "error": "La génération a échoué.",
         "aborted": "Génération interrompue.",
         "unreachable": "Le serveur local ne répond plus."
-      }
+      },
+      "memoryRecalled": "{count, plural, one {# souvenir utilisé} other {# souvenirs utilisés}}",
+      "memoryStored": "{count, plural, one {# fait mémorisé} other {# faits mémorisés}}",
+      "modelLocal": "Sur cet ordinateur",
+      "modelRemote": "En ligne"
     },
     "search": {
       "title": "Recherche dans le corpus Dragon Ball (hors ligne)",
@@ -1568,6 +1572,55 @@
       "controlTitle": "Pilotage",
       "controlText": "Santé des services, corpus, modèles locaux et entraînement.",
       "siteText": "Le site public complet (wiki, manga, databooks, actualités) dans votre navigateur."
+    },
+    "memory": {
+      "title": "Mémoire",
+      "description": "Ce que Shenron a retenu de vos discussions et réutilise dans ses réponses. Rien ne quitte cet ordinateur sans votre accord.",
+      "searchLabel": "Chercher dans la mémoire",
+      "searchPlaceholder": "Chercher un souvenir…",
+      "empty": "Shenron n’a encore rien mémorisé.",
+      "noMatch": "Aucun souvenir ne correspond.",
+      "unavailable": "La mémoire persistante n’est pas disponible sur ce serveur.",
+      "checking": "Vérification de la mémoire…",
+      "remove": "Oublier",
+      "clear": "Tout oublier",
+      "clearConfirm": "Confirmer : tout oublier",
+      "cancel": "Annuler",
+      "failed": "La mémoire n’a pas pu être lue ou modifiée.",
+      "total": "{count, plural, =0 {Aucun souvenir} one {# souvenir} other {# souvenirs}}",
+      "tags": {
+        "profile": "Profil",
+        "preference": "Préférence",
+        "remember": "À retenir"
+      }
+    },
+    "models": {
+      "title": "Modèles",
+      "description": "Les modèles de discussion de cet ordinateur. Un modèle en ligne envoie vos questions hors de cette machine.",
+      "checking": "Vérification des modèles…",
+      "unavailable": "La liste des modèles n’est pas disponible sur ce serveur.",
+      "failed": "La liste des modèles n’a pas pu être lue ou l’action a échoué.",
+      "empty": "Aucun modèle déclaré sur ce serveur.",
+      "defaultBadge": "Par défaut",
+      "local": "Local",
+      "remote": "En ligne",
+      "states": {
+        "ready": "Prêt",
+        "loading": "Chargement",
+        "downloading": "Téléchargement",
+        "installable": "À installer",
+        "failed": "Échec",
+        "unavailable": "Indisponible"
+      },
+      "install": "Installer",
+      "importAdapter": "Importer l’adaptateur fine-tuné Dragon Ball (fichier .gguf)",
+      "chooseFile": "Choisir le fichier…",
+      "pathLabel": "Chemin du fichier de l’adaptateur",
+      "pathPlaceholder": "/chemin/vers/shenron-chat-v2.gguf",
+      "importSubmit": "Importer",
+      "importFailed": "Échec de l’import",
+      "progressKnown": "{received} sur {total}",
+      "progressUnknown": "{received} reçus"
     }
   }
 }
