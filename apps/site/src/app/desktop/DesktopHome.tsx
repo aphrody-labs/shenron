@@ -143,6 +143,7 @@ function useModelsLabels(locale: string): ModelsLabels {
               total: formatBytes(locale, total),
             })
           : t("progressUnknown", { received: formatBytes(locale, received) }),
+      eta: (seconds: number) => t("eta", { minutes: Math.max(1, Math.ceil(seconds / 60)) }),
     }),
     [t, locale],
   );

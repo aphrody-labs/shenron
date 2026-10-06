@@ -1649,6 +1649,7 @@
       "importSubmit": "Importer",
       "importFailed": "Échec de l’import",
       "progressKnown": "{received} sur {total}",
+      "eta": "environ {minutes} min restantes",
       "progressUnknown": "{received} reçus"
     },
     "download": {

@@ -8,7 +8,7 @@
  */
 import { Banner, Button } from "@aphrody/m3-primitives";
 import { CircleAlert, Cpu, Globe } from "lucide-react";
-import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import type { ChatGroupStatus } from "./model";
 
 export type ChatModelStateName =
@@ -63,6 +63,35 @@ export interface ModelsLabels {
   importFailed: string;
   /** Download progress: `received` and `total` bytes (`total` may be unknown). */
   progress: (received: number, total: number | null) => string;
+  /** Estimated time left of a download, in seconds (shown once a rate is measured). */
+  eta?: (seconds: number) => string;
+}
+
+/** Download rate of one model, smoothed over the polls (bytes per second). */
+interface RateSample {
+  received: number;
+  at: number;
+  rate: number | null;
+}
+
+/** Seconds left from the smoothed rate, or `null` while unknown. */
+export function etaSeconds(sample: RateSample | undefined, total: number | null): number | null {
+  if (!sample?.rate || !total || sample.rate <= 0) return null;
+  return Math.max(0, Math.round((total - sample.received) / sample.rate));
+}
+
+/** Folds a new progress reading into the sample (exponential moving average of the rate). */
+export function nextRateSample(
+  previous: RateSample | undefined,
+  received: number,
+  at: number,
+): RateSample {
+  if (!previous || received < previous.received || at <= previous.at) {
+    return { received, at, rate: previous && received >= previous.received ? previous.rate : null };
+  }
+  const instant = ((received - previous.received) * 1000) / (at - previous.at);
+  const rate = previous.rate === null ? instant : previous.rate * 0.7 + instant * 0.3;
+  return { received, at, rate };
 }
 
 /** Result of the host file picker: a path, `null` when cancelled, `undefined` when it has none. */
@@ -99,6 +128,7 @@ export function ModelsPanel({
   const [path, setPath] = useState("");
   const [importError, setImportError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const rates = useRef(new Map<string, RateSample>());
   const on = group?.available === true;
 
   const load = useCallback(async () => {
@@ -108,6 +138,12 @@ export function ModelsPanel({
       return;
     }
     setFailed(false);
+    const now = Date.now();
+    for (const m of list) {
+      if (m.state === "downloading" && m.progress) {
+        rates.current.set(m.id, nextRateSample(rates.current.get(m.id), m.progress.received, now));
+      } else rates.current.delete(m.id);
+    }
     setModels(list);
     onChange?.(list);
   }, [transport, onChange]);
@@ -255,6 +291,12 @@ export function ModelsPanel({
                     </div>
                     <p className="m-0 text-label-small text-on-surface-variant">
                       {labels.progress(m.progress.received, m.progress.total)}
+                      {(() => {
+                        const left = labels.eta
+                          ? etaSeconds(rates.current.get(m.id), m.progress.total)
+                          : null;
+                        return left !== null && labels.eta ? ` · ${labels.eta(left)}` : null;
+                      })()}
                     </p>
                   </div>
                 ) : null}
