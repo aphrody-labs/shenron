@@ -342,15 +342,17 @@
 
 /* === Titres « Planche couleur » ===
    Les titres sont dans la famille du corps, poussée par ses axes variables : wght 850,
-   ROND 100 (la rondeur Capsule Corp), opsz 144, interlettrage −0,02 em. Newsreader
-   (`font-serif`) reste réservée aux citations de Toriyama et des sources primaires. */
+   ROND 100 (la rondeur Capsule Corp), taille optique AUTOMATIQUE et interlettrage normal.
+   L'ancien `opsz 144` imposait la coupe d'affiche à toutes les tailles : sous ~40 px ses
+   approches se refermaient et, avec −0,02 em en plus, les titres de section paraissaient
+   écrasés. Newsreader (`font-serif`) reste réservée aux citations de Toriyama et des
+   sources primaires. */
 @utility font-title {
   font-family: var(--font-sans);
   font-weight: 850;
-  font-variation-settings:
-    "ROND" 100,
-    "opsz" 144;
-  letter-spacing: -0.02em;
+  font-optical-sizing: auto;
+  font-variation-settings: "ROND" 100;
+  letter-spacing: normal;
 }
 
 /* ── .cible-44 — élargir la ZONE tactile sans grossir le dessin ────────────

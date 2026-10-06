@@ -29,6 +29,7 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import type { CanonConfig } from "@/lib/canon-engine";
 import type { CommunityTopsPayload } from "@/lib/community-tops";
+import { HOME_TOPS_MIN_ENTRY_VOTES } from "@/lib/home-tops";
 import type { FeedEntry } from "@/lib/feed";
 import type { BestOfSagaView } from "@/lib/home-bestof";
 import {
@@ -70,18 +71,21 @@ export interface HomeViewProps {
 }
 
 /**
- * Votes a Top 3 board needs before the home shows it: a podium of one or two 5.0 votes reads
- * as placeholder data. Below it the board stays on `/rankings`; with no board left, the
- * block is hidden instead of rendering an empty podium.
+ * Top 3 boards for the home: the page loads them ranked among entries with at least three
+ * votes (`getHomeCommunityTops`); a board left without podium is hidden, and with no board
+ * left the block is hidden instead of rendering an empty podium. The entry floor is applied
+ * here again so a payload from another source cannot bring a one-vote 5.0 back.
  */
-export const HOME_TOPS_MIN_VOTES = 5;
-
-/** Top 3 boards with enough votes for the home, or `null` when none qualifies. */
 export function homeCommunityTops(tops: CommunityTopsPayload | null): CommunityTopsPayload | null {
   if (!tops) return null;
-  const boards = tops.boards.filter(
-    (board) => board.entries.length > 0 && board.totalVotes >= HOME_TOPS_MIN_VOTES,
-  );
+  const boards = tops.boards
+    .map((board) => ({
+      ...board,
+      entries: board.entries
+        .filter((entry) => entry.count >= HOME_TOPS_MIN_ENTRY_VOTES)
+        .map((entry, index) => ({ ...entry, rank: (index + 1) as 1 | 2 | 3 })),
+    }))
+    .filter((board) => board.entries.length > 0);
   return boards.length > 0 ? { ...tops, boards } : null;
 }
 

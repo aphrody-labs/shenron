@@ -48,20 +48,28 @@ describe("home layout", () => {
 });
 
 describe("no placeholder data on the home", () => {
-  test("a Top 3 board needs real votes, none left hides the block", async () => {
-    const { homeCommunityTops, HOME_TOPS_MIN_VOTES } =
-      await import("../src/components/home/HomeView");
-    const board = (totalVotes: number, entries: number) => ({
-      def: { id: `b${totalVotes}` },
-      entries: Array.from({ length: entries }, (_, i) => ({ rank: i + 1 })),
-      totalVotes,
-      ratedCount: entries,
+  test("an entry needs three votes, a board without podium is hidden", async () => {
+    const { homeCommunityTops } = await import("../src/components/home/HomeView");
+    const entry = (id: string, count: number) => ({ id, count, rank: 1, average: 5 });
+    const board = (id: string, counts: number[]) => ({
+      def: { id },
+      entries: counts.map((c, i) => entry(`${id}-${i}`, c)),
+      totalVotes: counts.reduce((n, c) => n + c, 0),
+      ratedCount: counts.length,
     });
     const payload = (boards: unknown[]) => ({ boards, globalVotes: 0, generatedAt: "" }) as never;
     expect(homeCommunityTops(null)).toBeNull();
-    expect(homeCommunityTops(payload([board(1, 1), board(0, 0)]))).toBeNull();
-    const kept = homeCommunityTops(payload([board(1, 1), board(HOME_TOPS_MIN_VOTES, 3)]));
-    expect(kept?.boards.map((b) => b.totalVotes)).toEqual([HOME_TOPS_MIN_VOTES]);
+    expect(homeCommunityTops(payload([board("a", [1, 2]), board("b", [])]))).toBeNull();
+    const kept = homeCommunityTops(payload([board("a", [1, 2]), board("b", [1, 4, 3])]));
+    expect(kept?.boards.map((b) => String(b.def.id))).toEqual(["b"]);
+    expect(kept?.boards[0]?.entries.map((e) => `${e.id}#${e.rank}`)).toEqual(["b-1#1", "b-2#2"]);
+  });
+
+  test("the home loads its own best-of, /rankings keeps every vote", () => {
+    expect(source("../src/app/page.tsx")).toContain("getHomeCommunityTops()");
+    expect(source("../src/lib/community-tops-data.ts")).toContain(
+      "loadCommunityTops(HOME_TOPS_MIN_ENTRY_VOTES)",
+    );
   });
 
   test("magazine issues never reach the home databook rail", () => {

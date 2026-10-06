@@ -2,6 +2,7 @@
  * community-tops-data — assemblage **server-only** des Top 3 communautaires.
  * Agrège `site_ratings` × entités wiki (épisodes / films / jeux / arcs).
  */
+import { HOME_TOPS_MIN_ENTRY_VOTES } from "@/lib/home-tops";
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { and, eq, inArray, sql } from "drizzle-orm";
@@ -262,14 +263,22 @@ async function buildArcBoard(
   };
 }
 
-async function loadCommunityTops(): Promise<CommunityTopsPayload> {
+/** Keep only the entries with at least `min` votes (0: every rated entry). */
+function withMinVotes(aggs: Map<string, AggRow>, min: number): Map<string, AggRow> {
+  if (min <= 0) return aggs;
+  return new Map([...aggs].filter(([, agg]) => agg.count >= min));
+}
+
+async function loadCommunityTops(minEntryVotes = 0): Promise<CommunityTopsPayload> {
   try {
-    const [epAggs, movieAggs, gameAggs, arcAggs] = await Promise.all([
-      ratingAggs("episode"),
-      ratingAggs("movie"),
-      ratingAggs("game"),
-      ratingAggs("arc"),
-    ]);
+    const [epAggs, movieAggs, gameAggs, arcAggs] = (
+      await Promise.all([
+        ratingAggs("episode"),
+        ratingAggs("movie"),
+        ratingAggs("game"),
+        ratingAggs("arc"),
+      ])
+    ).map((aggs) => withMinVotes(aggs, minEntryVotes));
 
     const boards: CommunityTopBoard[] = [];
     for (const def of COMMUNITY_TOP_BOARDS) {
@@ -356,3 +365,14 @@ export async function getCommunityRankFor(
   }
   return best;
 }
+
+/**
+ * The home « best of »: the same boards, ranked among entries with at least
+ * `HOME_TOPS_MIN_ENTRY_VOTES` votes, so a podium is never built on one or two 5.0 votes.
+ * `/rankings` keeps `getCommunityTops` and every vote.
+ */
+export const getHomeCommunityTops = unstable_cache(
+  () => loadCommunityTops(HOME_TOPS_MIN_ENTRY_VOTES),
+  ["community-tops-home-v1"],
+  { revalidate: 300, tags: ["community-tops"] },
+);

@@ -10,7 +10,7 @@ import { HomeView } from "@/components/home/HomeView";
 import { getCanonConfig, getCanonReferences } from "@/lib/canon-config";
 import { getHomeConfig } from "@/lib/home-config";
 import { getSagaBestOf } from "@/lib/home-bestof-data";
-import { getCommunityTops } from "@/lib/community-tops-data";
+import { getHomeCommunityTops } from "@/lib/community-tops-data";
 import {
   botSagas,
   botEpisodes,
@@ -204,7 +204,7 @@ export default async function Home() {
     getFeaturedCharacters(),
     getSagas(),
     getSagaBestOf(),
-    getCommunityTops(),
+    getHomeCommunityTops(),
     getShenronLeaderboard(12, true, 900).catch(() => []),
     getShenronPresence(900).catch(() => ({ total: 0, online: 0, members: [] })),
     getHomeConfig(),

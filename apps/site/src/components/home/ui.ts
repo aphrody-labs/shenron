@@ -25,4 +25,4 @@ export const primaryButton = `inline-flex min-h-11 items-center justify-center r
 export const secondaryButton = `inline-flex min-h-11 items-center justify-center rounded-lg border border-os/20 px-5 text-sm font-bold text-os transition-colors hover:border-os/45 ${focusRing}`;
 
 /** Titre de bloc : même famille que le corps, poussée en graisse. */
-export const blockTitle = "text-lg font-[850] tracking-[-0.02em] text-os sm:text-xl";
+export const blockTitle = "text-lg font-[850] text-os sm:text-xl";

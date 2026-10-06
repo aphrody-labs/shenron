@@ -149,13 +149,12 @@ main:focus {
   }
   h1,
   h2 {
-    /* = `font-title` (styles.css) */
+    /* = `font-title` (styles.css) : taille optique automatique, interlettrage normal. */
     font-family: var(--font-sans);
     font-weight: 850;
-    font-variation-settings:
-      "ROND" 100,
-      "opsz" 144;
-    letter-spacing: -0.02em;
+    font-optical-sizing: auto;
+    font-variation-settings: "ROND" 100;
+    letter-spacing: normal;
   }
   ::selection {
     background: color-mix(in srgb, var(--color-dbz-ember) 40%, transparent);
@@ -1509,10 +1508,9 @@ main:focus {
 .wiki-content :is(h1, h2) {
   font-family: var(--font-sans);
   font-weight: 850;
-  font-variation-settings:
-    "ROND" 100,
-    "opsz" 144;
-  letter-spacing: -0.02em;
+  font-optical-sizing: auto;
+  font-variation-settings: "ROND" 100;
+  letter-spacing: normal;
   color: #fff;
   line-height: 1.18;
   text-wrap: balance;
