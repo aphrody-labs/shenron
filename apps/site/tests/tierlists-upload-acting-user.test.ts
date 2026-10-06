@@ -20,7 +20,10 @@ let currentUser: { user: { id: string; roleAdmin: boolean }; discordId: string }
 let userSecret: string | undefined = VECTOR.secret;
 
 mock.module("server-only", () => ({}));
-mock.module("@/lib/session", () => ({ getCurrentUser: async () => currentUser }));
+mock.module("@/lib/session", () => ({
+  getCurrentUser: async () => currentUser,
+  getSessionUser: async () => currentUser,
+}));
 mock.module("@/lib/config", () => ({ API_URL: "http://bot.test" }));
 mock.module("@/lib/env", () => ({
   env: {

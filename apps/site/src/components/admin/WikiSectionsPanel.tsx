@@ -11,6 +11,7 @@
  * lit `getWikiSections` (server-only). Monté uniquement en mode édition (l'entité
  * doit exister pour porter des sections).
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Chargement,
@@ -619,7 +620,7 @@ function WikiSectionLinksEditor({
           </div>
           {list.isLoading ? (
             <p className="py-3 text-center text-xs text-white/50">
-              <Chargement className="mr-1 inline h-3 w-3 animate-spin" /> Chargement…
+              <Chargement className="mr-1 inline h-3 w-3 animate-spin" /> <LoadingText />
             </p>
           ) : (
             <div className="max-h-56 space-y-1 overflow-y-auto">

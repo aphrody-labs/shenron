@@ -5,6 +5,7 @@
  * techniques d'un personnage, personnages d'un jeu, etc. Lier/délier par NOM
  * (jamais d'id brut), via la table de jointure (`/api/wiki-admin/<join>`).
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chargement, Croix, Lien } from "@shenron/ui/icones";
 import { useState } from "react";
@@ -132,7 +133,7 @@ function RelationEditor({ spec, entityId }: { spec: RelationSpec; entityId: stri
         }}
       >
         <option value="">
-          {options.isLoading ? "Chargement…" : `+ Lier ${spec.label.toLowerCase()}…`}
+          {options.isLoading ? <LoadingText /> : `+ Lier ${spec.label.toLowerCase()}…`}
         </option>
         {available.map((o) => (
           <option key={o.value} value={o.value}>

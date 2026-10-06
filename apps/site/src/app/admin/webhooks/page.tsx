@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Send, Trash2, Webhook as WebhookIcon, Copy, Check } from "lucide-react";
 import { type FormEvent, useMemo, useState } from "react";
@@ -165,7 +166,7 @@ export default function WebhooksPage() {
             {webhooks.isLoading && (
               <tr>
                 <td colSpan={5} className="p-6 text-center text-zinc-500 text-sm">
-                  Chargement…
+                  <LoadingText />
                 </td>
               </tr>
             )}

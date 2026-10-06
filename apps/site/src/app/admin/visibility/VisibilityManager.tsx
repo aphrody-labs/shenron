@@ -9,6 +9,7 @@
  * → une entité masquée disparaît des index et sa page détail renvoie 404 pour le
  * public, mais reste éditable ici et dans le studio.
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chargement, Oeil, OeilBarre, Recherche } from "@shenron/ui/icones";
@@ -187,7 +188,7 @@ export function VisibilityManager() {
       {/* Grille d'entités */}
       {list.isLoading ? (
         <div className="dbz-panel flex items-center justify-center gap-2 py-16 text-white/50">
-          <Chargement className="h-5 w-5 animate-spin" /> Chargement…
+          <Chargement className="h-5 w-5 animate-spin" /> <LoadingText />
         </div>
       ) : list.isError ? (
         <p className="dbz-panel py-12 text-center text-red-400">Erreur de chargement. Réessaie.</p>

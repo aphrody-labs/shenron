@@ -9,6 +9,7 @@
  * réel (`economy.ursaf.mode` : off / notice / collect) se règle dans les
  * paramètres ; cette page n'active rien toute seule.
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
@@ -155,7 +156,7 @@ export default function AdminUrsafPage() {
           </dl>
         ) : (
           <p className="mt-3 text-sm text-white/45">
-            {inflation.isLoading ? "Chargement…" : "Indisponible."}
+            {inflation.isLoading ? <LoadingText /> : "Indisponible."}
           </p>
         )}
         {inf && inf.history.length > 1 && (
@@ -341,7 +342,9 @@ export default function AdminUrsafPage() {
           </select>
         </div>
         {notices.isLoading ? (
-          <p className="mt-3 text-sm text-white/45">Chargement…</p>
+          <p className="mt-3 text-sm text-white/45">
+            <LoadingText />
+          </p>
         ) : (notices.data?.notices.length ?? 0) === 0 ? (
           <p className="mt-3 text-sm text-white/45">Aucun avis.</p>
         ) : (

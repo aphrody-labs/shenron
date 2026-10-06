@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { readAccountData } from "@/lib/account-data";
 import { getShenronUserResult } from "@/lib/shenron";
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const me = await getCurrentUser();
+  const me = await getSessionUser();
   if (!me?.user) return NextResponse.json({ error: "Connexion requise" }, { status: 401 });
   const [siteData, botProfile] = await Promise.all([
     readAccountData({

@@ -16,7 +16,7 @@ import { getProfileCardUrl } from "@/lib/assets";
 import { Avatar } from "@/components/Avatar";
 import { discordDefaultAvatarUrl } from "@/lib/discord-avatar";
 import { getShenronUserResult } from "@/lib/shenron";
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import { formatZeni } from "@/lib/zeni";
 import { ProfileCardCustomizer } from "@/components/profile/ProfileCardCustomizer";
 
@@ -66,7 +66,7 @@ export default async function ProfilePage({
     // Registre public des notes : c'est lui qui rend le concours arbitrable
     // (on peut relire fiche par fiche ce qu'un membre a réellement écrit).
     getMemberContributions(id, { limit: 200 }).catch(() => null as MemberContributions | null),
-    getCurrentUser().catch(() => null),
+    getSessionUser().catch(() => null),
   ]);
   const isOwner = viewer?.discordId === id;
   const ownProfile = memberView && isOwner;

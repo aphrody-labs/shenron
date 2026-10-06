@@ -1,4 +1,5 @@
 "use client";
+import { LoadingText } from "@/components/LoadingText";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -127,7 +128,9 @@ function TraductionFr({ chapterId, page }: { chapterId: number; page: number }) 
       </button>
       {active ? (
         texts === null ? (
-          <p className="m3-reader__translation-status">Chargement…</p>
+          <p className="m3-reader__translation-status">
+            <LoadingText />
+          </p>
         ) : texts.length === 0 ? (
           <p className="m3-reader__translation-status">
             Aucune traduction publiée pour cette planche.

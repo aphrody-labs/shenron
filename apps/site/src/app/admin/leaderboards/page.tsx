@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -192,7 +193,9 @@ export default function LeaderboardsPage() {
       fallback={
         <div className="flex items-center justify-center gap-3 p-12 text-white/50">
           <Chargement className="h-5 w-5 animate-spin" />
-          <span>Chargement…</span>
+          <span>
+            <LoadingText />
+          </span>
         </div>
       }
     >

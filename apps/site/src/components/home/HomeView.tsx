@@ -69,6 +69,22 @@ export interface HomeViewProps {
   canon: { doctrine: CanonConfig; references: number };
 }
 
+/**
+ * Votes a Top 3 board needs before the home shows it: a podium of one or two 5.0 votes reads
+ * as placeholder data. Below it the board stays on `/rankings`; with no board left, the
+ * block is hidden instead of rendering an empty podium.
+ */
+export const HOME_TOPS_MIN_VOTES = 5;
+
+/** Top 3 boards with enough votes for the home, or `null` when none qualifies. */
+export function homeCommunityTops(tops: CommunityTopsPayload | null): CommunityTopsPayload | null {
+  if (!tops) return null;
+  const boards = tops.boards.filter(
+    (board) => board.entries.length > 0 && board.totalVotes >= HOME_TOPS_MIN_VOTES,
+  );
+  return boards.length > 0 ? { ...tops, boards } : null;
+}
+
 /** Blocs dont la place est fixe dans la page (fonctions, pas contenus). */
 const FIXED: ReadonlySet<string> = new Set(["universe", "news", "pantheon", "community"]);
 
@@ -106,7 +122,8 @@ export function coveredDestinations(config: HomeConfig, shown: ReadonlySet<strin
   return [...covered];
 }
 
-export function HomeView(props: HomeViewProps) {
+export function HomeView(rawProps: HomeViewProps) {
+  const props = { ...rawProps, communityTops: homeCommunityTops(rawProps.communityTops) };
   const { config, access, feed, bestof, communityTops } = props;
   const enabled = new Map(config.sections.filter((s) => s.enabled).map((s) => [s.id, s]));
 

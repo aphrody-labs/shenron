@@ -13,7 +13,7 @@
  * avec sa clé et sa portée `comment`. Deux portes, deux contrôles distincts.
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import { createComment, listComments, SocialError } from "@/lib/social";
 import {
@@ -46,7 +46,7 @@ function fail(code: string, status: number): NextResponse {
 
 async function viewer() {
   try {
-    const me = await getCurrentUser();
+    const me = await getSessionUser();
     return {
       id: me?.user?.id ?? null,
       name: me?.user?.username ?? null,

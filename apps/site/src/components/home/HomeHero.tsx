@@ -53,7 +53,10 @@ export function HomeHero({
           </span>
           <em>France</em>
         </div>
-        <h1 className="mt-5 max-w-[30ch] text-2xl font-[850] leading-tight tracking-[-0.02em] text-os sm:text-3xl lg:text-4xl">
+        {/* Optical size left to the text size (not the global h1 `opsz 144`, a display cut
+            whose spacing closes up at this size) and no negative tracking: the title read
+            squashed under the wordmark. */}
+        <h1 className="mt-5 max-w-[30ch] text-2xl leading-tight font-extrabold tracking-normal text-os [font-variation-settings:'ROND'_100] sm:text-3xl lg:text-4xl">
           <T k="accueil.hero.title" />
         </h1>
         {lede ? (

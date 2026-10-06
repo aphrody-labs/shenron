@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Diese, Envoyer, Rafraichir } from "@shenron/ui/icones";
@@ -183,7 +184,9 @@ export function BotConsole() {
             </p>
           )}
           {channelId && messagesQ.isLoading && (
-            <p className="text-sm italic text-white/50">Chargement…</p>
+            <p className="text-sm italic text-white/50">
+              <LoadingText />
+            </p>
           )}
           {channelId && messagesQ.data?.messages.length === 0 && (
             <p className="text-sm italic text-white/50">Aucun message récent.</p>

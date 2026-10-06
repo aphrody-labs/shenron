@@ -12,6 +12,7 @@
  * Refuser sans note est possible mais découragé : la note est la seule réponse
  * que recevra la personne qui a pris le temps de lire une planche.
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chargement, Coche, Croix, LienExterne } from "@shenron/ui/icones";
 import Link from "next/link";
@@ -180,7 +181,7 @@ export default function PageContributions() {
 
       {isLoading ? (
         <p className="flex items-center gap-2 text-sm text-white/40">
-          <Chargement className="h-4 w-4 animate-spin" /> Chargement…
+          <Chargement className="h-4 w-4 animate-spin" /> <LoadingText />
         </p>
       ) : !data?.rows.length ? (
         <p className="rounded-xl border border-white/8 bg-white/[0.02] px-5 py-10 text-center text-sm text-white/40">

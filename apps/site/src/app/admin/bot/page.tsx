@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Bot as BotIcon, ChevronDown, Globe, Hash, Wifi } from "lucide-react";
@@ -147,7 +148,7 @@ export default function BotPage() {
           </div>
         ) : (
           <p className="text-sm text-zinc-500">
-            {info.isLoading ? "Chargement…" : "Aucun serveur."}
+            {info.isLoading ? <LoadingText /> : "Aucun serveur."}
           </p>
         )}
       </div>
@@ -162,7 +163,7 @@ export default function BotPage() {
           </div>
         ) : (
           <p className="text-sm text-zinc-500">
-            {cmds.isLoading ? "Chargement…" : "Aucune commande slash registrée pour ce bot."}
+            {cmds.isLoading ? <LoadingText /> : "Aucune commande slash registrée pour ce bot."}
           </p>
         )}
       </div>

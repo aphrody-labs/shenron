@@ -9,7 +9,7 @@
  * contient l'état du membre — jamais cacheable, même une seconde.
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import {
   myReactions,
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   let userId: string | null = null;
   try {
-    const me = await getCurrentUser();
+    const me = await getSessionUser();
     userId = me?.user?.id ?? null;
   } catch {
     userId = null;
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let userId: string | null = null;
   try {
-    const me = await getCurrentUser();
+    const me = await getSessionUser();
     userId = me?.user?.id ?? null;
   } catch {
     userId = null;

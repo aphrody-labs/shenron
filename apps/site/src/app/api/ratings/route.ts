@@ -9,7 +9,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import {
   RATING_COMMENT_MAX,
   getRatingState,
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   let userId: string | null = null;
   try {
-    const me = await getCurrentUser();
+    const me = await getSessionUser();
     userId = me?.user?.id ?? null;
   } catch {
     userId = null;
@@ -71,9 +71,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  let me: Awaited<ReturnType<typeof getCurrentUser>> = null;
+  let me: Awaited<ReturnType<typeof getSessionUser>> = null;
   try {
-    me = await getCurrentUser();
+    me = await getSessionUser();
   } catch {
     me = null;
   }

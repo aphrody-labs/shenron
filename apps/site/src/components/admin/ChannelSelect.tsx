@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/T";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { api } from "@/lib/admin-api";
@@ -44,6 +45,7 @@ export function ChannelSelect({
   disabled,
   className,
 }: Props) {
+  const t = useT();
   const { data, isLoading } = useQuery({
     queryKey: ["discord", "channels"],
     queryFn: () => api.get<{ channels: Channel[] }>("/discord/channels"),
@@ -75,7 +77,7 @@ export function ChannelSelect({
       required={required}
       disabled={disabled || isLoading}
     >
-      <option value="">{isLoading ? "Chargement…" : placeholder}</option>
+      <option value="">{isLoading ? t("common.loading") : placeholder}</option>
       {grouped.byCat.get(null)?.map((c) => (
         <option key={c.id} value={c.id}>
           {TYPE_PREFIX[c.type] ?? ""}

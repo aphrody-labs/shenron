@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ShieldAlert,
@@ -447,7 +448,7 @@ function WarnsCard({
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-zinc-500">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Chargement…
+            <LoadingText />
           </div>
         ) : byUser.size === 0 ? (
           <div className="rounded-lg border border-zinc-800 bg-zinc-900/20 p-4 text-center text-sm text-zinc-500">
@@ -556,7 +557,7 @@ function JailsCard({
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-zinc-500">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Chargement…
+            <LoadingText />
           </div>
         ) : rows.length === 0 ? (
           <div className="rounded-lg border border-zinc-800 bg-zinc-900/20 p-4 text-center text-sm text-zinc-500">
@@ -637,7 +638,7 @@ function RecentCard({ rows, loading }: { rows: ActionLog[]; loading: boolean }) 
       {loading ? (
         <div className="flex items-center gap-2 p-4 text-sm text-zinc-500">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Chargement…
+          <LoadingText />
         </div>
       ) : rows.length === 0 ? (
         <div className="p-4 text-sm text-zinc-500">Aucune action de modération récente.</div>

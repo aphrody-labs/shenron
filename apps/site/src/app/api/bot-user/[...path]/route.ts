@@ -8,7 +8,7 @@
  *  - Permet à un user normal d'agir sur le bot pour jouer (/games/*),
  *    récupérer son profil (/me/*), etc.
  */
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import { env } from "@/lib/env";
 import { API_URL as API } from "@/lib/config";
 import { NextRequest, NextResponse } from "next/server";
@@ -20,7 +20,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
-  const me = await getCurrentUser();
+  const me = await getSessionUser();
   if (!me?.discordId) {
     return NextResponse.json({ error: "Login requis" }, { status: 401 });
   }

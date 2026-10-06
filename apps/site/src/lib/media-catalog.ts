@@ -1,11 +1,24 @@
 import "server-only";
 
-import { and, desc, eq, ilike, or } from "drizzle-orm";
+import { and, desc, eq, ilike, isNotNull, isNull, ne, notInArray, or } from "drizzle-orm";
 import { botDatabooks, botEpisodes, botMangaVolumes, botMovies } from "@/db/bot-schema";
 import { db } from "@/lib/db";
 import { publicDatabookImage } from "@/lib/databook-media";
 
 const LIMIT = 12;
+
+/**
+ * Magazine categories kept off the home rail. Magazine issues (V-Jump, Weekly
+ * Shōnen Jump, Saikyō Jump) carry a Dragon Ball article but another series on their cover
+ * (Demon Slayer, Yu-Gi-Oh!, Boruto…): they stay in the databooks library, not on the
+ * home rail, whose cards are covers.
+ */
+export const MAGAZINE_CATEGORIES = [
+  "V-Jump",
+  "Weekly Shonen Jump",
+  "Saikyō Jump",
+  "Guidebook",
+] as const;
 
 /**
  * Sélection légère et universelle pour les rails média de l'accueil et de
@@ -83,7 +96,17 @@ export async function readMediaCatalog() {
         publishedAt: botDatabooks.publishedAt,
       })
       .from(botDatabooks)
-      .where(eq(botDatabooks.visible, true))
+      .where(
+        and(
+          eq(botDatabooks.visible, true),
+          or(
+            isNull(botDatabooks.category),
+            notInArray(botDatabooks.category, [...MAGAZINE_CATEGORIES]),
+          ),
+          isNotNull(botDatabooks.cover),
+          ne(botDatabooks.cover, ""),
+        ),
+      )
       .orderBy(desc(botDatabooks.publishedAt), desc(botDatabooks.id))
       .limit(LIMIT),
   ]);

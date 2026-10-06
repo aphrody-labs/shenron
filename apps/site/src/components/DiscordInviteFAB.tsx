@@ -1,10 +1,30 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useT } from "@/components/T";
 import { DISCORD_INVITE } from "@/lib/config";
 
+/** Scroll depth past which the invitation folds into its icon. */
+const FOLD_AT = 160;
+
+/**
+ * Discord invitation, floating. Hidden on the home, whose live server panel already invites
+ * to the server (the pill covered its blocks); elsewhere it folds into an icon once the
+ * reader scrolls, so it stops sitting on the content.
+ */
 export function DiscordInviteFAB() {
+  const t = useT();
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
+  const [folded, setFolded] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setFolded(window.scrollY > FOLD_AT);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // `localStorage` LÈVE une exception, il ne rend pas `null`, quand le stockage
   // est interdit (navigation privée verrouillée, cookies tiers bloqués, page
@@ -23,7 +43,7 @@ export function DiscordInviteFAB() {
     if (!dismissed) setIsVisible(true);
   }, []);
 
-  if (!isVisible) return null;
+  if (!isVisible || pathname === "/") return null;
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -47,7 +67,7 @@ export function DiscordInviteFAB() {
         <button
           type="button"
           onClick={handleDismiss}
-          aria-label="Fermer"
+          aria-label={t("shell.close")}
           // Le carré visible reste petit (24 px, pour ne pas manger la pastille),
           // mais la ZONE TACTILE fait 44 px via un pseudo-élément : c'était le
           // plus petit contrôle du site, et fermer une pastille flottante au
@@ -60,12 +80,15 @@ export function DiscordInviteFAB() {
           href={inviteUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="dbz-button !py-2.5 !px-4 inline-flex items-center gap-2.5 !text-xs md:!text-sm"
+          title={folded ? t("footer.joinDiscord") : undefined}
+          className={`dbz-button inline-flex items-center gap-2.5 !text-xs md:!text-sm ${
+            folded ? "!p-2.5" : "!py-2.5 !px-4"
+          }`}
         >
           <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden>
             <path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.07.07 0 0 0-.073.035 13.86 13.86 0 0 0-.61 1.255 18.27 18.27 0 0 0-5.488 0 12.51 12.51 0 0 0-.617-1.255.07.07 0 0 0-.073-.035A19.74 19.74 0 0 0 3.687 4.37a.06.06 0 0 0-.03.025C.533 9.046-.32 13.58.099 18.06a.08.08 0 0 0 .03.054 19.9 19.9 0 0 0 5.993 3.03.07.07 0 0 0 .078-.027 14.27 14.27 0 0 0 1.226-1.994.07.07 0 0 0-.038-.097 13.11 13.11 0 0 1-1.872-.892.07.07 0 0 1-.008-.118c.126-.094.252-.192.372-.291a.07.07 0 0 1 .07-.01c3.927 1.793 8.18 1.793 12.062 0a.07.07 0 0 1 .072.01c.12.1.245.198.372.292a.07.07 0 0 1-.006.118 12.3 12.3 0 0 1-1.873.891.07.07 0 0 0-.037.098 16.04 16.04 0 0 0 1.225 1.994.07.07 0 0 0 .078.028 19.84 19.84 0 0 0 6.002-3.03.08.08 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.665a.06.06 0 0 0-.029-.025zM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.418 2.157-2.418 1.212 0 2.176 1.094 2.157 2.418 0 1.334-.955 2.42-2.157 2.42zm7.974 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.418 2.157-2.418 1.212 0 2.176 1.094 2.157 2.418 0 1.334-.945 2.42-2.157 2.42z" />
           </svg>
-          <span>Rejoindre le Discord</span>
+          <span className={folded ? "sr-only" : undefined}>{t("footer.joinDiscord")}</span>
         </a>
       </div>
     </div>

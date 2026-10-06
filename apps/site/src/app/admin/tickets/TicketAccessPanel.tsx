@@ -9,6 +9,7 @@
  * ces droits **à la création** d'un ticket — d'où le bouton « Appliquer aux
  * tickets ouverts », qui rejoue la config sur les salons déjà existants.
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bouclier, Chargement, Croix, Plus, Rafraichir } from "@shenron/ui/icones";
@@ -118,7 +119,9 @@ export function TicketAccessPanel() {
       </div>
 
       {settings.isLoading ? (
-        <p className="text-sm text-white/50">Chargement…</p>
+        <p className="text-sm text-white/50">
+          <LoadingText />
+        </p>
       ) : (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {TICKET_KINDS.map((kind) => {

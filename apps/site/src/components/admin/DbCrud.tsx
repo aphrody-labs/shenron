@@ -6,6 +6,7 @@
  * une via l'API CRUD générique du bot (`/api/database/:table[/:id]`), puis
  * `router.refresh()` pour recharger la vue server. Les pages restent des RSC.
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -329,7 +330,9 @@ function FieldModal({
         </div>
 
         {loading ? (
-          <div className="py-12 text-center text-sm text-white/50">Chargement…</div>
+          <div className="py-12 text-center text-sm text-white/50">
+            <LoadingText />
+          </div>
         ) : (
           <div className="space-y-3">
             {columns.map((c) => (

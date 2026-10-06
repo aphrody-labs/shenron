@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import { NextResponse } from "next/server";
 
 // Endpoint léger pour l'état d'auth côté client (nav). Volontairement isolé du
@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const me = await getCurrentUser();
+  const me = await getSessionUser();
   return NextResponse.json(
     {
       authenticated: Boolean(me),

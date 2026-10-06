@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Alimentation,
@@ -186,7 +187,9 @@ function PreviewSection({
   if (isLoading)
     return (
       <div className="dbz-panel p-8 text-center">
-        <p className="font-saiyan text-dbz-orange text-xl mb-2">CHARGEMENT…</p>
+        <p className="font-saiyan text-dbz-orange text-xl mb-2">
+          <LoadingText />
+        </p>
         <p className="text-sm text-white/50">Récupération des canvases disponibles.</p>
       </div>
     );

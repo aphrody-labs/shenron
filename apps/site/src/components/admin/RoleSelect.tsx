@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/T";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { api } from "@/lib/admin-api";
@@ -68,6 +69,7 @@ export function RoleSelect({
   disabled,
   className,
 }: Props) {
+  const t = useT();
   const { data, isLoading } = useQuery({
     queryKey: ["discord", "roles"],
     queryFn: () => api.get<{ roles: Role[]; count: number }>("/discord/roles"),
@@ -104,7 +106,7 @@ export function RoleSelect({
         required={required}
         disabled={disabled || isLoading}
       >
-        <option value="">{isLoading ? "Chargement…" : placeholder}</option>
+        <option value="">{isLoading ? t("common.loading") : placeholder}</option>
         {roles.map((r) => (
           <option key={r.id} value={r.id}>
             {r.name}

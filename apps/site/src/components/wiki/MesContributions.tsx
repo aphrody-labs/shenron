@@ -11,6 +11,7 @@
  * Îlot client (`/api/wiki/contributions`, session requise) monté sur une page
  * publique en ISR : la page reste cachée, seul ce bloc se peuple côté navigateur.
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Chargement } from "@shenron/ui/icones";
@@ -74,7 +75,7 @@ export function MesContributions() {
       <h2 className="font-saiyan text-2xl uppercase text-white">Mes propositions</h2>
       {lignes === null ? (
         <p className="mt-4 flex items-center gap-2 text-sm text-white/40">
-          <Chargement className="h-4 w-4 animate-spin" /> Chargement…
+          <Chargement className="h-4 w-4 animate-spin" /> <LoadingText />
         </p>
       ) : erreur ? (
         <p className="mt-4 text-sm leading-relaxed text-white/50">

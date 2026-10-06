@@ -17,7 +17,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { userPreferences } from "@/db/schema";
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import { sanitizeInternalPath } from "@/lib/internal-path";
 
 export const runtime = "nodejs";
@@ -85,7 +85,7 @@ function sanitize(input: unknown): Favorite[] {
 const identityOf = (userId: string) => `u:${userId}`;
 
 export async function GET() {
-  const me = await getCurrentUser();
+  const me = await getSessionUser();
   if (!me?.user) return NextResponse.json({ favorites: [] });
   try {
     const [row] = await db
@@ -106,7 +106,7 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  const me = await getCurrentUser();
+  const me = await getSessionUser();
   if (!me?.user) return NextResponse.json({ error: "Connexion requise" }, { status: 401 });
 
   const annoncee = Number(req.headers.get("content-length") ?? 0);

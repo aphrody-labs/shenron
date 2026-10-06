@@ -289,8 +289,24 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   return result;
 }
 
-export async function requireUser(callbackURL?: string): Promise<CurrentUser> {
+/**
+ * The signed-in READER: a real Better Auth session (Discord sign-in), never an automation
+ * actor. Admin access by IP (`SHENRON_ADMIN_IPS`), signed cookie, token or agent key is
+ * attached to the `OWNER_ID` account for the admin guards and the API; shown in the public
+ * UI, it made an anonymous visitor from an admin address appear signed in as that account.
+ * Everything a reader sees about « their » account (`/api/me`, the shell account block,
+ * member pages, profile ownership, favorites, ratings, reactions) goes through this one.
+ */
+export async function getSessionUser(): Promise<CurrentUser | null> {
   const me = await getCurrentUser();
+  if (!me || (me as SessionUser).automation || me.sessionUserId === TOKEN_ADMIN_SESSION_ID)
+    return null;
+  return me;
+}
+
+/** Member pages: a real session, otherwise the sign-in page. */
+export async function requireUser(callbackURL?: string): Promise<CurrentUser> {
+  const me = await getSessionUser();
   if (!me) {
     const cb = callbackURL ? `?callbackURL=${encodeURIComponent(callbackURL)}` : "";
     redirect(`/signin${cb}`);
@@ -299,7 +315,9 @@ export async function requireUser(callbackURL?: string): Promise<CurrentUser> {
 }
 
 export async function requireAdmin(): Promise<CurrentUser & { user: SiteUser }> {
-  const me = await requireUser();
+  // Admin guard: automation actors (IP, cookie, token) are valid here, unlike `requireUser`.
+  const me = await getCurrentUser();
+  if (!me) redirect("/signin?callbackURL=%2Fadmin");
   if (!me.user?.roleAdmin) redirect("/");
   return me as CurrentUser & { user: SiteUser };
 }

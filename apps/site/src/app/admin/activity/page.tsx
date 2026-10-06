@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
@@ -450,7 +451,7 @@ function TrendChart({
   if (n === 0) {
     return (
       <div className="h-[220px] flex items-center justify-center text-sm text-white/50">
-        {loading ? "Chargement…" : "Aucune visite enregistrée sur la période."}
+        {loading ? <LoadingText /> : "Aucune visite enregistrée sur la période."}
       </div>
     );
   }

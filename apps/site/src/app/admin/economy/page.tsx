@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserSelect } from "@/components/admin/UserSelect";
 import { RoleSelect } from "@/components/admin/RoleSelect";
@@ -311,7 +312,7 @@ export default function AdminEconomyPage() {
         {top.isLoading && (
           <div className="flex items-center gap-2 text-zinc-500 text-sm">
             <Chargement className="h-4 w-4 animate-spin" />
-            Chargement…
+            <LoadingText />
           </div>
         )}
         {top.isError && (
@@ -384,7 +385,7 @@ export default function AdminEconomyPage() {
         {txs.isLoading && (
           <div className="flex items-center gap-2 text-zinc-500 text-sm">
             <Chargement className="h-4 w-4 animate-spin" />
-            Chargement…
+            <LoadingText />
           </div>
         )}
         {txs.data?.rows.length === 0 && (

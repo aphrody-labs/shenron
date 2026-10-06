@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserSelect } from "@/components/admin/UserSelect";
 import {
@@ -750,7 +751,7 @@ function ThresholdCurveCard() {
 
       {query.isLoading ? (
         <div className="flex items-center gap-2 text-sm text-zinc-500">
-          <Chargement className="h-4 w-4 animate-spin" /> Chargement…
+          <Chargement className="h-4 w-4 animate-spin" /> <LoadingText />
         </div>
       ) : (
         <div className="space-y-2">

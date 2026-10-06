@@ -13,7 +13,7 @@ import {
 } from "@shenron/db/agent-homes/types";
 import { env } from "@/lib/env";
 import { signDesktopLink } from "@/lib/desktop-link";
-import { getCurrentUser } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   const port = desktopLinkPort(url.searchParams.get("port"));
   if (!DESKTOP_LINK.state.test(state) || port === null)
     return NextResponse.json({ error: "invalid_request" }, { status: 400, headers: noStore });
-  const me = await getCurrentUser();
+  const me = await getSessionUser();
   if (!me?.discordId) {
     const back = `${DESKTOP_LINK.sitePath}?state=${state}&port=${port}`;
     return NextResponse.redirect(

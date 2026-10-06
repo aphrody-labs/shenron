@@ -12,6 +12,7 @@
  *
  * Deep-link : `?page=episodes` ou `?series=DBZ` scroll/highlight la ligne.
  */
+import { LoadingText } from "@/components/LoadingText";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
@@ -345,7 +346,9 @@ export function BannersEditor() {
             </div>
             <div className="overflow-y-auto p-4">
               {lib.isLoading ? (
-                <p className="py-8 text-center text-sm text-white/50">Chargement…</p>
+                <p className="py-8 text-center text-sm text-white/50">
+                  <LoadingText />
+                </p>
               ) : (lib.data?.length ?? 0) === 0 ? (
                 <p className="py-8 text-center text-sm text-white/50">
                   Aucune image (toei / dbofficial / wiki/banners).

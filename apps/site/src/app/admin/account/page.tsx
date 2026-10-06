@@ -1,4 +1,5 @@
 "use client";
+import { LoadingText } from "@/components/LoadingText";
 import {
   type DiscordImageSize,
   discordUserAvatar,
@@ -290,7 +291,11 @@ export default function AccountPage() {
           Mes serveurs Discord
           {guilds.data ? ` (${guilds.data.guilds.length})` : ""}
         </h3>
-        {guilds.isLoading && <div className="text-sm text-zinc-500">Chargement…</div>}
+        {guilds.isLoading && (
+          <div className="text-sm text-zinc-500">
+            <LoadingText />
+          </div>
+        )}
         {guilds.isError && (
           <div className="text-sm text-zinc-500">
             Liste de serveurs indisponible

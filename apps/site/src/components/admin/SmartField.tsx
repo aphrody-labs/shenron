@@ -13,6 +13,7 @@
  *   - texte long       → zone de texte
  *   - sinon            → champ texte
  */
+import { useT } from "@/components/T";
 import { useQuery } from "@tanstack/react-query";
 import { ImageField } from "@/components/admin/ImageField";
 import { MarkdownField } from "@/components/admin/MarkdownField";
@@ -174,6 +175,7 @@ function EntityPicker({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const t = useT();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["fk-options", refTable],
     queryFn: () =>
@@ -204,7 +206,7 @@ function EntityPicker({
       onChange={(e) => onChange(e.target.value)}
       disabled={isLoading}
     >
-      <option value="">{isLoading ? "Chargement…" : "— Aucun —"}</option>
+      <option value="">{isLoading ? t("common.loading") : "— Aucun —"}</option>
       {value && !inList && <option value={value}>Actuel : {value}</option>}
       {options.map((o) => (
         <option key={o.value} value={o.value}>

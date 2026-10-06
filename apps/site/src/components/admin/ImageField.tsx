@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { FolderOpen, ImageOff, Loader2, Search, Upload, X } from "lucide-react";
 import {
   useCallback,
@@ -343,7 +344,7 @@ function GalleryPicker({
           <p className="py-12 text-center text-sm text-red-400">{error}</p>
         ) : files === null ? (
           <div className="flex items-center justify-center gap-2 py-12 text-sm text-white/50">
-            <Loader2 className="h-4 w-4 animate-spin" /> Chargement…
+            <Loader2 className="h-4 w-4 animate-spin" /> <LoadingText />
           </div>
         ) : shown.length === 0 ? (
           <p className="py-12 text-center text-sm text-white/50">Aucune image trouvée.</p>

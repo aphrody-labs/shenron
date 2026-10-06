@@ -1,3 +1,4 @@
+import { LoadingText } from "@/components/LoadingText";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { requireAdmin } from "@/lib/session";
@@ -13,7 +14,13 @@ export default async function AdminBannersPage() {
   await requireAdmin();
   // Suspense requis pour useSearchParams (deep-link ?page=episodes).
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-white/50">Chargement…</div>}>
+    <Suspense
+      fallback={
+        <div className="p-8 text-sm text-white/50">
+          <LoadingText />
+        </div>
+      }
+    >
       <BannersEditor />
     </Suspense>
   );

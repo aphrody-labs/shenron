@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Gift, RefreshCw, ExternalLink, FastForward, Users } from "lucide-react";
 import { useState } from "react";
@@ -91,7 +92,9 @@ export default function GiveawaysPage() {
 
       {giveaways.isLoading && (
         <div className="dbz-panel p-8 text-center">
-          <p className="font-saiyan text-dbz-orange text-xl mb-2">CHARGEMENT…</p>
+          <p className="font-saiyan text-dbz-orange text-xl mb-2">
+            <LoadingText />
+          </p>
           <p className="text-sm text-white/50">Récupération des tirages au sort.</p>
         </div>
       )}
