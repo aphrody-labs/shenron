@@ -17,11 +17,12 @@
   },
   "dependencies": {
     "@shenron/api": "workspace:*",
+    "@shenron/auth": "workspace:*",
     "@shenron/config": "workspace:*",
+    "@shenron/db": "workspace:*",
     "@shenron/native": "workspace:*"
   },
   "devDependencies": {
-    "@shenron/db": "workspace:*",
     "@types/bun": "catalog:",
     "typescript": "catalog:",
     "undici-types": "~8.9.0"

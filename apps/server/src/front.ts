@@ -5,7 +5,9 @@
  *
  *   1. `/api/local/*`            local APIs (health with the API groups, native search, the
  *                                editor engine bridge `/api/local/koharu`)
- *   2. `/api/v1/*`               the Shenron API host, authoritative: a disabled group answers
+ *   2. `/api/auth/*`            Better Auth of the host when it serves it (DATABASE_URL, Discord
+ *                                application), else Next; the client address is the socket peer
+ *      `/api/v1/*`               the Shenron API host, authoritative: a disabled group answers
  *                                its JSON 404, never a Next page (Next has no `/api/v1`)
  *      `/api/public/*`, `/mcp`   the host when it serves that path (wiki and RAG from the VFS,
  *                                OpenAPI, MCP proxy), else Next (`app/api/public/[...route]` on
@@ -101,8 +103,21 @@ const under = (pathname: string, prefix: string) =>
 /** Step 2: the API paths the host answers before the assets and Next. */
 export function hostClaims(host: FrontHost, pathname: string): boolean {
   if (under(pathname, "/api/v1")) return true;
+  if (under(pathname, "/api/auth")) return host.handles(pathname);
   if (pathname.startsWith("/api/public/") || under(pathname, "/mcp")) return host.handles(pathname);
   return false;
+}
+
+/**
+ * Better Auth reads the client address from `x-real-ip` / `x-forwarded-for` (rate limit, session
+ * IP): this front server is the first hop, so those headers are replaced by the socket peer.
+ */
+export function withPeerAddress(request: Request, peer?: string): Request {
+  const headers = new Headers(request.headers);
+  headers.delete("x-real-ip");
+  headers.delete("x-forwarded-for");
+  if (peer) headers.set("x-real-ip", plainAddress(peer));
+  return new Request(request, { headers });
 }
 
 export function freePort(): number {
@@ -196,7 +211,11 @@ export function serveFront(o: FrontOptions): Bun.Server<ChatSocketData> {
       const local = await o.local(request, url, o.ready(), peer);
       if (local) return local;
       // The host returns no response once it has upgraded the chat WebSocket.
-      if (host && hostClaims(host, url.pathname)) return host.fetch(request, server);
+      if (host && hostClaims(host, url.pathname))
+        return host.fetch(
+          under(url.pathname, "/api/auth") ? withPeerAddress(request, peer) : request,
+          server,
+        );
       const asset = await staticAsset(o.layout, url.pathname);
       if (asset) return asset;
       if (host && url.pathname.startsWith("/assets/") && host.handles(url.pathname))

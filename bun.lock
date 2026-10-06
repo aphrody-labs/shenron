@@ -60,11 +60,12 @@
       },
       "dependencies": {
         "@shenron/api": "workspace:*",
+        "@shenron/auth": "workspace:*",
         "@shenron/config": "workspace:*",
+        "@shenron/db": "workspace:*",
         "@shenron/native": "workspace:*",
       },
       "devDependencies": {
-        "@shenron/db": "workspace:*",
         "@types/bun": "catalog:",
         "typescript": "catalog:",
         "undici-types": "~8.9.0",
@@ -172,10 +173,9 @@
         "@shenron/db": "workspace:*",
         "@shenron/lexicon": "workspace:*",
         "@shenron/pipeline": "workspace:*",
-        "zod": "catalog:",
-      },
-      "devDependencies": {
+        "better-auth": "catalog:",
         "drizzle-orm": "catalog:",
+        "zod": "catalog:",
       },
     },
     "packages/auth": {

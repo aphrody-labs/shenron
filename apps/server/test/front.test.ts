@@ -286,6 +286,7 @@ describe("absent capabilities: groups disabled, the server keeps serving", () =>
         reason: "aucun modèle de chat déclaré (llama-server, aphrody-llama-daemon)",
       },
       memory: { available: false, reason: "bibliothèque native absente : mémoire indisponible" },
+      auth: { available: false, reason: "DATABASE_URL absente : authentification indisponible" },
     });
   });
 

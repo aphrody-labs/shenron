@@ -100,6 +100,19 @@ export interface VfsPort {
   publicOnly?: boolean;
 }
 
+/**
+ * Better Auth of the host (`@shenron/api/host`): `/api/auth/*` is handed to `handler` as is
+ * (every method, Better Auth owns its CORS, cookies and rate limit). Absent: no route.
+ */
+export interface BetterAuthPort {
+  handler(request: Request): Promise<Response>;
+  /** Better Auth user id of the session in `headers` (cookie or bearer), or null. */
+  session?(headers: Headers): Promise<{ userId: string } | null>;
+}
+
+/** Base path of {@link BetterAuthPort}. */
+export const BETTER_AUTH_PATH = "/api/auth";
+
 export interface AuthPort {
   /** Conversation owner of the request (site session, signed bot user, desktop user), or null. */
   owner(request: Request): Promise<string | null>;
@@ -151,6 +164,8 @@ export interface ShenronApiPorts {
   vfs?: VfsPort | null;
   ocr?: OcrPort | null;
   auth?: AuthPort | null;
+  /** Better Auth handler on `/api/auth/*`; absent → group disabled, the path is not claimed. */
+  betterAuth?: BetterAuthPort | null;
   mcp?: McpProxyPort | null;
   /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@shenron/api/plugin`). */
   plugin?: PluginPort | null;
@@ -850,7 +865,12 @@ export function createShenronApi(
   const mcp = ports.mcp ?? null;
   const mcpPrefix = "/mcp";
 
+  const betterAuth = ports.betterAuth ?? null;
+  const isAuthPath = (pathname: string) =>
+    pathname === BETTER_AUTH_PATH || pathname.startsWith(`${BETTER_AUTH_PATH}/`);
+
   const handles = (pathname: string): boolean =>
+    (betterAuth !== null && isAuthPath(pathname)) ||
     router.match(pathname).length > 0 ||
     (mcp !== null && (pathname === mcpPrefix || pathname.startsWith(`${mcpPrefix}/`)));
 
@@ -909,6 +929,14 @@ export function createShenronApi(
       });
       return response;
     };
+    if (betterAuth && isAuthPath(path)) {
+      try {
+        return finish(await betterAuth.handler(request));
+      } catch (error) {
+        console.error("[shenron-api] Better Auth failed:", error);
+        return finish(json({ error: "internal", code: "internal" }, 500, cors));
+      }
+    }
     if (mcp && (path === mcpPrefix || path.startsWith(`${mcpPrefix}/`)))
       return finish(await proxyMcp(request, url, cors));
     const candidates = forced
@@ -1085,6 +1113,16 @@ export function createShenronApi(
       entry.HEAD = handler;
     } else entry.POST = handler;
     entry.OPTIONS = (request, server) => dispatch(request, server);
+  }
+  if (betterAuth) {
+    const handler: RouteFn = (request, server) => dispatch(request, server);
+    routes[BETTER_AUTH_PATH] = { GET: handler, HEAD: handler, POST: handler, OPTIONS: handler };
+    routes[`${BETTER_AUTH_PATH}/*`] = {
+      GET: handler,
+      HEAD: handler,
+      POST: handler,
+      OPTIONS: handler,
+    };
   }
   if (mcp) {
     const proxy: RouteFn = (request, server) => dispatch(request, server);

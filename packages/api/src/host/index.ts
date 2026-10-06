@@ -52,12 +52,14 @@ import { backendsFromEnv, geminiCookieCandidates, type LlmBackend } from "../cha
 import { createStdioMcpClient } from "../chat/mcp";
 import { createPluginPort, resolvePluginRoot } from "../plugin";
 import { createCliOcr } from "../chat/ocr";
+import { createHostAuth } from "./auth";
 import type { ChatModelEntry } from "../contract/chat";
 import type { LocalApiGroups, LocalApiGroupStatus } from "../contract/local";
 import type { RagHit, RagSearchQuery } from "../contract/schemas";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "../http";
 import {
   type AuthPort,
+  type BetterAuthPort,
   type ChatSocketData,
   createShenronApi,
   type MemoryPort,
@@ -325,6 +327,11 @@ export interface LocalApiOptions {
    * `/home`, else APHRODY_WORKSPACE).
    */
   agentHome?: ((ownerId: string) => string | null) | null;
+  /**
+   * Better Auth on `/api/auth/*` (override for tests; `null` disables). Absent: built from the
+   * environment (`DATABASE_URL`, Discord application, `BETTER_AUTH_SECRET`), see `./auth`.
+   */
+  betterAuth?: BetterAuthPort | null;
   fetch?: typeof fetch;
   /** Local models the server manages (llama-server router of shenron-server), with their state. */
   chatModels?: () => Promise<ChatModelEntry[]>;
@@ -539,6 +546,13 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const wiki = opened && options.wiki !== false ? opened.wiki : null;
   const assetsDir = envString(env, "SHENRON_ASSETS_DIR") ?? null;
   const mcpUrl = envString(env, "SHENRON_MCP_URL");
+  const authBuilt =
+    options.betterAuth === undefined
+      ? createHostAuth(env)
+      : options.betterAuth
+        ? { port: options.betterAuth }
+        : { reason: "authentification désactivée" };
+  const betterAuthPort = "port" in authBuilt ? authBuilt.port : null;
   const api = createShenronApi(
     {
       wiki,
@@ -549,6 +563,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       vfs: opened ? createVfsPort(opened, { publicOnly, assetsDir }) : null,
       ocr: ocrPort,
       auth: createEnvAuth(env, isLoopback),
+      betterAuth: betterAuthPort,
       mcp: mcpUrl ? { url: mcpUrl } : null,
       // `/api/public/plugin*` quand `SHENRON_PLUGIN_DIR` désigne un plugin lisible.
       plugin: pluginPort,
@@ -617,6 +632,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     mcp: mcpUrl ? available() : unavailable("serveur MCP non configuré"),
     models: { ...chatGroup },
     memory: memory ? available() : unavailable(memoryReason),
+    auth: "port" in authBuilt ? available() : unavailable(authBuilt.reason),
   };
   const servesAssets = assetsDir !== null || opened !== null;
   const isAsset = (pathname: string) => servesAssets && pathname.startsWith("/assets/");

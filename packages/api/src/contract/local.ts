@@ -25,6 +25,7 @@ export const LOCAL_API_GROUPS = [
   "mcp",
   "models",
   "memory",
+  "auth",
 ] as const;
 
 export const LocalApiGroupName = z.enum(LOCAL_API_GROUPS);

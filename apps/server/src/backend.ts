@@ -38,6 +38,7 @@
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createLocalApi, type LocalApi as HostApi, type MemoryLocation } from "@shenron/api/host";
+import type { BetterAuthPort } from "@shenron/api/server";
 import type { LocalApiGroups } from "@shenron/api/contract";
 import { DEFAULT_CHAT_MODEL_ID, DEFAULT_LOCAL_CHAT_BACKENDS } from "@shenron/config/chat-model";
 
@@ -225,6 +226,7 @@ export function unavailableGroups(reason: string): LocalApiGroups {
     mcp: { ...status },
     models: { ...status },
     memory: { ...status },
+    auth: { ...status },
   };
 }
 
@@ -258,6 +260,8 @@ export async function startBackend(
     memoryLocation?: MemoryLocation;
     /** Agent homes of this machine (default: opened under `<home>/agents` outside production). */
     agentHomes?: AgentHomes | null;
+    /** Better Auth port override (tests); default: built by the host from the environment. */
+    betterAuth?: BetterAuthPort | null;
   } = {},
 ): Promise<Backend> {
   const plan = planBackend(paths, env, o);
@@ -318,6 +322,7 @@ export async function startBackend(
       wiki: plan.wiki,
       ...(chatModel ? { chatModels: chatModel.catalog } : {}),
       memory: nativeMemory(paths, plan.env),
+      ...(o.betterAuth !== undefined ? { betterAuth: o.betterAuth } : {}),
       ...(agentHomes
         ? {
             agentHome: agentHomes.dirOf,

@@ -29,10 +29,9 @@
     "@shenron/db": "workspace:*",
     "@shenron/lexicon": "workspace:*",
     "@shenron/pipeline": "workspace:*",
+    "better-auth": "catalog:",
+    "drizzle-orm": "catalog:",
     "zod": "catalog:"
-  },
-  "devDependencies": {
-    "drizzle-orm": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.2"
