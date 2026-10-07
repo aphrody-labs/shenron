@@ -21,7 +21,10 @@ import { DragonRadar } from "@shenron/ui/icones";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { track } from "@/lib/telemetry";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { getDragonRadarMessages } from "@shenron/ui/public/dragon-radar-messages";
+import { startSearchSession } from "@/lib/search-session";
 
 // Miroir client de la forme renvoyée par `/api/search` (= `SearchResults` de
 // db-universe). Défini localement pour ne pas importer le module server-only
@@ -230,27 +233,27 @@ export default function CommandPalette({
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResults>(EMPTY);
   const [loading, setLoading] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const messages = getDragonRadarMessages(useLocale());
 
   // Recherche debouncée ; annule la requête en vol à chaque frappe.
   useEffect(() => {
     const term = query.trim();
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (term.length < 2) {
-      abortRef.current?.abort();
+    // Reset the network session when its query, visibility or retry changes.
+    // oxlint-disable-next-line react/set-state-in-effect
+    setFailed(false);
+    setResults(EMPTY);
+    if (!open || term.length < 2) {
       setResults(EMPTY);
       setLoading(false);
       return;
     }
     setLoading(true);
-    debounceRef.current = setTimeout(async () => {
-      abortRef.current?.abort();
-      const ctrl = new AbortController();
-      abortRef.current = ctrl;
-      try {
+    return startSearchSession(
+      async (signal) => {
         const res = await fetch(`/api/search?q=${encodeURIComponent(term)}`, {
-          signal: ctrl.signal,
+          signal,
         });
         if (!res.ok) throw new Error(String(res.status));
         // Aucun filtrage ici : `/api/search` ne renvoie déjà que les catégories
@@ -258,23 +261,32 @@ export default function CommandPalette({
         // le proxy). La liste en dur qui vivait ici — héritée de la bêta, 4
         // catégories sur 12 — restait fausse à chaque ouverture de rubrique.
         const recus = (await res.json()) as SearchResults;
-        setResults(recus);
-        // Ce que les gens cherchent est le signal le plus utile du site :
-        // une recherche sans résultat désigne un contenu qui manque, une
-        // recherche fréquente désigne un contenu à mettre en avant. Le
-        // type `search` était déclaré depuis le début et n'était émis
-        // nulle part.
-        track("search", { query: term, resultCount: count(recus) });
-      } catch (e) {
-        if ((e as Error).name !== "AbortError") setResults(EMPTY);
-      } finally {
-        if (!ctrl.signal.aborted) setLoading(false);
-      }
-    }, 180);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [query]);
+        if (
+          !recus ||
+          Object.keys(EMPTY).some(
+            (key) => key !== "q" && !Array.isArray(recus[key as keyof SearchResults]),
+          )
+        )
+          throw new Error("Invalid search response");
+        return recus;
+      },
+      {
+        success: (recus) => {
+          setResults(recus);
+          // Ce que les gens cherchent est le signal le plus utile du site :
+          // une recherche sans résultat désigne un contenu qui manque, une
+          // recherche fréquente désigne un contenu à mettre en avant. Le
+          // type `search` était déclaré depuis le début et n'était émis
+          // nulle part.
+          track("search", { query: term, resultCount: count(recus) });
+        },
+        failure: () => setFailed(true),
+        settled: () => setLoading(false),
+      },
+    );
+    // Retry intentionally starts a new session even when the query is unchanged.
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies
+  }, [query, open, attempt]);
 
   const go = useCallback(
     (href: string) => {
@@ -315,7 +327,15 @@ export default function CommandPalette({
       </div>
 
       <Command.List className="max-h-[60vh] overflow-y-auto overscroll-contain p-2 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:font-display [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-white/50">
-        {term.length >= 2 && !loading && total === 0 && (
+        {failed && (
+          <div role="alert" className="px-3 py-6 text-center text-sm text-white/70">
+            <p>{messages.error}</p>
+            <button type="button" onClick={() => setAttempt((value) => value + 1)}>
+              {messages.retry}
+            </button>
+          </div>
+        )}
+        {term.length >= 2 && !loading && !failed && total === 0 && (
           <Command.Empty className="px-3 py-10 text-center text-sm text-white/50">
             Aucune énergie détectée pour «&nbsp;
             <span className="text-dbz-orange">{term}</span>&nbsp;».

@@ -105,7 +105,13 @@ export async function GET(req: NextRequest) {
     getLaunchConfig(),
     searchExternalSources({ q, limit: 8 }),
   ]);
-  const wiki = filtrerSurAcces(results ?? empty(q), cfg);
+  // A failed database search is not an empty successful search. Never cache it.
+  if (results === null)
+    return NextResponse.json(
+      { error: "Search unavailable" },
+      { status: 503, headers: { "cache-control": "no-store", "retry-after": "5" } },
+    );
+  const wiki = filtrerSurAcces(results, cfg);
   return NextResponse.json(
     { ...wiki, sources: external.records },
     {
