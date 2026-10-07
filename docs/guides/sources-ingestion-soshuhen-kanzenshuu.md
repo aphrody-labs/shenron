@@ -4,6 +4,19 @@ Ce document technique formalise les protocoles d'ingestion, d'alignement et d'in
 1. **L'édition Sōshūhen (総集編 - Weekly Shōnen Jump Digest Edition)**
 2. **Les archives et guides de référence Kanzenshuu**
 
+> **État vérifié le 7 octobre 2026 : préparation, pas ingestion.** Les 18 fiches
+> Sōshūhen de production (`/api/manga/volume/701` à `/718`) déclarent 381 pages
+> pour le tome 1 et aucune pour les 17 suivants. Ce compte API ne prouve pas
+> encore que les fichiers sont accessibles ni que leur contenu est indexé.
+> Le script ci-dessous contient des métadonnées et des estimations non recoupées ;
+> ses dates, plages de chapitres et nombres de pages ne constituent pas un catalogue
+> éditorial validé. Par exemple, Shueisha date Legend 2 du 13 mai 2016
+> ([ISBN 9784081111664](https://www.shueisha.co.jp/books/items/contents.html?isbn=978-4-08-111166-4)),
+> alors que le script indique le 27 mai. Ne pas ingérer ces valeurs sans recoupement.
+> Les propriétés de reproduction et les comptes de commentaires présentés ci-dessous
+> restent à vérifier sur les exemplaires. La complétude exige les fichiers réels,
+> leur provenance, une pagination vérifiée et les preuves de dépôt DB et RAG.
+
 ---
 
 ## 1. Édition Sōshūhen (Shueisha, 2016–2017)
@@ -66,12 +79,15 @@ Kanzenshuu (fusion de Daizenshuu EX et Kanzentai) constitue la référence inter
 ## 3. Script Opérationnel Préparatoire
 
 Le script `scripts/ops/prepare-soshuhen-kanzenshuu-ingest.ts` permet de :
-1. Valider l'intégrité des manifestes de chapitres Sōshūhen (1 à 18).
-2. Vérifier les doublons de citations d'interviews avant insertion en base.
-3. Préparer les chunks d'ingestion RAG au format `rag_chunks` avec les bons tags d'autorité.
+1. Afficher un manifeste préparatoire de 18 tomes et ses estimations.
+2. Compter les lignes de `bot.db_manga_chapters`, toutes éditions confondues.
+3. Afficher des pistes documentaires Kanzenshuu.
+
+Il ne vérifie aucun fichier de page, aucun doublon d'interview et aucun dépôt RAG.
+Il n'écrit pas en base ; `--apply` est refusé pour éviter de confondre préparation
+et ingestion. Le succès de son exécution ne vaut pas validation de production.
 
 ### Commande d'Exécution :
 ```bash
 bun scripts/ops/prepare-soshuhen-kanzenshuu-ingest.ts --dry-run
-bun scripts/ops/prepare-soshuhen-kanzenshuu-ingest.ts --apply
 ```

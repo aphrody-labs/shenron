@@ -191,6 +191,14 @@ const SOSHUHEN_LEGENDS: SoshuhenLegendManifest[] = [
 ];
 
 async function main() {
+  if (isApply) {
+    throw new Error(
+      "Ce script ne dépose aucune page ni aucun chunk. --apply est refusé : utiliser la pipeline d’ingestion avec un manifeste de sources vérifié.",
+    );
+  }
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL requis pour le contrôle en lecture seule.");
+  }
   console.log(
     `[Shenron Ingest Protocol] Mode: ${isDryRun ? "DRY-RUN (Audit & Vérification)" : "APPLY (Écriture DB)"}`,
   );
@@ -214,7 +222,10 @@ async function main() {
       );
     }
 
-    console.log(`\n  => Total chapitres couverts : ${totalChaptersCovered} / 519 (Intégrité 100%)`);
+    console.log(
+      `\n  => Chapitres décrits par le manifeste préparatoire : ${totalChaptersCovered} / 519.`,
+    );
+    console.log("  => Aucune couverture de pages, OCR, DB ou RAG n’est prouvée par ce total.");
     console.log(`  => Estimation pages couleur Weekly Jump restituées : ${totalColorPages} pages.`);
 
     // 2. Contrôle de cohérence avec bot.db_manga_chapters
@@ -224,7 +235,9 @@ async function main() {
     const dbChapterCount = Number(dbChapters[0].count);
     console.log(`  • Chapitres actuellement en base : ${dbChapterCount}`);
     if (dbChapterCount === 519) {
-      console.log(`  ✓ Couverture 519 chapitres confirmée dans bot.db_manga_chapters.`);
+      console.log(
+        `  ℹ 519 lignes présentes toutes éditions confondues ; aucune couverture Sōshūhen prouvée.`,
+      );
     } else {
       console.log(`  ℹ Différence de volume : ${dbChapterCount} chapitres en base.`);
     }
@@ -262,7 +275,7 @@ async function main() {
     }
 
     console.log(`\n========================================================================`);
-    console.log(`Audit de préparation Sōshūhen & Kanzenshuu terminé avec succès.`);
+    console.log(`Contrôle préparatoire terminé ; ingestion et exhaustivité non vérifiées.`);
     console.log(
       `Pour plus de détails techniques, voir docs/guides/sources-ingestion-soshuhen-kanzenshuu.md`,
     );
