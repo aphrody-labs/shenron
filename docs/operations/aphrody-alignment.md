@@ -317,3 +317,12 @@ que les trois tests WARP ne terminent pas ; son processus identifié est arrêt�
 après le diagnostic borné. Elle n'est pas déclarée verte. Cette exécution
 chargeait le DXC 1.9.2607.0 présent à côté des binaires CEF. Les preuves RTX
 4070 restent distinctes de cette qualification logicielle encore ouverte.
+
+Le contrôle croisé suivant impose DXC sur la RTX 4070 : les cibles 32 × 32,
+17 × 3 et 65 × 33 passent avec tous leurs pixels exacts, d'abord avec DXC
+1.8.2502.11 du SDK Windows, puis avec DXC 1.9.2607.0 livré à côté de CEF.
+La seconde configuration passe également avec l'initialisation par défaut
+(`num_init_threads = None`), sans coarse stages CPU. Chaque processus supervisé
+termine avec le code zéro. Cela qualifie ce chemin matériel DX12/DXC et confirme
+que le réglage retiré n'est pas nécessaire pour ces scènes sur la RTX 4070 ;
+cela ne qualifie ni WARP ni l'application CEF complète.
