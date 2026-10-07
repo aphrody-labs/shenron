@@ -497,6 +497,13 @@ est un tableau. Une seconde page servie sur `127.0.0.2`, hors des origines
 autorisées, reçoit bien le refus ACL pour `get_project`. Les deux contrôles
 terminent avec succès et leurs processus supervisés sont arrêtés.
 
+Le contrôle positif est ensuite étendu à une fixture de projet portant un nom
+Unicode et un identifiant aléatoire. Via les commandes Tauri réelles, Studio
+crée le projet, vérifie son nom, le ferme, le rouvre, le ferme et le supprime.
+Le projet courant redevient absent et la liste retrouve son effectif initial ;
+la fenêtre reste réactive. Aucune identité de projet existant n'est publiée.
+Ce cycle qualifie l'état de l'éditeur par IPC, sans appel d'inférence.
+
 Cette correction reste dans le snapshot de qualification : les chemins
 desktop sont encore revendiqués par `desktop-installer` et
 `desktop-fast-launch`. Elle n'est donc pas livrée sur `main` à ce stade.
