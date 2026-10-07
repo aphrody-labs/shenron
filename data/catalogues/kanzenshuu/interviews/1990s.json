@@ -683,6 +683,58 @@
       ],
       "editorialSummary": "Toriyama répond à des questions sur l’après-série et les coulisses de plusieurs personnages. Il raconte notamment que Lunch est partie à la recherche de Tenshinhan, décrit les jumeaux C-17 et C-18 comme des délinquants enlevés par Gero et explique que le gang de Pilaf a différé ses projets de conquête du monde face à Cell.",
       "reviewStatus": "source-checked-summary-retained"
+    },
+    {
+      "id": "site-post-220-agent-mai-funimation-email-qa",
+      "url": "https://www.kanzenshuu.com/1999/02/06/agent-mai-funimation-tidbits/",
+      "title": "Q&A par courriel avec « Agent Mai » (FUNimation) — première session",
+      "publication": "Kanzenshuu, « Agent Mai » FUNimation Tidbits",
+      "publicationType": "email-interview",
+      "format": "email-interview",
+      "publicationDate": "1999-02-06",
+      "participants": [
+        "Adrian Saavedra",
+        "Agent Mai (pseudonyme déclaré; identité non confirmée)"
+      ],
+      "topics": [
+        "Directe : réponses d’un contact FUNimation sur la production, le doublage et la diffusion américaine de Dragon Ball/Dragon Ball Z."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": 10,
+      "sectionHeadings": [],
+      "sourceDescription": "Questions et réponses par courriel reproduites dans le billet; contact FUNimation anonyme sous pseudonyme, sans enregistrement oral ni identité civile connue.",
+      "editorialSummary": "Adrian Saavedra publie un échange par courriel avec un contact de FUNimation se présentant sous le pseudonyme « Agent Mai ». Les questions portent notamment sur la reprise de Dragon Ball Z, l’accord annoncé avec Cartoon Network, les responsables du financement, la distribution vidéo, les changements de comédiens, les dates de sortie envisagées, la poursuite possible de Dragon Ball et Dragon Ball Z, ainsi que le niveau de censure et la musique des épisodes. Le contact répond que les voix seraient réenregistrées en interne, que les épisodes à venir seraient moins censurés que les 53 premiers et qu’une version non censurée était espérée; plusieurs dates et plans restent alors incertains. La page précise que « Agent Mai » n’est pas son vrai nom.",
+      "reviewStatus": "summary-written-source-post-reproduces-email-qa"
+    },
+    {
+      "id": "site-post-223-agent-mai-funimation-email-qa-follow-up",
+      "url": "https://www.kanzenshuu.com/1999/04/03/agent-mai-funimation-additional-tidbits/",
+      "title": "Q&A par courriel complémentaire avec « Agent Mai » (FUNimation)",
+      "publication": "Kanzenshuu, « Agent Mai » FUNimation Additional Tidbits",
+      "publicationType": "email-interview-follow-up",
+      "format": "email-interview-follow-up",
+      "publicationDate": "1999-04-03",
+      "participants": [
+        "Adrian Saavedra",
+        "Agent Mai (pseudonyme déclaré; identité non confirmée)"
+      ],
+      "topics": [
+        "Directe : échanges avec un représentant de FUNimation sur l’adaptation, les épisodes, le doublage et les sorties Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": 12,
+      "sectionHeadings": [],
+      "sourceDescription": "Suite du Q&A par courriel publiée en deux sessions datées. Plusieurs questions sont groupées dans une même réponse; les nombres d’épisodes, calendriers et projets sont rapportés comme annonces contemporaines.",
+      "editorialSummary": "Kanzenshuu publie le 3 avril une suite de la correspondance d’Adrian Saavedra avec le contact FUNimation « Agent Mai ». Le billet reproduit d’abord une réponse datée du 5 mars sur la troisième saison de Dragon Ball Z : le contact confirme que 50 épisodes sont prévus et situe alors leur production entre les épisodes japonais 68 et 117. Il répond aussi sur l’avancement du travail, le sous-titrage, les relations avec Pioneer et les projets Dragon Ball/Dragon Ball Z. Une seconde session, datée du 26 mars, apporte des réponses sur le calendrier de diffusion et de vidéo, les films Dragon Ball, les sorties DVD et l’avenir possible des séries. Ces réponses décrivent les plans et l’état de production tels que le contact les présentait à ces dates; elles ne valent pas confirmation des réalisations ultérieures.",
+      "reviewStatus": "summary-written-source-post-reproduces-email-qa"
     }
   ]
 }

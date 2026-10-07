@@ -135,6 +135,38 @@
       },
       "forumContent": false,
       "dragonBallRelevance": "Dragon Ball Super, Anime production, Salón del Manga"
+    },
+    {
+      "id": "wired-italia-2017-toyotaro-interview",
+      "title": "Toyotarō — entretien WIRED Italia au Napoli Comicon",
+      "summary": "Kanzenshuu présente un entretien de WIRED Italia réalisé à l’occasion du Napoli Comicon. Son aperçu indique que Toyotarō y parle de son attachement à Dragon Ball depuis l’enfance, de son travail sur la série dans un rôle officiel et de l’orientation à venir de l’arc Survie de l’Univers. Le billet ne fournit pas une transcription complète : l’entretien intégral reste sur WIRED Italia. Il signale aussi une traduction anglaise attribuée à un membre de la communauté; cette traduction et les propos qui n’apparaissent pas dans le résumé éditorial de Kanzenshuu ne sont pas repris ici.",
+      "keyInformation": [
+        "Entretien de WIRED Italia avec Toyotarō, à l’occasion du Napoli Comicon.",
+        "Le résumé éditorial du billet couvre son intérêt d’enfance pour la série, son travail officiel et une allusion à la suite de l’arc Survie de l’Univers.",
+        "L’entretien complet est externe; le billet ne publie pas de transcription intégrale."
+      ],
+      "source": {
+        "publication": "WIRED Italia, entretien avec Toyotarō au Napoli Comicon",
+        "date": "2017-05-01",
+        "participants": [
+          "Toyotarō"
+        ],
+        "primarySource": "http://www.wired.it/play/fumetti/2017/05/01/toyotaro-dragon-ball-super/",
+        "kanzenshuuSitePost": {
+          "wpId": 55762,
+          "url": "https://www.kanzenshuu.com/2017/05/07/wired-italia-interview-with-toyotaro-from-napoli-comicon/",
+          "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json",
+          "reproducedFullInterview": false,
+          "summaryAndExcerpts": false,
+          "communityTranslationMentioned": true,
+          "forumContent": false
+        },
+        "formatNote": "Entretien externe résumé par Kanzenshuu; aucune transcription intégrale dans le billet. La traduction communautaire mentionnée n’est pas utilisée.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : entretien du dessinateur de Dragon Ball Super sur son rapport à la série et son travail.",
+      "status": "summary-based-on-kanzenshuu-post-external-full-interview",
+      "forumContent": false
     }
   ]
 }

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des Q&A et entretiens publiés en 1999; contenus de forum exclus.",
+  "reviewNote": "Les deux fiches Agent Mai reproduisent des échanges par courriel publiés par Kanzenshuu. Agent Mai est présenté par la source comme un pseudonyme et non comme un nom réel; les annonces et prévisions sont conservées comme déclarations contemporaines, non comme faits vérifiés après coup.",
+  "records": [
+    {
+      "id": "site-post-220-agent-mai-funimation-email-qa",
+      "kind": "email-interview",
+      "title": "Q&A par courriel avec « Agent Mai » (FUNimation) — première session",
+      "summary": "Adrian Saavedra publie un échange par courriel avec un contact de FUNimation se présentant sous le pseudonyme « Agent Mai ». Les questions portent notamment sur la reprise de Dragon Ball Z, l’accord annoncé avec Cartoon Network, les responsables du financement, la distribution vidéo, les changements de comédiens, les dates de sortie envisagées, la poursuite possible de Dragon Ball et Dragon Ball Z, ainsi que le niveau de censure et la musique des épisodes. Le contact répond que les voix seraient réenregistrées en interne, que les épisodes à venir seraient moins censurés que les 53 premiers et qu’une version non censurée était espérée; plusieurs dates et plans restent alors incertains. La page précise que « Agent Mai » n’est pas son vrai nom.",
+      "keyInformation": [
+        "Adrian Saavedra pose les questions et relaie les réponses écrites d’un contact FUNimation dont l’identité réelle n’est pas fournie.",
+        "Le contact dit que FUNimation travaille avec Cartoon Network et précise que Pioneer n’est pas impliqué dans l’accord évoqué.",
+        "Il annonce que les rôles seraient recastés et enregistrés en interne; il indique que les épisodes 1 à 53 avaient été enregistrés au Canada.",
+        "Pour les prochains épisodes, il prévoit moins de censure et espère que la musique japonaise d’origine restera dans les versions non censurées; il ne présente pas cela comme une décision définitivement arrêtée.",
+        "Les fenêtres de sortie, le financement et la suite des productions restent incertains dans les réponses du moment."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, « Agent Mai » FUNimation Tidbits",
+        "url": "https://www.kanzenshuu.com/1999/02/06/agent-mai-funimation-tidbits/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "date": "1999-02-06",
+        "participants": [
+          "Adrian Saavedra",
+          "Agent Mai (pseudonyme déclaré; identité non confirmée)"
+        ],
+        "formatNote": "Questions et réponses par courriel reproduites dans le billet; contact FUNimation anonyme sous pseudonyme, sans enregistrement oral ni identité civile connue.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : réponses d’un contact FUNimation sur la production, le doublage et la diffusion américaine de Dragon Ball/Dragon Ball Z.",
+      "status": "summary-written-source-post-reproduces-email-qa",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-223-agent-mai-funimation-email-qa-follow-up",
+      "kind": "email-interview-follow-up",
+      "title": "Q&A par courriel complémentaire avec « Agent Mai » (FUNimation)",
+      "summary": "Kanzenshuu publie le 3 avril une suite de la correspondance d’Adrian Saavedra avec le contact FUNimation « Agent Mai ». Le billet reproduit d’abord une réponse datée du 5 mars sur la troisième saison de Dragon Ball Z : le contact confirme que 50 épisodes sont prévus et situe alors leur production entre les épisodes japonais 68 et 117. Il répond aussi sur l’avancement du travail, le sous-titrage, les relations avec Pioneer et les projets Dragon Ball/Dragon Ball Z. Une seconde session, datée du 26 mars, apporte des réponses sur le calendrier de diffusion et de vidéo, les films Dragon Ball, les sorties DVD et l’avenir possible des séries. Ces réponses décrivent les plans et l’état de production tels que le contact les présentait à ces dates; elles ne valent pas confirmation des réalisations ultérieures.",
+      "keyInformation": [
+        "Le billet du 3 avril reproduit deux sessions de courriels datées du 5 et du 26 mars 1999.",
+        "Dans la session du 5 mars, Agent Mai confirme 50 épisodes planifiés pour la saison et indique une adaptation des épisodes japonais 68 à 117; la réponse dit que scripts, enregistrements et mixages avancent en parallèle.",
+        "Le contact déclare alors qu’il n’y a pas de plan pour sous-titrer Dragon Ball/Dragon Ball Z et qu’il n’y a pas de projet Dragon Ball GT.",
+        "Dans la session du 26 mars, les réponses portent entre autres sur les premières sorties vidéo non censurées, les films et les autres projets envisagés par FUNimation.",
+        "Adrian Saavedra est le questionneur; Agent Mai demeure un pseudonyme et son identité n’est pas établie par le billet."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, « Agent Mai » FUNimation Additional Tidbits",
+        "url": "https://www.kanzenshuu.com/1999/04/03/agent-mai-funimation-additional-tidbits/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "date": "1999-04-03",
+        "emailDates": [
+          "1999-03-05",
+          "1999-03-26"
+        ],
+        "participants": [
+          "Adrian Saavedra",
+          "Agent Mai (pseudonyme déclaré; identité non confirmée)"
+        ],
+        "formatNote": "Suite du Q&A par courriel publiée en deux sessions datées. Plusieurs questions sont groupées dans une même réponse; les nombres d’épisodes, calendriers et projets sont rapportés comme annonces contemporaines.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : échanges avec un représentant de FUNimation sur l’adaptation, les épisodes, le doublage et les sorties Dragon Ball.",
+      "status": "summary-written-source-post-reproduces-email-qa",
+      "forumContent": false
+    }
+  ]
+}

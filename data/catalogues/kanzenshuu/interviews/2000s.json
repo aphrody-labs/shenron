@@ -1016,6 +1016,65 @@
       "reviewStatus": "synopsis-checked-audio-pending",
       "audioDownloaded": true,
       "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-3881-podcast-episode-0180.mp3"
+    },
+    {
+      "id": "site-post-3081-podcast-episode-0135-teamfourstar",
+      "url": "https://www.kanzenshuu.com/2008/06/29/podcast-episode-0135/",
+      "title": "KaiserNeko et Lanipator — entretien sur DBZ Abridged",
+      "publication": "Kanzenshuu Podcast Episode #0135",
+      "publicationType": "Website post announcing an audio interview",
+      "format": "Audio interview",
+      "publicationDate": "2008-06-29",
+      "participants": [
+        "KaiserNeko",
+        "Lanipator",
+        "VegettoEX",
+        "Meri",
+        "Jeff"
+      ],
+      "topics": [
+        "TeamFourStar",
+        "Dragon Ball Z Abridged",
+        "fan production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le billet précise que VegettoEX, Meri et Jeff interviewent KaiserNeko et Lanipator de TeamFourStar au sujet de la genèse de DBZ Abridged et de la suite prévue. L’épisode est annoncé comme téléchargeable, mais le corps acquis ne fournit ni URL audio directe ni transcription.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Le billet annonce un entretien audio avec KaiserNeko et Lanipator, créateurs de TeamFourStar, centré sur l’origine de DBZ Abridged et leurs projets après cette première étape. La page ne transcrit pas l’échange et la copie locale n’inclut pas le fichier audio.",
+      "reviewStatus": "source-post-cross-checked-audio-transcript-pending"
+    },
+    {
+      "id": "site-post-3343-nozawa-kageyama-event-interview",
+      "url": "https://www.kanzenshuu.com/2008/11/30/special-conest-winner-movie-screening-in-japan/",
+      "title": "Masako Nozawa et Hironobu Kageyama — vœu à Shenlong",
+      "publication": "Kanzenshuu event report: Special Contest Winner Movie Screening in Japan",
+      "publicationType": "Website post reporting an event Q&A",
+      "format": "Event Q&A excerpt",
+      "publicationDate": "2008-11-30",
+      "participants": [
+        "Masako Nozawa",
+        "Hironobu Kageyama"
+      ],
+      "topics": [
+        "Dragon Ball Z",
+        "event appearance",
+        "Shenlong"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le compte rendu rapporte une question commune sur le vœu à Shenlong et résume la réponse de chaque invité; il ne reproduit pas une transcription intégrale.",
+      "questionCount": 1,
+      "sectionHeadings": [],
+      "editorialSummary": "Interrogés sur le vœu qu’ils adresseraient à Shenlong, Nozawa répond qu’elle voudrait entrer dans le Guinness Book of Records. Kageyama plaisante d’abord sur un pafu-pafu avec Kame-Sennin, puis formule le souhait de rester en bonne santé afin de continuer à chanter.",
+      "reviewStatus": "source-post-cross-checked-event-excerpt"
     }
   ]
 }

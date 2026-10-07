@@ -1273,6 +1273,38 @@
       "dragonBallRelevance": "Éclairage direct sur les métiers créatifs du film.",
       "formatNote": "Entretien collectif : quatre membres de l’équipe répondent aux questions sur le scénario, la réalisation et la production du film.",
       "archivalKind": "authorial-comment"
+    },
+    {
+      "id": "site-post-28216-funimation-community-blu-ray-qa",
+      "kind": "qa",
+      "title": "FUNimation répond aux questions de Kanzenshuu sur les Blu-ray",
+      "summary": "Kanzenshuu publie une séance de questions-réponses avec FUNimation, composée de douze questions sélectionnées parmi les soumissions de la communauté, parfois éditées, regroupées ou reformulées. Les réponses expliquent notamment la coordination avec Toei au Japon pour les illustrations de couverture et le passage des esquisses à l’art final; elles précisent que les résultats d’un sondage n’étaient qu’un facteur parmi d’autres dans les décisions de produit. FUNimation décrit aussi son recadrage manuel, plan par plan, du format 4:3 vers le 16:9, ainsi que les opérations de restauration de l’image (défauts, traces de bande, rayures, couleur, netteté et bruit) et le traitement/remixage de l’audio anglais. Après la séance, Kanzenshuu ajoute séparément son propre avis éditorial, préférant le 4:3 et le respect du grain original; ces préférences ne sont pas attribuées à FUNimation.",
+      "keyInformation": [
+        "Douze questions sélectionnées et parfois éditées, combinées ou reformulées par Kanzenshuu.",
+        "FUNimation décrit le travail sur les couvertures avec Toei et les étapes d’illustration.",
+        "Le sondage est présenté comme un élément parmi plusieurs dans les décisions éditoriales.",
+        "Le recadrage 4:3 vers 16:9 est décrit comme manuel et plan par plan.",
+        "Les réponses évoquent nettoyage/restauration de l’image et réduction du bruit/remixage de l’audio anglais.",
+        "La préférence pour le 4:3 et le grain est l’avis éditorial de Kanzenshuu après le Q&A, pas une réponse de FUNimation."
+      ],
+      "source": {
+        "publication": "Kanzenshuu — Q&A avec FUNimation",
+        "url": "https://www.kanzenshuu.com/2013/12/31/funimation-responds-to-kanzenshuu-community-blu-ray-questions/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2013.json",
+        "date": "2013-12-31",
+        "participants": [
+          "FUNimation (répondant institutionnel)",
+          "Kanzenshuu (sélection et rédaction des questions)"
+        ],
+        "questionAnswerCount": 12,
+        "detectedQuestionBlocks": 12,
+        "detectedAnswerBlocks": 12,
+        "formatNote": "Douze questions-réponses publiées; les questions proviennent de soumissions communautaires sélectionnées et parfois éditées ou regroupées. L’avis final de Kanzenshuu est distingué des réponses.",
+        "forumContent": false
+      },
+      "formatNote": "Q&A institutionnel publié; contributions communautaires non reproduites comme messages de forum.",
+      "dragonBallRelevance": "Directe : décisions de restauration, de présentation et de production des éditions vidéo Dragon Ball.",
+      "forumContent": false
     }
   ]
 }
