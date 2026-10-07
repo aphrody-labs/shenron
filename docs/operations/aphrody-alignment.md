@@ -326,3 +326,19 @@ La seconde configuration passe également avec l'initialisation par défaut
 termine avec le code zéro. Cela qualifie ce chemin matériel DX12/DXC et confirme
 que le réglage retiré n'est pas nécessaire pour ces scènes sur la RTX 4070 ;
 cela ne qualifie ni WARP ni l'application CEF complète.
+
+Le lancement natif de `shenron-desktop.exe` présent sur Windows est ensuite
+testé contre un serveur HTTP loopback synthétique. Après 10 s, puis lors d'un
+second essai de 30 s avec capture des traces, la fenêtre `Shenron Studio`
+possède un handle non nul et répond. Le serveur reçoit `/robots.txt`, mais
+aucune requête de page `/` : la navigation n'est donc pas qualifiée. CEF
+signale `Timeout of new browser info response for frame`. Les processus
+supervisés sont terminés après chaque essai.
+
+Les variables de processus `APPDATA` et `LOCALAPPDATA` ne constituent pas
+une isolation du profil CEF sur ce poste : la résolution native conserve le
+cache de l'application sous le dossier utilisateur Windows. Aucun profil,
+cookie ou store existant n'est supprimé. Les prochains essais doivent utiliser
+un chemin de cache explicite du runtime. Aucun `shenron-server.exe` n'étant
+présent à côté du binaire inspecté, cette preuve ne qualifie pas non plus le
+paquet autonome complet ni son installation.
