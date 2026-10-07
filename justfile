@@ -90,6 +90,11 @@ bun-format-check:
 dev-site:
     bun --filter @shenron/site dev
 
+# Remote dev on the build VPS: up | gates [--rust] | dev | stop | sync | doctor | clean-wsl | backup
+[group('bun')]
+remote *args="up":
+    bun scripts/dev/remote-dev.ts {{args}}
+
 # Discord bot in watch mode
 [group('bun')]
 dev-bot:

@@ -86,7 +86,8 @@ export default async function StatsPage() {
         Corpus &amp; Base de Savoir DBFR
       </h2>
       <p className="text-sm text-white/50 mb-5">
-        Volumétrie des sources primaires, databooks et connaissances vectorisées par l&apos;IA Shenron.
+        Volumétrie des sources primaires, databooks et connaissances vectorisées par l&apos;IA
+        Shenron.
       </p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard

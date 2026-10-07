@@ -129,7 +129,10 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
         case "l":
         case "arrowright":
           e.preventDefault();
-          video.currentTime = Math.min(video.duration || Infinity, video.currentTime + (e.key === "l" ? 10 : 5));
+          video.currentTime = Math.min(
+            video.duration || Infinity,
+            video.currentTime + (e.key === "l" ? 10 : 5),
+          );
           break;
         case "f":
           e.preventDefault();

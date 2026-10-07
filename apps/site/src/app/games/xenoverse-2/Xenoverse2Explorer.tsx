@@ -69,14 +69,22 @@ export default function Xenoverse2Explorer() {
       for (let index = 0; index < supported.length; index += 1) {
         const { file, format } = supported[index]!;
         if (file.size > MAX_FILE_BYTES) {
-          next.push({ name: file.webkitRelativePath || file.name, bytes: file.size, error: "oversize" });
+          next.push({
+            name: file.webkitRelativePath || file.name,
+            bytes: file.size,
+            error: "oversize",
+          });
         } else {
           try {
             const bytes = new Uint8Array(await file.arrayBuffer());
             const result = parseGameDataFile(format, bytes);
             next.push({ name: file.webkitRelativePath || file.name, bytes: file.size, result });
           } catch {
-            next.push({ name: file.webkitRelativePath || file.name, bytes: file.size, error: "invalid" });
+            next.push({
+              name: file.webkitRelativePath || file.name,
+              bytes: file.size,
+              error: "invalid",
+            });
           }
         }
         if (index % 8 === 7 || index === supported.length - 1) {
@@ -101,7 +109,10 @@ export default function Xenoverse2Explorer() {
   }
 
   const parsedCount = reports.filter((report) => report.result).length;
-  const recordCount = reports.reduce((total, report) => total + (report.result?.recordCount ?? 0), 0);
+  const recordCount = reports.reduce(
+    (total, report) => total + (report.result?.recordCount ?? 0),
+    0,
+  );
 
   return (
     <div className="space-y-6">
@@ -123,7 +134,9 @@ export default function Xenoverse2Explorer() {
           aria-label={t("communaute.jeux.xenoverse.chooseFolder")}
         />
         <button type="button" className={BTN_PRIMARY} onClick={chooseDirectory} disabled={busy}>
-          {busy ? t("communaute.jeux.xenoverse.scanning") : t("communaute.jeux.xenoverse.chooseFolder")}
+          {busy
+            ? t("communaute.jeux.xenoverse.scanning")
+            : t("communaute.jeux.xenoverse.chooseFolder")}
         </button>
         <p className="text-xs leading-relaxed text-white/55">
           {t("communaute.jeux.xenoverse.privacy")}
@@ -133,7 +146,11 @@ export default function Xenoverse2Explorer() {
             {t("communaute.jeux.xenoverse.progress", progress)}
           </p>
         )}
-        {error && <p role="alert" className="text-sm text-red-300">{error}</p>}
+        {error && (
+          <p role="alert" className="text-sm text-red-300">
+            {error}
+          </p>
+        )}
       </section>
 
       {reports.length > 0 && (
@@ -153,9 +170,14 @@ export default function Xenoverse2Explorer() {
           )}
           <ul className="space-y-3">
             {reports.map((report) => (
-              <li key={`${report.name}:${report.bytes}`} className="rounded-lg border border-white/10 bg-black/20 p-4">
+              <li
+                key={`${report.name}:${report.bytes}`}
+                className="rounded-lg border border-white/10 bg-black/20 p-4"
+              >
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <h3 className="break-all font-mono text-sm font-semibold text-white">{report.name}</h3>
+                  <h3 className="break-all font-mono text-sm font-semibold text-white">
+                    {report.name}
+                  </h3>
                   {report.result ? (
                     <span className="text-sm text-dbz-green">
                       {t("communaute.jeux.xenoverse.fileResult", {
@@ -172,7 +194,9 @@ export default function Xenoverse2Explorer() {
                 {report.result && (
                   <details className="mt-3">
                     <summary className="cursor-pointer text-sm text-white/65">
-                      {t("communaute.jeux.xenoverse.preview", { count: report.result.preview.length })}
+                      {t("communaute.jeux.xenoverse.preview", {
+                        count: report.result.preview.length,
+                      })}
                     </summary>
                     <pre className="mt-3 max-h-96 overflow-auto rounded-md bg-black/35 p-3 text-xs leading-relaxed text-white/75">
                       {JSON.stringify(report.result.preview, null, 2)}

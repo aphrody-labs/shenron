@@ -52,7 +52,9 @@ interface GpuBenchmarkResult {
 }
 
 async function runGpuBenchmark(queries: string[]): Promise<GpuBenchmarkResult> {
-  console.log(`⚡ [GPU] Démarrage du banc CUDA sur NVIDIA RTX 4070 pour ${queries.length} requêtes...`);
+  console.log(
+    `⚡ [GPU] Démarrage du banc CUDA sur NVIDIA RTX 4070 pour ${queries.length} requêtes...`,
+  );
 
   const pyScript = `
 import torch
@@ -132,7 +134,9 @@ async function runShenronRetrieval(
   client: AphrodyComputeClient,
   concurrency = 3,
 ): Promise<{ results: CaseResult[]; modes: Record<string, number>; elapsedMs: number }> {
-  console.log(`🔍 [Retrieval] Évaluation de ${gold.length} cas dorés (concurrence ${concurrency})...`);
+  console.log(
+    `🔍 [Retrieval] Évaluation de ${gold.length} cas dorés (concurrence ${concurrency})...`,
+  );
   const t0 = performance.now();
   const results: CaseResult[] = [];
   const modes: Record<string, number> = {};
@@ -156,7 +160,9 @@ async function runShenronRetrieval(
         } catch (err: any) {
           retries--;
           if (retries === 0) {
-            console.error(`  ✗ [Worker ${id}] Échec définitif cas ${idx} (${testCase.q}): ${err.message}`);
+            console.error(
+              `  ✗ [Worker ${id}] Échec définitif cas ${idx} (${testCase.q}): ${err.message}`,
+            );
             res = {
               case: testCase,
               rank: 0,
@@ -206,7 +212,9 @@ async function syncToDiscordDebate(
   retrievalElapsedMs: number,
   modes: Record<string, number>,
 ) {
-  console.log(`📢 [Discord] Publication des résultats dans le salon #debat (${DISCORD_CHANNEL_ID})...`);
+  console.log(
+    `📢 [Discord] Publication des résultats dans le salon #debat (${DISCORD_CHANNEL_ID})...`,
+  );
 
   const r1 = agg.recall[1] * 100;
   const r3 = agg.recall[3] * 100;
@@ -222,8 +230,7 @@ async function syncToDiscordDebate(
       icon_url: "https://dragonballfr.com/favicon.ico",
     },
     title: `🎯 Benchmarking Retrieval : ${casesCount} cas dorés évalués`,
-    description:
-      `*Évaluation autonome haute précision exécutée sur l'accélérateur matériel local et synchronisée dans le salon Débat.*`,
+    description: `*Évaluation autonome haute précision exécutée sur l'accélérateur matériel local et synchronisée dans le salon Débat.*`,
     fields: [
       {
         name: "📊 Qualité de Récupération (Retrieval Accuracy)",
@@ -253,7 +260,9 @@ async function syncToDiscordDebate(
         value: [
           `• **Chunks Indexés :** \`${stats.chunks.toLocaleString("fr-FR")}\` documents`,
           `• **Vecteurs Denses :** \`${stats.vectors.toLocaleString("fr-FR")}\` embeddings (E5 384d)`,
-          `• **Modes de Retrieval :** \`${Object.entries(modes).map(([m, c]) => `${m}: ${c}`).join(" · ")}\``,
+          `• **Modes de Retrieval :** \`${Object.entries(modes)
+            .map(([m, c]) => `${m}: ${c}`)
+            .join(" · ")}\``,
           `• **Durée Totale Retrieval :** \`${(retrievalElapsedMs / 1000).toFixed(1)} s\` (\`${Math.round(retrievalElapsedMs / casesCount)} ms/requête\`)`,
           `• **Statut Gate CI (R@5 ≥ 80%) :** ${r5 >= 80 ? "✅ **VALIDÉ (PASS)**" : "❌ **RÉGRESSION**"}`,
         ].join("\n"),
@@ -266,17 +275,20 @@ async function syncToDiscordDebate(
     timestamp: new Date().toISOString(),
   };
 
-  const response = await fetch(`https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages`, {
-    method: "POST",
-    headers: {
-      authorization: `Bot ${token}`,
-      "content-type": "application/json",
+  const response = await fetch(
+    `https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bot ${token}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        content: `🐉 **[Shenron RAG Audit]** Évaluation complète du Retrieval & Accélération GPU terminée avec succès.`,
+        embeds: [embed],
+      }),
     },
-    body: JSON.stringify({
-      content: `🐉 **[Shenron RAG Audit]** Évaluation complète du Retrieval & Accélération GPU terminée avec succès.`,
-      embeds: [embed],
-    }),
-  });
+  );
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -308,7 +320,9 @@ async function main() {
     throw new Error("Aphrody RAG est indisponible sur 127.0.0.1:8791");
   }
   const stats = await client.ragStats();
-  console.log(`✓ Aphrody RAG en ligne : ${stats.chunks} chunks, ${stats.vectors} vecteurs denses.\n`);
+  console.log(
+    `✓ Aphrody RAG en ligne : ${stats.chunks} chunks, ${stats.vectors} vecteurs denses.\n`,
+  );
 
   // 2. Chargement du dataset doré
   const goldText = await Bun.file(GOLD_PATH).text();

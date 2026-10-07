@@ -310,7 +310,9 @@ async function xenoverseWasmProbe(): Promise<string[]> {
       queue.push(`/_next/${match[0]}`);
   }
   if (!filename) {
-    console.log(`ERR WASM shenron-re : aucun chunk Xenoverse ne référence le binaire (${seen.size} lus)`);
+    console.log(
+      `ERR WASM shenron-re : aucun chunk Xenoverse ne référence le binaire (${seen.size} lus)`,
+    );
     return ["/games/xenoverse-2 (wasm)"];
   }
 
@@ -319,7 +321,8 @@ async function xenoverseWasmProbe(): Promise<string[]> {
     const response = await fetch(url, { headers: { origin: SITE } }).catch(() => null);
     const type = response?.headers.get("content-type")?.split(";")[0]?.trim();
     const cache = response?.headers.get("cache-control") ?? "";
-    const cors = url.startsWith(SITE) || response?.headers.get("access-control-allow-origin") != null;
+    const cors =
+      url.startsWith(SITE) || response?.headers.get("access-control-allow-origin") != null;
     const valid = response?.ok ? WebAssembly.validate(await response.bytes()) : false;
     console.log(`${response?.status ?? "ERR"} ${type ?? "-"} ${cache || "-"} ${url}`);
     if (type !== "application/wasm" || !/immutable/.test(cache) || !cors || !valid)

@@ -45,13 +45,7 @@ export class AdminLabListener {
         message.channelId === APHRODY_DISCORD.adminConsoleChannelId ||
         message.channelId === APHRODY_DISCORD.startHereChannelId);
 
-    if (
-      !isLabGuild ||
-      !isLabChannel ||
-      message.author.bot ||
-      message.webhookId
-    )
-      return;
+    if (!isLabGuild || !isLabChannel || message.author.bot || message.webhookId) return;
     const authorized =
       isBotOwner(message.author.id) ||
       message.member?.permissions.has(PermissionFlagsBits.Administrator);

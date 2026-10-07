@@ -1088,7 +1088,11 @@ export default function DragonPixelGame() {
       ctx.fillStyle = "#f8fafc";
       ctx.shadowColor = "#000000";
       ctx.shadowBlur = 4;
-      ctx.fillText(`POWER BALANCE: ${Math.round(m.powerBalance)}% • METEOR SMASH AT 100%`, 640, pbY + 16);
+      ctx.fillText(
+        `POWER BALANCE: ${Math.round(m.powerBalance)}% • METEOR SMASH AT 100%`,
+        640,
+        pbY + 16,
+      );
       ctx.restore();
     }
 
@@ -1141,7 +1145,11 @@ export default function DragonPixelGame() {
         ctx.font = "800 14px 'Noto Sans JP', sans-serif";
         ctx.fillStyle = "#94a3b8";
         ctx.textAlign = "right";
-        ctx.fillText("▶ Appuyez sur Espace ou Touchez l'écran pour continuer", boxX + boxW - 28, boxY + 115);
+        ctx.fillText(
+          "▶ Appuyez sur Espace ou Touchez l'écran pour continuer",
+          boxX + boxW - 28,
+          boxY + 115,
+        );
 
         ctx.restore();
       }
@@ -1362,7 +1370,13 @@ export default function DragonPixelGame() {
       }
       if (e.key === "Tab" || e.key === "v" || e.key === "V") {
         e.preventDefault();
-        const dims: MultiverseDimension[] = ["xenoverse", "fighterz", "butoden", "tenkaichi", "legend"];
+        const dims: MultiverseDimension[] = [
+          "xenoverse",
+          "fighterz",
+          "butoden",
+          "tenkaichi",
+          "legend",
+        ];
         const m = gameStateRef.current.multiverse;
         const idx = (dims.indexOf(m.dimension) + 1) % dims.length;
         m.dimension = dims[idx];
@@ -1428,7 +1442,13 @@ export default function DragonPixelGame() {
         const clickY = ((e.clientY - rect.top) / rect.height) * 720;
 
         if (clickX >= 440 && clickX <= 840 && clickY >= 14 && clickY <= 82) {
-          const dims: MultiverseDimension[] = ["xenoverse", "fighterz", "butoden", "tenkaichi", "legend"];
+          const dims: MultiverseDimension[] = [
+            "xenoverse",
+            "fighterz",
+            "butoden",
+            "tenkaichi",
+            "legend",
+          ];
           const m = gameStateRef.current.multiverse;
           const idx = (dims.indexOf(m.dimension) + 1) % dims.length;
           m.dimension = dims[idx];
@@ -1439,7 +1459,16 @@ export default function DragonPixelGame() {
         }
       }
     },
-    [inDialogue, gameStatus, selectedChapter, handleNextDialogue, handleStartChapter, handleRestart, playSound, spawnOnomatopoeia],
+    [
+      inDialogue,
+      gameStatus,
+      selectedChapter,
+      handleNextDialogue,
+      handleStartChapter,
+      handleRestart,
+      playSound,
+      spawnOnomatopoeia,
+    ],
   );
 
   return (

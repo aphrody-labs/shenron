@@ -49,8 +49,7 @@ export const metadata: Metadata = {
     "Dragon Ball en français : personnages, sagas, films, manga et actualités, sourcés sur le manga.",
   ...ogMeta({
     title: "DBFR — L'encyclopédie Dragon Ball",
-    description:
-      "Dragon Ball en français : personnages, sagas, films, manga et actualités.",
+    description: "Dragon Ball en français : personnages, sagas, films, manga et actualités.",
     type: "website",
     canonical: "/",
   }),

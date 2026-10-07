@@ -41,17 +41,21 @@ describe("shenron-re WASM pipeline", () => {
     expect(fighterZ?.developer).toBe("Arc System Works");
 
     // Android games validation
-    const legends = catalog.find((g) => g.android_package_ids.includes("com.bandainamcoent.dblegends_ww"));
+    const legends = catalog.find((g) =>
+      g.android_package_ids.includes("com.bandainamcoent.dblegends_ww"),
+    );
     expect(legends).toBeDefined();
     expect(legends?.engine).toBe("unity");
 
-    const dokkan = catalog.find((g) => g.android_package_ids.includes("com.bandainamcoent.dbszdokkanww"));
+    const dokkan = catalog.find((g) =>
+      g.android_package_ids.includes("com.bandainamcoent.dbszdokkanww"),
+    );
     expect(dokkan).toBeDefined();
     expect(dokkan?.engine).toBe("cocos2dx");
   });
 
   test("scans memory signatures via wasm_scan_aob", () => {
-    const memory = new Uint8Array([0x90, 0x48, 0x89, 0x5C, 0x24, 0x10, 0xC3]);
+    const memory = new Uint8Array([0x90, 0x48, 0x89, 0x5c, 0x24, 0x10, 0xc3]);
     const matches = scanAob(memory, "48 89 ?? 24");
     expect(matches).toEqual([1]);
   });
@@ -90,7 +94,7 @@ describe("shenron-re WASM pipeline", () => {
     const buffer = new Uint8Array(4096);
     const view = new DataView(buffer.buffer);
 
-    buffer.set([0x43, 0x50, 0x4B, 0x20], 0); // "CPK "
+    buffer.set([0x43, 0x50, 0x4b, 0x20], 0); // "CPK "
     const tocOffset = 512;
     const contentOffset = 2048;
 
@@ -204,7 +208,7 @@ describe("shenron-re WASM pipeline", () => {
 
     const compressed = new Uint8Array(16 + 0x100 + stream.length);
     const view = new DataView(compressed.buffer);
-    compressed.set([0x43, 0x52, 0x49, 0x4C, 0x41, 0x59, 0x4C, 0x41], 0);
+    compressed.set([0x43, 0x52, 0x49, 0x4c, 0x41, 0x59, 0x4c, 0x41], 0);
     view.setUint32(8, payload.length, true);
     view.setUint32(12, 0, true);
     compressed.set(original.subarray(0, 0x100), 16);
@@ -222,7 +226,7 @@ describe("shenron-re WASM pipeline", () => {
     const buffer = new Uint8Array(headerSize + count * entrySize);
     const view = new DataView(buffer.buffer);
 
-    buffer.set([0x23, 0x42, 0x44, 0x4D], 0); // "#BDM"
+    buffer.set([0x23, 0x42, 0x44, 0x4d], 0); // "#BDM"
     view.setUint32(4, 1, true); // version
     view.setUint32(8, count, true);
     view.setUint32(12, headerSize, true);
@@ -319,7 +323,7 @@ describe("shenron-re WASM pipeline", () => {
     const buffer = new Uint8Array(headerSize + totalTextLen);
     const view = new DataView(buffer.buffer);
 
-    buffer.set([0x23, 0x4D, 0x53, 0x47], 0); // "#MSG"
+    buffer.set([0x23, 0x4d, 0x53, 0x47], 0); // "#MSG"
     view.setUint32(4, 1, true);
     view.setUint32(8, lines.length, true);
     view.setUint32(12, headerSize, true);
@@ -337,4 +341,3 @@ describe("shenron-re WASM pipeline", () => {
     expect(msg.entries[1]?.lines[0]).toBe("Super Saiyan");
   });
 });
-

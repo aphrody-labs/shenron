@@ -66,6 +66,18 @@ export const SHENRON_RE_SYMBOLS = {
     args: [],
     returns: "ptr",
   },
+  shenron_re_live_process_find: {
+    args: ["cstring"],
+    returns: "ptr",
+  },
+  shenron_re_live_battle_read: {
+    args: ["u32", "u64"],
+    returns: "ptr",
+  },
+  shenron_re_unified_state_json: {
+    args: ["ptr", "usize", "ptr", "usize", "ptr", "usize", "ptr", "usize", "u32"],
+    returns: "ptr",
+  },
 } as const;
 
 export type ShenronReLibrary = ReturnType<typeof dlopen<typeof SHENRON_RE_SYMBOLS>>;
@@ -105,7 +117,7 @@ export function getShenronReLibrary(): ShenronReLibrary {
   const libPath = resolveShenronReLibraryPath();
   if (!libPath) {
     throw new Error(
-      `Could not locate libshenron_re.${suffix}. Build it with 'cargo build -p shenron-re' or set SHENRON_RE_LIB.`
+      `Could not locate libshenron_re.${suffix}. Build it with 'cargo build -p shenron-re' or set SHENRON_RE_LIB.`,
     );
   }
 
@@ -185,7 +197,7 @@ export function reExtractCpkFile(archive: Uint8Array, filename: string): Uint8Ar
     ptr(archive),
     archive.byteLength,
     ptr(filenameCstr),
-    ptr(outLenBuf)
+    ptr(outLenBuf),
   );
 
   if (!outPtr || outPtr === 0) return null;
@@ -274,4 +286,123 @@ export function reCatalog(): unknown {
   const lib = getShenronReLibrary();
   const raw = lib.symbols.shenron_re_catalog_json();
   return readJsonAndFree(lib, raw);
+}
+
+export interface LiveProcessFindResult {
+  found: boolean;
+  pid?: number;
+  base_address?: string;
+  regions_count?: number;
+}
+
+export interface LiveBattleCharacter {
+  address: number;
+  character_id: number;
+  costume_id: number;
+  current_hp: number;
+  max_hp: number;
+  current_ki: number;
+  max_ki: number;
+  current_stamina: number;
+  max_stamina: number;
+  transform_state: number;
+}
+
+export interface ResolvedSkill {
+  id: number;
+  name: string;
+  category: string;
+  ki_cost: number;
+  total_hits: number;
+  base_damage: number;
+}
+
+export interface UnifiedCharacterProfile {
+  cac: Dxbv2Cac;
+  super_skills: ResolvedSkill[];
+  ultimate_skills: ResolvedSkill[];
+  evasive_skills: ResolvedSkill[];
+  awoken_skill?: ResolvedSkill;
+  live_status?: LiveBattleCharacter;
+}
+
+export interface Dbxv2UnifiedState {
+  game_title: string;
+  steam_app_id: number;
+  timestamp: string;
+  save_overview?: {
+    signature: string;
+    zeni: number;
+    tp_medals: number;
+    total_cacs: number;
+  };
+  characters: UnifiedCharacterProfile[];
+  binary_re?: {
+    executable_path: string;
+    size_bytes: number;
+    is_pe: boolean;
+    header_entropy: number;
+    total_analyzed_functions: number;
+    sample_functions: Array<{
+      va: string;
+      name: string;
+      return_type: string;
+      size: number;
+    }>;
+  };
+  live_wine?: {
+    pid: number;
+    process_name: string;
+    base_address: string;
+    mapped_regions_count: number;
+    active_combatant?: LiveBattleCharacter;
+  };
+}
+
+/** Find running process (e.g. DBXV2.exe under Wine) and inspect its memory maps. */
+export function reLiveProcessFind(processName: string): LiveProcessFindResult {
+  const lib = getShenronReLibrary();
+  const nameCstr = new TextEncoder().encode(`${processName}\0`);
+  const raw = lib.symbols.shenron_re_live_process_find(ptr(nameCstr));
+  return readJsonAndFree<LiveProcessFindResult>(lib, raw);
+}
+
+/** Read live combat telemetry from process memory. */
+export function reLiveBattleRead(pid: number, address: bigint | number): LiveBattleCharacter {
+  const lib = getShenronReLibrary();
+  const raw = lib.symbols.shenron_re_live_battle_read(pid, BigInt(address));
+  return readJsonAndFree<LiveBattleCharacter>(lib, raw);
+}
+
+/** Synthesize unified Xenoverse 2 state across save, assets, RE and live memory. */
+export function reUnifiedState(options: {
+  saveData?: Uint8Array;
+  cusData?: Uint8Array;
+  bacData?: Uint8Array;
+  bdmData?: Uint8Array;
+  pid?: number;
+}): Dbxv2UnifiedState {
+  const lib = getShenronReLibrary();
+  const savePtr = options.saveData ? ptr(options.saveData) : null;
+  const saveLen = options.saveData ? options.saveData.byteLength : 0;
+  const cusPtr = options.cusData ? ptr(options.cusData) : null;
+  const cusLen = options.cusData ? options.cusData.byteLength : 0;
+  const bacPtr = options.bacData ? ptr(options.bacData) : null;
+  const bacLen = options.bacData ? options.bacData.byteLength : 0;
+  const bdmPtr = options.bdmData ? ptr(options.bdmData) : null;
+  const bdmLen = options.bdmData ? options.bdmData.byteLength : 0;
+  const pid = options.pid ?? 0;
+
+  const raw = lib.symbols.shenron_re_unified_state_json(
+    savePtr,
+    saveLen,
+    cusPtr,
+    cusLen,
+    bacPtr,
+    bacLen,
+    bdmPtr,
+    bdmLen,
+    pid,
+  );
+  return readJsonAndFree<Dbxv2UnifiedState>(lib, raw);
 }

@@ -6,6 +6,8 @@ import {
   reTriage,
   reParseSave,
   reCatalog,
+  reLiveProcessFind,
+  reUnifiedState,
   resolveShenronReLibraryPath,
 } from "../src/re";
 
@@ -68,5 +70,17 @@ describe("shenron-re Bun FFI", () => {
     const dbxv2 = catalog.find((g) => g.id === "dbxv2");
     expect(dbxv2).toBeDefined();
     expect(dbxv2?.title).toBe("Dragon Ball Xenoverse 2");
+  });
+
+  it("handles live process search via FFI", () => {
+    const res = reLiveProcessFind("DBXV2_NonExistent.exe");
+    expect(res.found).toBe(false);
+  });
+
+  it("builds unified state snapshot via FFI", () => {
+    const state = reUnifiedState({});
+    expect(state.game_title).toBe("Dragon Ball Xenoverse 2");
+    expect(state.steam_app_id).toBe(454650);
+    expect(Array.isArray(state.characters)).toBe(true);
   });
 });

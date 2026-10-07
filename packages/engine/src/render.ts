@@ -182,7 +182,8 @@ export class EngineRenderer {
       ctx.textAlign = "center";
       ctx.font = "bold 36px sans-serif";
       ctx.fillStyle = "#facc15";
-      const winText = ui.winner === 1 ? "PLAYER 1 WINS!" : ui.winner === 2 ? "PLAYER 2 WINS!" : "DRAW!";
+      const winText =
+        ui.winner === 1 ? "PLAYER 1 WINS!" : ui.winner === 2 ? "PLAYER 2 WINS!" : "DRAW!";
       ctx.fillText(winText, width / 2, height / 2 - 20);
     }
 

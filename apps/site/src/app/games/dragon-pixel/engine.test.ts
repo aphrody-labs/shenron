@@ -144,4 +144,3 @@ test("the legend power balance meter triggers meteor smash at 100", () => {
   expect(g.multiverse.powerBalance).toBe(0); // Reset after smash
   expect(g.score).toBeGreaterThanOrEqual(1000);
 });
-

@@ -4,7 +4,10 @@
 /**
  * Decompress a CRILAYLA compressed buffer into raw uncompressed bytes.
  */
-export function wasm_decompress_crilayla(compressed: Uint8Array, uncompressed_size: number): Uint8Array;
+export function wasm_decompress_crilayla(
+  compressed: Uint8Array,
+  uncompressed_size: number,
+): Uint8Array;
 
 /**
  * Extract a single file from a CPK archive by name (transparently decompressing CRILAYLA if needed).
@@ -54,23 +57,37 @@ export function wasm_triage_cpk(bytes: Uint8Array): any;
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
-    readonly memory: WebAssembly.Memory;
-    readonly wasm_decompress_crilayla: (a: number, b: number, c: number) => [number, number, number, number];
-    readonly wasm_extract_cpk_file: (a: number, b: number, c: number, d: number) => [number, number, number, number];
-    readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
-    readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
-    readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
-    readonly wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];
-    readonly wasm_triage_cpk: (a: number, b: number) => [number, number, number];
-    readonly __wbindgen_malloc: (a: number, b: number) => number;
-    readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-    readonly __wbindgen_externrefs: WebAssembly.Table;
-    readonly __externref_table_dealloc: (a: number) => void;
-    readonly __wbindgen_free: (a: number, b: number, c: number) => void;
-    readonly __wbindgen_start: () => void;
+  readonly memory: WebAssembly.Memory;
+  readonly wasm_decompress_crilayla: (
+    a: number,
+    b: number,
+    c: number,
+  ) => [number, number, number, number];
+  readonly wasm_extract_cpk_file: (
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+  ) => [number, number, number, number];
+  readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
+  readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
+  readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
+  readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
+  readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
+  readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
+  readonly wasm_scan_aob: (
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+  ) => [number, number, number, number];
+  readonly wasm_triage_cpk: (a: number, b: number) => [number, number, number];
+  readonly __wbindgen_malloc: (a: number, b: number) => number;
+  readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+  readonly __wbindgen_externrefs: WebAssembly.Table;
+  readonly __externref_table_dealloc: (a: number) => void;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+  readonly __wbindgen_start: () => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;
@@ -93,4 +110,9 @@ export function initSync(module: { module: SyncInitInput } | SyncInitInput): Ini
  *
  * @returns {Promise<InitOutput>}
  */
-export default function __wbg_init (module_or_path?: { module_or_path: InitInput | Promise<InitInput> } | InitInput | Promise<InitInput>): Promise<InitOutput>;
+export default function __wbg_init(
+  module_or_path?:
+    | { module_or_path: InitInput | Promise<InitInput> }
+    | InitInput
+    | Promise<InitInput>,
+): Promise<InitOutput>;

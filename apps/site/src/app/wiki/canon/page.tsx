@@ -100,23 +100,39 @@ export default async function CanonPage({
       {/* Télémétrie en direct du corpus DBFR */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-emerald-500/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-emerald-400">Extraits RAG</p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">241 558</p>
+          <p className="font-scouter text-[10px] uppercase tracking-wider text-emerald-400">
+            Extraits RAG
+          </p>
+          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
+            241 558
+          </p>
           <p className="text-[11px] text-white/50">Vectorisés &amp; sourcés</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-dbz-orange/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-dbz-orange">Citations Canon</p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">6 905</p>
+          <p className="font-scouter text-[10px] uppercase tracking-wider text-dbz-orange">
+            Citations Canon
+          </p>
+          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
+            6 905
+          </p>
           <p className="text-[11px] text-white/50">Toriyama &amp; guides</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-dbz-gold/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-dbz-gold">Planches Databooks</p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">33 738</p>
+          <p className="font-scouter text-[10px] uppercase tracking-wider text-dbz-gold">
+            Planches Databooks
+          </p>
+          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
+            33 738
+          </p>
           <p className="text-[11px] text-white/50">Daizenshuu &amp; SEG</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-center sm:text-left transition-colors hover:border-blue-400/40">
-          <p className="font-scouter text-[10px] uppercase tracking-wider text-blue-400">Pages Manga</p>
-          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">11 213</p>
+          <p className="font-scouter text-[10px] uppercase tracking-wider text-blue-400">
+            Pages Manga
+          </p>
+          <p className="font-display text-xl sm:text-2xl font-bold text-white tabular-nums">
+            11 213
+          </p>
           <p className="text-[11px] text-white/50">922 chapitres · 254 tomes</p>
         </div>
       </div>

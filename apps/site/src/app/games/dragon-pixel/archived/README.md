@@ -3,6 +3,7 @@
 Ce dossier conserve l'ancien prototype procédural `Canvas2D` (`DragonPixelGame.deprecated-canvas2d.tsx`).
 
 ### Raison de l'archivage & Interdiction stricte
+
 - **Interdiction** : Le rendu procédural à base de rectangles `ctx.fillRect` et d'arcs mathématiques est formellement interdit pour Dragon Pixel.
 - **Remplacement** : Remplacé par le véritable moteur Dragon Pixel authentique :
   1. Assets et sprites rétro authentiques extraits par rétro-ingénierie (RE) des conteneurs du monorepo et du VPS.

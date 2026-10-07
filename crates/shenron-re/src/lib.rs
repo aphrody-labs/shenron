@@ -13,6 +13,7 @@ pub mod inventory;
 pub mod live;
 pub mod steam;
 pub mod text;
+pub mod unified;
 pub mod world;
 
 #[cfg(any(feature = "wasm", target_arch = "wasm32", test))]
@@ -53,6 +54,10 @@ pub use steam::{
     scan_dragon_ball_installs,
 };
 pub use world::xenoverse3::{Xenoverse3Map, xenoverse3_prototype_map};
+pub use unified::{
+    BinaryFunctionEntry, BinaryReOverview, Dbxv2UnifiedState, LiveWineOverview, ResolvedSkill,
+    SaveOverview, UnifiedCharacterProfile,
+};
 
 /// Version of the shenron-re reverse engineering engine.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

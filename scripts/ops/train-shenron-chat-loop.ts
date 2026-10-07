@@ -6,7 +6,7 @@
  * 2. Génération / enrichment continu des rollouts de chat (build-chat-rollouts.ts).
  * 3. Entraînement LoRA / SFT itératif (aphrody-train).
  * 4. Évaluation sur le jeu de test gold et reporting des métriques.
- * 
+ *
  * Usage:
  *   bun scripts/ops/train-shenron-chat-loop.ts [--batch 50] [--sleep-sec 30] [--teacher aphrody|antigravity]
  */
@@ -20,7 +20,8 @@ const home = homedir();
 const defaultTriples = join(home, ".aphrody/workspaces/dbfr/training/triples.jsonl");
 const defaultSoul = join(home, ".aphrody/workspaces/dbfr/SOUL.md");
 const outDir = join(home, ".aphrody/private/training/shenron/chat");
-const fallbackTriples = "C:\\Users\\omara\\.shenron-plugin\\dbfr\\shenron-trained\\training\\triples.jsonl";
+const fallbackTriples =
+  "C:\\Users\\omara\\.shenron-plugin\\dbfr\\shenron-trained\\training\\triples.jsonl";
 const fallbackSoul = "C:\\Users\\omara\\.shenron-plugin\\dbfr\\SOUL.md";
 
 const { values } = parseArgs({
@@ -76,8 +77,16 @@ const repoRoot = join(import.meta.dir, "../..");
 // 2. Initialisation du split gold
 console.log("Initialisation du split gold...");
 const splitProc = Bun.spawn(
-  ["bun", "packages/pipeline/scripts/build-chat-rollouts.ts", "--split-only", "--input", defaultTriples, "--out", outDir],
-  { cwd: repoRoot, stdout: "inherit", stderr: "inherit" }
+  [
+    "bun",
+    "packages/pipeline/scripts/build-chat-rollouts.ts",
+    "--split-only",
+    "--input",
+    defaultTriples,
+    "--out",
+    outDir,
+  ],
+  { cwd: repoRoot, stdout: "inherit", stderr: "inherit" },
 );
 await splitProc.exited;
 
@@ -105,10 +114,14 @@ while (running) {
   const rolloutArgs: string[] = [
     "bun",
     "packages/pipeline/scripts/build-chat-rollouts.ts",
-    "--input", defaultTriples,
-    "--out", outDir,
-    "--limit", String(batchSize),
-    "--teacher", teacher,
+    "--input",
+    defaultTriples,
+    "--out",
+    outDir,
+    "--limit",
+    String(batchSize),
+    "--teacher",
+    teacher,
     ...modelArg,
   ];
 
@@ -126,8 +139,17 @@ while (running) {
   if (existsSync(goldPath)) {
     console.log(`[B] Évaluation rapide sur le benchmark gold...`);
     const evalProc = Bun.spawn(
-      ["bun", "packages/pipeline/scripts/eval-chat-gold.ts", "--gold", goldPath, "--limit", "10", "--label", `cycle-${cycle}`],
-      { cwd: repoRoot, stdout: "pipe", stderr: "pipe" }
+      [
+        "bun",
+        "packages/pipeline/scripts/eval-chat-gold.ts",
+        "--gold",
+        goldPath,
+        "--limit",
+        "10",
+        "--label",
+        `cycle-${cycle}`,
+      ],
+      { cwd: repoRoot, stdout: "pipe", stderr: "pipe" },
     );
     const evalOut = await new Response(evalProc.stdout).text();
     await evalProc.exited;

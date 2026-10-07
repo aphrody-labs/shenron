@@ -25,7 +25,9 @@ function Metric({ metric }: { metric: CoverageMetric }) {
           <p className="mt-2 font-display text-2xl font-bold text-white tabular-nums">
             {metric.available.toLocaleString("fr-FR")}{" "}
             {metric.total > 0 && (
-              <span className="text-base font-normal text-white/45">/ {metric.total.toLocaleString("fr-FR")}</span>
+              <span className="text-base font-normal text-white/45">
+                / {metric.total.toLocaleString("fr-FR")}
+              </span>
             )}
           </p>
         </div>

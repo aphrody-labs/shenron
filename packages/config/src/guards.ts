@@ -781,11 +781,14 @@ export async function checkNoEscapingImports(packageDir: string): Promise<Offenc
   return dedupe(offences);
 }
 
-/** Environment kept for child processes: PATH plus the Windows system variables. */
+/**
+ * Environment kept for child processes: PATH, the Windows system variables and BUN_BE_BUN (a
+ * multi-call runtime such as yolo is `process.execPath` and only acts as bun with it set).
+ */
 // Reduced child env on purpose: NODE_ENV is deliberately absent (declared required by app ProcessEnv augmentations).
 function reducedEnv(): NodeJS.ProcessEnv {
   const env: Record<string, string> = {};
-  for (const name of ["PATH", "Path", "SystemRoot", "TEMP", "TMP"]) {
+  for (const name of ["PATH", "Path", "SystemRoot", "TEMP", "TMP", "BUN_BE_BUN"]) {
     const value = process.env[name];
     if (typeof value === "string") env[name] = value;
   }

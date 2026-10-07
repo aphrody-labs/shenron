@@ -23,13 +23,7 @@ export type FighterId =
   | "jiren"
   | "beerus";
 
-export type ArenaId =
-  | "paozu"
-  | "budokai"
-  | "wasteland"
-  | "namek"
-  | "cell_games"
-  | "kaiohshin";
+export type ArenaId = "paozu" | "budokai" | "wasteland" | "namek" | "cell_games" | "kaiohshin";
 
 export type GameMode = "story" | "arcade" | "survival" | "dojo";
 
@@ -95,13 +89,49 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     themeColor: "#f85b1a",
     forms: [
       { level: 0, name: "Base", powerMultiplier: 1.0, powerLevel: 8200, auraColor: "#ffffff" },
-      { level: 1, name: "Kaiō-ken x4", powerMultiplier: 1.35, powerLevel: 32000, auraColor: "#de1b22" },
-      { level: 2, name: "Super Saiyan", powerMultiplier: 1.75, powerLevel: 150000000, auraColor: "#ffd700" },
-      { level: 3, name: "Super Saiyan 3", powerMultiplier: 2.2, powerLevel: 1200000000, auraColor: "#ffee00" },
+      {
+        level: 1,
+        name: "Kaiō-ken x4",
+        powerMultiplier: 1.35,
+        powerLevel: 32000,
+        auraColor: "#de1b22",
+      },
+      {
+        level: 2,
+        name: "Super Saiyan",
+        powerMultiplier: 1.75,
+        powerLevel: 150000000,
+        auraColor: "#ffd700",
+      },
+      {
+        level: 3,
+        name: "Super Saiyan 3",
+        powerMultiplier: 2.2,
+        powerLevel: 1200000000,
+        auraColor: "#ffee00",
+      },
     ],
     specials: [
-      { id: "kamehameha", name: "Kamehameha", nameJa: "かめはめ波", cost: 35, damage: 28, type: "beam", color: "#00b4d8", sfx: "final-flash" },
-      { id: "genkidama", name: "Chō Genki Dama", nameJa: "超元気玉", cost: 80, damage: 65, type: "ultimate", color: "#90e0ef", sfx: "power-up" },
+      {
+        id: "kamehameha",
+        name: "Kamehameha",
+        nameJa: "かめはめ波",
+        cost: 35,
+        damage: 28,
+        type: "beam",
+        color: "#00b4d8",
+        sfx: "final-flash",
+      },
+      {
+        id: "genkidama",
+        name: "Chō Genki Dama",
+        nameJa: "超元気玉",
+        cost: 80,
+        damage: 65,
+        type: "ultimate",
+        color: "#90e0ef",
+        sfx: "power-up",
+      },
     ],
   },
   vegeta: {
@@ -116,13 +146,52 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     themeColor: "#1b365d",
     forms: [
       { level: 0, name: "Base", powerMultiplier: 1.0, powerLevel: 18000, auraColor: "#ffffff" },
-      { level: 1, name: "Super Saiyan", powerMultiplier: 1.75, powerLevel: 160000000, auraColor: "#ffd700" },
-      { level: 2, name: "Majin Vegeta", powerMultiplier: 2.1, powerLevel: 1100000000, auraColor: "#f72585" },
+      {
+        level: 1,
+        name: "Super Saiyan",
+        powerMultiplier: 1.75,
+        powerLevel: 160000000,
+        auraColor: "#ffd700",
+      },
+      {
+        level: 2,
+        name: "Majin Vegeta",
+        powerMultiplier: 2.1,
+        powerLevel: 1100000000,
+        auraColor: "#f72585",
+      },
     ],
     specials: [
-      { id: "garric_gun", name: "Canon Garric", nameJa: "ギャリック砲", cost: 30, damage: 25, type: "beam", color: "#9d4edd", sfx: "final-flash" },
-      { id: "final_flash", name: "Final Flash", nameJa: "ファイナルフラッシュ", cost: 50, damage: 45, type: "beam", color: "#ffd700", sfx: "final-flash" },
-      { id: "final_explosion", name: "Explosion Finale", nameJa: "ファイナルエクスプロージョン", cost: 90, damage: 75, type: "ultimate", color: "#ffffff", sfx: "power-up" },
+      {
+        id: "garric_gun",
+        name: "Canon Garric",
+        nameJa: "ギャリック砲",
+        cost: 30,
+        damage: 25,
+        type: "beam",
+        color: "#9d4edd",
+        sfx: "final-flash",
+      },
+      {
+        id: "final_flash",
+        name: "Final Flash",
+        nameJa: "ファイナルフラッシュ",
+        cost: 50,
+        damage: 45,
+        type: "beam",
+        color: "#ffd700",
+        sfx: "final-flash",
+      },
+      {
+        id: "final_explosion",
+        name: "Explosion Finale",
+        nameJa: "ファイナルエクスプロージョン",
+        cost: 90,
+        damage: 75,
+        type: "ultimate",
+        color: "#ffffff",
+        sfx: "power-up",
+      },
     ],
   },
   gohan: {
@@ -137,12 +206,42 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     themeColor: "#5a189a",
     forms: [
       { level: 0, name: "Base", powerMultiplier: 1.0, powerLevel: 2800, auraColor: "#ffffff" },
-      { level: 1, name: "Super Saiyan 2", powerMultiplier: 1.9, powerLevel: 1000000000, auraColor: "#ffd700" },
-      { level: 2, name: "Ultimate Gohan", powerMultiplier: 2.3, powerLevel: 1800000000, auraColor: "#ffffff" },
+      {
+        level: 1,
+        name: "Super Saiyan 2",
+        powerMultiplier: 1.9,
+        powerLevel: 1000000000,
+        auraColor: "#ffd700",
+      },
+      {
+        level: 2,
+        name: "Ultimate Gohan",
+        powerMultiplier: 2.3,
+        powerLevel: 1800000000,
+        auraColor: "#ffffff",
+      },
     ],
     specials: [
-      { id: "masenko", name: "Masenko", nameJa: "魔閃光", cost: 25, damage: 22, type: "beam", color: "#ffb703", sfx: "final-flash" },
-      { id: "father_son_kamehameha", name: "Père-Fils Kamehameha", nameJa: "親子かめはめ波", cost: 85, damage: 70, type: "ultimate", color: "#00f5d4", sfx: "power-up" },
+      {
+        id: "masenko",
+        name: "Masenko",
+        nameJa: "魔閃光",
+        cost: 25,
+        damage: 22,
+        type: "beam",
+        color: "#ffb703",
+        sfx: "final-flash",
+      },
+      {
+        id: "father_son_kamehameha",
+        name: "Père-Fils Kamehameha",
+        nameJa: "親子かめはめ波",
+        cost: 85,
+        damage: 70,
+        type: "ultimate",
+        color: "#00f5d4",
+        sfx: "power-up",
+      },
     ],
   },
   piccolo: {
@@ -157,11 +256,35 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     themeColor: "#40916c",
     forms: [
       { level: 0, name: "Base", powerMultiplier: 1.0, powerLevel: 3500, auraColor: "#ffffff" },
-      { level: 1, name: "Super Namek", powerMultiplier: 1.85, powerLevel: 800000000, auraColor: "#52b788" },
+      {
+        level: 1,
+        name: "Super Namek",
+        powerMultiplier: 1.85,
+        powerLevel: 800000000,
+        auraColor: "#52b788",
+      },
     ],
     specials: [
-      { id: "makankosappo", name: "Makankosappo", nameJa: "魔貫光殺砲", cost: 40, damage: 38, type: "beam", color: "#d90429", sfx: "final-flash" },
-      { id: "chobakuretsumaha", name: "Chō Bakuretsumaha", nameJa: "超爆裂魔波", cost: 70, damage: 55, type: "ultimate", color: "#ffb703", sfx: "power-up" },
+      {
+        id: "makankosappo",
+        name: "Makankosappo",
+        nameJa: "魔貫光殺砲",
+        cost: 40,
+        damage: 38,
+        type: "beam",
+        color: "#d90429",
+        sfx: "final-flash",
+      },
+      {
+        id: "chobakuretsumaha",
+        name: "Chō Bakuretsumaha",
+        nameJa: "超爆裂魔波",
+        cost: 70,
+        damage: 55,
+        type: "ultimate",
+        color: "#ffb703",
+        sfx: "power-up",
+      },
     ],
   },
   trunks: {
@@ -176,11 +299,35 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     themeColor: "#00b4d8",
     forms: [
       { level: 0, name: "Base", powerMultiplier: 1.0, powerLevel: 5000, auraColor: "#ffffff" },
-      { level: 1, name: "Super Saiyan", powerMultiplier: 1.75, powerLevel: 150000000, auraColor: "#ffd700" },
+      {
+        level: 1,
+        name: "Super Saiyan",
+        powerMultiplier: 1.75,
+        powerLevel: 150000000,
+        auraColor: "#ffd700",
+      },
     ],
     specials: [
-      { id: "burning_attack", name: "Burning Attack", nameJa: "バーニングアタック", cost: 35, damage: 30, type: "blast", color: "#fb8500", sfx: "final-flash" },
-      { id: "heat_dome", name: "Heat Dome Attack", nameJa: "ヒートドームアタック", cost: 75, damage: 60, type: "ultimate", color: "#ff006e", sfx: "power-up" },
+      {
+        id: "burning_attack",
+        name: "Burning Attack",
+        nameJa: "バーニングアタック",
+        cost: 35,
+        damage: 30,
+        type: "blast",
+        color: "#fb8500",
+        sfx: "final-flash",
+      },
+      {
+        id: "heat_dome",
+        name: "Heat Dome Attack",
+        nameJa: "ヒートドームアタック",
+        cost: 75,
+        damage: 60,
+        type: "ultimate",
+        color: "#ff006e",
+        sfx: "power-up",
+      },
     ],
   },
   frieza: {
@@ -194,12 +341,42 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     emblemId: "redRibbon",
     themeColor: "#7209b7",
     forms: [
-      { level: 0, name: "1re Forme", powerMultiplier: 1.0, powerLevel: 530000, auraColor: "#7209b7" },
-      { level: 1, name: "Forme Finale 100%", powerMultiplier: 2.0, powerLevel: 120000000, auraColor: "#b5179e" },
+      {
+        level: 0,
+        name: "1re Forme",
+        powerMultiplier: 1.0,
+        powerLevel: 530000,
+        auraColor: "#7209b7",
+      },
+      {
+        level: 1,
+        name: "Forme Finale 100%",
+        powerMultiplier: 2.0,
+        powerLevel: 120000000,
+        auraColor: "#b5179e",
+      },
     ],
     specials: [
-      { id: "death_beam", name: "Rayon de la Mort", nameJa: "デスビーム", cost: 20, damage: 24, type: "beam", color: "#f72585", sfx: "final-flash" },
-      { id: "death_ball", name: "Boule de la Mort", nameJa: "デスボール", cost: 80, damage: 65, type: "ultimate", color: "#560bad", sfx: "power-up" },
+      {
+        id: "death_beam",
+        name: "Rayon de la Mort",
+        nameJa: "デスビーム",
+        cost: 20,
+        damage: 24,
+        type: "beam",
+        color: "#f72585",
+        sfx: "final-flash",
+      },
+      {
+        id: "death_ball",
+        name: "Boule de la Mort",
+        nameJa: "デスボール",
+        cost: 80,
+        damage: 65,
+        type: "ultimate",
+        color: "#560bad",
+        sfx: "power-up",
+      },
     ],
   },
   cell: {
@@ -213,12 +390,42 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     emblemId: "redRibbon",
     themeColor: "#2d6a4f",
     forms: [
-      { level: 0, name: "Cell Parfait", powerMultiplier: 1.0, powerLevel: 900000000, auraColor: "#ffd700" },
-      { level: 1, name: "Super Cell Parfait", powerMultiplier: 1.8, powerLevel: 1400000000, auraColor: "#00f5d4" },
+      {
+        level: 0,
+        name: "Cell Parfait",
+        powerMultiplier: 1.0,
+        powerLevel: 900000000,
+        auraColor: "#ffd700",
+      },
+      {
+        level: 1,
+        name: "Super Cell Parfait",
+        powerMultiplier: 1.8,
+        powerLevel: 1400000000,
+        auraColor: "#00f5d4",
+      },
     ],
     specials: [
-      { id: "solar_kamehameha", name: "Kamehameha Solaire", nameJa: "太陽系破壊かめはめ波", cost: 50, damage: 45, type: "beam", color: "#ffd700", sfx: "final-flash" },
-      { id: "perfect_barrier", name: "Barrière Parfaite", nameJa: "パーフェクトバリア", cost: 75, damage: 55, type: "ultimate", color: "#00b4d8", sfx: "power-up" },
+      {
+        id: "solar_kamehameha",
+        name: "Kamehameha Solaire",
+        nameJa: "太陽系破壊かめはめ波",
+        cost: 50,
+        damage: 45,
+        type: "beam",
+        color: "#ffd700",
+        sfx: "final-flash",
+      },
+      {
+        id: "perfect_barrier",
+        name: "Barrière Parfaite",
+        nameJa: "パーフェクトバリア",
+        cost: 75,
+        damage: 55,
+        type: "ultimate",
+        color: "#00b4d8",
+        sfx: "power-up",
+      },
     ],
   },
   buu: {
@@ -232,12 +439,42 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     emblemId: "majin",
     themeColor: "#f72585",
     forms: [
-      { level: 0, name: "Majin Buu", powerMultiplier: 1.0, powerLevel: 1500000000, auraColor: "#f72585" },
-      { level: 1, name: "Kid Buu (Pur)", powerMultiplier: 2.0, powerLevel: 1800000000, auraColor: "#ff007f" },
+      {
+        level: 0,
+        name: "Majin Buu",
+        powerMultiplier: 1.0,
+        powerLevel: 1500000000,
+        auraColor: "#f72585",
+      },
+      {
+        level: 1,
+        name: "Kid Buu (Pur)",
+        powerMultiplier: 2.0,
+        powerLevel: 1800000000,
+        auraColor: "#ff007f",
+      },
     ],
     specials: [
-      { id: "candy_beam", name: "Rayon Bonbon", nameJa: "お菓子光線", cost: 35, damage: 30, type: "blast", color: "#ff70a6", sfx: "final-flash" },
-      { id: "vanishing_ball", name: "Vanishing Ball", nameJa: "地球崩壊弾", cost: 85, damage: 70, type: "ultimate", color: "#f72585", sfx: "power-up" },
+      {
+        id: "candy_beam",
+        name: "Rayon Bonbon",
+        nameJa: "お菓子光線",
+        cost: 35,
+        damage: 30,
+        type: "blast",
+        color: "#ff70a6",
+        sfx: "final-flash",
+      },
+      {
+        id: "vanishing_ball",
+        name: "Vanishing Ball",
+        nameJa: "地球崩壊弾",
+        cost: 85,
+        damage: 70,
+        type: "ultimate",
+        color: "#f72585",
+        sfx: "power-up",
+      },
     ],
   },
   broly: {
@@ -251,12 +488,42 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     emblemId: "demon",
     themeColor: "#22c55e",
     forms: [
-      { level: 0, name: "Base", powerMultiplier: 1.0, powerLevel: 1400000000, auraColor: "#22c55e" },
-      { level: 1, name: "Super Saiyan Légendaire", powerMultiplier: 2.2, powerLevel: 3000000000, auraColor: "#4ade80" },
+      {
+        level: 0,
+        name: "Base",
+        powerMultiplier: 1.0,
+        powerLevel: 1400000000,
+        auraColor: "#22c55e",
+      },
+      {
+        level: 1,
+        name: "Super Saiyan Légendaire",
+        powerMultiplier: 2.2,
+        powerLevel: 3000000000,
+        auraColor: "#4ade80",
+      },
     ],
     specials: [
-      { id: "eraser_cannon", name: "Eraser Cannon", nameJa: "イレイザーキャノン", cost: 35, damage: 35, type: "blast", color: "#22c55e", sfx: "final-flash" },
-      { id: "gigantic_meteor", name: "Gigantic Meteor", nameJa: "ギガンティックミーティア", cost: 85, damage: 75, type: "ultimate", color: "#4ade80", sfx: "power-up" },
+      {
+        id: "eraser_cannon",
+        name: "Eraser Cannon",
+        nameJa: "イレイザーキャノン",
+        cost: 35,
+        damage: 35,
+        type: "blast",
+        color: "#22c55e",
+        sfx: "final-flash",
+      },
+      {
+        id: "gigantic_meteor",
+        name: "Gigantic Meteor",
+        nameJa: "ギガンティックミーティア",
+        cost: 85,
+        damage: 75,
+        type: "ultimate",
+        color: "#4ade80",
+        sfx: "power-up",
+      },
     ],
   },
   jiren: {
@@ -270,11 +537,35 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     emblemId: "capsule",
     themeColor: "#ef4444",
     forms: [
-      { level: 0, name: "Pleine Puissance", powerMultiplier: 1.0, powerLevel: 2500000000, auraColor: "#ef4444" },
+      {
+        level: 0,
+        name: "Pleine Puissance",
+        powerMultiplier: 1.0,
+        powerLevel: 2500000000,
+        auraColor: "#ef4444",
+      },
     ],
     specials: [
-      { id: "power_impact", name: "Power Impact", nameJa: "パワーインパクト", cost: 40, damage: 40, type: "beam", color: "#ef4444", sfx: "final-flash" },
-      { id: "colossal_slash", name: "Tranchant Colossal", nameJa: "コロッサルラッシュ", cost: 80, damage: 70, type: "ultimate", color: "#f87171", sfx: "power-up" },
+      {
+        id: "power_impact",
+        name: "Power Impact",
+        nameJa: "パワーインパクト",
+        cost: 40,
+        damage: 40,
+        type: "beam",
+        color: "#ef4444",
+        sfx: "final-flash",
+      },
+      {
+        id: "colossal_slash",
+        name: "Tranchant Colossal",
+        nameJa: "コロッサルラッシュ",
+        cost: 80,
+        damage: 70,
+        type: "ultimate",
+        color: "#f87171",
+        sfx: "power-up",
+      },
     ],
   },
   beerus: {
@@ -288,11 +579,35 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     emblemId: "demon",
     themeColor: "#a855f7",
     forms: [
-      { level: 0, name: "Dieu de la Destruction", powerMultiplier: 1.0, powerLevel: 5000000000, auraColor: "#a855f7" },
+      {
+        level: 0,
+        name: "Dieu de la Destruction",
+        powerMultiplier: 1.0,
+        powerLevel: 5000000000,
+        auraColor: "#a855f7",
+      },
     ],
     specials: [
-      { id: "beerus_sphere", name: "Sphère de Beerus", nameJa: "破壊神の怒り", cost: 45, damage: 45, type: "blast", color: "#a855f7", sfx: "final-flash" },
-      { id: "hakai", name: "Hakai", nameJa: "破壊", cost: 90, damage: 85, type: "ultimate", color: "#c084fc", sfx: "power-up" },
+      {
+        id: "beerus_sphere",
+        name: "Sphère de Beerus",
+        nameJa: "破壊神の怒り",
+        cost: 45,
+        damage: 45,
+        type: "blast",
+        color: "#a855f7",
+        sfx: "final-flash",
+      },
+      {
+        id: "hakai",
+        name: "Hakai",
+        nameJa: "破壊",
+        cost: 90,
+        damage: 85,
+        type: "ultimate",
+        color: "#c084fc",
+        sfx: "power-up",
+      },
     ],
   },
 };
@@ -326,7 +641,10 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "piccolo",
     enemyName: "Oolong & Bandits de Paozu",
     introDialogue: [
-      { speaker: "Bulma", text: "Tu as la boule à quatre étoiles de ton grand-père ! Viens avec moi chercher les 7 boules de cristal !" },
+      {
+        speaker: "Bulma",
+        text: "Tu as la boule à quatre étoiles de ton grand-père ! Viens avec moi chercher les 7 boules de cristal !",
+      },
       { speaker: "Goku", text: "D'accord, mais je ne me sépare jamais de mon Nyoï-bô !" },
     ],
     victoryDialogue: [
@@ -346,11 +664,17 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "piccolo",
     enemyName: "Jackie Chun (Tortue Géniale)",
     introDialogue: [
-      { speaker: "Jackie Chun", text: "Goku, montre-moi tout ce que t'a appris ton entraînement avec les carapaces !" },
+      {
+        speaker: "Jackie Chun",
+        text: "Goku, montre-moi tout ce que t'a appris ton entraînement avec les carapaces !",
+      },
       { speaker: "Goku", text: "Papy Chun, préparez-vous, je vais donner tout ce que j'ai !" },
     ],
     victoryDialogue: [
-      { speaker: "Goku", text: "Le monde est tellement vaste... Il existe des combattants encore plus forts !" },
+      {
+        speaker: "Goku",
+        text: "Le monde est tellement vaste... Il existe des combattants encore plus forts !",
+      },
     ],
     objective: "Survivez et gagnez la finale du championnat mondial des arts martiaux.",
     bossHp: 100,
@@ -366,12 +690,16 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "frieza",
     enemyName: "Taopaipai",
     introDialogue: [
-      { speaker: "Taopaipai", text: "Gamin, ton heure est venue. Mon Dodonpa ne rate jamais sa cible !" },
-      { speaker: "Goku", text: "J'ai bu l'Eau Sacrée de Maître Karine ! Ton Dodonpa ne me fait plus rien !" },
+      {
+        speaker: "Taopaipai",
+        text: "Gamin, ton heure est venue. Mon Dodonpa ne rate jamais sa cible !",
+      },
+      {
+        speaker: "Goku",
+        text: "J'ai bu l'Eau Sacrée de Maître Karine ! Ton Dodonpa ne me fait plus rien !",
+      },
     ],
-    victoryDialogue: [
-      { speaker: "Goku", text: "Tu as tué le père d'Upa, tu as perdu !" },
-    ],
+    victoryDialogue: [{ speaker: "Goku", text: "Tu as tué le père d'Upa, tu as perdu !" }],
     objective: "Vainquez Taopaipai au pied de la Tour Karine.",
     bossHp: 110,
   },
@@ -386,12 +714,16 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "piccolo",
     enemyName: "Démon Piccolo (Jeune)",
     introDialogue: [
-      { speaker: "Démon Piccolo", text: "Misérable vermine ! Je règne sur ce monde avec la jeunesse éternelle !" },
-      { speaker: "Goku", text: "Piccolo ! Même s'il ne me reste qu'un seul bras, je vais mettre toute ma vie dans ce coup !" },
+      {
+        speaker: "Démon Piccolo",
+        text: "Misérable vermine ! Je règne sur ce monde avec la jeunesse éternelle !",
+      },
+      {
+        speaker: "Goku",
+        text: "Piccolo ! Même s'il ne me reste qu'un seul bras, je vais mettre toute ma vie dans ce coup !",
+      },
     ],
-    victoryDialogue: [
-      { speaker: "Goku", text: "J'ai vengé Maître Roshi et Krilin !" },
-    ],
+    victoryDialogue: [{ speaker: "Goku", text: "J'ai vengé Maître Roshi et Krilin !" }],
     objective: "Utilisez toute votre énergie pour transpercer le Démon Piccolo.",
     bossHp: 120,
   },
@@ -406,8 +738,14 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "piccolo",
     enemyName: "Ma Junior (Piccolo)",
     introDialogue: [
-      { speaker: "Piccolo", text: "Cette fois, Son Goku, rien ne te sauvera ! L'arène entière sera ton tombeau !" },
-      { speaker: "Goku", text: "Je suis prêt, Piccolo ! Nous réglerons nos comptes selon les règles du Budokai !" },
+      {
+        speaker: "Piccolo",
+        text: "Cette fois, Son Goku, rien ne te sauvera ! L'arène entière sera ton tombeau !",
+      },
+      {
+        speaker: "Goku",
+        text: "Je suis prêt, Piccolo ! Nous réglerons nos comptes selon les règles du Budokai !",
+      },
     ],
     victoryDialogue: [
       { speaker: "Arbitre", text: "1, 2, 3... 10 ! Son Goku est le Champion du Monde !" },
@@ -426,12 +764,13 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "vegeta",
     enemyName: "Raditz le Saiyan",
     introDialogue: [
-      { speaker: "Raditz", text: "Kakarotto, tu as oublié ta mission ! Tu n'es qu'une honte pour notre race guerrière !" },
+      {
+        speaker: "Raditz",
+        text: "Kakarotto, tu as oublié ta mission ! Tu n'es qu'une honte pour notre race guerrière !",
+      },
       { speaker: "Goku", text: "Mon nom est Son Goku, et la Terre est ma planète !" },
     ],
-    victoryDialogue: [
-      { speaker: "Piccolo", text: "Makankosappo ! C'est terminé..." },
-    ],
+    victoryDialogue: [{ speaker: "Piccolo", text: "Makankosappo ! C'est terminé..." }],
     objective: "Terrassez le guerrier de l'espace Raditz.",
     bossHp: 140,
   },
@@ -446,11 +785,17 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "vegeta",
     enemyName: "Prince Vegeta",
     introDialogue: [
-      { speaker: "Vegeta", text: "Un guerrier de basse classe comme toi ne vaincra jamais un prince d'élite ! Crève avec cette planète !" },
+      {
+        speaker: "Vegeta",
+        text: "Un guerrier de basse classe comme toi ne vaincra jamais un prince d'élite ! Crève avec cette planète !",
+      },
       { speaker: "Goku", text: "Mon corps n'en peut plus... Mais je dois monter au Kaiō-ken x4 !" },
     ],
     victoryDialogue: [
-      { speaker: "Goku", text: "Vegeta... Krilin, s'il te plaît, laisse-le partir... Je veux le réaffronter un jour !" },
+      {
+        speaker: "Goku",
+        text: "Vegeta... Krilin, s'il te plaît, laisse-le partir... Je veux le réaffronter un jour !",
+      },
     ],
     objective: "Repoussez le Canon Garric avec le Kaiō-ken x4.",
     bossHp: 150,
@@ -466,8 +811,14 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "frieza",
     enemyName: "Commando Ginyu",
     introDialogue: [
-      { speaker: "Ginyu", text: "Notre pose de combat est la plus parfaite de l'univers ! Tokusentai !" },
-      { speaker: "Goku", text: "Vous avez blessé Gohan et Krilin. Je ne vous laisserai pas faire un pas de plus." },
+      {
+        speaker: "Ginyu",
+        text: "Notre pose de combat est la plus parfaite de l'univers ! Tokusentai !",
+      },
+      {
+        speaker: "Goku",
+        text: "Vous avez blessé Gohan et Krilin. Je ne vous laisserai pas faire un pas de plus.",
+      },
     ],
     victoryDialogue: [
       { speaker: "Goku", text: "Vos corps ne servent à rien si vous n'avez pas de cœur pur." },
@@ -486,11 +837,20 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "frieza",
     enemyName: "Freezer (100% Puissance Max)",
     introDialogue: [
-      { speaker: "Freezer", text: "Je vais faire exploser cette planète en 5 minutes ! Tu mourras dans le vide spatial !" },
-      { speaker: "Goku", text: "Tu as tué Krilin... Tu ne pourras jamais me pardonner cela. JE SUIS LE GUERRIER LÉGENDAIRE, SON GOKU !" },
+      {
+        speaker: "Freezer",
+        text: "Je vais faire exploser cette planète en 5 minutes ! Tu mourras dans le vide spatial !",
+      },
+      {
+        speaker: "Goku",
+        text: "Tu as tué Krilin... Tu ne pourras jamais me pardonner cela. JE SUIS LE GUERRIER LÉGENDAIRE, SON GOKU !",
+      },
     ],
     victoryDialogue: [
-      { speaker: "Goku", text: "C'est fini, Freezer. Tu as été vaincu par celui que tu redoutais tant." },
+      {
+        speaker: "Goku",
+        text: "C'est fini, Freezer. Tu as été vaincu par celui que tu redoutais tant.",
+      },
     ],
     objective: "Éveillez le Super Saiyan et triomphez de Freezer 100%.",
     bossHp: 180,
@@ -507,7 +867,10 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "frieza",
     enemyName: "Méca Freezer & Roi Cold",
     introDialogue: [
-      { speaker: "Méca Freezer", text: "Qui es-tu, gamin ? Tu crois pouvoir m'affronter avec cette simple épée ?" },
+      {
+        speaker: "Méca Freezer",
+        text: "Qui es-tu, gamin ? Tu crois pouvoir m'affronter avec cette simple épée ?",
+      },
       { speaker: "Trunks", text: "Tu penses que Goku est le seul Super Saiyan ? Tu te trompes !" },
     ],
     victoryDialogue: [
@@ -527,8 +890,14 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "cell",
     enemyName: "Cyborg C-17 & Cell Imparfait",
     introDialogue: [
-      { speaker: "Piccolo", text: "Je ne suis plus ni Kami-sama ni Piccolo... Je suis le Namek qui a oublié son nom !" },
-      { speaker: "Cell", text: "Ton énergie est délicieuse, Piccolo... Mais j'absorberai les Cyborgs !" },
+      {
+        speaker: "Piccolo",
+        text: "Je ne suis plus ni Kami-sama ni Piccolo... Je suis le Namek qui a oublié son nom !",
+      },
+      {
+        speaker: "Cell",
+        text: "Ton énergie est délicieuse, Piccolo... Mais j'absorberai les Cyborgs !",
+      },
     ],
     victoryDialogue: [
       { speaker: "Piccolo", text: "Tu n'atteindras pas ta perfection tant que je serai debout !" },
@@ -547,7 +916,10 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "cell",
     enemyName: "Cell Parfait",
     introDialogue: [
-      { speaker: "C-16", text: "Gohan... Laisse exploser ta colère. Ce n'est pas un crime de se battre pour la justice..." },
+      {
+        speaker: "C-16",
+        text: "Gohan... Laisse exploser ta colère. Ce n'est pas un crime de se battre pour la justice...",
+      },
       { speaker: "Gohan", text: "Cell... Je ne te pardonnerai JAMAIS !" },
     ],
     victoryDialogue: [
@@ -568,13 +940,14 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "cell",
     enemyName: "Super Cell Parfait",
     introDialogue: [
-      { speaker: "Cell", text: "Mon corps a atteint l'état de perfection ultime avec les cellules des Saiyans ! Dis adieu à la Terre !" },
+      {
+        speaker: "Cell",
+        text: "Mon corps a atteint l'état de perfection ultime avec les cellules des Saiyans ! Dis adieu à la Terre !",
+      },
       { speaker: "Goku (esprit)", text: "Ne renonce pas, Gohan ! Tire ! Tout de suite !" },
       { speaker: "Gohan", text: "KA... ME... HA... ME... HA !!!" },
     ],
-    victoryDialogue: [
-      { speaker: "Gohan", text: "Merci, Papa... La Terre est sauvée." },
-    ],
+    victoryDialogue: [{ speaker: "Gohan", text: "Merci, Papa... La Terre est sauvée." }],
     objective: "Annihilez chaque cellule de Cell avec le Kamehameha Père-Fils.",
     bossHp: 200,
   },
@@ -589,11 +962,17 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "buu",
     enemyName: "Majin Buu",
     introDialogue: [
-      { speaker: "Vegeta", text: "Trunks... Bulma... Et même toi, Kakarotto... C'est pour vous que je me bats." },
+      {
+        speaker: "Vegeta",
+        text: "Trunks... Bulma... Et même toi, Kakarotto... C'est pour vous que je me bats.",
+      },
       { speaker: "Buu", text: "Buu va te transformer en chocolat !" },
     ],
     victoryDialogue: [
-      { speaker: "Piccolo", text: "Vegeta a combattu pour les siens... C'était un noble guerrier." },
+      {
+        speaker: "Piccolo",
+        text: "Vegeta a combattu pour les siens... C'était un noble guerrier.",
+      },
     ],
     objective: "Sacrifiez-vous dans un déluge d'énergie contre Majin Buu.",
     bossHp: 210,
@@ -609,11 +988,17 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "buu",
     enemyName: "Kid Buu (Pur)",
     introDialogue: [
-      { speaker: "Vegeta", text: "Tu es le numéro un, Kakarotto... Rassemble l'énergie de chaque être vivant de l'univers !" },
+      {
+        speaker: "Vegeta",
+        text: "Tu es le numéro un, Kakarotto... Rassemble l'énergie de chaque être vivant de l'univers !",
+      },
       { speaker: "Goku", text: "Gens de la Terre, prêtez-moi votre force une dernière fois !" },
     ],
     victoryDialogue: [
-      { speaker: "Goku", text: "Tu étais incroyable, Buu. Reviens un jour réincarné en quelqu'un de bon, et nous nous battrons encore !" },
+      {
+        speaker: "Goku",
+        text: "Tu étais incroyable, Buu. Reviens un jour réincarné en quelqu'un de bon, et nous nous battrons encore !",
+      },
     ],
     objective: "Achevez la grande saga Dragon Ball avec le Chō Genki Dama universel !",
     bossHp: 220,
@@ -629,11 +1014,17 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "frieza",
     enemyName: "Lord Beerus & Golden Freezer",
     introDialogue: [
-      { speaker: "Beerus", text: "Montre-moi la puissance du Super Saiyan God avant que je ne détruise cette planète !" },
+      {
+        speaker: "Beerus",
+        text: "Montre-moi la puissance du Super Saiyan God avant que je ne détruise cette planète !",
+      },
       { speaker: "Goku", text: "Seigneur Beerus, je ne vous laisserai pas anéantir notre monde !" },
     ],
     victoryDialogue: [
-      { speaker: "Beerus", text: "Tu m'as fait utiliser une bonne part de ma force, Son Goku... Je t'épargne pour aujourd'hui." },
+      {
+        speaker: "Beerus",
+        text: "Tu m'as fait utiliser une bonne part de ma force, Son Goku... Je t'épargne pour aujourd'hui.",
+      },
     ],
     objective: "Survivez et repoussez les attaques du Dieu de la Destruction Beerus.",
     bossHp: 240,
@@ -650,8 +1041,14 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "vegeta",
     enemyName: "Jiren le Gris (Univers 11)",
     introDialogue: [
-      { speaker: "Jiren", text: "La force absolue est la seule vérité. Rien ne peut surmonter ma justice." },
-      { speaker: "Goku", text: "Ce n'est pas ma force seule... C'est la confiance de tous mes amis qui me transcende ! MIGATTE NO GOKUI !" },
+      {
+        speaker: "Jiren",
+        text: "La force absolue est la seule vérité. Rien ne peut surmonter ma justice.",
+      },
+      {
+        speaker: "Goku",
+        text: "Ce n'est pas ma force seule... C'est la confiance de tous mes amis qui me transcende ! MIGATTE NO GOKUI !",
+      },
     ],
     victoryDialogue: [
       { speaker: "Goku", text: "Jiren... Tu es incroyable. Battons-nous encore un jour !" },
@@ -671,11 +1068,20 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     enemyFighter: "piccolo",
     enemyName: "Gomah & Les Forces du Royaume des Démons",
     introDialogue: [
-      { speaker: "Goku", text: "Même si je suis redevenu petit avec mon Nyoï-bô, mon cœur de Saiyan reste invincible !" },
-      { speaker: "Glorio", text: "Goku, suis-moi ! Le mystère du monde des démons s'ouvre devant nous !" },
+      {
+        speaker: "Goku",
+        text: "Même si je suis redevenu petit avec mon Nyoï-bô, mon cœur de Saiyan reste invincible !",
+      },
+      {
+        speaker: "Glorio",
+        text: "Goku, suis-moi ! Le mystère du monde des démons s'ouvre devant nous !",
+      },
     ],
     victoryDialogue: [
-      { speaker: "Goku", text: "L'aventure ne s'arrête jamais... C'est ça, le monde de Dragon Ball !" },
+      {
+        speaker: "Goku",
+        text: "L'aventure ne s'arrête jamais... C'est ça, le monde de Dragon Ball !",
+      },
     ],
     objective: "Triomphez dans l'ultime chapitre de Dragon Ball Daima !",
     bossHp: 280,
@@ -951,7 +1357,10 @@ export function step(g: GameState, input: GameInput, dt: number): void {
 
   const baseSpeed = p.style === "speed" ? 280 : 215;
   const speedBonus = p.transformed ? 1.25 : 1.0;
-  p.x = Math.max(24, Math.min(936, p.x + move * baseSpeed * speedBonus * moveMultiplier * clampedDt));
+  p.x = Math.max(
+    24,
+    Math.min(936, p.x + move * baseSpeed * speedBonus * moveMultiplier * clampedDt),
+  );
 
   // Saut & Vol
   if (input.jump && p.y >= 320) {
@@ -997,7 +1406,7 @@ export function step(g: GameState, input: GameInput, dt: number): void {
   }
 
   const def = FIGHTERS[p.fighterId] ?? FIGHTERS.goku;
-  const formDef = def.forms[p.transformed > 0 ? (p.formLevel || 1) : 0] ?? def.forms[0];
+  const formDef = def.forms[p.transformed > 0 ? p.formLevel || 1 : 0] ?? def.forms[0];
   p.powerLevel = formDef.powerLevel;
 
   const stylePower = p.style === "power" ? 1.25 : 1;
@@ -1196,7 +1605,7 @@ export function step(g: GameState, input: GameInput, dt: number): void {
     // Attaque de l'IA quand à portée
     if (Math.abs(dist) < 55 && !e.cooldown) {
       e.cooldown = 0.85;
-      const baseDmg = g.mode === "story" ? 12 : (p.transformed ? 3 : 6);
+      const baseDmg = g.mode === "story" ? 12 : p.transformed ? 3 : 6;
       const dmg = p.guarding ? Math.max(1, Math.round(baseDmg * 0.2)) : baseDmg;
       p.hp = Math.max(0, p.hp - dmg);
       g.screenShake = 3;

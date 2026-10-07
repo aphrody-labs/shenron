@@ -345,17 +345,13 @@ export function DesktopHome() {
           <span className="capsule-badge">
             <span
               className={`capsule-led ${
-                offline
-                  ? "bg-red-500 shadow-red-500"
-                  : "bg-emerald-400 shadow-emerald-400"
+                offline ? "bg-red-500 shadow-red-500" : "bg-emerald-400 shadow-emerald-400"
               }`}
             />
             {tauri ? "Shenron Studio Desktop" : "Web ↔ Desktop Bridge"}
           </span>
           {health?.localRag ? (
-            <span className="badge badge-success text-[10px]">
-              RAG Local Actif
-            </span>
+            <span className="badge badge-success text-[10px]">RAG Local Actif</span>
           ) : null}
         </div>
         <div className="workspace-actions flex flex-wrap items-center gap-4 pt-2">

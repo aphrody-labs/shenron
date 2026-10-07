@@ -16,6 +16,7 @@ the root `AGENTS.md`.
 | RAG and LLM compute (compute host, databases, tunnels)       | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
 | Development workstation                                      | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md)                                                                                                |
 | Rust development (crates, gates, CI)                         | [`development/rust.md`](development/rust.md)                                                                                                        |
+| Développement distant (VPS, VS Code, WSL propre, sauvegarde) | [`development/remote-dev.md`](development/remote-dev.md) |
 | Bun dependencies                                             | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md)                                                                            |
 | Operations (delegated to `aphrody-infra`)                    | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md)                                                                                  |
 | Content enrichment session                                   | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md)                                                                  |

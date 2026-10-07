@@ -20,20 +20,14 @@ const PKG_DIR = join(ROOT, "crates", "shenron-re", "pkg");
 const SITE_WASM_DIR = join(ROOT, "apps", "site", "public", "wasm");
 
 console.log(`▶ Building ${CRATE} for ${TARGET} in release mode...`);
-const cargo = Bun.spawnSync([
-  "cargo",
-  "build",
-  "-p",
-  CRATE,
-  "--target",
-  TARGET,
-  "--release",
-  "--locked",
-], {
-  cwd: ROOT,
-  stdout: "inherit",
-  stderr: "inherit",
-});
+const cargo = Bun.spawnSync(
+  ["cargo", "build", "-p", CRATE, "--target", TARGET, "--release", "--locked"],
+  {
+    cwd: ROOT,
+    stdout: "inherit",
+    stderr: "inherit",
+  },
+);
 
 if (cargo.exitCode !== 0) {
   console.error("✗ Cargo build failed");
@@ -47,14 +41,7 @@ if (!existsSync(wasmPath)) {
 }
 
 console.log(`▶ Running wasm-bindgen on ${wasmPath}...`);
-const bindgen = Bun.spawnSync([
-  "wasm-bindgen",
-  wasmPath,
-  "--out-dir",
-  PKG_DIR,
-  "--target",
-  "web",
-], {
+const bindgen = Bun.spawnSync(["wasm-bindgen", wasmPath, "--out-dir", PKG_DIR, "--target", "web"], {
   cwd: ROOT,
   stdout: "inherit",
   stderr: "inherit",
@@ -76,13 +63,19 @@ for (const file of [
 }
 
 const lock = await Bun.file(join(ROOT, "Cargo.lock")).text();
-const expectedBindgen = /\[\[package\]\]\r?\nname = "wasm-bindgen"\r?\nversion = "([^"]+)"/.exec(lock)?.[1];
+const expectedBindgen = /\[\[package\]\]\r?\nname = "wasm-bindgen"\r?\nversion = "([^"]+)"/.exec(
+  lock,
+)?.[1];
 const bindgenVersion = Bun.spawnSync(["wasm-bindgen", "--version"], {
   cwd: ROOT,
   stdout: "pipe",
   stderr: "pipe",
 });
-if (!expectedBindgen || bindgenVersion.exitCode !== 0 || !bindgenVersion.stdout.toString().includes(expectedBindgen)) {
+if (
+  !expectedBindgen ||
+  bindgenVersion.exitCode !== 0 ||
+  !bindgenVersion.stdout.toString().includes(expectedBindgen)
+) {
   console.error(
     `✗ wasm-bindgen CLI must match Cargo.lock (${expectedBindgen ?? "version not found"}); ` +
       bindgenVersion.stderr.toString().trim(),

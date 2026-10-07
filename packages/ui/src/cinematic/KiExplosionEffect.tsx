@@ -4,14 +4,14 @@
 import { useEffect, useRef, useCallback } from "react";
 
 export type KiColorStyle =
-  | "gold"      // Super Saiyan
-  | "cyan"      // Super Saiyan Blue / SSJ2 Lightning
-  | "red"       // Kaioken
-  | "emerald"   // Broly Full Power
-  | "rose"      // Super Saiyan Rosé
-  | "silver"    // Ultra Instinct
-  | "purple"    // Gohan Beast / Destruction Ki
-  | "blue";     // Kamehameha Classic
+  | "gold" // Super Saiyan
+  | "cyan" // Super Saiyan Blue / SSJ2 Lightning
+  | "red" // Kaioken
+  | "emerald" // Broly Full Power
+  | "rose" // Super Saiyan Rosé
+  | "silver" // Ultra Instinct
+  | "purple" // Gohan Beast / Destruction Ki
+  | "blue"; // Kamehameha Classic
 
 export interface KiExplosionEffectProps {
   /** Active trigger or burst count. Incrementing triggers a new explosion */
@@ -73,7 +73,9 @@ export function KiExplosionEffect({
   const playKiSound = useCallback(() => {
     if (!playSound || typeof window === "undefined") return;
     try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
       const osc = ctx.createOscillator();

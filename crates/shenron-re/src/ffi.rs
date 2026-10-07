@@ -23,6 +23,8 @@ use crate::formats::{
     sav::Dxbv2Save,
 };
 use crate::fs::cpk::CpkArchive;
+use crate::live::process::WineProcessMemory;
+use crate::unified::Dbxv2UnifiedState;
 
 /// Current ABI version for `shenron-re` FFI.
 pub const SHENRON_RE_ABI_VERSION: u32 = 1;
@@ -242,6 +244,131 @@ pub extern "C" fn shenron_re_catalog_json() -> *mut c_char {
     to_c_string(&catalog)
 }
 
+/// Finds a running process by name (e.g. "DBXV2.exe") and inspects its Wine memory maps.
+/// Returns JSON with { found: bool, pid?: u32, base_address?: string, regions_count?: usize }.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn shenron_re_live_process_find(process_name_ptr: *const c_char) -> *mut c_char {
+    if process_name_ptr.is_null() {
+        return err_to_c_string("Process name pointer is null");
+    }
+    let c_str = unsafe { CStr::from_ptr(process_name_ptr) };
+    let name = match c_str.to_str() {
+        Ok(s) => s,
+        Err(_) => return err_to_c_string("Invalid UTF-8 in process name"),
+    };
+
+    #[derive(serde::Serialize)]
+    struct ProcessFindReport {
+        found: bool,
+        pid: Option<u32>,
+        base_address: Option<String>,
+        regions_count: Option<usize>,
+    }
+
+    match WineProcessMemory::find_by_name(name) {
+        Ok(Some(pid)) => match WineProcessMemory::attach(pid, name) {
+            Ok(mem) => to_c_string(&ProcessFindReport {
+                found: true,
+                pid: Some(pid),
+                base_address: Some(format!("0x{:x}", mem.base_address)),
+                regions_count: Some(mem.regions.len()),
+            }),
+            Err(_) => to_c_string(&ProcessFindReport {
+                found: true,
+                pid: Some(pid),
+                base_address: None,
+                regions_count: None,
+            }),
+        },
+        Ok(None) => to_c_string(&ProcessFindReport {
+            found: false,
+            pid: None,
+            base_address: None,
+            regions_count: None,
+        }),
+        Err(e) => err_to_c_string(&e.to_string()),
+    }
+}
+
+/// Reads live battle telemetry for a combatant at a given virtual memory address.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn shenron_re_live_battle_read(pid: u32, address: u64) -> *mut c_char {
+    if pid == 0 || address == 0 {
+        return err_to_c_string("PID and address must be non-zero");
+    }
+    match WineProcessMemory::attach(pid, "DBXV2.exe") {
+        Ok(mem) => match mem.inspect_battle_character(address) {
+            Ok(combatant) => to_c_string(&combatant),
+            Err(e) => err_to_c_string(&e.to_string()),
+        },
+        Err(e) => err_to_c_string(&e.to_string()),
+    }
+}
+
+/// Synthesizes a unified Xenoverse 2 state snapshot combining save data, skill/moveset assets,
+/// and live process telemetry if attached.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn shenron_re_unified_state_json(
+    save_ptr: *const u8,
+    save_len: usize,
+    cus_ptr: *const u8,
+    cus_len: usize,
+    bac_ptr: *const u8,
+    bac_len: usize,
+    bdm_ptr: *const u8,
+    bdm_len: usize,
+    pid: u32,
+) -> *mut c_char {
+    let save = if !save_ptr.is_null() && save_len >= 0x20000 {
+        let slice = unsafe { slice::from_raw_parts(save_ptr, save_len) };
+        Dxbv2Save::parse_decrypted(slice).ok()
+    } else {
+        None
+    };
+
+    let cus = if !cus_ptr.is_null() && cus_len > 0 {
+        let slice = unsafe { slice::from_raw_parts(cus_ptr, cus_len) };
+        CusFile::parse(slice).ok()
+    } else {
+        None
+    };
+
+    let bac = if !bac_ptr.is_null() && bac_len > 0 {
+        let slice = unsafe { slice::from_raw_parts(bac_ptr, bac_len) };
+        BacFile::parse(slice).ok()
+    } else {
+        None
+    };
+
+    let bdm = if !bdm_ptr.is_null() && bdm_len > 0 {
+        let slice = unsafe { slice::from_raw_parts(bdm_ptr, bdm_len) };
+        BdmFile::parse(slice).ok()
+    } else {
+        None
+    };
+
+    let (wine_mem, live_char) = if pid > 0 {
+        match WineProcessMemory::attach(pid, "DBXV2.exe") {
+            Ok(mem) => (Some(mem), None),
+            Err(_) => (None, None),
+        }
+    } else {
+        (None, None)
+    };
+
+    let state = Dbxv2UnifiedState::build(
+        save.as_ref(),
+        cus.as_ref(),
+        bac.as_ref(),
+        bdm.as_ref(),
+        None,
+        wine_mem.as_ref(),
+        live_char.as_ref(),
+    );
+
+    to_c_string(&state)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -262,6 +389,31 @@ mod tests {
         assert!(!c_str_ptr.is_null());
         let res_str = unsafe { CStr::from_ptr(c_str_ptr) }.to_str().unwrap();
         assert!(res_str.contains(r#""is_pe":true"#));
+        unsafe {
+            shenron_re_free_string(c_str_ptr);
+        }
+    }
+
+    #[test]
+    fn test_ffi_live_process_find_nonexistent() {
+        let name = CString::new("NonExistentProcess12345.exe").unwrap();
+        let c_str_ptr = unsafe { shenron_re_live_process_find(name.as_ptr()) };
+        assert!(!c_str_ptr.is_null());
+        let res_str = unsafe { CStr::from_ptr(c_str_ptr) }.to_str().unwrap();
+        assert!(res_str.contains(r#""found":false"#));
+        unsafe {
+            shenron_re_free_string(c_str_ptr);
+        }
+    }
+
+    #[test]
+    fn test_ffi_unified_state_empty() {
+        let c_str_ptr = unsafe {
+            shenron_re_unified_state_json(ptr::null(), 0, ptr::null(), 0, ptr::null(), 0, ptr::null(), 0, 0)
+        };
+        assert!(!c_str_ptr.is_null());
+        let res_str = unsafe { CStr::from_ptr(c_str_ptr) }.to_str().unwrap();
+        assert!(res_str.contains(r#""game_title":"Dragon Ball Xenoverse 2""#));
         unsafe {
             shenron_re_free_string(c_str_ptr);
         }

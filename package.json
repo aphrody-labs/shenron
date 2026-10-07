@@ -154,7 +154,9 @@
     "audit:assets": "bun scripts/audit/assets-dedup.ts",
     "test:scripts": "bun test --path-ignore-patterns='**/*.live.test.ts' ./scripts",
     "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts",
-    "test:integration": "bun scripts/testing/integration/run.ts"
+    "test:integration": "bun scripts/testing/integration/run.ts",
+    "dev:remote": "bun scripts/dev/remote-dev.ts up",
+    "gates:remote": "bun scripts/dev/remote-dev.ts gates"
   },
   "devDependencies": {
     "@aphrody/agent-browser": "catalog:",

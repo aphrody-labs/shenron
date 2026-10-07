@@ -10,7 +10,7 @@ traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de 
 et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
 et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
 auteur `aphrody-dev <contact@aphrody.com>`, sans mention d'assistant.
-Sessions cloud et locales : aucun outil n'est interdit (Cargo, Git, Bun, Python via `uv`, utilitaires shell), sans hook ni confirmation ; depuis WSL, le Cargo lourd passe par les deux VPS de build (tunnel `vps-cargo.ts` d'Aphrody, voir `docs/development/rust.md`) et WSL ne fait que le Bun. Les règles de données (`db:push`, sources éditoriales) restent en vigueur.
+Sessions cloud et locales : aucun outil n'est interdit (Cargo, Git, Bun, Python via `uv`, utilitaires shell), sans hook ni confirmation ; depuis WSL, le Cargo lourd passe par les deux VPS de build (tunnel `vps-cargo.ts` d'Aphrody, voir `docs/development/rust.md`) et WSL ne fait qu'éditer : installation, portes et serveur de dev passent par `bun scripts/dev/remote-dev.ts up` (`just remote`, tâches VS Code ; `docs/development/remote-dev.md`). Les règles de données (`db:push`, sources éditoriales) restent en vigueur.
 
 Session cloud : `docs/operations/CLOUD-SESSION.md` (hooks, SSH, secrets) ; chantiers ouverts dans `docs/reference/root/REPRISE.md`, lus au démarrage et repris sans demander jusqu'à la production.
 

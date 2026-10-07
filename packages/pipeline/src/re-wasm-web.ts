@@ -38,7 +38,12 @@ export function parseGameDataFile(format: GameDataFormat, bytes: Uint8Array): Ga
   switch (format) {
     case "cus": {
       const file = wasm_parse_cus(bytes) as { version: number; skills: unknown[] };
-      return { format, version: file.version, recordCount: file.skills.length, preview: file.skills.slice(0, 12) };
+      return {
+        format,
+        version: file.version,
+        recordCount: file.skills.length,
+        preview: file.skills.slice(0, 12),
+      };
     }
     case "pup": {
       const file = wasm_parse_pup(bytes) as { entries: unknown[] };

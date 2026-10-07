@@ -239,10 +239,7 @@ export function extractCpkFile(archiveBytes: Uint8Array, filename: string): Uint
 /**
  * Decompresses a CRILAYLA compressed buffer.
  */
-export function decompressCrilayla(
-  compressed: Uint8Array,
-  uncompressedSize = 0,
-): Uint8Array {
+export function decompressCrilayla(compressed: Uint8Array, uncompressedSize = 0): Uint8Array {
   ensureWasm();
   return wasm_decompress_crilayla(compressed, uncompressedSize);
 }
@@ -295,4 +292,3 @@ export function parseMsg(msgBytes: Uint8Array): MsgFile {
   ensureWasm();
   return wasm_parse_msg(msgBytes) as MsgFile;
 }
-

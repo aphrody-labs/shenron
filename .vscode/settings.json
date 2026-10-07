@@ -1,0 +1,22 @@
+{
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/target/**": true,
+    "**/.next*/**": true,
+    "**/dist/**": true,
+    "**/.cache/**": true,
+    "**/graphify-out/**": true,
+    "**/var/**": true,
+    "**/data/home/**": true
+  },
+  "search.exclude": {
+    "**/target": true,
+    "**/.next*": true,
+    "**/dist": true,
+    "**/.cache": true,
+    "**/graphify-out": true,
+    "**/var": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.defaultFormatter": "oxc.oxc-vscode"
+}

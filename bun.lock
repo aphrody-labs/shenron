@@ -101,6 +101,7 @@
         "@shenron/auth": "workspace:*",
         "@shenron/config": "workspace:*",
         "@shenron/db": "workspace:*",
+        "@shenron/engine": "workspace:*",
         "@shenron/images": "workspace:*",
         "@shenron/lexicon": "workspace:*",
         "@shenron/pipeline": "workspace:*",
@@ -228,6 +229,14 @@
         "@shenron/config": "workspace:*",
         "drizzle-orm": "catalog:",
         "postgres": "catalog:",
+      },
+    },
+    "packages/engine": {
+      "name": "@shenron/engine",
+      "version": "1.3.0",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+        "typescript": "catalog:",
       },
     },
     "packages/images": {
@@ -1127,6 +1136,8 @@
     "@shenron/config": ["@shenron/config@workspace:packages/config"],
 
     "@shenron/db": ["@shenron/db@workspace:packages/db"],
+
+    "@shenron/engine": ["@shenron/engine@workspace:packages/engine"],
 
     "@shenron/images": ["@shenron/images@workspace:packages/images"],
 
