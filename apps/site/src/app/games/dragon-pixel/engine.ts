@@ -652,14 +652,16 @@ export function createGame(
     style = "speed";
   }
 
-  const def = FIGHTERS[fighterId];
   let arena: ArenaId = "budokai";
 
   if (mode === "story") {
     const chap = STORY_CHAPTERS.find((c) => c.id === chapterId) ?? STORY_CHAPTERS[0];
     arena = chap.arena;
     fighterId = chap.playerFighter;
+    style = FIGHTERS[fighterId].style;
   }
+
+  const def = FIGHTERS[fighterId];
 
   return {
     player: {

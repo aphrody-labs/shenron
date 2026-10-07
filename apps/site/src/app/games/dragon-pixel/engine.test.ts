@@ -79,6 +79,14 @@ test("story mode chapter 1 initialization and victory", () => {
   expect(g.status).toBe("won");
 });
 
+test("story chapters initialize the designated fighter stats and style", () => {
+  const g = createGame("goku", "story", 10);
+  expect(g.player.fighterId).toBe("trunks");
+  expect(g.player.style).toBe("speed");
+  expect(g.player.powerLevel).toBe(5000);
+  expect(g.player.maxEnergy).toBe(100);
+});
+
 test("guard reduces damage and vanish repositions behind opponent", () => {
   const g = createGame();
   g.wave = 1;
