@@ -469,4 +469,37 @@ des sorties de qualification, distinctes de ceux du NSIS précédent.
 La première reconstruction release complète termine avec succès en 13 min
 27 s. Deux anciens garde-fous de visibilité différant du `main` actuel sont
 ensuite retirés du snapshot par synchronisation de l'entrée canonique ;
-la reconstruction ciblée et le lancement GUI de ce Studio restent à terminer.
+la reconstruction ciblée termine ensuite en 8 min 28 s. Le Studio complet,
+avec Koharu activé et un identifiant de qualification distinct, charge la page
+loopback, lit son DOM et appelle `/cef-ready` ; sa fenêtre reste réactive.
+Cette page de contrôle ne constitue pas encore une validation visuelle de
+l'interface Next ni une preuve d'inférence ML.
+
+Clippy strict avec `--all-targets` passe également pour Studio, FFI, MCP et
+`koharu-library` avec les fonctionnalités exactes de la fabrique :
+`shenron-desktop/custom-protocol`, `shenron-mcp/koharu` et
+`koharu-library/desktop`. Les empreintes ci-dessus restent celles de la
+reconstruction précédente ; elles ne désignent pas de nouveaux binaires
+release avec ces fonctionnalités supplémentaires.
+
+## Qualification des permissions natives de Studio
+
+L'invocation réelle de `get_project` depuis CEF révèle un défaut supplémentaire
+sur la configuration canonique : `Command get_project not allowed by ACL`.
+Dans le snapshot Windows privé, une correction explicite autorise les 51
+commandes Koharu et les 13 commandes Shenron enregistrées, sur la fenêtre
+`main`, dans les périmètres loopback déjà déclarés. Aucun joker de commandes
+n'est ajouté ; la capacité distante d'administration est conservée.
+
+Après reconstruction release en 4 min, la page CEF appelle réellement
+`get_project` et `list_projects` : le projet courant est absent et la liste
+est un tableau. Une seconde page servie sur `127.0.0.2`, hors des origines
+autorisées, reçoit bien le refus ACL pour `get_project`. Les deux contrôles
+terminent avec succès et leurs processus supervisés sont arrêtés.
+
+Cette correction reste dans le snapshot de qualification : les chemins
+desktop sont encore revendiqués par `desktop-installer` et
+`desktop-fast-launch`. Elle n'est donc pas livrée sur `main` à ce stade.
+Les contrôles ne qualifient ni le rendu du canvas, ni l'inférence, ni une
+installation ou activation du nouveau NSIS. La session reste exclusivement
+Windows, sans intervention sur les VPS.
