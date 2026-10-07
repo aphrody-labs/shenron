@@ -260,3 +260,18 @@ mais échoue au test d'écho WebSocket : zéro upgrade reçu, au lieu d'un.
 Le CLI canonique corrigé est en compilation native dans le même snapshot
 producteur, sous le verrou Cargo partagé. La qualification navigateur complète
 reste ouverte ; les preuves Linux de transport ne qualifient pas Windows.
+
+Le CLI canonique Windows termine ensuite sa compilation en 7 min 30 s.
+Sa copie isolée `aphrody-web.exe` est vérifiée par SHA-256 :
+`4ff67f94344711212cf31b88fed98b0053a923bcddb5a04438263bef8dab2aad`.
+Avec la DLL ci-dessus, l'écho WebSocket Unicode réel passe sous Bun Windows
+(un test, deux assertions). La suite Next réelle démarre mais échoue toujours
+après 30 s sur la conversation attendue absente du DOM ; ses assertions restent
+inchangées. Aucun binaire installé n'est remplacé pendant cette qualification.
+
+Un diagnostic Vello natif sur la RTX 4070, via Vulkan, rend des cibles 32 × 32,
+17 × 3 et 65 × 33 : tous les pixels RGBA sont vérifiés exactement, sans perte
+de périphérique ni erreur de validation. Cela qualifie ce rendu matériel, mais
+ne ferme pas les trois échecs DX12 WARP. Le SDK natif passe également la création
+d'un projet Unicode, sa fermeture, sa réouverture dans un second processus et
+sa suppression, dans un dossier temporaire isolé.
