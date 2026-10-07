@@ -123,3 +123,141 @@ describe("MemoryPanel", () => {
     expect(screen.queryByText("Prefers Vegeta")).toBeNull();
   });
 });
+
+test("a rejected removal releases the controls and preserves the memory", async () => {
+  const t = transport();
+  t.remove = mock().mockRejectedValueOnce(Error("private detail")).mockResolvedValue(true);
+  render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+  const button = await screen.findByRole("button", { name: /Forget: Lives in Lyon/ });
+  await act(async () => fireEvent.click(button));
+  expect(await screen.findByText(labels.failed)).toBeTruthy();
+  expect((button as HTMLButtonElement).disabled).toBe(false);
+  expect(screen.getByText("Lives in Lyon")).toBeTruthy();
+  await act(async () => fireEvent.click(button));
+  expect(screen.queryByText("Lives in Lyon")).toBeNull();
+  expect(screen.queryByText(labels.failed)).toBeNull();
+});
+
+test("a rejected clear can be confirmed and retried", async () => {
+  const t = transport();
+  t.clear = mock().mockRejectedValueOnce(Error("private detail")).mockResolvedValue(2);
+  render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+  await screen.findByText("Lives in Lyon");
+  fireEvent.click(screen.getByRole("button", { name: labels.clear }));
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: labels.clearConfirm })));
+  expect(await screen.findByText(labels.failed)).toBeTruthy();
+  expect((screen.getByRole("button", { name: labels.clear }) as HTMLButtonElement).disabled).toBe(
+    false,
+  );
+  fireEvent.click(screen.getByRole("button", { name: labels.clear }));
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: labels.clearConfirm })));
+  expect(screen.getByText(labels.empty)).toBeTruthy();
+  expect(screen.queryByText(labels.failed)).toBeNull();
+});
+
+test.each(["remove", "clear"])("an old refresh cannot restore memory after %s", async (action) => {
+  const pending = Promise.withResolvers<{ memories: typeof facts; total: number } | null>();
+  const started = Promise.withResolvers<void>();
+  const t = transport();
+  t.list = mock()
+    .mockResolvedValueOnce({ memories: facts, total: 2 })
+    .mockImplementationOnce(() => {
+      started.resolve();
+      return pending.promise;
+    });
+  const view = render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+  await screen.findByText("Lives in Lyon");
+  view.rerender(
+    <MemoryPanel transport={t} labels={labels} memory={{ available: true }} refreshKey={1} />,
+  );
+  await act(async () => {
+    await started.promise;
+  });
+  if (action === "remove")
+    await act(async () =>
+      fireEvent.click(screen.getByRole("button", { name: /Forget: Lives in Lyon/ })),
+    );
+  else {
+    fireEvent.click(screen.getByRole("button", { name: labels.clear }));
+    await act(async () =>
+      fireEvent.click(screen.getByRole("button", { name: labels.clearConfirm })),
+    );
+  }
+  await act(async () => pending.resolve({ memories: facts, total: 2 }));
+  expect(screen.queryByText("Lives in Lyon")).toBeNull();
+  if (action === "clear") expect(screen.queryByText("Prefers Vegeta")).toBeNull();
+});
+
+test("a removal from the old transport cannot edit the replacement memory", async () => {
+  const pending = Promise.withResolvers<boolean>();
+  const t = transport();
+  t.remove = mock(() => pending.promise);
+  const view = render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+  await screen.findByText("Lives in Lyon");
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: /Forget: Lives in Lyon/ })),
+  );
+  view.rerender(
+    <MemoryPanel transport={transport()} labels={labels} memory={{ available: true }} />,
+  );
+  await screen.findByText("Lives in Lyon");
+  await act(async () => pending.resolve(true));
+  expect(screen.getByText("Lives in Lyon")).toBeTruthy();
+  expect(screen.getByText("2 memories")).toBeTruthy();
+});
+
+test("a rejected read is visible and the next search can recover", async () => {
+  const t = transport();
+  t.list = mock()
+    .mockRejectedValueOnce(Error("private detail"))
+    .mockResolvedValue({ memories: [facts[1]!], total: 1 });
+  render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+  expect(await screen.findByText(labels.failed)).toBeTruthy();
+  fireEvent.change(screen.getByLabelText(labels.searchLabel), { target: { value: "Lyon" } });
+  expect(await screen.findByText("Lives in Lyon")).toBeTruthy();
+  expect(screen.queryByText(labels.failed)).toBeNull();
+});
+
+test("finishing a removal after a new search preserves its unrelated result count", async () => {
+  const pending = Promise.withResolvers<boolean>();
+  const t = transport();
+  t.remove = mock(() => pending.promise);
+  render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+  await screen.findByText("Prefers Vegeta");
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: /Forget: Prefers Vegeta/ })),
+  );
+  fireEvent.change(screen.getByLabelText(labels.searchLabel), { target: { value: "Lyon" } });
+  await screen.findByText("1 memories");
+  await act(async () => pending.resolve(true));
+  expect(screen.getByText("Lives in Lyon")).toBeTruthy();
+  expect(screen.getByText("1 memories")).toBeTruthy();
+});
+
+test("a successful concurrent refresh does not erase a removal failure", async () => {
+  const pending = Promise.withResolvers<{ memories: typeof facts; total: number } | null>();
+  const started = Promise.withResolvers<void>();
+  const t = transport();
+  t.list = mock()
+    .mockResolvedValueOnce({ memories: facts, total: 2 })
+    .mockImplementationOnce(() => {
+      started.resolve();
+      return pending.promise;
+    });
+  t.remove = mock(async () => false);
+  const view = render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+  await screen.findByText("Lives in Lyon");
+  view.rerender(
+    <MemoryPanel transport={t} labels={labels} memory={{ available: true }} refreshKey={1} />,
+  );
+  await act(async () => {
+    await started.promise;
+  });
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: /Forget: Lives in Lyon/ })),
+  );
+  expect(screen.getByText(labels.failed)).toBeTruthy();
+  await act(async () => pending.resolve({ memories: facts, total: 2 }));
+  expect(screen.getByText(labels.failed)).toBeTruthy();
+  expect(screen.getByText("Lives in Lyon")).toBeTruthy();
+});

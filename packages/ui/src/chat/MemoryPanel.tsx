@@ -7,7 +7,7 @@
  */
 import { Banner, Button } from "@aphrody/m3-primitives";
 import { Brain, CircleAlert, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChatGroupStatus } from "./model";
 
 export interface MemoryItem {
@@ -64,24 +64,52 @@ export function MemoryPanel({
   className,
 }: MemoryPanelProps) {
   const [query, setQuery] = useState("");
-  const [items, setItems] = useState<MemoryItem[] | null>(null);
-  const [total, setTotal] = useState(0);
+  const [{ items, total }, setData] = useState<{ items: MemoryItem[] | null; total: number }>({
+    items: null,
+    total: 0,
+  });
   const [failed, setFailed] = useState(false);
+  const [actionFailed, setActionFailed] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const on = memory?.available === true;
+  const connection = useRef<{ active: boolean } | null>(null);
+  const revision = useRef(0);
+  const mutating = useRef(false);
+
+  useEffect(() => {
+    const session = { active: on };
+    connection.current = session;
+    mutating.current = false;
+    setBusy(false);
+    setData({ items: null, total: 0 });
+    setFailed(false);
+    setActionFailed(false);
+    setConfirming(false);
+    return () => {
+      session.active = false;
+    };
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- Replacing the transport invalidates operations and clears the previous server's view.
+  }, [transport, on]);
 
   const load = useCallback(
     async (q: string, isCurrent: () => boolean) => {
-      const result = await transport.list(q ? { q } : {});
-      if (!isCurrent()) return;
+      const version = revision.current;
+      const owner = connection.current;
+      const result = await transport.list(q ? { q } : {}).catch(() => null);
+      if (
+        !isCurrent() ||
+        !owner?.active ||
+        owner !== connection.current ||
+        version !== revision.current
+      )
+        return;
       if (!result) {
         setFailed(true);
         return;
       }
       setFailed(false);
-      setItems(result.memories);
-      setTotal(result.total);
+      setData({ items: result.memories, total: result.total });
     },
     [transport],
   );
@@ -97,22 +125,40 @@ export function MemoryPanel({
   }, [on, load, query, refreshKey]);
 
   async function remove(id: string) {
+    if (mutating.current || !on) return;
+    const owner = connection.current;
+    if (!owner?.active) return;
+    mutating.current = true;
     setBusy(true);
-    const ok = await transport.remove(id);
+    const ok = await transport.remove(id).catch(() => false);
+    if (!owner.active || owner !== connection.current) return;
+    mutating.current = false;
     setBusy(false);
-    if (!ok) return setFailed(true);
-    setItems((list) => list?.filter((m) => m.id !== id) ?? null);
-    setTotal((n) => Math.max(0, n - 1));
+    if (!ok) return setActionFailed(true);
+    revision.current++;
+    setActionFailed(false);
+    setData((current) => {
+      const remaining = current.items?.filter((m) => m.id !== id) ?? null;
+      const removed = (current.items?.length ?? 0) - (remaining?.length ?? 0);
+      return { items: remaining, total: Math.max(0, current.total - removed) };
+    });
   }
 
   async function clear() {
+    if (mutating.current || !on) return;
+    const owner = connection.current;
+    if (!owner?.active) return;
+    mutating.current = true;
     setBusy(true);
-    const deleted = await transport.clear();
+    const deleted = await transport.clear().catch(() => null);
+    if (!owner.active || owner !== connection.current) return;
+    mutating.current = false;
     setBusy(false);
     setConfirming(false);
-    if (deleted === null) return setFailed(true);
-    setItems([]);
-    setTotal(0);
+    if (deleted === null) return setActionFailed(true);
+    revision.current++;
+    setActionFailed(false);
+    setData({ items: [], total: 0 });
   }
 
   return (
@@ -161,7 +207,12 @@ export function MemoryPanel({
             />
             {confirming ? (
               <div className="flex gap-2">
-                <Button variant="text" size="lg" onClick={() => setConfirming(false)}>
+                <Button
+                  variant="text"
+                  size="lg"
+                  disabled={busy}
+                  onClick={() => setConfirming(false)}
+                >
                   {labels.cancel}
                 </Button>
                 <Button
@@ -186,7 +237,7 @@ export function MemoryPanel({
             )}
           </div>
 
-          {failed ? (
+          {failed || actionFailed ? (
             <Banner variant="error" showDot={false} icon={CircleAlert}>
               <p className="m-0">{labels.failed}</p>
             </Banner>
