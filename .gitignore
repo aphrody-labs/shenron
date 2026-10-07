@@ -42,6 +42,7 @@ test-results/
 *.p12
 *.pfx
 /data/home/
+/data/source-acquisition/
 /apps/bot/data/*.db
 *.db
 *.db-shm

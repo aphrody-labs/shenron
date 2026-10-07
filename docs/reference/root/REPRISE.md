@@ -12,6 +12,18 @@ l'installeur (v3) est déposé pour Omar, la validation de bout en bout reste à
 
 ## À faire
 
+- **Corpus documentaire Dragon Ball** : poursuivre en autonomie l'acquisition et
+  l'indexation de toutes les pages des 18 Sōshūhen, des Kai Dragon Books, des éditions
+  Full Color, des numéros Weekly Shōnen Jump mentionnant Dragon Ball et des interviews.
+  Séparer les identités d'édition et les paginations imprimées des fichiers acquis.
+  Utiliser directement le MCP et la CLI Aphrody ; les audits de production passent
+  par `aphrody-infra ssh exec`, les documents bruts privés par `data/source-acquisition/`
+  (ignoré), les preuves par `var/reports/source-*`. Les contrôles
+  `source-coverage.ts`, `source-ingestion-postgres.ts` et `source-readiness.ts`
+  sont livrés ; les dépôts DB/RAG, les vecteurs, la mise à jour du site et la
+  qualification de production restent à exécuter et vérifier sur le corpus complet.
+  Le gel des écritures OCR/traduction des databooks reste applicable.
+
 - **Release en production** : livrer les commits récents de `main` (retrait de « Découvrir », hôte Bun
   avec Better Auth, canvas wasm wgpu 30). `bun scripts/ops/release.ts --build-host vps` (le build du
   site exige Docker : dbfr n'en a pas). Si le vps est saturé, arrêter `shenron-cdn-sync.timer` pendant la
