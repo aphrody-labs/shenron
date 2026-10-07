@@ -32,7 +32,8 @@ export function createChronologyConfigRepository(db: ChronologyDatabase) {
           description: botTimelineEvents.description,
           characters_involved: botTimelineEvents.charactersInvolved,
           source_ref: botTimelineEvents.sourceRef,
-          canon: botTimelineEvents.canon,
+          // Legacy wiki mirrors store booleans as text; expose an actual boolean.
+          canon: sql<boolean>`${botTimelineEvents.canon}::text IN ('true', 't', '1')`,
           order_idx: botTimelineEvents.orderIdx,
         })
         .from(botTimelineEvents)
