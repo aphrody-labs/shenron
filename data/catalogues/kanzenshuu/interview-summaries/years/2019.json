@@ -135,6 +135,42 @@
       "dragonBallRelevance": "Directe : présente les principes des responsables de production pour adapter Dragon Ball en anime ou en jeu vidéo et préserver les personnages et l'univers.",
       "status": "summary-written-print-source-not-collated",
       "forumContent": false
+    },
+    {
+      "id": "tv-animation-comics-evil-dragon-arc-volume-3-katsuyoshi-nakatsuru-interview",
+      "title": "TV Animation Comics: Evil Dragon Arc Volume 3 — interview signalée de Katsuyoshi Nakatsuru",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu indique que le volume 3 des TV Animation Comics consacré à l’arc des Dragons maléfiques, paru le 4 décembre 2019, comprend une interview de Katsuyoshi Nakatsuru. Elle ne donne ni sujet, ni extrait, ni longueur, ni détails sur les questions. Cette notice signale donc une interview identifiée par la source, avec confiance faible quant à son contenu et sans lui attribuer de propos.",
+      "keyInformation": [
+        "Répondant nommé par la page : Katsuyoshi Nakatsuru.",
+        "Support : TV Animation Comics, arc des Dragons maléfiques, volume 3; date de sortie indiquée : 4 décembre 2019.",
+        "Aucun contenu, extrait, sujet ou nombre de pages n’est décrit par la page locale."
+      ],
+      "source": {
+        "publication": "TV Animation Comics: Evil Dragon Arc Volume 3",
+        "date": "2019-12-04",
+        "url": "https://www.kanzenshuu.com/manga/tv-comics/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 9393,
+        "sourcePageTitle": "TV Animation Comics",
+        "sourcePageUrl": "https://www.kanzenshuu.com/manga/tv-comics/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2019
+        ],
+        "participants": [
+          "Katsuyoshi Nakatsuru"
+        ],
+        "format": "interview signalée",
+        "contentDescription": null,
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Notice bibliographique d’un entretien signalé dans un volume consacré à l’arc des Dragons maléfiques; la page n’en expose pas le contenu.",
+      "formatNote": "Candidate de confiance faible : la page répertorie l’interview et le répondant, sans transcription ni description substantielle.",
+      "status": "identified-low-confidence-content-unavailable",
+      "forumContent": false
     }
   ]
 }

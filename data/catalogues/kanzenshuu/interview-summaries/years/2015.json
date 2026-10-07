@@ -544,6 +544,37 @@
       "dragonBallRelevance": "Directe : objectifs de distribution et d’exploitation de Dragon Ball Z: Revival of ‘F’ rapportés par des responsables de Toei.",
       "status": "summary-written-external-interview-not-fully-transcribed",
       "forumContent": false
+    },
+    {
+      "id": "v-jump-2015-akio-iyoku-kozo-morishita-film-titles",
+      "title": "Akio Iyoku et Kōzō Morishita — entretien V-Jump sur les films Dragon Ball",
+      "summary": "Dans cet entretien en ligne de V-Jump, Akio Iyoku interroge le producteur Kōzō Morishita sur la conception des films Dragon Ball de cette période. Morishita explique que les titres et l’histoire étaient élaborés en parallèle avec l’éditeur Kondō; cette simultanéité rendait le processus de décision difficile. Kanzenshuu cite et résume ce passage dans une page ultérieure, sans reproduire l’entretien complet.",
+      "keyInformation": [
+        "Morishita rapporte que le sous-titre et le contenu narratif des films étaient réfléchis en même temps.",
+        "L’éditeur Kondō participait à ces échanges de conception.",
+        "Morishita décrit cette façon de travailler comme difficile.",
+        "La page Kanzenshuu fournit un extrait/résumé, pas une transcription intégrale de l’entretien V-Jump."
+      ],
+      "source": {
+        "publication": "V-Jump, entretien en ligne; Akio Iyoku interviewe le producteur Kōzō Morishita",
+        "date": "24 May 2015 (archive de la page; date originale de publication non établie)",
+        "participants": [
+          "Akio Iyoku",
+          "Kōzō Morishita",
+          "Kondō (éditeur, mentionné)"
+        ],
+        "originalSource": "http://vjump.shueisha.co.jp/victory/vt23/wp-main-pre23.html",
+        "archivedSource": "https://web.archive.org/web/20150524012258/http://vjump.shueisha.co.jp:80/victory/vt23/wp-main-pre23.html",
+        "kanzenshuuPage": "https://www.kanzenshuu.com/faqs/dbz-movies-fit-the-story/",
+        "kanzenshuuPageId": 75192,
+        "questionAnswerCount": null,
+        "formatNote": "Entretien en ligne externe; Kanzenshuu en rapporte un passage, sans transcription complète. La capture Wayback est datée du 24 mai 2015, ce qui n’établit pas nécessairement la date de publication originale.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
+      },
+      "dragonBallRelevance": "Directe: témoignage d’un producteur sur la conception des films Dragon Ball.",
+      "status": "summary-based-on-kanzenshuu-excerpt-source-not-fully-collated",
+      "forumContent": false
     }
   ]
 }

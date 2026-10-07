@@ -151,6 +151,136 @@
       "forum": false,
       "forumContent": false,
       "kind": "qa"
+    },
+    {
+      "id": "site-page-51125-shonen-jump-dragon-power-akira-toriyama",
+      "title": "Akira Toriyama — Dragon Power! / Ask Akira Toriyama",
+      "kind": "interview",
+      "summary": "Cet entretien de Shonen Jump présente les inspirations et choix de création d’Akira Toriyama. Après une introduction retraçant son passage de Dr. Slump à Dragon Ball, les questions portent sur les arts martiaux, les pouvoirs, les personnages et les idées qui ont façonné le manga. Kanzenshuu reproduit l’article d’entretien dans son archive de presse.",
+      "keyInformation": [
+        "L’article présente Dragon Ball comme le passage de Toriyama d’un manga comique à une aventure inspirée du kung-fu et des arts martiaux.",
+        "Les questions abordent la création des personnages, les techniques et les influences de Toriyama.",
+        "Le contenu est un entretien avec l’auteur, et non un texte éditorial uniquement consacré à sa biographie."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-january-2003-interview-dragon-power-ask-akira-toriyama/",
+        "publication": "Shonen Jump, janvier 2003, « Dragon Power! / Ask Akira Toriyama »",
+        "publicationDate": "2003-01",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "kanzenshuuPageId": 51125,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien imprimé en questions-réponses",
+        "scopeNote": "Article entier transcrit dans la page d’archive Kanzenshuu."
+      },
+      "dragonBallRelevance": "Directe : création de Dragon Ball, inspirations et choix de conception de Toriyama.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Entretien long; le texte éditorial d’introduction précède les questions."
+    },
+    {
+      "id": "site-page-51151-shonen-jump-kidz-questionz-akira-toriyama",
+      "title": "Akira Toriyama — KidZ QuestionZ au lancement de Shonen Jump à New York",
+      "kind": "qa",
+      "summary": "À la suite du compte rendu du lancement américain de Shonen Jump, une section distincte restitue les questions posées à Akira Toriyama par de jeunes lecteurs. Les réponses sont présentées comme un Q&A d’événement, séparé de l’autre entretien Toriyama–Yasutoko publié dans le même numéro.",
+      "keyInformation": [
+        "Le Q&A est associé au lancement de Shonen Jump à New York et à la rencontre avec Toriyama.",
+        "Les questions viennent de jeunes lecteurs; le format diffère de l’entretien de Takeshi Yasutoko dans le même numéro.",
+        "Le texte constitue une séquence de réponses directes de Toriyama, et non une simple mention de la séance publique."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-nyc-launch-kidz-questionz-for-akira-toriyama/",
+        "publication": "Shonen Jump, mars 2003, « NYC Launch / KidZ QuestionZ for Akira Toriyama »",
+        "publicationDate": "2003-03",
+        "participants": [
+          "Akira Toriyama",
+          "Jeunes lecteurs de Shonen Jump"
+        ],
+        "kanzenshuuPageId": 51151,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Q&A imprimé d’événement",
+        "scopeNote": "La page reproduit la section Q&A; elle ne doit pas être fusionnée avec l’entretien Yasutoko du même numéro."
+      },
+      "dragonBallRelevance": "Directe : réponses de Toriyama aux lecteurs lors du lancement américain de Shonen Jump.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Q&A imprimé, distinct de la rencontre avec Takeshi Yasutoko."
+    },
+    {
+      "id": "site-page-51159-shonen-jump-toriyama-yasutoko",
+      "title": "Akira Toriyama et Takeshi Yasutoko — entretien face-à-face",
+      "kind": "interview",
+      "summary": "Dans cet entretien de Shonen Jump, le champion de patinage en ligne Takeshi Yasutoko questionne Akira Toriyama lors d’une rencontre à New York. Les échanges portent sur les ressemblances entre Toriyama et certains de ses personnages, sa manière de développer personnages et histoires pendant la sérialisation, et son travail de créateur. L’article décrit la rencontre et reproduit directement les dialogues.",
+      "keyInformation": [
+        "Yasutoko dit que Senbei Norimaki lui rappelle Toriyama; l’auteur répond qu’on lui fait souvent cette remarque, y compris au sujet du maître des tortues.",
+        "Toriyama explique qu’il ne s’est pas consciemment représenté dans ces personnages, mais que dessiner des personnages proches de soi lui paraît naturel.",
+        "Il décrit le développement des personnages comme un processus discuté au fil des réunions mensuelles et de la sérialisation."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-interview-toriyama-vs-tasutoko/",
+        "publication": "Shonen Jump, mars 2003, « Interview — Toriyama vs Yasutoko »",
+        "publicationDate": "2003-03",
+        "participants": [
+          "Akira Toriyama",
+          "Takeshi Yasutoko"
+        ],
+        "kanzenshuuPageId": 51159,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien imprimé en dialogue",
+        "scopeNote": "Le corps de la page reproduit les échanges; le numéro contient aussi un Q&A différent avec des lecteurs."
+      },
+      "dragonBallRelevance": "Directe : témoignage de Toriyama sur ses personnages et sa méthode de création.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Entretien face-à-face, distinct du Q&A des jeunes lecteurs dans le même numéro."
+    },
+    {
+      "id": "site-page-53780-anime-insider-qt-on-gt-funimation-staff-qa",
+      "title": "Équipe FUNimation — Q&A sur Dragon Ball GT",
+      "kind": "qa",
+      "summary": "Ce Q&A d’Anime Insider apporte les réponses de quatre membres de l’équipe américaine de Dragon Ball GT : le réalisateur Chris Bevins, le superviseur de scénario Jeremy Carlisle, le scénariste et voix d’Eric Vale, et le comédien Mike McFarland. Interrogés sur les choix de diffusion et des éléments de la série, Bevins explique que FUNimation a commencé par les épisodes où l’action démarre avec Baby, avant de prévoir de revenir aux épisodes initiaux; les réponses distinguent aussi les appellations japonaises et celles du doublage. L’article précise que ces propos documentent uniquement l’adaptation anglaise et ne font pas autorité sur la production japonaise ni sur le canon de GT.",
+      "keyInformation": [
+        "Les questions proviennent de lecteurs et sont adressées à l’équipe du doublage américain de FUNimation.",
+        "Chris Bevins explique que les 16 premiers épisodes ont été écartés du premier passage américain pour commencer par les épisodes d’action autour de Baby; il indique qu’ils devaient ensuite être produits pour DVD.",
+        "Bevins, Carlisle, Vale et McFarland répondent à des questions sur la série et sa localisation; leurs propos décrivent la version FUNimation, pas la production japonaise.",
+        "La page Kanzenshuu signale que l’article source contient des erreurs factuelles et les corrige en notes éditoriales; les réponses doivent donc rester attribuées à ces intervenants."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/anime-insider-december-2003-feature-the-qt-on-gt/",
+        "publication": "Anime Insider, décembre 2003, « The QT on GT »",
+        "publicationDate": "2003-12",
+        "participants": [
+          "Chris Bevins",
+          "Jeremy Carlisle",
+          "Eric Vale",
+          "Mike McFarland"
+        ],
+        "kanzenshuuPageId": 53780,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2017.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "format": "Q&A imprimé avec quatre membres de l’équipe FUNimation",
+        "forumContent": false,
+        "scopeNote": "Le contenu porte sur l’adaptation/doublage américain; l’éditeur Kanzenshuu précise que les propos ne décrivent pas la production japonaise."
+      },
+      "dragonBallRelevance": "Directe, mais limitée à l’adaptation américaine de Dragon Ball GT et à l’équipe FUNimation.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Q&A transcrit dans le corps de la page; conserver les notes éditoriales de portée."
     }
   ]
 }

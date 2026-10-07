@@ -1305,6 +1305,110 @@
       "formatNote": "Q&A institutionnel publié; contributions communautaires non reproduites comme messages de forum.",
       "dragonBallRelevance": "Directe : décisions de restauration, de présentation et de production des éditions vidéo Dragon Ball.",
       "forumContent": false
+    },
+    {
+      "id": "battle-of-gods-limited-dvd-nozawa-video-interview",
+      "kind": "video-interview",
+      "title": "Masako Nozawa — entretien vidéo bonus de Battle of Gods",
+      "summary": "Dans l’entretien vidéo du DVD bonus de l’édition japonaise limitée de Battle of Gods, Masako Nozawa, interprète de Son Goku, Son Gohan et Son Goten, évoque son expérience sur le film. La page Kanzenshuu décrit ce segment, sans en fournir la transcription ni le fichier vidéo; aucun propos plus précis ne peut donc lui être attribué.",
+      "keyInformation": [
+        "La page Kanzenshuu identifie Masako Nozawa et ses rôles dans le film.",
+        "L’entretien est un segment vidéo distinct du guide officiel du film; le contenu disponible se limite à la description éditoriale de Kanzenshuu."
+      ],
+      "source": {
+        "publication": "Dragon Ball Z: Battle of Gods — édition japonaise limitée, DVD bonus",
+        "date": "2013-09-13",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "kanzenshuuPageId": 26565,
+        "kanzenshuuUrl": "https://www.kanzenshuu.com/home-video/jp/bog-limited/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
+        "transcriptAvailable": false,
+        "formatNote": "Interview vidéo décrite par Kanzenshuu; pas de transcription reproduite dans la page locale.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : expérience de Nozawa dans le doublage du film.",
+      "status": "summary-written-video-not-acquired",
+      "forumContent": false
+    },
+    {
+      "id": "battle-of-gods-limited-dvd-yamadera-video-interview",
+      "kind": "video-interview",
+      "title": "Kōichi Yamadera — entretien vidéo bonus de Battle of Gods",
+      "summary": "Dans l’entretien vidéo du DVD bonus de l’édition japonaise limitée de Battle of Gods, Kōichi Yamadera, interprète de Beerus, évoque son expérience sur le film. La page Kanzenshuu décrit ce segment, sans en fournir la transcription ni le fichier vidéo; aucun propos plus précis ne peut donc lui être attribué.",
+      "keyInformation": [
+        "La page Kanzenshuu identifie Kōichi Yamadera et son rôle dans le film.",
+        "L’entretien est un segment vidéo distinct du guide officiel du film; le contenu disponible se limite à la description éditoriale de Kanzenshuu."
+      ],
+      "source": {
+        "publication": "Dragon Ball Z: Battle of Gods — édition japonaise limitée, DVD bonus",
+        "date": "2013-09-13",
+        "participants": [
+          "Kōichi Yamadera"
+        ],
+        "kanzenshuuPageId": 26565,
+        "kanzenshuuUrl": "https://www.kanzenshuu.com/home-video/jp/bog-limited/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
+        "transcriptAvailable": false,
+        "formatNote": "Interview vidéo décrite par Kanzenshuu; pas de transcription reproduite dans la page locale.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : expérience de Yamadera dans le doublage du film.",
+      "status": "summary-written-video-not-acquired",
+      "forumContent": false
+    },
+    {
+      "id": "battle-of-gods-limited-dvd-nakagawa-video-interview",
+      "kind": "video-interview",
+      "title": "Shōko Nakagawa — entretien vidéo bonus de Battle of Gods",
+      "summary": "Dans l’entretien vidéo du DVD bonus de l’édition japonaise limitée de Battle of Gods, Shōko Nakagawa, interprète du Poisson Oracle, évoque son expérience sur le film. La page Kanzenshuu décrit ce segment, sans en fournir la transcription ni le fichier vidéo; aucun propos plus précis ne peut donc lui être attribué.",
+      "keyInformation": [
+        "La page Kanzenshuu identifie Shōko Nakagawa et son rôle dans le film.",
+        "L’entretien est un segment vidéo distinct du guide officiel du film; le contenu disponible se limite à la description éditoriale de Kanzenshuu."
+      ],
+      "source": {
+        "publication": "Dragon Ball Z: Battle of Gods — édition japonaise limitée, DVD bonus",
+        "date": "2013-09-13",
+        "participants": [
+          "Shōko Nakagawa"
+        ],
+        "kanzenshuuPageId": 26565,
+        "kanzenshuuUrl": "https://www.kanzenshuu.com/home-video/jp/bog-limited/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
+        "transcriptAvailable": false,
+        "formatNote": "Interview vidéo décrite par Kanzenshuu; pas de transcription reproduite dans la page locale.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : expérience de Nakagawa dans le doublage du film.",
+      "status": "summary-written-video-not-acquired",
+      "forumContent": false
+    },
+    {
+      "id": "battle-of-gods-limited-dvd-matsumoto-video-interview",
+      "kind": "video-interview",
+      "title": "Kaori Matsumoto — entretien vidéo bonus de Battle of Gods",
+      "summary": "Dans l’entretien vidéo du DVD bonus de l’édition japonaise limitée de Battle of Gods, Kaori Matsumoto, interprète de la policière à moto, évoque son expérience sur le film. La page Kanzenshuu décrit ce segment, sans en fournir la transcription ni le fichier vidéo; aucun propos plus précis ne peut donc lui être attribué.",
+      "keyInformation": [
+        "La page Kanzenshuu identifie Kaori Matsumoto et son rôle dans le film.",
+        "L’entretien est un segment vidéo distinct du guide officiel du film; le contenu disponible se limite à la description éditoriale de Kanzenshuu."
+      ],
+      "source": {
+        "publication": "Dragon Ball Z: Battle of Gods — édition japonaise limitée, DVD bonus",
+        "date": "2013-09-13",
+        "participants": [
+          "Kaori Matsumoto"
+        ],
+        "kanzenshuuPageId": 26565,
+        "kanzenshuuUrl": "https://www.kanzenshuu.com/home-video/jp/bog-limited/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
+        "transcriptAvailable": false,
+        "formatNote": "Interview vidéo décrite par Kanzenshuu; pas de transcription reproduite dans la page locale.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : expérience de Matsumoto dans le doublage du film.",
+      "status": "summary-written-video-not-acquired",
+      "forumContent": false
     }
   ]
 }

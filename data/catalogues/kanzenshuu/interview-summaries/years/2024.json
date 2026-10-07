@@ -149,6 +149,38 @@
       },
       "forumContent": false,
       "dragonBallRelevance": "Informations de lancement sur le jeu d’arcade Super Dragon Ball Divers et la compatibilité envisagée avec les cartes Heroes."
+    },
+    {
+      "id": "kaze-video-kazuhiko-torishima-battle-of-gods-interview-excerpt",
+      "title": "Kazuhiko Torishima — extrait vidéo d’entretien associé à la sortie française de Dragon Ball Kai",
+      "summary": "Dans le passage vidéo cité par Kanzenshuu, Kazuhiko Torishima raconte une discussion avec Bandai alors que les revenus diminuaient. Après lui avoir demandé ce qui pourrait aider l’entreprise, Bandai évoque une nouvelle série animée. Toriyama ne souhaitait pas écrire une nouvelle histoire; Torishima indique qu’une conclusion a ensuite été trouvée avec Bandai. Kanzenshuu ne fournit qu’un extrait résumé et horodaté, pas une transcription complète. L’année 2024 correspond à la publication du billet Kanzenshuu qui cite la vidéo; l’année de l’entretien lui-même n’est pas établie.",
+      "keyInformation": [
+        "Torishima replace l’échange dans une période où les revenus de Bandai étaient en baisse.",
+        "Bandai lui demande quelles mesures pourraient soutenir l’entreprise, puis évoque une nouvelle série animée Dragon Ball.",
+        "Torishima dit que Toriyama ne voulait pas écrire de nouvelle histoire et qu’ils ont fini par trouver une solution avec Bandai.",
+        "Kanzenshuu renvoie à un passage de la vidéo à 6 min 27 s et en résume le contenu; aucune transcription intégrale n’est donnée.",
+        "Date de l’entretien inconnue. 2024 est uniquement l’année de publication du billet Kanzenshuu."
+      ],
+      "source": {
+        "publication": "Entretien vidéo YouTube réalisé en lien avec la sortie française de Dragon Ball Kai chez Kazé; série et date de production non précisées dans le billet",
+        "date": null,
+        "interviewYear": null,
+        "kanzenshuuCitationYear": 2024,
+        "participants": [
+          "Kazuhiko Torishima",
+          "intervieweur non identifié dans le passage cité"
+        ],
+        "originalSource": "https://www.youtube.com/watch?v=Jd0ocHDfYgg&t=387s",
+        "kanzenshuuPage": "https://www.kanzenshuu.com/rumor/toriyama-battle-of-gods-evolution/",
+        "kanzenshuuPageId": 75060,
+        "questionAnswerCount": null,
+        "formatNote": "Extrait/résumé d’une interview vidéo externe, horodaté à 6:27. Date de l’entretien inconnue; 2024 désigne seulement l’année du billet Kanzenshuu.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
+      },
+      "dragonBallRelevance": "Directe: témoignage de l’ancien éditeur de Dragon Ball sur les discussions ayant précédé le projet Battle of Gods.",
+      "status": "summary-based-on-kanzenshuu-video-excerpt-source-date-unknown",
+      "forumContent": false
     }
   ]
 }

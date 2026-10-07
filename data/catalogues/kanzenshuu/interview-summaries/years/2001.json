@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Résumé d’un entretien publié en 2001 et rapporté dans une page Kanzenshuu ultérieure; aucune transcription intégrale dans le corps source.",
+  "reviewNote": "La notice s’appuie uniquement sur le résumé historique de la page Cross Epoch de Kanzenshuu. Elle ne reconstitue pas les questions ni les réponses de l’entretien original.",
+  "records": [
+    {
+      "id": "one-piece-color-walk-1-oda-toriyama-interview-summary",
+      "kind": "external-interview-summary",
+      "title": "Entretien conjoint Eiichirō Oda × Akira Toriyama — résumé de Kanzenshuu",
+      "summary": "La page Cross Epoch de Kanzenshuu indique qu’Eiichirō Oda et Akira Toriyama se sont entretenus en 2001 pour l’artbook One Piece Color Walk 1, avant que leur projet de collaboration ne soit envisagé. Elle résume un élément de cet échange : Oda admirait Toriyama depuis son enfance et découvrit que Toriyama appréciait lui aussi One Piece, qu’il avait connu par l’intermédiaire de ses enfants. Le corps Kanzenshuu ne reproduit pas l’entretien complet ni ses questions et réponses.",
+      "keyInformation": [
+        "Participants : Eiichirō Oda et Akira Toriyama.",
+        "Publication source indiquée : One Piece Color Walk 1; année de l’entretien rapportée par Kanzenshuu : 2001.",
+        "Le résumé rapporte l’admiration d’Oda pour Toriyama depuis son enfance et l’intérêt réciproque de Toriyama pour One Piece, découvert grâce à ses enfants.",
+        "Kanzenshuu donne une notice/résumé historique sans transcription intégrale; les propos détaillés et la structure Q/R de la source ne sont pas disponibles dans ce corps."
+      ],
+      "source": {
+        "publication": "One Piece Color Walk 1",
+        "date": "2001",
+        "participants": [
+          "Eiichirō Oda",
+          "Akira Toriyama"
+        ],
+        "url": "https://www.kanzenshuu.com/manga/spin-offs/crossovers/cross-epoch/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
+        "sourceRecordId": 24513,
+        "sourcePageDate": "2013-07-25",
+        "formatNote": "Entretien externe signalé et résumé brièvement dans la notice historique de Cross Epoch; aucune transcription ni compte des questions/réponses n’est fourni.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : Akira Toriyama, auteur de Dragon Ball, échange avec Eiichirō Oda au sujet de leur admiration réciproque et de One Piece.",
+      "status": "summary-from-kanzenshuu-page-no-full-transcript",
+      "forumContent": false
+    }
+  ]
+}

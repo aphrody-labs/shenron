@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des interviews Dragon Ball publiées en 2000; les contenus de forum sont exclus.",
+  "reviewNote": "Les notices incluent les entretiens menés par Daizenshuu EX et archivés ou liés sur Kanzenshuu; les résumés ne reproduisent pas les transcriptions.",
+  "records": [
+    {
+      "id": "daizenshuu-ex-2000-sonny-strait-interview",
+      "kind": "written-interview",
+      "title": "Sonny Strait — entretien avec Jon Allen",
+      "summary": "Sonny Strait raconte sa formation d’acteur, son audition chez FUNimation et la manière dont il a construit sa voix de Krillin, en choisissant de proposer sa propre interprétation plutôt que d’imiter Terry Klassen. Il décrit aussi son travail sur TOM, l’animateur de Toonami, et sur Bardock, ses méthodes de préparation, ainsi que les réactions des fans au changement de voix. Le segment intitulé « prank call » en fin d’audio est une blague dans l’entretien, pas une conversation réelle avec Terry Klassen.",
+      "keyInformation": [
+        "Sonny Strait revient sur son audition et le choix de sa voix de Krillin.",
+        "Il explique sa décision de ne pas imiter Terry Klassen et de façonner sa propre interprétation.",
+        "Il décrit également ses rôles de TOM et de Bardock et sa méthode de préparation.",
+        "La transcription intégrale de l’entretien Daizenshuu EX est liée depuis une page Kanzenshuu et conservée dans l’acquisition privée."
+      ],
+      "source": {
+        "url": "https://www.daizex.com/guides/rumors/media/jon_allen_sonny_strait_interview.txt",
+        "publication": "Daizenshuu EX, entretien avec Sonny Strait",
+        "date": "2000-11",
+        "participants": [
+          "Jon Allen",
+          "Sonny Strait"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-ex-2000-sonny-strait-interview.txt",
+        "kanzenshuuPostUrl": "https://www.kanzenshuu.com/rumor/the-sonny-strait-terry-klassen-prank-call/",
+        "kanzenshuuPostRawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
+        "transcriptAvailable": true,
+        "formatNote": "Entretien écrit intégral lié depuis le guide des rumeurs Kanzenshuu; l’audio contient une blague de clôture, pas un véritable appel piégé à Terry Klassen.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : expérience d’un comédien FUNimation sur le doublage de Dragon Ball Z.",
+      "status": "source-transcript-acquired-from-link-in-kanzenshuu-page",
+      "forumContent": false
+    }
+  ]
+}

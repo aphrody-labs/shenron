@@ -38,6 +38,86 @@
       "forum": false,
       "status": "summary-written-print-source-not-collated",
       "forumContent": false
+    },
+    {
+      "id": "dragon-ball-complete-song-collection-cocc-9202-talk-no-1",
+      "title": "Talk No. 1 — Dragon Ball: Complete Song Collection (COCC-9202)",
+      "kind": "audio",
+      "summary": "La page Kanzenshuu répertorie la piste 3, « Talk No. 1 », du CD COCC-9202 Dragon Ball – Complete Song Collection, paru le 21 octobre 1991. Elle décrit la piste comme une conversation entre Akira Toriyama, Yūji Horii et Hironobu Sakaguchi au sujet de Chrono Trigger. La piste audio et sa transcription n’ont pas été acquises; la nature exacte des échanges n’est donc pas davantage caractérisée.",
+      "keyInformation": [
+        "Piste 3 du CD COCC-9202, paru le 21 octobre 1991.",
+        "Participants nommés : Akira Toriyama, Yūji Horii et Hironobu Sakaguchi.",
+        "Sujet indiqué : Chrono Trigger; audio et transcription non acquis."
+      ],
+      "source": {
+        "publication": "Dragon Ball – Complete Song Collection (COCC-9202)",
+        "date": "1991-10-21",
+        "url": "https://www.kanzenshuu.com/music/miscellaneous/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 8767,
+        "sourcePageTitle": "Miscellaneous Dragon Ball CDs",
+        "sourcePageUrl": "https://www.kanzenshuu.com/music/miscellaneous/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          1991
+        ],
+        "track": 3,
+        "trackTitle": "Talk No. 1",
+        "participants": [
+          "Akira Toriyama",
+          "Yūji Horii",
+          "Hironobu Sakaguchi"
+        ],
+        "format": "conversation audio",
+        "audioAcquired": false,
+        "transcriptAcquired": false,
+        "formatNote": "La page la décrit comme conversation; elle ne permet pas de conclure qu’il s’agit formellement d’un entretien."
+      },
+      "dragonBallRelevance": "Piste parlée incluse dans un CD de chansons Dragon Ball; les personnes et, pour la piste 1, le sujet sont ceux cités par la page Kanzenshuu.",
+      "formatNote": "La page la décrit comme conversation; elle ne permet pas de conclure qu’il s’agit formellement d’un entretien.",
+      "status": "audio-not-acquired-classification-open",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-complete-song-collection-cocc-9202-talk-no-2",
+      "title": "Talk No. 2 — Dragon Ball: Complete Song Collection (COCC-9202)",
+      "kind": "audio",
+      "summary": "La page Kanzenshuu répertorie la piste 34, « Talk No. 2 », du CD COCC-9202 Dragon Ball – Complete Song Collection, paru le 21 octobre 1991. Elle nomme Masako Nozawa, Norio Wakamoto et Kōzō Shioya comme participants, mais ne précise ni le sujet ni le contenu de leur échange. L’audio et toute transcription restent non acquis; cette entrée demeure une piste parlée à classer, sans la qualifier d’entretien établi.",
+      "keyInformation": [
+        "Piste 34 du CD COCC-9202, paru le 21 octobre 1991.",
+        "Participants nommés : Masako Nozawa, Norio Wakamoto et Kōzō Shioya.",
+        "Sujet non indiqué; audio et transcription non acquis."
+      ],
+      "source": {
+        "publication": "Dragon Ball – Complete Song Collection (COCC-9202)",
+        "date": "1991-10-21",
+        "url": "https://www.kanzenshuu.com/music/miscellaneous/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 8767,
+        "sourcePageTitle": "Miscellaneous Dragon Ball CDs",
+        "sourcePageUrl": "https://www.kanzenshuu.com/music/miscellaneous/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          1991
+        ],
+        "track": 34,
+        "trackTitle": "Talk No. 2",
+        "participants": [
+          "Masako Nozawa",
+          "Norio Wakamoto",
+          "Kōzō Shioya"
+        ],
+        "format": "conversation audio",
+        "audioAcquired": false,
+        "transcriptAcquired": false,
+        "formatNote": "Piste parlée répertoriée par la page; sujet inconnu et statut d’entretien non établi."
+      },
+      "dragonBallRelevance": "Piste parlée incluse dans un CD de chansons Dragon Ball; les personnes et, pour la piste 1, le sujet sont ceux cités par la page Kanzenshuu.",
+      "formatNote": "Piste parlée répertoriée par la page; sujet inconnu et statut d’entretien non établi.",
+      "status": "audio-not-acquired-classification-open",
+      "forumContent": false
     }
   ]
 }
