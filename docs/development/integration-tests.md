@@ -59,3 +59,12 @@ Les sondes isolées du moteur installé exécutent les scripts classiques et
 modules ainsi que le montage et l’hydratation d’un composant React avec effet et
 interaction. Ces résultats
 ne qualifient pas encore l’hydratation Next ni le produit complet.
+
+Le blocage a été localisé dans le canal de développement : Next 16.3.8 attend
+des métadonnées RSC transmises par WebSocket. Le moteur contenait un WebSocket
+simulé dont `send()` supprimait les messages. Aphrody `796f309` remplace ce
+transport par des connexions réelles, avec la politique réseau et les cookies
+du contexte. Les 556 tests natifs et Clippy strict passent sur le VPS.
+La qualification du navigateur installé reste ouverte : le binaire doit
+consommer ce correctif, et le frontal Bun doit relayer le WebSocket de Next
+(`/_next/hmr`), que son relais HTTP ne transporte pas actuellement.
