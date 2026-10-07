@@ -510,3 +510,48 @@ desktop sont encore revendiqués par `desktop-installer` et
 Les contrôles ne qualifient ni le rendu du canvas, ni l'inférence, ni une
 installation ou activation du nouveau NSIS. La session reste exclusivement
 Windows, sans intervention sur les VPS.
+
+## Binaires release avec les fonctionnalités de la fabrique
+
+La reconstruction native Windows avec les trois fonctionnalités de la fabrique
+termine en 12 min 13 s. Les nouvelles sorties passent les 35 tests Bun FFI
+(115 assertions, aucun échec ni skip) et le cycle SDK Unicode en deux processus.
+Le MCP répond à health, `initialize` et `tools/list` : les deux outils de
+scanlation sont présents sur l'endpoint loopback complet et absents du catalogue
+public. Aucun outil de scanlation n'est exécuté, conformément au gel éditorial.
+
+| Artefact de qualification | Taille (octets) | SHA-256 |
+| --- | ---: | --- |
+| `shenron_ffi.dll` | 69 018 624 | `019c10749a7db344bf3e33f1032589ffcb8572b41d4ee375e6ba759c94a1f963` |
+| `shenron-mcp.exe` | 67 712 512 | `71baab98334b1b83213bc30b7b30e2e5b2469ead0901d34f69bef57aeff45edb` |
+| `koharu-sdk.exe` | 74 519 552 | `a7c2268a7272f798f0090f808bec778d41fb7c87caec521ce55bcc16a08eb974` |
+| `shenron-desktop.exe` | 89 007 616 | `408cbb7e68687676b5c7e5a16267628e6433a8d7bac35cb1d62ef9f996c19345` |
+
+Studio conserve l'identifiant de qualification et la correction ACL privée
+décrits ci-dessus. Ces fichiers ne sont pas encore un nouveau paquet NSIS
+installé. La DLL est plus volumineuse que celle du premier contrôle release :
+la qualification porte ici sur le graphe de fonctionnalités complet.
+
+L'état courant de Shenron épingle désormais `@aphrody/m3-reader 3.3.7`, comme
+le manifeste producteur. Le registre npm public renvoie cette version ;
+l'archive de 66 088 octets est téléchargée et son SHA-512 correspond à la fois
+aux métadonnées publiées et au `bun.lock` consommateur. Cette preuve de
+publication et d'intégrité ne remplace pas la validation de l'interface.
+
+Le Studio reconstruit charge ensuite `/desktop` depuis le serveur extrait du
+NSIS précédent, via un proxy de qualification local. Une sonde insérée dans
+l'HTML confirme les contenus Shenron, les scripts Next, les feuilles de style,
+les dimensions du DOM et une réponse réelle à `get_project` par IPC natif.
+L'URL de développement est bien une URL de base : le contrôle de disponibilité
+y ajoute `/robots.txt`. Le premier essai avait utilisé une route comme base ;
+sa correction appartient à la sonde, pas au produit.
+
+Une capture Win32 `PrintWindow` de cette seule fenêtre produit une image
+1280 × 860 uniformément grise. Elle ne prouve donc pas la composition visuelle
+CEF ; la validation des pixels reste ouverte. Ce parcours associe le nouveau
+Studio au frontend de l'ancien NSIS, pas à un nouveau paquet complet. Les
+processus de qualification sont arrêtés et les traces restent hors Git.
+Le CLI Aphrody Windows installé expose aussi `winclean observe` ; appelé avec
+le handle exact de cette fenêtre, il échoue avec `no image returned`. Le DOM
+et l'IPC réussissent à nouveau, mais ce second contrôle de capture ne permet
+pas davantage de conclure sur les pixels affichés.
