@@ -257,3 +257,73 @@ Une mesure de civilisation par énergie exploitée (par exemple une échelle de 
 
 Sources : [Metaphysical Aspects](https://vsbattles.fandom.com/wiki/Metaphysical_Aspects), [Crossovers](https://vsbattles.fandom.com/wiki/Crossovers), [Canon](https://vsbattles.fandom.com/wiki/Canon), [The Kardashev Scale](https://vsbattles.fandom.com/wiki/The_Kardashev_Scale), [Civilization Tiering System](https://vsbattles.fandom.com/wiki/Civilization_Tiering_System).
 
+
+
+## Annexe J — Registre de couverture et suite de l’audit
+
+**Sens des statuts :** « synthétisé » = les règles principales sont paraphrasées ici à partir du contenu accessible; « partiel » = principes généraux relevés, mais toutes les clauses/exceptions n’ont pas été revues; « restant » = page recensée, sans synthèse substantielle dédiée. Ces statuts décrivent le travail du corpus, pas l’autorité ni la qualité du VSBW.
+
+| Famille de pages de règles | Couverture actuelle | Travail qui reste |
+|---|---|---|
+| Scaling, Attack Potency, tiering, FAQ et statistiques usuelles | Partiel | Revue intégrale de chaque critère, exception, définition et seuil; seuils détaillés laissés aux pages sources. |
+| Vitesse, réactions/perception, projectiles, lasers, éclairs, blitz et chronométrie | Synthétisé au niveau des méthodes | Revoir les critères numériques, les exceptions de chaque page et la table de perception dans les sources courantes. |
+| Calcul général, énergie cinétique, explosions, nuages/tempêtes, séismes, GBE, corps célestes, trous noirs, mise à l’échelle grande taille, courbure planétaire, inverse du carré, création, montagnes/îles, stabilisation, énergie masse | Synthétisé en paraphrase | Les méthodes et valeurs conventionnelles doivent être contrôlées page par page; confirmer les formules avec leurs unités et sources scientifiques. |
+| Zéro absolu, calculs empilés, multiplicateurs, destruction environnementale | Synthétisé en paraphrase | Vérifier exceptions récentes et dépendances entre les guides. |
+| Évaluation de calculs, demandes, groupe de calcul, exemples/références de calculs | Partiel | Distinguer procédures communautaires VSBW des principes mathématiques; plusieurs pages pratiques ne sont pas des règles de powerscaling générales. |
+| Hypothèses standard, égalisation de réalité/vitesse/énergie, règles des versus threads | Partiel | Revoir toutes les variantes et règles de publication/modération; n’importer aucune convention de match par défaut chez DBFR. |
+| Hax, résistances, manipulation mentale/âme, régénération, immortalité, acausalité | Partiel | Ces résumés ne couvrent qu’un échantillon des pages de capacités; établir une taxonomie et auditer les capacités pertinentes par mécanisme. |
+| Cosmologie, théorie des ensembles, univers/multivers, dimensions, au-delà des dimensions, réalité-fiction, omnipotence/omniprésence | Partiel | Les critères et débats de frontière nécessitent relecture des pages actuelles et contrôle des termes mathématiques. |
+| Fallacies, déclarations, feats, hyperbole, outliers, incohérences, effets scénaristiques | Partiel | Examiner les pages complètes, éviter de transformer les étiquettes en règles automatiques. |
+| Canon, crossovers, jeux vidéo/jeux de combat, héritage de pouvoirs, systèmes d’énergie, aspects métaphysiques, échelle de Kardashev | Partiel | Revue des formulations intégrales; certaines sont contextuelles ou spécifiques à un média et ne se généralisent pas à DBFR. |
+| Pages de pouvoirs individuels (catégorie entière) | Restant | Hors inventaire détaillé à ce stade : les inclure uniquement lorsqu’elles fixent une règle d’évaluation/interaction, sans dériver vers les profils d’utilisateurs. |
+
+Répertoires d’entrée : [Calculation Instructions](https://vsbattles.fandom.com/wiki/Category:Calculation_Instructions), [Terms](https://vsbattles.fandom.com/wiki/Category:Terms), [Important Pages](https://vsbattles.fandom.com/wiki/Category:Important). La catégorie de calcul expose une trentaine de rubriques, tandis que « Terms » et « Important » sont des index plus larges et évolutifs. L’inventaire n’est donc pas clos par les pages déjà citées ici.
+
+**Barrière de neutralité DBFR :** les tiers publiés, les chiffres calculés pour personnages, les ratings de profils, et les chaînes déjà adoptées par VSBW restent exclus comme données initiales. Les exemples ne servent qu’à comprendre une forme de raisonnement, et sont remplacés dans les fiches DBFR par les preuves originales de la fiction examinée. Les standards mathématiques ou les constantes ne sont repris qu’avec leurs hypothèses, source et unité.
+
+
+
+## Annexe K — Cas d’entraînement neutres
+
+Ces cas sont construits pour enseigner la méthode; ce ne sont ni des exemples VSBW ni des profils DBFR.
+
+### Cas 1 — Grand effet environnemental
+
+Une personne déclenche par télécommande une tempête couvrant une vaste région; une autre personne la vainc dans une lutte physique sans que la télécommande soit utilisée.
+
+**Lecture attendue :** la tempête établit une capacité de zone/effet environnemental du dispositif. La victoire physique n’hérite pas de cette puissance puisque la capacité n’a pas été mobilisée et que son énergie n’est pas reliée à la force corporelle. Séparer DC, AP, équipement et force physique.
+
+### Cas 2 — Esquive d’un projectile
+
+Un tireur aligne une arme; la cible se déplace avant que le coup parte. Dans une autre scène, une cible ne bouge qu’après émission d’un projectile dont le trajet et la vitesse sont établis.
+
+**Lecture attendue :** première scène = anticipation possible, elle n’établit pas la réaction au projectile. Seconde scène = réaction calculable uniquement si timing, distances, trajectoire, vitesse du projectile et mouvement de la cible sont défendables; préciser si le résultat porte sur réaction, mouvement bref ou combat.
+
+### Cas 3 — « Dimension supérieure »
+
+Un récit appelle une pièce « dimension supérieure », sans décrire ses axes, son rapport au monde ordinaire ni ce que l’action a affecté.
+
+**Lecture attendue :** l’étiquette seule ne prouve pas dimension mathématique supérieure ou supériorité qualitative. Définir le terme selon le récit, établir la structure minimale et démontrer l’action pertinente; sinon garder l’inférence ouverte.
+
+### Cas 4 — Déclaration d’absence de limites
+
+Une source secondaire affirme qu’une capacité « peut tout faire », mais l’œuvre ne montre qu’une application et le locuteur est peu informé.
+
+**Lecture attendue :** analyser la fiabilité du locuteur, le sens figuré possible et les limites connues. L’absence d’autre limite montrée ne démontre pas l’absence de limites (no-limits fallacy). Ne pas remplacer le claim exagéré par l’affirmation inverse; conclure ce qui est étayé et ce qui reste inconnu.
+
+### Cas 5 — Système d’énergie commun
+
+Deux familles d’attaques sont dites utiliser « l’énergie », mais l’une est magique et l’autre physique; aucun lien d’effort, de conversion ou de mise à l’échelle n’est établi.
+
+**Lecture attendue :** le nom générique ne suffit pas à établir un système énergétique unifié. Tester la règle de l’œuvre, l’équivalence de mécanisme et les performances comparées; conserver les stats séparées tant que le lien n’est pas prouvé.
+
+### Cas 6 — Mesure issue d’un dessin
+
+Une image montre un objet devant l’horizon et un second objet près de l’observateur; leur rapport en pixels paraît donner une taille extrême.
+
+**Lecture attendue :** mesurer la perspective et la courbure, vérifier le champ visuel et la position de chaque objet, tester d’autres échelles et rapporter une plage d’incertitude. La mesure est une hypothèse de modèle, pas un fait exact fourni par le dessin.
+
+### Auto-contrôle
+
+Pour chaque réponse, exiger quatre éléments : (1) fait directement établi; (2) inférence autorisée ou refusée et pourquoi; (3) catégorie statistique concernée; (4) donnée manquante qui ferait évoluer la conclusion. Si l’analyse attribue un niveau depuis un profil VSBW, un nom de technique ou la seule absence de contre-exemple, elle échoue au contrôle de neutralité.
+
