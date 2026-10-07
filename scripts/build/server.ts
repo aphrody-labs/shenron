@@ -172,8 +172,12 @@ function flattenNodeModules(root: string) {
       }
     }
   }
-  for (const [pkg, path] of hoisted)
-    cpSync(path, join(root, "node_modules", pkg), { recursive: true, dereference: true });
+  for (const [pkg, path] of hoisted) {
+    const destination = join(root, "node_modules", pkg);
+    if (existsSync(destination) && lstatSync(destination).isSymbolicLink())
+      rmSync(destination, { force: true });
+    cpSync(path, destination, { recursive: true, dereference: true });
+  }
   rmSync(store, { recursive: true, force: true });
   for (const link of [
     ...new Bun.Glob("**/node_modules/*").scanSync({
