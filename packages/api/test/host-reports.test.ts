@@ -85,11 +85,31 @@ test("anonymous, cross-origin, malformed and oversized requests never persist", 
         401,
       );
       expect((await submit(url, payload, { origin: "https://foreign.test" })).status).toBe(403);
-      expect((await submit(url, { ...payload, message: "short" })).status).toBe(400);
+      expect((await submit(url, { ...payload, message: "four" })).status).toBe(400);
       expect((await submit(url, { ...payload, category: "unknown" })).status).toBe(400);
       expect((await submit(url, { ...payload, path: "//foreign.test" })).status).toBe(400);
       expect((await submit(url, { ...payload, message: "x".repeat(20_000) })).status).toBe(413);
       expect(rows).toHaveLength(0);
+    },
+  );
+});
+
+test("message bounds match the form and count trimmed content", async () => {
+  const rows: SiteReportInsert[] = [];
+  await withServer(
+    session,
+    {
+      insert: async (row) => {
+        rows.push(row);
+      },
+    },
+    async (url) => {
+      expect((await submit(url, { ...payload, message: "  panne  " })).status).toBe(201);
+      expect(rows[0]?.message).toBe("panne");
+      expect((await submit(url, { ...payload, message: "x".repeat(2000) })).status).toBe(201);
+      expect((await submit(url, { ...payload, message: "  four  " })).status).toBe(400);
+      expect((await submit(url, { ...payload, message: "x".repeat(2001) })).status).toBe(400);
+      expect(rows).toHaveLength(2);
     },
   );
 });

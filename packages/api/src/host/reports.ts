@@ -14,7 +14,7 @@ const reportBody = z.object({
     .refine((path) => path.startsWith("/") && !path.startsWith("//")),
   pageTitle: z.string().max(256).nullable(),
   category: z.enum(["bug", "contenu", "lien", "suggestion", "autre"]),
-  message: z.string().trim().min(10).max(2000),
+  message: z.string().trim().min(5).max(2000),
 });
 
 export interface ReportRepository {
