@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { startHealthPolling } from "@shenron/ui/public/health-poll";
 import type { LocalHealthResponse } from "@shenron/api/contract";
 import {
   ChatPanel,
@@ -258,31 +259,29 @@ export function DesktopHome() {
     return (iso: string) => format.format(new Date(iso));
   }, [locale]);
 
-  const loadHealth = useCallback(async () => {
-    try {
-      const response = await fetch("/api/local/health", { cache: "no-store" });
-      if (!response.ok && response.status !== 503) throw new Error(`HTTP ${response.status}`);
-      setHealth((await response.json()) as Health);
-      setOffline(false);
-    } catch {
-      setOffline(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadHealth();
-  }, [loadHealth]);
-
-  // While the chat model downloads or loads, its state (and the percentage of its reason) moves:
-  // re-read the health until chat and models are available.
-  const settling =
-    health !== null &&
-    (health.groups?.chat?.available === false || health.groups?.models?.available === false);
-  useEffect(() => {
-    if (!settling) return;
-    const timer = setInterval(() => void loadHealth(), 3000);
-    return () => clearInterval(timer);
-  }, [settling, loadHealth]);
+  useEffect(
+    () =>
+      startHealthPolling<Health>({
+        async load(signal) {
+          const response = await fetch("/api/local/health", { cache: "no-store", signal });
+          if (!response.ok && response.status !== 503) throw new Error("Health unavailable");
+          return response.json();
+        },
+        onUpdate(value) {
+          setHealth(value);
+          setOffline(false);
+        },
+        onError() {
+          setOffline(true);
+        },
+        shouldPoll(value) {
+          return (
+            value.groups?.chat?.available === false || value.groups?.models?.available === false
+          );
+        },
+      }),
+    [],
+  );
 
   // Without the local server (plain browser) or without `groups` (older server), the chat
   // and its history count as unavailable rather than checking forever.
