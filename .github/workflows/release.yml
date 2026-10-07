@@ -39,6 +39,9 @@ jobs:
       - name: Install
         run: bun ci
 
+      - name: Verify the one release version
+        run: bun scripts/release/check-version.ts "${{ github.event.inputs.tag || github.ref_name }}"
+
       # Le WASM de crates/koharu-canvas est suivi par Git (packages/koharu/src/wasm/, contrôlé
       # par rust.yml) : aucun outillage Rust pour le site.
       # Application frontale (Next standalone, sans base) + API locales, un seul fichier.
@@ -71,9 +74,71 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  desktop:
+    name: Shenron Studio (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: linux-x64, os: ubuntu-22.04 }
+          - { target: windows-x64, os: windows-latest }
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          persist-credentials: false
+      - name: Check Aphrody access
+        shell: bash
+        env:
+          APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
+        run: |
+          if [ -z "$APHRODY_GIT_TOKEN" ]; then
+            echo "::error::APHRODY_GIT_TOKEN is required (private Aphrody git dependencies)"
+            exit 1
+          fi
+          git config --global url."https://x-access-token:${APHRODY_GIT_TOKEN}@github.com/aphrody-labs/".insteadOf \
+            "https://github.com/aphrody-labs/"
+      - name: Linux system dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev build-essential file
+      - name: Rust toolchain
+        shell: bash
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-desktop-${{ matrix.target }}
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: tauri-cli
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: release-desktop-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - name: Install exact dependencies
+        run: bun ci
+      - name: Verify the one release version
+        run: bun scripts/release/check-version.ts "${{ github.event.inputs.tag || github.ref_name }}"
+      - name: Build Shenron Studio
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
+          bun scripts/build/desktop.ts --target "${{ matrix.target }}" --skip-chat-model
+      - uses: actions/upload-artifact@v5
+        with:
+          name: shenron-studio-${{ matrix.target }}
+          path: dist/desktop/${{ matrix.target }}/
+          if-no-files-found: error
+          retention-days: 30
+
   release:
     name: Create GitHub Release (draft)
-    needs: build
+    needs: [build, desktop]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -86,11 +151,12 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      # Nom attendu par install.ps1 : SHA256SUMS.
+      # One checksum index covers every server, bot and Studio asset in this release.
       - name: Generate SHA256 sums
         run: |
           cd artifacts
-          sha256sum shenron-* > SHA256SUMS
+          rm -f SHA256SUMS
+          sha256sum -- * > SHA256SUMS
           cat SHA256SUMS
 
       - name: Extract changelog
@@ -111,8 +177,7 @@ jobs:
             echo "__EOF__"
           } >> "$GITHUB_OUTPUT"
 
-      # Brouillon : install.ps1 lit releases/latest et exige l'installeur Windows, construit
-      # hors CI (Rust, Tauri, NSIS). La release n'est publiée qu'une fois l'installeur joint.
+      # Keep a single reviewable draft until the owner publishes this complete release.
       - name: Create draft release
         uses: softprops/action-gh-release@v3
         with:
@@ -131,12 +196,10 @@ jobs:
             `shenron-server doctor` affiche le profil et la présence des secrets ; `shenron-bot --smoke`
             vérifie le binaire sans Discord ni base. Intégrité : `SHA256SUMS`.
 
-            ## Application de bureau (Windows)
+            ## Shenron Studio
 
-            Installeur `*_x64-setup.exe` (Tauri) installé par `install.ps1`. Construit hors CI :
-            `bun scripts/build/desktop.ts --target windows-x64`, puis joindre
-            `dist/desktop/windows-x64/*_x64-setup.exe` et ajouter sa ligne de
-            `dist/desktop/windows-x64/SHA256SUMS` au `SHA256SUMS` de cette release avant publication.
+            Installers and sidecars for Linux x64 and Windows x64 are built from this exact tag
+            and attached to this same release. `SHA256SUMS` covers the complete release.
 
             ## Depuis les sources
 
@@ -146,8 +209,6 @@ jobs:
             cp apps/bot/.env.example apps/bot/.env   # DISCORD_TOKEN / GUILD_ID / OWNER_ID
             bun --filter @shenron/bot dev
             ```
-          files: |
-            artifacts/shenron-*
-            artifacts/SHA256SUMS
+          files: artifacts/*
           draft: true
           prerelease: ${{ contains(steps.changelog.outputs.tag, '-') }}
