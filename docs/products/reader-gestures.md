@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Gestes de la visionneuse des databooks
 
 La visionneuse de `@shenron/ui/reader` conserve une seule implémentation
