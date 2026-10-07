@@ -145,6 +145,51 @@ describe("useTauriFullscreen", () => {
     expect(fullscreenCalls()).toEqual([]);
   });
 
+  test("Tauri: a delayed native entry is restored after reader disposal or DOM exit", async () => {
+    for (const dispose of [true, false]) {
+      calls = [];
+      let finish!: () => void;
+      mockWindows("main");
+      mockIPC((cmd, payload) => {
+        calls.push({ cmd, payload });
+        if (cmd === "plugin:window|is_fullscreen") return windowFullscreen;
+        if (cmd === "plugin:window|set_fullscreen") {
+          const enter = Boolean((payload as { value?: boolean }).value);
+          if (!enter) {
+            windowFullscreen = false;
+            return null;
+          }
+          return new Promise<null>((resolve) => {
+            finish = () => {
+              windowFullscreen = true;
+              resolve(null);
+            };
+          });
+        }
+        return null;
+      });
+      const { unmount } = render(<Probe />);
+      fullscreenElement = screen.getByTestId("inner");
+      document.dispatchEvent(new Event("fullscreenchange"));
+      await settle();
+      // Repeated notifications must not launch another native entry in flight.
+      document.dispatchEvent(new Event("fullscreenchange"));
+      if (dispose) unmount();
+      else {
+        fullscreenElement = null;
+        document.dispatchEvent(new Event("fullscreenchange"));
+      }
+      await settle();
+      finish();
+      await settle();
+      expect(fullscreenCalls()).toEqual([true, false]);
+      expect(windowFullscreen).toBe(false);
+      if (!dispose) unmount();
+      fullscreenElement = null;
+      await settle();
+    }
+  });
+
   test("Tauri: elements outside the scope and a refused permission stay silent", async () => {
     simulateTauri({ refuse: true });
     render(<Probe />);

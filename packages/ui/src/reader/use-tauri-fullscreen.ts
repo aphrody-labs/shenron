@@ -56,24 +56,41 @@ export function useTauriFullscreen(scope?: RefObject<HTMLElement | null>): void 
     // Vrai quand c'est nous qui avons mis la fenêtre en plein écran.
     let owned = false;
     let disposed = false;
-    const onChange = async () => {
+    let pending = Promise.resolve();
+    const synchronize = async () => {
+      if (disposed) {
+        if (owned) {
+          owned = false;
+          await setTauriWindowFullscreen(false);
+        }
+        return;
+      }
       const element = document.fullscreenElement;
       if (element && inScope(scope, element)) {
         if (owned) return;
         if (await isTauriWindowFullscreen()) return;
-        if (disposed) return;
+        // The reader can close or leave fullscreen during the native status query.
+        if (disposed || !inScope(scope, document.fullscreenElement)) return;
         owned = await setTauriWindowFullscreen(true);
+        // Native entry cannot be cancelled; release it if its owner disappeared.
+        if (owned && (disposed || !document.fullscreenElement)) {
+          owned = false;
+          await setTauriWindowFullscreen(false);
+        }
       } else if (!element && owned) {
         owned = false;
         await setTauriWindowFullscreen(false);
       }
     };
-    const listener = () => void onChange();
+    // Serialize IPC so repeated events never create competing ownership decisions.
+    const listener = () => {
+      pending = pending.then(synchronize);
+    };
     document.addEventListener("fullscreenchange", listener);
     return () => {
       disposed = true;
       document.removeEventListener("fullscreenchange", listener);
-      if (owned) void setTauriWindowFullscreen(false);
+      listener();
     };
   }, [scope]);
 }
