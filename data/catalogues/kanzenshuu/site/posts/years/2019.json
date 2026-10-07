@@ -1,0 +1,4786 @@
+{
+  "year": "2019",
+  "scope": "Public Kanzenshuu WordPress posts published in this year; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 66814,
+      "type": "posts",
+      "slug": "debuting-the-new-animation-production-guide",
+      "title": "Debuting the New “Animation Production Guide”",
+      "date": "2019-12-30T14:35:57",
+      "modified": "2019-12-30T16:12:50",
+      "url": "https://www.kanzenshuu.com/2019/12/30/debuting-the-new-animation-production-guide/",
+      "excerpt": "One staple of Kanzenshuu has always been our authoritatively detailed guides, many of which cover the various animation aspects of the Dragon Ball franchise. When we were first piecing together the “Episode Guide” nearly 15 years ago, the inclusion of complete episode credit listings was a priority, and as time went on we began compiling …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66720,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-55-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 55 English Translation Available",
+      "date": "2019-12-20T10:05:38",
+      "modified": "2019-12-20T10:05:38",
+      "url": "https://www.kanzenshuu.com/2019/12/20/dragon-ball-super-manga-chapter-55-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s fifty-fifth chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 66712,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-25",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #25",
+      "date": "2019-12-20T06:49:42",
+      "modified": "2019-12-20T07:01:54",
+      "url": "https://www.kanzenshuu.com/2019/12/20/translation-update-special-project-toyotaro-drew-it-image-25/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, Great …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66519,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-broli-dbs-promotional-video",
+      "title": "“Dragon Ball FighterZ” Broli (DBS) Promotional Video Showcases Special Moves, Alternate Colors, Lobby Characters, & Z-Stamp",
+      "date": "2019-12-02T10:57:00",
+      "modified": "2019-12-02T10:57:00",
+      "url": "https://www.kanzenshuu.com/2019/12/02/dragon-ball-fighterz-broli-dbs-promotional-video/",
+      "excerpt": "Ahead of the character’s release this week (05 December 2019), a short promotional video for Broli (DBS) has been released showcasing some of his special moves. The character will be available individually for &yen;500/$5, or as part of the game’s optional $24.99 “FighterZ Pass 2” covering six total characters. The video concludes with a glimpse …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 66522,
+      "type": "posts",
+      "slug": "dragon-ball-gt-anime-comic-vols-1-3-cover-art-revealed",
+      "title": "Dragon Ball GT Anime Comic Vols. 1-3 Cover Art Revealed",
+      "date": "2019-12-01T14:03:22",
+      "modified": "2020-05-30T11:23:28",
+      "url": "https://www.kanzenshuu.com/2019/12/01/dragon-ball-gt-anime-comic-vols-1-3-cover-art-revealed/",
+      "excerpt": "Shueisha has revealed the cover art for the upcoming debut three volumes of the Dragon Ball GT anime comic: Presented in full color (as opposed to the limited-color version from serialization), the three volumes are all due out this Wednesday (04 December 2019) for &yen;1,000 each (plus tax), and will cover the entirety of the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        134
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 134,
+          "count": 8,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-gt/",
+          "name": "Dragon Ball GT",
+          "slug": "dragon-ball-gt"
+        }
+      ]
+    },
+    {
+      "id": 66507,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-24",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #24",
+      "date": "2019-11-22T06:36:24",
+      "modified": "2019-11-22T06:36:24",
+      "url": "https://www.kanzenshuu.com/2019/11/22/translation-update-special-project-toyotaro-drew-it-image-24/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, Great …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66501,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-54-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 54 English Translation Available",
+      "date": "2019-11-20T10:32:54",
+      "modified": "2019-11-20T10:32:54",
+      "url": "https://www.kanzenshuu.com/2019/11/20/dragon-ball-super-manga-chapter-54-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s fifty-fourth chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 66495,
+      "type": "posts",
+      "slug": "bandai-namco-holdings-q2-fiscal-2020-figures",
+      "title": "Bandai Namco Holdings Q2 Fiscal 2020 Figures",
+      "date": "2019-11-13T19:16:03",
+      "modified": "2019-11-13T19:16:03",
+      "url": "https://www.kanzenshuu.com/2019/11/13/bandai-namco-holdings-q2-fiscal-2020-figures/",
+      "excerpt": "Bandai Namco Holdings has posted a ¥34.607 billion (approximately $318 million) profit for the first half of fiscal year 2020, compared to a ¥34.188 billion profit the same half last year. Dragon Ball once again handily came in as the company’s best-performing franchise for the half-year, pulling in ¥61.3 billion (a jump over last year’s …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        79
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 79,
+          "count": 31,
+          "link": "https://www.kanzenshuu.com/tag/financial/",
+          "name": "Financial",
+          "slug": "financial"
+        }
+      ]
+    },
+    {
+      "id": 66488,
+      "type": "posts",
+      "slug": "dragon-ball-symphonic-adventure-comes-to-america-beginning-in-march-2020-with-chicago-debut",
+      "title": "“Dragon Ball Symphonic Adventure” Comes to America Beginning in March 2020 with Chicago Debut",
+      "date": "2019-11-12T21:37:56",
+      "modified": "2019-11-12T21:37:56",
+      "url": "https://www.kanzenshuu.com/2019/11/12/dragon-ball-symphonic-adventure-comes-to-america-beginning-in-march-2020-with-chicago-debut/",
+      "excerpt": "Overlook Events will bring the “Dragon Ball Symphonic Adventure” orchestral concert to America beginning 27 March 2020 in Chicago, with additional dates and locations to be announced. “Dragon Ball Symphonic Adventure” Kicks Off North American Tour With Premiere Performance In Chicago LOS ANGELES, Nov. 12, 2019 /PRNewswire/ — As part of the year-long 30th anniversary …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        131
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 131,
+          "count": 5,
+          "link": "https://www.kanzenshuu.com/tag/symphonic-adventure/",
+          "name": "Symphonic Adventure",
+          "slug": "symphonic-adventure"
+        }
+      ]
+    },
+    {
+      "id": 66482,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-eighteenth-episode-streaming-december-2019",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Eighteenth Episode Streaming December 2019",
+      "date": "2019-11-05T12:34:26",
+      "modified": "2019-11-05T12:34:26",
+      "url": "https://www.kanzenshuu.com/2019/11/05/super-dragon-ball-heroes-promotional-anime-eighteenth-episode-streaming-december-2019/",
+      "excerpt": "Following last week’s seventeenth episode premiere, the official Super Dragon Ball Heroes website announced a December 2019 streaming timeframe for the forthcoming eighteenth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“Super Decisive Battle! Gogeta vs. Hearts!”), the Earth trembles as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 66432,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-23",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #23",
+      "date": "2019-10-23T08:33:04",
+      "modified": "2019-10-23T08:33:04",
+      "url": "https://www.kanzenshuu.com/2019/10/23/translation-update-special-project-toyotaro-drew-it-image-23/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, Great …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66413,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-53-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 53 English Translation Available",
+      "date": "2019-10-21T09:18:29",
+      "modified": "2019-10-21T12:12:22",
+      "url": "https://www.kanzenshuu.com/2019/10/21/dragon-ball-super-manga-chapter-53-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s fifty-third chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 66400,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-9th-anniversary-super-guide-releasing-november-2019",
+      "title": "“Super Dragon Ball Heroes: 9th Anniversary Super Guide” Releasing November 2019",
+      "date": "2019-10-18T15:26:37",
+      "modified": "2019-10-18T15:26:37",
+      "url": "https://www.kanzenshuu.com/2019/10/18/super-dragon-ball-heroes-9th-anniversary-super-guide-releasing-november-2019/",
+      "excerpt": "Shueisha and online retailers have listed an 07 November 2019 release date and &yen;1,250 + tax price tag for a forthcoming Super Dragon Ball Heroes: 9th Anniversary Super Guide. The 2019 book follows two previous anniversary guide books: the 8th Anniversary Super Guide book in November 2018 and the 5th Anniversary Mission book in November …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        76
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 76,
+          "count": 67,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-heroes/",
+          "name": "Dragon Ball Heroes",
+          "slug": "dragon-ball-heroes"
+        }
+      ]
+    },
+    {
+      "id": 66392,
+      "type": "posts",
+      "slug": "japanese-dragon-ball-super-manga-collected-edition-vol-11-releasing-in-december-2019",
+      "title": "Japanese “Dragon Ball Super” Manga Collected Edition Vol. 11 Releasing in December 2019",
+      "date": "2019-10-18T09:49:27",
+      "modified": "2019-10-18T09:49:27",
+      "url": "https://www.kanzenshuu.com/2019/10/18/japanese-dragon-ball-super-manga-collected-edition-vol-11-releasing-in-december-2019/",
+      "excerpt": "Shueisha and online retailers have listed an 04 December 2019 release date for the eleventh collected volume of Toyotarō’s Dragon Ball Super manga series, which will retail for &yen;440 (+ tax) in print. The volume will pick up with the forty-ninth chapter of the series; the tenth collected volume saw its release in Japan back …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 66384,
+      "type": "posts",
+      "slug": "funimation-dragon-ball-super-part-ten-releasing-january-2020",
+      "title": "FUNimation “Dragon Ball Super: Part Ten” Home Video (DVD/Blu-ray) Releasing January 2020",
+      "date": "2019-10-16T19:21:15",
+      "modified": "2019-10-16T19:21:15",
+      "url": "https://www.kanzenshuu.com/2019/10/16/funimation-dragon-ball-super-part-ten-releasing-january-2020/",
+      "excerpt": "FUNimation’s online store reveals a 14 January 2020 release date for the company’s tenth and final part of the Dragon Ball Super television series on DVD and Blu-ray. Universes bid their sad farewells as one by one they’re wiped from existence. With only the strongest warriors left in the ring, time is running out, and …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 66373,
+      "type": "posts",
+      "slug": "dragon-ball-gt-anime-comic-receiving-collected-edition-release-in-december-2019",
+      "title": "Dragon Ball GT Anime Comic Receiving Collected Edition Release in December 2019",
+      "date": "2019-10-16T09:35:56",
+      "modified": "2024-08-28T13:50:31",
+      "url": "https://www.kanzenshuu.com/2019/10/16/dragon-ball-gt-anime-comic-receiving-collected-edition-release-in-december-2019/",
+      "excerpt": "The long-running and oft-forgotten Dragon Ball GT anime comic — comprised of limited-color screen shots from the 1996-1997 television series displayed in manga format with dialog and narration bubbles — began back in the January 2014 issue of Shueisha’s Saikyō Jump magazine. Running as a tie-in with the Dragon Ball Heroes arcade game’s then-current “Evil …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        134
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 134,
+          "count": 8,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-gt/",
+          "name": "Dragon Ball GT",
+          "slug": "dragon-ball-gt"
+        }
+      ]
+    },
+    {
+      "id": 66364,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-seventeenth-episode-streaming-october-27",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Seventeenth Episode Streaming October 27",
+      "date": "2019-10-10T16:00:28",
+      "modified": "2019-10-10T16:00:28",
+      "url": "https://www.kanzenshuu.com/2019/10/10/super-dragon-ball-heroes-promotional-anime-seventeenth-episode-streaming-october-27/",
+      "excerpt": "Following today’s sixteenth episode premiere, the official Super Dragon Ball Heroes website announced a 27 October 2019 streaming date for the forthcoming seventeenth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc, and coinciding with a special ninth-anniversary live event set to be streamed the same day. …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 66358,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-sixteenth-episode-streaming-october-10",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Sixteenth Episode Streaming October 10",
+      "date": "2019-10-02T10:45:53",
+      "modified": "2019-10-02T10:45:53",
+      "url": "https://www.kanzenshuu.com/2019/10/02/super-dragon-ball-heroes-promotional-anime-sixteenth-episode-streaming-october-10/",
+      "excerpt": "The official Super Dragon Ball Heroes website has announced a 10 October 2019 streaming date for the forthcoming sixteenth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“Zamasu vs Universe 7! Ambition’s End!”), the universe seed has finally filled with energy, and …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 66350,
+      "type": "posts",
+      "slug": "podcast-episode-0478",
+      "title": "Podcast Episode #0478",
+      "date": "2019-10-01T14:23:49",
+      "modified": "2020-07-16T09:21:40",
+      "url": "https://www.kanzenshuu.com/2019/10/01/podcast-episode-0478/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0478! Mike and Ian review the five bonus manga chapters in the Jump Victory Carnival 2019 Official Guide Book. This year, Toyotaro undercuts the 2018 theatrical film, Yoshitaka Nakagama provides some background on the Super Dragon Ball Heroes villains, Naho Ooishi tells a fantastical fever dream, and Hiroshi Otogi sure does draw …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66201,
+      "type": "posts",
+      "slug": "exploring-name-pun-sources-galactic-patrol",
+      "title": "Exploring the Name Pun Sources: The Galactic Patrol",
+      "date": "2019-09-25T14:43:58",
+      "modified": "2020-06-22T15:32:44",
+      "url": "https://www.kanzenshuu.com/2019/09/25/exploring-name-pun-sources-galactic-patrol/",
+      "excerpt": "While the latest Dragon Ball Super manga chapter certainly gave us plenty to speculate about, in typical Kanzenshuu fashion, what we want to talk about is not necessarily the content of the story itself, but something a little more behind-the-scenes: in this case, puns and possible name sources, particularly with regard to and in response …",
+      "categories": [
+        91
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 91,
+          "count": 8,
+          "link": "https://www.kanzenshuu.com/category/news-categories/editorial/",
+          "name": "Editorial",
+          "slug": "editorial"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66277,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-gogeta-ssgss-promotional-video",
+      "title": "“Dragon Ball FighterZ” Gogeta (SSGSS) Promotional Video Showcases Special Moves, Alternate Colors, Lobby Characters, & Z-Stamp",
+      "date": "2019-09-25T10:21:27",
+      "modified": "2019-09-25T10:25:31",
+      "url": "https://www.kanzenshuu.com/2019/09/25/dragon-ball-fighterz-gogeta-ssgss-promotional-video/",
+      "excerpt": "Ahead of the character’s release tomorrow (26 September 2019), a short promotional video for Gogeta (SSGSS) has been released showcasing some of his special moves. The character will be available individually for &yen;500/$5, or as part of the game’s optional $24.99 “FighterZ Pass 2” covering six total characters. The video concludes with a glimpse at …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 66176,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-52-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 52 English Translation Available",
+      "date": "2019-09-20T11:06:51",
+      "modified": "2019-09-20T11:06:51",
+      "url": "https://www.kanzenshuu.com/2019/09/20/dragon-ball-super-manga-chapter-52-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s fifty-second chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 66171,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-22",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #22",
+      "date": "2019-09-20T08:30:25",
+      "modified": "2019-09-20T08:30:25",
+      "url": "https://www.kanzenshuu.com/2019/09/20/translation-update-special-project-toyotaro-drew-it-image-22/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, Great …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66160,
+      "type": "posts",
+      "slug": "dragon-ball-z-kakarot-international-release-dates-pre-order-bonus-items-announced",
+      "title": "“Dragon Ball Z: Kakarot” International Release Dates & Pre-Order Bonus Items Announced",
+      "date": "2019-09-12T08:49:05",
+      "modified": "2019-09-12T08:50:34",
+      "url": "https://www.kanzenshuu.com/2019/09/12/dragon-ball-z-kakarot-international-release-dates-pre-order-bonus-items-announced/",
+      "excerpt": "In conjunction with Tokyo Game Show 2019 this week, Bandai Namco revealed both the domestic (16 January 2020) and international (17 January 2020) release dates for the forthcoming Dragon Ball Z: Kakarot video game, alongside various bonus items available to those pre-ordering either the standard or “Collector’s Edition” versions of the game. All pre-orders of …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 66077,
+      "type": "posts",
+      "slug": "podcast-episode-0477",
+      "title": "Podcast Episode #0477",
+      "date": "2019-09-09T16:01:54",
+      "modified": "2020-07-16T09:22:34",
+      "url": "https://www.kanzenshuu.com/2019/09/09/podcast-episode-0477/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0477! Mike and Joe dig into some of the hidden easter eggs littered through the eighth Dragon Ball Z film. From the Turtle Hermit busting out an Arale mask, to Kuririn singing a popular folk song, to Gohan’s seminar application, the film is a freeze-frame-frenzy of fun! A brief news recap and …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66054,
+      "type": "posts",
+      "slug": "new-character-bonyu-revealed-for-forthcoming-dragon-ball-z-kakarot-video-game",
+      "title": "New Character “Bonyu” Revealed For Forthcoming “Dragon Ball Z: Kakarot” Video Game",
+      "date": "2019-09-03T15:27:28",
+      "modified": "2019-09-03T15:27:42",
+      "url": "https://www.kanzenshuu.com/2019/09/03/new-character-bonyu-revealed-for-forthcoming-dragon-ball-z-kakarot-video-game/",
+      "excerpt": "As originally revealed in the October 2019 issue of Shueisha’s V-Jump magazine (released 21 August 2019), Bandai Namco has announced that a brand-new character — Bonyu, designed by Akira Toriyama — will make an appearance in a short sub-quest in the forthcoming Dragon Ball Z: Kakarot video game. Bonyu, from the same planet as Jheece, …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 66038,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-21",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #21",
+      "date": "2019-08-30T08:42:17",
+      "modified": "2019-08-30T08:42:17",
+      "url": "https://www.kanzenshuu.com/2019/08/30/translation-update-special-project-toyotaro-drew-it-image-21/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, Great …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66043,
+      "type": "posts",
+      "slug": "bandai-namco-holdings-q1-fiscal-2020-figures",
+      "title": "Bandai Namco Holdings Q1 Fiscal 2020 Figures",
+      "date": "2019-08-26T09:58:48",
+      "modified": "2019-08-26T09:58:48",
+      "url": "https://www.kanzenshuu.com/2019/08/26/bandai-namco-holdings-q1-fiscal-2020-figures/",
+      "excerpt": "Bandai Namco Holdings has posted a ¥16.924 billion (approximately $160 million) profit for the first quarter of fiscal year 2020, compared to a ¥14.637 billion profit the same quarter last year. Dragon Ball once again handily came in as the company’s best-performing franchise for the quarter, pulling in ¥28.4 billion (a jump over last year’s …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        79
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 79,
+          "count": 31,
+          "link": "https://www.kanzenshuu.com/tag/financial/",
+          "name": "Financial",
+          "slug": "financial"
+        }
+      ]
+    },
+    {
+      "id": 66031,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-51-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 51 English Translation Available",
+      "date": "2019-08-20T11:41:26",
+      "modified": "2019-08-20T11:41:26",
+      "url": "https://www.kanzenshuu.com/2019/08/20/dragon-ball-super-manga-chapter-51-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s fifty-first chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 66022,
+      "type": "posts",
+      "slug": "podcast-episode-0476",
+      "title": "Podcast Episode #0476",
+      "date": "2019-08-12T12:07:43",
+      "modified": "2020-07-16T09:23:20",
+      "url": "https://www.kanzenshuu.com/2019/08/12/podcast-episode-0476/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0476! Mike and Stacey attempt to arrive at a spelling consensus for the “Ritto-sei-ningen” following some recent wiki-work revelations, and we check in on Volume 10 of the “Dragon Ball Super” manga in Japan for a two-page bonus chapter revolving around Cranberi. SEGMENTS: 00:13 – Introduction 02:44 – Wiki Check-In: Ritto-sei-ningen 19:18 …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 66015,
+      "type": "posts",
+      "slug": "majin-boo-good-teased-summer-2019-jump-force-dlc-trailer",
+      "title": "“Majin Boo (Good)” Teased For “Summer 2019” in “Jump Force” DLC Trailer",
+      "date": "2019-08-12T11:24:38",
+      "modified": "2019-08-12T11:24:38",
+      "url": "https://www.kanzenshuu.com/2019/08/12/majin-boo-good-teased-summer-2019-jump-force-dlc-trailer/",
+      "excerpt": "Having been formally announced back in the spring, Bandai Namco is committing to a “summer 2019” launch for Majin Boo as an upcoming paid downloadable character for Jump Force, the 50th anniversary crossover fighting game released on the PlayStation 4, Xbox One, and PC. The “Good” version of Boo helps round out the full lineup …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        137
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 137,
+          "count": 9,
+          "link": "https://www.kanzenshuu.com/tag/jump-force/",
+          "name": "Jump Force",
+          "slug": "jump-force"
+        }
+      ]
+    },
+    {
+      "id": 65995,
+      "type": "posts",
+      "slug": "janenba-formally-revealed-forthcoming-dragon-ball-fighterz-dlc-releasing-august-8",
+      "title": "Janenba Formally Revealed as Forthcoming “Dragon Ball FighterZ” DLC Character Releasing August 8",
+      "date": "2019-08-05T14:54:14",
+      "modified": "2019-08-05T14:54:14",
+      "url": "https://www.kanzenshuu.com/2019/08/05/janenba-formally-revealed-forthcoming-dragon-ball-fighterz-dlc-releasing-august-8/",
+      "excerpt": "In conjunction with the game’s performance at the 2019 Evolution Championship Series (“Evo”) this weekend, Janenba was formally unveiled as the sixth character coming as optional paid downloadable content to Dragon Ball FighterZ within the game’s “FighterZ Pass 2”. The reveal followed two inadvertent “leaks” from Microsoft and Nintendo. Janenba debuted in 1995’s twelfth theatrical …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 65987,
+      "type": "posts",
+      "slug": "podcast-episode-0475",
+      "title": "Podcast Episode #0475",
+      "date": "2019-08-05T14:00:52",
+      "modified": "2020-07-16T09:24:21",
+      "url": "https://www.kanzenshuu.com/2019/08/05/podcast-episode-0475/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0475! Mike and Meri field a bunch of great audience feedback from last episode’s “Captain Ginyu – Assault” retrospective, and Joe joins in to chat a little bit about some of the insane and absolutely-totally-real wiki work going on behind the scenes! SEGMENTS: 00:13 – Introduction 04:38 – Wiki Check-In: Real-World References …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65973,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-vol-10-content-overview",
+      "title": "“Dragon Ball Super” Manga Vol. 10 Content Overview",
+      "date": "2019-08-01T15:12:58",
+      "modified": "2019-08-01T15:12:58",
+      "url": "https://www.kanzenshuu.com/2019/08/01/dragon-ball-super-manga-vol-10-content-overview/",
+      "excerpt": "The tenth collected volume of Toyotarō’s Dragon Ball Super manga — originally and currently serialized on a monthly basis in Shueisha’s V-Jump magazine — officially hit Japanese shelves today (02 August 2019) for &yen;440 + tax. Spanning 192 pages, the volume covers chapters 45-48, and also contains a two-page bonus comic (originally hinted at by …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 65962,
+      "type": "posts",
+      "slug": "second-major-mention-pointing-toward-janenba-as-upcoming-dragon-ball-fighterz-dlc-character",
+      "title": "Second Major Mention Pointing Toward Janenba As Upcoming “Dragon Ball FighterZ” DLC Character",
+      "date": "2019-07-29T15:14:35",
+      "modified": "2019-07-29T15:14:35",
+      "url": "https://www.kanzenshuu.com/2019/07/29/second-major-mention-pointing-toward-janenba-as-upcoming-dragon-ball-fighterz-dlc-character/",
+      "excerpt": "Following a mention of a “skin” in a May 2019 “This Week on Xbox” segment by Microsoft’s Larry “Major Nelson” Hryb, the official Nintendo UK website has posted and since removed a formal entry for Janenba as forthcoming paid downloadable content in Dragon Ball FighterZ: Janemba as a new playable character 5 alternative colors for …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 65958,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-fifteenth-episode-streaming-september-2019",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Fifteenth Episode Streaming September 2019",
+      "date": "2019-07-29T13:43:04",
+      "modified": "2019-07-29T13:43:04",
+      "url": "https://www.kanzenshuu.com/2019/07/29/super-dragon-ball-heroes-promotional-anime-fifteenth-episode-streaming-september-2019/",
+      "excerpt": "Following this weekend’s fourteenth episode premiere, the official Super Dragon Ball Heroes website announced a September 2019 timeframe for the forthcoming fifteenth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“Send Kamioren Flying! Overwhelming! Ultra Instinct!”), Goku utilizes Ultra Instinct and overwhelms …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 65928,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-20",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #20",
+      "date": "2019-07-21T16:57:05",
+      "modified": "2019-07-21T16:57:05",
+      "url": "https://www.kanzenshuu.com/2019/07/21/translation-update-special-project-toyotaro-drew-it-image-20/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, Great …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65924,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-50-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 50 English Translation Available",
+      "date": "2019-07-19T11:03:59",
+      "modified": "2019-08-20T08:22:42",
+      "url": "https://www.kanzenshuu.com/2019/07/19/dragon-ball-super-manga-chapter-50-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s fiftieth chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 65918,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-evo-2019-registration-numbers",
+      "title": "“Dragon Ball FighterZ” Evo 2019 Registration Numbers",
+      "date": "2019-07-19T09:56:57",
+      "modified": "2019-07-19T09:56:57",
+      "url": "https://www.kanzenshuu.com/2019/07/19/dragon-ball-fighterz-evo-2019-registration-numbers/",
+      "excerpt": "Dragon Ball FighterZ has received 1,191 entrants for the 2019 Evolution Championship Series (“Evo”) to be held in Las Vegas this coming August, coming in as the sixth-most-entered game. This is down from last year’s 2,575 entrants, which at the time secured the top spot as the most-entered game in 2018. The game went on …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 65913,
+      "type": "posts",
+      "slug": "podcast-episode-0474",
+      "title": "Podcast Episode #0474",
+      "date": "2019-07-15T15:26:40",
+      "modified": "2020-07-16T09:26:01",
+      "url": "https://www.kanzenshuu.com/2019/07/15/podcast-episode-0474/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0474! Mike and Meri time travel twenty years into the past to relive “Captain Ginyu – Assault” on home video. “Season Three” officially begins with a new voice cast and new musical score, but how does this fit into the larger Dragon Ball fandom at the time? Tune in as our collective …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65907,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-fourteenth-episode-streaming-july-28",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Fourteenth Episode Streaming July 28",
+      "date": "2019-07-11T13:18:27",
+      "modified": "2019-07-11T13:18:27",
+      "url": "https://www.kanzenshuu.com/2019/07/11/super-dragon-ball-heroes-promotional-anime-fourteenth-episode-streaming-july-28/",
+      "excerpt": "Following today’s thirteenth episode premiere, the official Super Dragon Ball Heroes website announced a 28 July 2019 streaming date for the forthcoming fourteenth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“The Menacing Universe Seed! Kamioren’s Rampage!!”), Piccolo and No. 17 continue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 65879,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-thirteenth-episode-streaming-july-11",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Thirteenth Episode Streaming July 11",
+      "date": "2019-06-24T11:26:13",
+      "modified": "2019-06-24T11:26:13",
+      "url": "https://www.kanzenshuu.com/2019/06/24/super-dragon-ball-heroes-promotional-anime-thirteenth-episode-streaming-july-11/",
+      "excerpt": "Following this weekend’s twelfth episode premiere, the official Super Dragon Ball Heroes website announced a 11 July 2019 streaming date for the forthcoming thirteenth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“Super Hearts Joins The Fight! An All-Out Earthshaking Battle!”), Goku …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 65862,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-19",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #19",
+      "date": "2019-06-21T09:07:57",
+      "modified": "2019-06-21T09:07:57",
+      "url": "https://www.kanzenshuu.com/2019/06/21/translation-update-special-project-toyotaro-drew-it-image-19/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, Great …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65854,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-49-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 49 English Translation Available",
+      "date": "2019-06-20T11:08:23",
+      "modified": "2019-06-20T11:08:23",
+      "url": "https://www.kanzenshuu.com/2019/06/20/dragon-ball-super-manga-chapter-49-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s forty-ninth chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 65850,
+      "type": "posts",
+      "slug": "japanese-dragon-ball-super-manga-collected-edition-vol-10-releasing-in-august-2019",
+      "title": "Japanese “Dragon Ball Super” Manga Collected Edition Vol. 10 Releasing in August 2019",
+      "date": "2019-06-18T10:44:08",
+      "modified": "2019-06-18T10:44:08",
+      "url": "https://www.kanzenshuu.com/2019/06/18/japanese-dragon-ball-super-manga-collected-edition-vol-10-releasing-in-august-2019/",
+      "excerpt": "Shueisha and online retailers have listed an 02 August 2019 release date for the tenth collected volume of Toyotarō’s Dragon Ball Super manga series, which will retail for &yen;440 (+ tax) in print. The volume will pick up with the forty-fifth chapter of the series; the ninth collected volume saw its release in Japan back …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 65833,
+      "type": "posts",
+      "slug": "dragon-ball-game-project-z-unveiled-as-dragon-ball-z-kakarot-during-microsoft-2019-e3-briefing",
+      "title": "“Dragon Ball Game Project Z” Unveiled as “Dragon Ball Z: Kakarot” During Microsoft 2019 E3 Briefing",
+      "date": "2019-06-09T16:55:21",
+      "modified": "2019-06-09T19:27:48",
+      "url": "https://www.kanzenshuu.com/2019/06/09/dragon-ball-game-project-z-unveiled-as-dragon-ball-z-kakarot-during-microsoft-2019-e3-briefing/",
+      "excerpt": "Originally revealed under the “Game Project Z” code name back in January, Dragon Ball Z: Kakarot was formally unveiled during Microsoft’s Electronic Entertainment Exposition (“E3”) media briefing this afternoon. Developed by CyberConnect2 for Bandai Namco, the action role-playing game is due in early 2020. Amazon is currently offering the game for a $49.94 pre-order on …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 65824,
+      "type": "posts",
+      "slug": "dragon-ball-xenoverse-2-announced-for-google-stadia",
+      "title": "“Dragon Ball XENOVERSE 2” Announced For Google Stadia",
+      "date": "2019-06-06T13:39:53",
+      "modified": "2019-06-06T13:39:53",
+      "url": "https://www.kanzenshuu.com/2019/06/06/dragon-ball-xenoverse-2-announced-for-google-stadia/",
+      "excerpt": "As part of today’s Google “Stadia Connect” livestream featuring pricing and launch information for the forthcoming video game streaming initiative, Bandai Namco’s Dragon Ball XENOVERSE 2 was formally revealed for the platform. Stadia, a streaming-only video gaming platform developed by Google with both ongoing subscription and standard purchase options for games, is set for launch …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 65819,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-world-mission-switch-pc-version-1-01-02-patch-notes",
+      "title": "“Super Dragon Ball Heroes: World Mission” (Switch/PC) Version 1.01.02 Patch Notes",
+      "date": "2019-06-06T13:22:48",
+      "modified": "2019-06-06T13:22:48",
+      "url": "https://www.kanzenshuu.com/2019/06/06/super-dragon-ball-heroes-world-mission-switch-pc-version-1-01-02-patch-notes/",
+      "excerpt": "Bandai Namco has detailed the following updates released as part of today’s version 1.02.02 patch for Super Dragon Ball Heroes: World Mission: Fixed the issue from the recent free update, where the game freezes if the players creates a custom card using the newly added customization contents from the last update, proceeds to edit a …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        143
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 143,
+          "count": 10,
+          "link": "https://www.kanzenshuu.com/tag/world-mission/",
+          "name": "World Mission",
+          "slug": "world-mission"
+        }
+      ]
+    },
+    {
+      "id": 65782,
+      "type": "posts",
+      "slug": "dragon-ball-gt-anime-comic-saikyo-jump-end-continue-from-beginning",
+      "title": "“Dragon Ball GT” Anime Comic in “Saikyō Jump” Reaches End of Series + Set to Continue From Beginning of Series",
+      "date": "2019-06-05T15:13:39",
+      "modified": "2019-06-05T15:13:39",
+      "url": "https://www.kanzenshuu.com/2019/06/05/dragon-ball-gt-anime-comic-saikyo-jump-end-continue-from-beginning/",
+      "excerpt": "The Dragon Ball GT anime comic — comprised of limited-color screen shots from the 1996-1997 television series displayed in manga format with dialog and narration bubbles — began back in the January 2014 issue of Shueisha’s Saikyō Jump magazine. Running as a tie-in with the Dragon Ball Heroes arcade game’s then-current “Evil Dragon Mission” updates, …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        134
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 134,
+          "count": 8,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-gt/",
+          "name": "Dragon Ball GT",
+          "slug": "dragon-ball-gt"
+        }
+      ]
+    },
+    {
+      "id": 65786,
+      "type": "posts",
+      "slug": "dragon-ball-sd-vol-6-release-details-content-overview",
+      "title": "“Dragon Ball SD” Vol. 6 Release Details & Content Overview",
+      "date": "2019-06-03T15:23:13",
+      "modified": "2019-06-03T15:25:04",
+      "url": "https://www.kanzenshuu.com/2019/06/03/dragon-ball-sd-vol-6-release-details-content-overview/",
+      "excerpt": "The sixth collected volume of Naho Ooishi‘s Dragon Ball SD — the spin-off/re-telling of the Dragon Ball series currently serialized in Saikyō Jump — saw its release both digitally and in print in Japan today (04 June 2019). The volume picks up with Chapter 49 of the monthly/bimonthly reboot of the comic as the Earthlings …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        75
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 75,
+          "count": 33,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-sd/",
+          "name": "Dragon Ball SD",
+          "slug": "dragon-ball-sd"
+        }
+      ]
+    },
+    {
+      "id": 65732,
+      "type": "posts",
+      "slug": "ribrianne-dlc-character-coming-to-dragon-ball-xenoverse-2",
+      "title": "Ribrianne DLC Character Coming to “Dragon Ball XENOVERSE 2”",
+      "date": "2019-05-24T14:57:11",
+      "modified": "2019-05-25T13:15:33",
+      "url": "https://www.kanzenshuu.com/2019/05/24/ribrianne-dlc-character-coming-to-dragon-ball-xenoverse-2/",
+      "excerpt": "Following last month’s Super Saiyan God Vegeta reveal, and in conjunction with this week’s July 2019 issue of Shueisha’s V-Jump magazine, Bandai Namco has announced Universe 2’s Ribrianne is coming as paid downloadable content to Dragon Ball XENOVERSE 2 as part of the game’s forthcoming “Ultra Pack 1” in June: Special moves will include Formation, …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 65629,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-18",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #18",
+      "date": "2019-05-21T08:44:25",
+      "modified": "2019-05-21T08:58:39",
+      "url": "https://www.kanzenshuu.com/2019/05/21/translation-update-special-project-toyotaro-drew-it-image-18/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, Shiirasu, and …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65617,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-48-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 48 English Translation Available",
+      "date": "2019-05-20T11:18:21",
+      "modified": "2019-05-20T11:18:21",
+      "url": "https://www.kanzenshuu.com/2019/05/20/dragon-ball-super-manga-chapter-48-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s forty-eighth chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 65404,
+      "type": "posts",
+      "slug": "bandai-namco-holdings-fiscal-2019-figures",
+      "title": "Bandai Namco Holdings Fiscal 2019 Figures",
+      "date": "2019-05-14T12:37:36",
+      "modified": "2022-03-13T14:40:56",
+      "url": "https://www.kanzenshuu.com/2019/05/14/bandai-namco-holdings-fiscal-2019-figures/",
+      "excerpt": "Bandai Namco Holdings has posted a ¥63.383 billion (approximately $578 million) profit for the full fiscal year of 2019, compared to a ¥54.109 billion profit last year. Dragon Ball came in as the company’s best-performing franchise for the year, pulling in ¥129 billion (yet another jump over last year’s ¥97.9 billion), significantly beating the company’s …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        79
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 79,
+          "count": 31,
+          "link": "https://www.kanzenshuu.com/tag/financial/",
+          "name": "Financial",
+          "slug": "financial"
+        }
+      ]
+    },
+    {
+      "id": 65364,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-universe-mission-manga-vol-1-content-overview",
+      "title": "“Super Dragon Ball Heroes: Universe Mission” Manga Vol. 1 Content Overview",
+      "date": "2019-05-14T12:20:22",
+      "modified": "2019-05-14T12:20:22",
+      "url": "https://www.kanzenshuu.com/2019/05/14/super-dragon-ball-heroes-universe-mission-manga-vol-1-content-overview/",
+      "excerpt": "The first collected volume of Yoshitaka Nagayama’s Super Dragon Ball Heroes: Universe Mission manga series — originally and currently serialized on a bimonthly basis in Shueisha’s Saikyō Jump magazine — officially hit Japanese shelves earlier this month on 02 May 2019 for &yen;500 + tax. Spanning 200 pages, the volume covers the the series’ first …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        76
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 76,
+          "count": 67,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-heroes/",
+          "name": "Dragon Ball Heroes",
+          "slug": "dragon-ball-heroes"
+        }
+      ]
+    },
+    {
+      "id": 65326,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-twelfth-episode-streaming-late-june-2019",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Twelfth Episode Streaming Late-June 2019",
+      "date": "2019-05-09T08:42:18",
+      "modified": "2019-06-24T11:20:48",
+      "url": "https://www.kanzenshuu.com/2019/05/09/super-dragon-ball-heroes-promotional-anime-twelfth-episode-streaming-late-june-2019/",
+      "excerpt": "Following today’s eleventh episode premiere, the official Super Dragon Ball Heroes website announced a late-June 2019 streaming date for the forthcoming twelfth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“Calling All Super Warriors! Universe 7’s Decisive Battle”), Goku and the others …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 65317,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-patch-1-17-notes-upcoming-adjustments",
+      "title": "“Dragon Ball FighterZ” Patch 1.17 Notes & Upcoming Adjustments",
+      "date": "2019-05-08T16:12:59",
+      "modified": "2019-05-16T16:00:14",
+      "url": "https://www.kanzenshuu.com/2019/05/08/dragon-ball-fighterz-patch-1-17-notes-upcoming-adjustments/",
+      "excerpt": "Bandai Namco has detailed numerous gameplay and character-specific changes in the 1.17 patch of Dragon Ball FighterZ hitting this week, releasing in conjunction with tomorrow’s “Son Goku (GT)” playable character debut. The 3-on-3, “2.5D” fighting game is developed by Arc System Works and is currently available on the PlayStation 4, Xbox One, and PC (via …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 65300,
+      "type": "posts",
+      "slug": "podcast-episode-0473",
+      "title": "Podcast Episode #0473",
+      "date": "2019-05-05T12:57:45",
+      "modified": "2020-07-16T09:26:38",
+      "url": "https://www.kanzenshuu.com/2019/05/05/podcast-episode-0473/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0473! Mike and Julian share their “Hidden and Forgotten Dragon Ball Stories” panel from Castle Point Anime Convention 2019! Tune in for a brief overview of some of the oft-forgotten supplemental manga series and the historical context that created some of these bizarre releases. SEGMENTS: 00:12 – Introduction 01:47 – Topic 47:35 …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65308,
+      "type": "posts",
+      "slug": "dragon-ball-xenoverse-2-photo-mode-launches-on-nintendo-switch-edition",
+      "title": "“Dragon Ball XENOVERSE 2” Photo Mode Launches on Nintendo Switch Edition",
+      "date": "2019-04-29T15:10:42",
+      "modified": "2019-05-06T15:31:52",
+      "url": "https://www.kanzenshuu.com/2019/04/29/dragon-ball-xenoverse-2-photo-mode-launches-on-nintendo-switch-edition/",
+      "excerpt": "Following an initial launch on other platforms back in March, today’s update for Dragon Ball XENOVERSE 2 on the Nintendo Switch enables the long-promised “Photo Mode”: Players will find a new “Photo Mode” robot in Conton City which will allow them to set up battles and pause for specific camera framing and embellishments. The photo …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 65263,
+      "type": "posts",
+      "slug": "dragon-ball-sd-volume-6-listed-for-release-in-june-2019",
+      "title": "“Dragon Ball SD” Volume 6 Listed For Release in June 2019",
+      "date": "2019-04-29T12:40:23",
+      "modified": "2019-06-03T15:04:12",
+      "url": "https://www.kanzenshuu.com/2019/04/29/dragon-ball-sd-volume-6-listed-for-release-in-june-2019/",
+      "excerpt": "The sixth collected volume of Dragon Ball SD appears to finally be on its way from Shueisha, with a catalog entry noting an 04 June 2019 release date, clocking in at 192 pages and running at ¥600 + tax. The release will mark a little more than a year since the fifth collected volume, no …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        75
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 75,
+          "count": 33,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-sd/",
+          "name": "Dragon Ball SD",
+          "slug": "dragon-ball-sd"
+        }
+      ]
+    },
+    {
+      "id": 65268,
+      "type": "posts",
+      "slug": "podcast-episode-0472",
+      "title": "Podcast Episode #0472",
+      "date": "2019-04-29T12:09:44",
+      "modified": "2020-07-16T09:45:35",
+      "url": "https://www.kanzenshuu.com/2019/04/29/podcast-episode-0472/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0472! Mike and Julian go behind-the-scenes to discuss some of the recent name spelling disparities between not just the official licensees, but also with us here at Kanzenshuu. What is suddenly driving this attempt at consistency from the top down, and why do we sometimes feel the need to be different? Where …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65255,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-17",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #17",
+      "date": "2019-04-25T08:27:03",
+      "modified": "2019-04-25T08:27:03",
+      "url": "https://www.kanzenshuu.com/2019/04/25/translation-update-special-project-toyotaro-drew-it-image-17/",
+      "excerpt": "Each month, Toyotarō provides a drawing — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided drawings of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, Onio with his wife, and Shiirasu. …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65242,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-son-goku-gt-promotional-video",
+      "title": "“Dragon Ball FighterZ” Son Goku (GT) Promotional Video Showcases Special Moves, Alternate Colors, Lobby Characters, & Z-Stamp",
+      "date": "2019-04-24T15:18:13",
+      "modified": "2019-05-08T16:09:19",
+      "url": "https://www.kanzenshuu.com/2019/04/24/dragon-ball-fighterz-son-goku-gt-promotional-video/",
+      "excerpt": "Following the initial reveal back in March, and in conjunction with this week’s June 2019 issue of Shueisha’s V-Jump magazine, a short promotional video for Son Goku (GT) has been released showcasing some of his special moves, including a bonus super move seeing the character transform into Super Saiyan 4 when teammates have been defeated: …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 65722,
+      "type": "posts",
+      "slug": "super-saiyan-god-vegeta-dlc-character-coming-to-dragon-ball-xenoverse-2",
+      "title": "Super Saiyan God Vegeta DLC Character Coming to “Dragon Ball XENOVERSE 2”",
+      "date": "2019-04-22T19:24:02",
+      "modified": "2019-05-24T14:59:01",
+      "url": "https://www.kanzenshuu.com/2019/04/22/super-saiyan-god-vegeta-dlc-character-coming-to-dragon-ball-xenoverse-2/",
+      "excerpt": "In conjunction with this week’s June 2019 issue of Shueisha’s V-Jump magazine, Bandai Namco has announced the Super Saiyan God version of Vegeta coming as paid downloadable content to Dragon Ball XENOVERSE 2 as part of the game’s forthcoming “Ultra Pack” in June: Special moves will include the Prominent Flash, Blazing Attack, and Burst Stinger. …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 65181,
+      "type": "posts",
+      "slug": "podcast-episode-0471",
+      "title": "Podcast Episode #0471",
+      "date": "2019-04-22T14:10:05",
+      "modified": "2020-08-18T15:04:08",
+      "url": "https://www.kanzenshuu.com/2019/04/22/podcast-episode-0471/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0471! Mike, Julian, and Ian review Toyotaro’s “debut” manga series (in an official capacity, anyway): “Dragon Ball Heroes: Victory Mission” from 2012-2014. The odd little promotional manga that could somehow grew into a legitimate serialization and arguably shaped the future of the “Dragon Ball Heroes” franchise for years to come. What lasting …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65174,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-47-english-translation-available",
+      "title": "“Dragon Ball Super” Manga Chapter 47 English Translation Available",
+      "date": "2019-04-20T13:46:38",
+      "modified": "2019-04-20T13:46:38",
+      "url": "https://www.kanzenshuu.com/2019/04/20/dragon-ball-super-manga-chapter-47-english-translation-available/",
+      "excerpt": "Continuing onward from previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s forty-seventh chapter to their respective Manga Plus and Shonen Jump services, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 65159,
+      "type": "posts",
+      "slug": "shueisha-reveals-naohiro-shintanis-dragon-ball-super-broly-anime-comic-cover-art",
+      "title": "Shueisha Reveals Naohiro Shintani’s “Dragon Ball Super: Broly” Anime Comic Cover Art",
+      "date": "2019-04-20T01:14:38",
+      "modified": "2019-04-20T10:17:52",
+      "url": "https://www.kanzenshuu.com/2019/04/20/shueisha-reveals-naohiro-shintanis-dragon-ball-super-broly-anime-comic-cover-art/",
+      "excerpt": "Shueisha’s official Dragon Ball website has unveiled the cover for the upcoming Dragon Ball Super: Broly anime comic. The official cover art is drawn by none other than Naohiro Shintani, the theatrical film’s animation supervisor. カバー（上の画像）に使用されるイラストは、作画監督の新谷直大さん描き下ろし！悟空とベジータ、ブロリーが描かれたド迫力のイラストだ！！ The cover illustration is drawn by animation supervisor Naohiro Shintani! Goku, Vegeta, and Broli have been drawn with an …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 65150,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-eleventh-episode-streaming-may-9",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Eleventh Episode Streaming May 9",
+      "date": "2019-04-18T14:02:19",
+      "modified": "2019-04-18T14:02:49",
+      "url": "https://www.kanzenshuu.com/2019/04/18/super-dragon-ball-heroes-promotional-anime-eleventh-episode-streaming-may-9/",
+      "excerpt": "Following today’s tenth episode premiere, the official Super Dragon Ball Heroes website announced an 09 May 2019 streaming date for the forthcoming eleventh episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“Fierce Fight! Universe 11’s Climactic Battle!”), Vegeta battles on with his …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 65134,
+      "type": "posts",
+      "slug": "bandai-namco-announces-majin-boo-coming-as-additional-jump-force-playable-character",
+      "title": "Bandai Namco Announces Majin Boo Coming as Additional “Jump Force” Playable Character",
+      "date": "2019-04-18T12:18:51",
+      "modified": "2019-04-18T12:18:51",
+      "url": "https://www.kanzenshuu.com/2019/04/18/bandai-namco-announces-majin-boo-coming-as-additional-jump-force-playable-character/",
+      "excerpt": "Bandai Namco has revealed the full lineup of nine characters — including Dragon Ball‘s Majin Boo — coming as paid downloadable content to Jump Force, the 50th anniversary crossover fighting game recently released on the PlayStation 4, Xbox One, and PC. Here's a look at the full line up coming to the #JUMPFORCE Character Pass: …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        137
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 137,
+          "count": 9,
+          "link": "https://www.kanzenshuu.com/tag/jump-force/",
+          "name": "Jump Force",
+          "slug": "jump-force"
+        }
+      ]
+    },
+    {
+      "id": 65123,
+      "type": "posts",
+      "slug": "funimation-dragon-ball-super-part-eight-releasing-july-2019",
+      "title": "FUNimation “Dragon Ball Super: Part Eight” Home Video (DVD/Blu-ray) Releasing July 2019",
+      "date": "2019-04-17T11:38:31",
+      "modified": "2019-10-16T19:05:47",
+      "url": "https://www.kanzenshuu.com/2019/04/17/funimation-dragon-ball-super-part-eight-releasing-july-2019/",
+      "excerpt": "FUNimation’s online store reveals an 02 July 2019 release date for the company’s eighth part of the Dragon Ball Super television series on DVD and Blu-ray. With Buu out of commission, and in order to complete their roster, Goku recruits an old enemy as the 7th Universe’s final teammate. However, the other universes aren’t keen …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 65098,
+      "type": "posts",
+      "slug": "dragon-ball-super-broly-funimation-home-dvd-blu-ray-release-quick-facts",
+      "title": "“Dragon Ball Super: Broly” FUNimation Home DVD/Blu-ray Release: Quick Facts",
+      "date": "2019-04-16T22:05:55",
+      "modified": "2019-04-18T14:15:42",
+      "url": "https://www.kanzenshuu.com/2019/04/16/dragon-ball-super-broly-funimation-home-dvd-blu-ray-release-quick-facts/",
+      "excerpt": "Last year’s Dragon Ball Super: Broly theatrical film sees its home release today from FUNimation (somehow two months ahead of its impending Japanese release!). Stay tuned here at Kanzenshuu as we continue to cover the film and its various international releases, but in the meantime, check out these quick facts: it is everything you actually …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 65096,
+      "type": "posts",
+      "slug": "podcast-episode-0470",
+      "title": "Podcast Episode #0470",
+      "date": "2019-04-16T15:25:31",
+      "modified": "2020-08-18T15:04:36",
+      "url": "https://www.kanzenshuu.com/2019/04/16/podcast-episode-0470/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0470! Mike and Heath check in on “Super Dragon Ball Heroes: World Mission” before chatting out the latest entry in the long-running saga of questionable-at-best, depressing-at-worst FUNimation Dragon Ball Z home video releases. Who do they think they are making this 30th anniversary Blu-ray set for, and why do we keep repeating …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 65090,
+      "type": "posts",
+      "slug": "dragon-ball-super-broly-content-coming-super-dragon-ball-heroes-world-mission",
+      "title": "Bandai Namco Teases “Dragon Ball Super: Broly” Content Coming to “Super Dragon Ball Heroes: World Mission”",
+      "date": "2019-04-15T13:42:57",
+      "modified": "2019-04-15T13:42:57",
+      "url": "https://www.kanzenshuu.com/2019/04/15/dragon-ball-super-broly-content-coming-super-dragon-ball-heroes-world-mission/",
+      "excerpt": "A brief teaser released last Friday indicates material related to the Dragon Ball Super: Broly theatrical film is making its way to Super Dragon Ball Heroes: World Mission courtesy of a new update “coming soon”: Cards featuring characters from the film originally debuted in the Super Dragon Ball Heroes arcade game’s “Universe Mission 5” update …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        143
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 143,
+          "count": 10,
+          "link": "https://www.kanzenshuu.com/tag/world-mission/",
+          "name": "World Mission",
+          "slug": "world-mission"
+        }
+      ]
+    },
+    {
+      "id": 64998,
+      "type": "posts",
+      "slug": "funimation-dbz-30th-anniversary-bluray-set-trailer",
+      "title": "FUNimation Shares Dragon Ball Z 30th Anniversary Blu-ray Set Trailer With Questionable Video Quality Seeking to Reach Pre-order Goal",
+      "date": "2019-04-07T14:58:57",
+      "modified": "2019-04-07T15:53:47",
+      "url": "https://www.kanzenshuu.com/2019/04/07/funimation-dbz-30th-anniversary-bluray-set-trailer/",
+      "excerpt": "FUNimation has shared a new trailer to promote and garner the necessary pre-orders for their (potential) forthcoming Dragon Ball Z 30th anniversary Blu-ray set: While advertised and genuinely presented in the series’ original 4:3 aspect ratio, the quality of the video samples used appear similar to the company’s previous Blu-ray release of the Dragon Ball …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64954,
+      "type": "posts",
+      "slug": "new-feature-article-guide-to-family-names-in-dragon-ball",
+      "title": "New Feature Article: Guide to Family Names in Dragon Ball",
+      "date": "2019-04-01T14:31:20",
+      "modified": "2019-04-01T14:31:20",
+      "url": "https://www.kanzenshuu.com/2019/04/01/new-feature-article-guide-to-family-names-in-dragon-ball/",
+      "excerpt": "Back on episode #0426 of our podcast, we took a short tour through the world of family names in Dragon Ball. As we do with many of our podcast topics and related guides, we have been working since that episode’s release to build a larger, all-encompassing page to house that information. Nearly two years later …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64900,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-16",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #16",
+      "date": "2019-03-29T15:03:06",
+      "modified": "2019-03-29T15:03:06",
+      "url": "https://www.kanzenshuu.com/2019/03/29/translation-update-special-project-toyotaro-drew-it-image-16/",
+      "excerpt": "Each month, Toyotarō provides a sketch — as well as a brief comment — on the official Japanese Dragon Ball website. Thus far, Toyotarō has provided sketches of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, Bardock’s original television special crew, and Onio with his wife. For …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64926,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-patch-1-15-notes-upcoming-adjustments",
+      "title": "“Dragon Ball FighterZ” Patch 1.15 Notes & Upcoming Adjustments",
+      "date": "2019-03-29T14:58:49",
+      "modified": "2019-03-29T15:35:14",
+      "url": "https://www.kanzenshuu.com/2019/03/29/dragon-ball-fighterz-patch-1-15-notes-upcoming-adjustments/",
+      "excerpt": "Bandai Namco has detailed the numerous gameplay and character-specific changes in the 1.15 patch of Dragon Ball FighterZ released this week: ◆System Mechanics ・Standing Light Attack: Follow-up 2 →Can now be linked to a Z Change. →Will always knock the opponent forward on hit. ・Jumping Light Attack →Fixed an issue in which a Super Combo …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 64921,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-world-mission-demo-available-on-japanese-nintendo-switch-eshop",
+      "title": "“Super Dragon Ball Heroes: World Mission” Demo Available on Japanese Nintendo Switch eShop",
+      "date": "2019-03-29T09:55:13",
+      "modified": "2019-03-29T09:55:13",
+      "url": "https://www.kanzenshuu.com/2019/03/29/super-dragon-ball-heroes-world-mission-demo-available-on-japanese-nintendo-switch-eshop/",
+      "excerpt": "A demo version of the forthcoming Super Dragon Ball Heroes: World Mission video game is now available on the Japanese Nintendo Switch eShop: The demo version contains introductory story mode scenarios, a selection of pre-set missions, and a glimpse at the card creation mode. The demo version is exclusive to the Japanese eShop, and while …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        143
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 143,
+          "count": 10,
+          "link": "https://www.kanzenshuu.com/tag/world-mission/",
+          "name": "World Mission",
+          "slug": "world-mission"
+        }
+      ]
+    },
+    {
+      "id": 64911,
+      "type": "posts",
+      "slug": "additional-screenshots-forthcoming-dragon-ball-fighterz-paid-dlc-character-son-goku-gt",
+      "title": "Additional Screenshots of Forthcoming “Dragon Ball FighterZ” Paid DLC Character Son Goku (GT)",
+      "date": "2019-03-26T13:36:08",
+      "modified": "2019-03-26T13:36:08",
+      "url": "https://www.kanzenshuu.com/2019/03/26/additional-screenshots-forthcoming-dragon-ball-fighterz-paid-dlc-character-son-goku-gt/",
+      "excerpt": "Bandai Namco has released additional screenshots showcasing the forthcoming Dragon Ball FighterZ playable character, Son Goku (GT): Last week’s May 2019 issue of Shueisha’s V-Jump magazine teased another ultimate attack available to the Dragon Ball GT version of Goku, noting that more information will be revealed in the next issue. No release date for the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 64904,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-tenth-episode-streaming-april-18",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Tenth Episode Streaming April 18",
+      "date": "2019-03-26T13:19:06",
+      "modified": "2019-03-26T13:19:06",
+      "url": "https://www.kanzenshuu.com/2019/03/26/super-dragon-ball-heroes-promotional-anime-tenth-episode-streaming-april-18/",
+      "excerpt": "Following up on the vague “mid-April” announcement earlier this month, last week’s May 2019 issue of Shueisha’s V-Jump magazine announced a concrete 18 April 2019 streaming date for the forthcoming tenth episode of the Super Dragon Ball Heroes promotional anime, continuing further into the brand-new “Universal Conflict” arc. In the upcoming episode (“Counterattack! Fierce Attack! …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 64843,
+      "type": "posts",
+      "slug": "shueisha-releasing-dragon-ball-super-broly-anime-comic-may-2019",
+      "title": "Shueisha Releasing “Dragon Ball Super: Broly” Anime Comic in May 2019",
+      "date": "2019-03-22T11:47:25",
+      "modified": "2019-03-22T11:50:50",
+      "url": "https://www.kanzenshuu.com/2019/03/22/shueisha-releasing-dragon-ball-super-broly-anime-comic-may-2019/",
+      "excerpt": "Shueisha has listed an “anime comic” version of last year’s Dragon Ball Super: Broly theatrical film for release in Japan. The book hits shelves 02 May 2019 for &yen;1,400 + tax. Cover art and page count information are not provided in the current listing. Two novelizations were released in Japan back in December alongside the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 64748,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-universe-mission-manga-collected-edition-beginning-may-2019",
+      "title": "Yoshitaka Nagayama’s “Super Dragon Ball Heroes: Universe Mission” Manga Series Receiving Collected Edition Beginning May 2019",
+      "date": "2019-03-20T15:16:39",
+      "modified": "2019-03-20T15:16:39",
+      "url": "https://www.kanzenshuu.com/2019/03/20/super-dragon-ball-heroes-universe-mission-manga-collected-edition-beginning-may-2019/",
+      "excerpt": "The ongoing Super Dragon Ball Heroes: Universe Mission manga series by Yoshitaka Nagayama — currently serialized in Shueisha’s bimonthly Saikyō Jump magazine — is slated to begin receiving a collected print edition, with the first volume set for release 02 May 2019. The Universe Mission series began serialization back in the May 2018 issue of …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        76
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 76,
+          "count": 67,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-heroes/",
+          "name": "Dragon Ball Heroes",
+          "slug": "dragon-ball-heroes"
+        }
+      ]
+    },
+    {
+      "id": 64741,
+      "type": "posts",
+      "slug": "free-dragon-ball-xenoverse-2-lite-edition-ps4-xbo-launches",
+      "title": "Free “Dragon Ball XENOVERSE 2 – Lite Edition” (PS4/XBO) Launches",
+      "date": "2019-03-20T12:18:29",
+      "modified": "2019-03-20T12:18:29",
+      "url": "https://www.kanzenshuu.com/2019/03/20/free-dragon-ball-xenoverse-2-lite-edition-ps4-xbo-launches/",
+      "excerpt": "Bandai Namco has announced and released a new “Lite” edition of Dragon Ball XENOVERSE 2 on the PlayStation 4 and Xbox One, allowing players to dip into the game for free with limited story availability yet compatibility with full (paid) editions of the game and support for downloadable content packs, along with the ability to …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 64733,
+      "type": "posts",
+      "slug": "dragon-ball-gt-son-goku-coming-dragon-ball-fighterz-playable-character",
+      "title": "Dragon Ball GT Version of Son Goku Coming as “Dragon Ball FighterZ” Playable Character",
+      "date": "2019-03-20T11:23:56",
+      "modified": "2019-03-20T11:23:56",
+      "url": "https://www.kanzenshuu.com/2019/03/20/dragon-ball-gt-son-goku-coming-dragon-ball-fighterz-playable-character/",
+      "excerpt": "In conjunction with today’s May 2019 issue of Shueisha’s V-Jump magazine in Japan, Bandai Namco has announced the Dragon Ball GT child version of Son Goku is coming to Dragon Ball FighterZ as paid downloadable content: Goku can use Nyoi-Bō to allow for a long reach, while the Kamehameha can launch Goku toward the opponent …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 64726,
+      "type": "posts",
+      "slug": "two-anison-bgm-pack-releases-super-dragon-ball-heroes-world-mission",
+      "title": "Bandai Namco Announces Two “Anison & BGM Pack” DLC Releases to Accompany “Super Dragon Ball Heroes: World Mission” (Switch/PC) at Launch",
+      "date": "2019-03-20T09:56:28",
+      "modified": "2019-03-20T09:56:28",
+      "url": "https://www.kanzenshuu.com/2019/03/20/two-anison-bgm-pack-releases-super-dragon-ball-heroes-world-mission/",
+      "excerpt": "Taking a cue from similar packs available both in Dragon Ball XENOVERSE 2 and Dragon Ball FighterZ, Bandai Namco has announced “Anison & BGM Pack 1” and “Anison & BGM Pack 2” (paid downloadble content) for the forthcoming Super Dragon Ball Heroes: World Mission, both of which will be available for &yen;1,389 + tax each …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        143
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 143,
+          "count": 10,
+          "link": "https://www.kanzenshuu.com/tag/world-mission/",
+          "name": "World Mission",
+          "slug": "world-mission"
+        }
+      ]
+    },
+    {
+      "id": 64674,
+      "type": "posts",
+      "slug": "podcast-episode-0469",
+      "title": "Podcast Episode #0469",
+      "date": "2019-03-19T20:30:07",
+      "modified": "2020-08-18T15:05:05",
+      "url": "https://www.kanzenshuu.com/2019/03/19/podcast-episode-0469/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0469! Mike and Julian wrap up a two-part retrospective looking at official fusion designs created by fans. We conclude in 2016 with the “Dragon Ball Fusions” contest that spawned Great Satanman, Gorus, and Taks, and take a look at the surrounding circumstances that led to incomplete implementation all around! SEGMENTS: 00:13 – …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64682,
+      "type": "posts",
+      "slug": "dragon-ball-xenoverse-2-photo-mode-launches",
+      "title": "“Dragon Ball XENOVERSE 2” (PS4/XBO/NSW/PC) Photo Mode Launches",
+      "date": "2019-03-19T18:22:02",
+      "modified": "2019-03-19T18:22:02",
+      "url": "https://www.kanzenshuu.com/2019/03/19/dragon-ball-xenoverse-2-photo-mode-launches/",
+      "excerpt": "Today’s version 1.12 update for Dragon Ball XENOVERSE 2 — currently rolling out across the game’s release on the PlayStation 4, Xbox One, Switch, and PC — enables the long-promised “Photo Mode”: Players will find a new “Photo Mode” robot in Conton City which will allow them to set up battles and pause for specific …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 64664,
+      "type": "posts",
+      "slug": "viz-posts-dragon-ball-super-manga-chapter-46-english-translation",
+      "title": "Viz Posts “Dragon Ball Super” Manga Chapter 46 English Translation",
+      "date": "2019-03-19T11:29:22",
+      "modified": "2019-03-19T11:29:22",
+      "url": "https://www.kanzenshuu.com/2019/03/19/viz-posts-dragon-ball-super-manga-chapter-46-english-translation/",
+      "excerpt": "Continuing onward from previous chapters, Viz has added their English translation of the Dragon Ball Super manga’s forty-sixth chapter to their website, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release continues Viz’s schedule of not simply simultaneously publishing the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 64657,
+      "type": "posts",
+      "slug": "may-2019-issue-saikyo-jump-return-dark-demon-realm-mission-manga",
+      "title": "May 2019 Issue of Saikyō Jump to See Return of Super Dragon Ball Heroes “Dark Demon Realm Mission!” Manga Alongside Ongoing “Universe Mission” Manga",
+      "date": "2019-03-18T12:50:27",
+      "modified": "2019-03-18T12:51:33",
+      "url": "https://www.kanzenshuu.com/2019/03/18/may-2019-issue-saikyo-jump-return-dark-demon-realm-mission-manga/",
+      "excerpt": "Super Dragon Ball Heroes manga author Yoshitaka Nagayama announced on Twitter today the return of his previous Super Dragon Ball Heroes: Dark Demon Realm Mission! series (“part two”) in the upcoming May 2019 issue of Shueisha’s Saikyō Jump magazine. [告知！！]4月5日発売予定の最強ジャンプの5月号より「SDBH暗黒魔界ミッション！」第2部スタートです！！！！！！！！！「SDBHユニバースミッション！！」と2本連載でお届けです！！！！お楽しみにです！！！！！！！！#スーパー #ドラゴンボール #ヒーローズ #暗黒魔界 #ミッション #最強ジャンプ pic.twitter.com/w8zq0QFeXv &mdash; ながやま由貴 (@Yositakakka) March 18, 2019 The return of …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        76
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 76,
+          "count": 67,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-heroes/",
+          "name": "Dragon Ball Heroes",
+          "slug": "dragon-ball-heroes"
+        }
+      ]
+    },
+    {
+      "id": 64643,
+      "type": "posts",
+      "slug": "bandai-namco-outlines-jump-force-2019-update-schedule",
+      "title": "Bandai Namco Outlines Planned “Jump Force” (PS4/XBO/PC) 2019 Update Schedule",
+      "date": "2019-03-15T16:03:31",
+      "modified": "2019-03-15T16:03:31",
+      "url": "https://www.kanzenshuu.com/2019/03/15/bandai-namco-outlines-jump-force-2019-update-schedule/",
+      "excerpt": "Bandai Namco has released the company’s planned update schedule for Jump Force, the 50th anniversary crossover fighting game recently released on the PlayStation 4, Xbox One, and PC. The updates are set to include both free (avatar clothing, raid bosses, stages, etc.) and paid (playable characters, techniques, etc.) updates: Jump Force, a crossover fighting game …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        137
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 137,
+          "count": 9,
+          "link": "https://www.kanzenshuu.com/tag/jump-force/",
+          "name": "Jump Force",
+          "slug": "jump-force"
+        }
+      ]
+    },
+    {
+      "id": 64637,
+      "type": "posts",
+      "slug": "ps4-xenoverse2-moving-updated-server-march",
+      "title": "PlayStation 4 Edition of “Dragon Ball XENOVERSE 2” Moving to Updated Server (“New Conton City”) March 20",
+      "date": "2019-03-15T15:45:53",
+      "modified": "2019-03-15T15:45:53",
+      "url": "https://www.kanzenshuu.com/2019/03/15/ps4-xenoverse2-moving-updated-server-march/",
+      "excerpt": "Bandai Namco has announced that the Sony PlayStation 4 edition of 2016’s Dragon Ball XENOVERSE 2 will migrate to a new server 20 March 2019. Players may choose to migrate to this new server upon its launch for continued access to online events at the expense of certain historical account details. Players may also choose …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 64553,
+      "type": "posts",
+      "slug": "funimation-30th-anniversary-dbz-blu-ray-adjusted-3000",
+      "title": "FUNimation Potential Forthcoming 30th Anniversary “Dragon Ball Z” Blu-ray Set Fan Reservation Number Adjusted to 3,000 With No Further Details Available",
+      "date": "2019-03-13T10:10:28",
+      "modified": "2019-03-13T10:10:28",
+      "url": "https://www.kanzenshuu.com/2019/03/13/funimation-30th-anniversary-dbz-blu-ray-adjusted-3000/",
+      "excerpt": "FUNimation’s “Frequently Asked Questions” section for their potential forthcoming 30th anniversary Dragon Ball Z Blu-ray set has increased the previously-listed 2,500 necessary fan reservations to 3,000: WHY 3,000 UNITS? This is the minimum build order for sets from our printers. This minimum makes sure that we can sell the product to you at an affordable …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64514,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-tenth-episode-streaming-mid-april",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Tenth Episode Streaming Mid-April",
+      "date": "2019-03-11T10:07:58",
+      "modified": "2019-03-16T00:19:47",
+      "url": "https://www.kanzenshuu.com/2019/03/11/super-dragon-ball-heroes-promotional-anime-tenth-episode-streaming-mid-april/",
+      "excerpt": "The official Super Dragon Ball Heroes website has updated with a tentative mid-April 2019 release date for the upcoming tenth episode of the promotional anime series (“Counterattack! Fierce Attack! Goku and Vegeta!”), continuing the brand-new “Universal Conflict” arc: Goku, who has activated his Ultra Instinct (Omen), commences a fierce attack on the Core Area’s warriors. …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 64387,
+      "type": "posts",
+      "slug": "dragon-ball-super-broly-japan-home-video-june-5",
+      "title": "“Dragon Ball Super: Broly” Japanese DVD/Blu-ray Regular and Limited Editions Releasing June 5",
+      "date": "2019-03-11T09:53:23",
+      "modified": "2019-03-11T09:53:23",
+      "url": "https://www.kanzenshuu.com/2019/03/11/dragon-ball-super-broly-japan-home-video-june-5/",
+      "excerpt": "The Japanese home video release of last year’s Dragon Ball Super: Broly theatrical film on DVD and Blu-ray has been announced for 05 June 2019. All editions will include a trailer collection in addition to the film itself, which will will be presented in 5.1 surround sound as well as with a descriptive audio track …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 64498,
+      "type": "posts",
+      "slug": "podcast-episode-0468",
+      "title": "Podcast Episode #0468",
+      "date": "2019-03-10T12:19:13",
+      "modified": "2020-08-18T15:05:20",
+      "url": "https://www.kanzenshuu.com/2019/03/10/podcast-episode-0468/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0468! Mike and Julian kick off a two-part retrospective looking at official fusion designs created by fans. We begin back in 1995 with Akira Toriyama’s own design of Piririn and the contest soliciting new designs. Tune in for the history behind these artists, and how some of these designs were re-used and …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64487,
+      "type": "posts",
+      "slug": "new-feature-article-official-dragon-ball-fan-fusion-designs-part-1",
+      "title": "New Feature Article: Official Dragon Ball Fan Fusion Designs Part 1 (1995) – Piririn, Gotan, Gohanks, and More!",
+      "date": "2019-03-10T11:17:06",
+      "modified": "2019-03-21T17:44:04",
+      "url": "https://www.kanzenshuu.com/2019/03/10/new-feature-article-official-dragon-ball-fan-fusion-designs-part-1/",
+      "excerpt": "The 2016 Nintendo 3DS video game Dragon Ball Fusions brought a wealth of whimsical new fusions to the world of Dragon Ball. From the EX Fusion “Karoli” (“Kakarrot” + “Broli”) as seen right on the game’s front cover, to original characters like the “Saibaiking” (a fusion of multiple Saibaimen together), Dragon Ball Fusions and its …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64364,
+      "type": "posts",
+      "slug": "podcast-episode-0467",
+      "title": "Podcast Episode #0467",
+      "date": "2019-03-03T07:55:48",
+      "modified": "2020-08-18T15:05:48",
+      "url": "https://www.kanzenshuu.com/2019/03/03/podcast-episode-0467/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0467! Mike and Kirran check in on the trainwreck that is “Jump Force”, the latest crossover fighting game in support of Jump’s 50th anniversary. The big question: is it a hilarious trainwreck, or is it just awful? Tune in for all this and a tease of upcoming website content and the next …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64367,
+      "type": "posts",
+      "slug": "funimation-30th-anniversary-dbz-bluray-requires-2500-reservations",
+      "title": "FUNimation Announces Potential Forthcoming 30th Anniversary “Dragon Ball Z” Blu-ray Set Requiring 2,500 Fan Reservations",
+      "date": "2019-03-02T12:21:08",
+      "modified": "2019-03-02T12:32:08",
+      "url": "https://www.kanzenshuu.com/2019/03/02/funimation-30th-anniversary-dbz-bluray-requires-2500-reservations/",
+      "excerpt": "Following up on plans previously detailed in the February 2019 issue of the License Global trade magazine, FUNimation (in conjunction with Toei Animation) has more formally unveiled plans for a potential 30th anniversary Dragon Ball Z Blu-ray set, which is stated to not be concretely planned for release and will require 2,500 fan reservations ahead …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64353,
+      "type": "posts",
+      "slug": "bandai-namco-details-card-creation-switch-pre-order-bonuses-for-super-dragon-ball-heroes-world-mission",
+      "title": "Bandai Namco Details Card Creation + Switch Pre-order Bonuses For “Super Dragon Ball Heroes: World Mission”",
+      "date": "2019-02-21T13:36:24",
+      "modified": "2019-02-21T13:36:24",
+      "url": "https://www.kanzenshuu.com/2019/02/21/bandai-namco-details-card-creation-switch-pre-order-bonuses-for-super-dragon-ball-heroes-world-mission/",
+      "excerpt": "Bandai Namco has released Japanese and English-language “Card Creation” trailers for the forthcoming Super Dragon Ball Heroes: World Mission: The trailers also provide a look at the international “Hero Edition” available for pre-order (thus far only indicated as a physical edition on the Nintendo Switch), which will come packed with “11 early character card unlocks” …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        143
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 143,
+          "count": 10,
+          "link": "https://www.kanzenshuu.com/tag/world-mission/",
+          "name": "World Mission",
+          "slug": "world-mission"
+        }
+      ]
+    },
+    {
+      "id": 64347,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-15",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #15",
+      "date": "2019-02-21T10:48:31",
+      "modified": "2019-02-21T10:48:31",
+      "url": "https://www.kanzenshuu.com/2019/02/21/translation-update-special-project-toyotaro-drew-it-image-15/",
+      "excerpt": "Each month, Toyotarō provides a sketch — as well as a brief comment — on the official Japanese Dragon Ball website for a character that has not appeared in Dragon Ball Super. Thus far, Toyotarō has provided sketches of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, King Cold, …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64340,
+      "type": "posts",
+      "slug": "viz-posts-dragon-ball-super-manga-chapter-45-english-translation",
+      "title": "Viz Posts “Dragon Ball Super” Manga Chapter 45 English Translation",
+      "date": "2019-02-21T10:30:08",
+      "modified": "2019-02-21T10:30:08",
+      "url": "https://www.kanzenshuu.com/2019/02/21/viz-posts-dragon-ball-super-manga-chapter-45-english-translation/",
+      "excerpt": "Continuing onward from previous chapters, Viz has added their English translation of the Dragon Ball Super manga’s forty-fifth chapter to their website, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release continues Viz’s schedule of not simply simultaneously publishing the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 64336,
+      "type": "posts",
+      "slug": "toy-fair-2019-dragon-ball-merchandise-overview",
+      "title": "Toy Fair 2019 Dragon Ball Merchandise Overview",
+      "date": "2019-02-19T10:50:53",
+      "modified": "2019-02-19T10:50:53",
+      "url": "https://www.kanzenshuu.com/2019/02/19/toy-fair-2019-dragon-ball-merchandise-overview/",
+      "excerpt": "We spent this Sunday at Toy Fair 2019 in New York taking a look at the various Dragon Ball merchandise available now and coming soon to store shelves and online retailers. Take a gander through our Twitter thread for a photo tour of the various booths! Spending the day at #ToyFair checking out some new …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64330,
+      "type": "posts",
+      "slug": "japanese-dragon-ball-super-manga-vol-9-releasing-in-april-2019",
+      "title": "Japanese “Dragon Ball Super” Manga Vol. 9 Releasing in April 2019",
+      "date": "2019-02-19T10:43:22",
+      "modified": "2019-02-19T10:43:22",
+      "url": "https://www.kanzenshuu.com/2019/02/19/japanese-dragon-ball-super-manga-vol-9-releasing-in-april-2019/",
+      "excerpt": "Shueisha and online retailers have listed an 04 April 2019 release date for the ninth collected volume of Toyotarō’s Dragon Ball Super manga series, which will retail for &yen;440 (+ tax) in print. The volume will also be released digitally the same day. The volume will pick up with the forty-first chapter of the series; …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 64323,
+      "type": "posts",
+      "slug": "amazon-dates-viz-dragon-ball-super-volume-7-print-edition-for-december-2019",
+      "title": "Amazon Dates Viz “Dragon Ball Super” Volume 7 Print Edition For December 2019",
+      "date": "2019-02-15T13:40:09",
+      "modified": "2019-02-15T13:40:09",
+      "url": "https://www.kanzenshuu.com/2019/02/15/amazon-dates-viz-dragon-ball-super-volume-7-print-edition-for-december-2019/",
+      "excerpt": "A new Amazon listing for Viz’s seventh volume of the Dragon Ball Super manga’s print edition is dated for 03 December 2019 at a $9.99 MSRP. A digital edition will also be available at various retailers, including Amazon, Comixology, and direct from Viz. Goku’s adventure from the best-selling classic manga Dragon Ball continues in this …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 64306,
+      "type": "posts",
+      "slug": "license-global-february-2019-magazine-reveals-upcoming-dragon-ball-z-30th-anniversary-plans",
+      "title": "License Global February 2019 Magazine Reveals Upcoming Dragon Ball Z 30th Anniversary Plans",
+      "date": "2019-02-14T15:49:10",
+      "modified": "2019-02-14T15:49:10",
+      "url": "https://www.kanzenshuu.com/2019/02/14/license-global-february-2019-magazine-reveals-upcoming-dragon-ball-z-30th-anniversary-plans/",
+      "excerpt": "Today’s February 2019 issue of License Global‘s magazine features an extensive spotlight on the Dragon Ball franchise, which includes closer looks at partnerships between Toei Animation, Bandai Namco, and FUNimation, and some of the various companies’ upcoming plans. Of particular note, the spotlight appears to reveal a forthcoming announcement of a new home video release …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64291,
+      "type": "posts",
+      "slug": "new-translations-dragon-ball-super-broly-theatrical-program-interviews-nagamine-shintani",
+      "title": "New Translations: “Dragon Ball Super: Broly” Theatrical Program Interviews – Tatsuya Nagamine & Naohiro Shintani",
+      "date": "2019-02-13T21:13:39",
+      "modified": "2019-03-21T17:47:51",
+      "url": "https://www.kanzenshuu.com/2019/02/13/new-translations-dragon-ball-super-broly-theatrical-program-interviews-nagamine-shintani/",
+      "excerpt": "Two new interviews have been added to our “Translations” archive: those with Dragon Ball Super: Broly director Tatsuya Nagamine and animation supervisor Naohiro Shintani, both coming from the “Super Edition” of the film’s Japanese theatrical attendee program book. Tatsuya Nagamine Regarding the direction of the film, Nagamine discusses letting the animators go loose, working with …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 64283,
+      "type": "posts",
+      "slug": "podcast-episode-0466",
+      "title": "Podcast Episode #0466",
+      "date": "2019-02-11T19:18:25",
+      "modified": "2020-08-18T15:06:20",
+      "url": "https://www.kanzenshuu.com/2019/02/11/podcast-episode-0466/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0466! Mike and Julian catch up on listener questions, and end up doing a mini manga historical lesson in the process, discussing all of the various releases in Japan and some of the changes made to each along the way. Tune in for an update on our family name guide and a …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64271,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-promotional-anime-eighth-episode-february-24",
+      "title": "“Super Dragon Ball Heroes” Promotional Anime Eighth Episode Dated For February 24",
+      "date": "2019-02-07T15:09:08",
+      "modified": "2019-02-07T15:09:08",
+      "url": "https://www.kanzenshuu.com/2019/02/07/super-dragon-ball-heroes-promotional-anime-eighth-episode-february-24/",
+      "excerpt": "The official Super Dragon Ball Heroes website has updated with a 24 February 2019 release date for the upcoming eighth episode of the series (“The Ultimate, Worst Warriors Invade! Universe 6 Demolished!”), continuing the brand-new “Universal Survival” arc: The episode will debut in conjunction with the scheduled Super Dragon Ball Heroes “King Match” game event. …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 65595,
+      "type": "posts",
+      "slug": "videl-brings-first-alternate-costume-to-dragon-ball-fighterz",
+      "title": "Videl Brings First Alternate Costume to “Dragon Ball FighterZ”",
+      "date": "2019-02-01T20:15:34",
+      "modified": "2019-05-15T19:27:28",
+      "url": "https://www.kanzenshuu.com/2019/02/01/videl-brings-first-alternate-costume-to-dragon-ball-fighterz/",
+      "excerpt": "This week’s release of Videl brings the first true alternate costume to a character in Dragon Ball FighterZ. By holding the L1 (PlayStation 4) / LT (Xbox One) button and pressing the confirmation button, players can switch Videl from her short haircut fighting outfit to her longer-hair school outfit. The outfit remains throughout all gameplay, …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 64262,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-january-2019-patch-notes",
+      "title": "“Dragon Ball FighterZ” January 2019 Patch Notes",
+      "date": "2019-01-30T16:29:06",
+      "modified": "2019-01-30T16:29:06",
+      "url": "https://www.kanzenshuu.com/2019/01/30/dragon-ball-fighterz-january-2019-patch-notes/",
+      "excerpt": "Bandai Namco has released patch notes for the latest update to Dragon Ball FighterZ: HEALTH RECOVERY UPON TAKING DAMAGE: – Reduce the amount of recoverable health when damaged. (Excluding invincible moves) KI GAUGE: – Decrease the amount of Ki Gauge gained when receiving damage from Super Attacks and Meteor Attacks, and increase the amount of …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 64254,
+      "type": "posts",
+      "slug": "funimation-online-store-lists-april-16-release-date-dragon-ball-super-broly",
+      "title": "FUNimation Online Store Lists April 16 Release Date For “Dragon Ball Super: Broly” DVD + Blu-ray",
+      "date": "2019-01-30T16:11:05",
+      "modified": "2019-01-30T16:11:05",
+      "url": "https://www.kanzenshuu.com/2019/01/30/funimation-online-store-lists-april-16-release-date-dragon-ball-super-broly/",
+      "excerpt": "Following the appearance of recent online retailer listings, a new banner across the pre-order page of FUNimation’s online store lists a 16 April 2019 release date for the home video (DVD, Blu-ray, and digital) version of the recent Dragon Ball Super: Broly theatrical film. The film is still screening in theaters internationally, and no Japanese …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 64235,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-pass-2-jiren-videl-broli-gogeta",
+      "title": "“Dragon Ball FighterZ” Receiving “FighterZ Pass 2”: Jiren & Videl Available January 31, Broli (DBS) & Gogeta (SSGSS) Also Announced",
+      "date": "2019-01-28T11:05:42",
+      "modified": "2019-01-28T11:05:42",
+      "url": "https://www.kanzenshuu.com/2019/01/28/dragon-ball-fighterz-pass-2-jiren-videl-broli-gogeta/",
+      "excerpt": "In conjunction with this weekend’s Dragon Ball FighterZ “World Tour Finals: Red Bull Final Summoning” tournament in Los Angeles, and following a brief accidental video post, Bandai Namco formally announced the forthcoming second season of paid downloadable content coming in the form of additional characters. Videl and Jiren join the cast 31 January 2019, with …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 64201,
+      "type": "posts",
+      "slug": "toei-acknowledges-movie-blu-ray-censorship-apology-incorrect-jacket-text-description",
+      "title": "Toei Acknowledges New Remastered Movie Blu-ray Censorship via Apology For Incorrect Jacket Text Description",
+      "date": "2019-01-25T10:12:16",
+      "modified": "2019-01-25T11:01:54",
+      "url": "https://www.kanzenshuu.com/2019/01/25/toei-acknowledges-movie-blu-ray-censorship-apology-incorrect-jacket-text-description/",
+      "excerpt": "Toei Animation has acknowledged certain instances of visual censorship in their recent remastered Blu-ray release of Dragon Ball Z‘s 11th and 12th theatrical films from 1994 and 1995, respectively. The acknowledgement comes by way of an apology for the packaging’s descriptive text: ＜映像表現上の修正の内容＞ 本件商品の発売にあたり、皆様により楽しんでいただけるように、また、子どもへ与える影響にも配慮したうえで、映像の確認作業を行いました。映像確認作業の結果、表現上の修正を行った映像を本件商品に収録いたしました。 ＜ジャケットの記載＞ 本件商品のジャケットに「この作品には、映像、台詞の一部に、現在では不適当と思われる表現もありますが、作品の歴史的価値を重視し、現存する原版のとおり収録してあります。」という注意文を掲載していました。 -Content of Visual Edits- Approaching the release of the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        142
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 142,
+          "count": 4,
+          "link": "https://www.kanzenshuu.com/tag/db-the-movies-blu-ray/",
+          "name": "DB The Movies Blu-ray",
+          "slug": "db-the-movies-blu-ray"
+        }
+      ]
+    },
+    {
+      "id": 64180,
+      "type": "posts",
+      "slug": "natpe-licensing-convention-spotlight-announces-additional-dragon-ball-super-episodes-underway",
+      "title": "NATPE Licensing Convention Spotlight Announces Additional “Dragon Ball Super” Episodes Underway",
+      "date": "2019-01-23T10:51:57",
+      "modified": "2019-01-23T20:28:46",
+      "url": "https://www.kanzenshuu.com/2019/01/23/natpe-licensing-convention-spotlight-announces-additional-dragon-ball-super-episodes-underway/",
+      "excerpt": "A spotlight on various Toei properties by WorldScreen.com appears to reveal and confirm additional episodes of the Dragon Ball Super television series from Toei Animation: The company is also making more episodes of Dragon Ball Super, a Japanese fantasy martial arts action series in the Dragon Ball media franchise that follows Goku in the aftermath …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 64159,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-14",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #14",
+      "date": "2019-01-22T09:27:18",
+      "modified": "2019-01-22T12:27:43",
+      "url": "https://www.kanzenshuu.com/2019/01/22/translation-update-special-project-toyotaro-drew-it-image-14/",
+      "excerpt": "Each month, Toyotarō provides a sketch — as well as a brief comment — on the official Japanese Dragon Ball website for a character that has not appeared in Dragon Ball Super. Thus far, Toyotarō has provided sketches of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, Paragus, and King …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64153,
+      "type": "posts",
+      "slug": "viz-posts-dragon-ball-super-manga-chapter-44-english-translation",
+      "title": "Viz Posts “Dragon Ball Super” Manga Chapter 44 English Translation",
+      "date": "2019-01-21T13:49:50",
+      "modified": "2019-01-21T13:49:50",
+      "url": "https://www.kanzenshuu.com/2019/01/21/viz-posts-dragon-ball-super-manga-chapter-44-english-translation/",
+      "excerpt": "Continuing onward from previous chapters, Viz has added their English translation of the Dragon Ball Super manga’s forty-fourth chapter to their website, moving further into the original “Galactic Patrol Prisoner arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release begins a new feature of not simply simultaneously publishing …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 64137,
+      "type": "posts",
+      "slug": "viz-chogashu-dragon-ball-visual-history-english-translation-fall-2019",
+      "title": "Viz Announces “Chōgashū” English Translation For Fall 2019 as “Dragon Ball: A Visual History”",
+      "date": "2019-01-17T14:47:47",
+      "modified": "2019-01-17T14:49:35",
+      "url": "https://www.kanzenshuu.com/2019/01/17/viz-chogashu-dragon-ball-visual-history-english-translation-fall-2019/",
+      "excerpt": "Viz announced today their forthcoming English-language publication of 2013’s Dragon Ball: Chōgashū as Dragon Ball: A Visual History, set for release this fall. Announcement: Dragon Ball: A Visual History coming Fall 2019. A comprehensive hardcover art book featuring full-color artwork, exclusive creator commentary, and rare sketches from Akira Toriyama's iconic series! pic.twitter.com/KgL1MgnmTt &mdash; VIZ (@VIZMedia) …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        129
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 129,
+          "count": 5,
+          "link": "https://www.kanzenshuu.com/tag/chogashu/",
+          "name": "Chogashu",
+          "slug": "chogashu"
+        }
+      ]
+    },
+    {
+      "id": 64132,
+      "type": "posts",
+      "slug": "funimation-dragon-ball-super-part-seven-april-2019",
+      "title": "FUNimation “Dragon Ball Super: Part Seven” Home Video (DVD/Blu-ray) Releasing April 2019",
+      "date": "2019-01-17T11:29:00",
+      "modified": "2019-01-17T11:29:00",
+      "url": "https://www.kanzenshuu.com/2019/01/17/funimation-dragon-ball-super-part-seven-april-2019/",
+      "excerpt": "FUNimation’s online shop reveals an 02 April 2019 release date for their seventh part of the Dragon Ball Super television series on DVD and Blu-ray. In an effort to teach Future Zeno about martial arts, Zeno calls for an exhibition match between the 7th and 9th Universes. Afterwards, Goku searches for the 7th Universe’s 10 …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 64103,
+      "type": "posts",
+      "slug": "dragon-ball-game-project-z-action-rpg-announced",
+      "title": "Bandai Namco Unveils a Forthcoming “Action RPG” in “Dragon Ball Game Project Z” + Additional “Dragon Ball FighterZ” DLC Tease",
+      "date": "2019-01-16T06:48:44",
+      "modified": "2019-01-16T06:48:44",
+      "url": "https://www.kanzenshuu.com/2019/01/16/dragon-ball-game-project-z-action-rpg-announced/",
+      "excerpt": "In a coordinated tweet across Shueisha’s V-Jump account and various international Bandai Namco accounts, the company has announced a forthcoming “action RPG” under the codename “Dragon Ball Game Project Z” for planned release in 2019, with initial details coming in next week’s March 2019 issue of V-Jump. Rumors of a non-fighting, action RPG entry for …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 64096,
+      "type": "posts",
+      "slug": "new-translation-sports-nippon-dragon-ball-super-broly-times-voice-actor-roundtable",
+      "title": "New Translation: “Sports Nippon Dragon Ball Super: Broly Times” Voice Actor Roundtable",
+      "date": "2019-01-15T11:38:31",
+      "modified": "2019-03-21T17:54:53",
+      "url": "https://www.kanzenshuu.com/2019/01/15/new-translation-sports-nippon-dragon-ball-super-broly-times-voice-actor-roundtable/",
+      "excerpt": "Our latest translation from the Dragon Ball Super: Broly promotional “newspaper” is the “Passionate Cross-Talk” with voice actors Masako Nozawa (Son Goku), Ryō Horikawa (Vegeta), Bin Shimada (Broli), and Ryūsei Nakao (Freeza). READ THE FULL TRANSLATION This item has been added to our “Translations” archive. The Sports Nippon Dragon Ball Super: Broly Times is available …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 64065,
+      "type": "posts",
+      "slug": "international-release-sdbh-world-mission-nintendo-switch-announced",
+      "title": "International Release For “Super Dragon Ball Heroes: World Mission” (Nintendo Switch/PC) Announced",
+      "date": "2019-01-14T19:27:32",
+      "modified": "2019-01-15T08:40:28",
+      "url": "https://www.kanzenshuu.com/2019/01/14/international-release-sdbh-world-mission-nintendo-switch-announced/",
+      "excerpt": "During this evening’s “Dragon Ball Games Super Showcase” pre-recorded live stream from Bandai Namco, the forthcoming Super Dragon Ball Heroes: World Mission for Nintendo Switch — already set for release 04 April 2019 in Japan — was announced for international release 05 April 2019 on Nintendo Switch and PC. Super Dragon Ball Heroes: World Mission, …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        143
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 143,
+          "count": 10,
+          "link": "https://www.kanzenshuu.com/tag/world-mission/",
+          "name": "World Mission",
+          "slug": "world-mission"
+        }
+      ]
+    },
+    {
+      "id": 64052,
+      "type": "posts",
+      "slug": "podcast-episode-0465",
+      "title": "Podcast Episode #0465",
+      "date": "2019-01-14T13:46:47",
+      "modified": "2020-08-18T15:06:34",
+      "url": "https://www.kanzenshuu.com/2019/01/14/podcast-episode-0465/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0465! Mike speaks with Jake and Ajay about “Dragon Ball Super: Broly” from its Japanese theatrical debut! With all of the production changes thrown into the mix while simultaneously pulling various echoes of the franchise’s past to form a new story, how does it all hold up in the end? Stick around …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 64030,
+      "type": "posts",
+      "slug": "sdbh-promo-anime-universal-conflict-arc-begins",
+      "title": "“Universal Conflict arc” Begins with “Super Dragon Ball Heroes” Promotional Anime’s 7th Episode + 8th Episode Scheduled for February 2019",
+      "date": "2019-01-10T12:35:34",
+      "modified": "2019-01-10T12:38:44",
+      "url": "https://www.kanzenshuu.com/2019/01/10/sdbh-promo-anime-universal-conflict-arc-begins/",
+      "excerpt": "Following the completion of the “Prison Planet arc” in the Super Dragon Ball Heroes promotional anime last month, the series moves into a new “Universal Conflict arc” with today’s seventh episode, posted for free (albeit region-locked) via Bandai Namco on YouTube and the game’s official website. Alongside the return of Zamasu (from the Dragon Ball …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        139
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 139,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/tag/sdbh-promo-anime/",
+          "name": "SDBH Promo Anime",
+          "slug": "sdbh-promo-anime"
+        }
+      ]
+    },
+    {
+      "id": 64003,
+      "type": "posts",
+      "slug": "new-translation-sports-nippon-dragon-ball-super-broly-times-staff-cast-comments",
+      "title": "New Translation: “Sports Nippon Dragon Ball Super: Broly Times” Staff & Cast Comments",
+      "date": "2019-01-09T12:33:38",
+      "modified": "2019-03-21T17:56:49",
+      "url": "https://www.kanzenshuu.com/2019/01/09/new-translation-sports-nippon-dragon-ball-super-broly-times-staff-cast-comments/",
+      "excerpt": "Our latest translation from the Dragon Ball Super: Broly promotional “newspaper” is a series of comments from some of the film’s various staff and cast members, including director Tatsuya Nagamine, animation supervisor Naohiro Shintani, new Bulma voice actress Aya Hisakawa, and more. READ THE FULL TRANSLATION This item has been added to our “Translations” archive. …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 63989,
+      "type": "posts",
+      "slug": "podcast-episode-0464",
+      "title": "Podcast Episode #0464",
+      "date": "2019-01-08T12:22:07",
+      "modified": "2020-08-18T15:07:08",
+      "url": "https://www.kanzenshuu.com/2019/01/08/podcast-episode-0464/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0464! Mike, Julian, and Heath discuss some of the top Dragon Ball stories of 2018 before taking a look at last year’s predictions. With Dragon Ball Super known to be coming to a close and a new movie on the horizon, how well did we plot out 2018? Stick around for new …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 63978,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-13",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!!” Image #13",
+      "date": "2019-01-07T20:23:24",
+      "modified": "2019-01-07T20:23:24",
+      "url": "https://www.kanzenshuu.com/2019/01/07/translation-update-special-project-toyotaro-drew-it-image-13/",
+      "excerpt": "Each month, Toyotarō provides a sketch — as well as a brief comment — on the official Japanese Dragon Ball website for a character that has not appeared in Dragon Ball Super. Thus far, Toyotarō has provided sketches of #8, Lunch, Chapa with Oob, Tambourine, Man-Wolf, Tapion, Janenba, Broli, Ozotto, Ginyu, Bardock, and Paragus. For …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 63971,
+      "type": "posts",
+      "slug": "new-translation-sports-nippon-dragon-ball-super-broly-times-rio-uchida-interview",
+      "title": "New Translation: “Sports Nippon Dragon Ball Super: Broly Times” Rio Uchida Interview",
+      "date": "2019-01-07T10:06:52",
+      "modified": "2019-03-21T17:58:07",
+      "url": "https://www.kanzenshuu.com/2019/01/07/new-translation-sports-nippon-dragon-ball-super-broly-times-rio-uchida-interview/",
+      "excerpt": "Our latest translation from the Dragon Ball Super: Broly promotional “newspaper” is an interview with actress Rio Uchida (born 1991, attracting attention in 2014 while playing the heroine in Kamen Rider Drive). “I wasn’t aware of things like the story of when Goku was little, so I was able to watch it this time, like, …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 63960,
+      "type": "posts",
+      "slug": "new-translation-sports-nippon-dragon-ball-super-broly-times-toyotaro-interview",
+      "title": "New Translation: “Sports Nippon Dragon Ball Super: Broly Times” Toyotarō Interview",
+      "date": "2019-01-03T15:36:05",
+      "modified": "2019-03-21T17:57:47",
+      "url": "https://www.kanzenshuu.com/2019/01/03/new-translation-sports-nippon-dragon-ball-super-broly-times-toyotaro-interview/",
+      "excerpt": "Following a similar release in 2015 for the theatrical film Dragon Ball Z: Resurrection ‘F’, the new film Dragon Ball Super: Broly received a promotional “newspaper” with various interviews, character biographies, merchandise highlights, etc. Various items from this release will be translated in the coming days, but first up is an interview with Dragon Ball …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        130
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 130,
+          "count": 35,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2018/",
+          "name": "Super Movie 2018",
+          "slug": "super-movie-2018"
+        }
+      ]
+    },
+    {
+      "id": 63901,
+      "type": "posts",
+      "slug": "2018-in-review-kanzenshuu-top-5-dragon-ball-news-stories",
+      "title": "2018 In Review: Kanzenshuu’s Top 5 Dragon Ball News Stories",
+      "date": "2019-01-01T21:48:01",
+      "modified": "2019-01-03T20:33:00",
+      "url": "https://www.kanzenshuu.com/2019/01/01/2018-in-review-kanzenshuu-top-5-dragon-ball-news-stories/",
+      "excerpt": "Between the completion of a brand new television series, the debut of a new theatrical film, various video game lore and gameplay expansions, and everything in between, somehow 2018 managed to host just as many (if not more) twists and turns than any previous year. Here are Kanzenshuu‘s top five stories of 2018! #5: November …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2019.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    }
+  ]
+}
