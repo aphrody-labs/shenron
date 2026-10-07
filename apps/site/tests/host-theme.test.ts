@@ -58,3 +58,16 @@ test("Next reads and writes the hosted palette without resolving DB, while prese
   status = 503;
   expect(await getSiteTheme()).toEqual(DEFAULT_SITE_THEME);
 });
+
+test("an absent host cannot reactivate Next database storage", async () => {
+  delete process.env.SHENRON_HOST_URL;
+  try {
+    expect(await getSiteTheme()).toEqual(DEFAULT_SITE_THEME);
+    const error = await saveSiteTheme({ radius: 1 }).catch((value: unknown) => value);
+    expect(error).toBeInstanceOf(HostThemeError);
+    if (!(error instanceof HostThemeError)) throw new Error("Expected a theme service failure");
+    expect(error.status).toBe(503);
+  } finally {
+    process.env.SHENRON_HOST_URL = server.url.origin;
+  }
+});

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Request-cached theme adapter; the Bun host owns storage in host mode. */
+/** Request-cached theme adapter; only the Bun host owns storage. */
 import "server-only";
 import { cache } from "react";
 import { resolveHostUrl } from "@shenron/config/public-urls";
@@ -31,7 +31,7 @@ function hostThemeClient(host: string, requestHeaders?: Headers, adminToken?: st
 
 export const getSiteTheme = cache(async (): Promise<SiteTheme> => {
   const host = resolveHostUrl(process.env);
-  if (!host) return (await import("./theme-config-legacy")).getLegacySiteTheme();
+  if (!host) return DEFAULT_SITE_THEME;
   const result = await hostThemeClient(host).call(endpoints.siteTheme, {});
   return result.ok ? resolveSiteTheme(result.value.theme) : DEFAULT_SITE_THEME;
 });
@@ -43,7 +43,7 @@ export async function saveSiteTheme(
   adminToken?: string | null,
 ): Promise<SiteTheme> {
   const host = resolveHostUrl(process.env);
-  if (!host) return (await import("./theme-config-legacy")).saveLegacySiteTheme(patch, by);
+  if (!host) throw new HostThemeError(503);
   const result = await hostThemeClient(host, requestHeaders, adminToken).call(
     endpoints.siteThemeSave,
     { body: patch },

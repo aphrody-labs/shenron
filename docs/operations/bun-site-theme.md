@@ -22,10 +22,11 @@ revalidation du layout. Après cette garde, elle relaie les identifiants de la
 requête et, s’il existe, le jeton admin configuré vers Bun. Ce jeton reste côté
 serveur. La nouvelle API applique encore sa propre autorisation.
 
-Sans `SHENRON_HOST_URL`, le mode historique Next reste isolé dans
-`theme-config-legacy.ts` pour préserver les profils encore non migrés. Son
-retrait et la qualification OAuth réelle restent ouverts ; ce lot ne constitue
-pas la sortie complète du backend de Next.
+Sans `SHENRON_HOST_URL`, le rendu utilise la palette par défaut et une écriture
+échoue avec `503`. Le stockage historique Next a été retiré : une absence ou une
+panne de l’hôte ne réactive jamais un accès DB depuis l’adaptateur du thème.
+La qualification OAuth réelle reste ouverte ; les autres capacités encore
+hébergées dans Next doivent être migrées séparément.
 
 ## Qualification reproductible
 
