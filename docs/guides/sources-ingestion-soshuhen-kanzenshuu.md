@@ -91,3 +91,32 @@ et ingestion. Le succès de son exécution ne vaut pas validation de production.
 ```bash
 bun scripts/ops/prepare-soshuhen-kanzenshuu-ingest.ts --dry-run
 ```
+
+## 4. Contrôles de couverture et dépôt des nouvelles sources
+
+Le contrôle des sources distingue cinq familles : Sōshūhen, Kai Dragon Book,
+Full Color, Weekly Shōnen Jump et interviews. Un ISBN et un nombre de pages
+bibliographiques ne prouvent pas que les images ont été acquises. Papier et
+numérique, langue et identifiant d'édition restent distincts.
+
+```sh
+# Catalogue énuméré, manifestes de pages et fichiers locaux : sortie 2 si incomplet.
+bun packages/pipeline/scripts/source-coverage.ts --audit <catalog.json> <manifest-root> <asset-root> <report.json>
+
+# Bibliographie et résolution PostgreSQL en lecture seule.
+bun packages/pipeline/scripts/source-ingestion-postgres.ts --bibliography-audit <bibliography.json> <report.json>
+
+# Accès aux images du lecteur : sortie 1 tant que l'exhaustivité DB/RAG est non prouvée.
+bun scripts/audit/source-readiness.ts https://dragonballfr.com var/reports/source-readiness-all-assets.json --all-assets
+```
+
+Les rapports générés restent dans `var/reports/`. L'audit de couverture exige une
+énumération revue des ouvrages et des pages, des fichiers vérifiés par SHA-256,
+une provenance et des transcriptions revues ou une déclaration explicite d'absence
+de texte. Une famille dont l'univers attendu reste inconnu est incomplète.
+
+L'adaptateur de dépôt réutilise PostgreSQL, les révisions éditoriales et la
+synchronisation RAG d'Aphrody. Le gel des databooks reste impératif. Le mapping
+entre pagination d'édition et chapitres du lecteur doit être vérifié avant de
+déposer un volume manga. Les simulations et les tests locaux ne constituent ni
+une ingestion exécutée ni une qualification de production.
