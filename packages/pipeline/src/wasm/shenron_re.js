@@ -51,6 +51,19 @@ export function wasm_get_dragon_ball_catalog() {
 }
 
 /**
+ * Retrieve the source-attributed Xenoverse 3 prototype world map as JavaScript data.
+ * Announced places and original prototype geometry are distinguished in each record.
+ * @returns {any}
+ */
+export function wasm_get_xenoverse3_prototype_map() {
+    const ret = wasm.wasm_get_xenoverse3_prototype_map();
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Parse a DBXV2 BAC (Battle Action Code) moveset binary file and return all moves.
  * @param {Uint8Array} bac_bytes
  * @returns {any}

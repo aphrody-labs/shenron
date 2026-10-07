@@ -21,6 +21,7 @@ import initWasm, {
   wasm_parse_msg,
   wasm_parse_pup,
   wasm_scan_aob,
+  wasm_get_xenoverse3_prototype_map,
 } from "./wasm/shenron_re.js";
 
 export type Platform = "steam" | "android" | "windows" | "ios" | "console";
@@ -97,6 +98,56 @@ export interface CusSkill {
 export interface CusFile {
   version: number;
   skills: CusSkill[];
+}
+
+export type MapEvidenceStatus = "announced" | "prototype";
+export type MapPlaceKind = "hub" | "district" | "interior" | "mission_area" | "landmark";
+export type MapTravelMode = "walk" | "fly" | "transit" | "mission_launch";
+
+export interface MapPoint {
+  x: number;
+  y: number;
+  elevation: number;
+}
+
+export interface Xenoverse3Map {
+  schema_version: number;
+  title: string;
+  era: string;
+  status: string;
+  coordinate_system: string;
+  bounds: [number, number, number];
+  zones: Array<{
+    id: string;
+    name: string;
+    kind: MapPlaceKind;
+    evidence: MapEvidenceStatus;
+    source: string;
+    center: MapPoint;
+    radius: number;
+    description: string;
+  }>;
+  landmarks: Array<{
+    id: string;
+    name: string;
+    zone_id: string;
+    kind: MapPlaceKind;
+    evidence: MapEvidenceStatus;
+    source: string;
+    position: MapPoint;
+    description: string;
+  }>;
+  routes: Array<{
+    id: string;
+    from: string;
+    to: string;
+    mode: MapTravelMode;
+    distance: number;
+    evidence: MapEvidenceStatus;
+    source: string;
+    description: string;
+  }>;
+  caveat: string;
 }
 
 export type DamageType =
@@ -239,10 +290,7 @@ export function extractCpkFile(archiveBytes: Uint8Array, filename: string): Uint
 /**
  * Decompresses a CRILAYLA compressed buffer.
  */
-export function decompressCrilayla(
-  compressed: Uint8Array,
-  uncompressedSize = 0,
-): Uint8Array {
+export function decompressCrilayla(compressed: Uint8Array, uncompressedSize = 0): Uint8Array {
   ensureWasm();
   return wasm_decompress_crilayla(compressed, uncompressedSize);
 }
@@ -262,6 +310,12 @@ export function scanAob(data: Uint8Array, pattern: string): number[] {
   ensureWasm();
   const offsets = wasm_scan_aob(data, pattern);
   return Array.from(offsets);
+}
+
+/** Returns the source-attributed AGE 1000 map graph; invented geometry is marked prototype. */
+export function getXenoverse3PrototypeMap(): Xenoverse3Map {
+  ensureWasm();
+  return wasm_get_xenoverse3_prototype_map() as Xenoverse3Map;
 }
 
 /**
@@ -295,4 +349,3 @@ export function parseMsg(msgBytes: Uint8Array): MsgFile {
   ensureWasm();
   return wasm_parse_msg(msgBytes) as MsgFile;
 }
-

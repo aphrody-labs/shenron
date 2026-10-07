@@ -18,15 +18,7 @@ const OUT_DIR = join(ROOT, "packages", "pipeline", "src", "wasm");
 const PKG_DIR = join(ROOT, "crates", "shenron-re", "pkg");
 
 console.log(`▶ Building ${CRATE} for ${TARGET} in release mode...`);
-const cargo = Bun.spawnSync([
-  "cargo",
-  "build",
-  "-p",
-  CRATE,
-  "--target",
-  TARGET,
-  "--release",
-], {
+const cargo = Bun.spawnSync(["cargo", "build", "-p", CRATE, "--target", TARGET, "--release"], {
   cwd: ROOT,
   stdout: "inherit",
   stderr: "inherit",
@@ -44,14 +36,7 @@ if (!existsSync(wasmPath)) {
 }
 
 console.log(`▶ Running wasm-bindgen on ${wasmPath}...`);
-const bindgen = Bun.spawnSync([
-  "wasm-bindgen",
-  wasmPath,
-  "--out-dir",
-  PKG_DIR,
-  "--target",
-  "web",
-], {
+const bindgen = Bun.spawnSync(["wasm-bindgen", wasmPath, "--out-dir", PKG_DIR, "--target", "web"], {
   cwd: ROOT,
   stdout: "inherit",
   stderr: "inherit",
@@ -66,7 +51,6 @@ await mkdir(OUT_DIR, { recursive: true });
 for (const file of [
   "shenron_re.d.ts",
   "shenron_re.js",
-  "shenron_re_bg.js",
   "shenron_re_bg.wasm",
   "shenron_re_bg.wasm.d.ts",
 ]) {

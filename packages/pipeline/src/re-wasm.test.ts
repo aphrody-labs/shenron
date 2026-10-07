@@ -12,6 +12,7 @@ import {
   triageCpk,
   extractCpkFile,
   decompressCrilayla,
+  getXenoverse3PrototypeMap,
 } from "./re-wasm.ts";
 
 describe("shenron-re WASM pipeline", () => {
@@ -41,17 +42,33 @@ describe("shenron-re WASM pipeline", () => {
     expect(fighterZ?.developer).toBe("Arc System Works");
 
     // Android games validation
-    const legends = catalog.find((g) => g.android_package_ids.includes("com.bandainamcoent.dblegends_ww"));
+    const legends = catalog.find((g) =>
+      g.android_package_ids.includes("com.bandainamcoent.dblegends_ww"),
+    );
     expect(legends).toBeDefined();
     expect(legends?.engine).toBe("unity");
 
-    const dokkan = catalog.find((g) => g.android_package_ids.includes("com.bandainamcoent.dbszdokkanww"));
+    const dokkan = catalog.find((g) =>
+      g.android_package_ids.includes("com.bandainamcoent.dbszdokkanww"),
+    );
     expect(dokkan).toBeDefined();
     expect(dokkan?.engine).toBe("cocos2dx");
   });
 
+  test("retrieves a connected, source-attributed Xenoverse 3 prototype map", () => {
+    const map = getXenoverse3PrototypeMap();
+    expect(map.era).toBe("AGE 1000");
+    expect(map.status).toBe("original_prototype_schematic");
+    expect(map.zones.map(({ id }) => id)).toContain("glacier-expedition");
+    expect(map.landmarks.every(({ source }) => source.startsWith("https://"))).toBe(true);
+    expect(map.routes.some(({ from, to }) => from === "west-city" && to === "central-plaza")).toBe(
+      true,
+    );
+    expect(map.caveat).toContain("unreleased");
+  });
+
   test("scans memory signatures via wasm_scan_aob", () => {
-    const memory = new Uint8Array([0x90, 0x48, 0x89, 0x5C, 0x24, 0x10, 0xC3]);
+    const memory = new Uint8Array([0x90, 0x48, 0x89, 0x5c, 0x24, 0x10, 0xc3]);
     const matches = scanAob(memory, "48 89 ?? 24");
     expect(matches).toEqual([1]);
   });
@@ -88,9 +105,8 @@ describe("shenron-re WASM pipeline", () => {
     // Generate valid CPK buffer with @UTF tables
     const content = new TextEncoder().encode("Instant Transmission Skill Data");
     const buffer = new Uint8Array(4096);
-    const view = new DataView(buffer.buffer);
 
-    buffer.set([0x43, 0x50, 0x4B, 0x20], 0); // "CPK "
+    buffer.set([0x43, 0x50, 0x4b, 0x20], 0); // "CPK "
     const tocOffset = 512;
     const contentOffset = 2048;
 
@@ -107,7 +123,7 @@ describe("shenron-re WASM pipeline", () => {
         return off;
       }
       const nameOff = add(name);
-      const cols = Object.keys(rows[0] || {}).sort();
+      const cols = Object.keys(rows[0] || {}).toSorted();
       const colOffs = cols.map(add);
       const rowLen = cols.length * 4;
       const rowBytes = new Uint8Array(rows.length * rowLen);
@@ -204,7 +220,7 @@ describe("shenron-re WASM pipeline", () => {
 
     const compressed = new Uint8Array(16 + 0x100 + stream.length);
     const view = new DataView(compressed.buffer);
-    compressed.set([0x43, 0x52, 0x49, 0x4C, 0x41, 0x59, 0x4C, 0x41], 0);
+    compressed.set([0x43, 0x52, 0x49, 0x4c, 0x41, 0x59, 0x4c, 0x41], 0);
     view.setUint32(8, payload.length, true);
     view.setUint32(12, 0, true);
     compressed.set(original.subarray(0, 0x100), 16);
@@ -222,7 +238,7 @@ describe("shenron-re WASM pipeline", () => {
     const buffer = new Uint8Array(headerSize + count * entrySize);
     const view = new DataView(buffer.buffer);
 
-    buffer.set([0x23, 0x42, 0x44, 0x4D], 0); // "#BDM"
+    buffer.set([0x23, 0x42, 0x44, 0x4d], 0); // "#BDM"
     view.setUint32(4, 1, true); // version
     view.setUint32(8, count, true);
     view.setUint32(12, headerSize, true);
@@ -319,7 +335,7 @@ describe("shenron-re WASM pipeline", () => {
     const buffer = new Uint8Array(headerSize + totalTextLen);
     const view = new DataView(buffer.buffer);
 
-    buffer.set([0x23, 0x4D, 0x53, 0x47], 0); // "#MSG"
+    buffer.set([0x23, 0x4d, 0x53, 0x47], 0); // "#MSG"
     view.setUint32(4, 1, true);
     view.setUint32(8, lines.length, true);
     view.setUint32(12, headerSize, true);
@@ -337,4 +353,3 @@ describe("shenron-re WASM pipeline", () => {
     expect(msg.entries[1]?.lines[0]).toBe("Super Saiyan");
   });
 });
-

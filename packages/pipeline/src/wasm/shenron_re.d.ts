@@ -17,6 +17,12 @@ export function wasm_extract_cpk_file(archive_bytes: Uint8Array, filename: strin
 export function wasm_get_dragon_ball_catalog(): any;
 
 /**
+ * Retrieve the source-attributed Xenoverse 3 prototype world map as JavaScript data.
+ * Announced places and original prototype geometry are distinguished in each record.
+ */
+export function wasm_get_xenoverse3_prototype_map(): any;
+
+/**
  * Parse a DBXV2 BAC (Battle Action Code) moveset binary file and return all moves.
  */
 export function wasm_parse_bac(bac_bytes: Uint8Array): any;
@@ -58,6 +64,7 @@ export interface InitOutput {
     readonly wasm_decompress_crilayla: (a: number, b: number, c: number) => [number, number, number, number];
     readonly wasm_extract_cpk_file: (a: number, b: number, c: number, d: number) => [number, number, number, number];
     readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
+    readonly wasm_get_xenoverse3_prototype_map: () => [number, number, number];
     readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
