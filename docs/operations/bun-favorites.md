@@ -25,11 +25,23 @@ une erreur explicite. Il ne réactive pas de stockage Next et ne transforme pas
 une panne DB en favoris vides. Le stockage local du navigateur reste disponible.
 L’activation et la qualification des cookies/OAuth en production restent ouvertes.
 
+Le client attend une lecture valide avant de déclarer la synchronisation prête.
+Les lectures simultanées partagent une requête ; les sauvegardes sont sérialisées
+et regroupent les modifications locales récentes. Une réponse ancienne ne peut
+pas annuler une suppression faite pendant la lecture. Les suppressions en attente
+restent dans le stockage local après un échec et un rechargement, jusqu’à la
+confirmation de la sauvegarde courante. Les requêtes expirent après dix secondes.
+Le client désactive `keepalive` lorsque le corps dépasse la
+[limite navigateur de 64 Kio](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit).
+Cette qualification ne couvre pas la fusion entre plusieurs appareils ni les
+changements de compte dans le même navigateur.
+
 ## Qualification
 
 ```sh
 bun scripts/testing/integration/postgres.ts
 bun run test:integration --no-browser
+cd apps/site && bun test --isolate tests/favorites-sync.test.ts
 ```
 
 Le cluster PostgreSQL temporaire et isolé vérifie le stockage JSONB réel, la

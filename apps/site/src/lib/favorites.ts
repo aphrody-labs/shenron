@@ -19,7 +19,7 @@
 const KEY = "dbfr_favorites_v1";
 export const FAVORITES_EVENT = "dbfr:favorites";
 
-import type { Favorite, FavoriteKind } from "@shenron/config/favorites";
+import { sanitizeFavorites, type Favorite, type FavoriteKind } from "@shenron/config/favorites";
 export type { Favorite, FavoriteKind } from "@shenron/config/favorites";
 
 const favKey = (kind: FavoriteKind, id: string) => `${kind}:${id}`;
@@ -68,6 +68,12 @@ export function toggleFavorite(entry: Omit<Favorite, "at">): boolean {
   const k = favKey(entry.kind, entry.id);
   const current = readFavorites();
   const exists = current.some((f) => favKey(f.kind, f.id) === k);
+  generation++;
+  changedKeys.add(k);
+  const removed = readRemoved();
+  if (exists) removed.add(k);
+  else removed.delete(k);
+  persistRemoved(removed);
   write(
     exists
       ? current.filter((f) => favKey(f.kind, f.id) !== k)
@@ -76,40 +82,113 @@ export function toggleFavorite(entry: Omit<Favorite, "at">): boolean {
   return !exists;
 }
 
-// ── Synchronisation serveur ────────────────────────────────────────────────
-
-/** Anti-rafale : plusieurs bascules rapprochées n'écrivent qu'une fois. */
+// One read and one write at a time; local changes win until acknowledged.
+const REMOVED_KEY = "dbfr_favorites_removed_v1";
+const changedKeys = new Set<string>();
+let generation = 0;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 let synced = false;
+let syncRequested = false;
+let syncFlight: Promise<void> | null = null;
+let writing = false;
+let pending: { list: Favorite[]; generation: number } | null = null;
 
-async function push(list: Favorite[]): Promise<void> {
-  if (typeof window === "undefined" || !synced) return;
+function readRemoved(): Set<string> {
+  try {
+    const value: unknown = JSON.parse(window.localStorage.getItem(REMOVED_KEY) ?? "[]");
+    return new Set(
+      Array.isArray(value) ? value.filter((key): key is string => typeof key === "string") : [],
+    );
+  } catch {
+    return new Set();
+  }
+}
+function persistRemoved(keys: Set<string>): void {
+  try {
+    window.localStorage.setItem(REMOVED_KEY, JSON.stringify([...keys]));
+  } catch {
+    /* Keep local-first behavior when browser storage is unavailable. */
+  }
+}
+
+function push(list: Favorite[]): void {
+  if (typeof window === "undefined") return;
+  if (!synced) {
+    if (syncRequested) void syncFavorites();
+    return;
+  }
+  pending = { list, generation };
   if (pushTimer) clearTimeout(pushTimer);
   pushTimer = setTimeout(() => {
-    void fetch("/api/favorites", {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ favorites: list }),
-      // La synchro est un confort : son échec ne doit rien interrompre.
-      keepalive: true,
-    }).catch(() => {});
+    pushTimer = null;
+    void flush();
   }, 800);
 }
 
-/**
- * Fusionne les favoris du serveur avec ceux du navigateur. À appeler une fois
- * par session, quand on sait l'utilisateur connecté. En cas de doublon, la
- * version la plus récente gagne.
- */
-export async function syncFavorites(): Promise<void> {
-  if (typeof window === "undefined" || synced) return;
-  synced = true;
+async function flush(): Promise<void> {
+  if (writing || pushTimer || !synced) return;
+  writing = true;
   try {
-    const res = await fetch("/api/favorites", { credentials: "include" });
+    while (pending && synced) {
+      if (pushTimer) break;
+      const snapshot = pending;
+      pending = null;
+      const body = JSON.stringify({ favorites: sanitizeFavorites(snapshot.list) });
+      const response = await fetch("/api/favorites", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body,
+        signal: AbortSignal.timeout(10_000),
+        // Keepalive has a shared 64 KiB body budget in browsers.
+        keepalive: new TextEncoder().encode(body).byteLength <= 64 * 1024,
+      });
+      if (!response.ok) {
+        synced = false;
+        break;
+      }
+      if (snapshot.generation === generation && !pending) {
+        changedKeys.clear();
+        persistRemoved(new Set());
+      }
+    }
+  } catch {
+    synced = false;
+  } finally {
+    writing = false;
+    if (pending && !pushTimer) {
+      if (synced) void flush();
+      else if (syncRequested) void syncFavorites();
+    }
+  }
+}
+
+/** Coalesce callers; a failed read remains retryable on the next authorized interaction. */
+export async function syncFavorites(): Promise<void> {
+  if (typeof window === "undefined") return;
+  syncRequested = true;
+  if (synced) return;
+  if (syncFlight) return syncFlight;
+  syncFlight = synchronize().finally(() => {
+    syncFlight = null;
+  });
+  return syncFlight;
+}
+
+async function synchronize(): Promise<void> {
+  try {
+    const res = await fetch("/api/favorites", {
+      credentials: "include",
+      signal: AbortSignal.timeout(10_000),
+    });
     if (!res.ok) return;
     const data = (await res.json()) as { favorites?: unknown };
-    const remote = Array.isArray(data.favorites) ? data.favorites.filter(isFavorite) : [];
+    if (!Array.isArray(data.favorites)) return;
+    const removed = readRemoved();
+    const remote = data.favorites.filter(isFavorite).filter((favorite) => {
+      const key = favKey(favorite.kind, favorite.id);
+      return !removed.has(key) && !changedKeys.has(key);
+    });
     const byKey = new Map<string, Favorite>();
     for (const f of [...remote, ...readFavorites()]) {
       const k = favKey(f.kind, f.id);
@@ -119,8 +198,9 @@ export async function syncFavorites(): Promise<void> {
     const merged = [...byKey.values()].toSorted((a, b) => b.at - a.at);
     window.localStorage.setItem(KEY, JSON.stringify(merged));
     window.dispatchEvent(new CustomEvent(FAVORITES_EVENT));
+    synced = true;
     void push(merged);
   } catch {
-    /* hors ligne : on garde le local */
+    /* Keep the local snapshot and pending deletions after a failure. */
   }
 }
