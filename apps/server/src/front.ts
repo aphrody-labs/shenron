@@ -28,6 +28,7 @@ import { join, normalize, sep } from "node:path";
 import type { ChatSocketData } from "@shenron/api/server";
 
 import type { LocalApi } from "./local-api";
+import { connectNextDev, frontWebSockets, type FrontSocketData } from "./next-dev";
 
 /** Idle timeout of the front server, in seconds (Bun's maximum is 255). */
 export const FRONT_IDLE_TIMEOUT_S = 120;
@@ -40,6 +41,8 @@ export interface FrontHost {
 }
 
 export interface FrontOptions {
+  /** Opt-in for local Next development WebSockets; never enabled by production defaults. */
+  development?: boolean;
   hostname: string;
   /** 0 picks a free port. */
   port: number;
@@ -154,13 +157,7 @@ async function relay(
   nextPort: number,
   peer?: string,
 ): Promise<Response> {
-  const headers = new Headers(request.headers);
-  for (const name of HOP_BY_HOP) headers.delete(name);
-  headers.delete("x-real-ip");
-  headers.delete("x-forwarded-for");
-  if (peer) headers.set("x-real-ip", plainAddress(peer));
-  headers.set("x-forwarded-host", url.host);
-  headers.set("x-forwarded-proto", url.protocol.replace(":", ""));
+  const headers = relayHeaders(request, url, peer);
   const upstream = await fetch(`http://127.0.0.1:${nextPort}${url.pathname}${url.search}`, {
     method: request.method,
     headers,
@@ -176,6 +173,17 @@ async function relay(
     statusText: upstream.statusText,
     headers: responseHeaders,
   });
+}
+
+function relayHeaders(request: Request, url: URL, peer?: string): Headers {
+  const headers = new Headers(request.headers);
+  for (const name of HOP_BY_HOP) headers.delete(name);
+  headers.delete("x-real-ip");
+  headers.delete("x-forwarded-for");
+  if (peer) headers.set("x-real-ip", plainAddress(peer));
+  headers.set("x-forwarded-host", url.host);
+  headers.set("x-forwarded-proto", url.protocol.replace(":", ""));
+  return headers;
 }
 
 /** Page shown while Next starts: HTML navigations reload themselves, other requests retry. */
@@ -198,18 +206,43 @@ const NO_WEBSOCKET: WebSocketHandler<ChatSocketData> = {
   },
 };
 
-export function serveFront(o: FrontOptions): Bun.Server<ChatSocketData> {
+export function serveFront(o: FrontOptions): Bun.Server<FrontSocketData> {
   const host = o.host;
-  return Bun.serve<ChatSocketData>({
+  return Bun.serve<FrontSocketData>({
     hostname: o.hostname,
     port: o.port,
     // Explicit: Bun derives the default from NODE_ENV, which only the Next child sets.
     development: false,
     idleTimeout: o.idleTimeout ?? FRONT_IDLE_TIMEOUT_S,
-    websocket: host?.websocket ?? NO_WEBSOCKET,
+    websocket: frontWebSockets(host?.websocket ?? NO_WEBSOCKET),
     async fetch(request, server) {
       const url = new URL(request.url);
       const peer = server.requestIP(request)?.address;
+      if (
+        (url.pathname === "/_next/hmr" || url.pathname === "/_next/webpack-hmr") &&
+        request.headers.get("upgrade")?.toLowerCase() === "websocket"
+      ) {
+        const origin = request.headers.get("origin");
+        if (
+          !o.development ||
+          !peer ||
+          !["127.0.0.1", "::1"].includes(plainAddress(peer)) ||
+          (origin && origin !== url.origin)
+        )
+          return new Response(null, { status: 403 });
+        if (!o.ready()) return startingResponse(request);
+        try {
+          const data = await connectNextDev(
+            `ws://127.0.0.1:${o.nextPort}${url.pathname}${url.search}`,
+            relayHeaders(request, url, peer),
+          );
+          if (server.upgrade(request, { data })) return;
+          data.upstream.close();
+          return new Response(null, { status: 400 });
+        } catch {
+          return new Response(null, { status: 503, headers: { "retry-after": "1" } });
+        }
+      }
       const local = await o.local(request, url, o.ready(), peer);
       if (local) return local;
       // The host returns no response once it has upgraded the chat WebSocket.

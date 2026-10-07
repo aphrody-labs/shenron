@@ -43,6 +43,7 @@ export function createFixture(nextPort = 0) {
     { vfsDatabase: db, betterAuth: null },
   );
   const front = serveFront({
+    development: nextPort > 0,
     hostname: "127.0.0.1",
     port: 0,
     layout: { dist: join(root, "dist"), publicDir: join(root, "public") },
