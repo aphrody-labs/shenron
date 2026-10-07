@@ -912,3 +912,34 @@ Quatre pages supplémentaires illustrent des critères qui existent déjà dans 
 Les quatre autres pages de cosmologie supplémentaires — [Infinite Mage Cosmology (Web Novel), oldid 9673848](https://vsbattles.fandom.com/wiki/Infinite_Mage_Cosmology_page_(Web_Novel)?oldid=9673848), [Lego Monkie Kid Cosmology, oldid 9474293](https://vsbattles.fandom.com/wiki/Lego_Monkie_Kid_Cosmology?oldid=9474293), [Xeelee Sequence Cosmology, oldid 9092970](https://vsbattles.fandom.com/wiki/Xeelee_Sequence_Cosmology?oldid=9092970) et [Yin Tian Shen Yin Cosmology, oldid 9444735](https://vsbattles.fandom.com/wiki/Yin_Tian_Shen_Yin_Cosmology?oldid=9444735) — exposent des cosmologies particulières sans ajouter de méthode VSBW générale dans les révisions consultées.
 
 Les trois pages supplémentaires de *Feat Explanations* ont également été lues : [Anima-Beyond Fantasy Resistances Compilations, oldid 9481748](https://vsbattles.fandom.com/wiki/Anima-Beyond_Fantasy_Resistances_Compilations?oldid=9481748) utilise des tests propres à son jeu de rôle; [Monster Strike Videogame Power Scaling, oldid 9094173](https://vsbattles.fandom.com/wiki/Monster_Strike_Videogame_Power_Scaling?oldid=9094173) est une analyse utilisateur de traductions et de feats; [Unsong - Applied Kabbalah Feats, oldid 8603768](https://vsbattles.fandom.com/wiki/Unsong_-_Applied_Kabbalah_Feats?oldid=8603768) rappelle qu’une capacité ne se déploie pas forcément en combat sans réflexion ou emplacement requis. Cette dernière précaution est déjà incluse dans le contrôle des conditions d’activation et de préparation; son blog n’est pas une source normative. Exclure les tests, mesures, noms et conclusions appliqués aux cas individuels.
+
+## Annexe AO — Rappel actif sur les capacités et les limites
+
+Répondre sans consulter les sections précédentes. Pour chaque cas, nommer la capacité ou statistique concernée, l’inférence refusée et la preuve encore nécessaire. Tous les cas sont fictifs et ne proviennent pas de profils VSBW.
+
+1. Une entité dit être « l’idée même de la justice », mais le récit ne montre aucun effet lié à cette idée. Quelle propriété peut-on retenir?
+2. Un combattant se déplace sous une forte gravité artificielle. Cela suffit-il à prouver une résistance au contrôle de la gravité?
+3. Une attaque est renvoyée par un bouclier dans une scène. Quelles limites doivent être vérifiées avant de conclure qu’il peut réfléchir n’importe quelle attaque?
+4. Une cible laisse plusieurs images rémanentes pendant un mouvement. Quelle conclusion de vitesse est permise sans autre mesure?
+5. Une technique double les dégâts d’un coup. Peut-on conclure que toutes les statistiques du lanceur doublent?
+6. Un pouvoir traverse l’armure et empoisonne l’intérieur de la cible. Quelle capacité décrit ce mécanisme, et que ne prouve-t-il pas sur l’AP?
+7. Une attaque efface le corps d’une cible. Peut-on en déduire l’effacement de son âme, de son esprit et de son concept?
+8. Deux œuvres appellent leur ressource « énergie ». Est-ce suffisant pour établir un système énergétique commun ou transférer des résistances?
+9. Un phénomène de jeu donne l’impression que le temps est arrêté. Quelles explications alternatives faut-il examiner?
+10. Une source dit qu’une entité est omnipotente. Cela suffit-il à la classification VSBW Tier 0?
+
+<details>
+<summary>Corrigé de l’exercice</summary>
+
+1. Le titre ou l’identification à un concept ne suffit pas. Il faut établir les propriétés fonctionnelles pertinentes de l’existence abstraite par des faits ou une source fiable.
+2. Non. La performance peut venir de la force de levage ou d’un autre mécanisme. Il faut montrer une résistance au hax gravitationnel lui-même.
+3. Type d’attaque, plafond de puissance, surcharge, conditions, préparation, action consciente, visée, portée et défenses contournant le bouclier.
+4. Aucune vitesse élevée n’est établie par les seules images rémanentes; il faut une scène avec trajet, durée et référent mesurables.
+5. Non. Un bonus de dégâts n’est pas automatiquement une amplification générale des statistiques; identifier la statistique visée et le mécanisme.
+6. La négation/contournement de durabilité par effet interne ou poison. Cela ne donne pas à l’attaque une AP égale à la durabilité contournée.
+7. Non. La portée d’effacement se limite aux aspects réellement détruits ou explicitement ciblés.
+8. Non. Le vocabulaire partagé ne prouve ni conversion, ni source commune, ni partage de puissance ou de résistances.
+9. Accélération du personnage, vitesse de perception, ralentissement des autres, montage ou règle de gameplay. Il faut une confirmation narrative adaptée au média.
+10. Non. La page VSBW exige un ensemble de critères stricts de primauté, unité, immutabilité et indivisibilité; le mot seul ne suffit pas.
+
+</details>
