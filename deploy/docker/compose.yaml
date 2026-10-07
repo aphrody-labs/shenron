@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: Apache-2.0
+# Application containers only. PostgreSQL, Redis, nginx and CDN remain Infra-owned services.
+name: shenron
+services:
+  site:
+    image: localhost/shenron:${SHENRON_IMAGE_TAG:-local}
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      args:
+        SHENRON_REVISION: ${SHENRON_REVISION:-unknown}
+    entrypoint: ["/usr/local/bin/shenron-server"]
+    command: ["serve", "--host", "127.0.0.1", "--port", "5011"]
+    env_file:
+      - ${SHENRON_SITE_ENV_FILE:-/etc/rose-griffon/shenron-site.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
+    environment:
+      SHENRON_HOME: /var/lib/shenron
+      SHENRON_PROFILE: production
+      SHENRON_FFI_LIB: /usr/local/lib/libshenron_ffi.so
+      SHENRON_VFS_DB: /var/lib/shenron/data/shenron-vfs.sqlite
+      HOSTNAME: 127.0.0.1
+      PORT: "5011"
+      NEXT_TELEMETRY_DISABLED: "1"
+    network_mode: host
+    user: "${SHENRON_UID:-1000}:${SHENRON_GID:-1000}"
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    volumes:
+      - type: bind
+        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/server
+        target: /var/lib/shenron
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail --silent http://127.0.0.1:5011/api/local/health | jq -e '.groups.rag.available == true and .groups.mcp.available == true' >/dev/null
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    restart: unless-stopped
+
+  bot:
+    image: localhost/shenron:${SHENRON_IMAGE_TAG:-local}
+    entrypoint: ["/usr/local/bin/shenron-bot"]
+    env_file:
+      - ${SHENRON_BOT_ENV_FILE:-/etc/rose-griffon/shenron-bot.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
+    environment:
+      API_HOST: 127.0.0.1
+      API_PORT: "5006"
+      DATABASE_PATH: /app/data/bot.db
+      SHENRON_FFI_LIB: /usr/local/lib/libshenron_ffi.so
+    network_mode: host
+    user: "${SHENRON_UID:-1000}:${SHENRON_GID:-1000}"
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    volumes:
+      - type: bind
+        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/bot/data
+        target: /app/data
+      - type: bind
+        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/bot/assets
+        target: /app/assets
+        read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:5006/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped

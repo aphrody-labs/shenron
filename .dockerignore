@@ -1,0 +1,18 @@
+# The image consumes only sealed server and bot outputs; never send source, caches or private data.
+**
+!dist/
+!dist/server/
+!dist/server/linux-x64/
+!dist/server/linux-x64/shenron-server
+!dist/server/linux-x64/native/
+!dist/server/linux-x64/native/libshenron_ffi.so
+!dist/bot/
+!dist/bot/linux-x64/
+!dist/bot/linux-x64/shenron-bot
+!dist/bot/linux-x64/src/
+!dist/bot/linux-x64/src/db/
+!dist/bot/linux-x64/src/db/migrations/
+!dist/bot/linux-x64/src/db/migrations/**
+!dist/mcp/
+!dist/mcp/linux-x64/
+!dist/mcp/linux-x64/shenron-mcp
