@@ -9,6 +9,7 @@ import { z } from "zod";
 import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
 import { AccountSessionResponse } from "./account";
+import { PageBannersResponse, PageBannersSaveResponse } from "./page-banners";
 import { HomeConfigResponse, HomeConfigSaveResponse } from "./home";
 import { SiteThemeResponse, SiteThemeSaveResponse } from "./site-theme";
 import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
@@ -142,6 +143,26 @@ export const endpoints = {
     body: z.object({ favorites: z.unknown() }),
     maxBodyBytes: FAVORITES_BODY_MAX,
     response: FavoritesSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
+  pageBanners: {
+    id: "pageBanners",
+    method: "get",
+    path: "/api/v1/site/banners",
+    auth: "public",
+    response: PageBannersResponse,
+    cache: "no-store",
+    native: true,
+  },
+  pageBannersSave: {
+    id: "pageBannersSave",
+    method: "post",
+    path: "/api/v1/site/banners",
+    auth: "admin",
+    body: z.unknown(),
+    maxBodyBytes: 512 * 1024,
+    response: PageBannersSaveResponse,
     cache: "no-store",
     native: true,
   },

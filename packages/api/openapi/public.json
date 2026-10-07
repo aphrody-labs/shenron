@@ -185,6 +185,177 @@
         ]
       }
     },
+    "/api/v1/site/banners": {
+      "get": {
+        "operationId": "pageBanners",
+        "tags": [
+          "site"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageBannersResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "pageBannersSave",
+        "tags": [
+          "site"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageBannersSaveResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/site/home": {
       "get": {
         "operationId": "homeConfig",
@@ -5016,6 +5187,150 @@
           "openapi"
         ],
         "additionalProperties": {}
+      },
+      "PageBanners": {
+        "type": "object",
+        "properties": {
+          "pages": {
+            "type": "object",
+            "properties": {
+              "episodes": {
+                "type": "string"
+              },
+              "films": {
+                "type": "string"
+              },
+              "chronologie": {
+                "type": "string"
+              },
+              "personnages": {
+                "type": "string"
+              },
+              "sagas": {
+                "type": "string"
+              },
+              "arcs": {
+                "type": "string"
+              },
+              "races": {
+                "type": "string"
+              },
+              "transformations": {
+                "type": "string"
+              },
+              "techniques": {
+                "type": "string"
+              },
+              "jeux": {
+                "type": "string"
+              },
+              "manga": {
+                "type": "string"
+              },
+              "databooks": {
+                "type": "string"
+              },
+              "combats": {
+                "type": "string"
+              },
+              "dragons": {
+                "type": "string"
+              },
+              "lieux": {
+                "type": "string"
+              },
+              "musiques": {
+                "type": "string"
+              },
+              "objets": {
+                "type": "string"
+              },
+              "puissances": {
+                "type": "string"
+              },
+              "news": {
+                "type": "string"
+              },
+              "tools": {
+                "type": "string"
+              },
+              "staff": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "episodes",
+              "films",
+              "chronologie",
+              "personnages",
+              "sagas",
+              "arcs",
+              "races",
+              "transformations",
+              "techniques",
+              "jeux",
+              "manga",
+              "databooks",
+              "combats",
+              "dragons",
+              "lieux",
+              "musiques",
+              "objets",
+              "puissances",
+              "news",
+              "tools",
+              "staff"
+            ],
+            "additionalProperties": false
+          },
+          "series": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "fallback": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pages",
+          "series",
+          "fallback"
+        ],
+        "additionalProperties": false
+      },
+      "PageBannersResponse": {
+        "type": "object",
+        "properties": {
+          "banners": {
+            "$ref": "#/components/schemas/PageBanners"
+          }
+        },
+        "required": [
+          "banners"
+        ],
+        "additionalProperties": false
+      },
+      "PageBannersSaveResponse": {
+        "type": "object",
+        "properties": {
+          "banners": {
+            "$ref": "#/components/schemas/PageBanners"
+          },
+          "ok": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "banners",
+          "ok"
+        ],
+        "additionalProperties": false
       },
       "PluginFormat": {
         "type": "string",

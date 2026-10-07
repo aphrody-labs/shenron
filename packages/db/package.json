@@ -34,7 +34,8 @@
     "./vfs/build": "./src/vfs/build.ts",
     "./repos/site-theme": "./src/repos/site-theme.ts",
     "./repos/favorites": "./src/repos/favorites.ts",
-    "./repos/home": "./src/repos/home.ts"
+    "./repos/home": "./src/repos/home.ts",
+    "./repos/page-banners": "./src/repos/page-banners.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -83,7 +84,8 @@
       "./vfs/build": "bun",
       "./repos/site-theme": "server",
       "./repos/favorites": "server",
-      "./repos/home": "server"
+      "./repos/home": "server",
+      "./repos/page-banners": "server"
     }
   }
 }

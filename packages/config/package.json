@@ -36,7 +36,8 @@
     "./site-theme": "./src/site-theme.ts",
     "./favorites": "./src/favorites.ts",
     "./home": "./src/home.ts",
-    "./legacy-routes": "./src/legacy-routes.ts"
+    "./legacy-routes": "./src/legacy-routes.ts",
+    "./page-banners": "./src/page-banners.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -83,7 +84,8 @@
       "./site-theme": "pure",
       "./favorites": "pure",
       "./home": "pure",
-      "./legacy-routes": "pure"
+      "./legacy-routes": "pure",
+      "./page-banners": "pure"
     }
   }
 }

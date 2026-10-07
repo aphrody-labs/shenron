@@ -5,6 +5,8 @@
  *   PUT → { ok, banners }       upsert singleton + revalidate des pages touchées
  */
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
+import { HostBannerError } from "@/lib/host-banner-error";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 import { getPageBanners, savePageBanners } from "@/lib/banner-config";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
@@ -52,7 +54,12 @@ export async function PUT(req: NextRequest) {
     return badRequest("JSON body requis");
   }
   try {
-    const banners = await savePageBanners(body, me?.discordId || me?.user?.id || "token-admin");
+    const banners = await savePageBanners(
+      body,
+      me?.discordId || me?.user?.id || "token-admin",
+      req.headers,
+      envFirst(process.env, ENV_ALIASES.adminToken)?.value,
+    );
     for (const p of REVALIDATE_PATHS) {
       try {
         revalidatePath(p, p.includes("[") ? "page" : undefined);
@@ -68,6 +75,8 @@ export async function PUT(req: NextRequest) {
     }
     return NextResponse.json({ ok: true, banners });
   } catch (err) {
+    if (err instanceof HostBannerError)
+      return NextResponse.json({ error: err.message }, { status: err.status });
     return badRequest(err instanceof Error ? err.message : "erreur");
   }
 }

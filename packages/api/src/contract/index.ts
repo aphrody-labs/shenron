@@ -15,3 +15,5 @@ export * from "./site-theme";
 export * from "./favorites";
 
 export * from "./home";
+
+export * from "./page-banners";

@@ -30,6 +30,7 @@ import {
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
 import type { AccountSessionProfile } from "../contract/account";
+import { resolvePageBanners, type PageBannersConfig } from "@shenron/config/page-banners";
 import { resolveHomeConfig, type HomeConfig } from "@shenron/config/home";
 import { resolveSiteTheme, type SiteTheme } from "@shenron/config/site-theme";
 import type { MemoryEntry, MemoryListQuery } from "../contract/memory";
@@ -173,6 +174,12 @@ export interface ShenronApiLogEvent {
   ms?: number;
 }
 
+export interface PageBannersPort {
+  defaults?: PageBannersConfig;
+  read(): Promise<unknown>;
+  save(config: PageBannersConfig, by: string | null): Promise<void>;
+}
+
 export interface HomeConfigPort {
   read(): Promise<unknown>;
   save(config: HomeConfig, by: string | null): Promise<void>;
@@ -184,6 +191,7 @@ export interface SiteThemePort {
 }
 
 export interface ShenronApiPorts {
+  pageBanners?: PageBannersPort | null;
   homeConfig?: HomeConfigPort | null;
   siteTheme?: SiteThemePort | null;
   /** Absent → wiki group disabled → `handles()` false → historical 404. */
@@ -478,6 +486,19 @@ export function createShenronApi(
       "Cache-Control": "private, no-store",
     });
   });
+  add(endpoints.pageBanners, Boolean(ports.pageBanners), async () =>
+    json(
+      { banners: resolvePageBanners(await ports.pageBanners!.read(), ports.pageBanners!.defaults) },
+      200,
+      { "Cache-Control": "no-store" },
+    ),
+  );
+  add(endpoints.pageBannersSave, Boolean(ports.pageBanners), async ({ body, request }) => {
+    const banners = resolvePageBanners(body, ports.pageBanners!.defaults);
+    const ownerId = await ports.auth?.owner(request);
+    await ports.pageBanners!.save(banners, ownerId ?? "token-admin");
+    return json({ ok: true, banners }, 200, { "Cache-Control": "no-store" });
+  });
   add(endpoints.homeConfig, Boolean(ports.homeConfig), async () =>
     json({ config: resolveHomeConfig(await ports.homeConfig!.read()) }, 200, {
       "Cache-Control": "no-store",
@@ -517,6 +538,7 @@ export function createShenronApi(
   });
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
   const anyGroup = [
+    ports.pageBanners,
     ports.homeConfig,
     ports.siteTheme,
     favoritesEnabled ? ports.favorites : null,
