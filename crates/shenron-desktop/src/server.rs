@@ -274,6 +274,7 @@ pub async fn start(app: &AppHandle) -> Result<String, String> {
         .env("PORT", port.to_string())
         .env("HOSTNAME", "127.0.0.1")
         .env("SHENRON_HOME", &data)
+        .env("SHENRON_SERVER_BIN", &binary)
         .env("SHENRON_PROFILE", "desktop")
         .env("NODE_ENV", "production")
         .stdin(Stdio::null())
