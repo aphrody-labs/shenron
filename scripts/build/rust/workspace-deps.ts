@@ -21,6 +21,7 @@ import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { alignAphrodyPins } from "./aphrody-pins.ts";
 
 const ROOT = `${join(import.meta.dir, "../../..")}/`;
 const args = process.argv.slice(2);
@@ -41,7 +42,7 @@ function aphrodyRepositories(): string[] {
   if (explicit) return [explicit];
   const db = join(process.env.CARGO_HOME ?? join(homedir(), ".cargo"), "git/db");
   const fetched = existsSync(db)
-    ? [...new Bun.Glob("aphrody-*").scanSync({ cwd: db, onlyFiles: false })].sort()
+    ? [...new Bun.Glob("aphrody-*").scanSync({ cwd: db, onlyFiles: false })].toSorted()
     : [];
   return [join(homedir(), "aphrody"), ...fetched.map((name) => join(db, name))];
 }
@@ -109,7 +110,7 @@ const inline = (spec: Record<string, unknown>) =>
 
 const lines: string[] = [];
 const missing: string[] = [];
-for (const name of [...wanted].sort()) {
+for (const name of [...wanted].toSorted()) {
   if (owned.has(name)) continue;
   const own = local.get(name);
   if (own) {
@@ -141,7 +142,7 @@ if (missing.length)
   );
 
 const block = `${begin}\n# aphrody-rev: ${REV}\n${lines.join("\n")}\n${end}`;
-const next = manifest.replace(new RegExp(`${begin}[\\s\\S]*?${end}`), block);
+const next = alignAphrodyPins(manifest.replace(new RegExp(`${begin}[\\s\\S]*?${end}`), block), REV);
 if (args.includes("--check")) {
   if (next !== manifest) {
     console.error(
