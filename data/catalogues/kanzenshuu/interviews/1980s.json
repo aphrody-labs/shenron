@@ -1,0 +1,97 @@
+{
+  "decade": "1980s",
+  "records": [
+    {
+      "id": "monthly-starlog-1980-11-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/monthly-starlog-1980-11-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview",
+      "publication": "Monthly Starlog, 1980 #11 (pp. 86-89)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "01 October 1980",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Pre-Dragon Ball",
+        "Non-Dragon Ball",
+        "Dr. Slump",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/monthly-starlog-1980-11-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Monthly Starlog 1980 #11: Akira Toriyama Interview",
+      "sourceDescription": "English translation of the Akira Toriyama interview with Haruka Takachiho from the 1980 #11 issue of 'Monthly Starlog'",
+      "questionCount": 77,
+      "sectionHeadings": [
+        "Monthly Starlog , 1980 #11 (01 October 1980)",
+        "Akira Toriyama Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "tetsukos-room-1983-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/tetsukos-room-1983-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview",
+      "publication": "Tetsuko’s Room",
+      "publicationType": "TV Program",
+      "format": "Interview",
+      "publicationDate": "04 May 1983",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Pre-Dragon Ball",
+        "Non-Dragon Ball",
+        "Dr. Slump",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/tetsukos-room-1983-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Tetsuko's Room (1983): Akira Toriyama Interview - Kanzenshuu",
+      "sourceDescription": null,
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Tetsuko’s Room (first aired 04 May 1983)",
+        "Akira Toriyama Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "telepal-1986-toriyama-takahashi",
+      "url": "https://www.kanzenshuu.com/translations/telepal-1986-toriyama-takahashi/",
+      "title": "Big Creators’ Talk: Akira Toriyama x Rumiko Takahashi",
+      "publication": "TeLePAL, 1986 #3 (pp. 19-22)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "01 February 1986",
+      "participants": [
+        "Akira Toriyama",
+        "Rumiko Takahashi"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/telepal-1986-toriyama-takahashi.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | TeLePAL (1986 No. 3) - Big Creators' Talk: Akira Toriyama x Rumiko Takahashi",
+      "sourceDescription": "English translation of the 'Big Creators' Talk: Akira Toriyama x Rumiko Takahashi' interview from the 1986 No. 3 issue of 'TeLePAL'",
+      "questionCount": 24,
+      "sectionHeadings": [
+        "TeLePAL (1986 No. 3)",
+        "Big Creators’ Talk:",
+        "Akira Toriyama x Rumiko Takahashi"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    }
+  ]
+}

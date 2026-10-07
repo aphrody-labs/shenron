@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2017; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview",
+      "title": "Entretien avec l'éditeur de Dragon Ball Gaiden: Tenseishitara Yamucha datta Ken",
+      "summary": "Entretien de Tsunehiko Nishimaki avec un éditeur anonyme de Shueisha sur la création du manga dérivé consacré à Yamcha. L'idée est née d'une discussion informelle entre éditeurs autour d'un récit de réincarnation dans l'univers de Dragon Ball. Yamcha a été choisi pour le contraste comique entre son statut de personnage jugé faible et le renversement de situation; une piste mettant Krilin au centre d'une boucle temporelle avait aussi été envisagée. L'éditeur indique que Toriyama a accepté le projet, a donné des suggestions sur le storyboard — notamment sur la mort comique du protagoniste et sa caractérisation — puis a apprécié le manuscrit terminé. L'artiste Dragon Garow Lee a été repéré par un membre de l'équipe pour ses parodies publiées sur Pixiv puis approché sur Twitter. Selon l'éditeur, le premier chapitre a dépassé de plus de deux fois les lectures d'un one-shot habituel et a été le titre le plus lu de la semaine. Ces informations décrivent le processus éditorial de ce spin-off; elles ne sont pas des déclarations directes de Toriyama.",
+      "keyInformation": [
+        "L'idée du spin-off vient d'une conversation informelle dans l'équipe éditoriale de Shueisha sur une histoire de réincarnation façon romans web dans l'univers de Dragon Ball.",
+        "L'éditeur dit que Yamcha a été retenu parce que son profil permettait un renversement comique; une histoire en boucle temporelle avec Krilin avait aussi été envisagée.",
+        "Toriyama a été consulté dès la conception, a approuvé le projet, puis a proposé des améliorations au storyboard portant notamment sur la mort du protagoniste et sa caractérisation pour faciliter l'entrée du lecteur.",
+        "L'artiste Dragon Garow Lee a été signalé à l'équipe par un membre qui connaissait ses parodies sur Pixiv; l'éditeur l'a ensuite contacté sur Twitter.",
+        "L'éditeur attribue le succès initial au bouche-à-oreille et au calendrier proche d'un épisode de Dragon Ball Super consacré à Yamcha; il rapporte plus du double des lectures d'un one-shot ordinaire et la première place de la semaine.",
+        "L'interview est une source sur la production et la réception éditoriale du spin-off, pas une source directe sur les intentions de Toriyama au sujet de l'histoire principale."
+      ],
+      "source": {
+        "publication": "BuzzFeed Japan, entretien par Tsunehiko Nishimaki avec un éditeur anonyme de Shueisha",
+        "pages": null,
+        "date": "2017-01-28",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview/",
+        "primarySource": "https://www.buzzfeed.com/jp/tsunehikonishimaki/reincarnation-yamcha",
+        "questionAnswerCount": 10
+      },
+      "dragonBallRelevance": "Production éditoriale d'un spin-off officiel; propos de l'éditeur Shueisha, à distinguer des déclarations d'auteur.",
+      "status": "summary-written-primary-source-available-kanzenshuu-copy-unavailable"
+    }
+  ]
+}

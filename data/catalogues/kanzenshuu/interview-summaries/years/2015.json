@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2015; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview",
+      "title": "Momoiro Clover Z Interview",
+      "summary": "Momoiro Clover Z raconte son doublage des anges dans Resurrection F. Les membres découvrent la difficulté de jouer le fantastique et de rire sur commande avec des images fixes.",
+      "keyInformation": [
+        "Ariyasu et Sasaki veulent faire enrager Freeza dans la scène.",
+        "Momota trouve le rire angélique difficile; Takagi devait jouer un rôle énergique.",
+        "Elles enregistrent avant animation complète et imaginent les mouvements."
+      ],
+      "source": {
+        "publication": "Weekly Shōnen Jump, 2015 #15 (p. 20)",
+        "date": "09 March 2015",
+        "participants": [
+          "Momoka Ariyasu",
+          "Ayaka Sasaki",
+          "Kanako Momota",
+          "Shiori Tamai",
+          "Reni Takagi"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview/",
+        "questionAnswerCount": 2,
+        "detectedQuestionBlocks": 2,
+        "detectedAnswerBlocks": 1,
+        "formatNote": "Blocs réponse locaux=1 vs index=2. Comptage Q/R distinct (2/1); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "entermix-may-2015-momoiro-clover-z-interview",
+      "title": "Momoiro Clover Z Interview",
+      "summary": "Momoiro Clover Z parle de la chanson thème, des personnages préférés et du doublage des anges. Les membres espèrent que la chanson rappellera Dragon Ball Z à plusieurs générations; leurs réponses sur les pouvoirs sont ludiques.",
+      "keyInformation": [
+        "Le Z du nom du groupe faisait référence à Dragon Ball.",
+        "Leurs choix de personnages sont des préférences personnelles.",
+        "Elles imaginent téléportation, guérison, météo et télékinésie.",
+        "Le rire angélique sur images non animées leur a semblé difficile."
+      ],
+      "source": {
+        "publication": "Entermix, May 2015 (pp. 76-77)",
+        "date": "20 March 2015",
+        "participants": [
+          "Momoka Ariyasu",
+          "Ayaka Sasaki",
+          "Kanako Momota",
+          "Shiori Tamai",
+          "Reni Takagi"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/entermix-may-2015-momoiro-clover-z-interview/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "v-jump-may-2015-momoiro-clover-z",
+      "title": "Momoiro Clover Z Interview",
+      "summary": "Échange humoristique où le groupe imagine des usages du ki: téléportation, météo, guérison, télékinésie et fusion avec un mur pour fuir dans les rêves de Takagi. Le dialogue joue sur les pouvoirs déjà vus dans Dragon Ball.",
+      "keyInformation": [
+        "Ariyasu choisit la téléportation, Sasaki la météo, Momota la guérison et Tamai la télékinésie.",
+        "Takagi imagine se fondre dans un mur pour fuir un ennemi rêvé.",
+        "Plaisanteries promotionnelles, pas ajouts canoniques."
+      ],
+      "source": {
+        "publication": "V-Jump, May 2015 (p. 9)",
+        "date": "20 March 2015",
+        "participants": [
+          "Momoka Ariyasu",
+          "Ayaka Sasaki",
+          "Kanako Momota",
+          "Shiori Tamai",
+          "Reni Takagi"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-may-2015-momoiro-clover-z/",
+        "questionAnswerCount": 11,
+        "detectedQuestionBlocks": 11,
+        "detectedAnswerBlocks": 10,
+        "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "flying-postman-press-april-2015-norihiro-hayashida",
+      "title": "Norihiro Hayashida Interview",
+      "summary": "Le producteur Hayashida raconte la décision de produire un film après le succès de Battle of Gods. Selon lui, la chanson F de Maximum the Hormone inspire à Toriyama le retour de Freeza. Il loue le scénario, les combats de Yamamuro et la musique de Sumitomo; c'est son premier long métrage comme producteur.",
+      "keyInformation": [
+        "Après le succès du film précédent, l'équipe demande à Toriyama un nouveau scénario.",
+        "Hayashida attribue à F l'idée du retour de Freeza.",
+        "Il apprécie le dialogue, les gestes martiaux et la musique.",
+        "Propos du producteur, non de l'auteur."
+      ],
+      "source": {
+        "publication": "Flying Postman Press, April 2015 (p. 4)",
+        "date": "20 March 2015",
+        "participants": [
+          "Norihiro Hayashida"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-norihiro-hayashida/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 4
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "flying-postman-press-april-2015-ryusei-nakao",
+      "title": "Ryūsei Nakao Interview",
+      "summary": "Nakao accueille le retour de Freeza comme un hommage aux fans. Il évoque l'allure aristocratique du personnage, son complexe envers son père et le défi de préserver sa voix en jouant Golden Freeza. Les plaisanteries de puissance sont des gags d'acteur.",
+      "keyInformation": [
+        "Nakao attribue le retour au soutien des fans.",
+        "Il associe le parler raffiné de Freeza à un aristocrate et voit son père comme une source de complexe.",
+        "Il préserve la voix reconnaissable du personnage; les scènes rapides compliquaient le doublage.",
+        "Son estimation de puissance est une plaisanterie."
+      ],
+      "source": {
+        "publication": "Flying Postman Press, April 2015 (p. 2)",
+        "date": "20 March 2015",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-ryusei-nakao/",
+        "questionAnswerCount": 7,
+        "detectedQuestionBlocks": 7,
+        "detectedAnswerBlocks": 7
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "entermix-may-2015-ryusei-nakao-interview",
+      "title": "Ryūsei Nakao Interview",
+      "summary": "Nakao se réjouit de retrouver Freeza et joue sa forme dorée comme une malveillance plus achevée. Il commente les combats rapides et son expérience avec Nozawa; témoignage d'acteur.",
+      "keyInformation": [
+        "Il associe le F du titre aux fans.",
+        "Il accentue le côté maléfique sans changer l'essence du personnage.",
+        "Les combats obligeaient à vérifier les mouvements en studio.",
+        "Ses remarques de puissance ne sont pas des faits narratifs."
+      ],
+      "source": {
+        "publication": "Entermix, May 2015 (p. 78)",
+        "date": "20 March 2015",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/entermix-may-2015-ryusei-nakao-interview/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 5
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "v-jump-june-2015-ryusei-nakao-interview",
+      "title": "Ryūsei Nakao Interview",
+      "summary": "Après la sortie du film, Nakao détaille son jeu de Golden Freeza et les combats rapides. Il trouve inédit que Freeza soit intimidé par Beerus, apprécie l'échange avec Tagoma et la présence de Jaco.",
+      "keyInformation": [
+        "Nakao jouait Freeza plus maléfique; les mouvements rapides étaient revus sur pause.",
+        "Il apprécie de voir Freeza nerveux face à Beerus.",
+        "Il signale les scènes avec Tagoma et Jaco; appréciations d'acteur."
+      ],
+      "source": {
+        "publication": "V-Jump, June 2015 (pp. 332-333)",
+        "date": "21 April 2015",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2015-ryusei-nakao-interview/",
+        "questionAnswerCount": 11,
+        "detectedQuestionBlocks": 11,
+        "detectedAnswerBlocks": 10,
+        "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    }
+  ]
+}

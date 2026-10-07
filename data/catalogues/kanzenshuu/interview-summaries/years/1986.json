@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 1986; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "telepal-1986-toriyama-takahashi",
+      "title": "Big Creators’ Talk: Akira Toriyama x Rumiko Takahashi",
+      "summary": "Dans cet échange avec Rumiko Takahashi, Toriyama explique qu'il a voulu différencier Dragon Ball de Dr. Slump en changeant de ton et d'univers visuel : une ambiance inspirée de la Chine et davantage centrée sur l'histoire, avec moins de gags. Il décrit Goku comme un garçon à la fois espiègle et sincère, qualités qu'il associe respectivement à ses cheveux et à son visage. Il dit inventer l'histoire au fil de la publication plutôt que de planifier la suite; les idées arrivent parfois sous la pression du délai, et il a réutilisé des éléments de pages refusées avant ses débuts. Il rapporte que Torishima insistait sur la lisibilité et que Dragon Ball devait viser un lectorat plus âgé, même si ce principe de clarté l'a ramené vers une narration proche de Dr. Slump. Sur l'animation, il accepte des écarts importants au manga si le résultat est intéressant et demande surtout que Goku soit animé avec énergie.",
+      "keyInformation": [
+        "Le changement de cadre et de rythme par rapport à Dr. Slump visait aussi à renouveler le plaisir de l'auteur; Toriyama dit avoir voulu réduire les éléments comiques au profit de l'histoire.",
+        "Il décrit Goku comme espiègle et sincère, et dit chercher à ne pas rendre les personnages secondaires trop singuliers pour éviter qu'ils ne lui volent la vedette.",
+        "Il affirme improviser la suite de Dragon Ball au fil des chapitres et modifier les lieux ou l'ambiance selon son envie plutôt que de s'enfermer dans un plan fixe.",
+        "Il attribue à Torishima la consigne de raconter clairement et rapporte que Dragon Ball devait relever le lectorat visé par rapport à Dr. Slump.",
+        "Il distingue les forces des médias : mouvement, couleur et son pour l'animation; composition des cases pour le manga.",
+        "Il se montre favorable aux changements d'adaptation, même importants, si l'anime fonctionne comme œuvre divertissante; sa demande concrète est de faire beaucoup bouger Goku."
+      ],
+      "source": {
+        "publication": "TeLePAL, 1986 no. 3",
+        "pages": "19–22",
+        "date": "1986-02-01",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/telepal-1986-toriyama-takahashi/",
+        "questionAnswerCount": 24,
+        "formatNote": "Le HTML contient 24 blocs question et 26 blocs réponse; certaines réponses sont réparties en plusieurs blocs. Le nombre de questions correspond à l'index."
+      },
+      "dragonBallRelevance": "Directe : intention de départ, caractérisation de Goku, méthode de sérialisation et rapport à l'adaptation animée.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

@@ -1,0 +1,3342 @@
+{
+  "schemaVersion": 1,
+  "sourceArchive": "https://www.kanzenshuu.com/translations/",
+  "acquiredAt": "2026-10-07T21:19:53.222Z",
+  "scope": "Editorial translation archive entries labeled Interview; forum pages excluded.",
+  "records": [
+    {
+      "id": "monthly-starlog-1980-11-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/monthly-starlog-1980-11-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview",
+      "publication": "Monthly Starlog, 1980 #11 (pp. 86-89)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "01 October 1980",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Pre-Dragon Ball",
+        "Non-Dragon Ball",
+        "Dr. Slump",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/monthly-starlog-1980-11-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Monthly Starlog 1980 #11: Akira Toriyama Interview",
+      "sourceDescription": "English translation of the Akira Toriyama interview with Haruka Takachiho from the 1980 #11 issue of 'Monthly Starlog'",
+      "questionCount": 77,
+      "sectionHeadings": [
+        "Monthly Starlog , 1980 #11 (01 October 1980)",
+        "Akira Toriyama Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "tetsukos-room-1983-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/tetsukos-room-1983-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview",
+      "publication": "Tetsuko’s Room",
+      "publicationType": "TV Program",
+      "format": "Interview",
+      "publicationDate": "04 May 1983",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Pre-Dragon Ball",
+        "Non-Dragon Ball",
+        "Dr. Slump",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/tetsukos-room-1983-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Tetsuko's Room (1983): Akira Toriyama Interview - Kanzenshuu",
+      "sourceDescription": null,
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Tetsuko’s Room (first aired 04 May 1983)",
+        "Akira Toriyama Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "telepal-1986-toriyama-takahashi",
+      "url": "https://www.kanzenshuu.com/translations/telepal-1986-toriyama-takahashi/",
+      "title": "Big Creators’ Talk: Akira Toriyama x Rumiko Takahashi",
+      "publication": "TeLePAL, 1986 #3 (pp. 19-22)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "01 February 1986",
+      "participants": [
+        "Akira Toriyama",
+        "Rumiko Takahashi"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/telepal-1986-toriyama-takahashi.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | TeLePAL (1986 No. 3) - Big Creators' Talk: Akira Toriyama x Rumiko Takahashi",
+      "sourceDescription": "English translation of the 'Big Creators' Talk: Akira Toriyama x Rumiko Takahashi' interview from the 1986 No. 3 issue of 'TeLePAL'",
+      "questionCount": 24,
+      "sectionHeadings": [
+        "TeLePAL (1986 No. 3)",
+        "Big Creators’ Talk:",
+        "Akira Toriyama x Rumiko Takahashi"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "akira-toriyama-the-world-toriyama-vs-akimoto",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-the-world-toriyama-vs-akimoto/",
+      "title": "Face-to-Face Talk: Akira Toriyama vs Osamu Akimoto",
+      "publication": "Akira Toriyama: The World (pp. 94-95)",
+      "publicationType": "Artbook",
+      "format": "Interview",
+      "publicationDate": "10 January 1990",
+      "participants": [
+        "Akira Toriyama",
+        "Osamu Akimoto"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Characters",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/akira-toriyama-the-world-toriyama-vs-akimoto.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Akira Toriyama: The World - Akira Toriyama vs. Osamu Akimoto",
+      "sourceDescription": "English translation of the 'Face-to-Face Talk: Akira Toriyama vs. Osamu Akimoto' interview in the 1990 'Akira Toriyama: The World' art book",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "Akira Toriyama: The World (10 January 1990)",
+        "Face-to-Face Talk",
+        "Akira Toriyama vs. Osamu Akimoto"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "weekly-playboy-1995-5-akira-toriyama-exclusive-interview",
+      "url": "https://www.kanzenshuu.com/translations/weekly-playboy-1995-5-akira-toriyama-exclusive-interview/",
+      "title": "Akira Toriyama – Exclusive Interview",
+      "publication": "Weekly Playboy, 1995 #5 (pp. 43-46)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "17 January 1995",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Manga",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-playboy-1995-5-akira-toriyama-exclusive-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Weekly Playboy 1995 #5 - Akira Toriyama Exclusive Interview",
+      "sourceDescription": "An English translation of an Akira Toriyama feature article from the 1995 #5 issue of 'Weekly Playboy' in Japan",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Weekly Playboy , 1995 #5",
+        "Akira Toriyama – Exclusive Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "daizenshuu-1-akira-toriyama-super-interview",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-1-akira-toriyama-super-interview/",
+      "title": "Akira Toriyama Super Interview — 1 st Round",
+      "publication": "Dragon Ball Daizenshuu 1: Complete Illustrations (pp. 202-207)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "20 June 1995",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Characters",
+        "Illustrations"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-1-akira-toriyama-super-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 1 - Akira Toriyama Super Interview",
+      "sourceDescription": "The first of six Daizenshuu interviews with Dragon Ball author Akira Toriyama in which he discusses his artistic styles and illustrations.",
+      "questionCount": 22,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 1: Complete Illustrations",
+        "Akira Toriyama Super Interview",
+        "1st Round — The Evolving Illustrations"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "daizenshuu-2-akira-toriyama-super-interview",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-2-akira-toriyama-super-interview/",
+      "title": "Akira Toriyama Super Interview — 2 nd Round",
+      "publication": "Dragon Ball Daizenshuu 2: Story Guide (pp. 261-265)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "04 August 1995",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Characters",
+        "Story"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-2-akira-toriyama-super-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 2 - Akira Toriyama Super Interview",
+      "sourceDescription": "The second of six Daizenshuu interviews with Dragon Ball author Akira Toriyama in which he discusses the series' story and development.",
+      "questionCount": 15,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 2: Story Guide",
+        "Akira Toriyama Super Interview",
+        "2nd Round — The Unpredictable Story"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "daizenshuu-3-akira-toriyama-super-interview",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-3-akira-toriyama-super-interview/",
+      "title": "Akira Toriyama Super Interview — 3 rd Round",
+      "publication": "Dragon Ball Daizenshuu 3: TV Animation Part 1 (pp. 202-207)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "04 September 1995",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Anime)",
+        "Dragon Ball Z",
+        "Animation"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-3-akira-toriyama-super-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 3 - Akira Toriyama Super Interview",
+      "sourceDescription": "The third of six Daizenshuu interviews with Dragon Ball author Akira Toriyama in which he discusses the anime adaption of his hit manga series.",
+      "questionCount": 25,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 3: TV Animation Part 1",
+        "Akira Toriyama Super Interview",
+        "3rd Round — A Fusion with Animation"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "daizenshuu-4-akira-toriyama-super-interview",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-akira-toriyama-super-interview/",
+      "title": "Akira Toriyama Super Interview — 4 th Round",
+      "publication": "Dragon Ball Daizenshuu 4: World Guide (pp. 164-169)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "04 October 1995",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Setting",
+        "World"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-4-akira-toriyama-super-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 4 - Akira Toriyama Super Interview",
+      "sourceDescription": "The fourth of six Daizenshuu interviews with Dragon Ball author Akira Toriyama in which he discusses everything that makes up the Dragon World.",
+      "questionCount": 15,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 4: World Guide",
+        "Akira Toriyama Super Interview",
+        "4th Round — A World Where Anything Can Happen"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "daizenshuu-5-akira-toriyama-super-interview",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-5-akira-toriyama-super-interview/",
+      "title": "Akira Toriyama Super Interview — 5 th Round",
+      "publication": "Dragon Ball Daizenshuu 5: TV Animation Part 2 (pp. 206-210)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "04 November 1995",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball Z",
+        "Animation",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-5-akira-toriyama-super-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 5 - Akira Toriyama Super Interview",
+      "sourceDescription": "The fifth of six Daizenshuu interviews with Dragon Ball author Akira Toriyama in which he discusses the anime adaption of his hit manga series.",
+      "questionCount": 27,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 5: TV Animation Part 2",
+        "Akira Toriyama Super Interview",
+        "5th Round — Pushing the Possibilities"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "daizenshuu-6-akira-toriyama-super-interview",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-6-akira-toriyama-super-interview/",
+      "title": "Akira Toriyama Super Interview — 6 th Round",
+      "publication": "Dragon Ball Daizenshuu 6: Movies & TV Specials (pp. 212-216)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "04 December 1995",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Anime)",
+        "Dragon Ball Z",
+        "Characters",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-6-akira-toriyama-super-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 6 - Akira Toriyama Super Interview",
+      "sourceDescription": "The final Daizenshuu interview with Dragon Ball author Akira Toriyama in which he discusses the franchise's theatrical films",
+      "questionCount": 27,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 6: Movies & TV Specials",
+        "Akira Toriyama Super Interview",
+        "6th Round — Origins, and Onward to the Future…"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "daizenshuu-7-shenlong-times",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-shenlong-times/",
+      "title": "Shenlong Times — 7 th Issue",
+      "publication": "Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia",
+      "publicationType": "Insert Pamphlet",
+      "format": "Interview",
+      "publicationDate": "05 February 1996",
+      "participants": [
+        "Akira Toriyama",
+        "Masakazu Katsura"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Dragon Ball GT",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-7-shenlong-times.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 7 - Shenlong Times",
+      "sourceDescription": "English translation of the special 'Shenlong Times' booklet included with the seventh Dragon Ball Daizenshuu volume, 'Large Encyclopedia'",
+      "questionCount": 8,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu Volume 7: Dragon Ball Large Encyclopedia",
+        "Shenlong Times — 7th Issue",
+        "Shenlong Times Final Issue Commemorative “What’s in Store Up Ahead” Interview",
+        "Akira Toriyama’s “Me These Days”",
+        "I Love Dragon Ball #7: Masakazu Katsura- san",
+        "There’s Still More DB News ― Issue #7"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "wired-japan-1997-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/wired-japan-1997-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview",
+      "publication": "WIRED Japan, January 1997 (“Issue 3.01”; pp. 62-63)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "21 November 1996",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Manga",
+        "Production",
+        "Video Games"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/wired-japan-1997-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | WIRED Japan 1997: Akira Toriyama interview",
+      "sourceDescription": "English translation of Akira Toriyama's interview with WIRED Japan from the magazine's 1997 #1 issue",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "WIRED Japan 1997 #1: “Issue 3.01” (21 November 1996)",
+        "Akira Toriyama Interview",
+        "Thus Spake Dr. Slump"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview/",
+      "title": "Masako Nozawa Long Interview",
+      "publication": "Dragon Ball GT: Perfect File Vol. 2 (pp. 82-86)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "17 December 1997",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball GT"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball GT Perfect File 2: Masako Nozawa Long Interview",
+      "sourceDescription": "English translation of the Masako Nozawa Long Interview from the second Dragon Ball GT Perfect File book released in 1997",
+      "questionCount": 20,
+      "sectionHeadings": [
+        "Dragon Ball GT Perfect File 2",
+        "Masako Nozawa Long Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "son-goku-densetsu-toriyama-x-nakatsuru",
+      "url": "https://www.kanzenshuu.com/translations/son-goku-densetsu-toriyama-x-nakatsuru/",
+      "title": "Akira Toriyama × Katsuyoshi Nakatsuru",
+      "publication": "TV Anime Guide: Dragon Ball Z Son Goku Densetsu (pp. 90-102)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "03 October 2003",
+      "participants": [
+        "Akira Toriyama",
+        "Katsuyoshi Nakatsuru"
+      ],
+      "topics": [
+        "Dragon Ball Z",
+        "Dragon Ball GT",
+        "Animation",
+        "Characters",
+        "Kanzenban",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/son-goku-densetsu-toriyama-x-nakatsuru.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Son Goku Densetsu - Toriyama x Nakatsuru",
+      "sourceDescription": "An interview from \"Son Goku Densetsu\" with Dragon Ball author Akira Toriyama and series animator/character designer Katsuyoshi Nakatsuru.",
+      "questionCount": 32,
+      "sectionHeadings": [
+        "TV Anime Guide: Dragon Ball Z Son Goku Densetsu",
+        "Akira Toriyama × Katsuyoshi Nakatsuru"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-landmark-dragon-ball-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-dragon-ball-toriyama/",
+      "title": "Akira Toriyama On the Road",
+      "publication": "Kanzenban Official Guide: Dragon Ball Landmark (pp. 146-157)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "19 December 2003",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Jackie Chan",
+        "Bruce Lee"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-landmark-dragon-ball-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Landmark: Dragon Ball and Akira Toriyama",
+      "sourceDescription": "English translation of Akira Toriyama's first (of two) look-backs on his career and Dragon Ball's serialization in 'Dragon Ball: Landmark'",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Kanzenban Official Guide: Dragon Ball Landmark",
+        "The path to Dragon Ball’s birth will now be revealed!!",
+        "AKIRA TORIYAMA ON THE ROAD"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-forever-dragon-ball-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
+      "title": "Akira Toriyama with Dragon Ball",
+      "publication": "Kanzenban Official Guide: Dragon Ball Forever (pp. 146-155)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "30 April 2004",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Characters",
+        "Kanzenban",
+        "Manga",
+        "Setting"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-forever-dragon-ball-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Forever: Dragon Ball and Akira Toriyama",
+      "sourceDescription": "English translation of Akira Toriyama's second (of two) look-backs on his career and Dragon Ball's serialization in 'Dragon Ball: Forever'",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Kanzenban Official Guide: Dragon Ball Forever",
+        "Secrets from the making of Dragon Ball can now be told!!",
+        "AKIRA TORIYAMA WITH DRAGON BALL"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "tenkaichi-densetsu-toriyama-koyama-nozawa",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
+      "title": "The World’s Best Round-Table Discussion",
+      "publication": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 80-91)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "02 July 2004",
+      "participants": [
+        "Akira Toriyama",
+        "Takao Koyama",
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball (Anime)",
+        "Dragon Ball Z",
+        "Characters",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/tenkaichi-densetsu-toriyama-koyama-nozawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Tenka'ichi Densetsu - Toriyama x Koyama x Nozawa",
+      "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Dragon Ball author Akira Toriyama, series organizer Takao Koyama, and Son Goku voice actress Masako Nozawa.",
+      "questionCount": 29,
+      "sectionHeadings": [
+        "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+        "The World’s Best Round-Table Discussion",
+        "Akira Toriyama × Takao Koyama × Masako Nozawa"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview/",
+      "title": "GT Back Then",
+      "publication": "Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book (pp. 44-49)",
+      "publicationType": "Booklet",
+      "format": "Interview",
+      "publicationDate": "15 June 2005",
+      "participants": [
+        "Kōzō Morishita"
+      ],
+      "topics": [
+        "Dragon Ball GT",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball GT Dragon Book: GT Back Then (Kōzō Morishita Interview)",
+      "sourceDescription": "English translation of the Kōzō Morishita 'GT Back Then' interview from the 2006 Dragon Ball GT Dragon Box DVD release in Japan",
+      "questionCount": 23,
+      "sectionHeadings": [
+        "Dragon Ball GT DVD Box: Dragon Box GT “Dragon Book” (15 June 2005)",
+        "GT Back Then (Kōzō Morishita Interview)"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "jump-sq-may-2008-akira-toriyama-masakazu-katsura",
+      "url": "https://www.kanzenshuu.com/translations/jump-sq-may-2008-akira-toriyama-masakazu-katsura/",
+      "title": "Akira Toriyama × Masakazu Katsura",
+      "publication": "Jump SQ, May 2008 (pp. 8-10, 267-269)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "02 April 2008",
+      "participants": [
+        "Akira Toriyama",
+        "Masakazu Katsura"
+      ],
+      "topics": [
+        "Non-Dragon Ball",
+        "Galactic Patrol"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/jump-sq-may-2008-akira-toriyama-masakazu-katsura.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Jump SQ (May 2008): Akira Toriyama & Masakazu Katsura",
+      "sourceDescription": "English translation of the 'Toriyama x Katsura' interview session from the May 2008 issue of 'Jump SQ' in Japan",
+      "questionCount": 27,
+      "sectionHeadings": [
+        "Jump SQ May 2008 (02 April 2008)",
+        "“Akira Toriyama × Masakazu Katsura”",
+        "Sachie-chan GOOD!! 1 Collaboration One-Shot Talk"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "kai_book-masako_nozawa",
+      "url": "https://www.kanzenshuu.com/translations/kai_book-masako_nozawa/",
+      "title": "Cast Interview #1: Masako Nozawa (Son Goku, et al.)",
+      "publication": "Dragon Ball Kai Blu-ray Box #1 — Dragon Book (pp. 7-8)",
+      "publicationType": "Booklet",
+      "format": "Interview",
+      "publicationDate": "23 October 2009",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball Kai",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/kai_book-masako_nozawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Ball Kai Dragon Book - Masako Nozawa - Kanzenshuu",
+      "sourceDescription": null,
+      "questionCount": 5,
+      "sectionHeadings": [
+        "Dragon Ball Kai Blu-ray Box #01 – Dragon Book",
+        "Cast Interview #1",
+        "Masako Nozawa, voice of Son Goku and Son Gohan"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "young-jump-2010-toriyama-x-katsura",
+      "url": "https://www.kanzenshuu.com/translations/young-jump-2010-toriyama-x-katsura/",
+      "title": "Jiya “Super-Deluxe Talk” — Toriyama × Katsura",
+      "publication": "Young Jump, 2010 #07 (pp. 400-405)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "14 January 2010",
+      "participants": [
+        "Akira Toriyama",
+        "Masakazu Katsura"
+      ],
+      "topics": [
+        "Non-Dragon Ball",
+        "Galactic Patrol",
+        "Jiya"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/young-jump-2010-toriyama-x-katsura.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Young Jump (2010 #07): Toriyama x Katsura",
+      "sourceDescription": "English translation of the 'Toriyama x Katsura' interview session from a January 2010 issue of 'Young Jump' magazine in Japan",
+      "questionCount": 20,
+      "sectionHeadings": [
+        "Young Jump 2010 #07 (14 January 2010)",
+        "“Toriyama x Katsura”"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "kai_book-mayumi_tanaka",
+      "url": "https://www.kanzenshuu.com/translations/kai_book-mayumi_tanaka/",
+      "title": "Cast Interview #2: Mayumi Tanaka (Kuririn)",
+      "publication": "Dragon Ball Kai Blu-ray Box #2 — Dragon Book (pp. 5-6)",
+      "publicationType": "Booklet",
+      "format": "Interview",
+      "publicationDate": "19 February 2010",
+      "participants": [
+        "Mayumi Tanaka"
+      ],
+      "topics": [
+        "Dragon Ball Kai",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/kai_book-mayumi_tanaka.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Ball Kai Dragon Book - Mayumi Tanaka - Kanzenshuu",
+      "sourceDescription": null,
+      "questionCount": 4,
+      "sectionHeadings": [
+        "Dragon Ball Kai Blu-ray Box #02 – Dragon Book",
+        "Cast Interview #2",
+        "Mayumi Tanaka, voice of Kuririn"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "golden_warrior-minoru_maeda",
+      "url": "https://www.kanzenshuu.com/translations/golden_warrior-minoru_maeda/",
+      "title": "Dragon Ball Back Then Vol. 1",
+      "publication": "Dragon Ball Anime Illustration Collection: The Golden Warrior (pp. 20-21)",
+      "publicationType": "Artbook",
+      "format": "Interview",
+      "publicationDate": "16 April 2010",
+      "participants": [
+        "Minoru Maeda"
+      ],
+      "topics": [
+        "Dragon Ball (Anime)",
+        "Dragon Ball Z",
+        "Animation",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/golden_warrior-minoru_maeda.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | The Golden Warrior - Minoru Maeda Interview",
+      "sourceDescription": "An interview with Dragon Ball animator and character designer Minoru Maeda about his designs and influences.",
+      "questionCount": 11,
+      "sectionHeadings": [
+        "Dragon Ball Anime Illustration Collection: The Golden Warrior",
+        "Dragon Ball Back Then Vol. 1",
+        "Interview with “Dragon Ball” & “Dragon Ball Z” character designer Minoru Maeda"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "golden_warrior-tadayoshi_yamamuro",
+      "url": "https://www.kanzenshuu.com/translations/golden_warrior-tadayoshi_yamamuro/",
+      "title": "Dragon Ball Back Then Vol. 2",
+      "publication": "Dragon Ball Anime Illustration Collection: The Golden Warrior (pp. 50-51)",
+      "publicationType": "Artbook",
+      "format": "Interview",
+      "publicationDate": "16 April 2010",
+      "participants": [
+        "Tadayoshi Yamamuro"
+      ],
+      "topics": [
+        "Dragon Ball Z",
+        "Animation",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/golden_warrior-tadayoshi_yamamuro.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | The Golden Warrior - Tadayoshi Yamamuro Interview",
+      "sourceDescription": "An interview with Dragon Ball animator and character designer Tadayoshi Yamamuro about his designs and influences.",
+      "questionCount": 12,
+      "sectionHeadings": [
+        "Dragon Ball Anime Illustration Collection: The Golden Warrior",
+        "Dragon Ball Back Then Vol. 2",
+        "Interview with “Dragon Ball Z” character designer Tadayoshi Yamamuro"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "golden_warrior-katsuyoshi_nakatsuru",
+      "url": "https://www.kanzenshuu.com/translations/golden_warrior-katsuyoshi_nakatsuru/",
+      "title": "Dragon Ball Back Then Vol. 3",
+      "publication": "Dragon Ball Anime Illustration Collection: The Golden Warrior (pp. 78-79)",
+      "publicationType": "Artbook",
+      "format": "Interview",
+      "publicationDate": "16 April 2010",
+      "participants": [
+        "Katsuyoshi Nakatsuru"
+      ],
+      "topics": [
+        "Dragon Ball Z",
+        "Dragon Ball GT",
+        "Animation",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/golden_warrior-katsuyoshi_nakatsuru.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | The Golden Warrior - Katsuyoshi Nakatsuru Interview",
+      "sourceDescription": "An interview with Dragon Ball animator and character designer Katsuyoshi Nakatsuru about his designs and influences.",
+      "questionCount": 12,
+      "sectionHeadings": [
+        "Dragon Ball Anime Illustration Collection: The Golden Warrior",
+        "Dragon Ball Back Then Vol. 3",
+        "Interview with “Dragon Ball Z” & “Dragon Ball GT” character designer Katsuyoshi Nakatsuru"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chozenshu-1-we-asked-akira-toriyama-2013",
+      "url": "https://www.kanzenshuu.com/translations/chozenshu-1-we-asked-akira-toriyama-2013/",
+      "title": "We Asked Akira Toriyama! 2013",
+      "publication": "Dragon Ball Chōzenshū 1: Story & World Guide (pp. 28-31)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "05 February 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Characters",
+        "Production",
+        "Setting",
+        "World"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chozenshu-1-we-asked-akira-toriyama-2013.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chōzenshū 1 – We Asked Akira Toriyama! 2013",
+      "sourceDescription": "The first Chōzenshū Q&A session with Dragon Ball original author Akira Toriyama",
+      "questionCount": 10,
+      "sectionHeadings": [
+        "Dragon Ball Chōzenshū 1: Story & World Guide",
+        "We Asked Akira Toriyama! 2013",
+        "Character Section",
+        "New World Section",
+        "World Section"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-april-2013-triple-z-talk",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-april-2013-triple-z-talk/",
+      "title": "ZZZ (Triple-Z) Talk",
+      "publication": "V-Jump, April 2013 (pp. 160-162)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "21 February 2013",
+      "participants": [
+        "Masako Nozawa",
+        "Shōko Nakagawa",
+        "Kaori Matsumoto"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-april-2013-triple-z-talk.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | V-Jump April 2013: Triple-Z Talk",
+      "sourceDescription": "Translation of a three-way interview with Masako Nozawa, Shoko Nakagawa, and Kaori Matsumoto regarding the film Battle of Gods from V-Jump 2013 #4",
+      "questionCount": 13,
+      "sectionHeadings": [
+        "V-Jump , April 2013 (21 February 2013)",
+        "Up Close and Personal with Three Ultimate Performers!!",
+        "ZZZ (Triple-Z) Talk"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "okstars-interview-vol-246-masahiro-hosoda",
+      "url": "https://www.kanzenshuu.com/translations/okstars-interview-vol-246-masahiro-hosoda/",
+      "title": "Animation Director: Masahiro Hosoda",
+      "publication": "OKStars Interview, Vol. 246",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "01 March 2013",
+      "participants": [
+        "Masahiro Hosoda"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/okstars-interview-vol-246-masahiro-hosoda.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | OKStars Interview (Vol. 246) - Masahiro Hosoda",
+      "sourceDescription": "Interview with director Masahiro Hosoda from Vol. 246 of OKStars in support of the upcoming film Dragon Ball Z: Battle of Gods",
+      "questionCount": 8,
+      "sectionHeadings": [
+        "OKStars Interview , Vol. 246: Anime Director",
+        "Masahiro Hosoda"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "okstars-interview-vol-249-tadayoshi-yamamuro",
+      "url": "https://www.kanzenshuu.com/translations/okstars-interview-vol-249-tadayoshi-yamamuro/",
+      "title": "Animation Supervisor: Tadayoshi Yamamuro",
+      "publication": "OKStars Interview, Vol. 249",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "01 March 2013",
+      "participants": [
+        "Tadayoshi Yamamuro"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/okstars-interview-vol-249-tadayoshi-yamamuro.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | OKStars Interview (Vol. 249) - Tadayoshi Yamamuro",
+      "sourceDescription": "Interview with animation supervisor Tadayoshi Yamamuro from Vol. 249 of OKStars in support of the upcoming film 'Dragon Ball Z: Battle of Gods'",
+      "questionCount": 9,
+      "sectionHeadings": [
+        "OKStars Interview , Vol. 249: Animation Supervisor",
+        "Tadayoshi Yamamuro"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "seiyu-animedia-april-2013-masako-nozawa-interview",
+      "url": "https://www.kanzenshuu.com/translations/seiyu-animedia-april-2013-masako-nozawa-interview/",
+      "title": "Masako Nozawa Interview",
+      "publication": "Seiyū Animedia, April 2013 (p. 63)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "09 March 2013",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/seiyu-animedia-april-2013-masako-nozawa-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Seiyū Animedia (April 2013): Masako Nozawa Interview",
+      "sourceDescription": "Interview with Masako Nozawa in support of the film Dragon Ball Z: Battle of Gods from the April 2013 issue of Seiyū Animedia",
+      "questionCount": 9,
+      "sectionHeadings": [
+        "Seiyū Animedia , April 2013 Issue (09 March 2013)",
+        "Masako Nozawa"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "animage-april-2013-dbz-revived-feature",
+      "url": "https://www.kanzenshuu.com/translations/animage-april-2013-dbz-revived-feature/",
+      "title": "“DBZ, Revived!” Feature",
+      "publication": "Animage, April 2013 (pp. 108-109)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "10 March 2013",
+      "participants": [
+        "Masako Nozawa",
+        "FLOW"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Music",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/animage-april-2013-dbz-revived-feature.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Animage (April 2013): \"DBZ, Revived!\" Feature",
+      "sourceDescription": "Interview with Masako Nozawa and quotes from FLOW from the April 2013 issue of Animage regarding the upcoming film Dragon Ball Z: Battle of Gods",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "Animage , April 2013 Issue (10 March 2013)",
+        "“DBZ, Revived!” Feature"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "ure-pia-soken-yusuke-watanabe",
+      "url": "https://www.kanzenshuu.com/translations/ure-pia-soken-yusuke-watanabe/",
+      "title": "Yūsuke Watanabe Interview",
+      "publication": "Ure-Pia Sōken",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "13 March 2013",
+      "participants": [
+        "Yūsuke Watanabe"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/ure-pia-soken-yusuke-watanabe.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Ure-Pia Sōken: Yūsuke Watanabe",
+      "sourceDescription": "Feature on and interview with Dragon Ball Z: Battle of Gods scriptwriter Yūsuke Watanabe from Ure-Pia Sōken in March 2013",
+      "questionCount": 1,
+      "sectionHeadings": [
+        "Ure-Pia Sōken (13 March 2013)",
+        "Yūsuke Watanabe"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "cddl-data-marchapril-2013-flow-interview",
+      "url": "https://www.kanzenshuu.com/translations/cddl-data-marchapril-2013-flow-interview/",
+      "title": "FLOW Interview",
+      "publication": "CD&DL Data, March/April 2013 (pp. 32-34)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "14 March 2013",
+      "participants": [
+        "FLOW"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Music"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/cddl-data-marchapril-2013-flow-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | CD&DL Data (March/April 2013) - FLOW Interview",
+      "sourceDescription": "Interview with the band FLOW from the March/April 2013 issue of CD&DL Data magazine in Japan about the film Dragon Ball Z: Battle of Gods",
+      "questionCount": 12,
+      "sectionHeadings": [
+        "CD&DL Data , March/April 2013 Issue",
+        "FLOW Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "animate-tv-masako-nozawa-interview",
+      "url": "https://www.kanzenshuu.com/translations/animate-tv-masako-nozawa-interview/",
+      "title": "Masako Nozawa Interview",
+      "publication": "animate Times",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "15 March 2013",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/animate-tv-masako-nozawa-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Animate.tv: Masako Nozawa Interview",
+      "sourceDescription": "Interview with voice actress Masako Nozawa with Animate.tv regarding her work on the film Dragon Ball Z: Battle of Gods",
+      "questionCount": 11,
+      "sectionHeadings": [
+        "Animate.tv",
+        "Masako Nozawa Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dvd-blu-ray-vision-april-2013-battle-of-gods",
+      "url": "https://www.kanzenshuu.com/translations/dvd-blu-ray-vision-april-2013-battle-of-gods/",
+      "title": "FLOW / Masako Nozawa & Yūsuke Watanabe Interviews",
+      "publication": "DVD & Blu-ray Vision, April 2013 (pp. 79-81)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "19 March 2013",
+      "participants": [
+        "Masako Nozawa",
+        "FLOW",
+        "Yūsuke Watanabe"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Music",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dvd-blu-ray-vision-april-2013-battle-of-gods.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | DVD & Blu-ray Vision: FLOW, Masako Nozawa, Yūsuke Watanabe",
+      "sourceDescription": "Interviews with the band FLOW, voice actress Masako Nozawa, and scriptwriter Yūsuke Watanabe from the April 2013 issue of DVD & Blu-ray Vision magazine in Japan",
+      "questionCount": 51,
+      "sectionHeadings": [
+        "DVD & Blu-ray Vision , April 2013 Issue",
+        "FLOW, Masako Nozawa, Yūsuke Watanabe"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "otonafami-may-2013-issue-masako-nozawa-interview",
+      "url": "https://www.kanzenshuu.com/translations/otonafami-may-2013-issue-masako-nozawa-interview/",
+      "title": "Masako Nozawa Interviews",
+      "publication": "OtonaFami, May 2013 (p. 92)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "19 March 2013",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/otonafami-may-2013-issue-masako-nozawa-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | OtonaFami (May 2013 Issue): Masako Nozawa Interview",
+      "sourceDescription": "English translation of an interview with Masako Nozawa (Son Goku, et al.) from the May 2013 issue of 'Otona Fami' in Japan",
+      "questionCount": 8,
+      "sectionHeadings": [
+        "OtonaFami, May 2013 Issue",
+        "Masako Nozawa Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-may-2013-akira-toriyama-special-interview",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2013-akira-toriyama-special-interview/",
+      "title": "Akira Toriyama Special Interview",
+      "publication": "V-Jump, May 2013 (pp. 34-35)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "21 March 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Battle of Gods"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2013-akira-toriyama-special-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Kanzenshuu | Translations | V-Jump (May 2013) - Akira Toriyama Special Interview",
+      "sourceDescription": "Interview with original manga author Akira Toriyama about the new film Dragon Ball Z: Battle of Gods from the May 2013 issue of V-Jump",
+      "questionCount": 29,
+      "sectionHeadings": [
+        "V-Jump , May 2013 (21 March 2013)",
+        "Akira Toriyama Special Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-may-2013-naho-ooishi-toyotaro",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2013-naho-ooishi-toyotaro/",
+      "title": "Double Dragon Talk",
+      "publication": "V-Jump, May 2013 (pp. 81-83)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "21 March 2013",
+      "participants": [
+        "Naho Ooishi",
+        "Toyotarō"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2013-naho-ooishi-toyotaro.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Double Dragon Talk (Ooishi Naho x Toyotarō)",
+      "sourceDescription": null,
+      "questionCount": 7,
+      "sectionHeadings": [
+        "V-Jump , May 2013 (21 March 2013)",
+        "DOUBLE DRAGON TALK",
+        "Dragon Ball SD , serialized in Saikyō Jump!! — NAHO OOISHI Dragon Ball Heroes: Victory Mission — TOYOTARŌ"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "bog-official-movie-guide-masako-nozawa",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-masako-nozawa/",
+      "title": "Masako Nozawa Interview",
+      "publication": "“Dragon Ball Z: Battle of Gods” Official Movie Guide (pp. 34-36)",
+      "publicationType": "Mook",
+      "format": "Interview",
+      "publicationDate": "21 March 2013",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/bog-official-movie-guide-masako-nozawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Battle of Gods\" Official Movie Guide: Masako Nozawa Interview",
+      "sourceDescription": null,
+      "questionCount": 16,
+      "sectionHeadings": [
+        "Dragon Ball Z: Battle of Gods Official Movie Guide",
+        "Masako Nozawa Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "bog-official-movie-guide-masahiro-hosoda",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-masahiro-hosoda/",
+      "title": "Director Masahiro Hosoda Interview",
+      "publication": "“Dragon Ball Z: Battle of Gods” Official Movie Guide (p. 41)",
+      "publicationType": "Mook",
+      "format": "Interview",
+      "publicationDate": "21 March 2013",
+      "participants": [
+        "Masahiro Hosoda"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Staff",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/bog-official-movie-guide-masahiro-hosoda.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Battle of Gods\" Official Movie Guide: Masahiro Hosoda Interview",
+      "sourceDescription": null,
+      "questionCount": 7,
+      "sectionHeadings": [
+        "Dragon Ball Z: Battle of Gods Official Movie Guide",
+        "Director Masahiro Hosoda Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "bog-official-movie-guide-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-akira-toriyama/",
+      "title": "Akira Toriyama Special Interview",
+      "publication": "“Dragon Ball Z: Battle of Gods” Official Movie Guide (pp. 43-44)",
+      "publicationType": "Mook",
+      "format": "Interview",
+      "publicationDate": "21 March 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/bog-official-movie-guide-akira-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Battle of Gods\" Official Movie Guide: Akira Toriyama Interview",
+      "sourceDescription": null,
+      "questionCount": 13,
+      "sectionHeadings": [
+        "Dragon Ball Z: Battle of Gods Official Movie Guide",
+        "Akira Toriyama Special Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "getnavi-may-2013-the-top-notch-cast-and-staff-talk",
+      "url": "https://www.kanzenshuu.com/translations/getnavi-may-2013-the-top-notch-cast-and-staff-talk/",
+      "title": "The Top-Notch Cast and Staff Talk!",
+      "publication": "GetNavi, May 2013 (Insert Booklet; pp. 4-5)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "23 March 2013",
+      "participants": [
+        "Masako Nozawa",
+        "FLOW",
+        "Yūsuke Watanabe"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Music",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/getnavi-may-2013-the-top-notch-cast-and-staff-talk.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | GetNavi (May 2013): The Top-Notch Cast and Staff Talk!",
+      "sourceDescription": "Interview with Masako Nozawa, Yūsuke Watanabe, and the band FLOW in support of the film 'Dragon Ball Z: Battle of Gods' from the May 2013 issue of GetNavi",
+      "questionCount": 13,
+      "sectionHeadings": [
+        "GetNavi , May 2013 Issue (23 March 2013)",
+        "The Top-Notch Cast and Staff Talk!",
+        "The appeal of the latest theatrical release (The first in 17 years)"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "akira-toriyama-masako-nozawa-special-talk",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-masako-nozawa-special-talk/",
+      "title": "Akira Toriyama & Masako Nozawa Special Talk",
+      "publication": "“Akira Toriyama: The World of Dragon Ball” 2013 Exhibit Display",
+      "publicationType": "TV Program",
+      "format": "Interview",
+      "publicationDate": "27 March 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Characters"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/akira-toriyama-masako-nozawa-special-talk.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Akira Toriyama & Masako Nozawa Special Talk",
+      "sourceDescription": "English translation of the special 'Akira Toriyama & Masako Nozawa Special Talk' from the Japanese 'The World of Akira Toriyama' exhibit",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "The World of Akira Toriyama: Special Exhibit",
+        "Akira Toriyama & Masako Nozawa Special Talk"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "weekly-asahi-masako-nozawa-interview",
+      "url": "https://www.kanzenshuu.com/translations/weekly-asahi-masako-nozawa-interview/",
+      "title": "Mariko’s Guest Collection 659: Masako Nozawa Interview",
+      "publication": "Weekly Asahi, 29 March 2013 (pp. 112-116)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "29 March 2013",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-asahi-masako-nozawa-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Weekly Asahi: Masako Nozawa Interview",
+      "sourceDescription": "English translation of an interview with Masako Nozawa from the Japanese news magazine Weekly Asahi (29 March 2013 issue)",
+      "questionCount": 53,
+      "sectionHeadings": [
+        "Weekly Asahi (29 March 2013)",
+        "Mariko’s Guest Collection 659: Masako Nozawa Interview",
+        "with Mariko Hayashi"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "asahi-shimbun-digital-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/asahi-shimbun-digital-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview",
+      "publication": "Asahi Shimbun Digital",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "30 March 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/asahi-shimbun-digital-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Asahi Shimbun Digital: Akira Toriyama Interview",
+      "sourceDescription": "Interview from Asahi Shimbun Digital with original manga author Akira Toriyama regarding his work on the film Dragon Ball Z: Battle of Gods",
+      "questionCount": 17,
+      "sectionHeadings": [
+        "Asahi Shimbun Digital",
+        "Akira Toriyama Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "official-battle-gods-website-toriyama-x-nakagawa-interview",
+      "url": "https://www.kanzenshuu.com/translations/official-battle-gods-website-toriyama-x-nakagawa-interview/",
+      "title": "Akira Toriyama × Shōko Nakagawa Interview",
+      "publication": "Official “Dragon Ball Z: Battle of Gods” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "03 April 2013",
+      "participants": [
+        "Akira Toriyama",
+        "Shōko Nakagawa"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/official-battle-gods-website-toriyama-x-nakagawa-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Official \"Battle of Gods\" Website: Toriyama x Nakagawa Interview",
+      "sourceDescription": "English translation of joint interview between Akira Toriyama and Shoko Nakagawa from the official 'Battle of Gods' website",
+      "questionCount": 9,
+      "sectionHeadings": [
+        "Official Dragon Ball Z: Battle of Gods Website",
+        "Akira Toriyama × Shōko Nakagawa Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "full-color-comics-freeza-arc-vol-4-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/full-color-comics-freeza-arc-vol-4-akira-toriyama/",
+      "title": "Freeza Arc, Vol. 4: Akira Toriyama Interview / Q&A",
+      "publication": "Dragon Ball Full Color: Freeza Volume #4 (pp. 240-245)",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 April 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Battle of Gods",
+        "Characters",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/full-color-comics-freeza-arc-vol-4-akira-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Full Color Comics: Freeza Arc Vol. 4",
+      "sourceDescription": "English translation of Akira Toriyama interview questions and answers from the 4th volume of the Freeza arc in the Full Color Comics",
+      "questionCount": 12,
+      "sectionHeadings": [
+        "Dragon Ball Full Color Comics: Freeza Arc Vol. 4",
+        "Akira Toriyama"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "full-color-comics-freeza-arc-vol-5-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/full-color-comics-freeza-arc-vol-5-akira-toriyama/",
+      "title": "Freeza Arc, Vol. 5: Akira Toriyama Interview / Q&A",
+      "publication": "Dragon Ball Full Color: Freeza Volume #5 (pp. 240-245)",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 April 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Battle of Gods",
+        "Characters",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/full-color-comics-freeza-arc-vol-5-akira-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Full Color Comics: Freeza Arc Vol. 5 - Akira Toriyama",
+      "sourceDescription": "English translation of Akira Toriyama interview questions and answers from the 5th volume of the Freeza arc in the Full Color Comics",
+      "questionCount": 11,
+      "sectionHeadings": [
+        "Dragon Ball Full Color Comics: Freeza Arc Vol. 5",
+        "Akira Toriyama"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chogashu-akira-toriyama-super-interview-latest-edition",
+      "url": "https://www.kanzenshuu.com/translations/chogashu-akira-toriyama-super-interview-latest-edition/",
+      "title": "Akira Toriyama Super Interview: Latest Edition",
+      "publication": "Dragon Ball Chōgashū: Super Art Collection (pp. 224-225)",
+      "publicationType": "Artbook",
+      "format": "Interview",
+      "publicationDate": "09 May 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Dragon Ball GT",
+        "Battle of Gods",
+        "Characters",
+        "Kanzenban",
+        "Neko Majin"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chogashu-akira-toriyama-super-interview-latest-edition.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chōgashū: Akira Toriyama Super Interview: Latest Edition",
+      "sourceDescription": "English translation of new interview with original Dragon Ball manga author Akira Toriyama included in 2013 Chōgashū (Super Art Collection)",
+      "questionCount": 10,
+      "sectionHeadings": [
+        "Dragon Ball Chōgashū: Super Art Collection",
+        "Akira Toriyama Super Interview",
+        "Latest Edition"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chozenshu-4-masako-nozawa",
+      "url": "https://www.kanzenshuu.com/translations/chozenshu-4-masako-nozawa/",
+      "title": "Masako Nozawa Looks Back on Dragon Ball!!",
+      "publication": "Dragon Ball Chōzenshū 4: Dragon Ball Super Encyclopedia (pp. 340-345)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "09 May 2013",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball (Anime)",
+        "Dragon Ball Z",
+        "Dragon Ball GT",
+        "Dragon Ball Kai",
+        "Battle of Gods",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chozenshu-4-masako-nozawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chōzenshu 4: Masako Nozawa",
+      "sourceDescription": "English translation of Masako Nozawa's interview/monologue from 2013's 'Chōzenshu 4: Dragon Ball Super Encyclopedia'",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Chōzenshu 4: Dragon Ball Super Encyclopedia",
+        "Masako Nozawa Looks Back on Dragon Ball !!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chozenshu-4-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/chozenshu-4-akira-toriyama/",
+      "title": "Akira Toriyama Also Looks Back on Dragon Ball!!",
+      "publication": "Dragon Ball Chōzenshū 4: Dragon Ball Super Encyclopedia (pp. 346-349)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "09 May 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Dragon Ball (Anime)",
+        "Dragon Ball Z",
+        "Dragon Ball GT",
+        "Battle of Gods",
+        "Kanzenban"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chozenshu-4-akira-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chōzenshu 4: Akira Toriyama",
+      "sourceDescription": "English translation of Akira Toriyama's interview from 2013's 'Chōzenshu 4: Dragon Ball Super Encyclopedia'",
+      "questionCount": 17,
+      "sectionHeadings": [
+        "Chōzenshu 4: Dragon Ball Super Encyclopedia",
+        "Akira Toriyama Also Looks Back at Dragon Ball !!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "battle-gods-animanga-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/battle-gods-animanga-akira-toriyama/",
+      "title": "Akira Toriyama Godly Interview",
+      "publication": "“Dragon Ball Z: Battle of Gods” Animation Comic (pp. 350-355)",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 October 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Battle of Gods",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/battle-gods-animanga-akira-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Battle of Gods\" Animanga: Akira Toriyama",
+      "sourceDescription": "English translation of Akira Toriyama's Q&A session from the 'Anime Film Comic' version of the film 'Dragon Ball Z: Battle of Gods'",
+      "questionCount": 17,
+      "sectionHeadings": [
+        "Dragon Ball Z: Battle of Gods Anime Comics",
+        "Akira Toriyama- sensei Godly Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "mens-non-no-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/mens-non-no-akira-toriyama-interview/",
+      "title": "“I Want to Meet That Person” Special: Akira Toriyama",
+      "publication": "Men’s Non-No, January 2014 (pp. 183-187)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "10 December 2013",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Doctor Slump",
+        "Jaco",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/mens-non-no-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Men's Non-No (January 2014): Akira Toriyama Interview",
+      "sourceDescription": "English translation of the 'I Want to Meet That Person' special interview with Akira Toriyama from the January 2014 issue of 'Men's Non-No' magazine in Japan",
+      "questionCount": 27,
+      "sectionHeadings": [
+        "Men’s Non-No , January 2014 Issue (10 December 2013)",
+        "“I Want to Meet That Person” Special",
+        "VOL. 25 / AKIRA TORIYAMA / MANGA ARTIST"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "katsura-akira-premium-talk",
+      "url": "https://www.kanzenshuu.com/translations/katsura-akira-premium-talk/",
+      "title": "Masakazu Katsura & Akira Toriyama — Premium Talk",
+      "publication": "Katsura Akira (pp. 192-201)",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 April 2014",
+      "participants": [
+        "Akira Toriyama",
+        "Masakazu Katsura"
+      ],
+      "topics": [
+        "Non-Dragon Ball",
+        "Galactic Patrol"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/katsura-akira-premium-talk.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Katsura Akira - Premium Talk",
+      "sourceDescription": "English translation of the 'Premium Talk' session from the April 2014 'Katsura Akira' release from Masakazu Katsura and Akira Toriyama",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "Katsura Akira (04 April 2014)",
+        "“Premium Talk”"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview/",
+      "title": "Kōzō Shioya & Unshō Ishizuka Interview",
+      "publication": "V-Jump, June 2014 (pp. 364-365)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "21 April 2014",
+      "participants": [
+        "Unshō Ishizuka",
+        "Kōzō Shioya"
+      ],
+      "topics": [
+        "Dragon Ball Kai",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | V-Jump (June 2014): Kōzō Shioya & Unshō Ishizuka Interview",
+      "sourceDescription": null,
+      "questionCount": 6,
+      "sectionHeadings": [
+        "V-Jump , June 2014 Issue (21 April 2014)",
+        "The Two Other Stars of the “Majin Boo Arc”!",
+        "A Burnished-Silver Talk",
+        "Gleaming With Subtle Refinement!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview",
+      "url": "https://www.kanzenshuu.com/translations/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview/",
+      "title": "Momoiro Clover Z Interview",
+      "publication": "Weekly Shōnen Jump, 2015 #15 (p. 20)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "09 March 2015",
+      "participants": [
+        "Momoka Ariyasu",
+        "Ayaka Sasaki",
+        "Kanako Momota",
+        "Shiori Tamai",
+        "Reni Takagi"
+      ],
+      "topics": [
+        "Resurrection “F”",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Weekly Shōnen Jump (2015 Issue #15): Momoiro Clover Z Interview",
+      "sourceDescription": null,
+      "questionCount": 2,
+      "sectionHeadings": [
+        "Weekly Shōnen Jump , 2015 #15 (09 March 2015)",
+        "Point-Blank Interview with MOMOIRO CLOVER Z, who will be performing the theme song!!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "flying-postman-press-april-2015-ryusei-nakao",
+      "url": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-ryusei-nakao/",
+      "title": "Ryūsei Nakao Interview",
+      "publication": "Flying Postman Press, April 2015 (p. 2)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "20 March 2015",
+      "participants": [
+        "Ryūsei Nakao"
+      ],
+      "topics": [
+        "Resurrection “F”",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-ryusei-nakao.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Flying Postman Press (April 2015): Ryūsei Nakao Interview",
+      "sourceDescription": null,
+      "questionCount": 7,
+      "sectionHeadings": [
+        "Flying Postman Press April 2015 issue (20 March 2015)",
+        "“F” not only stands for “Freeza”, it stands for “fans” too",
+        "Ryūsei Nakao, who has served as the voice of Freeza from the TV anime series all the way up to the present, testifies! What is Freeza’s shocking strength in this new movie—?"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "flying-postman-press-april-2015-norihiro-hayashida",
+      "url": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-norihiro-hayashida/",
+      "title": "Norihiro Hayashida Interview",
+      "publication": "Flying Postman Press, April 2015 (p. 4)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "20 March 2015",
+      "participants": [
+        "Norihiro Hayashida"
+      ],
+      "topics": [
+        "Resurrection “F”",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-norihiro-hayashida.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Flying Postman Press (April 2015): Norihiro Hayashida Interview",
+      "sourceDescription": null,
+      "questionCount": 4,
+      "sectionHeadings": [
+        "Flying Postman Press April 2015 issue (20 March 2015)",
+        "Akira Toriyama- sensei is a truly extraordinary storyteller",
+        "From his experience in the planning stage to his thoughts on the finished movie, Toei Animation producer Norihiro Hayashida discusses the film’s appeal."
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "entermix-may-2015-momoiro-clover-z-interview",
+      "url": "https://www.kanzenshuu.com/translations/entermix-may-2015-momoiro-clover-z-interview/",
+      "title": "Momoiro Clover Z Interview",
+      "publication": "Entermix, May 2015 (pp. 76-77)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "20 March 2015",
+      "participants": [
+        "Momoka Ariyasu",
+        "Ayaka Sasaki",
+        "Kanako Momota",
+        "Shiori Tamai",
+        "Reni Takagi"
+      ],
+      "topics": [
+        "Resurrection “F”",
+        "Music",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-momoiro-clover-z-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Kanzenshuu | Translations | Entermix (May 2015) - Momoiro Clover Z Interview",
+      "sourceDescription": "English translation of a Momoiro Clover Z interview from the May 2015 issue of Entermix in Japan discussing 'Dragon Ball Z: Revival of F'",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "Entermix , May 2015 Issue (20 March 2015)",
+        "Momoiro Clover Z Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "entermix-may-2015-ryusei-nakao-interview",
+      "url": "https://www.kanzenshuu.com/translations/entermix-may-2015-ryusei-nakao-interview/",
+      "title": "Ryūsei Nakao Interview",
+      "publication": "Entermix, May 2015 (p. 78)",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "20 March 2015",
+      "participants": [
+        "Ryūsei Nakao"
+      ],
+      "topics": [
+        "Resurrection “F”",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-ryusei-nakao-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Kanzenshuu | Translations | Entermix (May 2015) - Ryūsei Nakao Interview",
+      "sourceDescription": "English translation of a Ryūsei Nakao interview from the May 2015 issue of Entermix in Japan discussing 'Dragon Ball Z: Revival of F'",
+      "questionCount": 5,
+      "sectionHeadings": [
+        "Entermix , May 2015 Issue (20 March 2015)",
+        "Ryūsei Nakao Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-may-2015-momoiro-clover-z",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2015-momoiro-clover-z/",
+      "title": "Momoiro Clover Z Interview",
+      "publication": "V-Jump, May 2015 (p. 9)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "20 March 2015",
+      "participants": [
+        "Momoka Ariyasu",
+        "Ayaka Sasaki",
+        "Kanako Momota",
+        "Shiori Tamai",
+        "Reni Takagi"
+      ],
+      "topics": [
+        "Resurrection “F”",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2015-momoiro-clover-z.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Kanzenshuu | Translations | V-Jump May 2015: Momoiro Clover Z Interview",
+      "sourceDescription": "English translation of an interview with Momoiro Clover Z regarding the film 'Dragon Ball Z: Revival of F' from the May 2015 issue of V-Jump",
+      "questionCount": 11,
+      "sectionHeadings": [
+        "V-Jump , May 2015 Issue (20 March 2015)",
+        "MomoClo make their first V-appearance!!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-june-2015-ryusei-nakao-interview",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-june-2015-ryusei-nakao-interview/",
+      "title": "Ryūsei Nakao Interview",
+      "publication": "V-Jump, June 2015 (pp. 332-333)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "21 April 2015",
+      "participants": [
+        "Ryūsei Nakao"
+      ],
+      "topics": [
+        "Resurrection “F”",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2015-ryusei-nakao-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Kanzenshuu | Translations | V-Jump (May 2013) - Akira Toriyama Special Interview",
+      "sourceDescription": "Interview with original manga author Akira Toriyama about the new film Dragon Ball Z: Battle of Gods from the May 2013 issue of V-Jump",
+      "questionCount": 11,
+      "sectionHeadings": [
+        "V-Jump , June 2015 Issue (21 April 2015)",
+        "Ryūsei Nakao Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-history-book-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-history-book-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview: Dragon Ball and Akira Toriyama",
+      "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 88-93)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 January 2016",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "30th Anniversary"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-history-book-akira-toriyama-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Ball “Super History Book” – Akira Toriyama Interview - Kanzenshuu",
+      "sourceDescription": "English translation of the Akira Toriyama interview from the 2016 Dragon Ball 30th Anniversary 'Super History Book' in Japan",
+      "questionCount": 40,
+      "sectionHeadings": [
+        "Dragon Ball 30th Anniversary “Super History Book” (21 January 2016)",
+        "Akira Toriyama Interview: Dragon Ball and Akira Toriyama"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-01",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-01/",
+      "title": "Video Games Selection – Pick Up! 01",
+      "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 182-183)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 January 2016",
+      "participants": [
+        "Nobuyuki Tanaka",
+        "Toshihiro Suzuki"
+      ],
+      "topics": [
+        "Video Game",
+        "30th Anniversary"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-01.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Super History Book: Video Games Selection - Pick Up! 01",
+      "sourceDescription": "English translation of the Nintendo Famicom era video game-related interview from Dragon Ball's 30th anniversary Super History Book",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "30th Anniversary: Dragon Ball Chōshishū –Super History Book– (21 January 2016)",
+        "Video Games Selection – Pick Up! 01"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-02",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-02/",
+      "title": "Video Games Selection – Pick Up! 02",
+      "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 184-185)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 January 2016",
+      "participants": [
+        "Toshihiro Suzuki"
+      ],
+      "topics": [
+        "Video Game",
+        "30th Anniversary"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-02.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Super History Book: Video Games Selection - Pick Up! 02",
+      "sourceDescription": "English translation of the Nintendo Super Famicom era video game-related interview from Dragon Ball's 30th anniversary Super History Book",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "30th Anniversary: Dragon Ball Chōshishū –Super History Book– (21 January 2016)",
+        "Video Games Selection – Pick Up! 02"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-03",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-03/",
+      "title": "Video Games Selection – Pick Up! 03",
+      "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 186-187)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 January 2016",
+      "participants": [
+        "Daisuke Uchiyama"
+      ],
+      "topics": [
+        "Video Game",
+        "30th Anniversary"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-03.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Super History Book: Video Games Selection - Pick Up! 03",
+      "sourceDescription": "English translation of the Dragon Ball Z: Budokai era video game-related interview from Dragon Ball's 30th anniversary Super History Book",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "30th Anniversary: Dragon Ball Chōshishū –Super History Book– (21 January 2016)",
+        "Video Games Selection – Pick Up! 03"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-04",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-04/",
+      "title": "Video Games Selection – Pick Up! 04",
+      "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 188-189)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 January 2016",
+      "participants": [
+        "Ryō Mito"
+      ],
+      "topics": [
+        "Video Game",
+        "30th Anniversary"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-04.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Super History Book: Video Games Selection - Pick Up! 04",
+      "sourceDescription": "English translation of the Dragon Ball Z: Sparking! / Budokai Tenkaichi era video game-related interview from Dragon Ball's 30th anniversary Super History Book",
+      "questionCount": 5,
+      "sectionHeadings": [
+        "30th Anniversary: Dragon Ball Chōshishū –Super History Book– (21 January 2016)",
+        "Video Games Selection – Pick Up! 04"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-05",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-05/",
+      "title": "Video Games Selection – Pick Up! 05",
+      "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 190-191)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 January 2016",
+      "participants": [
+        "Masayuki Hirano"
+      ],
+      "topics": [
+        "Video Game",
+        "30th Anniversary"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-05.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Super History Book: Video Games Selection - Pick Up! 05",
+      "sourceDescription": "English translation of the Dragon Ball Xenoverse video game-related interview from Dragon Ball's 30th anniversary Super History Book",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "30th Anniversary: Dragon Ball Chōshishū –Super History Book– (21 January 2016)",
+        "Video Games Selection – Pick Up! 05"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version/",
+      "title": "Tori-Toyo Free Talk (Book Version)",
+      "publication": "Dragon Ball Super (Manga) Volume 1",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 April 2016",
+      "participants": [
+        "Akira Toriyama",
+        "Toyotarō"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Dragon Ball Super"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super\" Manga Vol. 1 Tori-Toyo Interview (Book Version)",
+      "sourceDescription": "English translation of the interview with Akira Toriyama and Toyotaro from Shueisha's first volume of 'Dragon Ball Super' manga in Japan",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "Dragon Ball Super Volume 1 (Manga)",
+        "Tori-Toyo Free Talk",
+        "(Book Version)"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version/",
+      "title": "Tori-Toyo Free Talk (Web Version)",
+      "publication": "Shueisha’s Official V-Jump Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "04 April 2016",
+      "participants": [
+        "Akira Toriyama",
+        "Toyotarō"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Manga"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super\" Manga Vol. 1 Tori-Toyo Interview (Web Version)",
+      "sourceDescription": "English translation of the web interview with Akira Toriyama and Toyotaro in conjunctions with the first 'Dragon Ball Super' manga volume",
+      "questionCount": 13,
+      "sectionHeadings": [
+        "Dragon Ball Super Volume 1 (Manga)",
+        "Tori-Toyo Free Talk",
+        "( Web Version )"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc/",
+      "title": "Takeshi Kusao Special Interview",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "10 June 2016",
+      "participants": [
+        "Takeshi Kusao"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super\" Special Interview - Takeshi Kusao",
+      "sourceDescription": "English translation of the interview with Takeshi Kusao leading up to the debut of the 'Future Trunks Arc' in 'Dragon Ball Super'",
+      "questionCount": 5,
+      "sectionHeadings": [
+        "Dragon Ball Super Special Interview",
+        "Trunks — Takeshi Kusao"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1/",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 1)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "22 November 2016",
+      "participants": [
+        "Masako Nozawa",
+        "Mami Koyama"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Super - Goku vs. Arale: Masako Nozawa & Mami Koyama Special Interview (Part 1)",
+      "sourceDescription": "English translation of part 1 of the joint Masako Nozawa (Son Goku, et al.) & Mami Koyama (Arale) interview on the Dragon Ball Super website",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "Dragon Ball Super Official Website",
+        "Goku vs. Arale: Masako Nozawa & Mami Koyama Special Interview (Part 1)"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2/",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 2)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "22 November 2016",
+      "participants": [
+        "Masako Nozawa",
+        "Mami Koyama"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Super - Goku vs. Arale: Masako Nozawa & Mami Koyama Special Interview (Part 2)",
+      "sourceDescription": "English translation of part 2 of the joint Masako Nozawa (Son Goku, et al.) & Mami Koyama (Arale) interview on the Dragon Ball Super website",
+      "questionCount": 2,
+      "sectionHeadings": [
+        "Dragon Ball Super Official Website",
+        "Goku vs. Arale: Masako Nozawa & Mami Koyama Special Interview (Part 2)"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-tori-toyo-free-talk-vol-2",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-tori-toyo-free-talk-vol-2/",
+      "title": "Tori-Toyo Free Talk Vol. 2",
+      "publication": "Dragon Ball Super (Manga) Volume 4",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "02 December 2016",
+      "participants": [
+        "Akira Toriyama",
+        "Toyotarō"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Dragon Ball Super"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-tori-toyo-free-talk-vol-2.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super\" Manga Vol. 4 Tori-Toyo Free Talk Vol. 2",
+      "sourceDescription": "English translation of the interview with Akira Toriyama and Toyotaro from Shueisha's fourth volume of 'Dragon Ball Super' manga in Japan",
+      "questionCount": 5,
+      "sectionHeadings": [
+        "Dragon Ball Super Volume 4 (02 November 2017)",
+        "Tori-Toyo Free Talk Vol. 2"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview",
+      "url": "https://www.kanzenshuu.com/translations/the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview/",
+      "title": "“The Case of Being Reincarnated as Yamcha” Interview",
+      "publication": "BuzzFeed Japan",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "28 January 2017",
+      "participants": [
+        "None"
+      ],
+      "topics": [
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview.html",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": "https://www.buzzfeed.com/jp/tsunehikonishimaki/reincarnation-yamcha",
+      "pageTitle": null,
+      "sourceDescription": null,
+      "questionCount": 0,
+      "sectionHeadings": [],
+      "editorialSummary": null,
+      "reviewStatus": "kanzenshuu-source-unavailable-alternate-primary-source-found"
+    },
+    {
+      "id": "asahi-kazuhiko-torishima-interview-jump-50th-anniversary",
+      "url": "https://www.kanzenshuu.com/translations/asahi-kazuhiko-torishima-interview-jump-50th-anniversary/",
+      "title": "Jump 50th Anniversary: Kazuhiko Torishima Interview",
+      "publication": "Asashi: Aera Dot",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "17 February 2018",
+      "participants": [
+        "Kazuhiko Torishima"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Editors",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/asahi-kazuhiko-torishima-interview-jump-50th-anniversary.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Asahi - Kazuhiko Torishima Interview (Jump 50th Anniversary)",
+      "sourceDescription": "English translation of a February 2018 interview between Asahi's Tarō Kawashima and Kazuhiko Torishima discussing Dragon Ball, Akira Toriyama, Shueisha, and more",
+      "questionCount": 12,
+      "sectionHeadings": [
+        "Asashi: Aera Dot (17 February 2018)",
+        "Jump 50th anniversary: the legendary former editor-in-chief talks about the company politics surrounding Akira Toriyama"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-mayumi-tanaka",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-mayumi-tanaka/",
+      "title": "Final Episode Interview: Mayumi Tanaka (Kuririn)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "19 March 2018",
+      "participants": [
+        "Mayumi Tanaka"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-mayumi-tanaka.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Mayumi Tanaka",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Mayumi Tanaka interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Mayumi Tanaka"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-hikaru-midorikawa",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-hikaru-midorikawa/",
+      "title": "Final Episode Interview: Hikaru Midorikawa (Tenshinhan)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "19 March 2018",
+      "participants": [
+        "Hikaru Midorikawa"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-hikaru-midorikawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Hikaru Midorikawa",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Hikaru Midorikawa interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 2,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Hikaru Midorikawa"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-miki-ito",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-miki-ito/",
+      "title": "Final Episode Interview: Miki Itō (No. 18)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "20 March 2018",
+      "participants": [
+        "Miki Itō"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-miki-ito.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Miki Itō",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Miki Itō interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 2,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Miki Itō"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-masaharu-sato",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-masaharu-sato/",
+      "title": "Final Episode Interview: Masaharu Satō (Kame-Sen’nin)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "20 March 2018",
+      "participants": [
+        "Masaharu Satō"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-masaharu-sato.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Masaharu Satō",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Masaharu Satō interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Masaharu Satō"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-toshio-furukawa",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-toshio-furukawa/",
+      "title": "Final Episode Interview: Toshio Furukawa (Piccolo)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "21 March 2018",
+      "participants": [
+        "Toshio Furukawa"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-toshio-furukawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Toward the Final Episode: Toshio Furukawa",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Toshio Furukawa interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 2,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Toshio Furukawa"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-ryo-horikawa",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-ryo-horikawa/",
+      "title": "Final Episode Interview: Ryō Horikawa (Vegeta)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "21 March 2018",
+      "participants": [
+        "Ryō Horikawa"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-ryo-horikawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Ryō Horikawa",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Ryō Horikawa interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 2,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Ryō Horikawa"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-shigeru-nakahara",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-shigeru-nakahara/",
+      "title": "Final Episode Interview: Shigeru Nakahara (No. 17)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "22 March 2018",
+      "participants": [
+        "Shigeru Nakahara"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-shigeru-nakahara.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Shigeru Nakahara",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Shigeru Nakahara interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 2,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Shigeru Nakahara"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-ryusei-nakao",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-ryusei-nakao/",
+      "title": "Final Episode Interview: Ryūsei Nakao (Freeza)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "23 March 2018",
+      "participants": [
+        "Ryūsei Nakao"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-ryusei-nakao.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Ryūsei Nakao",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Ryūsei Nakao interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Ryūsei Nakao"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "interview-relay-toward-final-episode-masako-nozawa",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-masako-nozawa/",
+      "title": "Final Episode Interview: Masako Nozawa (Son Goku & Son Gohan)",
+      "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "24 March 2018",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-masako-nozawa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Interview Relay Looking Toward the Final Episode: Masako Nozawa",
+      "sourceDescription": "English translation of the Dragon Ball Official Site's Masako Nozawa interview leading up to the conclusion of the 'Dragon Ball Super' television series in March 2018",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "Interview Relay Looking Toward the Final Episode",
+        "Masako Nozawa"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "akio-iyoku-dbs-movie-interview",
+      "url": "https://www.kanzenshuu.com/translations/akio-iyoku-dbs-movie-interview/",
+      "title": "Dragon Ball Movie Frontline: Akio Iyoku",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "29 April 2018",
+      "participants": [
+        "Akio Iyoku"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly",
+        "Production",
+        "Staff"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/akio-iyoku-dbs-movie-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site - Akio Iyoku Interview (Dragon Ball Super Movie)",
+      "sourceDescription": "English translation of an April 2018 interview with Dragon Ball Room department head Akio Iyoku regarding the 2018 Dragon Ball Super movie",
+      "questionCount": 23,
+      "sectionHeadings": [
+        "Dragon Ball Official Site (29 April 2018)",
+        "“Dragon Ball Movie Frontline”: Akio Iyoku Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "nintendo-classic-mini-famicom-kazuhiko-torishima-interview",
+      "url": "https://www.kanzenshuu.com/translations/nintendo-classic-mini-famicom-kazuhiko-torishima-interview/",
+      "title": "Kazuhiko Torishima Interview",
+      "publication": "Nintendo Classic Mini Famicom Jump Edition Guide Book",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "06 July 2018",
+      "participants": [
+        "Kazuhiko Torishima"
+      ],
+      "topics": [
+        "Production",
+        "Video Games"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/nintendo-classic-mini-famicom-kazuhiko-torishima-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Nintendo Classic Mini Famicom WJ Guide: Kazuhiko Torishiama Interview",
+      "sourceDescription": "A partial English translation of the Kazuhiko Torishima interview from the Nintendo Classic Mini Famicom WJ Edition guide regarding Dragon Ball games",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "Nintendo Classic Mini Family Computer Weekly Shōnen Jump 50th Anniversary Version Guide to the Fastest Possible Path to 100% Completion (06 July 2018)",
+        "Kazuhiko Torishima Interview 0"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "tatsuya-nagamine-dbs-movie-interview",
+      "url": "https://www.kanzenshuu.com/translations/tatsuya-nagamine-dbs-movie-interview/",
+      "title": "Dragon Ball Movie Frontline: Tatsuya Nagamine",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "05 August 2018",
+      "participants": [
+        "Tatsuya Nagamine"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly",
+        "Production",
+        "Staff"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/tatsuya-nagamine-dbs-movie-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site – Tatsuya Nagamine Interview (Dragon Ball Super Movie)",
+      "sourceDescription": "English translation of an August 2018 interview with 'Dragon Ball Super: Broli' theatrical film director Tatsuya Nagamine",
+      "questionCount": 11,
+      "sectionHeadings": [
+        "Dragon Ball Official Site (05 August 2018)",
+        "“Dragon Ball Movie Frontline”: Tatsuya Nagamine Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "naohiro-shintani-dbs-movie-interview",
+      "url": "https://www.kanzenshuu.com/translations/naohiro-shintani-dbs-movie-interview/",
+      "title": "Dragon Ball Movie Frontline: Naohiro Shintani",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "19 August 2018",
+      "participants": [
+        "Naohiro Shintani"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly",
+        "Production",
+        "Staff"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/naohiro-shintani-dbs-movie-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site – Naohiro Shintani Interview (Dragon Ball Super Movie)",
+      "sourceDescription": "English translation of an August 2018 interview with 'Dragon Ball Super: Broli' theatrical film animation supervisor Naohiro Shintani",
+      "questionCount": 11,
+      "sectionHeadings": [
+        "Dragon Ball Official Site (19 August 2018)",
+        "“Dragon Ball Movie Frontline”: Naohiro Shintani Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-movie-frontline-norihito-sumitomo",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-movie-frontline-norihito-sumitomo/",
+      "title": "Dragon Ball Movie Frontline: Norihito Sumitomo",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "21 October 2018",
+      "participants": [
+        "Norihito Sumitomo"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly",
+        "Production",
+        "Staff"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-movie-frontline-norihito-sumitomo.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Movie Frontline: Norihito Sumitomo",
+      "sourceDescription": "English translation of an October 2018 interview with 'Dragon Ball Super: Broly' theatrical film composer Norihito Sumitomo",
+      "questionCount": 9,
+      "sectionHeadings": [
+        "Dragon Ball Official Site (21 October 2018)",
+        "“Dragon Ball Movie Frontline”: Norihito Sumitomo Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "vjump-january-2019-nagamine-interview",
+      "url": "https://www.kanzenshuu.com/translations/vjump-january-2019-nagamine-interview/",
+      "title": "Director Nagamine Speaks!!",
+      "publication": "V-Jump, January 2019 (pp. 82-83)",
+      "publicationType": "Anthology",
+      "format": "Interview",
+      "publicationDate": "21 November 2018",
+      "participants": [
+        "Tatsuya Nagamine"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly",
+        "Production",
+        "Staff"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/vjump-january-2019-nagamine-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | V-Jump (January 2019) – \"Director Nagamine Speaks!!\"",
+      "sourceDescription": "English translation of the Tatsuya Nagamine interview regarding the film 'Dragon Ball Super: Broly' in the January 2019 issue of V-Jump",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "V-Jump , January 2019 (21 November 2018)",
+        "Director Nagamine Speaks!!",
+        "Director Nagamine told V-Jump his thoughts on the film Dragon Ball Super: Broly !"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "sponichi-dbs-broly-shinbun-rio-uchida",
+      "url": "https://www.kanzenshuu.com/translations/sponichi-dbs-broly-shinbun-rio-uchida/",
+      "title": "Dārio’s Dragon Ball Love",
+      "publication": "Sports Nippon Dragon Ball Super: Broly Times (pp. 2-3)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "12 December 2018",
+      "participants": [
+        "Rio Uchida"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-rio-uchida.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Sponichi \"Dragon Ball Super: Broly\" Shinbun – Rio Uchida",
+      "sourceDescription": "English translation of the Rio Uchida interview from the 2018 'Sponichi Dragon Ball Super: Broly Shinbun'",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Sponichi “Dragon Ball Super: Broly” Shinbun (12 December 2018)",
+        "“This Broly is my favorite!”",
+        "Dārio’s Dragon Ball Love"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "sponichi-dbs-broly-shinbun-toyotaro",
+      "url": "https://www.kanzenshuu.com/translations/sponichi-dbs-broly-shinbun-toyotaro/",
+      "title": "Toyotarō Draws It",
+      "publication": "Sports Nippon Dragon Ball Super: Broly Times (pp. 6-7)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "12 December 2018",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-toyotaro.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Sponichi \"Dragon Ball Super: Broly\" Shinbun - Toyotarō",
+      "sourceDescription": "English translation of the Toyotarō interview from the 2018 'Sponichi Dragon Ball Super: Broly Shinbun'",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Sponichi “Dragon Ball Super: Broly” Shinbun (12 December 2018)",
+        "From “Boyhood Doodling” to “Working with Toriyama- sensei “",
+        "“Toyotarō Draws It”"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "sponichi-dbs-broly-shinbun-voice-actor-roundtable",
+      "url": "https://www.kanzenshuu.com/translations/sponichi-dbs-broly-shinbun-voice-actor-roundtable/",
+      "title": "Dragon Ball Super: Broly Passionate Cross-Talk",
+      "publication": "Sports Nippon Dragon Ball Super: Broly Times (pp. 12-13)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "12 December 2018",
+      "participants": [
+        "Masako Nozawa",
+        "Ryō Horikawa",
+        "Bin Shimada",
+        "Ryūsei Nakao"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Broly"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-voice-actor-roundtable.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Sponichi “Dragon Ball Super: Broly” Shinbun – Voice Actor Roundtable",
+      "sourceDescription": "English translation of the 'Passionate Cross-Talk' voice actor roundtable from the 2018 'Sponichi Dragon Ball Super: Broly Shinbun'",
+      "questionCount": 26,
+      "sectionHeadings": [
+        "Sponichi “Dragon Ball Super: Broly” Shinbun (12 December 2018)",
+        "Passionate Cross-Talk",
+        "Four Legendary Super Voice Actors Talked Passionately of their Love for Dragon Ball and This Film’s Highlights"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview/",
+      "title": "Toyotarō Workspace Interview",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "03 December 2019",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Manga",
+        "Dragon Ball Super",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site – Dragon Ball Super Volume 11 Toyotarō Workspace Interview",
+      "sourceDescription": "English translation of the Toyotarō workspace December 2019 interview from the Dragon Ball Official Site in conjunction with DBS Vol. 11",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "Dragon Ball Official Site",
+        "In commemoration of Dragon Ball Super Volume 11 going on sale! A point-blank interview with Toyotarō, and his workspace revealed!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form/",
+      "title": "“Toyotarō Drew It!” Debuts in Figure Form!!",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "15 July 2020",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Illustration",
+        "Manga",
+        "Merchandise"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site – \"Toyotarō Drew It!\" Debuts in Figure Form!!",
+      "sourceDescription": "English translation of the \"Toyotarō Drew It! Debuts in Figure Form!!\" July 2020 column from the Dragon Ball Official Site",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "Dragon Ball Official Site",
+        "“Toyotarō Drew It!” Debuts in Figure Form!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "vj-official-dragon-ball-super-inside-scoop-editor-video",
+      "url": "https://www.kanzenshuu.com/translations/vj-official-dragon-ball-super-inside-scoop-editor-video/",
+      "title": "Dragon Ball Super: The Inside Scoop from the Editor!!",
+      "publication": "Dragon Ball Official Site, V-JumPlay Official News",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "14 October 2020",
+      "participants": [
+        "Victory Uchida"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Manga",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/vj-official-dragon-ball-super-inside-scoop-editor-video.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | VJ Official: Dragon Ball Super: The Inside Scoop from the Editor!! (Video)",
+      "sourceDescription": "English translation of the video interview with Dragon Ball Super manga editor Victory Uchida from October 2020 announcing a new (post-Moro) story arc",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "V-JumPlay Official News (14 October 2020)",
+        "VJ Official: Dragon Ball Super: The Inside Scoop from the Editor!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "vjump-february-2021-we-ask-toyotaro-sensei",
+      "url": "https://www.kanzenshuu.com/translations/vjump-february-2021-we-ask-toyotaro-sensei/",
+      "title": "We ask Toyotarō-sensei!",
+      "publication": "V-Jump, February 2021",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "21 December 2020",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Manga",
+        "Dragon Ball Super",
+        "Manga",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/vjump-february-2021-we-ask-toyotaro-sensei.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | V-Jump (February 2021) – \"We ask Toyotarō-sensei!\"",
+      "sourceDescription": "English translation of the three-question Toyotarō interview column in the February 2021 issue of V-Jump",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "V-Jump , February 2021 (21 December 2020)",
+        "In celebration of the conclusion of the Galactic Patrol Prisoner arc:",
+        "We ask Toyotarō- sensei !"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-june-2022-back-up-comic-chapter-35",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-june-2022-back-up-comic-chapter-35/",
+      "title": "Back-Up Comic: Victory Asada’s Road Toward Super Top-Class!!! Chapter 35",
+      "publication": "V-Jump, June 2022",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "21 April 2022",
+      "participants": [
+        "Tetsuro Kodama"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Super Hero",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2022-back-up-comic-chapter-35.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | V-Jump (June 2022) – \"Back-Up Comic: Victory Asada's Road Toward Super Top-Class!!!\" Chapter 35",
+      "sourceDescription": "English translation of the bonus comic in the June 2022 issue of V-Jump magazine with Dragon Ball Super: Super Hero director Tetsuro Kodama",
+      "questionCount": 7,
+      "sectionHeadings": [
+        "V-Jump , June 2022 (21 April 2022)",
+        "Back-Up Comic: Victory Asada’s Road Toward Super Top-Class!!! Chapter 35:",
+        "A New Challenge! The Dragon Ball Director!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview/",
+      "title": "Chikashi Kubota Interview",
+      "publication": "Dragon Ball Super: Super Hero Theatrical Pamphlet",
+      "publicationType": "Booklet",
+      "format": "Interview",
+      "publicationDate": "11 June 2022",
+      "participants": [
+        "Chikashi Kubota"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Super Hero",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super: Super Hero\" Theatrical Pamphlet - Chikashi Kubota Interview",
+      "sourceDescription": "English translation of the brief interview with Chikashi Kubota (Animation Director) from the Dragon Ball Super: Super Hero theatrical pamphlet in Japan",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "“Dragon Ball Super: Super Hero” Theatrical Pamphlet (11 June 2022)",
+        "Chikashi Kubota Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "sand-land-movie-akira-toriyama-qa",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-movie-akira-toriyama-qa/",
+      "title": "Akira Toriyama Q&A",
+      "publication": "“Sand Land” Movie Official Website & Special Booklet",
+      "publicationType": "Web/Online + Print",
+      "format": "Interview",
+      "publicationDate": "21 March 2023",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Sand Land",
+        "Non-Dragon Ball",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-movie-akira-toriyama-qa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "\"Sand Land\" Movie Akira Toriyama Q&A - Kanzenshuu",
+      "sourceDescription": "English translation of Akira Toriyama's brief Q&A originally shared on the Sand Land movie official website (and later included with the home video release)",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "“Sand Land” Movie Official Website & Special Booklet",
+        "Akira Toriyama Q&A (21 March 2023) 1"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1",
+      "url": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1/",
+      "title": "Ultimate Interview Vol. 1",
+      "publication": "Dr. Mashirito’s Ultimate Manga Technique",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 July 2023",
+      "participants": [
+        "Kazuhiko Torishima",
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dr. Mashirito's Ultimate Manga Technique - Ultimate Interview Vol. 1 - Kanzenshuu",
+      "sourceDescription": "English translation of the Akira Toriyama and Kazuhiko Torishima chat from the 2023 book \"Dr. Mashirito's Ultimate Manga Technique\"",
+      "questionCount": 8,
+      "sectionHeadings": [
+        "Dr. Mashirito’s Ultimate Manga Technique (21 July 2023)",
+        "Ultimate Interview Vol. 1: Akira Toriyama x Kazuhiko Torishima"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "sand-land-production-secrets",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-production-secrets/",
+      "title": "Ask Akira Toriyama: “Sand Land” Production Secrets",
+      "publication": "Sand Land (Kanzenban)",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 August 2023",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Sand Land",
+        "Non-Dragon Ball",
+        "Manga",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-production-secrets.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Sand Land\" Kanzenban - Ask Akira Toriyama: \"Sand Land\" Production Secrets - Kanzenshuu",
+      "sourceDescription": "English translation of the Akira Toriyama interview from the 2023 kanzenban release of the Sand Land manga series",
+      "questionCount": 26,
+      "sectionHeadings": [
+        "“Sand Land” Kanzenban (04 August 2023)",
+        "Ask Akira Toriyama: “Sand Land” Production Secrets"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chunichi-shimbun-article-hisashi-tanaka",
+      "url": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-hisashi-tanaka/",
+      "title": "Hisashi Tanaka Article",
+      "publication": "Chunichi Shimbun",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "09 March 2024",
+      "participants": [
+        "Hisashi Tanaka"
+      ],
+      "topics": [
+        "Production",
+        "Assistants",
+        "Dragon Ball (Manga)"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-hisashi-tanaka.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chunichi Shimbun Article - Hisashi Tanaka - Kanzenshuu",
+      "sourceDescription": "English translation of a March 2024 Chunichi Shimbun article with Hisashi Tanaka, Akira Toriyama's first assistant",
+      "questionCount": 1,
+      "sectionHeadings": [
+        "Chunichi Shimbun (09 March 2024)",
+        "Hisashi Tanaka Article"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chunichi-shimbun-article-takashi-matsuyama",
+      "url": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-takashi-matsuyama/",
+      "title": "Takashi Matsuyama Article",
+      "publication": "Chunichi Shimbun",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "09 March 2024",
+      "participants": [
+        "Takashi Matsuyama"
+      ],
+      "topics": [
+        "Production",
+        "Assistants",
+        "Dragon Ball (Manga)"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-takashi-matsuyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chunichi Shimbun Article - Takashi Matsuyama - Kanzenshuu",
+      "sourceDescription": "English translation of a March 2024 Chunichi Shimbun article with Takashi Matsuyama, Akira Toriyama's second assistant",
+      "questionCount": 1,
+      "sectionHeadings": [
+        "Chunichi Shimbun (09 March 2024)",
+        "Takashi Matsuyama Article"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-official-site-march-2024-toyotaro-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-march-2024-toyotaro-interview/",
+      "title": "Toyotarō Interview",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "21 March 2024",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Manga",
+        "Dragon Ball Super",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-march-2024-toyotaro-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Ball Official Site – March 2024 Toyotarō Interview - Kanzenshuu",
+      "sourceDescription": "English translation of the Toyotarō interview from the Dragon Ball Official Site in conjunction with the end of the Dragon Ball Super manga's Super Hero arc",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "Dragon Ball Official Site",
+        "March 2024 Toyotarō Interview (21 March 2024)"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "mantanweb-daima-akiyo-iyoku-1",
+      "url": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
+      "title": "Dragon Ball Daima (Akio Iyoku Interview #1)",
+      "publication": "MANTANWEB",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "11 February 2025",
+      "participants": [
+        "Akio Iyoku"
+      ],
+      "topics": [
+        "Dragon Ball Daima",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/mantanweb-daima-akiyo-iyoku-1.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "MANTANWEB: \"Dragon Ball Daima: the first animated series in the franchise in 6 years – why make Goku a child again?\" - Kanzenshuu",
+      "sourceDescription": "English translation of a February 2025 article from MANTANWEB interviewing Dragon Ball franchise producer Akio Iyoku about Dragon Ball Daima",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "MANTANWEB (11 February 2025)",
+        "“Dragon Ball Daima: The first animated series in the franchise in 6 years – why make Goku a child again?”"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-24-toyotaro-afterword",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
+      "title": "Toyotarō Afterword",
+      "publication": "Dragon Ball Super (Manga) Volume 24",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 April 2025",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Dragon Ball Super"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-24-toyotaro-afterword.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super\" Manga Vol. 24: Toyotarō Afterword",
+      "sourceDescription": "English translation of Toyotarō's afterword from the 24th volume of the Dragon Ball Super manga, originally released in April 2025 in Japan",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Dragon Ball Super Volume 24 (04 April 2025)",
+        "Toyotarō Afterword"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    }
+  ],
+  "coverage": {
+    "archiveInterviewEntries": 109,
+    "attempted": 109,
+    "acquired": 108,
+    "alternatePrimarySources": 1,
+    "failed": [
+      "https://www.kanzenshuu.com/translations/the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview/"
+    ]
+  }
+}

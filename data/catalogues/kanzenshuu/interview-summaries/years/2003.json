@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2003; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "son-goku-densetsu-toriyama-x-nakatsuru",
+      "title": "Akira Toriyama × Katsuyoshi Nakatsuru",
+      "summary": "Cet entretien réunit Toriyama et Katsuyoshi Nakatsuru, animateur et character designer lié à Dragon Ball Z et GT. Toriyama raconte que la stylisation anguleuse de l'anime lui a servi de modèle pour rendre ses combats plus rapides et simplifier les ombres. Il explique que le titre Dragon Ball Z devait signifier la fin de la série — Z étant la dernière lettre — et qu'il acceptait surtout la demande de l'équipe animée de rafraîchir le titre. Il revient sur des choix de conception ajustés pendant la sérialisation, par exemple une armure saiyenne d'abord imaginée rigide puis rendue plus souple pour permettre aux personnages de lever le bras. Il dit avoir aimé le spécial Bardock, qui l'a ému et l'a amené à intégrer Bardock au manga; il précise également qu'il avait transmis à l'équipe animée certaines règles non écrites de son monde, comme le faible nombre de visages saiyans distincts. Il rappelle enfin que Dragon Ball devait ses thèmes martiaux aux films de Bruce Lee et Jackie Chan, et que ses chapitres hebdomadaires étaient souvent dessinés sous une forte pression de délai.",
+      "keyInformation": [
+        "Nakatsuru avait déjà animé des épisodes du début de Dragon Ball, dont les premières apparitions d'Oolong et du Kamehameha de Kame-sennin; l'entretien distingue son travail de key animation de l'interpolation.",
+        "Toriyama dit que le trait anguleux et les aplats inspirés par l'animation l'ont aidé à donner de la vitesse aux combats et à accélérer son travail sur le manga.",
+        "Il explique que le Z de Dragon Ball Z faisait référence à la dernière lettre de l'alphabet et à son souhait de finir le manga; il n'attribue pas le titre à une boisson énergisante. L'équipe de l'anime souhaitait quant à elle donner un nouvel élan à la série télévisée.",
+        "Il décrit l'armure saiyenne comme un design évolutif : initialement rigide, elle a été représentée plus souple quand il a constaté qu'une matière dure empêcherait le mouvement du bras.",
+        "Toriyama dit avoir choisi le résultat du Tenkaichi Budokai à rebours des cartes de lecteurs qui prédisaient la victoire de Goku, et se souvient d'un Goku volontairement conçu comme personnage principal peu remarquable avant les ajustements éditoriaux.",
+        "Il dit ne pas avoir de modèle humain pour Goku; Bruce Lee influençait plutôt l'expression de son visage dans les scènes de combat.",
+        "Il explique que le spécial TV Bardock l'a ému et qu'il a ensuite intégré Bardock au manga; il avait aussi formulé pour les animateurs des idées de continuité comme le faible nombre de types de visages saiyans.",
+        "À propos d'une nouvelle série animée, il préférait ajouter des histoires inédites situées dans le passé plutôt que prolonger l'histoire principale après sa conclusion; dans cet entretien, GT est traité comme le prolongement animé déjà existant.",
+        "Il dit que l'inspiration martiale de Dragon Ball vient de Bruce Lee et Jackie Chan : il a revu Enter the Dragon de nombreuses fois et regardé Drunken Master plus de deux cents fois selon son souvenir.",
+        "Il décrit un rythme hebdomadaire très court : il gardait parfois ses storyboards jusqu'à deux jours avant remise, les dessinait en quelques heures et finissait le chapitre en environ un jour et demi.",
+        "Il dit avoir relu le manga entier pour les nouvelles couvertures Kanzenban et avoir été surpris par son énergie et le plaisir de lecture."
+      ],
+      "source": {
+        "publication": "TV Anime Guide: Dragon Ball Z Son Goku Densetsu",
+        "pages": "90–102",
+        "date": "2003-10-03",
+        "participants": [
+          "Akira Toriyama",
+          "Katsuyoshi Nakatsuru"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/son-goku-densetsu-toriyama-x-nakatsuru/",
+        "questionAnswerCount": 31,
+        "formatNote": "Le HTML acquis contient 32 blocs question et 31 blocs réponse; le compte résumé correspond aux 31 paires complètes, tandis que l'index compte les 32 questions balisées."
+      },
+      "dragonBallRelevance": "Directe : origines, titre DBZ, dessin, continuité éditoriale entre manga et anime, personnages, Bardock, inspirations et méthode de sérialisation.",
+      "status": "summary-written-print-source-not-collated"
+    },
+    {
+      "id": "dragon-ball-landmark-dragon-ball-toriyama",
+      "title": "Akira Toriyama On the Road",
+      "summary": "Dans ce retour biographique, Toriyama parle de ses goûts d'enfant, de ses débuts professionnels et de la transition entre Dr. Slump et Dragon Ball. Il raconte que la fin de Dr. Slump l'a conduit à chercher un autre format, moins dépendant de la résolution d'un gag à chaque chapitre; il a préparé Dragon Ball après un récit court d'arts martiaux inspiré de son goût pour les films de kung-fu. Il dit avoir choisi Jump après avoir manqué le délai d'un concours chez Shōnen Magazine et parce que ses concours revenaient plus souvent. Il évoque aussi ses longues nuits pendant Dr. Slump, ses influences visuelles de jeunesse et son plaisir durable à dessiner plutôt qu'à planifier une grande saga.",
+      "keyInformation": [
+        "Toriyama dit qu'enfant il aimait dessiner ce qu'il voulait posséder ou voir, et cite Popeye et les films d'animation Disney parmi ses influences précoces.",
+        "Après son emploi dans une entreprise de design, il a commencé par tenter un concours de Shōnen Magazine, mais a raté la date limite; il a alors choisi Jump, dont les concours étaient plus fréquents.",
+        "Il se souvient que Dr. Slump était difficile à sérialiser parce qu'il fallait conclure une histoire comique chaque semaine; il a développé Dragon Ball à partir d'un récit court de kung-fu et du souhait de faire un manga feuilletonnant.",
+        "Il décrit une période de surmenage extrême pendant Dr. Slump, dont une nuit record de six jours avec seulement une vingtaine de minutes de sommeil; il dit que ce régime s'était largement atténué pendant Dragon Ball.",
+        "Il dit qu'il regardait beaucoup de films d'arts martiaux, notamment Enter the Dragon et Drunken Master; ses estimations du nombre de visionnages varient d'un entretien à l'autre et doivent être conservées comme souvenirs approximatifs plutôt que comme compte exact.",
+        "Il raconte avoir utilisé sa fonction de président du conseil des élèves pour faire programmer un film de monstres, un souvenir qui témoigne de son intérêt pour les films de kaijū dès l'enfance."
+      ],
+      "source": {
+        "publication": "Kanzenban Official Guide: Dragon Ball Landmark",
+        "pages": "146–157",
+        "date": "2003-12-19",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-dragon-ball-toriyama/",
+        "questionAnswerCount": null,
+        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans balisage standard des questions."
+      },
+      "dragonBallRelevance": "Contexte direct de la transition Dr. Slump–Dragon Ball et de la genèse éditoriale; biographie générale pour le reste.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

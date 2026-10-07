@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2025; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "mantanweb-daima-akiyo-iyoku-1",
+      "title": "Akio Iyoku — genèse et objectifs de Dragon Ball Daima",
+      "summary": "Dans ce grand entretien de MANTANWEB, le producteur exécutif Akio Iyoku raconte comment un projet de nouveau film ou de nouvelle série a commencé à se discuter pendant la production de Super Hero, environ six ans avant Daima. L'équipe comptait d'abord développer le projet sans trop solliciter Toriyama, puis celui-ci s'est impliqué de plus en plus et a fini par prendre en charge presque tout; ses questions sur le Monde des Démons et les nouveaux personnages ont densifié l'univers. Iyoku dit que la série était déjà en production avant la finalisation complète du scénario, après de nombreuses discussions. Le public visé incluait les adultes qui avaient grandi avec GT et leurs enfants; le projet voulait retrouver une aventure de Goku enfant, mais Iyoku précise que l'équipe ne savait pas au départ qu'elle transformerait les personnages en enfants et attribue cette idée à Toriyama. Il rapporte que l'histoire se déroule juste après l'arc de Majin Boo et que Toriyama avait déjà en tête plusieurs liens avec le manga, dont les origines des Kaiōshin, des Nameks et de Boo. Iyoku décrit l'équilibre recherché entre l'identité familière de Dragon Ball et de nouveaux éléments, l'ambition d'une diffusion mondiale simultanée en streaming, et ses attentes élevées pour le combat final. Ces informations sont les propos du producteur et ne sont pas à attribuer à Toriyama, sauf quand Iyoku rapporte expressément une décision ou une idée de ce dernier.",
+      "keyInformation": [
+        "Iyoku situe les premières discussions de Daima environ six ans plus tôt, pendant la production de Super Hero, au moment où l'équipe envisageait un nouveau film ou une série. Elle voulait d'abord construire le projet elle-même et consulter Toriyama sans lui confier toute la charge.",
+        "Selon Iyoku, Toriyama s'est progressivement beaucoup plus investi que prévu; ses questions sur le Monde des Démons et les nouveaux personnages ont consolidé le monde de Daima, jusqu'à ce qu'il prenne en charge presque tout le projet.",
+        "Iyoku dit que le développement de la série a duré plus longtemps que celui d'un film et que l'équipe a fait de nombreux allers-retours sur l'histoire; la production animée avait commencé avant que le scénario soit entièrement finalisé.",
+        "L'objectif était de proposer une série regardable par des parents et leurs enfants. Iyoku visait notamment les adultes alors trentenaires ou plus qui avaient connu GT enfants; il décrit GT comme un point de départ de ton et d'aventure puisque Goku y redevenait enfant et partait en voyage.",
+        "Iyoku précise que l'équipe ne savait pas initialement qu'elle rajeunirait les personnages; il attribue cette idée à Toriyama. Il estimait qu'un Goku enfant, à la fois mignon et cool, pouvait toucher un public plus large et donner à l'action une fraîcheur différente de Super.",
+        "La série voulait être accessible à de nouveaux spectateurs et rappeler les fondements de Dragon Ball — quête des Dragon Balls et affrontement d'adversaires puissants — sans la rendre enfantine ni sacrifier les qualités des personnages, de l'histoire et de l'image.",
+        "Iyoku situe Daima immédiatement après la fin de l'arc Majin Boo et attribue la gestion de l'histoire à Toriyama. Il rapporte que la série devait révéler notamment les origines des Kaiōshin, des Nameks et de Majin Boo, ainsi que des liens avec le manga que Toriyama avait déjà en tête.",
+        "Iyoku dit que la découverte de l'origine des êtres aux oreilles pointues dans le Monde des Démons l'a surpris; il estime que Toriyama gardait déjà ces connexions en tête et adaptait son point de vue selon la série, plutôt que d'inventer tout arbitrairement.",
+        "Le producteur décrit l'équilibre recherché entre les caractéristiques attendues de Dragon Ball et de nouveaux défis : trop répéter les mêmes éléments lasserait le public, mais des changements trop grands risqueraient de rompre les attentes fondamentales.",
+        "Iyoku présente la diffusion mondiale au même moment, avec une priorité au streaming, comme une première pour toute une série Dragon Ball diffusée du début à la fin en simulcast. Il veut observer les réactions différentes selon les pays et régions et dit que d'autres développements de la franchise sont en préparation, sans les détailler.",
+        "Au moment de l'article, Iyoku promet un combat final dépassant les attentes et recommande de revoir la série depuis le début; il annonce que certaines révélations seront prévisibles, d'autres inattendues et certaines surprenantes. Il s'agit de son appréciation promotionnelle de la série."
+      ],
+      "source": {
+        "publication": "MANTANWEB",
+        "pages": "Entretien-reportage Web, sans pagination; aucune numérotation de questions dans la transcription",
+        "date": "2025-02-11",
+        "participants": [
+          "Akio Iyoku"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
+        "questionAnswerCount": 0,
+        "formatNote": "Long article avec intertitres et réponses de Iyoku insérées dans un récit journalistique, sans balisage Q/R. Les affirmations sur la conception et la diffusion sont celles d'Akio Iyoku, producteur exécutif; seules les idées qu'il attribue explicitement à Toriyama sont indirectement rapportées comme telles."
+      },
+      "dragonBallRelevance": "Directe : témoignage du producteur exécutif sur le développement, les objectifs de public, la place temporelle et la diffusion de Daima; les propos de Iyoku sont séparés de ceux qu'il rapporte de Toriyama.",
+      "status": "summary-written-print-source-not-collated"
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-24-toyotaro-afterword",
+      "title": "Toyotarō — postface du volume 24 de Dragon Ball Super",
+      "summary": "Dans la postface du volume 24, Toyotarō explique l'origine du récit spécial sur Saiyaman X qu'il a dessiné pour clore l'arc Super Hero. Toriyama lui avait remis un texte sur l'origine du personnage et lui avait dit qu'il pouvait l'utiliser ou non dans les chapitres. Toyotarō ne voulait pas laisser l'idée de côté, mais le nombre de chapitres prévus pour le prélude était déjà limité à trois; il a donc dessiné ces épisodes après leur conversion en histoire de Saiyaman X et a abandonné l'autre récit. Comme il tenait toujours à le dessiner pour achever l'arc, il a pu le publier sous la forme d'un one-shot dans le volume. Il distingue ainsi la matière initialement écrite par Toriyama de son expansion et de sa réalisation en manga, et remercie les lecteurs en déclarant l'arc Super Hero véritablement terminé.",
+      "keyInformation": [
+        "Toriyama avait confié à Toyotarō un texte racontant l'origine de Saiyaman X et lui avait laissé le choix de l'intégrer ou non dans les chapitres publiés.",
+        "Toyotarō voulait adapter le texte, mais trois chapitres de prélude à l'arc avaient déjà été décidés; il a donc abandonné provisoirement cette histoire et dessiné les trois chapitres qui étaient devenus ceux de Saiyaman X.",
+        "Toyotarō tenait à dessiner le récit inédit pour donner une véritable conclusion à l'arc Super Hero; il a pu le réaliser et le publier comme histoire en un chapitre dans le volume 24.",
+        "La postface distingue le texte source fourni par Toriyama de son développement et de sa réalisation graphique par Toyotarō. Toyotarō remercie les lecteurs et considère l'arc achevé avec ce one-shot."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super, volume 24 (manga)",
+        "pages": "Postface, pagination non indiquée dans la transcription Kanzenshuu",
+        "date": "2025-04-04",
+        "participants": [
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
+        "questionAnswerCount": 0,
+        "formatNote": "Postface autobiographique, et non entretien question-réponse. L'index Kanzenshuu classe cette entrée parmi les interviews; les propos concernent la genèse éditoriale d'un one-shot et la répartition du travail entre Toriyama et Toyotarō."
+      },
+      "dragonBallRelevance": "Directe : documente l'origine d'un récit de Dragon Ball Super et le partage des rôles entre le texte initial de Toriyama et son adaptation en manga par Toyotarō.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

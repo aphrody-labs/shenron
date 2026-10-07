@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 1996; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "daizenshuu-7-shenlong-times",
+      "title": "Shenlong Times — entretien du Daizenshuu 7",
+      "summary": "Dans cet entretien publié après la fin du manga, Akira Toriyama dit avoir terminé les illustrations destinées aux sept Daizenshuu, tout en étant occupé à faire construire un nouvel atelier et en plaisantant sur ses nuits blanches de plans. Il explique avoir participé modestement à Dragon Ball GT : il relisait les scénarios proposés par Toei, donnait quelques conseils et avait dessiné quelques personnages et illustrations. Il félicite le staff et dit recommander la série, qu'il attend aussi comme spectateur ordinaire; il plaisante qu'elle lui donnerait peut-être matière à reprendre le manga, avant de préciser qu'il n'a aucune intention de le dessiner. L'entretien inclut une conversation avec Masakazu Katsura sur les ordinateurs et le tramage, où Toriyama imagine avec humour pouvoir dicter des dessins à un Macintosh et annonce qu'il pourrait écrire un one-shot lorsqu'il en maîtriserait l'usage. Un panneau autobiographique précise que la couverture du volume 7 était sa dernière illustration Dragon Ball et reprend une image du dernier chapitre recolorée pour l'édition; il dit avoir voulu ensuite ne plus jamais la redessiner. Les propos témoignent de sa recommandation enthousiaste de GT en 1996 et de son rôle limité de supervision; ils doivent rester situés dans cette publication.",
+      "keyInformation": [
+        "Toriyama dit ne pas être occupé au moment de l'entretien, ses illustrations pour les Daizenshuu étant terminées, mais il fait construire un nouvel atelier et plaisante sur les nuits blanches passées à préparer les plans.",
+        "Son implication dans GT est décrite comme limitée : il vérifiait les scénarios envoyés par Toei, donnait quelques conseils et dessinait quelques personnages et illustrations.",
+        "Toriyama se dit intéressé par GT, félicite l'équipe d'animation et affirme le recommander; il précise aussi qu'il en attend la diffusion comme un spectateur ordinaire.",
+        "Il plaisante que l'histoire de GT pourrait presque lui donner envie de reprendre une sérialisation de Dragon Ball, mais déclare immédiatement n'avoir absolument aucune intention de la dessiner.",
+        "En échangeant avec Masakazu Katsura, il imagine avec humour un Macintosh capable de dessiner à partir d'instructions dictées au microphone et critique les trames trop abondantes de Katsura; Katsura lui répond qu'il déteste le travail manuel et n'utilise même pas les trames.",
+        "Toriyama dit avoir de nombreuses idées et envisager un récit court lorsqu'il saura se servir du Macintosh; il s'agit d'un projet envisagé, non d'une annonce de travail terminé.",
+        "Dans le panneau « Me These Days », il dit que l'illustration de couverture du Daizenshuu 7 est sa dernière image dessinée pour Dragon Ball; elle reprend une illustration du dernier panneau du manga, photocopiée et recoloriée pour une impression en quatre couleurs après une version originale en deux couleurs.",
+        "Il plaisante qu'il comptait travailler peu sur cette couverture mais qu'elle lui a finalement pris davantage de temps, puis se réjouit de ne plus avoir à la dessiner. Un court encadré final reproduit une plaisanterie de Toriyama sur les trames de Katsura."
+      ],
+      "source": {
+        "publication": "Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia",
+        "pages": "numéro Shenlong Times; couverture et panneau rétrospectif associés au volume",
+        "date": "1996-02-05",
+        "participants": [
+          "Akira Toriyama",
+          "Masakazu Katsura"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-7-shenlong-times/",
+        "questionAnswerCount": 8,
+        "formatNote": "Les huit blocs question-réponse détectés comprennent l'interview principale, une conversation éditoriale avec Katsura et des encadrés/panneaux de commentaire de Toriyama; ils ne sont pas huit questions biographiques homogènes."
+      },
+      "dragonBallRelevance": "Directe : participation de Toriyama à GT, recommandation de l'anime, fin de ses illustrations pour Dragon Ball et dernière image du manga; point de vue éditorial daté de 1996.",
+      "status": "summary-written-print-source-not-collated"
+    },
+    {
+      "id": "wired-japan-1997-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview — WIRED Japan",
+      "summary": "Dans cet entretien réalisé en novembre 1996, Toriyama parle de la bande dessinée, de Dragon Ball à l'étranger et de sa manière de travailler. Il accepte l'idée de lire des mangas à l'écran, mais tient au papier et à la lecture d'une double page; des voix ou des sons intégrés lui sembleraient déplacer le médium, puisque chaque lecteur imagine lui-même les voix et les bruitages. Il estime que le dessin porte davantage d'information que le texte et attribue à Torishima l'exigence de raconter clairement sans longs passages inutiles. Il explique que les commentaires de lecteurs annonçant la suite d'une histoire pouvaient l'inciter à prendre la direction opposée, y compris à tuer un personnage populaire. Il critique la représentation de Goku comme héros justicier dans l'anime : selon lui, Goku se bat d'abord par désir d'affronter des adversaires puissants, un aspect plus ambigu qu'il jugeait insuffisamment rendu à l'écran. Il défend également le manga comme divertissement, sans transformer chaque événement de société en stratégie éditoriale, et dit que la méthode de planifier collectivement une histoire ne lui conviendrait pas.",
+      "keyInformation": [
+        "Toriyama est ouvert à la lecture numérique, mais préfère le papier pour son toucher et la composition de la double page; il pense que des voix et sons intégrés feraient de l'œuvre un médium différent, puisque les lecteurs imaginent ces éléments en lisant.",
+        "Il considère que l'information visuelle prime sur le texte et dit que Torishima lui a appris à garder les mots comme complément, choisis pour renforcer le personnage ou clarifier l'image.",
+        "Il explique qu'il pouvait contredire délibérément les prédictions des lecteurs et éliminer un personnage devenu populaire, en partie parce qu'il écrivait sans plan complet à long terme.",
+        "À propos de l'anime, il juge que la caractérisation de Goku comme héros défendant les autres gomme une part de son ambiguïté; il décrit le Goku du manga comme motivé surtout par le désir d'affronter des combattants puissants. C'est son commentaire sur l'adaptation, pas une définition exhaustive de toutes les motivations de Goku dans le manga.",
+        "Il associe la singularité visuelle de ses personnages à son expérience du dessin publicitaire et relie la pratique des délais à son ancien emploi en entreprise.",
+        "Il estime que les magazines de manga doivent surtout divertir et critique l'utilisation de sujets sociaux comme tactique éditoriale; il indique que la planification collective d'un récit ne correspond pas à sa méthode et qu'il ne prévoyait alors pas de reprendre une sérialisation hebdomadaire."
+      ],
+      "source": {
+        "publication": "WIRED Japan, janvier 1997, issue 3.01",
+        "pages": "62–63",
+        "interviewDate": "1996-11-21",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/wired-japan-1997-akira-toriyama-interview/",
+        "questionAnswerCount": null,
+        "formatNote": "Transcription sous forme de paragraphes d'entretien, sans balisage standard des questions."
+      },
+      "dragonBallRelevance": "Directe : regard de Toriyama sur le Goku du manga et son adaptation en anime; contexte de création et philosophie éditoriale.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

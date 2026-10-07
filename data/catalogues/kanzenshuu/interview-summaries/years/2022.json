@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2022; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "v-jump-june-2022-back-up-comic-chapter-35",
+      "title": "Tetsuro Kodama — récit illustré de la réalisation de Super Hero",
+      "summary": "Ce chapitre du comic éditorial de V-Jump met en scène Victory Asada et Kasai interviewant Tetsuro Kodama, réalisateur de Dragon Ball Super: Super Hero, dans un récit humoristique de sept pages. Kodama raconte être passé du rêve d'illustrateur à la peinture de décors, puis au travail indépendant, à la création de sa société ECHOES et à la réalisation de démonstrations visuelles pour Toei; Kōzō Morishita a facilité son entrée en relation avec le studio. Bien qu'il ait recommandé une autre direction visuelle, Toei a retenu l'une de ses propositions CG. Kodama s'est efforcé de supprimer l'impression artificielle souvent associée à la 3D, en travaillant le nombre d'images, les expressions, les ombres, les lignes et les formes. Il dit que l'action était plus facile à traiter que les gestes quotidiens et les dialogues, et décrit ses indications aux animateurs comme une direction de jeu. Le premier matériel reçu fut le scénario de Toriyama accompagné d'un dessin de Carmine. Le comic mêle ces explications à des gags sur la moto de Kodama et sur l'improbable « apparition » d'Asada dans le film; cette dernière est explicitement une plaisanterie et non un caméo réel.",
+      "keyInformation": [
+        "Le comic met en scène l'intervieweur Victory Asada, Kasai et le réalisateur Tetsuro Kodama; son ouverture et sa conclusion sont des gags dessinés, pas des échanges documentaires littéraux.",
+        "Kodama raconte avoir grandi à Ōita avec le désir de devenir illustrateur, puis s'être orienté vers les décors d'animation, avoir étudié dans une école d'art à Osaka, travaillé en indépendant et déménagé à Tokyo à 27 ans; il a ensuite fondé la société ECHOES et enseigné à l'Université des arts de Kyoto.",
+        "Il dit avoir travaillé avec Toei depuis plus de dix ans et avoir été introduit auprès du studio par Kōzō Morishita. Après que ses démonstrations visuelles pour Super Hero ont été bien reçues, il a été nommé réalisateur.",
+        "Kodama affirme respecter les demandes du client tout en cherchant à faire ressortir ses propres qualités à l'intérieur du cadre imposé. Il avait recommandé une des deux propositions à l'esthétique différente, mais Toei a choisi l'autre direction.",
+        "La réalisation en 3D lui a d'abord fait craindre les difficultés de reproduire notamment les plis des vêtements de Dragon Ball. Son objectif était que la 3D ne paraisse pas artificielle au point de faire regretter un dessin traditionnel; il a étudié le nombre d'images, les expressions, les ombres, les lignes et les formes.",
+        "Pour le mouvement, Kodama partageait ses idées en images puis laissait les animateurs travailler avant de vérifier le résultat, une méthode qu'il compare à la direction d'acteurs. Il juge l'action plus facile grâce à l'expertise des animateurs de Toei; les dialogues, les gestes et les mouvements de la vie quotidienne posaient davantage de problèmes de naturel.",
+        "Le premier matériel reçu par Kodama fut le scénario de Toriyama et un dessin de Carmine. Il se souvient de la densité des personnages et informations du scénario et dit que Carmine demeure un personnage auquel il est attaché.",
+        "Kodama cite les trois jeunes guerriers Nameks du village de Muri comme ses personnages favoris; il suggère qu'un hommage pourrait se trouver dans Super Hero, sans préciser lequel.",
+        "Le récit plaisante sur les cinq motos de Kodama, son permis obtenu deux ans plus tôt et son intérêt possible pour une Super Cub. Il imagine aussi Asada dans le film comme figurant décoratif lié au logo de l'Armée du Ruban Rouge, puis révèle explicitement qu'Asada n'apparaîtra pas dans le film."
+      ],
+      "source": {
+        "publication": "V-Jump, numéro de juin 2022, comic bonus « Victory Asada's Road Toward Super Top-Class!!! », chapitre 35",
+        "pages": "7 pages (planches 1 à 7 dans la transcription Kanzenshuu)",
+        "date": "2022-04-21",
+        "participants": [
+          "Tetsuro Kodama",
+          "Victory Asada",
+          "Kasai"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2022-back-up-comic-chapter-35/",
+        "questionAnswerCount": 7,
+        "formatNote": "Les sept unités repérées par Kanzenshuu correspondent aux sept pages/planches d'un comic d'interview humoristique, et non à sept questions journalistiques autonomes. Des didascalies, bulles et éléments de gag complètent les propos de Kodama; l'annonce que Victory Asada serait dans le film est une plaisanterie démentie dans la dernière planche."
+      },
+      "dragonBallRelevance": "Directe : expérience de Kodama comme réalisateur de Super Hero et détails de production sur l'adaptation 3D, le travail avec Toei, les animateurs et le scénario de Toriyama.",
+      "status": "summary-written-print-source-not-collated"
+    },
+    {
+      "id": "dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview",
+      "title": "Chikashi Kubota — animation de Super Hero",
+      "summary": "Le directeur d'animation Chikashi Kubota raconte avoir eu quelques réserves en apprenant que Super Hero serait réalisé en 3D, mais avoir retrouvé en lisant le scénario l'excitation qu'il ressentait enfant devant les nouveaux chapitres de Dragon Ball dans Weekly Shōnen Jump. Il voulait contribuer à reproduire la « qualité Toriyama » dans un espace tridimensionnel et a étudié les solutions graphiques des animateurs précédents. Passé de l'animation clé sur Broly à la direction d'animation, il corrigeait les images rendues en 3D sur iPad; une modification de ligne pouvait exiger une retouche du modèle entier, d'où ses explications détaillées aux équipes. Il fut impressionné par leur prise en compte de ses indications. Il souligne les possibilités de caméra et les textures de la pluie propres à la 3D, et décrit le film comme une nouvelle façon de découvrir les personnages de Toriyama en mouvement. Enfin, il voit son travail comme une manière de rendre à Dragon Ball l'enthousiasme qui l'avait conduit à devenir animateur.",
+      "keyInformation": [
+        "Kubota dit avoir éprouvé des réserves à l'annonce d'un film en 3D, mais que le scénario l'a enthousiasmé comme lorsqu'il lisait Dragon Ball enfant; il y a reconnu une nouvelle histoire de Dragon Ball.",
+        "Il souhaitait contribuer à transposer en trois dimensions ce qu'il appelle la « qualité Toriyama » et a étudié les approches des animateurs précédents pour représenter le style du mangaka.",
+        "Après avoir été animateur clé sur Broly, Kubota est devenu directeur d'animation sur Super Hero. Il n'a pas participé aux étapes habituelles de layouts et roughs 2D, et a découvert une autre grammaire du mouvement et un pipeline de production réparti entre de nombreuses étapes, pièces et personnes.",
+        "Il corrigeait sur iPad directement par-dessus les rendus 3D. Une retouche même limitée à une ligne pouvait demander de modifier tout le modèle; il ajoutait donc des notes expliquant le raisonnement graphique derrière chaque demande.",
+        "Kubota fut touché de retrouver intégralement ses corrections dans les plans révisés et souligne l'effort des équipes; il dit avoir parfois été surpris que des demandes qu'il pensait excessives soient réalisées telles quelles.",
+        "Il oppose certaines difficultés de la 3D aux atouts de l'animation traditionnelle, mais estime que les nouvelles vues de caméra et les personnages évoluant dans un espace intégralement tridimensionnel offrent des découvertes visuelles inédites.",
+        "Sa scène favorite est celle sous la pluie : il juge que la 3D permet de montrer la texture des gouttes d'une façon rarement vue dans la série et moins accessible à l'animation dessinée traditionnelle.",
+        "Kubota raconte que la manga et l'anime de Dragon Ball l'avaient inspiré à devenir animateur; il considère son travail sur Super Hero comme une manière de rendre l'enthousiasme reçu dans son enfance."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super: Super Hero Theatrical Pamphlet",
+        "pages": "Entretien de quatre questions, pagination non indiquée dans la transcription Kanzenshuu",
+        "date": "2022-06-11",
+        "participants": [
+          "Chikashi Kubota"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview/",
+        "questionAnswerCount": 4,
+        "formatNote": "Entretien écrit de quatre questions-réponses. Kubota s'exprime comme directeur d'animation et ancien animateur clé; ses appréciations de la 3D sont son expérience professionnelle."
+      },
+      "dragonBallRelevance": "Directe : méthodes de production et de direction d'animation du film Dragon Ball Super: Super Hero, vues par son directeur d'animation.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

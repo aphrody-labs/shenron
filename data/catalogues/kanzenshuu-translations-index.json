@@ -1,0 +1,3842 @@
+{
+  "schemaVersion": 1,
+  "source": "https://www.kanzenshuu.com/translations/",
+  "checkedAt": "2026-10-07T21:07:27.933Z",
+  "coverage": {
+    "archiveLinks": 293,
+    "interviews": 112,
+    "qa": 55,
+    "roundtables": 13,
+    "authorialComments": 96,
+    "editorial": 11,
+    "other": 6
+  },
+  "policy": {
+    "forumExcluded": true,
+    "translationsReproduced": false,
+    "scope": "Editorial archive entry inventory; metadata only, awaiting per-page review and topic summaries."
+  },
+  "records": [
+    {
+      "id": "pafu-september-1980-mangaka-whos-who-akira-toriyama",
+      "title": "Mangaka Who’s Who – Akira Toriyama Pafu, September 1980 (pp. 240-241) Magazine QA 27 August 1980 Akira Toriyama Pre-Dragon Ball, Non-Dragon Ball, Manga",
+      "url": "https://www.kanzenshuu.com/translations/pafu-september-1980-mangaka-whos-who-akira-toriyama/",
+      "kind": "qa",
+      "yearsMentioned": [
+        1980
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 1
+    },
+    {
+      "id": "monthly-starlog-1980-11-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview Monthly Starlog, 1980 #11 (pp. 86-89) Magazine Interview 01 October 1980 Akira Toriyama Pre-Dragon Ball, Non-Dragon Ball, Dr. Slump, Manga",
+      "url": "https://www.kanzenshuu.com/translations/monthly-starlog-1980-11-akira-toriyama-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1980
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 2
+    },
+    {
+      "id": "focus-1982-19-akira-toriyama-wedding",
+      "title": "Akira Toriyama Article FOCUS, 1982 #19 (pp. 18-19) Magazine Article 07 May 1982 Akira Toriyama Pre-Dragon Ball, Non-Dragon Ball, Manga",
+      "url": "https://www.kanzenshuu.com/translations/focus-1982-19-akira-toriyama-wedding/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        1982
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 3
+    },
+    {
+      "id": "tetsukos-room-1983-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview Tetsuko’s Room TV Program Interview 04 May 1983 Akira Toriyama Pre-Dragon Ball, Non-Dragon Ball, Dr. Slump, Manga",
+      "url": "https://www.kanzenshuu.com/translations/tetsukos-room-1983-akira-toriyama-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1983
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 4
+    },
+    {
+      "id": "toriyama-me-back-when-i-drew-this-5",
+      "title": "\"Me Back When I Drew This\" #5 Akira Toriyama’s _____piece Theatre, Vol. 1 (p. 189) Manga Comic 15 July 1983 Akira Toriyama Pre-Dragon Ball, Non-Dragon Ball, Chobit, Manga",
+      "url": "https://www.kanzenshuu.com/translations/toriyama-me-back-when-i-drew-this-5/",
+      "kind": "other",
+      "yearsMentioned": [
+        1983
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 5
+    },
+    {
+      "id": "bird-land-press-making-of-dragon-ball",
+      "title": "The Making of Dragon Ball Bird Land Press 15 (pp. 4-8) Newsletter Content Section 01 November 1984 Akira Toriyama Dragon Ball (Manga), Production",
+      "url": "https://www.kanzenshuu.com/translations/bird-land-press-making-of-dragon-ball/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        1984
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 6
+    },
+    {
+      "id": "wj-1985-10-toriyama-neverending-story",
+      "title": "\"The NeverEnding Story\" Comment Weekly Shōnen Jump, 1985 #10 Anthology 18 February 1985 Akira Toriyama Illustrations, Promotional",
+      "url": "https://www.kanzenshuu.com/translations/wj-1985-10-toriyama-neverending-story/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1985
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 7
+    },
+    {
+      "id": "dr-slump-volume-18-dragon-ball-comments",
+      "title": "Dragon Ball Comments Dr. Slump, Volume 18 (pp. 224 & 238) Manga Comment 10 May 1985 Akira Toriyama Pre-Dragon Ball, Non-Dragon Ball, Dr. Slump, Manga",
+      "url": "https://www.kanzenshuu.com/translations/dr-slump-volume-18-dragon-ball-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1985
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 8
+    },
+    {
+      "id": "akira-toriyama-tankobon-introductions",
+      "title": "Akira Toriyama Introductions Dragon Ball Tankōbon, Volumes 1-42 Manga Introduction 10 September 1985 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-introductions/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1985
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 9
+    },
+    {
+      "id": "akira-toriyama-tankobon-ask-me-anything",
+      "title": "Toriyama- san ’s Dragon Ball Ask-Me-Anything Corner Dragon Ball Tankōbon, Volumes 1-12 Manga Introduction 10 September 1985 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
+      "kind": "qa",
+      "yearsMentioned": [
+        1985
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 10
+    },
+    {
+      "id": "telepal-1986-toriyama-takahashi",
+      "title": "Big Creators’ Talk: Akira Toriyama x Rumiko Takahashi TeLePAL, 1986 #3 (pp. 19-22) Magazine Interview 01 February 1986 Akira Toriyama, Rumiko Takahashi Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/telepal-1986-toriyama-takahashi/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1986
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 11
+    },
+    {
+      "id": "weekly-jump-1986-37-character-biography-data",
+      "title": "Character Biography Data Weekly Shōnen Jump, 1986 #37 Anthology Content Section 12 August 1986 None Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/weekly-jump-1986-37-character-biography-data/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        1986
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 12
+    },
+    {
+      "id": "adventure-special-toriyama-qa",
+      "title": "Is That So?! The Dragon Balls Dragon Ball: Adventure Special (pp. 138-140) Mook QA 18 November 1987 Akira Toriyama Dragon Ball (Manga), Characters, Production, Setting",
+      "url": "https://www.kanzenshuu.com/translations/adventure-special-toriyama-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        1987
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 13
+    },
+    {
+      "id": "akira-toriyama-blank-piece-theatre-vol2-this-is-how-i-became-a-cartoonist",
+      "title": "This is How I Became a Cartoonist Akira Toriyama’s _____piece Theatre, Vol. 2 (pp. 20, 72, 94, 140, 166, 184) Manga Comic 15 March 1988 Akira Toriyama Non-Dragon Ball, Manga",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-blank-piece-theatre-vol2-this-is-how-i-became-a-cartoonist/",
+      "kind": "other",
+      "yearsMentioned": [
+        1988
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 14
+    },
+    {
+      "id": "dragon-ball-z-anime-special-the-anime-and-me",
+      "title": "The Anime and Me Jump Gold Selection 4: Dragon Ball Z Anime Special Mook Comic 04 October 1989 Akira Toriyama Dragon Ball Z, Production",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-z-anime-special-the-anime-and-me/",
+      "kind": "other",
+      "yearsMentioned": [
+        1989
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 15
+    },
+    {
+      "id": "dragon-ball-z-anime-special-dragon-call",
+      "title": "Dragon Call Jump Gold Selection 4: Dragon Ball Z Anime Special Mook Content Section 04 October 1989 Kenji Shimizu, Keizō Shichijō, Kōzō Morishita, Takao Koyama, Daisuke Nishio, Minoru Maeda, Minoru Okazaki, Yūji Ikeda Dragon Ball Z, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-z-anime-special-dragon-call/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        1989
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 16
+    },
+    {
+      "id": "akira-toriyama-the-world-toriyama-vs-akimoto",
+      "title": "Face-to-Face Talk: Akira Toriyama vs Osamu Akimoto Akira Toriyama: The World (pp. 94-95) Artbook Interview 10 January 1990 Akira Toriyama, Osamu Akimoto Dragon Ball (Manga), Characters, Manga",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-the-world-toriyama-vs-akimoto/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1990
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 17
+    },
+    {
+      "id": "dragon-ball-z-anime-special-2-cartoon-classroom",
+      "title": "The Cartoon Classroom Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II Mook Content Section 06 June 1991 Akira Toriyama Dragon Ball (Manga), Characters, Drawing",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-z-anime-special-2-cartoon-classroom/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        1991
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 18
+    },
+    {
+      "id": "dbz-anime-special-2-super-anime-jin",
+      "title": "Super Anime-jin Roundtable Discussion Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II (pp. 138-140) Mook Roundtable 06 June 1991 Akira Toriyama, Masako Nozawa, Daisuke Nishio, Minoru Maeda, Takao Koyama, Kōzō Morishita Dragon Ball Z, Production, Staff, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dbz-anime-special-2-super-anime-jin/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1991
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 19
+    },
+    {
+      "id": "dbz-ongakushu-vol-1-kozo-morishita-comment",
+      "title": "Kōzō Morishita BGM Comment Dragon Ball Z Ongakushū Volume 1 Insert Pamphlet Comment 21 August 1992 Kōzō Morishita Dragon Ball Z, Music, BGM",
+      "url": "https://www.kanzenshuu.com/translations/dbz-ongakushu-vol-1-kozo-morishita-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1992
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 20
+    },
+    {
+      "id": "vjump-february-1993-dragon-ball-z-arcade-akira-toriyama-comment-design",
+      "title": "\"Dragon Ball Z\" (Arcade) Akira Toriyama Comment and Design V-Jump, February 1993 Anthology Comment 21 December 1992 Akira Toriyama Arcade, Design",
+      "url": "https://www.kanzenshuu.com/translations/vjump-february-1993-dragon-ball-z-arcade-akira-toriyama-comment-design/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1993,
+        1992
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 21
+    },
+    {
+      "id": "dbz-ongakushu-vol-2-hiruta-seiichi-comment",
+      "title": "Hiruta Sei’ichi BGM Comment Dragon Ball Z Ongakushū Volume 2 Insert Pamphlet Comment 01 May 1993 Hiruta Sei’ichi Dragon Ball Z, Music, BGM",
+      "url": "https://www.kanzenshuu.com/translations/dbz-ongakushu-vol-2-hiruta-seiichi-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1993
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 22
+    },
+    {
+      "id": "db-dbz-daizenshuu-5-disc-set-yu-hayakawa-comment",
+      "title": "Yū Hayakawa Comment: \"About This CD Set\" Dragon Ball & Dragon Ball Z Daizenshuu 5-Disc Set Insert Pamphlet Comment 01 April 1994 Yū Hayakawa Dragon Ball, Dragon Ball Z, Music, BGM",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-yu-hayakawa-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1994
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 23
+    },
+    {
+      "id": "db-dbz-daizenshuu-5-disc-set-kozo-morishita-comment",
+      "title": "Kōzō Morishita Comment: \"A Constant Straightforward Approach!\" Dragon Ball & Dragon Ball Z Daizenshuu 5-Disc Set Insert Pamphlet Comment 01 April 1994 Kōzō Morishita Dragon Ball, Dragon Ball Z, Music, BGM",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-kozo-morishita-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1994
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 24
+    },
+    {
+      "id": "db-dbz-daizenshuu-5-disc-set-shunsuke-kikuchi-comment",
+      "title": "Shunsuke Kikuchi Comment: \"Where Will This End Up Going?\" Dragon Ball & Dragon Ball Z Daizenshuu 5-Disc Set Insert Pamphlet Comment 01 April 1994 Shunsuke Kikuchi Dragon Ball, Dragon Ball Z, Music, BGM",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-shunsuke-kikuchi-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1994
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 25
+    },
+    {
+      "id": "db-dbz-daizenshuu-5-disc-set-shigeru-miyashita-comment",
+      "title": "Shigeru Miyashita Comment: \"Something Beyond 100%\" Dragon Ball & Dragon Ball Z Daizenshuu 5-Disc Set Insert Pamphlet Comment 01 April 1994 Shigeru Miyashita Dragon Ball, Dragon Ball Z, Music, BGM",
+      "url": "https://www.kanzenshuu.com/translations/db-dbz-daizenshuu-5-disc-set-shigeru-miyashita-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1994
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 26
+    },
+    {
+      "id": "weekly-playboy-1995-5-akira-toriyama-exclusive-interview",
+      "title": "Akira Toriyama – Exclusive Interview Weekly Playboy, 1995 #5 (pp. 43-46) Magazine Interview 17 January 1995 Akira Toriyama Dragon Ball (Manga), Manga, Production",
+      "url": "https://www.kanzenshuu.com/translations/weekly-playboy-1995-5-akira-toriyama-exclusive-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 27
+    },
+    {
+      "id": "momoko-sakura-akira-toriyama-correspondence-exchange",
+      "title": "Correspondence Exchange: Momoko Sakura & Akira Toriyama Momoko Sakura’s Technicolor World (pp. 74-75) Book Comment 19 April 1995 Akira Toriyama, Momoko Sakura Non-Dragon Ball, Illustration",
+      "url": "https://www.kanzenshuu.com/translations/momoko-sakura-akira-toriyama-correspondence-exchange/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 28
+    },
+    {
+      "id": "weekly-jump-1995-28-anime-j-wing-act-15",
+      "title": "Anime J Wing Act.15: The Invincible Combo!! Weekly Shōnen Jump, 1995 #28 Anthology Content Section 26 June 1995 None Dragon Ball (Manga), Dragon Ball (Anime), Characters",
+      "url": "https://www.kanzenshuu.com/translations/weekly-jump-1995-28-anime-j-wing-act-15/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 29
+    },
+    {
+      "id": "daizenshuu-1-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 1: Complete Illustrations (p. 13) Guidebook Introduction 20 June 1995 Akira Toriyama Dragon Ball (Manga), Illustrations",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-1-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 30
+    },
+    {
+      "id": "daizenshuu-1-akira-toriyama-super-interview",
+      "title": "Akira Toriyama Super Interview — 1 st Round Dragon Ball Daizenshuu 1: Complete Illustrations (pp. 202-207) Guidebook Interview 20 June 1995 Akira Toriyama Dragon Ball (Manga), Characters, Illustrations",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-1-akira-toriyama-super-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 31
+    },
+    {
+      "id": "daizenshuu-1-shenlong-times",
+      "title": "Shenlong Times — 1 st Issue Dragon Ball Daizenshuu 1: Complete Illustrations Insert Pamphlet Roundtable 20 June 1995 Akira Toriyama, Kazuhiko Torishima, Yū Kondō, Fuyuto Takeda, Jackie Chan Dragon Ball (Manga), Editors",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-1-shenlong-times/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 32
+    },
+    {
+      "id": "daizenshuu-2-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 2: Story Guide (p. 13) Guidebook Introduction 04 August 1995 Akira Toriyama Dragon Ball (Manga), Story",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-2-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 33
+    },
+    {
+      "id": "daizenshuu-2-akira-toriyama-super-interview",
+      "title": "Akira Toriyama Super Interview — 2 nd Round Dragon Ball Daizenshuu 2: Story Guide (pp. 261-265) Guidebook Interview 04 August 1995 Akira Toriyama Dragon Ball (Manga), Characters, Story",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-2-akira-toriyama-super-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 34
+    },
+    {
+      "id": "daizenshuu-2-shenlong-times",
+      "title": "Shenlong Times — 2 nd Issue Dragon Ball Daizenshuu 2: Story Guide Insert Pamphlet Roundtable 04 August 1995 Akira Toriyama, Kazuhiko Torishima, Yū Kondō, Fuyuto Takeda, Shingo Katori Dragon Ball (Manga), Editors, Story",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-2-shenlong-times/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 35
+    },
+    {
+      "id": "daizenshuu-3-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 3: TV Animation Part 1 (p. 13) Guidebook Introduction 04 September 1995 Akira Toriyama Dragon Ball (Anime), Dragon Ball Z, Animation",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-3-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 36
+    },
+    {
+      "id": "daizenshuu-3-akira-toriyama-super-interview",
+      "title": "Akira Toriyama Super Interview — 3 rd Round Dragon Ball Daizenshuu 3: TV Animation Part 1 (pp. 202-207) Guidebook Interview 04 September 1995 Akira Toriyama Dragon Ball (Anime), Dragon Ball Z, Animation",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-3-akira-toriyama-super-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 37
+    },
+    {
+      "id": "daizenshuu-3-shenlong-times",
+      "title": "Shenlong Times — 3 rd Issue Dragon Ball Daizenshuu 3: TV Animation Part 1 Insert Pamphlet Roundtable 04 September 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Masa’aki Satake Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-3-shenlong-times/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 38
+    },
+    {
+      "id": "daizenshuu-4-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 4: World Guide (p. 13) Guidebook Introduction 04 October 1995 Akira Toriyama Dragon Ball (Manga), World",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 39
+    },
+    {
+      "id": "daizenshuu-4-akira-toriyama-best",
+      "title": "Akira Toriyama’s Best Dragon Ball Daizenshuu 4: World Guide (pp. 38-39, 106, 108-109, 146-147) Guidebook QA 04 October 1995 Akira Toriyama Dragon Ball (Manga), Characters, Martial Arts, Setting, World",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-akira-toriyama-best/",
+      "kind": "qa",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 40
+    },
+    {
+      "id": "daizenshuu-4-akira-toriyama-super-interview",
+      "title": "Akira Toriyama Super Interview — 4 th Round Dragon Ball Daizenshuu 4: World Guide (pp. 164-169) Guidebook Interview 04 October 1995 Akira Toriyama Dragon Ball (Manga), Setting, World",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-akira-toriyama-super-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 41
+    },
+    {
+      "id": "daizenshuu-4-shenlong-times",
+      "title": "Shenlong Times — 4 th Issue Dragon Ball Daizenshuu 4: World Guide Insert Pamphlet Roundtable 04 October 1995 Akira Toriyama, Toshihiro Suzuki, Momoko Sakura Dragon Ball (Manga), Production, World",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-shenlong-times/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 42
+    },
+    {
+      "id": "daizenshuu-5-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 5: TV Animation Part 2 (p. 13) Guidebook Introduction 04 November 1995 Akira Toriyama Dragon Ball Z, Dragon Ball GT",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-5-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 43
+    },
+    {
+      "id": "daizenshuu-5-akira-toriyama-super-interview",
+      "title": "Akira Toriyama Super Interview — 5 th Round Dragon Ball Daizenshuu 5: TV Animation Part 2 (pp. 206-210) Guidebook Interview 04 November 1995 Akira Toriyama Dragon Ball Z, Animation, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-5-akira-toriyama-super-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 44
+    },
+    {
+      "id": "daizenshuu-5-shenlong-times",
+      "title": "Shenlong Times — 5 th Issue Dragon Ball Daizenshuu 5: TV Animation Part 2 Insert Pamphlet Roundtable 04 November 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Yūji Horii Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-5-shenlong-times/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 45
+    },
+    {
+      "id": "daizenshuu-6-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 6: Movies & TV Specials (p. 13) Guidebook Introduction 04 December 1995 Akira Toriyama Dragon Ball (Anime), Dragon Ball Z",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-6-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 46
+    },
+    {
+      "id": "daizenshuu-6-akira-toriyama-super-interview",
+      "title": "Akira Toriyama Super Interview — 6 th Round Dragon Ball Daizenshuu 6: Movies & TV Specials (pp. 212-216) Guidebook Interview 04 December 1995 Akira Toriyama Dragon Ball (Anime), Dragon Ball Z, Characters, Production",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-6-akira-toriyama-super-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 47
+    },
+    {
+      "id": "daizenshuu-6-shenlong-times",
+      "title": "Shenlong Times — 6 th Issue Dragon Ball Daizenshuu 6: Movies & TV Specials Insert Pamphlet Roundtable 04 December 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Daisaburō Okumoto Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-6-shenlong-times/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1995
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 48
+    },
+    {
+      "id": "daizenshuu-7-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 13) Guidebook Introduction 05 February 1996 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 49
+    },
+    {
+      "id": "daizenshuu-7-secret-stories-of-the-dragon-ball-characters",
+      "title": "Secret Stories of the Dragon Ball Characters Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 112) Guidebook QA 05 February 1996 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-secret-stories-of-the-dragon-ball-characters/",
+      "kind": "qa",
+      "yearsMentioned": [
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 50
+    },
+    {
+      "id": "daizenshuu-7-toriyama-thanks",
+      "title": "Thank You From Akira Toriyama Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 312) Guidebook Comment 05 February 1996 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-toriyama-thanks/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 51
+    },
+    {
+      "id": "daizenshuu-7-shenlong-times",
+      "title": "Shenlong Times — 7 th Issue Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia Insert Pamphlet Interview 05 February 1996 Akira Toriyama, Masakazu Katsura Dragon Ball (Manga), Dragon Ball GT, Production",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-shenlong-times/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 52
+    },
+    {
+      "id": "supplemental-daizenshuu-tv-animation-part-3-animations-gleanings",
+      "title": "Animation’s Gleanings Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 63-71) Guidebook Content Section 05 February 1996 None Dragon Ball (Anime), Dragon Ball Z, Production",
+      "url": "https://www.kanzenshuu.com/translations/supplemental-daizenshuu-tv-animation-part-3-animations-gleanings/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 53
+    },
+    {
+      "id": "supplemental-daizenshuu-super-voice-talks",
+      "title": "Special Voice-Actor Roundtable: Super Voice Talks Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 107-113) Guidebook Roundtable 05 February 1996 Toshio Furukawa, Mayumi Tanaka, Ryō Horikawa, Masako Nozawa, Tōru Furuya, Hiromi Tsuru, Hirotaka Suzuoki Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/supplemental-daizenshuu-super-voice-talks/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 54
+    },
+    {
+      "id": "weekly-jump-1996-13-akira-toriyama-dragon-ball-if-you-please",
+      "title": "Dragon Ball, If You Please Weekly Shōnen Jump, 1996 #13 (p. 3) Anthology Comic 27 February 1996 Akira Toriyama Dragon Ball GT",
+      "url": "https://www.kanzenshuu.com/translations/weekly-jump-1996-13-akira-toriyama-dragon-ball-if-you-please/",
+      "kind": "other",
+      "yearsMentioned": [
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 55
+    },
+    {
+      "id": "wired-japan-1997-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview WIRED Japan, January 1997 (\"Issue 3.01\"; pp. 62-63) Magazine Interview 21 November 1996 Akira Toriyama Dragon Ball (Manga), Manga, Production, Video Games",
+      "url": "https://www.kanzenshuu.com/translations/wired-japan-1997-akira-toriyama-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1997,
+        1996
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 56
+    },
+    {
+      "id": "dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview",
+      "title": "Masako Nozawa Long Interview Dragon Ball GT: Perfect File Vol. 2 (pp. 82-86) Guidebook Interview 17 December 1997 Masako Nozawa Dragon Ball GT",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1997
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 57
+    },
+    {
+      "id": "dragon-ball-children-01",
+      "title": "Dragon Ball Children Volume 1: Ei’ichirō Oda Dragon Ball Kanzenban Volume 1 Insert Pamphlet Comment 04 December 2002 Ei’ichirō Oda Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-01/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2002
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 58
+    },
+    {
+      "id": "dragon-ball-children-02",
+      "title": "Dragon Ball Children Volume 2: Masashi Kishimoto Dragon Ball Kanzenban Volume 3 Insert Pamphlet Comment 28 December 2002 Masashi Kishimoto Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-02/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2002
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 59
+    },
+    {
+      "id": "dragon-ball-children-03",
+      "title": "Dragon Ball Children Volume 3: Shin’ya Suzuki Dragon Ball Kanzenban Volume 5 Insert Pamphlet Comment 04 February 2003 Shin’ya Suzuki Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-03/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 60
+    },
+    {
+      "id": "dragon-ball-children-04",
+      "title": "Dragon Ball Children Volume 4: Yoshio Sawai Dragon Ball Kanzenban Volume 7 Insert Pamphlet Comment 04 March 2003 Yoshio Sawai Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-04/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 61
+    },
+    {
+      "id": "dragon-book-z-1-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Z DVD Box: Dragon Box Z Volume 1 — Dragon Book (p. 1) Booklet Introduction 19 March 2003 Akira Toriyama Dragon Ball Z",
+      "url": "https://www.kanzenshuu.com/translations/dragon-book-z-1-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 62
+    },
+    {
+      "id": "dragon-box-z1-staff-cast-qa",
+      "title": "\"Z\" Staff and Cast Q&A Dragon Ball Z DVD Box: Dragon Box Z Volume 1 — Dragon Book (pp. 108-111) Booklet QA 19 March 2003 Daisuke Nishio, Takao Koyama, Katsuyoshi Nakatsuru, Minoru Maeda, Kazuya Hisada, Tadayoshi Yamamuro, Shunsuke Kikuchi, Hiromi Tsuru, Masako Nozawa, Mayumi Tanaka, Ryō Horikawa, etc. Dragon Ball Z, Production, Staff, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-box-z1-staff-cast-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 63
+    },
+    {
+      "id": "dragon-ball-children-05",
+      "title": "Dragon Ball Children Volume 5: Yūsuke Murata Dragon Ball Kanzenban Volume 9 Insert Pamphlet Comment 04 April 2003 Yūsuke Murata Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-05/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 64
+    },
+    {
+      "id": "dragon-ball-children-06",
+      "title": "Dragon Ball Children Volume 6: Tite Kubo Dragon Ball Kanzenban Volume 11 Insert Pamphlet Comment 01 May 2003 Tite Kubo Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-06/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 65
+    },
+    {
+      "id": "dragon-ball-children-07",
+      "title": "Dragon Ball Children Volume 7: Kentarō Yabuki Dragon Ball Kanzenban Volume 13 Insert Pamphlet Comment 04 June 2003 Kentarō Yabuki Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-07/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 66
+    },
+    {
+      "id": "dragon-ball-children-08",
+      "title": "Dragon Ball Children Volume 8: Yasuhiro Kanō Dragon Ball Kanzenban Volume 15 Insert Pamphlet Comment 04 July 2003 Yasuhiro Kanō Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-08/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 67
+    },
+    {
+      "id": "dragon-ball-children-09",
+      "title": "Dragon Ball Children Volume 9: Mikio Itō Dragon Ball Kanzenban Volume 17 Insert Pamphlet Comment 04 August 2003 Mikio Itō Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-09/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 68
+    },
+    {
+      "id": "dragon-ball-children-10",
+      "title": "Dragon Ball Children Volume 10: Nakaba Suzuki Dragon Ball Kanzenban Volume 19 Insert Pamphlet Comment 04 September 2003 Nakaba Suzuki Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-10/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 69
+    },
+    {
+      "id": "dragon-book-z-2-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Z DVD Box: Dragon Box Z Volume 2 — Dragon Book (p. 1) Booklet Introduction 18 September 2003 Akira Toriyama Dragon Ball Z",
+      "url": "https://www.kanzenshuu.com/translations/dragon-book-z-2-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 70
+    },
+    {
+      "id": "son-goku-densetsu-toriyama-x-nakatsuru",
+      "title": "Akira Toriyama × Katsuyoshi Nakatsuru TV Anime Guide: Dragon Ball Z Son Goku Densetsu (pp. 90-102) Guidebook Interview 03 October 2003 Akira Toriyama, Katsuyoshi Nakatsuru Dragon Ball Z, Dragon Ball GT, Animation, Characters, Kanzenban, Production",
+      "url": "https://www.kanzenshuu.com/translations/son-goku-densetsu-toriyama-x-nakatsuru/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 71
+    },
+    {
+      "id": "dragon-ball-children-11",
+      "title": "Dragon Ball Children Volume 11: Ken’ichi Sakura Dragon Ball Kanzenban Volume 21 Insert Pamphlet Comment 03 October 2003 Ken’ichi Sakura Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-11/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 72
+    },
+    {
+      "id": "dragon-ball-children-12",
+      "title": "Dragon Ball Children Volume 12: Kenjirō Takeshita Dragon Ball Kanzenban Volume 23 Insert Pamphlet Comment 04 November 2003 Kenjirō Takeshita Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-12/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 73
+    },
+    {
+      "id": "dragon-ball-children-13",
+      "title": "Dragon Ball Children Volume 13: Norihiro Yagi Dragon Ball Kanzenban Volume 25 Insert Pamphlet Comment 04 December 2003 Norihiro Yagi Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-13/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 74
+    },
+    {
+      "id": "dragon-ball-landmark-dragon-ball-toriyama",
+      "title": "Akira Toriyama On the Road Kanzenban Official Guide: Dragon Ball Landmark (pp. 146-157) Guidebook Interview 19 December 2003 Akira Toriyama Dragon Ball (Manga), Jackie Chan, Bruce Lee",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-dragon-ball-toriyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 75
+    },
+    {
+      "id": "dragon-ball-landmark-toriyama-qa",
+      "title": "Surprise Project!! We Suddenly Asked Him in the Middle of Dinner! Kanzenban Official Guide: Dragon Ball Landmark (pp. 156-157) Guidebook QA 19 December 2003 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-toriyama-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2003
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 76
+    },
+    {
+      "id": "dragon-ball-children-14",
+      "title": "Dragon Ball Children Volume 14: Arina Tanemura Dragon Ball Kanzenban Volume 27 Insert Pamphlet Comment 05 January 2004 Arina Tanemura Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-14/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 77
+    },
+    {
+      "id": "dragon-ball-children-15",
+      "title": "Dragon Ball Children Volume 15: Ryō Azuki Dragon Ball Kanzenban Volume 29 Insert Pamphlet Comment 04 February 2004 Ryō Azuki Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-15/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 78
+    },
+    {
+      "id": "dragon-ball-children-16",
+      "title": "Dragon Ball Children Volume 16: Kōshi Rikudō Dragon Ball Kanzenban Volume 31 Insert Pamphlet Comment 04 March 2004 Kōshi Rikudō Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-16/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 79
+    },
+    {
+      "id": "dragon-ball-children-17",
+      "title": "Dragon Ball Children Volume 17: Kōta Hirano Dragon Ball Kanzenban Volume 33 Insert Pamphlet Comment 02 April 2004 Kōta Hirano Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-17/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 80
+    },
+    {
+      "id": "dragon-ball-forever-toriyama-qa",
+      "title": "We Asked Toriyama-sensei! Kanzenban Official Guide: Dragon Ball Forever (pp. 146-147, 150-154) Guidebook QA 30 April 2004 Akira Toriyama Dragon Ball (Manga), Characters, Kanzenban, Manga",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-forever-toriyama-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 81
+    },
+    {
+      "id": "dragon-ball-forever-dragon-ball-toriyama",
+      "title": "Akira Toriyama with Dragon Ball Kanzenban Official Guide: Dragon Ball Forever (pp. 146-155) Guidebook Interview 30 April 2004 Akira Toriyama Dragon Ball (Manga), Characters, Kanzenban, Manga, Setting",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 82
+    },
+    {
+      "id": "tenkaichi-densetsu-toriyama-koyama-nozawa",
+      "title": "The World’s Best Round-Table Discussion TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 80-91) Guidebook Interview 02 July 2004 Akira Toriyama, Takao Koyama, Masako Nozawa Dragon Ball (Anime), Dragon Ball Z, Characters, Production, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 83
+    },
+    {
+      "id": "tenkaichi-densetsu-masako-nozawa",
+      "title": "Son Goku / Gohan / Goten: Masako Nozawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 98-101) Guidebook QA 02 July 2004 Masako Nozawa Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-masako-nozawa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 84
+    },
+    {
+      "id": "tenkaichi-densetsu-toshio-furukawa",
+      "title": "Piccolo: Toshio Furukawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 102-105) Guidebook QA 02 July 2004 Toshio Furukawa Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toshio-furukawa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 85
+    },
+    {
+      "id": "tenkaichi-densetsu-ryo-horikawa",
+      "title": "Vegeta: Ryō Horikawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 106-109) Guidebook QA 02 July 2004 Ryō Horikawa Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryo-horikawa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 86
+    },
+    {
+      "id": "tenkaichi-densetsu-mayumi-tanaka",
+      "title": "Kuririn: Mayumi Tanaka TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 110-112) Guidebook QA 02 July 2004 Mayumi Tanaka Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-tanaka/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 87
+    },
+    {
+      "id": "tenkaichi-densetsu-toru-furuya",
+      "title": "Yamcha: Tōru Furuya TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 146-149) Guidebook QA 02 July 2004 Tōru Furuya Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toru-furuya/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 88
+    },
+    {
+      "id": "tenkaichi-densetsu-hirotaka-suzuoki",
+      "title": "Tenshinhan: Hirotaka Suzuoki TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 150-153) Guidebook QA 02 July 2004 Hirotaka Suzuoki Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hirotaka-suzuoki/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 89
+    },
+    {
+      "id": "tenkaichi-densetsu-takeshi-kusao",
+      "title": "Trunks: Takeshi Kusao TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 154-157) Guidebook QA 02 July 2004 Takeshi Kusao Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-kusao/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 90
+    },
+    {
+      "id": "tenkaichi-densetsu-hiromi-tsuru",
+      "title": "Bulma: Hiromi Tsuru TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 158-161) Guidebook QA 02 July 2004 Hiromi Tsuru Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiromi-tsuru/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 91
+    },
+    {
+      "id": "tenkaichi-densetsu-takeshi-aono",
+      "title": "Demon King Piccolo / God: Takeshi Aono TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 162-163) Guidebook QA 02 July 2004 Takeshi Aono Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-aono/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 92
+    },
+    {
+      "id": "tenkaichi-densetsu-yuko-minaguchi",
+      "title": "Videl: Yūko Minaguchi TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 164-165) Guidebook QA 02 July 2004 Yūko Minaguchi Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-yuko-minaguchi/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 93
+    },
+    {
+      "id": "tenkaichi-densetsu-mayumi-sho",
+      "title": "Chi-Chi: Mayumi Shō TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 166-167) Guidebook QA 02 July 2004 Mayumi Shō Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-sho/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 94
+    },
+    {
+      "id": "tenkaichi-densetsu-hiroshi-masuoka",
+      "title": "Kame-Sen’nin: Hiroshi Masuoka TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 168-169) Guidebook QA 02 July 2004 Hiroshi Masuoka Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiroshi-masuoka/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 95
+    },
+    {
+      "id": "tenkaichi-densetsu-ryusei-nakao",
+      "title": "Freeza: Ryūsei Nakao TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 170-171) Guidebook QA 02 July 2004 Ryūsei Nakao Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryusei-nakao/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 96
+    },
+    {
+      "id": "tenkaichi-densetsu-norio-wakamoto",
+      "title": "Cell: Norio Wakamoto TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 172-173) Guidebook QA 02 July 2004 Norio Wakamoto Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-norio-wakamoto/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 97
+    },
+    {
+      "id": "tenkaichi-densetsu-kozo-shioya",
+      "title": "Majin Boo: Kōzō Shioya TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 174-175) Guidebook QA 02 July 2004 Kōzō Shioya Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-kozo-shioya/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 98
+    },
+    {
+      "id": "tenkaichi-densetsu-joji-yanami",
+      "title": "Narration / Kaiō: Jōji Yanami TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (p. 176) Guidebook QA 02 July 2004 Jōji Yanami Dragon Ball (Anime), Dragon Ball Z, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-joji-yanami/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2004
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 99
+    },
+    {
+      "id": "dragon-book-gt-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book (p. 1) Booklet Introduction 15 June 2005 Akira Toriyama Dragon Ball GT",
+      "url": "https://www.kanzenshuu.com/translations/dragon-book-gt-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2005
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 100
+    },
+    {
+      "id": "dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview",
+      "title": "GT Back Then Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book (pp. 44-49) Booklet Interview 15 June 2005 Kōzō Morishita Dragon Ball GT, Production",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2005
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 101
+    },
+    {
+      "id": "dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa",
+      "title": "Dragon Ball Q Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book (pp. 56-59) Booklet QA 15 June 2005 Atsushi Maekawa Dragon Ball GT, Production",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2005
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 102
+    },
+    {
+      "id": "akira-toriyama-comments-super-dragon-ball-z",
+      "title": "Akira Toriyama’s Comment on \"Super Dragon Ball Z\" Official \"Super Dragon Ball Z\" Website Web/Online Comment 21 December 2005 Akira Toriyama Super Dragon Ball Z, Video Game",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-comments-super-dragon-ball-z/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2005
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 103
+    },
+    {
+      "id": "comments-super-dragon-ball-z-production-team",
+      "title": "Comments From \"Super Dragon Ball Z\" Production Team Official \"Super Dragon Ball Z\" Website Web/Online Comment 13 January 2006 Ryūichirō Baba, Noritaka Funamizu, Akira Nishitani Super Dragon Ball Z, Video Game",
+      "url": "https://www.kanzenshuu.com/translations/comments-super-dragon-ball-z-production-team/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2006
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 104
+    },
+    {
+      "id": "dragon-book-movies-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Box The Movies — Dragon Book (p. 1) Booklet Introduction 14 April 2006 Akira Toriyama Dragon Ball (Anime), Dragon Ball Z",
+      "url": "https://www.kanzenshuu.com/translations/dragon-book-movies-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2006
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 105
+    },
+    {
+      "id": "dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama",
+      "title": "Theatrical Story Q&A Dragon Box The Movies — Dragon Book (pp. 52-55) Booklet QA 14 April 2006 Takao Koyama Dragon Ball (Anime), Dragon Ball Z, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2006
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 106
+    },
+    {
+      "id": "cho-kochikame-akira-toriyama-introduction",
+      "title": "Akira Toriyama Comment Chō-Kochikame (p. 218) Manga Comment 15 September 2006 Akira Toriyama Non-Dragon Ball, Manga",
+      "url": "https://www.kanzenshuu.com/translations/cho-kochikame-akira-toriyama-introduction/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2006
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 107
+    },
+    {
+      "id": "jump-sq-may-2008-akira-toriyama-masakazu-katsura",
+      "title": "Akira Toriyama × Masakazu Katsura Jump SQ, May 2008 (pp. 8-10, 267-269) Anthology Interview 02 April 2008 Akira Toriyama, Masakazu Katsura Non-Dragon Ball, Galactic Patrol",
+      "url": "https://www.kanzenshuu.com/translations/jump-sq-may-2008-akira-toriyama-masakazu-katsura/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2008
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 108
+    },
+    {
+      "id": "maximum-the-hormone-f-single-liner-notes",
+      "title": "\"F\" Single Liner Notes Maximum the Hormone — \"Tsume Tsume Tsume / F\" Single Home Media Comment 09 July 2008 Maximum the Hormone Resurrection \"F\", Music",
+      "url": "https://www.kanzenshuu.com/translations/maximum-the-hormone-f-single-liner-notes/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2008
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 109
+    },
+    {
+      "id": "seg-story-volume-truth-about-dragon-ball",
+      "title": "The Truth About the \"Dragon Ball\" Manga Dragon Ball Super Exciting Guide: Story Volume (pp. 87-93) Guidebook QA 04 March 2009 Akira Toriyama Dragon Ball (Anime), Battle, Kanzenban, Manga, Production",
+      "url": "https://www.kanzenshuu.com/translations/seg-story-volume-truth-about-dragon-ball/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2009
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 110
+    },
+    {
+      "id": "jsat-manga-akira-toriyama-naho-ooishi-introduction",
+      "title": "Akira Toriyama & Naho Ooishi Introductions V-Jump, May 2009 (Insert Booklet; p. 1) Anthology Introduction 21 March 2009 Akira Toriyama, Naho Ooishi Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/jsat-manga-akira-toriyama-naho-ooishi-introduction/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2009
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 111
+    },
+    {
+      "id": "seg-character-volume-truth-about-dragon-ball",
+      "title": "The Truth About the \"Dragon Ball\" Manga, Part 2 Dragon Ball Super Exciting Guide: Character Volume (pp. 91-95) Guidebook QA 03 April 2009 Akira Toriyama Dragon Ball (Anime), Characters, Kanzenban, Manga, Setting, Techniques",
+      "url": "https://www.kanzenshuu.com/translations/seg-character-volume-truth-about-dragon-ball/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2009
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 112
+    },
+    {
+      "id": "kai_book-masako_nozawa",
+      "title": "Cast Interview #1: Masako Nozawa (Son Goku, et al.) Dragon Ball Kai Blu-ray Box #1 — Dragon Book (pp. 7-8) Booklet Interview 23 October 2009 Masako Nozawa Dragon Ball Kai, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/kai_book-masako_nozawa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2009
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 113
+    },
+    {
+      "id": "young-jump-2010-toriyama-x-katsura",
+      "title": "Jiya \"Super-Deluxe Talk\" — Toriyama × Katsura Young Jump, 2010 #07 (pp. 400-405) Anthology Interview 14 January 2010 Akira Toriyama, Masakazu Katsura Non-Dragon Ball, Galactic Patrol, Jiya",
+      "url": "https://www.kanzenshuu.com/translations/young-jump-2010-toriyama-x-katsura/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 114
+    },
+    {
+      "id": "kai_book-mayumi_tanaka",
+      "title": "Cast Interview #2: Mayumi Tanaka (Kuririn) Dragon Ball Kai Blu-ray Box #2 — Dragon Book (pp. 5-6) Booklet Interview 19 February 2010 Mayumi Tanaka Dragon Ball Kai, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/kai_book-mayumi_tanaka/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 115
+    },
+    {
+      "id": "training-manga-mind-akira-toriyama-qa",
+      "title": "Akira Toriyama Q&A Training the Manga Mind (pp. 37-42) Book QA 19 March 2010 Akira Toriyama Manga",
+      "url": "https://www.kanzenshuu.com/translations/training-manga-mind-akira-toriyama-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 116
+    },
+    {
+      "id": "golden_warrior-minoru_maeda",
+      "title": "Dragon Ball Back Then Vol. 1 Dragon Ball Anime Illustration Collection: The Golden Warrior (pp. 20-21) Artbook Interview 16 April 2010 Minoru Maeda Dragon Ball (Anime), Dragon Ball Z, Animation, Production",
+      "url": "https://www.kanzenshuu.com/translations/golden_warrior-minoru_maeda/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 117
+    },
+    {
+      "id": "golden_warrior-tadayoshi_yamamuro",
+      "title": "Dragon Ball Back Then Vol. 2 Dragon Ball Anime Illustration Collection: The Golden Warrior (pp. 50-51) Artbook Interview 16 April 2010 Tadayoshi Yamamuro Dragon Ball Z, Animation, Production",
+      "url": "https://www.kanzenshuu.com/translations/golden_warrior-tadayoshi_yamamuro/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 118
+    },
+    {
+      "id": "golden_warrior-katsuyoshi_nakatsuru",
+      "title": "Dragon Ball Back Then Vol. 3 Dragon Ball Anime Illustration Collection: The Golden Warrior (pp. 78-79) Artbook Interview 16 April 2010 Katsuyoshi Nakatsuru Dragon Ball Z, Dragon Ball GT, Animation, Production",
+      "url": "https://www.kanzenshuu.com/translations/golden_warrior-katsuyoshi_nakatsuru/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 119
+    },
+    {
+      "id": "kokoro-no-hane-dvd-masako-nozawa",
+      "title": "Voice Actor Q&A \"Kokoro no Hane\" Bonus DVD – Limited Edition Home Media QA 21 July 2010 Masako Nozawa Dragon Ball Kai",
+      "url": "https://www.kanzenshuu.com/translations/kokoro-no-hane-dvd-masako-nozawa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 120
+    },
+    {
+      "id": "extreme-battle-collection-round-02-toriyama-qa",
+      "title": "Special Column: Akira Toriyama — I’m Answering Dragon Ball Extreme Battle Collection: Round 02 (pp. 89-90) Guidebook QA 04 August 2010 Akira Toriyama Dragon Ball (Anime), Dragon Ball Z, Battle, Characters, Scouter",
+      "url": "https://www.kanzenshuu.com/translations/extreme-battle-collection-round-02-toriyama-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2010
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 121
+    },
+    {
+      "id": "special-selection-toriyama-bardock",
+      "title": "Akira Toriyama’s Comments on Bardock Dragon Ball Z Special Selection DVD Home Media Comment 05 August 2011 Akira Toriyama Dragon Ball Z",
+      "url": "https://www.kanzenshuu.com/translations/special-selection-toriyama-bardock/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2011
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 122
+    },
+    {
+      "id": "weekly-shonen-jump-2012-issue-33-akira-toriyama-comments",
+      "title": "Akira Toriyama’s 2013 Movie Comment Weekly Shōnen Jump, 2012 #33 (p. 13) Anthology Comment 14 July 2012 Akira Toriyama Battle of Gods",
+      "url": "https://www.kanzenshuu.com/translations/weekly-shonen-jump-2012-issue-33-akira-toriyama-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013,
+        2012
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 123
+    },
+    {
+      "id": "battle-of-gods-promotional-pamphlet-2-akira-toriyama",
+      "title": "Akira Toriyama Comment \"Dragon Ball Z: Battle of Gods\" Battle Book — Promotional Pamphlet Pamphlet Comment 01 February 2013 Akira Toriyama Battle of Gods",
+      "url": "https://www.kanzenshuu.com/translations/battle-of-gods-promotional-pamphlet-2-akira-toriyama/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 124
+    },
+    {
+      "id": "db-full-color-saiyan-arc-01",
+      "title": "Saiyan Arc, Vol. 1: Dragon Ball Q&A 7 Dragon Ball Full Color: Saiyan Arc Volume #1 (pp. 246-247) Manga QA 04 February 2013 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-01/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 125
+    },
+    {
+      "id": "db-full-color-saiyan-arc-02",
+      "title": "Saiyan Arc, Vol. 2: Dragon Ball Q&A 7 Dragon Ball Full Color: Saiyan Arc Volume #2 (pp. 244-245) Manga QA 04 February 2013 Akira Toriyama Dragon Ball (Manga), Characters, Scouter, Techniques",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-02/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 126
+    },
+    {
+      "id": "db-full-color-saiyan-arc-03",
+      "title": "Saiyan Arc, Vol. 3: Dragon Ball Q&A 7 Dragon Ball Full Color: Saiyan Arc Volume #3 (pp. 244-245) Manga QA 04 February 2013 Akira Toriyama Dragon Ball (Manga), Battle of Gods, Characters, Techniques",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-03/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 127
+    },
+    {
+      "id": "chozenshu-1-we-asked-akira-toriyama-2013",
+      "title": "We Asked Akira Toriyama! 2013 Dragon Ball Chōzenshū 1: Story & World Guide (pp. 28-31) Guidebook Interview 05 February 2013 Akira Toriyama Battle of Gods, Characters, Production, Setting, World",
+      "url": "https://www.kanzenshuu.com/translations/chozenshu-1-we-asked-akira-toriyama-2013/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 128
+    },
+    {
+      "id": "v-jump-april-2013-triple-z-talk",
+      "title": "ZZZ (Triple-Z) Talk V-Jump, April 2013 (pp. 160-162) Anthology Interview 21 February 2013 Masako Nozawa, Shōko Nakagawa, Kaori Matsumoto Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-april-2013-triple-z-talk/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 129
+    },
+    {
+      "id": "okstars-interview-vol-246-masahiro-hosoda",
+      "title": "Animation Director: Masahiro Hosoda OKStars Interview, Vol. 246 Web/Online Interview 01 March 2013 Masahiro Hosoda Battle of Gods, Production",
+      "url": "https://www.kanzenshuu.com/translations/okstars-interview-vol-246-masahiro-hosoda/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 130
+    },
+    {
+      "id": "okstars-interview-vol-249-tadayoshi-yamamuro",
+      "title": "Animation Supervisor: Tadayoshi Yamamuro OKStars Interview, Vol. 249 Web/Online Interview 01 March 2013 Tadayoshi Yamamuro Battle of Gods, Production",
+      "url": "https://www.kanzenshuu.com/translations/okstars-interview-vol-249-tadayoshi-yamamuro/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 131
+    },
+    {
+      "id": "saikyo-kids-z-interview",
+      "title": "Saikyō Kids Z Interview!!! Saikyō Jump, April 2013 (pp. 16-17) Anthology QA 04 March 2013 Masako Nozawa, Shōko Nakagawa, Kaori Matsumoto Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/saikyo-kids-z-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 132
+    },
+    {
+      "id": "super-long-interview-please-tell-us-akira-toriyama-sensei",
+      "title": "Super Long Interview!! Please Tell Us, Akira Toriyama- sensei !! Weekly Shōnen Jump, 2013 #14 thru #20 Anthology QA 04 March 2013 Akira Toriyama Battle of Gods",
+      "url": "https://www.kanzenshuu.com/translations/super-long-interview-please-tell-us-akira-toriyama-sensei/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 133
+    },
+    {
+      "id": "seiyu-animedia-april-2013-masako-nozawa-interview",
+      "title": "Masako Nozawa Interview Seiyū Animedia, April 2013 (p. 63) Magazine Interview 09 March 2013 Masako Nozawa Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/seiyu-animedia-april-2013-masako-nozawa-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 134
+    },
+    {
+      "id": "animage-april-2013-dbz-revived-feature",
+      "title": "\"DBZ, Revived!\" Feature Animage, April 2013 (pp. 108-109) Magazine Interview 10 March 2013 Masako Nozawa, FLOW Battle of Gods, Music, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/animage-april-2013-dbz-revived-feature/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 135
+    },
+    {
+      "id": "ure-pia-soken-yusuke-watanabe",
+      "title": "Yūsuke Watanabe Interview Ure-Pia Sōken Web/Online Interview 13 March 2013 Yūsuke Watanabe Battle of Gods, Production",
+      "url": "https://www.kanzenshuu.com/translations/ure-pia-soken-yusuke-watanabe/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 136
+    },
+    {
+      "id": "cddl-data-marchapril-2013-flow-interview",
+      "title": "FLOW Interview CD&DL Data, March/April 2013 (pp. 32-34) Magazine Interview 14 March 2013 FLOW Battle of Gods, Music",
+      "url": "https://www.kanzenshuu.com/translations/cddl-data-marchapril-2013-flow-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 137
+    },
+    {
+      "id": "animate-tv-masako-nozawa-interview",
+      "title": "Masako Nozawa Interview animate Times Web/Online Interview 15 March 2013 Masako Nozawa Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/animate-tv-masako-nozawa-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 138
+    },
+    {
+      "id": "battle-of-gods-differ-ariake-screening-report-and-comments",
+      "title": "\"Battle of Gods\" Differ Ariake Screening Report and Comments Toei Press Release Web/Online Comment 18 March 2013 Masako Nozawa, Masakazu Morita, Masaharu Satō, Mayumi Tanaka, Ryō Horikawa, Takeshi Kusao, FLOW Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/battle-of-gods-differ-ariake-screening-report-and-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 139
+    },
+    {
+      "id": "dvd-blu-ray-vision-april-2013-battle-of-gods",
+      "title": "FLOW / Masako Nozawa & Yūsuke Watanabe Interviews DVD & Blu-ray Vision, April 2013 (pp. 79-81) Magazine Interview 19 March 2013 Masako Nozawa, FLOW, Yūsuke Watanabe Battle of Gods, Music, Production, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dvd-blu-ray-vision-april-2013-battle-of-gods/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 140
+    },
+    {
+      "id": "otonafami-may-2013-issue-masako-nozawa-interview",
+      "title": "Masako Nozawa Interviews OtonaFami, May 2013 (p. 92) Magazine Interview 19 March 2013 Masako Nozawa Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/otonafami-may-2013-issue-masako-nozawa-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 141
+    },
+    {
+      "id": "v-jump-may-2013-akira-toriyama-special-interview",
+      "title": "Akira Toriyama Special Interview V-Jump, May 2013 (pp. 34-35) Anthology Interview 21 March 2013 Akira Toriyama Battle of Gods",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2013-akira-toriyama-special-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 142
+    },
+    {
+      "id": "v-jump-may-2013-naho-ooishi-toyotaro",
+      "title": "Double Dragon Talk V-Jump, May 2013 (pp. 81-83) Anthology Interview 21 March 2013 Naho Ooishi, Toyotarō Battle of Gods, Manga",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2013-naho-ooishi-toyotaro/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 143
+    },
+    {
+      "id": "bog-official-movie-guide-masako-nozawa",
+      "title": "Masako Nozawa Interview \"Dragon Ball Z: Battle of Gods\" Official Movie Guide (pp. 34-36) Mook Interview 21 March 2013 Masako Nozawa Battle of Gods, Production, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-masako-nozawa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 144
+    },
+    {
+      "id": "bog-official-movie-guide-cast-comments",
+      "title": "Cast Comment Collection \"Dragon Ball Z: Battle of Gods\" Official Movie Guide (pp. 37-40) Mook Comment 21 March 2013 Kōichi Yamadera, Masakazu Morita, Masaharu Satō, Hiromi Tsuru, Mayumi Tanaka, Ryō Horikawa, Toshio Furukawa, Tōru Furuya, Hikaru Midorikawa, Takeshi Kusao, Kaori Matsumoto, Shōko Nakagawa, FLOW Battle of Gods, Production, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-cast-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 145
+    },
+    {
+      "id": "bog-official-movie-guide-masahiro-hosoda",
+      "title": "Director Masahiro Hosoda Interview \"Dragon Ball Z: Battle of Gods\" Official Movie Guide (p. 41) Mook Interview 21 March 2013 Masahiro Hosoda Battle of Gods, Staff, Production",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-masahiro-hosoda/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 146
+    },
+    {
+      "id": "bog-official-movie-guide-staff-comments",
+      "title": "Main Staff Comment Collection \"Dragon Ball Z: Battle of Gods\" Official Movie Guide (p. 42) Mook Comment 21 March 2013 Yūsuke Watanabe, Tadayoshi Yamamuro, Hiroshi Katō, Norihito Sumitomo Battle of Gods, Staff, Production",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-staff-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 147
+    },
+    {
+      "id": "bog-official-movie-guide-akira-toriyama",
+      "title": "Akira Toriyama Special Interview \"Dragon Ball Z: Battle of Gods\" Official Movie Guide (pp. 43-44) Mook Interview 21 March 2013 Akira Toriyama Battle of Gods, Production",
+      "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-akira-toriyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 148
+    },
+    {
+      "id": "getnavi-may-2013-the-top-notch-cast-and-staff-talk",
+      "title": "The Top-Notch Cast and Staff Talk! GetNavi, May 2013 (Insert Booklet; pp. 4-5) Magazine Interview 23 March 2013 Masako Nozawa, FLOW, Yūsuke Watanabe Battle of Gods, Music, Production, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/getnavi-may-2013-the-top-notch-cast-and-staff-talk/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 149
+    },
+    {
+      "id": "mando-kobayashi-akira-toriyama-qa",
+      "title": "Akira Toriyama Q&A Mandō Kobayashi TV Program QA 24 March 2013 Akira Toriyama Battle of Gods, Characters",
+      "url": "https://www.kanzenshuu.com/translations/mando-kobayashi-akira-toriyama-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 150
+    },
+    {
+      "id": "2013-exhibit-artbook-akira-toriyama-introduction",
+      "title": "Akira Toriyama’s Introduction \"Akira Toriyama: The World of Dragon Ball\" 2013 Exhibit Artbook (p. 1) Artbook Introduction 27 March 2013 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/2013-exhibit-artbook-akira-toriyama-introduction/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 151
+    },
+    {
+      "id": "akira-toriyama-masako-nozawa-special-talk",
+      "title": "Akira Toriyama & Masako Nozawa Special Talk \"Akira Toriyama: The World of Dragon Ball\" 2013 Exhibit Display TV Program Interview 27 March 2013 Akira Toriyama Battle of Gods, Characters",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-masako-nozawa-special-talk/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 152
+    },
+    {
+      "id": "weekly-asahi-masako-nozawa-interview",
+      "title": "Mariko’s Guest Collection 659: Masako Nozawa Interview Weekly Asahi, 29 March 2013 (pp. 112-116) Magazine Interview 29 March 2013 Masako Nozawa Battle of Gods, Production, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/weekly-asahi-masako-nozawa-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 153
+    },
+    {
+      "id": "battle-of-gods-theatrical-program-akira-toriyama-comments",
+      "title": "Akira Toriyama Comment \"Dragon Ball Z: Battle of Gods\" Theatrical Program Booklet Comment 30 March 2013 Akira Toriyama Battle of Gods",
+      "url": "https://www.kanzenshuu.com/translations/battle-of-gods-theatrical-program-akira-toriyama-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 154
+    },
+    {
+      "id": "asahi-shimbun-digital-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview Asahi Shimbun Digital Web/Online Interview 30 March 2013 Akira Toriyama Battle of Gods, Production",
+      "url": "https://www.kanzenshuu.com/translations/asahi-shimbun-digital-akira-toriyama-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 155
+    },
+    {
+      "id": "official-battle-gods-website-toriyama-x-nakagawa-interview",
+      "title": "Akira Toriyama × Shōko Nakagawa Interview Official \"Dragon Ball Z: Battle of Gods\" Website Web/Online Interview 03 April 2013 Akira Toriyama, Shōko Nakagawa Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/official-battle-gods-website-toriyama-x-nakagawa-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 156
+    },
+    {
+      "id": "full-color-comics-freeza-arc-vol-4-akira-toriyama",
+      "title": "Freeza Arc, Vol. 4: Akira Toriyama Interview / Q&A Dragon Ball Full Color: Freeza Volume #4 (pp. 240-245) Manga Interview 04 April 2013 Akira Toriyama Dragon Ball (Manga), Battle of Gods, Characters, Production",
+      "url": "https://www.kanzenshuu.com/translations/full-color-comics-freeza-arc-vol-4-akira-toriyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 157
+    },
+    {
+      "id": "full-color-comics-freeza-arc-vol-5-akira-toriyama",
+      "title": "Freeza Arc, Vol. 5: Akira Toriyama Interview / Q&A Dragon Ball Full Color: Freeza Volume #5 (pp. 240-245) Manga Interview 04 April 2013 Akira Toriyama Dragon Ball (Manga), Battle of Gods, Characters, Production",
+      "url": "https://www.kanzenshuu.com/translations/full-color-comics-freeza-arc-vol-5-akira-toriyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 158
+    },
+    {
+      "id": "dragon-ball-sd-vol-1-akira-toriyamas-message",
+      "title": "Akira Toriyama Message Dragon Ball SD Volume 1 (p. 189) Manga Comment 04 April 2013 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-sd-vol-1-akira-toriyamas-message/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 159
+    },
+    {
+      "id": "takao-koyama-battle-of-gods-blog-post",
+      "title": "I saw \"Dragon Ball Z: Battle of Gods\"!! Noppo no Zakkan — Takao Koyama’s Personal Blog Web/Online Comment 07 April 2013 Takao Koyama Battle of Gods, Staff",
+      "url": "https://www.kanzenshuu.com/translations/takao-koyama-battle-of-gods-blog-post/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 160
+    },
+    {
+      "id": "chogashu-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Chōgashū: Super Art Collection (p. 3) Artbook Introduction 09 May 2013 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/chogashu-toriyama-intro/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 161
+    },
+    {
+      "id": "chogashu-akira-toriyama-super-interview-latest-edition",
+      "title": "Akira Toriyama Super Interview: Latest Edition Dragon Ball Chōgashū: Super Art Collection (pp. 224-225) Artbook Interview 09 May 2013 Akira Toriyama Dragon Ball (Manga), Dragon Ball GT, Battle of Gods, Characters, Kanzenban, Neko Majin",
+      "url": "https://www.kanzenshuu.com/translations/chogashu-akira-toriyama-super-interview-latest-edition/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 162
+    },
+    {
+      "id": "chozenshu-4-masako-nozawa",
+      "title": "Masako Nozawa Looks Back on Dragon Ball!! Dragon Ball Chōzenshū 4: Dragon Ball Super Encyclopedia (pp. 340-345) Guidebook Interview 09 May 2013 Masako Nozawa Dragon Ball (Anime), Dragon Ball Z, Dragon Ball GT, Dragon Ball Kai, Battle of Gods, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/chozenshu-4-masako-nozawa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 163
+    },
+    {
+      "id": "chozenshu-4-akira-toriyama",
+      "title": "Akira Toriyama Also Looks Back on Dragon Ball!! Dragon Ball Chōzenshū 4: Dragon Ball Super Encyclopedia (pp. 346-349) Guidebook Interview 09 May 2013 Akira Toriyama Dragon Ball (Manga), Dragon Ball (Anime), Dragon Ball Z, Dragon Ball GT, Battle of Gods, Kanzenban",
+      "url": "https://www.kanzenshuu.com/translations/chozenshu-4-akira-toriyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 164
+    },
+    {
+      "id": "maximum-the-hormone-yoshu-fukushu-liner-notes-f",
+      "title": "\"F\" Liner Notes Maximum the Hormone — \"Yoshū Fukushū\" Album Home Media Roundtable 31 July 2013 Maximum the Hormone Resurrection \"F\", Music",
+      "url": "https://www.kanzenshuu.com/translations/maximum-the-hormone-yoshu-fukushu-liner-notes-f/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 165
+    },
+    {
+      "id": "inside-story-jaco-galactic-patrolman-1",
+      "title": "The Inside Story on \"Jaco the Galactic Patrolman\", Part 1 Jump LIVE! App for iOS and Android Digital Comment 05 August 2013 Akira Toriyama Galactic Patrol, Jaco, Manga, Production",
+      "url": "https://www.kanzenshuu.com/translations/inside-story-jaco-galactic-patrolman-1/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 166
+    },
+    {
+      "id": "inside-story-jaco-galactic-patrolman-2",
+      "title": "The Inside Story on \"Jaco the Galactic Patrolman\", Part 2 Jump LIVE! App for iOS and Android Digital Comment 12 August 2013 Akira Toriyama Galactic Patrol, Jaco, Manga, Production",
+      "url": "https://www.kanzenshuu.com/translations/inside-story-jaco-galactic-patrolman-2/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 167
+    },
+    {
+      "id": "battle-gods-blu-ray-dvd-message",
+      "title": "Akira Toriyama’s Special Booklet Message \"Dragon Ball Z: Battle of Gods\" Special Limited Edition Box — Special Booklet (pp. 2-3) Booklet Comment 13 September 2013 Akira Toriyama Battle of Gods",
+      "url": "https://www.kanzenshuu.com/translations/battle-gods-blu-ray-dvd-message/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 168
+    },
+    {
+      "id": "battle-gods-animanga-akira-toriyama",
+      "title": "Akira Toriyama Godly Interview \"Dragon Ball Z: Battle of Gods\" Animation Comic (pp. 350-355) Manga Interview 04 October 2013 Akira Toriyama Battle of Gods, Production",
+      "url": "https://www.kanzenshuu.com/translations/battle-gods-animanga-akira-toriyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 169
+    },
+    {
+      "id": "v-jump-december-2013-akira-toriyama",
+      "title": "Tera-P / V-Jump Cartoonists’ Museum: Akira Toriyama V-Jump, December 2013 (pp. 453-457) Anthology QA 21 October 2013 Akira Toriyama, Naho Ooishi, Toyotarō, Engineer Yoshito Battle of Gods, Jaco, Galactic Patrol, Manga",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-december-2013-akira-toriyama/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 170
+    },
+    {
+      "id": "v-jump-december-2013-toyotaro-q-and-a",
+      "title": "V-Jump Cartoonists’ Museum: Toyotarō V-Jump, December 2013 (p. 260) Anthology QA 21 October 2013 Toyotarō Dragon Ball Heroes, Manga, Victory Mission",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-december-2013-toyotaro-q-and-a/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 171
+    },
+    {
+      "id": "v-jump-december-2013-naho-ooishi-q-and-a",
+      "title": "V-Jump Cartoonists’ Museum: Naho Ooishi V-Jump, December 2013 (p. 437) Anthology QA 21 October 2013 Naho Ooishi Dragon Ball SD, Manga",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-december-2013-naho-ooishi-q-and-a/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 172
+    },
+    {
+      "id": "saikyo-jump-december-2013-dbh-entry-book-0-author-comments",
+      "title": "Author Comments Saikyō Jump, December 2013; Dragon Ball Heroes Entry Book 0 (pp. 58, 66) Magazine Comment 02 November 2013 Toyotarō, Yoshitaka Nagayama Dragon Ball Heroes, Manga, Victory Mission, Charisma Mission",
+      "url": "https://www.kanzenshuu.com/translations/saikyo-jump-december-2013-dbh-entry-book-0-author-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 173
+    },
+    {
+      "id": "mens-non-no-akira-toriyama-interview",
+      "title": "\"I Want to Meet That Person\" Special: Akira Toriyama Men’s Non-No, January 2014 (pp. 183-187) Magazine Interview 10 December 2013 Akira Toriyama Dragon Ball (Manga), Doctor Slump, Jaco, Manga",
+      "url": "https://www.kanzenshuu.com/translations/mens-non-no-akira-toriyama-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2014,
+        2013
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 174
+    },
+    {
+      "id": "naho-ooishi-episode-bardock-introduction",
+      "title": "Naho Ooishi Introduction Dragon Ball: Episode of Bardock \"Super Kanzenban\" (Saikyō Jump Insert) Manga Introduction 04 February 2014 Naho Ooishi Dragon Ball (Manga), Episode of Bardock",
+      "url": "https://www.kanzenshuu.com/translations/naho-ooishi-episode-bardock-introduction/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 175
+    },
+    {
+      "id": "episode-bardock-akira-toriyama-super-qa",
+      "title": "Akira Toriyama- sensei Super Q&A Dragon Ball: Episode of Bardock \"Super Kanzenban\" (Saikyō Jump Insert; pp. 78-81) Manga QA 04 February 2014 Akira Toriyama, Naho Ooishi Dragon Ball (Manga), Episode of Bardock, Galactic Patrol, Jaco",
+      "url": "https://www.kanzenshuu.com/translations/episode-bardock-akira-toriyama-super-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 176
+    },
+    {
+      "id": "fuji-tv-dragon-ball-kai-producer-comments",
+      "title": "\"Dragon Ball Kai\" Producer Comments Fuji TV Official Website Web/Online Comment 24 February 2014 Osamu Nozaki, Norihiro Hayashida Dragon Ball Kai, Production",
+      "url": "https://www.kanzenshuu.com/translations/fuji-tv-dragon-ball-kai-producer-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 177
+    },
+    {
+      "id": "saikyo-jump-tell-us-toriyama-sensei-qa",
+      "title": "Tell Us, Akira Toriyama- sensei ! Saikyō Jump, April & May 2014 Anthology QA 04 March 2014 Akira Toriyama, Naho Ooishi Dragon Ball (Manga), Scouter",
+      "url": "https://www.kanzenshuu.com/translations/saikyo-jump-tell-us-toriyama-sensei-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 178
+    },
+    {
+      "id": "norihito-sumitomo-dragon-ball-kai-post",
+      "title": "Norihito Sumitomo \"Dragon Ball Kai\" Post Norihito Sumitomo’s Official Website Web/Online Comment 18 March 2014 Norihito Sumitomo Dragon Ball Kai, Battle of Gods, Music, BGM, Production",
+      "url": "https://www.kanzenshuu.com/translations/norihito-sumitomo-dragon-ball-kai-post/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 179
+    },
+    {
+      "id": "v-jump-may-2014-majin-buu-arc-comments",
+      "title": "Dragon Ball Kai Majin Boo Arc Comments V-Jump, May 2014 (p. 42) Anthology Comment 20 March 2014 Akira Toriyama, Masako Nozawa, Ryō Horikawa, Kōzō Shioya Dragon Ball Kai, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2014-majin-buu-arc-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 180
+    },
+    {
+      "id": "dragon-ball-kai-majin-buu-akira-toriyama-message",
+      "title": "Akira Toriyama Message Dragon Ball Kai \"Majin Boo Arc\" Press Screening Event Comment 28 March 2014 Akira Toriyama Dragon Ball Kai",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-kai-majin-buu-akira-toriyama-message/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 181
+    },
+    {
+      "id": "april-2014-akira-toriyama-obi-comments",
+      "title": "Akira Toriyama Collected Manga Volumes: April 2014 Obi Comments Shueisha’s \"Jaco the Galactic Patrolman\" Promotional Website Web/Online Comment 01 April 2014 Akira Toriyama Manga",
+      "url": "https://www.kanzenshuu.com/translations/april-2014-akira-toriyama-obi-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 182
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-01",
+      "title": "Artificial Human & Cell Arc, Vol. 1: Dragon Ball Q&A Dragon Ball Full Color: Artificial Human & Cell Arc Volume #1 (pp. 222-223) Manga QA 04 April 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-01/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 183
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-02",
+      "title": "Artificial Human & Cell Arc, Vol. 2: Dragon Ball Q&A Dragon Ball Full Color: Artificial Human & Cell Arc Volume #2 (pp. 226-227) Manga QA 04 April 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-02/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 184
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-03",
+      "title": "Artificial Human & Cell Arc, Vol. 3: Dragon Ball Q&A Dragon Ball Full Color: Artificial Human & Cell Arc Volume #3 (pp. 222-223) Manga QA 04 April 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-03/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 185
+    },
+    {
+      "id": "katsura-akira-author-comments",
+      "title": "Author Comments Katsura Akira (p. 2) Manga Comment 04 April 2014 Akira Toriyama, Masakazu Katsura Non-Dragon Ball, Galactic Patrol",
+      "url": "https://www.kanzenshuu.com/translations/katsura-akira-author-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 186
+    },
+    {
+      "id": "katsura-akira-premium-talk",
+      "title": "Masakazu Katsura & Akira Toriyama — Premium Talk Katsura Akira (pp. 192-201) Manga Interview 04 April 2014 Akira Toriyama, Masakazu Katsura Non-Dragon Ball, Galactic Patrol",
+      "url": "https://www.kanzenshuu.com/translations/katsura-akira-premium-talk/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 187
+    },
+    {
+      "id": "v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview",
+      "title": "Kōzō Shioya & Unshō Ishizuka Interview V-Jump, June 2014 (pp. 364-365) Anthology Interview 21 April 2014 Unshō Ishizuka, Kōzō Shioya Dragon Ball Kai, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 188
+    },
+    {
+      "id": "saikyo-jump-june-2014-issue-twel-buu-mysteries",
+      "title": "Twel-Boo Mysteries Saikyō Jump, June 2014 (pp. 7-11) Anthology QA 02 May 2014 Akira Toriyama, Naho Ooishi Dragon Ball (Manga), Dragon Ball Kai, Characters",
+      "url": "https://www.kanzenshuu.com/translations/saikyo-jump-june-2014-issue-twel-buu-mysteries/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 189
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-04",
+      "title": "Artificial Human & Cell Arc, Vol. 4: Dragon Ball Q&A Dragon Ball Full Color: Artificial Human & Cell Arc Volume #4 (pp. 230-231) Manga QA 02 May 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-04/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 190
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-05",
+      "title": "Artificial Human & Cell Arc, Vol. 5: Dragon Ball Q&A Dragon Ball Full Color: Artificial Human & Cell Arc Volume #5 (pp. 220-221) Manga QA 02 May 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-05/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 191
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-06",
+      "title": "Artificial Human & Cell Arc, Vol. 6: Dragon Ball Q&A Dragon Ball Full Color: Artificial Human & Cell Arc Volume #6 (pp. 218-221) Manga QA 02 May 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-06/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 192
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-03",
+      "title": "Majin Boo Arc, Vol. 3: Dragon Ball Q&A Dragon Ball Full Color: Majin Boo Arc Volume #3 (pp. 230-231) Manga QA 04 June 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-03/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 193
+    },
+    {
+      "id": "saikyo-jump-july-2014-akira-toriyama-me-lately",
+      "title": "Me Lately Saikyō Jump, July 2014 (p. 5) Anthology Comic 04 June 2014 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/saikyo-jump-july-2014-akira-toriyama-me-lately/",
+      "kind": "other",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 194
+    },
+    {
+      "id": "saikyo-jump-july-2014-ooishi-toriyama-scouters-qa",
+      "title": "Naho Ooishi Goes to the Source!! Saikyō Jump, July 2014 (pp. 28-29) Anthology QA 04 June 2014 Akira Toriyama, Naho Ooishi Dragon Ball (Manga), Scouter",
+      "url": "https://www.kanzenshuu.com/translations/saikyo-jump-july-2014-ooishi-toriyama-scouters-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 195
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-04",
+      "title": "Majin Boo Arc, Vol. 4: Dragon Ball Q&A Dragon Ball Full Color: Majin Boo Arc Volume #4 (pp. 228-231) Manga QA 04 July 2014 Akira Toriyama Dragon Ball (Manga), Characters, Techniques",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-04/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 196
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-05",
+      "title": "Majin Boo Arc, Vol. 5: Dragon Ball Q&A Dragon Ball Full Color: Majin Boo Arc Volume #5 (pp. 218-223) Manga QA 04 July 2014 Akira Toriyama Dragon Ball (Manga), Characters, Setting",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-05/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 197
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-06",
+      "title": "Majin Boo Arc, Vol. 6: Dragon Ball Q&A Dragon Ball Full Color: Majin Boo Arc Volume #6 (pp. 227-229) Manga QA 04 July 2014 Akira Toriyama Dragon Ball (Manga), Characters",
+      "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-06/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 198
+    },
+    {
+      "id": "v-jump-september-2014-akira-toriyama-comment",
+      "title": "Akira Toriyama’s 2015 Movie Comment V-Jump, September 2014 (p. 89) Anthology Comment 19 July 2014 Akira Toriyama Resurrection \"F\"",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-september-2014-akira-toriyama-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015,
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 199
+    },
+    {
+      "id": "v-jump-january-2015-akira-toriyama-comment",
+      "title": "Akira Toriyama Comment V-Jump, January 2015 (p. 97) Anthology Comment 21 November 2014 Akira Toriyama Resurrection \"F\"",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-january-2015-akira-toriyama-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015,
+        2014
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 200
+    },
+    {
+      "id": "norihito-sumitomo-staff-revival-of-f-blog-post",
+      "title": "Norihito Sumitomo \"Resurrection ’F'\" Post Norihito Sumitomo’s Official Website Web/Online Comment 20 February 2015 Norihito Sumitomo Resurrection \"F\", Music, BGM, Production",
+      "url": "https://www.kanzenshuu.com/translations/norihito-sumitomo-staff-revival-of-f-blog-post/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 201
+    },
+    {
+      "id": "weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview",
+      "title": "Momoiro Clover Z Interview Weekly Shōnen Jump, 2015 #15 (p. 20) Anthology Interview 09 March 2015 Momoka Ariyasu, Ayaka Sasaki, Kanako Momota, Shiori Tamai, Reni Takagi Resurrection \"F\", Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 202
+    },
+    {
+      "id": "flying-postman-press-april-2015-ryusei-nakao",
+      "title": "Ryūsei Nakao Interview Flying Postman Press, April 2015 (p. 2) Magazine Interview 20 March 2015 Ryūsei Nakao Resurrection \"F\", Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-ryusei-nakao/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 203
+    },
+    {
+      "id": "flying-postman-press-april-2015-norihiro-hayashida",
+      "title": "Norihiro Hayashida Interview Flying Postman Press, April 2015 (p. 4) Magazine Interview 20 March 2015 Norihiro Hayashida Resurrection \"F\", Production",
+      "url": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-norihiro-hayashida/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 204
+    },
+    {
+      "id": "entermix-may-2015-momoiro-clover-z-interview",
+      "title": "Momoiro Clover Z Interview Entermix, May 2015 (pp. 76-77) Magazine Interview 20 March 2015 Momoka Ariyasu, Ayaka Sasaki, Kanako Momota, Shiori Tamai, Reni Takagi Resurrection \"F\", Music, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/entermix-may-2015-momoiro-clover-z-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 205
+    },
+    {
+      "id": "entermix-may-2015-ryusei-nakao-interview",
+      "title": "Ryūsei Nakao Interview Entermix, May 2015 (p. 78) Magazine Interview 20 March 2015 Ryūsei Nakao Resurrection \"F\", Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/entermix-may-2015-ryusei-nakao-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 206
+    },
+    {
+      "id": "v-jump-may-2015-momoiro-clover-z",
+      "title": "Momoiro Clover Z Interview V-Jump, May 2015 (p. 9) Anthology Interview 20 March 2015 Momoka Ariyasu, Ayaka Sasaki, Kanako Momota, Shiori Tamai, Reni Takagi Resurrection \"F\", Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2015-momoiro-clover-z/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 207
+    },
+    {
+      "id": "v-jump-may-2015-naho-ooishi-toyotaro",
+      "title": "Double Dragon Talk 2!!! V-Jump, May 2015 (pp. 10-11) Anthology QA 20 March 2015 Naho Ooishi, Toyotarō Resurrection \"F\", Manga",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2015-naho-ooishi-toyotaro/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 208
+    },
+    {
+      "id": "v-jump-may-2015-issue-akira-toriyama-comments",
+      "title": "Akira Toriyama \"Resurrection ’F'\" Comment V-Jump, May 2015 (p. 8) Anthology Comment 20 March 2015 Akira Toriyama Resurrection \"F\"",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-may-2015-issue-akira-toriyama-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 209
+    },
+    {
+      "id": "volume-f-akira-toriyama-script-comments",
+      "title": "Akira Toriyama Script Comments Dragon Ball: Volume \"F\" (various pages) Booklet Comment 18 April 2015 Akira Toriyama Resurrection \"F\", Production",
+      "url": "https://www.kanzenshuu.com/translations/volume-f-akira-toriyama-script-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 210
+    },
+    {
+      "id": "v-jump-june-2015-ryusei-nakao-interview",
+      "title": "Ryūsei Nakao Interview V-Jump, June 2015 (pp. 332-333) Anthology Interview 21 April 2015 Ryūsei Nakao Resurrection \"F\", Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-june-2015-ryusei-nakao-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 211
+    },
+    {
+      "id": "v-jump-august-2015-issue-akira-toriyama-comments",
+      "title": "Akira Toriyama \"Dragon Ball Super\" Comment V-Jump, August 2015 (p. 8) Anthology Comment 20 June 2015 Akira Toriyama Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-august-2015-issue-akira-toriyama-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 212
+    },
+    {
+      "id": "dragon-ball-super-super-start-guide-message-from-akira-toriyama",
+      "title": "Message From Akira Toriyama Dragon Ball Super: Super Start Guide Mook Comment 03 July 2015 Akira Toriyama Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-start-guide-message-from-akira-toriyama/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 213
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-masako-nozawa",
+      "title": "\"Dragon Ball Super\" Cast Comment — Masako Nozawa Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Comment 04 July 2015 Masako Nozawa Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-masako-nozawa/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 214
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-ryo-horikawa",
+      "title": "\"Dragon Ball Super\" Cast Comment — Ryō Horikawa Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Comment 04 July 2015 Ryō Horikawa Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-ryo-horikawa/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 215
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-toshio-furukawa",
+      "title": "\"Dragon Ball Super\" Cast Comment — Toshio Furukawa Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Comment 05 July 2015 Toshio Furukawa Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-toshio-furukawa/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 216
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-takeshi-kusao",
+      "title": "\"Dragon Ball Super\" Cast Comment — Takeshi Kusao Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Comment 05 July 2015 Takeshi Kusao Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-takeshi-kusao/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 217
+    },
+    {
+      "id": "dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka",
+      "title": "\"Dragon Ball Super\" Cast Comment — Kōzō Shioya & Unshō Ishizuka Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Comment 22 August 2015 Kōzō Shioya, Unshō Ishizuka Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 218
+    },
+    {
+      "id": "resurrection-f-anime-comic-message-from-akira-toriyama",
+      "title": "Message From Akira Toriyama \"Dragon Ball Z: Resurrection ’F'\" Animation Comic (p. 357) Manga Comment 04 December 2015 Akira Toriyama Resurrection \"F\", Production",
+      "url": "https://www.kanzenshuu.com/translations/resurrection-f-anime-comic-message-from-akira-toriyama/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2015
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 219
+    },
+    {
+      "id": "dragon-ball-super-history-book-akira-toriyama-introduction",
+      "title": "Akira Toriyama 30th Anniversary Message 30th Anniversary: Dragon Ball Chōshishū -Super History Book- (p. 2) Guidebook Comment 21 January 2016 Akira Toriyama Dragon Ball (Manga), 30th Anniversary",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-history-book-akira-toriyama-introduction/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 220
+    },
+    {
+      "id": "dragon-ball-super-history-book-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview: Dragon Ball and Akira Toriyama 30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 88-93) Guidebook Interview 21 January 2016 Akira Toriyama Dragon Ball (Manga), 30th Anniversary",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-history-book-akira-toriyama-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 221
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-01",
+      "title": "Video Games Selection – Pick Up! 01 30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 182-183) Guidebook Interview 21 January 2016 Nobuyuki Tanaka, Toshihiro Suzuki Video Game, 30th Anniversary",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-01/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 222
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-02",
+      "title": "Video Games Selection – Pick Up! 02 30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 184-185) Guidebook Interview 21 January 2016 Toshihiro Suzuki Video Game, 30th Anniversary",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-02/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 223
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-03",
+      "title": "Video Games Selection – Pick Up! 03 30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 186-187) Guidebook Interview 21 January 2016 Daisuke Uchiyama Video Game, 30th Anniversary",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-03/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 224
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-04",
+      "title": "Video Games Selection – Pick Up! 04 30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 188-189) Guidebook Interview 21 January 2016 Ryō Mito Video Game, 30th Anniversary",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-04/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 225
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-05",
+      "title": "Video Games Selection – Pick Up! 05 30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 190-191) Guidebook Interview 21 January 2016 Masayuki Hirano Video Game, 30th Anniversary",
+      "url": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-05/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 226
+    },
+    {
+      "id": "v-jump-march-2016-akira-toriyama-dragon-ball-super-character-designs",
+      "title": "Akira Toriyama \"Dragon Ball Super\" Character Designs V-Jump, March 2017 (p. 121) Anthology Content Section 21 January 2016 None Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-march-2016-akira-toriyama-dragon-ball-super-character-designs/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        2017,
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 227
+    },
+    {
+      "id": "dragon-ball-super-original-soundtrack-norihito-sumitomo-comment",
+      "title": "Norihito Sumitomo Comment Dragon Ball Super Original Soundtrack Home Media Comment 24 February 2016 Norihito Sumitomo Dragon Ball Super, BGM, Music",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-original-soundtrack-norihito-sumitomo-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 228
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version",
+      "title": "Tori-Toyo Free Talk (Book Version) Dragon Ball Super (Manga) Volume 1 Manga Interview 04 April 2016 Akira Toriyama, Toyotarō Dragon Ball (Manga), Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 229
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version",
+      "title": "Tori-Toyo Free Talk (Web Version) Shueisha’s Official V-Jump Website Web/Online Interview 04 April 2016 Akira Toriyama, Toyotarō Dragon Ball Super, Manga",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 230
+    },
+    {
+      "id": "dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc",
+      "title": "Takeshi Kusao Special Interview Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 10 June 2016 Takeshi Kusao Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 231
+    },
+    {
+      "id": "ic-carddass-akira-toriyama-congratulatory-message",
+      "title": "Akira Toriyama Congratulatory Message Official \"IC Carddass Dragon Ball Trading Card Game\" Website Web/Online Comment 15 July 2016 Akira Toriyama Video Game",
+      "url": "https://www.kanzenshuu.com/translations/ic-carddass-akira-toriyama-congratulatory-message/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 232
+    },
+    {
+      "id": "animedia-december-2016-atsushi-kido-dragon-ball-super-comments",
+      "title": "Atsushi Kido \"Dragon Ball Super\" Comments Animedia, December 2016 (p. 27) Magazine QA 10 November 2016 Atsushi Kido Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/animedia-december-2016-atsushi-kido-dragon-ball-super-comments/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 233
+    },
+    {
+      "id": "v-jump-january-2017-dragon-ball-super-rivals-super-biographies",
+      "title": "\"Dragon Ball Super\" Rivals Super Biographies V-Jump, January 2017 (pp. 364-365) Anthology Content Section 21 November 2016 None Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-january-2017-dragon-ball-super-rivals-super-biographies/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        2017,
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 234
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 1) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 22 November 2016 Masako Nozawa, Mami Koyama Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 235
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 2) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 22 November 2016 Masako Nozawa, Mami Koyama Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 236
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy",
+      "title": "Toyotarō- sensei ’s Super Anatomy!!! Dragon Ball Super (Manga) Volume 2 Manga QA 02 December 2016 Toyotarō Dragon Ball (Manga), Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 237
+    },
+    {
+      "id": "dragon-ball-super-tori-toyo-free-talk-vol-2",
+      "title": "Tori-Toyo Free Talk Vol. 2 Dragon Ball Super (Manga) Volume 4 Manga Interview 02 December 2016 Akira Toriyama, Toyotarō Dragon Ball (Manga), Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-tori-toyo-free-talk-vol-2/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2016
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 238
+    },
+    {
+      "id": "animedia-february-2017-dragon-ball-super-universe-survival-arc-article",
+      "title": "\"Dragon Ball Super: Universe Survival Arc\" Article Animedia, February 2017 (p. 93) Magazine Content Section 10 January 2017 None Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/animedia-february-2017-dragon-ball-super-universe-survival-arc-article/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        2017
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 239
+    },
+    {
+      "id": "the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview",
+      "title": "\"The Case of Being Reincarnated as Yamcha\" Interview BuzzFeed Japan Web/Online Interview 28 January 2017 None Production",
+      "url": "https://www.kanzenshuu.com/translations/the-case-of-being-reincarnated-as-yamcha-buzzfeed-japan-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2017
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 240
+    },
+    {
+      "id": "showa-vs-heisei-top-20-toriyama-comment",
+      "title": "Hero & Heroine Top 20 — Akira Toriyama Comment Shōwa vs Heisei TV Special TV Program Comment 26 August 2017 Akira Toriyama Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/showa-vs-heisei-top-20-toriyama-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2017
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 241
+    },
+    {
+      "id": "saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa",
+      "title": "We Asked Akira Toriyama- sensei ! Saiyan Special Q&A Dragon Ball: Saiyan Super Strongest Comics (Saikyō Jump Insert; pp. 116-119) Booklet QA 01 December 2017 Akira Toriyama Dragon Ball (Manga), Saiyans",
+      "url": "https://www.kanzenshuu.com/translations/saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2017
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 242
+    },
+    {
+      "id": "special-project-toyotaro-drew-it",
+      "title": "Special Project — Toyotarō Drew It! Dragon Ball Official Site Web/Online Comment 15 December 2017 Toyotarō Dragon Ball Super, Illustration, Manga",
+      "url": "https://www.kanzenshuu.com/translations/special-project-toyotaro-drew-it/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2017
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 243
+    },
+    {
+      "id": "asahi-kazuhiko-torishima-interview-jump-50th-anniversary",
+      "title": "Jump 50th Anniversary: Kazuhiko Torishima Interview Asashi: Aera Dot Web/Online Interview 17 February 2018 Kazuhiko Torishima Dragon Ball (Manga), Editors, Production",
+      "url": "https://www.kanzenshuu.com/translations/asahi-kazuhiko-torishima-interview-jump-50th-anniversary/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 244
+    },
+    {
+      "id": "dragon-ball-official-site-the-artisans-who-made-the-universe-survival-arc",
+      "title": "The Artisans Who Made the Universe Survival Arc Dragon Ball Official Site Web/Online Comment 09 March 2018 Satoru Takami, Ryōta Nakamura Dragon Ball Super, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-the-artisans-who-made-the-universe-survival-arc/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 245
+    },
+    {
+      "id": "interview-relay-toward-final-episode-mayumi-tanaka",
+      "title": "Final Episode Interview: Mayumi Tanaka (Kuririn) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 19 March 2018 Mayumi Tanaka Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-mayumi-tanaka/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 246
+    },
+    {
+      "id": "interview-relay-toward-final-episode-hikaru-midorikawa",
+      "title": "Final Episode Interview: Hikaru Midorikawa (Tenshinhan) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 19 March 2018 Hikaru Midorikawa Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-hikaru-midorikawa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 247
+    },
+    {
+      "id": "interview-relay-toward-final-episode-miki-ito",
+      "title": "Final Episode Interview: Miki Itō (No. 18) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 20 March 2018 Miki Itō Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-miki-ito/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 248
+    },
+    {
+      "id": "interview-relay-toward-final-episode-masaharu-sato",
+      "title": "Final Episode Interview: Masaharu Satō (Kame-Sen’nin) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 20 March 2018 Masaharu Satō Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-masaharu-sato/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 249
+    },
+    {
+      "id": "interview-relay-toward-final-episode-toshio-furukawa",
+      "title": "Final Episode Interview: Toshio Furukawa (Piccolo) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 21 March 2018 Toshio Furukawa Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-toshio-furukawa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 250
+    },
+    {
+      "id": "interview-relay-toward-final-episode-ryo-horikawa",
+      "title": "Final Episode Interview: Ryō Horikawa (Vegeta) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 21 March 2018 Ryō Horikawa Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-ryo-horikawa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 251
+    },
+    {
+      "id": "interview-relay-toward-final-episode-shigeru-nakahara",
+      "title": "Final Episode Interview: Shigeru Nakahara (No. 17) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 22 March 2018 Shigeru Nakahara Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-shigeru-nakahara/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 252
+    },
+    {
+      "id": "interview-relay-toward-final-episode-ryusei-nakao",
+      "title": "Final Episode Interview: Ryūsei Nakao (Freeza) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 23 March 2018 Ryūsei Nakao Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-ryusei-nakao/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 253
+    },
+    {
+      "id": "interview-relay-toward-final-episode-masako-nozawa",
+      "title": "Final Episode Interview: Masako Nozawa (Son Goku & Son Gohan) Toei Animation’s Official \"Dragon Ball Super\" Website Web/Online Interview 24 March 2018 Masako Nozawa Dragon Ball Super, Voice Actor",
+      "url": "https://www.kanzenshuu.com/translations/interview-relay-toward-final-episode-masako-nozawa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 254
+    },
+    {
+      "id": "akio-iyoku-dbs-movie-interview",
+      "title": "Dragon Ball Movie Frontline: Akio Iyoku Dragon Ball Official Site Web/Online Interview 29 April 2018 Akio Iyoku Dragon Ball Super, Broly, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/akio-iyoku-dbs-movie-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 255
+    },
+    {
+      "id": "nintendo-classic-mini-famicom-kazuhiko-torishima-interview",
+      "title": "Kazuhiko Torishima Interview Nintendo Classic Mini Famicom Jump Edition Guide Book Guidebook Interview 06 July 2018 Kazuhiko Torishima Production, Video Games",
+      "url": "https://www.kanzenshuu.com/translations/nintendo-classic-mini-famicom-kazuhiko-torishima-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 256
+    },
+    {
+      "id": "tatsuya-nagamine-dbs-movie-interview",
+      "title": "Dragon Ball Movie Frontline: Tatsuya Nagamine Dragon Ball Official Site Web/Online Interview 05 August 2018 Tatsuya Nagamine Dragon Ball Super, Broly, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/tatsuya-nagamine-dbs-movie-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 257
+    },
+    {
+      "id": "naohiro-shintani-dbs-movie-interview",
+      "title": "Dragon Ball Movie Frontline: Naohiro Shintani Dragon Ball Official Site Web/Online Interview 19 August 2018 Naohiro Shintani Dragon Ball Super, Broly, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/naohiro-shintani-dbs-movie-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 258
+    },
+    {
+      "id": "dragon-ball-movie-frontline-norihito-sumitomo",
+      "title": "Dragon Ball Movie Frontline: Norihito Sumitomo Dragon Ball Official Site Web/Online Interview 21 October 2018 Norihito Sumitomo Dragon Ball Super, Broly, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-movie-frontline-norihito-sumitomo/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 259
+    },
+    {
+      "id": "vjump-january-2019-nagamine-interview",
+      "title": "Director Nagamine Speaks!! V-Jump, January 2019 (pp. 82-83) Anthology Interview 21 November 2018 Tatsuya Nagamine Dragon Ball Super, Broly, Production, Staff",
+      "url": "https://www.kanzenshuu.com/translations/vjump-january-2019-nagamine-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2019,
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 260
+    },
+    {
+      "id": "vjump-january-2019-toyotaro-broly",
+      "title": "Toyotarō \"Dragon Ball Super: Broly\" Comment & Illustration V-Jump, January 2019 (p. 83) Anthology Comment 21 November 2018 Toyotarō Dragon Ball Super, Broly",
+      "url": "https://www.kanzenshuu.com/translations/vjump-january-2019-toyotaro-broly/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2019,
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 261
+    },
+    {
+      "id": "toyotaro-galactic-patrol-prisoner-arc-comment",
+      "title": "Toyotarō \"Dragon Ball Super: Galactic Patrol Prisoner Arc\" Comment Saikyō Jump, January 2019, Supplemental Booklet (p. 57) Anthology Comment 01 December 2018 Toyotarō Dragon Ball Super, Galactic Patrol",
+      "url": "https://www.kanzenshuu.com/translations/toyotaro-galactic-patrol-prisoner-arc-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2019,
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 262
+    },
+    {
+      "id": "toyotaro-shiirasu-design-comment",
+      "title": "Toyotarō Shiirasu Design Comment V-Jump, February 2019 (p. 24) Anthology Comment 21 December 2018 Toyotarō Dragon Ball Heroes, Galactic Patrol, Design",
+      "url": "https://www.kanzenshuu.com/translations/toyotaro-shiirasu-design-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2019,
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 263
+    },
+    {
+      "id": "sponichi-dbs-broly-shinbun-rio-uchida",
+      "title": "Dārio’s Dragon Ball Love Sports Nippon Dragon Ball Super: Broly Times (pp. 2-3) Guidebook Interview 12 December 2018 Rio Uchida Dragon Ball Super, Broly",
+      "url": "https://www.kanzenshuu.com/translations/sponichi-dbs-broly-shinbun-rio-uchida/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 264
+    },
+    {
+      "id": "sponichi-dbs-broly-shinbun-toyotaro",
+      "title": "Toyotarō Draws It Sports Nippon Dragon Ball Super: Broly Times (pp. 6-7) Guidebook Interview 12 December 2018 Toyotarō Dragon Ball Super, Broly",
+      "url": "https://www.kanzenshuu.com/translations/sponichi-dbs-broly-shinbun-toyotaro/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 265
+    },
+    {
+      "id": "sponichi-dbs-broly-shinbun-voice-actor-roundtable",
+      "title": "Dragon Ball Super: Broly Passionate Cross-Talk Sports Nippon Dragon Ball Super: Broly Times (pp. 12-13) Guidebook Interview 12 December 2018 Masako Nozawa, Ryō Horikawa, Bin Shimada, Ryūsei Nakao Dragon Ball Super, Broly",
+      "url": "https://www.kanzenshuu.com/translations/sponichi-dbs-broly-shinbun-voice-actor-roundtable/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 266
+    },
+    {
+      "id": "sponichi-dbs-broly-shinbun-staff-cast-comments",
+      "title": "Dragon Ball Super: Broly Staff & Cast Comments Sports Nippon Dragon Ball Super: Broly Times (pp. 20-21) Guidebook Comment 12 December 2018 Tatsuya Nagamine, Naohiro Shintani, Nobuhito Sue, Kazuo Ogura, Aya Hisakawa, Nana Mizuki, Tomokazu Sugita Dragon Ball Super, Broly",
+      "url": "https://www.kanzenshuu.com/translations/sponichi-dbs-broly-shinbun-staff-cast-comments/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 267
+    },
+    {
+      "id": "dbs-broly-theatrical-program-naohiro-shintani",
+      "title": "Naohiro Shintani Interview \"Dragon Ball Super: Broly\" Theatrical Program (Super Edition) Guidebook Comment 14 December 2018 Naohiro Shintani Dragon Ball Super, Broly, Production",
+      "url": "https://www.kanzenshuu.com/translations/dbs-broly-theatrical-program-naohiro-shintani/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 268
+    },
+    {
+      "id": "dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview",
+      "title": "Toyotarō Workspace Interview Dragon Ball Official Site Web/Online Interview 03 December 2019 Toyotarō Manga, Dragon Ball Super, Production",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2019
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 269
+    },
+    {
+      "id": "unite-tokyo-dragon-ball-video-game-development-interview-part-1",
+      "title": "Dragon Ball Video Game Development — Part 1 ITmedia Business Online Web/Online Roundtable 04 December 2019 Kazuhiko Torishima, Daisuke Uchiyama, Shin Unozawa Production, Video Games",
+      "url": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-1/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        2019
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 270
+    },
+    {
+      "id": "unite-tokyo-dragon-ball-video-game-development-interview-part-2",
+      "title": "Dragon Ball Video Game Development — Part 2 ITmedia Business Online Web/Online Roundtable 05 December 2019 Kazuhiko Torishima, Daisuke Uchiyama, Shin Unozawa Production, Video Games",
+      "url": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-2/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        2019
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 271
+    },
+    {
+      "id": "unite-tokyo-dragon-ball-video-game-development-interview-part-3",
+      "title": "Dragon Ball Video Game Development — Part 3 ITmedia Business Online Web/Online Roundtable 06 December 2019 Kazuhiko Torishima, Daisuke Uchiyama, Shin Unozawa Production, Video Games",
+      "url": "https://www.kanzenshuu.com/translations/unite-tokyo-dragon-ball-video-game-development-interview-part-3/",
+      "kind": "roundtable",
+      "yearsMentioned": [
+        2019
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 272
+    },
+    {
+      "id": "dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form",
+      "title": "\"Toyotarō Drew It!\" Debuts in Figure Form!! Dragon Ball Official Site Web/Online Interview 15 July 2020 Toyotarō Illustration, Manga, Merchandise",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2020
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 273
+    },
+    {
+      "id": "vj-official-dragon-ball-super-inside-scoop-editor-video",
+      "title": "Dragon Ball Super: The Inside Scoop from the Editor!! Dragon Ball Official Site, V-JumPlay Official News Web/Online Interview 14 October 2020 Victory Uchida Dragon Ball Super, Manga, Production",
+      "url": "https://www.kanzenshuu.com/translations/vj-official-dragon-ball-super-inside-scoop-editor-video/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2020
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 274
+    },
+    {
+      "id": "vjump-february-2021-we-ask-toyotaro-sensei",
+      "title": "We ask Toyotarō-sensei! V-Jump, February 2021 Magazine Interview 21 December 2021 Toyotarō Manga, Dragon Ball Super, Manga, Production",
+      "url": "https://www.kanzenshuu.com/translations/vjump-february-2021-we-ask-toyotaro-sensei/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2021
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 275
+    },
+    {
+      "id": "v-jump-june-2022-back-up-comic-chapter-35",
+      "title": "Back-Up Comic: Victory Asada’s Road Toward Super Top-Class!!! Chapter 35 V-Jump, June 2022 Magazine Interview 21 April 2022 Tetsuro Kodama Dragon Ball Super, Super Hero, Production",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-june-2022-back-up-comic-chapter-35/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2022
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 276
+    },
+    {
+      "id": "dbssh-ost-naoki-sato-comment",
+      "title": "Naoki Satō Comment Dragon Ball Super: Super Hero Original Soundtrack Home Media Comment 08 June 2022 Naoki Satō Dragon Ball Super: Super Hero, Music, BGM",
+      "url": "https://www.kanzenshuu.com/translations/dbssh-ost-naoki-sato-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2022
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 277
+    },
+    {
+      "id": "dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview",
+      "title": "Chikashi Kubota Interview Dragon Ball Super: Super Hero Theatrical Pamphlet Booklet Interview 11 June 2022 Chikashi Kubota Dragon Ball Super, Super Hero, Production",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2022
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 278
+    },
+    {
+      "id": "sand-land-movie-akira-toriyama-qa",
+      "title": "Akira Toriyama Q&A \"Sand Land\" Movie Official Website & Special Booklet Web/Online + Print Interview 21 March 2023 Akira Toriyama Sand Land, Non-Dragon Ball, Production",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-movie-akira-toriyama-qa/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2023
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 279
+    },
+    {
+      "id": "dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1",
+      "title": "Ultimate Interview Vol. 1 Dr. Mashirito’s Ultimate Manga Technique Guidebook Interview 21 July 2023 Kazuhiko Torishima, Akira Toriyama Dragon Ball (Manga), Production",
+      "url": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2023
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 280
+    },
+    {
+      "id": "dr-mashiritos-ultimate-manga-technique-torishima-toriyama-back-then",
+      "title": "Torishima & Toriyama Back Then Dr. Mashirito’s Ultimate Manga Technique Guidebook Comic 21 July 2023 Kazuhiko Torishima, Akira Toriyama Dragon Ball (Manga), Production",
+      "url": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-torishima-toriyama-back-then/",
+      "kind": "other",
+      "yearsMentioned": [
+        2023
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 281
+    },
+    {
+      "id": "sand-land-production-secrets",
+      "title": "Ask Akira Toriyama: \"Sand Land\" Production Secrets Sand Land (Kanzenban) Manga Interview 04 August 2023 Akira Toriyama Sand Land, Non-Dragon Ball, Manga, Production",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-production-secrets/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2023
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 282
+    },
+    {
+      "id": "sand-land-series-akira-toriyama-comment",
+      "title": "Akira Toriyama Comment \"Sand Land\" Official Website Web/Online Comment 04 March 2024 Akira Toriyama Sand Land, Non-Dragon Ball, Production",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-series-akira-toriyama-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 283
+    },
+    {
+      "id": "taaf-2024-akira-toriyama-comment",
+      "title": "Akira Toriyama Lifetime Achievement Award Comment Tokyo Anime Award Festival 2024 Booklet Comment 08 March 2024 Akira Toriyama Award",
+      "url": "https://www.kanzenshuu.com/translations/taaf-2024-akira-toriyama-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 284
+    },
+    {
+      "id": "chunichi-shimbun-article-hisashi-tanaka",
+      "title": "Hisashi Tanaka Article Chunichi Shimbun Web/Online Interview 09 March 2024 Hisashi Tanaka Production, Assistants, Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-hisashi-tanaka/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 285
+    },
+    {
+      "id": "chunichi-shimbun-article-takashi-matsuyama",
+      "title": "Takashi Matsuyama Article Chunichi Shimbun Web/Online Interview 09 March 2024 Takashi Matsuyama Production, Assistants, Dragon Ball (Manga)",
+      "url": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-takashi-matsuyama/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 286
+    },
+    {
+      "id": "dragon-ball-official-site-march-2024-toyotaro-interview",
+      "title": "Toyotarō Interview Dragon Ball Official Site Web/Online Interview 21 March 2024 Toyotarō Manga, Dragon Ball Super, Production",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-march-2024-toyotaro-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 287
+    },
+    {
+      "id": "sand-land-video-game-akira-toriyama-comment",
+      "title": "Akira Toriyama Comment \"Sand Land\" Video Game Social Media Web/Online Comment 24 March 2024 Akira Toriyama Sand Land, Non-Dragon Ball, Production, Video Games",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-video-game-akira-toriyama-comment/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 288
+    },
+    {
+      "id": "interval-special-toyotaro-drawing-gevo",
+      "title": "Dragon Ball Super Interval Special — Toyotarō Drawing (Gevo) Dragon Ball Official Site & V-Jump, June 2024 Web/Online + Print Comment 19 April 2024 Toyotarō Illustration, Manga",
+      "url": "https://www.kanzenshuu.com/translations/interval-special-toyotaro-drawing-gevo/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 289
+    },
+    {
+      "id": "interval-special-toyotaro-drawing-gohan-beast",
+      "title": "Dragon Ball Super Interval Special — Toyotarō Drawing (Gohan Beast) Dragon Ball Official Site & V-Jump, July 2024 Web/Online + Print Comment 21 May 2024 Toyotarō Illustration, Manga",
+      "url": "https://www.kanzenshuu.com/translations/interval-special-toyotaro-drawing-gohan-beast/",
+      "kind": "authorial-comment",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 290
+    },
+    {
+      "id": "weekly-toyo-keizai-article-dragon-ball-rights-dispute",
+      "title": "Fervor and Chaos Regarding the \"Dragon Ball Money\" Weekly Toyo Keizai Magazine Article 08 July 2024 n/a Industry",
+      "url": "https://www.kanzenshuu.com/translations/weekly-toyo-keizai-article-dragon-ball-rights-dispute/",
+      "kind": "editorial",
+      "yearsMentioned": [
+        2024
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 291
+    },
+    {
+      "id": "mantanweb-daima-akiyo-iyoku-1",
+      "title": "Dragon Ball Daima (Akio Iyoku Interview #1) MANTANWEB Web/Online Interview 11 February 2025 Akio Iyoku Dragon Ball Daima, Production",
+      "url": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2025
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 292
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-24-toyotaro-afterword",
+      "title": "Toyotarō Afterword Dragon Ball Super (Manga) Volume 24 Manga Interview 04 April 2025 Toyotarō Dragon Ball (Manga), Dragon Ball Super",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2025
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": false,
+      "sequence": 293
+    }
+  ]
+}
