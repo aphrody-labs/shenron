@@ -35,10 +35,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/young-jump-2010-toriyama-x-katsura/",
         "questionAnswerCount": 20,
-        "formatNote": "La transcription comprend 14 questions d'entretien, cinq panneaux de manga reproduits en Q/R (items 15–19) et une dernière question sur d'éventuelles collaborations."
+        "formatNote": "La transcription comprend 14 questions d'entretien, cinq panneaux de manga reproduits en Q/R (items 15–19) et une dernière question sur d'éventuelles collaborations.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Indirecte : entretien de création sur Jiya, sans information narrative Dragon Ball; contexte utile sur les méthodes de travail de Toriyama et Katsura.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "kai_book-mayumi_tanaka",
@@ -63,10 +65,12 @@
           "Mayumi Tanaka"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/kai_book-mayumi_tanaka/",
-        "questionAnswerCount": 4
+        "questionAnswerCount": 4,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe pour la réception et l'interprétation vocale de Kuririn et la production de Kai; les analyses des personnages sont celles de leur comédienne.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "golden_warrior-katsuyoshi_nakatsuru",
@@ -94,10 +98,12 @@
           "Katsuyoshi Nakatsuru"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-katsuyoshi_nakatsuru/",
-        "questionAnswerCount": 12
+        "questionAnswerCount": 12,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : création de Super Saiyan 4 et du design de GT, échanges avec Toriyama, histoire de l'animation et avis personnel sur la poursuite du manga.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "golden_warrior-minoru_maeda",
@@ -125,10 +131,12 @@
           "Minoru Maeda"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-minoru_maeda/",
-        "questionAnswerCount": 11
+        "questionAnswerCount": 11,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : character design, suivi artistique du manga dans l'anime et méthode de création des personnages originaux; perspective d'un animateur et character designer.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "golden_warrior-tadayoshi_yamamuro",
@@ -155,10 +163,147 @@
           "Tadayoshi Yamamuro"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-tadayoshi_yamamuro/",
-        "questionAnswerCount": 12
+        "questionAnswerCount": 12,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : animation des personnages et combats, créations des films, transformations, influences de Bruce Lee et réception du travail de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "training-manga-mind-akira-toriyama-qa",
+      "title": "Training the Manga Mind (19 March 2010)",
+      "kind": "qa",
+      "summary": "Dans un entretien par courriel sur son métier, Toriyama décrit ses outils, son passage à la couleur numérique et l’importance d’un papier lisse. Il explique sa mise en page des combats, sa méthode de storyboard, sa préférence pour une histoire claire, fluide et légèrement surprenante, et dit retrouver son état d’esprit d’enfant pour créer du manga shōnen.",
+      "keyInformation": [
+        "Outils : encre Pilot, plume Zebra, Photoshop/Painter",
+        "mouvement par mise en page et taille des cases",
+        "récit lisible, rythmé et surprenant."
+      ],
+      "source": {
+        "date": "19 March 2010",
+        "publication": "Training the Manga Mind",
+        "pages": "pp. 37-42",
+        "bibliographicYears": [
+          2010
+        ],
+        "url": "https://www.kanzenshuu.com/translations/training-manga-mind-akira-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/training-manga-mind-akira-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/training-manga-mind-akira-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 15,
+        "questionBlockCount": 15,
+        "answerBlockCount": 15,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the Akira Toriyama Q&A session from the March 2010 release of 'Training the Manga Mind'",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Informations concrètes sur les méthodes de dessin et les principes narratifs de Toriyama.",
+      "formatNote": "Interview par courriel présentée en questions-réponses."
+    },
+    {
+      "id": "kokoro-no-hane-dvd-masako-nozawa",
+      "title": "Kokoro no Hane Bonus DVD – Limited Edition",
+      "kind": "qa",
+      "summary": "Masako Nozawa commente Team Dragon et l’ending doux de Kai. Elle explique qu’elle prend Goku et Gohan au sérieux et vit avec eux intérieurement au quotidien. Elle invite les fans à faire découvrir la série à leur entourage pour élargir encore son public.",
+      "keyInformation": [
+        "Nozawa ne sépare pas ses personnages d’elle-même",
+        "elle apprécie la tonalité apaisée de l’ending et encourage le bouche-à-oreille."
+      ],
+      "source": {
+        "date": "21 July 2010",
+        "publication": "Kokoro no Hane  Bonus DVD – Limited Edition",
+        "pages": null,
+        "bibliographicYears": [
+          2010
+        ],
+        "url": "https://www.kanzenshuu.com/translations/kokoro-no-hane-dvd-masako-nozawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/kokoro-no-hane-dvd-masako-nozawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/kokoro-no-hane-dvd-masako-nozawa.html",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "A translation of the short Q&A session with Masako Nozawa (voice of Son Goku and Son Gohan) on the Kokoro no Hane Limited Edition DVD",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Éclairage sur le rapport de la doubleuse historique à Goku et Gohan.",
+      "formatNote": "Q&A issu d’un DVD bonus."
+    },
+    {
+      "id": "extreme-battle-collection-round-02-toriyama-qa",
+      "title": "Dragon Ball Extreme Battle Collection: Round 02",
+      "kind": "qa",
+      "summary": "Toriyama revient sur l’anime, les combats et les techniques. Il laissait l’équipe libre, à part une fois où le ton lui sembla trop édulcoré ; il avait choisi Nozawa après audition et jugeait sa voix conforme à son image de Goku. Il explique la lisibilité des combats, la visualisation du ki, l’évolution des niveaux et résultats pendant l’écriture et l’utilité narrative des scouters.",
+      "keyInformation": [
+        "Choix de Nozawa par audition",
+        "combats lisibles",
+        "puissance et résultats pouvaient changer pendant la création",
+        "scouter rend la force et le repérage compréhensibles."
+      ],
+      "source": {
+        "date": "04 August 2010",
+        "publication": "Dragon Ball Extreme Battle Collection: Round 02",
+        "pages": "pp. 89-90",
+        "bibliographicYears": [
+          2010
+        ],
+        "url": "https://www.kanzenshuu.com/translations/extreme-battle-collection-round-02-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/extreme-battle-collection-round-02-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/extreme-battle-collection-round-02-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage direct sur l’adaptation animée et la narration du manga.",
+      "formatNote": "Colonne Q&A suivie d’un encadré éditorial."
+    },
+    {
+      "id": "site-post-4365-hironobu-kageyama-interview-excerpt",
+      "title": "Hironobu Kageyama Interview (excerpt)",
+      "kind": "interview-excerpt",
+      "summary": "Dans le seul échange reproduit, Hironobu Kageyama cite « CHA-LA HEAD-CHA-LA » comme la chanson dont il est le plus fier, en expliquant que le public réagit avec enthousiasme lorsqu’il la chante. Le billet renvoie ensuite à l’entretien externe complet.",
+      "keyInformation": [
+        "Le billet Kanzenshuu reproduit un seul échange question-réponse de l’entretien externe."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2010/02/17/hironobu-kageyama-interview/",
+        "publication": "Otaku2 interview, one Q&A excerpt reproduced by Kanzenshuu",
+        "publicationDate": "17 February 2010",
+        "participants": [
+          "Hironobu Kageyama",
+          "PG (interviewer)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Interview excerpt",
+        "questionAnswerCount": 1,
+        "scopeNote": "Un seul échange est reproduit; l’entretien externe complet n’est pas inclus."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Music, CHA-LA HEAD-CHA-LA"
     }
   ]
 }

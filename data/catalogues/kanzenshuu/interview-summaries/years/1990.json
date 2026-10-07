@@ -19,10 +19,12 @@
         "pages": "94–95",
         "date": "1990-01-10",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/akira-toriyama-the-world-toriyama-vs-akimoto/",
-        "questionAnswerCount": 6
+        "questionAnswerCount": 6,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : Goku, écriture des adversaires et conception des personnages; méthode générale de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

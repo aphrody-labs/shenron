@@ -392,6 +392,203 @@
       ],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "year": 2026,
+      "id": "site-post-80266-dr-slump-hilltop-interview",
+      "url": "https://www.kanzenshuu.com/2026/08/24/dr-slump-hilltop/",
+      "title": "Q&A With “Dr. Slump” PlayStation Game Fan Translator Hilltop",
+      "publication": "Kanzenshuu interview post",
+      "publicationType": "Website Q&A",
+      "format": "Interview Q&A",
+      "publicationDate": "24 August 2026",
+      "participants": [
+        "Hilltop (fan translator)"
+      ],
+      "topics": [
+        "Dr. Slump",
+        "PlayStation",
+        "Fan translation",
+        "Game hacking"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Kanzenshuu conducts a direct Q&A with the fan translator Hilltop about their translation and hacking work on the Dr. Slump PlayStation game; the post contains six question prompts, including a bonus question.",
+      "questionCount": 6,
+      "sectionHeadings": [],
+      "editorialSummary": "Hilltop raconte son parcours vers la traduction et le hacking de jeux, explique son intérêt pour le jeu PlayStation Dr. Slump et les apprentissages de ce premier projet. Le Q&A aborde aussi des détails à repérer dans le jeu, puis compare les apports d’un traducteur humain à ceux de la traduction automatique. Une question bonus porte sur Boku no Natsuyasumi 2.",
+      "reviewStatus": "source-checked-summary-written"
+    },
+    {
+      "year": 2026,
+      "id": "site-post-80126-dragon-ball-z-goku-hishoden-kazetrigger-interview",
+      "url": "https://www.kanzenshuu.com/2026/08/10/goku-hishoden-kazetrigger/",
+      "title": "Q&A With “Dragon Ball Z: Gokū Hishōden” Game Boy Game Fan Translator Kazetrigger",
+      "publication": "Kanzenshuu interview post",
+      "publicationType": "Website Q&A",
+      "format": "Interview Q&A",
+      "publicationDate": "10 August 2026",
+      "participants": [
+        "Kazetrigger (fan translator and game hacker)"
+      ],
+      "topics": [
+        "Dragon Ball Z: Gokū Hishōden",
+        "Fan translation",
+        "Game Boy",
+        "Game hacking"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Kanzenshuu conducts a direct Q&A with the fan translator Kazetrigger about the Game Boy game Gokū Hishōden and its English translation; the post contains five question prompts.",
+      "questionCount": 5,
+      "sectionHeadings": [],
+      "editorialSummary": "Kazetrigger décrit son parcours de joueur et de traducteur, puis explique pourquoi il a choisi Gokū Hishōden. Il évoque la traduction japonaise, les limites de mémoire de la Game Boy et la compression graphique qui a compliqué le romhacking. Il partage des conseils pour le premier combat contre Copy Goku et analyse les limites de l’IA pour traduire un jeu sans contexte ni compréhension des voix, des pronoms et des jeux de mots.",
+      "reviewStatus": "source-checked-summary-written"
+    },
+    {
+      "id": "site-post-73737-podcast-episode-0503",
+      "url": "https://www.kanzenshuu.com/2023/06/26/podcast-episode-0503/",
+      "title": "Podcast Episode #0503 — Julian",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio interview",
+      "publicationDate": "2023-06-26",
+      "participants": [
+        "Julian"
+      ],
+      "topics": [
+        "Kanzenshuu history and translation work"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0503.mp3",
+      "acquired": true,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Kanzenshuu post announces the interview and provides a short show synopsis; the audio is linked from the podcast RSS but has not been transcribed.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Premier épisode d’une série d’entretiens avec les membres de l’équipe Kanzenshuu. Julian revient sur ses débuts en 2002, le relancement de Daizenshuu EX et le développement de son travail de traduction. Le synopsis précise que l’épisode avait été enregistré cinq ans auparavant; aucun transcript n’est fourni.",
+      "reviewStatus": "synopsis-checked-audio-pending",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-73737-podcast-episode-0503.mp3"
+    },
+    {
+      "id": "site-post-74266-podcast-episode-0506",
+      "url": "https://www.kanzenshuu.com/2023/10/09/podcast-episode-0506/",
+      "title": "Podcast Episode #0506 — Heath",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio interview",
+      "publicationDate": "2023-10-09",
+      "participants": [
+        "Heath"
+      ],
+      "topics": [
+        "Kanzenshuu history and collaboration"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0506.mp3",
+      "acquired": true,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Kanzenshuu post announces the interview and provides a short show synopsis; the audio is linked from the podcast RSS but has not been transcribed.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La série d’entretiens avec l’équipe Kanzenshuu se poursuit avec Heath, qui revient sur les premiers sites de fans, le lancement d’un nouveau site en 2005, la fusion de sites en 2012 et le travail collaboratif de l’équipe. Le billet donne ce synopsis, sans transcrire l’audio.",
+      "reviewStatus": "synopsis-checked-audio-pending",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-74266-podcast-episode-0506.mp3"
+    },
+    {
+      "id": "site-post-78283-podcast-episode-0518",
+      "url": "https://www.kanzenshuu.com/2025/03/23/podcast-episode-0518/",
+      "title": "Podcast Episode #0518 — Rocco (Mega64)",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio interview",
+      "publicationDate": "2025-03-23",
+      "participants": [
+        "Rocco (Mega64)"
+      ],
+      "topics": [
+        "Dragon Ball fandom and live-action sketches"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0518.mp3",
+      "acquired": true,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Kanzenshuu post announces the interview and provides a short show synopsis; the audio is linked from the podcast RSS but has not been transcribed.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike interviewe Rocco de Mega64 à propos de sa découverte de Dragon Ball, de sa collection de figurines et des sketches live-action de Dragon Ball Z produits par Mega64. Le billet ne reproduit pas l’échange audio.",
+      "reviewStatus": "synopsis-checked-audio-pending",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78283-podcast-episode-0518.mp3"
+    },
+    {
+      "id": "site-post-78299-podcast-episode-0519",
+      "url": "https://www.kanzenshuu.com/2025/04/06/podcast-episode-0519/",
+      "title": "Podcast Episode #0519 — Brandon Bovia",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio interview",
+      "publicationDate": "2025-04-06",
+      "participants": [
+        "Brandon Bovia"
+      ],
+      "topics": [
+        "Manga lettering"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0519.mp3",
+      "acquired": true,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Kanzenshuu post announces the interview and provides a short show synopsis; the audio is linked from the podcast RSS but has not been transcribed.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike interviewe Brandon Bovia, lettreur de l’édition anglaise du manga Dragon Ball Super chez Viz. Le synopsis indique que l’échange porte sur le rôle du lettreur, les différences entre publication simultanée et volumes reliés, et le travail nécessaire pour adapter les chapitres en anglais. Le billet ne fournit pas de transcription.",
+      "reviewStatus": "synopsis-checked-audio-pending",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78299-podcast-episode-0519.mp3"
+    },
+    {
+      "id": "site-post-69445-weekly-dragon-ball-news-toyotaro-interview",
+      "url": "https://www.kanzenshuu.com/2021/08/10/toyotaro-interviewed-on-official-websites-weekly-dragon-ball-news/",
+      "title": "Weekly Dragon Ball News Interview — Toyotarō and Victory Uchida",
+      "publication": "Kanzenshuu post summarizing external interview",
+      "publicationType": "Website-post interview summary",
+      "format": "Video interview summary",
+      "publicationDate": "2021-08-10",
+      "participants": [
+        "Toyotarō",
+        "Victory Uchida"
+      ],
+      "topics": [
+        "Dragon Ball Super manga",
+        "Granolla the Survivor",
+        "Manga creation"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
+      "externalMediaUrl": "https://dragon-ball-official.com/news/01_392.html",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": "https://dragon-ball-official.com/news/01_392.html",
+      "sourceDescription": "Kanzenshuu summarizes this video/audio interview; the full transcript is not reproduced in the post.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Kanzenshuu compile cinq points de l’entretien vidéo de Toyotarō avec son éditeur Victory Uchida. Toyotarō explique avoir proposé Granolla, personnage original lié aux Saiyans, puis élaboré une idée d’histoire avec Uchida avant de la soumettre à Toriyama. Celui-ci a développé l’intrigue, ajouté les Heeters et conçu un nouvel ensemble de Dragon Balls. Toyotarō décrit Granolla comme un survivant et un tireur d’élite au style rétro/steampunk; il explique aussi l’ajout d’Oatmeal pour accompagner le personnage. Enfin, il évoque plusieurs refus des designs des Heeters et le transfert à Toriyama du design des Sugarians après des retours sur leurs yeux. Ce sont les points retenus dans le billet, pas une transcription.",
+      "reviewStatus": "source-checked-summary-only"
     }
   ]
 }

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (2002); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "dragon-ball-children-01",
+      "title": "Dragon Ball Children Volume 1: Ei’ichirō Oda Dragon Ball Kanzenban Volume 1 Insert Pamphlet Comment 04 December 2002 Ei’ichirō Oda Dragon Ball (Manga)",
+      "summary": "Eiichirō Oda se remémore l’attente hebdomadaire de Dragon Ball et le choc provoqué par la mort de Kuririn dans un épisode du manga. Il décrit une génération de lecteurs qui répétait chaque semaine la même question sur la suite et attribue à l’œuvre une influence déterminante sur son propre rapport au manga.",
+      "keyInformation": [
+        "Oda raconte avoir lu les chapitres de Dragon Ball avec ses camarades et partagé leur surprise aux grands rebondissements",
+        "Il explique que l’œuvre a accompagné ses années de formation et nourri son admiration pour Toriyama"
+      ],
+      "source": {
+        "publication": "Dragon Ball Children Volume 1: Ei’ichirō Oda Dragon Ball Kanzenban Volume 1 Insert Pamphlet Comment 04 December 2002 Ei’ichirō Oda Dragon Ball (Manga)",
+        "pages": null,
+        "date": "2002-12-04",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-01/"
+      },
+      "dragonBallRelevance": "Indirecte : témoignage d’un mangaka sur la réception et l’influence de Dragon Ball.",
+      "formatNote": "Commentaire de créateur invité dans une série de témoignages, non-Q/R.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-children-02",
+      "title": "Dragon Ball Children Volume 2: Masashi Kishimoto Dragon Ball Kanzenban Volume 3 Insert Pamphlet Comment 28 December 2002 Masashi Kishimoto Dragon Ball (Manga)",
+      "summary": "Masashi Kishimoto décrit Dragon Ball comme une référence commune au sein de l’équipe de Naruto. Il se souvient de l’impatience de la lecture hebdomadaire et de la façon dont les développements du manga suscitaient des échanges entre jeunes lecteurs et assistants.",
+      "keyInformation": [
+        "Kishimoto évoque les âges rapprochés des membres de son équipe et leur langage commun nourri par Dragon Ball",
+        "Il reprend le souvenir d’Oda de l’attente collective pour les nouveaux chapitres"
+      ],
+      "source": {
+        "publication": "Dragon Ball Children Volume 2: Masashi Kishimoto Dragon Ball Kanzenban Volume 3 Insert Pamphlet Comment 28 December 2002 Masashi Kishimoto Dragon Ball (Manga)",
+        "pages": null,
+        "date": "2002-12-28",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-children-02/"
+      },
+      "dragonBallRelevance": "Indirecte : souvenir d’un collègue mangaka sur la portée générationnelle de l’œuvre.",
+      "formatNote": "Texte personnel de la série Dragon Ball Children.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

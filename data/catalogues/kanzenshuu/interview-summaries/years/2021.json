@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2021; contenus de forum exclus.",
+  "reviewNote": "Les synthèses de médias vidéo/audio distinguent les points rapportés par Kanzenshuu de toute transcription; les transcriptions absentes sont signalées.",
+  "records": [
+    {
+      "id": "site-post-69445-weekly-dragon-ball-news-toyotaro-interview",
+      "title": "Weekly Dragon Ball News Interview — Toyotarō and Victory Uchida",
+      "kind": "interview-summary",
+      "summary": "Kanzenshuu compile cinq points de l’entretien vidéo de Toyotarō avec son éditeur Victory Uchida. Toyotarō explique avoir proposé Granolla, personnage original lié aux Saiyans, puis élaboré une idée d’histoire avec Uchida avant de la soumettre à Toriyama. Celui-ci a développé l’intrigue, ajouté les Heeters et conçu un nouvel ensemble de Dragon Balls. Toyotarō décrit Granolla comme un survivant et un tireur d’élite au style rétro/steampunk; il explique aussi l’ajout d’Oatmeal pour accompagner le personnage. Enfin, il évoque plusieurs refus des designs des Heeters et le transfert à Toriyama du design des Sugarians après des retours sur leurs yeux. Ce sont les points retenus dans le billet, pas une transcription.",
+      "keyInformation": [
+        "Cinq points résumés depuis l’interview vidéo; transcript absent.",
+        "Les échanges originaux ne sont pas transcrits dans le billet."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2021/08/10/toyotaro-interviewed-on-official-websites-weekly-dragon-ball-news/",
+        "publication": "Kanzenshuu site post",
+        "publicationDate": "2021-08-10",
+        "participants": [
+          "Toyotarō",
+          "Victory Uchida"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
+        "externalMediaUrl": "https://dragon-ball-official.com/news/01_392.html",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Video interview summary",
+        "scopeNote": "Cinq points résumés depuis l’interview vidéo; transcript absent."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Super manga, Granolla the Survivor, Manga creation"
+    }
+  ]
+}

@@ -5,6 +5,31 @@
   "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
   "records": [
     {
+      "id": "wired-japan-1997-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview — WIRED Japan",
+      "summary": "Dans cet entretien réalisé en novembre 1996, Toriyama parle de la bande dessinée, de Dragon Ball à l'étranger et de sa manière de travailler. Il accepte l'idée de lire des mangas à l'écran, mais tient au papier et à la lecture d'une double page; des voix ou des sons intégrés lui sembleraient déplacer le médium, puisque chaque lecteur imagine lui-même les voix et les bruitages. Il estime que le dessin porte davantage d'information que le texte et attribue à Torishima l'exigence de raconter clairement sans longs passages inutiles. Il explique que les commentaires de lecteurs annonçant la suite d'une histoire pouvaient l'inciter à prendre la direction opposée, y compris à tuer un personnage populaire. Il critique la représentation de Goku comme héros justicier dans l'anime : selon lui, Goku se bat d'abord par désir d'affronter des adversaires puissants, un aspect plus ambigu qu'il jugeait insuffisamment rendu à l'écran. Il défend également le manga comme divertissement, sans transformer chaque événement de société en stratégie éditoriale, et dit que la méthode de planifier collectivement une histoire ne lui conviendrait pas.",
+      "keyInformation": [
+        "Toriyama est ouvert à la lecture numérique, mais préfère le papier pour son toucher et la composition de la double page; il pense que des voix et sons intégrés feraient de l'œuvre un médium différent, puisque les lecteurs imaginent ces éléments en lisant.",
+        "Il considère que l'information visuelle prime sur le texte et dit que Torishima lui a appris à garder les mots comme complément, choisis pour renforcer le personnage ou clarifier l'image.",
+        "Il explique qu'il pouvait contredire délibérément les prédictions des lecteurs et éliminer un personnage devenu populaire, en partie parce qu'il écrivait sans plan complet à long terme.",
+        "À propos de l'anime, il juge que la caractérisation de Goku comme héros défendant les autres gomme une part de son ambiguïté; il décrit le Goku du manga comme motivé surtout par le désir d'affronter des combattants puissants. C'est son commentaire sur l'adaptation, pas une définition exhaustive de toutes les motivations de Goku dans le manga.",
+        "Il associe la singularité visuelle de ses personnages à son expérience du dessin publicitaire et relie la pratique des délais à son ancien emploi en entreprise.",
+        "Il estime que les magazines de manga doivent surtout divertir et critique l'utilisation de sujets sociaux comme tactique éditoriale; il indique que la planification collective d'un récit ne correspond pas à sa méthode et qu'il ne prévoyait alors pas de reprendre une sérialisation hebdomadaire."
+      ],
+      "source": {
+        "publication": "WIRED Japan, janvier 1997, issue 3.01",
+        "pages": "62–63",
+        "interviewDate": "1996-11-21",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/wired-japan-1997-akira-toriyama-interview/",
+        "questionAnswerCount": null,
+        "formatNote": "Transcription sous forme de paragraphes d'entretien, sans balisage standard des questions.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : regard de Toriyama sur le Goku du manga et son adaptation en anime; contexte de création et philosophie éditoriale.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
       "id": "daizenshuu-7-shenlong-times",
       "title": "Shenlong Times — entretien du Daizenshuu 7",
       "summary": "Dans cet entretien publié après la fin du manga, Akira Toriyama dit avoir terminé les illustrations destinées aux sept Daizenshuu, tout en étant occupé à faire construire un nouvel atelier et en plaisantant sur ses nuits blanches de plans. Il explique avoir participé modestement à Dragon Ball GT : il relisait les scénarios proposés par Toei, donnait quelques conseils et avait dessiné quelques personnages et illustrations. Il félicite le staff et dit recommander la série, qu'il attend aussi comme spectateur ordinaire; il plaisante qu'elle lui donnerait peut-être matière à reprendre le manga, avant de préciser qu'il n'a aucune intention de le dessiner. L'entretien inclut une conversation avec Masakazu Katsura sur les ordinateurs et le tramage, où Toriyama imagine avec humour pouvoir dicter des dessins à un Macintosh et annonce qu'il pourrait écrire un one-shot lorsqu'il en maîtriserait l'usage. Un panneau autobiographique précise que la couverture du volume 7 était sa dernière illustration Dragon Ball et reprend une image du dernier chapitre recolorée pour l'édition; il dit avoir voulu ensuite ne plus jamais la redessiner. Les propos témoignent de sa recommandation enthousiaste de GT en 1996 et de son rôle limité de supervision; ils doivent rester situés dans cette publication.",
@@ -28,33 +53,81 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-7-shenlong-times/",
         "questionAnswerCount": 8,
-        "formatNote": "Les huit blocs question-réponse détectés comprennent l'interview principale, une conversation éditoriale avec Katsura et des encadrés/panneaux de commentaire de Toriyama; ils ne sont pas huit questions biographiques homogènes."
+        "formatNote": "Les huit blocs question-réponse détectés comprennent l'interview principale, une conversation éditoriale avec Katsura et des encadrés/panneaux de commentaire de Toriyama; ils ne sont pas huit questions biographiques homogènes.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : participation de Toriyama à GT, recommandation de l'anime, fin de ses illustrations pour Dragon Ball et dernière image du manga; point de vue éditorial daté de 1996.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
-      "id": "wired-japan-1997-akira-toriyama-interview",
-      "title": "Akira Toriyama Interview — WIRED Japan",
-      "summary": "Dans cet entretien réalisé en novembre 1996, Toriyama parle de la bande dessinée, de Dragon Ball à l'étranger et de sa manière de travailler. Il accepte l'idée de lire des mangas à l'écran, mais tient au papier et à la lecture d'une double page; des voix ou des sons intégrés lui sembleraient déplacer le médium, puisque chaque lecteur imagine lui-même les voix et les bruitages. Il estime que le dessin porte davantage d'information que le texte et attribue à Torishima l'exigence de raconter clairement sans longs passages inutiles. Il explique que les commentaires de lecteurs annonçant la suite d'une histoire pouvaient l'inciter à prendre la direction opposée, y compris à tuer un personnage populaire. Il critique la représentation de Goku comme héros justicier dans l'anime : selon lui, Goku se bat d'abord par désir d'affronter des adversaires puissants, un aspect plus ambigu qu'il jugeait insuffisamment rendu à l'écran. Il défend également le manga comme divertissement, sans transformer chaque événement de société en stratégie éditoriale, et dit que la méthode de planifier collectivement une histoire ne lui conviendrait pas.",
+      "id": "supplemental-daizenshuu-super-voice-talks",
+      "title": "Special Voice-Actor Roundtable: Super Voice Talks Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 107-113)",
+      "summary": "Sept comédiens japonais échangent sur leur casting, leur approche des rôles et leurs souvenirs de Dragon Ball Z. Ils expliquent que certains sont passés par une audition tandis que d’autres ont été choisis directement; Nozawa raconte notamment son audition pour Goku et l’importance du casting de vétérans dans le studio.",
       "keyInformation": [
-        "Toriyama est ouvert à la lecture numérique, mais préfère le papier pour son toucher et la composition de la double page; il pense que des voix et sons intégrés feraient de l'œuvre un médium différent, puisque les lecteurs imaginent ces éléments en lisant.",
-        "Il considère que l'information visuelle prime sur le texte et dit que Torishima lui a appris à garder les mots comme complément, choisis pour renforcer le personnage ou clarifier l'image.",
-        "Il explique qu'il pouvait contredire délibérément les prédictions des lecteurs et éliminer un personnage devenu populaire, en partie parce qu'il écrivait sans plan complet à long terme.",
-        "À propos de l'anime, il juge que la caractérisation de Goku comme héros défendant les autres gomme une part de son ambiguïté; il décrit le Goku du manga comme motivé surtout par le désir d'affronter des combattants puissants. C'est son commentaire sur l'adaptation, pas une définition exhaustive de toutes les motivations de Goku dans le manga.",
-        "Il associe la singularité visuelle de ses personnages à son expérience du dessin publicitaire et relie la pratique des délais à son ancien emploi en entreprise.",
-        "Il estime que les magazines de manga doivent surtout divertir et critique l'utilisation de sujets sociaux comme tactique éditoriale; il indique que la planification collective d'un récit ne correspond pas à sa méthode et qu'il ne prévoyait alors pas de reprendre une sérialisation hebdomadaire."
+        "Nozawa, Tsuru et d’autres décrivent des parcours de casting différents, audition ou attribution directe",
+        "Les acteurs discutent de la préparation des rôles et des liens entre leur interprétation et les personnages"
       ],
       "source": {
-        "publication": "WIRED Japan, janvier 1997, issue 3.01",
-        "pages": "62–63",
-        "interviewDate": "1996-11-21",
-        "archivedTranslation": "https://www.kanzenshuu.com/translations/wired-japan-1997-akira-toriyama-interview/",
-        "questionAnswerCount": null,
-        "formatNote": "Transcription sous forme de paragraphes d'entretien, sans balisage standard des questions."
+        "publication": "Special Voice-Actor Roundtable: Super Voice Talks Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 107-113)",
+        "pages": "107-113",
+        "date": "1996-02-05",
+        "url": "https://www.kanzenshuu.com/translations/supplemental-daizenshuu-super-voice-talks/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/supplemental-daizenshuu-super-voice-talks/",
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/supplemental-daizenshuu-super-voice-talks.html",
+        "participants": [
+          "Toshio Furukawa",
+          "Mayumi Tanaka",
+          "Ryō Horikawa",
+          "Masako Nozawa",
+          "Tōru Furuya",
+          "Hiromi Tsuru",
+          "Hirotaka Suzuoki"
+        ],
+        "questionAnswerCount": 14,
+        "detectedQuestionBlocks": 14,
+        "detectedAnswerBlocks": 14,
+        "formatNote": "Table ronde chorale de sept comédiens, structurée en 14 blocs question-réponse; les réponses contiennent des prises de parole de plusieurs participants.",
+        "forumContent": false
       },
-      "dragonBallRelevance": "Directe : regard de Toriyama sur le Goku du manga et son adaptation en anime; contexte de création et philosophie éditoriale.",
-      "status": "summary-written-print-source-not-collated"
+      "dragonBallRelevance": "Directe : témoignages de comédiens sur l’interprétation des personnages de l’anime.",
+      "formatNote": "Table ronde de sept voix; réponses attribuées individuellement.",
+      "forum": false,
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-7-secret-stories-of-the-dragon-ball-characters",
+      "title": "Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia",
+      "summary": "Toriyama répond à des questions sur l’après-série et les coulisses de plusieurs personnages. Il raconte notamment que Lunch est partie à la recherche de Tenshinhan, décrit les jumeaux C-17 et C-18 comme des délinquants enlevés par Gero et explique que le gang de Pilaf a différé ses projets de conquête du monde face à Cell.",
+      "keyInformation": [
+        "Toriyama donne une explication sur l’origine de C-17 et C-18 et leur opposition à Gero",
+        "Il propose des suites humoristiques ou incertaines pour Lunch et le gang de Pilaf"
+      ],
+      "source": {
+        "publication": "Secret Stories of the Dragon Ball Characters Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 112)",
+        "pages": "112",
+        "date": "1996-02-05",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-secret-stories-of-the-dragon-ball-characters/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-7-secret-stories-of-the-dragon-ball-characters/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/daizenshuu-7-secret-stories-of-the-dragon-ball-characters.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the 'Secret Stories of the Dragon Ball Characters' Q&A column with Akira Toriyama from Daizenshuu 7",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : informations d’auteur sur les personnages et leur devenir.",
+      "formatNote": "Questions-réponses de guide, réponses parfois spéculatives ou plaisantes.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
     }
   ]
 }

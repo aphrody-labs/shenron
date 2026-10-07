@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1982); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "focus-1982-19-akira-toriyama-wedding",
+      "title": "Akira Toriyama Article FOCUS, 1982 #19 (pp. 18-19)",
+      "summary": "Ce reportage de FOCUS couvre le mariage de Toriyama avec la dessinatrice Yoshimi Katō, célébré à Nagoya en mai 1982. Il décrit leur rencontre et le caractère réservé de Toriyama, puis met en regard cette vie privée discrète avec ses revenus exceptionnellement élevés issus du succès de Dr. Slump.",
+      "keyInformation": [
+        "Toriyama épouse Yoshimi Katō, dessinatrice de Nagoya, après environ un an de relation; le reportage rapporte sa timidité avec les femmes et ses plaisanteries sur la tenue de mariée",
+        "Le magazine chiffre ses revenus de 1981 à plus de 539 millions de yens et les compare à son salaire mensuel de débutant en 1979"
+      ],
+      "source": {
+        "publication": "Akira Toriyama Article FOCUS, 1982 #19 (pp. 18-19)",
+        "pages": "18-19",
+        "date": "1982-05-07",
+        "url": "https://www.kanzenshuu.com/translations/focus-1982-19-akira-toriyama-wedding/"
+      },
+      "dragonBallRelevance": "Indirecte : biographie de Toriyama au moment de Dr. Slump, avant la création de Dragon Ball.",
+      "formatNote": "Article de reportage narratif, pas un entretien structuré.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

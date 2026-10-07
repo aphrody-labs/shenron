@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1989); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "dragon-ball-z-anime-special-dragon-call",
+      "title": "Dragon Call Jump Gold Selection 4: Dragon Ball Z Anime Special",
+      "summary": "Cette série de portraits rassemble les souvenirs de huit membres du personnel de l’anime. Producteurs, réalisateur et autres collaborateurs décrivent les débuts de la série, ses audiences, l’adaptation du manga et les choix de production; le dossier insiste sur les défis de rythme et sur la contribution collective à l’identité de l’anime.",
+      "keyInformation": [
+        "Le producteur Kenji Shimizu se souvient des inquiétudes initiales sur les audiences et de la réception très large du programme",
+        "Le dossier présente différents métiers de la production et leurs expériences de Dragon Ball et Dragon Ball Z"
+      ],
+      "source": {
+        "publication": "Dragon Call Jump Gold Selection 4: Dragon Ball Z Anime Special",
+        "pages": null,
+        "date": "1989-10-04",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-z-anime-special-dragon-call/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-z-anime-special-dragon-call.html",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "questionBlockCount": 0,
+        "answerBlockCount": 8,
+        "sourceDescription": "English translation of the &#039;Dragon Call&#039; production staff spotlight from the 1989 &#039;Dragon Ball Z Anime Special&#039; magazine/book"
+      },
+      "dragonBallRelevance": "Directe pour l’histoire de production de l’anime et les témoignages de son équipe.",
+      "formatNote": "Portrait éditorial du personnel de production, sans questions-réponses.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-z-anime-special-the-anime-and-me",
+      "title": "The Anime and Me Jump Gold Selection 4: Dragon Ball Z Anime Special",
+      "summary": "Dans un manga explicatif, Toriyama raconte la naissance de Dragon Ball et son passage à l’animation. Il relie son intérêt pour les films de Jackie Chan à Dragon Boy, puis à la décision de terminer Dr. Slump et de lancer Dragon Ball comme série de kung-fu et d’aventure; il évoque aussi son approche peu planifiée de l’histoire.",
+      "keyInformation": [
+        "Dragon Boy naît après que Toriyama a parlé des films de Jackie Chan à son éditeur; son succès mène à la nouvelle série",
+        "Dragon Ball démarre avec Goku à la recherche des Dragon Ball, sur une base mêlant aventure, arts martiaux et atmosphère du Voyage en Occident"
+      ],
+      "source": {
+        "publication": "The Anime and Me Jump Gold Selection 4: Dragon Ball Z Anime Special",
+        "pages": null,
+        "date": "1989-10-04",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-z-anime-special-the-anime-and-me/"
+      },
+      "dragonBallRelevance": "Directe : récit de l’auteur sur les origines du manga et son adaptation animée.",
+      "formatNote": "Récit en manga d’auteur, à la première personne, complété par des encadrés et notes.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Entrées éditoriales Kanzenshuu hors interviews publiées en 2008, issues du périmètre bibliographique 2006–2015 ; traductions non reproduites ; forums exclus.",
+  "records": [
+    {
+      "id": "maximum-the-hormone-f-single-liner-notes",
+      "title": "\"F\" Single Liner Notes Maximum the Hormone — \"Tsume Tsume Tsume / F\" Single Home Media Comment 09 July 2008 Maximum the Hormone Resurrection \"F\", Music",
+      "kind": "authorial-comment",
+      "summary": "Ryō Kawakita explique que « F » évoque Freezer et « Freedom » : l’oppression des Nameks sert d’allégorie à la domination et au génocide. La chanson utilise cette référence plutôt que d’énoncer directement le programme politique du groupe ; les notes abordent aussi le jeu de mots « Phowa », la réception de l’œuvre et la rencontre du groupe avec Toriyama.",
+      "keyInformation": [
+        "« F » désigne Freezer et Freedom",
+        "l’arc Namek fournit une métaphore de l’oppression",
+        "allusions et références invitent l’auditeur à réfléchir."
+      ],
+      "source": {
+        "date": "09 July 2008",
+        "publication": "Maximum the Hormone –  Tsume Tsume Tsume / “F”",
+        "pages": null,
+        "bibliographicYears": [
+          2008
+        ],
+        "url": "https://www.kanzenshuu.com/translations/maximum-the-hormone-f-single-liner-notes/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Lien entre Dragon Ball, musique populaire et lecture politique de l’arc Namek."
+    }
+  ]
+}

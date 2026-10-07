@@ -30,10 +30,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
         "questionAnswerCount": 0,
-        "formatNote": "Long article avec intertitres et réponses de Iyoku insérées dans un récit journalistique, sans balisage Q/R. Les affirmations sur la conception et la diffusion sont celles d'Akio Iyoku, producteur exécutif; seules les idées qu'il attribue explicitement à Toriyama sont indirectement rapportées comme telles."
+        "formatNote": "Long article avec intertitres et réponses de Iyoku insérées dans un récit journalistique, sans balisage Q/R. Les affirmations sur la conception et la diffusion sont celles d'Akio Iyoku, producteur exécutif; seules les idées qu'il attribue explicitement à Toriyama sont indirectement rapportées comme telles.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : témoignage du producteur exécutif sur le développement, les objectifs de public, la place temporelle et la diffusion de Daima; les propos de Iyoku sont séparés de ceux qu'il rapporte de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-manga-vol-24-toyotaro-afterword",
@@ -54,10 +56,78 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
         "questionAnswerCount": 0,
-        "formatNote": "Postface autobiographique, et non entretien question-réponse. L'index Kanzenshuu classe cette entrée parmi les interviews; les propos concernent la genèse éditoriale d'un one-shot et la répartition du travail entre Toriyama et Toyotarō."
+        "formatNote": "Postface autobiographique, et non entretien question-réponse. L'index Kanzenshuu classe cette entrée parmi les interviews; les propos concernent la genèse éditoriale d'un one-shot et la répartition du travail entre Toriyama et Toyotarō.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : documente l'origine d'un récit de Dragon Ball Super et le partage des rôles entre le texte initial de Toriyama et son adaptation en manga par Toyotarō.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-78283-podcast-episode-0518",
+      "title": "Podcast Episode #0518 — Rocco (Mega64)",
+      "kind": "audio-interview",
+      "summary": "Mike interviewe Rocco de Mega64 à propos de sa découverte de Dragon Ball, de sa collection de figurines et des sketches live-action de Dragon Ball Z produits par Mega64. Le billet ne reproduit pas l’échange audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0518; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/03/23/podcast-episode-0518/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-03-23",
+        "participants": [
+          "Rocco (Mega64)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0518.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78283-podcast-episode-0518.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball fandom and live-action sketches",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78283-podcast-episode-0518.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-78299-podcast-episode-0519",
+      "title": "Podcast Episode #0519 — Brandon Bovia",
+      "kind": "audio-interview",
+      "summary": "Mike interviewe Brandon Bovia, lettreur de l’édition anglaise du manga Dragon Ball Super chez Viz. Le synopsis indique que l’échange porte sur le rôle du lettreur, les différences entre publication simultanée et volumes reliés, et le travail nécessaire pour adapter les chapitres en anglais. Le billet ne fournit pas de transcription.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0519; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/04/06/podcast-episode-0519/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-04-06",
+        "participants": [
+          "Brandon Bovia"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0519.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78299-podcast-episode-0519.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Manga lettering",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78299-podcast-episode-0519.mp3",
+      "audioTranscriptAvailable": false
     }
   ]
 }

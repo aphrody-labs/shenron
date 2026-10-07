@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1993); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "dbz-ongakushu-vol-2-hiruta-seiichi-comment",
+      "title": "Hiruta Sei’ichi BGM Comment Dragon Ball Z Ongakushū Volume 2 Insert Pamphlet Comment 01 May 1993 Hiruta Sei’ichi Dragon Ball Z, Music, BGM",
+      "summary": "Hiruta Sei’ichi raconte une séance de travail entre le compositeur Shunsuke Kikuchi et le réalisateur Shigeyasu Yamauchi autour d’une scène de Dragon Ball Z. Leur échange précis sur l’atmosphère musicale montre comment une consigne abstraite — une musique lourde mais pas sombre — se transforme en composition; Hiruta souligne ensuite la contribution de Kikuchi au ton de la série.",
+      "keyInformation": [
+        "La musique est conçue à partir du scénario et des indications de mise en scène avant de disposer des images achevées",
+        "Hiruta loue la capacité de Kikuchi à préserver une légèreté caractéristique malgré l’intensification des combats"
+      ],
+      "source": {
+        "publication": "Hiruta Sei’ichi BGM Comment Dragon Ball Z Ongakushū Volume 2 Insert Pamphlet Comment 01 May 1993 Hiruta Sei’ichi Dragon Ball Z, Music, BGM",
+        "pages": null,
+        "date": "1993-05-01",
+        "url": "https://www.kanzenshuu.com/translations/dbz-ongakushu-vol-2-hiruta-seiichi-comment/"
+      },
+      "dragonBallRelevance": "Directe : processus de composition de la musique de l’anime.",
+      "formatNote": "Commentaire narratif avec reconstitution d’un échange de production.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

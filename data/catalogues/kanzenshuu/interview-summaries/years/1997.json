@@ -20,10 +20,12 @@
         "pages": "82–86",
         "date": "1997-12-17",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview/",
-        "questionAnswerCount": 20
+        "questionAnswerCount": 20,
+        "forumContent": false
       },
       "dragonBallRelevance": "Production et interprétation vocale de Dragon Ball GT; témoignage de comédienne, distinct d'une source d'auteur sur le récit.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

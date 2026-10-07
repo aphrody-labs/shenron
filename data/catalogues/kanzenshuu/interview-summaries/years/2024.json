@@ -25,10 +25,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-hisashi-tanaka/",
         "questionAnswerCount": 1,
-        "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc-question/réponse mais le texte archivé présente un récit et des citations; les souvenirs sont attribués à l'assistant Hisashi Tanaka et rapportés par le journaliste Hiroshi Ōyama."
+        "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc-question/réponse mais le texte archivé présente un récit et des citations; les souvenirs sont attribués à l'assistant Hisashi Tanaka et rapportés par le journaliste Hiroshi Ōyama.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : témoignage de première main d'un assistant sur le rythme de travail, l'atelier de Nagoya et le caractère de Toriyama pendant les débuts de Dragon Ball; les faits sont rapportés par un journaliste.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "chunichi-shimbun-article-takashi-matsuyama",
@@ -52,10 +54,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-takashi-matsuyama/",
         "questionAnswerCount": 1,
-        "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc, mais le texte archivé est un article avec citations; propos rapportés par le journaliste Atsushi Okamura au nom de Matsuyama."
+        "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc, mais le texte archivé est un article avec citations; propos rapportés par le journaliste Atsushi Okamura au nom de Matsuyama.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : témoignage d'un assistant de Dragon Ball sur le recrutement, le travail en atelier, les relations avec les éditeurs et le tempérament créatif de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-official-site-march-2024-toyotaro-interview",
@@ -79,10 +83,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-march-2024-toyotaro-interview/",
         "questionAnswerCount": 6,
-        "formatNote": "Six questions-réponses; les réponses sur les chapitres 101 à 103 distinguent explicitement le scénario de Toriyama et les ajustements de Toyotarō."
+        "formatNote": "Six questions-réponses; les réponses sur les chapitres 101 à 103 distinguent explicitement le scénario de Toriyama et les ajustements de Toyotarō.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : explications de Toyotarō sur la création d'une illustration Dragon Ball et sur le partage des rôles avec Toriyama dans l'adaptation manga de Super Hero.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

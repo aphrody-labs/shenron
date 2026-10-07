@@ -3,5 +3,39 @@
   "language": "fr",
   "scope": "Synthèses des entretiens publiés en 2011; contenus de forum exclus.",
   "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
-  "records": []
+  "records": [
+    {
+      "id": "site-post-5411-podcast-episode-0264",
+      "title": "Podcast Episode #0264 — Drabaz",
+      "kind": "audio-interview",
+      "summary": "Le synopsis annonce l’intervention de Drabaz, auditeur de longue date, au sujet de son niveau personnalisé sur LittleBigPlanet consacré à Dragon Ball. L’épisode parle de la création du niveau « The Search for Shenlong’s Little Big Dragonballs! ». Le podcast traite aussi d’autres sujets et l’enregistrement n’est pas transcrit dans le billet.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0264; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2011/07/11/podcast-episode-0264/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2011-07-11",
+        "participants": [
+          "Drabaz"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Daizenshuu_EX_-_Episode_0264.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-5411-podcast-episode-0264.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "LittleBigPlanet",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-5411-podcast-episode-0264.mp3",
+      "audioTranscriptAvailable": false
+    }
+  ]
 }

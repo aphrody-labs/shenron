@@ -92,6 +92,61 @@
       ],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "pafu-september-1980-mangaka-whos-who-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/translations/pafu-september-1980-mangaka-whos-who-akira-toriyama/",
+      "title": "Pafu , September 1980",
+      "publication": "Mangaka Who’s Who – Akira Toriyama Pafu, September 1980 (pp. 240-241)",
+      "publicationType": "Q&A",
+      "format": "Q&A interview",
+      "publicationDate": "1980-08-27",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [],
+      "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/pafu-september-1980-mangaka-whos-who-akira-toriyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Pafu (September 1980): Mangaka Who's Who - Akira Toriyama",
+      "sourceDescription": "English translation of the Akira Toriyama Q&A from the September 1980 issue of 'Pafu' in Japan",
+      "questionCount": 29,
+      "answerBlockCount": 29,
+      "sectionHeadings": [
+        "Pafu , September 1980",
+        "Mangaka Who’s Who – Akira Toriyama"
+      ],
+      "editorialSummary": "Ce portrait en questions-réponses présente Toriyama à 25 ans, après son premier succès avec Dr. Slump. Il parle de son ancien emploi de designer, de ses goûts, de ses habitudes et de sa personnalité avec une autodérision constante; ses réponses dessinent un jeune auteur encore installé dans la campagne d’Aichi, attaché à la liberté et réticent aux contraintes.",
+      "reviewStatus": "source-checked-summary-retained"
+    },
+    {
+      "id": "adventure-special-toriyama-qa",
+      "url": "https://www.kanzenshuu.com/translations/adventure-special-toriyama-qa/",
+      "title": "Dragon Ball: Adventure Special (18 November 1987)",
+      "publication": "Is That So?! The Dragon Balls Dragon Ball: Adventure Special (pp. 138-140)",
+      "publicationType": "Q&A",
+      "format": "Q&A interview",
+      "publicationDate": "1987-11-18",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [],
+      "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/adventure-special-toriyama-qa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Ball: Adventure Special - Akira Toriyama Q&A | Kanzenshuu",
+      "sourceDescription": "English translation of the Akira Toriyama Q&A column from Dragon Ball's original 1987 guide book, the \"Adventure Special\"",
+      "questionCount": 64,
+      "answerBlockCount": 64,
+      "sectionHeadings": [
+        "Dragon Ball: Adventure Special (18 November 1987)",
+        "A Full-Coverage Q&A With Toriyama!!",
+        "Is That So?! The Dragon Balls"
+      ],
+      "editorialSummary": "Toriyama répond à un long questionnaire mêlant l’univers de Dragon Ball, sa carrière et des questions générales. Il explique plusieurs choix simples de conception — comme les sept Dragon Ball, l’absence de nez de Kuririn ou la coupe de Bulma — tout en laissant ouvertes certaines questions et en traitant d’autres avec humour.",
+      "reviewStatus": "source-checked-summary-retained"
     }
   ]
 }

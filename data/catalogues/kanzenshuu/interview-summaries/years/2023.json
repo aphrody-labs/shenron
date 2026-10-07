@@ -26,10 +26,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/sand-land-movie-akira-toriyama-qa/",
         "questionAnswerCount": 6,
-        "formatNote": "Six questions-réponses de Toriyama. Entretien sur Sand Land et son adaptation, non sur l'intrigue de Dragon Ball."
+        "formatNote": "Six questions-réponses de Toriyama. Entretien sur Sand Land et son adaptation, non sur l'intrigue de Dragon Ball.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Indirecte : retour de Toriyama sur sa carrière après Dragon Ball, son rythme de travail, ses outils et sa conception du manga; le sujet principal est Sand Land.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1",
@@ -60,10 +62,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1/",
         "questionAnswerCount": 8,
-        "formatNote": "Huit questions-réponses dialoguées entre Toriyama et Torishima; les deux intervenants sont nommés dans les réponses. Réminiscences rétrospectives, avec des plaisanteries mutuelles à conserver comme telles."
+        "formatNote": "Huit questions-réponses dialoguées entre Toriyama et Torishima; les deux intervenants sont nommés dans les réponses. Réminiscences rétrospectives, avec des plaisanteries mutuelles à conserver comme telles.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe et historique : souvenirs des créateurs de Dragon Ball sur sa genèse, son improvisation, l'édition, le rythme de production et la progression des combats; plusieurs réponses portent aussi sur Dr. Slump et leur carrière commune.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "sand-land-production-secrets",
@@ -93,10 +97,78 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/sand-land-production-secrets/",
         "questionAnswerCount": 26,
-        "formatNote": "Entretien écrit de 26 questions-réponses consacré à Sand Land. Les réponses de Toriyama sur la mythologie de Sand Land sont des explications de cette œuvre; les rapprochements avec Dabra ou Satan ne constituent pas à eux seuls une déclaration sur la continuité de Dragon Ball."
+        "formatNote": "Entretien écrit de 26 questions-réponses consacré à Sand Land. Les réponses de Toriyama sur la mythologie de Sand Land sont des explications de cette œuvre; les rapprochements avec Dabra ou Satan ne constituent pas à eux seuls une déclaration sur la continuité de Dragon Ball.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Indirecte : surtout une source sur Sand Land et la méthode de Toriyama; elle offre quelques comparaisons explicitement formulées avec Dabra et Satan, sans établir à elle seule des règles de continuité entre les œuvres.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-73737-podcast-episode-0503",
+      "title": "Podcast Episode #0503 — Julian",
+      "kind": "audio-interview",
+      "summary": "Premier épisode d’une série d’entretiens avec les membres de l’équipe Kanzenshuu. Julian revient sur ses débuts en 2002, le relancement de Daizenshuu EX et le développement de son travail de traduction. Le synopsis précise que l’épisode avait été enregistré cinq ans auparavant; aucun transcript n’est fourni.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0503; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2023/06/26/podcast-episode-0503/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2023-06-26",
+        "participants": [
+          "Julian"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0503.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-73737-podcast-episode-0503.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Kanzenshuu history and translation work",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-73737-podcast-episode-0503.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-74266-podcast-episode-0506",
+      "title": "Podcast Episode #0506 — Heath",
+      "kind": "audio-interview",
+      "summary": "La série d’entretiens avec l’équipe Kanzenshuu se poursuit avec Heath, qui revient sur les premiers sites de fans, le lancement d’un nouveau site en 2005, la fusion de sites en 2012 et le travail collaboratif de l’équipe. Le billet donne ce synopsis, sans transcrire l’audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0506; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2023/10/09/podcast-episode-0506/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2023-10-09",
+        "participants": [
+          "Heath"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0506.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-74266-podcast-episode-0506.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Kanzenshuu history and collaboration",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-74266-podcast-episode-0506.mp3",
+      "audioTranscriptAvailable": false
     }
   ]
 }

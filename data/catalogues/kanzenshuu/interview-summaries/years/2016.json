@@ -27,10 +27,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-history-book-akira-toriyama-interview/",
         "questionAnswerCount": 40,
         "detectedQuestionBlocks": 40,
-        "detectedAnswerBlocks": 40
+        "detectedAnswerBlocks": 40,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "super-history-book-video-games-selection-pick-up-01",
@@ -51,10 +53,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-01/",
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
-        "detectedAnswerBlocks": 4
+        "detectedAnswerBlocks": 4,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "super-history-book-video-games-selection-pick-up-02",
@@ -74,10 +78,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-02/",
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
-        "detectedAnswerBlocks": 6
+        "detectedAnswerBlocks": 6,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "super-history-book-video-games-selection-pick-up-03",
@@ -98,10 +104,12 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 5,
-        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise."
+        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "super-history-book-video-games-selection-pick-up-04",
@@ -122,10 +130,12 @@
         "questionAnswerCount": 5,
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 6,
-        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise."
+        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "super-history-book-video-games-selection-pick-up-05",
@@ -146,10 +156,12 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 5,
-        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise."
+        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version",
@@ -170,10 +182,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version/",
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
-        "detectedAnswerBlocks": 6
+        "detectedAnswerBlocks": 6,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version",
@@ -194,10 +208,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version/",
         "questionAnswerCount": 13,
         "detectedQuestionBlocks": 13,
-        "detectedAnswerBlocks": 13
+        "detectedAnswerBlocks": 13,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc",
@@ -217,10 +233,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc/",
         "questionAnswerCount": 5,
         "detectedQuestionBlocks": 5,
-        "detectedAnswerBlocks": 5
+        "detectedAnswerBlocks": 5,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1",
@@ -241,10 +259,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1/",
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
-        "detectedAnswerBlocks": 4
+        "detectedAnswerBlocks": 4,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2",
@@ -266,10 +286,12 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 4,
-        "formatNote": "Blocs réponse locaux=4 vs index=2. Comptage Q/R distinct (2/4); vérifier structure imbriquée ou question omise."
+        "formatNote": "Blocs réponse locaux=4 vs index=2. Comptage Q/R distinct (2/4); vérifier structure imbriquée ou question omise.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-tori-toyo-free-talk-vol-2",
@@ -292,10 +314,185 @@
         "questionAnswerCount": 5,
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 6,
-        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise."
+        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "animedia-december-2016-atsushi-kido-dragon-ball-super-comments",
+      "title": "Animedia December 2016 Issue (10 November 2016)",
+      "summary": "Le producteur Atsushi Kido répond à une question de classement des combattants pendant l'arc de Trunks du futur. En excluant Beerus, il considère alors Goku Black comme le plus fort, car il a pris la puissance de Goku comme base et a évolué à sa manière. Il qualifie Zamasu fusionné de personnage « injuste » en raison de sa puissance et de son immortalité, mais suppose que la contradiction entre le corps mortel de Goku et l'objectif d'éliminer les mortels pourrait constituer une faiblesse. Il annonce l'affrontement de Vegetto contre Zamasu fusionné et promet que Trunks jouera un rôle décisif. Il s'agit de l'appréciation promotionnelle de Kido au moment de la publication, non d'un classement général ou intemporel.",
+      "keyInformation": [
+        "Kido répond qu'en excluant Beerus, il choisirait Goku Black comme combattant le plus fort du moment, en raison de l'usage de la puissance de Goku comme base et de l'évolution propre de Black.",
+        "Il juge Zamasu fusionné presque invincible, car celui-ci combine une puissance écrasante à l'immortalité qui neutralise les attaques; il souligne aussi l'inventivité de ses techniques.",
+        "Comme faiblesse potentielle, Kido évoque la contradiction d'un Zamasu qui veut vaincre les mortels tout en ayant pris le corps du mortel Goku; il présente cela comme une possibilité, pas comme une certitude.",
+        "Il annonce que Goku et Vegeta fusionneront en Vegetto pour combattre Zamasu fusionné et précise que les actions de Trunks seront également essentielles à l'issue de la bataille.",
+        "Le commentaire est situé à la veille de la diffusion de l'épisode 66; la note de Kanzenshuu indique que cet épisode devait être diffusé trois jours après la parution du numéro."
+      ],
+      "source": {
+        "publication": "Animedia, numéro de décembre 2016",
+        "pages": "p. 27",
+        "date": "2016-11-10",
+        "url": "https://www.kanzenshuu.com/translations/animedia-december-2016-atsushi-kido-dragon-ball-super-comments/",
+        "participants": [
+          "Atsushi Kido"
+        ],
+        "formatNote": "Réponses courtes de producteur à une question promotionnelle sur les forces des antagonistes; les jugements et prédictions de Kido sont datés et personnels.",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/animedia-december-2016-atsushi-kido-dragon-ball-super-comments/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/animedia-december-2016-atsushi-kido-dragon-ball-super-comments.html",
+        "questionAnswerCount": 3,
+        "questionBlockCount": 3,
+        "answerBlockCount": 3,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Atsushi Kido's comments regarding the Future Trunks arc of 'Dragon Ball Super' from Animedia's December 2016 issue",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : propos d'un producteur sur les personnages et les développements imminents de Dragon Ball Super en 2016.",
+      "forumContent": false,
+      "kind": "qa",
+      "formatNote": "Q&A éditorial avec répondant(s) identifié(s)."
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy",
+      "title": "Dragon Ball Super Volume 2 (Manga)",
+      "summary": "Dans une rubrique du deuxième volume du manga Dragon Ball Super, Toyotarō répond à plusieurs questions sur ses goûts et sa méthode. Il nomme Goku comme son personnage préféré et se souvient avoir rempli ses cahiers d'écolier de dessins de Dragon Ball, en rêvant déjà d'un dérivé dont Chaozu aurait été le protagoniste. Beerus et Whis sont difficiles à dessiner car ils n'ont pas de modèles antérieurs et Whis possède une forme d'yeux inédite. Toyotarō explique qu'il dessine un brouillon à partir de l'histoire originale de Toriyama, le remet à son éditeur qui le fait vérifier, puis réalise la version finale; recevoir des dessins correctifs de Toriyama peut le faire passer de l'excitation au découragement. Il indique que la suite de l'arc de Trunks du futur prendra une direction différente de l'anime et annonce que « cette promesse » sera tenue, sans révéler la suite. Une note de volume rappelle enfin sa rencontre avec les fans au New York Comic Con, qui a ravivé son amour du manga.",
+      "keyInformation": [
+        "Toyotarō répond que Goku est naturellement son personnage favori, même s'il plaisante sur le fait que répondre Oolong ou Pilaf aurait pu surprendre les lecteurs.",
+        "Il dessinait des personnages de Dragon Ball dans ses cahiers dès l'école primaire et imaginait déjà un manga dérivé; sa première idée mettait Chaozu en vedette.",
+        "Il juge Beerus et Whis difficiles à dessiner faute de modèles antérieurs, en particulier les yeux de Whis, dont la forme ne lui semblait pas encore utilisée dans Dragon Ball.",
+        "Sa méthode consiste à réaliser un brouillon à partir de l'histoire originale de Toriyama, l'envoyer à son éditeur pour obtenir les corrections de Toriyama, puis produire l'image définitive à partir de ces indications. Les dessins directement réalisés par Toriyama le rendent à la fois enthousiaste et intimidé.",
+        "La page compare un brouillon de Toyotarō où la planète est plus petite et sans dialogue au dessin corrigé par Toriyama, qui agrandit la planète et ajoute du dialogue; Toyotarō prépare ensuite l'image finale.",
+        "Toyotarō annonce que la fin de l'arc de Trunks du futur divergera de celle de la série télévisée et que la promesse attendue par les lecteurs sera tenue, sans révéler de détails sur l'arc ultérieur.",
+        "Une note éditoriale relate la participation de Toyotarō au New York Comic Con et son plaisir de rencontrer les fans, expérience qui aurait renouvelé son affection pour le manga."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super, manga, volume 2",
+        "pages": "Rubrique de questions-réponses, pagination non indiquée dans la page Kanzenshuu",
+        "date": "2016-12-02",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy/",
+        "participants": [
+          "Toyotarō"
+        ],
+        "formatNote": "Questions-réponses de lecteur; les annonces sur les arcs futurs sont des commentaires promotionnels de Toyotarō au moment de publication.",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-manga-vol-2-toyotaro-sensei-super-anatomy.html",
+        "questionAnswerCount": 4,
+        "questionBlockCount": 4,
+        "answerBlockCount": 4,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the 'Toyotarō-sensei's Super Anatomy!!!' interview from the second collected edition of the 'Dragon Ball Super' manga",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : préférences de Toyotarō, origine de son intérêt pour Dragon Ball et processus de collaboration avec Toriyama sur le manga.",
+      "forumContent": false,
+      "kind": "qa",
+      "formatNote": "Q&A éditorial avec répondant(s) identifié(s)."
+    },
+    {
+      "id": "site-post-48708-podcast-episode-0400",
+      "title": "Podcast Episode #0400 — Greg Werner",
+      "kind": "audio-interview",
+      "summary": "Pour l’épisode 400, Kirbopher revient d’abord avec l’équipe sur le podcast. Greg Werner est ensuite interviewé au sujet de sa découverte de Dragon Ball en Amérique au milieu des années 1990, de la création d’un ancien site de fans, des transformations du fandom, de son travail pour le magazine Beckett et de son passage au fandom professionnel de One Piece. Le billet n’inclut pas de transcription audio.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0400; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2016/03/28/podcast-episode-0400/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2016-03-28",
+        "participants": [
+          "Greg Werner"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0400.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-48708-podcast-episode-0400.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Fandom and publishing",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-48708-podcast-episode-0400.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-49488-podcast-episode-0403",
+      "title": "Podcast Episode #0403 — Jason Thompson",
+      "kind": "audio-interview",
+      "summary": "Le synopsis présente une interview de Jason Thompson, ancien éditeur chez Viz, enregistrée à Anime Fan Fest 2016. La discussion porte sur son travail éditorial chez Viz et les hauts et bas de la censure dans la traduction anglaise du manga Dragon Ball. L’épisode comprend aussi un échange sur l’annonce du retour de Trunks dans Dragon Ball Super; aucun transcript de l’interview n’est fourni.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0403; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2016/05/10/podcast-episode-0403/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2016-05-10",
+        "participants": [
+          "Jason Thompson"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0403.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49488-podcast-episode-0403.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Viz manga publishing and censorship",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49488-podcast-episode-0403.mp3",
+      "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-49710-podcast-episode-0404",
+      "title": "Podcast Episode #0404 — Lance Heiskell",
+      "kind": "audio-interview",
+      "summary": "Le synopsis annonce une discussion de Mike avec Lance Heiskell, ancien directeur marketing puis directeur de la stratégie d’entreprise chez FUNimation. Ils reviennent sur le marketing américain de Dragon Ball, la culture de fans de l’époque, les rééditions de Dragon Ball Z jusqu’aux Blu-ray et le coffret « Rock the Dragon », puis abordent l’absence de simulcast de Dragon Ball Super. L’entretien audio n’est pas transcrit.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0404; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2016/05/17/podcast-episode-0404/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2016-05-17",
+        "participants": [
+          "Lance Heiskell"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0404.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49710-podcast-episode-0404.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "FUNimation marketing",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-49710-podcast-episode-0404.mp3",
+      "audioTranscriptAvailable": false
     }
   ]
 }
