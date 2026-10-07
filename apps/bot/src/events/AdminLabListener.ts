@@ -8,7 +8,7 @@ import { ADMIN_LAB_CHANNEL_ID } from "~/lib/admin-lab";
 import { logger } from "~/lib/logger";
 import { env, isBotOwner } from "~/lib/env";
 import { PermissionFlagsBits } from "discord.js";
-import { resolveDiscordAi } from "@shenron/config/discord-ai";
+import { resolveDiscordAi, APHRODY_DISCORD } from "@shenron/config/discord-ai";
 
 /**
  * AdminLabListener — Écoute et automatisation en temps réel du salon admin (🤖・lab-ia-admin).
@@ -35,10 +35,19 @@ export class AdminLabListener {
   @On({ event: "messageCreate" })
   @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
+    const isLabGuild =
+      message.guildId === env.GUILD_ID ||
+      message.guildId === APHRODY_DISCORD.guildId ||
+      env.ADDITIONAL_GUILD_IDS.includes(message.guildId ?? "");
+    const isLabChannel =
+      Boolean(ADMIN_LAB_CHANNEL_ID) &&
+      (message.channelId === ADMIN_LAB_CHANNEL_ID ||
+        message.channelId === APHRODY_DISCORD.adminConsoleChannelId ||
+        message.channelId === APHRODY_DISCORD.startHereChannelId);
+
     if (
-      message.guildId !== env.GUILD_ID ||
-      !ADMIN_LAB_CHANNEL_ID ||
-      message.channelId !== ADMIN_LAB_CHANNEL_ID ||
+      !isLabGuild ||
+      !isLabChannel ||
       message.author.bot ||
       message.webhookId
     )

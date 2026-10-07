@@ -22,6 +22,14 @@ export const metadata: Metadata = {
 // marque les jeux jouables ici ; les autres se jouent sur Discord.
 const GAMES = [
   {
+    name: "Dragon Pixel",
+    cmd: null as string | null,
+    variant: "solo",
+    desc: "Affronte les 5 vagues d'ennemis en combat 2D rétro ! Choisis ton style (équilibré, vitesse, puissance), charge ton ki et déclenche ta transformation.",
+    power: "5 Vagues",
+    play: "/games/dragon-pixel" as string | null,
+  },
+  {
     name: "2048 : Ki Merge",
     cmd: null as string | null,
     variant: "solo",

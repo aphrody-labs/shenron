@@ -72,7 +72,8 @@
     "./bxc/snapshot": "./src/bxc/snapshot.ts",
     "./aphrody/media": "./src/aphrody/media.ts",
     "./aphrody/native-commands": "./src/aphrody/native-commands.ts",
-    "./ai/training-hashes": "./src/ai/training-hashes.ts"
+    "./ai/training-hashes": "./src/ai/training-hashes.ts",
+    "./re-wasm": "./src/re-wasm.ts"
   },
   "scripts": {
     "pipeline": "bun src/cli.ts",
@@ -170,7 +171,8 @@
       "./bxc/snapshot": "server",
       "./aphrody/media": "bun",
       "./aphrody/native-commands": "bun",
-      "./ai/training-hashes": "pure"
+      "./ai/training-hashes": "pure",
+      "./re-wasm": "bun"
     }
   }
 }

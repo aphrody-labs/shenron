@@ -45,6 +45,7 @@ import "./events/EconomyCron";
 import "./events/InteractionLog";
 import "./events/JailExpiry";
 import "./events/JoinLeave";
+import "./events/LabSyncCron";
 import "./events/LevelRoleSync";
 import "./events/MessageLog";
 import "./events/MessageXP";

@@ -1,9 +1,83 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { startNextStandalone, waitForNextStartup } from "../src/next-startup";
+import { startNextStandalone, stopStandaloneChild, waitForNextStartup } from "../src/next-startup";
+
+async function serverFixture(source: string) {
+  const root = mkdtempSync(join(tmpdir(), "shenron-lifecycle-"));
+  const app = join(root, "site", "apps", "site");
+  mkdirSync(join(app, ".next"), { recursive: true });
+  await Bun.write(join(app, ".next", "BUILD_ID"), "synthetic-lifecycle");
+  await Bun.write(join(app, "server.js"), source);
+  const child = Bun.spawn(
+    [process.execPath, join(import.meta.dir, "../src/cli.ts"), "serve", "--port", "0"],
+    {
+      env: {
+        HOME: root,
+        PATH: join(root, "no-tools"),
+        SHENRON_HOME: join(root, "home"),
+        SHENRON_SITE_DIR: join(root, "site"),
+        SHENRON_PROFILE: "public",
+        SHENRON_CHAT_STORE: "off",
+        SHENRON_CHAT_BACKENDS: "local",
+        SHENRON_MEMORY_ENABLED: "0",
+        QUALIFICATION_MARKER: join(root, "stopped"),
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+  return { root, child };
+}
+
+test("the actual CLI exits with failure when its ready UI child crashes", async () => {
+  const { root, child } = await serverFixture(`
+    Bun.serve({hostname:process.env.HOSTNAME,port:Number(process.env.PORT),fetch:()=>new Response("ready")});
+    setTimeout(()=>process.exit(7),1000);
+  `);
+  try {
+    const stderr = new Response(child.stderr).text();
+    const stdout = new Response(child.stdout).text();
+    expect(await child.exited).toBe(1);
+    expect(await stdout).toContain("Shenron : http://");
+    const events = await stderr;
+    expect(events).toContain('"event":"shenron.site.ready"');
+    expect(events).toContain('"event":"shenron.site.exited","exitCode":7');
+  } finally {
+    await stopStandaloneChild(child, 100);
+    rmSync(root, { recursive: true, force: true });
+  }
+}, 15_000);
+
+test.skipIf(process.platform === "win32")(
+  "the CLI waits for graceful child cleanup before leaving",
+  async () => {
+    const { root, child } = await serverFixture(`
+    process.on("SIGTERM",async()=>{await Bun.sleep(100);await Bun.write(process.env.QUALIFICATION_MARKER,"closed");process.exit(0)});
+    Bun.serve({hostname:process.env.HOSTNAME,port:Number(process.env.PORT),fetch:()=>new Response("ready")});
+  `);
+    const stderr = new Response(child.stderr).text();
+    try {
+      const reader = child.stdout.getReader();
+      let output = "";
+      while (!output.includes("Shenron : http://")) {
+        const part = await reader.read();
+        if (part.done) throw new Error("CLI exited before readiness");
+        output += new TextDecoder().decode(part.value);
+      }
+      reader.releaseLock();
+      await stopStandaloneChild(child);
+      expect(child.exitCode).toBe(0);
+      expect(existsSync(join(root, "stopped"))).toBe(true);
+      expect(await stderr).not.toContain('"event":"shenron.site.exited"');
+    } finally {
+      await stopStandaloneChild(child, 100);
+      rmSync(root, { recursive: true, force: true });
+    }
+  },
+  15_000,
+);
 
 test("the actual standalone launcher starts a loopback Bun child with production routing", async () => {
   const app = mkdtempSync(join(tmpdir(), "shenron-startup-"));

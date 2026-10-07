@@ -34,3 +34,23 @@ bun test test/next-startup.test.ts
 Les durées réduites des fixtures sont injectées au lanceur interne. Le démarrage
 de production conserve son budget de 120 secondes. Aucune base ni aucun profil
 d'authentification de production ne participe à cette suite.
+
+## Sortie après démarrage et arrêt du serveur
+
+La promesse `RunningSite.exited` observe aussi la sortie du rendu après son
+démarrage. Le frontal cesse de se déclarer prêt. Le CLI journalise
+`shenron.site.exited`, ferme le frontal, le backend, les workers natifs et le bot
+éventuel, puis termine avec le code 1. Le superviseur peut alors relancer le
+service au lieu de conserver un processus répondant avec un rendu mort.
+
+`RunningSite.stop()` renvoie une promesse partagée entre les appels : chaque
+ressource est arrêtée une seule fois, et les échecs sont remontés après que les
+autres fermetures ont été tentées. SIGINT et SIGTERM attendent ces fermetures ;
+le rendu et le bot disposent de trois secondes avant SIGKILL. L'absence du bot
+demandé par `serve all` ferme également le site déjà démarré.
+
+Deux fixtures supplémentaires lancent réellement le CLI avec un standalone
+synthétique et un dossier privé jetable : panne du rendu après readiness, et
+écriture différée pendant son arrêt gracieux. Les cas propres aux signaux POSIX
+sont ignorés sur Windows. La reprise par systemd et le fonctionnement sur un
+appareil Windows ne sont pas qualifiés par ces tests.

@@ -96,6 +96,8 @@ const intents = PERSONAS.shenron.token
     })
   : desiredIntents;
 
+const admittedGuilds = admittedGuildIds(env.GUILD_ID, env.ADDITIONAL_GUILD_IDS);
+
 const client = new Client({
   botId: "shenron",
   intents,
@@ -107,7 +109,7 @@ const client = new Client({
     Partials.Reaction,
   ],
   silent: env.NODE_ENV === "production",
-  botGuilds: [env.GUILD_ID],
+  botGuilds: Array.from(admittedGuilds),
   guards: [CommandPermissions],
   ...createProductionCacheOptions(),
 });
@@ -117,7 +119,6 @@ const clients = new Map<PersonaId, Client>(PERSONA_IDS.map((id) => [id, client])
 // (LogService, MessageTemplateService, StatsService, ApiServer le résolvent
 // implicitement via @inject(Client)).
 const shenron = client;
-const admittedGuilds = admittedGuildIds(env.GUILD_ID, env.ADDITIONAL_GUILD_IDS);
 container.registerInstance(Client, shenron);
 container.register("ClientMap", { useValue: clients });
 
@@ -155,7 +156,13 @@ client.once("clientReady", async () => {
 
 client.on("guildCreate", async (guild) => {
   if (admittedGuilds.has(guild.id)) {
-    logger.info({ gid: guild.id }, "Admitted guild joined");
+    logger.info({ gid: guild.id, name: guild.name }, "Admitted guild joined; registering commands");
+    await initApplicationCommandsSafe(client, {
+      logger: {
+        info: (msg) => logger.info(msg),
+        error: (msg, ...args) => logger.error({ args }, msg),
+      },
+    });
     return;
   }
   logger.warn({ gid: guild.id, name: guild.name }, "Unapproved guild invitation; leaving");

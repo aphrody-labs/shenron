@@ -8,6 +8,27 @@ const SHUTDOWN_GRACE_MS = 3_000;
 type Child = Pick<Bun.Subprocess, "exitCode" | "signalCode" | "exited" | "kill">;
 type StartupOptions = { timeoutMs?: number; shutdownGraceMs?: number };
 
+/** Join child shutdown, escalating when a process ignores the graceful signal. */
+export async function stopStandaloneChild(
+  child: Child,
+  graceMs = SHUTDOWN_GRACE_MS,
+): Promise<void> {
+  const terminated = () => child.exitCode !== null || child.signalCode !== null;
+  if (terminated()) {
+    await child.exited;
+    return;
+  }
+  child.kill("SIGTERM");
+  const force = setTimeout(() => {
+    if (!terminated()) child.kill("SIGKILL");
+  }, graceMs);
+  try {
+    await child.exited;
+  } finally {
+    clearTimeout(force);
+  }
+}
+
 const COMPILED =
   import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(import.meta.path);
 
@@ -74,17 +95,7 @@ export async function waitForNextStartup(
       throw new Error(`Next standalone server exited with signal ${child.signalCode}`);
     throw new Error(`Next standalone server did not start within ${timeoutMs / 1_000} s`);
   } catch (error) {
-    if (!terminated()) {
-      child.kill("SIGTERM");
-      const force = setTimeout(() => {
-        if (!terminated()) child.kill("SIGKILL");
-      }, options.shutdownGraceMs ?? SHUTDOWN_GRACE_MS);
-      try {
-        await child.exited;
-      } finally {
-        clearTimeout(force);
-      }
-    }
+    await stopStandaloneChild(child, options.shutdownGraceMs);
     throw error;
   } finally {
     clearTimeout(timeout);

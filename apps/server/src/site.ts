@@ -16,7 +16,7 @@ import { type Backend, startBackend } from "./backend";
 import type { ServerPaths } from "./config";
 import { type FrontHost, freePort, serveFront } from "./front";
 import { localApi } from "./local-api";
-import { startNextStandalone } from "./next-startup";
+import { startNextStandalone, stopStandaloneChild } from "./next-startup";
 
 export interface SiteLayout {
   /** Standalone root (contains `apps/site/server.js` and the traced `node_modules`). */
@@ -62,7 +62,8 @@ export interface RunningSite {
   url: string;
   port: number;
   layout: SiteLayout;
-  stop(): void;
+  exited: Promise<number>;
+  stop(): Promise<void>;
 }
 
 /** The host as the front sees it: `/mcp` falls back to Next once the MCP sidecar is down. */
@@ -114,11 +115,15 @@ export async function serveSite(
   try {
     next = await startNextStandalone(layout.app, nextPort, backend.nextEnv);
   } catch (error) {
-    void front.stop(true);
-    await backend.stop();
+    await Promise.allSettled([front.stop(true), backend.stop()]);
     throw error;
   }
   ready = true;
+  const exited = next.exited.then((code) => {
+    ready = false;
+    return code;
+  });
+  let stopping: Promise<void> | undefined;
   const url = `http://${options.hostname === "0.0.0.0" ? "127.0.0.1" : options.hostname}:${front.port}`;
   const groups = backend.groups();
   console.error(
@@ -134,10 +139,20 @@ export async function serveSite(
     url,
     port: front.port ?? options.port,
     layout,
+    exited,
     stop: () => {
-      next.kill();
-      void front.stop(true);
-      void backend.stop();
+      ready = false;
+      return (stopping ??= (async () => {
+        const results = await Promise.allSettled([
+          stopStandaloneChild(next),
+          front.stop(true),
+          backend.stop(),
+        ]);
+        const errors = results.flatMap((result) =>
+          result.status === "rejected" ? [result.reason] : [],
+        );
+        if (errors.length) throw new AggregateError(errors, "Shenron site shutdown failed");
+      })());
     },
   };
 }
