@@ -6,6 +6,7 @@
 
 pub mod catalog;
 pub mod error;
+pub mod ffi;
 pub mod formats;
 pub mod fs;
 pub mod inventory;
@@ -37,6 +38,7 @@ pub use formats::{
     moveset::{CharacterMoveset, MoveFrameData},
     msg::{MsgEntry, MsgFile},
     pup::{PupEntry, PupFile},
+    sav::{Dxbv2Cac, Dxbv2Save},
 };
 pub use fs::{
     cpk::{CpkArchive, CpkEntry},

@@ -39,24 +39,31 @@ l'application utilise les adresses publiques de dragonballfr.com.
 | `apps/server`                                                       | `shenron-server` : le binaire autonome qui sert l'application frontale et les API locales.                                                                                        |
 | `packages/ui`                                                       | La couche UI unique : système de design Dragon Ball, lecteurs, éditeur Koharu, studio.                                                                                            |
 | `packages/{api,auth,config,db,images,koharu,media,native,pipeline}` | Contrat d'API, authentification, configuration, base de données, assets, client Koharu, médias, liaison native, chaîne éditoriale.                                                |
-| `crates/shenron-*`                                                  | Rust : CLI `shenron`, serveur MCP, RAG, traduction JP→FR, manga, C ABI, commandes du studio, application de bureau (Tauri 3).                                                     |
+| `crates/shenron-*`                                                  | Rust : CLI `shenron`, serveur MCP, moteur RE pur Rust `shenron-re` (parseurs binaires DBXV2/CPK, FFI C ABI), RAG, traduction JP→FR, manga, C ABI, commandes du studio, application de bureau (Tauri 3). |
 | `crates/koharu-*`                                                   | Le moteur de traduction manga Koharu (détection, OCR, inpainting, rendu, PSD).                                                                                                    |
 | `plugin/`                                                           | Le plugin Claude Code « shenron » (compétences Dragon Ball, MCP).                                                                                                                 |
-| `vendor/dbxv2`                                                      | Sous-module [dbxv2](https://github.com/aphrody-code/dbxv2) : outils Xenoverse 2 (extraction, conversion, indexation et modding), à intégrer dans Shenron selon le plan directeur. |
+| `vendor/dbxv2`                                                      | Sous-module [dbxv2](https://github.com/aphrody-code/dbxv2) : référence des outils Xenoverse 2 historiques, migré vers le socle Rust natif `crates/shenron-re` et la liaison Bun FFI `@shenron/native/re`. |
 | `deploy/`, `config/`, `docs/`                                       | Artefacts de déploiement, configuration publique, documentation.                                                                                                                  |
 
-## Fusion avec dbxv2
+## Migration et intégration dbxv2
 
-Le dépôt [aphrody-code/dbxv2](https://github.com/aphrody-code/dbxv2) est suivi
-comme sous-module dans `vendor/dbxv2`, à une révision Git épinglée. Il apporte
-un CLI Python/uv et une bibliothèque d'outils pour Dragon Ball Xenoverse 2.
-Le [plan de fusion](docs/reference/root/PLAN.md#fusion-shenron--dbxv2)
-prévoit de réunir leurs fonctionnalités dans Shenron : une interface commune
-web, bureau et mobile, des contrats d'API partagés et le serveur Bun.
-L'ajout du sous-module constitue le point de départ ; le raccordement produit
-et le portage restent à réaliser.
+Les fonctionnalités de l'écosystème DBXV2 ont été migrées vers un socle unifié et performant en Rust natif et Bun FFI :
 
-Pour récupérer sa révision enregistrée après un clone de Shenron :
+1. **Moteur d'ingénierie inverse natif (`crates/shenron-re`)** :
+   - **Système de fichiers et archives** : VFS mémoire zero-copy (`XenoverseVfs`), montage multi-niveaux d'archives CPK (`data.cpk`, `data2.cpk`, DLCs), décompression native du format propriétaire CRILAYLA (`crilayla.rs`).
+   - **Décodeurs de formats binaires** : Modèles 3D et maillages (`EMD`), atlas de textures et conversion RGBA8888 (`EMB`), matériaux et shaders (`EMM`), squelettes et os (`ESK`), animations de combat et hitboxes (`BAC`), matrices de dégâts (`BDM`), catalogue des 708 compétences (`CUS`), coefficients de transformation (`PUP`), chaînes textuelles localisées (`MSG`), et conteneur de sauvegarde PC avec déchiffrement et inspection CaC/Zeni/TP (`SAV`).
+   - **Catalogue exhaustif** : Registre unifié des jeux vidéo Dragon Ball sur Steam, PC, Android et consoles avec moteurs, formats et chemins de sauvegarde.
+
+2. **Liaison Bun FFI (`@shenron/native/re`)** :
+   - Exporte une interface TypeScript typée via `bun:ffi` (`dlopen`) se liant directement à la bibliothèque partagée `libshenron_re.so` / `shenron_re.dll`.
+   - Permet au serveur Bun et aux scripts de trier des binaires, inspecter des sauvegardes et extraire des fichiers d'archives CPK en mémoire en quelques microsecondes sans runtime Python ni JVM.
+
+3. **Pipeline d'automatisation YOLO & CDN sur VPS** :
+   - **Acquisition SteamCMD** : Automatisation complète du téléchargement de Dragon Ball Xenoverse 2 (AppID `454650`, ~39,6 Go) via SteamCMD avec mise en cache des jetons d'authentification.
+   - **Analyse profonde Ghidra Headless** : Conteneur Docker `aphrody-re-suite` (Ghidra 11.3, OpenJDK 21) pour l'extraction automatique des fonctions, symboles et chaînes du binaire `DBXV2.exe`.
+   - **Publication CDN Nginx** : Exposition publique des modèles, textures, frame data et manifestes sur `https://cdn.dragonballfr.com/assets/dbxv2/` (HTTP/2, HTTP/3 QUIC, compression Brotli/Gzip, en-têtes CORS).
+
+Pour récupérer le sous-module après un clone de Shenron :
 
 ```sh
 git submodule update --init --recursive vendor/dbxv2

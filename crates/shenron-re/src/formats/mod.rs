@@ -11,6 +11,7 @@ pub mod model_assemble;
 pub mod moveset;
 pub mod msg;
 pub mod pup;
+pub mod sav;
 
 pub use bac::{BacFile, BacHitbox, BacMove};
 pub use bdm::{BdmEntry, BdmFile, DamageType};
@@ -24,3 +25,4 @@ pub use model_assemble::{AssembledCharacterModel, ModelPrimitive};
 pub use moveset::{CharacterMoveset, MoveFrameData};
 pub use msg::{MsgEntry, MsgFile};
 pub use pup::{PupEntry, PupFile};
+pub use sav::{Dxbv2Cac, Dxbv2Save};
