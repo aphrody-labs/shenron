@@ -15,7 +15,7 @@ listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
 | `gemini-web/flash` | Gemini web app, operator's Google session | Optional remote backend |
 
 - **Desktop:** Aphrody's router and provisioner (`aphrody-llama-server`, contract
-  `LOCAL-CHAT.md`) run inside `shenron-server` through `libshenron_ffi` (ABI 4,
+  `LOCAL-CHAT.md`) run inside `shenron-server` through `libshenron_ffi` (ABI 5,
   `shenron_llama_*`). `apps/server/src/chat-model.ts` only selects files (defaults pinned in
   `@shenron/config/chat-model`). One `llama-server` starts on first use; the supervisor
   re-executes `shenron-server llama-daemon`, so no Aphrody executable ships with the app. The

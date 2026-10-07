@@ -41,8 +41,10 @@ Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun 
 Dimps listés plus haut, un scanner de manifests Steam explicitement fourni en entrée,
 un catalogue et des bindings WASM. Le scan Steam ne lit que les manifests d'installation;
 il ne produit aucun flux d'événements temps réel et n'accède pas aux identifiants Steam.
-Le nouveau binaire `shenron-re map` sérialise la carte originale et source-attribuée;
-`shenron-re catalog` sérialise le catalogue. Ce n'est pas une parité avec le CLI dbxv2.
+Le nouveau binaire `shenron-re map` sérialise la carte originale avec provenance;
+`shenron-re catalog` sérialise le catalogue. Le binding natif `@shenron/native` expose aussi
+la carte via le symbole ABI 5 `shenron_re_xenoverse3_map`, avec libération de la chaîne par
+le contrat FFI standard. La matrice ne constitue pas une parité avec le CLI dbxv2.
 
 ## Assets, données et distribution
 
@@ -67,8 +69,8 @@ la géométrie et les liaisons prototype sont signalées comme telles. Elle n'es
 carte extraite/reconstituée du jeu, ni une production AAA. Les changements du site Dragon
 Pixel ne consomment pas encore directement le graphe Rust/WASM.
 
-Portes ciblées exécutées dans ce worktree : `cargo test -p shenron-re --locked`,
-`cargo clippy -p shenron-re --locked --all-targets -- -D warnings`, build WASM et
-`bun test packages/pipeline/src/re-wasm.test.ts`; la nouvelle commande CLI a également
-été exécutée et son JSON observé. Aucun hôte distant ni service de production n'a été
-modifié.
+Portes ciblées exécutées dans ce worktree : tests et Clippy de `shenron-re` et `shenron-ffi`,
+compilation WASM, génération ABI vérifiée, typecheck/lint et 36 tests `@shenron/native` avec
+la bibliothèque debug réellement chargée. La nouvelle commande CLI a également été exécutée
+et son JSON observé. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte
+ni service de production n'a été modifié.

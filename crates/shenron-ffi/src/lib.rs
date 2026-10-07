@@ -13,6 +13,8 @@
 //! - ABI 4 keeps every ABI 3 symbol unchanged and adds the local chat models
 //!   (`shenron_llama_{provision_job,progress,router_start,router_stop,daemon}`), Aphrody's
 //!   `aphrody-llama-server` local chat in process ([`llama`]).
+//! - ABI 5 keeps every ABI 4 symbol unchanged and adds the source-attributed Xenoverse 3
+//!   prototype map from `shenron-re`.
 //!
 //! Memory: an owned string is allocated here by the Rust global allocator and released by the
 //! caller, exactly once, with `shenron_string_free` (from any thread); static strings are never
@@ -671,6 +673,23 @@ mod native {
         string_to_c(json)
     }
 
+    /// Return Shenron RE's original, source-attributed Xenoverse 3 prototype map as owned JSON.
+    /// Its coordinates are schematic and do not claim to reproduce unpublished game geometry.
+    /// Free with `shenron_string_free`.
+    #[unsafe(no_mangle)]
+    #[must_use]
+    pub extern "C" fn shenron_re_xenoverse3_map() -> *mut c_char {
+        let json =
+            catch_unwind(|| to_json(&shenron_re::world::xenoverse3::xenoverse3_prototype_map()))
+                .unwrap_or_else(|payload| {
+                    let message =
+                        format!("shenron_re_xenoverse3_map panicked: {}", panic_message(&*payload));
+                    set_last_error(message.clone());
+                    to_json(&serde_json::json!({ "error": message }))
+                });
+        string_to_c(json)
+    }
+
     /// Register a cancellable job; returns its id (never 0; 0 reports an internal failure).
     #[unsafe(no_mangle)]
     #[must_use]
@@ -1013,7 +1032,7 @@ mod tests {
     #[test]
     fn shenron_abi_and_version_are_valid() {
         assert_eq!(shenron_abi_version(), abi::ABI_VERSION);
-        assert_eq!(abi::ABI_VERSION, 4);
+        assert_eq!(abi::ABI_VERSION, 5);
         let ptr = shenron_version();
         assert!(!ptr.is_null());
         let text = unsafe { CStr::from_ptr(ptr) }.to_str().unwrap();
@@ -1032,6 +1051,17 @@ mod tests {
         assert!(["debug", "release"].contains(&info["profile"].as_str().unwrap()));
         assert!(info["features"].is_array());
         assert!(info["rustc"].as_str().unwrap().starts_with("rustc "), "{info}");
+    }
+
+    #[test]
+    fn xenoverse3_prototype_map_is_owned_json_with_provenance() {
+        let map = owned(shenron_re_xenoverse3_map());
+        assert_eq!(map["schema_version"], 1);
+        assert_eq!(map["status"], "original_prototype_schematic");
+        assert_eq!(map["zones"].as_array().unwrap().len(), 6);
+        assert_eq!(map["routes"].as_array().unwrap().len(), 7);
+        assert!(map["caveat"].as_str().unwrap().contains("unreleased"));
+        assert!(map["zones"][0]["source"].as_str().unwrap().starts_with("https://"));
     }
 
     #[test]

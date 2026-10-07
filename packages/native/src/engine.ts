@@ -272,6 +272,68 @@ export function shenronBuildInfo(): BuildInfo {
   return structuredClone(libraryInfo as BuildInfo);
 }
 
+/** Original AGE 1000 Xenoverse 3 prototype map with citations and schematic geometry. */
+export interface Xenoverse3PrototypeMap {
+  schema_version: number;
+  title: string;
+  era: string;
+  status: "original_prototype_schematic";
+  coordinate_system: string;
+  bounds: [number, number, number];
+  zones: Array<{
+    id: string;
+    name: string;
+    kind: string;
+    evidence: "announced" | "prototype";
+    source: string;
+    center: { x: number; y: number; elevation: number };
+    radius: number;
+    description: string;
+  }>;
+  landmarks: Array<{
+    id: string;
+    name: string;
+    zone_id: string;
+    kind: string;
+    evidence: "announced" | "prototype";
+    source: string;
+    position: { x: number; y: number; elevation: number };
+    description: string;
+  }>;
+  routes: Array<{
+    id: string;
+    from: string;
+    to: string;
+    mode: string;
+    distance: number;
+    evidence: "announced" | "prototype";
+    source: string;
+    description: string;
+  }>;
+  caveat: string;
+}
+
+/** Read Shenron RE's source-attributed prototype map through native Rust FFI. */
+export function shenronReXenoverse3Map(): Xenoverse3PrototypeMap {
+  const value: unknown = JSON.parse(
+    readOwnedString(loadLib().symbols.shenron_re_xenoverse3_map(), "shenron_re_xenoverse3_map"),
+  );
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    (value as Xenoverse3PrototypeMap).status !== "original_prototype_schematic" ||
+    !Array.isArray((value as Xenoverse3PrototypeMap).zones) ||
+    !Array.isArray((value as Xenoverse3PrototypeMap).landmarks) ||
+    !Array.isArray((value as Xenoverse3PrototypeMap).routes)
+  ) {
+    const error = (value as { error?: unknown } | null)?.error;
+    throw new Error(
+      typeof error === "string" ? error : "Shenron RE returned an invalid Xenoverse 3 map",
+    );
+  }
+  return value as Xenoverse3PrototypeMap;
+}
+
 /** Registered native jobs, pending or running (leak checks). */
 export function shenronJobCount(): number {
   return loadLib().symbols.shenron_job_count();
