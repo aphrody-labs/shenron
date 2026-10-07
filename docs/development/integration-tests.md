@@ -77,3 +77,12 @@ Next échoue encore après 30 secondes sur la conversation attendue. Le frontal
 Bun doit notamment relayer le WebSocket de Next (`/_next/hmr`), que son relais
 HTTP ne transporte pas actuellement. Ce résultat ne qualifie pas Windows,
 OAuth ni les services de production.
+
+Une sonde temporaire, hors Git, a redirigé uniquement le WebSocket `/_next/hmr`
+vers le port de Next, en conservant la page et les API derrière le frontal Bun.
+Avec le CLI corrigé, toutes les assertions du scénario ont passé : ouverture
+de la conversation SQLite et de son message, nouvelle discussion, API depuis
+la page et verrou `instant()`. Cette sonde identifie le relais HMR manquant ;
+elle ne remplace pas la qualification du frontal et n'en modifie pas les
+assertions. React signale encore des différences d'attributs SVG `xmlns`
+dans le moteur, à corriger séparément.

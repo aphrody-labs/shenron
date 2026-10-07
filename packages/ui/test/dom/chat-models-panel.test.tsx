@@ -84,6 +84,140 @@ function transport(models: ChatModelView[][] = [base]): ModelsTransport {
 afterEach(cleanup);
 
 describe("ModelsPanel", () => {
+  test("changing the notification callback does not restart the model request", async () => {
+    const pending = Promise.withResolvers<ChatModelView[] | null>();
+    const t = transport();
+    t.list = mock(() => pending.promise);
+    const old = mock();
+    const latest = mock();
+    const view = render(
+      <ModelsPanel transport={t} labels={labels} models={{ available: true }} onChange={old} />,
+    );
+    expect(screen.getByText("Checking")).toBeTruthy();
+    view.rerender(
+      <ModelsPanel transport={t} labels={labels} models={{ available: true }} onChange={latest} />,
+    );
+    await act(async () => {
+      pending.resolve(base);
+    });
+    expect(t.list).toHaveBeenCalledTimes(1);
+    expect(old).not.toHaveBeenCalled();
+    expect(latest).toHaveBeenCalledWith(base);
+  });
+
+  test("waits for a slow progress request before polling again", async () => {
+    const pending = Promise.withResolvers<ChatModelView[] | null>();
+    const downloading = [{ ...base[0]!, state: "downloading" as const }];
+    const t = transport();
+    t.list = mock()
+      .mockResolvedValueOnce(downloading)
+      .mockImplementationOnce(() => pending.promise)
+      .mockResolvedValue(base);
+    render(<ModelsPanel transport={t} labels={labels} models={{ available: true }} pollMs={20} />);
+    await screen.findByText("Downloading");
+    await act(async () => {
+      await Bun.sleep(100);
+    });
+    expect(t.list).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      pending.resolve(base);
+    });
+    expect(await screen.findByText("Ready")).toBeTruthy();
+    await act(async () => {
+      await Bun.sleep(60);
+    });
+    expect(t.list).toHaveBeenCalledTimes(2);
+  });
+
+  test("stops polling when the models group becomes unavailable", async () => {
+    const t = transport([[{ ...base[0]!, state: "downloading" }]]);
+    const view = render(
+      <ModelsPanel transport={t} labels={labels} models={{ available: true }} pollMs={20} />,
+    );
+    await screen.findByText("Downloading");
+    view.rerender(
+      <ModelsPanel transport={t} labels={labels} models={{ available: false }} pollMs={20} />,
+    );
+    const calls = (t.list as ReturnType<typeof mock>).mock.calls.length;
+    await act(async () => {
+      await Bun.sleep(80);
+    });
+    expect(t.list).toHaveBeenCalledTimes(calls);
+    expect(screen.getByText("No models here")).toBeTruthy();
+    expect(screen.queryByText("Downloading")).toBeNull();
+  });
+
+  test("an install refresh waits for an older progress request and then reads again", async () => {
+    const pending = Promise.withResolvers<ChatModelView[] | null>();
+    const downloading = [{ ...base[0]!, state: "downloading" as const }, base[1]!];
+    const t = transport();
+    t.list = mock()
+      .mockResolvedValueOnce(downloading)
+      .mockImplementationOnce(() => pending.promise)
+      .mockResolvedValue(base);
+    render(<ModelsPanel transport={t} labels={labels} models={{ available: true }} pollMs={20} />);
+    await screen.findByText("Downloading");
+    await act(async () => {
+      await Bun.sleep(50);
+    });
+    expect(t.list).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Install" }));
+    });
+    expect(t.install).toHaveBeenCalledTimes(1);
+    expect(t.list).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      pending.resolve(downloading);
+    });
+    expect(await screen.findByText("Ready")).toBeTruthy();
+    expect(t.list).toHaveBeenCalledTimes(3);
+  });
+
+  test("a closed panel never publishes a late result", async () => {
+    const pending = Promise.withResolvers<ChatModelView[] | null>();
+    const t = transport();
+    t.list = mock(() => pending.promise);
+    const changed = mock();
+    const view = render(
+      <ModelsPanel transport={t} labels={labels} models={{ available: true }} onChange={changed} />,
+    );
+    view.unmount();
+    await act(async () => {
+      pending.resolve(base);
+    });
+    expect(changed).not.toHaveBeenCalled();
+  });
+
+  test("a replaced transport cannot publish its old result", async () => {
+    const pending = Promise.withResolvers<ChatModelView[] | null>();
+    const old = transport();
+    old.list = mock(() => pending.promise);
+    const changed = mock();
+    const view = render(
+      <ModelsPanel
+        transport={old}
+        labels={labels}
+        models={{ available: true }}
+        onChange={changed}
+      />,
+    );
+    view.rerender(
+      <ModelsPanel
+        transport={transport([[]])}
+        labels={labels}
+        models={{ available: true }}
+        onChange={changed}
+      />,
+    );
+    await screen.findByText("No model");
+    await act(async () => {
+      pending.resolve(base);
+    });
+    expect(screen.getByText("No model")).toBeTruthy();
+    expect(screen.queryByText("Shenron chat v2")).toBeNull();
+    expect(changed).toHaveBeenCalledTimes(1);
+  });
+
   test("shows every state and installs on one click, then follows the download", async () => {
     const downloading = base.map((m) =>
       m.id === "gemma4-e2b"

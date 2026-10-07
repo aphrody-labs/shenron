@@ -129,37 +129,80 @@ export function ModelsPanel({
   const [importError, setImportError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const rates = useRef(new Map<string, RateSample>());
+  const onChangeRef = useRef(onChange);
+  const requests = useRef<{
+    active: boolean;
+    transport: ModelsTransport;
+    pending: Promise<void> | null;
+  } | null>(null);
   const [samples, setSamples] = useState<ReadonlyMap<string, RateSample>>(() => new Map());
   const on = group?.available === true;
 
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   const load = useCallback(async () => {
-    const list = await transport.list();
-    if (!list) {
-      setFailed(true);
-      return;
+    const session = requests.current;
+    if (!session?.active || session.transport !== transport) return;
+    const read = async () => {
+      if (!session.active) return;
+      const list = await transport.list();
+      if (!session.active) return;
+      if (!list) {
+        setFailed(true);
+        return;
+      }
+      setFailed(false);
+      const now = Date.now();
+      for (const m of list) {
+        if (m.state === "downloading" && m.progress) {
+          rates.current.set(
+            m.id,
+            nextRateSample(rates.current.get(m.id), m.progress.received, now),
+          );
+        } else rates.current.delete(m.id);
+      }
+      setSamples(new Map(rates.current));
+      setModels(list);
+      onChangeRef.current?.(list);
+    };
+    // Mutations need a fresh reading after any older progress request completes.
+    const pending = session.pending ? session.pending.then(read, read) : read();
+    session.pending = pending;
+    try {
+      await pending;
+    } finally {
+      if (session.pending === pending) session.pending = null;
     }
-    setFailed(false);
-    const now = Date.now();
-    for (const m of list) {
-      if (m.state === "downloading" && m.progress) {
-        rates.current.set(m.id, nextRateSample(rates.current.get(m.id), m.progress.received, now));
-      } else rates.current.delete(m.id);
-    }
-    setSamples(new Map(rates.current));
-    setModels(list);
-    onChange?.(list);
-  }, [transport, onChange]);
+  }, [transport]);
 
   useEffect(() => {
+    const session = { active: on, transport, pending: null as Promise<void> | null };
+    requests.current = session;
     if (on) void load();
-  }, [on, load]);
+    else rates.current.clear();
+    return () => {
+      session.active = false;
+      if (requests.current === session) requests.current = null;
+    };
+  }, [on, transport, load]);
 
   const polling = models?.some((m) => BUSY.has(m.state)) === true;
   useEffect(() => {
-    if (!polling) return;
-    const timer = setInterval(() => void load(), pollMs);
-    return () => clearInterval(timer);
-  }, [polling, pollMs, load]);
+    if (!on || !polling) return;
+    let active = true;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      await load();
+      if (active) timer = setTimeout(() => void poll(), pollMs);
+    };
+    timer = setTimeout(() => void poll(), pollMs);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [on, polling, pollMs, load]);
 
   async function install(model: ChatModelView) {
     setBusy(true);
@@ -213,27 +256,27 @@ export function ModelsPanel({
         </div>
       </header>
 
-      {group === null ? (
+      {group === null || (on && models === null && !failed) ? (
         <output className="m-0 block text-body-medium text-on-surface-variant">
           {labels.checking}
         </output>
-      ) : !on && !models ? (
+      ) : !on ? (
         <Banner variant="default" showDot={false} icon={CircleAlert}>
           <p className="m-0">{group.reason ?? labels.unavailable}</p>
         </Banner>
       ) : null}
 
-      {failed ? (
+      {on && failed ? (
         <Banner variant="error" showDot={false} icon={CircleAlert}>
           <p className="m-0">{labels.failed}</p>
         </Banner>
       ) : null}
 
-      {models && models.length === 0 ? (
+      {on && models && models.length === 0 ? (
         <p className="m-0 text-body-medium text-on-surface-variant">{labels.empty}</p>
       ) : null}
 
-      {models && models.length > 0 ? (
+      {on && models && models.length > 0 ? (
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {models.map((m) => {
             const ratio =
