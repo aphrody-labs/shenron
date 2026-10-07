@@ -69,12 +69,12 @@ describe("wiki-nav-manifest — Manifeste de navigation encyclopédique", () => 
 
   test("la recherche générale ne déclenche pas le verdict canonique lexical", async () => {
     const source = await Bun.file(
-      new URL("../src/components/wiki/DragonRadarSearch.tsx", import.meta.url),
+      new URL("../../../packages/ui/src/public/use-dragon-radar.tsx", import.meta.url),
     ).text();
-    const canonFetch = source.indexOf("/api/canon?q=");
+    const canonFetch = source.indexOf("transport.canon(query, signal)");
     const scopeGuard = source.lastIndexOf('scope === "canon"', canonFetch);
     expect(canonFetch).toBeGreaterThan(-1);
     expect(scopeGuard).toBeGreaterThan(-1);
-    expect(source).toContain("/api/search?q=");
+    expect(source).toContain("transport.search(query, signal)");
   });
 });

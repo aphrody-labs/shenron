@@ -14,5 +14,6 @@
 - [ ] Réconcilier la livraison et le routage Infra du site public avant qualification visuelle en production.
 - [x] [Corriger les gestes interrompus et les faux doubles taps du lecteur partagé](docs/products/reader-gestures.md).
 - [x] [Restituer le plein écran natif du lecteur après une réponse IPC tardive](docs/products/reader-fullscreen.md).
+- [x] [Partager Dragon Radar, rétablir ses dix familles et borner ses chargements avec reprise](docs/products/dragon-radar.md).
 - [ ] Unifier le rendu manga web, bureau et mobile ; vérifier visuellement les états et tailles d'écran.
 - [ ] Qualifier les chargements, erreurs, accessibilité et livraison de bout en bout.
