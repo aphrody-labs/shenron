@@ -375,7 +375,8 @@ mod reqwest_lite {
                 return None;
             };
             let status = std::str::from_utf8(&head[..read]).unwrap_or("");
-            let code = status.strip_prefix("HTTP/1.1 ").or_else(|| status.strip_prefix("HTTP/1.0 "))?;
+            let code =
+                status.strip_prefix("HTTP/1.1 ").or_else(|| status.strip_prefix("HTTP/1.0 "))?;
             code.get(..3)?.parse().ok()
         }
     }

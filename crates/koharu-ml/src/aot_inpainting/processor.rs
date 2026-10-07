@@ -4,9 +4,9 @@
 //! https://github.com/dmMaze/BallonsTranslator/blob/4bcc635c19f6c63a902872cf77b3d554e14ed1b7/ballontranslator/utils/imgproc_utils.py#L132-L164
 
 use anyhow::{Context, Result, bail, ensure};
+use aphrody_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, GrayImage, RgbImage};
-use koharu_torch::{Device, Kind, Tensor};
 
 use super::model::Model;
 

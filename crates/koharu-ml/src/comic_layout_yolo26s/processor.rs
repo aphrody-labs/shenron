@@ -7,9 +7,9 @@
 //! - https://github.com/ultralytics/ultralytics/blob/e6cb320fce86b41b88b15111fa37e9f6fcad1e7f/ultralytics/utils/ops.py
 
 use anyhow::{Result, bail, ensure};
+use aphrody_torch::{Device, IndexOp, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, Rgb, RgbImage, imageops};
-use koharu_torch::{Device, IndexOp, Kind, Tensor};
 use serde::Serialize;
 
 use super::{config::ComicLayoutYolo26sConfig, model::Output};

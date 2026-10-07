@@ -38,7 +38,11 @@ import {
 import { WIKI_VISIBILITY_TABLES } from "../src/db/wiki-visibility";
 
 const dir = mkdtempSync(join(tmpdir(), "shenron-replica-sync-"));
-afterAll(() => rmSync(dir, { recursive: true, force: true }));
+afterAll(() => {
+  // Finalize unreachable SQLite statements before removing their files on Windows.
+  Bun.gc(true);
+  rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
+});
 
 const MIGRATIONS = join(import.meta.dir, "../src/db/migrations");
 let replicas = 0;

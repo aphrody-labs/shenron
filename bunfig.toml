@@ -9,6 +9,8 @@ minimumReleaseAge = 259200
 # Owner-published Aphrody packages are pinned exactly and released in step with this repository;
 # security fixes (next, nodemailer, undici) track upstream in real time.
 minimumReleaseAgeExcludes = [
+  "@aphrody/agent-browser",
+  "@aphrody/web-test",
   "@aphrody/ag-ui",
   "@aphrody/api",
   "@aphrody/bun-test-dom",

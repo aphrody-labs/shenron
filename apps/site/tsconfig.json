@@ -36,7 +36,9 @@
     ".next-dev/types/**/*.ts",
     ".next-dev/dev/types/**/*.ts",
     ".next-standalone/types/**/*.ts",
-    ".next-standalone/dev/types/**/*.ts"
+    ".next-standalone/dev/types/**/*.ts",
+    ".next-qualification/types/**/*.ts",
+    ".next-qualification/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules", "tests", "scripts"]
 }

@@ -14,7 +14,7 @@ impl Default for TypesettingConfig {
 }
 
 impl TypesettingConfig {
-    pub fn load() -> anyhow::Result<koharu_config::Config<Self>> {
-        koharu_config::load("typesetting")
+    pub fn load() -> anyhow::Result<aphrody_ml_config::Config<Self>> {
+        aphrody_ml_config::load("typesetting")
     }
 }

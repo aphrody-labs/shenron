@@ -19,11 +19,11 @@ workspace = true
 
 [dependencies]
 aphrody-agent-home = { workspace = true }
-aphrody-local-chat = { workspace = true }
-aphrody-local-chat-models = { workspace = true }
+aphrody-llama-server = { workspace = true }
+aphrody-models = { workspace = true }
 aphrody-memory = { workspace = true }
 aphrody-rag-core = { workspace = true }
-aphrody-stdio-capture = { workspace = true }
+aphrody-backend = { workspace = true }
 axum = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

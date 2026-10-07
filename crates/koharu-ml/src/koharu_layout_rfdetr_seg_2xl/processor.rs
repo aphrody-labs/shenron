@@ -4,8 +4,8 @@
 //! https://github.com/roboflow/rf-detr/blob/4ab7c18729de9d02ffd0495795d0831b5630f01b/src/rfdetr/models/postprocess.py
 
 use anyhow::{Result, ensure};
+use aphrody_torch::{Device, IndexOp, Kind, Tensor};
 use image::DynamicImage;
-use koharu_torch::{Device, IndexOp, Kind, Tensor};
 use serde::Serialize;
 
 use super::{

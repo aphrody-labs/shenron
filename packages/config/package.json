@@ -30,7 +30,8 @@
     "./aphrody-corpus": "./src/aphrody-corpus.ts",
     "./admin": "./src/admin.ts",
     "./chat-model": "./src/chat-model.ts",
-    "./dm-chat": "./src/dm-chat.ts"
+    "./dm-chat": "./src/dm-chat.ts",
+    "./testing-executable": "./src/testing-executable.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -71,7 +72,8 @@
       "./databooks-defauts": "pure",
       "./aphrody-corpus": "pure",
       "./chat-model": "pure",
-      "./dm-chat": "pure"
+      "./dm-chat": "pure",
+      "./testing-executable": "bun"
     }
   }
 }

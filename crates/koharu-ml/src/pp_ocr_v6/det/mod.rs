@@ -3,8 +3,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
+use aphrody_torch::Device;
 use image::DynamicImage;
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -55,7 +55,7 @@ impl PPOCRV6MediumDet {
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<TextDetections> {
-        koharu_torch::no_grad(|| {
+        aphrody_torch::no_grad(|| {
             let pixel_values = self.processor.preprocess(image, self.device)?;
             let output = self.model.forward(&pixel_values);
             self.processor.postprocess(&output, image)
@@ -65,7 +65,7 @@ impl PPOCRV6MediumDet {
 
 #[cfg(test)]
 mod tests {
-    use koharu_runtime::{Feature, Runtime};
+    use aphrody_ml_runtime::{Feature, Runtime};
 
     use super::*;
 

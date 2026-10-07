@@ -13,7 +13,7 @@
 //! Gentle migration from the upstream locations: projects of `Documents/Koharu` stay listed
 //! and open in place (new projects go to the new root), and an existing
 //! `<OS cache>/koharu/packages` store keeps serving until the new store exists, so no model is
-//! downloaded twice. The shared settings file stays `~/.koharu/config.toml`: `koharu-config`
+//! downloaded twice. The shared settings file stays `~/.koharu/config.toml`: `aphrody-ml-config`
 //! (Aphrody) offers no other location.
 
 use std::path::{Path, PathBuf};
@@ -31,7 +31,7 @@ pub struct Roots {
     pub projects: PathBuf,
     /// Upstream project root, still listed and opened when it exists.
     pub legacy_projects: Option<PathBuf>,
-    /// Runtime and model package store (`koharu_runtime::Store`).
+    /// Runtime and model package store (`aphrody_ml_runtime::Store`).
     pub packages: PathBuf,
 }
 
@@ -70,7 +70,7 @@ impl Roots {
     /// Select the package store before any runtime or model is resolved. A store already
     /// chosen by the process (another library in it) is kept and reported.
     pub fn configure_store(&self) {
-        if let Err(error) = koharu_runtime::Store::configure(&self.packages) {
+        if let Err(error) = aphrody_ml_runtime::Store::configure(&self.packages) {
             tracing::warn!(%error, store = %self.packages.display(), "Koharu package store unchanged");
         }
     }

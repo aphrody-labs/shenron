@@ -21,7 +21,7 @@ use std::{
     time::Duration,
 };
 
-use aphrody_local_chat::{
+use aphrody_llama_server::{
     ArtifactSpec, ChatProvisionRequest, DaemonCommand, LoraSpec, ProvisionProgress,
     locate_llama_server, provision_chat,
     router::{ChatRouter, RouterConfig, RouterContext},
@@ -109,9 +109,7 @@ impl ProvisionRequest {
     /// The declared catalog cannot be read.
     pub fn to_aphrody(&self) -> Result<ChatProvisionRequest, String> {
         let declared = match &self.catalog {
-            Some(path) => {
-                Some(aphrody_local_chat_models::Catalog::load(path).map_err(|e| e.to_string())?)
-            },
+            Some(path) => Some(aphrody_models::Catalog::load(path).map_err(|e| e.to_string())?),
             None => None,
         };
         Ok(ChatProvisionRequest {
@@ -153,7 +151,10 @@ impl Drop for ProgressSlot {
 ///
 /// # Errors
 /// Resolution, transfer, digest or store failure.
-pub async fn provision(job: u64, request: ChatProvisionRequest) -> Result<LlamaProvisioned, String> {
+pub async fn provision(
+    job: u64,
+    request: ChatProvisionRequest,
+) -> Result<LlamaProvisioned, String> {
     let _slot = ProgressSlot(job);
     let model = provision_chat(&request, |p: &ProvisionProgress| {
         progress_map().lock().unwrap_or_else(PoisonError::into_inner).insert(
@@ -240,5 +241,5 @@ pub async fn start(request: RouterRequest) -> Result<LlamaRouterInfo, String> {
 pub fn daemon(args: Vec<String>) -> i32 {
     let mut argv = vec![OsString::from("aphrody-llama-daemon")];
     argv.extend(args.into_iter().map(OsString::from));
-    aphrody_local_chat::cli_main(argv)
+    aphrody_llama_server::cli_main(argv)
 }

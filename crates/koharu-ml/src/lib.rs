@@ -1,6 +1,6 @@
 use anyhow::Context;
-use koharu_llama::llama_backend::LlamaBackend;
-use koharu_runtime::{Feature, Hardware, Runtime};
+use aphrody_llama::llama_backend::LlamaBackend;
+use aphrody_ml_runtime::{Feature, Hardware, Runtime};
 use tokio::sync::OnceCell;
 
 mod backend;
@@ -27,10 +27,10 @@ pub mod rorem_mixed;
 pub mod speech_bubble_yolo11n;
 pub mod speech_bubble_yolov8m;
 
-pub use koharu_diffusion as diffusion;
-pub use koharu_llama as llama;
-pub use koharu_runtime::{Backend, Device, DeviceType};
-pub use koharu_torch as torch;
+pub use aphrody_diffusion as diffusion;
+pub use aphrody_llama as llama;
+pub use aphrody_ml_runtime::{Backend, Device, DeviceType};
+pub use aphrody_torch as torch;
 
 static LLAMA: OnceCell<LlamaBackend> = OnceCell::const_new();
 static DIFFUSION: OnceCell<()> = OnceCell::const_new();
@@ -51,13 +51,13 @@ pub async fn init() -> anyhow::Result<()> {
 
             LLAMA
                 .get_or_try_init(|| async {
-                    koharu_llama::send_logs_to_tracing(koharu_llama::LogOptions::default());
+                    aphrody_llama::send_logs_to_tracing(aphrody_llama::LogOptions::default());
                     LlamaBackend::init().context("failed to initialize llama.cpp backend")
                 })
                 .await?;
             DIFFUSION
                 .get_or_try_init(|| async {
-                    koharu_diffusion::send_logs_to_tracing()
+                    aphrody_diffusion::send_logs_to_tracing()
                         .context("failed to redirect stable-diffusion.cpp logs")?;
                     Ok::<(), anyhow::Error>(())
                 })
@@ -92,8 +92,8 @@ pub fn llama_backend() -> Option<&'static LlamaBackend> {
 macro_rules! model_repository {
     ($repository:literal @ $revision:literal { $($name:ident = $filename:literal),+ $(,)? }) => {
         $(
-            const $name: koharu_runtime::HuggingFaceFile<'static> =
-                koharu_runtime::HuggingFaceFile::pinned(
+            const $name: aphrody_ml_runtime::HuggingFaceFile<'static> =
+                aphrody_ml_runtime::HuggingFaceFile::pinned(
                     $repository,
                     $revision,
                     $filename,

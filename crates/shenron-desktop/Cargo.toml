@@ -40,5 +40,5 @@ tauri-plugin-opener = { workspace = true }
 tauri-plugin-process = { workspace = true }
 tauri-plugin-single-instance = { workspace = true }
 tauri-plugin-window-state = { workspace = true }
-tauri-runtime-wry = { workspace = true }
+tauri-runtime-cef = { workspace = true }
 tokio = { workspace = true }

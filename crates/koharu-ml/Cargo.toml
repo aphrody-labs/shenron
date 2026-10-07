@@ -16,10 +16,10 @@ publish = false
 workspace = true
 
 [dependencies]
-koharu-diffusion = { workspace = true }
-koharu-llama = { workspace = true, features = ["llguidance"] }
-koharu-runtime = { workspace = true }
-koharu-torch = { workspace = true }
+aphrody-diffusion = { workspace = true }
+aphrody-llama = { workspace = true, features = ["llguidance"] }
+aphrody-ml-runtime = { workspace = true }
+aphrody-torch = { workspace = true }
 llguidance = { workspace = true }
 ab_glyph = { workspace = true }
 anyhow = { workspace = true }

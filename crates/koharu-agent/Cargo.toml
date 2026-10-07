@@ -21,8 +21,8 @@ async-trait = { workspace = true }
 base64 = { workspace = true }
 eventsource-stream = { workspace = true }
 futures = { workspace = true }
-koharu-config = { workspace = true }
-koharu-runtime = { workspace = true }
+aphrody-ml-config = { workspace = true }
+aphrody-ml-runtime = { workspace = true }
 koharu-secrets = { workspace = true }
 reqwest = { workspace = true }
 serde = { workspace = true }

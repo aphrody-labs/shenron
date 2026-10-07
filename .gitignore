@@ -82,3 +82,6 @@ __pycache__/
 *.cpuprofile
 *.tgz
 graphify-out/
+
+# Isolated Next dev build used by the Aphrody Web integration pipeline.
+apps/site/.next-qualification/

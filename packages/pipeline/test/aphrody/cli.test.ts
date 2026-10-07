@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /** `@shenron/pipeline/aphrody/cli` against a fixture executable (no real aphrody binary). */
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { testExecutable } from "@shenron/config/testing-executable";
 import { aphrodyDoctor, aphrodyGitInspect, runAphrodyCli } from "../../src/aphrody/cli";
 
 let dir = "";
@@ -20,16 +21,7 @@ else if (cmd === "text") console.log("not json at all");
 
 beforeAll(() => {
   dir = mkdtempSync(join(tmpdir(), "aphrody-cli-"));
-  const script = join(dir, "fixture.ts");
-  writeFileSync(script, FIXTURE);
-  if (process.platform === "win32") {
-    bin = join(dir, "aphrody.cmd");
-    writeFileSync(bin, `@echo off\r\n"${process.execPath}" "${script}" %*\r\n`);
-  } else {
-    bin = join(dir, "aphrody");
-    writeFileSync(bin, `#!/bin/sh\nexec "${process.execPath}" "${script}" "$@"\n`);
-    chmodSync(bin, 0o755);
-  }
+  bin = testExecutable(dir, "aphrody", FIXTURE);
 });
 
 afterAll(() => {

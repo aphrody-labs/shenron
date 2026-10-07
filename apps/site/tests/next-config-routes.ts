@@ -6,6 +6,7 @@
  */
 import { readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 import { prepareDestination } from "next/dist/shared/lib/router/utils/prepare-destination";
 import config from "../next.config";
@@ -63,7 +64,7 @@ export function rewriteOf(url: string): string | null {
   return applyFirst(beforeFiles, url);
 }
 
-const APP_DIR = new URL("../src/app/", import.meta.url).pathname;
+const APP_DIR = fileURLToPath(new URL("../src/app/", import.meta.url));
 
 /** Routes (`page.tsx`, `route.ts`) de `src/app`, groupes `(…)` et slots `@…` retirés. */
 export function appRoutes(): { route: string; file: string }[] {

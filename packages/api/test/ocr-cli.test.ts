@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, describe, expect, test } from "bun:test";
-import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { testExecutable } from "@shenron/config/testing-executable";
 
 import { createCliOcr, readOcrResult } from "../src/chat/ocr";
 
@@ -48,13 +49,14 @@ describe("createCliOcr", () => {
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
   test("runs `aphrody ocr ppocr <file> --json` and reads its result", async () => {
-    const fake = join(dir, "aphrody");
     const answer = JSON.stringify(result());
-    writeFileSync(
-      fake,
-      `#!/bin/sh\n[ "$1 $2 $4" = "ocr ppocr --json" ] || { echo "bad args: $*" >&2; exit 2; }\nprintf '%s' '${answer}'\n`,
+    const fake = testExecutable(
+      dir,
+      "aphrody",
+      `const [command, engine, file, json] = process.argv.slice(2);
+if (command !== "ocr" || engine !== "ppocr" || !file || json !== "--json") { console.error("bad args"); process.exit(2); }
+process.stdout.write(${JSON.stringify(answer)});`,
     );
-    chmodSync(fake, 0o755);
     const ocr = createCliOcr({ binary: fake });
     expect(ocr.available()).toBe(true);
     const out = await ocr.recognize(PNG, "image/png");
@@ -63,9 +65,11 @@ describe("createCliOcr", () => {
   });
 
   test("a failing CLI surfaces its exit code and last stderr line", async () => {
-    const fake = join(dir, "aphrody-fail");
-    writeFileSync(fake, "#!/bin/sh\necho 'model ppocr-v5-mobile not installed' >&2\nexit 3\n");
-    chmodSync(fake, 0o755);
+    const fake = testExecutable(
+      dir,
+      "aphrody-fail",
+      'console.error("model ppocr-v5-mobile not installed"); process.exit(3);',
+    );
     await expect(createCliOcr({ binary: fake }).recognize(PNG, "image/png")).rejects.toThrow(
       "aphrody ocr ppocr failed (exit 3): model ppocr-v5-mobile not installed",
     );

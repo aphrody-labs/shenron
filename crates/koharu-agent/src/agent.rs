@@ -77,7 +77,7 @@ pub struct RunResult {
 pub struct Agent<H> {
     codex: Codex,
     host: Arc<H>,
-    config: koharu_config::Config<Config>,
+    config: aphrody_ml_config::Config<Config>,
     history: Mutex<Vec<Value>>,
     serial: Mutex<()>,
 }

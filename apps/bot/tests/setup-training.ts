@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { existsSync, unlinkSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
@@ -13,17 +13,10 @@ Bun.env.DISCORD_TOKEN ??= "test-token";
 Bun.env.GUILD_ID ??= "1497167233280118896";
 Bun.env.OWNER_ID ??= "11111111111111111";
 Bun.env.JAIL_ROLE_ID ??= "1405635615827034194";
-Bun.env.DATABASE_PATH = join(
-  tmpdir(),
-  `shenron-bot-training-${process.pid}-${Bun.main.slice(-24).replaceAll(/[^a-zA-Z0-9]/g, "_")}.db`,
-);
+Bun.env.DATABASE_PATH = join(mkdtempSync(join(tmpdir(), "shenron-bot-training-")), "bot.db");
 Bun.env.LOG_LEVEL = "error";
 
 const dbPath = Bun.env.DATABASE_PATH;
-for (const suffix of ["", "-journal", "-wal", "-shm"]) {
-  const path = `${dbPath}${suffix}`;
-  if (existsSync(path)) unlinkSync(path);
-}
 const sqlite = new Database(dbPath);
 sqlite.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
 const db = drizzle(sqlite);

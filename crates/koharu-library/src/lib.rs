@@ -14,9 +14,9 @@ use std::{
 };
 
 use anyhow::{Context as _, Result, bail};
+use aphrody_ml_config::Config;
 use async_trait::async_trait;
 use image::{ExtendedColorType, ImageEncoder as _, codecs::png::PngEncoder};
-use koharu_config::Config;
 use koharu_ml::Device;
 use koharu_pipeline::{Committer, Pipeline, PipelineError, Report, StageOutput};
 use koharu_psd::export_page;
@@ -38,21 +38,21 @@ pub mod service;
 pub use editor::Editor;
 pub use service::Service;
 
+pub use aphrody_diffusion as diffusion;
+pub use aphrody_llama as llama;
+pub use aphrody_ml_config as config;
+pub use aphrody_ml_runtime as runtime;
+pub use aphrody_torch as torch;
 pub use koharu_agent as agent;
-pub use koharu_config as config;
 pub use koharu_desktop as desktop;
-pub use koharu_diffusion as diffusion;
-pub use koharu_llama as llama;
 pub use koharu_ml as ml;
 pub use koharu_pipeline as pipeline;
 pub use koharu_psd as psd;
 pub use koharu_rasterizer as rasterizer;
 pub use koharu_renderer as renderer;
-pub use koharu_runtime as runtime;
 pub use koharu_scene as scene;
 pub use koharu_secrets as secrets;
 pub use koharu_storage as storage;
-pub use koharu_torch as torch;
 pub use koharu_translator as translator;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

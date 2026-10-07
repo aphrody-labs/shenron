@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 use self::model::Model;
 
-pub use koharu_llama::model::params::LlamaLoadMode;
+pub use aphrody_llama::model::params::LlamaLoadMode;
 
 const DEFAULT_GPU_LAYERS: u32 = 1000;
 const DEFAULT_MAX_TOKENS: usize = 512;
@@ -20,7 +20,7 @@ const DEFAULT_SEED: u32 = 299_792_458;
 /// Marker consumed by llama.cpp's multimodal tokenizer for one attached media input.
 #[must_use]
 pub fn media_marker() -> &'static str {
-    koharu_llama::mtmd::mtmd_default_marker()
+    aphrody_llama::mtmd::mtmd_default_marker()
 }
 
 /// A loaded GGUF language model with optional multimodal support.
@@ -327,7 +327,7 @@ pub enum GenerationControl {
 /// One newly generated token and the complete text generated through that token.
 #[derive(Debug, Clone, Copy)]
 pub struct TokenChunk<'a> {
-    pub token: koharu_llama::token::LlamaToken,
+    pub token: aphrody_llama::token::LlamaToken,
     pub piece: &'a str,
     pub text: &'a str,
     pub generated_tokens: usize,

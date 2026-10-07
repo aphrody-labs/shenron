@@ -128,7 +128,9 @@
       "tw-animate-css": "^1.4.0",
       "typescript": "7.0.2",
       "zod": "^4.6.5",
-      "zustand": "^5.0.15"
+      "zustand": "^5.0.15",
+      "@aphrody/web-test": "0.2.6",
+      "@aphrody/agent-browser": "1.0.0-canary"
     }
   },
   "type": "module",
@@ -149,15 +151,24 @@
     "test:live": "bun run --filter @shenron/pipeline rag:test",
     "audit:assets": "bun scripts/audit/assets-dedup.ts",
     "test:scripts": "bun test ./scripts",
-    "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts"
+    "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts",
+    "test:integration": "bun scripts/testing/integration/run.ts"
   },
   "devDependencies": {
+    "@aphrody/agent-browser": "catalog:",
+    "@aphrody/web-test": "catalog:",
+    "@shenron/api": "workspace:*",
+    "@shenron/config": "workspace:*",
+    "@shenron/db": "workspace:*",
     "@shenron/pipeline": "workspace:*",
+    "@shenron/ui": "workspace:*",
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "postgres": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "typescript": "catalog:"
   },
   "overrides": {

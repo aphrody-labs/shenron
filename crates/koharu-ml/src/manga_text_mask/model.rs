@@ -11,7 +11,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use koharu_torch::{
+use aphrody_torch::{
     Device, Tensor,
     nn::{self, Module, ModuleT},
 };
@@ -540,7 +540,7 @@ mod tests {
     #[ignore = "requires the dynamically loaded LibTorch runtime"]
     async fn model_tree_matches_checkpoint_tensor_shapes() -> anyhow::Result<()> {
         crate::init().await?;
-        let model = Model::new(koharu_torch::Device::Cpu);
+        let model = Model::new(aphrody_torch::Device::Cpu);
         let variables = model.vs.variables();
 
         assert_eq!(variables["encoder.model.conv_stem.weight"].size(), [32, 3, 3, 3]);

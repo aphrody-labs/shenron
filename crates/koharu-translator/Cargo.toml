@@ -16,9 +16,9 @@ publish = false
 workspace = true
 
 [dependencies]
-koharu-config = { workspace = true }
+aphrody-ml-config = { workspace = true }
 koharu-ml = { workspace = true }
-koharu-runtime = { workspace = true }
+aphrody-ml-runtime = { workspace = true }
 koharu-secrets = { workspace = true }
 anyhow = { workspace = true }
 base64 = { workspace = true }

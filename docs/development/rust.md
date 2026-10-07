@@ -16,8 +16,7 @@ commandes, dépendances Aphrody, règles WSL, conventions et ajout d'une crate. 
 - **Outils** (tous en Rust) : `cargo install --locked just cargo-nextest cargo-deny`, puis selon
   le besoin `sccache`, `cargo-xwin` (installeur Windows) ; `wasm-bindgen-cli` est installé à la
   version de `Cargo.lock` par `bun --filter @shenron/koharu build:wasm`.
-- **Bibliothèques système (Linux)** : celles de Tauri 3 (WebKitGTK 4.1, GTK 3, appindicator,
-  librsvg, libxdo), `libclang` (bindgen des crates `koharu-*-sys` d'Aphrody), fontconfig, D-Bus,
+- **Bibliothèques système (Linux)** : celles du runtime Tauri 3 CEF (GTK 4, X11, xkbcommon), `libclang` (bindgen des crates `koharu-*-sys` d'Aphrody), fontconfig, D-Bus,
   OpenSSL, `cmake`, `pkg-config`. La liste exacte est l'étape « System libraries » de
   `.github/workflows/rust.yml`.
 - **Accès à Aphrody** : `aphrody-labs/aphrody` est privé. `.cargo/config.toml` fait passer Cargo
@@ -29,33 +28,33 @@ commandes, dépendances Aphrody, règles WSL, conventions et ajout d'une crate. 
 
 Deux familles : les crates Shenron (Apache-2.0, `aphrody-dev`) et les crates amont de Koharu,
 intégrées et modifiées ici, qui gardent leur licence `MIT OR Apache-2.0` et l'attribution de leurs
-auteurs (`docs/licenses/koharu/`). Le socle ML (`koharu-{llama,torch,diffusion,runtime,config}`),
+auteurs (`docs/licenses/koharu/`). Le socle ML (`aphrody-{llama,torch,diffusion,ml-runtime,ml-config}`),
 le RAG, l'OCR, les modèles et le fork Tauri 3 (`aphrody-tauri*`, `tauri-specta`) viennent
 d'Aphrody : on les consomme, on ne les copie pas.
 
-| Crate | Rôle | Features | Cibles |
-| --- | --- | --- | --- |
-| `shenron-rag` | Corpus Dragon Ball hors ligne, index local, persona, ingestion dans le stockage `aphrody-rag` | — | natif |
-| `shenron-manga` | Adaptateur Shenron sur `koharu-library` : catalogue CDN, résultats de page, projection OCR | `koharu` (désactivée par défaut) | natif |
-| `shenron-cli` | Binaire `shenron` : santé, RAG, entraînement, pont OCR des databooks, API databooks, manga, configuration | `ocr` (défaut), `koharu` | natif |
-| `shenron-mcp` | Serveur MCP (stdio, HTTP `--http --public`) : outils `dragonball.*` et `dbfr_*` | `koharu` | natif |
-| `shenron-ffi` | ABI C `shenron_*` (`cdylib` + `rlib`) chargée par `@shenron/native` (`bun:ffi`) | — | natif (`.so`, `.dll`) |
-| `shenron-studio` | Commandes Tauri du studio : santé, RAG, corpus, modèles locaux, moteur Koharu en processus | — | natif |
-| `shenron-desktop` | Application Tauri 3 : le site, l'éditeur et le studio dans une fenêtre, `shenron-server` en sidecar | `koharu` (défaut), `custom-protocol` | Windows (NSIS), Linux |
-| `koharu-library` | Moteur sans interface : projets, édition, traitement, rendu, outils d'agent ; binaire `koharu-sdk` (JSON Lines sur stdio) | — | natif |
-| `koharu-app` | Couche Tauri de l'éditeur ; ses commandes Specta génèrent `packages/koharu/src/protocol.ts` | — | natif |
-| `koharu-canvas` | Viewport WebGPU de l'éditeur, compilé en WASM (`cdylib`) ; le code vit sous `cfg(target_arch = "wasm32")` | — | wasm32 |
-| `koharu-rasterizer` | Trames préparées portables, composition Vello/WGPU | `native` (défaut ; sans elle pour wasm32) | natif, wasm32 |
-| `koharu-renderer` | Rendu d'une page : mise en page, shaping, césure, polices | — | natif |
-| `koharu-scene` | Modèle de scène typé | — | natif |
-| `koharu-storage` | Instantanés et blobs sur le système de fichiers | — | natif |
-| `koharu-pipeline` | Orchestration des modèles en processus (détection, OCR, inpainting) | — | natif |
-| `koharu-ml` | Modèles (détection, OCR, masques, polices, LLM) sur le socle ML d'Aphrody | — | natif |
-| `koharu-translator` | Traducteurs locaux et distants, glossaire | — | natif |
-| `koharu-psd` | Export PSD depuis les révisions de scène | — | natif |
-| `koharu-desktop` | Préparation native des pages, partagée par la présentation et l'export | — | natif |
-| `koharu-agent` | Agent Codex en processus (OAuth) | — | natif |
-| `koharu-secrets` | Secrets dans le trousseau du système | — | natif |
+| Crate               | Rôle                                                                                                                      | Features                                  | Cibles                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | --------------------- |
+| `shenron-rag`       | Corpus Dragon Ball hors ligne, index local, persona, ingestion dans le stockage `aphrody-rag`                             | —                                         | natif                 |
+| `shenron-manga`     | Adaptateur Shenron sur `koharu-library` : catalogue CDN, résultats de page, projection OCR                                | `koharu` (désactivée par défaut)          | natif                 |
+| `shenron-cli`       | Binaire `shenron` : santé, RAG, entraînement, pont OCR des databooks, API databooks, manga, configuration                 | `ocr` (défaut), `koharu`                  | natif                 |
+| `shenron-mcp`       | Serveur MCP (stdio, HTTP `--http --public`) : outils `dragonball.*` et `dbfr_*`                                           | `koharu`                                  | natif                 |
+| `shenron-ffi`       | ABI C `shenron_*` (`cdylib` + `rlib`) chargée par `@shenron/native` (`bun:ffi`)                                           | —                                         | natif (`.so`, `.dll`) |
+| `shenron-studio`    | Commandes Tauri du studio : santé, RAG, corpus, modèles locaux, moteur Koharu en processus                                | —                                         | natif                 |
+| `shenron-desktop`   | Application Tauri 3 : le site, l'éditeur et le studio dans une fenêtre, `shenron-server` en sidecar                       | `koharu` (défaut), `custom-protocol`      | Windows (NSIS), Linux |
+| `koharu-library`    | Moteur sans interface : projets, édition, traitement, rendu, outils d'agent ; binaire `koharu-sdk` (JSON Lines sur stdio) | —                                         | natif                 |
+| `koharu-app`        | Couche Tauri de l'éditeur ; ses commandes Specta génèrent `packages/koharu/src/protocol.ts`                               | —                                         | natif                 |
+| `koharu-canvas`     | Viewport WebGPU de l'éditeur, compilé en WASM (`cdylib`) ; le code vit sous `cfg(target_arch = "wasm32")`                 | —                                         | wasm32                |
+| `koharu-rasterizer` | Trames préparées portables, composition Vello/WGPU                                                                        | `native` (défaut ; sans elle pour wasm32) | natif, wasm32         |
+| `koharu-renderer`   | Rendu d'une page : mise en page, shaping, césure, polices                                                                 | —                                         | natif                 |
+| `koharu-scene`      | Modèle de scène typé                                                                                                      | —                                         | natif                 |
+| `koharu-storage`    | Instantanés et blobs sur le système de fichiers                                                                           | —                                         | natif                 |
+| `koharu-pipeline`   | Orchestration des modèles en processus (détection, OCR, inpainting)                                                       | —                                         | natif                 |
+| `koharu-ml`         | Modèles (détection, OCR, masques, polices, LLM) sur le socle ML d'Aphrody                                                 | —                                         | natif                 |
+| `koharu-translator` | Traducteurs locaux et distants, glossaire                                                                                 | —                                         | natif                 |
+| `koharu-psd`        | Export PSD depuis les révisions de scène                                                                                  | —                                         | natif                 |
+| `koharu-desktop`    | Préparation native des pages, partagée par la présentation et l'export                                                    | —                                         | natif                 |
+| `koharu-agent`      | Agent Codex en processus (OAuth)                                                                                          | —                                         | natif                 |
+| `koharu-secrets`    | Secrets dans le trousseau du système                                                                                      | —                                         | natif                 |
 
 `bun scripts/build/rust/test.ts --list` donne la liste réelle des membres (`cargo metadata`).
 Les cibles natives sont Linux x64 et Windows x64 ; les binaires livrés (`shenron`,
@@ -67,22 +66,22 @@ Les cibles natives sont Linux x64 et Windows x64 ; les binaires livrés (`shenro
 `just` est le point d'entrée unique (Bun et Rust) ; ses recettes appellent les scripts existants.
 Les alias Cargo vivent dans `.cargo/config.toml`, les scripts `*:rust` dans `package.json`.
 
-| Tâche | `just` | Cargo | `bun run` |
-| --- | --- | --- | --- |
-| Vérifier les types (toutes cibles) | `just rust-check` | `cargo ck` | `check:rust` |
-| Clippy, avertissements refusés | `just rust-lint` | `cargo lint` | `clippy:rust` |
-| Tests (nextest) | `just rust-test [args]` | `cargo t` | `test:rust` |
-| Format | `just rust-fmt`, `just rust-fmt-check` | `cargo fmt --all [--check]` | `fmt:rust` (vérifie) |
-| Licences, avis, sources | `just rust-deny` | `cargo deny check` | `deny:rust` |
-| Feature `koharu` (clippy + tests) | `just koharu` | `cargo koharu`, `cargo koharu-test` | — |
-| `koharu-canvas` en wasm32 | `just wasm` (vérifie), `just wasm-build` (construit) | `cargo wasm` | `--filter @shenron/koharu build:wasm` |
-| Rustdoc du workspace | `just rust-doc` | `cargo docs` | — |
-| Protocole Specta | `just protocol` | — | `--filter @shenron/koharu protocol` |
-| Serveur MCP, CLI | `just mcp [args]`, `just cli [args]` | `cargo run -p shenron-mcp`, `-p shenron-cli` | — |
-| Installeur de bureau | `just desktop [--target …]` | — | `scripts/build/desktop.ts` |
-| Bloc de dépendances généré | `just deps`, `just deps-check` | — | `scripts/build/rust/workspace-deps.ts` |
-| Manifestes alignés | `just align-check` | — | `scripts/build/rust/align-crates.ts` |
-| Tout ce que fait la CI | `just ci` | — | — |
+| Tâche                              | `just`                                               | Cargo                                        | `bun run`                              |
+| ---------------------------------- | ---------------------------------------------------- | -------------------------------------------- | -------------------------------------- |
+| Vérifier les types (toutes cibles) | `just rust-check`                                    | `cargo ck`                                   | `check:rust`                           |
+| Clippy, avertissements refusés     | `just rust-lint`                                     | `cargo lint`                                 | `clippy:rust`                          |
+| Tests (nextest)                    | `just rust-test [args]`                              | `cargo t`                                    | `test:rust`                            |
+| Format                             | `just rust-fmt`, `just rust-fmt-check`               | `cargo fmt --all [--check]`                  | `fmt:rust` (vérifie)                   |
+| Licences, avis, sources            | `just rust-deny`                                     | `cargo deny check`                           | `deny:rust`                            |
+| Feature `koharu` (clippy + tests)  | `just koharu`                                        | `cargo koharu`, `cargo koharu-test`          | —                                      |
+| `koharu-canvas` en wasm32          | `just wasm` (vérifie), `just wasm-build` (construit) | `cargo wasm`                                 | `--filter @shenron/koharu build:wasm`  |
+| Rustdoc du workspace               | `just rust-doc`                                      | `cargo docs`                                 | —                                      |
+| Protocole Specta                   | `just protocol`                                      | —                                            | `--filter @shenron/koharu protocol`    |
+| Serveur MCP, CLI                   | `just mcp [args]`, `just cli [args]`                 | `cargo run -p shenron-mcp`, `-p shenron-cli` | —                                      |
+| Installeur de bureau               | `just desktop [--target …]`                          | —                                            | `scripts/build/desktop.ts`             |
+| Bloc de dépendances généré         | `just deps`, `just deps-check`                       | —                                            | `scripts/build/rust/workspace-deps.ts` |
+| Manifestes alignés                 | `just align-check`                                   | —                                            | `scripts/build/rust/align-crates.ts`   |
+| Tout ce que fait la CI             | `just ci`                                            | —                                            | —                                      |
 
 `just check`, `just lint`, `just test` et `just format-check` enchaînent le côté Bun puis le côté
 Rust. Les alias Clippy finissent par `-- -D warnings` : pour cibler une crate, écrire la commande
@@ -181,7 +180,7 @@ Next exclues.
    workspace.
 2. `Cargo.toml` : en-tête SPDX, `name`, `description`, `version.workspace = true` et les autres
    clés héritées, `[lints] workspace = true` (`bun scripts/build/rust/align-crates.ts --write
-   shenron-<nom>` les pose), dépendances en `{ workspace = true }`.
+shenron-<nom>` les pose), dépendances en `{ workspace = true }`.
 3. Dépendance nouvelle : présente dans le workspace d'Aphrody → `just deps` ; sinon, la déclarer
    à la main dans la section propre à Shenron de `[workspace.dependencies]`. Vérifier sa licence
    (`just rust-deny`).
@@ -204,7 +203,7 @@ configurations Cargo, scripts `scripts/build/rust/`) :
   `APHRODY_GIT_TOKEN` et sont sautés sans lui (dépôts sans secret, contributions depuis un fork).
 
 Créer le secret : jeton fine-grained dont le propriétaire est `aphrody-labs`, accès au seul dépôt
-`aphrody-labs/aphrody`, permission *Contents: read* ; l'enregistrer dans *Settings → Secrets and
-variables → Actions* sous `APHRODY_GIT_TOKEN`. Le workflow réécrit `https://github.com/aphrody-labs/`
+`aphrody-labs/aphrody`, permission _Contents: read_ ; l'enregistrer dans _Settings → Secrets and
+variables → Actions_ sous `APHRODY_GIT_TOKEN`. Le workflow réécrit `https://github.com/aphrody-labs/`
 avec ce jeton pour le CLI git. Caches : `~/.cargo` (Swatinem/rust-cache) et sccache (cache
 GitHub Actions). `ci.yml` reste le workflow Bun.

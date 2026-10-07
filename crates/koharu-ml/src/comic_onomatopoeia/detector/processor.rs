@@ -4,10 +4,10 @@
 //! https://github.com/ku21fan/COO-Comic-Onomatopoeia/blob/d8028f015b8ce99a4dd798427342f97087529357/MTSv3/maskrcnn_benchmark/modeling/segmentation/inference.py#L100-L285
 
 use anyhow::{Context, Result, ensure};
+use aphrody_torch::{Device, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, GrayImage, Luma, RgbImage};
 use imageproc::contours::find_contours_with_threshold;
-use koharu_torch::{Device, Tensor};
 use serde::{Deserialize, Serialize};
 
 use super::config::Config;

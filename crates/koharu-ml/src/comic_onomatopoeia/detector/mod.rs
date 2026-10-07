@@ -3,8 +3,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
+use aphrody_torch::Device;
 use image::DynamicImage;
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -39,7 +39,7 @@ impl ComicOnomatopoeiaDetector {
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<Vec<Detection>> {
-        koharu_torch::no_grad(|| {
+        aphrody_torch::no_grad(|| {
             let (pixel_values, size) = self.processor.preprocess(image, self.device)?;
             let prediction = self.model.forward(&pixel_values);
             self.processor.postprocess(&prediction, size)

@@ -4,7 +4,6 @@
  * path derived by `fileURLToPath` (correct on Windows), or `RAG_LEXIQUE`.
  * Only the exported resolver is exercised; the script is never executed.
  */
-import { tempPath } from "@aphrody/paths";
 import { describe, expect, it } from "bun:test";
 import { fileURLToPath } from "node:url";
 import {
@@ -124,8 +123,8 @@ describe("script environment contract (B13, rule 9)", () => {
         "win32",
       ),
     ).toThrow(/base servie/);
-    expect(requireOfflineRagDb({ RAG_DB: tempPath("ragbuild.db") }, "/srv/shenron", "posix")).toBe(
-      tempPath("ragbuild.db"),
+    expect(requireOfflineRagDb({ RAG_DB: "/tmp/ragbuild.db" }, "/srv/shenron", "posix")).toBe(
+      "/tmp/ragbuild.db",
     );
   });
 });

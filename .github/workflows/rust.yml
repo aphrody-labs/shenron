@@ -99,15 +99,15 @@ jobs:
       - name: Free runner disk
         run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
 
-      # WebKitGTK and GTK (Tauri 3), libclang (bindgen in the koharu *-sys crates), fontconfig,
+      # CEF/GTK 4 (Tauri 3), libclang (bindgen in the Aphrody ML *-sys crates), fontconfig,
       # D-Bus (keyring).
       - name: System libraries
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            build-essential clang cmake libayatana-appindicator3-dev libclang-dev libdbus-1-dev \
-            libfontconfig1-dev libgtk-3-dev librsvg2-dev libssl-dev libwebkit2gtk-4.1-dev \
-            libxdo-dev pkg-config
+            build-essential clang cmake libclang-dev libdbus-1-dev \
+            libfontconfig1-dev libgtk-4-dev libssl-dev \
+            libx11-dev libxkbcommon-dev pkg-config
 
       - name: Toolchain
         run: rustup toolchain install

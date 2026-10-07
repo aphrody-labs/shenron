@@ -881,10 +881,10 @@ async fn relay_resources(
 }
 
 async fn relay_downloads(inner: Weak<Inner>) {
-    use koharu_runtime::download::Event;
+    use aphrody_ml_runtime::download::Event;
     use tokio::sync::broadcast::error::RecvError;
 
-    let mut downloads = koharu_runtime::download::subscribe();
+    let mut downloads = aphrody_ml_runtime::download::subscribe();
     loop {
         let event = match downloads.recv().await {
             Ok(event) => event,

@@ -29,7 +29,7 @@ dirs = { workspace = true }
 futures = { workspace = true }
 hayro = { workspace = true }
 image = { workspace = true }
-koharu-config = { workspace = true }
+aphrody-ml-config = { workspace = true }
 koharu-agent = { workspace = true }
 koharu-desktop = { workspace = true }
 koharu-ml = { workspace = true }
@@ -43,10 +43,10 @@ koharu-storage = { workspace = true }
 koharu-translator = { workspace = true }
 open = { workspace = true, optional = true }
 parking_lot = { workspace = true }
-koharu-runtime = { workspace = true }
-koharu-diffusion = { workspace = true }
-koharu-llama = { workspace = true }
-koharu-torch = { workspace = true }
+aphrody-ml-runtime = { workspace = true }
+aphrody-diffusion = { workspace = true }
+aphrody-llama = { workspace = true }
+aphrody-torch = { workspace = true }
 rars = { workspace = true }
 rayon = { workspace = true }
 reqwest = { workspace = true }

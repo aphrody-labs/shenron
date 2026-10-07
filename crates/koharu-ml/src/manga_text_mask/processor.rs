@@ -5,13 +5,13 @@
 use std::collections::VecDeque;
 
 use anyhow::{Context, Result, ensure};
+use aphrody_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, GrayImage, Luma, RgbImage};
 use imageproc::{
     distance_transform::Norm,
     morphology::{Mask, dilate, grayscale_dilate, grayscale_erode},
 };
-use koharu_torch::{Device, Kind, Tensor};
 
 use super::model::Model;
 

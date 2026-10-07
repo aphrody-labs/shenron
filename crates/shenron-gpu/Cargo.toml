@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-gpu"
+description = "The one wgpu backend of Shenron: adapter and device selection, limits, device loss, render targets, readback, presentation and Vello glue, native and browser."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[features]
+default = ["vello"]
+# `shenron_gpu::vello_backend` and the re-export of `vello` (wgpu itself is always re-exported).
+vello = ["dep:vello"]
+# `shenron_gpu::testing`: noop and software-adapter contexts for the tests of dependent crates.
+testing = ["wgpu/noop"]
+
+[dependencies]
+log = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+vello = { workspace = true, optional = true }
+wgpu = { workspace = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+pollster = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+wgpu = { workspace = true, features = ["noop"] }

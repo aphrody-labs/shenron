@@ -8,9 +8,9 @@
 //! - https://github.com/ultralytics/ultralytics/blob/e15d6f50dc618d542c1cd9f3d968c76981c90c9f/ultralytics/utils/ops.py
 
 use anyhow::{Result, bail, ensure};
+use aphrody_torch::{Device, IndexOp, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, Rgb, RgbImage, imageops};
-use koharu_torch::{Device, IndexOp, Kind, Tensor};
 use serde::Serialize;
 
 use super::{config::Yolo11nSpeechBubbleConfig, model::Output};

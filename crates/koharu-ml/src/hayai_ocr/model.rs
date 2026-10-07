@@ -8,7 +8,7 @@
 use std::path::Path;
 
 use anyhow::{Result, ensure};
-use koharu_torch::{
+use aphrody_torch::{
     Device, Kind, Tensor,
     nn::{self, Module},
 };

@@ -56,7 +56,7 @@ mod native {
         time::Duration,
     };
 
-    use aphrody_stdio_capture::with_captured_stdio;
+    use aphrody_backend::stdio_capture::with_captured_stdio;
     use serde::Serialize;
     use serde_json::Value;
 
@@ -940,7 +940,9 @@ mod native {
     /// As `shenron_memory_add` for `request_json`. Free the result once.
     #[unsafe(no_mangle)]
     #[must_use]
-    pub unsafe extern "C" fn shenron_llama_router_start(request_json: *const c_char) -> *mut c_char {
+    pub unsafe extern "C" fn shenron_llama_router_start(
+        request_json: *const c_char,
+    ) -> *mut c_char {
         string_to_c(jobs::run(jobs::create(), "shenron_llama_router_start", |job| {
             let request: crate::llama::RouterRequest =
                 unsafe { json_request(request_json, "request_json") }.map_err(JobError::Usage)?;

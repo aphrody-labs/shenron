@@ -6,7 +6,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use koharu_torch::{
+use aphrody_torch::{
     Device, Tensor,
     nn::{self, ModuleT},
 };
@@ -25,7 +25,7 @@ impl Model {
         crate::backend::set_precision(&mut vs);
         // The published safetensors retain Lightning's `model` wrapper and
         // torch.compile's `_orig_mod` wrapper from the upstream checkpoint.
-        let model = koharu_torch::vision::resnet::resnet50(
+        let model = aphrody_torch::vision::resnet::resnet50(
             &(&vs.root() / "model" / "_orig_mod" / "model"),
             OUTPUT_DIM,
         );

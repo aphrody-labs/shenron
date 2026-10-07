@@ -6,8 +6,8 @@
 use std::path::Path;
 
 use anyhow::{Context, Result, bail};
+use aphrody_torch::{Device, Kind, Tensor};
 use image::DynamicImage;
-use koharu_torch::{Device, Kind, Tensor};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]

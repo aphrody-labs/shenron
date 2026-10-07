@@ -3,8 +3,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
+use aphrody_torch::Device;
 use image::DynamicImage;
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -62,7 +62,7 @@ impl Yolo11nSpeechBubbleSegmenter {
         confidence_threshold: f32,
         nms_threshold: f32,
     ) -> Result<Yolo11nSpeechBubbleInstances> {
-        koharu_torch::no_grad(|| {
+        aphrody_torch::no_grad(|| {
             let (pixel_values, letterbox) = self.processor.preprocess(image, self.device)?;
             let output = self.model.forward(&pixel_values);
             self.processor.postprocess(&output, &letterbox, confidence_threshold, nms_threshold)

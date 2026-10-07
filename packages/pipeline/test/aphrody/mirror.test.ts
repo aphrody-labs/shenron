@@ -1,19 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 import { tempPath } from "@aphrody/paths";
 import { afterAll, describe, expect, it } from "bun:test";
-import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { aphrodyWebMirror } from "../../src/aphrody/mirror";
+import { testExecutable } from "@shenron/config/testing-executable";
 
 const directory = mkdtempSync(join(tmpdir(), "aphrody-mirror-consumer-"));
 afterAll(() => rmSync(directory, { recursive: true, force: true }));
 
 function fixture(name: string, source: string) {
-  const bin = join(directory, name);
-  writeFileSync(bin, `#!${process.execPath}\n${source}\n`);
-  chmodSync(bin, 0o755);
-  return bin;
+  return testExecutable(directory, name, source);
 }
 
 const partialReport = {
@@ -30,7 +28,7 @@ describe("Aphrody Web mirror CLI client", () => {
     const bin = fixture(
       "mirror-partial",
       `const args=process.argv.slice(2);
-if(args[0]!=="web"||args[1]!=="mirror"||args[2]!=="https://wiki.example/"||args[3]!=="/tmp/mirror"||args[args.indexOf("--max-pages")+1]!=="7"||args[args.indexOf("--resolve-cdns")+1]!=="true") process.exit(2);
+if(args[0]!=="web"||args[1]!=="mirror"||args[2]!=="https://wiki.example/"||args[3]!==${JSON.stringify(tempPath("mirror"))}||args[args.indexOf("--max-pages")+1]!=="7"||args[args.indexOf("--resolve-cdns")+1]!=="true") process.exit(2);
 console.log(${JSON.stringify(JSON.stringify(partialReport))});`,
     );
     const report = await aphrodyWebMirror(

@@ -9,7 +9,7 @@
 use std::path::Path;
 
 use anyhow::{Result, ensure};
-use koharu_torch::{
+use aphrody_torch::{
     Kind, Tensor,
     nn::{self, Module, ModuleT},
 };
@@ -29,7 +29,7 @@ pub struct Model {
 }
 
 impl Model {
-    pub fn new(config: &ComicLayoutYolo26sConfig, device: koharu_torch::Device) -> Result<Self> {
+    pub fn new(config: &ComicLayoutYolo26sConfig, device: aphrody_torch::Device) -> Result<Self> {
         let mut vs = nn::VarStore::new(device);
         crate::backend::set_precision(&mut vs);
         let model = Yolo26Seg::new(&(&vs.root() / "model"), config)?;

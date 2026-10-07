@@ -65,7 +65,7 @@ impl ShenronKnowledge {
         if let Some(kind) = request.kind.as_deref().map(str::trim).filter(|kind| !kind.is_empty()) {
             parameters.push(("kind", kind));
         }
-        let response = koharu_runtime::http_client()?
+        let response = aphrody_ml_runtime::http_client()?
             .get(format!("{server}{SEARCH_PATH}"))
             .query(&parameters)
             .timeout(Duration::from_secs(15))

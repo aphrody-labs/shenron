@@ -143,7 +143,7 @@ mod tests {
     async fn registry_contains_every_stage() {
         let translator = koharu_translator::Translator::from_config(
             koharu_ml::Device::cpu(),
-            koharu_config::Config::memory(koharu_translator::ProvidersConfig::default()),
+            aphrody_ml_config::Config::memory(koharu_translator::ProvidersConfig::default()),
         )
         .unwrap();
         let stages =

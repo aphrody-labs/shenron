@@ -3,7 +3,7 @@
  * Importer ce module **en premier**, avant toute classe du bot.
  */
 import "reflect-metadata";
-import { mkdirSync, unlinkSync, existsSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -21,15 +21,12 @@ Bun.env.OWNER_ID ??= "11111111111111111";
 // échouait pour cette seule raison, en attendant un identifiant de repli que le
 // code de production ne connaît pas. (En production, la variable EST définie.)
 Bun.env.JAIL_ROLE_ID ??= "1405635615827034194";
-Bun.env.DATABASE_PATH = join(tmpdir(), `shenron-bot-test-${process.pid}.db`);
+// Isolated files share a process; an earlier SQLite handle may still be open on Windows.
+// Give every setup its own database instead of unlinking another isolate's live file.
+Bun.env.DATABASE_PATH = join(mkdtempSync(join(tmpdir(), "shenron-bot-test-")), "bot.db");
 Bun.env.LOG_LEVEL = "error"; // silence pino pendant les tests
 
 const dbPath = Bun.env.DATABASE_PATH;
-mkdirSync(tmpdir(), { recursive: true });
-for (const ext of ["", "-journal", "-wal", "-shm"]) {
-  const p = `${dbPath}${ext}`;
-  if (existsSync(p)) unlinkSync(p);
-}
 
 // Applique les migrations sur la DB fraîche
 const { drizzle } = await import("drizzle-orm/bun-sqlite");

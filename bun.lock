@@ -5,12 +5,20 @@
     "": {
       "name": "shenron",
       "devDependencies": {
+        "@aphrody/agent-browser": "catalog:",
+        "@aphrody/web-test": "catalog:",
+        "@shenron/api": "workspace:*",
+        "@shenron/config": "workspace:*",
+        "@shenron/db": "workspace:*",
         "@shenron/pipeline": "workspace:*",
+        "@shenron/ui": "workspace:*",
         "@types/bun": "catalog:",
         "@types/node": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
         "postgres": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
         "typescript": "catalog:",
       },
     },
@@ -361,6 +369,7 @@
   "catalog": {
     "@ai-sdk/openai-compatible": "^3.0.59",
     "@ai-sdk/provider": "4.0.19",
+    "@aphrody/agent-browser": "1.0.0-canary",
     "@aphrody/api": "3.0.0-alpha.2",
     "@aphrody/bun-test-dom": "0.1.0",
     "@aphrody/discord-kit": "0.1.0",
@@ -376,6 +385,7 @@
     "@aphrody/plugin-opener": "3.0.0-alpha.2",
     "@aphrody/runtime-sdk": "0.1.0",
     "@aphrody/sql": "0.1.0",
+    "@aphrody/web-test": "0.2.6",
     "@base-ui/react": "^1.8.0",
     "@codemirror/lang-markdown": "^6.5.2",
     "@codemirror/language-data": "^6.5.2",
@@ -506,6 +516,8 @@
 
     "@aphrody/ag-ui": ["@aphrody/ag-ui@1.0.1", "", { "dependencies": { "@ag-ui/a2ui-toolkit": "0.0.4", "@ag-ui/client": "npm:@aphrody/ag-ui-client@1.0.1-aphrody.1", "@ag-ui/core": "1.0.1", "@ag-ui/encoder": "1.0.1", "@ag-ui/proto": "1.0.1" } }, "sha512-bjLPHUbPFoxprJfD53xBBFZQfxSzK460l/WoRvxt//nybqMvF51GP9s4cxsuld+UHnBPQu6L7XcySMPHqX3vMQ=="],
 
+    "@aphrody/agent-browser": ["@aphrody/agent-browser@1.0.0-canary", "", { "dependencies": { "@aphrody/runtime-sdk": "0.1.0" }, "bin": { "agent-browser": "bin/agent-browser.js" } }, "sha512-rkJgUcX6Em2QWtqlUVh9mY5WqCXeHKS9iUaGuW3vHUSQ5Unuve6Hup/j3IyUj/TvqO4MskV3EtgB4hOt0DgmZA=="],
+
     "@aphrody/api": ["@aphrody/api@3.0.0-alpha.2", "", {}, "sha512-bQrHUrp6vR5QZ07RsCTWhLlIyjgBOJ3VbULue9i5g/s4/I4KaLfwkyBksVLhlQcGLWxG04Vnu+JOccNkicoHsA=="],
 
     "@aphrody/bun-test-dom": ["@aphrody/bun-test-dom@0.1.0", "", { "dependencies": { "@happy-dom/global-registrator": "^20.14.5" } }, "sha512-tztHgOtFXAmpFGxVdVkEt21kgp9lUpS6TosCvUiVoh8sN/VXK4cBruWoDU2/KBN4AFUuPFi3DLUof2SnzcBEuQ=="],
@@ -539,6 +551,8 @@
     "@aphrody/runtime-sdk": ["@aphrody/runtime-sdk@0.1.0", "", {}, "sha512-8BbC3qBb46u8YcLrGpEByAFxSstT34SmtbTNPU12Tms1OJ2wSkWQVuFS+5Uo0Miuzx8hRYuveIDdQKmJ8wamBg=="],
 
     "@aphrody/sql": ["@aphrody/sql@0.1.0", "", { "dependencies": { "sqlite-vec": "^0.1.9" } }, "sha512-BYCLc0A/hSye6Bfw3t6Mrm3KdL4mT8X9UtJYFlLH/wKPz8icAKzTPfC6+9w/BP21KH/Bj1k0zwtLtdJykT5Gcg=="],
+
+    "@aphrody/web-test": ["@aphrody/web-test@0.2.6", "", { "dependencies": { "@aphrody/agent-browser": "1.0.0-canary" } }, "sha512-+YSCnELPq5ZTUSr7CqgKryLiJBGWoXcT4+iCktnQp45McgGNPyHWQ2H59yQTlvPBerR35lAdyIfUrS3gqZf9tA=="],
 
     "@babel/code-frame": ["@babel/code-frame@7.29.7", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.29.7", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw=="],
 

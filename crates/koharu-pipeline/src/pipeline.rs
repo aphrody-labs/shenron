@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use anyhow::{Context as _, Result};
+use aphrody_ml_config::Config;
 use arc_swap::ArcSwap;
-use koharu_config::Config;
 use koharu_scene::Snapshot;
 
 use crate::{

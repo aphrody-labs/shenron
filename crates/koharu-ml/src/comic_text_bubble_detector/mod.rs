@@ -8,8 +8,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
+use aphrody_torch::Device;
 use image::DynamicImage;
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -82,7 +82,7 @@ impl RTDetrV2Detection {
         image: &DynamicImage,
         confidence_threshold: f32,
     ) -> Result<Vec<TextBlock>> {
-        koharu_torch::no_grad(|| {
+        aphrody_torch::no_grad(|| {
             let (bubble_boxes, text_boxes) =
                 self.image_slicer.process_slices_for_detection(image, |slice| {
                     self.detect_single_image(slice, confidence_threshold)
