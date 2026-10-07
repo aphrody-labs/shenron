@@ -23,6 +23,7 @@ import {
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { estChapitreCouleur, libelleSerie } from "@/lib/manga-editions";
 import { VignetteTome } from "@/components/manga/VignetteTome";
+import { useT } from "@/components/T";
 import { Etoile } from "@shenron/ui/toriyama/MotifsCouverture";
 
 export interface Volume {
@@ -114,13 +115,14 @@ const ACHIEVEMENTS: Achievement[] = [
 
 /** Entête de section « Édition Couleur », partagé par les onglets. */
 function ColorSectionHeader({ count }: { count: number }) {
+  const t = useT();
   return (
     <>
       <div className="flex items-center gap-3">
         <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
         <h3 className="font-display text-2xl text-white">
           <Etoile taille={14} className="mr-2 align-baseline text-[var(--color-logo-rouge)]" />
-          Édition Couleur
+          {t("mangaCatalog.colorSectionTitle")}
         </h3>
         <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-400 text-black font-black">
           Full Color
@@ -128,9 +130,7 @@ function ColorSectionHeader({ count }: { count: number }) {
         <div className="h-px flex-1 bg-white/12" />
       </div>
       <p className="text-xs text-white/50 max-w-2xl font-display">
-        L&apos;œuvre originale d&apos;Akira Toriyama en couleur
-        {count > 0 ? ` — ${count} chapitres` : ""}. Ouvre un tome pour choisir entre l&apos;édition
-        noir &amp; blanc et l&apos;édition couleur.
+        {t("mangaCatalog.colorSectionDescription", { count })}
       </p>
     </>
   );
@@ -241,6 +241,7 @@ export function MangaVolumeGrid({
   colorVolumeIds = [],
   colorChapterCount = 0,
 }: MangaVolumeGridProps) {
+  const t = useT();
   // L'inventaire complet s'ouvre en premier ; les onglets suivants sont des raccourcis d'édition.
   const [tab, setTab] = useState<MangaTab>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -467,8 +468,8 @@ export function MangaVolumeGrid({
             },
             {
               id: "full_color" as MangaTab,
-              title: "Full Color",
-              desc: "Colorisation officielle",
+              title: t("mangaCatalog.colorTabTitle"),
+              desc: t("mangaCatalog.colorTabDescription"),
               badge: `${colorVolumes.length || colorChapterCount || 520} tomes`,
               icon: Palette,
             },
@@ -703,15 +704,17 @@ export function MangaVolumeGrid({
                 <div className="flex items-center gap-3">
                   <Palette className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
                   <h3 className="font-display text-2xl text-white">
-                    Dragon Ball Full Color (フルカラー)
+                    {t("mangaCatalog.colorPanelTitle")}
                   </h3>
                   <span className="text-[11px] px-2 py-0.5 rounded bg-fuchsia-500/15 text-fuchsia-300 font-bold border border-fuchsia-500/30">
-                    {colorVolumes.length || 42} tomes, {colorChapterCount || 520} chapitres
+                    {t("mangaCatalog.colorPanelCount", {
+                      volumes: colorVolumes.length || 42,
+                      chapters: colorChapterCount || 520,
+                    })}
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-white/50 max-w-2xl font-display">
-                  L&apos;intégrale officielle colorisée par la Shueisha : 520 chapitres en
-                  quadrichromie haute définition, navigables par tome ou par chapitre direct.
+                  {t("mangaCatalog.colorPanelDescription")}
                 </p>
               </div>
             </div>
@@ -721,7 +724,7 @@ export function MangaVolumeGrid({
             {colorChapters.length > 0 && (
               <div className="space-y-4 pt-6 border-t border-white/10">
                 <h4 className="font-display font-bold text-sm text-fuchsia-300">
-                  Tous les chapitres Full Color ({colorChapters.length})
+                  {t("mangaCatalog.colorChapterListTitle", { count: colorChapters.length })}
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                   {colorChapters.map((chapter, idx) => (

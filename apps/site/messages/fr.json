@@ -1,4 +1,18 @@
 {
+  "mangaCatalog": {
+    "colorSectionTitle": "Scans couleur français",
+    "colorSectionDescription": "Fonds de scans couleur en français, provenant du forum scan-db. Il ne contient pas l’édition japonaise originale de Shueisha. {count} chapitres recensés.",
+    "colorTabTitle": "Scans couleur FR",
+    "colorTabDescription": "Version française issue du forum scan-db ; l’édition japonaise originale n’est pas présente.",
+    "colorPanelTitle": "Dragon Ball Full Color — scans français",
+    "colorPanelCount": "{volumes} références, {chapters} chapitres",
+    "colorPanelDescription": "Ces scans français proviennent du forum scan-db. Ils ne constituent pas l’édition japonaise originale de Shueisha.",
+    "colorChapterListTitle": "Chapitres disponibles ({count})",
+    "frenchColorScans": "Scans couleur français (scan-db)",
+    "japaneseOriginalNotIndexed": "Édition originale japonaise Full Color (non indexée)",
+    "japaneseOriginalCatalogueStatus": "Full Color japonais : 32 tomes papier / 42 numériques au catalogue Shueisha ; intégrale non indexée",
+    "frenchBlackWhiteScans": "Scans français en noir et blanc"
+  },
   "nav": {
     "wiki": "Wiki",
     "oeuvres": "TV & Médias",

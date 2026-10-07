@@ -84,12 +84,13 @@ describe("Sprint 1 — Media Works & Editions API Integration", () => {
     expect(indexContent).toContain("mediaWorks");
     expect(indexContent).toContain("Éditions référencées");
     expect(indexContent).toContain("/api/wiki/media");
+    expect(indexContent).toContain('mangaCatalog.japaneseOriginalCatalogueStatus');
 
     const volumeContent = await Bun.file(
       new URL("../src/app/wiki/manga/volume/[id]/page.tsx", import.meta.url),
     ).text();
     expect(volumeContent).toContain("Éditions répertoriées :");
     expect(volumeContent).toContain("Glénat FR (42)");
-    expect(volumeContent).toContain("Full Color (42)");
+    expect(volumeContent).toContain('mangaCatalog.japaneseOriginalCatalogueStatus');
   });
 });

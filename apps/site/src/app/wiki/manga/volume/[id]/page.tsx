@@ -24,6 +24,7 @@ import { idDeFiche } from "../../../_id-fiche";
 import { AccesApi } from "@/components/manga/AccesApi";
 import { SITE_URL } from "@/lib/config";
 import { LienExterne } from "@shenron/ui/icones";
+import { T } from "@/components/T";
 
 import { langueDe, LIBELLE_SERIE } from "@/lib/manga-editions";
 
@@ -245,7 +246,7 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
                     Glénat FR (42)
                   </li>
                   <li className="rounded-md border border-fuchsia-500/30 bg-fuchsia-500/10 px-2 py-1 text-fuchsia-200">
-                    Full Color (42)
+                    <T k="mangaCatalog.japaneseOriginalCatalogueStatus" />
                   </li>
                   <li className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-white/70">
                     Tankōbon JA

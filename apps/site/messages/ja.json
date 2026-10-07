@@ -1,4 +1,18 @@
 {
+  "mangaCatalog": {
+    "colorSectionTitle": "フランス語版カラー画像",
+    "colorSectionDescription": "scan-db フォーラム由来のフランス語カラー画像です。集英社の日本語オリジナル版は含まれていません。登録章数：{count}話。",
+    "colorTabTitle": "フランス語カラー画像",
+    "colorTabDescription": "scan-db フォーラム由来のフランス語版です。日本語オリジナル版は含まれていません。",
+    "colorPanelTitle": "ドラゴンボール フルカラー — フランス語版",
+    "colorPanelCount": "登録巻 {volumes}冊、章 {chapters}話",
+    "colorPanelDescription": "scan-db フォーラム由来のフランス語カラー画像です。集英社の日本語オリジナル版ではありません。",
+    "colorChapterListTitle": "閲覧可能な章（{count}話）",
+    "frenchColorScans": "フランス語カラー画像（scan-db）",
+    "japaneseOriginalNotIndexed": "日本語オリジナル版フルカラー（未収録）",
+    "japaneseOriginalCatalogueStatus": "日本語版フルカラー：集英社カタログでは紙版32巻・電子版42巻。全巻未収録",
+    "frenchBlackWhiteScans": "フランス語版・モノクロスキャン"
+  },
   "nav": {
     "wiki": "大百科事典",
     "oeuvres": "アニメ・映像",

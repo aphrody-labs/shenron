@@ -1,6 +1,7 @@
 import { PageShell } from "@shenron/ui/layout/PageShell";
 import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { T } from "@/components/T";
 import { ContributeRail, StatTiles } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { PageBanner } from "@/components/media/PageBanner";
@@ -214,10 +215,17 @@ export default async function MangaIndexPage() {
                 <p className="mt-1 font-display font-semibold text-white">{ed.label}</p>
                 <p className="mt-2 flex items-center justify-between gap-2 text-[13px] text-white/60">
                   <span>{ed.publisher ?? "Éditeur officiel"}</span>
-                  <span className="tabular-nums text-white/80">
-                    {ed.volumes_count > 0 ? `${ed.volumes_count} tomes` : "Indexé"}
-                  </span>
+                  {ed.edition !== "full_color" && (
+                    <span className="tabular-nums text-white/80">
+                      {ed.volumes_count > 0 ? `${ed.volumes_count} tomes` : "Indexé"}
+                    </span>
+                  )}
                 </p>
+                {ed.edition === "full_color" && (
+                  <p className="mt-2 text-[12px] leading-relaxed text-white/60">
+                    <T k="mangaCatalog.japaneseOriginalCatalogueStatus" />
+                  </p>
+                )}
               </li>
             ))}
           </ul>

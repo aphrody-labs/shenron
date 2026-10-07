@@ -25,9 +25,16 @@ les planches sont téléchargées sur le VPS et servies depuis `bot.dragonballfr
 | --------------------------------- | ---------------------------------- | --------------------------- | -------: |
 | **Dragon Ball original VF** (N&B) | **complet — 42 tomes**             | Sushi Scan → CDN anime-sama |    7 965 |
 | **Dragon Ball Super** (N&B)       | **complet (103 chapitres)**        | scan-vf.net → self-host     |    4 355 |
-| **Dragon Ball Full Color** (DBFC) | **complet — 520 chapitres**        | scan-db forum → CDN         |    7 954 |
+| **Scans Dragon Ball couleur FR** (DBFC) | **520 chapitres recensés** | forum scan-db → CDN | 7 954 |
 
 Total : **20 274 planches self-hostées** et servies directement via `https://cdn.dragonballfr.com`.
+
+**Limite de provenance :** le fonds DBFC ci-dessus est une version française issue
+du forum scan-db. Ce n'est pas l'édition japonaise originale Full Color de
+Shūeisha demandée pour le nouveau corpus. Les 7 954 pages ne sont pas mappées aux
+32 volumes papier ni aux 42 volumes numériques japonais et ne doivent pas être
+présentées comme cette édition. Les notices bibliographiques et aperçus officiels
+Shūeisha ne remplacent pas les pages intégrales acquises avec un droit d'ingestion.
 
 ### comic.dragonballcn.com — bibliographie, couvertures & métadonnées
 
@@ -64,8 +71,10 @@ seuil de Go libres) + conversion WebP (`sharp`).
   → CDN `s22.anime-sama.me/.../Dragon Ball/N/...`). Niveau de gris + resize 1280 +
   WebP q55 (manga N&B compresse bien). 1 chapitre lisible par tome, rattaché au
   volume existant `Dragon Ball Vol. N`. `--from --to --force --dry-run`.
-- **`ingest-fullcolor-manga.ts`** — édition couleur (parse `ts_reader`, images déjà
-  WebP, pas de reconversion). Crée des chapitres `chapter_number` 90x.
+- **`ingest-fullcolor-manga.ts`** — import historique désactivé : il téléchargeait
+  deux tomes français depuis Sushi Scan sans provenance d'édition ni base de droits
+  vérifiée. Utiliser uniquement le parcours à manifeste, empreintes et droits
+  documentés (`source-coverage.ts` puis `source-ingestion-postgres.ts`).
 - **`selfhost-manga-pages.ts`** — rapatrie les planches N&B externes (scan-vf,
   lelscanfr) déjà référencées : download + WebP + réécrit `pages` en chemins locaux.
   **Referer par hôte** (anti-hotlink). ⚠️ **Ne PAS envoyer de Referer `mangadex.org`**
