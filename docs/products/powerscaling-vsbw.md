@@ -590,7 +590,7 @@ Révisions consultées : Tiering System 9401765 (2026-02-28); Tiering System FAQ
 Cette note affine les statuts de l’annexe J sans les présenter comme une couverture totale de toutes les pages VSBW :
 
 - **Instructions de calcul :** 28 pages de la catégorie officielle lues en wikitexte direct; synthèse dédiée ajoutée. Deux billets d’utilisateurs et les profils sont écartés.
-- **Statistiques :** huit pages (AP, durabilité, force de levage, force de frappe, endurance, portée, hax, résistance) lues directement; leurs distinctions et principales limites sont synthétisées, mais chaque capacité particulière et toutes les exceptions restent hors de ce lot.
+- **Statistiques et capacités générales :** huit pages centrales (AP, durabilité, force de levage, force de frappe, endurance, portée, hax, résistance) et les 226 pages de la catégorie générale *Powers and Abilities* lues directement. Les pages de capacité apportent des distinctions et limites locales, pas une norme générale d’attribution de Tier/AP. Les 249 pages *Verse-specific Powers and Abilities* restent en triage/audit.
 - **Cosmologie :** Tiering System, FAQ, dimensions, existence dimensionnelle supérieure et au-delà des dimensions, univers, multivers, omnipotence et théorie des ensembles relus. La reconstruction complète des seuils physiques reste en cours.
 - **Cohérence et preuve :** Feats, Fallacies, Hyperbole, Inconsistencies, Outliers, CIS, PIS et Environmental Destruction relus en wikitexte; synthèses méthodologiques ajoutées.
 - **Pages de cadrage complémentaires :** les règles d’héritage, les discussions, les formats, définitions FTL/omniscience/omniprésence, BFR et one-shot ont été inspectés et classés comme règles de preuve, définitions ou conventions de matchup selon leur portée.
