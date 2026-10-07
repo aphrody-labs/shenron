@@ -24,6 +24,17 @@ if (!onlyCross) {
   }
 }
 stages.push({
+  name: "shared shell palette DOM",
+  cwd: join(root, "apps/site"),
+  args: [
+    "test",
+    "--preload",
+    Bun.resolveSync("@aphrody/bun-test-dom", join(root, "packages/ui")),
+    "--isolate",
+    "./tests/command-palette.dom.live.test.tsx",
+  ],
+});
+stages.push({
   name: "Bun-native PostgreSQL theme",
   cwd: import.meta.dir,
   args: ["postgres.ts"],

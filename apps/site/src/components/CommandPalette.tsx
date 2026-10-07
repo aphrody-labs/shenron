@@ -23,6 +23,10 @@ import { useRouter } from "next/navigation";
 import { track } from "@/lib/telemetry";
 import { useCallback, useEffect, useState } from "react";
 import { useLocale } from "next-intl";
+import {
+  getCommandPaletteMessages,
+  paletteText,
+} from "@shenron/ui/public/command-palette-messages";
 import { getDragonRadarMessages } from "@shenron/ui/public/dragon-radar-messages";
 import { startSearchSession } from "@/lib/search-session";
 
@@ -167,6 +171,20 @@ type SearchResults = {
     category: string;
   }>;
   sources: Array<{ url: string; kind: string; title: string; excerpt: string; httpStatus: number }>;
+  databooks: Array<{
+    id: number;
+    title: string;
+    title_ja: string | null;
+    category: string | null;
+    cover: string | null;
+  }>;
+  novels: Array<{
+    id: number;
+    title: string;
+    title_ja: string | null;
+    publication_type: string;
+    cover: string | null;
+  }>;
 };
 
 const EMPTY: SearchResults = {
@@ -193,6 +211,8 @@ const EMPTY: SearchResults = {
   dragons: [],
   contributors: [],
   sources: [],
+  databooks: [],
+  novels: [],
 };
 
 function count(r: SearchResults): number {
@@ -218,7 +238,9 @@ function count(r: SearchResults): number {
     r.items.length +
     r.dragons.length +
     (r.contributors?.length ?? 0) +
-    r.sources.length
+    r.sources.length +
+    r.databooks.length +
+    r.novels.length
   );
 }
 
@@ -235,7 +257,9 @@ export default function CommandPalette({
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
-  const messages = getDragonRadarMessages(useLocale());
+  const locale = useLocale();
+  const messages = getDragonRadarMessages(locale);
+  const palette = getCommandPaletteMessages(locale);
 
   // Recherche debouncée ; annule la requête en vol à chaque frappe.
   useEffect(() => {
@@ -305,7 +329,7 @@ export default function CommandPalette({
     <Command.Dialog
       open={open}
       onOpenChange={onOpenChange}
-      label="Recherche Dragon Ball"
+      label={palette.label}
       shouldFilter={false}
       loop
       overlayClassName="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm"
@@ -316,7 +340,7 @@ export default function CommandPalette({
         <Command.Input
           value={query}
           onValueChange={setQuery}
-          placeholder="Un personnage, une saga, une technique, un épisode…"
+          placeholder={palette.placeholder}
           className="h-14 w-full bg-transparent text-white placeholder:text-white/50 font-display text-base outline-none"
         />
         {loading && (
@@ -337,18 +361,17 @@ export default function CommandPalette({
         )}
         {term.length >= 2 && !loading && !failed && total === 0 && (
           <Command.Empty className="px-3 py-10 text-center text-sm text-white/50">
-            Aucune énergie détectée pour «&nbsp;
-            <span className="text-dbz-orange">{term}</span>&nbsp;».
+            {palette.emptyBefore}
+            <span className="text-dbz-orange">{term}</span>
+            {palette.emptyAfter}
           </Command.Empty>
         )}
         {term.length < 2 && (
-          <p className="px-3 py-10 text-center text-sm text-white/50">
-            Tape au moins 2 caractères pour scanner l'univers.
-          </p>
+          <p className="px-3 py-10 text-center text-sm text-white/50">{palette.shortQuery}</p>
         )}
 
         {results.characters.length > 0 && (
-          <Command.Group heading="Personnages">
+          <Command.Group heading={palette.hCharacters}>
             {results.characters.map((c) => (
               <Item
                 key={`char-${c.id}`}
@@ -357,7 +380,7 @@ export default function CommandPalette({
                 image={c.image}
                 title={c.name}
                 subtitle={c.name_ja ?? c.race ?? undefined}
-                kind="Guerrier"
+                kind={palette.kCharacter}
                 accent="orange"
               />
             ))}
@@ -365,7 +388,7 @@ export default function CommandPalette({
         )}
 
         {results.planets.length > 0 && (
-          <Command.Group heading="Lieux">
+          <Command.Group heading={palette.hPlanets}>
             {results.planets.map((p) => (
               <Item
                 key={`planet-${p.id}`}
@@ -374,7 +397,7 @@ export default function CommandPalette({
                 image={p.image}
                 title={p.name}
                 subtitle={p.name_ja ?? undefined}
-                kind="Lieu"
+                kind={palette.kLocation}
                 accent="blue"
               />
             ))}
@@ -382,7 +405,7 @@ export default function CommandPalette({
         )}
 
         {results.sagas.length > 0 && (
-          <Command.Group heading="Sagas">
+          <Command.Group heading={palette.hSagas}>
             {results.sagas.map((s) => (
               <Item
                 key={`saga-${s.id}`}
@@ -390,7 +413,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/sagas/${s.slug}`)}
                 title={s.name}
                 subtitle={s.series ?? undefined}
-                kind="Saga"
+                kind={palette.kSaga}
                 accent="orange"
               />
             ))}
@@ -398,7 +421,7 @@ export default function CommandPalette({
         )}
 
         {results.movies.length > 0 && (
-          <Command.Group heading="Films">
+          <Command.Group heading={palette.hMovies}>
             {results.movies.map((m) => (
               <Item
                 key={`movie-${m.id}`}
@@ -406,7 +429,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/movies/${m.slug}`)}
                 title={m.title}
                 subtitle={m.title_ja ?? m.series ?? undefined}
-                kind="Film"
+                kind={palette.kMovie}
                 accent="red"
               />
             ))}
@@ -414,7 +437,7 @@ export default function CommandPalette({
         )}
 
         {results.games.length > 0 && (
-          <Command.Group heading="Jeux">
+          <Command.Group heading={palette.hGames}>
             {results.games.map((g) => (
               <Item
                 key={`game-${g.id}`}
@@ -422,7 +445,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/games/${g.slug}`)}
                 title={g.title}
                 subtitle={g.title_ja ?? undefined}
-                kind="Jeu"
+                kind={palette.kGame}
                 accent="blue"
               />
             ))}
@@ -430,7 +453,7 @@ export default function CommandPalette({
         )}
 
         {results.episodes.length > 0 && (
-          <Command.Group heading="Épisodes">
+          <Command.Group heading={palette.hEpisodes}>
             {results.episodes.map((e) => (
               <Item
                 key={`ep-${e.id}`}
@@ -438,8 +461,11 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/episodes/${e.id}`)}
                 image={e.image}
                 title={e.title}
-                subtitle={`${e.series} · épisode ${e.number_in_series}`}
-                kind="Épisode"
+                subtitle={paletteText(palette, "episodeSubtitle", {
+                  series: e.series,
+                  number: e.number_in_series,
+                })}
+                kind={palette.kEpisode}
                 accent="blue"
               />
             ))}
@@ -447,7 +473,7 @@ export default function CommandPalette({
         )}
 
         {results.techniques.length > 0 && (
-          <Command.Group heading="Techniques">
+          <Command.Group heading={palette.hTechniques}>
             {results.techniques.map((t) => (
               <Item
                 key={`tech-${t.id}`}
@@ -455,7 +481,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/techniques/${t.slug}`)}
                 title={t.name}
                 subtitle={t.name_ja ?? t.type ?? undefined}
-                kind="Technique"
+                kind={palette.kTechnique}
                 accent="orange"
               />
             ))}
@@ -463,7 +489,7 @@ export default function CommandPalette({
         )}
 
         {results.races.length > 0 && (
-          <Command.Group heading="Races">
+          <Command.Group heading={palette.hRaces}>
             {results.races.map((r) => (
               <Item
                 key={`race-${r.id}`}
@@ -471,7 +497,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/races/${r.slug}`)}
                 title={r.name}
                 subtitle={r.name_ja ?? undefined}
-                kind="Race"
+                kind={palette.kRace}
                 accent="purple"
               />
             ))}
@@ -479,7 +505,7 @@ export default function CommandPalette({
         )}
 
         {results.transformations.length > 0 && (
-          <Command.Group heading="Transformations">
+          <Command.Group heading={palette.hTransformations}>
             {results.transformations.map((t) => (
               <Item
                 key={`transfo-${t.id}`}
@@ -487,7 +513,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/characters/${t.character_id}`)}
                 image={t.image}
                 title={t.name}
-                kind="Transfo"
+                kind={palette.kTransformation}
                 accent="orange"
               />
             ))}
@@ -495,7 +521,7 @@ export default function CommandPalette({
         )}
 
         {results.arcs.length > 0 && (
-          <Command.Group heading="Arcs">
+          <Command.Group heading={palette.hArcs}>
             {results.arcs.map((a) => (
               <Item
                 key={`arc-${a.id}`}
@@ -503,7 +529,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/arcs/${a.slug}`)}
                 title={a.name}
                 subtitle={a.name_ja ?? undefined}
-                kind="Arc"
+                kind={palette.kArc}
                 accent="red"
               />
             ))}
@@ -511,16 +537,16 @@ export default function CommandPalette({
         )}
 
         {results.mangaVolumes.length > 0 && (
-          <Command.Group heading="Tomes (manga)">
+          <Command.Group heading={palette.hVolumes}>
             {results.mangaVolumes.map((v) => (
               <Item
                 key={`vol-${v.id}`}
                 value={`vol-${v.id}-${v.title ?? v.volume_number}`}
                 onSelect={() => go(`/wiki/manga/volume/${v.id}`)}
                 image={v.cover}
-                title={v.title ? `Tome ${v.volume_number} — ${v.title}` : `Tome ${v.volume_number}`}
+                title={`${paletteText(palette, "volume", { number: v.volume_number ?? "" })}${v.title ? ` — ${v.title}` : ""}`}
                 subtitle={v.series}
-                kind="Tome"
+                kind={palette.kVolume}
                 accent="blue"
               />
             ))}
@@ -528,19 +554,15 @@ export default function CommandPalette({
         )}
 
         {results.mangaChapters.length > 0 && (
-          <Command.Group heading="Chapitres (manga)">
+          <Command.Group heading={palette.hChapters}>
             {results.mangaChapters.map((c) => (
               <Item
                 key={`chap-${c.id}`}
                 value={`chap-${c.id}-${c.title ?? c.chapter_number}`}
                 onSelect={() => go(`/wiki/manga/${c.id}`)}
-                title={
-                  c.title
-                    ? `Chapitre ${c.chapter_number} — ${c.title}`
-                    : `Chapitre ${c.chapter_number}`
-                }
+                title={`${paletteText(palette, "chapter", { number: c.chapter_number ?? "" })}${c.title ? ` — ${c.title}` : ""}`}
                 subtitle={c.series}
-                kind="Chapitre"
+                kind={palette.kChapter}
                 accent="blue"
               />
             ))}
@@ -548,7 +570,7 @@ export default function CommandPalette({
         )}
 
         {results.battles.length > 0 && (
-          <Command.Group heading="Combats Légendaires">
+          <Command.Group heading={palette.hBattles}>
             {results.battles.map((b) => (
               <Item
                 key={`battle-${b.id}`}
@@ -556,7 +578,7 @@ export default function CommandPalette({
                 onSelect={() => go("/wiki/events")}
                 title={b.name}
                 subtitle={b.name_ja ?? b.saga ?? undefined}
-                kind="Combat"
+                kind={palette.kBattle}
                 accent="red"
               />
             ))}
@@ -564,7 +586,7 @@ export default function CommandPalette({
         )}
 
         {results.locations.length > 0 && (
-          <Command.Group heading="Lieux & Sanctuaires">
+          <Command.Group heading={palette.hLocations}>
             {results.locations.map((l) => (
               <Item
                 key={`loc-${l.id}`}
@@ -573,7 +595,7 @@ export default function CommandPalette({
                 image={l.image}
                 title={l.name}
                 subtitle={l.name_ja ?? l.realm_type ?? undefined}
-                kind="Lieu"
+                kind={palette.kLocation}
                 accent="green"
               />
             ))}
@@ -581,7 +603,7 @@ export default function CommandPalette({
         )}
 
         {results.tournaments.length > 0 && (
-          <Command.Group heading="Tournois d'Arts Martiaux">
+          <Command.Group heading={palette.hTournaments}>
             {results.tournaments.map((t) => (
               <Item
                 key={`tourn-${t.id}`}
@@ -589,7 +611,7 @@ export default function CommandPalette({
                 onSelect={() => go("/wiki/events")}
                 title={t.name}
                 subtitle={t.name_ja ?? t.saga ?? undefined}
-                kind="Tournoi"
+                kind={palette.kTournament}
                 accent="orange"
               />
             ))}
@@ -597,7 +619,7 @@ export default function CommandPalette({
         )}
 
         {results.voiceActors.length > 0 && (
-          <Command.Group heading="Casting & Voix (Seiyū & VF)">
+          <Command.Group heading={palette.hVoiceActors}>
             {results.voiceActors.map((va) => (
               <Item
                 key={`va-${va.id}`}
@@ -605,9 +627,10 @@ export default function CommandPalette({
                 onSelect={() => go("/wiki/staff")}
                 title={va.name}
                 subtitle={
-                  va.name_ja ?? (va.nationality === "ja" ? "Seiyū (VO)" : "Doublage Français (VF)")
+                  va.name_ja ??
+                  (va.nationality === "ja" ? palette.japaneseVoice : palette.frenchVoice)
                 }
-                kind="Voix"
+                kind={palette.kVoiceActor}
                 accent="purple"
               />
             ))}
@@ -615,7 +638,7 @@ export default function CommandPalette({
         )}
 
         {results.contributors && results.contributors.length > 0 && (
-          <Command.Group heading="Staff & Créateurs">
+          <Command.Group heading={palette.hContributors}>
             {results.contributors.map((c) => (
               <Item
                 key={`contrib-${c.id}`}
@@ -627,7 +650,7 @@ export default function CommandPalette({
                 }
                 title={c.name}
                 subtitle={c.name_ja ? `${c.name_ja} · ${c.category}` : c.category}
-                kind="Staff"
+                kind={palette.kContributor}
                 accent="orange"
               />
             ))}
@@ -635,7 +658,7 @@ export default function CommandPalette({
         )}
 
         {results.soundtracks.length > 0 && (
-          <Command.Group heading="Musiques & Bandes Originales">
+          <Command.Group heading={palette.hSoundtracks}>
             {results.soundtracks.map((s) => (
               <Item
                 key={`ost-${s.id}`}
@@ -643,7 +666,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/music`)}
                 title={s.title}
                 subtitle={s.title_ja ?? s.series ?? undefined}
-                kind="OST"
+                kind={palette.kSoundtrack}
                 accent="blue"
               />
             ))}
@@ -651,7 +674,7 @@ export default function CommandPalette({
         )}
 
         {results.powerLevels.length > 0 && (
-          <Command.Group heading="Niveaux de Puissance (Scouter)">
+          <Command.Group heading={palette.hPowerLevels}>
             {results.powerLevels.map((p) => (
               <Item
                 key={`pl-${p.id}`}
@@ -659,7 +682,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/power-levels`)}
                 title={`${p.character_name} : ${p.power_value_formatted}`}
                 subtitle={p.battle_or_context || undefined}
-                kind="Scouter"
+                kind={palette.kPowerLevel}
                 accent="red"
               />
             ))}
@@ -667,7 +690,7 @@ export default function CommandPalette({
         )}
 
         {results.items.length > 0 && (
-          <Command.Group heading="Objets & Technologies">
+          <Command.Group heading={palette.hItems}>
             {results.items.map((i) => (
               <Item
                 key={`item-${i.id}`}
@@ -676,7 +699,7 @@ export default function CommandPalette({
                 image={i.image}
                 title={i.name}
                 subtitle={i.name_ja ?? i.category ?? undefined}
-                kind="Objet"
+                kind={palette.kItem}
                 accent="green"
               />
             ))}
@@ -684,7 +707,7 @@ export default function CommandPalette({
         )}
 
         {results.dragons.length > 0 && (
-          <Command.Group heading="Dragons Sacrés">
+          <Command.Group heading={palette.hDragons}>
             {results.dragons.map((d) => (
               <Item
                 key={`dragon-${d.id}`}
@@ -692,16 +715,51 @@ export default function CommandPalette({
                 onSelect={() => go(`/wiki/dragons#${d.slug}`)}
                 image={d.image}
                 title={d.name}
-                subtitle={d.name_ja ?? (d.creator ? `Créé par ${d.creator}` : undefined)}
-                kind="Dragon"
+                subtitle={
+                  d.name_ja ??
+                  (d.creator ? paletteText(palette, "creator", { name: d.creator }) : undefined)
+                }
+                kind={palette.kDragon}
                 accent="orange"
               />
             ))}
           </Command.Group>
         )}
 
+        {results.databooks.length > 0 && (
+          <Command.Group heading={palette.hDatabooks}>
+            {results.databooks.map((book) => (
+              <Item
+                key={`databook-${book.id}`}
+                value={`databook-${book.id}-${book.title}`}
+                onSelect={() => go(`/wiki/databooks/${book.id}`)}
+                image={book.cover}
+                title={book.title}
+                subtitle={book.title_ja ?? book.category ?? undefined}
+                kind={palette.kDatabook}
+                accent="blue"
+              />
+            ))}
+          </Command.Group>
+        )}
+        {results.novels.length > 0 && (
+          <Command.Group heading={palette.hNovels}>
+            {results.novels.map((book) => (
+              <Item
+                key={`novel-${book.id}`}
+                value={`novel-${book.id}-${book.title}`}
+                onSelect={() => go("/wiki/manga")}
+                image={book.cover}
+                title={book.title}
+                subtitle={book.title_ja ?? undefined}
+                kind={palette.kNovel}
+                accent="purple"
+              />
+            ))}
+          </Command.Group>
+        )}
         {results.sources.length > 0 && (
-          <Command.Group heading="Sources BXC — toutes classifications">
+          <Command.Group heading={palette.hSources}>
             {results.sources.map((source) => (
               <Item
                 key={`source-${source.url}`}
@@ -709,7 +767,7 @@ export default function CommandPalette({
                 onSelect={() => go(`/sources/dragon-ball?q=${encodeURIComponent(term)}`)}
                 title={source.title}
                 subtitle={`${source.kind} · HTTP ${source.httpStatus}`}
-                kind="BXC"
+                kind={palette.kSource}
                 accent="purple"
               />
             ))}
@@ -721,20 +779,20 @@ export default function CommandPalette({
 				    y compris sans résultat — c'est là qu'on a le plus besoin d'aller
 				    voir plus large. */}
         {term.length >= 2 && (
-          <Command.Group heading="Aller plus loin">
+          <Command.Group heading={palette.hFurther}>
             <Item
               value={`tous-${term}`}
               onSelect={() => go(`/wiki/search?q=${encodeURIComponent(term)}`)}
-              title={`Voir tous les résultats pour « ${term} »`}
-              kind="Recherche"
+              title={paletteText(palette, "allResults", { query: term })}
+              kind={palette.kSearch}
               accent="orange"
             />
             <Item
               value={`ask-${term}`}
               onSelect={() => go(`/ask?q=${encodeURIComponent(term)}`)}
-              title={`Poser la question à l'assistant`}
-              subtitle="Réponse rédigée et sourcée sur le wiki"
-              kind="Assistant"
+              title={palette.ask}
+              subtitle={palette.askSubtitle}
+              kind={palette.kAssistant}
               accent="purple"
             />
           </Command.Group>

@@ -25,6 +25,13 @@ Une étape indépendante ouvre un WebSocket réel depuis Obscura vers un serveur
 Bun temporaire et vérifie l'écho Unicode. Elle refuse donc un transport simulé
 qui déclenche `open` sans transmettre de messages.
 
+Une étape DOM dédiée monte la palette réelle du shell avec le préchargement
+`@aphrody/bun-test-dom`. Elle vérifie les résultats databooks et romans,
+la navigation vers une fiche databook et le changement anglais/japonais.
+Les dictionnaires de la palette vivent dans `@shenron/ui/public` et couvrent
+toutes ses catégories. Cette étape s’exécute aussi avec `--no-browser` et
+`--cross-only` ; elle ne remplace pas une qualification visuelle dans Obscura.
+
 La qualification navigateur utilise `@aphrody/agent-browser/engine`,
 `@aphrody/web-test` et son export `/next`. Elle démarre Obscura avec accès
 loopback explicite et un Next/Turbopack réel, sur des ports temporaires.
