@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Deux articles publics de personnages : Yamoshi et Amond.",
+  "reviewNote": "Synthèses françaises des seuls wikitexts capturés pour les pages listées. Les récits de jeux et sources complémentaires sont distingués des faits montrés dans le film ou le manga; les lacunes de citation et sections signalées comme incomplètes sont conservées.",
+  "records": [
+    {
+      "id": "yamoshi",
+      "title": "Yamoshi",
+      "summary": "L’article décrit Yamoshi comme un Saiyan au cœur juste, antérieur à la conquête de la planète Plant et à son renommage en planète Vegeta. Avec cinq compagnons, il se soulève contre les Saiyans belliqueux; acculé, il se transforme en Super Saiyan, mais est finalement vaincu par le nombre et l’épuisement. Son esprit continue ensuite à rechercher six Saiyans vertueux afin de faire naître le Super Saiyan God. L’article avance avec prudence que cet esprit pourrait être lié au rêve prophétique de Beerus. Un ancien Namek aurait consigné la légende du Super Saiyan God dans le Livre des légendes namek, par sympathie pour Yamoshi. La page précise que le personnage n’est pas apparu directement dans le manga ou l’anime : ces éléments relèvent d’explications complémentaires attribuées à Toriyama. Elle propose enfin, comme hypothèse étymologique, un jeu sur moyashi (« germes de soja »).",
+      "keyInformation": [
+        {
+          "topic": "Rôle dans le passé saiyan",
+          "detail": "Révolté avec cinq autres Saiyans; transforme sa colère et sa lutte désespérée en première manifestation connue du Super Saiyan selon le récit rapporté."
+        },
+        {
+          "topic": "Légende du Super Saiyan God",
+          "detail": "Après sa défaite, son esprit chercherait six Saiyans au cœur pur; la relation avec le rêve de Beerus est présentée comme possible, non établie."
+        },
+        {
+          "topic": "Transmission namek",
+          "detail": "Le Livre des légendes namek aurait conservé la mémoire de la quête; l’article attribue cette transmission à un ancien Namek touché par son histoire."
+        },
+        {
+          "topic": "Nature des éléments",
+          "detail": "Information complémentaire issue d’un entretien de Toriyama, non événement montré directement dans le manga ou l’anime."
+        },
+        {
+          "topic": "Nom",
+          "detail": "L’origine dans moyashi est une interprétation probable du jeu de mots, non une certitude démontrée."
+        }
+      ],
+      "dragonBallRelevance": "Directe et élevée pour l’histoire ancienne des Saiyans et la légende du Super Saiyan God; à attribuer à une explication complémentaire de Toriyama, distincte d’une apparition dans le récit principal.",
+      "internalReferences": [
+        "Super Saiyan",
+        "Super Saiyan God",
+        "Beerus",
+        "Namekian Book of Legends",
+        "Dragon Ball Vol. S: Saiyan Super Strongest Comics",
+        "Saikyō Jump"
+      ],
+      "uncertainties": [
+        "Le lien causal entre l’esprit de Yamoshi et le rêve de Beerus est formulé comme une possibilité.",
+        "L’étymologie moyashi est présentée comme probable.",
+        "Yamoshi n’a pas de représentation directe dans le manga ou l’anime selon l’article."
+      ],
+      "status": "supplementary-lore",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Yamoshi",
+        "revisedAt": "2020-07-27T22:42:08Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/yamoshi.json",
+        "pageId": 6306
+      },
+      "pageId": 6306,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "amond",
+      "title": "Amond",
+      "summary": "Amond est présenté comme un membre du commando de Tullece dans le troisième film Dragon Ball Z. Le film le montre participant à la reconnaissance de la Terre et à l’affrontement contre Goku; il se distingue par sa force, son agilité et sa capacité à renvoyer le Kienzan de Kuririn. Une biographie plus détaillée provient d’une brochure Toei de 1990 et de l’Anime Special : criminel intergalactique arrêté par une organisation de police spatiale, il aurait été emprisonné sur la planète Nutz avant d’être libéré lors de l’attaque de Tullece. Cette origine n’est pas exposée dans le film lui-même. La page relève son apparence (longue tresse, oreilles percées, cicatrice à la joue et armure à cornes), son tic verbal en « -desse » et une puissance de combat de 9 100 donnée par la brochure. Elle répertorie aussi ses apparitions et techniques dans plusieurs jeux, qu’il faut distinguer de ses actions dans le film. Son nom japonais abrège vraisemblablement l’anglais almond, conformément aux noms de fruits à coque du groupe de Tullece.",
+      "keyInformation": [
+        {
+          "topic": "Film",
+          "detail": "Membre du groupe de Tullece dans DBZ Movie 3; participe à la recherche du fruit de l’Arbre de la puissance et au combat final. Il renvoie le Kienzan de Kuririn et est ensuite vaincu par Goku et les autres combattants."
+        },
+        {
+          "topic": "Biographie complémentaire",
+          "detail": "La brochure de la Toei/Anime Special de 1990 le décrit comme criminel arrêté puis emprisonné sur Nutz avant son recrutement; source promotionnelle distincte du film."
+        },
+        {
+          "topic": "Caractéristiques",
+          "detail": "Puissance de combat 9 100 selon la brochure; grand gabarit mais mobile, tresse, piercings, cicatrice et armure à épaulettes cornues; terminaison « -desse » dans son parler."
+        },
+        {
+          "topic": "Jeux",
+          "detail": "Apparitions dans Dragon Ball Heroes et divers jeux dérivés; plusieurs noms de techniques de la page sont des capacités de jeu et non des techniques montrées dans le film."
+        },
+        {
+          "topic": "Nom",
+          "detail": "Amond renverrait probablement à almond; le jeu s’inscrit dans la série de noms alimentaires du commando."
+        },
+        {
+          "topic": "Voix",
+          "detail": "La page crédite Banjō Ginga en japonais; les crédits anglais sont signalés avec un besoin de citation pour Paul Dobson, tandis qu’elle mentionne Paul Slavens pour le redoublage de 2005."
+        }
+      ],
+      "dragonBallRelevance": "Directe pour un antagoniste du troisième film DBZ et ses apparitions vidéoludiques; les détails de passé et de puissance viennent de matériel promotionnel secondaire.",
+      "internalReferences": [
+        "Tullece",
+        "Tree of Godly Might",
+        "Kuririn",
+        "Kienzan",
+        "Dragon Ball Z: The Tree of Might",
+        "Dragon Ball Heroes",
+        "Dokkan Battle"
+      ],
+      "uncertainties": [
+        "L’article est catégorisé comme incomplet; la section d’apparition dans Ultimate Mission 2 reste marquée TBD.",
+        "Le lien historique entre la police spatiale mentionnée dans la brochure et la Patrouille galactique est une comparaison éditoriale, pas une filiation explicitement établie.",
+        "Un crédit de doublage anglais est marqué citation nécessaire.",
+        "Ne pas confondre la biographie issue des documents promotionnels avec le contenu montré à l’écran."
+      ],
+      "status": "incomplete-and-partly-citation-needed",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Amond",
+        "revisedAt": "2022-02-22T21:56:50Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/amond.json",
+        "pageId": 8716
+      },
+      "pageId": 8716,
+      "publicPreviewListed": true,
+      "forumContent": false
+    }
+  ]
+}
