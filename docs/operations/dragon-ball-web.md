@@ -120,13 +120,15 @@ RAG ; la préparation supervisée, l’entraînement et l’évaluation exigent 
 leurs ports qualifiés. Leur absence produit un blocage explicite, jamais un
 succès simulé.
 
-La qualification opérationnelle du 2026-10-07 relève une erreur 503
-« RAG database unavailable » sur le MCP stdio de la session, lancé sans référence
-de base de données. Le service existant `shenron-compute` de DBFR est actif :
-sa lecture authentifiée des statistiques retourne HTTP 200, avec 158 917 chunks
-et 115 106 vecteurs. Ces comptes ne prouvent pas une couverture complète.
-L’orchestrateur doit utiliser sa route authentifiée existante ; les DSN et
-jetons restent dans l’environnement protégé du propriétaire.
+La qualification opérationnelle du 2026-10-07 a relevé une erreur 503
+« RAG database unavailable » sur l’ancien processus MCP stdio de la session.
+Le profil protégé référence désormais la base RAG du propriétaire courant,
+son schéma et le tunnel persistant existant. Un nouveau processus du binaire
+qualifié expose 672 outils et réussit une recherche RAG en lecture seule.
+Le processus déjà ouvert conserve son environnement jusqu’à sa reconnexion.
+Les statistiques du service `shenron-compute` ne prouvent ni la couverture des
+16 familles ni celle du corpus PostgreSQL Shenron. Les DSN et jetons restent
+dans l’environnement protégé du propriétaire.
 
 Les exports et anciens poids locaux ne prouvent ni une ingestion actuelle avec
 vecteurs ni un entraînement validé. Le poste Omar WSL reste le propriétaire de l’entraînement ;
@@ -139,11 +141,15 @@ Qualification native du 2026-10-07 : le SDK Bun 3.3.8 est produit depuis la
 révision propre `cafa8b3e8ef494a4cfa5243a7304902057fb0380`. Les archives
 source et leurs SHA-256 sont dans `vendor/aphrody-sdk/manifest.json` ; elles
 contiennent le code et aucune bibliothèque native, donnée ou authentification.
-L’artefact FFI privé `3b6a5e1c9a3c` a passé les six tests natifs du pipeline
-sans test ignoré, dont la session MCP HTTP authentifiée et l’annulation.
-Le contrôle Rust MCP/client compte 169 tests réussis et un test ignoré ;
-Clippy strict est vert. Le binaire CLI et la bibliothèque restent des
-qualifications distinctes de leur installation et de l’activation des services.
+L’artefact FFI privé `41c2fd83145c` a passé les six tests natifs du pipeline
+sans test ignoré. Le vrai serveur RMCP a également passé les appels CLI et FFI
+avec authentification par référence d’environnement, session HTTP/SSE,
+idempotence et annulation des jobs dans un store de test isolé.
+Le contrôle Rust MCP/client compte 175 tests réussis et un test ignoré ;
+Clippy strict est vert. Le consommateur Shenron appelle réellement le module
+Dragon Ball par FFI. Les 24 alias Aphrody de WSL pointent vers le binaire
+qualifié ; leur contrôle est vert et leurs anciennes cibles sont conservées.
+Cette installation ne prouve pas encore l’activation des workers de chaque hôte.
 
 Le module Workspace `yolo ops mcp-environment prepare|probe|apply` conserve
 l’environnement dans un JSON privé (dossier 0700, fichier 0600) et ne publie
@@ -154,3 +160,7 @@ ne sont écrites qu’après réussite. Chaque agent référence le même fichie
 préparation ultérieure conserve les références d’authentification existantes,
 sans importer le `DATABASE_URL` générique d’un autre domaine. Ces opérations
 d’administration ne remplacent pas les appels FFI du pipeline produit.
+Les quatre configurations globales Codex, Claude, AGY et client Aphrody ont
+été appliquées après le probe canonique réussi : elles utilisent `aphrody-mcp`
+et cette unique référence privée, avec sauvegardes protégées. Le serveur MCP
+déjà ouvert dans la session a été conservé.
