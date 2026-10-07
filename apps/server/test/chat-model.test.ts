@@ -54,7 +54,7 @@ function fakeNative(o: { llamaBin?: string | null; present?: string[]; failChat?
   const present = new Set(o.present ?? []);
   const provisions: ShenronLlamaProvision[] = [];
   const routers: { request: ShenronLlamaRouterStart; models: RouterModel[] }[] = [];
-  const chats: { model: string }[] = [];
+  const chats: { model: string; authorization: string | null }[] = [];
   let server: ReturnType<typeof Bun.serve> | null = null;
   const native: LocalChatNative = {
     async provision(request, onProgress) {
@@ -92,13 +92,23 @@ function fakeNative(o: { llamaBin?: string | null; present?: string[]; failChat?
                 reason: present.has(m.model) ? null : "model files not provisioned",
               })),
             });
+          if (url.pathname === "/v1/models")
+            return Response.json({
+              object: "list",
+              data: config.models.map((model) => ({ id: model.id, object: "model" })),
+            });
           if (url.pathname === "/v1/chat/completions") {
-            const body = (await req.json()) as { model: string };
-            chats.push(body);
+            const body = (await req.json()) as { model: string; stream?: boolean };
+            chats.push({ ...body, authorization: req.headers.get("authorization") });
             if (o.failChat)
               return Response.json(
                 { error: { message: "llama-server exited (code 3)" } },
                 { status: 503 },
+              );
+            if (body.stream)
+              return new Response(
+                'data: {"choices":[{"delta":{"content":"p"}}]}\n\ndata: [DONE]\n\n',
+                { headers: { "content-type": "text/event-stream" } },
               );
             return Response.json({ choices: [{ message: { role: "assistant", content: "p" } }] });
           }
@@ -223,6 +233,45 @@ describe("startChatModel", () => {
       lora: [{ spec: `file:${adapter}` }],
     });
     expect(fake.chats.map((c) => c.model)).toEqual([CHAT_MODEL_IDS.shenron]);
+
+    const modelsUrl = new URL("http://127.0.0.1/v1/models");
+    const modelList = await model.handle(new Request(modelsUrl.href), modelsUrl, "127.0.0.1");
+    expect(modelList?.status).toBe(200);
+    expect(await modelList!.json()).toMatchObject({
+      data: [{ id: CHAT_MODEL_IDS.shenron }, { id: GEMMA_MODEL.id }],
+    });
+
+    const completionUrl = new URL("http://127.0.0.1/v1/chat/completions");
+    const completion = await model.handle(
+      new Request(completionUrl.href, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: "Bearer local-test-key" },
+        body: JSON.stringify({
+          model: CHAT_MODEL_IDS.shenron,
+          messages: [{ role: "user", content: "Find sourced evidence." }],
+          stream: true,
+        }),
+      }),
+      completionUrl,
+      "127.0.0.1",
+    );
+    expect(completion?.headers.get("content-type")).toContain("text/event-stream");
+    expect(await completion!.text()).toContain('"content":"p"');
+    expect(fake.chats.at(-1)).toMatchObject({
+      model: CHAT_MODEL_IDS.shenron,
+      stream: true,
+      authorization: null,
+    });
+    const remoteCompletion = await model.handle(
+      new Request(completionUrl.href, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ model: CHAT_MODEL_IDS.shenron, messages: [] }),
+      }),
+      completionUrl,
+      "10.0.0.2",
+    );
+    expect(remoteCompletion?.status).toBe(403);
 
     const catalog = await model.catalog();
     expect(catalog.map((e) => [e.id, e.state, e.default, e.available])).toEqual([

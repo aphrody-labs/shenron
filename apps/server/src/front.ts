@@ -5,6 +5,8 @@
  *
  *   1. `/api/local/*`            local APIs (health with the API groups, native search, the
  *                                editor engine bridge `/api/local/koharu`)
+ *      `/v1/models`, `/v1/chat/completions`
+ *                                OpenAI-compatible local model endpoints, loopback only
  *   2. `/api/auth/*`            Better Auth of the host when it serves it (DATABASE_URL, Discord
  *                                application), else Next; the client address is the socket peer
  *      `/api/v1/*`               the Shenron API host, authoritative: a disabled group answers

@@ -7,6 +7,8 @@
  *                                         of `@shenron/api/contract`)
  *   /api/local/koharu/*                   the editor engine of a browser on this machine
  *                                         (./koharu.ts), when the server has one
+ *   GET /v1/models, POST /v1/chat/completions
+ *                                         loopback-only OpenAI-compatible local chat model
  *   GET /api/local/models                 managed chat models and their state; POST
  *   /api/local/models/{id}/install|import download Gemma 4 E2B, import the adapter (./chat-model.ts)
  *   GET /api/local/rag/search?q=&limit=&kind=
@@ -108,11 +110,11 @@ export function localApi(
   };
 
   return async (request, url, ready, peer = null) => {
+    const models = await chatModel?.handle(request, url, peer);
+    if (models) return models;
     if (!url.pathname.startsWith("/api/local/")) return null;
     const engine = await koharu?.handle(request, url, peer);
     if (engine) return engine;
-    const models = await chatModel?.handle(request, url, peer);
-    if (models) return models;
     const headers = { "cache-control": "no-store", "access-control-allow-origin": "*" };
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (url.pathname === "/api/local/health") {

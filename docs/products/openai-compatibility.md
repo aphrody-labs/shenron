@@ -7,9 +7,11 @@ requirements.
 ## Compatible surfaces
 
 - **Local model:** Shenron Chat v2 runs through Aphrody's local `llama-server` router. It exposes
-  the OpenAI-compatible `/v1/models` and `/v1/chat/completions` endpoints on loopback. The router
-  is not a public service. Shenron selects `shenron-chat-v2` and Gemma by stable model IDs;
-  Shenron Chat v2 is Qwen3-4B with the Shenron LoRA. Aphrody owns provisioning and inference.
+  OpenAI-compatible `/v1/models` and `/v1/chat/completions` endpoints. `shenron-server` forwards
+  these paths on its own origin for loopback clients only and strips caller credentials before
+  forwarding. The model router is not a public service. Shenron selects `shenron-chat-v2` and
+  Gemma by stable model IDs; Shenron Chat v2 is Qwen3-4B with the Shenron LoRA. Aphrody owns
+  provisioning and inference.
 - **Shenron API:** The current chat contract is `POST /api/v1/chat`, which streams Shenron SSE
   events for sources, tools, the selected model, and completion. The catalog is
   `GET /api/v1/models`. This is not the OpenAI Chat Completions schema. Chat requires an owner

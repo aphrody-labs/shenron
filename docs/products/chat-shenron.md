@@ -32,10 +32,12 @@ listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
   Each entry has a `state` (`ready | loading | downloading | installable | failed | unavailable`)
   and may include `progress`, `installUrl`, or `importUrl`. Requests select a model with
   `ChatRequest.model`; `done.model` identifies the responder.
-- **OpenAI protocol:** the llama.cpp router used by `shenron-server` over loopback exposes
-  `/v1/models` and `/v1/chat/completions`; Shenron's client consumes its SSE stream. This
-  internal endpoint is not Shenron's public API, which remains `/api/v1/chat` with its own SSE
-  contract and owner authentication. See the [OpenAI compatibility matrix](openai-compatibility.md).
+- **OpenAI protocol:** the llama.cpp router used by `shenron-server` exposes `/v1/models` and
+  `/v1/chat/completions`. `shenron-server` forwards those endpoints on its own origin for
+  loopback clients only, preserving OpenAI JSON and SSE responses while stripping caller
+  credentials before forwarding. This local endpoint is not Shenron's public API, which remains
+  `/api/v1/chat` with its own SSE contract and owner authentication. See the
+  [OpenAI compatibility matrix](openai-compatibility.md).
 - **Gemini web** uses the operator's Google cookies (`~/.aphrody/google-cookies.json`). The
   catalog marks it unavailable after the first request with an expired session.
 

@@ -8,6 +8,7 @@ import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
 import { closeShenronWorkerPool } from "@shenron/native/worker";
 
 import { unavailableGroups } from "../src/backend";
+import type { ChatModel } from "../src/chat-model";
 import type { ServerPaths } from "../src/config";
 import { type LocalFacts, localApi, type LocalNative } from "../src/local-api";
 
@@ -79,6 +80,22 @@ describe("local API routing", () => {
     const api = localApi(serverPaths(), NO_FACTS, {}, fakeNative());
     expect(await call(api, "/api/public/wiki/categories")).toBeNull();
     expect(await call(api, "/api/local")).toBeNull();
+  });
+
+  test("routes the OpenAI model catalog through the loopback chat model before the front app", async () => {
+    const seen: string[] = [];
+    const chatModel = {
+      async handle(_request: Request, url: URL, peer?: string | null) {
+        if (url.pathname !== "/v1/models") return null;
+        seen.push(`${url.pathname} ${peer}`);
+        return Response.json({ object: "list", data: [] });
+      },
+    } as ChatModel;
+    const api = localApi(serverPaths(), NO_FACTS, {}, fakeNative(), null, chatModel);
+    const url = new URL("http://127.0.0.1/v1/models");
+    const response = await api(new Request(url.href), url, true, "127.0.0.1");
+    expect(response?.status).toBe(200);
+    expect(seen).toEqual(["/v1/models 127.0.0.1"]);
   });
 
   test("OPTIONS → 204 with CORS and no-store; unknown → 404", async () => {

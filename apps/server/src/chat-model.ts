@@ -194,8 +194,9 @@ export interface ChatModel {
   importAdapter(path: string): Promise<{ ok: boolean; error?: string }>;
   /**
    * `GET /api/local/models`, `POST /api/local/models/{id}/install` and
-   * `POST /api/local/models/shenron-chat-v2/import` (`{ "path": "<adapter.gguf>" }`); the
-   * writes answer this machine only (loopback peer and host).
+   * `POST /api/local/models/shenron-chat-v2/import` (`{ "path": "<adapter.gguf>" }`), plus the
+   * loopback-only OpenAI-compatible `GET /v1/models` and `POST /v1/chat/completions` endpoints.
+   * Model installation and import answer this machine only (loopback peer and host).
    */
   handle(request: Request, url: URL, peer?: string | null): Promise<Response | null>;
   /** Resolves once the default model answers (`true`) or failed (`false`). */
@@ -552,6 +553,60 @@ export function startChatModel(
     importAdapter,
     async handle(request, url, peer = null) {
       const headers = { "cache-control": "no-store" };
+      const openAiPath = url.pathname === "/v1/models" || url.pathname === "/v1/chat/completions";
+      if (openAiPath) {
+        if (!isLocalRequest(request, url, peer))
+          return Response.json({ error: { message: "this machine only" } }, { status: 403 });
+        const method = url.pathname === "/v1/models" ? "GET" : "POST";
+        if (request.method !== method)
+          return Response.json({ error: { message: `${method} only` } }, { status: 405 });
+        if (
+          method === "POST" &&
+          !request.headers.get("content-type")?.startsWith("application/json")
+        )
+          return Response.json(
+            { error: { message: "application/json required" } },
+            { status: 415 },
+          );
+        if (!router)
+          return Response.json(
+            { error: { message: "local chat model is not ready" } },
+            { status: 503 },
+          );
+
+        const path = url.pathname === "/v1/models" ? "/models" : "/chat/completions";
+        const upstreamHeaders = new Headers();
+        for (const name of ["accept", "content-type"]) {
+          const value = request.headers.get(name);
+          if (value) upstreamHeaders.set(name, value);
+        }
+        try {
+          const upstream = await http(`${router.baseUrl}${path}${url.search}`, {
+            method,
+            headers: upstreamHeaders,
+            ...(method === "POST" ? { body: request.body } : {}),
+            signal: request.signal,
+            redirect: "error",
+          });
+          const responseHeaders = new Headers({ "cache-control": "no-store" });
+          const contentType = upstream.headers.get("content-type");
+          if (contentType) responseHeaders.set("content-type", contentType);
+          return new Response(upstream.body, {
+            status: upstream.status,
+            headers: responseHeaders,
+          });
+        } catch (error) {
+          if (request.signal.aborted) return new Response(null, { status: 499, headers });
+          return Response.json(
+            {
+              error: {
+                message: `local chat router unavailable: ${String(error).slice(0, 160)}`,
+              },
+            },
+            { status: 502, headers },
+          );
+        }
+      }
       if (url.pathname === "/api/local/models" && request.method === "GET")
         return Response.json({ models: await catalog() }, { headers });
       const match = /^\/api\/local\/models\/([^/]+)\/(install|import)$/.exec(url.pathname);
