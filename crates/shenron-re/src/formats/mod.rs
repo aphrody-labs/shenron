@@ -3,6 +3,7 @@ pub mod bac;
 pub mod bdm;
 pub mod cms;
 pub mod cus;
+pub mod emb;
 pub mod msg;
 pub mod pup;
 

@@ -128,3 +128,43 @@ fn text_cli_converts_a_tree_to_a_new_destination_and_rejects_existing_destinatio
         manifest
     );
 }
+
+#[test]
+fn emb_cli_extracts_entries_to_a_new_directory_without_overwriting() {
+    let temp = tempfile::tempdir().unwrap();
+    let input = temp.path().join("sample.emb");
+    let mut bytes = vec![0; 44];
+    bytes[..4].copy_from_slice(b"#EMB");
+    bytes[12..16].copy_from_slice(&1i32.to_le_bytes());
+    bytes[24..28].copy_from_slice(&32i32.to_le_bytes());
+    bytes[28..32].copy_from_slice(&40i32.to_le_bytes());
+    bytes[32..36].copy_from_slice(&12i32.to_le_bytes());
+    bytes[36..40].copy_from_slice(&4i32.to_le_bytes());
+    bytes[40..44].copy_from_slice(&48i32.to_le_bytes());
+    bytes.extend_from_slice(b"DDS!texture.dds\0");
+    fs::write(&input, bytes).unwrap();
+
+    let output = temp.path().join("unpacked");
+    let extracted = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("emb")
+        .arg(&input)
+        .arg("--output-dir")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(extracted.status.success(), "{}", String::from_utf8_lossy(&extracted.stderr));
+    let report: serde_json::Value = serde_json::from_slice(&extracted.stdout).unwrap();
+    assert_eq!(report["entryCount"], 1);
+    assert_eq!(report["totalBytes"], 4);
+    assert_eq!(fs::read(output.join("texture.dds")).unwrap(), b"DDS!");
+
+    let refused = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("emb")
+        .arg(&input)
+        .arg("--output-dir")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(!refused.status.success());
+    assert_eq!(fs::read(output.join("texture.dds")).unwrap(), b"DDS!");
+}

@@ -18,7 +18,7 @@ Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun 
 | `map` | Partiel : `shenron-re inventory <game-root>` porte l'inventaire de chemins/tailles et le SHA-256 des `.exe`/`.dll` de moins de 60 Mio; la carte prototype Xenoverse 3 est une autre commande. Aucun vrai jeu installé n'a été scanné. |
 | `reverse` | Absent : pas d'analyse PE/DRM ni de CLI correspondant. |
 | `extract` | Partiel : parsing CPK et extraction en mémoire existent; pas de commande d'extraction d'arbres, reprise ou manifest. |
-| `tex` | Absent : pas de convertisseur EMB/DDS/PNG. |
+| `tex` | Partiel : `shenron-re emb <file.emb> --output-dir <new-dir>` valide et extrait les entrées EMB nommées en DDS dans un nouveau répertoire; pas de conversion DDS→PNG, de traitement récursif, ni d'analyse d'installation réelle. |
 | `audio` | Absent : pas de conversion CRI vers WAV. |
 | `text` | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE; `shenron-re text <input-dir> --output-dir <new-dir>` traite récursivement les `.msg` vers un arbre de sortie distinct, avec manifeste, ordre déterministe, liens symboliques ignorés et refus d'une destination existante. Ce mode protège les entrées et ne remplace pas le comportement risqué d'écrasement source du script Python. Le binding WASM `extractMsgText` extrait ces runs depuis un buffer. |
 | `models` | Absent : pas de métadonnées géométriques EMD/viewer. |
@@ -48,7 +48,10 @@ uniquement pour les petits exécutables et DLL. Le binding natif `@shenron/nativ
 la carte via le symbole ABI 5 `shenron_re_xenoverse3_map`, avec libération de la chaîne par
 le contrat FFI standard. `shenron-re text <file.msg>` porte l'extraction d'un fichier sans
 écraser un JSON existant; le mode dossier porte la conversion récursive dans une destination
-neuve, sans modifier l'arbre d'entrée. La matrice ne constitue pas une parité avec le CLI dbxv2.
+neuve, sans modifier l'arbre d'entrée. `shenron-re emb` valide les offsets, tailles et noms
+avant d'écrire chaque entrée DDS dans une destination neuve; l'archive EMB complète est lue
+en mémoire et aucun convertisseur de texture externe n'est invoqué. La matrice ne constitue
+pas une parité avec le CLI dbxv2.
 
 ## Assets, données et distribution
 
@@ -76,8 +79,9 @@ Pixel ne consomment pas encore directement le graphe Rust/WASM.
 Portes ciblées exécutées dans ce worktree : tests et Clippy de `shenron-re` et `shenron-ffi`,
 compilation WASM, génération ABI vérifiée, typecheck/lint et 36 tests `@shenron/native` avec
 la bibliothèque debug réellement chargée. La nouvelle commande CLI a également été exécutée
-et son JSON observé. Après ajout du mode récursif de texte, les 32 tests du crate
-(29 unitaires, 3 CLI) et Clippy strict passent; le build WASM/bindgen et les 11 tests `@shenron/pipeline`
+et son JSON observé. Après ajout du parseur EMB et de sa commande, les 35 tests du crate
+(31 unitaires, 4 CLI) et Clippy strict passent; ces fixtures sont synthétiques et aucun asset
+du jeu n'a été copié ou extrait. Le build WASM/bindgen et les 11 tests `@shenron/pipeline`
 passent aussi après ajout de `extractMsgText`. Le lint pipeline réussit avec 20 avertissements préexistants
 dans d'autres fichiers; son typecheck ne démarre pas faute de types `bun` installés. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte
 ni service de production n'a été modifié.
