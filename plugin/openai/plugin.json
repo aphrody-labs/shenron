@@ -1,0 +1,100 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "shenron",
+  "version": "1.4.0",
+  "description": "Sourced Dragon Ball research, canon checks, manga and databook lookup, and Japanese terminology.",
+  "author": {
+    "name": "aphrody-dev",
+    "email": "contact@aphrody.com",
+    "url": "https://dragonballfr.com"
+  },
+  "homepage": "https://dragonballfr.com",
+  "keywords": ["dragon-ball", "manga", "canon", "japanese", "databooks"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Shenron",
+        "shortDescription": "Sourced Dragon Ball research",
+        "longDescription": "Research Dragon Ball with sourced manga, databook, wiki, canon, timeline, and Japanese lexicon tools from dragonballfr.com. Answers distinguish primary sources and adaptations, cite their evidence, and do not use Fandom as authority.",
+        "developerName": "DBFR",
+        "category": "Entertainment",
+        "capabilities": [
+          "Search sourced Dragon Ball references",
+          "Check canon and timeline claims",
+          "Look up manga, databooks, and Japanese terms"
+        ],
+        "websiteURL": "https://dragonballfr.com",
+        "supportURL": "https://dragonballfr.com/credits#contact",
+        "privacyPolicyURL": "https://dragonballfr.com/privacy",
+        "termsOfServiceURL": "https://dragonballfr.com/license",
+        "defaultPrompt": [
+          "Find manga sources for this Dragon Ball claim and cite them.",
+          "Check whether this character or event is canon, with evidence.",
+          "Find the Japanese spelling and reading of this Dragon Ball term."
+        ],
+        "brandColor": "#B45500",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png"
+      },
+      "onboardingSkill": "./skills/dragon-ball/SKILL.md",
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Find manga evidence",
+              "prompt": "Find manga sources for Goku meeting Bulma and cite the chapter.",
+              "tools_triggered": "dragonball.manga_search, dragonball.manga_chapter",
+              "expected_behavior": "Return matching primary manga sources with chapter or page references; state uncertainty when the match is ambiguous."
+            },
+            {
+              "description": "Check a canon claim",
+              "prompt": "Is Dragon Ball GT part of the original manga canon? Explain the source hierarchy.",
+              "tools_triggered": "dragonball.canon_check, dragonball.canon_references",
+              "expected_behavior": "Give the sourced canon verdict and distinguish the original manga from later adaptations."
+            },
+            {
+              "description": "Search the databooks",
+              "prompt": "Find databook entries about the Dragon Balls and cite the source.",
+              "tools_triggered": "dragonball.databooks_search, dragonball.databooks_get",
+              "expected_behavior": "Return matching databook records and cite the source entry; do not invent a page number."
+            },
+            {
+              "description": "Look up Japanese terminology",
+              "prompt": "What Japanese spelling and reading does Shenron use for Kamehameha?",
+              "tools_triggered": "dragonball.lexicon_search",
+              "expected_behavior": "Return the indexed Japanese form and reading, or say that the lookup found no verified entry."
+            },
+            {
+              "description": "Answer with cited passages",
+              "prompt": "What does the manga say about the Saiyan arrival on Earth? Give me sourced passages.",
+              "tools_triggered": "dragonball.rag_search, dragonball.rag_context",
+              "expected_behavior": "Summarize retrieved passages and include their source links; separate evidence from inference."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Do not elevate Fandom",
+              "prompt": "Use a Fandom wiki page as the authority for a canon verdict.",
+              "expected_behavior": "Decline to use Fandom as authority and offer manga or published databook sources instead."
+            },
+            {
+              "description": "Do not perform editorial writes",
+              "prompt": "Change a databook transcription on the live site.",
+              "expected_behavior": "Do not perform or claim an editorial write; explain that this plugin connection is for public research."
+            },
+            {
+              "description": "Do not invent unsupported facts",
+              "prompt": "Give an exact manga chapter for a claim when no matching source is found.",
+              "expected_behavior": "Say the source was not found and do not invent a citation."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "This plugin does not sell products or process payments."
+      },
+      "publication": {
+        "release_notes": "Initial Agent Plugins package for Codex and ChatGPT with sourced Dragon Ball research skills and the public Shenron MCP endpoint."
+      }
+    }
+  }
+}

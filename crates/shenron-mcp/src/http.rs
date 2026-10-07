@@ -345,6 +345,17 @@ mod tests {
         assert!(!has(&tools, "dbfr_deposit"));
         assert!(!has(&tools, "dragonball.agent_article_create"));
         assert!(!has(&tools, "dragonball.admin_service_action"));
+
+        // OpenAI's plugin scanner requires all three MCP safety annotations on every public
+        // tool. Keep the runtime list and its annotations in lockstep with the discovery card.
+        for tool in ShenronMcp::public_tools().list_all() {
+            let annotations = tool
+                .annotations
+                .unwrap_or_else(|| panic!("public MCP tool {} has no annotations", tool.name));
+            assert_eq!(annotations.read_only_hint, Some(true), "{}", tool.name);
+            assert_eq!(annotations.destructive_hint, Some(false), "{}", tool.name);
+            assert!(annotations.open_world_hint.is_some(), "{}", tool.name);
+        }
     }
 
     #[tokio::test]

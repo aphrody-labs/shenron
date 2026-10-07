@@ -1,0 +1,20 @@
+{
+  "name": "dbfr-plugins",
+  "interface": {
+    "displayName": "DBFR"
+  },
+  "plugins": [
+    {
+      "name": "shenron",
+      "source": {
+        "source": "local",
+        "path": "./plugin/openai"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Entertainment"
+    }
+  ]
+}

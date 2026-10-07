@@ -1,0 +1,11 @@
+interface:
+  display_name: Shenron
+  short_description: Sourced Dragon Ball research
+  default_prompt: Find manga sources for this Dragon Ball claim and cite them.
+dependencies:
+  tools:
+    - type: mcp
+      value: shenron
+      description: Search public Dragon Ball sources, manga, databooks, canon, and Japanese terminology.
+      transport: streamable_http
+      url: https://dragonballfr.com/mcp

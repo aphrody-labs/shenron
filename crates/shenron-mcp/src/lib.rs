@@ -196,7 +196,14 @@ impl ServerHandler for ShenronMcp {
 #[tool_router(router = dbfr_router)]
 impl ShenronMcp {
     #[tool(
-        description = "List Dragon Ball FR databook records (dragonballfr.com), the official guides, artbooks and interviews. Reads the public catalogue; `include_hidden` is elevated only (it needs elevated access and $DBFR_TOKEN) and is refused otherwise rather than silently serving the public subset."
+        description = "List Dragon Ball FR databook records (dragonballfr.com), the official guides, artbooks and interviews. Reads the public catalogue; `include_hidden` is elevated only (it needs elevated access and $DBFR_TOKEN) and is refused otherwise rather than silently serving the public subset.",
+        annotations(
+            title = "Public databook catalogue",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
     )]
     async fn dbfr_databooks(
         &self,
@@ -206,7 +213,14 @@ impl ShenronMcp {
     }
 
     #[tool(
-        description = "Report one databook's plates: how many carry an image, how many are transcribed, and the numbers of those still missing a transcription. This is what says where OCR work remains."
+        description = "Report one databook's plates: how many carry an image, how many are transcribed, and the numbers of those still missing a transcription. This is what says where OCR work remains.",
+        annotations(
+            title = "Databook plate coverage",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
     )]
     async fn dbfr_pages(
         &self,
@@ -216,7 +230,14 @@ impl ShenronMcp {
     }
 
     #[tool(
-        description = "Read the stored transcription of specific plates of one databook (at most 40 per call)."
+        description = "Read the stored transcription of specific plates of one databook (at most 40 per call).",
+        annotations(
+            title = "Read databook transcriptions",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
     )]
     async fn dbfr_texts(
         &self,
@@ -226,7 +247,14 @@ impl ShenronMcp {
     }
 
     #[tool(
-        description = "Deprecated alias of dbfr_texts, kept for agents already configured with the old name. Read the stored transcription of specific plates of one databook (at most 40 per call)."
+        description = "Deprecated alias of dbfr_texts, kept for agents already configured with the old name. Read the stored transcription of specific plates of one databook (at most 40 per call).",
+        annotations(
+            title = "Read databook transcriptions (legacy alias)",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
     )]
     async fn dbfr_textes(
         &self,
@@ -236,7 +264,14 @@ impl ShenronMcp {
     }
 
     #[tool(
-        description = "Elevated only. Deposit transcriptions into one databook. Writes into a public corpus, so it is a dry run unless `apply` is true, refuses a blank text (the API reads it as `nothing to say`), and merges by default so plates absent from the call are untouched. Needs $DBFR_TOKEN in the server environment."
+        description = "Elevated only. Deposit transcriptions into one databook. Writes into a public corpus, so it is a dry run unless `apply` is true, refuses a blank text (the API reads it as `nothing to say`), and merges by default so plates absent from the call are untouched. Needs $DBFR_TOKEN in the server environment.",
+        annotations(
+            title = "Deposit databook transcriptions",
+            read_only_hint = false,
+            destructive_hint = true,
+            idempotent_hint = false,
+            open_world_hint = true
+        )
     )]
     async fn dbfr_deposit(
         &self,

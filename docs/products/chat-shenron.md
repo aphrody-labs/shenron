@@ -1,115 +1,118 @@
-# Chat Shenron : bureau, site et bot
+# Shenron Chat: desktop, website, and bot
 
-Le même assistant Shenron répond sur trois surfaces : **Shenron Studio** (application de bureau,
-`/desktop`), **le site** (`/api/chat`) et **le bot Discord** (DM). Ce document décrit les
-modèles, la persona, la mémoire et les limites de chaque surface. Le code fait foi ; les
-variables se trouvent dans [`operations/ENV.md`](../operations/ENV.md), les processus dans
+The same Shenron assistant serves three surfaces: **Shenron Studio** (desktop app, `/desktop`),
+**the website** (`/api/chat`), and **the Discord bot** (DMs). This document describes each
+surface's models, persona, memory, and limits. Code is authoritative; environment variables are
+listed in [`operations/ENV.md`](../operations/ENV.md), and process topology in
 [`architecture/RUNTIME.md`](../architecture/RUNTIME.md).
 
-## Modèles
+## Models
 
-| Identifiant        | Modèle                                                  | Où il tourne                                               |
-| ------------------ | ------------------------------------------------------- | ---------------------------------------------------------- |
-| `shenron-chat-v2`  | Qwen3-4B Instruct 2507 Q4_K_M + adaptateur LoRA Shenron | bureau (défaut)                                            |
-| `gemma4-e2b`       | Gemma 4 E2B instruct Q4_K_M (Unsloth, Apache-2.0)       | bureau (téléchargé à la demande), site et bot (production) |
-| `gemini-web/flash` | application web Gemini, session Google de l'opérateur   | distant, facultatif                                        |
+| ID | Model | Where it runs |
+| --- | --- | --- |
+| `shenron-chat-v2` | Qwen3-4B Instruct 2507 Q4_K_M + Shenron LoRA adapter | Desktop (default) |
+| `gemma4-e2b` | Gemma 4 E2B instruct Q4_K_M (Unsloth, Apache-2.0) | Desktop (on-demand download), website and bot (production) |
+| `gemini-web/flash` | Gemini web app, operator's Google session | Optional remote backend |
 
-- **Bureau** : le routeur et le provisionnement d'Aphrody (`aphrody-llama-server`, contrat
-  `LOCAL-CHAT.md`) tournent dans `shenron-server`, liés dans `libshenron_ffi` (ABI 4,
-  `shenron_llama_*`) ; `apps/server/src/chat-model.ts` ne choisit que les fichiers (défauts
-  épinglés dans `@shenron/config/chat-model`). Un `llama-server` à la fois, démarré au
-  premier usage ; le superviseur relance `shenron-server llama-daemon` comme démon, aucun
-  binaire Aphrody n'est livré. Magasin : `<SHENRON_HOME>/models` (`registry.json`).
-  L'installeur livre le runtime llama.cpp (Vulkan) et l'adaptateur LoRA ; la base Qwen
-  (2,5 Go) et Gemma (3,1 Go) se téléchargent au premier lancement ou en un clic, depuis
-  Hugging Face à une révision épinglée, avec reprise et vérification SHA-256. Sans adaptateur,
-  `POST /api/local/models/shenron-chat-v2/import {path}` l'importe depuis un fichier local.
-- **Production** : Gemma 4 E2B est préchargé (poids verrouillés en mémoire) dans un service
-  géré par `aphrody-infra`, joignable uniquement en boucle locale. Le site et le bot
-  l'appellent quand `APHRODY_AI_CHAT_BASE_URL` est posé ; la recherche RAG reste sur
-  `aphrody-ai-http`. Mesuré le 2026-10-06, sans GPU : premier jeton en environ 350 ms,
-  14 à 15 jetons/s.
-- **Liste** : `GET /api/v1/models` renvoie `{ order, backends, models, defaultModel, embedder }`.
-  Chaque entrée porte `state` (`ready | loading | downloading | installable | failed | unavailable`) et, selon le cas, `progress`, `installUrl` ou `importUrl`. Le modèle se choisit
-  à chaque requête (`ChatRequest.model`) ; `done.model` indique celui qui a répondu.
-- **Gemini web** dépend des cookies Google de l'opérateur (`~/.aphrody/google-cookies.json`). Une
-  session expirée le marque `unavailable` après le premier échec.
+- **Desktop:** Aphrody's router and provisioner (`aphrody-llama-server`, contract
+  `LOCAL-CHAT.md`) run inside `shenron-server` through `libshenron_ffi` (ABI 4,
+  `shenron_llama_*`). `apps/server/src/chat-model.ts` only selects files (defaults pinned in
+  `@shenron/config/chat-model`). One `llama-server` starts on first use; the supervisor
+  re-executes `shenron-server llama-daemon`, so no Aphrody executable ships with the app. The
+  model store is `<SHENRON_HOME>/models` (`registry.json`). The installer includes the Vulkan
+  llama.cpp runtime and LoRA adapter. Qwen (2.5 GB) and Gemma (3.1 GB) download on first launch
+  or on request from pinned Hugging Face revisions, with resume and SHA-256 verification.
+  Without the adapter, `POST /api/local/models/shenron-chat-v2/import {path}` imports a local
+  file.
+- **Production:** Gemma 4 E2B is preloaded (weights locked in memory) in a service managed by
+  `aphrody-infra`, reachable only over loopback. The website and bot call it when
+  `APHRODY_AI_CHAT_BASE_URL` is set; RAG search remains on `aphrody-ai-http`. Measured on
+  2026-10-06 without a GPU: about 350 ms to first token and 14–15 tokens/s.
+- **Catalog:** `GET /api/v1/models` returns `{ order, backends, models, defaultModel, embedder }`.
+  Each entry has a `state` (`ready | loading | downloading | installable | failed | unavailable`)
+  and may include `progress`, `installUrl`, or `importUrl`. Requests select a model with
+  `ChatRequest.model`; `done.model` identifies the responder.
+- **OpenAI protocol:** the llama.cpp router used by `shenron-server` over loopback exposes
+  `/v1/models` and `/v1/chat/completions`; Shenron's client consumes its SSE stream. This
+  internal endpoint is not Shenron's public API, which remains `/api/v1/chat` with its own SSE
+  contract and owner authentication. See the [OpenAI compatibility matrix](openai-compatibility.md).
+- **Gemini web** uses the operator's Google cookies (`~/.aphrody/google-cookies.json`). The
+  catalog marks it unavailable after the first request with an expired session.
 
-## Persona, agent home et plugin
+## Persona, agent home, and plugin
 
-- **Gabarit** : `templates/agent-home/`, au format natif d'aphrody-agent-home. Il porte la
-  persona Shenron, les règles éditoriales (le manga, les scans et les déclarations d'Akira
-  Toriyama priment, Fandom est interdit), la règle de langue fr/en/ja et un `USER.md` vide. Il
-  est embarqué par `@shenron/db/agent-homes` (`bun packages/db/scripts/agent-home-template.ts --check` en CI) et copié dans le payload serveur ; la garde de `scripts/build/server.ts`
-  refuse toute donnée privée.
-- **Un home par utilisateur**, identifié par `discord:<user_id>`, sinon `local` :
-  - **Bureau** : un home `local` est créé au premier lancement dans `<SHENRON_HOME>/agents/`.
-    La connexion Discord (`POST /api/local/agent-home/login`) ouvre le navigateur système sur le
-    site (`/api/desktop/link`, Better Auth), qui rend un code signé valable deux minutes ; le
-    home devient alors `discord-<id>`, mémoire comprise.
-  - **DM Discord** : le bot crée le home au premier message, dans PostgreSQL `chat.agent_homes`
-    (migration `0020_chat_agent_homes.sql`, à appliquer par le runbook `aphrody-infra` ; tant
-    qu'elle manque, le bot répond sans créer de home), sinon
-    dans des fichiers à côté de sa base.
-  - La synchronisation bureau ↔ cloud (instantanés complets, le plus récent `updatedAt` gagne)
-    est conçue mais pas branchée.
-- **Tous les modèles agissent comme Shenron** : le prompt système de chaque backend, Gemini web
-  compris, porte la persona du home, les champs de l'utilisateur (nom, langue, fuseau,
-  préférences, cités comme données), l'index du plugin `shenron` (`@shenron/api/plugin`, en
-  contexte seulement, pas encore en outils appelables) et la mémoire.
+- **Template:** `templates/agent-home/` follows the native aphrody-agent-home format. It carries
+  Shenron's persona, editorial rules (the manga, scans, and Akira Toriyama's statements take
+  priority; Fandom is not an authority), the fr/en/ja language rule, and an empty `USER.md`. It
+  is embedded by `@shenron/db/agent-homes` (`bun packages/db/scripts/agent-home-template.ts
+  --check` in CI) and copied into the server payload. The guard in `scripts/build/server.ts`
+  rejects private data.
+- **One home per user**, identified as `discord:<user_id>`, or `local`:
+  - **Desktop:** a `local` home is created on first launch under `<SHENRON_HOME>/agents/`.
+    Discord sign-in (`POST /api/local/agent-home/login`) opens the system browser to the site
+    (`/api/desktop/link`, Better Auth), which issues a signed code valid for two minutes. The home
+    then becomes `discord-<id>`, including its memory.
+  - **Discord DMs:** the bot creates the home on the first message in PostgreSQL
+    `chat.agent_homes` (migration `0020_chat_agent_homes.sql`, applied by the `aphrody-infra`
+    runbook). Until that migration is applied, the bot replies without creating a home; otherwise
+    it stores files beside its database.
+  - Desktop-to-cloud synchronization (full snapshots, latest `updatedAt` wins) is designed but
+    not connected.
+- **Every model acts as Shenron:** each backend's system prompt, including Gemini web, includes
+  the home persona, user fields (name, language, timezone, preferences, treated as data), the
+  `shenron` plugin index (`@shenron/api/plugin`, context only and not callable tools yet), and
+  memory.
 
-## Mémoire persistante
+## Persistent memory
 
-- **Stockage** : `aphrody_memory` (`SqliteLocalProvider`) appelé par `crates/shenron-ffi`
-  (ABI 3) via `@shenron/native` ; `apps/server/src/memory.ts` en fournit la fabrique à
-  l'hôte. Une base par home (`<home>/.aphrody/memory.sqlite`, défaut
-  `<SHENRON_HOME>/data/memory.sqlite`), créée en mode 600, chaque accès limité à un agent-id.
-- **Un tour de chat** : jusqu'à 5 souvenirs pertinents sont joints à la question comme données
-  (événement `memory:recall`), puis au plus 3 faits saillants sont écrits (présentation,
-  préférences, « souviens-toi que… »). `done.memory` vaut `{ recalled, stored }` ;
-  `memoryOptIn: false` exclut un tour. Une mémoire en panne ne fait jamais échouer le tour.
-- **Modèles distants** : la mémoire est injectée pour tous les modèles par défaut ;
-  `SHENRON_MEMORY_REMOTE=off` la garde en local.
-- **Endpoints** (réservés au propriétaire) : `GET /api/v1/memory?q=&tag=&limit=`,
-  `POST /api/v1/memory/{id}/delete`, `POST /api/v1/memory/clear` ; disponibilité dans
-  `groups.memory` de `/api/local/health`. Côté bot, la mémoire n'est active que si
-  `SHENRON_FFI_LIB` désigne la bibliothèque native, livrée avec la release.
+- **Storage:** `aphrody_memory` (`SqliteLocalProvider`) is called by `crates/shenron-ffi`
+  (ABI 3) through `@shenron/native`; `apps/server/src/memory.ts` supplies the host factory. Each
+  home has a database at `<home>/.aphrody/memory.sqlite` (default
+  `<SHENRON_HOME>/data/memory.sqlite`), created with mode 600; access is scoped to one agent ID.
+- **Each turn:** up to five relevant memories are attached to the question as data
+  (`memory:recall` event), then up to three notable facts are stored (introduction, preferences,
+  or explicit “remember that…” requests). `done.memory` is `{ recalled, stored }`;
+  `memoryOptIn: false` excludes a turn. Memory failures never fail the turn.
+- **Remote models:** memory is sent to all models by default; `SHENRON_MEMORY_REMOTE=off` keeps
+  it local.
+- **Owner-only endpoints:** `GET /api/v1/memory?q=&tag=&limit=`,
+  `POST /api/v1/memory/{id}/delete`, and `POST /api/v1/memory/clear`; availability is reported in
+  `groups.memory` from `/api/local/health`. In the bot, memory is active only when
+  `SHENRON_FFI_LIB` points to the native library shipped with the release.
 
 ## Surfaces
 
-- **Shenron Studio** (`/desktop`, `packages/ui/src/chat`) : chat Material 3 assemblé sur
-  `@aphrody/m3-ai` (MessageBubble, ChatComposer, ModelSelector), avec la liste des
-  conversations persistées, les citations, l'état « modèle indisponible », un panneau mémoire
-  (recherche, oubli, tout oublier) et un panneau modèles (installation de Gemma, import de
-  l'adaptateur par le sélecteur de fichier natif). Les liens s'ouvrent dans le navigateur
-  système. Libellés en fr, en et ja.
-- **Bot en DM** (`apps/bot/src/events/DirectMessageRelay.ts`) : ouvert à tout membre de la
-  guilde. Limites (défauts dans `@shenron/config/dm-chat`) : 2 générations simultanées,
-  20 demandes en attente avec position annoncée, 1 requête en cours et 5 réponses par 10 min
-  par utilisateur, 90 s par génération, 320 jetons et 1 800 caractères par réponse. Les owners
-  ne sont pas limités et passent en tête de file ; `SHENRON_DM_CHAT=off` réserve le chat aux
-  owners. Pas de streaming : l'indicateur « en train d'écrire » est renouvelé.
+- **Shenron Studio** (`/desktop`, `packages/ui/src/chat`): Material 3 chat assembled with
+  `@aphrody/m3-ai` (MessageBubble, ChatComposer, ModelSelector), with persisted conversations,
+  citations, a “model unavailable” state, memory controls (search, forget, clear all), and a model
+  panel (install Gemma, import the adapter through the native file picker). Links open in the
+  system browser. UI labels are localized in French, English, and Japanese.
+- **Discord DMs** (`apps/bot/src/events/DirectMessageRelay.ts`): available to guild members.
+  Defaults from `@shenron/config/dm-chat`: two concurrent generations, 20 queued requests with
+  announced position, one in-flight request and five replies per user every 10 minutes, 90
+  seconds per generation, 320 tokens and 1,800 characters per reply. Owners are unlimited and
+  prioritized; `SHENRON_DM_CHAT=off` restricts chat to owners. Responses do not stream; the
+  typing indicator is renewed.
 
-## Décisions du 2026-10-06
+## Decisions dated 2026-10-06
 
-- L'adaptateur LoRA `shenron-chat-v2` est livré dans l'installeur : ce sont des poids, pas le
-  corpus. Il n'a aucune source publique et n'est publié nulle part ailleurs.
-- Aucun poids n'est republié sur un miroir Aphrody : les téléchargements partent de Hugging
-  Face à une révision épinglée.
-- Les capacités Aphrody se consomment, elles ne se réimplémentent pas. La règle du propriétaire
-  d'Aphrody : WASM pour le web, binaire pour le bureau, FFI `bun:ffi` pour le backend Bun.
-  Le routeur et le provisionnement d'Aphrody sont liés dans `libshenron_ffi` (révision
-  `30b0e8a4`, en avance sur le bloc généré, qu'ils rejoindront à sa montée) ; la mémoire
-  reste le fournisseur SQLite d'`aphrody-memory` de la même bibliothèque (même fichier que
-  `aphrody memory --db`), `local_ops` arrivant avec cette montée.
+- The `shenron-chat-v2` LoRA adapter ships in the installer: it is model weight, not corpus data.
+  It has no public download source and is not published elsewhere.
+- No weights are republished on an Aphrody mirror; downloads use pinned Hugging Face revisions.
+- Shenron consumes Aphrody capabilities rather than reimplementing them. The owner rule is WASM
+  for the web, a binary for desktop, and `bun:ffi` for the Bun backend. Aphrody's router and
+  provisioner are linked through `libshenron_ffi` (revision `30b0e8a4`, ahead of the generated
+  dependency block and to be included when that block is updated); memory remains the SQLite
+  provider from `aphrody-memory` in the same library (same file as `aphrody memory --db`), with
+  `local_ops` arriving in that update.
 
-## Pistes ouvertes
+## Open work
 
-- Modèle dans le navigateur : WebLLM avec Qwen3-4B fusionné à l'adaptateur (MLC `q4f16_1`,
-  environ 2,3 Go), non encore converti ni testé.
-- Prochain fine-tuning sur RTX 4070 (12 Go) : Qwen3.5-4B en LoRA bf16, qui exige transformers
-  v5 dans le pipeline d'Aphrody ; repli immédiat sur Qwen3-4B-Instruct-2507 (environ 30 min
-  pour 3 epochs).
-- Remplacer le hub A2A de `@shenron/pipeline` (environ 2 000 lignes, ancien dialecte) par
-  `@aphrody/a2a` dès sa publication ; passer les appels du binaire `aphrody` du pipeline par la
-  FFI, ce qui demande d'ouvrir la garde `bun:ffi` à `@shenron/native`.
+- Browser model: WebLLM with Qwen3-4B merged with the adapter (MLC `q4f16_1`, about 2.3 GB), not
+  yet converted or tested.
+- Next fine-tune on an RTX 4070 (12 GB): Qwen3.5-4B LoRA bf16, which requires Transformers v5
+  in Aphrody's pipeline; immediate fallback is Qwen3-4B-Instruct-2507 (about 30 minutes for
+  three epochs).
+- Replace the `@shenron/pipeline` A2A hub (about 2,000 lines, legacy dialect) with `@aphrody/a2a`
+  when published; move pipeline calls to the `aphrody` binary through FFI, which requires
+  allowing `@shenron/native` through the `bun:ffi` guard.

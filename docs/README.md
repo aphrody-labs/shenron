@@ -1,43 +1,43 @@
-# Documentation Shenron
+# Shenron documentation
 
-Un document de référence par sujet ; les autres y renvoient. Le code fait foi,
-puis `AGENTS.md` à la racine.
+One reference document per topic; other documents link to it. Code is authoritative, followed by
+the root `AGENTS.md`.
 
-| Sujet                                                      | Référence                                                                                                                               |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Paquets, graphe de dépendances, gates                      | [`architecture/STACK.md`](architecture/STACK.md)                                                                                        |
-| Processus et binaires (`shenron-server`, bot, MCP, bureau) | [`architecture/RUNTIME.md`](architecture/RUNTIME.md)                                                                                    |
-| Frontière avec Aphrody (calcul, crates, paquets, Discord)  | [`architecture/APHRODY-ECOSYSTEM.md`](architecture/APHRODY-ECOSYSTEM.md)                                                                |
-| Langues du site                                            | [`architecture/i18n.md`](architecture/i18n.md)                                                                                          |
-| RAG du bot et reconstruction                               | [`architecture/rag-enrichment.md`](architecture/rag-enrichment.md)                                                                      |
-| Refonte du wiki (média, chronologies, contributeurs)       | [`architecture/architecture-refonte-wiki-dragon-ball.md`](architecture/architecture-refonte-wiki-dragon-ball.md)                        |
-| Chaîne SVG                                                 | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md)                                                                          |
-| Variables d'environnement                                  | [`operations/ENV.md`](operations/ENV.md)                                                                                                |
-| Calcul RAG et LLM (hôte de calcul, bases, tunnels)         | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                |
-| Poste de développement                                     | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md)                                                                                    |
-| Développement Rust (crates, commandes, CI)                 | [`development/rust.md`](development/rust.md)                                                                                            |
-| Dépendances Bun                                            | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md)                                                                |
-| Exploitation (déléguée à `aphrody-infra`)                  | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md)                                                                      |
-| Session d'enrichissement de contenu                        | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md)                                                      |
-| Persona d'agent côté Bun                                   | [`operations/agent-home-bun.md`](operations/agent-home-bun.md)                                                                          |
-| Plan directeur                                             | [`reference/root/PLAN.md`](reference/root/PLAN.md)                                                                                      |
-| Système graphique                                          | [`reference/DESIGN.md`](reference/DESIGN.md)                                                                                            |
-| Doctrine éditoriale du wiki                                | [`products/wiki-editorial.md`](products/wiki-editorial.md)                                                                              |
-| Arbitre de canonicité                                      | [`products/canon.md`](products/canon.md)                                                                                                |
-| Chat Shenron (bureau, site, bot) : modèles, mémoire, homes | [`products/chat-shenron.md`](products/chat-shenron.md)                                                                                  |
-| Accueil et shell du site : invariants d'identité           | [`products/accueil-et-shell.md`](products/accueil-et-shell.md)                                                                          |
-| Site participatif et API agents                            | [`products/site-participatif.md`](products/site-participatif.md)                                                                        |
-| Koharu                                                     | [`products/koharu/README.md`](products/koharu/README.md), doc amont archivée [`reference/koharu/upstream/`](reference/koharu/upstream/) |
-| Databooks : doctrine                                       | [`reference/databooks-doctrine.md`](reference/databooks-doctrine.md)                                                                    |
-| Databooks : export, OCR, API                               | [`guides/databooks-transcription.md`](guides/databooks-transcription.md)                                                                |
-| Databooks : traduction                                     | [`guides/TRADUCTION-DATABOOKS.md`](guides/TRADUCTION-DATABOOKS.md)                                                                      |
-| Manga : scans et OCR                                       | [`guides/manga-scans.md`](guides/manga-scans.md), [`guides/ocr-manga.md`](guides/ocr-manga.md)                                          |
-| Japonais                                                   | [`guides/japonais.md`](guides/japonais.md)                                                                                              |
-| Ingestion des données wiki                                 | [`guides/wiki-data-ingestion.md`](guides/wiki-data-ingestion.md)                                                                        |
-| Pièges mesurés                                             | [`guides/pieges.md`](guides/pieges.md)                                                                                                  |
-| Sécurité                                                   | [Politique de sécurité](SECURITY.md)                                                                                                    |
-| Licences des composants intégrés                           | [`licenses/`](licenses/)                                                                                                                |
+| Topic | Reference |
+| --- | --- |
+| Packages, dependency graph, and gates | [`architecture/STACK.md`](architecture/STACK.md) |
+| Processes and binaries (`shenron-server`, bot, MCP, desktop) | [`architecture/RUNTIME.md`](architecture/RUNTIME.md) |
+| Aphrody boundary (compute, crates, packages, Discord) | [`architecture/APHRODY-ECOSYSTEM.md`](architecture/APHRODY-ECOSYSTEM.md) |
+| Website languages | [`architecture/i18n.md`](architecture/i18n.md) |
+| Bot RAG and reconstruction | [`architecture/rag-enrichment.md`](architecture/rag-enrichment.md) |
+| Wiki redesign (media, timelines, contributors) | [`architecture/architecture-refonte-wiki-dragon-ball.md`](architecture/architecture-refonte-wiki-dragon-ball.md) |
+| SVG pipeline | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md) |
+| Environment variables | [`operations/ENV.md`](operations/ENV.md) |
+| RAG and LLM compute (compute host, databases, tunnels) | [`operations/compute-rag.md`](operations/compute-rag.md) |
+| Development workstation | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md) |
+| Rust development (crates, gates, CI) | [`development/rust.md`](development/rust.md) |
+| Bun dependencies | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md) |
+| Operations (delegated to `aphrody-infra`) | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md) |
+| Content enrichment session | [`operations/content-session-pipeline.md`](operations/content-session-pipeline.md) |
+| Bun agent persona | [`operations/agent-home-bun.md`](operations/agent-home-bun.md) |
+| Master plan | [`reference/root/PLAN.md`](reference/root/PLAN.md) |
+| Design system | [`reference/DESIGN.md`](reference/DESIGN.md) |
+| Wiki editorial policy | [`products/wiki-editorial.md`](products/wiki-editorial.md) |
+| Canon adjudication | [`products/canon.md`](products/canon.md) |
+| Shenron Chat (desktop, website, bot): models, memory, homes | [`products/chat-shenron.md`](products/chat-shenron.md) |
+| OpenAI compatibility, MCP, A2A, skills, and plugin | [`products/openai-compatibility.md`](products/openai-compatibility.md) |
+| Website home and shell invariants | [`products/accueil-et-shell.md`](products/accueil-et-shell.md) |
+| Participatory site and agent API | [`products/site-participatif.md`](products/site-participatif.md) |
+| Shenron Studio | [`products/koharu/README.md`](products/koharu/README.md), with archived upstream docs in [`reference/koharu/upstream/`](reference/koharu/upstream/) |
+| Databooks: policy | [`reference/databooks-doctrine.md`](reference/databooks-doctrine.md) |
+| Databooks: export, OCR, API | [`guides/databooks-transcription.md`](guides/databooks-transcription.md) |
+| Databooks: translation | [`guides/TRADUCTION-DATABOOKS.md`](guides/TRADUCTION-DATABOOKS.md) |
+| Manga scans and OCR | [`guides/manga-scans.md`](guides/manga-scans.md), [`guides/ocr-manga.md`](guides/ocr-manga.md) |
+| Japanese | [`guides/japonais.md`](guides/japonais.md) |
+| Wiki data ingestion | [`guides/wiki-data-ingestion.md`](guides/wiki-data-ingestion.md) |
+| Measured pitfalls | [`guides/pieges.md`](guides/pieges.md) |
+| Security | [Security policy](SECURITY.md) |
+| Licenses of bundled components | [`licenses/`](licenses/) |
 
-Aucune adresse, aucun hôte, port ni secret de production n'est écrit dans ces
-documents ; les données privées (`data/home/`, bases, `.env`) restent hors de
-Git.
+These documents contain no production addresses, hosts, ports, or secrets. Private data
+(`data/home/`, databases, `.env`) remains outside Git.
