@@ -637,3 +637,37 @@ Aucun modèle de chat n'est chargé, aucune inférence n'est qualifiée et aucun
 nouvel installeur n'est activé. Deux avertissements Turbopack sur le traçage
 large de fichiers BXC restent à examiner. Ce contrôle HTTP ne lance aucun
 navigateur et n'étend pas la qualification CEF aux nouvelles sorties WASM.
+
+## VFS public et inférence locale Windows
+
+Le VFS du payload de l'installation Windows existante passe la garde
+`publicVfsProblems` sans anomalie. Sans sidecar SQLite, sa copie vérifiée fait
+16 678 912 octets, SHA-256
+`82b57dc12b921cb1f0ae13473051b552d4ab942e527dbfa4712074992704c7a7`.
+La fabrique réemballe ce VFS avec le site déjà compilé. Le nouveau serveur fait
+181 241 856 octets, SHA-256
+`71d31167ca3874e48cd14c45854fd6867554cf30986c37fa537891e0766c07e2`.
+Il répond avec 21 catégories wiki, huit résultats pour la recherche « Goku »
+et sept sources dans le contexte RAG. Ce contrôle qualifie la recherche lexicale,
+pas la recherche vectorielle ni l'actualité du corpus réutilisé.
+
+Le pont HTTP vers le SDK exécute également un cycle création, fermeture,
+réouverture, fermeture et suppression d'un projet Unicode. Le projet rouvert
+est identique à celui créé ; la liste est vide après suppression.
+
+Le runtime llama-server Windows existant (build 11312, commit `0c1e57098`)
+charge le Qwen3-4B Instruct 2507 local et l'adaptateur Shenron dont le SHA-256
+correspond au catalogue. Une requête directe génère 32 tokens. Le parcours
+`/api/v1/chat` répond ensuite à une salutation avec `backend: local`, sans
+fallback, en 515 ms. Une question factuelle avec le VFS retourne six passages,
+une réponse générée localement et une citation VFS en 1 851 ms, sans fallback.
+Cette preuve porte sur le transport et le raccordement RAG au générateur ; elle
+ne constitue pas une évaluation de l'exactitude de toutes les réponses.
+
+Le premier essai factuel dépasse le contexte de 2 048 tokens imposé par la
+sonde ; le même essai réussit à 4 096 tokens. Aucun réglage produit n'est modifié.
+Le refus sans source est aussi vérifié (`backend: none`, aucun appel modèle).
+Les traces et conversations synthétiques restent dans le home de qualification
+hors Git. Aucun téléchargement de modèle ni accès VPS n'est effectué.
+L'usage GPU n'est pas attesté par les journaux de ce runtime. La recherche
+vectorielle, l'activation et l'installation complète restent à qualifier.
