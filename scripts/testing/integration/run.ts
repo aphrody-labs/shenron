@@ -46,6 +46,12 @@ stages.push({
 });
 if (!noBrowser)
   stages.push({
+    name: "Obscura shared section navigation",
+    cwd: import.meta.dir,
+    args: ["test", "test/section-navigation.live.test.ts", "--timeout", "60000"],
+  });
+if (!noBrowser)
+  stages.push({
     name: "Obscura real WebSocket transport",
     cwd: import.meta.dir,
     args: ["test", "test/websocket.live.test.ts", "--timeout", "30000"],

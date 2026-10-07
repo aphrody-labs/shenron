@@ -75,7 +75,11 @@ export function HomeQuickAccess({
   className?: string;
 }) {
   return (
-    <section aria-labelledby="accueil-rubriques-titre" className={className}>
+    <section
+      id="universe"
+      aria-labelledby="accueil-rubriques-titre"
+      className={`scroll-mt-24 ${className}`}
+    >
       <h2 id="accueil-rubriques-titre" className={`mb-3 ${blockTitle}`}>
         {title?.trim() ? title : <T k="accueil.quick.title" />}
       </h2>

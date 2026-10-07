@@ -8,6 +8,7 @@ export * from "./layout/SectionHeading";
 export * from "./navigation/LinkPager";
 export * from "./navigation/DomainBarView";
 export * from "./public/Chip";
+export * from "./public/SectionNavigation";
 export * from "./public/EmptyState";
 export * from "./public/StatTiles";
 export * from "./public/WikiSkeleton";

@@ -32,6 +32,7 @@ export function HomeHero({
   const cta = hero.ctaLabel.trim() && hero.ctaHref.trim() ? hero : null;
   return (
     <header
+      id="hero"
       className={`home-stage relative isolate min-w-0 overflow-hidden border-b border-white/[0.08] ${className}`}
     >
       <HomeHeroScenes scenes={hero.scenes} />

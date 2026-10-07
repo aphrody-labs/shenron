@@ -47,6 +47,7 @@ import { HomeGuardians, HomeLivePanel, HomeLiveProvider, HomePantheon } from "./
 import { HomeMenuJourney } from "./HomeMenuJourney";
 import { HomeQuickAccess, QUICK_ACCESS } from "./HomeQuickAccess";
 import { HomeSection } from "./HomeSection";
+import { HomeSectionNavigation } from "./HomeSectionNavigation";
 import { SagaBestOf } from "./SagaBestOf";
 import { SectionScene } from "./SectionScene";
 import type { FeaturedCharacter, SagaTeaser, WikiCounts } from "./types";
@@ -104,6 +105,8 @@ const SPAN: Record<string, string> = {
 
 const card =
   "rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
+
+const navigationLabel = (s: HomeSectionConfig) => s.navLabel.trim() || s.title.trim();
 
 const label = (s: HomeSectionConfig, fallback: string) =>
   s.title.trim() || s.navLabel.trim() || fallback;
@@ -190,6 +193,25 @@ export function HomeView(rawProps: HomeViewProps) {
     >
       <HomeHero hero={config.hero} />
       <PageShell width="wide" rhythm="tight">
+        <HomeSectionNavigation
+          sections={[
+            { id: "universe", label: universe ? navigationLabel(universe) : "" },
+            { id: "community", label: "" },
+            ...(pantheon && shown.has("pantheon")
+              ? [{ id: "pantheon", label: navigationLabel(pantheon) }]
+              : []),
+            ...flow
+              .slice(0, canonAt)
+              .map((section) => ({ id: section.id, label: navigationLabel(section) })),
+            ...(config.canon.enabled ? [{ id: "canon", label: config.canon.title }] : []),
+            ...flow
+              .slice(canonAt)
+              .map((section) => ({ id: section.id, label: navigationLabel(section) })),
+            ...(news && shown.has("news")
+              ? [{ id: "actualites", label: navigationLabel(news) }]
+              : []),
+          ]}
+        />
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-12 lg:gap-y-10">
           <HomeQuickAccess
             counts={props.wikiCounts}

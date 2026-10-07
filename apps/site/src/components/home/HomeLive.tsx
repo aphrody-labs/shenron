@@ -45,6 +45,9 @@ const VIDE: LiveState = {
 };
 
 const LiveContext = createContext<LiveState>(VIDE);
+export function useHomeLiveState() {
+  return useContext(LiveContext);
+}
 
 export function HomeLiveProvider({
   stats,
@@ -106,8 +109,9 @@ export function HomeLivePanel({
 
   return (
     <section
+      id="community"
       aria-labelledby="accueil-direct-titre"
-      className={`${surface} flex flex-col p-4 sm:p-5 ${className}`}
+      className={`${surface} flex scroll-mt-24 flex-col p-4 sm:p-5 ${className}`}
     >
       <h2 id="accueil-direct-titre" className={blockTitle}>
         {t("accueil.live.title")}
@@ -201,8 +205,9 @@ export function HomePantheon({
   const { topMembers } = useContext(LiveContext);
   return (
     <section
+      id="pantheon"
       aria-labelledby="accueil-pantheon-titre"
-      className={`${surface} p-4 sm:p-5 ${className}`}
+      className={`${surface} scroll-mt-24 p-4 sm:p-5 ${className}`}
     >
       <div className="flex items-baseline justify-between gap-3">
         <h2 id="accueil-pantheon-titre" className={blockTitle}>
@@ -270,7 +275,11 @@ export function HomeGuardians({ title, className = "" }: { title: string; classN
   const { personas } = useContext(LiveContext);
   if (personas.length === 0) return null;
   return (
-    <section aria-labelledby="accueil-gardiens-titre" className={className}>
+    <section
+      id="guardians"
+      aria-labelledby="accueil-gardiens-titre"
+      className={`scroll-mt-24 ${className}`}
+    >
       <h2 id="accueil-gardiens-titre" className={`mb-3 ${blockTitle}`}>
         {title}
       </h2>
