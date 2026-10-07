@@ -819,6 +819,69 @@ var CANON_DATABASE = [
     ]
   },
   {
+    id: "kid-buu-vs-buuhan",
+    title: "Majin Buu Pur (Kid Buu) vs Buuhan",
+    category: "lore",
+    tier: "CANON_ABSOLU",
+    score: 100,
+    keywords: [
+      "kid buu vs buuhan",
+      "kid buu plus fort que buuhan",
+      "buuhan vs kid buu",
+      "buu pur vs buuhan",
+      "kid buu ou buuhan",
+      "buuhan ou kid buu",
+      "majin buu pur ou buuhan",
+      "majin buu pur vs buuhan",
+      "qui est le plus fort entre kid buu et buuhan",
+      "qui est le plus fort entre majin buu pur et buuhan",
+      "qui est le plus fort entre majin buu pur (kid buu) et majin buu ayant absorbe gohan (buuhan)",
+      "qui est le plus fort entre kid buu et buu ayant absorbe gohan",
+      "kid buu plus fort",
+      "kid boo vs buuhan"
+    ],
+    verdict: "Majin Buu Pur (Kid Buu) est plus fort que Majin Buu ayant absorb\xE9 Gohan (Buuhan).",
+    explanation: "Kid Buu est la forme originelle et ultime de Majin Buu, incarnation absolue du mal et de la destruction sans frein ni bride morale. \xC9tabli \xE0 travers l'ensemble des m\xE9dias officiels de Dragon Ball comme l'adversaire supr\xEAme et qualifi\xE9 d'\xAB ennemi le plus fort de l'univers \xBB (Daizenshuu 2), il repr\xE9sente le sommet de dangerosit\xE9 et d'invuln\xE9rabilit\xE9 de Majin Buu, surpassant Buuhan et exigeant les forces vives du cosmos entier concentr\xE9es dans le Super Genkidama pour \xEAtre an\xE9anti.",
+    sources: [
+      "Manga Dragon Ball Tome 42",
+      "Daizenshuu 2 : Story Guide",
+      "Anime Dragon Ball Z"
+    ]
+  },
+  {
+    id: "goku-ssj3-vs-ultimate-gohan",
+    title: "Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan)",
+    category: "lore",
+    tier: "CANON_ABSOLU",
+    score: 100,
+    keywords: [
+      "goku ssj3 vs gohan ultime",
+      "goku ssj3 vs ultimate gohan",
+      "goku ssj3 plus fort que gohan",
+      "goku ssj3 plus fort que gohan ultime",
+      "goku ssj3 plus fort qu'ultimate gohan",
+      "ultimate gohan vs goku ssj3",
+      "gohan ultime vs goku ssj3",
+      "goku super saiyan 3 vs gohan",
+      "goku super saiyan 3 vs gohan ultime",
+      "goku super saiyan 3 vs ultimate gohan",
+      "qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan",
+      "qui est le plus fort dans la saga buu entre goku ssj3 et gohan ultime",
+      "qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan dans sa derniere forme (ultimate gohan)",
+      "qui est le plus fort entre goku super saiyan 3 et gohan dans sa derniere forme",
+      "qui est le plus fort entre goku ssj3 et ultimate gohan",
+      "goku ssj3 ou gohan ultime",
+      "goku ssj3 ou ultimate gohan"
+    ],
+    verdict: "Son Goku Super Saiyan 3 est plus fort que Gohan dans sa forme ultime (Ultimate Gohan).",
+    explanation: "Son Goku en Super Saiyan 3 est le guerrier Z d'\xE9lite supr\xEAme de la saga Buu. Seul combattant capable d'affronter Kid Buu au corps \xE0 corps lors de l'ultime bataille pour la survie du macrocosme, Goku sublime la puissance brute par son g\xE9nie martial, sa ma\xEEtrise du combat au-del\xE0 des limites et ses ressources h\xE9ro\xEFques, surpassant Gohan Ultime \xE0 travers l'ensemble des m\xE9dias de l'\u0153uvre (comme illustr\xE9 notamment face \xE0 Hildegarn dans le film 13).",
+    sources: [
+      "Manga Dragon Ball Tomes 41-42",
+      "Daizenshuu 2 : Story Guide",
+      "Film DBZ 13 : L'Attaque du Dragon"
+    ]
+  },
+  {
     id: "puissance-goku-ssj1-namek",
     title: "Puissance de Goku SSJ1 sur Namek (150 000 000 BP)",
     category: "lore",

@@ -127,6 +127,8 @@ export default async function CanonPage({
           "Gine",
           "Uub",
           "C-16",
+          "Kid Buu vs Buuhan",
+          "Goku SSJ3 vs Gohan Ultime",
         ].map((ex) => (
           <Link
             key={ex}

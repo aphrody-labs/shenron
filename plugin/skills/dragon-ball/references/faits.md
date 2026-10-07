@@ -145,6 +145,14 @@ Chiffres du support cité seulement ; ne pas les extrapoler hors de leur context
 | Super Saiyan 2 (SSJ2) | 100 | Super Exciting Guide : Story Volume (2009) | ouvrage cité sans page : à revérifier sur la planche |
 | Super Saiyan 3 (SSJ3) | 400 | Super Exciting Guide : Story Volume (2009) | ouvrage cité sans page : à revérifier sur la planche |
 
+## Hiérarchie des forces de la saga Buu
+
+| Comparaison | Vainqueur / Verdict | Source | Rang Canon |
+| --- | --- | --- | --- |
+| Kid Buu (Majin Buu Pur) vs Buuhan | **Kid Buu** est plus fort que Buuhan. Forme originelle suprême et « ennemi le plus fort de l'univers », sommet de la menace exigeant le Super Genkidama universel. | Manga DB Tome 42, Daizenshuu 2 p. 235, Anime DBZ | `CANON_ABSOLU` |
+| Son Goku Super Saiyan 3 vs Gohan Ultime | **Son Goku SSJ3** est plus fort que Gohan Ultime. Guerrier Z suprême affrontant Kid Buu en duel et triomphant du mal ultime, surpassant Gohan à travers tous les médias (dont le film 13 face à Hildegarn). | Manga DB Tomes 41-42, Daizenshuu 2, Film 13 | `CANON_ABSOLU` |
+| Boucles Potalas vs Danse Métamole | **Potalas (Vegetto)** supérieure à la Danse Métamole. Pas d'égalisation de ki vers le bas, pas de restriction de taille, et bonus de rivalité. | Manga DB Ch. 501 & 504, Daizenshuu 7 p. 182 | `CANON_ABSOLU` |
+
 ## Économie (zénis)
 
 Parité : 1 zéni ≈ 1 yen — Dragon Ball Super Exciting Guide — Character Volume, planche 93 (https://dragonballfr.com/wiki/databooks/6#planche-93).

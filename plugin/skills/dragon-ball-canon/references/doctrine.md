@@ -157,6 +157,8 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
 | `multiplicateurs-super-saiyan` | Multiplicateurs officiels du Super Saiyan (x50, x2, x4) | lore | `EXTENSION_OFFICIELLE` | 75 |
 | `unite-kiri-babidi` | L'unité Kiri (Babidi) et conversion en Sentōryoku | lore | `CANON_ABSOLU` | 100 |
 | `fusion-potara-vs-metamol-puissance` | Puissance Vegetto (Potara) vs Gogeta (Métamol) | lore | `EXTENSION_OFFICIELLE` | 75 |
+| `kid-buu-vs-buuhan` | Majin Buu Pur (Kid Buu) vs Buuhan | lore | `CANON_ABSOLU` | 100 |
+| `goku-ssj3-vs-ultimate-gohan` | Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan) | lore | `CANON_ABSOLU` | 100 |
 | `puissance-goku-ssj1-namek` | Puissance de Goku SSJ1 sur Namek (150 000 000 BP) | lore | `EXTENSION_OFFICIELLE` | 75 |
 | `arret-scouter-namek-toriyama` | Abandon des niveaux de puissance chiffrés (Scouters) après Namek | lore | `CANON_ABSOLU` | 100 |
 | `beerus-whis` | Beerus, Whis et la hiérarchie divine | character | `CANON_SUPERVISE` | 98 |
@@ -546,6 +548,30 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
   - Daizenshuu 7
 - Mots-clés : potara vs metamol, fusion potara vs metamol, fusion potara vs fusion metamol, fusion potara est superieure, fusion potara superieure, potara superieure, potara est superieure, potara superieure metamol, potara superieure a la fusion metamol, vegetto vs gogeta, vegetto plus fort que gogeta, vegetto est-il plus fort que gogeta, vegetto contre gogeta, gogeta vs vegito, gogeta vs vegetto, gogeta ou vegetto, gogeta ou vegito, gogeta contre vegito, gogeta contre vegetto, comparaison potara metamol, comparaison vegetto gogeta, puissance vegetto vs gogeta, puissance gogeta vs vegetto, puissance gogeta vs vegito, multiplication potara, addition metamol, fusion comparaison puissance, potara ou metamol, potala ou metamol, potala vs metamol, formule potara seg
 - Page du site : https://dragonballfr.com/wiki/canon?q=Puissance%20Vegetto%20(Potara)%20vs%20Gogeta%20(M%C3%A9tamol)
+
+### Majin Buu Pur (Kid Buu) vs Buuhan
+
+- Identifiant : `kid-buu-vs-buuhan` · catégorie lore · rang `CANON_ABSOLU` · score 100
+- Verdict : Majin Buu Pur (Kid Buu) est plus fort que Majin Buu ayant absorbé Gohan (Buuhan).
+- Explication : Kid Buu est la forme originelle et ultime de Majin Buu, incarnation absolue du mal et de la destruction sans frein ni bride morale. Établi à travers l'ensemble des médias officiels de Dragon Ball comme l'adversaire suprême et qualifié d'« ennemi le plus fort de l'univers » (Daizenshuu 2), il représente le sommet de dangerosité et d'invulnérabilité de Majin Buu, surpassant Buuhan et exigeant les forces vives du cosmos entier concentrées dans le Super Genkidama pour être anéanti.
+- Sources :
+  - Manga Dragon Ball Tome 42
+  - Daizenshuu 2 : Story Guide
+  - Anime Dragon Ball Z
+- Mots-clés : kid buu vs buuhan, kid buu plus fort que buuhan, buuhan vs kid buu, buu pur vs buuhan, kid buu ou buuhan, buuhan ou kid buu, majin buu pur ou buuhan, majin buu pur vs buuhan, qui est le plus fort entre kid buu et buuhan, qui est le plus fort entre majin buu pur et buuhan, qui est le plus fort entre majin buu pur (kid buu) et majin buu ayant absorbe gohan (buuhan), qui est le plus fort entre kid buu et buu ayant absorbe gohan, kid buu plus fort, kid boo vs buuhan
+- Page du site : https://dragonballfr.com/wiki/canon?q=Majin%20Buu%20Pur%20(Kid%20Buu)%20vs%20Buuhan
+
+### Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan)
+
+- Identifiant : `goku-ssj3-vs-ultimate-gohan` · catégorie lore · rang `CANON_ABSOLU` · score 100
+- Verdict : Son Goku Super Saiyan 3 est plus fort que Gohan dans sa forme ultime (Ultimate Gohan).
+- Explication : Son Goku en Super Saiyan 3 est le guerrier Z d'élite suprême de la saga Buu. Seul combattant capable d'affronter Kid Buu au corps à corps lors de l'ultime bataille pour la survie du macrocosme, Goku sublime la puissance brute par son génie martial, sa maîtrise du combat au-delà des limites et ses ressources héroïques, surpassant Gohan Ultime à travers l'ensemble des médias de l'œuvre (comme illustré notamment face à Hildegarn dans le film 13).
+- Sources :
+  - Manga Dragon Ball Tomes 41-42
+  - Daizenshuu 2 : Story Guide
+  - Film DBZ 13 : L'Attaque du Dragon
+- Mots-clés : goku ssj3 vs gohan ultime, goku ssj3 vs ultimate gohan, goku ssj3 plus fort que gohan, goku ssj3 plus fort que gohan ultime, goku ssj3 plus fort qu'ultimate gohan, ultimate gohan vs goku ssj3, gohan ultime vs goku ssj3, goku super saiyan 3 vs gohan, goku super saiyan 3 vs gohan ultime, goku super saiyan 3 vs ultimate gohan, qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan, qui est le plus fort dans la saga buu entre goku ssj3 et gohan ultime, qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan dans sa derniere forme (ultimate gohan), qui est le plus fort entre goku super saiyan 3 et gohan dans sa derniere forme, qui est le plus fort entre goku ssj3 et ultimate gohan, goku ssj3 ou gohan ultime, goku ssj3 ou ultimate gohan
+- Page du site : https://dragonballfr.com/wiki/canon?q=Son%20Goku%20Super%20Saiyan%203%20vs%20Gohan%20Ultime%20(Ultimate%20Gohan)
 
 ### Puissance de Goku SSJ1 sur Namek (150 000 000 BP)
 
