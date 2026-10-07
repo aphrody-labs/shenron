@@ -881,3 +881,25 @@ son seul embarquement de `shenron_ffi` ne prouve pas ce contrat. Les chemins
 de build restent revendiqués. Les ACL des ledgers, les correctifs portables,
 le frontend récent et l’exécution graphique restent à qualifier. Aucun VPS
 ni navigateur n’est utilisé ; binaires et rapports restent hors Git.
+
+### Qualification MSVC du pin Rust `34c5b2d0` — 2026-10-07
+
+Le checkout Windows isolé, fondé sur Shenron `203e8f5e`, résout les dépendances
+Aphrody à `34c5b2d0406d0797be582054ce0399110a3c5a0e`, la source de la DLL
+release qualifiée ci-dessus. Cargo conserve 1 213 packages : seules les sources
+Git des 46 entrées Aphrody changent, sans modification des autres versions.
+
+Avec le wrapper Windows sérialisé et sccache conservé, les commandes suivantes
+terminent avec le code 0 pour `x86_64-pc-windows-msvc` :
+
+- `cargo check --locked -p shenron-ffi -p shenron-mcp -p koharu-library`
+  en 2 min 01 s ;
+- `cargo clippy --locked -p shenron-ffi -p shenron-mcp -p koharu-library
+  --all-targets -- -D warnings` en 48,83 s.
+
+Le SDK appartient au paquet `koharu-library`. Une sélection erronée de paquet
+et un premier lancement Clippy ayant perdu le séparateur PowerShell ont échoué
+avant analyse ; les résultats ci-dessus sont ceux des commandes corrigées.
+Ces contrôles portent sur ce snapshot isolé. Le pin reste hors de `main` en
+attendant les tests et la qualification des fonctionnalités de l’installeur ;
+aucune nouvelle installation ou activation n’est attestée.
