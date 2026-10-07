@@ -113,7 +113,10 @@ export async function serveSite(
   backend.koharu.setServerUrl(`http://127.0.0.1:${front.port}`);
   let next: ReturnType<typeof Bun.spawn>;
   try {
-    next = await startNextStandalone(layout.app, nextPort, backend.nextEnv);
+    next = await startNextStandalone(layout.app, nextPort, {
+      ...backend.nextEnv,
+      SHENRON_HOST_URL: `http://127.0.0.1:${front.port}`,
+    });
   } catch (error) {
     await Promise.allSettled([front.stop(true), backend.stop()]);
     throw error;

@@ -33,6 +33,8 @@ async function serverFixture(source: string) {
 
 test("the actual CLI exits with failure when its ready UI child crashes", async () => {
   const { root, child } = await serverFixture(`
+    const relay = await fetch(process.env.SHENRON_HOST_URL + "/api/local/health");
+    console.log(JSON.stringify({relayHost:process.env.SHENRON_HOST_URL,relayStatus:relay.status}));
     Bun.serve({hostname:process.env.HOSTNAME,port:Number(process.env.PORT),fetch:()=>new Response("ready")});
     setTimeout(()=>process.exit(7),1000);
   `);
@@ -40,7 +42,9 @@ test("the actual CLI exits with failure when its ready UI child crashes", async 
     const stderr = new Response(child.stderr).text();
     const stdout = new Response(child.stdout).text();
     expect(await child.exited).toBe(1);
-    expect(await stdout).toContain("Shenron : http://");
+    const output = await stdout;
+    expect(output).toContain("Shenron : http://");
+    expect(output).toMatch(/"relayHost":"http:\/\/127\.0\.0\.1:\d+","relayStatus":503/);
     const events = await stderr;
     expect(events).toContain('"event":"shenron.site.ready"');
     expect(events).toContain('"event":"shenron.site.exited","exitCode":7');
