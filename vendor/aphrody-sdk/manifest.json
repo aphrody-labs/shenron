@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "producer": "aphrody",
-  "revision": "cafa8b3e8ef494a4cfa5243a7304902057fb0380",
+  "revision": "c8134dd39f84f0e51e2b8c14d50e83dc931c8722",
   "dirty": false,
   "packages": [
     {
       "name": "@aphrody/bun",
       "version": "3.3.8",
-      "archive": "aphrody-bun-2e9a90d48827b1d0.tgz",
-      "sha256": "2e9a90d48827b1d081897872648e7894fd3c78241e957513a4fd302c0c154cdd"
+      "archive": "aphrody-bun-1576722f0ef565c2.tgz",
+      "sha256": "1576722f0ef565c2c35b308988a1856e93ec014004c40dd632e89ed2d3fedb07"
     },
     {
       "name": "@aphrody/paths",
