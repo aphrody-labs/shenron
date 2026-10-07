@@ -1,0 +1,552 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Douze pages publiques de référence, de publication, de musique, de distribution et de calendrier.",
+  "reviewNote": "Résumés établis exclusivement à partir des révisions wikitext locales identifiées par l’index public. Les redirections restent décrites comme telles; aucun contenu de page cible, page restreinte, discussion ou forum n’a été consulté. Les tableaux sont synthétisés par fonction et périmètre plutôt que recopiés ligne à ligne.",
+  "records": [
+    {
+      "id": "saikyo-jump",
+      "title": "Saikyō Jump",
+      "summary": "Cette page retrace l’histoire et le contenu du magazine jeunesse de Shūeisha Saikyō Jump. Lancé en décembre 2010 comme projet conjoint de Weekly Shōnen Jump et V Jump, il a successivement paru au rythme trimestriel, mensuel, bimestriel, puis de nouveau mensuel à partir de 2021. La page décrit ses mangas dérivés, adaptations, promotions de jeux, pages en couleur et commentaires de contributeurs, ainsi que l’évolution de son lectorat et de son tirage selon les chiffres cités. Son importance pour Dragon Ball tient à la publication de nombreux projets satellites : Dragon Ball SD de Naho Ōishi, les mangas promotionnels de Super Dragon Ball Heroes, des rééditions et adaptations, et des entretiens ou livrets consacrés à la franchise. Dragon Ball SD a quitté les pages papier pour une forme vidéo en 2021, puis est revenu en impression en 2025. La page contient des listes de séries courantes et anciennes couvrant aussi d’autres franchises Jump.",
+      "keyInformation": [
+        {
+          "topic": "Périodicité",
+          "detail": "Trimestriel à partir de décembre 2010; mensuel fin 2011–août 2014; bimestriel d’octobre 2014 à avril 2021; pause puis reprise mensuelle en août 2021."
+        },
+        {
+          "topic": "Dragon Ball SD",
+          "detail": "Manga en couleur de Naho Ōishi; première phase trimestrielle puis reprise mensuelle depuis le début de Dragon Ball. La publication papier s’interrompt au printemps 2021, passe en vidéos, puis reprend sur papier en janvier 2025."
+        },
+        {
+          "topic": "Autres contenus DB",
+          "detail": "La page recense les adaptations/promo-mangas Heroes, Dragon Ball Fusions, Discross, FighterZ, des réimpressions et diverses publications commémoratives ou dérivées."
+        },
+        {
+          "topic": "Événements et données",
+          "detail": "Le magazine a organisé des événements liés à V-Jump Festa/Jump Victory Carnival; la page cite tirages et répartitions démographiques pour 2018 et 2019."
+        },
+        {
+          "topic": "Périmètre éditorial",
+          "detail": "L’essentiel du magazine est constitué de déclinaisons jeunesse ou promotionnelles de grandes franchises; les listes comprennent de nombreuses séries sans lien avec Dragon Ball."
+        }
+      ],
+      "dragonBallRelevance": "Directe comme historique et catalogue des publications dérivées Dragon Ball, de Dragon Ball SD, des mangas promotionnels Heroes, des réimpressions et suppléments éditoriaux.",
+      "internalReferences": [
+        "Dragon Ball SD",
+        "Super Dragon Ball Heroes",
+        "Dragon Ball Fusions",
+        "Dragon Ball FighterZ",
+        "Episode of Bardock",
+        "Neko Majin",
+        "Dragon Ball Super Gallery",
+        "Yamoshi"
+      ],
+      "uncertainties": [
+        "La page porte une indication d’incomplétude, notamment pour certaines descriptions de séries.",
+        "Les chiffres de tirage et de lectorat sont datés et proviennent des références citées sur la page; ils ne décrivent pas nécessairement la situation actuelle."
+      ],
+      "status": "incomplete-reference-catalogue",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Saiky%C5%8D_Jump",
+        "revisedAt": "2026-09-22T18:25:10Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/saikyo-jump.json",
+        "pageId": 5925
+      },
+      "pageId": 5925,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "list-of-super-dragon-ball-heroes-episodes",
+      "title": "List of Super Dragon Ball Heroes Episodes",
+      "summary": "Catalogue des épisodes de l’anime promotionnel Super Dragon Ball Heroes : ordre, date de diffusion japonaise, titre japonais et anglais, et principaux crédits d’animation, de storyboard et de réalisation. La liste organise les épisodes en arcs issus des missions du jeu, dont Prison Planet, Universal Conflict, Universe Creation et New Spacetime War, et relève séparément certains épisodes spéciaux. L’article indique Atsuhiro Tomioka au scénario de l’ensemble et Tadayoshi Yamamuro comme directeur d’animation, tout en précisant que les intitulés de son crédit varient parfois selon les épisodes. Les tableaux disponibles dans cette révision vont jusqu’à l’épisode 38. Il s’agit d’une production promotionnelle liée aux événements et personnages du jeu; la page ne la présente pas comme une adaptation de la continuité principale de la série télévisée Dragon Ball Super.",
+      "keyInformation": [
+        {
+          "topic": "Structure",
+          "detail": "Table chronologique séparée en arcs Prison Planet, Universal Conflict, épisodes spéciaux, Universe Creation et New Spacetime War."
+        },
+        {
+          "topic": "Crédits généraux",
+          "detail": "Atsuhiro Tomioka est donné comme scénariste de tous les épisodes; Tadayoshi Yamamuro assure la direction de l’animation, avec des variations de libellé de crédit."
+        },
+        {
+          "topic": "Champs des tableaux",
+          "detail": "Numéro et date, titres japonais/anglais, responsable(s) de l’animation, storyboard et réalisation; une entrée de réalisation apparaît non créditée/indéterminée."
+        },
+        {
+          "topic": "Périmètre temporel",
+          "detail": "La révision répertorie les épisodes 1 à 38; elle ne prétend donc pas couvrir les épisodes postérieurs à cette limite documentaire."
+        }
+      ],
+      "dragonBallRelevance": "Directe pour les crédits et l’organisation de l’anime promotionnel du jeu Super Dragon Ball Heroes; pertinence distincte de la continuité du manga et de l’anime principal.",
+      "internalReferences": [
+        "Super Dragon Ball Heroes",
+        "Prison Planet",
+        "Universal Conflict",
+        "Universe Creation",
+        "New Spacetime War",
+        "Atsuhiro Tomioka",
+        "Tadayoshi Yamamuro"
+      ],
+      "uncertainties": [
+        "Un épisode comporte un crédit de réalisation indéterminé (« ?? »).",
+        "La liste s’arrête à l’épisode 38 dans cette révision capturée; cela marque la limite de cette source, pas nécessairement la fin de la série."
+      ],
+      "status": "episode-and-credit-catalogue",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/List_of_Super_Dragon_Ball_Heroes_Episodes",
+        "revisedAt": "2026-04-27T14:25:07Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/list-of-super-dragon-ball-heroes-episodes.json",
+        "pageId": 6525
+      },
+      "pageId": 6525,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "xeno-suffix",
+      "title": "« Xeno » (Suffix)",
+      "summary": "La page capturée ne contient qu’une redirection vers « Xeno (Suffix) ». Elle n’explique donc ni le sens ni l’usage du suffixe. Pour respecter le périmètre des sources publiques retenues, cette synthèse ne développe pas la page cible.",
+      "keyInformation": [
+        {
+          "topic": "Contenu disponible",
+          "detail": "Redirection wiki seule; aucune définition ni exemple dans le corps de cette page."
+        }
+      ],
+      "dragonBallRelevance": "Potentiellement directe pour la nomenclature des personnages de Dragon Ball Heroes, mais la page source capturée ne fournit aucun contenu substantiel.",
+      "internalReferences": [
+        "Xeno (Suffix) — cible de redirection, non consultée"
+      ],
+      "uncertainties": [
+        "Le sens de « Xeno » ne peut être établi à partir de cette page de redirection seule."
+      ],
+      "status": "redirect-only",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/%22Xeno%22_(Suffix)",
+        "revisedAt": "2019-01-18T19:05:46Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/xeno-suffix.json",
+        "pageId": 6944
+      },
+      "pageId": 6944,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "age-757",
+      "title": "Age 757",
+      "summary": "Cette entrée de chronologie rassemble les événements et naissances attribués à l’année 757 du calendrier Dragon Ball. Elle situe les naissances de Videl et Son Gohan, et mentionne également Doru Money. Pour Videl, elle signale une contradiction entre Daizenshū 7, qui donne l’année 756, et des guides ultérieurs qui retiennent 757. Pour Gohan, elle rapproche les indications d’âge du manga, l’épisode télévisé 171 et les repères de dates de l’arc Cell : la datation au mois de mai et l’idée que son anniversaire a été célébré dans la Salle de l’Esprit et du Temps reposent sur une reconstruction des indices, pas sur un jour de naissance explicitement montré. L’article rappelle aussi que l’âge de Gohan a été corrigé de trois à quatre ans dans l’édition reliée du manga, correction reprise ensuite dans les adaptations japonaises. Doru Money est lié à la création du Tenkaichi Budōkai comme cadeau, selon le film cité.",
+      "keyInformation": [
+        {
+          "topic": "Videl",
+          "detail": "L’année 757 est retenue dans des guides postérieurs, mais Daizenshū 7 indique 756; la divergence est explicitement documentée."
+        },
+        {
+          "topic": "Gohan",
+          "detail": "L’article déduit une naissance en mai 757 à partir des dates de l’arc Cell et des âges indiqués; le jour exact reste inconnu et les sources ne s’accordent pas parfaitement."
+        },
+        {
+          "topic": "Correction d’âge",
+          "detail": "La première indication de Gohan à trois ans est modifiée en quatre ans dans le tankōbon 17; la suite de l’édition japonaise et ses adaptations suivent cette correction."
+        },
+        {
+          "topic": "Doru Money",
+          "detail": "Le film DBZ 9 est cité pour l’histoire de la création du Tenkaichi Budōkai comme cadeau destiné à Doru."
+        }
+      ],
+      "dragonBallRelevance": "Directe pour la chronologie et les repères biographiques de Gohan et Videl; cette entrée juxtapose des sources de manga, d’anime, de guides et de film plutôt qu’une date unique incontestée.",
+      "internalReferences": [
+        "Videl",
+        "Son Gohan",
+        "Daizenshū 7",
+        "Super Exciting Guide: Character Volume",
+        "Chōzenshū 4",
+        "Dragon Ball Z episode 171",
+        "Dragon Ball Z: Bojack Unbound"
+      ],
+      "uncertainties": [
+        "Naissance de Videl : conflit 756/757 entre guides.",
+        "Pour Gohan, le mois de mai est une synthèse d’indices; aucun jour exact n’est établi.",
+        "Les indications d’âge et le passage dans la Salle de l’Esprit et du Temps compliquent les calculs chronologiques."
+      ],
+      "status": "chronology-with-source-discrepancies",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Age_757",
+        "revisedAt": "2020-07-27T22:44:39Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/age-757.json",
+        "pageId": 8129
+      },
+      "pageId": 8129,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "kintoki-toki-of-the-golden-eyed-tribe",
+      "title": "Kintoki: Toki of the Golden-Eyed Tribe",
+      "summary": "La page documente Kintoki, récit court d’Akira Toriyama publié dans Weekly Shōnen Jump en 2010, au sein de la série de one-shots Top of the Super Legends. Le jeune Toki, membre d’un peuple aux yeux dorés réputé pour sa force mais dont les membres vivent peu longtemps, veut préserver sa tribu. Il croise Merluza, diseuse de bonne aventure qui prétend venir de Vénus, et se retrouve mêlé aux menaces du seigneur Berry, à un enlèvement par le dragon Thundra et à la présence d’autres membres du peuple, dont Kuina. La page suit le récit jusqu’au départ de Toki et Merluza pour rechercher les survivants. Elle décrit aussi la commande éditoriale, le contexte de publication, le commentaire de Toriyama et les éditions japonaise et anglaise, en distinguant cette nouvelle indépendante des œuvres Dragon Ball. Un lien ultérieur relie Merluza à Jaco, sans transformer Kintoki en récit de Dragon Ball.",
+      "keyInformation": [
+        {
+          "topic": "Publication",
+          "detail": "One-shot de 31 pages (une page couleur et 30 en noir et blanc), Weekly Shōnen Jump 2010 no 50, publié le 15 novembre 2010; sixième volet de Top of the Super Legends."
+        },
+        {
+          "topic": "Récit",
+          "detail": "Toki, qui pense être le dernier de son peuple, rencontre Merluza; il sauve le seigneur Berry d’un Thundra et découvre que quelques membres du peuple aux yeux dorés pourraient encore vivre."
+        },
+        {
+          "topic": "Personnages et peuple",
+          "detail": "Le peuple est présenté comme puissant et à courte durée de vie. La page décrit également Kuina, Cran, Raz et Huckle, ainsi que des jeux de noms possibles liés aux poissons, oiseaux, aliments ou animaux."
+        },
+        {
+          "topic": "Éditions",
+          "detail": "Publication japonaise originale; version numérique anglaise par Viz dans Weekly Shonen Jump en janvier 2013. L’article indiquait qu’aucune édition papier officielle anglaise n’existait à sa rédaction."
+        },
+        {
+          "topic": "Lien à Jaco",
+          "detail": "Merluza apparaît en caméo dans le chapitre 5 de Jaco the Galactic Patrolman; il s’agit d’un lien de personnage, pas d’une affirmation que Kintoki appartient à l’intrigue Dragon Ball."
+        },
+        {
+          "topic": "Commentaire de Toriyama",
+          "detail": "L’auteur qualifie le travail de manga hebdomadaire de difficile et exprime son admiration pour les artistes qui tiennent ce rythme."
+        }
+      ],
+      "dragonBallRelevance": "Indirecte : œuvre indépendante de Toriyama, utile pour étudier sa bibliographie; le caméo de Merluza dans Jaco crée un lien de personnage limité.",
+      "internalReferences": [
+        "Top of the Super Legends",
+        "Weekly Shōnen Jump",
+        "Jaco the Galactic Patrolman",
+        "Merluza",
+        "Toki"
+      ],
+      "uncertainties": [
+        "Les étymologies de plusieurs noms sont des propositions prudentes de la page.",
+        "L’article est marqué incomplet; sa synthèse ne comble pas les sections manquantes.",
+        "L’état des éditions anglaises est celui décrit par la page et peut être daté."
+      ],
+      "status": "independent-manga-incomplete-article",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Kintoki%3A_Toki_of_the_Golden-Eyed_Tribe",
+        "revisedAt": "2021-03-04T00:50:22Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/kintoki-toki-of-the-golden-eyed-tribe.json",
+        "pageId": 8428
+      },
+      "pageId": 8428,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "sachie-chan-good",
+      "title": "Sachie-chan GOOD!!",
+      "summary": "One-shot conçu par Akira Toriyama et dessiné par Masakazu Katsura, publié en 2008. Sachie Momochi, fille ninja d’un maître d’arts martiaux, part aider les habitants de la planète Octo contre le gang Mil après que son père est indisponible. Elle est accompagnée de Zalid, champion junior, et se sert d’un ramen spécial de son clan pour accroître momentanément sa force. Le conflit révèle que les paisibles Octoïtes peinent à concevoir la méchanceté et que la Patrouille galactique tarde à intervenir; l’insigne de celle-ci ressemble à la marque de naissance de Sachie, suggérant une relation. Pour la création, Toriyama a fourni l’histoire, les personnages et les storyboards, tandis que Katsura a réalisé les dessins définitifs et renforcé les conflits émotionnels. L’article retrace les éditions japonaises et la publication numérique anglaise. Il replace le récit parmi les histoires de Patrouille galactique de Toriyama, puis évoque Jiya et Jaco, sans présenter Sachie comme un épisode de l’histoire Dragon Ball.",
+      "keyInformation": [
+        {
+          "topic": "Histoire",
+          "detail": "Sachie, 14 ans, répond à la demande des Octoïtes et affronte le gang Mil avec Zalid; le ramen du clan lui donne temporairement plus de puissance. Elle choisit finalement des graines à planter comme récompense."
+        },
+        {
+          "topic": "Crédits créatifs",
+          "detail": "Toriyama écrit, conçoit et réalise les storyboards; Katsura dessine la version publiée et contribue à renforcer l’émotion et les conflits humains."
+        },
+        {
+          "topic": "Publication",
+          "detail": "Jump SQ de mai 2008 (parution le 2 avril 2008), puis compilation Jump SQ.M vol. 002, recueil Katsura Akira en 2014 et diffusion anglaise numérique par Viz."
+        },
+        {
+          "topic": "Jeux de mots",
+          "detail": "Les noms Mil, K’cho et Colate évoquent « milk chocolate »; d’autres noms et titres sont expliqués comme calembours, parfois avec prudence."
+        },
+        {
+          "topic": "Patrouille galactique",
+          "detail": "La page le place dans un ensemble d’histoires associées à la Patrouille galactique, suivi par Jiya et Jaco; elle souligne l’extension de cet univers par des œuvres ultérieures."
+        }
+      ],
+      "dragonBallRelevance": "Indirecte mais notable : précurseur thématique des récits de Toriyama autour de la Patrouille galactique; l’histoire de Sachie elle-même n’est pas présentée comme faisant partie de Dragon Ball.",
+      "internalReferences": [
+        "Akira Toriyama",
+        "Masakazu Katsura",
+        "Jiya",
+        "Jaco the Galactic Patrolman",
+        "Galactic Patrol"
+      ],
+      "uncertainties": [
+        "L’article est catégorisé incomplet.",
+        "Le signe partagé suggère une parenté avec la Patrouille galactique sans en détailler la généalogie.",
+        "Les mentions de scanlations pirates figurant dans l’article ne sont pas reprises comme sources ni suivies."
+      ],
+      "status": "independent-one-shot-incomplete-article",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Sachie-chan_GOOD!!",
+        "revisedAt": "2020-07-27T22:46:51Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/sachie-chan-good.json",
+        "pageId": 8503
+      },
+      "pageId": 8503,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "hoi-poi-capsule",
+      "title": "Hoi-Poi Capsule",
+      "summary": "La page publique capturée est uniquement une redirection vers « Hoi-Poi Capsules ». Elle ne fournit ni définition, ni histoire, ni exemples; la page cible n’a pas été consultée dans le cadre de ce lot.",
+      "keyInformation": [
+        {
+          "topic": "Contenu disponible",
+          "detail": "Redirection seule, sans texte explicatif sur cette page."
+        }
+      ],
+      "dragonBallRelevance": "Concept emblématique de Dragon Ball, mais non documenté dans le corps de cette page capturée.",
+      "internalReferences": [
+        "Hoi-Poi Capsules — cible de redirection, non consultée"
+      ],
+      "uncertainties": [
+        "Le contenu précis de la page cible est hors du périmètre des wikitexts sélectionnés."
+      ],
+      "status": "redirect-only",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Hoi-Poi_Capsule",
+        "revisedAt": "2020-08-19T04:46:05Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/hoi-poi-capsule.json",
+        "pageId": 12034
+      },
+      "pageId": 12034,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "yu-ya-mori-catalogue",
+      "title": "Yūya Mori catalogue",
+      "summary": "Catalogue de morceaux composés par Yūya Mori pour l’anime promotionnel Super Dragon Ball Heroes. La page suit l’ordre de première utilisation connu, donne le code de morceau, le titre, la tonalité et l’éventuelle présence sur un album officiel; elle exclut les chansons d’ouverture qui ne sont pas composées par Mori. Les morceaux sans album connu sont repérés par un préfixe de catalogue M-2XX. La liste comprend M-101 à M-128 et une entrée M-129 dont la première apparition reste inconnue, tout en indiquant son titre, sa tonalité et un album associé. Elle renvoie à la page générale de musique Heroes pour les tableaux de placement par épisode. La ressource est une cartographie de musique et de parution, non une transcription audio intégrale.",
+      "keyInformation": [
+        {
+          "topic": "Organisation",
+          "detail": "Inventaire chronologique des morceaux, titres, tonalités, épisodes de première utilisation et albums; les ouvertures sont exclues si elles ne sont pas de Mori."
+        },
+        {
+          "topic": "Disponibilité",
+          "detail": "Le préfixe M-2XX désigne les morceaux non présents sur les albums actuellement répertoriés par la page."
+        },
+        {
+          "topic": "Borne cataloguée",
+          "detail": "La série M-101–M-128 est suivie d’une entrée M-129 au début d’apparition « ?? », tonalité si bémol et album OST no 24."
+        },
+        {
+          "topic": "Date d’épisode discordante",
+          "detail": "L’entrée M-126–M-128 associe l’épisode 31 à la date du 20 janvier 2020, tandis que la liste d’épisodes Heroes indique le 20 janvier 2021 pour l’épisode 31."
+        }
+      ],
+      "dragonBallRelevance": "Directe pour la musique originale de l’anime promotionnel Super Dragon Ball Heroes et sa disponibilité sur albums.",
+      "internalReferences": [
+        "Yūya Mori",
+        "Super Dragon Ball Heroes Music",
+        "Super Dragon Ball Heroes Episode 31",
+        "Super Dragon Ball Heroes OST"
+      ],
+      "uncertainties": [
+        "La première apparition de M-129 est inconnue dans la page.",
+        "Le millésime attribué à l’épisode 31 dans l’entrée M-126–M-128 diverge de la liste d’épisodes; la différence est conservée sans arbitrage."
+      ],
+      "status": "music-catalogue-with-date-discrepancy",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Y%C5%ABya_Mori_catalogue",
+        "revisedAt": "2021-07-12T14:49:00Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/yu-ya-mori-catalogue.json",
+        "pageId": 13425
+      },
+      "pageId": 13425,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "super-dragon-ball-heroes-music",
+      "title": "Super Dragon Ball Heroes Music",
+      "summary": "Répertoire des placements musicaux épisode par épisode dans l’anime Super Dragon Ball Heroes. Les tableaux associent les codes de piste et titres aux scènes, tonalités et albums où les morceaux sont publiés; une marque signale les musiques utilisées pour la première fois dans Heroes. La couverture suit les arcs Universe Mission puis Big Bang Mission, notamment Prison Planet, Universal Conflict, Universe Creation et New Spacetime War. Elle comprend les épisodes 1 à 38 dans la révision capturée, avec certains épisodes spéciaux. La page permet de repérer l’utilisation de la musique de Yūya Mori et ses liens avec les albums de bande originale, mais ne constitue pas une source audio et son périmètre est borné par les épisodes alors documentés. Le catalogue complémentaire de Mori fournit des informations sur des morceaux encore absents des albums répertoriés.",
+      "keyInformation": [
+        {
+          "topic": "Données par épisode",
+          "detail": "Pour chaque séquence répertoriée : code et titre du cue, description de son placement, tonalité et disponibilité sur album."
+        },
+        {
+          "topic": "Périmètre",
+          "detail": "Tableaux couvrant les arcs de l’anime promotionnel, de l’épisode 1 à l’épisode 38 dans cette capture."
+        },
+        {
+          "topic": "Convention",
+          "detail": "Le signe † identifie les morceaux dont Heroes marque la première utilisation selon la légende de la page."
+        },
+        {
+          "topic": "Complément",
+          "detail": "La page renvoie au catalogue Yūya Mori pour les titres inédits sur OST et leurs métadonnées."
+        }
+      ],
+      "dragonBallRelevance": "Directe pour l’indexation des musiques de l’anime Super Dragon Ball Heroes et le rapport entre scènes, morceaux et sorties officielles.",
+      "internalReferences": [
+        "Yūya Mori catalogue",
+        "Super Dragon Ball Heroes Cast",
+        "Super Dragon Ball Heroes Staff",
+        "Super Dragon Ball Heroes Episodes"
+      ],
+      "uncertainties": [
+        "La page reflète une couverture arrêtée à l’épisode 38 à la date de sa révision capturée (2021); ne pas la présenter comme catalogue actuel exhaustif.",
+        "Les descriptions de séquences sont des repères éditoriaux associés aux tableaux, pas une transcription sonore."
+      ],
+      "status": "music-placement-catalogue-through-episode-38",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Super_Dragon_Ball_Heroes_Music",
+        "revisedAt": "2021-09-15T14:04:53Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/super-dragon-ball-heroes-music.json",
+        "pageId": 13426
+      },
+      "pageId": 13426,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "super-dragon-ball-heroes-cast",
+      "title": "Super Dragon Ball Heroes Cast",
+      "summary": "Cette page réunit une table récapitulative et les crédits vocaux japonais épisode par épisode pour Super Dragon Ball Heroes, jusqu’à l’épisode 38 dans la révision capturée. La table composite associe personnages, comédiens et numéros d’épisodes, tandis que les blocs individuels reproduisent les crédits propres à chaque épisode et aux arcs. Elle documente les retours de personnages et les variantes Xeno, ainsi que les apparitions temporaires d’antagonistes et personnages dérivés du jeu. Masako Nozawa prête sa voix à Son Goku et à plusieurs rôles liés, Ryō Horikawa à Vegeta et Vegetto; d’autres crédits sont distribués selon les épisodes. Les notes précisent notamment que Goku Black est crédité sous l’appellation « Saiyan masqué cramoisi » aux épisodes 33–36 et que Nozawa n’est créditée pour le Guerrier vêtu de noir qu’à partir de l’épisode 37. Il s’agit d’un relevé de crédits japonais, non d’une liste de doublage international.",
+      "keyInformation": [
+        {
+          "topic": "Format",
+          "detail": "Table composite personnages/interprètes/épisodes, puis tableaux de crédits individuels par épisode, en japonais avec translittérations anglaises."
+        },
+        {
+          "topic": "Exemples de crédits récurrents",
+          "detail": "Masako Nozawa : Son Goku et plusieurs rôles associés; Ryō Horikawa : Vegeta et Vegetto; les rôles changent selon les épisodes."
+        },
+        {
+          "topic": "Notes de crédit",
+          "detail": "Goku Black est crédité comme Saiyan masqué cramoisi dans les épisodes 33–36; la note indique que le crédit de Nozawa pour le Guerrier vêtu de noir commence à l’épisode 37."
+        },
+        {
+          "topic": "Périmètre",
+          "detail": "Les crédits individuels visibles couvrent les épisodes 1–38 à la date de révision de la page."
+        }
+      ],
+      "dragonBallRelevance": "Directe comme référence de distribution vocale japonaise de l’anime promotionnel Super Dragon Ball Heroes; elle n’établit rien sur les crédits des séries principales ou des doublages étrangers.",
+      "internalReferences": [
+        "Masako Nozawa",
+        "Ryō Horikawa",
+        "Super Dragon Ball Heroes Episode 37",
+        "Super Dragon Ball Heroes Episode 38",
+        "Son Goku:Xeno",
+        "Vegeta:Xeno"
+      ],
+      "uncertainties": [
+        "La table suit les crédits tels qu’affichés par épisode; une première absence de crédit ne prouve pas nécessairement l’absence de voix si le personnage n’est pas nommé de la même façon.",
+        "Le relevé s’arrête à l’épisode 38 dans la révision capturée."
+      ],
+      "status": "japanese-cast-credit-catalogue-through-episode-38",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Super_Dragon_Ball_Heroes_Cast",
+        "revisedAt": "2024-10-29T04:18:45Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/super-dragon-ball-heroes-cast.json",
+        "pageId": 16671
+      },
+      "pageId": 16671,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "super-dragon-ball-heroes-staff",
+      "title": "Super Dragon Ball Heroes Staff",
+      "summary": "Répertoire composite et fiches de crédits par épisode de l’équipe de Super Dragon Ball Heroes, jusqu’à l’épisode 38 dans la révision disponible. La synthèse identifie Atsuhiro Tomioka au scénario de tous les épisodes et Tadayoshi Yamamuro à la conception des personnages et à la direction d’animation, avec des libellés de fonction qui varient selon le crédit officiel. Yamamuro réalise aussi le storyboard de la plupart des épisodes et celui de l’épisode 7 lui attribue la réalisation. Les tableaux séparent ensuite les responsables de storyboard, réalisation, animation principale et animation secondaire. La page avertit que l’organisation de certaines entrées d’animateurs et de studios change selon les épisodes et que les deux catégories de key animation ne sont pas toujours détaillées distinctement. Il s’agit de crédits de production de l’anime promotionnel Heroes, pas d’une équipe de la série télévisée principale.",
+      "keyInformation": [
+        {
+          "topic": "Crédits récurrents",
+          "detail": "Atsuhiro Tomioka au scénario; Tadayoshi Yamamuro au character design et à la direction d’animation, sous des variantes de libellé."
+        },
+        {
+          "topic": "Storyboards et réalisation",
+          "detail": "Yamamuro prépare la plupart des storyboards et est crédité réalisateur de l’épisode 7; les tableaux détaillent aussi les équipes épisode par épisode."
+        },
+        {
+          "topic": "Lecture des tableaux",
+          "detail": "Les rubriques distinguent staff principal/secondaire; à partir de l’épisode 21, la présentation des animateurs et des studios est espacée différemment."
+        },
+        {
+          "topic": "Périmètre",
+          "detail": "La révision couvre les crédits jusqu’à l’épisode 38."
+        }
+      ],
+      "dragonBallRelevance": "Directe pour l’historique de production et l’attribution des rôles créatifs de l’anime promotionnel Super Dragon Ball Heroes.",
+      "internalReferences": [
+        "Atsuhiro Tomioka",
+        "Tadayoshi Yamamuro",
+        "Super Dragon Ball Heroes Episode 7",
+        "Super Dragon Ball Heroes Music",
+        "Super Dragon Ball Heroes Cast"
+      ],
+      "uncertainties": [
+        "Les libellés de rôle ne sont pas uniformes d’un épisode à l’autre.",
+        "Certaines entrées ne séparent pas clairement animation-clé primaire et secondaire; les tableaux suivent les crédits capturés plutôt que de corriger leur présentation.",
+        "Périmètre limité à l’épisode 38 dans cette révision."
+      ],
+      "status": "production-credit-catalogue-through-episode-38",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Super_Dragon_Ball_Heroes_Staff",
+        "revisedAt": "2021-09-15T12:03:11Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/super-dragon-ball-heroes-staff.json",
+        "pageId": 16672
+      },
+      "pageId": 16672,
+      "publicPreviewListed": true,
+      "forumContent": false
+    },
+    {
+      "id": "season",
+      "title": "Season",
+      "summary": "L’article distingue les saisons de diffusion, les blocs programmés par une chaîne et les « saisons » créées pour commercialiser des coffrets vidéo. Il rappelle qu’au Japon plusieurs séries Dragon Ball ont été diffusées en continu avec des pauses, et que les saisons de DVD anglophones ne correspondent pas nécessairement à une structure de production japonaise. Il décrit les diffusions hawaïenne, américaine syndiquée et Cartoon Network, en expliquant que le doublage FUNimation de Dragon Ball s’est arrêté après treize épisodes en 1995 avant le passage à Dragon Ball Z, tandis que les premières saisons américaines de Z furent éditées en blocs télévisés. Le cas Dragon Ball GT est présenté à part : la diffusion FUNimation de 2003 commença tard dans la série avant de revenir au début, donnant lieu à l’expression « épisodes perdus » pour les épisodes 1–16. La page contient des sections incomplètes et des indications TBD/citation nécessaire. Son passage relatif aux projets alors à venir est daté par sa révision; il ne doit pas être lu comme une annonce actuelle.",
+      "keyInformation": [
+        {
+          "topic": "Sens de « saison »",
+          "detail": "Pour les séries d’animation japonaises, l’œuvre peut être diffusée en continu; les découpages de coffrets vidéo occidentaux sont souvent commerciaux et ne sont pas équivalents aux saisons de diffusion.»"
+        },
+        {
+          "topic": "Diffusion japonaise",
+          "detail": "Dragon Ball suit Dr. Slump dans la grille Fuji TV en 1986; les séries Dragon Ball, Z et GT sont présentées comme une longue séquence de diffusion jusqu’en 1997, puis Dr. Slump revient. Kai et Super illustrent d’autres calendriers et interruptions."
+        },
+        {
+          "topic": "États-Unis — Dragon Ball",
+          "detail": "Diffusion syndiquée FUNimation amorcée en 1995, interrompue après 13 épisodes; Dragon Ball Z prend ensuite le relais, puis la diffusion reprend sur Cartoon Network en 2001."
+        },
+        {
+          "topic": "États-Unis — Z",
+          "detail": "La première diffusion syndiquée de Z (1996–1998) est montée en blocs; les appellations « Ocean/Pioneer/Saban » souvent employées confondent partenaires et détenteurs/production du doublage selon les précisions de l’article."
+        },
+        {
+          "topic": "États-Unis — GT",
+          "detail": "Les VHS FUNimation commencent en avril 2003; Cartoon Network débute en novembre par un épisode tardif puis revient au premier épisode. Les épisodes 1–16 sont alors surnommés « Lost Episodes »."
+        },
+        {
+          "topic": "Lacunes de la source",
+          "detail": "Des rubriques, dont des détails home video, restent TBD/incomplètes; des éléments sont marqués citation nécessaire."
+        }
+      ],
+      "dragonBallRelevance": "Directe pour l’histoire de la diffusion télévisée et vidéo de Dragon Ball, Z, GT, Kai et Super, particulièrement la différence entre diffusion et saisons de coffrets.",
+      "internalReferences": [
+        "Dr. Slump",
+        "Dragon Ball",
+        "Dragon Ball Z",
+        "Dragon Ball GT",
+        "Dragon Ball Kai",
+        "Dragon Ball Super",
+        "Cartoon Network",
+        "FUNimation"
+      ],
+      "uncertainties": [
+        "L’article est explicitement incomplet; les sections home video contiennent TBD et plusieurs affirmations sont signalées comme nécessitant une citation.",
+        "Les calendriers japonais et étrangers décrits sont ceux des sources citées dans la révision; les découpages de saison peuvent varier selon les chaînes et éditions.",
+        "Les annonces formulées au futur dans la révision capturée sont à comprendre selon cette date de rédaction, pas comme l’état présent."
+      ],
+      "status": "incomplete-broadcast-history",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Season",
+        "revisedAt": "2026-07-31T17:25:58Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/season.json",
+        "pageId": 16825
+      },
+      "pageId": 16825,
+      "publicPreviewListed": true,
+      "forumContent": false
+    }
+  ]
+}
