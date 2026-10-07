@@ -1,0 +1,397 @@
+{
+  "decade": "2020s",
+  "records": [
+    {
+      "id": "dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form/",
+      "title": "“Toyotarō Drew It!” Debuts in Figure Form!!",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "15 July 2020",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Illustration",
+        "Manga",
+        "Merchandise"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Official Site – \"Toyotarō Drew It!\" Debuts in Figure Form!!",
+      "sourceDescription": "English translation of the \"Toyotarō Drew It! Debuts in Figure Form!!\" July 2020 column from the Dragon Ball Official Site",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "Dragon Ball Official Site",
+        "“Toyotarō Drew It!” Debuts in Figure Form!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "vj-official-dragon-ball-super-inside-scoop-editor-video",
+      "url": "https://www.kanzenshuu.com/translations/vj-official-dragon-ball-super-inside-scoop-editor-video/",
+      "title": "Dragon Ball Super: The Inside Scoop from the Editor!!",
+      "publication": "Dragon Ball Official Site, V-JumPlay Official News",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "14 October 2020",
+      "participants": [
+        "Victory Uchida"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Manga",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/vj-official-dragon-ball-super-inside-scoop-editor-video.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | VJ Official: Dragon Ball Super: The Inside Scoop from the Editor!! (Video)",
+      "sourceDescription": "English translation of the video interview with Dragon Ball Super manga editor Victory Uchida from October 2020 announcing a new (post-Moro) story arc",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "V-JumPlay Official News (14 October 2020)",
+        "VJ Official: Dragon Ball Super: The Inside Scoop from the Editor!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "vjump-february-2021-we-ask-toyotaro-sensei",
+      "url": "https://www.kanzenshuu.com/translations/vjump-february-2021-we-ask-toyotaro-sensei/",
+      "title": "We ask Toyotarō-sensei!",
+      "publication": "V-Jump, February 2021",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "21 December 2020",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Manga",
+        "Dragon Ball Super",
+        "Manga",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/vjump-february-2021-we-ask-toyotaro-sensei.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | V-Jump (February 2021) – \"We ask Toyotarō-sensei!\"",
+      "sourceDescription": "English translation of the three-question Toyotarō interview column in the February 2021 issue of V-Jump",
+      "questionCount": 3,
+      "sectionHeadings": [
+        "V-Jump , February 2021 (21 December 2020)",
+        "In celebration of the conclusion of the Galactic Patrol Prisoner arc:",
+        "We ask Toyotarō- sensei !"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "v-jump-june-2022-back-up-comic-chapter-35",
+      "url": "https://www.kanzenshuu.com/translations/v-jump-june-2022-back-up-comic-chapter-35/",
+      "title": "Back-Up Comic: Victory Asada’s Road Toward Super Top-Class!!! Chapter 35",
+      "publication": "V-Jump, June 2022",
+      "publicationType": "Magazine",
+      "format": "Interview",
+      "publicationDate": "21 April 2022",
+      "participants": [
+        "Tetsuro Kodama"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Super Hero",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2022-back-up-comic-chapter-35.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | V-Jump (June 2022) – \"Back-Up Comic: Victory Asada's Road Toward Super Top-Class!!!\" Chapter 35",
+      "sourceDescription": "English translation of the bonus comic in the June 2022 issue of V-Jump magazine with Dragon Ball Super: Super Hero director Tetsuro Kodama",
+      "questionCount": 7,
+      "sectionHeadings": [
+        "V-Jump , June 2022 (21 April 2022)",
+        "Back-Up Comic: Victory Asada’s Road Toward Super Top-Class!!! Chapter 35:",
+        "A New Challenge! The Dragon Ball Director!!"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview/",
+      "title": "Chikashi Kubota Interview",
+      "publication": "Dragon Ball Super: Super Hero Theatrical Pamphlet",
+      "publicationType": "Booklet",
+      "format": "Interview",
+      "publicationDate": "11 June 2022",
+      "participants": [
+        "Chikashi Kubota"
+      ],
+      "topics": [
+        "Dragon Ball Super",
+        "Super Hero",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super: Super Hero\" Theatrical Pamphlet - Chikashi Kubota Interview",
+      "sourceDescription": "English translation of the brief interview with Chikashi Kubota (Animation Director) from the Dragon Ball Super: Super Hero theatrical pamphlet in Japan",
+      "questionCount": 4,
+      "sectionHeadings": [
+        "“Dragon Ball Super: Super Hero” Theatrical Pamphlet (11 June 2022)",
+        "Chikashi Kubota Interview"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "sand-land-movie-akira-toriyama-qa",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-movie-akira-toriyama-qa/",
+      "title": "Akira Toriyama Q&A",
+      "publication": "“Sand Land” Movie Official Website & Special Booklet",
+      "publicationType": "Web/Online + Print",
+      "format": "Interview",
+      "publicationDate": "21 March 2023",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Sand Land",
+        "Non-Dragon Ball",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-movie-akira-toriyama-qa.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "\"Sand Land\" Movie Akira Toriyama Q&A - Kanzenshuu",
+      "sourceDescription": "English translation of Akira Toriyama's brief Q&A originally shared on the Sand Land movie official website (and later included with the home video release)",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "“Sand Land” Movie Official Website & Special Booklet",
+        "Akira Toriyama Q&A (21 March 2023) 1"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1",
+      "url": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1/",
+      "title": "Ultimate Interview Vol. 1",
+      "publication": "Dr. Mashirito’s Ultimate Manga Technique",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "21 July 2023",
+      "participants": [
+        "Kazuhiko Torishima",
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dr. Mashirito's Ultimate Manga Technique - Ultimate Interview Vol. 1 - Kanzenshuu",
+      "sourceDescription": "English translation of the Akira Toriyama and Kazuhiko Torishima chat from the 2023 book \"Dr. Mashirito's Ultimate Manga Technique\"",
+      "questionCount": 8,
+      "sectionHeadings": [
+        "Dr. Mashirito’s Ultimate Manga Technique (21 July 2023)",
+        "Ultimate Interview Vol. 1: Akira Toriyama x Kazuhiko Torishima"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "sand-land-production-secrets",
+      "url": "https://www.kanzenshuu.com/translations/sand-land-production-secrets/",
+      "title": "Ask Akira Toriyama: “Sand Land” Production Secrets",
+      "publication": "Sand Land (Kanzenban)",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 August 2023",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Sand Land",
+        "Non-Dragon Ball",
+        "Manga",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-production-secrets.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Sand Land\" Kanzenban - Ask Akira Toriyama: \"Sand Land\" Production Secrets - Kanzenshuu",
+      "sourceDescription": "English translation of the Akira Toriyama interview from the 2023 kanzenban release of the Sand Land manga series",
+      "questionCount": 26,
+      "sectionHeadings": [
+        "“Sand Land” Kanzenban (04 August 2023)",
+        "Ask Akira Toriyama: “Sand Land” Production Secrets"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chunichi-shimbun-article-hisashi-tanaka",
+      "url": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-hisashi-tanaka/",
+      "title": "Hisashi Tanaka Article",
+      "publication": "Chunichi Shimbun",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "09 March 2024",
+      "participants": [
+        "Hisashi Tanaka"
+      ],
+      "topics": [
+        "Production",
+        "Assistants",
+        "Dragon Ball (Manga)"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-hisashi-tanaka.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chunichi Shimbun Article - Hisashi Tanaka - Kanzenshuu",
+      "sourceDescription": "English translation of a March 2024 Chunichi Shimbun article with Hisashi Tanaka, Akira Toriyama's first assistant",
+      "questionCount": 1,
+      "sectionHeadings": [
+        "Chunichi Shimbun (09 March 2024)",
+        "Hisashi Tanaka Article"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "chunichi-shimbun-article-takashi-matsuyama",
+      "url": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-takashi-matsuyama/",
+      "title": "Takashi Matsuyama Article",
+      "publication": "Chunichi Shimbun",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "09 March 2024",
+      "participants": [
+        "Takashi Matsuyama"
+      ],
+      "topics": [
+        "Production",
+        "Assistants",
+        "Dragon Ball (Manga)"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-takashi-matsuyama.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Chunichi Shimbun Article - Takashi Matsuyama - Kanzenshuu",
+      "sourceDescription": "English translation of a March 2024 Chunichi Shimbun article with Takashi Matsuyama, Akira Toriyama's second assistant",
+      "questionCount": 1,
+      "sectionHeadings": [
+        "Chunichi Shimbun (09 March 2024)",
+        "Takashi Matsuyama Article"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-official-site-march-2024-toyotaro-interview",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-march-2024-toyotaro-interview/",
+      "title": "Toyotarō Interview",
+      "publication": "Dragon Ball Official Site",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "21 March 2024",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Manga",
+        "Dragon Ball Super",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-march-2024-toyotaro-interview.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Ball Official Site – March 2024 Toyotarō Interview - Kanzenshuu",
+      "sourceDescription": "English translation of the Toyotarō interview from the Dragon Ball Official Site in conjunction with the end of the Dragon Ball Super manga's Super Hero arc",
+      "questionCount": 6,
+      "sectionHeadings": [
+        "Dragon Ball Official Site",
+        "March 2024 Toyotarō Interview (21 March 2024)"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "mantanweb-daima-akiyo-iyoku-1",
+      "url": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
+      "title": "Dragon Ball Daima (Akio Iyoku Interview #1)",
+      "publication": "MANTANWEB",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": "11 February 2025",
+      "participants": [
+        "Akio Iyoku"
+      ],
+      "topics": [
+        "Dragon Ball Daima",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/mantanweb-daima-akiyo-iyoku-1.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "MANTANWEB: \"Dragon Ball Daima: the first animated series in the franchise in 6 years – why make Goku a child again?\" - Kanzenshuu",
+      "sourceDescription": "English translation of a February 2025 article from MANTANWEB interviewing Dragon Ball franchise producer Akio Iyoku about Dragon Ball Daima",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "MANTANWEB (11 February 2025)",
+        "“Dragon Ball Daima: The first animated series in the franchise in 6 years – why make Goku a child again?”"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-24-toyotaro-afterword",
+      "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
+      "title": "Toyotarō Afterword",
+      "publication": "Dragon Ball Super (Manga) Volume 24",
+      "publicationType": "Manga",
+      "format": "Interview",
+      "publicationDate": "04 April 2025",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Dragon Ball Super"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-24-toyotaro-afterword.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | \"Dragon Ball Super\" Manga Vol. 24: Toyotarō Afterword",
+      "sourceDescription": "English translation of Toyotarō's afterword from the 24th volume of the Dragon Ball Super manga, originally released in April 2025 in Japan",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Dragon Ball Super Volume 24 (04 April 2025)",
+        "Toyotarō Afterword"
+      ],
+      "editorialSummary": null,
+      "reviewStatus": "source-acquired-summary-pending"
+    }
+  ]
+}

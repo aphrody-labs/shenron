@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2014; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "katsura-akira-premium-talk",
+      "title": "Masakazu Katsura & Akira Toriyama — Premium Talk",
+      "summary": "Toriyama et Katsura racontent leur amitié et les collaborations Sachie-chan GOOD!! et JIYA. Toriyama préfère la légèreté et les détails comiques; Katsura défend l'émotion et l'ampleur dramatique. Leurs désaccords nourrissent le travail. Toriyama évoque une idée de Patrouille Galactique reliée à Jaco, sans faire de JIYA un récit Dragon Ball.",
+      "keyInformation": [
+        "Toriyama proposa d'écrire plutôt que dessiner pour leur première collaboration.",
+        "Les auteurs se connaissent depuis les débuts de Katsura; leurs appels duraient parfois des heures.",
+        "Toriyama privilégie les interactions légères; Katsura voulait préserver les passages émotionnels.",
+        "Ils disent que les frictions créatives ont rendu le travail stimulant.",
+        "La Patrouille Galactique est une remarque sur un projet d'auteur, non une déclaration de continuité pour JIYA."
+      ],
+      "source": {
+        "publication": "Katsura Akira (pp. 192-201)",
+        "date": "04 April 2014",
+        "participants": [
+          "Akira Toriyama",
+          "Masakazu Katsura"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/katsura-akira-premium-talk/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview",
+      "title": "Kōzō Shioya & Unshō Ishizuka Interview",
+      "summary": "Kōzō Shioya (Boo) et Unshō Ishizuka (Satan) parlent de leur reprise dans Kai, de l'amitié Boo-Satan et du travail avec une distribution de vétérans. Ishizuka explique avoir cherché son interprétation propre après Daisuke Gōri; tous deux louent Nozawa et le rythme resserré de Kai.",
+      "keyInformation": [
+        "Shioya lit l'arc Boo comme une histoire d'amitié, où Satan et le chien rejoignent Boo.",
+        "Ishizuka a évité d'imiter Gōri et a trouvé son ton au fil des séances.",
+        "Les repas d'équipe aident les nouveaux à s'intégrer.",
+        "Témoignages d'acteurs, pas déclarations d'auteur."
+      ],
+      "source": {
+        "publication": "V-Jump, June 2014 (pp. 364-365)",
+        "date": "21 April 2014",
+        "participants": [
+          "Unshō Ishizuka",
+          "Kōzō Shioya"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 5,
+        "formatNote": "Blocs réponse locaux=5 vs index=6. Comptage Q/R distinct (6/5); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    }
+  ]
+}

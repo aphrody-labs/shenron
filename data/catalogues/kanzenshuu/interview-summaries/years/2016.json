@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2016; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-super-history-book-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview: Dragon Ball and Akira Toriyama",
+      "summary": "Toriyama retrace la création et l'évolution de Dragon Ball, souvent improvisées ou dictées par le dessin hebdomadaire. Goku commence comme singe, grandit pour faciliter les combats, le blond du Super Saiyan économise l'encrage et les transformations se décident pendant la publication. Il décrit ses designs, les sondages lecteurs, l'épuisement avant la fin et les raccords rétrospectifs.",
+      "keyInformation": [
+        "Goku commence comme singe puis devient humain; Torishima suggère la queue. Toriyama le fait grandir car sa taille gêne les combats.",
+        "Le blond épargne l'encrage; le regard de Bruce Lee inspire les yeux du Super Saiyan.",
+        "Les transformations de Freeza et leur nombre n'étaient pas prévus; les raccords se font au fil de la sérialisation.",
+        "Il conçoit souvent personnalité puis visage puis vêtements; silhouettes lisibles et types nouveaux comptent.",
+        "Les sondages et l'éditeur poussent vers les combats; Toriyama dit avoir résisté.",
+        "Il n'avait pas défini la fin au début; épuisé après Boo, il décide de conclure.",
+        "Il choisit souvent des décors ruraux simples pour réduire le travail et aime dessiner machines et dragons.",
+        "Il voit dieux et extraterrestres comme ressorts narratifs flexibles et dit relier des éléments après coup."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 88-93)",
+        "date": "21 January 2016",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-history-book-akira-toriyama-interview/",
+        "questionAnswerCount": 40,
+        "detectedQuestionBlocks": 40,
+        "detectedAnswerBlocks": 40
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-01",
+      "title": "Video Games Selection – Pick Up! 01",
+      "summary": "Tanaka et Suzuki expliquent comment les limites de la Famicom ont conduit au jeu de cartes, au plateau d'aventure et aux combats en vignettes. Tanaka recevait parfois par fax les techniques nommées ou dessinées par Toriyama; le travail conduisit ensuite à l'OVA Plan to Eradicate the Saiyans.",
+      "keyInformation": [
+        "Cartes et plateau réunissent aventure et combat dans les limites mémoire de la console.",
+        "Toriyama transmettait noms et dessins de techniques; Toei utilisait aussi ces informations.",
+        "Suzuki relie le jeu à l'OVA originale."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 182-183)",
+        "date": "21 January 2016",
+        "participants": [
+          "Nobuyuki Tanaka",
+          "Toshihiro Suzuki"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-01/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 4
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-02",
+      "title": "Video Games Selection – Pick Up! 02",
+      "summary": "Suzuki raconte Super Butōden et sa suite, créés dans le sillage des jeux de combat. L'écran partagé représente les distances; l'équipe manque de temps, ajoute des décors et personnages des films, puis simplifie la commande du Kamehameha.",
+      "keyInformation": [
+        "L'écran partagé vient d'une idée de programmeur testée sur prototype.",
+        "La suite sort la même année après un délai court; Toei fournit des visuels et personnages.",
+        "La commande du Kamehameha était difficile, même pour Toriyama, et fut simplifiée."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 184-185)",
+        "date": "21 January 2016",
+        "participants": [
+          "Toshihiro Suzuki"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-02/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-03",
+      "title": "Video Games Selection – Pick Up! 03",
+      "summary": "Uchiyama raconte la relance des jeux Dragon Ball sur PlayStation 2. Les reprises de modèles 3D retardent le lancement, mais les éditions Kanzenban et Dragon Box soutiennent fortuitement le calendrier. Les ventes à l'étranger surprennent l'équipe.",
+      "keyInformation": [
+        "Bandai mise sur Dragon Ball pour la nouvelle console et le marché nostalgique.",
+        "Une refonte des modèles 3D repousse la sortie de 2002 à février 2003.",
+        "Uchiyama rapporte environ trois millions d'exemplaires vendus à l'étranger."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 186-187)",
+        "date": "21 January 2016",
+        "participants": [
+          "Daisuke Uchiyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-03/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 5,
+        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-04",
+      "title": "Video Games Selection – Pick Up! 04",
+      "summary": "Mito présente Sparking! comme passage aux combats 3D et aux poursuites rapides. Le nom vient du refrain de l'anime; les équipes augmentent le roster et imaginent des scénarios alternatifs permettant des rencontres inédites.",
+      "keyInformation": [
+        "Sparking! devait dépasser les combats 2D et exploiter les projections en profondeur.",
+        "NEO et METEOR marquent les suites; les rosters grossissent pour surprendre le public.",
+        "Les scénarios hypothétiques sont des propositions de jeu, non canoniques."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 188-189)",
+        "date": "21 January 2016",
+        "participants": [
+          "Ryō Mito"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-04/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 6,
+        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "super-history-book-video-games-selection-pick-up-05",
+      "title": "Video Games Selection – Pick Up! 05",
+      "summary": "Hirano décrit Xenoverse comme une nouvelle manière d'habiter Dragon Ball par un avatar chargé de réparer l'histoire. Le jeu reprend des éléments de Dragon Ball Online et crée aussi Tokitoki City et Demigra; le design du Kaiōshin du Temps est supervisé par Toriyama.",
+      "keyInformation": [
+        "Le projet dépasse le combat comme Goku et la reconstitution du manga.",
+        "Mira, Towa et le Nid temporel viennent de DB Online; Tokitoki City et Demigra sont propres à Xenoverse.",
+        "Les événements alternatifs relèvent du jeu."
+      ],
+      "source": {
+        "publication": "30th Anniversary: Dragon Ball Chōshishū -Super History Book- (pp. 190-191)",
+        "date": "21 January 2016",
+        "participants": [
+          "Masayuki Hirano"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-history-book-video-games-selection-pick-up-05/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 5,
+        "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version",
+      "title": "Tori-Toyo Free Talk (Book Version)",
+      "summary": "Toriyama et Toyotarō présentent leur méthode d'adaptation manga: Toriyama fournit la trame, Toyotarō la met en cases et ajoute des scènes pour servir les personnages. Ils parlent de l'équilibre entre direction de l'auteur et autonomie du dessinateur.",
+      "keyInformation": [
+        "Toriyama fixe les grandes lignes; Toyotarō réalise storyboard et planches.",
+        "Toyotarō étudie le manga original tout en développant sa narration.",
+        "Les différences avec l'anime restent distinctes."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super (Manga) Volume 1",
+        "date": "04 April 2016",
+        "participants": [
+          "Akira Toriyama",
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version",
+      "title": "Tori-Toyo Free Talk (Web Version)",
+      "summary": "Version web développée du dialogue sur la fabrication du manga Super, ses designs et ses différences avec l'anime. Toyotarō s'appuie sur les volumes originaux tout en assumant son trait; Toriyama lui laisse faire briller les personnages.",
+      "keyInformation": [
+        "Toyotarō étudie les volumes et modèles originaux mais garde une voix propre.",
+        "Toriyama lui accorde de la marge pour développer les personnages.",
+        "Les versions anime et manga suivent des choix distincts."
+      ],
+      "source": {
+        "publication": "Shueisha’s Official V-Jump Website",
+        "date": "04 April 2016",
+        "participants": [
+          "Akira Toriyama",
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version/",
+        "questionAnswerCount": 13,
+        "detectedQuestionBlocks": 13,
+        "detectedAnswerBlocks": 13
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc",
+      "title": "Takeshi Kusao Special Interview",
+      "summary": "Kusao raconte sa surprise devant le retour de Trunks dans Super. Il rapproche son statut de jeune comédien de celui du personnage et distingue le Trunks futur meurtri du Trunks enfant protégé et compétitif.",
+      "keyInformation": [
+        "Le producteur annonce l'arc à Kusao pendant une pause; il ne s'attendait pas à reprendre le rôle.",
+        "Il rapproche son intégration à une distribution expérimentée de l'arrivée de Trunks.",
+        "Il joue le futur Trunks plus éprouvé et l'enfant plus méfiant face à son double."
+      ],
+      "source": {
+        "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+        "date": "10 June 2016",
+        "participants": [
+          "Takeshi Kusao"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 5
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 1)",
+      "summary": "Nozawa et Koyama célèbrent la rencontre de Goku et Aralé, leurs séances anciennes et l'ambiance joyeuse du studio. Koyama dit retrouver les sensations vocales d'Aralé; elles espèrent réunir plusieurs générations.",
+      "keyInformation": [
+        "Koyama admirait le rythme de Nozawa lorsqu'elle débutait.",
+        "L'ambiance amicale du studio nourrit selon elles l'épisode.",
+        "Les personnages restent durablement attachés aux acteurs."
+      ],
+      "source": {
+        "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+        "date": "22 November 2016",
+        "participants": [
+          "Masako Nozawa",
+          "Mami Koyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 4
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2",
+      "title": "Goku vs Arale: Masako Nozawa & Mami Koyama Special Interview (Part 2)",
+      "summary": "Nozawa et Koyama voient le combat de Goku et Aralé comme un jeu, tandis que Vegeta reste prisonnier de son orgueil. Elles évoquent la polyvalence de Nozawa et l'alternance entre épisodes comiques et arcs sérieux.",
+      "keyInformation": [
+        "Goku joue avec Aralé plutôt que de la traiter en ennemie.",
+        "Elles opposent sa spontanéité à l'orgueil de Vegeta.",
+        "Nozawa cite ses rôles multiples, dont Goku Black."
+      ],
+      "source": {
+        "publication": "Toei Animation’s Official “Dragon Ball Super” Website",
+        "date": "22 November 2016",
+        "participants": [
+          "Masako Nozawa",
+          "Mami Koyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2/",
+        "questionAnswerCount": 2,
+        "detectedQuestionBlocks": 2,
+        "detectedAnswerBlocks": 4,
+        "formatNote": "Blocs réponse locaux=4 vs index=2. Comptage Q/R distinct (2/4); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    },
+    {
+      "id": "dragon-ball-super-tori-toyo-free-talk-vol-2",
+      "title": "Tori-Toyo Free Talk Vol. 2",
+      "summary": "Toriyama et Toyotarō analysent l'arc Trunks, Zamasu et Goku Black. Toriyama reconnaît sa difficulté avec la psychologie; Toyotarō détaille ses initiatives manga pour rendre lisible la justice dévoyée de Zamasu, faire briller Vegeta et Trunks et construire la fusion avant l'affrontement final. Toriyama approuve cette marge.",
+      "keyInformation": [
+        "Toriyama voulait changer de ton; il décrit Zamasu comme bon mais trop rigide.",
+        "Toriyama compare Goku Black à un faux héros, un faux Son Goku.",
+        "La fusion n'était pas au scénario initial; Toyotarō l'a rendue nécessaire dans le manga.",
+        "Toriyama loue le travail psychologique de Toyotarō."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super (Manga) Volume 4",
+        "date": "02 December 2016",
+        "participants": [
+          "Akira Toriyama",
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-tori-toyo-free-talk-vol-2/",
+        "questionAnswerCount": 5,
+        "detectedQuestionBlocks": 5,
+        "detectedAnswerBlocks": 6,
+        "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    }
+  ]
+}

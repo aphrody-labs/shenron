@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2019; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview",
+      "title": "Toyotarō Workspace Interview",
+      "summary": "Toyotarō décrit la préparation de l'arc du Prisonnier de la Patrouille Galactique avec Toriyama et la conception de Merus, Moro et des Yardrats. Il détaille les choix visuels, le travail de sculpture des cornes de Moro, l'utilisation conjointe de designs de Yardrats et son processus au bureau. Il crédite les idées de Toriyama pour certains secrets narratifs, sans les dévoiler.",
+      "keyInformation": [
+        "Toyotarō dit que les rencontres avec Toriyama ont permis de lancer l'arc; certains secrets venaient d'idées propres à l'auteur.",
+        "Merus combine allure rétro et beauté juvénile; Moro devait être immédiatement un ennemi impitoyable, inspiré par l'imagerie du bouc et du faucheur.",
+        "Les cornes complexes de Moro étaient difficiles à dessiner; Toyotarō a sculpté une référence 3D.",
+        "Il inclut deux conceptions de Yardrats pour préserver variété et légèreté, plutôt que transformer tout le monde en guerrier.",
+        "Il garde les volumes du manga à portée de main, collectionne des figurines et rédige l'histoire avant le storyboard.",
+        "Ses propos portent sur la production du manga et le volume 11."
+      ],
+      "source": {
+        "publication": "Dragon Ball Official Site",
+        "date": "03 December 2019",
+        "participants": [
+          "Toyotarō"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 8,
+        "formatNote": "Blocs réponse locaux=8 vs index=4. Comptage Q/R distinct (4/8); vérifier structure imbriquée ou question omise."
+      },
+      "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
+      "status": "summary-written-source-not-print-collated"
+    }
+  ]
+}

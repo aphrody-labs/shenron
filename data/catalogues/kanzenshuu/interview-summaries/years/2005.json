@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2005; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview",
+      "title": "GT Back Then — entretien avec Kōzō Morishita",
+      "summary": "Le producteur et réalisateur Kōzō Morishita raconte la conception de Dragon Ball GT, en parlant au nom de l'équipe de Toei et non de Toriyama. Après la fin du manga, les producteurs voulaient garder la série dans sa case télévisée; une première piste consistait à raconter les dix années de l'ellipse avec Pan et Trunks, mais l'équipe a finalement choisi une histoire animée originale qui se déroule après la fin du manga. Morishita explique que Goku a été rajeuni pour le faire interagir avec la génération suivante et ramener une dynamique d'aventure. Les premiers épisodes de voyage spatial ont vite paru répétitifs aux scénaristes; ils ont recentré la série sur la Terre menacée et des antagonistes plus marquants. Morishita relie aussi la forme Super Saiyan 4 au milieu du développement. Il précise que la fin de GT, où Goku part avec Shenron et dont le statut vivant ou mort est laissé indéterminé, avait été décidée dès le lancement. Il évoque enfin une réception divisée : certains anciens fans ont rejeté la série, tandis qu'elle a aussi attiré de nouveaux spectateurs.",
+      "keyInformation": [
+        "Selon Morishita, après la fin du manga l'équipe a d'abord envisagé des histoires situées dans l'ellipse de dix ans, centrées sur Pan et Trunks; la décision finale a été de produire une histoire d'anime originale située après la fin du manga.",
+        "Il dit que Toriyama et l'équipe éditoriale de Weekly Shonen Jump ont été consultés, puis que Toriyama a fourni des esquisses et illustrations pour le jeune Goku, Pan, Trunks, le vaisseau et d'autres éléments majeurs.",
+        "Le retour de Goku à l'enfance devait l'associer à la génération suivante tout en réintroduisant l'esprit d'aventure du premier anime Dragon Ball.",
+        "Le staff avait préparé environ 26 épisodes de voyage spatial, mais a jugé les épisodes de voyage répétitifs dès la préparation du troisième épisode; ils ont donc réduit ce fil et recentré l'histoire sur la Terre et les combats.",
+        "Morishita explique que Pan était écrite pour déclencher les problèmes tandis que Goku les résolvait; la transformer en Super Saiyan aurait contredit cette fonction dramatique à ce stade de la série.",
+        "Il dit que Super Saiyan 4 a été créé en affinant le milieu de la série, et non comme une idée fixée dès le lancement.",
+        "Morishita présente Goku comme essentiel pour maintenir l'attention du jeune public et pour stabiliser une histoire Dragon Ball; il compare ce constat à l'accueil d'épisodes de DBZ où Goku était absent.",
+        "Il décrit la décision de ne pas refaire les mêmes intrigues comme un principe de GT : malgré le retour de Goku enfant, l'histoire devait avancer et éviter de répéter les arcs passés.",
+        "Il rapporte que la première diffusion américaine a d'abord coupé une partie des épisodes de voyage spatial pour entrer plus vite dans les combats et Super Saiyan 4, avant que ces épisodes soient réinsérés dans des diffusions ultérieures.",
+        "La scène finale de Goku quittant le monde avec Shenron avait été prévue dès le début; Morishita dit que l'équipe voulait laisser son état vivant ou mort indéterminé. C'est le témoignage du producteur sur l'intention de la production de GT.",
+        "Morishita décrit une réception contrastée : une partie des premiers fans a rejeté les écarts à l'œuvre de Toriyama, tandis que GT a constitué un point d'entrée pour de nouveaux fans."
+      ],
+      "source": {
+        "publication": "Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book",
+        "pages": "44–49",
+        "date": "2005-06-15",
+        "participants": [
+          "Kōzō Morishita"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview/",
+        "questionAnswerCount": 22,
+        "formatNote": "Le HTML contient 23 blocs question et 22 blocs réponse; le compte de la synthèse correspond aux paires complètes."
+      },
+      "dragonBallRelevance": "Production de Dragon Ball GT; témoignage du producteur à distinguer des déclarations de Toriyama et d'une définition générale de la continuité.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2004; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "dragon-ball-forever-dragon-ball-toriyama",
+      "title": "Akira Toriyama with Dragon Ball",
+      "summary": "Ce long entretien rétrospectif réunit des réponses de Toriyama sur la création et la sérialisation de Dragon Ball. Il explique que la contrainte de devoir dessiner des villes puis les détruire lui a fait déplacer les combats vers des zones désertes; il avait notamment prévu de faire disparaître rapidement les décors urbains difficiles à dessiner. Il décrit plusieurs idées comme improvisées ou laissées volontairement ouvertes, notamment les références d'une armée à une autre et certains arrière-plans des Saiyans; il ne faut donc pas transformer toutes ces correspondances en intrigues planifiées. Il rappelle que la transformation Super Saiyan l'aidait aussi à alléger le travail d'encrage des cheveux de Goku. Il parle également de sa difficulté avec les échéances périodiques, de son goût pour les gags et les inventions mécaniques, ainsi que de sa faible volonté de reprendre une longue série hebdomadaire.",
+      "keyInformation": [
+        "Toriyama dit qu'il n'aimait pas les échéances régulières, hebdomadaires ou mensuelles; l'emploi de l'ordinateur lui a redonné du plaisir à dessiner des illustrations, sans le faire renoncer au papier pour le manga.",
+        "Il explique qu'il retardait parfois l'arrivée de Goku afin de laisser l'antagoniste faire davantage de mal et de mettre ses alliés en difficulté; il aimait la destruction du centre-ville lors de l'arc du Roi démon Piccolo.",
+        "La préférence pour les zones de combat désertes tenait aussi à la charge de dessin : les batailles en ville imposaient de représenter les habitants et les bâtiments détruits. Il indique avoir parfois détruit rapidement un décor urbain qu'il avait dû dessiner avec soin.",
+        "Il relie la forme Super Saiyan au gain de temps qu'apportait le fait de ne plus encrer les cheveux noirs de Goku; il ajoute que la transformation avait aussi une forte lisibilité visuelle.",
+        "Il dit avoir laissé des cadres et éléments d'univers volontairement souples, et donne les liens entre l'Armée du Red Ribbon et les cyborgs ou les armures saiyennes comme exemples d'idées parfois improvisées ou conçues seulement pour son propre arrière-plan, sans plan narratif secret déjà fixé.",
+        "Il dit n'avoir pas consciemment pris des proches comme modèles des personnages; il mentionne plutôt Bruce Lee comme image de référence pour l'expression de combat de Goku, tout en indiquant que les ressemblances à ses anciens éditeurs ont pu se glisser inconsciemment.",
+        "Il raconte qu'il n'aimait pas particulièrement Chi-Chi et qu'il a décidé de la marier à Goku en partie parce qu'il savait que cela l'obligerait à continuer de la dessiner; il précise qu'elle n'est pas inspirée de son épouse.",
+        "Il dit apprécier davantage les ennemis foncièrement mauvais comme Piccolo Daimao et les moments où ils rendent l'arrivée de Goku plus attendue; cette structure était plus importante pour lui que le combat seul.",
+        "Il présente la création de Ginyu Force à partir d'un motif de produits laitiers comme un exemple de conception ludique faite à partir d'une idée de groupe, et non d'un plan de saga élaboré.",
+        "Il dit préférer concevoir des mécaniques originales, dont il peut imaginer librement le fonctionnement, plutôt que dessiner à répétition des véhicules réels avec références exactes.",
+        "Il affirme ne pas prévoir de reprendre une longue sérialisation hebdomadaire, faute d'énergie pour un rythme au long cours."
+      ],
+      "source": {
+        "publication": "Kanzenban Official Guide: Dragon Ball Forever",
+        "pages": "146–155",
+        "date": "2004-04-30",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
+        "questionAnswerCount": null,
+        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans blocs Q/R standard."
+      },
+      "dragonBallRelevance": "Directe : méthode de narration, transformations, arcs et personnages, charge de dessin et intentions de publication.",
+      "status": "summary-written-print-source-not-collated"
+    },
+    {
+      "id": "tenkaichi-densetsu-toriyama-koyama-nozawa",
+      "title": "The World’s Best Round-Table Discussion",
+      "summary": "Cette table ronde croise les souvenirs de Toriyama, du scénariste Takao Koyama et de la comédienne Masako Nozawa. Toriyama confirme qu'au départ il avait peu défini l'origine de Goku : il le pensait humain, voyait le grand singe comme une transformation de type loup-garou et n'a conçu son identité saiyanne qu'avec l'arrivée de Vegeta. Les Dragon Ball et leur vœu répondaient au besoin d'une quête simple à suivre; le nombre de sept et la boule à quatre étoiles n'avaient pas de signification cachée particulière. Il dit aussi que la présence de femmes saiyannes lui paraît nécessaire, même s'il n'en avait jamais dessiné. Koyama décrit comment le scénario d'anime devait étirer des chapitres d'action parfois réduits à une seule case et insérer des histoires annexes pour éviter de rattraper le manga. Nozawa raconte son audition et le choix de Toriyama; celui-ci reconnaît que la voix de Nozawa a ensuite nourri sa représentation de la façon de parler de Goku. Les trois intervenants parlent ainsi des souvenirs de production et des choix d'auteur, qui restent clairement attribués à leur locuteur.",
+      "keyInformation": [
+        "Toriyama dit qu'il n'avait pas conçu Goku comme extraterrestre au lancement du manga et qu'il envisageait d'abord le grand singe comme une transformation de type loup-garou; l'idée saiyanne lui est venue avec l'arrivée de Vegeta.",
+        "Il explique que les sept Dragon Ball apportaient une quête ludique et facile à comprendre; le nombre sept et le choix de la boule à quatre étoiles étaient des décisions arbitraires, sans sens caché particulier.",
+        "Il dit que Goku devait être gentil et simple à lire, rappelle les consignes de Torishima pour que le manga soit immédiatement compréhensible, et décrit plusieurs éléments de cohérence comme raccordés après coup pendant la sérialisation.",
+        "Sur la population saiyanne, Toriyama répond qu'il suppose qu'il existe des femmes, mais qu'il n'en avait pas dessinées; il relie ce choix au fait qu'il imaginait les Saiyans comme un peuple guerrier et à la rareté, à l'époque, de femmes combattantes dans les anime.",
+        "Dans l'échange, Koyama présente Krilin comme le Terrien masculin le plus fort et Toriyama confirme cette formulation.",
+        "Toriyama confirme les jeux de noms thématiques tels que Saiya à partir de yasai (légume), Kakarot/carotte et les noms de produits laitiers du commando Ginyu; ces systèmes n'impliquent pas tous une intrigue prévue à l'avance.",
+        "Nozawa raconte que Toriyama a participé à son audition et l'a retenue parce que sa voix correspondait à l'image qu'il avait de Goku; Toriyama explique ensuite avoir entendu la voix de Nozawa en écrivant le personnage et avoir repris davantage sa manière de parler dans le manga.",
+        "Toriyama dit qu'en écrivant Gohan il pensait que celui-ci détestait réellement se battre et souhaitait devenir savant, contrairement à son père; il décrit Goku comme peu intéressé par l'éducation des enfants et principalement mû par le désir de devenir plus fort.",
+        "Koyama témoigne des contraintes d'adaptation : certains épisodes étaient développés à partir d'une seule case, et les récits annexes servaient à empêcher l'anime de rattraper le manga.",
+        "Nozawa, Koyama et Toriyama distinguent le manga et l'anime comme des médias ayant leurs méthodes propres, tout en souhaitant qu'ils donnent l'impression d'être reliés."
+      ],
+      "source": {
+        "publication": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+        "pages": "80–91",
+        "date": "2004-07-02",
+        "participants": [
+          "Akira Toriyama",
+          "Takao Koyama",
+          "Masako Nozawa"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
+        "questionAnswerCount": 28,
+        "formatNote": "Le HTML contient 29 blocs question et 28 blocs réponse; la synthèse dénombre les paires complètes et conserve à part la question balisée sans bloc de réponse associé."
+      },
+      "dragonBallRelevance": "Directe : conception d'origine, Saiyans, Dragon Ball, Goku, Gohan, force de Krilin, casting vocal et contraintes d'adaptation.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

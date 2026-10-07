@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2008; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "jump-sq-may-2008-akira-toriyama-masakazu-katsura",
+      "title": "Sachie-chan GOOD!! — entretien Toriyama × Katsura",
+      "summary": "Cet entretien porte principalement sur Sachie-chan GOOD!!, le manga court réalisé à quatre mains par Akira Toriyama et Masakazu Katsura. Toriyama décrit son goût pour les histoires légères, le découpage en storyboard et les personnages qui provoquent des situations comiques; Katsura explique comment il a poussé son partenaire à donner plus de poids aux réactions émotionnelles. Toriyama dit préférer le dessin préparatoire à l'encrage et évoque la difficulté de tenir un rythme de publication. La discussion touche brièvement à la Patrouille Galactique : interrogé par Katsura sur une possible histoire liée à cet univers, Toriyama répond qu'il pourrait s'y prêter s'il n'avait qu'à fournir les storyboards. Cette remarque est une possibilité évoquée en plaisantant, pas l'annonce d'un projet Dragon Ball.",
+      "keyInformation": [
+        "Les deux auteurs parlent de la conception et de la collaboration autour de Sachie-chan GOOD!!, récit sans lien narratif avec Dragon Ball.",
+        "Toriyama explique qu'il aime particulièrement les storyboards, le rythme visuel et les idées comiques, tandis que l'encrage et les échéances répétées lui pèsent.",
+        "Katsura raconte avoir encouragé Toriyama à renforcer les réactions émotionnelles et la logique des personnages dans le récit collaboratif.",
+        "À une question de Katsura sur une histoire de la Patrouille Galactique, Toriyama répond qu'il pourrait la faire s'il se limitait aux storyboards; la formulation reste hypothétique et ne documente pas un projet engagé.",
+        "La Patrouille Galactique est ici une mention incidente; l'entretien ne constitue pas une source sur l'intrigue ou le canon de Dragon Ball."
+      ],
+      "source": {
+        "publication": "Jump SQ, May 2008",
+        "pages": "8–10, 267–269",
+        "date": "2008-04-02",
+        "participants": [
+          "Akira Toriyama",
+          "Masakazu Katsura"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/jump-sq-may-2008-akira-toriyama-masakazu-katsura/",
+        "questionAnswerCount": 27
+      },
+      "dragonBallRelevance": "Indirecte : entretien de création non-Dragon Ball avec une brève mention hypothétique de la Patrouille Galactique.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}

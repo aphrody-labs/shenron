@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2009; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "kai_book-masako_nozawa",
+      "title": "Cast Interview #1: Masako Nozawa (Son Goku, et al.)",
+      "summary": "La comédienne Masako Nozawa revient sur son travail vocal pour Dragon Ball Kai. Elle apprécie le rythme resserré de cette version et explique que l'enregistrement après la réalisation des images lui permet de mieux caler le jeu sur les mouvements et les émotions visibles. Elle parle de son interprétation de Goku, Gohan et Bardock, ainsi que de son attachement à plusieurs personnages. Ses propos décrivent l'expérience d'une interprète et sa lecture des rôles; ils ne doivent pas être attribués à Toriyama ni présentés comme des déclarations d'intention de l'auteur.",
+      "keyInformation": [
+        "Nozawa apprécie le rythme de Kai et le montage resserré de l'histoire.",
+        "Elle décrit l'enregistrement après la réalisation des images comme une aide pour synchroniser la voix et le jeu avec les expressions et les mouvements visibles.",
+        "Elle interprète Goku, Gohan et Bardock et décrit le plaisir de passer d'un personnage à l'autre.",
+        "Ses commentaires sur les motivations et les liens des personnages sont son interprétation de comédienne, pas une déclaration de Toriyama."
+      ],
+      "source": {
+        "publication": "Dragon Ball Kai Blu-ray Box #1 — Dragon Book",
+        "pages": "7–8",
+        "date": "2009-10-23",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/kai_book-masako_nozawa/",
+        "questionAnswerCount": 5
+      },
+      "dragonBallRelevance": "Directe pour la production et l'interprétation vocale de l'anime; perspective d'une comédienne, distincte du témoignage d'auteur.",
+      "status": "summary-written-print-source-not-collated"
+    }
+  ]
+}
