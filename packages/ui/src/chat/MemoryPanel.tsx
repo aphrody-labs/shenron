@@ -72,8 +72,9 @@ export function MemoryPanel({
   const on = memory?.available === true;
 
   const load = useCallback(
-    async (q: string) => {
+    async (q: string, isCurrent: () => boolean) => {
       const result = await transport.list(q ? { q } : {});
+      if (!isCurrent()) return;
       if (!result) {
         setFailed(true);
         return;
@@ -87,8 +88,12 @@ export function MemoryPanel({
 
   useEffect(() => {
     if (!on) return;
-    const timer = setTimeout(() => void load(query.trim()), query ? 250 : 0);
-    return () => clearTimeout(timer);
+    let current = true;
+    const timer = setTimeout(() => void load(query.trim(), () => current), query ? 250 : 0);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
   }, [on, load, query, refreshKey]);
 
   async function remove(id: string) {

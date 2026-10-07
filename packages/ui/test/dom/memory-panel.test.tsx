@@ -94,4 +94,32 @@ describe("MemoryPanel", () => {
     expect(screen.getByText("mémoire absente")).toBeTruthy();
     expect(t.list).not.toHaveBeenCalled();
   });
+
+  test("an older search cannot replace the latest results", async () => {
+    const older = Promise.withResolvers<{ memories: typeof facts; total: number } | null>();
+    const newer = Promise.withResolvers<{ memories: typeof facts; total: number } | null>();
+    const t = transport();
+    t.list = mock(async ({ q }) => {
+      if (q === "Vegeta") return older.promise;
+      if (q === "Lyon") return newer.promise;
+      return { memories: facts, total: facts.length };
+    });
+    render(<MemoryPanel transport={t} labels={labels} memory={{ available: true }} />);
+    await screen.findByText("Prefers Vegeta");
+    fireEvent.change(screen.getByLabelText("Search the memory"), { target: { value: "Vegeta" } });
+    await act(async () => {
+      await Bun.sleep(300);
+    });
+    expect(t.list).toHaveBeenLastCalledWith({ q: "Vegeta" });
+    fireEvent.change(screen.getByLabelText("Search the memory"), { target: { value: "Lyon" } });
+    await act(async () => {
+      await Bun.sleep(300);
+    });
+    expect(t.list).toHaveBeenLastCalledWith({ q: "Lyon" });
+    await act(async () => newer.resolve({ memories: [facts[1]!], total: 1 }));
+    expect(screen.getByText("Lives in Lyon")).toBeTruthy();
+    await act(async () => older.resolve({ memories: [facts[0]!], total: 1 }));
+    expect(screen.getByText("Lives in Lyon")).toBeTruthy();
+    expect(screen.queryByText("Prefers Vegeta")).toBeNull();
+  });
 });
