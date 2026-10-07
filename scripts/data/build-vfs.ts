@@ -5,7 +5,7 @@
  * generated entry module.
  *
  *   bun --env-file=$HOME/.aphrody/private/shenron/ai-http.env scripts/data/build-vfs.ts \
- *     --profile public|complet [--out DIR] [--rag-limit N] [--vectors f32|i8|none]
+ *     --profile public|complet [--out DIR] [--rag-limit N] [--rag-source postgres|wiki] [--vectors f32|i8|none]
  *     [--skip rag,wiki,home,data,assets,cdn,conversations] [--embed-assets] [--assets-dir DIR]...
  *     [--probe-cdn N]
  *
@@ -45,6 +45,7 @@ import {
   sha256Hex,
   ShenronVfs,
 } from "../../packages/db/src/vfs/index";
+import { exportPublicWikiRag } from "../../packages/db/src/vfs/public-wiki-rag";
 import { shenronRagChunk } from "../../packages/native/src/engine";
 
 const ROOT = resolve(import.meta.dir, "../..");
@@ -53,6 +54,7 @@ const { values } = parseArgs({
     profile: { type: "string", default: "public" },
     out: { type: "string" },
     "rag-limit": { type: "string" },
+    "rag-source": { type: "string", default: "postgres" },
     vectors: { type: "string" },
     skip: { type: "string", default: "" },
     "embed-assets": { type: "boolean", default: false },
@@ -64,6 +66,16 @@ const { values } = parseArgs({
 const profile = values.profile === "complet" ? "complet" : "public";
 if (values.profile !== profile)
   throw new Error(`--profile must be public or complet, got ${values.profile}`);
+if (!["postgres", "wiki"].includes(values["rag-source"]))
+  throw new Error("--rag-source must be postgres or wiki");
+if (values["rag-source"] === "wiki" && (profile !== "public" || skipWikiRequested()))
+  throw new Error("--rag-source wiki requires --profile public and wiki export");
+function skipWikiRequested(): boolean {
+  return values.skip
+    .split(",")
+    .map((s) => s.trim())
+    .includes("wiki");
+}
 const vectors = (values.vectors ?? (profile === "complet" ? "f32" : "i8")) as VectorMode;
 const skip = new Set(
   values.skip
@@ -96,7 +108,7 @@ for (const dir of ["/home", "/data", "/assets", "/public", "/db"]) vfs.mkdirAll(
 
 // ── RAG corpus ──────────────────────────────────────────────────────────────
 const ragUrl = process.env.SHENRON_RAG_PG_URL ?? process.env.APHRODY_MCP_DATABASE_URL;
-if (!skip.has("rag")) {
+if (!skip.has("rag") && values["rag-source"] === "postgres") {
   if (!ragUrl)
     throw new Error("SHENRON_RAG_PG_URL or APHRODY_MCP_DATABASE_URL is required (or --skip rag)");
   const sql = readOnlySql(ragUrl);
@@ -119,6 +131,11 @@ if (!skip.has("wiki")) {
   log("wiki.done", {
     rows: Object.values(report.wiki as Record<string, number>).reduce((a, b) => a + b, 0),
   });
+}
+
+if (!skip.has("rag") && values["rag-source"] === "wiki") {
+  report.rag = exportPublicWikiRag(db);
+  log("rag.wiki.done", report.rag as Record<string, number>);
 }
 
 // ── Agent home ──────────────────────────────────────────────────────────────
