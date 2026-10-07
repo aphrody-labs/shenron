@@ -30,6 +30,7 @@ import {
 import { createResilientRedis } from "@shenron/db/redis";
 import { RedisClient } from "bun";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
+import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { bearer } from "better-auth/plugins";
 import type { BetterAuthPort, HostSession } from "../server";
@@ -93,6 +94,41 @@ export function buildHostAuthOptions(
     plugins: [bearer()],
     ...loggingOptions(production ? "production" : "development"),
     database,
+    databaseHooks: {
+      user: {
+        update: {
+          before: async (user) => {
+            const data = { ...user };
+            if (data.name !== undefined) {
+              if (typeof data.name !== "string") {
+                throw new APIError("BAD_REQUEST", { message: "Le pseudo doit être une chaîne." });
+              }
+              data.name = data.name.trim();
+              if (data.name.length < 2 || data.name.length > 48) {
+                throw new APIError("BAD_REQUEST", {
+                  message: "Le pseudo doit contenir entre 2 et 48 caractères.",
+                });
+              }
+            }
+            if (data.image !== undefined && data.image !== null && data.image !== "") {
+              let avatar: URL;
+              try {
+                if (typeof data.image !== "string") throw new TypeError("Invalid avatar type");
+                avatar = new URL(data.image);
+              } catch {
+                throw new APIError("BAD_REQUEST", { message: "L’URL de l’avatar est invalide." });
+              }
+              if (avatar.protocol !== "https:") {
+                throw new APIError("BAD_REQUEST", {
+                  message: "L’avatar doit utiliser une URL HTTPS.",
+                });
+              }
+            }
+            return { data };
+          },
+        },
+      },
+    },
     socialProviders: {
       discord: discordProvider({
         clientId,

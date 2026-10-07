@@ -1,11 +1,96 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Better Auth on the Bun host: options from the shared bricks, group availability reasons. */
 import { expect, test } from "bun:test";
+import { betterAuth } from "better-auth";
+import { memoryAdapter } from "better-auth/adapters/memory";
 import { buildHostAuthOptions, createHostAuth } from "../src/host/auth";
 import { BETTER_AUTH_PATH, type BetterAuthPort, createShenronApi } from "../src/server";
 
 const discord = { DISCORD_CLIENT_ID: "id", DISCORD_CLIENT_SECRET: "secret" };
 const longSecret = "s".repeat(40);
+
+test("Bun profile updates reject invalid input before writing and preserve partial updates", async () => {
+  const options = buildHostAuthOptions({ BETTER_AUTH_SECRET: longSecret, ...discord }, undefined);
+  if ("reason" in options) throw new Error(options.reason);
+  const auth = betterAuth({
+    ...options,
+    baseURL: "http://localhost:3000",
+    database: memoryAdapter({ user: [], session: [], account: [], verification: [] }),
+    emailAndPassword: { enabled: true },
+    logger: { disabled: true },
+  });
+  const request = (path: string, body: unknown, cookie = "") =>
+    new Request(`http://localhost:3000/api/auth/${path}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", origin: "http://localhost:3000", cookie },
+      body: JSON.stringify(body),
+    });
+  const cookies = (response: Response) =>
+    response.headers
+      .getSetCookie()
+      .map((value) => value.split(";")[0])
+      .join("; ");
+  const signed = await auth.handler(
+    request("sign-up/email", {
+      name: "Goku",
+      email: "profile@example.test",
+      password: "test-password-123456",
+      image: "https://example.test/goku.png",
+    }),
+  );
+  expect(signed.status).toBe(200);
+  let cookie = cookies(signed);
+  const readUser = async () => {
+    const session = await auth.api.getSession({
+      headers: new Headers({ cookie }),
+      query: { disableCookieCache: true },
+    });
+    if (!session) throw new Error("Missing test session");
+    return session.user;
+  };
+  for (const body of [
+    { name: " " },
+    { name: " G " },
+    { name: "a".repeat(49) },
+    { name: null },
+    { name: 123 },
+    { name: [] },
+    { image: "http://example.test/goku.png" },
+    { image: "javascript:alert(1)" },
+    { image: "not a url" },
+    { image: 123 },
+    { name: "Vegeta", image: false },
+  ]) {
+    const rejected = await auth.handler(request("update-user", body, cookie));
+    expect(rejected.status).toBe(400);
+    const user = await readUser();
+    expect(user.name).toBe("Goku");
+    expect(user.image).toBe("https://example.test/goku.png");
+  }
+  for (const [body, expected] of [
+    [{ name: "  悟空  " }, { name: "悟空", image: "https://example.test/goku.png" }],
+    [{ name: "a".repeat(48) }, { name: "a".repeat(48), image: "https://example.test/goku.png" }],
+    [
+      { image: "https://example.test/vegeta.png" },
+      { name: "a".repeat(48), image: "https://example.test/vegeta.png" },
+    ],
+    [{ image: null }, { name: "a".repeat(48), image: null }],
+    [{ image: "" }, { name: "a".repeat(48), image: "" }],
+  ] as const) {
+    const updated = await auth.handler(request("update-user", body, cookie));
+    expect(updated.status).toBe(200);
+    cookie = cookies(updated) || cookie;
+    const user = await readUser();
+    expect(user.name).toBe(expected.name);
+    expect(user.image).toBe(expected.image);
+    // Better Auth must refresh the signed cookie as well as the stored profile.
+    const cached = await auth.api.getSession({ headers: new Headers({ cookie }) });
+    expect(cached?.user.name).toBe(expected.name);
+    expect(cached?.user.image).toBe(expected.image);
+  }
+  const unsigned = await auth.handler(request("update-user", { name: "Vegeta" }));
+  expect(unsigned.status).toBe(401);
+});
 
 test("production options use the shared policy: secure cookies, consent, no localhost", () => {
   const options = buildHostAuthOptions(
