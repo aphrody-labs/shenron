@@ -161,3 +161,38 @@ a réussi en 11,79 s depuis Windows. Exception limitée à cette cible : sccache
 wrapper est désactivé uniquement pour la porte WASM, sans effacer de cache.
 Le contrôle MSVC garde sccache, sur le port Windows 4227 forcé par la
 configuration Cargo du processus pour éviter le relais Linux 4226 de WSL.
+
+Le contrôle MSVC natif de la FFI et de Studio a réussi en 2 min 27 s ;
+Clippy strict, toutes cibles, a réussi sur les huit crates du lot en 1 min 17 s.
+LLVM 23.1.3 fournit désormais libclang sur Windows pour les bindings natifs.
+Les suites Windows du bot (484 succès, neuf skips) et du site (1 551 succès,
+39 skips) ont également réussi avant la mise à jour npm ci-dessous.
+
+La publication Aphrody `4e6f0542a` permet de mettre à jour 14 dépendances
+consommées : api, bun-test-dom, discord-kit, http, inference, m3-ai,
+m3-primitives, m3-reader, m3-tokens, messaging, paths, plugin-opener,
+runtime-sdk et sql. Leurs versions et intégrités ont été vérifiées dans le
+registre npm ; `bun install --frozen-lockfile` réussit sur Windows.
+`m3-theme@3.3.7` reste absent du registre et non qualifié : Shenron conserve
+`3.3.6`. Le pin Rust qualifié reste `fdd0a036b` ; les sources Rust des domaines
+ML, IA, Tauri et Infra et leurs manifests n'ont pas changé entre ce pin et
+`4e6f0542a`.
+
+La nouvelle crate `shenron-gpu` passe Clippy strict sur Windows, mais sa suite
+native garde quatre échecs pour 28 succès : deux attentes sur le rapport de
+l'adaptateur NOOP et deux lectures de pixels sur l'adaptateur logiciel.
+Ces échecs restent ouverts ; aucune qualification GPU complète ni exécution
+de l'installeur Studio n'est déclarée.
+
+Après les 14 mises à jour npm, TypeScript de tous les paquets et des scripts
+réussit sur Windows. Le lint global rend zéro erreur (569 avertissements).
+Les suites des paquets hors éditeur réussissent ; les chemins URL du lanceur
+et de deux suites de l'éditeur sont convertis avec `fileURLToPath`, et les
+séparateurs des chemins de locales sont normalisés pour Windows.
+La suite UI complète réussit après ces corrections, dont les 13 fichiers
+isolés de l'éditeur et les 95 tests DOM.
+Les trois contrats d'intégration HTTP passent sans navigateur.
+La suite globale des scripts reste à 61 succès et sept échecs dans ce snapshot :
+chemins de fichiers privés, fixture SSH de transfert OCR et cinq contrôles
+des références ou du packaging du plugin. Ces portes ne sont pas déclarées
+vertes ; les essais utilisent des fixtures synthétiques, sans transfert VPS.
