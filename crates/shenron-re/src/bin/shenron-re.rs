@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 use std::{env, fs, path::PathBuf, process::ExitCode};
 
-use shenron_re::world::xenoverse3::xenoverse3_prototype_map;
+use shenron_re::{inventory::inventory_install, world::xenoverse3::xenoverse3_prototype_map};
 
 fn main() -> ExitCode {
     let mut args = env::args_os().skip(1);
@@ -23,6 +23,28 @@ fn main() -> ExitCode {
             }
             let catalog = shenron_re::get_dragon_ball_catalog();
             print_json(&catalog)
+        },
+        Some(arg) if arg == "inventory" => {
+            let Some(root) = args.next() else {
+                return usage();
+            };
+            let inventory = match inventory_install(&PathBuf::from(root)) {
+                Ok(inventory) => inventory,
+                Err(error) => {
+                    eprintln!("shenron-re: inventory failed: {error}");
+                    return ExitCode::FAILURE;
+                },
+            };
+            match args.next() {
+                Some(option) if option == "--output" => match args.next() {
+                    Some(path) if args.next().is_none() => {
+                        write_json(PathBuf::from(path), &inventory)
+                    },
+                    _ => usage(),
+                },
+                None => print_json(&inventory),
+                _ => usage(),
+            }
         },
         _ => usage(),
     }
@@ -59,6 +81,8 @@ fn write_json(path: PathBuf, value: &impl serde::Serialize) -> ExitCode {
 }
 
 fn usage() -> ExitCode {
-    eprintln!("Usage: shenron-re map [--output <file>] | catalog");
+    eprintln!(
+        "Usage: shenron-re map [--output <file>] | catalog | inventory <game-root> [--output <file>]"
+    );
     ExitCode::from(2)
 }

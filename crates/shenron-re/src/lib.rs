@@ -8,6 +8,7 @@ pub mod catalog;
 pub mod error;
 pub mod formats;
 pub mod fs;
+pub mod inventory;
 pub mod live;
 pub mod steam;
 pub mod world;
