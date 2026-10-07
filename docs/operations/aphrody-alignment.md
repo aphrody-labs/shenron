@@ -234,3 +234,12 @@ le snapshot immuable Aphrody `6135cc4ffa25c971aba29929107a02b19dc85b0f` :
 `aphrody-ffi`, profil `runtime`, cible MSVC. Cette DLL canonique exporte l'ABI
 Yolo ; ni activation ni qualification navigateur complète ne sont encore
 déclarées. Aucun moteur n'est copié dans Shenron.
+
+Les artefacts release Windows `koharu-sdk.exe` et `shenron-mcp.exe` ont aussi
+été exercés directement, depuis le dossier de build MSVC, sans installation.
+Le SDK répond à `project.list` par une liste vide dans un dossier temporaire ;
+le processus termine avec le code zéro. Le MCP démarre sur loopback en mode
+public : `/health`, `initialize` (protocole 2025-06-18) et `tools/list` répondent
+en HTTP 200, avec un catalogue public non vide. Aucun outil métier ni service
+de production n'est appelé. Ce contrôle ne qualifie pas le lancement graphique
+de Studio ni son installeur. Les rapports restent hors Git.
