@@ -787,3 +787,10 @@ La copie NTFS provient du commit immuable bf03e5cd7db86bb07f34fe6dc9d960740d912f
 - Suite pipeline native Windows : 389 réussites, 15 skips, 11 échecs. Causes observées : chemins /tmp codés en dur, extraction de chemin URL avec .pathname produisant /C:/, hypothèses POSIX de permissions et de liens, ainsi que reprises de jobs à diagnostiquer. Aucun skip ajouté pour masquer ces échecs.
 
 Les chemins concernés sont revendiqués par les lots Dragon Ball natifs, couverture et automatisation ; ils restent préservés. Les rapports détaillés restent dans le store local ignoré var/reports/integration. Ce résultat ne qualifie ni le nouvel installeur complet ni l’activation globale du runtime Aphrody.
+### Contrat runtime Windows et frontières de paquets — 2026-10-07
+
+Sur la copie Shenron bf03e5cd, le contrôle check-workspace-packages.ts termine avec zéro erreur nouvelle, transitoire ou phase2, zéro avertissement et zéro entrée périmée. Il couvre les paquets et applications, sans lancement de navigateur.
+
+La DLL Windows historique de 247 048 704 octets, SHA-256 9171579c94dcf7f783999be0eb044fb4125ad2bce3011ae0590976550088ad5e, reste présente dans le target global MSVC, pas dans le dossier runtime du snapshot source. Le nouveau SDK refuse son utilisation normale sans manifeste. En qualification de développement explicite, il refuse ensuite le chargement faute du symbole aphrody_web_pipeline_abi_version. Cette DLL ne qualifie donc pas les nouveaux workflows natifs Shenron.
+
+Le remplacement est préparé depuis le commit producteur immuable cafa8b3e8ef494a4cfa5243a7304902057fb0380. Le contrôle MSVC de aphrody-ffi avec la feature jobs est lancé sous la garde Cargo native, cache partagé conservé. Aucun résultat terminal, nouvelle DLL, installation ou activation n’est revendiqué à ce stade.
