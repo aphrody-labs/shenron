@@ -134,3 +134,23 @@ son accès authentifié, son GPU et le runtime doivent être qualifiés avant
 exécution. Le runner d’entraînement historique utilise encore un sous-processus
 Python ; il ne constitue pas un handler natif en processus admissible pour cette
 automatisation.
+
+Qualification native du 2026-10-07 : le SDK Bun 3.3.8 est produit depuis la
+révision propre `cafa8b3e8ef494a4cfa5243a7304902057fb0380`. Les archives
+source et leurs SHA-256 sont dans `vendor/aphrody-sdk/manifest.json` ; elles
+contiennent le code et aucune bibliothèque native, donnée ou authentification.
+L’artefact FFI privé `3b6a5e1c9a3c` a passé les six tests natifs du pipeline
+sans test ignoré, dont la session MCP HTTP authentifiée et l’annulation.
+Le contrôle Rust MCP/client compte 169 tests réussis et un test ignoré ;
+Clippy strict est vert. Le binaire CLI et la bibliothèque restent des
+qualifications distinctes de leur installation et de l’activation des services.
+
+Le module Workspace `yolo ops mcp-environment prepare|probe|apply` conserve
+l’environnement dans un JSON privé (dossier 0700, fichier 0600) et ne publie
+que des noms de variables et des empreintes. La vérification utilise le client
+MCP natif, puis une recherche RAG en lecture seule ; les configurations globales
+ne sont écrites qu’après réussite. Chaque agent référence le même fichier par
+`APHRODY_MCP_ENV_FILE`, en préservant ses autres serveurs et options. Une
+préparation ultérieure conserve les références d’authentification existantes,
+sans importer le `DATABASE_URL` générique d’un autre domaine. Ces opérations
+d’administration ne remplacent pas les appels FFI du pipeline produit.

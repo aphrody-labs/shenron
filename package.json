@@ -174,10 +174,10 @@
     "typescript": "catalog:"
   },
   "overrides": {
-    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-756a1834b3c2e335.tgz",
+    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-2e9a90d48827b1d0.tgz",
     "@aphrody/paths": "file:vendor/aphrody-sdk/aphrody-paths-83ce57449c7d8766.tgz",
     "@aphrody/runtime-sdk": "file:vendor/aphrody-sdk/aphrody-runtime-sdk-81b17d5191c5c099.tgz",
-    "@aphrody/update": "file:vendor/aphrody-sdk/aphrody-update-c165f26f34b773c2.tgz",
+    "@aphrody/update": "file:vendor/aphrody-sdk/aphrody-update-2d00a6e13f3fc7f7.tgz",
     "axios": "^1.20.0",
     "qs": "^6.16.0",
     "undici": "^7.30.0"

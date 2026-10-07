@@ -366,10 +366,10 @@
     "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch",
   },
   "overrides": {
-    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-756a1834b3c2e335.tgz",
+    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-2e9a90d48827b1d0.tgz",
     "@aphrody/paths": "file:vendor/aphrody-sdk/aphrody-paths-83ce57449c7d8766.tgz",
     "@aphrody/runtime-sdk": "file:vendor/aphrody-sdk/aphrody-runtime-sdk-81b17d5191c5c099.tgz",
-    "@aphrody/update": "file:vendor/aphrody-sdk/aphrody-update-c165f26f34b773c2.tgz",
+    "@aphrody/update": "file:vendor/aphrody-sdk/aphrody-update-2d00a6e13f3fc7f7.tgz",
     "axios": "^1.20.0",
     "qs": "^6.16.0",
     "undici": "^7.30.0",
@@ -528,7 +528,7 @@
 
     "@aphrody/api": ["@aphrody/api@3.0.0-alpha.2", "", {}, "sha512-bQrHUrp6vR5QZ07RsCTWhLlIyjgBOJ3VbULue9i5g/s4/I4KaLfwkyBksVLhlQcGLWxG04Vnu+JOccNkicoHsA=="],
 
-    "@aphrody/bun": ["@aphrody/bun@vendor/aphrody-sdk/aphrody-bun-756a1834b3c2e335.tgz", { "dependencies": { "@aphrody/runtime-sdk": "0.1.1", "@aphrody/update": "0.1.1" } }, "sha512-mhzWLCXEIy8+f3ulgsSx7oQ9el9PzXK+gJY0Zxsqn2sPD/M3L5+KE9fhtoNNvNFpnbux/qgdUge2gFzO86Ojuw=="],
+    "@aphrody/bun": ["@aphrody/bun@vendor/aphrody-sdk/aphrody-bun-2e9a90d48827b1d0.tgz", { "dependencies": { "@aphrody/runtime-sdk": "0.1.1", "@aphrody/update": "0.1.1" } }, "sha512-fz27ihv+LYkJui2NIJgD17WZV9PFE5nAVzf9Gr3rC3FKlM28xBMhsIM9yoohGJC21j9i/ogYZnYCBz5FkpNKMw=="],
 
     "@aphrody/bun-test-dom": ["@aphrody/bun-test-dom@0.1.1", "", { "dependencies": { "@happy-dom/global-registrator": "^20.14.5" } }, "sha512-XZKt0FwXS8S4NiZIYr/X8BTCleTFlH72T4+W46tx1xrKXHDuIk4tOS+G3nLpuHbzinYiX+Efw+zfKlNuWlCoTA=="],
 
@@ -562,7 +562,7 @@
 
     "@aphrody/sql": ["@aphrody/sql@0.1.1", "", { "dependencies": { "sqlite-vec": "^0.1.9" } }, "sha512-7CTZwv11lfxgfsFzFOU3Z49fV6ON1NPpbCNLFpFQWD87cpH25U1L6SEBoDdQSMw8iAKGhx5ObKqgEt5I8ISZ1Q=="],
 
-    "@aphrody/update": ["@aphrody/update@vendor/aphrody-sdk/aphrody-update-c165f26f34b773c2.tgz", { "dependencies": { "@aphrody/paths": "0.1.1" } }, "sha512-O/56tfwWEwIhse+buOz9gWr8L6/fPgD7mEiRIV4oIGms38/K4n2m9TOT8DQo5RnxCmJDlNyyaN92wEmMqLtobg=="],
+    "@aphrody/update": ["@aphrody/update@vendor/aphrody-sdk/aphrody-update-2d00a6e13f3fc7f7.tgz", { "dependencies": { "@aphrody/paths": "0.1.1" } }, "sha512-a2Hym406ujHElxID//HFTzIhO6WN3FYL3Kq/cLg0CdhniUa9VAGvGG8sYWcSDIMOPTK8VcVNbenzrgfHpDK/cw=="],
 
     "@aphrody/web-test": ["@aphrody/web-test@0.2.6", "", { "dependencies": { "@aphrody/agent-browser": "1.0.0-canary" } }, "sha512-+YSCnELPq5ZTUSr7CqgKryLiJBGWoXcT4+iCktnQp45McgGNPyHWQ2H59yQTlvPBerR35lAdyIfUrS3gqZf9tA=="],
 
