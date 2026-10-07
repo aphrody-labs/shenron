@@ -671,3 +671,36 @@ Les traces et conversations synthétiques restent dans le home de qualification
 hors Git. Aucun téléchargement de modèle ni accès VPS n'est effectué.
 L'usage GPU n'est pas attesté par les journaux de ce runtime. La recherche
 vectorielle, l'activation et l'installation complète restent à qualifier.
+
+## Indexation et recherche hybride Windows
+
+L'installateur natif `aphrody-embed` place multilingual-e5-small, révision
+`614241f622f53c4eeff9890bdc4f31cfecc418b3`, dans le store protégé Windows.
+Le serveur local produit un vecteur fini de 384 dimensions, de norme
+`0.999999906536192`. Aucun modèle de substitution n'est utilisé.
+
+Une tâche de fond encode les 3 446 passages du VFS public dans une copie dédiée,
+avec les préfixes et la normalisation de `createE5Embedder` et la quantification
+`quantizeI8` du consommateur. L'index contient ensuite 3 446 vecteurs int8 pour
+1 972 documents ; la garde publique réussit à nouveau. La recherche native
+retourne huit voisins vectoriels et les résultats fusionnés portent des rangs
+lexicaux et vectoriels réels. Cette preuve ne constitue pas une évaluation de
+la pertinence du classement.
+
+Le VFS indexé fait 18 247 680 octets, SHA-256
+`105dfb59a114eb44da172d5b7c78227afb1ec363518ce3415640e3b318c81cb3`.
+Réemballé par la fabrique canonique, le serveur fait 182 563 840 octets,
+SHA-256 `42124870e39b3f1e546ad9247867dc46608934be8881a63da1cd05ed961dff93`.
+Ses routes de recherche et de contexte répondent en HTTP 200 en mode `hybrid`,
+sans erreur d'embedder. Le parcours chat récupère six passages puis génère
+localement une réponse avec citation VFS, sans fallback, en 1 910 ms.
+Les processus d'indexation, d'embedding et d'inférence de ces contrôles sont
+arrêtés ; modèles, index et conversations synthétiques restent hors Git.
+
+Le contrôle TypeScript complet de la copie NTFS réussit, scripts inclus.
+Un paquet NSIS de qualification est en construction sous le nom distinct
+`Shenron Studio Alignment QA` et l'identifiant
+`com.dragonballfr.shenron-alignment-probe`. Il rassemble les binaires natifs
+qualifiés, le runtime llama épinglé et l'adaptateur vérifié. Son serveur contient
+encore la version lexicale du VFS, préparée avant l'indexation. Ce paquet n'est
+pas une preuve d'installation ou d'activation, ni une livraison finale.
