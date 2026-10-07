@@ -803,3 +803,41 @@ Dans la copie Shenron bf03e5cd, quatre correctifs portables sont préparés sans
 Une sonde native sur des fixtures vides confirme que les constructeurs de ledgers jobs et automation acceptent un dossier auquel Everyone possède la lecture par ACL Windows. Les fixtures ont été supprimées ; aucune donnée protégée, acquisition, ingestion ou traduction n’est exécutée. La confidentialité Windows nécessite donc une correction réelle, pas seulement l’adaptation des assertions POSIX. Les chemins restent revendiqués par leurs lots Dragon Ball.
 
 La nouvelle DLL est préparée dans un checkout Git Windows isolé du commit producteur 34c5b2d0. Le fichier de documentation dépassant MAX_PATH est restauré après activation locale de core.longpaths ; aucune configuration système ni globale n’est modifiée. L’ancienne DLL qualifiée est conservée avec empreinte vérifiée pour rollback. La construction optimisée du runtime, son manifeste, le smoke Bun natif et l’activation restent à qualifier.
+
+### DLL et SDK natifs Windows — 2026-10-07
+
+La construction native MSVC du producteur immuable
+`34c5b2d0406d0797be582054ce0399110a3c5a0e` termine avec succès en
+5 min 57 s : `cargo build --locked -p aphrody-ffi --features jobs --profile runtime --target x86_64-pc-windows-msvc`.
+La DLL fait 272 265 728 octets ; son SHA-256 est
+`fc46eb677687b0621e75dfeb8c7f12bbc31a820cbf0164e92683b4d731454b77`.
+La garde Cargo native et le cache partagé sont conservés.
+
+Un nouveau checkout Windows figé à
+`2a29421ac59fb8dc63c0e7c407bf334b8cdd9b98` installe 958 paquets avec
+`bun install --frozen-lockfile`, depuis les seuls fichiers committés.
+Les quatre archives SDK désormais suivies correspondent au manifeste et à leurs
+empreintes. Ce résultat ferme le défaut de reproductibilité observé à bf03e5cd.
+
+Avec cette DLL explicitement sélectionnée en mode développement, les appels
+réels du SDK installé exécutent l’aide et le plan natif des 26 sources.
+Les six tests pipeline du producteur passent, avec 47 assertions et aucun skip :
+entrées invalides, annulation, propriété des handles, fermeture, GC, boucle
+d’événements et appels MCP HTTP concurrents avec authentification de fixture.
+`APHRODY_FFI_REQUIRE_NATIVE=1` interdit de masquer une DLL indisponible par un skip.
+Aucun identifiant réel ni service distant n’est utilisé.
+
+Sur ce même checkout, les tests d’identité, d’authentification Bun et de démarrage
+du serveur donnent 13 réussites, 2 skips Windows existants et aucun échec.
+Les quatre tests du relais d’authentification Next passent (16 assertions),
+ainsi que les cinq tests du module RE WASM (26 assertions).
+Le contrôle TypeScript complet réussit, applications, paquets et scripts inclus.
+Ces contrôles utilisent Bun natif et des serveurs loopback ; aucun navigateur
+ni VPS n’est lancé.
+
+Le profil Cargo `runtime` et le mode développement ne qualifient pas une
+distribution normale avec manifeste, une activation globale ou le nouvel
+installeur. Le contrôle des ACL Windows et l’intégration des correctifs sur les
+chemins encore revendiqués restent ouverts. Les révisions arrivées après
+2a29421a ne sont pas couvertes par ces résultats. Les DLL et rapports restent
+hors Git dans les stores locaux.
