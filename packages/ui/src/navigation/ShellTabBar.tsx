@@ -13,7 +13,7 @@
  * cumulés : pilule, glyphe en aplat, libellé gras.
  */
 import { Drawer } from "@base-ui/react/drawer";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import { Croix, Ellipse } from "../icones";
 import type {
   ShellContextNavValue,
@@ -63,6 +63,20 @@ export function ShellTabBar({
   linkComponent: ShellLinkComponent;
 }) {
   const tabActive = tabs.some((tab) => tab.href === activeHref);
+  const closeOnNavigation = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    // The current destination does not change pathname, so the shell's route
+    // effect alone cannot dismiss this modal.
+    onOpenChange(false);
+  };
   return (
     <Drawer.Root open={open} onOpenChange={(next) => onOpenChange(next)}>
       <MobileNavFrame label={labels.primaryNav}>
@@ -130,6 +144,7 @@ export function ShellTabBar({
               {contextNav && (
                 <Link
                   href={contextNav.backHref}
+                  onClick={closeOnNavigation}
                   className={`mb-2 flex min-h-12 items-center rounded-xl px-4 font-display text-[0.875rem] font-semibold text-os/70 hover:bg-os/[0.06] ${FOCUS}`}
                 >
                   {contextNav.backLabel}
@@ -152,6 +167,7 @@ export function ShellTabBar({
                             <li key={item.href}>
                               <Link
                                 href={item.href}
+                                onClick={closeOnNavigation}
                                 aria-current={on ? "page" : undefined}
                                 className={`flex min-h-12 flex-col justify-center rounded-xl px-4 py-1.5 transition-colors ${FOCUS} ${
                                   on ? "bg-dbz-green/15" : "hover:bg-os/[0.06]"

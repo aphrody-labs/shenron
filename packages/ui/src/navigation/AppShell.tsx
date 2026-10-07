@@ -272,6 +272,19 @@ export function AppShell({
     setSheetOpen(false);
   }, [pathname]);
 
+  // CSS hides the mobile drawer on desktop; its modal state must close too,
+  // otherwise focus and scroll remain trapped behind an invisible overlay.
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const desktop = window.matchMedia("(min-width: 64rem)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) setSheetOpen(false);
+    };
+    closeOnDesktop();
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
+
   const toggleSidebar = useCallback(() => {
     setCollapsed((current) => {
       writeCollapsed(!current);

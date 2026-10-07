@@ -2,11 +2,15 @@
 // AppShell: a navigation link, a section toggle and a content link all take
 // the click; nothing in the shell covers or disables the page.
 import { afterEach, describe, expect, test } from "bun:test";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useState, type MouseEvent } from "react";
 import { AppShell, type ShellLinkProps, type ShellNavSection } from "../../src/navigation/AppShell";
 
-afterEach(cleanup);
+const originalMatchMedia = window.matchMedia;
+afterEach(() => {
+  cleanup();
+  window.matchMedia = originalMatchMedia;
+});
 
 const sections: ShellNavSection[] = [
   { id: "discover", label: "Discover", items: [{ href: "/", label: "Home" }] },
@@ -53,6 +57,49 @@ function Harness() {
 }
 
 describe("AppShell clicks", () => {
+  test("selecting the current destination closes the mobile sheet", async () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Plus" }));
+    const sheet = await screen.findByRole("dialog");
+    fireEvent.click(within(sheet).getByRole("link", { name: "Home" }), { ctrlKey: true });
+    expect(screen.getByRole("dialog")).toBe(sheet);
+    fireEvent.click(within(sheet).getByRole("link", { name: "Home" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(screen.getByTestId("path").textContent).toBe("/");
+    expect(screen.getByRole("button", { name: "Plus" }).getAttribute("aria-expanded")).toBe(
+      "false",
+    );
+  });
+
+  test("switching to desktop closes the sheet and releases its media listener on unmount", async () => {
+    const listeners = new Set<() => void>();
+    let desktop = false;
+    window.matchMedia = ((query: string) =>
+      query === "(min-width: 64rem)"
+        ? {
+            media: query,
+            get matches() {
+              return desktop;
+            },
+            addEventListener: (_: string, listener: () => void) => listeners.add(listener),
+            removeEventListener: (_: string, listener: () => void) => listeners.delete(listener),
+          }
+        : originalMatchMedia.call(window, query)) as typeof window.matchMedia;
+    const { unmount } = render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Plus" }));
+    await screen.findByRole("dialog");
+    act(() => {
+      desktop = true;
+      for (const listener of listeners) listener();
+    });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(document.querySelector("main")?.closest("[aria-hidden='true']")).toBeNull();
+    fireEvent.click(screen.getByRole("link", { name: "Latest news" }));
+    expect(screen.getByTestId("path").textContent).toBe("/news");
+    unmount();
+    expect(listeners.size).toBe(0);
+  });
+
   test("a section opens and its link navigates", () => {
     render(<Harness />);
     const sidebar = screen.getByRole("complementary");
