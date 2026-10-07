@@ -737,3 +737,42 @@ de WebSocket arrivés ensuite sur `main` restent à intégrer dans la copie de
 qualification. Le lancement graphique du paquet installé, sa désinstallation,
 l'activation du produit final et l'intégration des correctifs revendiqués
 restent ouverts. Le paquet et ses ressources restent dans le store local hors Git.
+
+## Reprise du frontend et des portes Windows
+
+La copie NTFS reprend ensuite les fichiers committés à `bf7d08a3`, dont la
+navigation partagée de l'accueil et le relais WebSocket de développement.
+Le WASM est régénéré en 12,6 secondes après l'extraction des sources. Le site
+standalone compile en 12,584 secondes ; le serveur avec index hybride fait
+182 541 312 octets, SHA-256
+`c050bb7ce06b61d97cb1fa10559adce2feb436ea4a41459097c26a890ead1732`.
+Ses contrôles HTTP, de recherche hybride et de génération locale avec citation
+réussissent à nouveau ; la génération prend 1 941 ms, sans fallback. Un essai
+précédent échoue dans la sonde, dont la substitution ne traitait que les ports
+à cinq chiffres ; cette substitution est corrigée pour tous les ports valides.
+
+Les trois tests natifs du relais WebSocket réussissent (14 assertions), ainsi
+que les trois tests de navigation (10 assertions) avec le preload DOM Aphrody.
+Ces derniers utilisent une émulation DOM sous Bun, pas un navigateur graphique.
+
+Le nouveau membre `shenron-re` manquait dans le lockfile. La résolution native
+ajoute uniquement son bloc : 1 212 packages existants inchangés, 1 213 au total.
+Ce bloc est repris entre-temps par le lot pipeline sur `main` ; le lockfile
+canonique est identique à celui de la copie Windows qualifiée. Le membre passe
+le contrôle MSVC verrouillé et ses deux tests. Cinq diagnostics Clippy sont
+corrigés sur trois fichiers : lifetime superflu, trois conditions imbriquées
+et tri par comparateur. Après correction, les deux tests et Clippy strict,
+toutes cibles du membre, réussissent sur Windows.
+
+Le contrôle TypeScript de la révision `bf7d08a3` échoue dans le nouveau script
+`train-shenron-chat-loop.ts` sur les types `string | boolean` issus de
+`parseArgs`. Une correction privée qui vérifie les arguments chaînes rend
+le contrôle complet vert, scripts inclus. Ce script reste revendiqué par le
+lot de release : la correction privée n'est pas intégrée sur `main` et aucune
+boucle d'entraînement n'est exécutée.
+
+Pendant ces contrôles, `main` reçoit également les nouveaux contrats pipeline
+et les métadonnées de catalogue localisées. Ces changements ne font pas partie
+de la qualification de la copie figée `bf7d08a3` ; leur reprise et leurs portes
+restent nécessaires avant la livraison finale. L'installation QA existante
+reste distincte du serveur réemballé et n'est pas activée comme produit final.

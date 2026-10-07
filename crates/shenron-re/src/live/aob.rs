@@ -36,11 +36,11 @@ impl AobPattern {
         for i in 0..=max_idx {
             let mut matches = true;
             for (p_idx, &expected) in self.bytes.iter().enumerate() {
-                if let Some(expected_byte) = expected {
-                    if data[i + p_idx] != expected_byte {
-                        matches = false;
-                        break;
-                    }
+                if let Some(expected_byte) = expected
+                    && data[i + p_idx] != expected_byte
+                {
+                    matches = false;
+                    break;
                 }
             }
             if matches {
@@ -61,11 +61,11 @@ impl AobPattern {
         for i in 0..=max_idx {
             let mut matches = true;
             for (p_idx, &expected) in self.bytes.iter().enumerate() {
-                if let Some(expected_byte) = expected {
-                    if data[i + p_idx] != expected_byte {
-                        matches = false;
-                        break;
-                    }
+                if let Some(expected_byte) = expected
+                    && data[i + p_idx] != expected_byte
+                {
+                    matches = false;
+                    break;
                 }
             }
             if matches {

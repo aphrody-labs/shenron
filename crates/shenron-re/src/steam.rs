@@ -34,19 +34,19 @@ pub fn scan_dragon_ball_installs(libraries: &[PathBuf]) -> std::io::Result<Vec<S
             }
             let manifest = entry.path();
             let content = std::fs::read_to_string(&manifest)?;
-            if let Some((app_id, name, install_dir)) = parse_app_manifest(&content) {
-                if name.to_ascii_lowercase().contains("dragon ball") {
-                    installs.push(SteamGameInstall {
-                        app_id,
-                        name,
-                        install_dir: steamapps.join("common").join(install_dir),
-                        manifest,
-                    });
-                }
+            if let Some((app_id, name, install_dir)) = parse_app_manifest(&content)
+                && name.to_ascii_lowercase().contains("dragon ball")
+            {
+                installs.push(SteamGameInstall {
+                    app_id,
+                    name,
+                    install_dir: steamapps.join("common").join(install_dir),
+                    manifest,
+                });
             }
         }
     }
-    installs.sort_by(|left, right| left.app_id.cmp(&right.app_id));
+    installs.sort_by_key(|left| left.app_id);
     Ok(installs)
 }
 

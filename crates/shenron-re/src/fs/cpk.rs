@@ -63,7 +63,7 @@ impl CpkArchive {
     }
 
     /// Extract a file by its internal path/name.
-    pub fn extract<'a>(&self, buffer: &'a [u8], file_name: &str) -> Result<Vec<u8>> {
+    pub fn extract(&self, buffer: &[u8], file_name: &str) -> Result<Vec<u8>> {
         let &idx = self.file_map.get(file_name).ok_or_else(|| ReError::ParseError {
             context: "cpk_extract",
             details: format!("File `{file_name}` not found in archive"),
