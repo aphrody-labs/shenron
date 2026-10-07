@@ -88,6 +88,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
     let engine: Awaited<ReturnType<typeof startEngine>> | undefined;
     let page: TestPage | undefined;
     const diagnostics: { method: string; params: Record<string, unknown> }[] = [];
+    const diagnosticCounts = { runtime: 0, network: 0 };
     try {
       const deadline = Date.now() + 120_000;
       let ready = false;
@@ -112,11 +113,19 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
       });
       page = await TestPage.create({ cdpUrl: engine.endpoint, baseURL: fixture.url });
       page.raw.onEvent((method, params) => {
-        if (
-          diagnostics.length < 500 &&
-          (method.startsWith("Network.") || method.startsWith("Runtime."))
-        )
+        const channel = method.startsWith("Runtime.")
+          ? "runtime"
+          : method.startsWith("Network.")
+            ? "network"
+            : null;
+        if (channel && diagnosticCounts[channel] < (channel === "runtime" ? 100 : 400)) {
+          diagnosticCounts[channel]++;
           diagnostics.push({ method, params });
+        }
+      });
+      await page.raw._send("Page.addScriptToEvaluateOnNewDocument", {
+        source:
+          "globalThis.__qualificationErrors=[];(()=>{const record=value=>{if(__qualificationErrors.length<100)__qualificationErrors.push(String(value))};addEventListener('error',e=>record(e.error?.stack||e.message));addEventListener('unhandledrejection',e=>record(e.reason?.stack||e.reason))})();",
       });
       const response = await page.goto("/desktop");
       expect(response.status).toBe(200);
@@ -167,7 +176,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
               diagnostics,
               state: await page.raw
                 .evaluate(
-                  "({ready:document.readyState, scripts:[...document.scripts].map(s=>s.src), text:document.body.innerText})",
+                  "({ready:document.readyState, scripts:[...document.scripts].map(s=>s.src), text:document.body.innerText, errors:globalThis.__qualificationErrors, next:typeof globalThis.next, turbopack:Array.isArray(globalThis.TURBOPACK)?globalThis.TURBOPACK.length:typeof globalThis.TURBOPACK})",
                 )
                 .catch(String),
             },

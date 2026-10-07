@@ -50,3 +50,12 @@ initial de connexion dans le moteur installé. Le test reste actif et rouge
 dans `test:integration`, avec les diagnostics conservés ; il n'est pas déclaré
 qualifié. Les suites ordinaires ne démarrent pas ce test live : le runner dédié
 active `SHENRON_WEB_LIVE=1` dans son processus enfant.
+
+Les diagnostics réservent des quotas séparés au réseau (400 événements) et
+au runtime JavaScript (100 événements), pour conserver les erreurs tardives
+même après le chargement de nombreux chunks. Les erreurs et rejets non gérés
+de la page sont aussi enregistrés, avec une limite de 100 entrées.
+Les sondes isolées du moteur installé exécutent les scripts classiques et
+modules ainsi que le montage et l’hydratation d’un composant React avec effet et
+interaction. Ces résultats
+ne qualifient pas encore l’hydratation Next ni le produit complet.
