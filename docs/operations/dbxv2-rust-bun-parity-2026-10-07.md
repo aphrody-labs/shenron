@@ -20,7 +20,7 @@ Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun 
 | `extract` | Partiel : parsing CPK et extraction en mémoire existent; pas de commande d'extraction d'arbres, reprise ou manifest. |
 | `tex` | Absent : pas de convertisseur EMB/DDS/PNG. |
 | `audio` | Absent : pas de conversion CRI vers WAV. |
-| `text` | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE; `shenron-re text <input-dir> --output-dir <new-dir>` traite récursivement les `.msg` vers un arbre de sortie distinct, avec manifeste, ordre déterministe, liens symboliques ignorés et refus d'une destination existante. Ce mode protège les entrées et ne remplace pas le comportement risqué d'écrasement source du script Python. |
+| `text` | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE; `shenron-re text <input-dir> --output-dir <new-dir>` traite récursivement les `.msg` vers un arbre de sortie distinct, avec manifeste, ordre déterministe, liens symboliques ignorés et refus d'une destination existante. Ce mode protège les entrées et ne remplace pas le comportement risqué d'écrasement source du script Python. Le binding WASM `extractMsgText` extrait ces runs depuis un buffer. |
 | `models` | Absent : pas de métadonnées géométriques EMD/viewer. |
 | `parse` | Partiel : BAC/BDM/CUS/CMS/MSG/PUP; BCM/BCS/BSA/EAN/EMM/ESK et équivalence pyxenoverse absents. |
 | `tools` | Absent : aucun catalogue/cloneur équivalent dans ce crate. |
@@ -77,5 +77,7 @@ Portes ciblées exécutées dans ce worktree : tests et Clippy de `shenron-re` e
 compilation WASM, génération ABI vérifiée, typecheck/lint et 36 tests `@shenron/native` avec
 la bibliothèque debug réellement chargée. La nouvelle commande CLI a également été exécutée
 et son JSON observé. Après ajout du mode récursif de texte, les 32 tests du crate
-(29 unitaires, 3 CLI) et Clippy strict passent. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte
+(29 unitaires, 3 CLI) et Clippy strict passent; le build WASM/bindgen et les 11 tests `@shenron/pipeline`
+passent aussi après ajout de `extractMsgText`. Le lint pipeline réussit avec 20 avertissements préexistants
+dans d'autres fichiers; son typecheck ne démarre pas faute de types `bun` installés. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte
 ni service de production n'a été modifié.

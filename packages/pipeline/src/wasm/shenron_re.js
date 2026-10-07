@@ -39,6 +39,24 @@ export function wasm_extract_cpk_file(archive_bytes, filename) {
 }
 
 /**
+ * Extract printable UTF-16LE text runs from one MSG buffer without parsing its table layout.
+ * @param {string} file_name
+ * @param {Uint8Array} msg_bytes
+ * @returns {any}
+ */
+export function wasm_extract_msg_text(file_name, msg_bytes) {
+    const ptr0 = passStringToWasm0(file_name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passArray8ToWasm0(msg_bytes, wasm.__wbindgen_malloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ret = wasm.wasm_extract_msg_text(ptr0, len0, ptr1, len1);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Retrieve the full Dragon Ball game catalog (Steam + Android) as a JavaScript object.
  * @returns {any}
  */

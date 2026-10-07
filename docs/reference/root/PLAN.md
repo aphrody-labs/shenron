@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # PLAN.md — Plan Directeur Unifié de Shenron
 
-> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:26:57Z`.
+> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:32:06Z`.
 > Synthèse unifiée absorbant `PLAN.md`, `REPRISE.md`, `PLAN-SHENRON-RE.md` et la cartographie du graphe monorepo (23 607 nœuds, 62 707 arêtes).
 
 ```json
@@ -79,7 +79,7 @@ La cartographie native `aphrody-graph` unifie les quatre couches de la plateform
 | **SH-P0-017** | Sécurité staff & Bot admin | P0 | [x] | `checkAdmin` accorde les droits selon la politique staff (403 sinon, tests validés). |
 | **SH-P1-001** | Production & Sondes live | P1 | [x] | `dragonballfr.com` HTTP/2 200, `/api/health` ok, agent-card A2A 1.0 en ligne. |
 | **SH-P1-002** | Contrats OpenAPI & Tokens M3 | P1 | [x] | `openapi.ts --check` et `generate-tokens.ts --check` validés sans dérive. |
-| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)| P1 | [x] | Parser CPK/CRILAYLA, formats Dimps (BDM/BAC/CUS/PUP/MSG), WASM/Bun, carte prototype ABI natif 5 et export récursif MSG vers destination neuve validés (32 tests Rust du crate, 10 tests pipeline WASM). |
+| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)| P1 | [x] | Parser CPK/CRILAYLA, formats Dimps (BDM/BAC/CUS/PUP/MSG), WASM/Bun, carte prototype ABI natif 5, export récursif MSG et extraction de texte par WASM validés (32 tests Rust du crate, 11 tests pipeline WASM). |
 | **SH-P1-004** | Entraînement continu `shenron-chat-v2`| P1 | [ ] | Exécution itérative de `train-shenron-chat-loop.ts` avec monitoring GPU VRAM. |
 | **SH-P1-005** | Signature & Packaging Studio Desktop | P1 | [ ] | Packaging NSIS, mise à jour automatique Tauri 3, détection CUDA native. |
 

@@ -9,6 +9,7 @@ import {
   parseBac,
   parsePup,
   parseMsg,
+  extractMsgText,
   triageCpk,
   extractCpkFile,
   decompressCrilayla,
@@ -351,5 +352,18 @@ describe("shenron-re WASM pipeline", () => {
     expect(msg.entries.length).toBe(2);
     expect(msg.entries[0]?.lines[0]).toBe("Kamehameha");
     expect(msg.entries[1]?.lines[0]).toBe("Super Saiyan");
+  });
+
+  test("extracts permissive MSG text runs via WASM", () => {
+    const bytes = new Uint8Array([
+      0,
+      0,
+      ...Array.from("Hello", (char) => char.charCodeAt(0)).flatMap((code) => [code, 0]),
+    ]);
+    expect(extractMsgText("quest.msg", bytes)).toEqual({
+      file: "quest.msg",
+      count: 1,
+      strings: ["Hello"],
+    });
   });
 });

@@ -19,6 +19,7 @@ import initWasm, {
   wasm_parse_bdm,
   wasm_parse_cus,
   wasm_parse_msg,
+  wasm_extract_msg_text,
   wasm_parse_pup,
   wasm_scan_aob,
   wasm_get_xenoverse3_prototype_map,
@@ -79,6 +80,12 @@ export interface CpkTriageSummary {
   has_utf_table: boolean;
   compression_detected: boolean;
   entries: CpkEntry[];
+}
+
+export interface MsgTextExtraction {
+  file: string;
+  count: number;
+  strings: string[];
 }
 
 export type SkillCategory = "Super" | "Ultimate" | "Evasive" | "Awoken" | "Unknown";
@@ -348,4 +355,10 @@ export function parsePup(pupBytes: Uint8Array): PupFile {
 export function parseMsg(msgBytes: Uint8Array): MsgFile {
   ensureWasm();
   return wasm_parse_msg(msgBytes) as MsgFile;
+}
+
+/** Extract printable UTF-16LE strings from an MSG buffer using dbxv2-compatible scanning. */
+export function extractMsgText(fileName: string, msgBytes: Uint8Array): MsgTextExtraction {
+  ensureWasm();
+  return wasm_extract_msg_text(fileName, msgBytes) as MsgTextExtraction;
 }

@@ -9,6 +9,7 @@ use crate::formats::{bac::BacFile, bdm::BdmFile, cus::CusFile, msg::MsgFile, pup
 use crate::fs::cpk::{CpkArchive, CpkEntry};
 use crate::fs::crilayla::{decompress_crilayla, decompress_crilayla_raw};
 use crate::live::aob::AobPattern;
+use crate::text::extract_msg_text;
 use crate::world::xenoverse3::xenoverse3_prototype_map;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
@@ -102,6 +103,13 @@ pub fn wasm_parse_pup(pup_bytes: &[u8]) -> Result<JsValue, JsValue> {
 pub fn wasm_parse_msg(msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
     let msg = MsgFile::parse(msg_bytes).map_err(to_js_err)?;
     serde_wasm_bindgen::to_value(&msg).map_err(to_js_err)
+}
+
+/// Extract printable UTF-16LE text runs from one MSG buffer without parsing its table layout.
+#[wasm_bindgen]
+pub fn wasm_extract_msg_text(file_name: &str, msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let report = extract_msg_text(std::path::Path::new(file_name), msg_bytes);
+    serde_wasm_bindgen::to_value(&report).map_err(to_js_err)
 }
 
 /// Scan a buffer for an Array-of-Bytes (AOB) pattern with wildcards (e.g. "48 89 5C 24 ??").

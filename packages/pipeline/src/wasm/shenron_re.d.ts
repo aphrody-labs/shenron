@@ -12,6 +12,11 @@ export function wasm_decompress_crilayla(compressed: Uint8Array, uncompressed_si
 export function wasm_extract_cpk_file(archive_bytes: Uint8Array, filename: string): Uint8Array;
 
 /**
+ * Extract printable UTF-16LE text runs from one MSG buffer without parsing its table layout.
+ */
+export function wasm_extract_msg_text(file_name: string, msg_bytes: Uint8Array): any;
+
+/**
  * Retrieve the full Dragon Ball game catalog (Steam + Android) as a JavaScript object.
  */
 export function wasm_get_dragon_ball_catalog(): any;
@@ -63,6 +68,7 @@ export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly wasm_decompress_crilayla: (a: number, b: number, c: number) => [number, number, number, number];
     readonly wasm_extract_cpk_file: (a: number, b: number, c: number, d: number) => [number, number, number, number];
+    readonly wasm_extract_msg_text: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
     readonly wasm_get_xenoverse3_prototype_map: () => [number, number, number];
     readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
