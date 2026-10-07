@@ -1,0 +1,415 @@
+{
+  "year": "1999",
+  "scope": "Synthèses françaises des billets publics Kanzenshuu; messages de forum exclus.",
+  "records": [
+    {
+      "id": 217,
+      "type": "post",
+      "slug": "wall-street-journal-article-examines-violence-in-dbz",
+      "title": "Wall Street Journal Article Examines Violence in DBZ",
+      "url": "https://www.kanzenshuu.com/1999/12/06/wall-street-journal-article-examines-violence-in-dbz/",
+      "publishedAt": "1999-12-06T12:00:27",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "presse et réception"
+      ],
+      "summary": "Le billet signale un article de Sally Beatty, journaliste au Wall Street Journal, consacré à la représentation de la violence dans Dragon Ball et à la popularité croissante de la franchise en Amérique du Nord. Pour illustrer le sujet, l’article de presse évoque des scènes impliquant Vegeta et Krillin face à Freeza. Kanzenshuu renvoie à une copie archivée de l’article complet.",
+      "keyInformation": [
+        "Article de presse de Sally Beatty sur violence et popularité nord-américaine de Dragon Ball.",
+        "Le billet en donne quelques exemples de scènes et indique où consulter l’article archivé."
+      ],
+      "editorialRelevance": "presse et réception; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 276,
+      "type": "post",
+      "slug": "funimation-to-release-uncut-bilingual-dragonball-z-dvds",
+      "title": "FUNimation To Release Uncut, Bilingual DragonBall Z DVDs",
+      "url": "https://www.kanzenshuu.com/1999/10/03/funimation-to-release-uncut-bilingual-dragonball-z-dvds/",
+      "publishedAt": "1999-10-03T12:00:09",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique"
+      ],
+      "summary": "FUNimation annonce le passage de Dragon Ball Z au DVD avec une offre pensée pour réunir les publics du doublage et de la version japonaise : pistes anglaise doublée et japonaise originale, cette dernière accompagnée de sous-titres anglais distincts. Le long communiqué reproduit explique le choix du DVD plutôt que de la VHS sous-titrée, les contraintes de droits portant sur les premières saisons et les projets alors envisagés pour les films. Les premières parutions bilingues sont annoncées pour le printemps 2000, en commençant par le quatrième film, puis les épisodes à partir de la saison 3; le calendrier et plusieurs éléments restent encore prévisionnels.",
+      "keyInformation": [
+        "Projet de DVD DBZ avec audio japonais original, sous-titres anglais et doublage anglais.",
+        "Première sortie bilingue envisagée : le quatrième film au printemps 2000.",
+        "La série devait commencer à la saison 3, les premières saisons relevant alors de droits vidéo distincts détenus par Pioneer.",
+        "Le communiqué évoque aussi les projets de sortie des autres films Dragon Ball/Z."
+      ],
+      "editorialRelevance": "vidéo domestique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 250,
+      "type": "post",
+      "slug": "new-date-for-third-season-debut-on-cartoon-network",
+      "title": "New Date For Third Season Debut on Cartoon Network",
+      "url": "https://www.kanzenshuu.com/1999/09/07/new-date-for-third-season-debut-on-cartoon-network/",
+      "publishedAt": "1999-09-07T12:00:15",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "diffusion télévisée"
+      ],
+      "summary": "FUNimation et Cartoon Network déplacent au 13 septembre la première diffusion des deux premiers épisodes de la troisième saison du doublage anglais. Le bloc Toonami doit d’abord proposer les épisodes doublés 52–53, puis les épisodes 54–55, qui ouvrent la nouvelle saison. Le changement corrige la date annoncée précédemment, le 6 septembre.",
+      "keyInformation": [
+        "Nouvelle date annoncée : 13 septembre 1999.",
+        "Toonami prévoit les épisodes doublés 52–53 puis 54–55.",
+        "La date précédente du 6 septembre est remplacée."
+      ],
+      "editorialRelevance": "diffusion télévisée; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 241,
+      "type": "post",
+      "slug": "official-dragonballz-com-forum-back-online",
+      "title": "Official dragonballz.com Forum Back Online",
+      "url": "https://www.kanzenshuu.com/1999/08/13/official-dragonballz-com-forum-back-online/",
+      "publishedAt": "1999-08-13T12:00:37",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "annonce administrative"
+      ],
+      "summary": "Cette brève administrative indique que le forum du site officiel dragonballz.com, précédemment fermé, est de nouveau accessible. FUNimation exige désormais un identifiant et un mot de passe pour publier, mesure de modération et de sécurité annoncée après la fermeture. Le billet ne reproduit ni ne résume de messages du forum.",
+      "keyInformation": [
+        "Annonce administrative : réouverture du forum officiel de FUNimation.",
+        "La publication nécessite désormais identifiant et mot de passe.",
+        "Aucun message de forum n’est repris."
+      ],
+      "editorialRelevance": "annonce administrative; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 247,
+      "type": "post",
+      "slug": "next-dubbed-video-releases-air-date-for-third-season",
+      "title": "Next Dubbed Video Releases, Air Date For Third Season",
+      "url": "https://www.kanzenshuu.com/1999/08/13/next-dubbed-video-releases-air-date-for-third-season/",
+      "publishedAt": "1999-08-13T11:00:21",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique et télévision"
+      ],
+      "summary": "FUNimation annonce les deux prochaines cassettes du doublage anglais, couvrant les épisodes doublés 67 à 72, avec expédition prévue le 31 août 1999 et précommandes sur son site. L’article détaille aussi la programmation télévisée annoncée pour le 6 septembre : fin de la saison 2, puis une heure spéciale lançant la saison 3 avec « Ginyu Assault » et « Incredible Force! » (épisodes 54–55).",
+      "keyInformation": [
+        "Deux VHS couvrant les épisodes 67–72 prévues pour le 31 août.",
+        "Diffusion annoncée le 6 septembre : épisodes 52–53 puis ouverture de saison 3 avec les épisodes 54–55."
+      ],
+      "editorialRelevance": "vidéo domestique et télévision; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 238,
+      "type": "post",
+      "slug": "official-dragonballz-com-forum-gone",
+      "title": "Official dragonballz.com Forum Gone?",
+      "url": "https://www.kanzenshuu.com/1999/06/09/official-dragonballz-com-forum-gone/",
+      "publishedAt": "1999-06-09T12:00:36",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "annonce administrative"
+      ],
+      "summary": "Le billet rapporte la fermeture temporaire de l’espace de discussion du nouveau dragonballz.com. Il résume la mesure comme une réponse aux difficultés de modération et indique que FUNimation prévoit un retour après mise en place de contrôles de contenu et d’un système d’identification. Il s’agit d’une annonce administrative; aucun message d’utilisateur n’est repris dans la synthèse.",
+      "keyInformation": [
+        "Annonce administrative de fermeture temporaire du forum officiel.",
+        "Une réouverture est envisagée après renforcement de la modération et de l’accès."
+      ],
+      "editorialRelevance": "annonce administrative; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 231,
+      "type": "post",
+      "slug": "problems-with-funimation-vhs-releases",
+      "title": "Problems With FUNimation VHS Releases?",
+      "url": "https://www.kanzenshuu.com/1999/06/01/problems-with-funimation-vhs-releases/",
+      "publishedAt": "1999-06-01T12:00:10",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "support produit"
+      ],
+      "summary": "FUNimation signale des défauts sur une petite partie de trois cassettes VHS : Sleeping Princess in Devil’s Castle, Captain Ginyu: Assault et Captain Ginyu: Double Cross. Les problèmes rapportés comprennent un suivi d’image instable, du bruit de fond continu et, pour certains exemplaires, un son mono. Le billet renvoie à la page de garantie du distributeur pour les démarches de remplacement.",
+      "keyInformation": [
+        "Trois VHS concernées : Sleeping Princess in Devil’s Castle et les deux volumes Captain Ginyu.",
+        "Défauts possibles : image instable, bruit de fond, audio mono.",
+        "La page de garantie de FUNimation donne les démarches de recours."
+      ],
+      "editorialRelevance": "support produit; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 234,
+      "type": "post",
+      "slug": "dbz-english-dub-back-in-syndication",
+      "title": "DBZ English Dub Back In Syndication?",
+      "url": "https://www.kanzenshuu.com/1999/06/01/dbz-english-dub-back-in-syndication/",
+      "publishedAt": "1999-06-01T11:00:30",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "diffusion télévisée"
+      ],
+      "summary": "Des guides de programmes signalent le retour prochain du doublage anglais de Dragon Ball Z de FUNimation en syndication. La brève attire l’attention sur l’éventuelle diffusion de l’épisode 10, « Escape from Piccolo », doublé en 1996 mais absent de la première programmation télévisée. Au moment de publication, la reprise est présentée comme une diffusion à confirmer.",
+      "keyInformation": [
+        "Retour en syndication du doublage anglais annoncé par les guides TV.",
+        "La diffusion éventuelle de l’épisode 10, jusque-là omis, est le point à vérifier."
+      ],
+      "editorialRelevance": "diffusion télévisée; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 280,
+      "type": "post",
+      "slug": "cartoon-network-dbz20xl-recap",
+      "title": "Cartoon Network DBZ20XL Recap",
+      "url": "https://www.kanzenshuu.com/1999/06/01/cartoon-network-dbz20xl-recap/",
+      "publishedAt": "1999-06-01T01:00:32",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "diffusion télévisée"
+      ],
+      "summary": "Cartoon Network organise la semaine du 24 au 28 mai une opération spéciale DBZ20XL dans le créneau Toonami : quatre épisodes doublés de Dragon Ball Z sont diffusés chaque jour entre 16 h et 18 h. La programmation se conclut le samedi 29 mai par la diffusion consécutive des trois premiers films DBZ doublés par FUNimation.",
+      "keyInformation": [
+        "Marathon DBZ20XL du 24 au 28 mai sur Cartoon Network.",
+        "Quatre épisodes par jour dans Toonami; les trois premiers films sont programmés le 29 mai."
+      ],
+      "editorialRelevance": "diffusion télévisée; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 227,
+      "type": "post",
+      "slug": "captain-ginyu-vhs-available-for-pre-order",
+      "title": "“Captain Ginyu“ VHS Available For Pre-Order",
+      "url": "https://www.kanzenshuu.com/1999/04/15/captain-ginyu-vhs-available-for-pre-order/",
+      "publishedAt": "1999-04-15T12:00:08",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique"
+      ],
+      "summary": "FUNimation ouvre les précommandes de ses nouvelles VHS de la saison 3, dont l’expédition doit commencer le 15 mai. Le billet présente le volume Captain Ginyu: Assault, consacré à l’affrontement entre Goku, Burter et Jeice puis à l’arrivée de Ginyu, et précise que les volumes couvrent les épisodes doublés 54–56. Il s’agit d’une information de vente et de programmation éditoriale de la sortie vidéo.",
+      "keyInformation": [
+        "Précommandes ouvertes pour les VHS de la saison 3; expédition prévue le 15 mai.",
+        "Captain Ginyu: Assault couvre les épisodes doublés 54–56."
+      ],
+      "editorialRelevance": "vidéo domestique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 223,
+      "type": "post",
+      "slug": "agent-mai-funimation-additional-tidbits",
+      "title": "“Agent Mai“ FUNimation Additional Tidbits",
+      "url": "https://www.kanzenshuu.com/1999/04/03/agent-mai-funimation-additional-tidbits/",
+      "publishedAt": "1999-04-03T12:00:19",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "production et doublage"
+      ],
+      "summary": "Le billet relaie une séance de questions-réponses par courriel avec « Agent Mai », contact de FUNimation, transmise par Adrian Saavedra. Les réponses abordent le rythme de production de la saison 3, les relations de FUNimation avec Cartoon Network et Pioneer, ainsi que plusieurs décisions de doublage et de sortie. Cette synthèse retient les informations de production et écarte tout contenu de discussion de forum éventuellement cité.",
+      "keyInformation": [
+        "Questions-réponses avec un contact de FUNimation surnommé Agent Mai.",
+        "Thèmes : production de la saison 3, diffusion Cartoon Network, rôles des distributeurs."
+      ],
+      "editorialRelevance": "production et doublage; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 220,
+      "type": "post",
+      "slug": "agent-mai-funimation-tidbits",
+      "title": "“Agent Mai“ FUNimation Tidbits",
+      "url": "https://www.kanzenshuu.com/1999/02/06/agent-mai-funimation-tidbits/",
+      "publishedAt": "1999-02-06T12:00:42",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "production et doublage"
+      ],
+      "summary": "Adrian Saavedra transmet les premières réponses d’« Agent Mai », contact de FUNimation, à des questions sur la suite de Dragon Ball Z en anglais. Le billet clarifie notamment que le retour de la série relève d’un accord avec Cartoon Network et que Pioneer n’est pas impliqué dans cette reprise. Il rapporte aussi des éléments sur le financement et la préparation de la production, sans constituer une annonce complète de calendrier.",
+      "keyInformation": [
+        "FUNimation répond à des questions sur la poursuite de son doublage DBZ.",
+        "Le billet attribue l’accord de diffusion à Cartoon Network et distingue le rôle de Pioneer."
+      ],
+      "editorialRelevance": "production et doublage; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 269,
+      "type": "post",
+      "slug": "cartoon-network-dbz-movie-scheduling",
+      "title": "Cartoon Network DBZ Movie Scheduling",
+      "url": "https://www.kanzenshuu.com/1999/02/01/cartoon-network-dbz-movie-scheduling/",
+      "publishedAt": "1999-02-01T12:00:24",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "diffusion télévisée"
+      ],
+      "summary": "Cartoon Network programme les trois premiers films DBZ doublés par FUNimation dans l’ordre inverse : Tree of Might le 29 janvier, The World’s Strongest le 5 février, puis Dead Zone le 12 février 1999, chaque fois à 16 h (heure de l’Est). La diffusion de Tree of Might utilise l’adaptation censurée autrefois découpée en trois segments pour remplacer des épisodes de la syndication. La brève relève la promotion télévisée des films et leur historique de diffusion américaine.",
+      "keyInformation": [
+        "Ordre de diffusion inversé : Tree of Might, The World’s Strongest, Dead Zone.",
+        "Dates : 29 janvier, 5 février et 12 février 1999, à 16 h ET.",
+        "Tree of Might est diffusé dans sa version censurée adaptée à la syndication."
+      ],
+      "editorialRelevance": "diffusion télévisée; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    }
+  ]
+}
