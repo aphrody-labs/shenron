@@ -87,6 +87,7 @@
     "@tanstack/react-virtual": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
+    "cmdk": "catalog:",
     "i18next": "catalog:",
     "i18next-browser-languagedetector": "catalog:",
     "i18next-localstorage-backend": "catalog:",

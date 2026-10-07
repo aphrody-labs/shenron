@@ -32,6 +32,14 @@ Les dictionnaires de la palette vivent dans `@shenron/ui/public` et couvrent
 toutes ses catégories. Cette étape s’exécute aussi avec `--no-browser` et
 `--cross-only` ; elle ne remplace pas une qualification visuelle dans Obscura.
 
+Le rendu canonique est `@shenron/ui/public/CommandPalette`, sans import Next,
+DB ou serveur. L’application fournit la navigation, la résolution des images
+et la télémétrie ; `searchUrl` permet de viser une API Bun distincte. Le cycle
+de requête borné est aussi dans le paquet UI. Un test DOM du paquet monte cette
+vue sans adaptateur Next face à un serveur Bun temporaire : panne `503`,
+réessai, 24 familles documentaires et navigation vers un databook. Les réponses
+de ce serveur sont synthétiques ; ce test ne qualifie pas la recherche SQL.
+
 La qualification navigateur utilise `@aphrody/agent-browser/engine`,
 `@aphrody/web-test` et son export `/next`. Elle démarre Obscura avec accès
 loopback explicite et un Next/Turbopack réel, sur des ports temporaires.

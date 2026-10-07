@@ -13,6 +13,8 @@ export * from "./public/StatTiles";
 export * from "./public/WikiSkeleton";
 export * from "./public/StreamSkeleton";
 export * from "./public/MangaCard";
+export * from "./public/CommandPalette";
+export * from "./public/command-palette-messages";
 export * from "./toriyama";
 export * from "./cinematic/AuraContainer";
 export * from "./cinematic/KenBurns";
