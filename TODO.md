@@ -6,5 +6,6 @@
 - [ ] Rendre la reprise de purge durable en cas d'arrêt après la suppression Better Auth.
 - [ ] Sortir les fonctions backend restantes de Next et qualifier les accès DB sur Bun.
 - [ ] Auditer les pertes de fonctionnalités entre les grands commits UI et restaurer celles confirmées.
+- [x] [Corriger les gestes interrompus et les faux doubles taps du lecteur partagé](docs/products/reader-gestures.md).
 - [ ] Unifier le rendu manga web, bureau et mobile ; vérifier visuellement les états et tailles d'écran.
 - [ ] Qualifier les chargements, erreurs, accessibilité et livraison de bout en bout.

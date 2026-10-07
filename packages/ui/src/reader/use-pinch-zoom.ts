@@ -35,6 +35,7 @@ export const ZOOM_STEP = 1.25;
 export const SWIPE_MIN = 48;
 const TAP_SLOP = 10;
 const DOUBLE_TAP_MS = 300;
+const DOUBLE_TAP_SLOP = 24;
 
 export const IDENTITY: ZoomState = { scale: 1, x: 0, y: 0 };
 
@@ -75,7 +76,15 @@ export function zoomAround(
 
 type Gesture =
   | { kind: "idle" }
-  | { kind: "pan"; id: number; start: Point; origin: ZoomState; type: string; at: number }
+  | {
+      kind: "pan";
+      id: number;
+      start: Point;
+      origin: ZoomState;
+      type: string;
+      at: number;
+      fromPinch: boolean;
+    }
   | { kind: "pinch"; distance: number; mid: Point; origin: ZoomState };
 
 export type PinchZoomOptions = {
@@ -88,28 +97,42 @@ export type PinchZoomOptions = {
 export function usePinchZoom({ onSwipe, resetKey }: PinchZoomOptions = {}) {
   // Ref de rappel : la surface (la visionneuse) se monte après le hook, la molette suit.
   const elementRef = useRef<HTMLDivElement | null>(null);
-  const [surface, setSurface] = useState<HTMLDivElement | null>(null);
-  const surfaceRef = useCallback((node: HTMLDivElement | null) => {
-    elementRef.current = node;
-    setSurface(node);
+  const pointers = useRef(new Map<number, Point>());
+  const gesture = useRef<Gesture>({ kind: "idle" });
+  const lastTap = useRef<{ at: number; point: Point } | null>(null);
+  const clearGestures = useCallback(() => {
+    const ids = [...pointers.current.keys()];
+    pointers.current.clear();
+    gesture.current = { kind: "idle" };
+    lastTap.current = null;
+    const element = elementRef.current;
+    for (const id of ids) {
+      if (element?.hasPointerCapture?.(id)) element.releasePointerCapture(id);
+    }
   }, []);
+  const [surface, setSurface] = useState<HTMLDivElement | null>(null);
+  const surfaceRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (elementRef.current !== node) clearGestures();
+      elementRef.current = node;
+      setSurface(node);
+    },
+    [clearGestures],
+  );
   const [zoom, setZoom] = useState<ZoomState>(IDENTITY);
   const zoomRef = useRef(zoom);
   useLayoutEffect(() => {
     zoomRef.current = zoom;
   });
-  const pointers = useRef(new Map<number, Point>());
-  const gesture = useRef<Gesture>({ kind: "idle" });
-  const lastTap = useRef<{ at: number; point: Point } | null>(null);
   const onSwipeRef = useRef(onSwipe);
   useLayoutEffect(() => {
     onSwipeRef.current = onSwipe;
   });
 
   useEffect(() => {
+    clearGestures();
     setZoom(IDENTITY);
-    lastTap.current = null;
-  }, [resetKey]);
+  }, [resetKey, clearGestures]);
 
   const bounds = useCallback((): ZoomBounds => {
     const rect = elementRef.current?.getBoundingClientRect();
@@ -139,7 +162,10 @@ export function usePinchZoom({ onSwipe, resetKey }: PinchZoomOptions = {}) {
 
   const zoomIn = useCallback(() => zoomBy(ZOOM_STEP), [zoomBy]);
   const zoomOut = useCallback(() => zoomBy(1 / ZOOM_STEP), [zoomBy]);
-  const reset = useCallback(() => setZoom(IDENTITY), []);
+  const reset = useCallback(() => {
+    clearGestures();
+    setZoom(IDENTITY);
+  }, [clearGestures]);
 
   const startPinch = () => {
     const [a, b] = [...pointers.current.values()];
@@ -171,6 +197,7 @@ export function usePinchZoom({ onSwipe, resetKey }: PinchZoomOptions = {}) {
         origin: zoomRef.current,
         type: event.pointerType,
         at: event.timeStamp,
+        fromPinch: false,
       };
   };
 
@@ -227,14 +254,14 @@ export function usePinchZoom({ onSwipe, resetKey }: PinchZoomOptions = {}) {
             origin: zoomRef.current,
             type: "touch",
             at: event.timeStamp,
+            fromPinch: true,
           }
         : { kind: "idle" };
       lastTap.current = null;
       return;
     }
     gesture.current = { kind: "idle" };
-    if (current.kind !== "pan" || current.id !== event.pointerId || event.type === "pointercancel")
-      return;
+    if (current.kind !== "pan" || current.id !== event.pointerId || current.fromPinch) return;
     const dx = point.x - current.start.x;
     const dy = point.y - current.start.y;
     const touchLike = current.type !== "mouse";
@@ -251,12 +278,21 @@ export function usePinchZoom({ onSwipe, resetKey }: PinchZoomOptions = {}) {
     // Double tap au doigt ; la souris passe par `onDoubleClick`.
     if (!touchLike || Math.hypot(dx, dy) > TAP_SLOP) return;
     const previous = lastTap.current;
-    if (previous && event.timeStamp - previous.at <= DOUBLE_TAP_MS) {
+    if (
+      previous &&
+      event.timeStamp - previous.at >= 0 &&
+      event.timeStamp - previous.at <= DOUBLE_TAP_MS &&
+      Math.hypot(point.x - previous.point.x, point.y - previous.point.y) <= DOUBLE_TAP_SLOP
+    ) {
       lastTap.current = null;
       toggleAt(point);
     } else {
       lastTap.current = { at: event.timeStamp, point };
     }
+  };
+
+  const onPointerCancel = (event: ReactPointerEvent<HTMLElement>) => {
+    if (pointers.current.has(event.pointerId)) clearGestures();
   };
 
   const onDoubleClick = (event: { clientX: number; clientY: number }) =>
@@ -296,7 +332,8 @@ export function usePinchZoom({ onSwipe, resetKey }: PinchZoomOptions = {}) {
       onPointerDown,
       onPointerMove,
       onPointerUp: onPointerEnd,
-      onPointerCancel: onPointerEnd,
+      onPointerCancel,
+      onLostPointerCapture: onPointerCancel,
       onDoubleClick,
     },
   };

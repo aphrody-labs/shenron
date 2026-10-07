@@ -195,7 +195,7 @@ describe("DatabookReader on a phone", () => {
 
   const pointer = (
     target: Element,
-    type: "pointerDown" | "pointerMove" | "pointerUp",
+    type: "pointerDown" | "pointerMove" | "pointerUp" | "pointerCancel" | "lostPointerCapture",
     id: number,
     x: number,
     y = 300,
@@ -235,6 +235,63 @@ describe("DatabookReader on a phone", () => {
     pointer(surface, "pointerUp", 3, 252, 201);
     pointer(surface, "pointerDown", 4, 252, 201);
     pointer(surface, "pointerUp", 4, 252, 201);
+    expect(surface.hasAttribute("data-zoomed")).toBe(false);
+  });
+
+  test("two quick taps far apart are separate taps, not a double tap", () => {
+    const { surface } = openViewer();
+    pointer(surface, "pointerDown", 1, 60, 80);
+    pointer(surface, "pointerUp", 1, 60, 80);
+    pointer(surface, "pointerDown", 2, 340, 500);
+    pointer(surface, "pointerUp", 2, 340, 500);
+    expect(surface.hasAttribute("data-zoomed")).toBe(false);
+  });
+
+  test("changing pages abandons the active drag before another finger starts", () => {
+    const { reader, dialog, surface } = openViewer();
+    pointer(surface, "pointerDown", 1, 320);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Page suivante" }));
+    expect(badge(reader)).toBe("n° 2");
+    pointer(surface, "pointerDown", 2, 100);
+    pointer(surface, "pointerMove", 2, 300);
+    pointer(surface, "pointerUp", 2, 320);
+    expect(badge(reader)).toBe("n° 1");
+    expect(surface.hasAttribute("data-zoomed")).toBe(false);
+  });
+
+  test("resetting during a drag keeps the page fitted when that finger moves again", () => {
+    const { reader, dialog, surface } = openViewer();
+    fireEvent.click(within(dialog).getByRole("button", { name: "Zoomer" }));
+    pointer(surface, "pointerDown", 1, 300);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Taille réelle de l'écran" }));
+    pointer(surface, "pointerMove", 1, 100);
+    pointer(surface, "pointerUp", 1, 100);
+    expect(surface.hasAttribute("data-zoomed")).toBe(false);
+    expect(badge(reader)).toBe("n° 1");
+  });
+
+  test("lost capture and cancellation end the gesture without navigating", () => {
+    for (const event of ["lostPointerCapture", "pointerCancel"] as const) {
+      const { reader, surface } = openViewer();
+      pointer(surface, "pointerDown", 1, 320);
+      pointer(surface, event, 1, 320);
+      pointer(surface, "pointerDown", 2, 320);
+      pointer(surface, "pointerMove", 2, 100);
+      pointer(surface, "pointerUp", 2, 100);
+      expect(badge(reader)).toBe("n° 2");
+      cleanup();
+    }
+  });
+
+  test("a pinch ending at fit cannot turn into a swipe or double tap", () => {
+    const { reader, surface } = openViewer();
+    pointer(surface, "pointerDown", 1, 100);
+    pointer(surface, "pointerDown", 2, 300);
+    pointer(surface, "pointerUp", 1, 100);
+    pointer(surface, "pointerUp", 2, 300);
+    pointer(surface, "pointerDown", 3, 300);
+    pointer(surface, "pointerUp", 3, 300);
+    expect(badge(reader)).toBe("n° 1");
     expect(surface.hasAttribute("data-zoomed")).toBe(false);
   });
 
