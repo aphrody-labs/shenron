@@ -38,10 +38,16 @@ répond 502, sans divulguer son URL ni ses identifiants.
 - [x] Tests de transmission d’items opaques, outils, `context_management`, SSE
       français/japonais, authentification, annulation et erreurs amont.
 - [x] TypeScript du serveur, oxlint et oxfmt du périmètre.
-- [x] MCP public : handshake et catalogue de 48 outils constatés sur DBFR.
+- [x] MCP public : handshake et catalogue de 48 outils constatés sur DBFR ;
+      recherche `dragonball.rag_search` réussie via le proxy MCP Aphrody, avec URLs
+      de sources conservées.
 - [x] Fournisseur DBFR : `/v1/models` répond 200 ; `/v1/responses` reconnaît
       la route et rejette une requête vide avec 400.
-- [ ] Artefact de ce lot construit, installé et activé en production.
+- [x] Binaire Linux Bun compilé depuis le worktree propre `ed054786`, 865 modules,
+      83 817 952 octets ; `version` et `help` exécutés. SHA-256 :
+      `d2ddceefb4283c340bbc68cb010029d3009be35f82237fd03ac80e7cfeb8b502`.
+      Ce binaire de qualification n’embarque pas le site ni les ressources natives.
+- [ ] Artefact complet de ce lot installé et activé en production.
 - [ ] Dialogue Responses réel, outils et reprise avec le modèle livré.
 - [ ] Compactage fournisseur puis nouveau tour : le modèle DBFR actuel
       répond **404** sur `/v1/responses/compact`. La façade conserve cet échec ;
