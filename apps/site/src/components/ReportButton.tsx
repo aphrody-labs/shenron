@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { sendReport } from "@/lib/report-request";
+import { useT } from "@/components/T";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { REPORT_CATEGORIES, REPORT_MESSAGE_MAX } from "@/lib/report-types";
 import { useMe } from "@/lib/use-me";
@@ -22,6 +23,7 @@ import { PlainField } from "@/components/editor/PlainField";
 type Phase = "idle" | "sending" | "done" | "error";
 
 export function ReportButton({ inline = false }: { inline?: boolean }) {
+  const t = useT();
   const pathname = usePathname();
   const me = useMe();
   const idCategorie = useId();
@@ -30,7 +32,9 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
   const [category, setCategory] = useState<string>(REPORT_CATEGORIES[0].key);
   const [message, setMessage] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
-  const [err, setErr] = useState<string | null>(null);
+  const [err, setErr] = useState<"tooShort" | "signInRequired" | "rateLimited" | "failed" | null>(
+    null,
+  );
   const boutonRef = useRef<HTMLButtonElement>(null);
   const panneau = useRef<HTMLDivElement>(null);
   /** Fermeture automatique après un envoi réussi. */
@@ -107,7 +111,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
   async function submit() {
     if (phase === "sending" || submission.current) return;
     if (message.trim().length < 5) {
-      setErr("Décris un peu plus le problème (5 caractères min).");
+      setErr("tooShort");
       return;
     }
     setPhase("sending");
@@ -127,12 +131,12 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
       if (submission.current !== controller) return;
       if (res.status === 401) {
         setPhase("error");
-        setErr("Connecte-toi avec Discord pour envoyer un signalement.");
+        setErr("signInRequired");
         return;
       }
       if (res.status === 429) {
         setPhase("error");
-        setErr("Trop de signalements d'affilée. Réessaie dans quelques minutes.");
+        setErr("rateLimited");
         return;
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -149,7 +153,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
     } catch {
       if (submission.current !== controller) return;
       setPhase("error");
-      setErr("Échec de l'envoi. Réessaie dans un instant.");
+      setErr("failed");
     } finally {
       if (submission.current === controller) submission.current = null;
     }
@@ -167,7 +171,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
           setErr(null);
         }}
         aria-expanded={open}
-        aria-label="Signaler une erreur"
+        aria-label={t("reportDialog.title")}
         // Pastille discrète, plus la barre orange à libellé : trois éléments
         // flottants (signalement, invitation Discord, assistant) se
         // disputaient le bas de l'écran sur toutes les pages. Le libellé
@@ -177,11 +181,11 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
         // replié tombait à 46×42 — le doigt le rate une fois sur trois au coin de
         // l'écran, là où la prise est la moins sûre.
         className="group fab-secondary fixed bottom-4 left-4 z-40 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border border-white/12 bg-[rgba(10,10,10,0.8)] p-2.5 text-white/55 shadow-lg backdrop-blur-md transition-all hover:border-dbz-orange/50 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 md:bottom-6 md:left-6"
-        title="Signaler une erreur"
+        title={t("reportDialog.title")}
       >
         <Drapeau className="h-4 w-4" />
         <span className="max-w-0 overflow-hidden whitespace-nowrap text-[13px] font-display font-semibold opacity-0 transition-all duration-200 group-hover:max-w-[10rem] group-hover:pr-1 group-hover:opacity-100 group-focus-visible:max-w-[10rem] group-focus-visible:opacity-100">
-          Signaler une erreur
+          {t("reportDialog.title")}
         </span>
       </button>
 
@@ -190,7 +194,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="Signaler une erreur"
+            aria-label={t("reportDialog.title")}
             className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
             onMouseDown={(e) => {
               if (e.target === e.currentTarget) fermer();
@@ -203,12 +207,12 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
               {/* En-tête */}
               <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
                 <h2 className="flex items-center gap-2 font-saiyan text-lg uppercase tracking-widest text-dbz-orange">
-                  <Drapeau className="h-4 w-4" /> Signaler une erreur
+                  <Drapeau className="h-4 w-4" /> {t("reportDialog.title")}
                 </h2>
                 <button
                   type="button"
                   onClick={fermer}
-                  aria-label="Fermer"
+                  aria-label={t("reportDialog.close")}
                   className="rounded-full p-1.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   <Croix className="h-4 w-4" />
@@ -220,27 +224,23 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
                   <div className="flex flex-col items-center gap-3 py-6 text-center">
                     <CocheCercle className="h-10 w-10 text-green-400" />
                     <p className="font-display text-base font-semibold text-white">
-                      Merci, c&apos;est envoyé !
+                      {t("reportDialog.sent")}
                     </p>
-                    <p className="text-sm text-white/50">
-                      L&apos;équipe verra ton signalement dans son tableau de bord.
-                    </p>
+                    <p className="text-sm text-white/50">{t("reportDialog.sentBody")}</p>
                   </div>
                 ) : me && !me.authenticated ? (
                   // Anonyme → invitation à se connecter.
                   <div className="space-y-4 py-2 text-center">
-                    <p className="text-sm text-white/70">
-                      Connecte-toi avec Discord pour nous envoyer un signalement (on pourra te
-                      répondre et te tenir au courant).
-                    </p>
+                    <p className="text-sm text-white/70">{t("reportDialog.signInBody")}</p>
                     <SignInDiscord className="inline-flex h-11 items-center justify-center rounded-full bg-dbz-orange px-6 font-display font-bold text-black transition-colors hover:bg-white">
-                      Se connecter avec Discord
+                      {t("reportDialog.signIn")}
                     </SignInDiscord>
                   </div>
                 ) : (
                   <>
                     <p className="text-xs text-white/50">
-                      Page concernée : <span className="font-mono text-white/70">{pathname}</span>
+                      {t("reportDialog.page")}{" "}
+                      <span className="font-mono text-white/70">{pathname}</span>
                     </p>
 
                     <div>
@@ -248,7 +248,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
                         htmlFor={idCategorie}
                         className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-dbz-blue-light"
                       >
-                        Type de problème
+                        {t("reportDialog.category")}
                       </label>
                       <select
                         id={idCategorie}
@@ -258,7 +258,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
                       >
                         {REPORT_CATEGORIES.map((c) => (
                           <option key={c.key} value={c.key}>
-                            {c.label}
+                            {t(`reportDialog.categories.${c.key}`)}
                           </option>
                         ))}
                       </select>
@@ -269,7 +269,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
                         htmlFor={idMessage}
                         className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-dbz-blue-light"
                       >
-                        Décris le problème
+                        {t("reportDialog.message")}
                       </label>
                       <PlainField
                         id={idMessage}
@@ -278,7 +278,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
                         minRows={4}
                         maxRows={10}
                         maxLength={REPORT_MESSAGE_MAX}
-                        placeholder="Ex : l'image de Goku ne se charge pas, le lien vers la saga X est cassé, une info est fausse…"
+                        placeholder={t("reportDialog.placeholder")}
                       />
                     </div>
 
@@ -289,7 +289,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
 									    signalements d'affilée » ou « Connecte-toi avec Discord ». */}
                     {err && (
                       <p role="alert" className="text-sm text-dbz-red">
-                        {err}
+                        {t(`reportDialog.${err}`)}
                       </p>
                     )}
 
@@ -301,10 +301,11 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
                     >
                       {phase === "sending" ? (
                         <>
-                          <Chargement className="h-4 w-4 animate-spin" /> Envoi…
+                          <Chargement className="h-4 w-4 animate-spin" />{" "}
+                          {t("reportDialog.sending")}
                         </>
                       ) : (
-                        "Envoyer le signalement"
+                        t("reportDialog.submit")
                       )}
                     </button>
                   </>
