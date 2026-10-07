@@ -31,6 +31,16 @@ async function defaultRunner(
 ): Promise<CommandOutput> {
   const program = command[0];
   if (!program) throw new Error("A pipeline command requires a program");
+  if (/(?:^|[/\\])aphrody(?:\.exe)?$/.test(program)) {
+    const { runAphrodyCommand } = await import("./aphrody/native-commands");
+    const result = await runAphrodyCommand(command.slice(1), {
+      timeoutMs: controls.timeoutMs ?? 1_800_000,
+      signal: controls.signal,
+    });
+    if (result.kind === "not_found") throw new Error(result.message);
+    if (result.kind === "timeout") throw new Error(`Native pipeline deadline: ${result.stderr}`);
+    return { code: result.code, stdout: result.stdout, stderr: result.stderr };
+  }
   controls.signal?.throwIfAborted();
   if (
     controls.timeoutMs !== undefined &&

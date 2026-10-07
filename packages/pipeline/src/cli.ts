@@ -18,7 +18,6 @@ import {
   runTranslation,
 } from "./workflows";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
-import sharp from "sharp";
 import {
   parseDatabookCandidateManifest,
   parseMangaCandidateManifest,
@@ -34,11 +33,262 @@ import {
 } from "./aphrody-ocr-candidate";
 import { KoharuSdkClient } from "./koharu-sdk-client";
 import { submitCandidateFile } from "./candidate-submit";
+import { parseArgs } from "node:util";
+import type { CrawlTarget } from "./workflows";
 
 const [command, ...args] = process.argv.slice(2);
 const positional = args.filter((arg) => !arg.startsWith("--"));
 
 async function main() {
+  if (command === "dragon-ball") {
+    if (args[0] === "coverage") {
+      const { values } = parseArgs({
+        args: args.slice(1),
+        strict: true,
+        options: {
+          catalogue: { type: "string" },
+          manifests: { type: "string" },
+          assets: { type: "string" },
+          "repo-root": { type: "string" },
+          "freeze-file": { type: "string" },
+          "as-of": { type: "string" },
+        },
+      });
+      if (!values.catalogue || !values.manifests || !values.assets)
+        throw new Error("coverage requires --catalogue, --manifests and --assets");
+      const { loadDatasetInventory } = await import("./dragon-ball/dataset-inventory");
+      const { coverage, unavailable } = await loadDatasetInventory({
+        catalogPath: values.catalogue,
+        manifestRoot: values.manifests,
+        assetRoot: values.assets,
+        repoRoot: values["repo-root"] ?? resolve(import.meta.dir, "../../.."),
+        freezeFile: values["freeze-file"],
+        asOf: values["as-of"],
+      });
+      console.log(JSON.stringify({ ...coverage, unavailable }, null, 2));
+      if (!coverage.coverageComplete) process.exitCode = 2;
+    } else if (args[0] === "automate") {
+      const { values } = parseArgs({
+        args: args.slice(1),
+        strict: true,
+        options: {
+          catalogue: { type: "string" },
+          manifests: { type: "string" },
+          assets: { type: "string" },
+          ledger: { type: "string" },
+          "mcp-config": { type: "string" },
+          hosts: { type: "string" },
+          "jobs-ledger": { type: "string" },
+          "collection-plans": { type: "string" },
+          "training-datasets": { type: "string" },
+          "training-root": { type: "string" },
+          "repo-root": { type: "string" },
+          "freeze-file": { type: "string" },
+          concurrency: { type: "string", default: "2" },
+          interval: { type: "string", default: "60" },
+          watch: { type: "boolean", default: false },
+        },
+      });
+      if (
+        !values.catalogue ||
+        !values.manifests ||
+        !values.assets ||
+        !values.ledger ||
+        !values["mcp-config"]
+      )
+        throw new Error(
+          "automate requires --catalogue, --manifests, --assets, --ledger and --mcp-config",
+        );
+      if (Boolean(values.hosts) !== Boolean(values["jobs-ledger"]))
+        throw new Error("--hosts and --jobs-ledger must be provided together");
+      if (Boolean(values["training-datasets"]) !== Boolean(values["training-root"]))
+        throw new Error("--training-datasets and --training-root must be provided together");
+      const interval = Number(values.interval);
+      if (!Number.isInteger(interval) || interval < 5 || interval > 3600)
+        throw new Error("Automation interval must be 5..3600 seconds");
+      const { z } = await import("zod");
+      const { datasetCatalogSchema, datasetManifestSchema } =
+        await import("./dragon-ball/source-coverage");
+      const { loadDatasetInventory, resolveDatasetEditorialFreeze } =
+        await import("./dragon-ball/dataset-inventory");
+      const { DragonBallAutomation, createNativeRagPorts, createNativeCollectionPort } =
+        await import("./dragon-ball/automation");
+      const { AphrodyWebJobs } = await import("./aphrody/jobs");
+      const { createApprovedTrainingDatasetPort } = await import("./dragon-ball/training-dataset");
+      const hostSchema = z.array(
+        z
+          .object({
+            id: z.string(),
+            config: z.string(),
+            server: z.literal("aphrody").optional(),
+            slots: z.number().int(),
+            workerReady: z.boolean(),
+          })
+          .strict(),
+      );
+      const plansSchema = z.array(
+        z
+          .object({
+            family: datasetManifestSchema.shape.family,
+            datasetId: datasetManifestSchema.shape.id,
+            revision: z.string().regex(/^[a-f0-9]{64}$/),
+            args: z.array(z.string()).min(1).max(256),
+            approved: z.boolean(),
+            rightsApproved: z.boolean(),
+            editorialTarget: datasetManifestSchema.shape.editorialTarget,
+          })
+          .strict(),
+      );
+      const jobs = values.hosts
+        ? new AphrodyWebJobs(
+            values["jobs-ledger"]!,
+            hostSchema.parse(await Bun.file(values.hosts).json()),
+          )
+        : undefined;
+      const controller = new AbortController();
+      const stop = () => controller.abort(new Error("Automation stopped"));
+      process.on("SIGINT", stop);
+      process.on("SIGTERM", stop);
+      try {
+        using automation = new DragonBallAutomation(
+          values.ledger,
+          {
+            ...createNativeRagPorts({ config: values["mcp-config"] }),
+            ...(jobs ? { collect: createNativeCollectionPort(jobs) } : {}),
+            ...(values["training-datasets"] ? {
+              prepareDataset: createApprovedTrainingDatasetPort({
+                manifestPath: values["training-datasets"], root: values["training-root"]!,
+              }),
+            } : {}),
+          },
+          Number(values.concurrency),
+        );
+        const options = {
+          catalogPath: values.catalogue,
+          manifestRoot: values.manifests,
+          assetRoot: values.assets,
+          repoRoot: values["repo-root"] ?? resolve(import.meta.dir, "../../.."),
+          freezeFile: values["freeze-file"],
+        };
+        do {
+          const inventory = await loadDatasetInventory(options);
+          if (inventory.unavailable.some((item) => item.family === null)) {
+            console.log(
+              JSON.stringify(
+                { ...inventory.coverage, unavailable: inventory.unavailable },
+                null,
+                2,
+              ),
+            );
+            if (!values.watch) process.exitCode = 2;
+          } else {
+            const report = await automation.run({
+              catalog: datasetCatalogSchema.parse(await Bun.file(values.catalogue).json()),
+              datasets: inventory.verifiedDatasets,
+              collectionPlans: values["collection-plans"]
+                ? plansSchema.parse(await Bun.file(values["collection-plans"]).json())
+                : [],
+              editorialFrozen: (await resolveDatasetEditorialFreeze(options)).frozen,
+              signal: controller.signal,
+            });
+            console.log(JSON.stringify({ ...report, unavailable: inventory.unavailable }, null, 2));
+            if (!values.watch && !report.complete) process.exitCode = 2;
+          }
+          if (!values.watch) break;
+          for (let elapsed = 0; elapsed < interval && !controller.signal.aborted; elapsed++)
+            await Bun.sleep(1000);
+        } while (!controller.signal.aborted);
+      } finally {
+        process.off("SIGINT", stop);
+        process.off("SIGTERM", stop);
+        jobs?.close();
+      }
+    } else if (args[0] === "catalogue-enrich") {
+      const { values } = parseArgs({
+        args: args.slice(1),
+        strict: true,
+        options: {
+          catalogue: { type: "string" },
+          output: { type: "string" },
+          "assets-index": { type: "string" },
+          sqlite: { type: "string" },
+          "freeze-file": { type: "string" },
+          apply: { type: "boolean", default: false },
+        },
+      });
+      if (!values.catalogue) throw new Error("catalogue-enrich requires --catalogue");
+      const { enrichDragonBallCatalogue } = await import("./dragon-ball/enrichment");
+      console.log(
+        JSON.stringify(
+          await enrichDragonBallCatalogue({
+            cataloguePath: values.catalogue,
+            outputPath: values.output,
+            assetsIndexPath: values["assets-index"],
+            sqlitePath: values.sqlite,
+            freezeFile: values["freeze-file"],
+            apply: values.apply,
+          }),
+          null,
+          2,
+        ),
+      );
+    } else {
+      const { runAphrodyCommand } = await import("./aphrody/native-commands");
+      const result = await runAphrodyCommand(["web", "dragon-ball", ...args], {
+        timeoutMs: 1_800_000,
+        json: true,
+      });
+      if (result.kind !== "exit" || !result.ok)
+        throw new Error(`Native Dragon Ball command failed: ${JSON.stringify(result)}`);
+      console.log(JSON.stringify(result.data, null, 2));
+    }
+    return;
+  }
+  if (command === "unify") {
+    const { values } = parseArgs({
+      args,
+      strict: true,
+      options: {
+        "dry-run": { type: "boolean", default: false },
+        out: { type: "string" },
+      },
+    });
+    if (values.out !== undefined && !values.out.trim())
+      throw new Error("The corpus output directory must not be empty");
+    console.log(
+      JSON.stringify(
+        await runCorpusIngest({ dryRun: values["dry-run"], outDir: values.out }),
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+  if (command === "crawl") {
+    const { values, positionals } = parseArgs({
+      args,
+      allowPositionals: true,
+      strict: true,
+      options: {
+        "dry-run": { type: "boolean", default: false },
+        "max-depth": { type: "string" },
+        "max-requests": { type: "string" },
+        out: { type: "string" },
+      },
+    });
+    if (positionals.length > 2) throw new Error("usage: pipeline crawl <source> [URL] [options]");
+    const result = await runCrawl({
+      source: (positionals[0] ?? "universal") as CrawlTarget["source"],
+      url: positionals[1],
+      dryRun: values["dry-run"],
+      depth: values["max-depth"] === undefined ? undefined : Number(values["max-depth"]),
+      maxRequests:
+        values["max-requests"] === undefined ? undefined : Number(values["max-requests"]),
+      outDir: values.out,
+    });
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
   if (command === "aphrody-ocr-candidate") {
     const [kind, manifestPath, inputPath, outputPath] = args;
     if (
@@ -96,6 +346,7 @@ async function main() {
       if (new Bun.CryptoHasher("sha256").update(imageBytes).digest("hex") !== digest) {
         throw new Error(`manifest review image changed: ${entry.image}`);
       }
+      const { default: sharp } = await import("sharp");
       const metadata = await sharp(imageBytes).metadata();
       if (!metadata.width || !metadata.height)
         throw new Error(`manifest image has no dimensions: ${entry.image}`);
@@ -217,6 +468,7 @@ async function main() {
         if (new Bun.CryptoHasher("sha256").update(imageBytes).digest("hex") !== entry.imageSha256) {
           throw new Error(`manifest review image changed: ${entry.image}`);
         }
+        const { default: sharp } = await import("sharp");
         const metadata = await sharp(imageBytes).metadata();
         if (!metadata.width || !metadata.height)
           throw new Error(`manifest image has no dimensions: ${entry.image}`);
@@ -387,18 +639,6 @@ async function main() {
       console.log("=== Pipeline Traduction ===");
       result = await runTranslation({ dryRun, args });
       break;
-    case "crawl":
-      console.log("=== Pipeline Crawl ===");
-      result = await runCrawl({
-        source: (positional[0] as any) ?? "universal",
-        url: positional[1],
-        dryRun,
-      });
-      break;
-    case "unify":
-      console.log("=== Pipeline Unify : Aphrody Web corpus -> Aphrody RAG ===");
-      result = await runCorpusIngest({ dryRun });
-      break;
     default:
       console.log(`
 Usage: bun run pipeline <module> [options]
@@ -412,7 +652,8 @@ Modules unifiés (exécutables hors du VPS principal) :
   rag          Construit ou évalue l'index vectoriel RAG
   ia           Orchestration des workflows et agents IA
   translation  Lance la supervision Bun des traductions databooks et du RAG
-  crawl        Lance les scrapers et collecteurs de données
+  crawl        Exécute le module Dragon Ball natif d'Aphrody Web (guides, databooks, official, kanzenshuu, dragonballcn, universal, custom)
+  dragon-ball  Module natif FFI ; coverage vérifie les datasets, automate reprend les étapes, catalogue-enrich prépare l'enrichissement
   unify        Ingère les exports Aphrody Web dans le store Aphrody RAG
 `);
       process.exit(command ? 1 : 0);

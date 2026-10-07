@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "producer": "aphrody",
+  "revision": "e5342ab2959081f579a9350812d7abce6bd243e0",
+  "dirty": true,
+  "packages": [
+    {
+      "name": "@aphrody/bun",
+      "version": "3.3.8",
+      "archive": "aphrody-bun-3e3959b4f0cb37f4.tgz",
+      "sha256": "3e3959b4f0cb37f44e20c63931f57349dc9f9141f9497267b8481ebefa0d61cf"
+    },
+    {
+      "name": "@aphrody/paths",
+      "version": "0.1.1",
+      "archive": "aphrody-paths-83ce57449c7d8766.tgz",
+      "sha256": "83ce57449c7d87664878894911f5d50fc6fd1d663386b1509de12ca25ac49ceb"
+    },
+    {
+      "name": "@aphrody/runtime-sdk",
+      "version": "0.1.1",
+      "archive": "aphrody-runtime-sdk-81b17d5191c5c099.tgz",
+      "sha256": "81b17d5191c5c099e18229bdb11fdcb176a8d823a998cf5876131087d1d65ac0"
+    },
+    {
+      "name": "@aphrody/update",
+      "version": "0.1.1",
+      "archive": "aphrody-update-c165f26f34b773c2.tgz",
+      "sha256": "c165f26f34b773c25e9e6b93a43a8db086a2d648bc67b31190fc2f82f44a5370"
+    }
+  ],
+  "external": []
+}

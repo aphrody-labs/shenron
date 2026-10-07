@@ -7,6 +7,19 @@
  */
 import { LaunchPatchSchema, LaunchConfigResponse, LaunchConfigSaveResponse } from "./wiki-launch";
 import { z } from "zod";
+import {
+  WEB_PATHS,
+  WebStatus,
+  WebImage,
+  WebFrameSearch,
+  WebMediaResolve,
+  WebMediaSearch,
+  WebMediaSource,
+  WebMediaResults,
+  WebFrameStats,
+  WebFrameVector,
+  WebFrameMatches,
+} from "./web";
 import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
 import { AccountSessionResponse } from "./account";
@@ -135,6 +148,68 @@ export const TableParams = z.object({ table: z.string().min(1).max(100) });
 const WIKI_CACHE = { maxAgeSeconds: 3600 } as const;
 
 export const endpoints = {
+  webStatus: {
+    id: "webStatus",
+    method: "get",
+    path: WEB_PATHS.status,
+    auth: "admin",
+    response: WebStatus,
+    cache: "no-store",
+    native: true,
+  },
+  webFramesStats: {
+    id: "webFramesStats",
+    method: "get",
+    path: WEB_PATHS.framesStats,
+    auth: "admin",
+    response: WebFrameStats,
+    cache: "no-store",
+    native: true,
+  },
+  webFramesVector: {
+    id: "webFramesVector",
+    method: "post",
+    path: WEB_PATHS.framesVector,
+    auth: "admin",
+    body: WebImage,
+    maxBodyBytes: 24 * 1024 * 1024 + 1024,
+    response: WebFrameVector,
+    cache: "no-store",
+    native: true,
+  },
+  webFramesSearch: {
+    id: "webFramesSearch",
+    method: "post",
+    path: WEB_PATHS.framesSearch,
+    auth: "admin",
+    body: WebFrameSearch,
+    maxBodyBytes: 24 * 1024 * 1024 + 1024,
+    response: WebFrameMatches,
+    cache: "no-store",
+    native: true,
+  },
+  webMediaResolve: {
+    id: "webMediaResolve",
+    method: "post",
+    path: WEB_PATHS.mediaResolve,
+    auth: "admin",
+    body: WebMediaResolve,
+    maxBodyBytes: 8192,
+    response: WebMediaSource,
+    cache: "no-store",
+    native: true,
+  },
+  webMediaSearch: {
+    id: "webMediaSearch",
+    method: "post",
+    path: WEB_PATHS.mediaSearch,
+    auth: "admin",
+    body: WebMediaSearch,
+    maxBodyBytes: 8192,
+    response: WebMediaResults,
+    cache: "no-store",
+    native: true,
+  },
   favorites: {
     id: "favorites",
     method: "get",

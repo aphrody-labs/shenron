@@ -6,7 +6,7 @@ import { executeCommand, type CommandRunner } from "./execution";
 import { runMangaOcr, runDatabooksOcr } from "./workflows";
 import { buildRagIndex, evaluateRag } from "./workflows";
 import { runIaTask, getToriyamaPersona } from "./workflows";
-import { runCrawl } from "./workflows";
+import { runCrawl, runCorpusIngest } from "./workflows";
 
 const okRunner: CommandRunner = async (command) => ({
   code: 0,
@@ -50,7 +50,7 @@ describe("@shenron/pipeline — exécution vérifiable", () => {
     ).rejects.toThrow("échec fixture");
   });
 
-  it("route OCR, évaluation RAG Aphrody et crawl vers leurs scripts réels", async () => {
+  it("route le crawl vers le propriétaire natif sans changer les autres pipelines", async () => {
     const manga = await runMangaOcr({ runner: okRunner });
     const databooks = await runDatabooksOcr({ runner: okRunner });
     const rag = await evaluateRag({ runner: okRunner });
@@ -65,11 +65,49 @@ describe("@shenron/pipeline — exécution vérifiable", () => {
     expect(databooks.command.at(1)?.endsWith("gpu-continuous-ocr.ts")).toBe(true);
     expect(rag.command.at(1)?.endsWith("eval-aphrody-rag.ts")).toBe(true);
     expect(rag.command).toContain("--ci");
-    expect(crawl.command.at(1)?.endsWith("crawl-kanzenshuu-rag.ts")).toBe(true);
-    expect(officialCrawl.command.at(1)?.endsWith("crawl-dragon-ball-official-aphrody.ts")).toBe(
-      true,
-    );
-    expect(remoteCrawl.command.at(1)?.endsWith("aphrody-web-crawl.ts")).toBe(true);
+    expect(crawl.command.slice(1, 4)).toEqual(["web", "dragon-ball", "crawl"]);
+    expect(crawl.command).toContain("kanzenshuu");
+    expect(officialCrawl.command).toContain("official");
+    expect(remoteCrawl.command.slice(1, 4)).toEqual([
+      "web",
+      "crawl-index",
+      "https://example.org/news",
+    ]);
+    for (const result of [crawl, officialCrawl, remoteCrawl]) {
+      expect(result.command[result.command.indexOf("--profile") + 1]).toBe("shenron");
+      expect(result.command.some((arg) => arg.endsWith(".ts"))).toBe(false);
+    }
+  });
+
+  it("refuse les sources interdites et les budgets invalides avant toute exécution", async () => {
+    const runner: CommandRunner = async () => {
+      throw new Error("must not execute");
+    };
+    for (const url of [
+      "https://dragonball.fandom.com/wiki/Goku",
+      "https://user:secret@example.org",
+      "file:///tmp/private",
+    ]) {
+      await expect(runCrawl({ source: "custom", url, runner })).rejects.toThrow();
+    }
+    for (const maxRequests of [0, -1, Number.NaN, 1.5]) {
+      await expect(runCrawl({ source: "official", maxRequests, runner })).rejects.toThrow();
+    }
+  });
+
+  it("planifie sans lancer le crawler et indexe les exports dans le profil Shenron", async () => {
+    const planned = await runCrawl({
+      source: "universal",
+      dryRun: true,
+      runner: async () => {
+        throw new Error("must not execute");
+      },
+    });
+    expect(planned.status).toBe("planned");
+    expect(planned.command).toContain("--index");
+    const result = await runCorpusIngest({ runner: okRunner });
+    expect(result.command.slice(1, 4)).toEqual(["web", "dragon-ball", "index"]);
+    expect(result.command[result.command.indexOf("--profile") + 1]).toBe("shenron");
   });
 
   it("retourne uniquement la sortie réelle de l'agent", async () => {

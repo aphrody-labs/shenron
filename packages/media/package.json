@@ -7,7 +7,8 @@
   "exports": {
     "./manga": "./src/manga.ts",
     "./ocr": "./src/ocr.ts",
-    "./remote-ocr": "./src/remote-ocr.ts"
+    "./remote-ocr": "./src/remote-ocr.ts",
+    "./sha256": "./src/sha256.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -28,7 +29,8 @@
     "runtime": {
       "./manga": "pure",
       "./ocr": "pure",
-      "./remote-ocr": "pure"
+      "./remote-ocr": "pure",
+      "./sha256": "pure"
     }
   }
 }

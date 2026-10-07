@@ -151,107 +151,8 @@ export {
 // 5. DRAGONBALLCN SCHEMAS & TYPES
 // ==========================================
 
-export type DbcnCatalogCategory =
-  | "full_color"
-  | "jp_original"
-  | "zh_cn"
-  | "zh_hk"
-  | "taiwan"
-  | "kanzenban"
-  | "anime_movie"
-  | "anime_z"
-  | "arale_cn"
-  | "arale_jp"
-  | "arale_hk"
-  | "all";
-
-export const DbcnVolumeItemSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  category: z.string(),
-  categoryTitle: z.string().optional(),
-  arc: z.string().optional(),
-  coverUrl: z.string().optional(),
-  url: z.string().optional(),
-  date: z.string().optional(),
-});
-export type DbcnVolumeItem = z.infer<typeof DbcnVolumeItemSchema>;
-
-export const DbcnPageItemSchema = z.object({
-  pageNumber: z.number(),
-  name: z.string().default(""),
-  size: z.string().optional(),
-  thumbUrl: z.string().default(""),
-  imageUrl: z.string().default(""),
-  pageUrl: z.string().default(""),
-});
-export type DbcnPageItem = z.infer<typeof DbcnPageItemSchema>;
-
-export const DbcnVolumeInfoSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  totalPages: z.number(),
-  pages: z.array(DbcnPageItemSchema).default([]),
-});
-export type DbcnVolumeInfo = z.infer<typeof DbcnVolumeInfoSchema>;
-
-export const DbcnSinglePageViewSchema = z.object({
-  pageNumber: z.number(),
-  name: z.string().default(""),
-  thumbUrl: z.string().default(""),
-  imageUrl: z.string().default(""),
-  pageUrl: z.string().default(""),
-});
-export type DbcnSinglePageView = z.infer<typeof DbcnSinglePageViewSchema>;
-
-// ==========================================
-// 6. FRAMES (COLORLAYOUT & TRACE.MOE) SCHEMAS & TYPES
-// ==========================================
-
-export const FrameMatchPreviewSchema = z.object({
-  image: z.string().default(""),
-  video: z.string().default(""),
-});
-
-export const FrameMatchSchema = z.object({
-  title: z.string(),
-  episode: z.number().nullable().optional(),
-  season: z.number().nullable().optional(),
-  fromMs: z.number().default(0),
-  atMs: z.number().default(0),
-  toMs: z.number().default(0),
-  similarity: z.number().default(0),
-  source: z.string().default(""),
-  anilist: z.number().default(0),
-  preview: FrameMatchPreviewSchema.default({ image: "", video: "" }),
-});
-export type FrameMatch = z.infer<typeof FrameMatchSchema>;
-
-export const BxcSearchOutputSchema = z.object({
-  origin: z.string().default("local"),
-  matches: z.array(FrameMatchSchema).default([]),
-  quota: z
-    .object({
-      used: z.number(),
-      total: z.number(),
-    })
-    .optional(),
-});
-export type BxcSearchOutput = z.infer<typeof BxcSearchOutputSchema>;
-
-export const BxcVectorOutputSchema = z.object({
-  hash: z.string(),
-  vector: z.array(z.number()),
-});
-export type BxcVectorOutput = z.infer<typeof BxcVectorOutputSchema>;
-
-export const BxcFramesStatsSchema = z.object({
-  path: z.string(),
-  media: z.number(),
-  frames: z.number(),
-  durationMs: z.number(),
-});
-export type BxcFramesStats = z.infer<typeof BxcFramesStatsSchema>;
+export * from "./contracts";
+import type { DbcnCatalogCategory } from "./contracts";
 
 // ==========================================
 // 7. MEDIA STREAMS & PLAYERS SCHEMAS & TYPES
@@ -314,6 +215,8 @@ export interface ChapterWithPagesResult {
 export interface BxcSpawnOptions {
   /** Installed Aphrody CLI for capabilities migrated to their Rust owners. */
   aphrodyBin?: string;
+  nativeExecutor?: import("../aphrody/native-commands").NativeCommandExecutor;
+  signal?: AbortSignal;
   bxcPath?: string;
   timeoutMs?: number;
   retries?: number;

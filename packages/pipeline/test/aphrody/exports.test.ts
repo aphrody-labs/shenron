@@ -53,6 +53,7 @@ describe("@shenron/pipeline/aphrody exports", () => {
       "aphrodyDoctor",
       "aphrodyGitInspect",
       "runAphrodyCli",
+      "runAphrodyCommand",
     ]);
   });
 
@@ -61,9 +62,9 @@ describe("@shenron/pipeline/aphrody exports", () => {
     expect(pkg.exports["./aphrody"]).toBe("./src/aphrody/index.ts");
     expect(pkg.exports["./aphrody/compute"]).toBe("./src/aphrody/compute.ts");
     expect(pkg.exports["./aphrody/cli"]).toBe("./src/aphrody/cli.ts");
-    expect(pkg.shenron.runtime["./aphrody"]).toBe("server");
-    // node:child_process (../process): the site's Next server reaches the CLI through bxc.
-    expect(pkg.shenron.runtime["./aphrody/cli"]).toBe("server");
+    expect(pkg.shenron.runtime["./aphrody"]).toBe("bun");
+    // Native command consumers belong to the Bun boundary even with lazy FFI loading.
+    expect(pkg.shenron.runtime["./aphrody/cli"]).toBe("bun");
   });
 
   it("a2a subpath keeps the hub API", async () => {

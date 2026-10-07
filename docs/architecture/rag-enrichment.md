@@ -123,11 +123,17 @@ indexés** (la phase d'embedding de `rag:build` dure désormais ~15 min).
 > cf. `CLAUDE.md`) : 8 118 docs et ~29 300 chunks supprimés, crawler
 > `crawl-fandom-rag.ts` effacé, et `rag-build.ts` refuse désormais à
 > l'indexation tout document dont l'id ou l'URL vient de `fandom.com`.
-- **Kanzenshuu** (`crawl-kanzenshuu-rag.ts`) — databooks officiels (Daizenshuu,
-  Chōzenshū…). BFS scopé `/databook/…`, extraction `<main id="content">`. ~342 docs.
-- **Databooks traduits** (`crawl-databooks-rag.ts`) — Kanzentai (archives **Wayback**),
-  forums Neoseeker (**via Wayback** car blocage direct 403), Toei officiel, fredcrash.
-  ~28 docs.
+- **Kanzenshuu** — `pipeline crawl kanzenshuu` utilise le module natif
+  `aphrody web dragon-ball crawl --source kanzenshuu`, qui possède la sélection
+  des pages et leur extraction. Le nombre de documents dépend du rapport de campagne.
+- **Databooks traduits** — `pipeline crawl databooks` sélectionne les sources
+  `kanzentai,neoseeker-databooks,databook-other` du même module ; les archives
+  Wayback et les traductions conservent leur provenance.
+- **Guides** — `pipeline crawl guides` sélectionne les traductions de référence.
+- Le crawl et l'indexation restent dans le profil **Shenron**. `pipeline unify`
+  réindexe les exports existants par `aphrody web dragon-ball index`, sans recrawler.
+  Voir [le raccordement natif](../operations/dragon-ball-web.md) pour les budgets,
+  les répertoires privés et les commandes de qualification.
 
 ### Corpus d'auteur `.aphrody` (`ingest-aphrody-rag.ts`)
 

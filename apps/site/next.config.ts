@@ -79,6 +79,8 @@ const nextConfig: NextConfig = {
   // Next 16's embedded CLI resolver misreads the Bun workspace tsc path as a
   // git package (`@C:/.../tsc.js`) during production builds.
   typescript: { ignoreBuildErrors: true },
+  // Native SDK loading is deferred to the Bun host, outside Next's server bundle.
+  serverExternalPackages: ["@aphrody/bun"],
   // Repli documenté pour les VPS contraints : Webpack sans minification évite
   // le pic mémoire du minifieur lors d'un build à froid. L'option est activée
   // uniquement par la pipeline locale de secours et ne change pas les builds
@@ -204,6 +206,7 @@ const nextConfig: NextConfig = {
     "@shenron/koharu",
     "@shenron/lexicon",
     "@shenron/media",
+    "@shenron/native",
     "@shenron/images",
     "@shenron/db",
     "@shenron/auth",

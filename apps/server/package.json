@@ -20,7 +20,8 @@
     "@shenron/auth": "workspace:*",
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
-    "@shenron/native": "workspace:*"
+    "@shenron/native": "workspace:*",
+    "@shenron/pipeline": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

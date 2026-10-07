@@ -52,6 +52,12 @@ if (!noBrowser)
   });
 if (!noBrowser)
   stages.push({
+    name: "Obscura shared mobile safe area",
+    cwd: import.meta.dir,
+    args: ["test", "test/mobile-safe-area.live.test.ts", "--timeout", "60000"],
+  });
+if (!noBrowser)
+  stages.push({
     name: "Obscura real WebSocket transport",
     cwd: import.meta.dir,
     args: ["test", "test/websocket.live.test.ts", "--timeout", "30000"],

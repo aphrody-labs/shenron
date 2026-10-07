@@ -8,7 +8,8 @@
   "exports": {
     "./shenron": "./src/shenron.ts",
     "./engine": "./src/engine.ts",
-    "./worker": "./src/worker.ts"
+    "./worker": "./src/worker.ts",
+    "./web/pipeline": "./src/web-pipeline.ts"
   },
   "scripts": {
     "generate": "bun scripts/generate.ts",
@@ -16,6 +17,9 @@
     "lint": "oxlint -c ../../.oxlintrc.json src test scripts",
     "test": "bun test",
     "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@aphrody/bun": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
@@ -28,7 +32,8 @@
     "runtime": {
       "./shenron": "bun",
       "./engine": "bun",
-      "./worker": "bun"
+      "./worker": "bun",
+      "./web/pipeline": "bun"
     }
   }
 }

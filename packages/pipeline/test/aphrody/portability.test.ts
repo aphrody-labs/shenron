@@ -31,9 +31,24 @@ describe("portability", () => {
   });
 
   it("root bundles for node without bun:ffi, bun:sqlite, sharp or A2A code", async () => {
-    const result = await Bun.build({ entrypoints: [join(SRC, "index.ts")], target: "node" });
+    const result = await Bun.build({
+      entrypoints: [join(SRC, "index.ts")],
+      target: "node",
+      external: ["@aphrody/bun", "@aphrody/bun/*"],
+    });
     expect(result.success).toBe(true);
     const code = await result.outputs[0]!.text();
     expect(code).not.toMatch(/bun:ffi|bun:sqlite|["']sharp["']|ShenronA2AHub|\.coord/);
+  });
+
+  it("Bun bundles the native command owner instead of leaving a computed package import", async () => {
+    const result = await Bun.build({
+      entrypoints: [join(SRC, "aphrody/native-commands.ts")],
+      target: "bun",
+    });
+    expect(result.success).toBe(true);
+    const code = await result.outputs[0]!.text();
+    expect(code).toContain("aphrody_web_pipeline_submit");
+    expect(code).not.toContain("import(moduleName)");
   });
 });

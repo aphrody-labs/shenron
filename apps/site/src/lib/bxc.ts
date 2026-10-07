@@ -1,1 +1,1 @@
-export * from "@shenron/pipeline/bxc";
+export * from "@shenron/pipeline/bxc/server";
