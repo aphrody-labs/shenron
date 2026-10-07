@@ -1,4 +1,5 @@
 import { PageShell } from "@shenron/ui/layout/PageShell";
+import { JAPANESE_FULL_COLOR_CATALOGUE } from "@shenron/config/manga-catalogue";
 import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
 import { T } from "@/components/T";
@@ -223,7 +224,10 @@ export default async function MangaIndexPage() {
                 </p>
                 {ed.edition === "full_color" && (
                   <p className="mt-2 text-[12px] leading-relaxed text-white/60">
-                    <T k="mangaCatalog.japaneseOriginalCatalogueStatus" />
+                    <T
+                      k="mangaCatalog.japaneseOriginalCatalogueStatus"
+                      values={JAPANESE_FULL_COLOR_CATALOGUE}
+                    />
                   </p>
                 )}
               </li>

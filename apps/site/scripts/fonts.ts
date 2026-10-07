@@ -88,6 +88,10 @@ const VARIABLES = `:root {
   --font-mono-src: "JetBrains Mono", "JetBrains Mono Fallback";
   --font-jp: "Noto Sans JP", "Noto Sans JP Fallback", sans-serif;
 }
+
+html[lang="ja"] {
+  --font-sans: var(--font-jp);
+}
 `;
 
 interface Face {

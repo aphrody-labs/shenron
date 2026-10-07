@@ -102,4 +102,52 @@ impl CusFile {
 
         Ok(Self { version, skills })
     }
+
+    /// Helper to construct a synthetic CUS binary buffer with `count` skills.
+    pub fn create_mock(skill_count: usize) -> Vec<u8> {
+        let mut buffer = Vec::new();
+        buffer.extend_from_slice(CUS_MAGIC);
+        buffer.extend_from_slice(&1u32.to_le_bytes()); // version 1
+        buffer.extend_from_slice(&(skill_count as u32).to_le_bytes()); // count
+        buffer.extend_from_slice(&16u32.to_le_bytes()); // offset = 16
+
+        for i in 0..skill_count {
+            let mut entry = [0u8; 48];
+            let id = (1000 + i) as u32;
+            let cat = (i % 4) as u16; // Super, Ultimate, Evasive, Awoken
+            let ki_cost = (i as u32 % 5) * 100;
+            let stamina_cost = if cat == 2 { 300u32 } else { 0u32 };
+
+            entry[0..4].copy_from_slice(&id.to_le_bytes());
+            entry[4..6].copy_from_slice(&cat.to_le_bytes());
+            entry[8..12].copy_from_slice(&ki_cost.to_le_bytes());
+            entry[12..16].copy_from_slice(&stamina_cost.to_le_bytes());
+            entry[16..20].copy_from_slice(&(id * 10).to_le_bytes()); // name_id
+            entry[20..24].copy_from_slice(&(id * 10 + 1).to_le_bytes()); // desc_id
+
+            buffer.extend_from_slice(&entry);
+        }
+
+        buffer
+    }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_708_skills() {
+        let mock_cus = CusFile::create_mock(708);
+        let parsed = CusFile::parse(&mock_cus).expect("Should parse 708 skills cleanly");
+
+        assert_eq!(parsed.skills.len(), 708);
+        assert_eq!(parsed.skills[0].id, 1000);
+        assert_eq!(parsed.skills[0].category, SkillCategory::Super);
+        assert_eq!(parsed.skills[1].category, SkillCategory::Ultimate);
+        assert_eq!(parsed.skills[2].category, SkillCategory::Evasive);
+        assert_eq!(parsed.skills[3].category, SkillCategory::Awoken);
+        assert_eq!(parsed.skills[707].id, 1707);
+    }
+}
+

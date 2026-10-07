@@ -22,6 +22,14 @@ export const metadata: Metadata = {
 // marque les jeux jouables ici ; les autres se jouent sur Discord.
 const GAMES = [
   {
+    name: "Dragon Pixel",
+    cmd: null as string | null,
+    variant: "solo",
+    desc: "Jeu de combat 2D rétro Toriyama Master Edition. 15 chapitres du Mode Histoire couvrant les 42 tomes, 8 combattants, duels de Kikōha et transformations Super Saiyan.",
+    power: "42 Tomes",
+    play: "/games/dragon-pixel" as string | null,
+  },
+  {
     name: "2048 : Ki Merge",
     cmd: null as string | null,
     variant: "solo",

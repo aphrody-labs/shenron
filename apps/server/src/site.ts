@@ -16,6 +16,7 @@ import { type Backend, startBackend } from "./backend";
 import type { ServerPaths } from "./config";
 import { type FrontHost, freePort, serveFront } from "./front";
 import { localApi } from "./local-api";
+import { startNextStandalone, stopStandaloneChild } from "./next-startup";
 
 export interface SiteLayout {
   /** Standalone root (contains `apps/site/server.js` and the traced `node_modules`). */
@@ -57,53 +58,12 @@ export function locateSite(paths: ServerPaths, env: NodeJS.ProcessEnv = process.
   );
 }
 
-/** Whether this process is a `bun build --compile` executable (virtual module root). */
-const COMPILED =
-  import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(import.meta.path);
-
-/**
- * Start the Next standalone server on a loopback port, in a child Bun runtime: the same
- * executable with BUN_BE_BUN=1 when compiled (a compiled binary does not resolve the payload's
- * node_modules for modules it imports), else the current `bun`.
- */
-async function startNext(
-  layout: SiteLayout,
-  port: number,
-  extraEnv: Record<string, string>,
-): Promise<ReturnType<typeof Bun.spawn>> {
-  const child = Bun.spawn([process.execPath, join(layout.app, "server.js")], {
-    cwd: layout.app,
-    env: {
-      ...process.env,
-      ...extraEnv,
-      ...(COMPILED ? { BUN_BE_BUN: "1" } : {}),
-      PORT: String(port),
-      HOSTNAME: "127.0.0.1",
-      NODE_ENV: "production",
-    },
-    stdio: ["ignore", "inherit", "inherit"],
-  });
-  const deadline = Date.now() + 120_000;
-  while (Date.now() < deadline) {
-    if (child.exitCode !== null)
-      throw new Error(`Next standalone server exited with ${child.exitCode}`);
-    try {
-      const response = await fetch(`http://127.0.0.1:${port}/robots.txt`, { redirect: "manual" });
-      if (response.status < 500) return child;
-    } catch {
-      // not listening yet
-    }
-    await Bun.sleep(25);
-  }
-  child.kill();
-  throw new Error("Next standalone server did not start within 120 s");
-}
-
 export interface RunningSite {
   url: string;
   port: number;
   layout: SiteLayout;
-  stop(): void;
+  exited: Promise<number>;
+  stop(): Promise<void>;
 }
 
 /** The host as the front sees it: `/mcp` falls back to Next once the MCP sidecar is down. */
@@ -153,13 +113,20 @@ export async function serveSite(
   backend.koharu.setServerUrl(`http://127.0.0.1:${front.port}`);
   let next: ReturnType<typeof Bun.spawn>;
   try {
-    next = await startNext(layout, nextPort, backend.nextEnv);
+    next = await startNextStandalone(layout.app, nextPort, {
+      ...backend.nextEnv,
+      SHENRON_HOST_URL: `http://127.0.0.1:${front.port}`,
+    });
   } catch (error) {
-    void front.stop(true);
-    await backend.stop();
+    await Promise.allSettled([front.stop(true), backend.stop()]);
     throw error;
   }
   ready = true;
+  const exited = next.exited.then((code) => {
+    ready = false;
+    return code;
+  });
+  let stopping: Promise<void> | undefined;
   const url = `http://${options.hostname === "0.0.0.0" ? "127.0.0.1" : options.hostname}:${front.port}`;
   const groups = backend.groups();
   console.error(
@@ -175,10 +142,20 @@ export async function serveSite(
     url,
     port: front.port ?? options.port,
     layout,
+    exited,
     stop: () => {
-      next.kill();
-      void front.stop(true);
-      void backend.stop();
+      ready = false;
+      return (stopping ??= (async () => {
+        const results = await Promise.allSettled([
+          stopStandaloneChild(next),
+          front.stop(true),
+          backend.stop(),
+        ]);
+        const errors = results.flatMap((result) =>
+          result.status === "rejected" ? [result.reason] : [],
+        );
+        if (errors.length) throw new AggregateError(errors, "Shenron site shutdown failed");
+      })());
     },
   };
 }

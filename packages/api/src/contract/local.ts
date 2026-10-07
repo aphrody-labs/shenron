@@ -26,6 +26,7 @@ export const LOCAL_API_GROUPS = [
   "models",
   "memory",
   "auth",
+  "web",
 ] as const;
 
 export const LocalApiGroupName = z.enum(LOCAL_API_GROUPS);

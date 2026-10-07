@@ -35,10 +35,13 @@ const { values } = parseArgs({
   strict: false,
 });
 
-const batchSize = Math.max(1, parseInt(values.limit ?? values.batch ?? "50", 10));
-const sleepSec = Math.max(5, parseInt(values["sleep-sec"] ?? "30", 10));
-const maxCycles = values["max-cycles"] ? parseInt(values["max-cycles"], 10) : null;
-const teacher = values.teacher ?? "antigravity";
+const batchRaw = values.limit ?? values.batch ?? "50";
+const batchSize = Math.max(1, parseInt(typeof batchRaw === "string" ? batchRaw : "50", 10));
+const sleepRaw = values["sleep-sec"] ?? "30";
+const sleepSec = Math.max(5, parseInt(typeof sleepRaw === "string" ? sleepRaw : "30", 10));
+const maxCyclesRaw = values["max-cycles"];
+const maxCycles = typeof maxCyclesRaw === "string" ? parseInt(maxCyclesRaw, 10) : null;
+const teacher = typeof values.teacher === "string" ? values.teacher : "antigravity";
 
 console.log("==========================================================");
 console.log("🐉 SHENRON CHAT — BOUCLE CONTINUE D'ENTRAÎNEMENT         ");
@@ -98,14 +101,15 @@ while (running) {
 
   // Étape A : Génération / complétion des rollouts
   console.log(`[A] Génération d'un lot de ${batchSize} rollouts (teacher: ${teacher})...`);
-  const rolloutArgs = [
+  const modelArg = typeof values.model === "string" ? ["--model", values.model] : [];
+  const rolloutArgs: string[] = [
     "bun",
     "packages/pipeline/scripts/build-chat-rollouts.ts",
     "--input", defaultTriples,
     "--out", outDir,
     "--limit", String(batchSize),
     "--teacher", teacher,
-    ...(values.model ? ["--model", values.model] : [])
+    ...modelArg,
   ];
 
   const rollProc = Bun.spawn(rolloutArgs, { cwd: repoRoot, stdout: "inherit", stderr: "inherit" });

@@ -40,7 +40,8 @@
     "./page-banners": "./src/page-banners.ts",
     "./chronology": "./src/chronology.ts",
     "./wiki-launch": "./src/wiki-launch.ts",
-    "./wiki-launch-config": "./src/wiki-launch-config.ts"
+    "./wiki-launch-config": "./src/wiki-launch-config.ts",
+    "./manga-catalogue": "./src/manga-catalogue.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -91,7 +92,8 @@
       "./page-banners": "pure",
       "./chronology": "pure",
       "./wiki-launch": "pure",
-      "./wiki-launch-config": "pure"
+      "./wiki-launch-config": "pure",
+      "./manga-catalogue": "pure"
     }
   }
 }

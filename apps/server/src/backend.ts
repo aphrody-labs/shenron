@@ -49,6 +49,7 @@ import { freePort } from "./front";
 import { koharuBridge, type KoharuBridge } from "./koharu";
 import { libraryPath } from "./local-api";
 import { nativeMemory } from "./memory";
+import { createNativeWebPort } from "./web";
 
 export const VFS_FILE = "shenron-vfs.sqlite";
 /** Canonical lexicon shipped in the payload (`data/`, scripts/build/server-data.ts). */
@@ -227,6 +228,7 @@ export function unavailableGroups(reason: string): LocalApiGroups {
     models: { ...status },
     memory: { ...status },
     auth: { ...status },
+    web: { ...status },
   };
 }
 
@@ -322,6 +324,7 @@ export async function startBackend(
       wiki: plan.wiki,
       ...(chatModel ? { chatModels: chatModel.catalog } : {}),
       memory: nativeMemory(paths, plan.env),
+      web: await createNativeWebPort(),
       ...(o.betterAuth !== undefined ? { betterAuth: o.betterAuth } : {}),
       ...(agentHomes
         ? {

@@ -37,4 +37,32 @@ describe("Aphrody Discord migration", () => {
     ])
       expect(guildAiPrompt({ ...message, ...change }, botId, {})).toBeUndefined();
   });
+
+  test("accepts messages across admitted multi-guild setup in Aphrody lab channels", () => {
+    const multiGuildEnv = {
+      GUILD_ID: "934894610545770506",
+      ADDITIONAL_GUILD_IDS: APHRODY_DISCORD.guildId,
+    };
+    // Message in start-here
+    expect(guildAiPrompt(message, botId, multiGuildEnv)).toBe("Bonjour");
+
+    // Message in assistant channel
+    expect(
+      guildAiPrompt(
+        { ...message, channelId: APHRODY_DISCORD.assistantChannelId },
+        botId,
+        multiGuildEnv,
+      ),
+    ).toBe("Bonjour");
+
+    // Message in chat channel
+    expect(
+      guildAiPrompt(
+        { ...message, channelId: APHRODY_DISCORD.chatChannelId },
+        botId,
+        multiGuildEnv,
+      ),
+    ).toBe("Bonjour");
+  });
 });
+

@@ -1,18 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
+import { nativeFixture } from "./native-fixture";
 import { tempPath } from "@aphrody/paths";
-import { afterAll, describe, expect, it } from "bun:test";
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { describe, expect, it } from "bun:test";
 import { aphrodyWebMirror } from "../../src/aphrody/mirror";
-import { testExecutable } from "@shenron/config/testing-executable";
 
-const directory = mkdtempSync(join(tmpdir(), "aphrody-mirror-consumer-"));
-afterAll(() => rmSync(directory, { recursive: true, force: true }));
-
-function fixture(name: string, source: string) {
-  return testExecutable(directory, name, source);
-}
+const fixture = nativeFixture;
 
 const partialReport = {
   requests: 4,
@@ -25,7 +17,7 @@ const partialReport = {
 
 describe("Aphrody Web mirror CLI client", () => {
   it("passes bounded mirror settings and accepts partial reports", async () => {
-    const bin = fixture(
+    const nativeExecutor = fixture(
       "mirror-partial",
       `const args=process.argv.slice(2);
 if(args[0]!=="web"||args[1]!=="mirror"||args[2]!=="https://wiki.example/"||args[3]!==${JSON.stringify(tempPath("mirror"))}||args[args.indexOf("--max-pages")+1]!=="7"||args[args.indexOf("--resolve-cdns")+1]!=="true") process.exit(2);
@@ -38,13 +30,13 @@ console.log(${JSON.stringify(JSON.stringify(partialReport))});`,
         maxPages: 7,
         resolveCdns: true,
       },
-      { bin },
+      { nativeExecutor },
     );
     expect(report).toEqual(partialReport);
   });
 
   it("passes explicit CDN hosts as one argument", async () => {
-    const bin = fixture(
+    const nativeExecutor = fixture(
       "mirror-hosts",
       `const args=process.argv.slice(2); const index=args.indexOf("--resolve-cdns");
 if(index<0||args[index+1]!=="static.example,cdn.example") process.exit(3);
@@ -57,7 +49,7 @@ console.log(${JSON.stringify(JSON.stringify({ ...partialReport, failures: [] }))
           outputDir: tempPath("mirror"),
           resolveCdns: ["static.example", "cdn.example"],
         },
-        { bin },
+        { nativeExecutor },
       ),
     ).resolves.toMatchObject({ failures: [] });
   });
@@ -67,7 +59,7 @@ console.log(${JSON.stringify(JSON.stringify({ ...partialReport, failures: [] }))
     await expect(
       aphrodyWebMirror(
         { url: "https://wiki.example/", outputDir: tempPath("mirror") },
-        { bin: failed },
+        { nativeExecutor: failed },
       ),
     ).rejects.toThrow("exited 6");
 
@@ -78,7 +70,7 @@ console.log(${JSON.stringify(JSON.stringify({ ...partialReport, failures: [] }))
     await expect(
       aphrodyWebMirror(
         { url: "https://wiki.example/", outputDir: tempPath("mirror") },
-        { bin: invalid },
+        { nativeExecutor: invalid },
       ),
     ).rejects.toThrow("invalid report");
 
@@ -89,7 +81,7 @@ console.log(${JSON.stringify(JSON.stringify({ ...partialReport, failures: [] }))
     await expect(
       aphrodyWebMirror(
         { url: "https://wiki.example/", outputDir: tempPath("mirror") },
-        { bin: invalidFailure },
+        { nativeExecutor: invalidFailure },
       ),
     ).rejects.toThrow("invalid report");
   });

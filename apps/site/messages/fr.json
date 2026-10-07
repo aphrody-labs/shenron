@@ -10,7 +10,7 @@
     "colorChapterListTitle": "Chapitres disponibles ({count})",
     "frenchColorScans": "Scans couleur français (scan-db)",
     "japaneseOriginalNotIndexed": "Édition originale japonaise Full Color (non indexée)",
-    "japaneseOriginalCatalogueStatus": "Full Color japonais : 32 tomes papier / 42 numériques au catalogue Shueisha ; intégrale non indexée",
+    "japaneseOriginalCatalogueStatus": "Full Color japonais : {printVolumes} tomes papier / {digitalVolumes} numériques au catalogue Shueisha ; intégrale non indexée",
     "frenchBlackWhiteScans": "Scans français en noir et blanc"
   },
   "nav": {
@@ -1691,6 +1691,31 @@
       "minimize": "Réduire",
       "maximize": "Agrandir ou restaurer",
       "close": "Fermer"
+    }
+  },
+  "reportDialog": {
+    "title": "Signaler une erreur",
+    "close": "Fermer",
+    "tooShort": "Décris un peu plus le problème (5 caractères min).",
+    "signInRequired": "Connecte-toi avec Discord pour envoyer un signalement.",
+    "rateLimited": "Trop de signalements d'affilée. Réessaie dans quelques minutes.",
+    "failed": "Échec de l'envoi. Réessaie dans un instant.",
+    "sent": "Merci, c'est envoyé !",
+    "sentBody": "L'équipe verra ton signalement dans son tableau de bord.",
+    "signInBody": "Connecte-toi avec Discord pour nous envoyer un signalement (on pourra te répondre et te tenir au courant).",
+    "signIn": "Se connecter avec Discord",
+    "page": "Page concernée :",
+    "category": "Type de problème",
+    "message": "Décris le problème",
+    "placeholder": "Ex : l'image de Goku ne se charge pas, le lien vers la saga X est cassé, une info est fausse…",
+    "sending": "Envoi…",
+    "submit": "Envoyer le signalement",
+    "categories": {
+      "bug": "Bug / dysfonctionnement",
+      "contenu": "Erreur de contenu (info fausse)",
+      "lien": "Lien / média cassé",
+      "suggestion": "Suggestion / amélioration",
+      "autre": "Autre"
     }
   }
 }

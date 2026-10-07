@@ -262,9 +262,9 @@ export default async function RootLayout({
           <SiteShell>
             <PageTransition>{children}</PageTransition>
           </SiteShell>
+          <DiscordInviteFAB />
+          <ReportButton />
         </LocaleProvider>
-        <DiscordInviteFAB />
-        <ReportButton />
         {/* L'assistant flottant est retiré des pages publiques (2026-09-12).
 				    C'était un bouton rond à anneau dégradé, halo flou, survol qui
 				    grossit de 10 % et un emoji pour visage — tout ce que DESIGN.md

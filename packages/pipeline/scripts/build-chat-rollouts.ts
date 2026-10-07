@@ -16,7 +16,8 @@
  *        [--soul F] [--limit N] [--concurrency 2] [--model ID] [--teacher aphrody|antigravity]
  *        [--split-only] [--control-stdin] (send a "stop" line for a graceful Windows shutdown)
  */
-import { createHash } from "node:crypto";
+import { normalizeText, goldKeys, overlapsGold, sha256 } from "../src/ai/training-hashes";
+export { normalizeText, segmentHashes, goldKeys, overlapsGold } from "../src/ai/training-hashes";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { createInterface } from "node:readline";
@@ -48,70 +49,6 @@ export type ChatFn = (messages: AphrodyChatMessage[]) => Promise<{ answer: strin
 export const GOLD_PERCENT = 10;
 export const MAX_ANSWER_CHARS = 1200;
 export const MIN_OVERLAP_TOKENS = 2;
-
-// --- hashing (port of aphrody_train/hashing.py) ---------------------------
-
-const SEGMENT_SPLIT = /[.!?;:\n\r。！？]+/u;
-const SEGMENT_STRIP = new Set(" \t\"'`«»“”‘’()[]{}<>,-–—*#_|.!?;:…。！？");
-const MIN_SEGMENT_CHARS = 12;
-
-/** `normalize_text`: NFC, optional casefold, whitespace collapsed. */
-export function normalizeText(text: string, casefold = false): string {
-  let value = text.normalize("NFC");
-  if (casefold) value = value.toLowerCase().normalize("NFC");
-  return value.split(/\s+/u).filter(Boolean).join(" ");
-}
-
-function stripChars(value: string): string {
-  const chars = [...value];
-  let start = 0;
-  let end = chars.length;
-  while (start < end && SEGMENT_STRIP.has(chars[start] as string)) start++;
-  while (end > start && SEGMENT_STRIP.has(chars[end - 1] as string)) end--;
-  return chars.slice(start, end).join("");
-}
-
-function segmentKey(text: string): string {
-  return stripChars(normalizeText(text, true));
-}
-
-function sha256(value: string): string {
-  return createHash("sha256").update(value, "utf8").digest("hex");
-}
-
-/** `segment_hashes`: whole text plus each sentence segment >= 12 chars. */
-export function segmentHashes(text: string): Set<string> {
-  const out = new Set<string>();
-  const whole = segmentKey(text);
-  if (whole) out.add(sha256(whole));
-  for (const part of text.split(SEGMENT_SPLIT)) {
-    const value = segmentKey(part);
-    if ([...value].length >= MIN_SEGMENT_CHARS && value !== whole) out.add(sha256(value));
-  }
-  return out;
-}
-
-function* iterStrings(value: unknown): Generator<string> {
-  if (typeof value === "string") yield value;
-  else if (Array.isArray(value)) for (const item of value) yield* iterStrings(item);
-  else if (value && typeof value === "object")
-    for (const item of Object.values(value)) yield* iterStrings(item);
-}
-
-/** Gold text keys, mirroring `GoldIndex.add_query` / `add_target` (non-URL). */
-export function goldKeys(gold: GoldRow[]): Set<string> {
-  const keys = new Set<string>();
-  for (const row of gold)
-    for (const text of [row.query, ...row.expect])
-      if (text.trim()) for (const key of segmentHashes(text.trim())) keys.add(key);
-  return keys;
-}
-
-export function overlapsGold(value: unknown, keys: Set<string>): boolean {
-  for (const text of iterStrings(value))
-    for (const key of segmentHashes(text)) if (keys.has(key)) return true;
-  return false;
-}
 
 // --- split ----------------------------------------------------------------
 

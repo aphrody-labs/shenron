@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Unified operational workflows: OCR, RAG, agent orchestration, crawling and translation. */
-import { existsSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { wrapLanguageModel } from "ai";
@@ -232,10 +231,18 @@ export async function evaluateRag(
 }
 
 export interface CrawlTarget {
-  source: "dragonballcn" | "kanzenshuu" | "official" | "databooks" | "custom" | "universal";
+  source:
+    | "dragonballcn"
+    | "kanzenshuu"
+    | "official"
+    | "databooks"
+    | "guides"
+    | "custom"
+    | "universal";
   url?: string;
   depth?: number;
   outDir?: string;
+  maxRequests?: number;
   dryRun?: boolean;
   runner?: CommandRunner;
 }
@@ -243,89 +250,96 @@ export interface CrawlTarget {
 /**
  * Aphrody-owned Dragon Ball crawl and RAG locations for the Shenron profile.
  */
-export function corpusLocations(root: string, env?: Record<string, string | undefined>) {
+export function corpusLocations(_root: string, env?: Record<string, string | undefined>) {
   env ??= process.env;
   const crawlDir =
     env.APHRODY_CORPUS_CRAWL_DIR?.trim() ||
     join(env.APHRODY_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces", "dbfr", "crawl");
-  const datasetDir =
-    env.APHRODY_DRAGONBALL_DATASET_DIR?.trim() ||
-    join(root, "crates", "ai", "rag-eval", "datasets", "dragonball");
   return {
-    datasetDir,
-    crawlConfig: join(datasetDir, "crawl.config.json"),
     crawlDir,
-    ragDb: env.APHRODY_DRAGONBALL_RAG_DB?.trim() || join(crawlDir, "rag.sqlite"),
+    corpusDir: join(crawlDir, "corpus"),
+    profile: "shenron",
   };
 }
 
 /** Ingests every Aphrody Web corpus JSONL export into the Aphrody RAG owner. */
 export async function runCorpusIngest(
-  options: { dryRun?: boolean; runner?: CommandRunner } = {},
+  options: { dryRun?: boolean; outDir?: string; runner?: CommandRunner } = {},
 ): Promise<PipelineExecution> {
   const root = join(import.meta.dir, "../../..");
   const loc = corpusLocations(root);
-  const corpusDir = join(loc.crawlDir, "corpus");
-  const exports = existsSync(corpusDir)
-    ? readdirSync(corpusDir)
-        .filter((f) => f.endsWith(".jsonl"))
-        .toSorted()
-        .map((f) => join(corpusDir, f))
-    : [];
-  if (!exports.length && !options.dryRun)
-    throw new Error(
-      `aucun export Aphrody Web dans ${corpusDir}; lancer d'abord: pipeline crawl universal`,
-    );
   const command = [
-    "bun",
-    join(root, "packages/pipeline/scripts/rag-sync-aphrody.ts"),
-    "--corpus-crawl",
-    `--crawl-dir=${loc.crawlDir}`,
+    process.env.APHRODY_BIN?.trim() || "aphrody",
+    "web",
+    "dragon-ball",
+    "index",
+    "--output",
+    options.outDir ?? loc.corpusDir,
+    "--profile",
+    loc.profile,
+    "--json",
   ];
-  if (!options.dryRun) command.push("--appliquer");
   return executeCommand(command, { cwd: root, dryRun: options.dryRun, runner: options.runner });
 }
 
 export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> {
   const root = join(import.meta.dir, "../../..");
-  let command: string[] = [];
-  switch (target.source) {
-    case "dragonballcn":
-      command = ["bun", join(root, "packages/pipeline/scripts/crawl-dragonballcn.ts")];
-      break;
-    case "kanzenshuu":
-      command = ["bun", join(root, "packages/pipeline/scripts/crawl-kanzenshuu-rag.ts")];
-      break;
-    case "databooks":
-      command = ["bun", join(root, "packages/pipeline/scripts/crawl-databooks-rag.ts")];
-      break;
-    case "official":
-      command = [
-        "bun",
-        join(root, "scripts/ops/crawl-dragon-ball-official-aphrody.ts"),
-        target.dryRun ? "--dry-run" : "--apply",
-      ];
-      break;
-    case "universal": {
-      // Aphrody Web Rust owns crawling/extraction; Shenron supplies its DBFR plan.
-      command = ["bun", join(root, "packages/pipeline/scripts/aphrody-web-corpus-crawl.ts")];
-      if (target.dryRun) command.push("--dry-run");
-      if (target.depth !== undefined || target.outDir)
-        throw new Error(
-          "crawl universal: profondeur et sortie viennent de crawl.config.json et APHRODY_CORPUS_CRAWL_DIR",
-        );
-      return executeCommand(command, { cwd: root, dryRun: target.dryRun, runner: target.runner });
-    }
-    case "custom":
-      if (!target.url) throw new Error("crawl custom exige une URL");
-      if (target.outDir)
-        throw new Error(
-          "crawl distant Aphrody ne prend pas --out; les pages restent dans l'index Aphrody Web",
-        );
-      command = ["bun", join(root, "scripts/ops/aphrody-web-crawl.ts"), target.url];
-      break;
+  const loc = corpusLocations(root);
+  const bin = process.env.APHRODY_BIN?.trim() || "aphrody";
+  if (target.url && target.source !== "custom")
+    throw new Error("A seed URL requires the custom crawl source");
+  if (target.outDir !== undefined && !target.outDir.trim())
+    throw new Error("The crawl output directory must not be empty");
+  const sources: Record<Exclude<CrawlTarget["source"], "custom" | "universal">, string> = {
+    dragonballcn: "dragonballcn",
+    kanzenshuu: "kanzenshuu",
+    official: "official",
+    databooks: "kanzentai,neoseeker-databooks,databook-other",
+    guides: "guides",
+  };
+  let command: string[];
+  if (target.source === "custom") {
+    if (!target.url) throw new Error("crawl custom exige une URL");
+    const url = new URL(target.url);
+    if (!/^https?:$/.test(url.protocol) || url.username || url.password)
+      throw new Error("crawl custom requires an HTTP(S) URL without credentials");
+    if (url.hostname === "fandom.com" || url.hostname.endsWith(".fandom.com"))
+      throw new Error("Fandom is not an allowed Dragon Ball source");
+    command = [
+      bin,
+      "web",
+      "crawl-index",
+      url.href,
+      "--label",
+      "shenron-custom",
+      "--profile",
+      loc.profile,
+    ];
+    if (target.outDir) command.push("--state", target.outDir);
+  } else {
+    if (target.source !== "universal" && !Object.hasOwn(sources, target.source))
+      throw new Error(`Unknown Dragon Ball crawl source: ${target.source}`);
+    command = [
+      bin,
+      "web",
+      "dragon-ball",
+      "crawl",
+      "--output",
+      target.outDir ?? loc.corpusDir,
+      "--profile",
+      loc.profile,
+      "--json",
+      "--index",
+    ];
+    if (target.source !== "universal") command.push("--source", sources[target.source]);
+    if (process.env.APHRODY_CORPUS_CRAWL_CONFIG?.trim())
+      command.push("--config", process.env.APHRODY_CORPUS_CRAWL_CONFIG.trim());
   }
-  if (target.outDir) command.push("--out", target.outDir);
+  for (const value of [target.depth, target.maxRequests])
+    if (value !== undefined && (!Number.isSafeInteger(value) || value < 0))
+      throw new RangeError("Crawl budgets must be non-negative safe integers");
+  if (target.maxRequests === 0) throw new RangeError("maxRequests must be positive");
+  command.push("--max-requests", String(target.maxRequests ?? 500));
   if (target.depth !== undefined) command.push("--max-depth", String(target.depth));
   return executeCommand(command, { cwd: root, dryRun: target.dryRun, runner: target.runner });
 }

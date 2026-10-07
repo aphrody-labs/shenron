@@ -9,6 +9,7 @@ node_modules/
 /target/
 **/*.rs.bk
 dist/
+pkg/
 /apps/server/.build/
 /crates/shenron-desktop/binaries/
 /crates/shenron-desktop/tauri.bundle.json

@@ -26,12 +26,18 @@ const RUNTIME: Record<string, string> = {
   "./next": "server",
   "./chat": "bun",
   "./host": "bun",
+  "./desktop-link": "server",
   "./plugin": "server",
   "./openapi.json": "json",
 };
 
 /** Doctrine subpaths of `@shenron/pipeline` that `./chat` and `./host` may import (§4.1). */
-const PIPELINE_SUBPATHS = new Set(["@shenron/pipeline/ai/prompts", "@shenron/pipeline/agent-home"]);
+const PIPELINE_CONTRACT = "@shenron/pipeline/bxc/contracts";
+const PIPELINE_SUBPATHS = new Set([
+  "@shenron/pipeline/ai/prompts",
+  "@shenron/pipeline/agent-home",
+  PIPELINE_CONTRACT,
+]);
 
 /** Source files reached from an export through relative imports (type-only ones included). */
 function closure(key: string): string[] {
@@ -104,10 +110,13 @@ describe("@shenron/api manifest", () => {
     }
   });
 
-  test("only ./chat and ./host reach @shenron/pipeline (§4.1), through its doctrine subpaths", () => {
+  test("portable exports reach only pure Web contracts; chat and host add doctrine subpaths", () => {
     for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
       expect(
-        bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
+        bareImports(key).filter(
+          ({ specifier }) =>
+            specifier.startsWith("@shenron/pipeline") && specifier !== PIPELINE_CONTRACT,
+        ),
       ).toEqual([]);
     }
     const reached = ["./chat", "./host"].flatMap((key) =>

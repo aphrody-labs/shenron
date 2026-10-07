@@ -1,10 +1,8 @@
 import { resolveHostUrl } from "@shenron/config/public-urls";
 
 /**
- * Hôte Bun (`shenron-server`) comme fournisseur d'authentification, en option : quand
- * `SHENRON_HOST_URL` est posée, `/api/auth/*` lui est relayé et la session se lit chez lui
- * (cookie ou Bearer transmis tels quels). Variable absente : le site garde son propre
- * Better Auth, comportement inchangé.
+ * Bun owns authentication. The site forwards cookies and Bearer credentials to
+ * SHENRON_HOST_URL; missing configuration never starts a local auth/database backend.
  */
 export function hostAuthUrl(): string | null {
   return resolveHostUrl(process.env) ?? null;
@@ -77,18 +75,32 @@ export async function hostGetSession(
   }
 }
 
-/** `{ api.getSession }` du site : l'hôte quand il est configuré, sinon Better Auth local. */
+/** Explicit unavailable response for authentication; never cache an outage as a session. */
+export function authUnavailable(): Response {
+  return Response.json(
+    { error: "auth_unavailable" },
+    {
+      status: 503,
+      headers: { "Cache-Control": "private, no-store" },
+    },
+  );
+}
+
+/** Compatibility surface for server components; all authentication runs on Bun. */
 export const sessionAuth = {
   handler: async (request: Request) => {
-    const { auth } = await import("@/lib/auth");
-    return auth.handler(request);
+    const host = hostAuthUrl();
+    if (!host) return authUnavailable();
+    try {
+      return await proxyAuthToHost(request, host);
+    } catch {
+      return authUnavailable();
+    }
   },
   api: {
     getSession: async ({ headers }: { headers: Headers }) => {
       const host = hostAuthUrl();
-      if (host) return hostGetSession(host, headers);
-      const { auth } = await import("@/lib/auth");
-      return auth.api.getSession({ headers });
+      return host ? hostGetSession(host, headers) : null;
     },
   },
 };

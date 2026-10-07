@@ -10,7 +10,7 @@
     "colorChapterListTitle": "Available chapters ({count})",
     "frenchColorScans": "French color scans (scan-db)",
     "japaneseOriginalNotIndexed": "Japanese original Full Color edition (not indexed)",
-    "japaneseOriginalCatalogueStatus": "Japanese Full Color: 32 print / 42 digital volumes in Shueisha’s catalog; complete edition not indexed",
+    "japaneseOriginalCatalogueStatus": "Japanese Full Color: {printVolumes} print / {digitalVolumes} digital volumes in Shueisha’s catalog; complete edition not indexed",
     "frenchBlackWhiteScans": "French black-and-white scans"
   },
   "nav": {
@@ -1691,6 +1691,31 @@
       "minimize": "Minimize",
       "maximize": "Maximize or restore",
       "close": "Close"
+    }
+  },
+  "reportDialog": {
+    "title": "Report an error",
+    "close": "Close",
+    "tooShort": "Describe the problem in more detail (at least 5 characters).",
+    "signInRequired": "Sign in with Discord to send a report.",
+    "rateLimited": "Too many reports in a row. Try again in a few minutes.",
+    "failed": "The report could not be sent. Try again shortly.",
+    "sent": "Thanks, your report was sent!",
+    "sentBody": "The team will see your report in its dashboard.",
+    "signInBody": "Sign in with Discord to send us a report so we can reply and keep you updated.",
+    "signIn": "Sign in with Discord",
+    "page": "Affected page:",
+    "category": "Problem type",
+    "message": "Describe the problem",
+    "placeholder": "For example: Goku's image does not load, a saga link is broken, or information is incorrect…",
+    "sending": "Sending…",
+    "submit": "Send report",
+    "categories": {
+      "bug": "Bug / malfunction",
+      "contenu": "Incorrect content",
+      "lien": "Broken link / media",
+      "suggestion": "Suggestion / improvement",
+      "autre": "Other"
     }
   }
 }

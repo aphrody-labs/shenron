@@ -21,3 +21,4 @@ export * from "./page-banners";
 export * from "./chronology";
 
 export * from "./wiki-launch";
+export * from "./web";

@@ -24,6 +24,7 @@ import { LLAMA_DAEMON_VERB } from "./chat-model";
 import { libraryPath } from "./local-api";
 import { extract } from "./payload";
 import { serveSite } from "./site";
+import { stopStandaloneChild } from "./next-startup";
 import { VERSION } from "./version";
 
 export { VERSION } from "./version";
@@ -136,16 +137,36 @@ export async function main(
   if (rest[0] === "all") {
     const name = process.platform === "win32" ? "shenron-bot.exe" : "shenron-bot";
     const binary = join(paths.exeDir, name);
-    if (!existsSync(binary)) throw new Error(`${name} introuvable à côté de shenron-server`);
-    bot = Bun.spawn([binary], { stdio: ["ignore", "inherit", "inherit"], env: process.env });
+    try {
+      if (!existsSync(binary)) throw new Error(`${name} introuvable à côté de shenron-server`);
+      bot = Bun.spawn([binary], { stdio: ["ignore", "inherit", "inherit"], env: process.env });
+    } catch (error) {
+      await Promise.allSettled([site.stop(), closeShenronWorkerPool()]);
+      throw error;
+    }
   }
-  const stop = () => {
-    site.stop();
-    bot?.kill();
-    // Cancel the native jobs in flight and stop the workers, then leave.
-    void closeShenronWorkerPool().finally(() => process.exit(0));
+  let stopping = false;
+  const stop = (exitCode: number) => {
+    if (stopping) return;
+    stopping = true;
+    void Promise.allSettled([
+      site.stop(),
+      bot ? stopStandaloneChild(bot) : Promise.resolve(),
+      closeShenronWorkerPool(),
+    ]).then((results) => {
+      const failed = results.some((result) => result.status === "rejected");
+      for (const result of results) {
+        if (result.status === "rejected") console.error(result.reason);
+      }
+      return process.exit(failed ? 1 : exitCode);
+    });
   };
-  process.on("SIGINT", stop);
-  process.on("SIGTERM", stop);
+  process.on("SIGINT", () => stop(0));
+  process.on("SIGTERM", () => stop(0));
+  void site.exited.then((code) => {
+    if (stopping) return;
+    console.error(JSON.stringify({ event: "shenron.site.exited", exitCode: code }));
+    return stop(1);
+  });
   console.log(`Shenron : ${site.url} (profil ${profile})`);
 }

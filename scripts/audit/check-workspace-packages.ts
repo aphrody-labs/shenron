@@ -58,7 +58,7 @@ const PACKAGES: Readonly<Record<string, string>> = {
  * `bun:ffi` (CLAUDE.md, STACK §5). Everywhere else `bun:ffi` and `dlopen` stay offences.
  */
 const FFI_OWNER = "@shenron/native";
-const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen"]);
+const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen", "aphrody-native"]);
 
 /**
  * Allowed @shenron/* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
@@ -112,7 +112,11 @@ const ALLOWED_EDGES: Readonly<
 const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>> = {
   // Chat engine doctrine only (§4.1): personas and the agent home, never the pipeline runtime.
   "@shenron/api": {
-    "@shenron/pipeline": ["@shenron/pipeline/ai/prompts", "@shenron/pipeline/agent-home"],
+    "@shenron/pipeline": [
+      "@shenron/pipeline/ai/prompts",
+      "@shenron/pipeline/agent-home",
+      "@shenron/pipeline/bxc/contracts",
+    ],
   },
   "@shenron/ui": {
     // The editor speaks the generated protocol and draws on the wasm canvas; the koharu-sdk
