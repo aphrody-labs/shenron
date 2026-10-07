@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # PLAN.md — Plan Directeur Unifié de Shenron
 
-> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:24:32Z`.
+> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:26:57Z`.
 > Synthèse unifiée absorbant `PLAN.md`, `REPRISE.md`, `PLAN-SHENRON-RE.md` et la cartographie du graphe monorepo (23 607 nœuds, 62 707 arêtes).
 
 ```json
@@ -79,7 +79,7 @@ La cartographie native `aphrody-graph` unifie les quatre couches de la plateform
 | **SH-P0-017** | Sécurité staff & Bot admin | P0 | [x] | `checkAdmin` accorde les droits selon la politique staff (403 sinon, tests validés). |
 | **SH-P1-001** | Production & Sondes live | P1 | [x] | `dragonballfr.com` HTTP/2 200, `/api/health` ok, agent-card A2A 1.0 en ligne. |
 | **SH-P1-002** | Contrats OpenAPI & Tokens M3 | P1 | [x] | `openapi.ts --check` et `generate-tokens.ts --check` validés sans dérive. |
-| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)| P1 | [x] | Parser CPK/CRILAYLA, formats Dimps (BDM/BAC/CUS/PUP/MSG), WASM/Bun et carte prototype en ABI natif 5 validés (31 tests Rust du crate, 10 tests pipeline WASM). |
+| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)| P1 | [x] | Parser CPK/CRILAYLA, formats Dimps (BDM/BAC/CUS/PUP/MSG), WASM/Bun, carte prototype ABI natif 5 et export récursif MSG vers destination neuve validés (32 tests Rust du crate, 10 tests pipeline WASM). |
 | **SH-P1-004** | Entraînement continu `shenron-chat-v2`| P1 | [ ] | Exécution itérative de `train-shenron-chat-loop.ts` avec monitoring GPU VRAM. |
 | **SH-P1-005** | Signature & Packaging Studio Desktop | P1 | [ ] | Packaging NSIS, mise à jour automatique Tauri 3, détection CUDA native. |
 
@@ -112,6 +112,9 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
 - CLI Rust `shenron-re inventory <game-root>` inventorie chemins/tailles et empreintes limitées,
   sans copier de fichiers. WASM, `shenron-re map|catalog` et ABI natif FFI 5 donnent accès au
   prototype cartographique.
+- CLI `shenron-re text <input-dir> --output-dir <new-dir>` convertit récursivement les fichiers
+  MSG vers un nouvel arbre JSON, avec manifeste; refuse toute destination préexistante et
+  ignore les liens symboliques.
   Aucun asset n'a été extrait; aucun flux Steam temps réel, import de sauvegarde, transfert
   d'assets ou déploiement CDN n'a été réalisé.
 

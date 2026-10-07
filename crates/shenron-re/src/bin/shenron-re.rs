@@ -8,7 +8,8 @@ use std::{
 };
 
 use shenron_re::{
-    inventory::inventory_install, text::extract_msg_text,
+    inventory::inventory_install,
+    text::{extract_msg_text, extract_msg_tree},
     world::xenoverse3::xenoverse3_prototype_map,
 };
 
@@ -60,6 +61,25 @@ fn main() -> ExitCode {
                 return usage();
             };
             let input = PathBuf::from(input);
+            if input.is_dir() {
+                let Some(option) = args.next() else {
+                    return usage();
+                };
+                let Some(destination) = args.next() else {
+                    return usage();
+                };
+                if option != "--output-dir" || args.next().is_some() {
+                    return usage();
+                }
+                let manifest = match extract_msg_tree(&input, &PathBuf::from(destination)) {
+                    Ok(manifest) => manifest,
+                    Err(error) => {
+                        eprintln!("shenron-re: text batch failed: {error}");
+                        return ExitCode::FAILURE;
+                    },
+                };
+                return print_json(&manifest);
+            }
             if !input.extension().is_some_and(|extension| extension.eq_ignore_ascii_case("msg")) {
                 eprintln!("shenron-re: text input must have a .msg extension");
                 return ExitCode::FAILURE;
@@ -141,7 +161,7 @@ fn write_json_new(path: PathBuf, value: &impl serde::Serialize) -> ExitCode {
 
 fn usage() -> ExitCode {
     eprintln!(
-        "Usage: shenron-re map [--output <file>] | catalog | inventory <game-root> [--output <file>] | text <file.msg> [--output <new-file>]"
+        "Usage: shenron-re map [--output <file>] | catalog | inventory <game-root> [--output <file>] | text <file.msg> [--output <new-file>] | text <input-dir> --output-dir <new-dir>"
     );
     ExitCode::from(2)
 }

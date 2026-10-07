@@ -20,7 +20,7 @@ Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun 
 | `extract` | Partiel : parsing CPK et extraction en mémoire existent; pas de commande d'extraction d'arbres, reprise ou manifest. |
 | `tex` | Absent : pas de convertisseur EMB/DDS/PNG. |
 | `audio` | Absent : pas de conversion CRI vers WAV. |
-| `text` | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE et rend le JSON source; traitement récursif d'un arbre et manifeste restent à porter. |
+| `text` | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE; `shenron-re text <input-dir> --output-dir <new-dir>` traite récursivement les `.msg` vers un arbre de sortie distinct, avec manifeste, ordre déterministe, liens symboliques ignorés et refus d'une destination existante. Ce mode protège les entrées et ne remplace pas le comportement risqué d'écrasement source du script Python. |
 | `models` | Absent : pas de métadonnées géométriques EMD/viewer. |
 | `parse` | Partiel : BAC/BDM/CUS/CMS/MSG/PUP; BCM/BCS/BSA/EAN/EMM/ESK et équivalence pyxenoverse absents. |
 | `tools` | Absent : aucun catalogue/cloneur équivalent dans ce crate. |
@@ -47,7 +47,8 @@ manifeste d'installation en lecture seule : chemins relatifs, extensions, taille
 uniquement pour les petits exécutables et DLL. Le binding natif `@shenron/native` expose aussi
 la carte via le symbole ABI 5 `shenron_re_xenoverse3_map`, avec libération de la chaîne par
 le contrat FFI standard. `shenron-re text <file.msg>` porte l'extraction d'un fichier sans
-écraser un JSON existant. La matrice ne constitue pas une parité avec le CLI dbxv2.
+écraser un JSON existant; le mode dossier porte la conversion récursive dans une destination
+neuve, sans modifier l'arbre d'entrée. La matrice ne constitue pas une parité avec le CLI dbxv2.
 
 ## Assets, données et distribution
 
@@ -75,5 +76,6 @@ Pixel ne consomment pas encore directement le graphe Rust/WASM.
 Portes ciblées exécutées dans ce worktree : tests et Clippy de `shenron-re` et `shenron-ffi`,
 compilation WASM, génération ABI vérifiée, typecheck/lint et 36 tests `@shenron/native` avec
 la bibliothèque debug réellement chargée. La nouvelle commande CLI a également été exécutée
-et son JSON observé. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte
+et son JSON observé. Après ajout du mode récursif de texte, les 32 tests du crate
+(29 unitaires, 3 CLI) et Clippy strict passent. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte
 ni service de production n'a été modifié.

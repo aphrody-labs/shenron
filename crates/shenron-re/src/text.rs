@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Localized string extraction compatible with dbxv2's UTF-16LE MSG text pass.
 
-use std::path::Path;
+use std::{
+    fs::{self, OpenOptions},
+    io::Write,
+    path::{Path, PathBuf},
+};
 
 use serde::Serialize;
 
@@ -11,6 +15,13 @@ pub struct MsgText {
     pub file: String,
     pub count: usize,
     pub strings: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct MsgBatchManifest {
+    pub msg_files: usize,
+    pub converted: usize,
 }
 
 /// Extract runs of at least three printable Latin-1 UTF-16LE code units.
@@ -55,6 +66,73 @@ pub fn extract_msg_text(path: &Path, bytes: &[u8]) -> MsgText {
         count: strings.len(),
         strings,
     }
+}
+
+/// Convert every regular `.msg` file in `root` to a separate JSON file below a new destination.
+/// The source tree is read-only; symlinks are skipped and an existing destination is rejected.
+pub fn extract_msg_tree(root: &Path, destination: &Path) -> crate::Result<MsgBatchManifest> {
+    if !root.is_dir() {
+        return Err(crate::ReError::ParseError {
+            context: "msg_tree",
+            details: format!("input root is not a directory: {}", root.display()),
+        });
+    }
+    if destination.exists() {
+        return Err(crate::ReError::ParseError {
+            context: "msg_tree",
+            details: format!("destination already exists: {}", destination.display()),
+        });
+    }
+
+    let mut inputs = Vec::new();
+    let mut pending = vec![root.to_path_buf()];
+    while let Some(directory) = pending.pop() {
+        let mut entries = fs::read_dir(directory)?.collect::<std::io::Result<Vec<_>>>()?;
+        entries.sort_by_key(std::fs::DirEntry::file_name);
+        for entry in entries {
+            let file_type = entry.file_type()?;
+            if file_type.is_symlink() {
+                continue;
+            }
+            let path = entry.path();
+            if file_type.is_dir() {
+                pending.push(path);
+            } else if file_type.is_file()
+                && path.extension().is_some_and(|ext| ext.eq_ignore_ascii_case("msg"))
+            {
+                inputs.push(path);
+            }
+        }
+    }
+    inputs.sort();
+
+    fs::create_dir(destination)?;
+    for input in &inputs {
+        let relative = input.strip_prefix(root).map_err(|error| crate::ReError::ParseError {
+            context: "msg_tree",
+            details: error.to_string(),
+        })?;
+        let output = destination.join(relative).with_extension("msg.json");
+        let parent = output.parent().ok_or_else(|| crate::ReError::ParseError {
+            context: "msg_tree",
+            details: "output path has no parent".into(),
+        })?;
+        fs::create_dir_all(parent)?;
+        let bytes = fs::read(input)?;
+        let report = extract_msg_text(input, &bytes);
+        let json = serde_json::to_vec_pretty(&report).map_err(|error| {
+            crate::ReError::ParseError { context: "msg_tree", details: error.to_string() }
+        })?;
+        OpenOptions::new().write(true).create_new(true).open(&output)?.write_all(&json)?;
+    }
+
+    let manifest = MsgBatchManifest { msg_files: inputs.len(), converted: inputs.len() };
+    let manifest_path: PathBuf = destination.join("text_manifest.json");
+    let json = serde_json::to_vec_pretty(&manifest).map_err(|error| {
+        crate::ReError::ParseError { context: "msg_tree", details: error.to_string() }
+    })?;
+    OpenOptions::new().write(true).create_new(true).open(manifest_path)?.write_all(&json)?;
+    Ok(manifest)
 }
 
 fn is_printable_latin_utf16(low: u8, high: u8) -> bool {

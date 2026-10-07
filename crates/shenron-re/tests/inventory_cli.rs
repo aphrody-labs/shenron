@@ -81,3 +81,50 @@ fn text_cli_extracts_msg_strings_without_overwriting_existing_files() {
         report
     );
 }
+
+#[test]
+fn text_cli_converts_a_tree_to_a_new_destination_and_rejects_existing_destination() {
+    let temp = tempfile::tempdir().unwrap();
+    let root = temp.path().join("input");
+    fs::create_dir_all(root.join("en/sub")).unwrap();
+    fs::create_dir_all(root.join("ja")).unwrap();
+    for path in [root.join("en/sub/quest.msg"), root.join("ja/quest.MSG")] {
+        let mut bytes = vec![0, 0];
+        bytes.extend("Hello World".encode_utf16().flat_map(u16::to_le_bytes));
+        fs::write(path, bytes).unwrap();
+    }
+    fs::write(root.join("ignored.bin"), b"not an MSG").unwrap();
+
+    let output = temp.path().join("converted");
+    let result = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("text")
+        .arg(&root)
+        .arg("--output-dir")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(result.status.success(), "{}", String::from_utf8_lossy(&result.stderr));
+    let manifest: serde_json::Value = serde_json::from_slice(&result.stdout).unwrap();
+    assert_eq!(manifest["msgFiles"], 2);
+    assert_eq!(manifest["converted"], 2);
+    let report: serde_json::Value =
+        serde_json::from_slice(&fs::read(output.join("en/sub/quest.msg.json")).unwrap()).unwrap();
+    assert_eq!(report["strings"], serde_json::json!(["Hello World"]));
+    assert!(output.join("ja/quest.msg.json").is_file());
+
+    let refused = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("text")
+        .arg(&root)
+        .arg("--output-dir")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(!refused.status.success());
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(
+            &fs::read(output.join("text_manifest.json")).unwrap()
+        )
+        .unwrap(),
+        manifest
+    );
+}
