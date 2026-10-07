@@ -168,3 +168,47 @@ fn emb_cli_extracts_entries_to_a_new_directory_without_overwriting() {
     assert!(!refused.status.success());
     assert_eq!(fs::read(output.join("texture.dds")).unwrap(), b"DDS!");
 }
+
+#[test]
+fn cpk_cli_extracts_to_a_new_directory_and_rejects_traversal() {
+    use shenron_re::fs::cpk::CpkArchive;
+
+    let temp = tempfile::tempdir().unwrap();
+    let input = temp.path().join("sample.cpk");
+    fs::write(&input, CpkArchive::create_mock(&[("texture.dds", b"DDS!")])).unwrap();
+    let output = temp.path().join("unpacked");
+    let extracted = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("cpk")
+        .arg(&input)
+        .arg("--output-dir")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(extracted.status.success(), "{}", String::from_utf8_lossy(&extracted.stderr));
+    let report: serde_json::Value = serde_json::from_slice(&extracted.stdout).unwrap();
+    assert_eq!(report["entryCount"], 1);
+    assert_eq!(report["totalBytes"], 4);
+    assert_eq!(fs::read(output.join("texture.dds")).unwrap(), b"DDS!");
+    assert!(output.join("cpk_manifest.json").is_file());
+    let overwrite = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("cpk")
+        .arg(&input)
+        .arg("--output-dir")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(!overwrite.status.success());
+    assert_eq!(fs::read(output.join("texture.dds")).unwrap(), b"DDS!");
+
+    let traversal = temp.path().join("traversal.cpk");
+    fs::write(&traversal, CpkArchive::create_mock(&[("../escape.bin", b"unsafe")])).unwrap();
+    let refused = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("cpk")
+        .arg(&traversal)
+        .arg("--output-dir")
+        .arg(temp.path().join("traversal-output"))
+        .output()
+        .unwrap();
+    assert!(!refused.status.success());
+    assert!(!temp.path().join("escape.bin").exists());
+}

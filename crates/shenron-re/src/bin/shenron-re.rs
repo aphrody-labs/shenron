@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 use std::{
+    collections::HashSet,
     env,
     fs::{self, OpenOptions},
     io::Write,
@@ -9,6 +10,7 @@ use std::{
 
 use shenron_re::{
     formats::emb::EmbFile,
+    fs::cpk::{CpkArchive, CpkEntry},
     inventory::inventory_install,
     text::{extract_msg_text, extract_msg_tree},
     world::xenoverse3::xenoverse3_prototype_map,
@@ -106,6 +108,123 @@ fn main() -> ExitCode {
                 "files": outputs,
             });
             print_json(&summary)
+        },
+        Some(arg) if arg == "cpk" => {
+            let Some(input) = args.next() else {
+                return usage();
+            };
+            let input = PathBuf::from(input);
+            if !input.extension().is_some_and(|extension| extension.eq_ignore_ascii_case("cpk")) {
+                eprintln!("shenron-re: cpk input must have a .cpk extension");
+                return ExitCode::FAILURE;
+            }
+            let Some(option) = args.next() else {
+                return usage();
+            };
+            let Some(destination) = args.next() else {
+                return usage();
+            };
+            if option != "--output-dir" || args.next().is_some() {
+                return usage();
+            }
+            let archive_bytes = match fs::read(&input) {
+                Ok(bytes) => bytes,
+                Err(error) => {
+                    eprintln!("shenron-re: could not read {}: {error}", input.display());
+                    return ExitCode::FAILURE;
+                },
+            };
+            let archive = match CpkArchive::parse(&archive_bytes) {
+                Ok(archive) => archive,
+                Err(error) => {
+                    eprintln!("shenron-re: invalid CPK {}: {error}", input.display());
+                    return ExitCode::FAILURE;
+                },
+            };
+            let mut paths = Vec::with_capacity(archive.entries.len());
+            let mut unique_paths = HashSet::with_capacity(archive.entries.len());
+            for entry in &archive.entries {
+                let Some(path) = cpk_output_path(entry) else {
+                    eprintln!(
+                        "shenron-re: unsafe CPK output path: {:?}",
+                        entry.dir_name.as_deref().unwrap_or("")
+                    );
+                    return ExitCode::FAILURE;
+                };
+                let key = path.to_string_lossy().replace('\\', "/").to_ascii_lowercase();
+                if key == "cpk_manifest.json" {
+                    eprintln!("shenron-re: CPK entry reserves cpk_manifest.json");
+                    return ExitCode::FAILURE;
+                }
+                if !unique_paths.insert(key) {
+                    eprintln!("shenron-re: duplicate CPK output path: {}", path.display());
+                    return ExitCode::FAILURE;
+                }
+                paths.push(path);
+            }
+            let destination = PathBuf::from(destination);
+            if destination.exists() {
+                eprintln!("shenron-re: output directory already exists: {}", destination.display());
+                return ExitCode::FAILURE;
+            }
+            if let Err(error) = fs::create_dir(&destination) {
+                eprintln!("shenron-re: could not create {}: {error}", destination.display());
+                return ExitCode::FAILURE;
+            }
+            let mut outputs = Vec::with_capacity(archive.entries.len());
+            let mut total_bytes = 0u64;
+            for (entry, relative) in archive.entries.iter().zip(paths) {
+                let bytes = match shenron_re::fs::cpk_extract::extract_entry(&archive_bytes, entry)
+                {
+                    Ok(bytes) => bytes,
+                    Err(error) => {
+                        eprintln!("shenron-re: could not extract {}: {error}", entry.name);
+                        return ExitCode::FAILURE;
+                    },
+                };
+                let output = destination.join(&relative);
+                if let Some(parent) = output.parent()
+                    && let Err(error) = fs::create_dir_all(parent)
+                {
+                    eprintln!("shenron-re: could not create {}: {error}", parent.display());
+                    return ExitCode::FAILURE;
+                }
+                let result = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(&output)
+                    .and_then(|mut file| file.write_all(&bytes));
+                if let Err(error) = result {
+                    eprintln!("shenron-re: could not create {}: {error}", output.display());
+                    return ExitCode::FAILURE;
+                }
+                total_bytes = total_bytes.saturating_add(bytes.len() as u64);
+                outputs.push(serde_json::json!({
+                    "id": entry.id,
+                    "file": relative,
+                    "sizeBytes": bytes.len(),
+                }));
+            }
+            let manifest = serde_json::json!({
+                "archive": input.file_name().map(|name| name.to_string_lossy()),
+                "entryCount": outputs.len(),
+                "totalBytes": total_bytes,
+                "files": outputs,
+            });
+            let manifest_path = destination.join("cpk_manifest.json");
+            if let Err(error) =
+                OpenOptions::new().write(true).create_new(true).open(&manifest_path).and_then(
+                    |mut file| {
+                        let json =
+                            serde_json::to_vec_pretty(&manifest).map_err(std::io::Error::other)?;
+                        file.write_all(&json)
+                    },
+                )
+            {
+                eprintln!("shenron-re: could not write {}: {error}", manifest_path.display());
+                return ExitCode::FAILURE;
+            }
+            print_json(&manifest)
         },
         Some(arg) if arg == "inventory" => {
             let Some(root) = args.next() else {
@@ -232,9 +351,34 @@ fn write_json_new(path: PathBuf, value: &impl serde::Serialize) -> ExitCode {
     }
 }
 
+fn cpk_output_path(entry: &CpkEntry) -> Option<PathBuf> {
+    let mut output = PathBuf::new();
+    if let Some(directory) = entry.dir_name.as_deref().filter(|value| !value.is_empty()) {
+        for component in directory.split(['/', '\\']) {
+            if !is_safe_path_component(component) {
+                return None;
+            }
+            output.push(component);
+        }
+    }
+    if !is_safe_path_component(&entry.name) || entry.name.contains(['/', '\\']) {
+        return None;
+    }
+    output.push(&entry.name);
+    Some(output)
+}
+
+fn is_safe_path_component(component: &str) -> bool {
+    !component.is_empty()
+        && component != "."
+        && component != ".."
+        && !component.contains(':')
+        && !component.chars().any(char::is_control)
+}
+
 fn usage() -> ExitCode {
     eprintln!(
-        "Usage: shenron-re map [--output <file>] | catalog | inventory <game-root> [--output <file>] | text <file.msg> [--output <new-file>] | text <input-dir> --output-dir <new-dir> | emb <file.emb> --output-dir <new-dir>"
+        "Usage: shenron-re map [--output <file>] | catalog | inventory <game-root> [--output <file>] | text <file.msg> [--output <new-file>] | text <input-dir> --output-dir <new-dir> | emb <file.emb> --output-dir <new-dir> | cpk <file.cpk> --output-dir <new-dir>"
     );
     ExitCode::from(2)
 }
