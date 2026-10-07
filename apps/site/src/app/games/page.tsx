@@ -22,6 +22,14 @@ export const metadata: Metadata = {
 // marque les jeux jouables ici ; les autres se jouent sur Discord.
 const GAMES = [
   {
+    name: "Dragon Ball Xenoverse 2",
+    cmd: null as string | null,
+    variant: "WASM / analyse locale",
+    desc: <T k="communaute.jeux.xenoverse.cardDescription" />,
+    power: "5 formats",
+    play: "/games/xenoverse-2" as string | null,
+  },
+  {
     name: "Dragon Pixel",
     cmd: null as string | null,
     variant: "solo",

@@ -11,9 +11,8 @@
  * `bundle <sha>` (dbfr : bot, site, emballage), puis `assemble <sha>` (vps) sur la release relayée.
  *
  * `build` : avance rapide de `~/shenron` sur origin/main (arbre propre exigé), install figée,
- * `shenron-mcp` (cargo), bot compilé, WASM du viewport Koharu (`packages/koharu/scripts/
- * build-wasm.ts` : cible wasm32 et CLI wasm-bindgen verrouillé installés au premier passage,
- * rien à refaire si son tampon est à jour), site (`build-site-external.ts`, base lue dans
+ * `shenron-mcp` (cargo), WASM des moteurs Koharu et shenron-re, bot compilé, site
+ * (`build-site-external.ts`, base lue dans
  * l'environnement du site, jamais affichée), emballage puis `aphrody-infra-deploy-shenron
  * assemble`. Dernière ligne : `{"commit": …, "release": …}`.
  *
@@ -28,8 +27,8 @@
  * (`/srv/shenron-cdn-src`) et, pour ce qui n'y est pas encore, directement dans l'arbre servi
  * (`/srv/shenron-cdn`) : disponibles tout de suite, ré-encodés ensuite par
  * `aphrody-cdn-optimize`. Jamais de suppression : une page en cache garde ses anciens fichiers.
- * Le WASM de Koharu y part avec les médias (`static/media/koharu_canvas_bg.<hash>.wasm`) ; nginx
- * le sert en `application/wasm`, immuable (sonde de `release.ts`).
+ * Les WASM Koharu et shenron-re y partent avec des noms empreints ; nginx les sert en
+ * `application/wasm`, immuables (sondes de `release.ts`).
  */
 import { join } from "node:path";
 
@@ -71,12 +70,13 @@ function syncOrigin(ref = "origin/main"): string {
 
 /**
  * Produits de cargo : `shenron-mcp`, `libshenron_ffi.so` (mémoire du chat du bot, `SHENRON_FFI_LIB`)
- * et le WASM du viewport Koharu.
+ * et les moteurs WebAssembly Koharu et shenron-re.
  */
 function cargoProducts(): void {
   step("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
   step("shenron-ffi", ["cargo", "build", "--release", "-p", "shenron-ffi", "--lib"]);
   step("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
+  step("shenron-re wasm", ["bun", "packages/pipeline/scripts/build-re-wasm.ts"]);
 }
 
 /** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */

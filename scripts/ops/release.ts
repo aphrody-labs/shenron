@@ -158,7 +158,7 @@ async function buildOnDbfr(): Promise<string> {
   // 2. produits de cargo : vps → dbfr
   await relay(
     "vps",
-    "tar -C ~/shenron -cf - target/release/shenron-mcp target/release/libshenron_ffi.so packages/koharu/src/wasm",
+    "tar -C ~/shenron -cf - target/release/shenron-mcp target/release/libshenron_ffi.so packages/koharu/src/wasm packages/pipeline/src/wasm apps/site/public/wasm",
     "dbfr",
     `mkdir -p ${BUILD_REPO} && tar -C ${BUILD_REPO} -xf -`,
   );
@@ -262,6 +262,7 @@ async function probes(): Promise<void> {
   for (const path of [
     "/",
     "/games",
+    "/games/xenoverse-2",
     "/wiki/characters",
     "/studio",
     "/desktop",
@@ -283,8 +284,48 @@ async function probes(): Promise<void> {
     if (res.status !== 200) failures.push(font);
   }
   failures.push(...(await koharuWasmProbe()));
+  failures.push(...(await xenoverseWasmProbe()));
   failures.push(...(await ragProbe()));
   if (failures.length) throw new Error(`sondes en échec : ${failures.join(", ")}`);
+}
+
+/** Vérifie le WASM Xenoverse servi avec le type, le cache et CORS attendus. */
+async function xenoverseWasmProbe(): Promise<string[]> {
+  const html = await fetch(`${SITE}/games/xenoverse-2`)
+    .then((response) => (response.ok ? response.text() : ""))
+    .catch(() => "");
+  const chunk = /["']((?:https?:\/\/[^"'/]+)?\/_next\/static\/chunks\/[\w.-]+\.js)/g;
+  const queue = [...new Set([...html.matchAll(chunk)].map((match) => match[1]!))];
+  const seen = new Set<string>();
+  let filename: string | undefined;
+  while (!filename && queue.length && seen.size < 200) {
+    const path = queue.shift()!;
+    if (seen.has(path)) continue;
+    seen.add(path);
+    const js = await fetch(path.startsWith("http") ? path : SITE + path)
+      .then((response) => (response.ok ? response.text() : ""))
+      .catch(() => "");
+    filename = /shenron_re_bg\.[a-f0-9]{16}\.wasm/.exec(js)?.[0];
+    for (const match of js.matchAll(/static\/chunks\/[\w.-]+\.js/g))
+      queue.push(`/_next/${match[0]}`);
+  }
+  if (!filename) {
+    console.log(`ERR WASM shenron-re : aucun chunk Xenoverse ne référence le binaire (${seen.size} lus)`);
+    return ["/games/xenoverse-2 (wasm)"];
+  }
+
+  const failures: string[] = [];
+  for (const url of [`${SITE}/wasm/${filename}`, `${CDN}/site/wasm/${filename}`]) {
+    const response = await fetch(url, { headers: { origin: SITE } }).catch(() => null);
+    const type = response?.headers.get("content-type")?.split(";")[0]?.trim();
+    const cache = response?.headers.get("cache-control") ?? "";
+    const cors = url.startsWith(SITE) || response?.headers.get("access-control-allow-origin") != null;
+    const valid = response?.ok ? WebAssembly.validate(await response.bytes()) : false;
+    console.log(`${response?.status ?? "ERR"} ${type ?? "-"} ${cache || "-"} ${url}`);
+    if (type !== "application/wasm" || !/immutable/.test(cache) || !cors || !valid)
+      failures.push(url);
+  }
+  return failures;
 }
 
 /**

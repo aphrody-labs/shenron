@@ -998,6 +998,26 @@
       "newTab": "(opens in a new tab)"
     },
     "jeux": {
+      "xenoverse": {
+        "cardDescription": "Explore Xenoverse 2 formats and analyze data extracted from your copy locally.",
+        "title": "Dragon Ball Xenoverse 2",
+        "lead": "Format catalog and WASM analysis for files extracted from your copy of the game.",
+        "localTitle": "Local data analysis",
+        "localDescription": "Choose a folder of extracted data. The engine reads BAC, BDM, CUS, MSG, and PUP files directly in your browser.",
+        "chooseFolder": "Choose a data folder",
+        "scanning": "Analyzing…",
+        "privacy": "Selected files stay in this browser. Only the Shenron RE WebAssembly engine loads from the site/CDN; no game files are uploaded.",
+        "progress": "Files analyzed: {done} of {total}",
+        "engineError": "The WebAssembly engine could not load. Try again after the page has fully loaded.",
+        "noSupported": "No BAC, BDM, CUS, MSG, or PUP files found in the selection.",
+        "results": "Analysis results",
+        "summary": "{files} files decoded · {records} records",
+        "ignored": "{count} files in other formats ignored.",
+        "fileResult": "{format} · {count} records",
+        "preview": "Show preview ({count} records)",
+        "invalid": "Unreadable format",
+        "oversize": "File exceeds 16 MiB and was skipped"
+      },
       "2048": {
         "help": "Swipe the board, use the arrow keys once it has focus, or the buttons below it.",
         "board": "2048 board: merge fighters of equal power",

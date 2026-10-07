@@ -149,6 +149,9 @@ const CLIENT_FORBIDDEN = [
   "@shenron/pipeline",
 ];
 
+/** Explicitly pure entry points allowed from the site client despite a forbidden package root. */
+const CLIENT_ALLOWED_PURE = new Set(["@shenron/pipeline/re-wasm-web"]);
+
 type Severity = "error" | "warn";
 
 interface Violation {
@@ -630,6 +633,7 @@ function checkApps(): void {
         report("apps/site", "boundary", `${rel} imports bun-class ${specifier}`);
       if (
         isClient &&
+        !CLIENT_ALLOWED_PURE.has(specifier) &&
         CLIENT_FORBIDDEN.some(
           (forbidden) => specifier === forbidden || specifier.startsWith(`${forbidden}/`),
         )
