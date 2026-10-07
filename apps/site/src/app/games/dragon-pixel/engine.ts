@@ -802,7 +802,8 @@ export function step(g: GameState, input: GameInput, dt: number): void {
     const hitDamage = Math.round(13 * power);
 
     for (const e of g.enemies) {
-      if (Math.abs(e.x - p.x) < 70 && Math.abs(e.y - p.y) < 60) {
+      const isInFront = (e.x - p.x) * p.facing >= 0;
+      if (isInFront && Math.abs(e.x - p.x) < 70 && Math.abs(e.y - p.y) < 60) {
         const dmg = e.guarding ? Math.round(hitDamage * 0.2) : hitDamage;
         e.hp = Math.max(0, e.hp - dmg);
         g.screenShake = 2.5;

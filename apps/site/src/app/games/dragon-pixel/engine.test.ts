@@ -27,6 +27,20 @@ test("combo and projectile damage with energy cost", () => {
   expect(g.enemies[0].hp).toBe(63);
 });
 
+test("melee attacks only hit targets in the facing direction", () => {
+  const g = createGame();
+  g.player.x = 300;
+  g.player.facing = 1;
+  g.enemies = [{ x: 260, y: 320, hp: 100, cooldown: 10 }];
+  step(g, { punch: true }, 0.01);
+  expect(g.enemies[0].hp).toBe(100);
+
+  g.player.cooldown = 0;
+  g.player.facing = -1;
+  step(g, { punch: true }, 0.01);
+  expect(g.enemies[0].hp).toBe(87);
+});
+
 test("five waves win, score only once per enemy", () => {
   const g = createGame();
   for (let wave = 1; wave <= 5; wave++) {
