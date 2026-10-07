@@ -701,6 +701,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       } as unknown as Bun.Serve.Options<ChatSocketData>;
     },
     async close() {
+      if ("close" in authBuilt) await authBuilt.close();
       mcp?.close();
       opened?.vfs.db.close();
       sqlite?.db.close();

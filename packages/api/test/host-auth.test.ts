@@ -16,6 +16,8 @@ test("production options use the shared policy: secure cookies, consent, no loca
   expect(options.basePath).toBe("/api/auth");
   expect(options.secret).toBe(longSecret);
   expect(options.advanced?.useSecureCookies).toBe(true);
+  expect(options.rateLimit?.enabled).toBe(true);
+  expect(options.rateLimit?.customStorage).toBeDefined();
   expect(options.trustedOrigins).not.toContain("http://localhost:3000");
   const providers = options.socialProviders as { discord: { prompt: string; scope: string[] } };
   expect(providers.discord.prompt).toBe("consent");
@@ -52,13 +54,14 @@ test("a missing piece disables the group with a reason, never throws", () => {
   });
 });
 
-test("with a database URL and a Discord application the port is built (lazy connection)", () => {
+test("with a database URL and a Discord application the port is built (lazy connection)", async () => {
   const built = createHostAuth({
     DATABASE_URL: "postgres://u:p@127.0.0.1:1/db",
     BETTER_AUTH_SECRET: longSecret,
     ...discord,
   });
   expect("port" in built).toBe(true);
+  if ("port" in built) await built.close();
 });
 
 test("createShenronApi claims /api/auth only with a port, and hands the request over", async () => {

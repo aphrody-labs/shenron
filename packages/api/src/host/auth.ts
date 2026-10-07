@@ -24,10 +24,13 @@ import { staffPolicyFromEnv } from "@shenron/auth/staff";
 import { createBunDb } from "@shenron/db/bun-sql";
 import { baAccount, baSession, baUser, baVerification } from "@shenron/db/schema";
 import { createDiscordAccountLookup } from "@shenron/db/repos/accounts";
+import { createResilientRedis } from "@shenron/db/redis";
+import { RedisClient } from "bun";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { bearer } from "better-auth/plugins";
 import type { BetterAuthPort, HostSession } from "../server";
+import { createAuthRateLimitStorage } from "./auth-rate-limit";
 
 const list = (raw: string | undefined): string[] =>
   (raw ?? "")
@@ -35,7 +38,9 @@ const list = (raw: string | undefined): string[] =>
     .map((s) => s.trim())
     .filter(Boolean);
 
-export type AuthAvailability = { port: BetterAuthPort } | { reason: string };
+export type AuthAvailability =
+  | { port: BetterAuthPort; close(): Promise<void> }
+  | { reason: string };
 
 /** Options of the host's Better Auth, without side effect (tests build them without a database). */
 export function buildHostAuthOptions(
@@ -70,6 +75,12 @@ export function buildHostAuthOptions(
     },
     basePath: AUTH_BASE_PATH,
     secret,
+    rateLimit: {
+      enabled: production,
+      window: 60,
+      max: 100,
+      customStorage: createAuthRateLimitStorage(),
+    },
     session: {
       cookieCache: { ...SESSION_COOKIE_CACHE },
       expiresIn: 60 * 60 * 24 * 30,
@@ -97,30 +108,48 @@ export function buildHostAuthOptions(
 export function createHostAuth(env: EnvSource): AuthAvailability {
   const url = envString(env, "DATABASE_URL");
   if (!url) return { reason: "DATABASE_URL absente : authentification indisponible" };
+  const options = buildHostAuthOptions(env, undefined);
+  if ("reason" in options) return options;
   let db: ReturnType<typeof createBunDb>["db"];
+  let client: ReturnType<typeof createBunDb>["client"];
   try {
-    db = createBunDb({ env, applicationName: "shenron-auth" }).db;
+    ({ db, client } = createBunDb({ env, applicationName: "shenron-auth" }));
   } catch {
     return { reason: "DATABASE_URL invalide" };
   }
-  const options = buildHostAuthOptions(
-    env,
-    drizzleAdapter(db, {
-      provider: "pg",
-      debugLogs: !isProduction(env),
-      schema: {
-        user: baUser,
-        session: baSession,
-        account: baAccount,
-        verification: baVerification,
-      },
-    }),
-  );
-  if ("reason" in options) return options;
+  options.database = drizzleAdapter(db, {
+    provider: "pg",
+    debugLogs: !isProduction(env),
+    schema: {
+      user: baUser,
+      session: baSession,
+      account: baAccount,
+      verification: baVerification,
+    },
+  });
+  const redisUrl = envString(env, "REDIS_URL");
+  const redis = redisUrl
+    ? createResilientRedis({
+        url: redisUrl,
+        name: "shenron-auth-rate-limit",
+        createClient: (redisAddress) =>
+          new RedisClient(redisAddress, {
+            autoReconnect: true,
+            maxRetries: 2,
+            enableOfflineQueue: false,
+            connectionTimeout: 1000,
+          }),
+      })
+    : null;
+  options.rateLimit = { ...options.rateLimit, customStorage: createAuthRateLimitStorage(redis) };
   const auth = betterAuth(options);
   const accounts = createDiscordAccountLookup(db);
   const staff = staffPolicyFromEnv(env, "site");
   return {
+    async close() {
+      redis?.close();
+      await client.close();
+    },
     port: {
       handler: (request) => auth.handler(request),
       session: async (headers) => {
