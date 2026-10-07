@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Shenron
 
 Shenron est le produit de [dragonballfr.com](https://dragonballfr.com) : le site encyclopédique
@@ -31,27 +32,48 @@ l'application utilise les adresses publiques de dragonballfr.com.
 
 ## Ce que contient le dépôt
 
-| Chemin | Rôle |
-| --- | --- |
-| `apps/site` | L'application frontale unique (Next 16) : site public, administration, éditeur Koharu (`/koharu`), studio (`/studio`), passerelle MCP publique (`/mcp`). |
-| `apps/bot` | Le bot Discord multi-personas et son API publique (Bun). |
-| `apps/server` | `shenron-server` : le binaire autonome qui sert l'application frontale et les API locales. |
-| `packages/ui` | La couche UI unique : système de design Dragon Ball, lecteurs, éditeur Koharu, studio. |
-| `packages/{api,auth,config,db,images,koharu,media,native,pipeline}` | Contrat d'API, authentification, configuration, base de données, assets, client Koharu, médias, liaison native, chaîne éditoriale. |
-| `crates/shenron-*` | Rust : CLI `shenron`, serveur MCP, RAG, traduction JP→FR, manga, C ABI, commandes du studio, application de bureau (Tauri 3). |
-| `crates/koharu-*` | Le moteur de traduction manga Koharu (détection, OCR, inpainting, rendu, PSD). |
-| `plugin/` | Le plugin Claude Code « shenron » (compétences Dragon Ball, MCP). |
-| `deploy/`, `config/`, `docs/` | Artefacts de déploiement, configuration publique, documentation. |
+| Chemin                                                              | Rôle                                                                                                                                                                              |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/site`                                                         | L'application frontale unique (Next 16) : site public, administration, éditeur Koharu (`/koharu`), studio (`/studio`), passerelle MCP publique (`/mcp`).                          |
+| `apps/bot`                                                          | Le bot Discord multi-personas et son API publique (Bun).                                                                                                                          |
+| `apps/server`                                                       | `shenron-server` : le binaire autonome qui sert l'application frontale et les API locales.                                                                                        |
+| `packages/ui`                                                       | La couche UI unique : système de design Dragon Ball, lecteurs, éditeur Koharu, studio.                                                                                            |
+| `packages/{api,auth,config,db,images,koharu,media,native,pipeline}` | Contrat d'API, authentification, configuration, base de données, assets, client Koharu, médias, liaison native, chaîne éditoriale.                                                |
+| `crates/shenron-*`                                                  | Rust : CLI `shenron`, serveur MCP, RAG, traduction JP→FR, manga, C ABI, commandes du studio, application de bureau (Tauri 3).                                                     |
+| `crates/koharu-*`                                                   | Le moteur de traduction manga Koharu (détection, OCR, inpainting, rendu, PSD).                                                                                                    |
+| `plugin/`                                                           | Le plugin Claude Code « shenron » (compétences Dragon Ball, MCP).                                                                                                                 |
+| `vendor/dbxv2`                                                      | Sous-module [dbxv2](https://github.com/aphrody-code/dbxv2) : outils Xenoverse 2 (extraction, conversion, indexation et modding), à intégrer dans Shenron selon le plan directeur. |
+| `deploy/`, `config/`, `docs/`                                       | Artefacts de déploiement, configuration publique, documentation.                                                                                                                  |
+
+## Fusion avec dbxv2
+
+Le dépôt [aphrody-code/dbxv2](https://github.com/aphrody-code/dbxv2) est suivi
+comme sous-module dans `vendor/dbxv2`, à une révision Git épinglée. Il apporte
+un CLI Python/uv et une bibliothèque d'outils pour Dragon Ball Xenoverse 2.
+Le [plan de fusion](docs/reference/root/PLAN.md#fusion-shenron--dbxv2)
+prévoit de réunir leurs fonctionnalités dans Shenron : une interface commune
+web, bureau et mobile, des contrats d'API partagés et le serveur Bun.
+L'ajout du sous-module constitue le point de départ ; le raccordement produit
+et le portage restent à réaliser.
+
+Pour récupérer sa révision enregistrée après un clone de Shenron :
+
+```sh
+git submodule update --init --recursive vendor/dbxv2
+```
+
+Les fichiers du jeu, sauvegardes, extractions et index locaux restent dans
+leurs stores existants ; ils ne sont pas ajoutés au dépôt Shenron.
 
 ## Binaires
 
-| Binaire | Construction | Rôle |
-| --- | --- | --- |
-| `shenron-server` | `bun scripts/build/server.ts` | Application frontale (Next 16 standalone) + API locales, un seul fichier. |
-| `shenron-bot` | `bun scripts/build/bot.ts` | Bot Discord + API publique ; `--smoke` vérifie le binaire sans Discord ni base. |
+| Binaire           | Construction                               | Rôle                                                                                |
+| ----------------- | ------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `shenron-server`  | `bun scripts/build/server.ts`              | Application frontale (Next 16 standalone) + API locales, un seul fichier.           |
+| `shenron-bot`     | `bun scripts/build/bot.ts`                 | Bot Discord + API publique ; `--smoke` vérifie le binaire sans Discord ni base.     |
 | `shenron-desktop` | `cargo build --release -p shenron-desktop` | Application de bureau (Tauri 3) qui ouvre l'application frontale servie localement. |
-| `shenron` | `cargo build --release -p shenron-cli` | CLI : santé, RAG (`rag local`, `rag ingest`), entraînement, OCR, databooks, manga. |
-| `shenron-mcp` | `cargo build --release -p shenron-mcp` | Serveur MCP (stdio, ou `--http ADDR --public` en lecture seule). |
+| `shenron`         | `cargo build --release -p shenron-cli`     | CLI : santé, RAG (`rag local`, `rag ingest`), entraînement, OCR, databooks, manga.  |
+| `shenron-mcp`     | `cargo build --release -p shenron-mcp`     | Serveur MCP (stdio, ou `--http ADDR --public` en lecture seule).                    |
 
 `shenron-server doctor` affiche le profil et la présence des secrets (jamais leurs valeurs) ;
 `shenron-server paths` affiche les dossiers. Les secrets de production vivent hors dépôt dans
@@ -88,3 +110,5 @@ non suivi).
 Apache-2.0 (`LICENSE`). Le moteur Koharu (`crates/koharu-*`) est sous MIT OR Apache-2.0
 (auteurs d'origine : Mayo Takanashi, Wangchong Zhou ; voir `docs/licenses/koharu`).
 Dragon Ball © Bird Studio/Shueisha, Toei Animation : le site est un projet de fans.
+Les sous-modules conservent leurs licences propres : `dbxv2` déclare
+`Proprietary` dans son `pyproject.toml`.

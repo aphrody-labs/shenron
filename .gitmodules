@@ -1,0 +1,3 @@
+[submodule "dbxv2"]
+	path = vendor/dbxv2
+	url = https://github.com/aphrody-code/dbxv2.git
