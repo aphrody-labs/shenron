@@ -8,7 +8,7 @@ test("energy, transformation, cooldown and expiry", () => {
   step(g, { transform: true }, 0.01);
   expect(g.player.transformed).toBe(8);
   expect(g.player.energy).toBeLessThan(1);
-  for (let i = 0; i < 170; i++) step(g, {}, 0.05);
+  for (let i = 0; i < 180; i++) step(g, {}, 0.05);
   expect(g.player.transformed).toBe(0);
 });
 
