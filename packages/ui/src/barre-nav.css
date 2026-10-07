@@ -20,6 +20,14 @@
   --barre-nav-total: calc(var(--barre-nav-h) + env(safe-area-inset-bottom));
 }
 
+/* Workspace actions participate in layout on every viewport, leaving the chat unobscured. */
+.workspace-actions .fab-secondary.fab-secondary {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: auto;
+}
+
 /* Au-dessus de 1024 px la barre n'est pas rendue (`lg:hidden`) : elle ne prend
    aucune place, et rien ne doit se décaler. */
 @media (max-width: 1023px) {

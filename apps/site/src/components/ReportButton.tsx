@@ -12,6 +12,7 @@
 import { Chargement, CocheCercle, Croix, Drapeau } from "@shenron/ui/icones";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { REPORT_CATEGORIES, REPORT_MESSAGE_MAX } from "@/lib/report-types";
 import { useMe } from "@/lib/use-me";
@@ -19,7 +20,7 @@ import { PlainField } from "@/components/editor/PlainField";
 
 type Phase = "idle" | "sending" | "done" | "error";
 
-export function ReportButton() {
+export function ReportButton({ inline = false }: { inline?: boolean }) {
   const pathname = usePathname();
   const me = useMe();
   const idCategorie = useId();
@@ -95,7 +96,7 @@ export function ReportButton() {
   );
 
   // Ne s'affiche pas dans le back-office admin.
-  if (pathname?.startsWith("/admin")) return null;
+  if (pathname?.startsWith("/admin") || (pathname === "/desktop" && !inline)) return null;
 
   async function submit() {
     if (phase === "sending") return;
@@ -174,133 +175,135 @@ export function ReportButton() {
         </span>
       </button>
 
-      {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Signaler une erreur"
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) fermer();
-          }}
-        >
+      {open &&
+        createPortal(
           <div
-            ref={panneau}
-            className="w-full max-w-md overflow-hidden rounded-xl border border-dbz-orange/25 bg-dbz-card shadow-2xl"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Signaler une erreur"
+            className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
+            onMouseDown={(e) => {
+              if (e.target === e.currentTarget) fermer();
+            }}
           >
-            {/* En-tête */}
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
-              <h2 className="flex items-center gap-2 font-saiyan text-lg uppercase tracking-widest text-dbz-orange">
-                <Drapeau className="h-4 w-4" /> Signaler une erreur
-              </h2>
-              <button
-                type="button"
-                onClick={fermer}
-                aria-label="Fermer"
-                className="rounded-full p-1.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
-              >
-                <Croix className="h-4 w-4" />
-              </button>
-            </div>
+            <div
+              ref={panneau}
+              className="w-full max-w-md overflow-hidden rounded-xl border border-dbz-orange/25 bg-dbz-card shadow-2xl"
+            >
+              {/* En-tête */}
+              <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
+                <h2 className="flex items-center gap-2 font-saiyan text-lg uppercase tracking-widest text-dbz-orange">
+                  <Drapeau className="h-4 w-4" /> Signaler une erreur
+                </h2>
+                <button
+                  type="button"
+                  onClick={fermer}
+                  aria-label="Fermer"
+                  className="rounded-full p-1.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <Croix className="h-4 w-4" />
+                </button>
+              </div>
 
-            <div className="space-y-4 p-5">
-              {phase === "done" ? (
-                <div className="flex flex-col items-center gap-3 py-6 text-center">
-                  <CocheCercle className="h-10 w-10 text-green-400" />
-                  <p className="font-display text-base font-semibold text-white">
-                    Merci, c&apos;est envoyé !
-                  </p>
-                  <p className="text-sm text-white/50">
-                    L&apos;équipe verra ton signalement dans son tableau de bord.
-                  </p>
-                </div>
-              ) : me && !me.authenticated ? (
-                // Anonyme → invitation à se connecter.
-                <div className="space-y-4 py-2 text-center">
-                  <p className="text-sm text-white/70">
-                    Connecte-toi avec Discord pour nous envoyer un signalement (on pourra te
-                    répondre et te tenir au courant).
-                  </p>
-                  <SignInDiscord className="inline-flex h-11 items-center justify-center rounded-full bg-dbz-orange px-6 font-display font-bold text-black transition-colors hover:bg-white">
-                    Se connecter avec Discord
-                  </SignInDiscord>
-                </div>
-              ) : (
-                <>
-                  <p className="text-xs text-white/50">
-                    Page concernée : <span className="font-mono text-white/70">{pathname}</span>
-                  </p>
-
-                  <div>
-                    <label
-                      htmlFor={idCategorie}
-                      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-dbz-blue-light"
-                    >
-                      Type de problème
-                    </label>
-                    <select
-                      id={idCategorie}
-                      className="input w-full text-sm"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                    >
-                      {REPORT_CATEGORIES.map((c) => (
-                        <option key={c.key} value={c.key}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
+              <div className="space-y-4 p-5">
+                {phase === "done" ? (
+                  <div className="flex flex-col items-center gap-3 py-6 text-center">
+                    <CocheCercle className="h-10 w-10 text-green-400" />
+                    <p className="font-display text-base font-semibold text-white">
+                      Merci, c&apos;est envoyé !
+                    </p>
+                    <p className="text-sm text-white/50">
+                      L&apos;équipe verra ton signalement dans son tableau de bord.
+                    </p>
                   </div>
-
-                  <div>
-                    <label
-                      htmlFor={idMessage}
-                      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-dbz-blue-light"
-                    >
-                      Décris le problème
-                    </label>
-                    <PlainField
-                      id={idMessage}
-                      value={message}
-                      onChange={setMessage}
-                      minRows={4}
-                      maxRows={10}
-                      maxLength={REPORT_MESSAGE_MAX}
-                      placeholder="Ex : l'image de Goku ne se charge pas, le lien vers la saga X est cassé, une info est fausse…"
-                    />
+                ) : me && !me.authenticated ? (
+                  // Anonyme → invitation à se connecter.
+                  <div className="space-y-4 py-2 text-center">
+                    <p className="text-sm text-white/70">
+                      Connecte-toi avec Discord pour nous envoyer un signalement (on pourra te
+                      répondre et te tenir au courant).
+                    </p>
+                    <SignInDiscord className="inline-flex h-11 items-center justify-center rounded-full bg-dbz-orange px-6 font-display font-bold text-black transition-colors hover:bg-white">
+                      Se connecter avec Discord
+                    </SignInDiscord>
                   </div>
+                ) : (
+                  <>
+                    <p className="text-xs text-white/50">
+                      Page concernée : <span className="font-mono text-white/70">{pathname}</span>
+                    </p>
 
-                  {/* `role="alert"` : ce message apparaît APRÈS coup, en réponse à
+                    <div>
+                      <label
+                        htmlFor={idCategorie}
+                        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-dbz-blue-light"
+                      >
+                        Type de problème
+                      </label>
+                      <select
+                        id={idCategorie}
+                        className="input w-full text-sm"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                      >
+                        {REPORT_CATEGORIES.map((c) => (
+                          <option key={c.key} value={c.key}>
+                            {c.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor={idMessage}
+                        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-dbz-blue-light"
+                      >
+                        Décris le problème
+                      </label>
+                      <PlainField
+                        id={idMessage}
+                        value={message}
+                        onChange={setMessage}
+                        minRows={4}
+                        maxRows={10}
+                        maxLength={REPORT_MESSAGE_MAX}
+                        placeholder="Ex : l'image de Goku ne se charge pas, le lien vers la saga X est cassé, une info est fausse…"
+                      />
+                    </div>
+
+                    {/* `role="alert"` : ce message apparaît APRÈS coup, en réponse à
 									    un envoi. Sans région live, un utilisateur de lecteur d'écran
 									    appuyait sur « Envoyer », n'entendait rien, et n'avait aucune
 									    raison d'aller relire le formulaire pour découvrir « Trop de
 									    signalements d'affilée » ou « Connecte-toi avec Discord ». */}
-                  {err && (
-                    <p role="alert" className="text-sm text-dbz-red">
-                      {err}
-                    </p>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={submit}
-                    disabled={phase === "sending"}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-dbz-orange px-5 py-3 font-display font-bold text-black transition-colors hover:bg-white disabled:opacity-60"
-                  >
-                    {phase === "sending" ? (
-                      <>
-                        <Chargement className="h-4 w-4 animate-spin" /> Envoi…
-                      </>
-                    ) : (
-                      "Envoyer le signalement"
+                    {err && (
+                      <p role="alert" className="text-sm text-dbz-red">
+                        {err}
+                      </p>
                     )}
-                  </button>
-                </>
-              )}
+
+                    <button
+                      type="button"
+                      onClick={submit}
+                      disabled={phase === "sending"}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-dbz-orange px-5 py-3 font-display font-bold text-black transition-colors hover:bg-white disabled:opacity-60"
+                    >
+                      {phase === "sending" ? (
+                        <>
+                          <Chargement className="h-4 w-4 animate-spin" /> Envoi…
+                        </>
+                      ) : (
+                        "Envoyer le signalement"
+                      )}
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

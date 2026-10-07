@@ -7,6 +7,8 @@
  * translation editor, the control panel and the public site (opened in the system browser).
  */
 import Link from "next/link";
+import { DiscordInviteFAB } from "@/components/DiscordInviteFAB";
+import { ReportButton } from "@/components/ReportButton";
 import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { startHealthPolling } from "@shenron/ui/public/health-poll";
@@ -339,6 +341,10 @@ export function DesktopHome() {
               ? t("status.offline")
               : t("status.connecting")}
         </p>
+        <div className="workspace-actions flex flex-wrap items-center gap-4 pt-3">
+          <DiscordInviteFAB inline />
+          <ReportButton inline />
+        </div>
       </header>
 
       <ChatPanel

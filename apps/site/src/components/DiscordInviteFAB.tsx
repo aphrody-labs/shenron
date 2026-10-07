@@ -13,7 +13,7 @@ const FOLD_AT = 160;
  * to the server (the pill covered its blocks); elsewhere it folds into an icon once the
  * reader scrolls, so it stops sitting on the content.
  */
-export function DiscordInviteFAB() {
+export function DiscordInviteFAB({ inline = false }: { inline?: boolean }) {
   const t = useT();
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
@@ -43,7 +43,7 @@ export function DiscordInviteFAB() {
     if (!dismissed) setIsVisible(true);
   }, []);
 
-  if (!isVisible || pathname === "/") return null;
+  if (!isVisible || pathname === "/" || (pathname === "/desktop" && !inline)) return null;
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation();
