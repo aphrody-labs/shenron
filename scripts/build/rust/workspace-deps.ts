@@ -80,7 +80,7 @@ for await (const file of new Bun.Glob("crates/*/Cargo.toml").scan(ROOT)) {
   const crate = Bun.TOML.parse(await Bun.file(ROOT + file).text()) as Record<string, any>;
   const pkg = crate.package as { name: string; version: string | { workspace: true } };
   const version = typeof pkg.version === "string" ? pkg.version : ws.workspace.package.version;
-  local.set(pkg.name, { path: file.replace(/\/Cargo\.toml$/, ""), version });
+  local.set(pkg.name, { path: file.replaceAll("\\", "/").replace(/\/Cargo\.toml$/, ""), version });
   const tables: Record<string, Spec>[] = [];
   for (const key of ["dependencies", "dev-dependencies", "build-dependencies"]) {
     if (crate[key]) tables.push(crate[key]);

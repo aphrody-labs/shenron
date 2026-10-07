@@ -408,3 +408,31 @@ temporaire ; ce contrôle utilise explicitement le mode CPU du SDK et ne
 qualifie pas son rendu GPU. Les processus terminent et les fixtures temporaires
 sont retirées après la vérification. Ces preuves portent sur les binaires
 emballés, pas seulement sur les sorties Cargo brutes.
+
+## Correction de la navigation CEF au démarrage
+
+Le diagnostic Windows du 7 octobre identifie une course entre `navigate` et
+l'acquittement des scripts document-start : l'URL initiale du splash pouvait
+remplacer la navigation explicite vers le serveur local. Aphrody corrige ce
+comportement dans `7daf113b06c0c86dded6ec8ca5a7fe1971b1febf`, commité et poussé
+sur son `main`. Le runtime conserve la dernière URL demandée jusqu'à la
+consommation du chargement initial par la tâche UI CEF, puis reprend les
+navigations directes. Les règles de permissions et de sandbox sont conservées.
+
+Les 88 tests du runtime, dont trois régressions dédiées à cette course, passent
+nativement sous Windows ; Clippy strict passe également. Un binaire de diagnostic
+Shenron est ensuite reconstruit depuis cette révision Git, sans patch local du
+runtime. Avec un identifiant distinct, un cache temporaire explicite et sans
+Koharu, il charge la page loopback, lit son DOM en JavaScript et appelle
+`/cef-ready` ; la fenêtre est réactive. Les timeouts CEF de certains frames
+restent dans les traces, mais n'empêchent pas cette navigation. Cette preuve
+qualifie la navigation isolée ; elle ne qualifie pas encore le lancement complet
+du Studio ni l'installation ou l'activation de l'installeur Windows.
+
+La préparation des pins consommateurs dans le snapshot NTFS révèle aussi que
+le générateur Cargo doit normaliser les séparateurs Windows avant de retirer
+`Cargo.toml` du chemin des crates locales. Ce défaut est corrigé dans
+`scripts/build/rust/workspace-deps.ts` ; génération puis `--check`, TypeScript,
+oxlint, oxfmt et les deux tests des pins passent sous Windows. À ce stade,
+la nouvelle révision et son lockfile restent dans le snapshot de qualification
+pendant la vérification des consommateurs ; les pins livrés restent inchangés.
