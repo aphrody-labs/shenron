@@ -13,6 +13,7 @@ import { Chargement, CocheCercle, Croix, Drapeau } from "@shenron/ui/icones";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { sendReport } from "@/lib/report-request";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { REPORT_CATEGORIES, REPORT_MESSAGE_MAX } from "@/lib/report-types";
 import { useMe } from "@/lib/use-me";
@@ -34,8 +35,11 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
   const panneau = useRef<HTMLDivElement>(null);
   /** Fermeture automatique après un envoi réussi. */
   const cloture = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const submission = useRef<AbortController | null>(null);
 
   const fermer = useCallback(() => {
+    submission.current?.abort();
+    submission.current = null;
     if (cloture.current) {
       clearTimeout(cloture.current);
       cloture.current = null;
@@ -90,6 +94,8 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
   // se déclenchait ensuite dans le vide, sur des références déjà nulles.
   useEffect(
     () => () => {
+      submission.current?.abort();
+      submission.current = null;
       if (cloture.current) clearTimeout(cloture.current);
     },
     [],
@@ -99,25 +105,26 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
   if (pathname?.startsWith("/admin") || (pathname === "/desktop" && !inline)) return null;
 
   async function submit() {
-    if (phase === "sending") return;
+    if (phase === "sending" || submission.current) return;
     if (message.trim().length < 5) {
       setErr("Décris un peu plus le problème (5 caractères min).");
       return;
     }
     setPhase("sending");
     setErr(null);
+    const controller = new AbortController();
+    submission.current = controller;
     try {
-      const res = await fetch("/api/reports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({
+      const res = await sendReport(
+        {
           path: pathname ?? (typeof window !== "undefined" ? window.location.pathname : "/"),
           pageTitle: typeof document !== "undefined" ? document.title : null,
           category,
           message: message.trim(),
-        }),
-      });
+        },
+        controller.signal,
+      );
+      if (submission.current !== controller) return;
       if (res.status === 401) {
         setPhase("error");
         setErr("Connecte-toi avec Discord pour envoyer un signalement.");
@@ -140,8 +147,11 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
         fermer();
       }, 1800);
     } catch {
+      if (submission.current !== controller) return;
       setPhase("error");
       setErr("Échec de l'envoi. Réessaie dans un instant.");
+    } finally {
+      if (submission.current === controller) submission.current = null;
     }
   }
 
