@@ -303,3 +303,17 @@ du frontal et du staging sont encore revendiqués par `desktop-fast-launch`
 et `desktop-installer`. Leur coordination a été demandée avant intégration.
 Cette preuve ne déclare ni l'installeur complet qualifié ni le relais livré
 dans `main`.
+
+Le diagnostic WARP supplémentaire distingue les compilateurs : avec FXC et
+un seul thread d'initialisation, les trois images exactes passent. Avec DXC
+1.8.2502.11 et ce même réglage, le renderer est créé et la soumission atteint
+la lecture GPU, qui expire après 30 s, sans erreur de validation ni perte de
+périphérique signalée. Ce réglage ne constitue donc pas un correctif qualifié
+et son essai source est retiré. Aucun compilateur ni rendu CPU n'est imposé
+pour contourner l'échec.
+
+La suite native complète de 33 tests avec ce réglage rend 30 succès, tandis
+que les trois tests WARP ne terminent pas ; son processus identifié est arrêté
+après le diagnostic borné. Elle n'est pas déclarée verte. Cette exécution
+chargeait le DXC 1.9.2607.0 présent à côté des binaires CEF. Les preuves RTX
+4070 restent distinctes de cette qualification logicielle encore ouverte.
