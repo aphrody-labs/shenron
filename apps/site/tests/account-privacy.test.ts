@@ -10,6 +10,9 @@ import { describe, expect, mock, test } from "bun:test";
 import { APIError } from "better-auth/api";
 
 const accountData = await Bun.file(new URL("../src/lib/account-data.ts", import.meta.url)).text();
+const sharedAccountData = await Bun.file(
+  new URL("../../../packages/db/src/repos/account-data.ts", import.meta.url),
+).text();
 const exportRoute = await Bun.file(
   new URL("../src/app/api/account/export/route.ts", import.meta.url),
 ).text();
@@ -86,14 +89,15 @@ describe("suppression du compte", () => {
       "siteRatings",
       "editorDrafts",
     ]) {
-      expect(accountData).toMatch(new RegExp(`tx\\s*\\.delete\\(${table}\\)`));
+      expect(sharedAccountData).toMatch(new RegExp(`tx\\s*\\.delete\\(${table}\\)`));
     }
     for (const table of ["siteReports", "wikiContributions", "wikiRevisions", "users"]) {
-      expect(accountData).toMatch(new RegExp(`\\.update\\(${table}\\)`));
+      expect(sharedAccountData).toMatch(new RegExp(`\\.update\\(${table}\\)`));
     }
-    expect(accountData).toContain('username: "Compte supprimé"');
-    expect(accountData).toContain("authorDiscordId: null");
-    expect(accountData).toContain("userAgent: null");
+    expect(accountData).toContain("createAccountDataRepository(db).purgeAccountData(identity)");
+    expect(sharedAccountData).toContain('username: "Compte supprimé"');
+    expect(sharedAccountData).toContain("authorDiscordId: null");
+    expect(sharedAccountData).toContain("userAgent: null");
   });
 
   test("la purge est branchée après la suppression Better Auth", async () => {

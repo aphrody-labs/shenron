@@ -5,6 +5,7 @@
 // tiré `postgres`/`drizzle` dans le bundle et fait fuiter la forme même de
 // l'export. Cf. `docs/guides/pieges.md` (« shenron.ts / db-universe.ts sont server-only »).
 import "server-only";
+import { createAccountDataRepository, type AccountIdentity } from "@shenron/db/repos/accounts";
 import { and, count, desc, eq, or } from "drizzle-orm";
 import {
   baUser,
@@ -23,11 +24,7 @@ import {
 } from "@/db/schema";
 import { db } from "@/lib/db";
 
-export type AccountIdentity = {
-  authUserId: string;
-  appUserId: string;
-  discordId: string;
-};
+export type { AccountIdentity } from "@shenron/db/repos/accounts";
 
 export async function readAccountSummary(appUserId: string) {
   const [
@@ -277,52 +274,5 @@ export async function readAccountData(identity: AccountIdentity) {
  * L'opération est idempotente pour pouvoir être rejouée après un incident.
  */
 export async function purgeAccountData(identity: AccountIdentity): Promise<void> {
-  await db.transaction(async (tx) => {
-    // Une transaction postgres-js réserve une connexion : les opérations sont
-    // volontairement séquentielles afin qu'une erreur annule tout le lot et
-    // qu'aucune requête concurrente ne continue après un rollback.
-    await tx.delete(siteEvents).where(eq(siteEvents.userId, identity.authUserId));
-    await tx
-      .delete(userPreferences)
-      .where(
-        or(
-          eq(userPreferences.userId, identity.appUserId),
-          eq(userPreferences.identity, `u:${identity.appUserId}`),
-        ),
-      );
-    await tx.delete(tierlistVotes).where(eq(tierlistVotes.userId, identity.appUserId));
-    await tx.delete(siteRatings).where(eq(siteRatings.userId, identity.appUserId));
-    await tx.delete(editorDrafts).where(eq(editorDrafts.userId, identity.appUserId));
-    await tx
-      .update(siteReports)
-      .set({
-        userId: null,
-        discordId: null,
-        username: "Compte supprimé",
-        userAgent: null,
-      })
-      .where(eq(siteReports.userId, identity.appUserId));
-    await tx
-      .update(wikiContributions)
-      .set({
-        authorId: null,
-        authorName: "Compte supprimé",
-        authorDiscordId: null,
-      })
-      .where(eq(wikiContributions.authorId, identity.appUserId));
-    await tx
-      .update(wikiRevisions)
-      .set({ editorId: null, editorName: "Compte supprimé" })
-      .where(eq(wikiRevisions.editorId, identity.appUserId));
-
-    await tx
-      .update(users)
-      .set({
-        discordId: `deleted:${crypto.randomUUID()}`,
-        username: "Compte supprimé",
-        avatar: null,
-        roleAdmin: false,
-      })
-      .where(and(eq(users.id, identity.appUserId), eq(users.discordId, identity.discordId)));
-  });
+  await createAccountDataRepository(db).purgeAccountData(identity);
 }

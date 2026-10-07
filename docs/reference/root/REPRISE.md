@@ -5,11 +5,13 @@ chantiers sans demander, jusqu'à la production, puis met ce fichier à jour (re
 le restant) dans le même lot que le code. Les rapports générés vont dans `var/reports/`, pas ici.
 
 ## But en cours
+
 Shenron Studio, l'application de bureau, avec le modèle fine-tuné `shenron-chat-v2` (Qwen3-4B, LoRA
 sur tout Dragon Ball), une interface de chat M3 et la mémoire persistante d'Aphrody. Le cœur est livré ;
 l'installeur (v3) est déposé pour Omar, la validation de bout en bout reste à faire.
 
 ## À faire
+
 - **Release en production** : livrer les commits récents de `main` (retrait de « Découvrir », hôte Bun
   avec Better Auth, canvas wasm wgpu 30). `bun scripts/ops/release.ts --build-host vps` (le build du
   site exige Docker : dbfr n'en a pas). Si le vps est saturé, arrêter `shenron-cdn-sync.timer` pendant la
@@ -21,7 +23,9 @@ l'installeur (v3) est déposé pour Omar, la validation de bout en bout reste à
   release, mesurer la latence de `/api/chat` (relever le délai amont de 30 s de
   `apps/site/src/app/api/chat/route.ts` au-delà de 25 s).
 - **Auth sur Bun** : basculer le site sur l'hôte (`SHENRON_HOST_URL`), test de bout en bout Discord réel,
-  hooks du site (purge de compte, rate limit) et garde staff du bot à reprendre côté hôte.
+  validation du profil, invalidation du cache et garde staff du bot à reprendre côté hôte.
+  La limite Redis et [la purge DB partagée](../../operations/bun-account-deletion.md) sont branchées sur Bun ; la reprise durable
+  d'une purge interrompue après la suppression Better Auth reste à implémenter.
 - **Installeur Studio** : signature, mise à jour automatique Tauri, détection GPU CUDA, vérification de
   l'espace disque avant téléchargement.
 - **Omar** : WSL non activé (`wsl --install --no-distribution`, redémarrage, VT-x/SVM), puis `agy-all.md` ;
@@ -34,5 +38,6 @@ l'installeur (v3) est déposé pour Omar, la validation de bout en bout reste à
   puis les brancher dans Shenron.
 
 ## Décisions ouvertes
+
 - `OWNER_ID 1323725494184841256` (« Omar le Banni ») : à Omar ou à l'utilisateur ?
 - `default-secret-key-12345` codé en dur dans `aphrody-labs/rg` : sans propriétaire.

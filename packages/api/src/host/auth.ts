@@ -23,7 +23,10 @@ import { resolveSiteUrl } from "@shenron/config/public-urls";
 import { staffPolicyFromEnv } from "@shenron/auth/staff";
 import { createBunDb } from "@shenron/db/bun-sql";
 import { baAccount, baSession, baUser, baVerification } from "@shenron/db/schema";
-import { createDiscordAccountLookup } from "@shenron/db/repos/accounts";
+import {
+  createAccountDataRepository,
+  createDiscordAccountLookup,
+} from "@shenron/db/repos/accounts";
 import { createResilientRedis } from "@shenron/db/redis";
 import { RedisClient } from "bun";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
@@ -31,6 +34,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { bearer } from "better-auth/plugins";
 import type { BetterAuthPort, HostSession } from "../server";
 import { createAuthRateLimitStorage } from "./auth-rate-limit";
+import { buildAccountDeletionHooks } from "./account-deletion";
 
 const list = (raw: string | undefined): string[] =>
   (raw ?? "")
@@ -142,6 +146,7 @@ export function createHostAuth(env: EnvSource): AuthAvailability {
       })
     : null;
   options.rateLimit = { ...options.rateLimit, customStorage: createAuthRateLimitStorage(redis) };
+  options.user = { deleteUser: buildAccountDeletionHooks(createAccountDataRepository(db)) };
   const auth = betterAuth(options);
   const accounts = createDiscordAccountLookup(db);
   const staff = staffPolicyFromEnv(env, "site");

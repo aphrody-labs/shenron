@@ -8,6 +8,9 @@ import { and, eq } from "drizzle-orm";
 import { baAccount } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 
+export { createAccountDataRepository, accountIdentityQuery } from "./account-data";
+export type { AccountIdentity, AccountDeletionIdentity } from "./account-data";
+
 // oxlint-disable-next-line no-explicit-any -- repositories accept any Drizzle PG schema
 type AnyDb = ShenronPgDatabase<any>;
 
