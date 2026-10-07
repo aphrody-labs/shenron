@@ -3,7 +3,7 @@
 //! reports.
 
 use serde::Serialize;
-use wgpu::{Adapter, DeviceType};
+use wgpu::{Adapter, DeviceType, Features};
 
 use crate::options::GpuOptions;
 
@@ -63,15 +63,8 @@ fn device_type_name(device_type: DeviceType) -> &'static str {
     }
 }
 
-/// The names set in a bitflags value printed by `Debug` (`Features(A | B)`, `A | B`, `(empty)`).
-fn flag_names(debug: &str) -> Vec<String> {
-    let inner = debug.rsplit_once('(').map_or(debug, |(_, rest)| rest.trim_end_matches(')'));
-    inner
-        .split('|')
-        .map(str::trim)
-        .filter(|name| !name.is_empty() && !name.starts_with("0x") && *name != "empty")
-        .map(str::to_owned)
-        .collect()
+fn feature_names(features: Features) -> Vec<String> {
+    features.iter_names().map(|(name, _)| name.to_owned()).collect()
 }
 
 impl AdapterReport {
@@ -96,8 +89,13 @@ impl AdapterReport {
                 max_compute_invocations_per_workgroup: limits.max_compute_invocations_per_workgroup,
                 max_compute_workgroup_storage_size: limits.max_compute_workgroup_storage_size,
             },
-            features: flag_names(&format!("{:?}", adapter.features())),
-            downlevel: flag_names(&format!("{:?}", adapter.get_downlevel_capabilities().flags)),
+            features: feature_names(adapter.features()),
+            downlevel: adapter
+                .get_downlevel_capabilities()
+                .flags
+                .iter_names()
+                .map(|(name, _)| name.to_owned())
+                .collect(),
             name: info.name,
         }
     }
@@ -160,17 +158,11 @@ mod tests {
     }
 
     #[test]
-    fn flag_names_read_the_debug_output_of_bitflags() {
-        assert_eq!(
-            flag_names("Features(CLEAR_TEXTURE | PIPELINE_CACHE)"),
-            ["CLEAR_TEXTURE", "PIPELINE_CACHE"]
-        );
-        assert_eq!(
-            flag_names("COMPUTE_SHADERS | FRAGMENT_WRITABLE_STORAGE"),
-            ["COMPUTE_SHADERS", "FRAGMENT_WRITABLE_STORAGE"]
-        );
-        assert!(flag_names("Features(empty)").is_empty());
-        assert!(flag_names("").is_empty());
+    fn feature_names_preserve_wgpu_and_webgpu_flags() {
+        let names = feature_names(Features::CLEAR_TEXTURE | Features::TIMESTAMP_QUERY);
+        assert!(names.iter().any(|name| name == "CLEAR_TEXTURE"));
+        assert!(names.iter().any(|name| name == "TIMESTAMP_QUERY"));
+        assert!(feature_names(Features::empty()).is_empty());
     }
 
     #[test]

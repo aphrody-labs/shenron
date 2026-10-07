@@ -31,7 +31,10 @@ function restoreEnv(): void {
 afterEach(restoreEnv);
 // Each test resolves and opens the library itself (another test file may have opened one).
 beforeEach(() => close());
-afterAll(() => rmSync(scratch, { recursive: true, force: true }));
+afterAll(() => {
+  close();
+  rmSync(scratch, { recursive: true, force: true });
+});
 
 /** No default candidate beside the package: the default resolution finds nothing. */
 const noBundledLibrary = !existsSync(join(PACKAGE_ROOT, "native"));

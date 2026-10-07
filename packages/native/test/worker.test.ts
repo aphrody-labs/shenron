@@ -144,6 +144,9 @@ describe.if(library !== undefined)("ShenronWorkerPool with the built library", (
         await Promise.all(Array.from({ length: 1000 }, () => workers.sleep(0)));
       }
       Bun.gc(true);
+      // Main-thread GC does not collect worker heaps; allow their idle collection to run.
+      await Bun.sleep(250);
+      Bun.gc(true);
       return process.memoryUsage().rss;
     };
     // Worker heaps are collected on their own schedule: RSS breathes, a leak only grows. Four

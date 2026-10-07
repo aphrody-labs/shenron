@@ -39,7 +39,9 @@ mod noop {
         let context = noop_context(noop_with(adapter, Features::all()));
         assert_eq!(context.device().limits().max_texture_dimension_2d, 4096);
         assert_eq!(context.report().backend, "noop");
-        assert!(!context.report().is_software);
+        // wgpu-hal 30.0.1 reports NOOP as CPU, even with a device_type override.
+        assert_eq!(context.report().device_type, "cpu");
+        assert!(context.report().is_software);
     }
 
     #[test]
@@ -214,14 +216,54 @@ mod software {
             });
         target.copy_to_readback(&mut encoder);
         let submission = context.queue().submit([encoder.finish()]);
-        let pixels =
-            target.read_blocking(context, submission, Duration::from_secs(60)).expect("reads back");
+        let pixels = target
+            .read_blocking(context, submission, Duration::from_secs(60))
+            .unwrap_or_else(|error| {
+                panic!(
+                    "reads back: {error}; adapter {}; loss {:?}; validation errors {:?}",
+                    context.report().summary(),
+                    context.lost(),
+                    context.take_errors(),
+                )
+            });
         (pixels, target)
     }
 
     fn pixel(pixels: &[u8], width: u32, x: u32, y: u32) -> [u8; 4] {
         let at = ((y * width + x) * 4) as usize;
         [pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]]
+    }
+
+    #[test]
+    fn a_software_adapter_clears_and_reads_padded_rows_without_vello() {
+        let Some(context) = software_context() else { return };
+        let target = RenderTarget::new(context.device(), "clear readback", 17, 3).unwrap();
+        let mut encoder =
+            context.device().create_command_encoder(&wgpu::CommandEncoderDescriptor::default());
+        {
+            let _pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("clear readback"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: target.view(),
+                    depth_slice: None,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(wgpu::Color::RED),
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: None,
+                timestamp_writes: None,
+                occlusion_query_set: None,
+                multiview_mask: None,
+            });
+        }
+        target.copy_to_readback(&mut encoder);
+        let submission = context.queue().submit([encoder.finish()]);
+        let pixels = target.read_blocking(&context, submission, Duration::from_secs(60)).unwrap();
+        assert_eq!(pixels, [255, 0, 0, 255].repeat(17 * 3));
+        assert_eq!(context.error_count(), 0, "{:?}", context.take_errors());
+        assert!(context.lost().is_none());
     }
 
     #[test]

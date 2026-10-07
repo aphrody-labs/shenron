@@ -95,7 +95,8 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
       while (Date.now() < deadline && child.exitCode === null) {
         try {
           const response = await fetch(`http://127.0.0.1:${port}/desktop`, {
-            signal: AbortSignal.timeout(5000),
+            // Cold SSR also waits for the fixture's unavailable database fallbacks.
+            signal: AbortSignal.timeout(Math.min(15_000, deadline - Date.now())),
           });
           if (response.ok) {
             ready = true;

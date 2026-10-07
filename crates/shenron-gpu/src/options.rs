@@ -81,7 +81,7 @@ pub struct NoopOptions {
     pub limits: Option<Limits>,
     /// Reported features; `None` reports every feature.
     pub features: Option<Features>,
-    /// Reported device type; `None` reports `DeviceType::Other`.
+    /// Requested device type. wgpu-hal 30.0.1 currently reports CPU regardless of this value.
     pub device_type: Option<DeviceType>,
 }
 

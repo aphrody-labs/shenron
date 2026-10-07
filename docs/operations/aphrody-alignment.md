@@ -206,3 +206,31 @@ OpenAI ; le générateur natif actualise deux empreintes de `faits.ts`, sans
 modifier les connaissances générées. Le snapshot matérialise les liens de
 fichiers suivis et consulte les métadonnées Git du dépôt pour les tests de
 packaging, sans copier de données protégées.
+
+La DLL release MSVC `shenron_ffi.dll` charge réellement sous Bun Windows.
+La suite FFI complète rend 35 succès, zéro échec et 115 assertions. Son premier
+essai révélait un verrou SQLite au nettoyage : le cache de providers conservait
+des références fortes pendant toute la vie du processus. Il partage désormais
+les providers actifs avec des références faibles et libère les connexions
+inactives. Trois tests Rust mémoire passent en release, dont la libération du
+dernier propriétaire, le déplacement de la base sur Windows et sa réouverture
+sans perte de données. Le test RSS garde son seuil de 8 Mo et laisse 250 ms
+aux heaps des workers pour leur collecte asynchrone avant chaque mesure.
+Clippy strict MSVC, toutes cibles, passe pour `shenron-ffi` et `shenron-gpu`.
+
+Les noms de features GPU utilisent maintenant l'itérateur typé de wgpu 30,
+au lieu d'analyser son format `Debug` imbriqué. NOOP est correctement décrit
+comme CPU, conformément à wgpu-hal 30.0.1. Les tests GPU natifs rendent
+30 succès et trois échecs, également reproduits sans parallélisme : WARP
+perd le périphérique DX12 pendant les scènes Vello. L'effacement et la lecture
+de lignes avec padding sans Vello passent, sans perte de périphérique ni erreur
+de validation. La qualification Vello sur WARP reste donc ouverte.
+
+La qualification Next réelle atteint désormais HTTP 200 ; ses sondes ont un
+délai de 15 s, inclus dans la limite globale de démarrage de 120 s. La suite
+s'arrête ensuite sur la bibliothèque runtime native absente du SDK Windows,
+avant les assertions navigateur. Le producteur est construit séparément depuis
+le snapshot immuable Aphrody `6135cc4ffa25c971aba29929107a02b19dc85b0f` :
+`aphrody-ffi`, profil `runtime`, cible MSVC. Cette DLL canonique exporte l'ABI
+Yolo ; ni activation ni qualification navigateur complète ne sont encore
+déclarées. Aucun moteur n'est copié dans Shenron.

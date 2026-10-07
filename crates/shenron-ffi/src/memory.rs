@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Persistent chat memory: Aphrody's `aphrody-memory` [`SqliteLocalProvider`], one provider per
-//! database file for the life of the process.
+//! database file while calls own it; idle connections are released.
 //!
 //! Shenron stores nothing of its own here: records, ids, schema and search are the provider's.
 //! This module only validates the JSON requests of the `shenron_memory_*` exports, scopes every
@@ -9,7 +9,7 @@
 use std::{
     collections::{BTreeMap, HashMap},
     path::{Path, PathBuf},
-    sync::{Arc, Mutex, OnceLock, PoisonError},
+    sync::{Arc, Mutex, OnceLock, PoisonError, Weak},
 };
 
 use aphrody_memory::{
@@ -65,8 +65,9 @@ pub struct MemorySearch {
     pub limit: Option<u32>,
 }
 
-fn providers() -> &'static Mutex<HashMap<PathBuf, Arc<SqliteLocalProvider>>> {
-    static PROVIDERS: OnceLock<Mutex<HashMap<PathBuf, Arc<SqliteLocalProvider>>>> = OnceLock::new();
+fn providers() -> &'static Mutex<HashMap<PathBuf, Weak<SqliteLocalProvider>>> {
+    static PROVIDERS: OnceLock<Mutex<HashMap<PathBuf, Weak<SqliteLocalProvider>>>> =
+        OnceLock::new();
     PROVIDERS.get_or_init(|| Mutex::new(HashMap::new()))
 }
 
@@ -81,9 +82,10 @@ pub fn provider(path: &str) -> Result<Arc<SqliteLocalProvider>, String> {
     }
     let path = PathBuf::from(path);
     let mut open = providers().lock().unwrap_or_else(PoisonError::into_inner);
-    if let Some(provider) = open.get(&path) {
-        return Ok(Arc::clone(provider));
+    if let Some(provider) = open.get(&path).and_then(Weak::upgrade) {
+        return Ok(provider);
     }
+    open.retain(|_, provider| provider.strong_count() > 0);
     if let Some(parent) = path.parent().filter(|parent| !parent.as_os_str().is_empty()) {
         std::fs::create_dir_all(parent).map_err(|error| format!("memory directory: {error}"))?;
     }
@@ -91,7 +93,7 @@ pub fn provider(path: &str) -> Result<Arc<SqliteLocalProvider>, String> {
         SqliteLocalProvider::open(&path).map_err(|error| format!("memory database: {error}"))?,
     );
     restrict(&path);
-    open.insert(path, Arc::clone(&provider));
+    open.insert(path, Arc::downgrade(&provider));
     Ok(provider)
 }
 
@@ -283,6 +285,22 @@ mod tests {
             let mode = std::fs::metadata(path).unwrap().permissions().mode();
             assert_eq!(mode & 0o777, 0o600);
         }
+    }
+
+    #[tokio::test]
+    async fn the_last_owner_releases_the_database_without_losing_records() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("memory.sqlite");
+        let memory = provider(path.to_str().unwrap()).unwrap();
+        let added = add(&memory, add_request("a", "Goku", &[])).await.unwrap();
+        let weak = Arc::downgrade(&memory);
+        drop(memory);
+        assert!(weak.upgrade().is_none(), "the cache must not own idle connections");
+        let moved = dir.path().join("moved.sqlite");
+        std::fs::rename(&path, &moved).expect("the released database can be moved on Windows");
+        let reopened = provider(moved.to_str().unwrap()).unwrap();
+        let records = search(&reopened, search_request("a", None)).await.unwrap();
+        assert_eq!(records[0].id, added.id);
     }
 
     #[tokio::test]
