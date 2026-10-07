@@ -450,3 +450,23 @@ Les autres entrées sont conservées ; aucun patch local du runtime CEF n'est
 livré dans Shenron. Les binaires NSIS qualifiés précédemment restent ceux
 de leur preuve datée : ces nouveaux pins ne constituent pas une installation
 ou une activation du Studio reconstruit.
+
+Les nouvelles sorties release FFI, MCP et SDK sont ensuite reconstruites
+nativement sur ces pins. La DLL FFI passe les 35 tests Bun du paquet natif
+(115 assertions, aucun skip), dont ABI 4, mémoire persistante, concurrence,
+annulation et libération des jobs. Le nouveau MCP passe health, `initialize`
+et `tools/list` en loopback public ; le nouveau SDK passe à nouveau le cycle
+complet du projet Unicode dans deux processus, explicitement en mode CPU.
+Les fixtures et processus de ces contrôles sont retirés. Ces artefacts sont
+des sorties de qualification, distinctes de ceux du NSIS précédent.
+
+| Artefact Windows | Taille (octets) | SHA-256 |
+| --- | ---: | --- |
+| `shenron_ffi.dll` | 21 194 240 | `1aa40dbe5f15029ffcdb41cdcccfeade5f0ccb2c0195edca691764cd342e0602` |
+| `shenron-mcp.exe` | 19 472 384 | `b3088665b38a39c36a605d06c007bc4fd3ffda326ed17cdc2002bcc8df10377e` |
+| `koharu-sdk.exe` | 74 423 808 | `1f239475928cdcf8ef56ba816386340c337a512c54bd3eb846713459f1932fdd` |
+
+La première reconstruction release complète termine avec succès en 13 min
+27 s. Deux anciens garde-fous de visibilité différant du `main` actuel sont
+ensuite retirés du snapshot par synchronisation de l'entrée canonique ;
+la reconstruction ciblée et le lancement GUI de ce Studio restent à terminer.
