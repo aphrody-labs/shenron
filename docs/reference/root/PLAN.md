@@ -21,7 +21,7 @@
     "graph_edges": 62707,
     "graph_communities": 242
   },
-  "open_workstreams": 3
+  "open_workstreams": 4
 }
 ```
 
@@ -104,7 +104,15 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
 
 ---
 
-## 5. Exploitation & Portes de Contrôle
+## 5. Migration dbxv2 Rust/Bun (inventaire 2026-10-07)
+
+- Dépôt source `aphrody-code/dbxv2` vérifié au sous-module `fabc19c0021e3e992786dc2a093a749c8a1c26f0`.
+- Licence propriétaire; aucune donnée/asset du jeu dans le dépôt. La parité des 21 commandes
+  reste incomplète; matrice et limites dans `docs/operations/dbxv2-rust-bun-parity-2026-10-07.md`.
+- WASM map prototype et CLI `shenron-re map|catalog` sont ajoutés. Pas d'export d'installation,
+  de flux Steam temps réel, d'import de sauvegarde, de transfert d'assets ou de déploiement CDN.
+
+## 6. Exploitation & Portes de Contrôle
 
 * **Contrôles CI obligatoires** :
   ```sh

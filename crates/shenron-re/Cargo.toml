@@ -38,3 +38,7 @@ js-sys = { workspace = true }
 wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
 js-sys = { workspace = true }
+
+[[bin]]
+name = "shenron-re"
+path = "src/bin/shenron-re.rs"

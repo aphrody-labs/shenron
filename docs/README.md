@@ -15,6 +15,7 @@ the root `AGENTS.md`.
 | Environment variables                                        | [`operations/ENV.md`](operations/ENV.md)                                                                                                            |
 | RAG and LLM compute (compute host, databases, tunnels)       | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
 | Development workstation                                      | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md)                                                                                                |
+| dbxv2 migration parity and data boundaries                   | [`operations/dbxv2-rust-bun-parity-2026-10-07.md`](operations/dbxv2-rust-bun-parity-2026-10-07.md)
 | Rust development (crates, gates, CI)                         | [`development/rust.md`](development/rust.md)                                                                                                        |
 | Bun dependencies                                             | [`operations/BUN-PACKAGE-MANAGER.md`](operations/BUN-PACKAGE-MANAGER.md)                                                                            |
 | Operations (delegated to `aphrody-infra`)                    | [`operations/INFRA-DELEGATION.md`](operations/INFRA-DELEGATION.md)                                                                                  |
