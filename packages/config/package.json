@@ -31,7 +31,8 @@
     "./admin": "./src/admin.ts",
     "./chat-model": "./src/chat-model.ts",
     "./dm-chat": "./src/dm-chat.ts",
-    "./testing-executable": "./src/testing-executable.ts"
+    "./testing-executable": "./src/testing-executable.ts",
+    "./discord-ai": "./src/discord-ai.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -73,7 +74,8 @@
       "./aphrody-corpus": "pure",
       "./chat-model": "pure",
       "./dm-chat": "pure",
-      "./testing-executable": "bun"
+      "./testing-executable": "bun",
+      "./discord-ai": "pure"
     }
   }
 }

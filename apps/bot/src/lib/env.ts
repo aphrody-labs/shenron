@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { resolveDiscordAi } from "@shenron/config/discord-ai";
 import { staffPolicyFromEnv, type StaffEnvSource, type StaffPolicy } from "@shenron/auth/staff";
 
 const schema = z.object({
@@ -85,7 +86,14 @@ const schema = z.object({
   LOG_TICKET_CHANNEL_ID: z.string().optional(),
   MOD_NOTIFY_CHANNEL_ID: z.string().optional(),
   COMMANDS_CHANNEL_ID: z.string().optional(),
-  ADMIN_LAB_CHANNEL_ID: z.string().optional().default("1548677623935139901"),
+  ADMIN_LAB_CHANNEL_ID: z
+    .string()
+    .regex(/^\d{17,20}$/)
+    .optional(),
+  SHENRON_AI_CHANNEL_ID: z
+    .string()
+    .regex(/^\d{17,20}$/)
+    .optional(),
   ANNOUNCE_CHANNEL_ID: z.string().optional(),
   ACHIEVEMENT_CHANNEL_ID: z.string().optional(),
   LEVEL_CHANNEL_ID: z.string().optional(),
@@ -158,6 +166,8 @@ const shenronAppId = raw.APPLICATION_ID_SHENRON ?? raw.APPLICATION_ID;
 
 export const env = {
   ...raw,
+  ADMIN_LAB_CHANNEL_ID: resolveDiscordAi(Bun.env).adminChannelId,
+  SHENRON_AI_CHANNEL_ID: resolveDiscordAi(Bun.env).generalChannelId,
   DISCORD_TOKEN: shenronToken,
   DISCORD_TOKEN_SHENRON: shenronToken,
   DISCORD_TOKEN_BEERUS: shenronToken,

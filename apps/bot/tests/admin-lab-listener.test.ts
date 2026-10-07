@@ -1,4 +1,4 @@
-import "./setup-training";
+import "./setup-discord-ai";
 import { afterAll, describe, expect, test } from "bun:test";
 import { NotBot } from "@aphrody/discord-kit";
 import { MetadataStorage } from "discordx";
@@ -10,6 +10,8 @@ import { DatabaseService } from "../src/db/index";
 import { TrainingService } from "../src/services/TrainingService";
 import { AdminReportGoalService } from "../src/services/AdminReportGoalService";
 import { CanonService } from "../src/services/CanonService";
+import { env } from "../src/lib/env";
+import { PermissionFlagsBits } from "discord.js";
 import { ADMIN_LAB_CHANNEL_ID } from "../src/lib/admin-lab";
 
 // Base, docs/ et notifier isolés : les commandes !goal / !report du test
@@ -35,6 +37,8 @@ describe("AdminLabListener — Écoute et Automatisation du Salon Lab IA", () =>
     isBot?: boolean;
     authorId?: string;
     authorTag?: string;
+    guildId?: string;
+    admin?: boolean;
   }) {
     let replyData: any = null;
     let editData: any = null;
@@ -43,6 +47,13 @@ describe("AdminLabListener — Écoute et Automatisation du Salon Lab IA", () =>
       id: opts.id ?? `msg-${Date.now()}-${Math.random()}`,
       channelId: opts.channelId ?? ADMIN_LAB_CHANNEL_ID,
       content: opts.content,
+      guildId: opts.guildId ?? env.GUILD_ID,
+      member: {
+        permissions: {
+          has: (permission: bigint) =>
+            permission === PermissionFlagsBits.Administrator && opts.admin !== false,
+        },
+      },
       author: {
         id: opts.authorId ?? "1527405876695142620",
         tag: opts.authorTag ?? "Admin#0001",
@@ -78,6 +89,21 @@ describe("AdminLabListener — Écoute et Automatisation du Salon Lab IA", () =>
       channelId: "999999999999999999",
     });
 
+    await listener.onMessage([msg as any]);
+    expect(msg.getReply()).toBeNull();
+  });
+
+  test("refuse les commandes et l'archivage sans droits administrateur", async () => {
+    const msg = createMockMessage({ content: "!goal unauthorized", admin: false });
+    await listener.onMessage([msg as any]);
+    expect(msg.getReply()).toBeNull();
+    expect(
+      dbs.sqlite.query("SELECT * FROM admin_lab_messages WHERE message_id = ?").get(msg.id),
+    ).toBeNull();
+  });
+
+  test("ignore la même commande provenant d'une autre guilde", async () => {
+    const msg = createMockMessage({ content: "!status", guildId: "other-guild" });
     await listener.onMessage([msg as any]);
     expect(msg.getReply()).toBeNull();
   });

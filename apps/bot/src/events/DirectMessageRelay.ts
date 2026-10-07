@@ -19,6 +19,7 @@ import { hybridSearch } from "~/lib/rag";
 import { StatsService } from "~/services/StatsService";
 import { DatabooksService, type Databook, type PlateHit } from "~/services/DatabooksService";
 import { AgentHomeService } from "~/lib/agent-home";
+import { guildAiPrompt } from "@shenron/config/discord-ai";
 
 /** IDs des Owners / Fondateurs (Omar, Yoyo / Shawn, trape17) */
 const OWNER_DISCORD_IDS = new Set([
@@ -294,6 +295,7 @@ export class DirectMessageRelay {
   private async send(message: ArgsOf<"messageCreate">[0], content: string): Promise<void> {
     const payload = { content, allowedMentions: { parse: [], repliedUser: false } };
     await message.reply(payload).catch(async () => {
+      if (message.inGuild()) return;
       await message.author.send(payload).catch(() => undefined);
     });
   }
@@ -364,7 +366,8 @@ export class DirectMessageRelay {
       try {
         const query = question.slice(0, settings.maxInputChars);
         const homeView = home ? agentHomeFromSnapshot(home) : null;
-        const memory = await this.memory();
+        // Private agent homes and DM memories must never enter a shared-channel answer.
+        const memory = message.inGuild() ? null : await this.memory();
         const [hits, memories] = await Promise.all([
           hybridSearch(this.dbs.sqlite, query, 5)
             .then((r) => r.results)
@@ -373,7 +376,9 @@ export class DirectMessageRelay {
         ]);
         const result = await withTimeout(settings.timeoutMs, (signal) =>
           generateLlmGrounded(this.dbs.sqlite, query, hits, "shenron", {
-            sessionId: `discord:dm:${userId}`,
+            sessionId: message.inGuild()
+              ? `discord:guild:${message.guildId}:${message.channelId}:${userId}`
+              : `discord:dm:${userId}`,
             lang,
             homePersona: homeView?.persona ?? null,
             systemNote: homeUserNote(homeView?.user ?? null),
@@ -387,7 +392,7 @@ export class DirectMessageRelay {
           ? t(lang, "dm.unavailable")
           : boundReply(stripCitationMarkers(result.answer), settings.maxChars);
         await this.send(message, reply);
-        await this.record(userId, reply);
+        if (!message.inGuild()) await this.record(userId, reply);
         if (memory && agentId && !result.fallback)
           void memory.learn(agentId, query).catch(() => undefined);
       } finally {
@@ -411,7 +416,28 @@ export class DirectMessageRelay {
   @On({ event: "messageCreate" })
   @Guard(NotBot)
   async onDirectMessage([message]: ArgsOf<"messageCreate">) {
-    if (message.inGuild()) return;
+    if (message.inGuild()) {
+      const question = guildAiPrompt(message, message.client.user?.id ?? "", process.env);
+      if (!question) return;
+      const owner = isBotOwner(message.author.id) || OWNER_DISCORD_IDS.has(message.author.id);
+      const request = owner ? this.databookQuery(question) : null;
+      try {
+        if (request) {
+          await this.send(message, await this.buildDatabookReply(request));
+        } else if (owner && /^(?:status|statut|état|etat|services|vps|rapport)$/i.test(question)) {
+          await this.send(
+            message,
+            await this.buildLiveStatusReport(message.author.id === "281114294152724491"),
+          );
+        } else {
+          await this.answerWithModel(message, question, owner, null);
+        }
+      } catch (error) {
+        logger.warn({ err: error }, "[GuildAI] reply failed");
+        await this.send(message, t(resolveAnswerLang(question), "dm.unavailable"));
+      }
+      return;
+    }
 
     const contenu = (message.content ?? "").trim();
     const texte = contenu || (message.attachments.size > 0 ? "(pièce jointe sans texte)" : "");

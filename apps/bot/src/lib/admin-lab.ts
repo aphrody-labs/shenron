@@ -2,8 +2,9 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { discordFetch, DiscordRESTError } from "@aphrody/discord-kit/rest";
 import { ChannelError, DiscordChannel } from "@aphrody/messaging";
+import { resolveDiscordAi } from "@shenron/config/discord-ai";
 
-export const ADMIN_LAB_CHANNEL_ID = process.env.ADMIN_LAB_CHANNEL_ID ?? "1548677623935139901";
+export const ADMIN_LAB_CHANNEL_ID = resolveDiscordAi(process.env).adminChannelId;
 
 let cachedToken: string | null = null;
 
@@ -143,6 +144,7 @@ export async function sendAdminLabMessage(
   const token = await getDiscordBotToken();
   const payload = typeof options === "string" ? { content: options } : options;
   const channelId = payload.channelId ?? ADMIN_LAB_CHANNEL_ID;
+  if (!channelId) throw new Error("ADMIN_LAB_CHANNEL_ID is required outside the Aphrody guild");
   try {
     const { id } = await postAdminLabMessage(token, channelId, payload);
     return { id, ok: true };
@@ -164,6 +166,7 @@ export async function getAdminLabRecentMessages(
   }
 
   const token = await getDiscordBotToken();
+  if (!channelId) throw new Error("ADMIN_LAB_CHANNEL_ID is required outside the Aphrody guild");
   try {
     const { data } = await discordFetch<any[]>(`/channels/${channelId}/messages?limit=${limit}`, {
       mode: "Bot",

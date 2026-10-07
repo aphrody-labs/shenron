@@ -6,6 +6,9 @@ import { TrainingService } from "~/services/TrainingService";
 import { AdminReportGoalService } from "~/services/AdminReportGoalService";
 import { ADMIN_LAB_CHANNEL_ID } from "~/lib/admin-lab";
 import { logger } from "~/lib/logger";
+import { env, isBotOwner } from "~/lib/env";
+import { PermissionFlagsBits } from "discord.js";
+import { resolveDiscordAi } from "@shenron/config/discord-ai";
 
 /**
  * AdminLabListener — Écoute et automatisation en temps réel du salon admin (🤖・lab-ia-admin).
@@ -32,7 +35,18 @@ export class AdminLabListener {
   @On({ event: "messageCreate" })
   @Guard(NotBot)
   async onMessage([message]: ArgsOf<"messageCreate">) {
-    if (message.channelId !== ADMIN_LAB_CHANNEL_ID) return;
+    if (
+      message.guildId !== env.GUILD_ID ||
+      !ADMIN_LAB_CHANNEL_ID ||
+      message.channelId !== ADMIN_LAB_CHANNEL_ID ||
+      message.author.bot ||
+      message.webhookId
+    )
+      return;
+    const authorized =
+      isBotOwner(message.author.id) ||
+      message.member?.permissions.has(PermissionFlagsBits.Administrator);
+    if (!authorized) return;
 
     // 1. Archivage local immédiat du message
     try {
@@ -235,6 +249,9 @@ export class AdminLabListener {
         return;
       }
     }
+
+    // The shared chat relay owns general-channel questions, avoiding duplicate replies.
+    if (message.channelId === resolveDiscordAi(process.env).generalChannelId) return;
 
     // 3. Question canonique adressée à Shenron (si mention directe ou mot clé 'shenron')
     const mentionsBot = message.mentions.has(message.client.user?.id ?? "");
