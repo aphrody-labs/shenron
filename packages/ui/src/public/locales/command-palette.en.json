@@ -62,5 +62,7 @@
   "hDatabooks": "Databooks & guides",
   "kDatabook": "Databook",
   "hNovels": "Novels & light novels",
-  "kNovel": "Novel"
+  "kNovel": "Novel",
+  "resultCount": "{count} results",
+  "resultOne": "{count} result"
 }

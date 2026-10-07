@@ -40,6 +40,15 @@ vue sans adaptateur Next face à un serveur Bun temporaire : panne `503`,
 réessai, 24 familles documentaires et navigation vers un databook. Les réponses
 de ce serveur sont synthétiques ; ce test ne qualifie pas la recherche SQL.
 
+La palette annonce le chargement et le nombre de résultats dans un `output`
+vivant, hors de la liste marquée `aria-busy`. Le message vide reste visible
+même avec les liens vers la recherche complète et l’assistant. Les tests DOM
+couvrent `Home`/`Entrée`, `Échap` et le retour du focus au bouton d’ouverture.
+Le dialogue utilise Base UI, déjà présent dans le paquet, avec le même cadre
+visuel. Références : [ARIA busy](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-busy)
+et [Dialog Base UI](https://base-ui.com/react/components/dialog).
+Ces tests ne remplacent pas une vérification avec un lecteur d’écran réel.
+
 La qualification navigateur utilise `@aphrody/agent-browser/engine`,
 `@aphrody/web-test` et son export `/next`. Elle démarre Obscura avec accès
 loopback explicite et un Next/Turbopack réel, sur des ports temporaires.

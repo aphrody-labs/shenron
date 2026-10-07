@@ -62,5 +62,7 @@
   "hDatabooks": "データブックとガイド",
   "kDatabook": "データブック",
   "hNovels": "小説とライトノベル",
-  "kNovel": "小説"
+  "kNovel": "小説",
+  "resultCount": "{count}件の検索結果",
+  "resultOne": "{count}件の検索結果"
 }

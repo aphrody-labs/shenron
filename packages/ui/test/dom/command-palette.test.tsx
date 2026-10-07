@@ -1,8 +1,130 @@
 import { afterEach, expect, test } from "bun:test";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { CommandPalette } from "../../src/public/CommandPalette";
+import { useState } from "react";
 
 afterEach(cleanup);
+
+test("Escape closes the dialog and restores keyboard focus to its trigger", async () => {
+  function Harness() {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <button type="button" onClick={() => setOpen(true)}>
+          Open search
+        </button>
+        <CommandPalette open={open} onOpenChange={setOpen} locale="en" navigate={() => {}} />
+      </>
+    );
+  }
+  render(<Harness />);
+  const trigger = screen.getByRole("button", { name: "Open search" });
+  trigger.focus();
+  fireEvent.click(trigger);
+  const input = screen.getByRole("combobox", { name: "Dragon Ball search" });
+  await act(async () => {
+    await Bun.sleep(30);
+  });
+  expect(document.activeElement).toBe(input);
+  fireEvent.keyDown(input, { key: "Escape" });
+  await act(async () => {
+    await Bun.sleep(20);
+  });
+  expect(screen.queryByRole("combobox")).toBeNull();
+  expect(document.activeElement).toBe(trigger);
+});
+
+test("loading is announced, empty results remain visible, and keyboard navigation opens a result", async () => {
+  const keys = [
+    "characters",
+    "planets",
+    "sagas",
+    "movies",
+    "games",
+    "episodes",
+    "techniques",
+    "races",
+    "transformations",
+    "arcs",
+    "mangaVolumes",
+    "mangaChapters",
+    "battles",
+    "locations",
+    "tournaments",
+    "voiceActors",
+    "soundtracks",
+    "powerLevels",
+    "items",
+    "dragons",
+    "contributors",
+    "sources",
+    "databooks",
+    "novels",
+  ];
+  const empty = { ...Object.fromEntries(keys.map((key) => [key, []])), q: "guide" };
+  let complete!: (response: Response) => void;
+  let requests = 0;
+  const pending = new Promise<Response>((resolve) => {
+    complete = resolve;
+  });
+  const server = Bun.serve({
+    hostname: "127.0.0.1",
+    port: 0,
+    fetch() {
+      requests++;
+      return requests === 1
+        ? pending
+        : Response.json({
+            ...empty,
+            databooks: [
+              { id: 7, title: "Daizenshuu", cover: null, category: null, title_ja: null },
+            ],
+          });
+    },
+  });
+  const destinations: string[] = [];
+  try {
+    render(
+      <CommandPalette
+        open
+        locale="en"
+        onOpenChange={() => {}}
+        navigate={(href) => destinations.push(href)}
+        searchUrl={`${server.url}search`}
+      />,
+    );
+    const input = screen.getByRole("combobox", { name: "Dragon Ball search" });
+    fireEvent.change(input, { target: { value: "guide" } });
+    await act(async () => {
+      await Bun.sleep(250);
+    });
+    expect(screen.getByRole("status").textContent).toContain("Scanning");
+    expect(screen.getByRole("listbox").getAttribute("aria-busy")).toBe("true");
+    await act(async () => {
+      complete(Response.json(empty));
+      await Bun.sleep(30);
+    });
+    expect(screen.getByRole("status").textContent).toBe("0 results");
+    expect(screen.getByRole("listbox").getAttribute("aria-busy")).toBe("false");
+    expect(screen.getByText(/No energy detected/)).toBeTruthy();
+    expect(screen.getAllByRole("option")).toHaveLength(2);
+    fireEvent.keyDown(input, { key: "Home" });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(destinations).toEqual(["/wiki/search?q=guide"]);
+    fireEvent.change(input, { target: { value: "databook" } });
+    await act(async () => {
+      await Bun.sleep(250);
+    });
+    expect(screen.getByRole("status").textContent).toBe("1 result");
+    fireEvent.keyDown(input, { key: "Home" });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(destinations).toEqual(["/wiki/search?q=guide", "/wiki/databooks/7"]);
+  } finally {
+    complete(Response.json(empty));
+    cleanup();
+    await server.stop(true);
+  }
+});
 
 test("the shared palette runs without Next against a configurable Bun search server", async () => {
   const categories = [
