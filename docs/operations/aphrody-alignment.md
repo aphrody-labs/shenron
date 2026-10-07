@@ -704,3 +704,36 @@ Un paquet NSIS de qualification est en construction sous le nom distinct
 qualifiés, le runtime llama épinglé et l'adaptateur vérifié. Son serveur contient
 encore la version lexicale du VFS, préparée avant l'indexation. Ce paquet n'est
 pas une preuve d'installation ou d'activation, ni une livraison finale.
+
+## Installation NSIS de qualification sur Windows
+
+La fabrique NSIS termine avec code 0. Le paquet QA fait 449 486 113 octets,
+SHA-256 `7f7ce07d9aa09bf04ecc979d256b248785592a9437e621f278b62e5a8908d837`.
+Son installation silencieuse, sans option `/R`, réussit avec code 0 dans un
+dossier dédié. L'identifiant et le nom de produit distincts sont vérifiés dans
+le script NSIS avant exécution. Les valeurs des clés de registre de
+l'installation `Shenron Studio` existante restent identiques après installation.
+Aucun processus graphique Studio n'est lancé.
+
+Les trois sidecars installés correspondent aux empreintes des fichiers préparés.
+Les 26 fichiers du runtime llama et l'adaptateur installé sont identiques aux
+ressources préparées. Le binaire graphique installé ne diffère de la sortie
+native qualifiée que par les trois octets attendus du marqueur Tauri :
+`__TAURI_BUNDLE_TYPE_VAR_UNK` devient `__TAURI_BUNDLE_TYPE_VAR_NSS`.
+Son SHA-256 installé est
+`ccea9d6a2340625223706f059588e317ee1e31e393ed05094a7ea9539accae2d`.
+Le modèle de base Qwen présent dans le store protégé a également l'empreinte
+du catalogue, `3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597`.
+
+Depuis le dossier installé, le serveur charge la DLL embarquée et répond en
+HTTP 200 aux routes de santé, robots, desktop et studio. Son pont HTTP appelle
+réellement `get_project` sur le SDK installé. Les groupes wiki, RAG, VFS, MCP et
+Koharu sont disponibles ; les processus de cette sonde sont arrêtés.
+
+Cette installation QA réutilise les binaires natifs avec le correctif ACL privé
+déjà qualifié. Elle embarque le VFS lexical, pas le nouvel index hybride, et
+le frontend de la révision figée `6fe07b9b`. Les changements de navigation et
+de WebSocket arrivés ensuite sur `main` restent à intégrer dans la copie de
+qualification. Le lancement graphique du paquet installé, sa désinstallation,
+l'activation du produit final et l'intégration des correctifs revendiqués
+restent ouverts. Le paquet et ses ressources restent dans le store local hors Git.
