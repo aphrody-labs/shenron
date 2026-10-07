@@ -4,19 +4,14 @@
 //! Exposes CPK archive triage, CRILAYLA decompression, CUS skill decoding,
 //! AOB memory scanning, and Dragon Ball game catalog discovery to JS/WASM runtimes.
 
-use wasm_bindgen::prelude::*;
-use serde::{Deserialize, Serialize};
 use crate::catalog::get_dragon_ball_catalog;
-use crate::formats::{
-    bac::BacFile,
-    bdm::BdmFile,
-    cus::CusFile,
-    msg::MsgFile,
-    pup::PupFile,
-};
+use crate::formats::{bac::BacFile, bdm::BdmFile, cus::CusFile, msg::MsgFile, pup::PupFile};
 use crate::fs::cpk::{CpkArchive, CpkEntry};
 use crate::fs::crilayla::{decompress_crilayla, decompress_crilayla_raw};
 use crate::live::aob::AobPattern;
+use crate::world::xenoverse3::xenoverse3_prototype_map;
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
 
 /// Summary of a CPK archive inspection in WebAssembly.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -59,13 +54,18 @@ pub fn wasm_extract_cpk_file(archive_bytes: &[u8], filename: &str) -> Result<Vec
 
 /// Decompress a CRILAYLA compressed buffer into raw uncompressed bytes.
 #[wasm_bindgen]
-pub fn wasm_decompress_crilayla(compressed: &[u8], uncompressed_size: usize) -> Result<Vec<u8>, JsValue> {
+pub fn wasm_decompress_crilayla(
+    compressed: &[u8],
+    uncompressed_size: usize,
+) -> Result<Vec<u8>, JsValue> {
     if compressed.starts_with(b"CRILAYLA") {
         decompress_crilayla(compressed).map_err(to_js_err)
     } else if uncompressed_size > 0 {
         decompress_crilayla_raw(compressed, uncompressed_size).map_err(to_js_err)
     } else {
-        Err(JsValue::from_str("Invalid CRILAYLA input: missing CRILAYLA magic and uncompressed_size is 0"))
+        Err(JsValue::from_str(
+            "Invalid CRILAYLA input: missing CRILAYLA magic and uncompressed_size is 0",
+        ))
     }
 }
 
@@ -118,6 +118,14 @@ pub fn wasm_get_dragon_ball_catalog() -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(&catalog).map_err(to_js_err)
 }
 
+/// Retrieve the source-attributed Xenoverse 3 prototype world map as JavaScript data.
+/// Announced places and original prototype geometry are distinguished in each record.
+#[wasm_bindgen]
+pub fn wasm_get_xenoverse3_prototype_map() -> Result<JsValue, JsValue> {
+    let map = xenoverse3_prototype_map();
+    serde_wasm_bindgen::to_value(&map).map_err(to_js_err)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -141,5 +149,12 @@ mod tests {
         let parsed = BdmFile::parse(&mock).unwrap();
         assert_eq!(parsed.entries.len(), 5);
         assert_eq!(parsed.entries[0].id, 100);
+    }
+
+    #[test]
+    fn test_wasm_prototype_map_direct() {
+        let map = xenoverse3_prototype_map();
+        assert_eq!(map.era, "AGE 1000");
+        assert!(map.zones.iter().any(|zone| zone.id == "glacier-expedition"));
     }
 }
