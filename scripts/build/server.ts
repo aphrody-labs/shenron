@@ -46,6 +46,7 @@ import {
 import { join, resolve } from "node:path";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
+import { requireProductionVfs } from "./server-vfs-policy";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
 import { templateProblems } from "../../packages/db/src/agent-homes/template";
@@ -75,6 +76,8 @@ const TARGETS = {
 type Target = keyof typeof TARGETS;
 const flavor = option("--flavor", "desktop");
 if (flavor !== "desktop" && flavor !== "production") throw new Error("--flavor desktop|production");
+const vfsSource = resolve(option("--vfs", join(ROOT, "dist/vfs/shenron-vfs.public.sqlite")));
+if (flavor === "production") requireProductionVfs(vfsSource, flag("--no-vfs"));
 const CDN_URL = "https://cdn.dragonballfr.com";
 const target = option(
   "--target",
@@ -218,7 +221,6 @@ if (libCandidates[0]) {
 
 // 3b. Public VFS and agent home template (both public by construction, the VFS checked).
 const vfsOut = join(OUT, "vfs");
-const vfsSource = resolve(option("--vfs", join(ROOT, "dist/vfs/shenron-vfs.public.sqlite")));
 let vfsShipped = false;
 if (!flag("--no-vfs")) {
   if (existsSync(vfsSource)) {
