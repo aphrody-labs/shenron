@@ -1,13 +1,13 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # PLAN.md — Plan Directeur Unifié de Shenron
 
-> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:32:06Z`.
+> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:36:38Z`.
 > Synthèse unifiée absorbant `PLAN.md`, `REPRISE.md`, `PLAN-SHENRON-RE.md` et la cartographie du graphe monorepo (23 607 nœuds, 62 707 arêtes).
 
 ```json
 {
   "schema": "shenron-plan/v2",
-  "last_verified_at": "2026-10-07T18:24:32Z",
+  "last_verified_at": "2026-10-07T18:36:38Z",
   "status": "CONSOLIDÉ",
   "authoritative_file": "docs/reference/root/PLAN.md",
   "freeze": { "databooks": true, "path": ".coord/FREEZE-databooks.json" },
