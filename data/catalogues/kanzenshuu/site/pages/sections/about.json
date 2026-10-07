@@ -1,0 +1,26 @@
+{
+  "section": "about",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 13428,
+      "type": "pages",
+      "slug": "about",
+      "title": "About Us",
+      "date": "2012-11-14T23:16:10",
+      "modified": "2025-01-27T11:42:11",
+      "url": "https://www.kanzenshuu.com/about/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "about",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}

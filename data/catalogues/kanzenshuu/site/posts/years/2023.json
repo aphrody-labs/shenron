@@ -1,0 +1,3324 @@
+{
+  "year": "2023",
+  "scope": "Public Kanzenshuu WordPress posts published in this year; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 74533,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-images-72-73",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Images #72 & #73",
+      "date": "2023-12-24T17:35:23",
+      "modified": "2025-04-24T14:06:42",
+      "url": "https://www.kanzenshuu.com/2023/12/24/translation-update-special-project-toyotaro-drew-it-images-72-73/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball (or related…!) character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his November and Devember 2023 catch-up entry, Toyotarō has drawn Akkuman from Dragon Ball… and Ackman from …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 74524,
+      "type": "posts",
+      "slug": "podcast-episode-0508",
+      "title": "Podcast Episode #0508",
+      "date": "2023-12-24T13:50:51",
+      "modified": "2023-12-24T13:50:51",
+      "url": "https://www.kanzenshuu.com/2023/12/24/podcast-episode-0508/",
+      "excerpt": "Show Description Episode #0508! Mike brings on Ken and Ajay for an all-Daima extravaganza! We break down all the scenes in the debut Dragon Ball Daima trailer, trying to figure out who all is involved and what Toriyama may have in store for us, as well as dive into all the currently-announced production staff. We’re …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74520,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-100-released",
+      "title": "“Dragon Ball Super” Manga Chapter 100 Released",
+      "date": "2023-12-20T10:45:02",
+      "modified": "2023-12-20T10:45:02",
+      "url": "https://www.kanzenshuu.com/2023/12/20/dragon-ball-super-manga-chapter-100-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s one-hundredth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 74460,
+      "type": "posts",
+      "slug": "dragon-ball-sparking-zero-revealed-game-awards-2023",
+      "title": "“Dragon Ball: Sparking! ZERO” Revealed at The Game Awards 2023",
+      "date": "2023-12-07T21:18:48",
+      "modified": "2023-12-08T12:01:10",
+      "url": "https://www.kanzenshuu.com/2023/12/07/dragon-ball-sparking-zero-revealed-game-awards-2023/",
+      "excerpt": "Previously announced — back in March! — as the next entry in the Sparking! series of video games, Dragon Ball: Sparking! ZERO was more formally unveiled with a new trailer tonight during The Game Awards. Characters showcased included Son Goku (normal, Super Saiyan Blue), Vegeta (normal, Super Saiyan Blue), Freeza (final form), Broli (Wrathful, Super …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        156
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 156,
+          "count": 22,
+          "link": "https://www.kanzenshuu.com/tag/sparking-zero/",
+          "name": "Sparking Zero",
+          "slug": "sparking-zero"
+        }
+      ]
+    },
+    {
+      "id": 74444,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-29-sui-ishida",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #29: Sui Ishida",
+      "date": "2023-12-07T13:58:48",
+      "modified": "2023-12-07T13:58:48",
+      "url": "https://www.kanzenshuu.com/2023/12/07/40th-anniversary-tribute-dragon-ball-super-gallery-29-sui-ishida/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 74430,
+      "type": "posts",
+      "slug": "dragon-ball-daima-key-staff-revealed-vjump",
+      "title": "“Dragon Ball Daima” Key Staff Revealed in January 2024 Issue of V-Jump",
+      "date": "2023-11-22T16:46:38",
+      "modified": "2024-07-22T18:23:43",
+      "url": "https://www.kanzenshuu.com/2023/11/22/dragon-ball-daima-key-staff-revealed-vjump/",
+      "excerpt": "This week’s January 2024 issue of Shueisha’s V-Jump magazine revealed key staff for the upcoming show, Dragon Ball Daima: Akira Toriyama: original author, story, character designs [previously announced] Masako Nozawa: voice of Son Goku [previously implied] Yoshitaka Yashima: series co-director Aya Komaki: series co-director Katsuyoshi Nakatsuru: character designs [adapted for animation from Toriyama’s designs] Yūko …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        155
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 155,
+          "count": 19,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-daima/",
+          "name": "Dragon Ball Daima",
+          "slug": "dragon-ball-daima"
+        }
+      ]
+    },
+    {
+      "id": 74424,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-99-released",
+      "title": "“Dragon Ball Super” Manga Chapter 99 Released",
+      "date": "2023-11-20T11:51:03",
+      "modified": "2023-12-07T11:35:26",
+      "url": "https://www.kanzenshuu.com/2023/11/20/dragon-ball-super-manga-chapter-99-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-ninth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 74420,
+      "type": "posts",
+      "slug": "bandai-namco-holdings-q2-fiscal-2024-figures",
+      "title": "Bandai Namco Holdings Q2 Fiscal 2024 Figures",
+      "date": "2023-11-13T10:30:32",
+      "modified": "2023-11-13T10:30:32",
+      "url": "https://www.kanzenshuu.com/2023/11/13/bandai-namco-holdings-q2-fiscal-2024-figures/",
+      "excerpt": "Bandai Namco Holdings has posted a ¥52.167 billion profit for the first half of fiscal year of 2024, down from a ¥66.557 billion profit this same timeframe last year. Dragon Ball came in as the company’s second-best-performing franchise for the half, pulling in ¥68.4 billion (behind the Mobile Suit Gundam at ¥72.6 billion). This is …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        79
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 79,
+          "count": 31,
+          "link": "https://www.kanzenshuu.com/tag/financial/",
+          "name": "Financial",
+          "slug": "financial"
+        }
+      ]
+    },
+    {
+      "id": 74411,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-28-gege-akutami",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #28: Gege Akutami",
+      "date": "2023-11-07T14:22:28",
+      "modified": "2023-12-07T11:18:13",
+      "url": "https://www.kanzenshuu.com/2023/11/07/40th-anniversary-tribute-dragon-ball-super-gallery-28-gege-akutami/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 74371,
+      "type": "posts",
+      "slug": "sdbh-meteor-mission-updates",
+      "title": "“Super Dragon Ball Heroes: Meteor Mission” Updates: Video Games, Manga, & Promotional Anime",
+      "date": "2023-11-04T13:14:06",
+      "modified": "2023-11-04T13:17:21",
+      "url": "https://www.kanzenshuu.com/2023/11/04/sdbh-meteor-mission-updates/",
+      "excerpt": "Following the base Super Dragon Ball Heroes arcade upgrade and its subsequent Universe Mission, Big Bang Mission, and Ultra God Mission expansions, the series is set to debut its brand new Meteor Mission update on 09 November 2023, alongside the game’s overall 13th anniversary. Ahead of the game’s content launch, various multimedia spin-offs have already …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        76
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 76,
+          "count": 67,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-heroes/",
+          "name": "Dragon Ball Heroes",
+          "slug": "dragon-ball-heroes"
+        }
+      ]
+    },
+    {
+      "id": 74364,
+      "type": "posts",
+      "slug": "breakers-ps-plus-november-2023-anniversary-plans",
+      "title": "“Dragon Ball: The Breakers” PlayStation Plus Essentials Title For November 2023 + Anniversary Plans",
+      "date": "2023-11-01T11:51:39",
+      "modified": "2023-11-01T11:51:39",
+      "url": "https://www.kanzenshuu.com/2023/11/01/breakers-ps-plus-november-2023-anniversary-plans/",
+      "excerpt": "Sony has announced that Dragon Ball: The Breakers — alongside Mafia II: Definitive Edition and Aliens Fireteam Elite — will be a PlayStation Plus “Essentials” title for North American and European subscribers this month. Dragon Ball: The Breakers | PS4 In this online asymmetrical action game, a team of 7 ordinary citizens tries to survive …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        149
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 149,
+          "count": 5,
+          "link": "https://www.kanzenshuu.com/tag/the-breakers/",
+          "name": "The Breakers",
+          "slug": "the-breakers"
+        }
+      ]
+    },
+    {
+      "id": 74345,
+      "type": "posts",
+      "slug": "podcast-episode-0507",
+      "title": "Podcast Episode #0507",
+      "date": "2023-11-01T10:44:44",
+      "modified": "2023-11-01T10:46:04",
+      "url": "https://www.kanzenshuu.com/2023/11/01/podcast-episode-0507/",
+      "excerpt": "Show Description Episode #0507! From the depths of the archives, we managed to rescue an unreleased goodie: the next installment in our “Dragon Ball GT Review of Awesomeness”…! Mike, Meri, and Jeff dive into episodes 36-40 to wrap up the Baby arc in this podcast episode that was definitely recorded back in August 2018. How …",
+      "categories": [
+        13
+      ],
+      "tags": [
+        64
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 64,
+          "count": 9,
+          "link": "https://www.kanzenshuu.com/tag/gt-review-of-awesomeness/",
+          "name": "GT Review of Awesomeness",
+          "slug": "gt-review-of-awesomeness"
+        }
+      ]
+    },
+    {
+      "id": 74347,
+      "type": "posts",
+      "slug": "dbz-best-collection-vinyl-record-set",
+      "title": "Microïds/Kana Music To Release “Dragon Ball Z: Best Collection” Vinyl Record Set",
+      "date": "2023-10-31T18:11:35",
+      "modified": "2024-04-18T13:33:49",
+      "url": "https://www.kanzenshuu.com/2023/10/31/dbz-best-collection-vinyl-record-set/",
+      "excerpt": "French company Microïds — by way of their Kana Music sublabel — are set to release a new Dragon Ball Z: Best Collection vinyl record set, to begin shipping this December for €49.99 and rolling out to additional distributors into the new year. A total of 15 songs will comprise the two-record set, which includes …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        158
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 158,
+          "count": 3,
+          "link": "https://www.kanzenshuu.com/tag/music/",
+          "name": "Music",
+          "slug": "music"
+        }
+      ]
+    },
+    {
+      "id": 74328,
+      "type": "posts",
+      "slug": "jp-dbs-22-sdbh-ugm-3-releasing-december-2023",
+      "title": "Japanese “Dragon Ball Super” Manga Volume #22 and “Super Dragon Ball Heroes: Ultra God Mission!!!!” Volume #3 Releasing in December 2023",
+      "date": "2023-10-24T13:18:11",
+      "modified": "2023-10-26T12:51:51",
+      "url": "https://www.kanzenshuu.com/2023/10/24/jp-dbs-22-sdbh-ugm-3-releasing-december-2023/",
+      "excerpt": "Shueisha has announced two collected volumes of different Dragon Ball manga series for release in Japan on 04 December 2023: Dragon Ball Super — Volume 22 The twenty-second collected volume of the Dragon Ball Super manga series by Toyotarō will release 04 December 2023 in Japan for &yen;528 + tax. Spanning 192 pages, the upcoming …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        76,
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 76,
+          "count": 67,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-heroes/",
+          "name": "Dragon Ball Heroes",
+          "slug": "dragon-ball-heroes"
+        },
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 74311,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-71",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #71",
+      "date": "2023-10-22T12:13:27",
+      "modified": "2023-10-22T12:13:27",
+      "url": "https://www.kanzenshuu.com/2023/10/22/translation-update-special-project-toyotaro-drew-it-image-71/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball (or related…!) character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his October 2023 entry, Toyotarō has drawn Son Goku from the upcoming Dragon Ball Daima series: Son …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 74316,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-98-released",
+      "title": "“Dragon Ball Super” Manga Chapter 98 Released",
+      "date": "2023-10-19T12:30:12",
+      "modified": "2023-10-22T12:31:20",
+      "url": "https://www.kanzenshuu.com/2023/10/19/dragon-ball-super-manga-chapter-98-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-eighth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 74281,
+      "type": "posts",
+      "slug": "nycc-2023-panel-dragon-ball-daima-announced",
+      "title": "NYCC 2023 Dragon Ball Panel Recap: “Dragon Ball Daima” Series Announced & More",
+      "date": "2023-10-12T14:01:12",
+      "modified": "2023-12-09T22:28:23",
+      "url": "https://www.kanzenshuu.com/2023/10/12/nycc-2023-panel-dragon-ball-daima-announced/",
+      "excerpt": "During today’s “Dragon Ball Special Panel” at New York Comic Con, various announcements were shared, including that of a brand new animated series: Dragon Ball Daima. Moderator Monica Rial (English voice of Bulma) introduced fellow guest Ian Sinclair (English voice of Whis) to review ongoing events and updates for the video games Dragon Ball XENOVERSE …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        155
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 155,
+          "count": 19,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-daima/",
+          "name": "Dragon Ball Daima",
+          "slug": "dragon-ball-daima"
+        }
+      ]
+    },
+    {
+      "id": 74270,
+      "type": "posts",
+      "slug": "xenoverse-2-roadmap-xbox-ps5-versions",
+      "title": "Bandai Namco Announces Future “Dragon Ball XENOVERSE 2” Roadmap Including Xbox Series X|S and PlayStation 5 Versions",
+      "date": "2023-10-11T16:54:39",
+      "modified": "2023-10-11T16:54:40",
+      "url": "https://www.kanzenshuu.com/2023/10/11/xenoverse-2-roadmap-xbox-ps5-versions/",
+      "excerpt": "Dragon Ball XENOVERSE 2 — originally released back in 2015 on the PlayStation 4 and Xbox One, and later receiving ports to the Nintendo Switch and now-defunct Google Stadia — continues to receive updates and downloadable content to this day. Following a brief tease on social media yesterday… #DBXV2STAY TUNED… pic.twitter.com/AiuVPIlKb4 &mdash; Dragon Ball Games …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        112
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 112,
+          "count": 73,
+          "link": "https://www.kanzenshuu.com/tag/xenoverse-2/",
+          "name": "Xenoverse 2",
+          "slug": "xenoverse-2"
+        }
+      ]
+    },
+    {
+      "id": 74266,
+      "type": "posts",
+      "slug": "podcast-episode-0506",
+      "title": "Podcast Episode #0506",
+      "date": "2023-10-09T15:29:23",
+      "modified": "2023-10-09T15:29:23",
+      "url": "https://www.kanzenshuu.com/2023/10/09/podcast-episode-0506/",
+      "excerpt": "Show Description Episode #0506! We continue a brand new interview series talking with the staff members of Kanzenshuu itself! Heath is up next, so strap in for a trip back to the early days of fansites, launching a new one in 2005, combining sites in 2012, how we collaboratively work on everything together, and much …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74263,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-27-katsura-hoshino",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #27: Katsura Hoshino",
+      "date": "2023-10-09T11:08:11",
+      "modified": "2023-10-09T11:08:11",
+      "url": "https://www.kanzenshuu.com/2023/10/09/40th-anniversary-tribute-dragon-ball-super-gallery-27-katsura-hoshino/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 74255,
+      "type": "posts",
+      "slug": "new-rumor-guide-addition-goku-alien-foreshadowed",
+      "title": "New Rumor Guide Addition: Was Goku Being An Alien Foreshadowed?",
+      "date": "2023-10-04T13:17:54",
+      "modified": "2023-10-04T13:17:54",
+      "url": "https://www.kanzenshuu.com/2023/10/04/new-rumor-guide-addition-goku-alien-foreshadowed/",
+      "excerpt": "The “Rumor Guide” has been a consistent favorite of staff and visitors alike here at Kanzenshuu — the entries are a blast to put together, and they each act as an authoritative, one-stop-shop with verified original research and (generally!) definitive answers. The latest entry started as a simple way to catalogue the Alien movie reference …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74189,
+      "type": "posts",
+      "slug": "super-dragon-ball-heroes-13th-anniversary-super-guide-releasing-november-2023",
+      "title": "“Super Dragon Ball Heroes: 13th Anniversary Super Guide” Releasing November 2023",
+      "date": "2023-09-25T14:18:01",
+      "modified": "2023-09-25T14:18:01",
+      "url": "https://www.kanzenshuu.com/2023/09/25/super-dragon-ball-heroes-13th-anniversary-super-guide-releasing-november-2023/",
+      "excerpt": "Following the now-traditional schedule, Shueisha and other online retailers have listed an 09 November 2023 release date and &yen;1,595 + tax price tag for a forthcoming Super Dragon Ball Heroes: 13th Anniversary Super Guide. The 2023 book follows several previous anniversary guide books: the 5th Anniversary Mission book in November 2015, the 8th Anniversary Super …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        76
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 76,
+          "count": 67,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-heroes/",
+          "name": "Dragon Ball Heroes",
+          "slug": "dragon-ball-heroes"
+        }
+      ]
+    },
+    {
+      "id": 74185,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-70",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #70",
+      "date": "2023-09-22T09:55:06",
+      "modified": "2023-09-22T09:55:06",
+      "url": "https://www.kanzenshuu.com/2023/09/22/translation-update-special-project-toyotaro-drew-it-image-70/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball (or related…!) character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his September 2023 entry, Toyotarō has drawn the skinny failed fusion version of Gotenks: Gotenks (Failed Fusion) …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 74170,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-97-released",
+      "title": "“Dragon Ball Super” Manga Chapter 97 Released",
+      "date": "2023-09-20T11:37:09",
+      "modified": "2023-09-21T10:10:04",
+      "url": "https://www.kanzenshuu.com/2023/09/20/dragon-ball-super-manga-chapter-97-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-seventh chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 74155,
+      "type": "posts",
+      "slug": "fotns-shinsoban-akira-toriyama-obi-comment",
+      "title": "First “Fist of the North Star” Manga Re-Release Volume (Shinsōban) Ships with Akira Toriyama Obi Comment",
+      "date": "2023-09-18T09:58:49",
+      "modified": "2023-09-18T09:58:49",
+      "url": "https://www.kanzenshuu.com/2023/09/18/fotns-shinsoban-akira-toriyama-obi-comment/",
+      "excerpt": "The “New Edition” (新装版 Shinsōban) of Buronson and Tetsuro Hara’s classic Fist of the North Star manga series began its release last week in Japan, with the first two volumes hitting 13 September 2023, to be quickly followed by subsequent volumes in the coming weeks. Alongside each new volume, the surrounding obi comes with a …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74141,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-26-shuichi-aso",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #26: Shuichi Aso",
+      "date": "2023-09-10T16:45:00",
+      "modified": "2023-09-10T17:40:18",
+      "url": "https://www.kanzenshuu.com/2023/09/10/40th-anniversary-tribute-dragon-ball-super-gallery-26-shuichi-aso/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 74147,
+      "type": "posts",
+      "slug": "dragon-ball-special-panel-nycc-2023",
+      "title": "“Dragon Ball Special Panel” Scheduled For New York Comic Con 2023",
+      "date": "2023-09-08T09:50:31",
+      "modified": "2023-09-08T09:50:31",
+      "url": "https://www.kanzenshuu.com/2023/09/08/dragon-ball-special-panel-nycc-2023/",
+      "excerpt": "A “Dragon Ball Special Panel” has been announced for New York Comic Con this year. The panel will be held on the Empire Stage at the Javits Center in New York City from 12:45 to 1:45 pm (EDT) on 12 October 2023. Delivering the latest information on the world-famous manga and anime franchise, “Dragon Ball”. …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74131,
+      "type": "posts",
+      "slug": "sand-land-youtube-preview-toriyama-comment",
+      "title": "New Akira Toriyama Comment Released Alongside 15-Minute YouTube Preview of “Sand Land” Theatrical Film",
+      "date": "2023-09-01T14:44:27",
+      "modified": "2023-09-01T14:44:27",
+      "url": "https://www.kanzenshuu.com/2023/09/01/sand-land-youtube-preview-toriyama-comment/",
+      "excerpt": "In promotion of its recent release, the first 15 minutes of the new Sand Land theatrical film have been shared on YouTube. Alongside this video promotion, original author Akira Toriyama shared a new comment (alongside a drawing of the Swimmers’ Papa): To all of you wonderful people that have already seen the movie Sand Land: …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        153
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 153,
+          "count": 6,
+          "link": "https://www.kanzenshuu.com/tag/sand-land/",
+          "name": "Sand Land",
+          "slug": "sand-land"
+        }
+      ]
+    },
+    {
+      "id": 74128,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-69",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #69",
+      "date": "2023-09-01T14:13:05",
+      "modified": "2023-09-01T14:13:05",
+      "url": "https://www.kanzenshuu.com/2023/09/01/translation-update-special-project-toyotaro-drew-it-image-69/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball (or related…!) character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his August 2023 entry, Toyotarō has drawn Rao from Akira Toriyama’s Sand Land manga series (and new …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 74116,
+      "type": "posts",
+      "slug": "akio-iyoku-leaving-shueisha",
+      "title": "Head of the “Dragon Ball Room” and V-Jump Editor-in-Chief Akio Iyoku Leaving Shueisha to Form New Company: “Capsule Corporation Tokyo”",
+      "date": "2023-08-31T14:46:51",
+      "modified": "2023-08-31T14:46:51",
+      "url": "https://www.kanzenshuu.com/2023/08/31/akio-iyoku-leaving-shueisha/",
+      "excerpt": "An exclusive report from Bunshun Online reveals that Akio Iyoku — editor-in-chief of V-Jump as well as head of the “Dragon Ball Room,” an interdepartmental collaborative group shaping the ongoing production of the Dragon Ball franchise — is leaving Shueisha in favor of running his own company, which he created back in May of this …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74107,
+      "type": "posts",
+      "slug": "podcast-episode-0505",
+      "title": "Podcast Episode #0505",
+      "date": "2023-08-28T14:05:43",
+      "modified": "2023-08-28T20:41:04",
+      "url": "https://www.kanzenshuu.com/2023/08/28/podcast-episode-0505/",
+      "excerpt": "Show Description Episode #0505! Mike, Ken, and Randy return once again to “Dragon Ball Z: Kakarot” to review its fifth paid downloadable content pack, this time covering the 23rd Tenka’ichi Budōkai. Switching things up with ground-based battles and a rigid tournament structure, how does it fare compared to previous DLC releases, and what else might …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74100,
+      "type": "posts",
+      "slug": "new-rumor-guide-additions-alien-three-eyed-people-vegetto-gogeta",
+      "title": "New Rumor Guide Additions: The Alien Three-Eyed People & The Creation of Vegetto vs. Gogeta",
+      "date": "2023-08-25T14:58:13",
+      "modified": "2023-08-25T14:58:13",
+      "url": "https://www.kanzenshuu.com/2023/08/25/new-rumor-guide-additions-alien-three-eyed-people-vegetto-gogeta/",
+      "excerpt": "The “Rumor Guide” has been a consistent favorite of staff and visitors alike here at Kanzenshuu — the entries are a blast to put together, and they each act as an authoritative, one-stop-shop with verified original research and (generally!) definitive answers. As part of the guide’s latest update, two new entries have been added… including …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 74082,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-96-released",
+      "title": "“Dragon Ball Super” Manga Chapter 96 Released",
+      "date": "2023-08-20T12:00:36",
+      "modified": "2023-09-21T10:15:42",
+      "url": "https://www.kanzenshuu.com/2023/08/20/dragon-ball-super-manga-chapter-96-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-sixth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 74051,
+      "type": "posts",
+      "slug": "super-hero-4k-announced-november-2023-crunchyroll",
+      "title": "“Dragon Ball Super: Super Hero” 4K Ultra HD/Blu-ray Announced For November 2023 Release By Crunchyroll",
+      "date": "2023-08-17T10:58:22",
+      "modified": "2023-08-17T15:04:21",
+      "url": "https://www.kanzenshuu.com/2023/08/17/super-hero-4k-announced-november-2023-crunchyroll/",
+      "excerpt": "Though the recent film Dragon Ball Super: Super Hero hit DVD, Blu-ray, and 4K Ultra HD all at once upon release in Japan, the American release from Crunchyroll initially only featured DVD and Blu-ray formats. While a 4K Ultra HD has been promised for some time — initially (and strangely) only ever properly hinted at …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        148
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 148,
+          "count": 23,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2022/",
+          "name": "Super Movie 2022",
+          "slug": "super-movie-2022"
+        }
+      ]
+    },
+    {
+      "id": 74047,
+      "type": "posts",
+      "slug": "bandai-namco-holdings-q1-fiscal-2024-figures",
+      "title": "Bandai Namco Holdings Q1 Fiscal 2024 Figures",
+      "date": "2023-08-17T10:23:30",
+      "modified": "2023-08-17T10:23:30",
+      "url": "https://www.kanzenshuu.com/2023/08/17/bandai-namco-holdings-q1-fiscal-2024-figures/",
+      "excerpt": "Bandai Namco Holdings has posted a ¥21.786 billion profit for the first quarter of fiscal year of 2024, down from a ¥37.019 billion profit this same timeframe last year. Dragon Ball came in as the company’s second-best-performing franchise for the quarter, pulling in ¥28.7 billion (behind the Mobile Suit Gundam franchise at ¥36.9 billion). This …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        79
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 79,
+          "count": 31,
+          "link": "https://www.kanzenshuu.com/tag/financial/",
+          "name": "Financial",
+          "slug": "financial"
+        }
+      ]
+    },
+    {
+      "id": 74041,
+      "type": "posts",
+      "slug": "kakarot-23rd-tenkaichi-budokai-dlc-delayed-on-pc",
+      "title": "“Dragon Ball Z: Kakarot” 23rd Tenka’ichi Budōkai DLC Delayed on PC",
+      "date": "2023-08-17T10:06:05",
+      "modified": "2023-08-17T13:23:23",
+      "url": "https://www.kanzenshuu.com/2023/08/17/kakarot-23rd-tenkaichi-budokai-dlc-delayed-on-pc/",
+      "excerpt": "Hitting today across all other major gaming platforms, the 23rd Tenka’ichi Budōkai-focused paid downloadable content pack for Dragon Ball Z: Kakarot has been delayed on PC: The release date for DRAGON BALL Z: KAKAROT's DLC5, the \"23rd World Tournament\", for STEAM® has been delayed. For more information, please visit: https://t.co/Dw94oi5LLg #BandaiNamco #DBZK pic.twitter.com/z0Fl7x36ud &mdash; Bandai …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 73983,
+      "type": "posts",
+      "slug": "kakarot-23rd-budokai-dlc-release-august-17",
+      "title": "“Dragon Ball Z: Kakarot” 23rd Tenka’ichi Budōkai DLC Releasing August 17th",
+      "date": "2023-08-08T11:15:29",
+      "modified": "2023-08-08T11:15:29",
+      "url": "https://www.kanzenshuu.com/2023/08/08/kakarot-23rd-budokai-dlc-release-august-17/",
+      "excerpt": "First teased back in January alongside the game’s current-generation console update, Bandai Namco has announced that the paid downloadable content pack for Dragon Ball Z: Kakarot featuring the 23rd Tenka’ichi Budōkai will release worldwide on 17 August 2023. The downloadable content pack’s title in Japanese is “Troubles at the Tenka’ichi Budōkai” (波乱の天下一武道会 Haran no Tenka’ichi …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 73980,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-25-yasuhisa-hara",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #25: Yasuhisa Hara",
+      "date": "2023-08-07T18:57:07",
+      "modified": "2023-09-10T16:45:24",
+      "url": "https://www.kanzenshuu.com/2023/08/07/40th-anniversary-tribute-dragon-ball-super-gallery-25-yasuhisa-hara/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 73971,
+      "type": "posts",
+      "slug": "podcast-episode-0504",
+      "title": "Podcast Episode #0504",
+      "date": "2023-07-24T14:01:20",
+      "modified": "2023-07-24T14:01:20",
+      "url": "https://www.kanzenshuu.com/2023/07/24/podcast-episode-0504/",
+      "excerpt": "Show Description Episode #0504! Mike and Ken journey through the biggest hoaxes in modern Dragon Ball history. From fanart that escaped the clutches of its original artists, to purposeful (and sometimes long-term) bits of misinformation, we’ve seen it all! How well do some of these hoaxes hold up, and what will it take in the …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73965,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-68",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #68",
+      "date": "2023-07-24T09:03:43",
+      "modified": "2023-07-24T09:04:28",
+      "url": "https://www.kanzenshuu.com/2023/07/24/translation-update-special-project-toyotaro-drew-it-image-68/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball (or related…!) character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his July 2023 entry, Toyotarō has drawn Beelzebub from Akira Toriyama’s Sand Land manga series (and upcoming …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 73918,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-95-released",
+      "title": "“Dragon Ball Super” Manga Chapter 95 Released",
+      "date": "2023-07-20T11:16:55",
+      "modified": "2023-09-21T10:20:00",
+      "url": "https://www.kanzenshuu.com/2023/07/20/dragon-ball-super-manga-chapter-95-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-fifth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73878,
+      "type": "posts",
+      "slug": "new-rumor-guide-addition-kaio-ken-x100-in-dbz-movie-4",
+      "title": "New Rumor Guide Addition: Kaiō-Ken x100 in DBZ Movie 4",
+      "date": "2023-07-17T09:55:39",
+      "modified": "2023-07-17T09:55:39",
+      "url": "https://www.kanzenshuu.com/2023/07/17/new-rumor-guide-addition-kaio-ken-x100-in-dbz-movie-4/",
+      "excerpt": "A black-and-white image is often passed around by fans as proof that Goku uses a hundred-fold version of the Kaiō-Ken against Slug in Dragon Ball Z movie 4: Goku does not actually say the “hundred-times” part (百倍 hyaku-bai) aloud in the film, however, so where does this image come from and what does it all …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73832,
+      "type": "posts",
+      "slug": "kakarot-23rd-tenkaichi-budokai-dlc-promo-video",
+      "title": "Promotional Video Released For “Dragon Ball Z: Kakarot” Upcoming 23rd Tenka’ichi Budōkai DLC",
+      "date": "2023-07-13T15:41:19",
+      "modified": "2023-07-14T09:40:38",
+      "url": "https://www.kanzenshuu.com/2023/07/13/kakarot-23rd-tenkaichi-budokai-dlc-promo-video/",
+      "excerpt": "Bandai Namco has released a new promotional video for the — as of yet still undated — upcoming paid downloadable content pack for Dragon Ball Z: Kakarot featuring the 23rd Tenka’ichi Budōkai: The downloadable content pack’s title in Japanese is “Troubles at the Tenka’ichi Budōkai” (波乱の天下一武道会 Haran no Tenka’ichi Budōkai); as with the previous Bardock …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 73804,
+      "type": "posts",
+      "slug": "saikyo-jump-serialization-updates-august-2023-issue",
+      "title": "Saikyō Jump Serialization Updates: August 2023 Issue",
+      "date": "2023-07-07T11:27:34",
+      "modified": "2023-07-07T15:11:23",
+      "url": "https://www.kanzenshuu.com/2023/07/07/saikyo-jump-serialization-updates-august-2023-issue/",
+      "excerpt": "This week’s August 2023 issue of Shueisha’s Saikyō Jump magazine sees a certain stalwart wrap up another story arc, while also announcing the addition of a new “full color” classic Akira Toriyama manga to its lineup. The Dragon Ball GT anime comic — comprised of screen shots from the 1996-1997 television series displayed in manga …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73801,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-24-kazue-kato",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #24: Kazue Kato",
+      "date": "2023-07-07T11:25:51",
+      "modified": "2023-07-07T13:34:46",
+      "url": "https://www.kanzenshuu.com/2023/07/07/40th-anniversary-tribute-dragon-ball-super-gallery-24-kazue-kato/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 73792,
+      "type": "posts",
+      "slug": "new-rumor-guide-addition-super-saiyan-4-designer",
+      "title": "New Rumor Guide Addition: The Super Saiyan 4 Designer",
+      "date": "2023-07-06T14:58:09",
+      "modified": "2023-07-06T14:58:09",
+      "url": "https://www.kanzenshuu.com/2023/07/06/new-rumor-guide-addition-super-saiyan-4-designer/",
+      "excerpt": "A sketch from original Dragon Ball creator Akira Toriyama within the 2005 Dragon Ball GT “Dragon Box” DVD set in Japan is often cited as “proof” that Toriyama himself was the one who designed the Super Saiyan 4 transformation… which is not true (and is even outright explained in the accompanying comment!). So who actually …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73740,
+      "type": "posts",
+      "slug": "japanese-sand-land-theatrical-attendee-bonus-items",
+      "title": "Japanese “Sand Land” Theatrical Attendee Bonus Items Include Akira Toriyama Illustration Art Board and “Super Dragon Ball Heroes” Card",
+      "date": "2023-06-29T16:38:39",
+      "modified": "2023-06-29T18:46:44",
+      "url": "https://www.kanzenshuu.com/2023/06/29/japanese-sand-land-theatrical-attendee-bonus-items/",
+      "excerpt": "Alongside the Sand Land theatrical debut this August in Japan, a special “Akira Toriyama Hyper Assortment” — a special pack of bonus items — will be distributed to attendees, including a special A5-sized art board with an illustration by Toriyama, as well as a Beelzebub card for the arcade game Super Dragon Ball Heroes: The …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        153
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 153,
+          "count": 6,
+          "link": "https://www.kanzenshuu.com/tag/sand-land/",
+          "name": "Sand Land",
+          "slug": "sand-land"
+        }
+      ]
+    },
+    {
+      "id": 73737,
+      "type": "posts",
+      "slug": "podcast-episode-0503",
+      "title": "Podcast Episode #0503",
+      "date": "2023-06-26T16:44:42",
+      "modified": "2023-07-24T10:39:46",
+      "url": "https://www.kanzenshuu.com/2023/06/26/podcast-episode-0503/",
+      "excerpt": "Show Description Episode #0503! We start a brand new interview series talking with the staff members of Kanzenshuu itself! Julian is up first, so strap in for a trip back to 2002 as we prep the Daizenshuu EX relaunch and start honing those translation skills. We apparently recorded this episode five years ago, but it …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73731,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-67",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #67",
+      "date": "2023-06-23T11:10:39",
+      "modified": "2023-06-23T11:10:39",
+      "url": "https://www.kanzenshuu.com/2023/06/23/translation-update-special-project-toyotaro-drew-it-image-67/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his June 2023 entry, Toyotarō has drawn Zahha: Zahha A very mysterious magic swordsman. Congratulations to Dragon Ball Legends …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 73723,
+      "type": "posts",
+      "slug": "august-2023-japanese-manga-releases-announced",
+      "title": "August 2023 Japanese Manga Releases Announced: Dragon Ball Super Vol. 21, SDBH: Ultra God Mission Vol. 2, SDBH: Avatars Vol. 3 + Sand Land Kanzenban",
+      "date": "2023-06-22T13:26:33",
+      "modified": "2023-06-22T13:26:33",
+      "url": "https://www.kanzenshuu.com/2023/06/22/august-2023-japanese-manga-releases-announced/",
+      "excerpt": "Three volumes of various collected Dragon Ball manga series are all set to release 04 August 2023 in Japan, accompanied by a new kanzenban release of Sand Land, Akira Toriyama’s 14-chapter manga series from 2000: Dragon Ball Super — Volume 21 The twenty-first collected volume of the Dragon Ball Super manga series by Toyotarō will …",
+      "categories": [
+        12
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73716,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-94-released",
+      "title": "“Dragon Ball Super” Manga Chapter 94 Released",
+      "date": "2023-06-20T11:20:49",
+      "modified": "2023-09-26T15:03:56",
+      "url": "https://www.kanzenshuu.com/2023/06/20/dragon-ball-super-manga-chapter-94-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-fourth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73707,
+      "type": "posts",
+      "slug": "podcast-episode-0502",
+      "title": "Podcast Episode #0502",
+      "date": "2023-06-14T14:41:29",
+      "modified": "2023-06-14T15:59:10",
+      "url": "https://www.kanzenshuu.com/2023/06/14/podcast-episode-0502/",
+      "excerpt": "Show Description Episode #0502! Following up on last episode’s ten-year retrospective for the film version of “Battle of Gods”: Mike, Heath, and Ken re-review the initial four chapters of the “Dragon Ball Super” manga adapting the “Battle of Gods” arc… as well as the “Dragon Ball SD” manga adaptation by Naho Ooishi… as well as …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73701,
+      "type": "posts",
+      "slug": "new-translation-dbssh-naoki-sato-comment",
+      "title": "New Translation: “Dragon Ball Super: Super Hero” Original Soundtrack – Comment From Musical Composer Naoki Satō",
+      "date": "2023-06-14T13:54:27",
+      "modified": "2023-06-14T13:54:27",
+      "url": "https://www.kanzenshuu.com/2023/06/14/new-translation-dbssh-naoki-sato-comment/",
+      "excerpt": "This week marks the one-year anniversary of Dragon Ball Super: Super Hero hitting theaters in Japan! To mark this occasion, the latest addition to our “Translations” archive is the comment from musical composer Naoki Satō included with the film’s soundtrack release: When I got approached to do the soundtrack for this movie, first I was …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        148
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 148,
+          "count": 23,
+          "link": "https://www.kanzenshuu.com/tag/super-movie-2022/",
+          "name": "Super Movie 2022",
+          "slug": "super-movie-2022"
+        }
+      ]
+    },
+    {
+      "id": 73687,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-23-yuki-tabata",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #23: Yuki Tabata",
+      "date": "2023-06-07T09:36:37",
+      "modified": "2023-06-07T09:36:37",
+      "url": "https://www.kanzenshuu.com/2023/06/07/40th-anniversary-tribute-dragon-ball-super-gallery-23-yuki-tabata/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 73665,
+      "type": "posts",
+      "slug": "podcast-episode-0501",
+      "title": "Podcast Episode #0501",
+      "date": "2023-05-24T09:51:38",
+      "modified": "2023-05-24T14:19:52",
+      "url": "https://www.kanzenshuu.com/2023/05/24/podcast-episode-0501/",
+      "excerpt": "Show Description Episode #0501! Mike, Ajay, and Tyson look back at the 2013 theatrical film “Dragon Ball Z: Battle of Gods” with (somehow!) both a retrospective critical eye and a fresh perspective. Ten years removed and with multiple adaptations behind us, how does the original film version of the story hold up? What precedents did …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73644,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-66",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #66",
+      "date": "2023-05-19T13:22:01",
+      "modified": "2023-05-19T15:53:11",
+      "url": "https://www.kanzenshuu.com/2023/05/19/translation-update-special-project-toyotaro-drew-it-image-66/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his May 2023 entry, Toyotarō has drawn Shallot: Shallot A very mysterious Saiyan that came from a bygone era. …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 73637,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-93-released",
+      "title": "“Dragon Ball Super” Manga Chapter 93 Released",
+      "date": "2023-05-18T11:23:33",
+      "modified": "2023-09-26T15:14:43",
+      "url": "https://www.kanzenshuu.com/2023/05/18/dragon-ball-super-manga-chapter-93-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-third chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73632,
+      "type": "posts",
+      "slug": "bandai-namco-holdings-fiscal-2023-figures",
+      "title": "Bandai Namco Holdings Fiscal 2023 Figures",
+      "date": "2023-05-12T11:56:14",
+      "modified": "2023-05-12T11:56:14",
+      "url": "https://www.kanzenshuu.com/2023/05/12/bandai-namco-holdings-fiscal-2023-figures/",
+      "excerpt": "Bandai Namco Holdings has posted a ¥90.345 billion profit for the full fiscal year of 2023, down slightly from a ¥92.752 billion profit last year. Dragon Ball came in as the company’s best-performing franchise for the year, pulling in ¥144.5 billion, up from last year’s ¥127.6 billion and ahead of the projected ¥133.5 billion. The …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        79
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 79,
+          "count": 31,
+          "link": "https://www.kanzenshuu.com/tag/financial/",
+          "name": "Financial",
+          "slug": "financial"
+        }
+      ]
+    },
+    {
+      "id": 73619,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-22-shun-saeki",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #22: Shun Saeki",
+      "date": "2023-05-04T09:11:35",
+      "modified": "2023-05-04T09:11:35",
+      "url": "https://www.kanzenshuu.com/2023/05/04/40th-anniversary-tribute-dragon-ball-super-gallery-22-shun-saeki/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 73610,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-65",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #65",
+      "date": "2023-05-03T16:40:40",
+      "modified": "2023-05-19T09:13:30",
+      "url": "https://www.kanzenshuu.com/2023/05/03/translation-update-special-project-toyotaro-drew-it-image-65/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his (coming in late!) April 2023 entry, Toyotarō has drawn Tullece: Tullece I wonder how he survived the destruction …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 73602,
+      "type": "posts",
+      "slug": "new-wiki-preview-page-season",
+      "title": "New Wiki Preview Page + Call For Community Research Collaboration: “Season”",
+      "date": "2023-04-25T13:59:11",
+      "modified": "2023-04-25T13:59:11",
+      "url": "https://www.kanzenshuu.com/2023/04/25/new-wiki-preview-page-season/",
+      "excerpt": "A new wiki preview page is available… and it’s one we’re requesting your early support and community research on! Preview the “Season” wiki page Beyond all of the common misinformation around “seasons” for the North American broadcast (largely due to FUNimation’s later home video releases which ignored their previously-established cable broadcast “season” delineations), lots of …",
+      "categories": [
+        17
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 17,
+          "count": 18,
+          "link": "https://www.kanzenshuu.com/category/news-categories/site-meta/",
+          "name": "Site Meta",
+          "slug": "site-meta"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73594,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-92-released",
+      "title": "“Dragon Ball Super” Manga Chapter 92 Released",
+      "date": "2023-04-20T11:04:12",
+      "modified": "2023-09-26T15:22:48",
+      "url": "https://www.kanzenshuu.com/2023/04/20/dragon-ball-super-manga-chapter-92-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-second chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73591,
+      "type": "posts",
+      "slug": "new-translation-super-history-book-video-game-interview-5",
+      "title": "New Translation: 30th Anniversary Super History Book Video Game Interview #5: Xenoverse with Masayuki Hirano",
+      "date": "2023-04-14T11:24:58",
+      "modified": "2023-04-14T11:24:58",
+      "url": "https://www.kanzenshuu.com/2023/04/14/new-translation-super-history-book-video-game-interview-5/",
+      "excerpt": "Following up on the first, second, third, and fourth interviews in this series, our latest translation addition continues with material from 2016’s 30th anniversary Super History Book. Here in the fifth in a five-part series of video game-related interviews, we travel back to somewhat recent history with Dragon Ball Xenoverse producer Masayuki Hirano. Read the …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73562,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-21-boichi",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #21: Boichi",
+      "date": "2023-04-06T11:48:55",
+      "modified": "2023-04-11T11:26:04",
+      "url": "https://www.kanzenshuu.com/2023/04/06/40th-anniversary-tribute-dragon-ball-super-gallery-21-boichi/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 73536,
+      "type": "posts",
+      "slug": "podcast-episode-0500",
+      "title": "Podcast Episode #0500",
+      "date": "2023-04-01T13:30:56",
+      "modified": "2023-05-02T16:49:31",
+      "url": "https://www.kanzenshuu.com/2023/04/01/podcast-episode-0500/",
+      "excerpt": "Show Description Episode #0500! We are celebrating five hundred podcast episodes! Join us for a journey from the first episode back in 2005 through today’s shenanigans. All the best in-jokes, all the best discussions… and a lot more. Also: we occasionally talk about Dragon Ball. How to Listen Our podcast is available via Apple Podcasts …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73532,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-64",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #64",
+      "date": "2023-03-30T09:09:08",
+      "modified": "2023-05-03T16:31:54",
+      "url": "https://www.kanzenshuu.com/2023/03/30/translation-update-special-project-toyotaro-drew-it-image-64/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his March 2023 entry, Toyotarō has contributed a drawing of Garlic Jr.: Garlic Jr. A character from the movies …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 73510,
+      "type": "posts",
+      "slug": "new-translation-akira-toriyama-upcoming-sandland-movie",
+      "title": "New Translation: Akira Toriyama Q&A on Upcoming “Sand Land” Movie",
+      "date": "2023-03-21T20:34:49",
+      "modified": "2023-03-22T12:20:18",
+      "url": "https://www.kanzenshuu.com/2023/03/21/new-translation-akira-toriyama-upcoming-sandland-movie/",
+      "excerpt": "The official website for the forthcoming Sand Land animation project updated today with a short question-and-answer session with original creator Akira Toriyama, alongisde confirmation of the project being a theatrical film set for release in Japan 18 August 2023 with animation produced by Sunrise, Kamikaze Douga, and Anima. When and how was Sand Land born? …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        153
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 153,
+          "count": 6,
+          "link": "https://www.kanzenshuu.com/tag/sand-land/",
+          "name": "Sand Land",
+          "slug": "sand-land"
+        }
+      ]
+    },
+    {
+      "id": 73500,
+      "type": "posts",
+      "slug": "podcast-episode-0499",
+      "title": "Podcast Episode #0499",
+      "date": "2023-03-20T20:04:25",
+      "modified": "2023-03-22T15:14:06",
+      "url": "https://www.kanzenshuu.com/2023/03/20/podcast-episode-0499/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0499! Mike shares his Official Top Ten Dragon Ball Video Games with Kirran! With decades worth of bangers behind us and a widely-anticipated new game on the horizon, it seemed like the perfect time to purposefully get folks yelling back at their transistor radio speakers about us “forgetting” certain games! No, we …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73491,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-91-released",
+      "title": "“Dragon Ball Super” Manga Chapter 91 Released",
+      "date": "2023-03-19T12:43:52",
+      "modified": "2023-03-21T09:21:50",
+      "url": "https://www.kanzenshuu.com/2023/03/19/dragon-ball-super-manga-chapter-91-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninety-first chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”, now adapting the contents of the recent theatrical film following three chapters worth of original prologue …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73468,
+      "type": "posts",
+      "slug": "new-old-translation-akira-toriyama-neverending-story",
+      "title": "New (Old) Translation: Akira Toriyama Artwork and Comment on “The NeverEnding Story”",
+      "date": "2023-03-12T14:30:07",
+      "modified": "2023-03-12T14:30:07",
+      "url": "https://www.kanzenshuu.com/2023/03/12/new-old-translation-akira-toriyama-neverending-story/",
+      "excerpt": "Owners of 1995’s first Daizenshuu (“Complete Illustrations”) or perhaps 2013’s Dragon Ball Chōgashū: Super Art Collection may have come across an illustration of Goku riding a dragon without giving it much thought; after all, Goku rides lots of dragons in these illustrations. Viz’s English translation of the first Daizenshuu from 2008 notes this illustration as …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73431,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-20-posuka-demizu",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #20: Posuka Demizu",
+      "date": "2023-03-07T10:14:02",
+      "modified": "2023-04-06T11:46:17",
+      "url": "https://www.kanzenshuu.com/2023/03/07/40th-anniversary-tribute-dragon-ball-super-gallery-20-posuka-demizu/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 73418,
+      "type": "posts",
+      "slug": "new-sparking-budokai-tenkaichi-video-game-announced",
+      "title": "New “Sparking!” (“Budokai Tenkaichi”) Video Game Announced by Bandai Namco",
+      "date": "2023-03-06T20:06:25",
+      "modified": "2023-12-07T21:14:12",
+      "url": "https://www.kanzenshuu.com/2023/03/06/new-sparking-budokai-tenkaichi-video-game-announced/",
+      "excerpt": "In conjunction with the “DRAGON BALL Games Battle Hour” event yesterday, Bandai Namco and their partners revealed that a new entry in the Sparking! series of Dragon Ball video games is currently in development: ／「ドラゴンボール Sparking！」シリーズ 最新作情報が解禁！＼ 映像はコチラから↓#ドラゴンボール #バトルアワー pic.twitter.com/VMMPWWeSUr &mdash; ドラゴンボールゲームスバトルアワー2023公式 (@db_eventpj_jp) March 5, 2023 No additional information — including that of a specific …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        156
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 156,
+          "count": 22,
+          "link": "https://www.kanzenshuu.com/tag/sparking-zero/",
+          "name": "Sparking Zero",
+          "slug": "sparking-zero"
+        }
+      ]
+    },
+    {
+      "id": 73316,
+      "type": "posts",
+      "slug": "dragon-ball-fighterz-2023-updates",
+      "title": "“Dragon Ball FighterZ” Updates: Evo 2023, Rollback Beta on Steam, Forthcoming Balance Patch",
+      "date": "2023-03-06T16:58:36",
+      "modified": "2023-03-06T16:58:36",
+      "url": "https://www.kanzenshuu.com/2023/03/06/dragon-ball-fighterz-2023-updates/",
+      "excerpt": "Producer Tomoko Hiroki and the teams at Arc System Works and Bandai Namco have announced a slew of updates for Dragon Ball FighterZ coming this year: Dragon Ball FighterZ will make its fourth in-person appearance at Evolution Championship Series (“Evo”) this August in Las Vegas. During the Dragon Ball FighterZ World Tour 2022-23 Finals this …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        127
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 127,
+          "count": 77,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-fighterz/",
+          "name": "Dragon Ball FighterZ",
+          "slug": "dragon-ball-fighterz"
+        }
+      ]
+    },
+    {
+      "id": 73380,
+      "type": "posts",
+      "slug": "new-manga-guide-page-serialization",
+      "title": "New Manga Guide Page: Serialization",
+      "date": "2023-03-03T13:13:46",
+      "modified": "2023-03-03T13:13:46",
+      "url": "https://www.kanzenshuu.com/2023/03/03/new-manga-guide-page-serialization/",
+      "excerpt": "A brand-new “Serialization” page has launched within our extensive “Manga Guide,” with the goal of providing an evergreen, up-to-date page detailing all current Dragon Ball manga series in Japan. As of the new page’s launch, these series presently include (in order of original serialization start): Dragon Ball GT Anime Comic Dragon Ball Super by Toyotarō …",
+      "categories": [
+        3
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73348,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-63",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #63",
+      "date": "2023-02-28T09:54:12",
+      "modified": "2023-02-28T09:54:12",
+      "url": "https://www.kanzenshuu.com/2023/02/28/translation-update-special-project-toyotaro-drew-it-image-63/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his February 2023 entry, Toyotarō has contributed a drawing of Coola: COOLA (Final Form) He has a form beyond …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 73320,
+      "type": "posts",
+      "slug": "23rd-tenkaichi-budokai-dlc-kakarot-title-promo",
+      "title": "Upcoming 23rd Tenka’ichi Budōkai DLC for “Dragon Ball Z: Kakarot” Titled and Promoted Alongside April 2023 Issue of V-Jump",
+      "date": "2023-02-23T12:24:17",
+      "modified": "2023-02-23T12:43:11",
+      "url": "https://www.kanzenshuu.com/2023/02/23/23rd-tenkaichi-budokai-dlc-kakarot-title-promo/",
+      "excerpt": "In conjunction with this week’s April 2023 issue of Shueisha’s V-Jump magazine, Bandai Namco has further promoted the upcoming paid downloadable content pack for Dragon Ball Z: Kakarot featuring the 23rd Tenka’ichi Budōkai: The downloadable content pack’s title in Japanese is “Troubles at the Tenka’ichi Budōkai” (波乱の天下一武道会 Haran no Tenka’ichi Budōkai); as with the previous …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 73307,
+      "type": "posts",
+      "slug": "podcast-episode-0498",
+      "title": "Podcast Episode #0498",
+      "date": "2023-02-20T14:13:51",
+      "modified": "2023-02-21T09:56:57",
+      "url": "https://www.kanzenshuu.com/2023/02/20/podcast-episode-0498/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0498! Mike and Heath discuss some of the biggest (non-strength-related!) rumors and misunderstandings in general Dragon Ball fandom. From the classic “ending with Freeza” to recent confusion over the authorship of the Dragon Ball Super manga, we bring the receipts! REFERENCED SITES: GUIDE: Intended Endings RUMOR GUIDE: The Sonny Strait & Terry …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73301,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-90-released",
+      "title": "“Dragon Ball Super” Manga Chapter 90 Released",
+      "date": "2023-02-20T10:03:02",
+      "modified": "2023-03-01T13:45:57",
+      "url": "https://www.kanzenshuu.com/2023/02/20/dragon-ball-super-manga-chapter-90-released/",
+      "excerpt": "Following up on previous chapters, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s ninetieth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”. Alongside other initiatives including free chapters and a larger archive for paid subscribers, this release continues …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73296,
+      "type": "posts",
+      "slug": "viz-dragon-ball-super-manga-english-translation-collected-edition-vol-19-releasing-september-2023",
+      "title": "Viz “Dragon Ball Super” Manga English Translation Collected Edition Vol. 19 Releasing September 2023",
+      "date": "2023-02-16T15:31:10",
+      "modified": "2023-02-16T15:31:10",
+      "url": "https://www.kanzenshuu.com/2023/02/16/viz-dragon-ball-super-manga-english-translation-collected-edition-vol-19-releasing-september-2023/",
+      "excerpt": "Viz’s nineteenth collected volume of the Dragon Ball Super manga will be released 05 September 2023, covering chapters 81-84 (a la its Japanese counterpart): Granolah’s fierce assault seems to have Gas on the ropes until the youngest Heeters member’s inner nature is unleashed, leading to an all-out assault like nothing any of our heroes have …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73286,
+      "type": "posts",
+      "slug": "bandai-namco-holdings-q3-fiscal-2023-figures",
+      "title": "Bandai Namco Holdings Q3 Fiscal 2023 Figures",
+      "date": "2023-02-14T10:50:40",
+      "modified": "2023-02-14T10:50:40",
+      "url": "https://www.kanzenshuu.com/2023/02/14/bandai-namco-holdings-q3-fiscal-2023-figures/",
+      "excerpt": "Bandai Namco Holdings has posted a ¥84.444 billion (approximately $636 million) profit for the first three quarters of fiscal year 2023, compared to a ¥61.703 billion profit at this same point last year. Dragon Ball remains the company’s best-performing franchise, pulling in ¥102.2 billion these first three quarters of the fiscal year (a jump from …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        79
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 79,
+          "count": 31,
+          "link": "https://www.kanzenshuu.com/tag/financial/",
+          "name": "Financial",
+          "slug": "financial"
+        }
+      ]
+    },
+    {
+      "id": 73282,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-19-hideaki-sorachi",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #19: Hideaki Sorachi",
+      "date": "2023-02-07T10:33:38",
+      "modified": "2023-03-07T10:14:43",
+      "url": "https://www.kanzenshuu.com/2023/02/07/40th-anniversary-tribute-dragon-ball-super-gallery-19-hideaki-sorachi/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    },
+    {
+      "id": 73253,
+      "type": "posts",
+      "slug": "podcast-episode-0497",
+      "title": "Podcast Episode #0497",
+      "date": "2023-01-29T14:41:22",
+      "modified": "2023-01-29T14:46:52",
+      "url": "https://www.kanzenshuu.com/2023/01/29/podcast-episode-0497/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0497! Mike, Ken, and Randy reconvene once again to review the “Bardock: Alone Against Fate” DLC pack for “Dragon Ball Z: Kakarot”! How does the second season pass kick things off this time around, and how does it compare to content from the first season pass? REFERENCED SITES: PODCAST ARCHIVE: Bardock TV …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73240,
+      "type": "posts",
+      "slug": "translation-update-special-project-toyotaro-drew-it-image-62",
+      "title": "Translation Update: “Special Project: Toyotarō Drew It!” Image #62",
+      "date": "2023-01-24T10:37:32",
+      "modified": "2023-01-24T10:37:32",
+      "url": "https://www.kanzenshuu.com/2023/01/24/translation-update-special-project-toyotaro-drew-it-image-62/",
+      "excerpt": "Each month, Toyotarō provides a drawing of a Dragon Ball character — as well as an accompanying comment — on the official Japanese Dragon Ball website. Following up on the wealth of characters already drawn, for his January 2023 entry, Toyotarō has contributed a drawing of Hire Dragon: Hire Dragon This is how I imagine …",
+      "categories": [
+        3
+      ],
+      "tags": [
+        151
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 3,
+          "count": 536,
+          "link": "https://www.kanzenshuu.com/category/news-categories/content/",
+          "name": "Content",
+          "slug": "content"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 151,
+          "count": 54,
+          "link": "https://www.kanzenshuu.com/tag/toyotaro-drew-it/",
+          "name": "Toyotarō Drew It",
+          "slug": "toyotaro-drew-it"
+        }
+      ]
+    },
+    {
+      "id": 73221,
+      "type": "posts",
+      "slug": "dragon-ball-sd-volume-9-releasing-march-2023",
+      "title": "“Dragon Ball SD” Volume 9 Listed For Release from Shueisha in March 2023",
+      "date": "2023-01-22T15:31:07",
+      "modified": "2023-01-22T15:31:07",
+      "url": "https://www.kanzenshuu.com/2023/01/22/dragon-ball-sd-volume-9-releasing-march-2023/",
+      "excerpt": "The ninth collected volume of Dragon Ball SD is on its way from Shueisha, with a catalog entry noting an 03 March 2023 release date, clocking in at 192 pages and running at ¥748 + tax. The release will mark just under a year since the eighth collected volume. The ninth collected volume should pick …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        75
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 75,
+          "count": 33,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-sd/",
+          "name": "Dragon Ball SD",
+          "slug": "dragon-ball-sd"
+        }
+      ]
+    },
+    {
+      "id": 73214,
+      "type": "posts",
+      "slug": "japanese-dragon-ball-super-manga-volume-20-releasing-in-march-2023",
+      "title": "Japanese “Dragon Ball Super” Manga Volume #20 Releasing in March 2023",
+      "date": "2023-01-21T12:09:08",
+      "modified": "2023-01-21T12:09:08",
+      "url": "https://www.kanzenshuu.com/2023/01/21/japanese-dragon-ball-super-manga-volume-20-releasing-in-march-2023/",
+      "excerpt": "Shueisha and online retailers have listed the twentieth collected volume of the Dragon Ball Super manga series by Toyotarō as releasing 03 March 2023 in Japan for &yen;528 + tax. Following most previous volumes, the upcoming 20th volume should be set to include four Dragon Ball Super manga chapters, spanning chapter 85-88 — this would …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73202,
+      "type": "posts",
+      "slug": "dragon-ball-super-manga-chapter-89-released",
+      "title": "“Dragon Ball Super” Manga Chapter 89 Released",
+      "date": "2023-01-19T11:07:52",
+      "modified": "2023-09-26T15:27:25",
+      "url": "https://www.kanzenshuu.com/2023/01/19/dragon-ball-super-manga-chapter-89-released/",
+      "excerpt": "Following up on its return to serialization last month, Shueisha and Viz have added the official English translation of the Dragon Ball Super manga’s eighty-ninth chapter to their respective Manga Plus and Shonen Jump services, continuing onward into the brand-new “Super Hero arc”. Alongside other initiatives including free chapters and a larger archive for paid …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        100
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 100,
+          "count": 345,
+          "link": "https://www.kanzenshuu.com/tag/dragon-ball-super/",
+          "name": "Dragon Ball Super",
+          "slug": "dragon-ball-super"
+        }
+      ]
+    },
+    {
+      "id": 73198,
+      "type": "posts",
+      "slug": "podcast-episode-0496",
+      "title": "Podcast Episode #0496",
+      "date": "2023-01-16T16:53:55",
+      "modified": "2023-01-16T16:57:13",
+      "url": "https://www.kanzenshuu.com/2023/01/16/podcast-episode-0496/",
+      "excerpt": "SHOW DESCRIPTION: Episode #0496! Mike and Ken look ahead to the rest of 2023 for the Dragon Ball franchise. What do we know is on the horizon, and how do we think several of the ongoing productions we DO know about will shake out? Tune in for our thoughts, as well as our reactions to …",
+      "categories": [
+        13
+      ],
+      "tags": [],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 13,
+          "count": 551,
+          "link": "https://www.kanzenshuu.com/category/news-categories/podcast/",
+          "name": "Podcast",
+          "slug": "podcast"
+        }
+      ],
+      "tagTerms": []
+    },
+    {
+      "id": 73192,
+      "type": "posts",
+      "slug": "dbz-kakarot-teased-23rd-tenkaichi-budokai",
+      "title": "“Dragon Ball Z: Kakarot” Promotional Video Teases Upcoming 23rd Tenka’ichi Budōkai Content",
+      "date": "2023-01-11T16:57:41",
+      "modified": "2023-01-11T16:57:41",
+      "url": "https://www.kanzenshuu.com/2023/01/11/dbz-kakarot-teased-23rd-tenkaichi-budokai/",
+      "excerpt": "The “Launch Trailer” for this week’s “Bardock: Alone Against Fate” downloadable content pack for Dragon Ball Z: Kakarot concludes with a brief tease at future content: specifically that of the 23rd Tenka’ichi Budōkai. Taking place immediately before what the television series designated as the “Z” break (in what is otherwise simply “Dragon Ball” beginning to …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        145
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 145,
+          "count": 20,
+          "link": "https://www.kanzenshuu.com/tag/game-project-z-action-rpg/",
+          "name": "Game Project Z Action RPG",
+          "slug": "game-project-z-action-rpg"
+        }
+      ]
+    },
+    {
+      "id": 73189,
+      "type": "posts",
+      "slug": "40th-anniversary-tribute-dragon-ball-super-gallery-18-kentaro-yabuki",
+      "title": "40th Anniversary Tribute “Dragon Ball Super Gallery” #18: Kentarō Yabuki",
+      "date": "2023-01-11T16:35:27",
+      "modified": "2023-03-07T10:15:05",
+      "url": "https://www.kanzenshuu.com/2023/01/11/40th-anniversary-tribute-dragon-ball-super-gallery-18-kentaro-yabuki/",
+      "excerpt": "The September 2021 issue of Shueisha’s Saikyō Jump magazine kicked off a “Dragon Ball Super Gallery” series in commemoration of the Dragon Ball franchise’s upcoming 40th anniversary. The celebration aims to have different artists all contribute their own spin on the original 42 tankōbon covers, with the images and an accompanying comment published as the …",
+      "categories": [
+        12
+      ],
+      "tags": [
+        150
+      ],
+      "parent": null,
+      "section": null,
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
+      "categoryTerms": [
+        {
+          "id": 12,
+          "count": 2863,
+          "link": "https://www.kanzenshuu.com/category/news-categories/news/",
+          "name": "News",
+          "slug": "news"
+        }
+      ],
+      "tagTerms": [
+        {
+          "id": 150,
+          "count": 42,
+          "link": "https://www.kanzenshuu.com/tag/40th-anniversary-super-gallery/",
+          "name": "40th Anniversary Super Gallery",
+          "slug": "40th-anniversary-super-gallery"
+        }
+      ]
+    }
+  ]
+}
