@@ -12,6 +12,9 @@ bun scripts/build/server.ts --flavor production --target linux-x64
 bun scripts/build/bot.ts --target linux-x64
 # Use the serialized Cargo factory for a changed MCP/native component.
 install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
+# Embedded server packaging removes extracted native files; seal the bot copy.
+install -D -m 0755 target/release/libshenron_ffi.so \
+  dist/server/linux-x64/native/libshenron_ffi.so
 docker build -f deploy/docker/Dockerfile \
   --build-arg SHENRON_REVISION="$(git rev-parse HEAD)" \
   -t "localhost/shenron:$(git rev-parse HEAD)" .
