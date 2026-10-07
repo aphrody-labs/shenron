@@ -243,3 +243,20 @@ public : `/health`, `initialize` (protocole 2025-06-18) et `tools/list` réponde
 en HTTP 200, avec un catalogue public non vide. Aucun outil métier ni service
 de production n'est appelé. Ce contrôle ne qualifie pas le lancement graphique
 de Studio ni son installeur. Les rapports restent hors Git.
+
+La compilation de `aphrody-ffi` termine avec le code zéro. Sa DLL MSVC de
+247 048 704 octets charge sous Bun Windows via `YOLO_RUNTIME_LIB` explicite :
+ABI 1.5, récupération des paniques active, capacités `system.stats`,
+`bench.compute`, `process.supervise` et `http.probe`. Le SDK 0.1.1 lance Bun
+en processus supervisé, recueille exactement la sortie attendue et constate
+le code zéro. L'empreinte SHA-256 est
+`9171579c94dcf7f783999be0eb044fb4125ad2bce3011ae0590976550088ad5e`.
+La provenance repose sur le snapshot producteur ci-dessus : son archive Git
+ne contient pas `.git`, donc le champ embarqué `git_rev` vaut `unknown`.
+Il ne s'agit pas encore d'une activation globale.
+
+Avec cette DLL, le navigateur Windows installé `5bf7eed5a` démarre réellement,
+mais échoue au test d'écho WebSocket : zéro upgrade reçu, au lieu d'un.
+Le CLI canonique corrigé est en compilation native dans le même snapshot
+producteur, sous le verrou Cargo partagé. La qualification navigateur complète
+reste ouverte ; les preuves Linux de transport ne qualifient pas Windows.
