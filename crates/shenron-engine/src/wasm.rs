@@ -73,6 +73,7 @@ impl ShenronEngineWasm {
     }
 
     /// Advances the simulation by 1 frame with raw boolean input flags.
+    #[allow(clippy::too_many_arguments)]
     pub fn tick_raw(
         &mut self,
         p1_left: bool,
@@ -207,11 +208,13 @@ impl CanvasEngineWasm {
     }
 
     /// Fills an axis-aligned rectangle.
+    #[allow(clippy::too_many_arguments)]
     pub fn fill_rect(&mut self, x: f32, y: f32, w: f32, h: f32, r: u8, g: u8, b: u8, a: u8) {
         self.surface.fill_rect(Vec2::new(x, y), Vec2::new(w, h), ColorRgba::new(r, g, b, a));
     }
 
     /// Draws a procedural manga speech bubble.
+    #[allow(clippy::too_many_arguments)]
     pub fn draw_speech_bubble(
         &mut self,
         x: f32,

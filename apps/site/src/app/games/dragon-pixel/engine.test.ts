@@ -105,3 +105,43 @@ test("beam clash activation and resolution via mash", () => {
   step(g, { mash: true }, 0.05);
   expect(g.clash?.tension).toBeGreaterThan(0);
 });
+
+test("multiverse dimension switching cycles through all dimensions", () => {
+  const g = createGame();
+  expect(g.multiverse.dimension).toBe("xenoverse");
+  step(g, { dimensionSwitch: true }, 0.01);
+  expect(g.multiverse.dimension).toBe("fighterz");
+  step(g, { dimensionSwitch: true }, 0.01);
+  expect(g.multiverse.dimension).toBe("butoden");
+  step(g, { dimensionSwitch: true }, 0.01);
+  expect(g.multiverse.dimension).toBe("tenkaichi");
+  step(g, { dimensionSwitch: true }, 0.01);
+  expect(g.multiverse.dimension).toBe("legend");
+  step(g, { dimensionSwitch: true }, 0.01);
+  expect(g.multiverse.dimension).toBe("xenoverse");
+});
+
+test("fighterz sparking blast activates pushback and health regen", () => {
+  const g = createGame();
+  g.multiverse.dimension = "fighterz";
+  g.player.hp = 50;
+  g.enemies = [{ x: 200, y: 320, hp: 100, cooldown: 10 }];
+  g.player.x = 180;
+  step(g, { sparking: true }, 0.01);
+  expect(g.multiverse.sparkingActive).toBe(true);
+  expect(g.enemies[0].x).toBeGreaterThan(200); // Knockback push
+  step(g, {}, 0.5);
+  expect(g.player.hp).toBeGreaterThan(50); // Health regenerated
+});
+
+test("the legend power balance meter triggers meteor smash at 100", () => {
+  const g = createGame();
+  g.multiverse.dimension = "legend";
+  g.multiverse.powerBalance = 100;
+  g.enemies = [{ x: 250, y: 320, hp: 100, cooldown: 10 }];
+  step(g, {}, 0.01);
+  expect(g.enemies[0].hp).toBeLessThanOrEqual(25); // 75 massive meteor damage
+  expect(g.multiverse.powerBalance).toBe(0); // Reset after smash
+  expect(g.score).toBeGreaterThanOrEqual(1000);
+});
+

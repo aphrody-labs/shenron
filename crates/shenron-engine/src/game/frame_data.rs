@@ -237,3 +237,102 @@ pub fn get_fighter_hurtbox(is_crouching: bool) -> Hurtbox {
         }
     }
 }
+
+/// Converts a DBXV2 reverse-engineered move frame data into an engine combat move.
+pub fn from_xenoverse_move(xv: &shenron_re::formats::MoveFrameData) -> MoveFrameData {
+    let kind = match xv.damage_type {
+        shenron_re::formats::DamageType::KiBlast => MoveKind::KiBlast,
+        shenron_re::formats::DamageType::Special => {
+            if xv.base_damage > 3000 {
+                MoveKind::UltimateBeam
+            } else {
+                MoveKind::BeamSpecial
+            }
+        }
+        shenron_re::formats::DamageType::HeavyStrike => MoveKind::HeavyPunch,
+        _ => {
+            if xv.startup_frames <= 6 {
+                MoveKind::LightJab
+            } else if xv.startup_frames <= 10 {
+                MoveKind::HeavyPunch
+            } else {
+                MoveKind::ForwardKick
+            }
+        }
+    };
+
+    let hitstun = (xv.recovery_frames as i16 + xv.hit_advantage).max(1) as u32;
+    let blockstun = (xv.recovery_frames as i16 + xv.block_advantage).max(1) as u32;
+
+    let hitbox = if xv.active_frames > 0 {
+        Some(Hitbox {
+            offset: Rect::new(40.0, -15.0, 60.0, 40.0),
+            damage: xv.base_damage as f32,
+            knockback: [xv.knockback_strength, 0.0],
+            hitstun,
+            blockstun,
+        })
+    } else {
+        None
+    };
+
+    let ki_cost = match kind {
+        MoveKind::UltimateBeam => 100.0,
+        MoveKind::BeamSpecial => 30.0,
+        MoveKind::KiBlast => 10.0,
+        _ => 0.0,
+    };
+
+    MoveFrameData {
+        kind,
+        startup_frames: xv.startup_frames as u32,
+        active_frames: xv.active_frames as u32,
+        recovery_frames: xv.recovery_frames as u32,
+        damage: xv.base_damage as f32,
+        hitbox,
+        ki_cost,
+    }
+}
+
+/// Converts an entire character moveset into engine combat moves.
+pub fn map_xenoverse_moveset(xv_moveset: &shenron_re::formats::CharacterMoveset) -> Vec<MoveFrameData> {
+    xv_moveset.moves.iter().map(from_xenoverse_move).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_from_xenoverse_move_conversion() {
+        let xv_move = shenron_re::formats::MoveFrameData {
+            move_id: 200,
+            name: "Kamehameha".into(),
+            total_frames: 45,
+            startup_frames: 18,
+            active_frames: 12,
+            recovery_frames: 15,
+            hit_advantage: 8,
+            block_advantage: -4,
+            base_damage: 1800,
+            stamina_damage: 100,
+            damage_type: shenron_re::formats::DamageType::Special,
+            knockback_strength: 12.0,
+            is_invincible: false,
+            has_super_armor: false,
+        };
+
+        let engine_move = from_xenoverse_move(&xv_move);
+        assert_eq!(engine_move.kind, MoveKind::BeamSpecial);
+        assert_eq!(engine_move.startup_frames, 18);
+        assert_eq!(engine_move.active_frames, 12);
+        assert_eq!(engine_move.recovery_frames, 15);
+        assert_eq!(engine_move.damage, 1800.0);
+        assert_eq!(engine_move.ki_cost, 30.0);
+
+        let hit = engine_move.hitbox.unwrap();
+        assert_eq!(hit.hitstun, 23); // 15 + 8 = 23
+        assert_eq!(hit.blockstun, 11); // 15 - 4 = 11
+    }
+}
+

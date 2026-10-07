@@ -8,3 +8,4 @@ export * from "./KenBurns";
 export * from "./AnimeMomentCard";
 export * from "./AuraContainer";
 export * from "./KiAuraContainer";
+export * from "./KiExplosionEffect";

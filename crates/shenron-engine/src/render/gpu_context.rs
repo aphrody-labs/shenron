@@ -92,6 +92,85 @@ impl GpuContext {
         })
     }
 
+    /// Initializes a GPU context with a custom `DeviceRequest` (compatible with aphrody-gpu-backend).
+    pub async fn new_with_request(request: super::gpu_backend::DeviceRequest<'_>) -> Result<Self, GpuError> {
+        let instance = Instance::new(InstanceDescriptor {
+            backends: Backends::PRIMARY,
+            ..InstanceDescriptor::new_without_display_handle()
+        });
+
+        let adapter = instance
+            .request_adapter(&RequestAdapterOptions {
+                power_preference: PowerPreference::HighPerformance,
+                compatible_surface: None,
+                force_fallback_adapter: false,
+                apply_limit_buckets: false,
+            })
+            .await
+            .map_err(|_| GpuError::AdapterNotFound)?;
+
+        let supported_features = adapter.features();
+        let supports_multi_draw_indirect = supported_features.contains(Features::MULTI_DRAW_INDIRECT_COUNT);
+        let supports_bindless = supported_features.contains(Features::TEXTURE_BINDING_ARRAY);
+
+        let required_limits = match request.limits {
+            super::gpu_backend::DeviceLimits::Adapter => adapter.limits(),
+            super::gpu_backend::DeviceLimits::DownlevelWithAdapterResolution => {
+                Limits::downlevel_defaults().using_resolution(adapter.limits())
+            }
+        };
+
+        let mut required_features = Features::empty();
+        if supports_multi_draw_indirect {
+            required_features |= Features::MULTI_DRAW_INDIRECT_COUNT;
+        }
+
+        let (device, queue) = adapter
+            .request_device(&DeviceDescriptor {
+                label: request.label,
+                required_features,
+                required_limits,
+                memory_hints: wgpu::MemoryHints::Performance,
+                ..Default::default()
+            })
+            .await?;
+
+        Ok(Self {
+            device: Arc::new(device),
+            queue: Arc::new(queue),
+            adapter,
+            instance,
+            supports_multi_draw_indirect,
+            supports_bindless,
+        })
+    }
+
+    /// Generates a structured hardware and capabilities report.
+    #[must_use]
+    pub fn report(&self) -> super::gpu_backend::GpuReport {
+        let limits = self.device.limits();
+        let info = self.adapter.get_info();
+        super::gpu_backend::GpuReport {
+            adapters: vec![super::gpu_backend::AdapterReport::new(&info)],
+            selected: Some(super::gpu_backend::AdapterReport::new(&info)),
+            limits: Some(super::gpu_backend::ComputeLimits {
+                max_storage_buffer_binding_size: limits.max_storage_buffer_binding_size,
+                max_compute_workgroups_per_dimension: limits.max_compute_workgroups_per_dimension,
+                max_compute_invocations_per_workgroup: limits.max_compute_invocations_per_workgroup,
+                max_buffer_size: limits.max_buffer_size,
+            }),
+            error: None,
+        }
+    }
+
+    /// Runs a WGSL compute job using this context's device and queue.
+    pub fn run_compute(
+        &self,
+        job: super::gpu_backend::WgslJob<'_>,
+    ) -> Result<Vec<u8>, super::gpu_backend::GpuBackendError> {
+        super::gpu_backend::run_wgsl_compute(&self.device, &self.queue, job)
+    }
+
     /// Creates a 2D depth texture suitable for 32-bit floating point depth rendering.
     #[must_use]
     pub fn create_depth_texture(

@@ -18,7 +18,10 @@ export type FighterId =
   | "trunks"
   | "frieza"
   | "cell"
-  | "buu";
+  | "buu"
+  | "broly"
+  | "jiren"
+  | "beerus";
 
 export type ArenaId =
   | "paozu"
@@ -29,6 +32,24 @@ export type ArenaId =
   | "kaiohshin";
 
 export type GameMode = "story" | "arcade" | "survival" | "dojo";
+
+export type MultiverseDimension =
+  | "xenoverse" // Dimps: Stamina meter, Z-Vanish, Awoken skills, Super Armor
+  | "fighterz" // ArcSys: Sparking Blast, Super Dash, Dramatic finish
+  | "butoden" // SNES Retro: Split gauge, Desperation moves < 30% HP
+  | "tenkaichi" // Spike: Max Power mode, Dragon Homing, Beam clash
+  | "legend"; // BEC/Tose 1996: Power Balance Tug-of-War bar
+
+export interface MultiverseState {
+  dimension: MultiverseDimension;
+  sparkingActive: boolean;
+  sparkingTimer: number;
+  maxPowerActive: boolean;
+  maxPowerTimer: number;
+  powerBalance: number; // -100 to +100
+  stamina: number; // 0 to 100
+  maxStamina: number;
+}
 
 export interface SpecialMove {
   id: string;
@@ -217,6 +238,61 @@ export const FIGHTERS: Record<FighterId, FighterDefinition> = {
     specials: [
       { id: "candy_beam", name: "Rayon Bonbon", nameJa: "お菓子光線", cost: 35, damage: 30, type: "blast", color: "#ff70a6", sfx: "final-flash" },
       { id: "vanishing_ball", name: "Vanishing Ball", nameJa: "地球崩壊弾", cost: 85, damage: 70, type: "ultimate", color: "#f72585", sfx: "power-up" },
+    ],
+  },
+  broly: {
+    id: "broly",
+    name: "Broly",
+    nameJa: "ブロリー",
+    style: "power",
+    baseHp: 150,
+    baseKi: 100,
+    basePowerLevel: 1400000000,
+    emblemId: "demon",
+    themeColor: "#22c55e",
+    forms: [
+      { level: 0, name: "Base", powerMultiplier: 1.0, powerLevel: 1400000000, auraColor: "#22c55e" },
+      { level: 1, name: "Super Saiyan Légendaire", powerMultiplier: 2.2, powerLevel: 3000000000, auraColor: "#4ade80" },
+    ],
+    specials: [
+      { id: "eraser_cannon", name: "Eraser Cannon", nameJa: "イレイザーキャノン", cost: 35, damage: 35, type: "blast", color: "#22c55e", sfx: "final-flash" },
+      { id: "gigantic_meteor", name: "Gigantic Meteor", nameJa: "ギガンティックミーティア", cost: 85, damage: 75, type: "ultimate", color: "#4ade80", sfx: "power-up" },
+    ],
+  },
+  jiren: {
+    id: "jiren",
+    name: "Jiren",
+    nameJa: "ジレン",
+    style: "power",
+    baseHp: 160,
+    baseKi: 110,
+    basePowerLevel: 2500000000,
+    emblemId: "capsule",
+    themeColor: "#ef4444",
+    forms: [
+      { level: 0, name: "Pleine Puissance", powerMultiplier: 1.0, powerLevel: 2500000000, auraColor: "#ef4444" },
+    ],
+    specials: [
+      { id: "power_impact", name: "Power Impact", nameJa: "パワーインパクト", cost: 40, damage: 40, type: "beam", color: "#ef4444", sfx: "final-flash" },
+      { id: "colossal_slash", name: "Tranchant Colossal", nameJa: "コロッサルラッシュ", cost: 80, damage: 70, type: "ultimate", color: "#f87171", sfx: "power-up" },
+    ],
+  },
+  beerus: {
+    id: "beerus",
+    name: "Lord Beerus",
+    nameJa: "ビルス",
+    style: "speed",
+    baseHp: 170,
+    baseKi: 120,
+    basePowerLevel: 5000000000,
+    emblemId: "demon",
+    themeColor: "#a855f7",
+    forms: [
+      { level: 0, name: "Dieu de la Destruction", powerMultiplier: 1.0, powerLevel: 5000000000, auraColor: "#a855f7" },
+    ],
+    specials: [
+      { id: "beerus_sphere", name: "Sphère de Beerus", nameJa: "破壊神の怒り", cost: 45, damage: 45, type: "blast", color: "#a855f7", sfx: "final-flash" },
+      { id: "hakai", name: "Hakai", nameJa: "破壊", cost: 90, damage: 85, type: "ultimate", color: "#c084fc", sfx: "power-up" },
     ],
   },
 };
@@ -542,6 +618,68 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     objective: "Achevez la grande saga Dragon Ball avec le Chō Genki Dama universel !",
     bossHp: 220,
   },
+  {
+    id: 16,
+    tome: 43,
+    saga: "Bataille des Dieux & Résurrection de F",
+    title: "Chapitre 517 : Le Choc des Divinités — Goku vs Beerus",
+    titleJa: "神と神！破壊神ビルスとの激闘",
+    arena: "kaiohshin",
+    playerFighter: "goku",
+    enemyFighter: "frieza",
+    enemyName: "Lord Beerus & Golden Freezer",
+    introDialogue: [
+      { speaker: "Beerus", text: "Montre-moi la puissance du Super Saiyan God avant que je ne détruise cette planète !" },
+      { speaker: "Goku", text: "Seigneur Beerus, je ne vous laisserai pas anéantir notre monde !" },
+    ],
+    victoryDialogue: [
+      { speaker: "Beerus", text: "Tu m'as fait utiliser une bonne part de ma force, Son Goku... Je t'épargne pour aujourd'hui." },
+    ],
+    objective: "Survivez et repoussez les attaques du Dieu de la Destruction Beerus.",
+    bossHp: 240,
+    targetTransformation: 2,
+  },
+  {
+    id: 17,
+    tome: 44,
+    saga: "Tournoi du Pouvoir",
+    title: "Chapitre 518 : L'Ultra Instinct Maîtrisé",
+    titleJa: "限界突破！身勝手の極意極まる",
+    arena: "cell_games",
+    playerFighter: "goku",
+    enemyFighter: "vegeta",
+    enemyName: "Jiren le Gris (Univers 11)",
+    introDialogue: [
+      { speaker: "Jiren", text: "La force absolue est la seule vérité. Rien ne peut surmonter ma justice." },
+      { speaker: "Goku", text: "Ce n'est pas ma force seule... C'est la confiance de tous mes amis qui me transcende ! MIGATTE NO GOKUI !" },
+    ],
+    victoryDialogue: [
+      { speaker: "Goku", text: "Jiren... Tu es incroyable. Battons-nous encore un jour !" },
+    ],
+    objective: "Franchissez vos limites et terrassez Jiren avec l'Ultra Instinct.",
+    bossHp: 260,
+    targetTransformation: 3,
+  },
+  {
+    id: 18,
+    tome: 45,
+    saga: "Dragon Ball Daima",
+    title: "Chapitre 519 : L'Aventure dans le Monde des Démons",
+    titleJa: "魔界への旅立ち！小さき勇者とドラゴンボール",
+    arena: "paozu",
+    playerFighter: "goku",
+    enemyFighter: "piccolo",
+    enemyName: "Gomah & Les Forces du Royaume des Démons",
+    introDialogue: [
+      { speaker: "Goku", text: "Même si je suis redevenu petit avec mon Nyoï-bô, mon cœur de Saiyan reste invincible !" },
+      { speaker: "Glorio", text: "Goku, suis-moi ! Le mystère du monde des démons s'ouvre devant nous !" },
+    ],
+    victoryDialogue: [
+      { speaker: "Goku", text: "L'aventure ne s'arrête jamais... C'est ça, le monde de Dragon Ball !" },
+    ],
+    objective: "Triomphez dans l'ultime chapitre de Dragon Ball Daima !",
+    bossHp: 280,
+  },
 ];
 
 export interface Player {
@@ -616,6 +754,7 @@ export interface GameState {
   clash?: BeamClash;
   screenShake: number;
   scouterTarget?: number;
+  multiverse: MultiverseState;
 }
 
 export interface GameInput {
@@ -631,6 +770,8 @@ export interface GameInput {
   special?: boolean;
   ultimate?: boolean;
   mash?: boolean; // Pour le mini-jeu de Beam Clash
+  dimensionSwitch?: boolean;
+  sparking?: boolean;
 }
 
 export function createGame(
@@ -694,6 +835,16 @@ export function createGame(
     currentChapterId: chapterId,
     arena,
     screenShake: 0,
+    multiverse: {
+      dimension: "xenoverse",
+      sparkingActive: false,
+      sparkingTimer: 0,
+      maxPowerActive: false,
+      maxPowerTimer: 0,
+      powerBalance: 0,
+      stamina: 100,
+      maxStamina: 100,
+    },
   };
 }
 
@@ -708,6 +859,61 @@ export function step(g: GameState, input: GameInput, dt: number): void {
   p.transformed = Math.max(0, p.transformed - clampedDt);
   p.vanishCooldown = Math.max(0, p.vanishCooldown - clampedDt);
   g.screenShake = Math.max(0, g.screenShake - clampedDt * 10);
+
+  // ─── Multiverse Dimension Mechanics ──────────────────────────────────────────
+  const m = g.multiverse;
+  if (input.dimensionSwitch) {
+    const dims: MultiverseDimension[] = ["xenoverse", "fighterz", "butoden", "tenkaichi", "legend"];
+    const idx = (dims.indexOf(m.dimension) + 1) % dims.length;
+    m.dimension = dims[idx];
+    g.screenShake = 6;
+  }
+
+  // Dimension 1: Xenoverse (Dimps) — Stamina Management
+  if (m.dimension === "xenoverse") {
+    m.stamina = Math.min(m.maxStamina, m.stamina + 25 * clampedDt);
+  }
+
+  // Dimension 2: FighterZ (ArcSys) — Sparking Blast
+  if (m.dimension === "fighterz") {
+    if (input.sparking && !m.sparkingActive) {
+      m.sparkingActive = true;
+      m.sparkingTimer = 10;
+      g.screenShake = 16;
+      for (const e of g.enemies) {
+        e.x += (e.x > p.x ? 1 : -1) * 140;
+      }
+    }
+    if (m.sparkingActive) {
+      m.sparkingTimer -= clampedDt;
+      p.hp = Math.min(p.maxHp, p.hp + 6 * clampedDt);
+      if (m.sparkingTimer <= 0) m.sparkingActive = false;
+    }
+  }
+
+  // Dimension 4: Tenkaichi (Spike) — Max Power Mode
+  if (m.dimension === "tenkaichi") {
+    if (input.charge && p.energy >= 100 && !m.maxPowerActive) {
+      m.maxPowerActive = true;
+      m.maxPowerTimer = 10;
+      g.screenShake = 12;
+    }
+    if (m.maxPowerActive) {
+      m.maxPowerTimer -= clampedDt;
+      p.energy = 100;
+      if (m.maxPowerTimer <= 0) m.maxPowerActive = false;
+    }
+  }
+
+  // Dimension 5: The Legend — Power Balance Tug-of-War
+  if (m.dimension === "legend" && m.powerBalance >= 100) {
+    m.powerBalance = 0;
+    g.screenShake = 22;
+    for (const e of g.enemies) {
+      e.hp = Math.max(0, e.hp - 75);
+    }
+    g.score += 1000;
+  }
 
   // Gestion du Beam Clash (Choc de Kikōha)
   if (g.clash && g.clash.active) {
@@ -768,8 +974,12 @@ export function step(g: GameState, input: GameInput, dt: number): void {
   }
 
   // Z-Vanish (Téléportation esquive derrière l'adversaire le plus proche)
-  if (input.vanish && p.energy >= 25 && p.vanishCooldown === 0 && g.enemies.length > 0) {
+  const canVanish = p.energy >= 25 && (m.dimension !== "xenoverse" || m.stamina >= 30);
+  if (input.vanish && canVanish && p.vanishCooldown === 0 && g.enemies.length > 0) {
     p.energy -= 25;
+    if (m.dimension === "xenoverse") {
+      m.stamina = Math.max(0, m.stamina - 30);
+    }
     p.vanishCooldown = 0.8;
     const target = g.enemies[0];
     p.x = target.x + (p.facing > 0 ? 60 : -60);
@@ -791,7 +1001,10 @@ export function step(g: GameState, input: GameInput, dt: number): void {
   p.powerLevel = formDef.powerLevel;
 
   const stylePower = p.style === "power" ? 1.25 : 1;
-  const power = stylePower * (p.transformed ? 1.7 : 1);
+  const isDesperation = m.dimension === "butoden" && p.hp < p.maxHp * 0.3;
+  const desperationBonus = isDesperation ? 1.5 : 1.0;
+  const sparkingBonus = m.sparkingActive ? 1.25 : 1.0;
+  const power = stylePower * (p.transformed ? 1.7 : 1) * desperationBonus * sparkingBonus;
 
   // Attaque au corps à corps (Punch combo)
   if (input.punch && !p.cooldown) {
@@ -804,6 +1017,9 @@ export function step(g: GameState, input: GameInput, dt: number): void {
         const dmg = e.guarding ? Math.round(hitDamage * 0.2) : hitDamage;
         e.hp = Math.max(0, e.hp - dmg);
         g.screenShake = 2.5;
+        if (m.dimension === "legend") {
+          m.powerBalance = Math.min(100, m.powerBalance + 5);
+        }
 
         // Knockback sur le 3e coup de combo
         if (p.combo === 3) {
@@ -868,6 +1084,9 @@ export function step(g: GameState, input: GameInput, dt: number): void {
           const dmg = e.guarding ? Math.round(s.damage * 0.2) : s.damage;
           e.hp = Math.max(0, e.hp - dmg);
           g.screenShake = s.isBeam ? 6 : 3;
+          if (m.dimension === "legend") {
+            m.powerBalance = Math.min(100, m.powerBalance + 4);
+          }
           if (!s.isBeam) return false;
         }
       }
@@ -876,6 +1095,9 @@ export function step(g: GameState, input: GameInput, dt: number): void {
         const dmg = p.guarding ? Math.round(s.damage * 0.2) : s.damage;
         p.hp = Math.max(0, p.hp - dmg);
         g.screenShake = 5;
+        if (m.dimension === "legend") {
+          m.powerBalance = Math.max(-100, m.powerBalance - 5);
+        }
         if (p.hp <= 0) {
           g.status = "lost";
         }

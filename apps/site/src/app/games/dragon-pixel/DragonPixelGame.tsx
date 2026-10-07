@@ -10,11 +10,17 @@ import {
   type GameMode,
   type GameState,
   type GameInput,
+  type MultiverseDimension,
   FIGHTERS,
   STORY_CHAPTERS,
 } from "./engine";
+import { KiExplosionEffect, type KiColorStyle } from "@shenron/ui/cinematic";
 
-const CHARACTER_ASSETS: Record<FighterId, string> = {
+/**
+ * Authentic Full-Body High-Definition Akira Toriyama Character Artwork.
+ * Extracted from official high-resolution assets in /dbz/characters/ and /dbz/transformations/.
+ */
+const CHARACTER_FULL_ASSETS: Record<FighterId, string> = {
   goku: "/dbz/characters/goku.webp",
   vegeta: "/dbz/characters/vegeta.webp",
   gohan: "/dbz/characters/gohan.webp",
@@ -23,9 +29,12 @@ const CHARACTER_ASSETS: Record<FighterId, string> = {
   frieza: "/dbz/characters/freezer.webp",
   cell: "/dbz/characters/celula.webp",
   buu: "/dbz/characters/majin-buu.webp",
+  beerus: "/dbz/characters/Beerus_DBS_Broly_Artwork.webp",
+  broly: "/dbz/characters/Broly_DBS_Base.webp",
+  jiren: "/dbz/characters/Jiren.webp",
 };
 
-const TRANSFORMATION_ASSETS: Record<FighterId, string> = {
+const TRANSFORMATION_FULL_ASSETS: Record<FighterId, string> = {
   goku: "/dbz/transformations/goku-ssj.webp",
   vegeta: "/dbz/transformations/vegeta-ssj.webp",
   gohan: "/dbz/transformations/gohan-ssj2.webp",
@@ -34,16 +43,116 @@ const TRANSFORMATION_ASSETS: Record<FighterId, string> = {
   frieza: "/dbz/transformations/freezer-perfect-form-golden.webp",
   cell: "/dbz/transformations/super-perfect-form.webp",
   buu: "/dbz/transformations/majin-buu-pure.webp",
+  beerus: "/dbz/characters/Beerus_DBS_Broly_Artwork.webp",
+  broly: "/dbz/transformations/broly-lssj.webp",
+  jiren: "/dbz/characters/Jiren.webp",
 };
 
-const ARENA_BACKDROPS: Record<ArenaId, string> = {
-  paozu: "/dbz/planets/tierra.webp",
-  budokai: "/dbz/planets/tierra.webp",
-  wasteland: "/dbz/planets/tierra.webp",
-  namek: "/dbz/planets/namek.webp",
-  cell_games: "/dbz/planets/tierra.webp",
-  kaiohshin: "/dbz/planets/planeta-sagrado.webp",
+/**
+ * Official Square Portraits for HUD and Manga Koma Cut-Ins.
+ */
+const PORTRAIT_ASSETS: Record<FighterId, string> = {
+  goku: "/games/dragon-pixel/portraits/GOK.png",
+  vegeta: "/games/dragon-pixel/portraits/VGT.png",
+  gohan: "/games/dragon-pixel/portraits/GOH.png",
+  piccolo: "/games/dragon-pixel/portraits/PIC.png",
+  trunks: "/games/dragon-pixel/portraits/TRF.png",
+  frieza: "/games/dragon-pixel/portraits/FRZ.png",
+  cell: "/games/dragon-pixel/portraits/CEL.png",
+  buu: "/games/dragon-pixel/portraits/BUU.png",
+  beerus: "/games/dragon-pixel/portraits/BLS.png",
+  broly: "/games/dragon-pixel/portraits/BRL.png",
+  jiren: "/games/dragon-pixel/portraits/JRN.png",
 };
+
+/**
+ * Official Backdrops and Celestial Planets.
+ */
+const ARENA_BACKDROPS: Record<
+  ArenaId,
+  { planet: string; skyGrad: [string, string, string]; floorColor: string; rimColor: string }
+> = {
+  paozu: {
+    planet: "/dbz/planets/tierra.webp",
+    skyGrad: ["#0f172a", "#1e293b", "#334155"],
+    floorColor: "#1e3a1e",
+    rimColor: "#4ade80",
+  },
+  budokai: {
+    planet: "/dbz/planets/tierra.webp",
+    skyGrad: ["#1e1b4b", "#312e81", "#4338ca"],
+    floorColor: "#cbd5e1",
+    rimColor: "#94a3b8",
+  },
+  wasteland: {
+    planet: "/dbz/planets/tierra.webp",
+    skyGrad: ["#451a03", "#78350f", "#b45309"],
+    floorColor: "#78350f",
+    rimColor: "#f59e0b",
+  },
+  namek: {
+    planet: "/dbz/planets/namek.webp",
+    skyGrad: ["#064e3b", "#065f46", "#047857"],
+    floorColor: "#14532d",
+    rimColor: "#22c55e",
+  },
+  cell_games: {
+    planet: "/dbz/planets/tierra.webp",
+    skyGrad: ["#18181b", "#27272a", "#3f3f46"],
+    floorColor: "#475569",
+    rimColor: "#94a3b8",
+  },
+  kaiohshin: {
+    planet: "/dbz/planets/planeta-sagrado.webp",
+    skyGrad: ["#4a044e", "#701a75", "#86198f"],
+    floorColor: "#3b0764",
+    rimColor: "#c084fc",
+  },
+};
+
+/**
+ * Authentic Japanese Manga Onomatopoeias.
+ */
+interface MangaSfxParticle {
+  id: number;
+  text: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  scale: number;
+  rotation: number;
+  alpha: number;
+  color: string;
+  stroke: string;
+  life: number;
+  maxLife: number;
+}
+
+/**
+ * Zanzōken (Afterimage) trail snapshot.
+ */
+interface AfterimageSnapshot {
+  x: number;
+  y: number;
+  facing: number;
+  img: HTMLImageElement | null;
+  alpha: number;
+  auraColor: string;
+}
+
+/**
+ * Manga Koma Cut-in State for Super Attacks.
+ */
+interface MangaCutInState {
+  active: boolean;
+  fighterId: FighterId;
+  attackNameJa: string;
+  attackNameFr: string;
+  color: string;
+  timer: number;
+  duration: number;
+}
 
 const KEYS: Record<string, keyof GameInput> = {
   ArrowLeft: "left",
@@ -59,35 +168,49 @@ const KEYS: Record<string, keyof GameInput> = {
   u: "vanish",
   o: "special",
   m: "mash",
+  r: "sparking",
+  R: "sparking",
+  v: "dimensionSwitch",
+  V: "dimensionSwitch",
 };
-
-interface WasmEngineInstance {
-  step: (inputJson: string, dt: f32) => string;
-  get_render_packet_json: () => string;
-  restart: () => void;
-  set_chapter: (chapterId: number) => void;
-  set_fighter: (fighterId: string) => void;
-}
-
-type f32 = number;
 
 export default function DragonPixelGame() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [mode] = useState<GameMode>("story");
   const [selectedFighter, setSelectedFighter] = useState<FighterId>("goku");
   const [selectedChapter, setSelectedChapter] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const [inDialogue, setInDialogue] = useState(true);
   const [dialogueIndex, setDialogueIndex] = useState(0);
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">("playing");
+  const [explosionKey, setExplosionKey] = useState(0);
+  const [explosionColor, setExplosionColor] = useState<KiColorStyle>("gold");
 
   const gameStateRef = useRef<GameState>(createGame(selectedFighter, mode, selectedChapter));
   const heldKeysRef = useRef<Set<keyof GameInput>>(new Set());
   const lastTimeRef = useRef<number>(0);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const audioBuffersRef = useRef<Map<string, AudioBuffer>>(new Map());
+  const chargeSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const chargeGainRef = useRef<GainNode | null>(null);
   const imagesRef = useRef<Map<string, HTMLImageElement>>(new Map());
-  const wasmEngineRef = useRef<WasmEngineInstance | null>(null);
+
+  // Visual enhancement state
+  const onomatopoeiaRef = useRef<MangaSfxParticle[]>([]);
+  const nextParticleIdRef = useRef(1);
+  const playerTrailsRef = useRef<AfterimageSnapshot[]>([]);
+  const enemyTrailsRef = useRef<AfterimageSnapshot[]>([]);
+  const cutInRef = useRef<MangaCutInState>({
+    active: false,
+    fighterId: "goku",
+    attackNameJa: "",
+    attackNameFr: "",
+    color: "#00b4d8",
+    timer: 0,
+    duration: 0.65,
+  });
+  const screenFlashRef = useRef<number>(0);
 
   // Helper de cache et chargement d'image
   const getImage = useCallback((src: string): HTMLImageElement | null => {
@@ -100,12 +223,13 @@ export default function DragonPixelGame() {
     return img.complete && img.naturalWidth > 0 ? img : null;
   }, []);
 
-  // Préchargement de tous les assets officiels DBXV
+  // Preload all high-definition Toriyama artwork & backdrops
   useEffect(() => {
     const allUrls = [
-      ...Object.values(CHARACTER_ASSETS),
-      ...Object.values(TRANSFORMATION_ASSETS),
-      ...Object.values(ARENA_BACKDROPS),
+      ...Object.values(CHARACTER_FULL_ASSETS),
+      ...Object.values(TRANSFORMATION_FULL_ASSETS),
+      ...Object.values(PORTRAIT_ASSETS),
+      ...Object.values(ARENA_BACKDROPS).map((a) => a.planet),
     ];
     for (const url of allUrls) {
       const img = new Image();
@@ -114,164 +238,272 @@ export default function DragonPixelGame() {
     }
   }, []);
 
-  // Chargement du moteur WebAssembly haute performance
+  // Initialize and preload official Toei/Dimps Audio Pipeline
   useEffect(() => {
-    let active = true;
-    const initWasm = async () => {
-      try {
-        if (typeof window === "undefined") return;
-        const importFn = new Function("url", "return import(url)");
-        const wasmModule = await importFn("/wasm/dragon-pixel/dragon_pixel_engine.js");
-        await wasmModule.default("/wasm/dragon-pixel/dragon_pixel_engine_bg.wasm");
-        if (active) {
-          wasmEngineRef.current = new wasmModule.DragonPixelEngineWasm(
-            selectedFighter,
-            mode,
-            selectedChapter,
-            "paozu",
-          ) as WasmEngineInstance;
+    const soundUrls: Record<string, string> = {
+      punch: "/sfx/official/punch.mp3",
+      hit: "/sfx/official/hit.mp3",
+      charge: "/sfx/official/ki-charge.mp3",
+      powerup: "/sfx/official/power-up.mp3",
+      teleport: "/sfx/official/teleport.mp3",
+      final_flash: "/sfx/official/final-flash.mp3",
+      kamehameha: "/sfx/kamehameha.mp3",
+      kamehameha_wave: "/sfx/kamehameha-wave.mp3",
+      galick: "/sfx/galick.mp3",
+      scream: "/sfx/official/scream.mp3",
+      explosion: "/sfx/explosion.mp3",
+      kaioken: "/sfx/kaioken.mp3",
+      ultra_instinct: "/sfx/ultra-instinct.mp3",
+      whoosh: "/sfx/whoosh.mp3",
+    };
+
+    const getAudioCtx = () => {
+      if (!audioContextRef.current && typeof window !== "undefined") {
+        const AudioCtx =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        audioContextRef.current = new AudioCtx();
+      }
+      return audioContextRef.current;
+    };
+
+    const loadSounds = async () => {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+
+      for (const [key, url] of Object.entries(soundUrls)) {
+        try {
+          const res = await fetch(url);
+          const buf = await res.arrayBuffer();
+          const decoded = await ctx.decodeAudioData(buf);
+          audioBuffersRef.current.set(key, decoded);
+        } catch {
+          // Fallback transparent si un fichier est indisponible
         }
-      } catch {
-        // Repli transparent sur la simulation pure TypeScript
       }
     };
-    initWasm();
-    return () => {
-      active = false;
-    };
-  }, [selectedFighter, mode, selectedChapter]);
 
-  // Synthétiseur d'effets sonores Web Audio natif
-  const playSound = useCallback(
-    (type: "punch" | "blast" | "charge" | "vanish" | "transform" | "clash") => {
-      try {
-        if (!audioContextRef.current) {
-          audioContextRef.current = new (
-            window.AudioContext ||
-            (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-          )();
-        }
-        const ctx = audioContextRef.current;
-        if (ctx.state === "suspended") {
-          ctx.resume();
-        }
+    loadSounds();
+  }, []);
 
-        const osc = ctx.createOscillator();
+  // Production-grade sound trigger with dynamic pitch & zero-latency Web Audio buffers
+  const playSound = useCallback((key: string, rateVariation = true) => {
+    try {
+      const ctx = audioContextRef.current;
+      if (!ctx) return;
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+
+      const buffer = audioBuffersRef.current.get(key);
+      if (buffer) {
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        if (rateVariation) {
+          source.playbackRate.value = 0.96 + Math.random() * 0.08;
+        }
         const gain = ctx.createGain();
-        osc.connect(gain);
+        gain.gain.value = 0.6;
+        source.connect(gain);
         gain.connect(ctx.destination);
+        source.start(0);
+        return;
+      }
 
-        const now = ctx.currentTime;
+      // Synthétiseur d'appoint haute fidélité si le buffer n'est pas encore décodé
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      const now = ctx.currentTime;
+      if (key === "punch" || key === "hit") {
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.12);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+        osc.start(now);
+        osc.stop(now + 0.12);
+      } else if (key === "teleport") {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(920, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } else if (key === "explosion" || key === "final_flash") {
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+    } catch {
+      // Audio silencieux si bloqué
+    }
+  }, []);
 
-        if (type === "punch") {
-          osc.type = "triangle";
-          osc.frequency.setValueAtTime(160, now);
-          osc.frequency.exponentialRampToValueAtTime(40, now + 0.12);
-          gain.gain.setValueAtTime(0.35, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
-          osc.start(now);
-          osc.stop(now + 0.12);
-        } else if (type === "blast") {
-          osc.type = "sawtooth";
-          osc.frequency.setValueAtTime(440, now);
-          osc.frequency.exponentialRampToValueAtTime(110, now + 0.2);
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
-          osc.start(now);
-          osc.stop(now + 0.2);
-        } else if (type === "vanish") {
-          osc.type = "sine";
-          osc.frequency.setValueAtTime(880, now);
-          osc.frequency.exponentialRampToValueAtTime(180, now + 0.18);
-          gain.gain.setValueAtTime(0.3, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
-          osc.start(now);
-          osc.stop(now + 0.18);
-        } else if (type === "transform") {
-          osc.type = "sawtooth";
-          osc.frequency.setValueAtTime(220, now);
-          osc.frequency.exponentialRampToValueAtTime(740, now + 0.5);
-          gain.gain.setValueAtTime(0.4, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
-          osc.start(now);
-          osc.stop(now + 0.5);
-        } else if (type === "clash") {
-          osc.type = "square";
-          osc.frequency.setValueAtTime(200 + Math.random() * 100, now);
-          gain.gain.setValueAtTime(0.3, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
-          osc.start(now);
-          osc.stop(now + 0.1);
+  // Ki Charge loop management
+  const updateChargeAudio = useCallback((isCharging: boolean) => {
+    try {
+      const ctx = audioContextRef.current;
+      if (!ctx) return;
+      if (ctx.state === "suspended") ctx.resume();
+
+      if (isCharging) {
+        if (!chargeSourceRef.current) {
+          const buffer = audioBuffersRef.current.get("charge");
+          if (buffer) {
+            const src = ctx.createBufferSource();
+            src.buffer = buffer;
+            src.loop = true;
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.01, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.45, ctx.currentTime + 0.2);
+            src.connect(gain);
+            gain.connect(ctx.destination);
+            src.start(0);
+            chargeSourceRef.current = src;
+            chargeGainRef.current = gain;
+          }
         }
-      } catch {
-        // Audio silencieux si non autorisé
+      } else if (chargeSourceRef.current && chargeGainRef.current) {
+        const gain = chargeGainRef.current;
+        gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+        setTimeout(() => {
+          try {
+            chargeSourceRef.current?.stop();
+            chargeSourceRef.current?.disconnect();
+          } catch {
+            // Already disconnected
+          }
+          chargeSourceRef.current = null;
+          chargeGainRef.current = null;
+        }, 160);
+      }
+    } catch {
+      // Fallback
+    }
+  }, []);
+
+  // Spawn Japanese Manga Onomatopoeia Particle
+  const spawnOnomatopoeia = useCallback(
+    (text: string, x: number, y: number, color = "#ffeb3b", stroke = "#000000") => {
+      const id = nextParticleIdRef.current++;
+      const p: MangaSfxParticle = {
+        id,
+        text,
+        x: x + (Math.random() - 0.5) * 40,
+        y: y - 20 + (Math.random() - 0.5) * 30,
+        vx: (Math.random() - 0.5) * 60,
+        vy: -120 - Math.random() * 80,
+        scale: 1.5,
+        rotation: (Math.random() - 0.5) * 0.35,
+        alpha: 1.0,
+        color,
+        stroke,
+        life: 0.55,
+        maxLife: 0.55,
+      };
+      onomatopoeiaRef.current.push(p);
+      if (onomatopoeiaRef.current.length > 20) {
+        onomatopoeiaRef.current.shift();
       }
     },
     [],
   );
 
-  // Rendu de l'arrière-plan avec les vrais assets de planète DBXV
+  // Trigger dramatic Manga Koma Cut-in
+  const triggerMangaCutIn = useCallback(
+    (fighterId: FighterId, attackNameJa: string, attackNameFr: string, color = "#00b4d8") => {
+      cutInRef.current = {
+        active: true,
+        fighterId,
+        attackNameJa,
+        attackNameFr,
+        color,
+        timer: 0,
+        duration: 0.65,
+      };
+      screenFlashRef.current = 1.0;
+      playSound("kamehameha", false);
+    },
+    [playSound],
+  );
+
+  // Rendu de l'arrière-plan avec planète céleste et dégradé atmosphérique
   const drawArena = useCallback(
     (ctx: CanvasRenderingContext2D, arena: ArenaId) => {
-      // 1. Dégradé atmosphérique du ciel
-      const grad = ctx.createLinearGradient(0, 0, 0, 400);
-      if (arena === "namek") {
-        grad.addColorStop(0, "#065a60");
-        grad.addColorStop(0.7, "#1b998b");
-        grad.addColorStop(1, "#2ec4b6");
-      } else if (arena === "kaiohshin") {
-        grad.addColorStop(0, "#4a0e4e");
-        grad.addColorStop(0.7, "#b5179e");
-        grad.addColorStop(1, "#7209b7");
-      } else {
-        grad.addColorStop(0, "#1e293b");
-        grad.addColorStop(0.7, "#334155");
-        grad.addColorStop(1, "#475569");
-      }
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 960, 400);
+      const stage = ARENA_BACKDROPS[arena] ?? ARENA_BACKDROPS.paozu;
 
-      // 2. Vrai asset de planète DBXV en arrière-plan
-      const planetPath = ARENA_BACKDROPS[arena] ?? ARENA_BACKDROPS.paozu;
-      const planetImg = getImage(planetPath);
+      // 1. Dégradé atmosphérique du ciel
+      const grad = ctx.createLinearGradient(0, 0, 0, 580);
+      grad.addColorStop(0, stage.skyGrad[0]);
+      grad.addColorStop(0.65, stage.skyGrad[1]);
+      grad.addColorStop(1, stage.skyGrad[2]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1280, 720);
+
+      // 2. Planète céleste flottante
+      const planetImg = getImage(stage.planet);
       if (planetImg) {
         ctx.save();
-        ctx.globalAlpha = 0.45;
-        const pSize = 220;
-        ctx.drawImage(planetImg, 960 - pSize - 40, 30, pSize, pSize);
+        ctx.globalAlpha = 0.5;
+        const pSize = 300;
+        const floatY = Math.sin(Date.now() * 0.0008) * 12;
+        ctx.drawImage(planetImg, 1280 - pSize - 60, 40 + floatY, pSize, pSize);
         ctx.restore();
       }
 
-      // 3. Sol d'arène fidèle
-      if (arena === "namek") {
-        ctx.fillStyle = "#14532d";
-        ctx.fillRect(0, 330, 960, 70);
-        ctx.fillStyle = "#16a34a";
-        ctx.fillRect(0, 330, 960, 8);
-      } else if (arena === "budokai" || arena === "cell_games") {
-        ctx.fillStyle = "#cbd5e1";
-        ctx.fillRect(0, 330, 960, 70);
-        ctx.strokeStyle = "#64748b";
+      // 3. Sol d'arène fidèle et lignes de fuite
+      ctx.fillStyle = stage.floorColor;
+      ctx.fillRect(0, 570, 1280, 150);
+
+      // Bordure supérieure lumineuse du sol
+      ctx.fillStyle = stage.rimColor;
+      ctx.fillRect(0, 570, 1280, 8);
+
+      // Dalles pour Budokai / Cell Games
+      if (arena === "budokai" || arena === "cell_games") {
+        ctx.strokeStyle = stage.rimColor;
         ctx.lineWidth = 2;
-        for (let x = 0; x < 960; x += 60) {
-          ctx.strokeRect(x, 330, 60, 70);
+        ctx.globalAlpha = 0.4;
+        for (let x = 0; x < 1280; x += 80) {
+          ctx.strokeRect(x, 578, 80, 142);
         }
-      } else if (arena === "kaiohshin") {
-        ctx.fillStyle = "#3a0ca3";
-        ctx.fillRect(0, 330, 960, 70);
-        ctx.fillStyle = "#7209b7";
-        ctx.fillRect(0, 330, 960, 8);
-      } else {
-        ctx.fillStyle = "#78350f";
-        ctx.fillRect(0, 330, 960, 70);
-        ctx.fillStyle = "#b45309";
-        ctx.fillRect(0, 330, 960, 8);
+        ctx.globalAlpha = 1.0;
       }
     },
     [getImage],
   );
 
-  // Rendu d'un combattant avec les vrais assets officiels DBXV
+  // Rendu des traînées d'après-image (Zanzōken)
+  const drawAfterimages = useCallback(
+    (ctx: CanvasRenderingContext2D, trails: AfterimageSnapshot[]) => {
+      for (const t of trails) {
+        if (!t.img || t.alpha <= 0.05) continue;
+        ctx.save();
+        ctx.translate(t.x, t.y);
+        if (t.facing < 0) ctx.scale(-1, 1);
+        ctx.globalAlpha = t.alpha * 0.4;
+
+        // Silhouette lumineuse aux teintes de l'aura
+        ctx.shadowColor = t.auraColor;
+        ctx.shadowBlur = 18;
+
+        const targetHeight = 175;
+        const targetWidth = (t.img.naturalWidth / t.img.naturalHeight) * targetHeight;
+        ctx.drawImage(t.img, -targetWidth / 2, -targetHeight, targetWidth, targetHeight);
+        ctx.restore();
+      }
+    },
+    [],
+  );
+
+  // Rendu haute fidélité d'un combattant (Artwork complet, Cel-Shading et Auras animées)
   const drawFighterSprite = useCallback(
     (
       ctx: CanvasRenderingContext2D,
@@ -282,11 +514,11 @@ export default function DragonPixelGame() {
       transformed: number,
       isGuarding: boolean,
       isCharging: boolean,
+      trails: AfterimageSnapshot[],
     ) => {
       ctx.save();
       ctx.translate(x, y);
 
-      // Orientation gauche/droite
       if (facing < 0) {
         ctx.scale(-1, 1);
       }
@@ -294,42 +526,77 @@ export default function DragonPixelGame() {
       const isSuperSaiyan = transformed > 0;
       const def = FIGHTERS[fighterId] ?? FIGHTERS.goku;
 
-      // Ombre portée au sol
-      ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+      // Ombre portée dynamique au sol
+      ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
       ctx.beginPath();
-      ctx.ellipse(0, 0, 24, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 0, 48, 12, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Aura de Ki & Éclairs de transformation
+      // Palette d'aura selon la forme
+      const auraColor =
+        isSuperSaiyan && fighterId === "goku"
+          ? "#ffd700"
+          : isSuperSaiyan && fighterId === "gohan"
+            ? "#ffd700"
+            : isSuperSaiyan && fighterId === "vegeta"
+              ? "#f72585"
+              : isCharging
+                ? "#00f5d4"
+                : isSuperSaiyan
+                  ? "#ffd700"
+                  : "#ffffff";
+
+      // Rendu de l'aura vivante aux flammes polygonales
       if (isCharging || isSuperSaiyan) {
-        const auraColor = isSuperSaiyan ? "#ffd700" : isCharging ? "#00f5d4" : "#ffffff";
         ctx.save();
         ctx.strokeStyle = auraColor;
-        ctx.lineWidth = isSuperSaiyan ? 4 : 2;
+        ctx.lineWidth = isSuperSaiyan ? 5 : 3;
         ctx.shadowColor = auraColor;
-        ctx.shadowBlur = isSuperSaiyan ? 20 : 10;
+        ctx.shadowBlur = isSuperSaiyan ? 32 : 18;
 
+        // Flamme externe d'énergie
         ctx.beginPath();
-        for (let i = 0; i < 10; i++) {
-          const ang = (i / 10) * Math.PI * 2;
-          const rad = 36 + Math.sin(Date.now() * 0.02 + i * 1.5) * 8;
+        for (let i = 0; i < 16; i++) {
+          const ang = (i / 16) * Math.PI * 2;
+          const rad = 65 + Math.sin(Date.now() * 0.02 + i * 1.4) * 16;
           const ax = Math.cos(ang) * rad;
-          const ay = -45 + Math.sin(ang) * rad * 1.3;
+          const ay = -95 + Math.sin(ang) * rad * 1.4;
           if (i === 0) ctx.moveTo(ax, ay);
           else ctx.lineTo(ax, ay);
         }
         ctx.closePath();
         ctx.stroke();
 
-        // Éclairs SSJ2 / SSJ3
+        // Cœur blanc de l'aura
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < 12; i++) {
+          const ang = (i / 12) * Math.PI * 2;
+          const rad = 45 + Math.sin(Date.now() * 0.025 + i * 1.8) * 10;
+          const ax = Math.cos(ang) * rad;
+          const ay = -95 + Math.sin(ang) * rad * 1.3;
+          if (i === 0) ctx.moveTo(ax, ay);
+          else ctx.lineTo(ax, ay);
+        }
+        ctx.closePath();
+        ctx.stroke();
+
+        // Éclairs SSJ2 / SSJ3 / Forme Parfaite
         if (isSuperSaiyan) {
-          ctx.strokeStyle = "#00f5d4";
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = "#a5f3fc";
+          ctx.lineWidth = 3;
           ctx.beginPath();
-          const t = Date.now() * 0.03;
-          ctx.moveTo(-22 + Math.sin(t) * 12, -75);
-          ctx.lineTo(-10, -50);
-          ctx.lineTo(-26, -30);
+          const t = Date.now() * 0.04;
+          ctx.moveTo(-45 + Math.sin(t) * 22, -150);
+          ctx.lineTo(-20, -100);
+          ctx.lineTo(-50, -55);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(35 + Math.cos(t) * 20, -140);
+          ctx.lineTo(15, -85);
+          ctx.lineTo(40, -40);
           ctx.stroke();
         }
         ctx.restore();
@@ -338,34 +605,52 @@ export default function DragonPixelGame() {
       // Bouclier d'énergie de garde
       if (isGuarding) {
         ctx.save();
-        ctx.fillStyle = "rgba(0, 180, 216, 0.3)";
+        ctx.fillStyle = "rgba(0, 180, 216, 0.4)";
         ctx.strokeStyle = "#00b4d8";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 4.5;
         ctx.shadowColor = "#00b4d8";
-        ctx.shadowBlur = 12;
+        ctx.shadowBlur = 24;
         ctx.beginPath();
-        ctx.arc(15, -45, 45, -Math.PI / 2, Math.PI / 2);
+        ctx.arc(25, -90, 85, -Math.PI / 2, Math.PI / 2);
         ctx.fill();
         ctx.stroke();
         ctx.restore();
       }
 
-      // Vrai asset officiel DBXV (Portrait / Render haute résolution)
+      // Artwork officiel Toriyama haute définition
       const assetPath = isSuperSaiyan
-        ? TRANSFORMATION_ASSETS[fighterId] || CHARACTER_ASSETS[fighterId]
-        : CHARACTER_ASSETS[fighterId];
+        ? TRANSFORMATION_FULL_ASSETS[fighterId] || CHARACTER_FULL_ASSETS[fighterId]
+        : CHARACTER_FULL_ASSETS[fighterId];
       const img = getImage(assetPath);
 
       if (img) {
         ctx.save();
-        const targetHeight = 96;
+        const targetHeight = 175;
         const targetWidth = (img.naturalWidth / img.naturalHeight) * targetHeight;
-        ctx.drawImage(img, -targetWidth / 2, -targetHeight, targetWidth, targetHeight);
+        // Animation subtile de respiration
+        const floatY = Math.sin(Date.now() * 0.005) * 3;
+
+        // Enregistrement pour Zanzōken
+        if (trails.length === 0 || Math.hypot(trails[0].x - x, trails[0].y - y) > 20) {
+          trails.unshift({
+            x,
+            y,
+            facing,
+            img,
+            alpha: 0.7,
+            auraColor,
+          });
+          if (trails.length > 4) trails.pop();
+        }
+
+        // Contour encré manga façon Akira Toriyama
+        ctx.shadowColor = "#000000";
+        ctx.shadowBlur = 8;
+        ctx.drawImage(img, -targetWidth / 2, -targetHeight + floatY, targetWidth, targetHeight);
         ctx.restore();
       } else {
-        // Silhouette de repli le temps du chargement
         ctx.fillStyle = isSuperSaiyan ? "#ffb703" : def.themeColor;
-        ctx.fillRect(-14, -80, 28, 80);
+        ctx.fillRect(-28, -150, 56, 150);
       }
 
       ctx.restore();
@@ -373,7 +658,117 @@ export default function DragonPixelGame() {
     [getImage],
   );
 
-  // Boucle de rendu principal
+  // Rendu du Koma Cut-In manga dramatique
+  const drawMangaCutIn = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      const cut = cutInRef.current;
+      if (!cut.active) return;
+
+      ctx.save();
+      // 1. Assombrissement du reste de l'écran avec lignes de vitesse radiales
+      ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+      ctx.fillRect(0, 0, 1280, 720);
+
+      // 2. Panneau manga diagonal tranchant l'écran
+      ctx.beginPath();
+      ctx.moveTo(0, 220);
+      ctx.lineTo(1280, 290);
+      ctx.lineTo(1280, 510);
+      ctx.lineTo(0, 440);
+      ctx.closePath();
+      ctx.save();
+      ctx.clip();
+
+      // Fond de trame manga avec dégradé d'énergie
+      const grad = ctx.createLinearGradient(0, 220, 1280, 510);
+      grad.addColorStop(0, "#09090b");
+      grad.addColorStop(0.5, cut.color);
+      grad.addColorStop(1, "#09090b");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 220, 1280, 290);
+
+      // Lignes de vitesse manga (Shūchū-sen)
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 40; i++) {
+        const lx = Math.random() * 1280;
+        ctx.beginPath();
+        ctx.moveTo(lx, 220);
+        ctx.lineTo(640 + (lx - 640) * 0.4, 365);
+        ctx.stroke();
+      }
+
+      // Portrait gros plan du visage / yeux
+      const portrait = getImage(PORTRAIT_ASSETS[cut.fighterId]);
+      if (portrait) {
+        ctx.drawImage(portrait, 140, 240, 240, 240);
+      }
+
+      // Calligraphie japonaise de la technique en lettres géantes
+      ctx.font = "900 64px 'Impact', 'Noto Sans JP', sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 10;
+      ctx.strokeText(cut.attackNameJa, 740, 355);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(cut.attackNameJa, 740, 355);
+
+      // Sous-titre officiel en français
+      ctx.font = "700 24px 'Impact', sans-serif";
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 5;
+      ctx.strokeText(`« ${cut.attackNameFr} »`, 740, 420);
+      ctx.fillStyle = "#fbbf24";
+      ctx.fillText(`« ${cut.attackNameFr} »`, 740, 420);
+
+      ctx.restore();
+
+      // Bordure dorée du panneau manga
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(0, 220);
+      ctx.lineTo(1280, 290);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, 440);
+      ctx.lineTo(1280, 510);
+      ctx.stroke();
+
+      ctx.restore();
+    },
+    [getImage],
+  );
+
+  // Rendu des onomatopées japonaises animées
+  const drawOnomatopoeias = useCallback((ctx: CanvasRenderingContext2D) => {
+    for (const p of onomatopoeiaRef.current) {
+      if (p.life <= 0) continue;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.scale(p.scale, p.scale);
+      ctx.globalAlpha = p.alpha;
+
+      ctx.font = "900 48px 'Impact', 'Noto Sans JP', sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // Contour noir épais Toriyama
+      ctx.strokeStyle = p.stroke;
+      ctx.lineWidth = 6;
+      ctx.strokeText(p.text, 0, 0);
+
+      // Remplissage éclatant
+      ctx.fillStyle = p.color;
+      ctx.fillText(p.text, 0, 0);
+
+      ctx.restore();
+    }
+  }, []);
+
+  // Rendu complet du canvas à 60 FPS
   const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -382,237 +777,431 @@ export default function DragonPixelGame() {
 
     const g = gameStateRef.current;
 
-    // Secousse d'écran (Screen Shake)
+    // Mise à l'échelle pour 1280x720 natif
+    const scaleX = 1280 / 960;
+    const scaleY = 720 / 400;
+
     ctx.save();
+
+    // Tremblement de caméra dynamique
     if (g.screenShake > 0) {
-      const sx = (Math.random() - 0.5) * g.screenShake * 3;
-      const sy = (Math.random() - 0.5) * g.screenShake * 3;
+      const sx = (Math.random() - 0.5) * g.screenShake * 6;
+      const sy = (Math.random() - 0.5) * g.screenShake * 6;
       ctx.translate(sx, sy);
     }
 
-    ctx.clearRect(0, 0, 960, 400);
+    ctx.clearRect(0, 0, 1280, 720);
 
-    // 1. Décor d'arène avec les vraies planètes
+    // 1. Arène & Sol
     drawArena(ctx, g.arena);
 
-    // 2. Joueur
+    // 2. Traînées de vitesse (Zanzōken)
+    drawAfterimages(ctx, playerTrailsRef.current);
+    drawAfterimages(ctx, enemyTrailsRef.current);
+
+    // 3. Combattant Joueur
     const p = g.player;
     const isCharging = heldKeysRef.current.has("charge");
-    drawFighterSprite(ctx, p.x, p.y, p.facing, p.fighterId, p.transformed, p.guarding, isCharging);
+    drawFighterSprite(
+      ctx,
+      p.x * scaleX,
+      p.y * scaleY,
+      p.facing,
+      p.fighterId,
+      p.transformed,
+      p.guarding,
+      isCharging,
+      playerTrailsRef.current,
+    );
 
-    // 3. Ennemis
+    // 4. Ennemis / Boss
     for (const e of g.enemies) {
       drawFighterSprite(
         ctx,
-        e.x,
-        e.y,
+        e.x * scaleX,
+        e.y * scaleY,
         e.facing ?? -1,
         e.fighterId ?? "piccolo",
         e.formLevel ?? 0,
         e.guarding ?? false,
         false,
+        enemyTrailsRef.current,
       );
     }
 
-    // 4. Projectiles & Rayons
+    // 5. Kikōha & Rayons d'énergie géants
     for (const s of g.shots) {
       ctx.save();
+      const sx = s.x * scaleX;
+      const sy = s.y * scaleY;
       ctx.fillStyle = s.color || "#00b4d8";
       ctx.shadowColor = s.color || "#00b4d8";
-      ctx.shadowBlur = s.isBeam ? 18 : 8;
+      ctx.shadowBlur = s.isBeam ? 36 : 14;
 
       if (s.isBeam) {
-        const bWidth = s.width || 120;
-        const bHeight = s.height || 22;
-        const bx = s.vx > 0 ? s.x - bWidth : s.x;
-        ctx.fillRect(bx, s.y - bHeight / 2, bWidth, bHeight);
+        const bWidth = (s.width || 180) * scaleX;
+        const bHeight = (s.height || 36) * scaleY;
+        const bx = s.vx > 0 ? sx - bWidth : sx;
+        ctx.fillRect(bx, sy - bHeight / 2, bWidth, bHeight);
 
+        // Cœur blanc de pure énergie
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(bx, s.y - bHeight / 4, bWidth, bHeight / 2);
+        ctx.fillRect(bx, sy - bHeight / 4, bWidth, bHeight / 2);
       } else {
         ctx.beginPath();
-        ctx.arc(s.x, s.y, 8, 0, Math.PI * 2);
+        ctx.arc(sx, sy, 14, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
-        ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+        ctx.arc(sx, sy, 7, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();
     }
 
-    // 5. Mini-Jeu de Beam Clash (Choc d'énergie)
+    // 6. Choc de Kikōha (Beam Clash)
     if (g.clash && g.clash.active) {
       ctx.save();
-      const cx = g.clash.x;
-      const cy = g.clash.y;
+      const cx = g.clash.x * scaleX;
+      const cy = g.clash.y * scaleY;
 
-      const grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, 45);
+      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 90);
       grad.addColorStop(0, "#ffffff");
-      grad.addColorStop(0.4, "#00f5d4");
-      grad.addColorStop(1, "rgba(247, 37, 133, 0)");
+      grad.addColorStop(0.35, "#00f5d4");
+      grad.addColorStop(0.7, "#ff007f");
+      grad.addColorStop(1, "transparent");
+
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(cx, cy, 45, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 90, 0, Math.PI * 2);
       ctx.fill();
 
-      // Jauge de lutte énergétique
-      ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
-      ctx.fillRect(360, 45, 240, 22);
-      ctx.strokeStyle = "#ffd700";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(360, 45, 240, 22);
-
-      const barX = 480 + (g.clash.tension / 100) * 110;
-      ctx.fillStyle = g.clash.tension > 0 ? "#00f5d4" : "#f72585";
-      ctx.fillRect(Math.min(480, barX), 47, Math.abs(barX - 480), 18);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 13px JetBrains Mono, monospace";
-      ctx.textAlign = "center";
-      ctx.fillText("⚡ MATRAQUEZ LES TOUCHES ! ⚡", 480, 35);
-      ctx.restore();
-    }
-
-    // 6. HUD Supérieur avec Vrais Portraits DBXV
-    // Joueur (Gauche)
-    const pDef = FIGHTERS[p.fighterId] ?? FIGHTERS.goku;
-    const pImg = getImage(CHARACTER_ASSETS[p.fighterId]);
-    if (pImg) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(38, 38, 22, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(pImg, 16, 16, 44, 44);
-      ctx.restore();
-      ctx.strokeStyle = "#ffd700";
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(38, 38, 22, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
-    ctx.fillRect(68, 16, 220, 42);
-    ctx.strokeStyle = "#f85b1a";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(68, 16, 220, 42);
-
-    // PV Joueur
-    ctx.fillStyle = "#22c55e";
-    const hpRatio = Math.max(0, p.hp / p.maxHp);
-    ctx.fillRect(72, 20, 212 * hpRatio, 16);
-
-    // Ki Joueur
-    ctx.fillStyle = "#00b4d8";
-    const kiRatio = Math.max(0, p.energy / p.maxEnergy);
-    ctx.fillRect(72, 40, 212 * kiRatio, 12);
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 12px JetBrains Mono, monospace";
-    ctx.textAlign = "left";
-    ctx.fillText(`${pDef.name} [${pDef.emblemId.toUpperCase()}]`, 70, 12);
-
-    // Adversaire / Boss (Droite)
-    if (g.enemies.length > 0) {
-      const e = g.enemies[0];
-      const eFighterId = e.fighterId ?? "piccolo";
-      const eDef = FIGHTERS[eFighterId] ?? FIGHTERS.piccolo;
-      const eImg = getImage(CHARACTER_ASSETS[eFighterId] ?? CHARACTER_ASSETS.piccolo);
-
-      if (eImg) {
-        ctx.save();
+      // Éclairs de tension
+      for (let i = 0; i < 12; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const len = 45 + Math.random() * 55;
+        ctx.strokeStyle = Math.random() > 0.5 ? "#00f5d4" : "#ff007f";
+        ctx.lineWidth = 3.5;
         ctx.beginPath();
-        ctx.arc(922, 38, 22, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(eImg, 900, 16, 44, 44);
-        ctx.restore();
-        ctx.strokeStyle = "#ef4444";
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(922, 38, 22, 0, Math.PI * 2);
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(ang) * len, cy + Math.sin(ang) * len);
         ctx.stroke();
       }
-
-      ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
-      ctx.fillRect(672, 16, 220, 42);
-      ctx.strokeStyle = "#ef4444";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(672, 16, 220, 42);
-
-      // PV Ennemi
-      ctx.fillStyle = "#ef4444";
-      const eMax = e.maxHp ?? 100;
-      const eHpRatio = Math.max(0, e.hp / eMax);
-      ctx.fillRect(676 + 212 * (1 - eHpRatio), 20, 212 * eHpRatio, 16);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 12px JetBrains Mono, monospace";
-      ctx.textAlign = "right";
-      const enemyLabel =
-        g.mode === "story"
-          ? (STORY_CHAPTERS[g.currentChapterId - 1]?.enemyName ?? eDef.name)
-          : eDef.name;
-      ctx.fillText(enemyLabel, 890, 12);
+      ctx.restore();
     }
 
-    // Scouter Power Level (Centre)
-    ctx.fillStyle = "rgba(0, 245, 212, 0.9)";
-    ctx.font = "bold 14px JetBrains Mono, monospace";
+    // 7. Onomatopées japonaises animées
+    drawOnomatopoeias(ctx);
+
+    // 8. Manga Koma Cut-in en surimpression
+    drawMangaCutIn(ctx);
+
+    // 9. Écran de flash lumineux
+    if (screenFlashRef.current > 0.05) {
+      ctx.fillStyle = `rgba(255, 255, 255, ${screenFlashRef.current * 0.75})`;
+      ctx.fillRect(0, 0, 1280, 720);
+    }
+
+    // 10. HUD Haute Définition style Dragon Ball FighterZ
+    const enemy = g.enemies[0];
+    const enemyDef = enemy ? (FIGHTERS[enemy.fighterId ?? "piccolo"] ?? FIGHTERS.piccolo) : null;
+    const chap = STORY_CHAPTERS[selectedChapter - 1] ?? STORY_CHAPTERS[0];
+
+    // Badge de chapitre et Multiverse Dimension au centre
+    const m = g.multiverse;
+    const dimConfig: Record<
+      MultiverseDimension,
+      { label: string; game: string; color: string; perk: string }
+    > = {
+      xenoverse: {
+        label: "DIMENSION: XENOVERSE 2",
+        game: "Dimps Engine",
+        color: "#10b981",
+        perk: "Stamina & Z-Vanish [U]",
+      },
+      fighterz: {
+        label: "DIMENSION: FIGHTERZ",
+        game: "ArcSys Engine",
+        color: "#f59e0b",
+        perk: "Sparking Blast [R]",
+      },
+      butoden: {
+        label: "DIMENSION: SUPER BUTŌDEN",
+        game: "Super Famicom 16-bit",
+        color: "#ec4899",
+        perk: "Desperation Mode (<30% HP)",
+      },
+      tenkaichi: {
+        label: "DIMENSION: BUDOKAI TENKAICHI",
+        game: "Spike Chunsoft Engine",
+        color: "#38bdf8",
+        perk: "Max Power Mode (Ki Overcharge)",
+      },
+      legend: {
+        label: "DIMENSION: THE LEGEND",
+        game: "Tose / BEC 1996",
+        color: "#a855f7",
+        perk: "Power Balance Meteor Smash",
+      },
+    };
+    const activeDim = dimConfig[m.dimension];
+
+    ctx.save();
+    // 1. Titre du Chapitre
+    ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+    ctx.strokeStyle = "#f59e0b";
+    ctx.lineWidth = 2;
+    ctx.fillRect(460, 14, 360, 32);
+    ctx.strokeRect(460, 14, 360, 32);
+    ctx.font = "800 13px 'Noto Sans JP', sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(`SCOUTER POWER : ${p.powerLevel.toLocaleString()}`, 480, 22);
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillText(`${chap.saga} • ${chap.titleJa}`, 640, 34);
 
-    ctx.fillStyle = "#ffd700";
-    ctx.font = "12px JetBrains Mono, monospace";
-    ctx.fillText(
-      g.mode === "story"
-        ? `TOME ${STORY_CHAPTERS[g.currentChapterId - 1]?.tome ?? 1} — CH. ${g.currentChapterId} / 15`
-        : `VAGUE ${g.wave} / 5 — SCORE : ${g.score}`,
-      480,
-      40,
-    );
+    // 2. Badge Multiverse Dimension
+    ctx.fillStyle = "rgba(10, 15, 30, 0.92)";
+    ctx.strokeStyle = activeDim.color;
+    ctx.lineWidth = 2;
+    ctx.fillRect(440, 50, 400, 28);
+    ctx.strokeRect(440, 50, 400, 28);
 
-    // 7. Écran de Victoire / Défaite directement dans le Canvas
-    if (!isPlaying || g.status !== "playing") {
+    ctx.font = "900 11px 'Impact', 'Noto Sans JP', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillStyle = activeDim.color;
+    ctx.fillText(`${activeDim.label} ✦ ${activeDim.perk}`, 640, 68);
+    ctx.restore();
+
+    // Jauge Joueur (Haut Gauche)
+    ctx.save();
+    ctx.fillStyle = "rgba(15, 23, 42, 0.92)";
+    ctx.fillRect(24, 16, 360, 84);
+    ctx.strokeStyle = activeDim.color;
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(24, 16, 360, 84);
+
+    // Barre de Vie Joueur
+    const hpRatio = Math.max(0, Math.min(1, p.hp / (p.maxHp || 100)));
+    ctx.fillStyle = "#1e293b";
+    ctx.fillRect(100, 26, 268, 18);
+    ctx.fillStyle = hpRatio > 0.3 ? "#22c55e" : "#ef4444";
+    ctx.fillRect(100, 26, 268 * hpRatio, 18);
+
+    // Barre de Ki Joueur
+    const kiRatio = Math.max(0, Math.min(1, p.energy / (p.maxEnergy || 100)));
+    ctx.fillStyle = "#1e293b";
+    ctx.fillRect(100, 48, 268, 12);
+    ctx.fillStyle = m.maxPowerActive ? "#facc15" : "#0284c7";
+    ctx.fillRect(100, 48, 268 * kiRatio, 12);
+
+    // Barre d'Endurance (Stamina)
+    const staRatio = Math.max(0, Math.min(1, m.stamina / (m.maxStamina || 100)));
+    ctx.fillStyle = "#1e293b";
+    ctx.fillRect(100, 64, 268, 8);
+    ctx.fillStyle = "#10b981";
+    ctx.fillRect(100, 64, 268 * staRatio, 8);
+
+    // Badges d'état Multiverse
+    if (m.sparkingActive) {
+      ctx.font = "900 11px 'Impact', sans-serif";
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillText(`★ SPARKING: ${m.sparkingTimer.toFixed(1)}s`, 100, 88);
+    } else if (m.maxPowerActive) {
+      ctx.font = "900 11px 'Impact', sans-serif";
+      ctx.fillStyle = "#facc15";
+      ctx.fillText(`★ MAX POWER: ${m.maxPowerTimer.toFixed(1)}s`, 100, 88);
+    } else if (m.dimension === "butoden" && p.hp < p.maxHp * 0.3) {
+      ctx.font = "900 11px 'Impact', sans-serif";
+      ctx.fillStyle = "#ef4444";
+      ctx.fillText("⚠ DESPERATION MODE x1.5", 100, 88);
+    } else {
+      ctx.font = "700 10px monospace";
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText(`KI: ${Math.round(p.energy)}% • STM: ${Math.round(m.stamina)}%`, 100, 88);
+    }
+
+    // Portrait Joueur
+    const pThumb = getImage(PORTRAIT_ASSETS[p.fighterId]);
+    if (pThumb) {
+      ctx.drawImage(pThumb, 30, 22, 60, 60);
+    }
+    ctx.restore();
+
+    // Jauge Boss (Haut Droite)
+    if (enemy && enemyDef) {
       ctx.save();
-      ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-      ctx.fillRect(0, 0, 960, 400);
+      ctx.fillStyle = "rgba(15, 23, 42, 0.92)";
+      ctx.fillRect(896, 16, 360, 84);
+      ctx.strokeStyle = "#ef4444";
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(896, 16, 360, 84);
 
-      ctx.fillStyle = g.status === "won" ? "#ffd700" : g.status === "lost" ? "#ef4444" : "#ffffff";
-      ctx.font = "900 48px JetBrains Mono, monospace";
+      const eHpRatio = Math.max(0, Math.min(1, enemy.hp / (enemy.maxHp || 100)));
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(912, 26, 268, 18);
+      ctx.fillStyle = "#ef4444";
+      ctx.fillRect(912, 26, 268 * eHpRatio, 18);
+
+      // Nom du boss
+      ctx.font = "800 12px 'Noto Sans JP', sans-serif";
+      ctx.fillStyle = "#fca5a5";
+      ctx.fillText(enemyDef.nameJa || enemyDef.name, 912, 58);
+
+      const eThumb = getImage(PORTRAIT_ASSETS[enemy.fighterId ?? "piccolo"]);
+      if (eThumb) {
+        ctx.drawImage(eThumb, 1188, 22, 60, 60);
+      }
+      ctx.restore();
+    }
+
+    // Jauge The Legend: Power Balance Tug-of-War (Bas Centre)
+    if (m.dimension === "legend") {
+      ctx.save();
+      const pbX = 420;
+      const pbY = 650;
+      const pbW = 440;
+      const pbH = 22;
+
+      ctx.fillStyle = "rgba(10, 15, 30, 0.95)";
+      ctx.fillRect(pbX, pbY, pbW, pbH);
+      ctx.strokeStyle = "#a855f7";
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(pbX, pbY, pbW, pbH);
+
+      // Séparation 50/50 Joueur (Bleu) / Ennemi (Rouge)
+      const mid = pbX + pbW / 2;
+      const balanceShift = (m.powerBalance / 100) * (pbW / 2);
+
+      // Barre joueur
+      ctx.fillStyle = "#0284c7";
+      ctx.fillRect(pbX + 2, pbY + 2, pbW / 2 - 2, pbH - 4);
+      // Barre ennemi
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(mid, pbY + 2, pbW / 2 - 2, pbH - 4);
+
+      // Curseur dynamique de domination
+      const cursorX = mid + balanceShift;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(cursorX - 4, pbY - 3, 8, pbH + 6);
+
+      ctx.font = "900 11px 'Impact', sans-serif";
       ctx.textAlign = "center";
-      ctx.shadowColor = ctx.fillStyle;
-      ctx.shadowBlur = 18;
-      const bannerText =
-        g.status === "won" ? "VICTOIRE !" : g.status === "lost" ? "K.O. - DÉFAITE" : "DRAGON PIXEL";
-      ctx.fillText(bannerText, 480, 190);
+      ctx.fillStyle = "#f8fafc";
+      ctx.shadowColor = "#000000";
+      ctx.shadowBlur = 4;
+      ctx.fillText(`POWER BALANCE: ${Math.round(m.powerBalance)}% • METEOR SMASH AT 100%`, 640, pbY + 16);
+      ctx.restore();
+    }
 
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#e2e8f0";
-      ctx.font = "bold 16px JetBrains Mono, monospace";
+    // Guide de touches arcade discret (Bas)
+    if (!inDialogue && isPlaying && gameStatus === "playing") {
+      ctx.save();
+      ctx.font = "600 11px monospace";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
       ctx.fillText(
-        g.status === "won"
-          ? "Appuyez sur ESPACE ou touchez l'écran pour continuer"
-          : "Appuyez sur ESPACE ou touchez l'écran pour rejouer",
-        480,
-        240,
+        "Q/D: Move • ESPACE: Saut • J: Coup • K: Kikōha • L: Ki • I: Garde • U: Vanish • O: Spécial • T: Éveil • R: Sparking • TAB/V: Dimension",
+        640,
+        708,
       );
       ctx.restore();
+    }
+
+    // 11. Dialogue Manga Intégré Directement dans le Canvas
+    if (inDialogue && isPlaying) {
+      const currentDialogue =
+        gameStatus === "won"
+          ? chap.victoryDialogue[dialogueIndex]
+          : chap.introDialogue[dialogueIndex];
+
+      if (currentDialogue) {
+        ctx.save();
+        const boxX = 80;
+        const boxY = 560;
+        const boxW = 1120;
+        const boxH = 135;
+
+        // Cadre de bulle de manga avec fond noir et bordure dorée
+        ctx.fillStyle = "rgba(9, 9, 11, 0.95)";
+        ctx.fillRect(boxX, boxY, boxW, boxH);
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 3.5;
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+        // Nom du locuteur
+        ctx.font = "900 18px 'Noto Sans JP', sans-serif";
+        ctx.fillStyle = "#f59e0b";
+        ctx.fillText(`【 ${currentDialogue.speaker.toUpperCase()} 】`, boxX + 28, boxY + 36);
+
+        // Texte du dialogue
+        ctx.font = "500 20px serif";
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillText(`« ${currentDialogue.text} »`, boxX + 28, boxY + 76);
+
+        // Invite pour continuer
+        ctx.font = "800 14px 'Noto Sans JP', sans-serif";
+        ctx.fillStyle = "#94a3b8";
+        ctx.textAlign = "right";
+        ctx.fillText("▶ Appuyez sur Espace ou Touchez l'écran pour continuer", boxX + boxW - 28, boxY + 115);
+
+        ctx.restore();
+      }
     }
 
     ctx.restore();
-  }, [drawArena, drawFighterSprite, getImage, isPlaying]);
+  }, [
+    drawArena,
+    drawAfterimages,
+    drawFighterSprite,
+    drawOnomatopoeias,
+    drawMangaCutIn,
+    getImage,
+    selectedChapter,
+    inDialogue,
+    isPlaying,
+    gameStatus,
+    dialogueIndex,
+  ]);
 
-  // Boucle de jeu 60 FPS
+  // Boucle de simulation et d'animation à 60 FPS
   useEffect(() => {
     let animId: number;
 
-    const loop = (timestamp: number) => {
+    const gameLoop = (timestamp: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-      const dt = Math.min((timestamp - lastTimeRef.current) / 1000, 0.1);
+      const dt = Math.min(0.033, (timestamp - lastTimeRef.current) / 1000);
       lastTimeRef.current = timestamp;
 
-      if (isPlaying && !isPaused && !inDialogue) {
+      // Mise à jour des particules d'onomatopées
+      for (const p of onomatopoeiaRef.current) {
+        p.life -= dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.alpha = Math.max(0, p.life / p.maxLife);
+        p.scale = 1.0 + (p.life / p.maxLife) * 0.4;
+      }
+      onomatopoeiaRef.current = onomatopoeiaRef.current.filter((p) => p.life > 0);
+
+      // Traînées Zanzōken
+      for (const t of playerTrailsRef.current) t.alpha -= dt * 1.8;
+      for (const t of enemyTrailsRef.current) t.alpha -= dt * 1.8;
+      playerTrailsRef.current = playerTrailsRef.current.filter((t) => t.alpha > 0.05);
+      enemyTrailsRef.current = enemyTrailsRef.current.filter((t) => t.alpha > 0.05);
+
+      // Manga Koma Cut-in timer
+      if (cutInRef.current.active) {
+        cutInRef.current.timer += dt;
+        if (cutInRef.current.timer >= cutInRef.current.duration) {
+          cutInRef.current.active = false;
+        }
+      }
+
+      // Flash fondu
+      if (screenFlashRef.current > 0) {
+        screenFlashRef.current = Math.max(0, screenFlashRef.current - dt * 3.5);
+      }
+
+      // Simulation combat
+      if (isPlaying && !isPaused && !inDialogue && gameStatus === "playing") {
         const input: GameInput = {
           left: heldKeysRef.current.has("left"),
           right: heldKeysRef.current.has("right"),
@@ -627,54 +1216,102 @@ export default function DragonPixelGame() {
           mash: heldKeysRef.current.has("mash"),
         };
 
-        // Synchronisation moteur WebAssembly
-        if (wasmEngineRef.current) {
-          try {
-            wasmEngineRef.current.step(JSON.stringify(input), dt);
-          } catch {
-            // Repli sur le moteur TS
-          }
+        updateChargeAudio(!!input.charge);
+
+        const prevPlayerHp = gameStateRef.current.player.hp;
+        const prevEnemiesHp = gameStateRef.current.enemies.map((e) => e.hp);
+
+        // Déclenchement de Super Attaque
+        if (input.special && gameStateRef.current.player.energy >= 40 && !cutInRef.current.active) {
+          triggerMangaCutIn(
+            selectedFighter,
+            selectedFighter === "vegeta" ? "ファイナルフラッシュ!!" : "かめはめ波───ッ!!",
+            selectedFighter === "vegeta" ? "FINAL FLASH" : "KAMEHAMEHA",
+            selectedFighter === "vegeta" ? "#f59e0b" : "#00b4d8",
+          );
+        }
+
+        // Déclenchement Sparking Blast (FighterZ)
+        if (input.sparking && !gameStateRef.current.multiverse.sparkingActive) {
+          playSound("power_up");
+          spawnOnomatopoeia("スパーク!!", gameStateRef.current.player.x * 1.33, 500, "#f59e0b");
         }
 
         step(gameStateRef.current, input, dt);
 
-        if (input.punch) playSound("punch");
-        else if (input.blast) playSound("blast");
-        else if (input.vanish) playSound("vanish");
-        else if (input.transform) playSound("transform");
-        else if (input.mash) playSound("clash");
+        // Réception de dégâts joueur
+        if (gameStateRef.current.player.hp < prevPlayerHp) {
+          playSound("hit");
+          spawnOnomatopoeia("ドゴォッ!!", gameStateRef.current.player.x * 1.33, 500, "#ef4444");
+          setExplosionKey((k) => k + 1);
+          setExplosionColor("gold");
+        }
 
-        const g = gameStateRef.current;
-        setGameStatus((prev) => (prev !== g.status ? g.status : prev));
-        if (g.status === "won" && mode === "story") {
+        // Dégâts infligés à l'ennemi
+        for (let i = 0; i < gameStateRef.current.enemies.length; i++) {
+          const e = gameStateRef.current.enemies[i];
+          if (prevEnemiesHp[i] !== undefined && e.hp < prevEnemiesHp[i]) {
+            playSound("punch");
+            spawnOnomatopoeia("バキィッ!!", e.x * 1.33, 500, "#fbbf24");
+          }
+        }
+
+        // Téléportation Z-Vanish
+        if (input.vanish && gameStateRef.current.player.vanishCooldown > 0.7) {
+          playSound("teleport");
+          spawnOnomatopoeia("シュバッ!!", gameStateRef.current.player.x * 1.33, 520, "#38bdf8");
+        }
+
+        // Choc de Kikōha
+        if (gameStateRef.current.clash?.active) {
+          playSound("final_flash");
+          setExplosionKey((k) => k + 1);
+          setExplosionColor("cyan");
+        }
+
+        if (gameStateRef.current.player.hp <= 0) {
+          setGameStatus("lost");
+          updateChargeAudio(false);
+        } else if (
+          gameStateRef.current.enemies.length > 0 &&
+          gameStateRef.current.enemies.every((e) => e.hp <= 0)
+        ) {
+          setGameStatus("won");
           setInDialogue(true);
+          setDialogueIndex(0);
+          updateChargeAudio(false);
         }
       }
 
       renderCanvas();
-      animId = requestAnimationFrame(loop);
+      animId = requestAnimationFrame(gameLoop);
     };
 
-    animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
-  }, [isPlaying, isPaused, inDialogue, mode, playSound, renderCanvas]);
+    animId = requestAnimationFrame(gameLoop);
+    return () => {
+      cancelAnimationFrame(animId);
+      updateChargeAudio(false);
+    };
+  }, [
+    isPlaying,
+    isPaused,
+    inDialogue,
+    gameStatus,
+    playSound,
+    updateChargeAudio,
+    spawnOnomatopoeia,
+    triggerMangaCutIn,
+    renderCanvas,
+    selectedFighter,
+  ]);
 
   const handleStartChapter = useCallback(
-    (chapId: number) => {
-      setSelectedChapter(chapId);
-      gameStateRef.current = createGame(selectedFighter, "story", chapId);
+    (chapterId: number) => {
+      setSelectedChapter(chapterId);
+      gameStateRef.current = createGame(selectedFighter, "story", chapterId);
       setGameStatus("playing");
-      setDialogueIndex(0);
       setInDialogue(true);
-      setIsPlaying(true);
-      setIsPaused(false);
-      if (wasmEngineRef.current) {
-        try {
-          wasmEngineRef.current.set_chapter(chapId);
-        } catch {
-          // Repli
-        }
-      }
+      setDialogueIndex(0);
     },
     [selectedFighter],
   );
@@ -682,21 +1319,12 @@ export default function DragonPixelGame() {
   const handleRestart = useCallback(() => {
     gameStateRef.current = createGame(selectedFighter, mode, selectedChapter);
     setGameStatus("playing");
+    setInDialogue(true);
     setDialogueIndex(0);
-    setInDialogue(mode === "story");
-    setIsPlaying(true);
-    setIsPaused(false);
-    if (wasmEngineRef.current) {
-      try {
-        wasmEngineRef.current.restart();
-      } catch {
-        // Repli
-      }
-    }
   }, [selectedFighter, mode, selectedChapter]);
 
   const handleNextDialogue = useCallback(() => {
-    const chap = STORY_CHAPTERS[selectedChapter - 1];
+    const chap = STORY_CHAPTERS.find((c) => c.id === selectedChapter);
     if (!chap) return;
     const isIntro = gameStatus === "playing";
     const dialogueList = isIntro ? chap.introDialogue : chap.victoryDialogue;
@@ -706,7 +1334,7 @@ export default function DragonPixelGame() {
     } else {
       setInDialogue(false);
       if (gameStatus === "won") {
-        if (selectedChapter < 15) {
+        if (selectedChapter < 18) {
           handleStartChapter(selectedChapter + 1);
         } else {
           handleRestart();
@@ -715,7 +1343,7 @@ export default function DragonPixelGame() {
     }
   }, [selectedChapter, gameStatus, dialogueIndex, handleStartChapter, handleRestart]);
 
-  // Clavier
+  // Keyboard navigation & Gamepad polling
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (inDialogue && (e.key === " " || e.key === "Enter")) {
@@ -725,11 +1353,22 @@ export default function DragonPixelGame() {
       }
       if (gameStatus !== "playing" && (e.key === " " || e.key === "Enter")) {
         e.preventDefault();
-        if (gameStatus === "won" && selectedChapter < 15) {
+        if (gameStatus === "won" && selectedChapter < 18) {
           handleStartChapter(selectedChapter + 1);
         } else {
           handleRestart();
         }
+        return;
+      }
+      if (e.key === "Tab" || e.key === "v" || e.key === "V") {
+        e.preventDefault();
+        const dims: MultiverseDimension[] = ["xenoverse", "fighterz", "butoden", "tenkaichi", "legend"];
+        const m = gameStateRef.current.multiverse;
+        const idx = (dims.indexOf(m.dimension) + 1) % dims.length;
+        m.dimension = dims[idx];
+        gameStateRef.current.screenShake = 6;
+        playSound("power_up");
+        spawnOnomatopoeia("次元変革!!", 640, 200, "#38bdf8");
         return;
       }
       const action = KEYS[e.key];
@@ -761,27 +1400,47 @@ export default function DragonPixelGame() {
     handleNextDialogue,
     handleStartChapter,
     handleRestart,
+    playSound,
+    spawnOnomatopoeia,
   ]);
 
-  const handleCanvasClick = () => {
-    if (inDialogue) {
-      handleNextDialogue();
-      return;
-    }
-    if (gameStatus !== "playing") {
-      if (gameStatus === "won" && selectedChapter < 15) {
-        handleStartChapter(selectedChapter + 1);
-      } else {
-        handleRestart();
+  // Click on screen advances dialogue or triggers attack
+  const handleCanvasClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (inDialogue) {
+        handleNextDialogue();
+        return;
       }
-    }
-  };
+      if (gameStatus !== "playing") {
+        if (gameStatus === "won" && selectedChapter < 18) {
+          handleStartChapter(selectedChapter + 1);
+        } else {
+          handleRestart();
+        }
+        return;
+      }
 
-  const currentChap = STORY_CHAPTERS[selectedChapter - 1] ?? STORY_CHAPTERS[0];
-  const currentDialogue =
-    gameStatus === "won"
-      ? currentChap.victoryDialogue[dialogueIndex]
-      : currentChap.introDialogue[dialogueIndex];
+      // Check if clicking top-center dimension badge
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = ((e.clientX - rect.left) / rect.width) * 1280;
+        const clickY = ((e.clientY - rect.top) / rect.height) * 720;
+
+        if (clickX >= 440 && clickX <= 840 && clickY >= 14 && clickY <= 82) {
+          const dims: MultiverseDimension[] = ["xenoverse", "fighterz", "butoden", "tenkaichi", "legend"];
+          const m = gameStateRef.current.multiverse;
+          const idx = (dims.indexOf(m.dimension) + 1) % dims.length;
+          m.dimension = dims[idx];
+          gameStateRef.current.screenShake = 6;
+          playSound("power_up");
+          spawnOnomatopoeia("次元変革!!", 640, 200, "#38bdf8");
+          return;
+        }
+      }
+    },
+    [inDialogue, gameStatus, selectedChapter, handleNextDialogue, handleStartChapter, handleRestart, playSound, spawnOnomatopoeia],
+  );
 
   return (
     <div
@@ -790,45 +1449,18 @@ export default function DragonPixelGame() {
     >
       <canvas
         ref={canvasRef}
-        width={960}
-        height={400}
-        className="w-full h-full object-contain block"
+        width={1280}
+        height={720}
+        className="w-full h-full object-contain block bg-black"
       />
 
-      {/* Boîte de Dialogue Manga Cutscene (Mode Histoire) */}
-      {inDialogue && isPlaying && currentDialogue && (
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            handleNextDialogue();
-          }}
-          className="absolute inset-x-6 md:inset-x-16 bottom-6 bg-slate-950/95 border-2 border-amber-400 p-4 md:p-6 rounded-2xl shadow-2xl backdrop-blur-md flex items-center space-x-4 md:space-x-6 z-10"
-        >
-          <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-amber-500/20 border border-amber-400/50 flex-shrink-0 flex items-center justify-center font-black text-2xl text-amber-400 font-mono">
-            {currentDialogue.speaker.charAt(0)}
-          </div>
-          <div className="flex-1 space-y-1">
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-amber-400 text-sm md:text-base font-mono uppercase">
-                {currentDialogue.speaker}
-              </span>
-              <span className="text-xs text-slate-400 font-mono">[{currentChap.title}]</span>
-            </div>
-            <p className="text-slate-100 text-sm md:text-lg font-serif leading-relaxed">
-              « {currentDialogue.text} »
-            </p>
-          </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleNextDialogue();
-            }}
-            className="px-4 py-2 md:px-6 md:py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs md:text-sm uppercase tracking-wider rounded-xl shadow-lg transition-transform active:scale-95"
-          >
-            Suivant →
-          </button>
-        </div>
-      )}
+      {/* Couche d'effets de particules GPU */}
+      <KiExplosionEffect
+        triggerKey={explosionKey}
+        color={explosionColor}
+        radius={220}
+        particleCount={64}
+      />
     </div>
   );
 }
