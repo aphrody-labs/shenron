@@ -1,0 +1,2300 @@
+{
+  "year": "2005",
+  "scope": "Synthèses françaises des billets publics Kanzenshuu; messages de forum exclus.",
+  "records": [
+    {
+      "id": 986,
+      "type": "post",
+      "slug": "podcast-episode-0006",
+      "title": "Podcast Episode #0006",
+      "url": "https://www.kanzenshuu.com/2005/12/25/podcast-episode-0006/",
+      "publishedAt": "2005-12-25T10:15:34",
+      "categories": [
+        "Podcast"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "podcast"
+      ],
+      "topics": [
+        "podcast"
+      ],
+      "summary": "Le sixième épisode du podcast Kanzenshuu est consacré aux histoires embarrassantes de fandom racontées par VegettoEX, Julian et Meri. Le programme mêle anecdotes personnelles et discussion de la vie de fans; l’annonce fournit le descriptif de l’épisode et son accès audio.",
+      "keyInformation": [
+        "Podcast Kanzenshuu no 0006.",
+        "VegettoEX, Julian et Meri partagent des anecdotes de fandom."
+      ],
+      "editorialRelevance": "podcast; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 984,
+      "type": "post",
+      "slug": "super-dragon-ball-z-japanese-arcade-release-2",
+      "title": "“Super Dragon Ball Z“ Japanese Arcade Release",
+      "url": "https://www.kanzenshuu.com/2005/12/22/super-dragon-ball-z-japanese-arcade-release-2/",
+      "publishedAt": "2005-12-22T23:18:20",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le jeu d’arcade japonais Super Dragon Ball Z sort au Japon et propose des combats centrés sur les attaques emblématiques de la série. Le billet note l’absence de photos en raison d’un empêchement du correspondant arcade, en attendant un aperçu visuel ultérieur.",
+      "keyInformation": [
+        "Sortie japonaise en salles d’arcade de Super Dragon Ball Z.",
+        "Le billet annonce un suivi visuel ultérieur."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 979,
+      "type": "post",
+      "slug": "dbz-parody-on-upcoming-robot-chicken-episode",
+      "title": "DBZ Parody on Upcoming “Robot Chicken“ Episode",
+      "url": "https://www.kanzenshuu.com/2005/12/18/dbz-parody-on-upcoming-robot-chicken-episode/",
+      "publishedAt": "2005-12-18T22:30:48",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "parodie et télévision"
+      ],
+      "summary": "Les bandes-annonces de l’épisode spécial de Robot Chicken montrent une parodie de Dragon Ball Z mettant en scène Goku. Le billet annonce la diffusion de ce sketch dans l’émission humoristique américaine.",
+      "keyInformation": [
+        "Parodie de DBZ repérée dans la promotion de Robot Chicken.",
+        "Diffusion annoncée dans l’épisode spécial des fêtes."
+      ],
+      "editorialRelevance": "parodie et télévision; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 976,
+      "type": "post",
+      "slug": "podcast-episode-0005",
+      "title": "Podcast Episode #0005",
+      "url": "https://www.kanzenshuu.com/2005/12/18/podcast-episode-0005/",
+      "publishedAt": "2005-12-18T21:21:09",
+      "categories": [
+        "Podcast"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "podcast"
+      ],
+      "topics": [
+        "podcast et traduction"
+      ],
+      "summary": "Le cinquième podcast Kanzenshuu accueille Maggie de Lovely Cyborg pour examiner les traductions internationales de 人造人間, notamment Android, cyborg et robot, et les personnages auxquels chaque terme s’applique. L’équipe discute aussi d’autres sujets de fandom et présente l’épisode à écouter.",
+      "keyInformation": [
+        "Podcast no 0005 avec Maggie de Lovely Cyborg.",
+        "Sujet central : traduction de jinzōningen et choix Android/cyborg/robot."
+      ],
+      "editorialRelevance": "podcast et traduction; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 1005,
+      "type": "post",
+      "slug": "toei-dbz-r2-individual-dvd-covers-7-9",
+      "title": "Toei Dragon Ball Z R2 Individual DVD Covers 7-9",
+      "url": "https://www.kanzenshuu.com/2005/12/17/toei-dbz-r2-individual-dvd-covers-7-9/",
+      "publishedAt": "2005-12-17T12:20:20",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Toei dévoile les jaquettes des volumes 7 à 9 de l’édition individuelle japonaise tirée du Z Dragon Box. Chaque disque doit réunir six épisodes, couvrant les épisodes 37 à 54, avec une sortie prévue le 11 janvier 2006.",
+      "keyInformation": [
+        "Volumes japonais 7–9 annoncés, épisodes 37–54.",
+        "Six épisodes par disque; sortie prévue le 11 janvier 2006."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 1001,
+      "type": "post",
+      "slug": "dragon-box-the-movies-cover-art-scouter",
+      "title": "“Dragon Box: The Movies“ Cover Art & Scouter",
+      "url": "https://www.kanzenshuu.com/2005/12/17/dragon-box-the-movies-cover-art-scouter/",
+      "publishedAt": "2005-12-17T12:18:19",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Toei présente la jaquette définitive de Dragon Box: The Movies et un scouter associé au coffret. L’illustration finale diffère de l’image promotionnelle utilisée auparavant, tandis que l’accessoire de collection complète les annonces de l’édition consacrée aux films.",
+      "keyInformation": [
+        "Jaquette définitive de Dragon Box: The Movies dévoilée.",
+        "Illustration différente du visuel promotionnel antérieur; scouter associé au coffret."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 974,
+      "type": "post",
+      "slug": "three-new-portable-games-coming-to-north-america",
+      "title": "Three New Portable Games Coming To North America",
+      "url": "https://www.kanzenshuu.com/2005/12/15/three-new-portable-games-coming-to-north-america/",
+      "publishedAt": "2005-12-15T21:51:26",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Des fiches GameStop annoncent trois jeux Dragon Ball en Amérique du Nord en 2006 : Advance Adventure et Dragon Ball GT: Transformation sur GBA, ainsi que Shin Budokai sur PSP. Le billet souligne que ces dates sont des listings de détaillant plutôt que des annonces détaillées des éditeurs.",
+      "keyInformation": [
+        "Trois sorties listées pour 2006 : Advance Adventure, GT: Transformation et Shin Budokai.",
+        "Plateformes : GBA pour les deux premiers, PSP pour Shin Budokai."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 972,
+      "type": "post",
+      "slug": "super-dragon-ball-z-receiving-japanese-ps2-release",
+      "title": "“Super Dragon Ball Z“ Receiving Japanese PS2 Release",
+      "url": "https://www.kanzenshuu.com/2005/12/12/super-dragon-ball-z-receiving-japanese-ps2-release/",
+      "publishedAt": "2005-12-12T17:54:18",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Après sa sortie en arcade, Super Dragon Ball Z doit également recevoir une version japonaise sur PlayStation 2. Le billet rappelle que le jeu d’arcade fonctionne sur System 246, matériel proche de la PS2, ce qui facilite cette adaptation domestique.",
+      "keyInformation": [
+        "Super Dragon Ball Z annoncé sur PS2 au Japon.",
+        "Le jeu utilise l’architecture d’arcade System 246, apparentée à la PS2."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 970,
+      "type": "post",
+      "slug": "podcast-episode-0004",
+      "title": "Podcast Episode #0004",
+      "url": "https://www.kanzenshuu.com/2005/12/11/podcast-episode-0004/",
+      "publishedAt": "2005-12-11T00:01:43",
+      "categories": [
+        "Podcast"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "podcast"
+      ],
+      "topics": [
+        "podcast"
+      ],
+      "summary": "Le quatrième podcast Kanzenshuu réunit Meri et Scott Melzer pendant que Julian fait une pause. La discussion porte notamment sur Dragon Ball dans les AMV et les parodies de fans, avec un entretien approfondi de l’invité.",
+      "keyInformation": [
+        "Podcast no 0004 avec Meri et Scott Melzer.",
+        "Thèmes : AMV, parodies et culture de fans autour de DBZ."
+      ],
+      "editorialRelevance": "podcast; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 998,
+      "type": "post",
+      "slug": "40-off-funimation-dvds-at-rightstuf",
+      "title": "40%-Off FUNimation DVDs at RightStuf",
+      "url": "https://www.kanzenshuu.com/2005/12/10/40-off-funimation-dvds-at-rightstuf/",
+      "publishedAt": "2005-12-10T11:45:23",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "promotion commerciale"
+      ],
+      "summary": "RightStuf propose jusqu’au 18 décembre une remise de 40 % sur les DVD et VHS FUNimation, dont les éditions Dragon Ball, Dragon Ball Z et GT. Le billet donne le code promotionnel à saisir et présente l’offre comme une promotion temporaire du détaillant.",
+      "keyInformation": [
+        "Remise de 40 % sur les éditions vidéo FUNimation jusqu’au 18 décembre.",
+        "L’offre inclut Dragon Ball, DBZ et GT; code promotionnel indiqué dans l’article."
+      ],
+      "editorialRelevance": "promotion commerciale; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 968,
+      "type": "post",
+      "slug": "funimation-dbz-movie-12-release-date",
+      "title": "FUNimation DBZ Movie 12 Release Date",
+      "url": "https://www.kanzenshuu.com/2005/12/08/funimation-dbz-movie-12-release-date/",
+      "publishedAt": "2005-12-08T21:26:11",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique"
+      ],
+      "summary": "FUNimation fixe au 28 mars 2006 la sortie du douzième film Dragon Ball Z sous le titre Fusion Reborn. Le billet reprend le titre anglais retenu pour le marché vidéo nord-américain.",
+      "keyInformation": [
+        "Fusion Reborn (film DBZ 12) prévu le 28 mars 2006.",
+        "Titre anglais FUNimation confirmé."
+      ],
+      "editorialRelevance": "vidéo domestique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 996,
+      "type": "post",
+      "slug": "shueisha-releasing-tv-animation-comics-for-dbz-tv-series",
+      "title": "Shueisha Releasing “TV Animation Comics“ for DBZ TV Series",
+      "url": "https://www.kanzenshuu.com/2005/12/07/shueisha-releasing-tv-animation-comics-for-dbz-tv-series/",
+      "publishedAt": "2005-12-07T17:58:20",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "livre et adaptation"
+      ],
+      "summary": "Shueisha publie des TV Animation Comics adaptés de la série télévisée Dragon Ball Z. Ces livres composent leurs pages à partir d’images de l’animation et reprennent les titres des arcs ou épisodes; le billet présente ce format de transposition de l’anime en livre illustré.",
+      "keyInformation": [
+        "Nouveaux TV Animation Comics consacrés à l’anime DBZ.",
+        "Format composé de captures d’animation mises en page comme un manga."
+      ],
+      "editorialRelevance": "livre et adaptation; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 966,
+      "type": "post",
+      "slug": "podcast-episode-0003",
+      "title": "Podcast Episode #0003",
+      "url": "https://www.kanzenshuu.com/2005/12/04/podcast-episode-0003/",
+      "publishedAt": "2005-12-04T00:01:10",
+      "categories": [
+        "Podcast"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "podcast"
+      ],
+      "topics": [
+        "podcast et traduction"
+      ],
+      "summary": "Le troisième podcast Kanzenshuu aborde les choix de terminologie dans les traductions, notamment Saiya-jin/Saiyan et l’usage de « djinn » par Viz à la place de Majin. L’équipe examine aussi les albums musicaux sortis en 2005 et présente les ressources de l’épisode.",
+      "keyInformation": [
+        "Podcast no 0003.",
+        "Thèmes : romanisation Saiya-jin, traduction de Majin et critiques de CD 2005."
+      ],
+      "editorialRelevance": "podcast et traduction; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 962,
+      "type": "post",
+      "slug": "super-dragon-ball-z-japanese-arcade-release",
+      "title": "“Super Dragon Ball Z“ Japanese Arcade Release",
+      "url": "https://www.kanzenshuu.com/2005/12/01/super-dragon-ball-z-japanese-arcade-release/",
+      "publishedAt": "2005-12-01T22:04:42",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Banpresto doit sortir Super Dragon Ball Z dans les salles d’arcade japonaises le 22 décembre 2005. Le billet identifie le matériel System 246, le développement par Craft and Meister et l’implication de Noritaka Funamizu, ancien producteur chez Capcom.",
+      "keyInformation": [
+        "Sortie arcade japonaise annoncée le 22 décembre 2005.",
+        "Développeur : Craft and Meister; producteur associé : Noritaka Funamizu."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 988,
+      "type": "post",
+      "slug": "website-updates-history-dragon-box-the-movies",
+      "title": "Website Updates: History & Dragon Box: The Movies",
+      "url": "https://www.kanzenshuu.com/2005/12/01/website-updates-history-dragon-box-the-movies/",
+      "publishedAt": "2005-12-01T12:33:50",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "archives officielles"
+      ],
+      "summary": "Toei lance un site consacré à l’histoire des films Dragon Ball, sur le modèle de ses pages historiques pour les séries. Le billet signale la richesse de la ressource en ligne et les informations de production sur les films que le site officiel met à disposition.",
+      "keyInformation": [
+        "Nouveau site officiel Toei sur l’histoire des films Dragon Ball.",
+        "Ressource documentaire consacrée aux longs métrages."
+      ],
+      "editorialRelevance": "archives officielles; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 955,
+      "type": "post",
+      "slug": "toei-dbz-r2-individual-dvd-covers-4-6",
+      "title": "Toei Dragon Ball Z R2 Individual DVD Covers 4-6",
+      "url": "https://www.kanzenshuu.com/2005/11/27/toei-dbz-r2-individual-dvd-covers-4-6/",
+      "publishedAt": "2005-11-27T14:42:41",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Toei révèle les jaquettes des disques 4 à 6 de la collection japonaise individuelle Z Dragon Box. Les trois volumes couvrent les épisodes 19 à 36 et achèvent la saga Saiyan, avec une sortie prévue le 7 décembre 2005.",
+      "keyInformation": [
+        "Volumes 4–6 couvrant les épisodes 19–36.",
+        "Fin de la saga Saiyan; sortie japonaise prévue le 7 décembre."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 953,
+      "type": "post",
+      "slug": "podcast-episode-0002",
+      "title": "Podcast Episode #0002",
+      "url": "https://www.kanzenshuu.com/2005/11/27/podcast-episode-0002/",
+      "publishedAt": "2005-11-27T00:01:43",
+      "categories": [
+        "Podcast"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "podcast"
+      ],
+      "topics": [
+        "podcast"
+      ],
+      "summary": "Le deuxième épisode du podcast Kanzenshuu accueille Meri et poursuit les échanges entre les animateurs sur leur rapport à Dragon Ball. Le billet fournit la description et l’accès à l’enregistrement, dans le cadre du lancement de la série audio du site.",
+      "keyInformation": [
+        "Podcast Kanzenshuu no 0002.",
+        "Meri intervient comme invitée spéciale."
+      ],
+      "editorialRelevance": "podcast; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 951,
+      "type": "post",
+      "slug": "dan-dan-kokoro-hikarete-ku-remix-on-itunes",
+      "title": "“DAN DAN Kokoro Hikarete ’ku“ Remix on iTunes",
+      "url": "https://www.kanzenshuu.com/2005/11/25/dan-dan-kokoro-hikarete-ku-remix-on-itunes/",
+      "publishedAt": "2005-11-25T17:56:59",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique"
+      ],
+      "summary": "Un remix de DAN DAN Kokoro Hikarete ’ku, générique d’ouverture japonais de Dragon Ball GT, est proposé à l’achat sur l’iTunes américain. Le billet identifie sa parution sur l’album Anipara Club – Para Para Dance No. 1.",
+      "keyInformation": [
+        "Remix de DAN DAN Kokoro Hikarete ’ku disponible sur iTunes américain.",
+        "Piste issue de l’album Anipara Club – Para Para Dance No. 1."
+      ],
+      "editorialRelevance": "musique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 949,
+      "type": "post",
+      "slug": "dbz-movie-12-funimation-cover",
+      "title": "DBZ Movie 12 FUNimation Cover…?",
+      "url": "https://www.kanzenshuu.com/2005/11/24/dbz-movie-12-funimation-cover/",
+      "publishedAt": "2005-11-24T10:15:34",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique"
+      ],
+      "summary": "Une fiche de détaillant semble dévoiler la jaquette américaine de Fusion Reborn, douzième film DBZ, sous le titre complet Fusion Reborn!! Goku and Vegeta avant son raccourcissement commercial. Le billet précise qu’il s’agit d’un visuel de vente attribué à FUNimation.",
+      "keyInformation": [
+        "Fiche de jaquette américaine pour Fusion Reborn.",
+        "Titre long affiché : Fusion Reborn!! Goku and Vegeta; titre commercial abrégé."
+      ],
+      "editorialRelevance": "vidéo domestique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 947,
+      "type": "post",
+      "slug": "anime-no-1-cd-in-japan",
+      "title": "“Anime No. 1“ CD in Japan",
+      "url": "https://www.kanzenshuu.com/2005/11/23/anime-no-1-cd-in-japan/",
+      "publishedAt": "2005-11-23T20:39:12",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique"
+      ],
+      "summary": "CDJapan liste Anime No. 1, compilation japonaise prévue le 21 décembre 2005. Le disque doit réunir des interprètes originaux de génériques de séries classiques, dont une chanson de Hironobu Kageyama.",
+      "keyInformation": [
+        "Compilation Anime No. 1 prévue au Japon le 21 décembre.",
+        "Participation de Hironobu Kageyama annoncée."
+      ],
+      "editorialRelevance": "musique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 945,
+      "type": "post",
+      "slug": "legendary-super-warriors-4-95-at-z-store",
+      "title": "“Legendary Super Warriors“ $4.95 at Z-Store",
+      "url": "https://www.kanzenshuu.com/2005/11/22/legendary-super-warriors-4-95-at-z-store/",
+      "publishedAt": "2005-11-22T22:43:08",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "promotion commerciale"
+      ],
+      "summary": "Le Z-Store propose les derniers exemplaires du jeu Game Boy Color Legendary Super Warriors à 4,95 dollars. Le billet rappelle que la cartouche fonctionne également sur Game Boy Advance et conseille de tenir compte des frais d’expédition.",
+      "keyInformation": [
+        "Legendary Super Warriors soldé à 4,95 dollars sur Z-Store.",
+        "Jeu Game Boy Color jouable sur GBA; stocks limités."
+      ],
+      "editorialRelevance": "promotion commerciale; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 943,
+      "type": "post",
+      "slug": "podcast-episode-0001",
+      "title": "Podcast Episode #0001",
+      "url": "https://www.kanzenshuu.com/2005/11/20/podcast-episode-0001/",
+      "publishedAt": "2005-11-20T12:37:58",
+      "categories": [
+        "Podcast"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "podcast"
+      ],
+      "topics": [
+        "podcast"
+      ],
+      "summary": "Julian et un autre animateur publient le premier podcast Kanzenshuu après avoir envisagé ce format depuis quelque temps. Le flux RSS n’est pas encore installé, mais l’épisode inaugural est disponible en téléchargement et marque l’ouverture de la série audio du site.",
+      "keyInformation": [
+        "Lancement du premier podcast Kanzenshuu.",
+        "Épisode disponible malgré l’absence initiale de flux RSS."
+      ],
+      "editorialRelevance": "podcast; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 939,
+      "type": "post",
+      "slug": "r2-single-disc-releases-closer-look",
+      "title": "R2 Single Disc Releases Closer Look",
+      "url": "https://www.kanzenshuu.com/2005/11/12/r2-single-disc-releases-closer-look/",
+      "publishedAt": "2005-11-12T21:15:27",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Des photographies détaillent les premières éditions japonaises individuelles des DVD Dragon Ball Z extraites des coffrets Dragon Box. Le billet présente jaquettes, disques et captures comme un aperçu du format de vente séparée; il s’appuie sur des images publiées par des membres de la communauté, sans reprendre leurs messages.",
+      "keyInformation": [
+        "Aperçu des DVD DBZ vendus individuellement au Japon.",
+        "Ces disques reprennent le contenu des coffrets Dragon Box."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 934,
+      "type": "post",
+      "slug": "buku-ressen-official-japanese-website",
+      "title": "“Bukū Ressen“ Official Japanese Website",
+      "url": "https://www.kanzenshuu.com/2005/11/01/buku-ressen-official-japanese-website/",
+      "publishedAt": "2005-11-01T18:47:37",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le site officiel japonais du jeu Bukū Ressen, appelé Super Sonic Warriors 2 hors du Japon, est mis en ligne. Il montre plusieurs personnages et fonctions du jeu GBA attendu, avec un lancement annoncé pour le marché japonais.",
+      "keyInformation": [
+        "Site officiel de Bukū Ressen ouvert.",
+        "Le jeu doit être commercialisé ailleurs sous le titre Super Sonic Warriors 2."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 929,
+      "type": "post",
+      "slug": "dragon-box-the-movies-details",
+      "title": "“Dragon Box: The Movies“ Details",
+      "url": "https://www.kanzenshuu.com/2005/10/16/dragon-box-the-movies-details/",
+      "publishedAt": "2005-10-16T20:06:24",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Le site Jumpland révèle les caractéristiques du coffret Dragon Box: The Movies et ses modalités de commande. Le billet rassemble dates limites de précommande, contenu et informations de collection annoncées par Toei pour la compilation des films.",
+      "keyInformation": [
+        "Détails du coffret Dragon Box: The Movies publiés sur Jumpland.",
+        "Le billet résume commande, contenu et échéances."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 927,
+      "type": "post",
+      "slug": "ign-budokai-tenkaichi-review",
+      "title": "IGN “Budokai Tenkaichi“ Review",
+      "url": "https://www.kanzenshuu.com/2005/10/15/ign-budokai-tenkaichi-review/",
+      "publishedAt": "2005-10-15T23:29:16",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "critique de jeu"
+      ],
+      "summary": "IGN publie sa critique nord-américaine de Budokai Tenkaichi, adaptation de Sparking!, et lui attribue 8,2/10. Le test apprécie la variété et l’ampleur de l’expérience Dragon Ball Z tout en comparant sa profondeur de combat à celle d’autres jeux de combat.",
+      "keyInformation": [
+        "Note IGN : 8,2/10.",
+        "Critique de la version nord-américaine de Sparking!/Budokai Tenkaichi."
+      ],
+      "editorialRelevance": "critique de jeu; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 913,
+      "type": "post",
+      "slug": "domestic-video-game-news-galore",
+      "title": "Domestic Video Game News Galore",
+      "url": "https://www.kanzenshuu.com/2005/10/07/domestic-video-game-news-galore/",
+      "publishedAt": "2005-10-07T17:48:08",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo et récapitulatif"
+      ],
+      "summary": "Le billet regroupe plusieurs annonces de jeux : Sparking! sort au Japon, Budokai Tenkaichi est prévu aux États-Unis le 19 octobre, et d’autres éditions Greatest Hits ou portables sont mentionnées. Cette récapitulation aide à suivre les sorties de fin d’année sur PS2, GBA et autres plateformes.",
+      "keyInformation": [
+        "Sparking! sort au Japon; Budokai Tenkaichi est prévu aux États-Unis le 19 octobre.",
+        "Récapitulatif des sorties et éditions commerciales de jeux Dragon Ball."
+      ],
+      "editorialRelevance": "jeu vidéo et récapitulatif; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 906,
+      "type": "post",
+      "slug": "toei-dbz-r2-individual-dvd-covers-1-3",
+      "title": "Toei Dragon Ball Z R2 Individual DVD Covers 1-3",
+      "url": "https://www.kanzenshuu.com/2005/09/27/toei-dbz-r2-individual-dvd-covers-1-3/",
+      "publishedAt": "2005-09-27T12:04:45",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Toei dévoile les jaquettes des trois premiers DVD individuels issus du Z Dragon Box, chacun réunissant six épisodes. Ces premiers disques japonais doivent sortir le 2 novembre 2005 et ouvrent la commercialisation séparée du contenu des coffrets.",
+      "keyInformation": [
+        "Premiers volumes individuels DBZ (1–3) annoncés.",
+        "Six épisodes chacun; sortie prévue le 2 novembre 2005."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 911,
+      "type": "post",
+      "slug": "buus-fury-gameboy-advance-4-99-at-best-buy",
+      "title": "“Boo’s Fury“ (GameBoy Advance) $4.99 at Best Buy",
+      "url": "https://www.kanzenshuu.com/2005/09/12/buus-fury-gameboy-advance-4-99-at-best-buy/",
+      "publishedAt": "2005-09-12T22:05:35",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "promotion commerciale"
+      ],
+      "summary": "Best Buy solde Boo’s Fury, troisième jeu de la série américaine Legacy of Goku sur GBA, au prix de 4,99 dollars. L’offre est limitée aux stocks disponibles et s’inscrit dans une opération de liquidation de jeux vidéo.",
+      "keyInformation": [
+        "Boo’s Fury proposé à 4,99 dollars chez Best Buy.",
+        "Promotion de liquidation limitée aux stocks restants."
+      ],
+      "editorialRelevance": "promotion commerciale; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 894,
+      "type": "post",
+      "slug": "random-photo-from-japan",
+      "title": "Random Photo From Japan",
+      "url": "https://www.kanzenshuu.com/2005/08/30/random-photo-from-japan/",
+      "publishedAt": "2005-08-30T22:05:08",
+      "categories": [
+        "Site Meta"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "site meta"
+      ],
+      "topics": [
+        "billet personnel"
+      ],
+      "summary": "Le billet partage une photographie isolée envoyée depuis le Japon par un ami du rédacteur, alors enseignant dans le pays. Le texte ne donne pas de contexte Dragon Ball précis au cliché; il est conservé comme publication personnelle plutôt que comme information factuelle sur la franchise.",
+      "keyInformation": [
+        "Publication d’une photo prise au Japon par un proche du rédacteur.",
+        "Aucun détail Dragon Ball substantiel n’est donné dans le texte."
+      ],
+      "editorialRelevance": "billet personnel; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 889,
+      "type": "post",
+      "slug": "sparking-new-characters-revealed",
+      "title": "“Sparking!“ New Characters Revealed",
+      "url": "https://www.kanzenshuu.com/2005/08/11/sparking-new-characters-revealed/",
+      "publishedAt": "2005-08-11T21:52:22",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le site officiel japonais de Sparking! ajoute les profils de Trunks du futur et de Gogeta Super Saiyan 4. Le billet signale parallèlement les informations du jeu pour sa localisation américaine sous le titre Budokai Tenkaichi.",
+      "keyInformation": [
+        "Profils officiels ajoutés : Trunks du futur et Gogeta SSJ4.",
+        "Le jeu japonais Sparking! est localisé sous le nom Budokai Tenkaichi."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 897,
+      "type": "post",
+      "slug": "20th-anniversary-celebration-in-japan",
+      "title": "20th Anniversary Celebration in Japan",
+      "url": "https://www.kanzenshuu.com/2005/08/10/20th-anniversary-celebration-in-japan/",
+      "publishedAt": "2005-08-10T02:30:36",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "événement"
+      ],
+      "summary": "Une célébration du vingtième anniversaire de Dragon Ball se déroule au Japon du 16 juillet au 31 août 2005. Le billet situe les festivités dans le premier parc à thème Jump et donne leurs dates comme un événement commémoratif de la franchise.",
+      "keyInformation": [
+        "Célébration du 20e anniversaire de Dragon Ball au Japon.",
+        "Dates annoncées : 16 juillet–31 août 2005."
+      ],
+      "editorialRelevance": "événement; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 886,
+      "type": "post",
+      "slug": "cha-la-head-cha-la-2005-version-cd-released",
+      "title": "“CHA-LA HEAD-CHA-LA (2005 Version)” CD Released",
+      "url": "https://www.kanzenshuu.com/2005/08/03/cha-la-head-cha-la-2005-version-cd-released/",
+      "publishedAt": "2005-08-03T21:40:24",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique"
+      ],
+      "summary": "Un nouveau single japonais rassemble des versions réenregistrées des chansons Dragon Ball par leurs interprètes d’origine, dont Makafushigi Adventure! par Hiroki Takahashi. Le billet marque la sortie du disque et précise que les arrangements ont été refaits pour cette édition 2005.",
+      "keyInformation": [
+        "Sortie du single Makafushigi Adventure! (2005 ver.).",
+        "Les chansons Dragon Ball sont réenregistrées par leurs interprètes originaux."
+      ],
+      "editorialRelevance": "musique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 878,
+      "type": "post",
+      "slug": "sparking-japanese-cover-art-revealed",
+      "title": "“Sparking!“ Japanese Cover Art Revealed",
+      "url": "https://www.kanzenshuu.com/2005/07/26/sparking-japanese-cover-art-revealed/",
+      "publishedAt": "2005-07-26T20:10:31",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le site officiel de Sparking! dévoile la jaquette japonaise du jeu et un profil de Coola. Le billet relève la présentation graphique avant la sortie PS2.",
+      "keyInformation": [
+        "Jaquette japonaise de Sparking! révélée.",
+        "Nouveau profil de Coola sur le site officiel."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 853,
+      "type": "post",
+      "slug": "super-dragon-ball-z-arcade-game-screen-shots",
+      "title": "“Super Dragon Ball Z“ Arcade Screen Shots",
+      "url": "https://www.kanzenshuu.com/2005/07/26/super-dragon-ball-z-arcade-game-screen-shots/",
+      "publishedAt": "2005-07-26T08:12:03",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Game Watch publie deux nouvelles images de Super Dragon Ball Z, jeu de combat d’arcade japonais. Les informations le décrivent comme plus proche d’un jeu de combat traditionnel que les précédents titres Dragon Ball récents, avec une structure classique de personnages et d’affrontements.",
+      "keyInformation": [
+        "Deux captures de Super Dragon Ball Z en arcade.",
+        "Le jeu adopte une structure de combat plus traditionnelle."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 883,
+      "type": "post",
+      "slug": "funimation-to-release-dragon-ball-gt-dvd-box-sets",
+      "title": "FUNimation to Release Dragon Ball GT DVD Box Sets",
+      "url": "https://www.kanzenshuu.com/2005/07/21/funimation-to-release-dragon-ball-gt-dvd-box-sets/",
+      "publishedAt": "2005-07-21T16:25:19",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique"
+      ],
+      "summary": "FUNimation annonce Dragon Ball GT en coffrets DVD, dont le premier doit paraître le 18 octobre 2005 avec les cinq premiers disques. Le billet relève le choix de commencer par l’épisode 16, version récapitulative créée pour la distribution américaine, plutôt que par les véritables premiers épisodes.",
+      "keyInformation": [
+        "Premier coffret GT prévu le 18 octobre 2005.",
+        "Il commence à l’épisode 16 récapitulatif, pas aux épisodes initiaux."
+      ],
+      "editorialRelevance": "vidéo domestique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 839,
+      "type": "post",
+      "slug": "cha-la-head-cha-la-2005-preview",
+      "title": "“CHA-LA HEAD-CHA-LA -2005-“ Preview",
+      "url": "https://www.kanzenshuu.com/2005/07/21/cha-la-head-cha-la-2005-preview/",
+      "publishedAt": "2005-07-21T08:01:36",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique"
+      ],
+      "summary": "TEAM Entertainment met en ligne des extraits du single CHA-LA HEAD-CHA-LA –2005–, prévu au Japon le 3 août. Le disque comprend le thème réenregistré et WE GOTTA POWER, offrant un aperçu des nouvelles versions des chansons emblématiques de DBZ.",
+      "keyInformation": [
+        "Extraits de CHA-LA HEAD-CHA-LA –2005– disponibles.",
+        "Sortie japonaise prévue le 3 août; deux chansons annoncées."
+      ],
+      "editorialRelevance": "musique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 833,
+      "type": "post",
+      "slug": "makafushigi-adventure-2005-version-cd-released",
+      "title": "“Makafushigi Adventure (2005 Version)“ CD Released",
+      "url": "https://www.kanzenshuu.com/2005/07/20/makafushigi-adventure-2005-version-cd-released/",
+      "publishedAt": "2005-07-20T22:00:42",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique"
+      ],
+      "summary": "Le single japonais Makafushigi Adventure! (2005 ver.) paraît avec de nouvelles interprétations de chansons Dragon Ball par Hiroki Takahashi et d’autres chanteurs originaux. Le billet marque la sortie et présente les versions réenregistrées consacrées à la série.",
+      "keyInformation": [
+        "Sortie du single Makafushigi Adventure! (2005 ver.).",
+        "Réenregistrements de chansons Dragon Ball avec les chanteurs originaux."
+      ],
+      "editorialRelevance": "musique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 843,
+      "type": "post",
+      "slug": "movie-dragon-box-individual-r2-dbz-dvd-releases",
+      "title": "Movie Dragon Box + Individual R2 DBZ DVD Releases",
+      "url": "https://www.kanzenshuu.com/2005/07/20/movie-dragon-box-individual-r2-dbz-dvd-releases/",
+      "publishedAt": "2005-07-20T09:02:54",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Toei annonce deux projets de vidéo : un Dragon Box rassemblant les films et la vente individuelle des DVD TV de Dragon Ball Z déjà remastérisés pour les coffrets. Le billet présente ces annonces comme une extension des éditions collector vers un format permettant d’acheter les épisodes à l’unité.",
+      "keyInformation": [
+        "Dragon Box des films annoncé par Toei.",
+        "Les épisodes DBZ des coffrets seront aussi réédités sur DVD individuels."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 830,
+      "type": "post",
+      "slug": "2005-version-cds-sample-page",
+      "title": "“2005 Version“ CDs Sample Page",
+      "url": "https://www.kanzenshuu.com/2005/07/09/2005-version-cds-sample-page/",
+      "publishedAt": "2005-07-09T16:15:26",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique"
+      ],
+      "summary": "TEAM Entertainment met à disposition des extraits du premier single « version 2005 », Makafushigi Adventure!, dont la sortie est prévue au Japon le 20 juillet. La page d’échantillons présente les premières pistes du disque et permet d’entendre les arrangements réenregistrés.",
+      "keyInformation": [
+        "Extraits des cinq premières pistes de Makafushigi Adventure! (2005 ver.).",
+        "Sortie japonaise annoncée le 20 juillet."
+      ],
+      "editorialRelevance": "musique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 827,
+      "type": "post",
+      "slug": "sparking-official-website-updates",
+      "title": "“Sparking!“ Official Website Updates",
+      "url": "https://www.kanzenshuu.com/2005/06/28/sparking-official-website-updates/",
+      "publishedAt": "2005-06-28T18:45:51",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le site officiel de Sparking! ajoute une bande-annonce et de nouveaux personnages jouables, dont toute la force Ginyu. Les mises à jour laissent aussi entrevoir plusieurs modes et options de jeu encore en présentation avant la sortie japonaise.",
+      "keyInformation": [
+        "Nouveau trailer officiel de Sparking! avec les membres de la force Ginyu.",
+        "Le site présente aussi plusieurs fonctions et personnages jouables."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 825,
+      "type": "post",
+      "slug": "sparking-japanese-release-date-06-october-2005",
+      "title": "“Sparking!“ Japanese Release Date: 06 October 2005",
+      "url": "https://www.kanzenshuu.com/2005/06/26/sparking-japanese-release-date-06-october-2005/",
+      "publishedAt": "2005-06-26T17:15:16",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Bandai fixe au 6 octobre 2005 la sortie japonaise de Sparking! sur PlayStation 2. Le billet précise qu’aucune date américaine n’est encore annoncée pour la version qu’Atari doit commercialiser sous le titre Budokai Tenkaichi.",
+      "keyInformation": [
+        "Sortie japonaise PS2 annoncée pour le 6 octobre 2005.",
+        "Date américaine de Budokai Tenkaichi encore inconnue."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 823,
+      "type": "post",
+      "slug": "dbgt-dragon-box-extras-revealed-movie-dragon-box",
+      "title": "DBGT Dragon Box Extras Revealed + Movie Dragon Box",
+      "url": "https://www.kanzenshuu.com/2005/06/25/dbgt-dragon-box-extras-revealed-movie-dragon-box/",
+      "publishedAt": "2005-06-25T10:20:16",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Le coffret Dragon Box japonais de Dragon Ball GT vient de paraître et ses extras sont présentés en images : publicités, objets en zeni et autres éléments de collection. Le billet complète les informations de lancement par une visite visuelle du contenu.",
+      "keyInformation": [
+        "Le Dragon Box GT est paru au Japon.",
+        "Présentation illustrée des bonus et objets inclus."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 811,
+      "type": "post",
+      "slug": "new-2005-version-cds-from-takahashi-and-kageyama",
+      "title": "New “2005“ Version CDs from Takahashi and Kageyama",
+      "url": "https://www.kanzenshuu.com/2005/06/21/new-2005-version-cds-from-takahashi-and-kageyama/",
+      "publishedAt": "2005-06-21T21:15:56",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique"
+      ],
+      "summary": "Sony Music prévoit deux singles réenregistrant les thèmes des séries Dragon Ball, interprétés par Hiroki Takahashi et Hironobu Kageyama. Les chansons sortent en juillet et août 2005; la particularité mise en avant est la reprise par les chanteurs originaux plutôt que la réutilisation des masters anciens.",
+      "keyInformation": [
+        "Deux singles de versions 2005 annoncés pour juillet et août.",
+        "Interprètes : Hiroki Takahashi et Hironobu Kageyama."
+      ],
+      "editorialRelevance": "musique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 820,
+      "type": "post",
+      "slug": "dragon-ball-z-returns-to-cartoon-network",
+      "title": "“Dragon Ball Z“ Returns To Cartoon Network",
+      "url": "https://www.kanzenshuu.com/2005/06/15/dragon-ball-z-returns-to-cartoon-network/",
+      "publishedAt": "2005-06-15T08:19:34",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "diffusion télévisée"
+      ],
+      "summary": "Dragon Ball Z revient sur Cartoon Network dans une nouvelle diffusion fondée sur les épisodes Ultimate Uncut récemment édités. Ces épisodes utilisent le casting vocal actuel de FUNimation et un traitement musical différent des versions américaines de 1996–1998; le billet marque le début de cette nouvelle programmation.",
+      "keyInformation": [
+        "Retour de DBZ sur Cartoon Network avec les épisodes Ultimate Uncut.",
+        "Nouvelle diffusion utilisant le casting vocal actuel et une bande-son modifiée."
+      ],
+      "editorialRelevance": "diffusion télévisée; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 816,
+      "type": "post",
+      "slug": "funimation-dbz-movie-11-teaser-trailer",
+      "title": "FUNimation DBZ Movie 11 Teaser Trailer",
+      "url": "https://www.kanzenshuu.com/2005/06/04/funimation-dbz-movie-11-teaser-trailer/",
+      "publishedAt": "2005-06-04T10:50:13",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "promotion vidéo"
+      ],
+      "summary": "FUNimation publie une bande-annonce de son édition du onzième film DBZ, intitulé Bio-Broly pour le marché américain. Le teaser accompagne la campagne de promotion du DVD avant sa sortie.",
+      "keyInformation": [
+        "Teaser FUNimation pour le film DBZ 11.",
+        "Titre de sortie annoncé : Bio-Broly."
+      ],
+      "editorialRelevance": "promotion vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 806,
+      "type": "post",
+      "slug": "atari-formally-unveils-transformation-on-gameboy-advance",
+      "title": "Atari Formally Unveils “Transformation“ on GameBoy Advance",
+      "url": "https://www.kanzenshuu.com/2005/05/15/atari-formally-unveils-transformation-on-gameboy-advance/",
+      "publishedAt": "2005-05-15T16:05:25",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Atari dévoile officiellement Dragon Ball GT: Transformation sur GBA, jeu d’action qui permet d’incarner plusieurs personnages de GT. Le billet précise les premières caractéristiques et le calendrier alors annoncé pour la sortie américaine.",
+      "keyInformation": [
+        "Présentation officielle de GT: Transformation sur GBA.",
+        "Atari détaille le jeu après de premières mentions de suite potentielle."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 803,
+      "type": "post",
+      "slug": "transformation-2-for-gameboy-advance-listed-at-gamestop",
+      "title": "“Transformation 2“ For GameBoy Advance Listed at GameStop",
+      "url": "https://www.kanzenshuu.com/2005/05/14/transformation-2-for-gameboy-advance-listed-at-gamestop/",
+      "publishedAt": "2005-05-14T11:40:02",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo et rumeur"
+      ],
+      "summary": "GameStop répertorie Transformation 2 sur GBA avec une sortie prévue le 15 novembre 2005, avant même la commercialisation du premier opus. Le billet rappelle que cette série serait le cinquième jeu de la lignée américaine Legacy of Goku, mais traite l’information comme un listing commercial précoce.",
+      "keyInformation": [
+        "Transformation 2 apparaît sur GameStop pour le 15 novembre 2005.",
+        "Listing précoce, antérieur à la sortie du premier Transformation."
+      ],
+      "editorialRelevance": "jeu vidéo et rumeur; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 801,
+      "type": "post",
+      "slug": "dragon-ball-gt-dragon-box-dvd-set-delayed-in-japan",
+      "title": "Dragon Ball GT Dragon Box DVD Set Delayed in Japan",
+      "url": "https://www.kanzenshuu.com/2005/05/11/dragon-ball-gt-dragon-box-dvd-set-delayed-in-japan/",
+      "publishedAt": "2005-05-11T22:05:12",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition vidéo japonaise"
+      ],
+      "summary": "Alors que la date de sortie du coffret Dragon Ball GT japonais approche, Toei ne diffuse pas la campagne promotionnelle attendue et retarde l’édition. Le billet observe ce silence et annonce que la parution ne se fera pas à la date prévue, sans avancer de nouvelle échéance officielle.",
+      "keyInformation": [
+        "Retard du Dragon Box GT au Japon.",
+        "Nouvelle date non confirmée au moment de l’article."
+      ],
+      "editorialRelevance": "édition vidéo japonaise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 813,
+      "type": "post",
+      "slug": "navarre-acquires-funimation",
+      "title": "Navarre Acquires FUNimation",
+      "url": "https://www.kanzenshuu.com/2005/05/11/navarre-acquires-funimation/",
+      "publishedAt": "2005-05-11T12:00:46",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "entreprise"
+      ],
+      "summary": "Navarre finalise l’acquisition de FUNimation, annoncée plus tôt dans l’année. Le communiqué détaille la transaction et replace FUNimation dans l’activité de publication, de distribution et de gestion de marques de Navarre; la nouvelle concerne la structure de l’entreprise qui détient les droits nord-américains Dragon Ball.",
+      "keyInformation": [
+        "Acquisition de FUNimation par Navarre achevée.",
+        "Communiqué de Navarre publié le 11 mai 2005."
+      ],
+      "editorialRelevance": "entreprise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 799,
+      "type": "post",
+      "slug": "budokai-tenkaichi-sparking",
+      "title": "“Budokai Tenkaichi“ = “Sparking!“",
+      "url": "https://www.kanzenshuu.com/2005/05/05/budokai-tenkaichi-sparking/",
+      "publishedAt": "2005-05-05T17:32:37",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le billet clarifie que Budokai Tenkaichi, nom américain choisi par Atari, correspond bien au jeu japonais Sparking! développé par Spike pour Bandai. De nouvelles informations et images permettent d’écarter la confusion entre deux projets différents.",
+      "keyInformation": [
+        "Budokai Tenkaichi est la localisation occidentale de Sparking!.",
+        "Développeur japonais : Spike; éditeur japonais : Bandai."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 796,
+      "type": "post",
+      "slug": "dimps-dragon-ball-z-3-website-updated",
+      "title": "Dimps “Dragon Ball Z 3“ Website Updated",
+      "url": "https://www.kanzenshuu.com/2005/04/30/dimps-dragon-ball-z-3-website-updated/",
+      "publishedAt": "2005-04-30T13:22:55",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Dimps met à jour la page officielle de Dragon Ball Z 3 avec des détails sur le mode Dragon Universe et les onze personnages jouables de ce mode. Cette mise à jour tardive n’ajoute pas de changement majeur, mais documente le contenu du jeu après sa sortie.",
+      "keyInformation": [
+        "Mise à jour du site Dimps de DBZ 3.",
+        "Présente Dragon Universe et ses onze personnages jouables."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 794,
+      "type": "post",
+      "slug": "loads-of-video-game-news",
+      "title": "Loads of Video Game News",
+      "url": "https://www.kanzenshuu.com/2005/04/24/loads-of-video-game-news/",
+      "publishedAt": "2005-04-24T01:45:43",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le communiqué de Bandai confirme que Sparking! doit sortir en Europe et en Amérique après son lancement japonais. Cette annonce officielle établit l’existence de localisations occidentales, alors que le titre et la date de ces sorties ne sont pas encore entièrement fixés.",
+      "keyInformation": [
+        "Bandai confirme les sorties européenne et américaine de Sparking!.",
+        "Le calendrier et le titre localisé restent à préciser."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 792,
+      "type": "post",
+      "slug": "budokai-3-collectors-edition-in-europe",
+      "title": "“Budokai 3“ Collector’s Edition in Europe",
+      "url": "https://www.kanzenshuu.com/2005/04/18/budokai-3-collectors-edition-in-europe/",
+      "publishedAt": "2005-04-18T14:25:31",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo et édition spéciale"
+      ],
+      "summary": "Un média belge annonce une édition collector européenne de Budokai 3. Le billet traduit les détails disponibles sur cette version spéciale et signale l’intérêt d’un contenu additionnel pour le marché européen, sans la confondre avec l’édition nord-américaine.",
+      "keyInformation": [
+        "Édition collector européenne de Budokai 3 signalée en Belgique.",
+        "Le billet traduit les détails de l’annonce locale."
+      ],
+      "editorialRelevance": "jeu vidéo et édition spéciale; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 785,
+      "type": "post",
+      "slug": "dbz-sparking-announced-for-japanese-ps2",
+      "title": "“DBZ: Sparking!“ Announced For Japanese PS2",
+      "url": "https://www.kanzenshuu.com/2005/04/15/dbz-sparking-announced-for-japanese-ps2/",
+      "publishedAt": "2005-04-15T17:35:23",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Le magazine japonais Jump dévoile Sparking!, nouveau jeu Dragon Ball Z sur PlayStation 2, avec ses premières captures et informations. Le billet rapporte les caractéristiques initiales du projet Bandai avant sa commercialisation japonaise.",
+      "keyInformation": [
+        "Sparking! annoncé au Japon sur PS2.",
+        "Premières images et informations publiées dans Jump."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 782,
+      "type": "post",
+      "slug": "funimation-dbz-movie-11-details",
+      "title": "FUNimation DBZ Movie 11 Details",
+      "url": "https://www.kanzenshuu.com/2005/04/14/funimation-dbz-movie-11-details/",
+      "publishedAt": "2005-04-14T18:05:49",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique"
+      ],
+      "summary": "FUNimation confirme les détails DVD du onzième film DBZ, dont la sortie est fixée au 16 août 2005. Rebaptisé Bio-Broly, le film reçoit une jaquette proche de l’illustration japonaise originale, dans la continuité des choix visuels de la société.",
+      "keyInformation": [
+        "Bio-Broly (film DBZ 11) prévu en DVD le 16 août 2005.",
+        "Jaquette proche de l’original japonais."
+      ],
+      "editorialRelevance": "vidéo domestique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 779,
+      "type": "post",
+      "slug": "akira-toriyama-turns-50-years-old",
+      "title": "Akira Toriyama Turns 50 Years Old",
+      "url": "https://www.kanzenshuu.com/2005/04/05/akira-toriyama-turns-50-years-old/",
+      "publishedAt": "2005-04-05T16:45:05",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "actualité de l’auteur"
+      ],
+      "summary": "Le billet célèbre le cinquantième anniversaire d’Akira Toriyama, né le 5 avril 1955. Kanzenshuu adresse ses vœux au créateur de Dragon Ball dans une note commémorative.",
+      "keyInformation": [
+        "Akira Toriyama fête ses 50 ans le 5 avril 2005.",
+        "Billet d’anniversaire de l’équipe."
+      ],
+      "editorialRelevance": "actualité de l’auteur; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 775,
+      "type": "post",
+      "slug": "neko-majin-kanzenban-cover",
+      "title": "“Neko Majin“ Kanzenban Cover",
+      "url": "https://www.kanzenshuu.com/2005/04/01/neko-majin-kanzenban-cover/",
+      "publishedAt": "2005-04-01T00:00:51",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "manga"
+      ],
+      "summary": "Shueisha dévoile la couverture de l’édition kanzenban de Neko Majin. Les personnages représentés suggèrent que le volume rassemble les histoires Neko Majin ga Iru, Neko Majin Mike et les cinq chapitres de Neko Majin Z.",
+      "keyInformation": [
+        "Couverture de l’édition complète Neko Majin révélée.",
+        "Le volume devrait réunir huit chapitres/histoires de la série."
+      ],
+      "editorialRelevance": "manga; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 771,
+      "type": "post",
+      "slug": "neko-majin-kanzenban-coming-april-4th",
+      "title": "“Neko Majin“ Kanzenban Coming April 4th",
+      "url": "https://www.kanzenshuu.com/2005/03/03/neko-majin-kanzenban-coming-april-4th/",
+      "publishedAt": "2005-03-03T20:25:20",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "manga"
+      ],
+      "summary": "Shueisha annonce une édition kanzenban de Neko Majin par Akira Toriyama, prévue le 4 avril 2005. Le contenu n’est pas encore détaillé dans la fiche d’annonce, mais le billet identifie la publication comme une édition complète du manga humoristique.",
+      "keyInformation": [
+        "Neko Majin kanzenban prévu le 4 avril 2005.",
+        "Publication Shueisha; contenu détaillé encore inconnu."
+      ],
+      "editorialRelevance": "manga; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 767,
+      "type": "post",
+      "slug": "dragon-ball-z-3-original-soundtrack-released",
+      "title": "“Dragon Ball Z 3“ Original Soundtrack Released",
+      "url": "https://www.kanzenshuu.com/2005/03/01/dragon-ball-z-3-original-soundtrack-released/",
+      "publishedAt": "2005-03-01T23:40:22",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique de jeu"
+      ],
+      "summary": "La bande originale de Dragon Ball Z 3 paraît au Japon sous la référence KDSD-60. Le disque édité par Sony Music Entertainment comprend 28 pistes et coûte 2 800 yens.",
+      "keyInformation": [
+        "Bande originale de DBZ 3 sortie au Japon.",
+        "28 pistes; référence KDSD-60; prix de 2 800 yens."
+      ],
+      "editorialRelevance": "musique de jeu; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 762,
+      "type": "post",
+      "slug": "dbz2-z3-ops-cd-single-released",
+      "title": "DBZ2 & Z3 OPs CD Single Released",
+      "url": "https://www.kanzenshuu.com/2005/02/22/dbz2-z3-ops-cd-single-released/",
+      "publishedAt": "2005-02-22T23:00:05",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique de jeu"
+      ],
+      "summary": "Un single réunit les thèmes d’ouverture des jeux Dragon Ball Z 3 et Dragon Ball Z 2, tous deux interprétés par Hironobu Kageyama. Le disque KDSD-59 paraît au Japon et rassemble Ore wa Tokoton Tomaranai!! et Kusuburu Heart ni Hi o Tsukero!!.",
+      "keyInformation": [
+        "Single KDSD-59 consacré aux thèmes de DBZ 2 et DBZ 3.",
+        "Chant : Hironobu Kageyama."
+      ],
+      "editorialRelevance": "musique de jeu; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 790,
+      "type": "post",
+      "slug": "gibberish-in-ultimate-uncut-edition-trailer",
+      "title": "Gibberish in “Ultimate Uncut Edition“ Trailer",
+      "url": "https://www.kanzenshuu.com/2005/02/20/gibberish-in-ultimate-uncut-edition-trailer/",
+      "publishedAt": "2005-02-20T01:36:32",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "promotion vidéo"
+      ],
+      "summary": "La bande-annonce de l’Ultimate Uncut Edition de FUNimation contient des phrases japonaises sans sens, issues d’une traduction automatique ou d’un texte fantaisiste. Le billet relève avec humour ces formulations dans la promotion de l’édition DVD.",
+      "keyInformation": [
+        "Bande-annonce Ultimate Uncut avec texte japonais incohérent.",
+        "Exemple d’erreur promotionnelle relevé par Kanzenshuu."
+      ],
+      "editorialRelevance": "promotion vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 757,
+      "type": "post",
+      "slug": "digging-through-dbz3-audio-files",
+      "title": "Digging Through DBZ3 Audio Files",
+      "url": "https://www.kanzenshuu.com/2005/02/20/digging-through-dbz3-audio-files/",
+      "publishedAt": "2005-02-20T01:35:08",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo et analyse"
+      ],
+      "summary": "L’extraction des fichiers audio de Dragon Ball Z 3 révèle l’ordre et le nombre des noms annoncés par la voix du présentateur pendant le tournoi. Le billet compare cette liste à celle d’autres jeux et identifie des éléments sonores réutilisés.",
+      "keyInformation": [
+        "Analyse des annonces audio du mode tournoi de DBZ 3.",
+        "Liste de noms identique ou très proche de fichiers des jeux antérieurs."
+      ],
+      "editorialRelevance": "jeu vidéo et analyse; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 750,
+      "type": "post",
+      "slug": "bulma-somewhat-surfaces-in-dragon-ball-z-3",
+      "title": "Bulma (Somewhat) Surfaces in “Dragon Ball Z 3“",
+      "url": "https://www.kanzenshuu.com/2005/02/19/bulma-somewhat-surfaces-in-dragon-ball-z-3/",
+      "publishedAt": "2005-02-19T00:46:28",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo et contenu caché"
+      ],
+      "summary": "Des images et indications de joueurs montrent comment faire apparaître Bulma dans Dragon Ball Z 3, version japonaise de Budokai 3. Le billet décrit les conditions et limites de cette présence cachée, qui ne correspond pas à un personnage jouable normal.",
+      "keyInformation": [
+        "Bulma peut apparaître dans certaines conditions dans DBZ 3.",
+        "Sa présence ne constitue pas un personnage jouable standard."
+      ],
+      "editorialRelevance": "jeu vidéo et contenu caché; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 744,
+      "type": "post",
+      "slug": "dragon-ball-z-manga-to-end-in-domestic-shonen-jump-going-bimonthly",
+      "title": "“Dragon Ball Z“ Manga to End in Domestic Shonen Jump, Going Bimonthly",
+      "url": "https://www.kanzenshuu.com/2005/02/16/dragon-ball-z-manga-to-end-in-domestic-shonen-jump-going-bimonthly/",
+      "publishedAt": "2005-02-16T17:30:53",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "édition manga"
+      ],
+      "summary": "Viz annonce que le chapitre d’avril sera le dernier chapitre mensuel de Dragon Ball Z dans l’édition américaine de Shonen Jump, qui passera ensuite à une parution bimestrielle. Le billet précise les chapitres japonais concernés et situe ce changement dans le calendrier de publication de la traduction.",
+      "keyInformation": [
+        "Dernier chapitre mensuel DBZ de Viz dans Shonen Jump.",
+        "Le magazine passe à une périodicité bimestrielle."
+      ],
+      "editorialRelevance": "édition manga; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 739,
+      "type": "post",
+      "slug": "dragon-ball-z-3-news-extra-outfits",
+      "title": "“Dragon Ball Z 3“ News & Extra Outfits",
+      "url": "https://www.kanzenshuu.com/2005/02/10/dragon-ball-z-3-news-extra-outfits/",
+      "publishedAt": "2005-02-10T18:20:34",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "Dragon Ball Z 3, version japonaise de Budokai 3, paraît sur PlayStation 2 au Japon. Les premières informations évoquent plusieurs costumes supplémentaires et des différences de contenu par rapport à l’édition américaine, notamment dans le matériel promotionnel de V-Jump.",
+      "keyInformation": [
+        "Lancement japonais de DBZ 3 sur PS2.",
+        "Premiers retours évoquent des costumes supplémentaires et du contenu lié à V-Jump."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 737,
+      "type": "post",
+      "slug": "japanese-commercials-galore",
+      "title": "Japanese Commercials Galore",
+      "url": "https://www.kanzenshuu.com/2005/02/06/japanese-commercials-galore/",
+      "publishedAt": "2005-02-06T12:22:06",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "promotion vidéo"
+      ],
+      "summary": "Le site de Bandai publie plusieurs publicités japonaises de Dragon Ball Z 3, dont une vidéo promotionnelle de près de quatre minutes mettant en scène Goku et Vegeta en conversation. Le billet présente ces spots comme un aperçu du ton et des nouveautés mises en avant pour le jeu.",
+      "keyInformation": [
+        "Publicités japonaises de DBZ 3 mises en ligne.",
+        "Vidéo principale : près de quatre minutes de dialogue Goku–Vegeta."
+      ],
+      "editorialRelevance": "promotion vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 733,
+      "type": "post",
+      "slug": "official-dragon-ball-z-3-website-updated",
+      "title": "Official “Dragon Ball Z 3“ Website Updated",
+      "url": "https://www.kanzenshuu.com/2005/02/01/official-dragon-ball-z-3-website-updated/",
+      "publishedAt": "2005-02-01T20:31:57",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "promotion de jeu"
+      ],
+      "summary": "Dimps enrichit le site officiel de Dragon Ball Z 3 à neuf jours de sa sortie japonaise. Les nouvelles pages ajoutent du contenu au fil des révélations promotionnelles, sans dévoiler l’ensemble des éléments du jeu.",
+      "keyInformation": [
+        "Mise à jour du site officiel de DBZ 3.",
+        "Elle intervient neuf jours avant la sortie japonaise."
+      ],
+      "editorialRelevance": "promotion de jeu; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 730,
+      "type": "post",
+      "slug": "funimation-announces-dbz-movies-1-3-re-releases",
+      "title": "FUNimation Announces DBZ Movies 1-3 Re-releases",
+      "url": "https://www.kanzenshuu.com/2005/01/24/funimation-announces-dbz-movies-1-3-re-releases/",
+      "publishedAt": "2005-01-24T23:40:25",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "vidéo domestique"
+      ],
+      "summary": "FUNimation annonce le redoublage et la réédition des trois premiers films Dragon Ball Z, initialement distribués avec Pioneer en 1997–1998. Le billet rappelle le changement de droits de distribution et présente cette annonce comme le retour des films dans le catalogue sous la responsabilité de FUNimation.",
+      "keyInformation": [
+        "Films DBZ 1–3 redoublés et réédités par FUNimation.",
+        "Les premières versions étaient distribuées avec Pioneer en 1997–1998."
+      ],
+      "editorialRelevance": "vidéo domestique; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 722,
+      "type": "post",
+      "slug": "dragon-ball-z-z-2-soundtrack-released",
+      "title": "“Dragon Ball Z & Z 2“ Soundtrack Released",
+      "url": "https://www.kanzenshuu.com/2005/01/19/dragon-ball-z-z-2-soundtrack-released/",
+      "publishedAt": "2005-01-19T15:46:51",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "musique de jeu"
+      ],
+      "summary": "La bande originale des deux premiers jeux Budokai paraît officiellement au Japon sous le titre Dragon Ball Z & Z2 Original Soundtrack. Le double contenu est accompagné d’un DVD bonus proposant des éléments supplémentaires liés aux jeux et à leur musique.",
+      "keyInformation": [
+        "Sortie japonaise de Dragon Ball Z & Z2 Original Soundtrack.",
+        "DVD bonus inclus."
+      ],
+      "editorialRelevance": "musique de jeu; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 705,
+      "type": "post",
+      "slug": "sagas-screen-shots-video-footage",
+      "title": "“Sagas“ Screen Shots & Video Footage",
+      "url": "https://www.kanzenshuu.com/2005/01/13/sagas-screen-shots-video-footage/",
+      "publishedAt": "2005-01-13T22:18:59",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "GameSpot publie de nouvelles captures et séquences vidéo de Dragon Ball Z: Sagas, projet Atari prévu sur PlayStation 2, GameCube et Xbox. Le billet relaie cet aperçu de gameplay avant la sortie multi-plateforme.",
+      "keyInformation": [
+        "Nouvelles images et vidéos de DBZ: Sagas.",
+        "Plateformes annoncées : PS2, GameCube et Xbox."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 727,
+      "type": "post",
+      "slug": "funimation-to-be-acquired-by-navarre",
+      "title": "FUNimation To Be Acquired By Navarre",
+      "url": "https://www.kanzenshuu.com/2005/01/10/funimation-to-be-acquired-by-navarre/",
+      "publishedAt": "2005-01-10T12:00:46",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "entreprise"
+      ],
+      "summary": "Navarre annonce son intention d’acquérir FUNimation, détenteur des droits nord-américains Dragon Ball à cette date. Le communiqué présente l’opération et son calendrier prévisionnel, avant l’annonce ultérieure de sa finalisation.",
+      "keyInformation": [
+        "Acquisition de FUNimation par Navarre annoncée.",
+        "L’opération doit être conclue plus tard en 2005."
+      ],
+      "editorialRelevance": "entreprise; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 701,
+      "type": "post",
+      "slug": "neko-majin-z-5-released",
+      "title": "“Neko Majin Z 5“ Released",
+      "url": "https://www.kanzenshuu.com/2005/01/05/neko-majin-z-5-released/",
+      "publishedAt": "2005-01-05T13:05:19",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "manga"
+      ],
+      "summary": "Le cinquième chapitre de Neko Majin Z paraît dans le numéro de février de Monthly Shōnen Jump, mis en vente au Japon en janvier. Le billet confirme la reprise de la série sur deux mois, conformément à l’annonce précédente.",
+      "keyInformation": [
+        "Parution de Neko Majin Z 5 dans le numéro de février de Monthly Jump.",
+        "Le chapitre suit la publication de Neko Majin Z 4."
+      ],
+      "editorialRelevance": "manga; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    },
+    {
+      "id": 698,
+      "type": "post",
+      "slug": "dragon-ball-z-3-cover-art",
+      "title": "“Dragon Ball Z 3“ Cover Art",
+      "url": "https://www.kanzenshuu.com/2005/01/03/dragon-ball-z-3-cover-art/",
+      "publishedAt": "2005-01-03T13:30:27",
+      "categories": [
+        "News"
+      ],
+      "tags": [],
+      "classifications": [
+        "actualité publique",
+        "news"
+      ],
+      "topics": [
+        "jeu vidéo"
+      ],
+      "summary": "La couverture de Dragon Ball Z 3, version japonaise de Budokai 3 sur PlayStation 2, apparaît dans les catalogues de détaillants japonais. Le billet partage le visuel de l’édition avant sa sortie et identifie le lien avec le titre connu en Occident.",
+      "keyInformation": [
+        "Jaquette japonaise de DBZ 3 dévoilée.",
+        "Le jeu correspond à Budokai 3 sur PS2."
+      ],
+      "editorialRelevance": "jeu vidéo; billet public utile à l’histoire de la diffusion, de l’édition ou des produits Dragon Ball.",
+      "forumContent": false,
+      "source": {
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false
+      }
+    }
+  ]
+}
