@@ -30,6 +30,12 @@ stages.push({
 });
 if (!noBrowser)
   stages.push({
+    name: "Obscura real WebSocket transport",
+    cwd: import.meta.dir,
+    args: ["test", "test/websocket.live.test.ts", "--timeout", "30000"],
+  });
+if (!noBrowser)
+  stages.push({
     name: "Obscura against Next dev and Bun host",
     cwd: import.meta.dir,
     args: ["test", "test/dev.live.test.ts", "--timeout", "180000"],

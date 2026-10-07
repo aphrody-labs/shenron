@@ -21,6 +21,10 @@ invalides et l'absence de repli HTML pour une API désactivée. Ce code de
 qualification vit dans `scripts/testing/integration`, hors du graphe de
 dépendances produit ; aucune dépendance UI vers le serveur n'est ajoutée.
 
+Une étape indépendante ouvre un WebSocket réel depuis Obscura vers un serveur
+Bun temporaire et vérifie l'écho Unicode. Elle refuse donc un transport simulé
+qui déclenche `open` sans transmettre de messages.
+
 La qualification navigateur utilise `@aphrody/agent-browser/engine`,
 `@aphrody/web-test` et son export `/next`. Elle démarre Obscura avec accès
 loopback explicite et un Next/Turbopack réel, sur des ports temporaires.
@@ -65,6 +69,11 @@ des métadonnées RSC transmises par WebSocket. Le moteur contenait un WebSocket
 simulé dont `send()` supprimait les messages. Aphrody `796f309` remplace ce
 transport par des connexions réelles, avec la politique réseau et les cookies
 du contexte. Les 556 tests natifs et Clippy strict passent sur le VPS.
-La qualification du navigateur installé reste ouverte : le binaire doit
-consommer ce correctif, et le frontal Bun doit relayer le WebSocket de Next
-(`/_next/hmr`), que son relais HTTP ne transporte pas actuellement.
+Le CLI compilé depuis ce correctif a été récupéré avec vérification SHA-256.
+Il passe le plafond GLIBC 2.39 et l'écho WebSocket réel via le SDK sur Linux.
+Il est sélectionné explicitement par `APHRODY_WEB_BIN`, sans remplacer le CLI
+installé. Avec cet artefact, les contrats croisés passent toujours mais le test
+Next échoue encore après 30 secondes sur la conversation attendue. Le frontal
+Bun doit notamment relayer le WebSocket de Next (`/_next/hmr`), que son relais
+HTTP ne transporte pas actuellement. Ce résultat ne qualifie pas Windows,
+OAuth ni les services de production.
