@@ -17,3 +17,5 @@ export * from "./favorites";
 export * from "./home";
 
 export * from "./page-banners";
+
+export * from "./chronology";

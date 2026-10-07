@@ -9,6 +9,7 @@ import { z } from "zod";
 import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
 import { AccountSessionResponse } from "./account";
+import { ChronologyResponse, ChronologySaveResponse, TimelineItemsResponse } from "./chronology";
 import { PageBannersResponse, PageBannersSaveResponse } from "./page-banners";
 import { HomeConfigResponse, HomeConfigSaveResponse } from "./home";
 import { SiteThemeResponse, SiteThemeSaveResponse } from "./site-theme";
@@ -143,6 +144,35 @@ export const endpoints = {
     body: z.object({ favorites: z.unknown() }),
     maxBodyBytes: FAVORITES_BODY_MAX,
     response: FavoritesSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
+  chronology: {
+    id: "chronology",
+    method: "get",
+    path: "/api/v1/site/chronology",
+    auth: "public",
+    response: ChronologyResponse,
+    cache: "no-store",
+    native: true,
+  },
+  chronologySave: {
+    id: "chronologySave",
+    method: "post",
+    path: "/api/v1/site/chronology",
+    auth: "admin",
+    body: z.unknown(),
+    maxBodyBytes: 512 * 1024,
+    response: ChronologySaveResponse,
+    cache: "no-store",
+    native: true,
+  },
+  timelineItems: {
+    id: "timelineItems",
+    method: "get",
+    path: "/api/v1/wiki/timeline",
+    auth: "public",
+    response: TimelineItemsResponse,
     cache: "no-store",
     native: true,
   },

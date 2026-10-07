@@ -98,6 +98,7 @@ try {
       "test/site-theme.pg.test.ts",
       "test/favorites.pg.test.ts",
       "test/home.pg.test.ts",
+      "test/chronology.pg.test.ts",
       "test/page-banners.pg.test.ts",
     ],
     {

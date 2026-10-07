@@ -35,7 +35,8 @@
     "./repos/site-theme": "./src/repos/site-theme.ts",
     "./repos/favorites": "./src/repos/favorites.ts",
     "./repos/home": "./src/repos/home.ts",
-    "./repos/page-banners": "./src/repos/page-banners.ts"
+    "./repos/page-banners": "./src/repos/page-banners.ts",
+    "./repos/chronology": "./src/repos/chronology.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -85,7 +86,8 @@
       "./repos/site-theme": "server",
       "./repos/favorites": "server",
       "./repos/home": "server",
-      "./repos/page-banners": "server"
+      "./repos/page-banners": "server",
+      "./repos/chronology": "server"
     }
   }
 }

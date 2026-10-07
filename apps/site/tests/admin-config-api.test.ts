@@ -45,6 +45,7 @@ mock.module("@/lib/theme-config", () => ({
   },
 }));
 mock.module("@/lib/chronology-config", () => ({
+  getTimelineItems: async () => [],
   getChronologyConfig: async () => ({ overrides: {} }),
   saveChronologyConfig: async (patch: unknown, by?: string | null) => {
     writes.push({ kind: "chronology", patch, by });

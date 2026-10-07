@@ -37,7 +37,8 @@
     "./favorites": "./src/favorites.ts",
     "./home": "./src/home.ts",
     "./legacy-routes": "./src/legacy-routes.ts",
-    "./page-banners": "./src/page-banners.ts"
+    "./page-banners": "./src/page-banners.ts",
+    "./chronology": "./src/chronology.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -85,7 +86,8 @@
       "./favorites": "pure",
       "./home": "pure",
       "./legacy-routes": "pure",
-      "./page-banners": "pure"
+      "./page-banners": "pure",
+      "./chronology": "pure"
     }
   }
 }

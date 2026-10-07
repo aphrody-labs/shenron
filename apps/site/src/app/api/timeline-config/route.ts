@@ -8,11 +8,16 @@
  *
  * Le gate admin réutilise `isCurrentUserAdmin` / `getCurrentUser` (Better Auth +
  * users.roleAdmin, cf. /api/home-config). Le dataset brut vient de
- * `dbUniverse.timeline()` (server-only) — l'éditeur applique la curation en local.
+ * `getTimelineItems()` (server-only) — l'éditeur applique la curation en local.
  */
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
-import { getChronologyConfig, saveChronologyConfig } from "@/lib/chronology-config";
-import { dbUniverse } from "@/lib/db-universe";
+import { HostChronologyError } from "@/lib/host-chronology-error";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import {
+  getChronologyConfig,
+  getTimelineItems,
+  saveChronologyConfig,
+} from "@/lib/chronology-config";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,8 +29,15 @@ const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 
 
 export async function GET(req: NextRequest) {
   if (!(await isAdminOrToken(req))) return forbidden();
-  const [config, items] = await Promise.all([getChronologyConfig(), dbUniverse.timeline()]);
-  return NextResponse.json({ config, items: items ?? [] });
+  try {
+    const [config, items] = await Promise.all([getChronologyConfig(), getTimelineItems()]);
+    return NextResponse.json({ config, items });
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Timeline service unavailable" },
+      { status: err instanceof HostChronologyError ? err.status : 502 },
+    );
+  }
 }
 
 export async function PUT(req: NextRequest) {
@@ -38,11 +50,18 @@ export async function PUT(req: NextRequest) {
     return badRequest("JSON body requis");
   }
   try {
-    const config = await saveChronologyConfig(body, me?.discordId || me?.user?.id || "token-admin");
+    const config = await saveChronologyConfig(
+      body,
+      me?.discordId || me?.user?.id || "token-admin",
+      req.headers,
+      envFirst(process.env, ENV_ALIASES.adminToken)?.value,
+    );
     // La frise publique est en ISR (revalidate 3600) → purge immédiate.
     revalidatePath("/wiki/timeline");
     return NextResponse.json({ ok: true, config });
   } catch (err) {
+    if (err instanceof HostChronologyError)
+      return NextResponse.json({ error: err.message }, { status: err.status });
     return badRequest(err instanceof Error ? err.message : "erreur");
   }
 }

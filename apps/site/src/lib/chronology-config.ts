@@ -1,58 +1,66 @@
-/**
- * chronology-config — lecture/écriture **server-only** de la curation de la
- * chronologie universelle (/wiki/timeline).
- *
- * La table `ChronologyConfig` (schéma public) stocke un unique document JSON
- * (singleton `default`) : ordre des ères + overrides par entrée (ère/date/titre/
- * note/masquage/rang manuel). La page publique lit ici la config résolue puis
- * `applyChronology` produit la frise FIXE ; l'éditeur `/admin/timeline`
- * l'écrit via `/api/timeline-config`. Toute lecture est enveloppée (jamais
- * throw) : table absente / DB indispo / JSON invalide ⇒ défauts → frise
- * strictement identique à l'ancien ordre auto « ère ». Cf. `lib/chronology.ts`.
- */
+// SPDX-License-Identifier: Apache-2.0
+/** Request-cached chronology adapter; only the Bun host owns storage. */
 import "server-only";
-import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { chronologyConfig } from "@/db/schema";
+import { cache } from "react";
+import { resolveHostUrl } from "@shenron/config/public-urls";
 import {
   DEFAULT_CHRONOLOGY_CONFIG,
   resolveChronologyConfig,
   type ChronologyConfig,
-} from "@/lib/chronology";
+  type TimelineItem,
+} from "@shenron/config/chronology";
+import { createShenronApiClient } from "@shenron/api/client";
+import { endpoints } from "@shenron/api/contract";
 
-const SINGLETON_ID = "default";
+import { HostChronologyError } from "./host-chronology-error";
+export { HostChronologyError } from "./host-chronology-error";
 
-/** Config chronologie résolue (patch DB fusionné aux défauts). Ne throw jamais. */
-export async function getChronologyConfig(): Promise<ChronologyConfig> {
-  try {
-    const [row] = await db
-      .select()
-      .from(chronologyConfig)
-      .where(eq(chronologyConfig.id, SINGLETON_ID))
-      .limit(1);
-    if (!row) return structuredClone(DEFAULT_CHRONOLOGY_CONFIG);
-    return resolveChronologyConfig(row.data);
-  } catch (e) {
-    console.error("[chronology-config] lecture échouée, repli sur les défauts :", e);
-    return structuredClone(DEFAULT_CHRONOLOGY_CONFIG);
-  }
+function hostChronologyClient(host: string, requestHeaders?: Headers, adminToken?: string | null) {
+  const forward = Object.assign(
+    (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+      const headers = new Headers(init?.headers);
+      for (const name of ["cookie", "user-agent", ...(!adminToken ? ["authorization"] : [])]) {
+        const value = requestHeaders?.get(name);
+        if (value) headers.set(name, value);
+      }
+      return fetch(input, { ...init, headers, cache: "no-store" });
+    },
+    { preconnect: fetch.preconnect },
+  );
+  return createShenronApiClient({
+    baseUrl: host,
+    fetch: forward,
+    adminToken: () => adminToken ?? null,
+  });
 }
 
-/** Upsert du singleton (on stocke la config déjà résolue) → renvoie la config résolue. */
+export const getChronologyConfig = cache(async (): Promise<ChronologyConfig> => {
+  const host = resolveHostUrl(process.env);
+  if (!host) return structuredClone(DEFAULT_CHRONOLOGY_CONFIG);
+  const result = await hostChronologyClient(host).call(endpoints.chronology, {});
+  return result.ok ? resolveChronologyConfig(result.value.config) : DEFAULT_CHRONOLOGY_CONFIG;
+});
+
 export async function saveChronologyConfig(
   patch: unknown,
   by?: string | null,
+  requestHeaders?: Headers,
+  adminToken?: string | null,
 ): Promise<ChronologyConfig> {
-  const resolved = resolveChronologyConfig(patch);
-  // La colonne jsonb est typée Record<string, unknown> ; ChronologyConfig est
-  // structurellement du JSON → cast localisé (cf. home-config.ts).
-  const data = resolved as unknown as Record<string, unknown>;
-  await db
-    .insert(chronologyConfig)
-    .values({ id: SINGLETON_ID, data, updatedBy: by ?? null, updatedAt: new Date() })
-    .onConflictDoUpdate({
-      target: chronologyConfig.id,
-      set: { data, updatedBy: by ?? null, updatedAt: new Date() },
-    });
-  return resolved;
+  const host = resolveHostUrl(process.env);
+  if (!host) throw new HostChronologyError(503);
+  const result = await hostChronologyClient(host, requestHeaders, adminToken).call(
+    endpoints.chronologySave,
+    { body: patch },
+  );
+  if (!result.ok) throw new HostChronologyError(result.kind === "http" ? result.status : 502);
+  return resolveChronologyConfig(result.value.config);
+}
+
+export async function getTimelineItems(): Promise<TimelineItem[]> {
+  const host = resolveHostUrl(process.env);
+  if (!host) throw new HostChronologyError(503);
+  const result = await hostChronologyClient(host).call(endpoints.timelineItems, {});
+  if (!result.ok) throw new HostChronologyError(result.kind === "http" ? result.status : 502);
+  return result.value.items;
 }

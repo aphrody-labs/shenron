@@ -1,3 +1,4 @@
+import { getTimelineItems } from "./chronology-config";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
@@ -66,7 +67,6 @@ import type {
   VoiceActorRole,
   WikiSource,
 } from "@/db/bot-schema";
-import { eraOf, type TimelineItem } from "@/lib/chronology";
 import { orderPlayers } from "@/lib/players";
 import { CLE_VERIFIEE } from "@shenron/config/databooks-defauts";
 import type { SignauxRichesse } from "@/lib/character-richesse";
@@ -1687,125 +1687,7 @@ export const dbUniverse = {
    * trie/filtre) : on renvoie la matière première (ère, date, numéro, langues).
    * ~750 items → un seul round-trip par table.
    */
-  timeline: () =>
-    safe(async (): Promise<TimelineItem[]> => {
-      const [eps, movs, vols] = await Promise.all([
-        db
-          .select({
-            id: botEpisodes.id,
-            series: botEpisodes.series,
-            number: botEpisodes.numberInSeries,
-            title: botEpisodes.title,
-            titleJa: botEpisodes.titleJa,
-            date: botEpisodes.airDate,
-            image: botEpisodes.image,
-            players: botEpisodes.players,
-          })
-          .from(botEpisodes)
-          .where(eq(botEpisodes.visible, true)),
-        db
-          .select({
-            id: botMovies.id,
-            slug: botMovies.slug,
-            series: botMovies.series,
-            title: botMovies.title,
-            titleJa: botMovies.titleJa,
-            date: botMovies.releaseDate,
-            poster: botMovies.poster,
-            players: botMovies.players,
-          })
-          .from(botMovies)
-          .where(eq(botMovies.visible, true)),
-        // Tomes canoniques uniquement : les spin-offs (SD, Yamcha, Episode of
-        // Bardock…) vivent dans la même table sous d'AUTRES codes série, donc
-        // le filtre porte sur la série, pas sur le titre.
-        //
-        // Le filtre précédent exigeait un titre « Dragon Ball Vol. N » — et le
-        // tome 1, seul du catalogue à porter son vrai titre (« Son Goku et ses
-        // amis »), était donc absent de la frise : la chronologie du manga
-        // commençait au tome 2. Vérifié en base avant la bascule : sous `DB` et
-        // `DBS`, cette table ne contient QUE les 42 + 24 tomes canoniques.
-        db
-          .select({
-            id: botMangaVolumes.id,
-            series: botMangaVolumes.series,
-            number: botMangaVolumes.volumeNumber,
-            title: botMangaVolumes.title,
-            titleJa: botMangaVolumes.titleJa,
-            date: botMangaVolumes.publishedAt,
-            cover: botMangaVolumes.cover,
-          })
-          .from(botMangaVolumes)
-          .where(
-            and(
-              eq(botMangaVolumes.visible, true),
-              or(eq(botMangaVolumes.series, "DB"), eq(botMangaVolumes.series, "DBS")),
-            ),
-          ),
-      ]);
-      // Garde `Array.isArray` : `players` jsonb peut être un scalaire corrompu
-      // (piège documenté) → un `.some` non gardé planterait tout le dataset.
-      const langs = (
-        players: { lang?: "vf" | "vostfr" }[] | null,
-      ): { hasVf: boolean; hasVostfr: boolean } => {
-        const arr = Array.isArray(players) ? players : [];
-        return {
-          hasVf: arr.some((p) => p.lang === "vf"),
-          hasVostfr: arr.some((p) => p.lang === "vostfr"),
-        };
-      };
-      const items: TimelineItem[] = [
-        ...eps.map((e) => {
-          const l = langs(e.players);
-          return {
-            kind: "episode" as const,
-            id: e.id,
-            href: `/wiki/episodes/${e.id}`,
-            title: e.title ?? "",
-            titleJa: e.titleJa,
-            series: e.series,
-            era: eraOf(e.series),
-            number: e.number ?? null,
-            date: e.date ?? null,
-            image: e.image,
-            hasVf: l.hasVf,
-            hasVostfr: l.hasVostfr,
-          };
-        }),
-        ...movs.map((m) => {
-          const l = langs(m.players);
-          return {
-            kind: "movie" as const,
-            id: m.id,
-            href: `/wiki/movies/${m.slug ?? m.id}`,
-            title: m.title ?? "",
-            titleJa: m.titleJa,
-            series: m.series ?? "",
-            era: eraOf(m.series),
-            number: null,
-            date: m.date ?? null,
-            image: m.poster,
-            hasVf: l.hasVf,
-            hasVostfr: l.hasVostfr,
-          };
-        }),
-        ...vols.map((v) => ({
-          kind: "manga" as const,
-          id: v.id,
-          href: `/wiki/manga/volume/${v.id}`,
-          title: v.title ?? `Tome ${v.number ?? "?"}`,
-          titleJa: v.titleJa,
-          series: v.series,
-          era: "Manga" as const,
-          number: v.number ?? null,
-          date: v.date ?? null,
-          image: v.cover,
-          hasVf: false,
-          hasVostfr: false,
-        })),
-      ];
-      return items;
-    }),
+  timeline: () => safe(() => getTimelineItems()),
 
   games: () =>
     safe(async () => ({

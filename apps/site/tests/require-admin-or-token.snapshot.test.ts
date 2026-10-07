@@ -82,6 +82,7 @@ mock.module("@/lib/theme-config", () => ({
   saveSiteTheme: async (patch: unknown, by?: string | null) => ({ patch, by }),
 }));
 mock.module("@/lib/chronology-config", () => ({
+  getTimelineItems: async () => [],
   getChronologyConfig: async () => ({ overrides: {} }),
   saveChronologyConfig: async (patch: unknown, by?: string | null) => ({ patch, by }),
 }));

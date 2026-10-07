@@ -30,6 +30,11 @@ import {
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
 import type { AccountSessionProfile } from "../contract/account";
+import {
+  resolveChronologyConfig,
+  type ChronologyConfig,
+  type TimelineItem,
+} from "@shenron/config/chronology";
 import { resolvePageBanners, type PageBannersConfig } from "@shenron/config/page-banners";
 import { resolveHomeConfig, type HomeConfig } from "@shenron/config/home";
 import { resolveSiteTheme, type SiteTheme } from "@shenron/config/site-theme";
@@ -174,6 +179,12 @@ export interface ShenronApiLogEvent {
   ms?: number;
 }
 
+export interface ChronologyPort {
+  read(): Promise<unknown>;
+  save(config: ChronologyConfig, by: string | null): Promise<void>;
+  timeline(): Promise<TimelineItem[]>;
+}
+
 export interface PageBannersPort {
   defaults?: PageBannersConfig;
   read(): Promise<unknown>;
@@ -191,6 +202,7 @@ export interface SiteThemePort {
 }
 
 export interface ShenronApiPorts {
+  chronology?: ChronologyPort | null;
   pageBanners?: PageBannersPort | null;
   homeConfig?: HomeConfigPort | null;
   siteTheme?: SiteThemePort | null;
@@ -486,6 +498,20 @@ export function createShenronApi(
       "Cache-Control": "private, no-store",
     });
   });
+  add(endpoints.chronology, Boolean(ports.chronology), async () =>
+    json({ config: resolveChronologyConfig(await ports.chronology!.read()) }, 200, {
+      "Cache-Control": "no-store",
+    }),
+  );
+  add(endpoints.timelineItems, Boolean(ports.chronology), async () =>
+    json({ items: await ports.chronology!.timeline() }, 200, { "Cache-Control": "no-store" }),
+  );
+  add(endpoints.chronologySave, Boolean(ports.chronology), async ({ body, request }) => {
+    const config = resolveChronologyConfig(body);
+    const ownerId = await ports.auth?.owner(request);
+    await ports.chronology!.save(config, ownerId ?? "token-admin");
+    return json({ ok: true, config }, 200, { "Cache-Control": "no-store" });
+  });
   add(endpoints.pageBanners, Boolean(ports.pageBanners), async () =>
     json(
       { banners: resolvePageBanners(await ports.pageBanners!.read(), ports.pageBanners!.defaults) },
@@ -538,6 +564,7 @@ export function createShenronApi(
   });
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
   const anyGroup = [
+    ports.chronology,
     ports.pageBanners,
     ports.homeConfig,
     ports.siteTheme,
