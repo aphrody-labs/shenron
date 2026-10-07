@@ -555,3 +555,16 @@ Le CLI Aphrody Windows installé expose aussi `winclean observe` ; appelé avec
 le handle exact de cette fenêtre, il échoue avec `no image returned`. Le DOM
 et l'IPC réussissent à nouveau, mais ce second contrôle de capture ne permet
 pas davantage de conclure sur les pixels affichés.
+
+Le contrôle Win32 est ensuite repris avec `PW_RENDERFULLCONTENT = 2`, défini
+dans le `WinUser.h` du SDK Windows installé `10.0.26100.0`. La capture de la
+seule fenêtre 1280 × 860 affiche cette fois l'interface Next : titres, textes,
+styles, discussion vide et navigation sont visibles. Le contrôle DOM et IPC
+réussit dans le même processus. Aucun changement de sandbox, de GPU ou de
+politique DevTools n'est requis ; aucune capture du bureau complet n'est utilisée.
+
+Cette image qualifie la composition CEF du parcours de qualification. Elle
+montre aussi deux barres de titre et une icône manquante dans le frontend de
+l'ancien NSIS : ces défauts restent à vérifier dans le nouveau paquet complet.
+Elle ne prouve ni le rendu du canvas de traduction ni une inférence de chat.
+Les captures et rapports restent dans le store local ignoré par Git.
