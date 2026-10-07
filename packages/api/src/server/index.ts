@@ -30,6 +30,7 @@ import {
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
 import type { AccountSessionProfile } from "../contract/account";
+import { resolveHomeConfig, type HomeConfig } from "@shenron/config/home";
 import { resolveSiteTheme, type SiteTheme } from "@shenron/config/site-theme";
 import type { MemoryEntry, MemoryListQuery } from "../contract/memory";
 import type { RagContextResponse, RagHit, RagMode, RagSearchQuery } from "../contract/schemas";
@@ -172,12 +173,18 @@ export interface ShenronApiLogEvent {
   ms?: number;
 }
 
+export interface HomeConfigPort {
+  read(): Promise<unknown>;
+  save(config: HomeConfig, by: string | null): Promise<void>;
+}
+
 export interface SiteThemePort {
   read(): Promise<unknown>;
   save(theme: SiteTheme, by: string | null): Promise<void>;
 }
 
 export interface ShenronApiPorts {
+  homeConfig?: HomeConfigPort | null;
   siteTheme?: SiteThemePort | null;
   /** Absent → wiki group disabled → `handles()` false → historical 404. */
   wiki?: WikiReadPort | null;
@@ -471,6 +478,17 @@ export function createShenronApi(
       "Cache-Control": "private, no-store",
     });
   });
+  add(endpoints.homeConfig, Boolean(ports.homeConfig), async () =>
+    json({ config: resolveHomeConfig(await ports.homeConfig!.read()) }, 200, {
+      "Cache-Control": "no-store",
+    }),
+  );
+  add(endpoints.homeConfigSave, Boolean(ports.homeConfig), async ({ body, request }) => {
+    const config = resolveHomeConfig(body);
+    const ownerId = await ports.auth?.owner(request);
+    await ports.homeConfig!.save(config, ownerId ?? "token-admin");
+    return json({ ok: true, config }, 200, { "Cache-Control": "no-store" });
+  });
   add(endpoints.siteTheme, Boolean(ports.siteTheme), async () =>
     json({ theme: resolveSiteTheme(await ports.siteTheme!.read()) }, 200, {
       "Cache-Control": "no-store",
@@ -499,6 +517,7 @@ export function createShenronApi(
   });
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
   const anyGroup = [
+    ports.homeConfig,
     ports.siteTheme,
     favoritesEnabled ? ports.favorites : null,
     ports.wiki,

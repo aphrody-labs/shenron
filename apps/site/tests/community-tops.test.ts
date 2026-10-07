@@ -80,7 +80,9 @@ describe("source features", () => {
     expect(home).toContain('case "tops"');
     expect(home).toContain("communityTops");
 
-    const scenes = await Bun.file(new URL("../src/lib/home-scenes.ts", import.meta.url)).text();
+    const scenes = await Bun.file(
+      new URL("../../../packages/config/src/home.ts", import.meta.url),
+    ).text();
     expect(scenes).toContain('"tops"');
     expect(scenes).toContain("Les Top 3 de la communauté");
   });

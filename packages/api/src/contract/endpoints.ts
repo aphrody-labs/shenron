@@ -9,6 +9,7 @@ import { z } from "zod";
 import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
 import { AccountSessionResponse } from "./account";
+import { HomeConfigResponse, HomeConfigSaveResponse } from "./home";
 import { SiteThemeResponse, SiteThemeSaveResponse } from "./site-theme";
 import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
 import {
@@ -141,6 +142,26 @@ export const endpoints = {
     body: z.object({ favorites: z.unknown() }),
     maxBodyBytes: FAVORITES_BODY_MAX,
     response: FavoritesSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
+  homeConfig: {
+    id: "homeConfig",
+    method: "get",
+    path: "/api/v1/site/home",
+    auth: "public",
+    response: HomeConfigResponse,
+    cache: "no-store",
+    native: true,
+  },
+  homeConfigSave: {
+    id: "homeConfigSave",
+    method: "post",
+    path: "/api/v1/site/home",
+    auth: "admin",
+    body: z.unknown(),
+    maxBodyBytes: 512 * 1024,
+    response: HomeConfigSaveResponse,
     cache: "no-store",
     native: true,
   },

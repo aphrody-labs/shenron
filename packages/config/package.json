@@ -34,7 +34,9 @@
     "./testing-executable": "./src/testing-executable.ts",
     "./discord-ai": "./src/discord-ai.ts",
     "./site-theme": "./src/site-theme.ts",
-    "./favorites": "./src/favorites.ts"
+    "./favorites": "./src/favorites.ts",
+    "./home": "./src/home.ts",
+    "./legacy-routes": "./src/legacy-routes.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -79,7 +81,9 @@
       "./testing-executable": "bun",
       "./discord-ai": "pure",
       "./site-theme": "pure",
-      "./favorites": "pure"
+      "./favorites": "pure",
+      "./home": "pure",
+      "./legacy-routes": "pure"
     }
   }
 }

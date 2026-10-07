@@ -92,7 +92,13 @@ try {
   await pool.close();
   pool = undefined;
   const test = Bun.spawn(
-    [process.execPath, "test", "test/site-theme.pg.test.ts", "test/favorites.pg.test.ts"],
+    [
+      process.execPath,
+      "test",
+      "test/site-theme.pg.test.ts",
+      "test/favorites.pg.test.ts",
+      "test/home.pg.test.ts",
+    ],
     {
       cwd: join(root, "packages/api"),
       env: { ...process.env, SHENRON_THEME_PG_URL: base + "/shenron_theme_fixture" },

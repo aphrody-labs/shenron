@@ -13,3 +13,5 @@ export * from "./account";
 export * from "./site-theme";
 
 export * from "./favorites";
+
+export * from "./home";

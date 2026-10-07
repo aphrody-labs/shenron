@@ -54,6 +54,7 @@ import { createStdioMcpClient } from "../chat/mcp";
 import { createPluginPort, resolvePluginRoot } from "../plugin";
 import { createCliOcr } from "../chat/ocr";
 import { createHostAuth } from "./auth";
+import { createHostHome } from "./home";
 import { createHostSiteTheme } from "./site-theme";
 import type { ChatModelEntry } from "../contract/chat";
 import type { LocalApiGroups, LocalApiGroupStatus } from "../contract/local";
@@ -578,10 +579,12 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         ? { port: options.betterAuth }
         : { reason: "authentification désactivée" };
   const betterAuthPort = "port" in authBuilt ? authBuilt.port : null;
+  const homeConfig = createHostHome(env);
   const siteTheme = createHostSiteTheme(env);
   const favorites = createHostFavorites(env);
   const api = createShenronApi(
     {
+      homeConfig: homeConfig?.port,
       siteTheme: siteTheme?.port,
       favorites: favorites?.port,
       wiki,
@@ -707,6 +710,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       } as unknown as Bun.Serve.Options<ChatSocketData>;
     },
     async close() {
+      await homeConfig?.close();
       await siteTheme?.close();
       await favorites?.close();
       if ("close" in authBuilt) await authBuilt.close();

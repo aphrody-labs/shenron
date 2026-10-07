@@ -37,7 +37,7 @@ describe("accueil et menu complet", () => {
       source("../src/components/stream/MediaCatalogRails.tsx"),
       source("../src/components/home/HomeMenuJourney.tsx"),
       source("../src/components/home/HomeView.tsx"),
-      source("../src/lib/home-scenes.ts"),
+      source("../../../packages/config/src/home.ts"),
     ]);
     const homepageSources = `${page}\n${catalog}\n${journey}\n${view}\n${config}`;
     const mapped = new Set(SITE_DESTINATIONS.map((d) => d.href));

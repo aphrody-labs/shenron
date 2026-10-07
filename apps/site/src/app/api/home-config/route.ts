@@ -11,6 +11,8 @@
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
+import { HostHomeError } from "@/lib/host-home-error";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 import { getHomeConfig, saveHomeConfig } from "@/lib/home-config";
 import type { HomeClip } from "@/lib/home-scenes";
 import { revalidatePath } from "next/cache";
@@ -63,11 +65,18 @@ export async function PUT(req: NextRequest) {
     return badRequest("JSON body requis");
   }
   try {
-    const config = await saveHomeConfig(body, me?.discordId || me?.user?.id || "token-admin");
+    const config = await saveHomeConfig(
+      body,
+      me?.discordId || me?.user?.id || "token-admin",
+      req.headers,
+      envFirst(process.env, ENV_ALIASES.adminToken)?.value,
+    );
     // La home est en ISR (revalidate 120) → purge immédiate pour voir l'édition.
     revalidatePath("/");
     return NextResponse.json({ ok: true, config });
   } catch (err) {
+    if (err instanceof HostHomeError)
+      return NextResponse.json({ error: err.message }, { status: err.status });
     return badRequest(err instanceof Error ? err.message : "erreur");
   }
 }
