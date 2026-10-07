@@ -275,3 +275,31 @@ de périphérique ni erreur de validation. Cela qualifie ce rendu matériel, mai
 ne ferme pas les trois échecs DX12 WARP. Le SDK natif passe également la création
 d'un projet Unicode, sa fermeture, sa réouverture dans un second processus et
 sa suppression, dans un dossier temporaire isolé.
+
+Le même diagnostic matériel passe ensuite en DX12 sur la RTX 4070. WARP,
+lui, reproduit aussi un timeout de lecture GPU de 30 s sur une scène pleine,
+puis bloque à la destruction du périphérique ; seul le processus de diagnostic
+est arrêté. Aucun repli CPU ni retrait de test n'est appliqué.
+
+Dans le snapshot Windows isolé, un relais borné du WebSocket HMR de Next
+débloque la qualification de l'interface réelle. Il distingue les sockets Next
+de ceux du chat, conserve les callbacks du propriétaire du chat, relaie texte,
+binaire, cookies et sous-protocoles, limite les files à 1 Mo et 128 messages,
+et borne l'ouverture amont à 5 s. Trois tests de transport et la suite Next
+passent ; 69 tests serveur passent aussi, avec six skips existants. Le contrôle
+TypeScript serveur et scripts, le format et le lint scoped passent. La frontière
+native WebSocket explicite évite le conflit des déclarations DOM de bun-types.
+
+Le staging ZIP préparé dans ce même snapshot utilise `Expand-Archive` sous
+PowerShell Windows plutôt que l'exécutable `unzip` absent du PATH. Les tests
+vérifient les chemins Unicode et caractères de shell littéraux, et le refus
+d'une archive corrompue. Le runtime llama.cpp épinglé `b11312`, vérifié par
+SHA-256, est réellement extrait avec ses DLL ; `llama-server.exe --version`
+termine avec le code zéro (build 11312, commit `0c1e57098`). La dernière suite
+croisée HMR/Next/ZIP rend six succès, zéro échec et 16 assertions.
+
+Ces deux correctifs source restent uniquement dans le snapshot : les chemins
+du frontal et du staging sont encore revendiqués par `desktop-fast-launch`
+et `desktop-installer`. Leur coordination a été demandée avant intégration.
+Cette preuve ne déclare ni l'installeur complet qualifié ni le relais livré
+dans `main`.
