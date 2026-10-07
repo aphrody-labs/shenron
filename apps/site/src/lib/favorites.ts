@@ -19,24 +19,8 @@
 const KEY = "dbfr_favorites_v1";
 export const FAVORITES_EVENT = "dbfr:favorites";
 
-export type FavoriteKind =
-  | "episode"
-  | "movie"
-  | "chapter"
-  | "databook"
-  | "character"
-  | "saga"
-  | "game";
-
-export interface Favorite {
-  kind: FavoriteKind;
-  id: string;
-  title: string;
-  href: string;
-  image?: string | null;
-  caption?: string | null;
-  at: number;
-}
+import type { Favorite, FavoriteKind } from "@shenron/config/favorites";
+export type { Favorite, FavoriteKind } from "@shenron/config/favorites";
 
 const favKey = (kind: FavoriteKind, id: string) => `${kind}:${id}`;
 

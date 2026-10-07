@@ -16,6 +16,7 @@
  * The caller passes the environment (`process.env` in an entry point): nothing is read at
  * module load. Variables are listed in docs/architecture/STACK.md §3.6.
  */
+import { createHostFavorites } from "./favorites";
 import type { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { homedir } from "node:os";
@@ -578,9 +579,11 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         : { reason: "authentification désactivée" };
   const betterAuthPort = "port" in authBuilt ? authBuilt.port : null;
   const siteTheme = createHostSiteTheme(env);
+  const favorites = createHostFavorites(env);
   const api = createShenronApi(
     {
       siteTheme: siteTheme?.port,
+      favorites: favorites?.port,
       wiki,
       rag: opened ? createVfsRagPort(opened, embedder?.query ?? null, publicOnly) : null,
       chat,
@@ -705,6 +708,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     },
     async close() {
       await siteTheme?.close();
+      await favorites?.close();
       if ("close" in authBuilt) await authBuilt.close();
       mcp?.close();
       opened?.vfs.db.close();

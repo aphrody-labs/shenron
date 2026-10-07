@@ -85,8 +85,10 @@ export function buildOpenApiDocument(): Json {
       500: { description: "Internal error", content: error },
       503: { description: "Data store unavailable", content: error },
     };
-    if (spec.auth === "owner")
+    if (spec.auth === "owner" || spec.auth === "reader")
       responses[401] = { description: "Authentication required", content: error };
+    if (spec.maxBodyBytes !== undefined)
+      responses[413] = { description: "Request body too large", content: error };
     if (spec.auth === "admin") responses[403] = { description: "Forbidden", content: error };
     if (spec.upstream) responses[502] = { description: "Upstream unavailable", content: error };
     if (spec.websocket)

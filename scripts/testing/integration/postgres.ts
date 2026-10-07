@@ -91,12 +91,15 @@ try {
   await pool.unsafe("create database shenron_theme_fixture");
   await pool.close();
   pool = undefined;
-  const test = Bun.spawn([process.execPath, "test", "test/site-theme.pg.test.ts"], {
-    cwd: join(root, "packages/api"),
-    env: { ...process.env, SHENRON_THEME_PG_URL: base + "/shenron_theme_fixture" },
-    stdout: "inherit",
-    stderr: "inherit",
-  });
+  const test = Bun.spawn(
+    [process.execPath, "test", "test/site-theme.pg.test.ts", "test/favorites.pg.test.ts"],
+    {
+      cwd: join(root, "packages/api"),
+      env: { ...process.env, SHENRON_THEME_PG_URL: base + "/shenron_theme_fixture" },
+      stdout: "inherit",
+      stderr: "inherit",
+    },
+  );
   const code = await test.exited;
   if (code !== 0) throw new Error(`PostgreSQL theme qualification failed (${code})`);
 } finally {

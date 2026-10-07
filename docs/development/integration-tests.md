@@ -67,6 +67,9 @@ Une étape distincte [qualifie le thème sur PostgreSQL et Bun.SQL](../operation
 dans un cluster loopback temporaire. Elle vérifie l'upsert réel, l'auteur et le
 type JSONB avant de supprimer le cluster. Le fournisseur PostgreSQL doit être
 installé ; une absence est signalée comme échec dans le pipeline dédié.
+Le même cluster qualifie les [favoris hébergés par Bun](../operations/bun-favorites.md),
+leur séparation par profil et la conservation des autres préférences pendant
+des écritures concurrentes. Les sessions de ces fixtures restent synthétiques.
 
 Les journaux, diagnostics réseau/JavaScript et captures restent dans
 `var/reports/integration/`, ignoré par Git. Le build Next de qualification est

@@ -11,3 +11,5 @@ export * from "./lexicon";
 export * from "./memory";
 export * from "./account";
 export * from "./site-theme";
+
+export * from "./favorites";

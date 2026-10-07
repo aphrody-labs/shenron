@@ -11,6 +11,8 @@
  * Middleware order: client IP → CORS → method gate → rate limit (direct loopback exempt) →
  * owner/admin auth → zod validation → public cache (ETag, 304) → handler.
  */
+import { sanitizeFavorites, type Favorite } from "@shenron/config/favorites";
+import { BodyLimitError, readLimitedJson } from "./read-json";
 import { createHash } from "node:crypto";
 import type { Server, ServerWebSocket, WebSocketHandler } from "bun";
 import type { Kind, Lang, Lexicon, Term } from "@shenron/lexicon";
@@ -106,6 +108,11 @@ export interface VfsPort {
  * Better Auth of the host (`@shenron/api/host`): `/api/auth/*` is handed to `handler` as is
  * (every method, Better Auth owns its CORS, cookies and rate limit). Absent: no route.
  */
+export interface FavoritesPort {
+  read(userId: string): Promise<unknown>;
+  save(userId: string, favorites: Favorite[]): Promise<void>;
+}
+
 export interface HostSession {
   userId: string;
   discordId?: string | null;
@@ -184,6 +191,7 @@ export interface ShenronApiPorts {
   auth?: AuthPort | null;
   /** Better Auth handler on `/api/auth/*`; absent → group disabled, the path is not claimed. */
   betterAuth?: BetterAuthPort | null;
+  favorites?: FavoritesPort | null;
   mcp?: McpProxyPort | null;
   /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@shenron/api/plugin`). */
   plugin?: PluginPort | null;
@@ -430,6 +438,7 @@ export function createShenronApi(
     query: unknown;
     body: unknown;
     ownerId: string | null;
+    reader: HostSession | null;
     server?: BunServer;
     cors: Record<string, string>;
   }
@@ -441,6 +450,27 @@ export function createShenronApi(
   };
 
   // ── Reader identity: resolved exclusively by the Better Auth session port ──
+  const favoritesEnabled = Boolean(ports.favorites && ports.betterAuth?.session);
+  add(endpoints.favorites, favoritesEnabled, async ({ request }) => {
+    const session = await ports.betterAuth!.session!(request.headers);
+    if (!session) return json({ favorites: [] }, 200, { "Cache-Control": "private, no-store" });
+    if (!session.profile)
+      return json({ error: "Reader profile unavailable", code: "unavailable" }, 503, {
+        "Cache-Control": "private, no-store",
+      });
+    return json(
+      { favorites: sanitizeFavorites(await ports.favorites!.read(session.profile.id)) },
+      200,
+      { "Cache-Control": "private, no-store" },
+    );
+  });
+  add(endpoints.favoritesSave, favoritesEnabled, async ({ body, reader }) => {
+    const favorites = sanitizeFavorites((body as { favorites: unknown }).favorites);
+    await ports.favorites!.save(reader!.profile!.id, favorites);
+    return json({ ok: true, count: favorites.length }, 200, {
+      "Cache-Control": "private, no-store",
+    });
+  });
   add(endpoints.siteTheme, Boolean(ports.siteTheme), async () =>
     json({ theme: resolveSiteTheme(await ports.siteTheme!.read()) }, 200, {
       "Cache-Control": "no-store",
@@ -470,6 +500,7 @@ export function createShenronApi(
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
   const anyGroup = [
     ports.siteTheme,
+    favoritesEnabled ? ports.favorites : null,
     ports.wiki,
     ports.rag,
     ports.chat,
@@ -1015,12 +1046,26 @@ export function createShenronApi(
         }
       }
       let ownerId: string | null = null;
+      let reader: HostSession | null = null;
       if (spec.auth === "owner") {
         ownerId = (await ports.auth?.owner(request)) ?? null;
         if (!ownerId)
           return finish(
             json({ error: "Authentication required", code: "unauthenticated" }, 401, cors),
           );
+      } else if (spec.auth === "reader") {
+        reader = (await ports.betterAuth?.session?.(request.headers)) ?? null;
+        if (!reader)
+          return finish(
+            json({ error: "Authentication required", code: "unauthenticated" }, 401, cors),
+          );
+        if (!reader.profile)
+          return finish(
+            json({ error: "Reader profile unavailable", code: "unavailable" }, 503, cors),
+          );
+        const origin = request.headers.get("origin");
+        if (origin && origin !== url.origin && !ports.cors.allowedOrigins.includes(origin))
+          return finish(json({ error: "Untrusted origin", code: "forbidden" }, 403, cors));
       } else if (spec.auth === "admin") {
         if (!(await ports.auth?.admin(request)))
           return finish(json({ error: "Forbidden", code: "forbidden" }, 403, cors));
@@ -1053,8 +1098,13 @@ export function createShenronApi(
       if (spec.method === "post" && spec.body) {
         let raw: unknown;
         try {
-          raw = await request.json();
-        } catch {
+          raw =
+            spec.maxBodyBytes === undefined
+              ? await request.json()
+              : await readLimitedJson(request, spec.maxBodyBytes);
+        } catch (error) {
+          if (error instanceof BodyLimitError)
+            return finish(json({ error: "Body too large", code: "body_too_large" }, 413, cors));
           return finish(
             json(
               { error: "Invalid request", code: "invalid_request", message: "body must be JSON" },
@@ -1097,6 +1147,7 @@ export function createShenronApi(
         query,
         body,
         ownerId,
+        reader,
         server,
         cors,
       });

@@ -32,7 +32,8 @@
     "./agent-homes/types": "./src/agent-homes/types.ts",
     "./agent-homes/public-template": "./src/agent-homes/public-template.ts",
     "./vfs/build": "./src/vfs/build.ts",
-    "./repos/site-theme": "./src/repos/site-theme.ts"
+    "./repos/site-theme": "./src/repos/site-theme.ts",
+    "./repos/favorites": "./src/repos/favorites.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -79,7 +80,8 @@
       "./agent-homes/types": "pure",
       "./agent-homes/public-template": "pure",
       "./vfs/build": "bun",
-      "./repos/site-theme": "server"
+      "./repos/site-theme": "server",
+      "./repos/favorites": "server"
     }
   }
 }

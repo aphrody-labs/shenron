@@ -6,6 +6,8 @@
  * (honojs/middleware#952). Runtime class: `pure`.
  */
 import { z } from "zod";
+import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
+import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
 import { AccountSessionResponse } from "./account";
 import { SiteThemeResponse, SiteThemeSaveResponse } from "./site-theme";
 import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
@@ -74,7 +76,7 @@ import {
 } from "./schemas";
 
 /** `owner`: the host resolves the conversation owner (session, signed bot user, local desktop). */
-export type EndpointAuth = "public" | "admin" | "acting-user" | "owner";
+export type EndpointAuth = "public" | "admin" | "acting-user" | "owner" | "reader";
 export type EndpointCache = { maxAgeSeconds: number } | "no-store";
 
 export interface EndpointSpec {
@@ -85,6 +87,8 @@ export interface EndpointSpec {
   params?: z.ZodType;
   query?: z.ZodType;
   body?: z.ZodType;
+  /** Maximum raw JSON body bytes, enforced before parsing. */
+  maxBodyBytes?: number;
   response: z.ZodType;
   cache?: EndpointCache;
   /** Response is a page (`rows`/`items` + `total`/`limit`/`offset`), read leniently by the client. */
@@ -120,6 +124,26 @@ export const TableParams = z.object({ table: z.string().min(1).max(100) });
 const WIKI_CACHE = { maxAgeSeconds: 3600 } as const;
 
 export const endpoints = {
+  favorites: {
+    id: "favorites",
+    method: "get",
+    path: "/api/v1/account/favorites",
+    auth: "public",
+    response: FavoritesResponse,
+    cache: "no-store",
+    native: true,
+  },
+  favoritesSave: {
+    id: "favoritesSave",
+    method: "post",
+    path: "/api/v1/account/favorites",
+    auth: "reader",
+    body: z.object({ favorites: z.unknown() }),
+    maxBodyBytes: FAVORITES_BODY_MAX,
+    response: FavoritesSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
   siteTheme: {
     id: "siteTheme",
     method: "get",
