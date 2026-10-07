@@ -115,7 +115,7 @@ export interface ChatState {
   conversations: ChatConversationSummary[];
   activeId: string | null;
   messages: ChatMessageView[];
-  status: "idle" | "loading" | "streaming";
+  status: "idle" | "loading" | "load-error" | "streaming";
   streamId: string | null;
   backend: { backend: string; model: string | null } | null;
   error: { kind: ChatFailureKind; detail?: string } | null;
@@ -135,6 +135,7 @@ export type ChatAction =
   | { type: "conversations"; conversations: ChatConversationSummary[] }
   | { type: "open"; id: string }
   | { type: "opened"; id: string; messages: ChatMessageView[] }
+  | { type: "openFailed"; id: string }
   | { type: "new" }
   | { type: "send"; userId: string; replyId: string; message: string }
   | { type: "event"; event: ChatStreamEvent }
@@ -256,11 +257,15 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "open":
       return { ...state, activeId: action.id, messages: [], status: "loading", error: null };
     case "opened":
-      if (state.activeId !== action.id) return state;
+      if (state.activeId !== action.id || state.status !== "loading") return state;
       return { ...state, messages: action.messages, status: "idle" };
+    case "openFailed":
+      if (state.activeId !== action.id || state.status !== "loading") return state;
+      return { ...state, status: "load-error", error: { kind: "unreachable" } };
     case "new":
       return { ...state, activeId: null, messages: [], status: "idle", error: null };
     case "send":
+      if (state.status === "loading" || state.status === "load-error") return state;
       return {
         ...state,
         status: "streaming",

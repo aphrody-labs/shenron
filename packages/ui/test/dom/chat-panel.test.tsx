@@ -180,3 +180,83 @@ describe("ChatPanel", () => {
     expect(await screen.findByText("Unreachable")).toBeTruthy();
   });
 });
+
+test("history loading blocks sending until the selected thread is ready", async () => {
+  const pending = Promise.withResolvers<Awaited<ReturnType<ChatTransport["loadConversation"]>>>();
+  const t = transport({ loadConversation: () => pending.promise });
+  render(<ChatPanel transport={t} labels={labels} chat={on} conversations={on} />);
+  await screen.findByRole("button", { name: /Saved chat/ });
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: /Saved chat/ })));
+  const input = screen.getByRole("textbox") as HTMLTextAreaElement;
+  try {
+    expect(input.disabled).toBe(true);
+    fireEvent.change(input, { target: { value: "Premature question" } });
+    await act(async () => fireEvent.keyDown(input, { key: "Enter" }));
+    expect(t.send).not.toHaveBeenCalled();
+  } finally {
+    fireEvent.change(input, { target: { value: "" } });
+    await act(async () => pending.resolve([]));
+  }
+  expect(input.disabled).toBe(false);
+});
+
+test.each(["null", "rejection"])(
+  "a %s history read settles and can be retried",
+  async (failure) => {
+    let reads = 0;
+    const t = transport({
+      loadConversation: async () => {
+        if (++reads === 1) {
+          if (failure === "rejection") throw new Error("History unavailable");
+          return null;
+        }
+        return [
+          { id: "recovered", role: "assistant", content: "Recovered history", citations: [] },
+        ];
+      },
+    });
+    render(<ChatPanel transport={t} labels={labels} chat={on} conversations={on} />);
+    const button = await screen.findByRole("button", { name: /Saved chat/ });
+    await act(async () => fireEvent.click(button));
+    expect(await screen.findByText("Unreachable")).toBeTruthy();
+    expect((screen.getByRole("textbox") as HTMLTextAreaElement).disabled).toBe(true);
+    await act(async () => fireEvent.click(button));
+    expect(await screen.findByText("Recovered history")).toBeTruthy();
+    expect(screen.queryByText("Unreachable")).toBeNull();
+    expect((screen.getByRole("textbox") as HTMLTextAreaElement).disabled).toBe(false);
+  },
+);
+
+test("returning to the same thread ignores an older history response", async () => {
+  const old = Promise.withResolvers<Awaited<ReturnType<ChatTransport["loadConversation"]>>>();
+  const latest = Promise.withResolvers<Awaited<ReturnType<ChatTransport["loadConversation"]>>>();
+  let reads = 0;
+  const t = transport({
+    listConversations: async () => [
+      { id: "a", title: "Thread A", updatedAt: "2026-10-07T00:00:00Z" },
+      { id: "b", title: "Thread B", updatedAt: "2026-10-07T00:00:00Z" },
+    ],
+    loadConversation: async (id) =>
+      id === "b" ? [] : ++reads === 1 ? old.promise : latest.promise,
+  });
+  render(<ChatPanel transport={t} labels={labels} chat={on} conversations={on} />);
+  await screen.findByRole("button", { name: "Thread A" });
+  for (const name of ["Thread A", "Thread B", "Thread A"])
+    await act(async () => fireEvent.click(screen.getByRole("button", { name })));
+  try {
+    await act(async () =>
+      latest.resolve([
+        { id: "latest", role: "assistant", content: "Latest history", citations: [] },
+      ]),
+    );
+    expect(await screen.findByText("Latest history")).toBeTruthy();
+    await act(async () =>
+      old.resolve([{ id: "old", role: "assistant", content: "Outdated history", citations: [] }]),
+    );
+    expect(screen.queryByText("Outdated history")).toBeNull();
+    expect(screen.getByText("Latest history")).toBeTruthy();
+  } finally {
+    old.resolve([]);
+    latest.resolve([]);
+  }
+});

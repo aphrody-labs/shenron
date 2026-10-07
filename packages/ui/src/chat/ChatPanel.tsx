@@ -200,11 +200,21 @@ export function ChatPanel({
   const abort = useRef<AbortController | null>(null);
   const streamId = useRef<string | null>(null);
   const thread = useRef<HTMLOListElement | null>(null);
+  const openGeneration = useRef(0);
 
   const historyOn = history?.available === true;
   const chatOn = chat?.available === true;
   const unavailable = chat !== null && !chat.available;
   const streaming = state.status === "streaming";
+  const historyBlocked = state.status === "loading" || state.status === "load-error";
+
+  useEffect(
+    () => () => {
+      openGeneration.current++;
+    },
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- A new transport invalidates reads from the previous connection.
+    [transport],
+  );
 
   const refresh = useCallback(async () => {
     const list = await transport.listConversations();
@@ -241,15 +251,22 @@ export function ChatPanel({
   }, [state.messages]);
 
   async function open(id: string) {
-    if (streaming || id === state.activeId) return;
+    if (streaming || (id === state.activeId && state.status !== "load-error")) return;
+    const generation = ++openGeneration.current;
     dispatch({ type: "open", id });
-    const messages = await transport.loadConversation(id);
-    dispatch({ type: "opened", id, messages: messages ?? [] });
+    try {
+      const messages = await transport.loadConversation(id);
+      if (generation !== openGeneration.current) return;
+      if (messages === null) dispatch({ type: "openFailed", id });
+      else dispatch({ type: "opened", id, messages });
+    } catch {
+      if (generation === openGeneration.current) dispatch({ type: "openFailed", id });
+    }
   }
 
   async function submit() {
     const message = draft.trim();
-    if (!message || streaming || !chatOn) return;
+    if (!message || streaming || historyBlocked || !chatOn) return;
     const turns = historyOf(state.messages);
     const conversationId = state.activeId ?? undefined;
     setDraft("");
@@ -304,7 +321,10 @@ export function ChatPanel({
           size="lg"
           rounding="square"
           className="self-start"
-          onClick={() => dispatch({ type: "new" })}
+          onClick={() => {
+            openGeneration.current++;
+            dispatch({ type: "new" });
+          }}
           disabled={streaming}
         >
           <Plus aria-hidden size={20} />
@@ -329,6 +349,7 @@ export function ChatPanel({
                   type="button"
                   className="flex min-h-14 w-full cursor-pointer items-center gap-3 rounded-full border-0 bg-transparent px-4 py-2 text-left text-on-surface-variant transition-colors duration-200 hover:bg-on-surface/8 disabled:cursor-default aria-[current=page]:bg-secondary-container aria-[current=page]:text-on-secondary-container"
                   aria-current={c.id === state.activeId ? "page" : undefined}
+                  aria-busy={(c.id === state.activeId && state.status === "loading") || undefined}
                   onClick={() => void open(c.id)}
                   disabled={streaming}
                 >
@@ -358,7 +379,7 @@ export function ChatPanel({
           </Banner>
         ) : null}
 
-        {state.messages.length === 0 && state.status !== "loading" ? (
+        {state.messages.length === 0 && !historyBlocked ? (
           <div className="flex flex-1 flex-col justify-center gap-2 p-6 text-on-surface-variant">
             <h2 className="m-0 text-headline-small text-on-surface">{labels.welcomeTitle}</h2>
             <p className="m-0 max-w-[60ch] text-body-large">{labels.welcomeBody}</p>
@@ -400,7 +421,8 @@ export function ChatPanel({
           onDraftChange={setDraft}
           onSend={() => void submit()}
           placeholder={chatOn ? labels.placeholder : labels.unavailableTitle}
-          isSending={streaming || !chatOn}
+          isSending={streaming}
+          disabled={historyBlocked || !chatOn}
           {...(models.length > 1 && model
             ? {
                 modelSelector: {
