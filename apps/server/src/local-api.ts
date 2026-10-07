@@ -31,6 +31,7 @@ import { shenronWorkerPool } from "@shenron/native/worker";
 
 import { profileOf, type ServerPaths } from "./config";
 import { VERSION } from "./version";
+import { openAiApi } from "./openai";
 
 /** The native calls of the local APIs (`@shenron/native` by default; a fake in tests). */
 export interface LocalNative {
@@ -89,6 +90,7 @@ export function localApi(
   koharu: KoharuBridge | null = null,
   chatModel: ChatModel | null = null,
 ): LocalApi {
+  const openAi = openAiApi(env, () => chatModel?.url);
   let loaded: boolean | undefined;
   let nativeError: string | null = null;
   const load = (): boolean => {
@@ -110,8 +112,15 @@ export function localApi(
   };
 
   return async (request, url, ready, peer = null) => {
+    // An explicit gateway owns the complete wire contract, including tools and compaction.
+    if (env.SHENRON_OPENAI_BASE_URL?.trim()) {
+      const response = await openAi(request, url, ready, peer);
+      if (response) return response;
+    }
     const models = await chatModel?.handle(request, url, peer);
     if (models) return models;
+    const response = await openAi(request, url, ready, peer);
+    if (response) return response;
     if (!url.pathname.startsWith("/api/local/")) return null;
     const engine = await koharu?.handle(request, url, peer);
     if (engine) return engine;
