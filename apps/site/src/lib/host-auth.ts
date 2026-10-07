@@ -53,7 +53,11 @@ export async function hostGetSession(
   headers: Headers,
 ): Promise<HostSessionBody | null> {
   try {
-    const response = await fetch(new URL("/api/auth/get-session", host), {
+    const target = new URL("/api/auth/get-session", host);
+    // The site still resynchronizes its business profile. An older signed cookie
+    // must not overwrite a profile that the Bun host has already updated in DB.
+    target.searchParams.set("disableCookieCache", "true");
+    const response = await fetch(target, {
       headers: forwardHeaders(headers),
       signal: AbortSignal.timeout(10_000),
     });

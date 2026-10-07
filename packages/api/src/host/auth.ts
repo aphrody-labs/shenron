@@ -25,7 +25,7 @@ import { createBunDb } from "@shenron/db/bun-sql";
 import { baAccount, baSession, baUser, baVerification } from "@shenron/db/schema";
 import {
   createAccountDataRepository,
-  createDiscordAccountLookup,
+  createAccountProfileRepository,
 } from "@shenron/db/repos/accounts";
 import { createResilientRedis } from "@shenron/db/redis";
 import { RedisClient } from "bun";
@@ -36,6 +36,7 @@ import { bearer } from "better-auth/plugins";
 import type { BetterAuthPort, HostSession } from "../server";
 import { createAuthRateLimitStorage } from "./auth-rate-limit";
 import { buildAccountDeletionHooks } from "./account-deletion";
+import { accountProfileHooks } from "./account-profile";
 
 const list = (raw: string | undefined): string[] =>
   (raw ?? "")
@@ -183,9 +184,18 @@ export function createHostAuth(env: EnvSource): AuthAvailability {
     : null;
   options.rateLimit = { ...options.rateLimit, customStorage: createAuthRateLimitStorage(redis) };
   options.user = { deleteUser: buildAccountDeletionHooks(createAccountDataRepository(db)) };
-  const auth = betterAuth(options);
-  const accounts = createDiscordAccountLookup(db);
   const staff = staffPolicyFromEnv(env, "site");
+  const profiles = createAccountProfileRepository(db, staff.isStaff);
+  const profileHooks = accountProfileHooks(profiles);
+  options.databaseHooks = {
+    ...options.databaseHooks,
+    account: profileHooks.account,
+    user: {
+      ...options.databaseHooks?.user,
+      update: { ...options.databaseHooks?.user?.update, ...profileHooks.user.update },
+    },
+  };
+  const auth = betterAuth(options);
   return {
     async close() {
       redis?.close();
@@ -195,13 +205,14 @@ export function createHostAuth(env: EnvSource): AuthAvailability {
       handler: (request) => auth.handler(request),
       session: async (headers) => {
         try {
-          const found = await auth.api.getSession({ headers });
+          // Backend permissions must observe session revocation immediately.
+          const found = await auth.api.getSession({ headers, query: { disableCookieCache: true } });
           if (!found) return null;
-          const discordId = await accounts.discordIdForUser(found.user.id).catch(() => null);
+          const profile = await profiles.synchronize(found.user.id);
           const session: HostSession = {
             userId: found.user.id,
-            discordId,
-            staff: staff.isStaff(discordId),
+            discordId: profile?.discordId ?? null,
+            staff: profile?.roleAdmin ?? false,
           };
           return session;
         } catch {

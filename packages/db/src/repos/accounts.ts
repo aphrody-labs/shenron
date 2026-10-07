@@ -10,6 +10,12 @@ import type { ShenronPgDatabase } from "../types";
 
 export { createAccountDataRepository, accountIdentityQuery } from "./account-data";
 export type { AccountIdentity, AccountDeletionIdentity } from "./account-data";
+export {
+  createAccountProfileRepository,
+  accountProfileQuery,
+  accountProfileUpsert,
+} from "./account-profile";
+export type { AccountProfile } from "./account-profile";
 
 // oxlint-disable-next-line no-explicit-any -- repositories accept any Drizzle PG schema
 type AnyDb = ShenronPgDatabase<any>;

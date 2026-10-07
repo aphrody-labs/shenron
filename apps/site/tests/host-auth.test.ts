@@ -7,7 +7,7 @@ process.env.BETTER_AUTH_SECRET ??= "s".repeat(40);
 process.env.DISCORD_CLIENT_ID ??= "1234567890";
 process.env.DISCORD_CLIENT_SECRET ??= "1234567890";
 
-const seen: { path: string; cookie: string | null; method: string }[] = [];
+const seen: { path: string; cookie: string | null; method: string; fresh?: boolean }[] = [];
 const host = Bun.serve({
   port: 0,
   hostname: "127.0.0.1",
@@ -17,6 +17,9 @@ const host = Bun.serve({
       path: url.pathname,
       cookie: request.headers.get("cookie"),
       method: request.method,
+      ...(url.pathname === "/api/auth/get-session"
+        ? { fresh: url.searchParams.get("disableCookieCache") === "true" }
+        : {}),
     });
     if (url.pathname === "/api/auth/get-session")
       return request.headers.get("cookie")
@@ -33,6 +36,7 @@ test("the host session is read with the forwarded cookie, null without session o
   expect(await hostGetSession(origin, new Headers({ cookie: "a=b" }))).toEqual({
     user: { id: "u1", name: null, image: null },
   });
+  expect(seen.at(-1)?.fresh).toBe(true);
   expect(await hostGetSession(origin, new Headers())).toBeNull();
   expect(await hostGetSession("http://127.0.0.1:1", new Headers({ cookie: "a=b" }))).toBeNull();
 });
