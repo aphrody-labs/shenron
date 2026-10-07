@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+name: VPS factory qualification
+
+# Private, trusted manual qualification only. Pull requests never run on this host.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shenron-vps-factory-qualification
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    runs-on: [self-hosted, Linux, X64, shenron-factory, vps]
+    timeout-minutes: 5
+    steps:
+      - name: Verify non-root factory identity and runtime tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -un)" = shenron-build
+          test "$(id -u)" != 0
+          bun --version
+          cargo --version
+          rustc --version
+          docker version --format '{{.Server.Version}}'
+          docker buildx version
+          docker compose version
+          test -d /home/shenron-build/runner
+          df -h /home/shenron-build
