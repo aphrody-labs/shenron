@@ -111,6 +111,7 @@ function formatBytes(locale: string, bytes: number): string {
 
 function useModelsLabels(locale: string): ModelsLabels {
   const t = useTranslations("desktop.models");
+  const errors = useTranslations("error");
   return useMemo(
     () => ({
       title: t("title"),
@@ -118,6 +119,7 @@ function useModelsLabels(locale: string): ModelsLabels {
       checking: t("checking"),
       unavailable: t("unavailable"),
       failed: t("failed"),
+      retry: errors("retry"),
       empty: t("empty"),
       defaultBadge: t("defaultBadge"),
       local: t("local"),
@@ -146,7 +148,7 @@ function useModelsLabels(locale: string): ModelsLabels {
           : t("progressUnknown", { received: formatBytes(locale, received) }),
       eta: (seconds: number) => t("eta", { minutes: Math.max(1, Math.ceil(seconds / 60)) }),
     }),
-    [t, locale],
+    [t, errors, locale],
   );
 }
 

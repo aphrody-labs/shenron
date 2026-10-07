@@ -49,6 +49,7 @@ export interface ModelsLabels {
   checking: string;
   unavailable: string;
   failed: string;
+  retry: string;
   empty: string;
   defaultBadge: string;
   local: string;
@@ -124,11 +125,13 @@ export function ModelsPanel({
 }: ModelsPanelProps) {
   const [models, setModels] = useState<ChatModelView[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [actionFailed, setActionFailed] = useState(false);
   const [pathField, setPathField] = useState(!pickAdapterPath);
   const [path, setPath] = useState("");
   const [importError, setImportError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const rates = useRef(new Map<string, RateSample>());
+  const operation = useRef<symbol | null>(null);
   const onChangeRef = useRef(onChange);
   const requests = useRef<{
     active: boolean;
@@ -147,7 +150,7 @@ export function ModelsPanel({
     if (!session?.active || session.transport !== transport) return;
     const read = async () => {
       if (!session.active) return;
-      const list = await transport.list();
+      const list = await transport.list().catch(() => null);
       if (!session.active) return;
       if (!list) {
         setFailed(true);
@@ -180,6 +183,14 @@ export function ModelsPanel({
   useEffect(() => {
     const session = { active: on, transport, pending: null as Promise<void> | null };
     requests.current = session;
+    setModels(null);
+    setFailed(false);
+    rates.current.clear();
+    setSamples(new Map());
+    operation.current = null;
+    setBusy(false);
+    setActionFailed(false);
+    setImportError(null);
     if (on) void load();
     else rates.current.clear();
     return () => {
@@ -205,28 +216,74 @@ export function ModelsPanel({
   }, [on, polling, pollMs, load]);
 
   async function install(model: ChatModelView) {
+    const action = beginAction();
+    if (!action) return;
+    try {
+      const ok = await transport.install(model).catch(() => false);
+      if (!isCurrentAction(action)) return;
+      setActionFailed(!ok);
+      await load();
+    } finally {
+      finishAction(action);
+    }
+  }
+
+  function beginAction() {
+    const session = requests.current;
+    if (operation.current || !session?.active || session.transport !== transport) return null;
+    const token = Symbol();
+    operation.current = token;
     setBusy(true);
-    const ok = await transport.install(model);
+    setActionFailed(false);
+    setImportError(null);
+    return { token, session };
+  }
+
+  function isCurrentAction(action: NonNullable<ReturnType<typeof beginAction>>) {
+    return (
+      action.session.active &&
+      requests.current === action.session &&
+      operation.current === action.token
+    );
+  }
+
+  function finishAction(action: NonNullable<ReturnType<typeof beginAction>>) {
+    if (!isCurrentAction(action)) return;
+    operation.current = null;
     setBusy(false);
-    if (!ok) setFailed(true);
-    await load();
   }
 
   async function importFrom(model: ChatModelView, from: string) {
-    setBusy(true);
-    setImportError(null);
-    const error = await transport.importAdapter(model, from);
-    setBusy(false);
-    if (error) setImportError(error);
-    else setPath("");
-    await load();
+    const action = beginAction();
+    if (!action) return;
+    try {
+      const error = await transport.importAdapter(model, from).catch(() => labels.importFailed);
+      if (!isCurrentAction(action)) return;
+      if (error) setImportError(error);
+      else setPath("");
+      await load();
+    } finally {
+      finishAction(action);
+    }
   }
 
   async function choose(model: ChatModelView) {
     if (!pickAdapterPath) return setPathField(true);
-    const picked = await pickAdapterPath();
-    if (picked === undefined) return setPathField(true);
-    if (picked) await importFrom(model, picked);
+    const action = beginAction();
+    if (!action) return;
+    let picked: string | null | undefined;
+    try {
+      picked = await pickAdapterPath();
+      if (!isCurrentAction(action)) return;
+      if (picked === undefined) setPathField(true);
+    } catch {
+      if (isCurrentAction(action)) setImportError(labels.importFailed);
+      return;
+    } finally {
+      finishAction(action);
+    }
+    if (picked && action.session.active && requests.current === action.session)
+      await importFrom(model, picked);
   }
 
   function submitPath(event: FormEvent, model: ChatModelView) {
@@ -266,9 +323,14 @@ export function ModelsPanel({
         </Banner>
       ) : null}
 
-      {on && failed ? (
+      {on && (failed || actionFailed) ? (
         <Banner variant="error" showDot={false} icon={CircleAlert}>
           <p className="m-0">{labels.failed}</p>
+          {failed ? (
+            <Button variant="text" disabled={busy} onClick={() => void load()}>
+              {labels.retry}
+            </Button>
+          ) : null}
         </Banner>
       ) : null}
 
@@ -387,6 +449,7 @@ export function ModelsPanel({
                           id={`shenron-adapter-${m.id}`}
                           className="h-10 flex-1 rounded-small border border-outline bg-transparent px-3 text-body-medium text-on-surface outline-none placeholder:text-on-surface-variant focus-visible:border-2 focus-visible:border-primary"
                           value={path}
+                          disabled={busy}
                           maxLength={1024}
                           placeholder={labels.pathPlaceholder}
                           onChange={(event) => setPath(event.target.value)}
@@ -403,7 +466,8 @@ export function ModelsPanel({
                     )}
                     {importError ? (
                       <p className="m-0 text-body-small text-error" role="alert">
-                        {labels.importFailed} ({importError})
+                        {labels.importFailed}
+                        {importError !== labels.importFailed ? ` (${importError})` : ""}
                       </p>
                     ) : null}
                   </div>

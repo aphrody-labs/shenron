@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // ModelsPanel: states and progress, one-click install, adapter import by dialog or path field.
 import { afterEach, describe, expect, mock, test } from "bun:test";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import {
   type ChatModelView,
   type ModelsLabels,
@@ -15,6 +15,7 @@ const labels: ModelsLabels = {
   checking: "Checking",
   unavailable: "No models here",
   failed: "Models failed",
+  retry: "Retry models",
   empty: "No model",
   defaultBadge: "Default",
   local: "Local",
@@ -305,4 +306,103 @@ describe("ModelsPanel", () => {
     expect(screen.getByText("aucun modèle")).toBeTruthy();
     expect(t.list).not.toHaveBeenCalled();
   });
+});
+
+test("a rejected model read settles and can be retried", async () => {
+  const t = transport();
+  t.list = mock()
+    .mockRejectedValueOnce(new Error("private transport detail"))
+    .mockResolvedValue(base);
+  render(<ModelsPanel transport={t} labels={labels} models={{ available: true }} />);
+  expect(await screen.findByText(labels.failed)).toBeTruthy();
+  expect(screen.queryByText(labels.checking)).toBeNull();
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: labels.retry })));
+  expect(await screen.findByText("Ready")).toBeTruthy();
+  expect(screen.queryByText(labels.failed)).toBeNull();
+  expect(t.list).toHaveBeenCalledTimes(2);
+});
+
+test.each(["false", "rejection"])(
+  "a %s installation failure survives the next successful read",
+  async (failure) => {
+    const t = transport();
+    t.install = mock(async () => {
+      if (failure === "rejection") throw Error("private install detail");
+      return false;
+    });
+    render(<ModelsPanel transport={t} labels={labels} models={{ available: true }} />);
+    const button = await screen.findByRole("button", { name: labels.install });
+    await act(async () => fireEvent.click(button));
+    expect(await screen.findByText(labels.failed)).toBeTruthy();
+    expect(t.list).toHaveBeenCalledTimes(2);
+    expect((button as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.queryByText("private install detail")).toBeNull();
+  },
+);
+
+test("a rejected adapter import releases controls and preserves the path for retry", async () => {
+  const t = transport();
+  t.importAdapter = mock()
+    .mockRejectedValueOnce(Error("private import detail"))
+    .mockResolvedValue(null);
+  render(<ModelsPanel transport={t} labels={labels} models={{ available: true }} />);
+  const input = (await screen.findByLabelText(labels.pathLabel)) as HTMLInputElement;
+  fireEvent.change(input, { target: { value: "/fixture/adapter.gguf" } });
+  const button = screen.getByRole("button", { name: labels.importSubmit });
+  await act(async () => fireEvent.click(button));
+  expect(await screen.findByText(labels.importFailed)).toBeTruthy();
+  expect((button as HTMLButtonElement).disabled).toBe(false);
+  expect(input.value).toBe("/fixture/adapter.gguf");
+  await act(async () => fireEvent.click(button));
+  expect(screen.queryByText(labels.importFailed)).toBeNull();
+  expect(input.value).toBe("");
+});
+
+test("a rejected native file dialog shows a localized error and remains retryable", async () => {
+  const pick = mock(async () => {
+    throw Error("private picker detail");
+  });
+  render(
+    <ModelsPanel
+      transport={transport()}
+      labels={labels}
+      models={{ available: true }}
+      pickAdapterPath={pick}
+    />,
+  );
+  const button = await screen.findByRole("button", { name: labels.chooseFile });
+  await act(async () => fireEvent.click(button));
+  expect(await screen.findByText(labels.importFailed)).toBeTruthy();
+  expect((button as HTMLButtonElement).disabled).toBe(false);
+});
+
+test("an old installation cannot mark a replacement transport as failed", async () => {
+  const pending = Promise.withResolvers<boolean>();
+  const old = transport();
+  old.install = mock(() => pending.promise);
+  const latest = transport();
+  const view = render(<ModelsPanel transport={old} labels={labels} models={{ available: true }} />);
+  await screen.findByRole("button", { name: labels.install });
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: labels.install })));
+  view.rerender(<ModelsPanel transport={latest} labels={labels} models={{ available: true }} />);
+  await waitFor(() => expect(latest.list).toHaveBeenCalledTimes(1));
+  await act(async () => pending.resolve(false));
+  expect(screen.queryByText(labels.failed)).toBeNull();
+  expect(latest.install).not.toHaveBeenCalled();
+  expect((screen.getByRole("button", { name: labels.install }) as HTMLButtonElement).disabled).toBe(
+    false,
+  );
+});
+
+test("a rejected progress poll does not stop polling", async () => {
+  const t = transport();
+  t.list = mock()
+    .mockResolvedValueOnce([{ ...base[0]!, state: "downloading" }])
+    .mockRejectedValueOnce(Error("private poll detail"))
+    .mockResolvedValue(base);
+  render(<ModelsPanel transport={t} labels={labels} models={{ available: true }} pollMs={20} />);
+  expect(await screen.findByText("Downloading")).toBeTruthy();
+  expect(await screen.findByText("Ready")).toBeTruthy();
+  expect(t.list).toHaveBeenCalledTimes(3);
+  expect(screen.queryByText(labels.failed)).toBeNull();
 });
