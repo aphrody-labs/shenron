@@ -5,6 +5,10 @@ import {
   getDragonBallCatalog,
   scanAob,
   parseCus,
+  parseBdm,
+  parseBac,
+  parsePup,
+  parseMsg,
   triageCpk,
   extractCpkFile,
   decompressCrilayla,
@@ -210,4 +214,127 @@ describe("shenron-re WASM pipeline", () => {
     const decompressed = decompressCrilayla(compressed, original.length);
     expect(decompressed).toEqual(original);
   });
+
+  test("decodes BDM (Battle Damage Matrix) definitions via wasm_parse_bdm", () => {
+    const count = 5;
+    const headerSize = 16;
+    const entrySize = 48;
+    const buffer = new Uint8Array(headerSize + count * entrySize);
+    const view = new DataView(buffer.buffer);
+
+    buffer.set([0x23, 0x42, 0x44, 0x4D], 0); // "#BDM"
+    view.setUint32(4, 1, true); // version
+    view.setUint32(8, count, true);
+    view.setUint32(12, headerSize, true);
+
+    for (let i = 0; i < count; i++) {
+      const off = headerSize + i * entrySize;
+      view.setUint32(off, 100 + i, true); // id
+      view.setUint16(off + 4, i % 6, true); // damage_type
+      view.setUint16(off + 6, 50, true); // stamina_damage
+      view.setUint32(off + 8, (i + 1) * 250, true); // base_damage
+      view.setUint16(off + 12, 15, true); // hitstun_frames
+      view.setUint16(off + 14, 10, true); // blockstun_frames
+      view.setUint16(off + 16, i % 4, true); // knockback_type
+      view.setUint16(off + 18, 2, true); // camera_shake
+      view.setFloat32(off + 20, 5.0, true); // knockback_strength
+      view.setFloat32(off + 24, 2.5, true); // pushback_distance
+    }
+
+    const bdm = parseBdm(buffer);
+    expect(bdm.entries.length).toBe(5);
+    expect(bdm.entries[0]?.id).toBe(100);
+    expect(bdm.entries[0]?.damage_type).toBe("Strike");
+    expect(bdm.entries[0]?.base_damage).toBe(250);
+    expect(bdm.entries[1]?.damage_type).toBe("KiBlast");
+    expect(bdm.entries[1]?.base_damage).toBe(500);
+  });
+
+  test("decodes BAC (Battle Action Code) movesets via wasm_parse_bac", () => {
+    const count = 3;
+    const headerSize = 16;
+    const entrySize = 32;
+    const buffer = new Uint8Array(headerSize + count * entrySize);
+    const view = new DataView(buffer.buffer);
+
+    buffer.set([0x23, 0x42, 0x41, 0x43], 0); // "#BAC"
+    view.setUint32(4, 1, true);
+    view.setUint32(8, count, true);
+    view.setUint32(12, headerSize, true);
+
+    for (let i = 0; i < count; i++) {
+      const off = headerSize + i * entrySize;
+      view.setUint32(off, 500 + i, true); // move_id
+      view.setUint16(off + 4, 60, true); // total_frames
+      view.setUint16(off + 6, 12, true); // startup_frames
+      view.setUint16(off + 8, 20, true); // recovery_frames
+    }
+
+    const bac = parseBac(buffer);
+    expect(bac.moves.length).toBe(3);
+    expect(bac.moves[0]?.move_id).toBe(500);
+    expect(bac.moves[0]?.total_frames).toBe(60);
+    expect(bac.moves[0]?.startup_frames).toBe(12);
+  });
+
+  test("decodes PUP (Power-Up Parameters) transformation multipliers via wasm_parse_pup", () => {
+    const count = 2;
+    const headerSize = 16;
+    const entrySize = 64;
+    const buffer = new Uint8Array(headerSize + count * entrySize);
+    const view = new DataView(buffer.buffer);
+
+    buffer.set([0x23, 0x50, 0x55, 0x50], 0); // "#PUP"
+    view.setUint32(4, 1, true);
+    view.setUint32(8, count, true);
+    view.setUint32(12, headerSize, true);
+
+    for (let i = 0; i < count; i++) {
+      const off = headerSize + i * entrySize;
+      view.setUint32(off, 200 + i, true); // id
+      view.setFloat32(off + 4, 1.2, true); // basic_attack_mult
+      view.setFloat32(off + 8, 1.25, true); // basic_ki_mult
+      view.setFloat32(off + 12, 1.3, true); // strike_mult
+      view.setFloat32(off + 16, 1.35, true); // ki_blast_mult
+      view.setFloat32(off + 20, 0.9, true); // damage_taken_mult
+      view.setFloat32(off + 24, 1.1, true); // speed_ground_mult
+      view.setFloat32(off + 28, 1.15, true); // speed_air_mult
+      view.setFloat32(off + 32, 1.2, true); // speed_boost_mult
+      view.setFloat32(off + 36, 0.05, true); // ki_drain_rate
+      view.setFloat32(off + 40, 0.0, true); // stamina_drain_rate
+    }
+
+    const pup = parsePup(buffer);
+    expect(pup.entries.length).toBe(2);
+    expect(pup.entries[0]?.id).toBe(200);
+    expect(pup.entries[0]?.basic_attack_mult).toBeCloseTo(1.2);
+    expect(pup.entries[0]?.ki_blast_mult).toBeCloseTo(1.35);
+  });
+
+  test("decodes MSG (Message) strings via wasm_parse_msg", () => {
+    const lines = ["Kamehameha", "Super Saiyan"];
+    const headerSize = 16;
+    const encoded = lines.map((l) => new TextEncoder().encode(l));
+    const totalTextLen = encoded.reduce((acc, b) => acc + b.length + 1, 0);
+    const buffer = new Uint8Array(headerSize + totalTextLen);
+    const view = new DataView(buffer.buffer);
+
+    buffer.set([0x23, 0x4D, 0x53, 0x47], 0); // "#MSG"
+    view.setUint32(4, 1, true);
+    view.setUint32(8, lines.length, true);
+    view.setUint32(12, headerSize, true);
+
+    let off = headerSize;
+    for (const b of encoded) {
+      buffer.set(b, off);
+      buffer[off + b.length] = 0;
+      off += b.length + 1;
+    }
+
+    const msg = parseMsg(buffer);
+    expect(msg.entries.length).toBe(2);
+    expect(msg.entries[0]?.lines[0]).toBe("Kamehameha");
+    expect(msg.entries[1]?.lines[0]).toBe("Super Saiyan");
+  });
 });
+

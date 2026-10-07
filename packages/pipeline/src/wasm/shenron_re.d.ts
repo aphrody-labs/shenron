@@ -17,9 +17,29 @@ export function wasm_extract_cpk_file(archive_bytes: Uint8Array, filename: strin
 export function wasm_get_dragon_ball_catalog(): any;
 
 /**
+ * Parse a DBXV2 BAC (Battle Action Code) moveset binary file and return all moves.
+ */
+export function wasm_parse_bac(bac_bytes: Uint8Array): any;
+
+/**
+ * Parse a DBXV2 BDM (Battle Damage Matrix) binary file and return all damage definitions.
+ */
+export function wasm_parse_bdm(bdm_bytes: Uint8Array): any;
+
+/**
  * Parse a DBXV2 CUS (Character Ultimate Skill) binary file and return all skills.
  */
 export function wasm_parse_cus(cus_bytes: Uint8Array): any;
+
+/**
+ * Parse a DBXV2 MSG (Message) binary file and return localized text strings.
+ */
+export function wasm_parse_msg(msg_bytes: Uint8Array): any;
+
+/**
+ * Parse a DBXV2 PUP (Power-Up Parameters) binary file and return transformation multipliers.
+ */
+export function wasm_parse_pup(pup_bytes: Uint8Array): any;
 
 /**
  * Scan a buffer for an Array-of-Bytes (AOB) pattern with wildcards (e.g. "48 89 5C 24 ??").
@@ -38,7 +58,11 @@ export interface InitOutput {
     readonly wasm_decompress_crilayla: (a: number, b: number, c: number) => [number, number, number, number];
     readonly wasm_extract_cpk_file: (a: number, b: number, c: number, d: number) => [number, number, number, number];
     readonly wasm_get_dragon_ball_catalog: () => [number, number, number];
+    readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
     readonly wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];
     readonly wasm_triage_cpk: (a: number, b: number) => [number, number, number];
     readonly __wbindgen_malloc: (a: number, b: number) => number;

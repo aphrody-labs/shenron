@@ -51,6 +51,36 @@ export function wasm_get_dragon_ball_catalog() {
 }
 
 /**
+ * Parse a DBXV2 BAC (Battle Action Code) moveset binary file and return all moves.
+ * @param {Uint8Array} bac_bytes
+ * @returns {any}
+ */
+export function wasm_parse_bac(bac_bytes) {
+    const ptr0 = passArray8ToWasm0(bac_bytes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.wasm_parse_bac(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * Parse a DBXV2 BDM (Battle Damage Matrix) binary file and return all damage definitions.
+ * @param {Uint8Array} bdm_bytes
+ * @returns {any}
+ */
+export function wasm_parse_bdm(bdm_bytes) {
+    const ptr0 = passArray8ToWasm0(bdm_bytes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.wasm_parse_bdm(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Parse a DBXV2 CUS (Character Ultimate Skill) binary file and return all skills.
  * @param {Uint8Array} cus_bytes
  * @returns {any}
@@ -59,6 +89,36 @@ export function wasm_parse_cus(cus_bytes) {
     const ptr0 = passArray8ToWasm0(cus_bytes, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.wasm_parse_cus(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * Parse a DBXV2 MSG (Message) binary file and return localized text strings.
+ * @param {Uint8Array} msg_bytes
+ * @returns {any}
+ */
+export function wasm_parse_msg(msg_bytes) {
+    const ptr0 = passArray8ToWasm0(msg_bytes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.wasm_parse_msg(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * Parse a DBXV2 PUP (Power-Up Parameters) binary file and return transformation multipliers.
+ * @param {Uint8Array} pup_bytes
+ * @returns {any}
+ */
+export function wasm_parse_pup(pup_bytes) {
+    const ptr0 = passArray8ToWasm0(pup_bytes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.wasm_parse_pup(ptr0, len0);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }

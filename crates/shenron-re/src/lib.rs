@@ -23,6 +23,7 @@ pub use catalog::{
 pub use error::{ReError, Result};
 pub use formats::{
     bac::{BacFile, BacHitbox, BacMove},
+    bdm::{BdmEntry, BdmFile, DamageType},
     cms::{CmsEntry, CmsFile},
     cus::{CusFile, CusSkill, SkillCategory},
     msg::{MsgEntry, MsgFile},

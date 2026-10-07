@@ -15,7 +15,11 @@ import initWasm, {
   wasm_triage_cpk,
   wasm_extract_cpk_file,
   wasm_decompress_crilayla,
+  wasm_parse_bac,
+  wasm_parse_bdm,
   wasm_parse_cus,
+  wasm_parse_msg,
+  wasm_parse_pup,
   wasm_scan_aob,
 } from "./wasm/shenron_re.js";
 
@@ -93,6 +97,80 @@ export interface CusSkill {
 export interface CusFile {
   version: number;
   skills: CusSkill[];
+}
+
+export type DamageType =
+  | "Strike"
+  | "KiBlast"
+  | "HeavyStrike"
+  | "Grab"
+  | "Unblockable"
+  | "Special"
+  | "Unknown";
+
+export interface BdmEntry {
+  id: number;
+  damage_type: DamageType;
+  base_damage: number;
+  stamina_damage: number;
+  hitstun_frames: number;
+  blockstun_frames: number;
+  knockback_type: number;
+  knockback_strength: number;
+  pushback_distance: number;
+  camera_shake: number;
+}
+
+export interface BdmFile {
+  entries: BdmEntry[];
+}
+
+export interface BacHitbox {
+  start_frame: number;
+  end_frame: number;
+  damage: number;
+  bdm_entry_id: number;
+  knockback_type: number;
+}
+
+export interface BacMove {
+  move_id: number;
+  total_frames: number;
+  startup_frames: number;
+  recovery_frames: number;
+  hitboxes: BacHitbox[];
+}
+
+export interface BacFile {
+  moves: BacMove[];
+}
+
+export interface PupEntry {
+  id: number;
+  basic_attack_mult: number;
+  basic_ki_mult: number;
+  strike_mult: number;
+  ki_blast_mult: number;
+  damage_taken_mult: number;
+  speed_ground_mult: number;
+  speed_air_mult: number;
+  speed_boost_mult: number;
+  ki_drain_rate: number;
+  stamina_drain_rate: number;
+}
+
+export interface PupFile {
+  entries: PupEntry[];
+}
+
+export interface MsgEntry {
+  id: number;
+  name_id: string;
+  lines: string[];
+}
+
+export interface MsgFile {
+  entries: MsgEntry[];
 }
 
 let wasmReady = false;
@@ -185,3 +263,36 @@ export function scanAob(data: Uint8Array, pattern: string): number[] {
   const offsets = wasm_scan_aob(data, pattern);
   return Array.from(offsets);
 }
+
+/**
+ * Parses a DBXV2 BDM (Battle Damage Matrix) binary file and returns damage definitions.
+ */
+export function parseBdm(bdmBytes: Uint8Array): BdmFile {
+  ensureWasm();
+  return wasm_parse_bdm(bdmBytes) as BdmFile;
+}
+
+/**
+ * Parses a DBXV2 BAC (Battle Action Code) binary file and returns moveset frame data and hitboxes.
+ */
+export function parseBac(bacBytes: Uint8Array): BacFile {
+  ensureWasm();
+  return wasm_parse_bac(bacBytes) as BacFile;
+}
+
+/**
+ * Parses a DBXV2 PUP (Power-Up Parameters) binary file and returns transformation stat multipliers.
+ */
+export function parsePup(pupBytes: Uint8Array): PupFile {
+  ensureWasm();
+  return wasm_parse_pup(pupBytes) as PupFile;
+}
+
+/**
+ * Parses a DBXV2 MSG (Message) binary file and returns localized strings.
+ */
+export function parseMsg(msgBytes: Uint8Array): MsgFile {
+  ensureWasm();
+  return wasm_parse_msg(msgBytes) as MsgFile;
+}
+

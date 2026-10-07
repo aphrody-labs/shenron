@@ -11,6 +11,10 @@ import {
   getDragonBallCatalog,
   scanAob,
   parseCus,
+  parseBdm,
+  parseBac,
+  parsePup,
+  parseMsg,
   triageCpk,
   extractCpkFile,
   decompressCrilayla,
@@ -328,6 +332,89 @@ if (matchCount !== originalData.length) {
   throw new Error(`CRILAYLA decompression payload mismatch: ${matchCount}/${originalData.length} bytes matched`);
 }
 
+console.log("\n[7/7] Validating Dimps Binary Formats (BDM, BAC, PUP, MSG)...");
+
+// 1. BDM Validation
+const bdmBuffer = new Uint8Array(16 + 5 * 48);
+const bdmView = new DataView(bdmBuffer.buffer);
+bdmBuffer.set([0x23, 0x42, 0x44, 0x4D], 0); // "#BDM"
+bdmView.setUint32(4, 1, true);
+bdmView.setUint32(8, 5, true);
+bdmView.setUint32(12, 16, true);
+for (let i = 0; i < 5; i++) {
+  const off = 16 + i * 48;
+  bdmView.setUint32(off, 100 + i, true);
+  bdmView.setUint16(off + 4, i % 6, true);
+  bdmView.setUint32(off + 8, (i + 1) * 250, true);
+}
+const bdm = parseBdm(bdmBuffer);
+if (bdm.entries.length !== 5 || bdm.entries[0]?.damage_type !== "Strike") {
+  throw new Error("BDM validation failed");
+}
+console.log(`  ✓ BDM: decoded ${bdm.entries.length} impact matrices (Entry 0: type=${bdm.entries[0]?.damage_type}, dmg=${bdm.entries[0]?.base_damage})`);
+
+// 2. BAC Validation
+const bacBuffer = new Uint8Array(16 + 3 * 32);
+const bacView = new DataView(bacBuffer.buffer);
+bacBuffer.set([0x23, 0x42, 0x41, 0x43], 0); // "#BAC"
+bacView.setUint32(4, 1, true);
+bacView.setUint32(8, 3, true);
+bacView.setUint32(12, 16, true);
+for (let i = 0; i < 3; i++) {
+  const off = 16 + i * 32;
+  bacView.setUint32(off, 500 + i, true);
+  bacView.setUint16(off + 4, 60, true);
+  bacView.setUint16(off + 6, 12, true);
+  bacView.setUint16(off + 8, 20, true);
+}
+const bac = parseBac(bacBuffer);
+if (bac.moves.length !== 3 || bac.moves[0]?.startup_frames !== 12) {
+  throw new Error("BAC validation failed");
+}
+console.log(`  ✓ BAC: decoded ${bac.moves.length} moveset scripts (Move 0: startup=${bac.moves[0]?.startup_frames}f, total=${bac.moves[0]?.total_frames}f)`);
+
+// 3. PUP Validation
+const pupBuffer = new Uint8Array(16 + 2 * 64);
+const pupView = new DataView(pupBuffer.buffer);
+pupBuffer.set([0x23, 0x50, 0x55, 0x50], 0); // "#PUP"
+pupView.setUint32(4, 1, true);
+pupView.setUint32(8, 2, true);
+pupView.setUint32(12, 16, true);
+for (let i = 0; i < 2; i++) {
+  const off = 16 + i * 64;
+  pupView.setUint32(off, 200 + i, true);
+  pupView.setFloat32(off + 4, 1.2, true);
+  pupView.setFloat32(off + 16, 1.35, true);
+}
+const pup = parsePup(pupBuffer);
+if (pup.entries.length !== 2) {
+  throw new Error("PUP validation failed");
+}
+console.log(`  ✓ PUP: decoded ${pup.entries.length} power-up presets (Preset 0: atk_mult=${pup.entries[0]?.basic_attack_mult}, blast_mult=${pup.entries[0]?.ki_blast_mult})`);
+
+// 4. MSG Validation
+const msgLines = ["Super Kamehameha", "Final Flash", "Special Beam Cannon"];
+const msgEnc = msgLines.map((l) => new TextEncoder().encode(l));
+const msgTextLen = msgEnc.reduce((acc, b) => acc + b.length + 1, 0);
+const msgBuffer = new Uint8Array(16 + msgTextLen);
+const msgView = new DataView(msgBuffer.buffer);
+msgBuffer.set([0x23, 0x4D, 0x53, 0x47], 0); // "#MSG"
+msgView.setUint32(4, 1, true);
+msgView.setUint32(8, msgLines.length, true);
+msgView.setUint32(12, 16, true);
+let msgOff = 16;
+for (const b of msgEnc) {
+  msgBuffer.set(b, msgOff);
+  msgBuffer[msgOff + b.length] = 0;
+  msgOff += b.length + 1;
+}
+const msg = parseMsg(msgBuffer);
+if (msg.entries.length !== 3 || msg.entries[0]?.lines[0] !== "Super Kamehameha") {
+  throw new Error("MSG validation failed");
+}
+console.log(`  ✓ MSG: decoded ${msg.entries.length} text entries (Entry 0: "${msg.entries[0]?.lines[0]}")`);
+
 console.log("\n=================================================");
 console.log("✓ ALL WASM PIPELINE VALIDATIONS PASSED CLEANLY!");
 console.log("=================================================");
+
