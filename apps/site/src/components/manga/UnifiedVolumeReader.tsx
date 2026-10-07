@@ -4,6 +4,7 @@ import { useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { CollectionReader, type ReaderCollectionEdition } from "@shenron/ui/reader";
 import { MangaReader } from "./MangaReader";
+import { useT } from "@/components/T";
 
 export interface ChapterItem {
   id: number;
@@ -26,6 +27,7 @@ export interface VolumeData {
 }
 
 export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
+  const t = useT();
   const searchParams = useSearchParams();
   const chapters = useMemo(() => volume.chapters ?? [], [volume.chapters]);
   const formatChapterTitle = useCallback(
@@ -39,7 +41,7 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
     () => [
       {
         id: "nb",
-        label: "Original N&B (Tankōbon)",
+        label: t("mangaCatalog.frenchBlackWhiteScans"),
         chapters: chapters
           .filter((chapter) => chapter.series !== "DBFC")
           .toSorted((a, b) => a.chapter_number - b.chapter_number)
@@ -51,7 +53,7 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
       },
       {
         id: "color",
-        label: "Full Color (Shueisha)",
+        label: t("mangaCatalog.frenchColorScans"),
         chapters: chapters
           .filter((chapter) => chapter.series === "DBFC")
           .toSorted((a, b) => a.chapter_number - b.chapter_number)
@@ -62,7 +64,7 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
           })),
       },
     ],
-    [chapters, formatChapterTitle],
+    [chapters, formatChapterTitle, t],
   );
   const initialEdition = searchParams?.get("edition") ?? "nb";
   const initialChapterNumber = Number(searchParams?.get("chapter"));
