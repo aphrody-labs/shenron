@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Entrées éditoriales Kanzenshuu hors interviews publiées en 2006, issues du périmètre bibliographique 2006–2015 ; traductions non reproduites ; forums exclus.",
+  "records": [
+    {
+      "id": "comments-super-dragon-ball-z-production-team",
+      "title": "Comments From \"Super Dragon Ball Z\" Production Team Official \"Super Dragon Ball Z\" Website Web/Online Comment 13 January 2006 Ryūichirō Baba, Noritaka Funamizu, Akira Nishitani Super Dragon Ball Z, Video Game",
+      "kind": "authorial-comment",
+      "summary": "Trois responsables de Super Dragon Ball Z racontent leur relation à la série et la conception du jeu. Baba évoque sa passion d’enfance et la prise en main accessible ; Funamizu concrétise un projet mûri depuis vingt ans ; Nishitani détaille les essais autour du système de combat et des attaques à tête chercheuse.",
+      "keyInformation": [
+        "Baba lit Dragon Ball depuis l’adolescence",
+        "Funamizu concrétise un ancien projet",
+        "Nishitani décrit l’itération sur le dash et le homing."
+      ],
+      "source": {
+        "date": "13 January 2006",
+        "publication": "Official “Super Dragon Ball Z” Website",
+        "pages": null,
+        "bibliographicYears": [
+          2006
+        ],
+        "url": "https://www.kanzenshuu.com/translations/comments-super-dragon-ball-z-production-team/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage utile sur le développement d’un jeu Dragon Ball et ses producteurs/concepteurs."
+    },
+    {
+      "id": "dragon-book-movies-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Box The Movies — Dragon Book (p. 1) Booklet Introduction 14 April 2006 Akira Toriyama Dragon Ball (Anime), Dragon Ball Z",
+      "kind": "authorial-comment",
+      "summary": "Toriyama remercie les acheteurs du coffret Dragon Box et rend hommage aux scénaristes qui ont imaginé des histoires originales à partir de son manga. Pendant la sérialisation, sa contribution aux films fut ponctuelle, surtout pour concevoir des ennemis, travail qu’il jugeait difficile après avoir déjà épuisé ses idées de personnages puissants. Il conclut que les équipes ont créé des films efficaces et que Dragon Ball est béni par ses fans et son personnel.",
+      "keyInformation": [
+        "Toriyama a rarement contribué aux films durant la sérialisation",
+        "ses apports furent surtout des designs d’ennemis",
+        "il remercie équipes et fans."
+      ],
+      "source": {
+        "date": "14 April 2006",
+        "publication": "Dragon Ball  DVD Box: Dragon Box The Movies “Dragon Book”",
+        "pages": "p. 1",
+        "bibliographicYears": [
+          2006
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-book-movies-toriyama-intro/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source de l’auteur sur son rôle dans les films DBZ et son appréciation des équipes."
+    },
+    {
+      "id": "cho-kochikame-akira-toriyama-introduction",
+      "title": "Akira Toriyama Comment Chō-Kochikame (p. 218) Manga Comment 15 September 2006 Akira Toriyama Non-Dragon Ball, Manga",
+      "kind": "authorial-comment",
+      "summary": "Pour le recueil du trentième anniversaire de Kochi Kame, Toriyama félicite Osamu Akimoto pour sa longévité et admire son énergie. Il se réjouit de cette collaboration et d’apparaître aux côtés de Ryō-san, célèbre avant ses propres débuts, tout en plaisantant qu’il ne souhaite pas la répéter.",
+      "keyInformation": [
+        "Toriyama salue les trente ans de Kochi Kame et décrit la collaboration comme un honneur."
+      ],
+      "source": {
+        "date": "15 September 2006",
+        "publication": "Chō-Kochikame",
+        "pages": "p. 218",
+        "bibliographicYears": [
+          2006
+        ],
+        "url": "https://www.kanzenshuu.com/translations/cho-kochikame-akira-toriyama-introduction/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Documente une collaboration entre auteurs de manga."
+    }
+  ]
+}

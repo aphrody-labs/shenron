@@ -24,10 +24,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form/",
         "questionAnswerCount": 3,
-        "formatNote": "Article promotionnel organisé en trois questions-réponses; il présente une illustration et une future figurine. Le concept de Bardock derrière Goku est présenté par Toyotarō comme un scénario hypothétique, pas comme un événement canonique."
+        "formatNote": "Article promotionnel organisé en trois questions-réponses; il présente une illustration et une future figurine. Le concept de Bardock derrière Goku est présenté par Toyotarō comme un scénario hypothétique, pas comme un événement canonique.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : témoignage de Toyotarō sur la référence au manga, la représentation de Bardock et la conception de l'illustration; le scénario imaginé pour l'image reste hypothétique.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "vj-official-dragon-ball-super-inside-scoop-editor-video",
@@ -55,10 +57,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/vj-official-dragon-ball-super-inside-scoop-editor-video/",
         "questionAnswerCount": 0,
-        "formatNote": "Transcription d'une conversation vidéo sans balisage question-réponse formel; questions et commentaires s'enchaînent entre Uchida et les deux présentatrices. Les notes du traducteur corrigent certaines affirmations chronologiques d'Uchida et sont attribuées comme notes éditoriales, non comme ses propos."
+        "formatNote": "Transcription d'une conversation vidéo sans balisage question-réponse formel; questions et commentaires s'enchaînent entre Uchida et les deux présentatrices. Les notes du traducteur corrigent certaines affirmations chronologiques d'Uchida et sont attribuées comme notes éditoriales, non comme ses propos.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : description de la collaboration Toriyama–Toyotarō–éditeur, du processus de storyboard de Dragon Ball Super et de la préparation du nouvel arc; le passage sur l'Ultra Instinct est un souvenir d'Uchida assorti d'une correction éditoriale.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "vjump-february-2021-we-ask-toyotaro-sensei",
@@ -80,10 +84,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/vjump-february-2021-we-ask-toyotaro-sensei/",
         "questionAnswerCount": 3,
-        "formatNote": "Trois questions-réponses. Divergence de date à résoudre à la collation : l'en-tête de la page archivée donne V-Jump février 2021, paru le 21 décembre 2020, alors que le champ publicationDate de l'index principal indique le 21 décembre 2021. La fiche conserve les deux valeurs au lieu d'en choisir une sans preuve."
+        "formatNote": "Trois questions-réponses. Divergence de date à résoudre à la collation : l'en-tête de la page archivée donne V-Jump février 2021, paru le 21 décembre 2020, alors que le champ publicationDate de l'index principal indique le 21 décembre 2021. La fiche conserve les deux valeurs au lieu d'en choisir une sans preuve.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : témoignage de Toyotarō sur son travail de dessinateur et ses préférences concernant deux arcs de Dragon Ball Super; la déclaration sur le brouillon attribué à Toriyama est rapportée par Toyotarō.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1992); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "dbz-ongakushu-vol-1-kozo-morishita-comment",
+      "title": "Kōzō Morishita BGM Comment Dragon Ball Z Ongakushū Volume 1 Insert Pamphlet Comment 21 August 1992 Kōzō Morishita Dragon Ball Z, Music, BGM",
+      "summary": "Le producteur Kōzō Morishita rend hommage à la musique de Shunsuke Kikuchi et à son rôle dans le succès télévisuel et cinématographique de Dragon Ball. Il décrit comment la musique soutient les personnages, l’action et les changements de ton, et rappelle leur longue collaboration depuis d’autres productions de Toei.",
+      "keyInformation": [
+        "Morishita associe la popularité de la série à la musique de Kikuchi et évoque l’ampleur de son catalogue musical",
+        "Il rappelle leur collaboration antérieure sur plusieurs séries de Toei, dont Tiger Mask et Getter Robo"
+      ],
+      "source": {
+        "publication": "Kōzō Morishita BGM Comment Dragon Ball Z Ongakushū Volume 1 Insert Pamphlet Comment 21 August 1992 Kōzō Morishita Dragon Ball Z, Music, BGM",
+        "pages": null,
+        "date": "1992-08-21",
+        "url": "https://www.kanzenshuu.com/translations/dbz-ongakushu-vol-1-kozo-morishita-comment/"
+      },
+      "dragonBallRelevance": "Directe : témoignage d’un producteur sur la musique et la production de l’anime.",
+      "formatNote": "Commentaire d’accompagnement d’un album, sous forme d’hommage personnel.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "vjump-february-1993-dragon-ball-z-arcade-akira-toriyama-comment-design",
+      "title": "\"Dragon Ball Z\" (Arcade) Akira Toriyama Comment and Design V-Jump, February 1993",
+      "summary": "Toriyama commente la borne d’arcade Dragon Ball Z qu’il a lui-même conçue. Il dit être ému de voir le projet prendre forme et enthousiaste à l’idée de jouer à un jeu tiré de son manga, en attendant sa présentation publique prévue pendant les vacances d’été.",
+      "keyInformation": [
+        "Toriyama a participé au design de la borne et se réjouit de sa concrétisation",
+        "Le lancement est prévu lors d’un événement du 25e anniversaire de Jump en 1993"
+      ],
+      "source": {
+        "publication": "\"Dragon Ball Z\" (Arcade) Akira Toriyama Comment and Design V-Jump, February 1993",
+        "pages": null,
+        "date": "1992-12-21",
+        "url": "https://www.kanzenshuu.com/translations/vjump-february-1993-dragon-ball-z-arcade-akira-toriyama-comment-design/",
+        "bibliographicYears": [
+          1993,
+          1992
+        ]
+      },
+      "dragonBallRelevance": "Directe : implication de Toriyama dans la conception d’un jeu Dragon Ball.",
+      "formatNote": "Commentaire promotionnel très bref; le millésime de l’édition est 1993 mais la date de publication indiquée est le 21 décembre 1992.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

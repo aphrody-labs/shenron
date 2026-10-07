@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1985); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "wj-1985-10-toriyama-neverending-story",
+      "title": "\"The NeverEnding Story\" Comment Weekly Shōnen Jump, 1985 #10 Anthology 18 February 1985 Akira Toriyama Illustrations, Promotional",
+      "summary": "Toriyama livre un bref avis enthousiaste sur l’adaptation cinématographique de L’Histoire sans fin. Il apprécie la traduction à l’écran d’un récit qui lui semblait difficile à adapter et estime que le rythme plutôt tranquille convient à la fantasy.",
+      "keyInformation": [
+        "Il trouve l’adaptation réussie malgré la difficulté apparente du matériau d’origine",
+        "Il juge que le ton posé du film est adapté à son genre"
+      ],
+      "source": {
+        "publication": "\"The NeverEnding Story\" Comment Weekly Shōnen Jump, 1985 #10 Anthology 18 February 1985 Akira Toriyama Illustrations, Promotional",
+        "pages": null,
+        "date": "1985-02-18",
+        "url": "https://www.kanzenshuu.com/translations/wj-1985-10-toriyama-neverending-story/"
+      },
+      "dragonBallRelevance": "Indirecte : commentaire culturel de l’auteur, sans contenu Dragon Ball.",
+      "formatNote": "Commentaire promotionnel bref lié à un film, plutôt qu’un entretien.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "dr-slump-volume-18-dragon-ball-comments",
+      "title": "Dragon Ball Comments Dr. Slump, Volume 18 (pp. 224 & 238)",
+      "summary": "Les deux messages de fin de Dr. Slump annoncent à ses lecteurs l’arrivée prochaine de Dragon Ball. Le premier prend la forme d’une annonce publicitaire; le second remercie les lecteurs après la conclusion de la série et invite à retrouver Toriyama dans son nouveau manga.",
+      "keyInformation": [
+        "Une page annonce la prochaine série Dragon Ball; l’autre remercie les lecteurs de Dr. Slump et mentionne la future édition reliée",
+        "Le commentaire est écrit alors que Dragon Ball vient tout juste de commencer sa publication en magazine"
+      ],
+      "source": {
+        "publication": "Dragon Ball Comments Dr. Slump, Volume 18 (pp. 224 & 238)",
+        "pages": "224 et 238",
+        "date": "1985-05-10",
+        "url": "https://www.kanzenshuu.com/translations/dr-slump-volume-18-dragon-ball-comments/"
+      },
+      "dragonBallRelevance": "Directe : témoignage contemporain du lancement de Dragon Ball.",
+      "formatNote": "Deux courts commentaires imprimés dans le manga, dont une annonce éditoriale.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "akira-toriyama-tankobon-ask-me-anything",
+      "title": "Toriyama- san ’s Dragon Ball Ask-Me-Anything Corner Dragon Ball Tankōbon, Volumes 1-12",
+      "summary": "Cette rubrique rassemble les courriers des lecteurs et les réponses de Toriyama dans les premiers volumes reliés. Les questions portent sur les personnages, les choix narratifs, les dessins et la vie de l’auteur; ses réponses combinent éclaircissements, improvisation comique et demandes de soutien aux ventes des volumes.",
+      "keyInformation": [
+        "Toriyama répond notamment aux questions de lecteurs sur Goku, ses personnages et la création du manga",
+        "Le format évolue avec les premiers volumes et met en scène la relation entre courrier des lecteurs et auteur"
+      ],
+      "source": {
+        "publication": "Toriyama- san ’s Dragon Ball Ask-Me-Anything Corner Dragon Ball Tankōbon, Volumes 1-12",
+        "pages": null,
+        "date": "1985-09-10",
+        "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/akira-toriyama-tankobon-ask-me-anything.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 65,
+        "questionBlockCount": 65,
+        "answerBlockCount": 65,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Reader-mail Q&A",
+        "sourceDescription": ""
+      },
+      "dragonBallRelevance": "Directe : réponses d’auteur sur le manga et son univers, avec des informations parfois données sur le ton de la plaisanterie.",
+      "formatNote": "Courrier de lecteurs répondu par Toriyama; rubrique éditoriale, pas entretien.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "akira-toriyama-tankobon-introductions",
+      "title": "Akira Toriyama Introductions Dragon Ball Tankōbon, Volumes 1-42",
+      "summary": "Cette compilation réunit les textes d’introduction que Toriyama a écrits pour les 42 volumes de Dragon Ball. Il y alterne remarques sur l’univers et le travail en cours, anecdotes de vie familiale, remerciements et plaisanteries; à mesure que la série s’allonge, il évoque aussi la fatigue, les délais et l’improvisation de son récit.",
+      "keyInformation": [
+        "Dans le premier volume, il décrit un cadre d’inspiration chinoise sans époque précisément fixée et dit vouloir inventer les détails au fil de l’histoire",
+        "Les textes successifs documentent la sérialisation jusqu’à la fin, avec des commentaires personnels sur ses méthodes et son quotidien"
+      ],
+      "source": {
+        "publication": "Akira Toriyama Introductions Dragon Ball Tankōbon, Volumes 1-42",
+        "pages": null,
+        "date": "1985-09-10",
+        "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-introductions/"
+      },
+      "dragonBallRelevance": "Directe : source suivie sur l’écriture, la publication et les intentions de Dragon Ball.",
+      "formatNote": "Ensemble de 42 textes éditoriaux courts, pas une entrevue unique.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

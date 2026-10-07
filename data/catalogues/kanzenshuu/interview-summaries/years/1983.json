@@ -20,10 +20,12 @@
         "date": "1983-05-04",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tetsukos-room-1983-akira-toriyama-interview/",
         "questionAnswerCount": null,
-        "formatNote": "Transcription continue; le balisage de la page n'emploie pas les blocs Q/R habituels."
+        "formatNote": "Transcription continue; le balisage de la page n'emploie pas les blocs Q/R habituels.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Contexte de création de Dr. Slump et du travail éditorial de Torishima avant Dragon Ball.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

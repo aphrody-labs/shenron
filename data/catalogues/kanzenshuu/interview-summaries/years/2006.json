@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 2006; contenus de forum exclus.",
+  "reviewNote": "Q&A avec répondant(s) identifié(s); contenu de forum exclu.",
+  "records": [
+    {
+      "id": "dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama",
+      "title": "Dragon Box The Movies Dragonbook (14 April 2006)",
+      "kind": "qa",
+      "summary": "Takao Koyama décrit la fabrication des scénarios des treize films DBZ qu’il a écrits : concertation avec le producteur et l’éditeur superviseur, proposition de synopsis à Toriyama, puis rédaction. Les films devaient rester au niveau de progression de l’anime télévisé ; les noms des antagonistes suivent souvent des thèmes ludiques. Koyama détaille aussi les titres, les gags, les scènes de vie quotidienne et la difficulté de faire monter la puissance des adversaires.",
+      "keyInformation": [
+        "Synopsis soumis à Toriyama avant scénario",
+        "continuité avec l’anime contraint les intrigues",
+        "thèmes alimentaires pour les groupes de personnages",
+        "Broly revient trois fois comme adversaire redoutable."
+      ],
+      "source": {
+        "date": "14 April 2006",
+        "publication": "Dragon Box The Movies",
+        "pages": "pp. 52-55",
+        "bibliographicYears": [
+          2006
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama.html",
+        "participants": [
+          "Takao Koyama"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the 'Theatrical Story Q&A' with Takao Koyama from the 2006 release of Dragon Ball's 'Dragon Box The Movies' in Japan",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage majeur du scénariste historique des films DBZ.",
+      "formatNote": "Long Q&A mêlant réponses et notes explicatives."
+    }
+  ]
+}

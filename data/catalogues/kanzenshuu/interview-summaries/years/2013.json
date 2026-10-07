@@ -28,10 +28,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chozenshu-1-we-asked-akira-toriyama-2013/",
-        "questionAnswerCount": 10
+        "questionAnswerCount": 10,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : vie des personnages, inspiration de Beerus, fonctionnement du ki et rôle des divinités; certaines réponses portent sur Neko Majin.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "v-jump-april-2013-triple-z-talk",
@@ -58,10 +60,12 @@
           "Kaori Matsumoto"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-april-2013-triple-z-talk/",
-        "questionAnswerCount": 13
+        "questionAnswerCount": 13,
+        "forumContent": false
       },
       "dragonBallRelevance": "Réception et influence culturelle de Goku, expérience des interprètes et première prestation vocale de Kaori Matsumoto dans Battle of Gods; témoignages personnels plutôt que propos d'auteur.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "okstars-interview-vol-246-masahiro-hosoda",
@@ -85,10 +89,12 @@
           "Masahiro Hosoda"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/okstars-interview-vol-246-masahiro-hosoda/",
-        "questionAnswerCount": 8
+        "questionAnswerCount": 8,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : réalisation de Battle of Gods, interprétation de Beerus et Whis, direction des acteurs et intentions de production rapportées par le réalisateur.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "okstars-interview-vol-249-tadayoshi-yamamuro",
@@ -114,10 +120,12 @@
           "Tadayoshi Yamamuro"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/okstars-interview-vol-249-tadayoshi-yamamuro/",
-        "questionAnswerCount": 9
+        "questionAnswerCount": 9,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : supervision d'animation, design du Super Saiyan God, représentation des personnages et chorégraphie des combats de Battle of Gods.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "seiyu-animedia-april-2013-masako-nozawa-interview",
@@ -139,10 +147,12 @@
           "Masako Nozawa"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/seiyu-animedia-april-2013-masako-nozawa-interview/",
-        "questionAnswerCount": 9
+        "questionAnswerCount": 9,
+        "forumContent": false
       },
       "dragonBallRelevance": "Témoignage d'interprète sur Battle of Gods, la direction de jeu et sa lecture de Goku; ses anticipations ne sont pas des annonces d'auteur.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "animage-april-2013-dbz-revived-feature",
@@ -163,10 +173,12 @@
           "FLOW"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/animage-april-2013-dbz-revived-feature/",
-        "questionAnswerCount": 6
+        "questionAnswerCount": 6,
+        "forumContent": false
       },
       "dragonBallRelevance": "Document promotionnel du film, utile pour le témoignage de Nozawa et la création des chansons de FLOW; propos attribués aux intervenants.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "ure-pia-soken-yusuke-watanabe",
@@ -188,10 +200,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/ure-pia-soken-yusuke-watanabe/",
         "questionAnswerCount": 1,
-        "formatNote": "Un bloc Q/R développé en entretien narratif, avec citations et récit biographique."
+        "formatNote": "Un bloc Q/R développé en entretien narratif, avec citations et récit biographique.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Témoignage du scénariste sur le développement du film; ses jugements sur les personnages restent son point de vue.",
-      "status": "summary-written-source-not-collated"
+      "status": "summary-written-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "cddl-data-marchapril-2013-flow-interview",
@@ -213,10 +227,12 @@
           "FLOW"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/cddl-data-marchapril-2013-flow-interview/",
-        "questionAnswerCount": 12
+        "questionAnswerCount": 12,
+        "forumContent": false
       },
       "dragonBallRelevance": "Entretien de musiciens principalement consacré à leur album; la partie Dragon Ball documente la genèse de deux chansons du film.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "animate-tv-masako-nozawa-interview",
@@ -238,10 +254,12 @@
           "Masako Nozawa"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/animate-tv-masako-nozawa-interview/",
-        "questionAnswerCount": 11
+        "questionAnswerCount": 11,
+        "forumContent": false
       },
       "dragonBallRelevance": "Témoignage de comédienne sur l'interprétation et la production de Battle of Gods; opinions de Nozawa attribuées.",
-      "status": "summary-written-source-not-collated"
+      "status": "summary-written-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "dvd-blu-ray-vision-april-2013-battle-of-gods",
@@ -269,10 +287,12 @@
           "Yūsuke Watanabe"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dvd-blu-ray-vision-april-2013-battle-of-gods/",
-        "questionAnswerCount": 51
+        "questionAnswerCount": 51,
+        "forumContent": false
       },
       "dragonBallRelevance": "Table ronde multi-profils : propos distincts d'une comédienne, de musiciens et du scénariste; les informations sur Toriyama sont rapportées par Watanabe.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "otonafami-may-2013-issue-masako-nozawa-interview",
@@ -294,10 +314,12 @@
           "Masako Nozawa"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/otonafami-may-2013-issue-masako-nozawa-interview/",
-        "questionAnswerCount": 8
+        "questionAnswerCount": 8,
+        "forumContent": false
       },
       "dragonBallRelevance": "Témoignage promotionnel de la comédienne; la réaction de Toriyama est rapportée indirectement par Nozawa.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "bog-official-movie-guide-masahiro-hosoda",
@@ -323,10 +345,12 @@
           "Masahiro Hosoda"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-masahiro-hosoda/",
-        "questionAnswerCount": 7
+        "questionAnswerCount": 7,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe pour la réalisation et les choix de production de Battle of Gods; témoignage du réalisateur, à distinguer de ceux de Toriyama et des interprètes.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "bog-official-movie-guide-masako-nozawa",
@@ -354,10 +378,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-masako-nozawa/",
         "questionAnswerCount": 16,
-        "formatNote": "L'index Kanzenshuu indique 16 questions, mais la transcription acquise contient 15 paires balisées question-réponse; un item doit être repointé sur l'original imprimé."
+        "formatNote": "L'index Kanzenshuu indique 16 questions, mais la transcription acquise contient 15 paires balisées question-réponse; un item doit être repointé sur l'original imprimé.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe pour la production vocale et l'interprétation de Goku dans Battle of Gods; les jugements sur le personnage sont ceux de Nozawa, non des déclarations d'auteur.",
-      "status": "summary-written-count-discrepancy-to-review"
+      "status": "summary-written-count-discrepancy-to-review",
+      "forumContent": false
     },
     {
       "id": "v-jump-may-2013-naho-ooishi-toyotaro",
@@ -380,10 +406,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-may-2013-naho-ooishi-toyotaro/",
         "questionAnswerCount": 7,
-        "formatNote": "7 questions et 9 blocs de réponse; 2 blocs supplémentaires appartiennent à une bande dessinée intégrée, non à l'entretien."
+        "formatNote": "7 questions et 9 blocs de réponse; 2 blocs supplémentaires appartiennent à une bande dessinée intégrée, non à l'entretien.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Témoignage de deux mangaka sur leur réception du film; avis d'artistes, distinct des déclarations de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "bog-official-movie-guide-akira-toriyama",
@@ -412,10 +440,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-akira-toriyama/",
-        "questionAnswerCount": 13
+        "questionAnswerCount": 13,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : production et scénario de Battle of Gods, placement temporel, personnages et choix de conception; témoignage de Toriyama sur le film.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "v-jump-may-2013-akira-toriyama-special-interview",
@@ -446,10 +476,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-may-2013-akira-toriyama-special-interview/",
-        "questionAnswerCount": 29
+        "questionAnswerCount": 29,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : création de Battle of Gods, Beerus et Whis, placement temporel, Pilaf, Super Saiyan God et méthode de conception de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "getnavi-may-2013-the-top-notch-cast-and-staff-talk",
@@ -472,10 +504,12 @@
           "Yūsuke Watanabe"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/getnavi-may-2013-the-top-notch-cast-and-staff-talk/",
-        "questionAnswerCount": 13
+        "questionAnswerCount": 13,
+        "forumContent": false
       },
       "dragonBallRelevance": "Entretien collectif; témoignages distincts d'une comédienne, du scénariste et des musiciens.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "akira-toriyama-masako-nozawa-special-talk",
@@ -501,10 +535,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/akira-toriyama-masako-nozawa-special-talk/",
         "questionAnswerCount": 0,
-        "formatNote": "Dialogue libre balisé en 12 blocs de prises de parole; aucun Q/R numéroté."
+        "formatNote": "Dialogue libre balisé en 12 blocs de prises de parole; aucun Q/R numéroté.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Conversation d'auteur et d'interprète sur la conception de Goku, son incarnation vocale et la création de Beerus.",
-      "status": "summary-written-source-not-collated"
+      "status": "summary-written-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "weekly-asahi-masako-nozawa-interview",
@@ -532,10 +568,12 @@
           "Masako Nozawa"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/weekly-asahi-masako-nozawa-interview/",
-        "questionAnswerCount": 53
+        "questionAnswerCount": 53,
+        "forumContent": false
       },
       "dragonBallRelevance": "Entretien biographique avec l'interprète; souvenirs de conversations de production et interprétations personnelles explicitement indirects.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "asahi-shimbun-digital-akira-toriyama-interview",
@@ -561,10 +599,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/asahi-shimbun-digital-akira-toriyama-interview/",
-        "questionAnswerCount": 17
+        "questionAnswerCount": 17,
+        "forumContent": false
       },
       "dragonBallRelevance": "Entretien primaire avec l'auteur sur la production du film et son processus créatif; une note éditoriale sur les noms est distinguée de sa réponse.",
-      "status": "summary-written-source-not-collated"
+      "status": "summary-written-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "official-battle-gods-website-toriyama-x-nakagawa-interview",
@@ -589,10 +629,12 @@
           "Shōko Nakagawa"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/official-battle-gods-website-toriyama-x-nakagawa-interview/",
-        "questionAnswerCount": 9
+        "questionAnswerCount": 9,
+        "forumContent": false
       },
       "dragonBallRelevance": "Entretien de l'auteur et d'une chanteuse/comédienne; les propos de chacun sont attribués séparément.",
-      "status": "summary-written-source-not-collated"
+      "status": "summary-written-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "full-color-comics-freeza-arc-vol-4-akira-toriyama",
@@ -622,10 +664,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/full-color-comics-freeza-arc-vol-4-akira-toriyama/",
-        "questionAnswerCount": 12
+        "questionAnswerCount": 12,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : scénario, personnages et choix visuels de Battle of Gods; certaines réponses reprennent des sujets aussi abordés dans d'autres entretiens de 2013, avec des précisions propres à cette version.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "full-color-comics-freeza-arc-vol-5-akira-toriyama",
@@ -652,10 +696,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/full-color-comics-freeza-arc-vol-5-akira-toriyama/",
-        "questionAnswerCount": 11
+        "questionAnswerCount": 11,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : adaptations animées, Super Saiyan God, conception de Goku, origine de sa queue et intention de lisibilité; aussi des éléments biographiques sur Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "chozenshu-4-masako-nozawa",
@@ -690,10 +736,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chozenshu-4-masako-nozawa/",
         "questionAnswerCount": null,
-        "formatNote": "Récit rétrospectif structuré par périodes chronologiques, sans questions-réponses formelles."
+        "formatNote": "Récit rétrospectif structuré par périodes chronologiques, sans questions-réponses formelles.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe pour le travail vocal, les conditions de production et l'expérience de Nozawa dans les séries et films; témoignage d'interprète, distinct des déclarations d'auteur.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "chozenshu-4-akira-toriyama",
@@ -726,10 +774,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chozenshu-4-akira-toriyama/",
-        "questionAnswerCount": 17
+        "questionAnswerCount": 17,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : genèse et sérialisation du manga, tournois, casting et production de l'anime, GT, designs dérivés et pratiques créatives de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "chogashu-akira-toriyama-super-interview-latest-edition",
@@ -753,10 +803,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chogashu-akira-toriyama-super-interview-latest-edition/",
-        "questionAnswerCount": 10
+        "questionAnswerCount": 10,
+        "forumContent": false
       },
       "dragonBallRelevance": "Entretien primaire sur la pratique graphique de Toriyama; son souvenir concernant GT ne tranche pas le statut de la série.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "battle-gods-animanga-akira-toriyama",
@@ -780,10 +832,12 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/battle-gods-animanga-akira-toriyama/",
-        "questionAnswerCount": 17
+        "questionAnswerCount": 17,
+        "forumContent": false
       },
       "dragonBallRelevance": "Source d'auteur sur Battle of Gods et ses choix de production; les rapports de force sont ceux formulés dans cet entretien.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "mens-non-no-akira-toriyama-interview",
@@ -807,10 +861,418 @@
           "Akira Toriyama"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/mens-non-no-akira-toriyama-interview/",
-        "questionAnswerCount": 27
+        "questionAnswerCount": 27,
+        "forumContent": false
       },
       "dragonBallRelevance": "Entretien rétrospectif primaire sur le parcours de l'auteur et les choix de création de Dragon Ball.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "saikyo-kids-z-interview",
+      "title": "Saikyō Kids Z Interview!!!",
+      "summary": "Dans cet entretien de Saikyō Jump, deux jeunes lecteurs, Sora Suzuki et Shun’ya Yamada, interrogent Masako Nozawa, Shōko Nakagawa et Kaori Matsumoto, trois participantes à Battle of Gods. Elles parlent de leurs rêves et de leurs parcours : Nozawa évoque ses débuts précoces dans le spectacle et encourage à ne pas renoncer d’avance; Nakagawa explique que Dragon Ball a accompagné son enfance et nourri son envie de chanter; Matsumoto revient sur son engagement à voyager dans le monde et sur son ambition sportive. Les questions abordent ensuite leur lien avec la série. Nozawa décrit son jeu intuitif au micro lorsqu’elle incarne Goku, Gohan et Goten; Nakagawa cite Trunks aux cheveux longs et plaisante sur Vegeta; Matsumoto se réjouit d’avoir joué avec Goku et admire son goût du défi. Nozawa précise enfin que les personnages de Dragon Ball sont présents dans le film et invite à découvrir le nouveau dieu comme une surprise.",
+      "keyInformation": [
+        "Sora Suzuki et Shun’ya Yamada, deux membres des Saikyō Kids, mènent l’entretien.",
+        "Nozawa raconte avoir commencé le spectacle à deux ans et conseille de ne pas conclure trop tôt que son rêve est impossible.",
+        "Nakagawa dit que Dragon Ball a nourri son rêve de devenir chanteuse; Matsumoto revient sur ses voyages et son ambition sportive.",
+        "Nozawa visualise les personnages pour passer de Goku à Gohan puis Goten au micro, sans changement vocal consciemment calculé.",
+        "Nakagawa cite Trunks aux cheveux longs et plaisante sur Vegeta; Matsumoto admire le cœur de Goku qui aime les combats.",
+        "Nozawa mentionne la présence des personnages dans le film et désigne le nouveau dieu comme une surprise."
+      ],
+      "source": {
+        "publication": "Saikyō Jump, numéro d’avril 2013",
+        "date": "2013-03-04",
+        "participants": [
+          "Sora Suzuki",
+          "Shun’ya Yamada",
+          "Masako Nozawa",
+          "Shōko Nakagawa",
+          "Kaori Matsumoto"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/saikyo-kids-z-interview/",
+        "questionAnswerCount": 4,
+        "detectedQuestionBlocks": 4,
+        "detectedAnswerBlocks": 4,
+        "formatNote": "Entretien conduit par deux enfants; quatre blocs regroupent plusieurs sous-questions.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : doublage et réception de Dragon Ball par trois participantes à Battle of Gods.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "super-long-interview-please-tell-us-akira-toriyama-sensei",
+      "title": "Super Long Interview!! Please Tell Us, Akira Toriyama-sensei!!",
+      "summary": "Cette série de huit questions-réponses hebdomadaires de Weekly Shōnen Jump suit Akira Toriyama autour de Battle of Gods, de mars à avril 2013. Il explique que l’histoire avait commencé environ deux ans avant la sortie et que son implication renforcée l’a rendue plus proche de l’esprit de Dragon Ball et plaisante pour les enfants. Il a conçu Beerus comme un chat, notamment parce que les dieux humanoïdes étaient déjà nombreux, et lui a donné une apparence inspirée de l’Égypte ancienne. Le récit se déroule quelques années après Boo et avant la naissance de Pan; les personnages sont proches de leur sommet. Le Super Saiyan God était prévu dès le début et devait rompre visuellement avec l’escalade du Super Saiyan 3. Toriyama parle aussi des développements sentimentaux apparus incidemment, de la nécessité de suggérer un passé à Beerus pour rendre ses actes crédibles et de sa tendance à oublier vite ses idées. Il souhaitait que la fin laisse sentir une continuation au-delà de la bataille. La série porte sur ses idées de film, tandis que le scénario final est attribué à Yūsuke Watanabe.",
+      "keyInformation": [
+        "Toriyama situe le début du travail sur l’histoire environ deux ans avant la sortie; son implication a renforcé le ton Dragon Ball et l’attrait pour les enfants.",
+        "Beerus est conçu comme un chat, entre autres parce que Toriyama avait déjà créé de nombreux dieux humanoïdes; son apparence emprunte à l’Égypte ancienne.",
+        "Le film se situe quelques années après Boo, avant la naissance de Pan, avec des personnages proches de leur maximum.",
+        "Le Super Saiyan God était prévu tôt et devait être moins ostentatoire que le Super Saiyan 3.",
+        "Toriyama dit que les évolutions sentimentales sont incidentes et qu’il est peu à l’aise avec la romance.",
+        "Il voulait que Beerus ait un passé suggéré et reconnaît oublier rapidement ses idées.",
+        "La conclusion devait donner l’impression d’une histoire qui continue au-delà du combat.",
+        "Le scénario final du film est attribué à Yūsuke Watanabe."
+      ],
+      "source": {
+        "publication": "Weekly Shōnen Jump, 2013 nos 14–20",
+        "date": "2013-03-04",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/super-long-interview-please-tell-us-akira-toriyama-sensei/",
+        "questionAnswerCount": 8,
+        "detectedQuestionBlocks": 8,
+        "detectedAnswerBlocks": 8,
+        "formatNote": "Série hebdomadaire des numéros 14 à 20; première livraison le 4 mars, dernière le 15 avril 2013.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : développement, personnages, temporalité et intentions narratives de Battle of Gods, selon Toriyama.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "db-full-color-saiyan-arc-01",
+      "title": "Dragon Ball Full Color: Saiyan Arc Volume #01 (04 February 2013)",
+      "kind": "qa",
+      "summary": "Rubrique pédagogique sur l’arc Saiyan : âge et origine de Goku, rivalité avec Piccolo, queue et Oozaru, mariage avec Chi-Chi, Dieu de la Terre et forme du cosmos. Toriyama précise que Vegeta est prince et que Raditz et Nappa sont de rang égal.",
+      "keyInformation": [
+        "Goku est né en Age 737",
+        "Vegeta est prince",
+        "Raditz et Nappa ont le même rang."
+      ],
+      "source": {
+        "date": "04 February 2013",
+        "publication": "Dragon Ball Full Color: Saiyan Arc Volume #01",
+        "pages": "pp. 246-247",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-01/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-01/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-saiyan-arc-01.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha covers the basics of the story for newcomers to the series, while creator Akira Toriyama reveals some new in-universe information.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Vulgarisation du manga avec une réponse de Toriyama.",
+      "formatNote": "Q&A pédagogique de volume Full Color."
+    },
+    {
+      "id": "db-full-color-saiyan-arc-02",
+      "title": "Dragon Ball Full Color: Saiyan Arc Volume #02 (04 February 2013)",
+      "kind": "qa",
+      "summary": "La rubrique présente les haricots Senzu, puissances des Saiyans, Uranai Baba, vœux de Shenlong, Kikōhō et limites des scouters. Toriyama indique que les vaisseaux saiyans sont exigus mais conçus pour transporter sans dommage des passagers inconscients.",
+      "keyInformation": [
+        "Puissances indiquées : Raditz 1 500, Nappa 4 000, Vegeta 18 000",
+        "Baba est la sœur de Kame-Sen’nin",
+        "les anciens scouters ne dépassent pas 22 000."
+      ],
+      "source": {
+        "date": "04 February 2013",
+        "publication": "Dragon Ball Full Color: Saiyan Arc Volume #02",
+        "pages": "pp. 244-245",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-02/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-02/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-saiyan-arc-02.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha covers the basics of the story for newcomers to the series, while creator Akira Toriyama reveals some new in-universe information.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Informations de l’arc Saiyan et précision de l’auteur sur les vaisseaux.",
+      "formatNote": "Q&A éditorial avec une réponse de Toriyama."
+    },
+    {
+      "id": "db-full-color-saiyan-arc-03",
+      "title": "Dragon Ball Full Color: Saiyan Arc Volume #03 (04 February 2013)",
+      "kind": "qa",
+      "summary": "Questions sur Kamehameha, destructions de la Lune, transformations de Goku, Popo, Yajirobé et puissances terriennes. Toriyama invente une anecdote où Beerus détruit l’ancienne planète de Kaio après avoir perdu à un jeu vidéo de course ; Kanzenshuu note que cela contredit le film, où il perd à cache-cache.",
+      "keyInformation": [
+        "L’anecdote improvisée attribue à Beerus la destruction de la planète de Kaio après une défaite à un jeu de course",
+        "cela contredit l’explication du film."
+      ],
+      "source": {
+        "date": "04 February 2013",
+        "publication": "Dragon Ball Full Color: Saiyan Arc Volume #03",
+        "pages": "pp. 244-245",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-03/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-saiyan-arc-03/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-saiyan-arc-03.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha covers the basics of the story for newcomers to the series, while creator Akira Toriyama reveals some new in-universe information.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Déclaration de Toriyama avec divergence entre supports clairement signalée.",
+      "formatNote": "Q&A pédagogique et note de cohérence éditoriale."
+    },
+    {
+      "id": "mando-kobayashi-akira-toriyama-qa",
+      "title": "Mandō Kobayashi",
+      "kind": "qa",
+      "summary": "L’émission spéciale mêle discussion de Battle of Gods et réponses écrites de Toriyama. Il explique pourquoi il a réécrit le scénario, choisi la période après Boo et conçu Beerus et Whis comme des êtres puissants mais humanisés. Il improvise aussi des épilogues pour Yamcha, Tenshinhan et Chaozu, explicitement présentés comme incertains, et répond sur le casting et la création.",
+      "keyInformation": [
+        "Toriyama reprend le scénario car certains dialogues le gênaient",
+        "les épilogues de Yamcha, Tenshinhan et Chaozu sont improvisés à l’antenne et potentiellement erronés."
+      ],
+      "source": {
+        "date": "24 March 2013",
+        "publication": "Mandō Kobayashi",
+        "pages": null,
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/mando-kobayashi-akira-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/mando-kobayashi-akira-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/mando-kobayashi-akira-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 9,
+        "questionBlockCount": 9,
+        "answerBlockCount": 9,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Translation of Akira Toriyama's comments on the film Battle of Gods from the Mandō Kobayashi program on Fuji TV",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source riche sur la création du film, avec précaution explicite sur certaines réponses.",
+      "formatNote": "Émission transcrite, Q&A et échanges avec les invités."
+    },
+    {
+      "id": "v-jump-december-2013-akira-toriyama",
+      "title": "V-Jump , December 2013 (21 October 2013)",
+      "kind": "qa",
+      "summary": "Dans ce dossier V-Jump consacré à Jaco, Toriyama répond sur les noms alimentaires, l’emblème de la Patrouille Galactique et ses limites face aux Saiyans. Il explique que le lien de Jaco avec Dragon Ball justifie le cadre rétro ; Ooishi, Toyotarō et Engineer Yoshito réagissent ensuite à ces liens et souhaitent voir Jaco croiser leurs propres créations.",
+      "keyInformation": [
+        "La Patrouille ne peut rivaliser avec les Saiyans adultes ou Freezer",
+        "le lien avec Dragon Ball motive le cadre rétro",
+        "les collaborateurs saluent la révélation."
+      ],
+      "source": {
+        "date": "21 October 2013",
+        "publication": "V-Jump , December 2013",
+        "pages": "pp. 453-457",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/v-jump-december-2013-akira-toriyama/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-december-2013-akira-toriyama/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/v-jump-december-2013-akira-toriyama.html",
+        "participants": [
+          "Akira Toriyama",
+          "Naho Ooishi",
+          "Toyotarō",
+          "Engineer Yoshito"
+        ],
+        "questionAnswerCount": 17,
+        "questionBlockCount": 17,
+        "answerBlockCount": 17,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Akira Toriyama answers V-Jump editor Daisuke Terashi's questions about \"Jaco the Galactic Patrolman\", plus his influences and likes.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Document sur Jaco et les auteurs associés.",
+      "formatNote": "Article composite : Q&A, commentaires et profils."
+    },
+    {
+      "id": "v-jump-december-2013-toyotaro-q-and-a",
+      "title": "V-Jump December 2013 (21 October 2013)",
+      "kind": "qa",
+      "summary": "Toyotarō raconte avoir dessiné des mangas Dragon Ball depuis l’enfance jusqu’à ce qu’une occasion l’amène au métier. Il considère Toriyama et Dragon Ball comme le centre de sa vie de mangaka, tout en citant les adaptations de Dr. Slump et Cashman comme influences sur son style. Il évoque son souci de ne pas dénaturer les personnages et ses favoris.",
+      "keyInformation": [
+        "Toyotarō dessine depuis l’enfance",
+        "recherche de ressemblance sans dissonance",
+        "souhaite développer le monde Dragon Ball avec les lecteurs."
+      ],
+      "source": {
+        "date": "21 October 2013",
+        "publication": "V-Jump  December 2013",
+        "pages": "p. 260",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/v-jump-december-2013-toyotaro-q-and-a/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-december-2013-toyotaro-q-and-a/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/v-jump-december-2013-toyotaro-q-and-a.html",
+        "participants": [
+          "Toyotarō"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of a short Q&A session with 'Dragon Ball Heroes: Victory Mission' author Toyotarō from the December 2013 'V-Jump'",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Portrait de l’auteur de Victory Mission et source sur son rapport au style Toriyama.",
+      "formatNote": "Profil suivi d’un Q&A éditorial."
+    },
+    {
+      "id": "v-jump-december-2013-naho-ooishi-q-and-a",
+      "title": "V-Jump December 2013 Issue (21 October 2013)",
+      "kind": "qa",
+      "summary": "Bref portrait de Naho Ooishi, autrice de Dragon Ball SD et de Heya! Son Goku and Friends Return!!. Elle répond qu’elle s’est passionnée pour Monster Hunter 4 en multijoueur malgré ses débuts maladroits et adresse un message aux lecteurs de V-Jump.",
+      "keyInformation": [
+        "Autrice de Dragon Ball SD",
+        "mention de ses loisirs et d’une parution spéciale dans V-Jump."
+      ],
+      "source": {
+        "date": "21 October 2013",
+        "publication": "V-Jump  December 2013 Issue",
+        "pages": "p. 437",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/v-jump-december-2013-naho-ooishi-q-and-a/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-december-2013-naho-ooishi-q-and-a/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/v-jump-december-2013-naho-ooishi-q-and-a.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 2,
+        "questionBlockCount": 2,
+        "answerBlockCount": 2,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of a short Q&A session with 'Dragon Ball SD' author Naho Ooishi from the December 2013 'V-Jump'",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Notice biographique sur une collaboratrice de Dragon Ball.",
+      "formatNote": "Q&A très court, une question substantielle."
+    },
+    {
+      "id": "bog-official-movie-guide-cast-comments",
+      "title": "Dragon Ball Z: Battle of Gods Official Movie Guide",
+      "kind": "qa",
+      "summary": "Compilation des commentaires de treize interprètes de Battle of Gods, de Beerus et Whis aux personnages historiques et au groupe FLOW. Ils évoquent leur découverte des rôles, leurs difficultés d’interprétation et l’ambiance en studio ; Yamadera décrit les multiples facettes de Beerus, Morita le caractère énigmatique de Whis, et plusieurs vétérans se réjouissent des retrouvailles.",
+      "keyInformation": [
+        "Beerus : Kōichi Yamadera",
+        "Whis : Masakazu Morita",
+        "les acteurs soulignent le défi des rôles et le retour d’une distribution soudée."
+      ],
+      "source": {
+        "date": "21 March 2013",
+        "publication": "Dragon Ball Z: Battle of Gods  Official Movie Guide",
+        "pages": "pp. 37-40",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-cast-comments/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-cast-comments/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/bog-official-movie-guide-cast-comments.html",
+        "participants": [
+          "Kōichi Yamadera",
+          "Masakazu Morita",
+          "Masaharu Satō",
+          "Hiromi Tsuru",
+          "Mayumi Tanaka",
+          "Ryō Horikawa",
+          "Toshio Furukawa",
+          "Tōru Furuya",
+          "Hikaru Midorikawa",
+          "Takeshi Kusao",
+          "Kaori Matsumoto",
+          "Shōko Nakagawa",
+          "FLOW"
+        ],
+        "questionAnswerCount": 68,
+        "questionBlockCount": 68,
+        "answerBlockCount": 68,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source sur le casting et la production vocale du film.",
+      "formatNote": "Entretien collectif : treize interprètes répondent à des questions communes sur leurs rôles, la production et leur lien avec Dragon Ball.",
+      "archivalKind": "authorial-comment"
+    },
+    {
+      "id": "bog-official-movie-guide-staff-comments",
+      "title": "Dragon Ball Z: Battle of Gods Official Movie Guide",
+      "kind": "qa",
+      "summary": "Quatre responsables détaillent leurs métiers sur Battle of Gods : Watanabe adapte le synopsis de Toriyama, Yamamuro reçoit la consigne de rendre le Super Saiyan God élancé, Katō s’inspire de photographies d’arbres et de palais pour le décor de Beerus, et Sumitomo compose scène par scène puis remplace les maquettes par des instruments réels.",
+      "keyInformation": [
+        "Scénario adapté du synopsis de Toriyama",
+        "consigne de silhouette pour le Super Saiyan God",
+        "références photo pour les décors",
+        "composition musicale orchestrale."
+      ],
+      "source": {
+        "date": "21 March 2013",
+        "publication": "Dragon Ball Z: Battle of Gods  Official Movie Guide",
+        "pages": "p. 42",
+        "bibliographicYears": [
+          2013
+        ],
+        "url": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-staff-comments/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/bog-official-movie-guide-staff-comments/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/bog-official-movie-guide-staff-comments.html",
+        "participants": [
+          "Yūsuke Watanabe",
+          "Tadayoshi Yamamuro",
+          "Hiroshi Katō",
+          "Norihito Sumitomo"
+        ],
+        "questionAnswerCount": 18,
+        "questionBlockCount": 18,
+        "answerBlockCount": 18,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Éclairage direct sur les métiers créatifs du film.",
+      "formatNote": "Entretien collectif : quatre membres de l’équipe répondent aux questions sur le scénario, la réalisation et la production du film.",
+      "archivalKind": "authorial-comment"
     }
   ]
 }

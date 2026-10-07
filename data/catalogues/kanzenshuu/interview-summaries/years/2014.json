@@ -25,10 +25,12 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/katsura-akira-premium-talk/",
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
-        "detectedAnswerBlocks": 6
+        "detectedAnswerBlocks": 6,
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
     },
     {
       "id": "v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview",
@@ -51,10 +53,555 @@
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 5,
-        "formatNote": "Blocs réponse locaux=5 vs index=6. Comptage Q/R distinct (6/5); vérifier structure imbriquée ou question omise."
+        "formatNote": "Blocs réponse locaux=5 vs index=6. Comptage Q/R distinct (6/5); vérifier structure imbriquée ou question omise.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
-      "status": "summary-written-source-not-print-collated"
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "episode-bardock-akira-toriyama-super-qa",
+      "title": "Dragon Ball: Episode of Bardock “Super Kanzenban”; Saikyō Jump , March 2014 Issue (04 February 2014)",
+      "kind": "qa",
+      "summary": "Toriyama précise que Bardock est né dans l’anime avant d’être repris dans le manga et le décrit comme plus réfléchi et humain que les Saiyans ordinaires. Il révèle que Gine, mère de Goku, était une combattante douce puis employée d’un centre de distribution de viande ; il détaille aussi le rang de Bardock, la longévité des Saiyans et l’origine exceptionnelle de Freezer.",
+      "keyInformation": [
+        "Gine est la mère de Goku, douce et peu faite pour le combat",
+        "Bardock demeure guerrier de basse classe",
+        "Freezer et son père sont des mutants uniques."
+      ],
+      "source": {
+        "date": "04 February 2014",
+        "publication": "Dragon Ball: Episode of Bardock  “Super Kanzenban”;",
+        "pages": null,
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/episode-bardock-akira-toriyama-super-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/episode-bardock-akira-toriyama-super-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/episode-bardock-akira-toriyama-super-qa.html",
+        "participants": [
+          "Akira Toriyama",
+          "Naho Ooishi"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source majeure sur Bardock, Gine et les Saiyans.",
+      "formatNote": "Q&A étendu de Toriyama."
+    },
+    {
+      "id": "saikyo-jump-tell-us-toriyama-sensei-qa",
+      "title": "Tell Us, Akira Toriyama- sensei ! (04 March 2014 / 04 April 2014)",
+      "kind": "qa",
+      "summary": "Toriyama explique que « scouter » vient de scout au sens de reconnaissance. Il a créé l’appareil pour rendre la force immédiatement compréhensible, mais évite une mesure fixe de Goku et ses alliés afin que les nombres ne décident pas mécaniquement des combats ; le dispositif repère aussi les ennemis.",
+      "keyInformation": [
+        "Nom dérivé de scout",
+        "mesure et repérage",
+        "le ki empêche de figer la puissance de Goku et ses alliés."
+      ],
+      "source": {
+        "date": "04 March 2014",
+        "publication": "Tell Us, Akira Toriyama- sensei !",
+        "pages": null,
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/saikyo-jump-tell-us-toriyama-sensei-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/saikyo-jump-tell-us-toriyama-sensei-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/saikyo-jump-tell-us-toriyama-sensei-qa.html",
+        "participants": [
+          "Akira Toriyama",
+          "Naho Ooishi"
+        ],
+        "questionAnswerCount": 2,
+        "questionBlockCount": 2,
+        "answerBlockCount": 2,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Clarification de l’auteur sur le scouter.",
+      "formatNote": "Q&A court publié en deux livraisons."
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-01",
+      "title": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #01 (04 April 2014)",
+      "kind": "qa",
+      "summary": "Le volume vulgarise l’Armée du Ruban Rouge, Gero, Trunks et les capsules. Toriyama précise que Gero développa des humains artificiels autonomes pour éviter que ses armes soient utilisées contre l’armée et qu’il fabriqua également l’arsenal du Ruban Rouge. Kanzenshuu relève une erreur de localisation concernant l’attaque des numéros 19 et 20.",
+      "keyInformation": [
+        "Gero conçoit des armes autonomes et produit l’arsenal du Ruban Rouge",
+        "une note corrige le lieu de l’attaque."
+      ],
+      "source": {
+        "date": "04 April 2014",
+        "publication": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #01",
+        "pages": "pp. 222-223",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-01/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-01/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-artificial-humans-cell-arc-01.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the first Artificial Humans & Cell arc Full Color manga release",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Réponse de l’auteur sur Gero et ses armes.",
+      "formatNote": "Q&A avec note corrective."
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-02",
+      "title": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #02 (04 April 2014)",
+      "kind": "qa",
+      "summary": "Le Q&A présente les numéros 17 et 18, Piccolo et Capsule Corporation. Toriyama explique que les numéros 1 à 12 échouaient notamment à contrôler leur personnalité ; il a ensuite expérimenté les humains modifiés et conçu le 19 comme première réussite de cette méthode.",
+      "keyInformation": [
+        "Les numéros 1–12 échouent au contrôle de personnalité",
+        "19 est une réussite",
+        "17 et 18 ont été transformés contre leur gré."
+      ],
+      "source": {
+        "date": "04 April 2014",
+        "publication": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #02",
+        "pages": "pp. 226-227",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-02/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-02/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-artificial-humans-cell-arc-02.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the second Artificial Humans & Cell arc Full Color manga release",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Détails de conception des cyborgs par Toriyama.",
+      "formatNote": "Q&A mêlant vulgarisation et réponses directes."
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-03",
+      "title": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #03 (04 April 2014)",
+      "kind": "qa",
+      "summary": "Toriyama révèle que le modèle du numéro 16 était le fils de Gero, soldat mort jeune : il lui donna une puissance immense mais une personnalité douce. Le numéro 19 s’inspire d’une poupée ramenée comme trophée d’une base ennemie.",
+      "keyInformation": [
+        "Le numéro 16 reprend le modèle du fils défunt de Gero",
+        "le numéro 19 vient d’une poupée ennemie."
+      ],
+      "source": {
+        "date": "04 April 2014",
+        "publication": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #03",
+        "pages": "pp. 222-223",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-03/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-03/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-artificial-humans-cell-arc-03.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the third Artificial Humans & Cell arc Full Color manga release",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Informations de création de l’arc Cell.",
+      "formatNote": "Q&A et note de coulisses."
+    },
+    {
+      "id": "saikyo-jump-june-2014-issue-twel-buu-mysteries",
+      "title": "Saikyō Jump June 2014 Issue (02 May 2014)",
+      "kind": "qa",
+      "summary": "Dans ce Q&A avec Ooishi, Toriyama révèle que Boo existe depuis des temps immémoriaux et que Bibidi savait le réveiller ; Satan a cessé de combattre après que Tao Pai Pai eut tué son maître ; les Kaiōshin naissent tels quels. Il ajoute que Beerus a scellé l’ancien Kaiōshin dans l’épée Z et répond sur Kuririn et C-18.",
+      "keyInformation": [
+        "Boo préexiste à Bibidi",
+        "maître de Satan tué par Tao Pai Pai",
+        "Beerus scelle l’Elder Kaiōshin dans l’épée Z."
+      ],
+      "source": {
+        "date": "02 May 2014",
+        "publication": "Saikyō Jump  June 2014 Issue",
+        "pages": "pp. 7-11",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/saikyo-jump-june-2014-issue-twel-buu-mysteries/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/saikyo-jump-june-2014-issue-twel-buu-mysteries/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/saikyo-jump-june-2014-issue-twel-buu-mysteries.html",
+        "participants": [
+          "Akira Toriyama",
+          "Naho Ooishi"
+        ],
+        "questionAnswerCount": 12,
+        "questionBlockCount": 12,
+        "answerBlockCount": 12,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Akira Toriyama's special 'Twel-Buu Mysteries' Q&A session in the June 2014 issue of Saikyō Jump in Japan",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source majeure sur l’arc Boo et la cosmologie.",
+      "formatNote": "Long Q&A de Toriyama."
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-04",
+      "title": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #04 (02 May 2014)",
+      "kind": "qa",
+      "summary": "Cell s’inspire des insectes, y compris dans son développement. Toriyama explique que l’ordinateur de Gero a combiné plusieurs personnalités pour en faire une arme ultime et révèle préférer sa deuxième forme, que son éditeur jugeait stupide.",
+      "keyInformation": [
+        "Développement inspiré des insectes",
+        "personnalité composée",
+        "Toriyama préférait la deuxième forme de Cell."
+      ],
+      "source": {
+        "date": "02 May 2014",
+        "publication": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #04",
+        "pages": "pp. 230-231",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-04/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-04/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-artificial-humans-cell-arc-04.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the fourth Artificial Humans & Cell arc Full Color manga release",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Révèle les intentions créatives et l’influence éditoriale.",
+      "formatNote": "Q&A et coulisses."
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-05",
+      "title": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #05 (02 May 2014)",
+      "kind": "qa",
+      "summary": "Popo fabrique le modèle du dragon terrestre que Dieu anime. Le volume décrit aussi le roi de la Terre et Mister Satan ; Toriyama confirme que Mark est son nom civil et suppose qu’il s’est enrichi en vendant des produits dérivés.",
+      "keyInformation": [
+        "Popo modèle Shenlong",
+        "Mark est le nom civil de Satan",
+        "sa fortune provient probablement de produits dérivés."
+      ],
+      "source": {
+        "date": "02 May 2014",
+        "publication": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #05",
+        "pages": "pp. 220-221",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-05/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-05/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-artificial-humans-cell-arc-05.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the fifth Artificial Humans & Cell arc Full Color manga release",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Réponses de Toriyama sur des personnages secondaires.",
+      "formatNote": "Q&A et coulisses."
+    },
+    {
+      "id": "db-full-color-artificial-humans-cell-arc-06",
+      "title": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #06 (02 May 2014)",
+      "kind": "qa",
+      "summary": "Le dossier récapitule les menaces et le futur de Trunks. Toriyama précise que 17 et 18 peuvent se renforcer en s’entraînant, ont besoin d’eau et vieillissent lentement ; il révèle leurs noms humains Lapis et Lazuli, la famille de 17 après Cell et son projet initial de faire du numéro 20 l’ennemi principal.",
+      "keyInformation": [
+        "17 est garde d’une réserve naturelle et a une famille",
+        "17/18 peuvent progresser par entraînement",
+        "le numéro 20 devait être l’antagoniste principal."
+      ],
+      "source": {
+        "date": "02 May 2014",
+        "publication": "Dragon Ball Full Color: Artificial Humans & Cell Arc Volume #06",
+        "pages": "pp. 218-221",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-06/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-artificial-humans-cell-arc-06/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-artificial-humans-cell-arc-06.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 8,
+        "questionBlockCount": 8,
+        "answerBlockCount": 8,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the sixth Artificial Humans & Cell arc Full Color manga release",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source sur les personnages et les projets abandonnés.",
+      "formatNote": "Q&A long avec compléments de coulisses."
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-03",
+      "title": "Dragon Ball Full Color: Majin Boo Arc Volume #03 (04 June 2014)",
+      "kind": "qa",
+      "summary": "Après le palmarès des 21e à 23e tournois, Toriyama explique que les bâtiments du Tenkaichi Budokai s’inspirent de photos de voyage et nomme Goku contre Tenshinhan comme combat favori. Kanzenshuu rectifie son souvenir : le voyage avant la sérialisation était en Chine, non à Bali.",
+      "keyInformation": [
+        "Jackie Chun, Tenshinhan et Goku remportent les tournois",
+        "inspiration architecturale de voyage",
+        "correction Bali/Chine."
+      ],
+      "source": {
+        "date": "04 June 2014",
+        "publication": "Dragon Ball Full Color: Majin Boo Arc Volume #03",
+        "pages": "pp. 230-231",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-03/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-03/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-majin-buu-arc-03.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 3,
+        "questionBlockCount": 3,
+        "answerBlockCount": 3,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the third Majin Buu arc Full Color manga release.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Éclaire les choix visuels de l’auteur.",
+      "formatNote": "Q&A avec note corrective."
+    },
+    {
+      "id": "saikyo-jump-july-2014-ooishi-toriyama-scouters-qa",
+      "title": "Saikyō Jump July 2014 Issue (04 June 2014)",
+      "kind": "qa",
+      "summary": "Toriyama explique que l’explosion des scouters relève d’un effet dramatique comparable à un compteur analogique dépassé. Il précise que les modèles varient selon l’anatomie et les préférences et que les Tsufuls les ont inventés avant qu’un ingénieur de Freezer les adapte aux mesures de puissance et aux communications.",
+      "keyInformation": [
+        "Scouters inventés par les Tsufuls, adaptés par Gichamu",
+        "explosion = effet de mise en scène",
+        "options selon les utilisateurs."
+      ],
+      "source": {
+        "date": "04 June 2014",
+        "publication": "Saikyō Jump  July 2014 Issue",
+        "pages": "pp. 28-29",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/saikyo-jump-july-2014-ooishi-toriyama-scouters-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/saikyo-jump-july-2014-ooishi-toriyama-scouters-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/saikyo-jump-july-2014-ooishi-toriyama-scouters-qa.html",
+        "participants": [
+          "Akira Toriyama",
+          "Naho Ooishi"
+        ],
+        "questionAnswerCount": 3,
+        "questionBlockCount": 3,
+        "answerBlockCount": 3,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Naho Ooishi's scouters Q&A with original 'Dragon Ball' manga author Akira Toriyama in the July 2014 'Saikyō Jump'",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source directe sur l’origine et la fonction des scouters.",
+      "formatNote": "Q&A bref."
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-04",
+      "title": "Dragon Ball Full Color: Majin Boo Arc Volume #04 (04 July 2014)",
+      "kind": "qa",
+      "summary": "Après un rappel des techniques apprises par Goku, Toriyama explique que la danse de fusion lui est venue en regardant la télévision. Les mouvements synchronisent les partenaires ; les experts peuvent utiliser seulement « Ha ». La fusion de personnes très différentes serait possible mais difficile à équilibrer, et Toriyama dit avoir répété les gestes.",
+      "keyInformation": [
+        "Kamehameha appris par imitation",
+        "Kaiō-ken/Genki-Dama par Kaio",
+        "fusion synchronise les partenaires."
+      ],
+      "source": {
+        "date": "04 July 2014",
+        "publication": "Dragon Ball Full Color: Majin Boo Arc Volume #04",
+        "pages": "pp. 228-231",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-04/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-04/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-majin-buu-arc-04.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 6,
+        "questionBlockCount": 6,
+        "answerBlockCount": 6,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the fourth Majin Buu arc Full Color manga release. English translation by Kanzenshuu.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source sur l’invention des techniques et de la fusion.",
+      "formatNote": "Q&A et explications pédagogiques."
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-05",
+      "title": "Dragon Ball Full Color: Majin Boo Arc Volume #05 (04 July 2014)",
+      "kind": "qa",
+      "summary": "Le dossier décrit l’au-delà et les magiciens : les morts deviennent des esprits jugés par Enma, Baba peut les ramener un jour, et Toriyama a voulu un univers bureaucratique et familier. Bobbidi est un double de Bibidi et le royaume des démons un petit refuge de magiciens.",
+      "keyInformation": [
+        "Jugement par Enma",
+        "retour temporaire avec Baba",
+        "Bobbidi est un double de Bibidi",
+        "petit royaume des démons."
+      ],
+      "source": {
+        "date": "04 July 2014",
+        "publication": "Dragon Ball Full Color: Majin Boo Arc Volume #05",
+        "pages": "pp. 218-223",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-05/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-05/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-majin-buu-arc-05.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the fifth Majin Buu arc Full Color manga release. English translation by Kanzenshuu.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source sur les règles de la mort et la cosmologie.",
+      "formatNote": "Q&A et commentaires de coulisses."
+    },
+    {
+      "id": "db-full-color-majin-buu-arc-06",
+      "title": "Dragon Ball Full Color: Majin Boo Arc Volume #06 (04 July 2014)",
+      "kind": "qa",
+      "summary": "Toriyama révèle aimer le combat comique de Gotenks et Boo, dit que Lunch figurait dans son brouillon de la scène du Genki-Dama et nomme Miguel comme épouse de Satan. Il explique aussi que Goku préfère les duels et rappelle que les Kaiō naissent des fruits d’un arbre-monde.",
+      "keyInformation": [
+        "Combat de Gotenks préféré pour son absurdité",
+        "Lunch figurait au brouillon",
+        "Miguel épouse Satan",
+        "Kaiō issus de l’arbre-monde."
+      ],
+      "source": {
+        "date": "04 July 2014",
+        "publication": "Dragon Ball Full Color: Majin Boo Arc Volume #06",
+        "pages": "pp. 227-229",
+        "bibliographicYears": [
+          2014
+        ],
+        "url": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-06/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/db-full-color-majin-buu-arc-06/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/db-full-color-majin-buu-arc-06.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 5,
+        "questionBlockCount": 5,
+        "answerBlockCount": 5,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "Shueisha and Akira Toriyama answer questions in the sixth Majin Buu arc Full Color manga release. English translation by Kanzenshuu.",
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source sur les coulisses du manga et l’origine des dieux.",
+      "formatNote": "Révélations de clôture du Full Color de Boo."
+    },
+    {
+      "id": "site-post-33994-podcast-episode-0364",
+      "title": "Podcast Episode #0364 — Battle of Gods cast interview",
+      "kind": "audio-interview",
+      "summary": "Le synopsis précise que les acteurs américains Sean Schemmel, Christopher Sabat et Justin Cook accordent une interview exclusive sur le film, ses thèmes et les choix de distribution. Josh raconte également la première du film et l’événement sur tapis rouge. L’audio n’est pas transcrit dans le billet.",
+      "keyInformation": [
+        "Épisode audio Kanzenshuu #0364; résumé établi uniquement à partir du synopsis du billet.",
+        "Le fichier audio est signalé par le flux RSS; transcription non disponible dans le corpus."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2014/07/04/podcast-episode-0364/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2014-07-04",
+        "participants": [
+          "Sean Schemmel",
+          "Christopher Sabat",
+          "Justin Cook"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2014.json",
+        "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0364.mp3",
+        "audioTranscriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Notice limitée au synopsis du billet; l’audio n’a pas été transcrit ni écouté ici.",
+        "audioDownloaded": true,
+        "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-33994-podcast-episode-0364.mp3"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Z: Battle of Gods",
+      "audioDownloaded": true,
+      "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-33994-podcast-episode-0364.mp3",
+      "audioTranscriptAvailable": false
     }
   ]
 }

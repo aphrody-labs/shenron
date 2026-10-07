@@ -30,10 +30,45 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview/",
         "questionAnswerCount": 22,
-        "formatNote": "Le HTML contient 23 blocs question et 22 blocs réponse; le compte de la synthèse correspond aux paires complètes."
+        "formatNote": "Le HTML contient 23 blocs question et 22 blocs réponse; le compte de la synthèse correspond aux paires complètes.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Production de Dragon Ball GT; témoignage du producteur à distinguer des déclarations de Toriyama et d'une définition générale de la continuité.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa",
+      "title": "Dragon Ball GT DVD Box: Dragon Box GT “Dragon Book” (15 June 2005)",
+      "summary": "Le scénariste Atsushi Maekawa explique les choix narratifs de GT et le retour de Goku à l’enfance. L’équipe cherchait à repartir de l’esprit d’aventure et de comédie des débuts plutôt que de pousser encore la surenchère de puissance; le questionnaire porte aussi sur la conception et l’écriture des épisodes dont il était responsable.",
+      "keyInformation": [
+        "Maekawa écrit 28 épisodes de GT et le téléfilm; le retour de Goku enfant découle du souhait de renouer avec le ton des premiers arcs",
+        "L’équipe cherchait un nouveau moteur d’aventure après les combats extrêmes de Dragon Ball Z"
+      ],
+      "source": {
+        "publication": "Dragon Ball Q Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book (pp. 56-59)",
+        "pages": "56-59",
+        "date": "2005-06-15",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa.html",
+        "participants": [
+          "Atsushi Maekawa"
+        ],
+        "questionAnswerCount": 11,
+        "questionBlockCount": 11,
+        "answerBlockCount": 11,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of the Atsushi Maekawa Story Q&A from the 2006 Dragon Ball GT Dragon Box DVD release in Japan",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : explications d’un scénariste sur les intentions et la production de GT.",
+      "formatNote": "Q/R professionnel portant sur un anime original et sa construction narrative.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
     }
   ]
 }

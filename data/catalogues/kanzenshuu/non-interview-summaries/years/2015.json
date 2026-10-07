@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Entrées éditoriales Kanzenshuu hors interviews publiées en 2015, issues du périmètre bibliographique 2006–2015 ; traductions non reproduites ; forums exclus.",
+  "records": [
+    {
+      "id": "dragon-ball-super-super-start-guide-message-from-akira-toriyama",
+      "title": "Message From Akira Toriyama Dragon Ball Super: Super Start Guide Mook Comment 03 July 2015 Akira Toriyama Dragon Ball Super",
+      "kind": "authorial-comment",
+      "summary": "Toriyama présente Super comme suite complète de l’arc Boo, reprenant Battle of Gods et Resurrection “F”, puis confrontant les héros à l’Univers 6 autour des Super Dragon Balls. Il annonce de nombreux nouveaux personnages et un récit lumineux et simple.",
+      "keyInformation": [
+        "Après Boo, Beerus et Freezer, l’Univers 6 et les Super Dragon Balls deviennent le nouvel enjeu."
+      ],
+      "source": {
+        "date": "03 July 2015",
+        "publication": "Dragon Ball Super:",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-start-guide-message-from-akira-toriyama/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source directe sur le cadre initial de Super."
+    },
+    {
+      "id": "resurrection-f-anime-comic-message-from-akira-toriyama",
+      "title": "Message From Akira Toriyama \"Dragon Ball Z: Resurrection ’F'\" Animation Comic (p. 357) Manga Comment 04 December 2015 Akira Toriyama Resurrection \"F\", Production",
+      "kind": "authorial-comment",
+      "summary": "Toriyama présente l’anime-comic comme le seul moyen de lire en volume imprimé l’histoire de Resurrection “F”, qu’il n’a pas adaptée en manga. Il invite les lecteurs à profiter du format couleur et à découvrir des détails manqués au cinéma.",
+      "keyInformation": [
+        "Pas de manga de Toriyama pour le film",
+        "l’anime-comic offre une version imprimée en couleur."
+      ],
+      "source": {
+        "date": "04 December 2015",
+        "publication": "Resurrection “F”  Anime Comic",
+        "pages": "p. 357",
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/resurrection-f-anime-comic-message-from-akira-toriyama/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Message d’auteur accompagnant l’adaptation imprimée."
+    },
+    {
+      "id": "norihito-sumitomo-staff-revival-of-f-blog-post",
+      "title": "Norihito Sumitomo \"Resurrection ’F'\" Post Norihito Sumitomo’s Official Website Web/Online Comment 20 February 2015 Norihito Sumitomo Resurrection \"F\", Music, BGM, Production",
+      "kind": "authorial-comment",
+      "summary": "Le journal de production suit Sumitomo pendant l’enregistrement du film. Il commence après lecture du scénario, écrit plusieurs morceaux par jour et construit la progression autour de Freezer ; il ajuste ensuite tempo et tonalité aux images avec cordes, cuivres, guitare et chœur, sous un calendrier serré.",
+      "keyInformation": [
+        "Musique écrite avant achèvement des images",
+        "thèmes de résurrection et vengeance",
+        "ajustements au montage et enregistrement orchestral."
+      ],
+      "source": {
+        "date": "20 February 2015",
+        "publication": "Norihito Sumitomo Staff Diary",
+        "pages": null,
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/norihito-sumitomo-staff-revival-of-f-blog-post/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Source sur la composition de la musique du film.",
+      "formatNote": "Journal de studio plutôt qu’interview."
+    },
+    {
+      "id": "v-jump-august-2015-issue-akira-toriyama-comments",
+      "title": "Akira Toriyama \"Dragon Ball Super\" Comment V-Jump, August 2015 (p. 8) Anthology Comment 20 June 2015 Akira Toriyama Dragon Ball Super",
+      "kind": "authorial-comment",
+      "summary": "Toriyama s’amuse de l’ampleur spatiale prise par l’anime alors qu’il ne l’imaginait pas au départ. Il rassure : la narration restera simple et lisible.",
+      "keyInformation": [
+        "Dragon Ball Super étend son cadre à l’espace sans abandonner sa simplicité."
+      ],
+      "source": {
+        "date": "20 June 2015",
+        "publication": "V-Jump , August 2015",
+        "pages": "p. 8",
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/v-jump-august-2015-issue-akira-toriyama-comments/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Commentaire de lancement de Super."
+    },
+    {
+      "id": "v-jump-may-2015-issue-akira-toriyama-comments",
+      "title": "Akira Toriyama \"Resurrection ’F'\" Comment V-Jump, May 2015 (p. 8) Anthology Comment 20 March 2015 Akira Toriyama Resurrection \"F\"",
+      "kind": "authorial-comment",
+      "summary": "Toriyama dit que l’idée de ramener Freezer rendit l’écriture fluide, car il connaissait bien le personnage. Il multiplia les scènes d’action et associa Freezer aux éléments de Beerus et Whis, en plaisantant sur la charge imposée aux animateurs.",
+      "keyInformation": [
+        "Personnage bien établi",
+        "action accrue",
+        "éléments de Battle of Gods intégrés."
+      ],
+      "source": {
+        "date": "20 March 2015",
+        "publication": "V-Jump , May 2015",
+        "pages": "p. 8",
+        "bibliographicYears": [
+          2015
+        ],
+        "url": "https://www.kanzenshuu.com/translations/v-jump-may-2015-issue-akira-toriyama-comments/"
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Commentaire d’auteur sur la production du film."
+    }
+  ]
+}

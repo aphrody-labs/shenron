@@ -3,5 +3,58 @@
   "language": "fr",
   "scope": "Synthèses des entretiens publiés en 2026; contenus de forum exclus.",
   "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
-  "records": []
+  "records": [
+    {
+      "id": "site-post-80266-dr-slump-hilltop-interview",
+      "title": "Q&A With “Dr. Slump” PlayStation Game Fan Translator Hilltop",
+      "kind": "interview",
+      "summary": "Hilltop raconte son parcours vers la traduction et le hacking de jeux, explique son intérêt pour le jeu PlayStation Dr. Slump et les apprentissages de ce premier projet. Le Q&A aborde aussi des détails à repérer dans le jeu, puis compare les apports d’un traducteur humain à ceux de la traduction automatique. Une question bonus porte sur Boku no Natsuyasumi 2.",
+      "keyInformation": [
+        "Entretien direct en Q&A avec le traducteur amateur; le billet contient 6 questions."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/08/24/dr-slump-hilltop/",
+        "publication": "Kanzenshuu interview post",
+        "publicationDate": "24 August 2026",
+        "participants": [
+          "Hilltop (fan translator)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Interview Q&A",
+        "questionAnswerCount": 6,
+        "scopeNote": null
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dr. Slump, PlayStation, Fan translation, Game hacking"
+    },
+    {
+      "id": "site-post-80126-dragon-ball-z-goku-hishoden-kazetrigger-interview",
+      "title": "Q&A With “Dragon Ball Z: Gokū Hishōden” Game Boy Game Fan Translator Kazetrigger",
+      "kind": "interview",
+      "summary": "Kazetrigger décrit son parcours de joueur et de traducteur, puis explique pourquoi il a choisi Gokū Hishōden. Il évoque la traduction japonaise, les limites de mémoire de la Game Boy et la compression graphique qui a compliqué le romhacking. Il partage des conseils pour le premier combat contre Copy Goku et analyse les limites de l’IA pour traduire un jeu sans contexte ni compréhension des voix, des pronoms et des jeux de mots.",
+      "keyInformation": [
+        "Entretien direct en Q&A avec le traducteur amateur; le billet contient 5 questions."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/08/10/goku-hishoden-kazetrigger/",
+        "publication": "Kanzenshuu interview post",
+        "publicationDate": "10 August 2026",
+        "participants": [
+          "Kazetrigger (fan translator and game hacker)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Interview Q&A",
+        "questionAnswerCount": 5,
+        "scopeNote": null
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Dragon Ball Z: Gokū Hishōden, Fan translation, Game Boy, Game hacking"
+    }
+  ]
 }

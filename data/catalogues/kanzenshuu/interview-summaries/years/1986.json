@@ -22,10 +22,12 @@
         "date": "1986-02-01",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/telepal-1986-toriyama-takahashi/",
         "questionAnswerCount": 24,
-        "formatNote": "Le HTML contient 24 blocs question et 26 blocs réponse; certaines réponses sont réparties en plusieurs blocs. Le nombre de questions correspond à l'index."
+        "formatNote": "Le HTML contient 24 blocs question et 26 blocs réponse; certaines réponses sont réparties en plusieurs blocs. Le nombre de questions correspond à l'index.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : intention de départ, caractérisation de Goku, méthode de sérialisation et rapport à l'adaptation animée.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

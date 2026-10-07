@@ -24,10 +24,12 @@
           "Masakazu Katsura"
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/jump-sq-may-2008-akira-toriyama-masakazu-katsura/",
-        "questionAnswerCount": 27
+        "questionAnswerCount": 27,
+        "forumContent": false
       },
       "dragonBallRelevance": "Indirecte : entretien de création non-Dragon Ball avec une brève mention hypothétique de la Patrouille Galactique.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

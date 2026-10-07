@@ -31,10 +31,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/son-goku-densetsu-toriyama-x-nakatsuru/",
         "questionAnswerCount": 31,
-        "formatNote": "Le HTML acquis contient 32 blocs question et 31 blocs réponse; le compte résumé correspond aux 31 paires complètes, tandis que l'index compte les 32 questions balisées."
+        "formatNote": "Le HTML acquis contient 32 blocs question et 31 blocs réponse; le compte résumé correspond aux 31 paires complètes, tandis que l'index compte les 32 questions balisées.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : origines, titre DBZ, dessin, continuité éditoriale entre manga et anime, personnages, Bardock, inspirations et méthode de sérialisation.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-landmark-dragon-ball-toriyama",
@@ -57,10 +59,98 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-dragon-ball-toriyama/",
         "questionAnswerCount": null,
-        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans balisage standard des questions."
+        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans balisage standard des questions.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Contexte direct de la transition Dr. Slump–Dragon Ball et de la genèse éditoriale; biographie générale pour le reste.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-z1-staff-cast-qa",
+      "title": "Dragon Ball Z DVD Box – Dragon Box Z Volume 1",
+      "summary": "Ce questionnaire réunit les principaux membres de l’équipe et les comédiens de Dragon Ball Z autour de sept questions sur leur travail. Il aborde ce qu’ils ont aimé et trouvé difficile, les personnages ou scènes marquants, les changements personnels associés à la série et les vœux qu’ils feraient dans cet univers.",
+      "keyInformation": [
+        "Les questions couvrent le quotidien de production, les souvenirs, les personnages favoris et les souhaits des participants",
+        "Le dossier recueille des réponses distinctes de membres du personnel et de comédiens, sans les réduire à une histoire unique"
+      ],
+      "source": {
+        "publication": "\"Z\" Staff and Cast Q&A Dragon Ball Z DVD Box: Dragon Box Z Volume 1 — Dragon Book (pp. 108-111)",
+        "pages": "108-111",
+        "date": "2003-03-19",
+        "url": "https://www.kanzenshuu.com/translations/dragon-box-z1-staff-cast-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-box-z1-staff-cast-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-box-z1-staff-cast-qa.html",
+        "participants": [
+          "Akihiko Yamaguchi",
+          "Matsuji Kishimoto",
+          "Daisuke Nishio",
+          "Takao Koyama",
+          "Katsuyoshi Nakatsuru",
+          "Minoru Maeda",
+          "Kazuya Hisada",
+          "Tadayoshi Yamamuro",
+          "Shunsuke Kikuchi",
+          "Takashi Tokushige",
+          "Hiromi Tsuru",
+          "Masako Nozawa",
+          "Hiroshi Masuoka",
+          "Tōru Furuya",
+          "Hirotaka Suzuoki",
+          "Mayumi Tanaka",
+          "Ryō Horikawa",
+          "Toshio Furukawa",
+          "Jōji Yanami",
+          "Ryūsei Nakao"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 2,
+        "answerBlockCount": 20,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "",
+        "respondentCount": 20,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignages sur la production et l’interprétation de Dragon Ball Z.",
+      "formatNote": "Questionnaire collectif à sept questions, réponses attribuées à de nombreux intervenants.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "dragon-ball-landmark-toriyama-qa",
+      "title": "Kanzenban Official Guide: Dragon Ball Landmark",
+      "summary": "Toriyama répond à des questions sur sa personnalité, ses goûts et sa méthode de travail, puis à des questions sur les personnages. Il révèle que Lunch finit peut-être par rejoindre Tenshinhan, imagine l’avenir de plusieurs personnages et recommande aux aspirants mangaka de s’intéresser à autre chose qu’aux seuls mangas.",
+      "keyInformation": [
+        "Il dit avoir consciemment fait évoluer les coiffures de Bulma selon les étapes de l’histoire et imagine que Lunch retrouve Tenshinhan",
+        "Il recommande aux jeunes auteurs d’élargir leurs connaissances et préfère les amphibiens parmi les animaux"
+      ],
+      "source": {
+        "publication": "Surprise Project!! We Suddenly Asked Him in the Middle of Dinner! Kanzenban Official Guide: Dragon Ball Landmark (pp. 156-157)",
+        "pages": "156-157",
+        "date": "2003-12-19",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-landmark-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Akira Toriyama's short Q&A about his personality in \"Dragon Ball: Landmark\".",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : informations et opinions de Toriyama sur Dragon Ball et son métier.",
+      "formatNote": "Questionnaire mêlant questions personnelles, fiction et métier.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
     }
   ]
 }

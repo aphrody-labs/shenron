@@ -30,10 +30,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
         "questionAnswerCount": null,
-        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans blocs Q/R standard."
+        "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans blocs Q/R standard.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : méthode de narration, transformations, arcs et personnages, charge de dessin et intentions de publication.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "tenkaichi-densetsu-toriyama-koyama-nozawa",
@@ -62,10 +64,573 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
         "questionAnswerCount": 28,
-        "formatNote": "Le HTML contient 29 blocs question et 28 blocs réponse; la synthèse dénombre les paires complètes et conserve à part la question balisée sans bloc de réponse associé."
+        "formatNote": "Le HTML contient 29 blocs question et 28 blocs réponse; la synthèse dénombre les paires complètes et conserve à part la question balisée sans bloc de réponse associé.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : conception d'origine, Saiyans, Dragon Ball, Goku, Gohan, force de Krilin, casting vocal et contraintes d'adaptation.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-ball-forever-toriyama-qa",
+      "title": "Kanzenban Official Guide: Dragon Ball Forever",
+      "summary": "Toriyama répond à des questions hypothétiques sur le monde de Dragon Ball, puis développe les destins de plusieurs personnages et sa méthode de dessinateur. Il explique avoir fait évoluer les coiffures de Bulma selon les moments du récit, imagine que Lunch a fini par retrouver Tenshinhan, répond sur Satan, Yamcha, Vegeta et Bra, et conseille aux aspirants mangaka d’observer le monde au-delà des mangas.",
+      "keyInformation": [
+        "Toriyama précise que les changements de coiffure de Bulma sont intentionnels et propose une issue plaisante pour Lunch et Tenshinhan",
+        "Il donne des réponses spéculatives sur plusieurs personnages et recommande aux futurs auteurs d’élargir leurs expériences culturelles"
+      ],
+      "source": {
+        "publication": "We Asked Toriyama-sensei! Kanzenban Official Guide: Dragon Ball Forever (pp. 146-147, 150-154)",
+        "pages": "146-147, 150-154",
+        "date": "2004-04-30",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-forever-toriyama-qa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-toriyama-qa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-forever-toriyama-qa.html",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "questionAnswerCount": 13,
+        "questionBlockCount": 13,
+        "answerBlockCount": 13,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "English translation of Akira Toriyama's short Q&A about the characters of Dragon Ball and some 'what-if' situations from the 2004 guide book 'Dragon Ball Forever'",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : réponses d’auteur sur les personnages et le processus créatif.",
+      "formatNote": "Rubrique de questions thématiques organisée par sections, avec réponses parfois hypothétiques.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-masako-nozawa",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Masako Nozawa raconte son audition pour Goku et le fait que Toriyama a choisi sa voix après écoute de l’enregistrement. Elle décrit son approche instinctive du personnage et les différences entre Goku, Gohan et Goten, qu’elle interprète tous; elle revient aussi sur leur évolution au fil des séries.",
+      "keyInformation": [
+        "Nozawa a auditionné avec une séquence animée et apprend que Toriyama l’a sélectionnée",
+        "Elle distingue les caractères des trois membres de la famille Son tout en jouant chacun sans méthode vocale préétablie"
+      ],
+      "source": {
+        "publication": "Son Goku / Gohan / Goten: Masako Nozawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 98-101)",
+        "pages": "98-101",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-masako-nozawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-masako-nozawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-masako-nozawa.html",
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "questionAnswerCount": 16,
+        "questionBlockCount": 16,
+        "answerBlockCount": 16,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Son Goku voice actress Masako Nozawa.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de la comédienne principale sur le doublage japonais.",
+      "formatNote": "Entretien Q/R de guide sur un rôle de doublage.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-toshio-furukawa",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Toshio Furukawa se souvient de son premier rôle dans la série, celui du général Blue, avant d’être appelé pour Piccolo. Il décrit sa surprise devant le design du Namek et la manière dont il a construit une voix correspondant à son apparence, à sa force et à son évolution vers un personnage plus complexe.",
+      "keyInformation": [
+        "Furukawa interprète d’abord le général Blue avant Piccolo",
+        "Il décrit Piccolo comme un personnage d’une forte beauté masculine et relate sa réaction à son apparence singulière"
+      ],
+      "source": {
+        "publication": "Piccolo: Toshio Furukawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 102-105)",
+        "pages": "102-105",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toshio-furukawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toshio-furukawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toshio-furukawa.html",
+        "participants": [
+          "Toshio Furukawa"
+        ],
+        "questionAnswerCount": 12,
+        "questionBlockCount": 12,
+        "answerBlockCount": 12,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Piccolo voice actress Toshio Furukawa.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage et caractérisation de Piccolo dans l’anime.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-ryo-horikawa",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Ryō Horikawa raconte avoir imaginé que Vegeta ne resterait que quelques épisodes avant de mourir, puis avoir découvert que le rôle devenait récurrent. Il évoque la construction progressive de son interprétation à mesure que le personnage gagnait en importance et que de nouveaux aspects de sa personnalité apparaissaient.",
+      "keyInformation": [
+        "Horikawa s’attendait à un rôle bref et devient finalement l’interprète régulier de Vegeta",
+        "Il souligne que certains éléments du personnage, dont son statut de prince, se sont développés au fil du récit"
+      ],
+      "source": {
+        "publication": "Vegeta: Ryō Horikawa TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 106-109)",
+        "pages": "106-109",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryo-horikawa/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryo-horikawa/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryo-horikawa.html",
+        "participants": [
+          "Ryō Horikawa"
+        ],
+        "questionAnswerCount": 20,
+        "questionBlockCount": 20,
+        "answerBlockCount": 20,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Vegeta voice actor Ryō Horikawa.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur l’évolution de Vegeta.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-mayumi-tanaka",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Mayumi Tanaka raconte qu’elle s’est reconnue dans la petite taille et le crâne rasé de Kuririn et qu’elle aimait particulièrement son côté roublard dans les premiers épisodes. Elle parle aussi de Yajirobe et de l’évolution de Kuririn vers un personnage plus sérieux à l’époque de Z.",
+      "keyInformation": [
+        "Tanaka apprécie Kuririn enfant, tricheur, paresseux et comique, avant l’évolution du personnage",
+        "La comédienne associe son apparence à celle du personnage et évoque sa relation avec les rôles qu’elle interprète"
+      ],
+      "source": {
+        "publication": "Kuririn: Mayumi Tanaka TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 110-112)",
+        "pages": "110-112",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-tanaka/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-tanaka/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-tanaka.html",
+        "participants": [
+          "Mayumi Tanaka"
+        ],
+        "questionAnswerCount": 13,
+        "questionBlockCount": 13,
+        "answerBlockCount": 13,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Kuririn/Yajirobe voice actress Mayumi Tanaka.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : parcours du personnage et de son interprète dans l’anime.",
+      "formatNote": "Entretien Q/R individuel sur Kuririn et Yajirobe.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-toru-furuya",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Tōru Furuya explique comment il a été choisi pour Yamcha et se rappelle avoir trouvé le personnage cool, avec son image de loup solitaire du désert. Il savait cependant que l’humour de Toriyama ferait évoluer cette première impression; il retrace ainsi le contraste entre le guerrier impressionnant de ses débuts et le personnage comique qu’il est devenu.",
+      "keyInformation": [
+        "Furuya attribue son casting à la recommandation possible d’un directeur du son",
+        "Il évoque l’évolution de Yamcha entre l’image de combattant solitaire et les ressorts comiques de la série"
+      ],
+      "source": {
+        "publication": "Yamcha: Tōru Furuya TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 146-149)",
+        "pages": "146-149",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toru-furuya/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toru-furuya/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toru-furuya.html",
+        "participants": [
+          "Tōru Furuya"
+        ],
+        "questionAnswerCount": 18,
+        "questionBlockCount": 18,
+        "answerBlockCount": 17,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Yamcha voice actor Tōru Furuya.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage et évolution d’un personnage.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-hirotaka-suzuoki",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Hirotaka Suzuoki raconte qu’il connaissait peu Dragon Ball lorsqu’il a été choisi pour Tenshinhan et que Tōru Furuya l’a aidé à découvrir le personnage. Il décrit son approche de jeu comme liée au texte et à son affection pour un rôle qu’il a gardé pendant de nombreuses années.",
+      "keyInformation": [
+        "Suzuoki demande à Furuya de lui expliquer le personnage avant de commencer",
+        "Il exprime son attachement à Tenshinhan après de longues années d’interprétation"
+      ],
+      "source": {
+        "publication": "Tenshinhan: Hirotaka Suzuoki TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 150-153)",
+        "pages": "150-153",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hirotaka-suzuoki/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hirotaka-suzuoki/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hirotaka-suzuoki.html",
+        "participants": [
+          "Hirotaka Suzuoki"
+        ],
+        "questionAnswerCount": 11,
+        "questionBlockCount": 11,
+        "answerBlockCount": 11,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Tenshinhan voice actor Hirotaka Suzuoki.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur Tenshinhan.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-takeshi-kusao",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Takeshi Kusao explique qu’il avait souhaité interpréter Trunks dès la publication de ses premières apparitions dans le manga. Il décrit comme un rêve le fait d’être finalement choisi pour un rôle dans une série aussi populaire et raconte sa première rencontre avec le personnage à travers les pages de Jump.",
+      "keyInformation": [
+        "Kusao avait exprimé son souhait de jouer Trunks avant son casting",
+        "Il décrit l’arrivée du personnage comme un moment de forte attente dans le manga et l’anime"
+      ],
+      "source": {
+        "publication": "Trunks: Takeshi Kusao TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 154-157)",
+        "pages": "154-157",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-kusao/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-kusao/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-kusao.html",
+        "participants": [
+          "Takeshi Kusao"
+        ],
+        "questionAnswerCount": 13,
+        "questionBlockCount": 13,
+        "answerBlockCount": 13,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Trunks voice actor Takeshi Kusao.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage de Trunks.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-hiromi-tsuru",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Hiromi Tsuru se souvient que Bulma représentait un rôle énergique inhabituel pour elle. Elle décrit la jeune Bulma comme égocentrique et déterminée, puis l’évolution vers une mère plus posée, tout en expliquant comment elle a suivi les changements du personnage sur plusieurs années.",
+      "keyInformation": [
+        "Tsuru souhaitait jouer un personnage aussi énergique et affirmé que Bulma",
+        "Elle observe que la maternité et l’âge ont adouci Bulma au fil de la série"
+      ],
+      "source": {
+        "publication": "Bulma: Hiromi Tsuru TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 158-161)",
+        "pages": "158-161",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiromi-tsuru/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiromi-tsuru/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiromi-tsuru.html",
+        "participants": [
+          "Hiromi Tsuru"
+        ],
+        "questionAnswerCount": 21,
+        "questionBlockCount": 21,
+        "answerBlockCount": 21,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Bulma voice actress Hiromi Tsuru.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage et évolution de Bulma.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-takeshi-aono",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Takeshi Aono décrit l’impact immédiat de Piccolo Daimaō et son envie de trouver une interprétation à la hauteur de son apparence singulière. Il revient sur son expérience des rôles excentriques et sur les différences entre le roi démon et Dieu, deux personnages qu’il a tous deux doublés.",
+      "keyInformation": [
+        "Aono est frappé par le design vert et imposant de Piccolo Daimaō",
+        "Il interprète aussi Dieu et compare la manière d’aborder les deux personnages"
+      ],
+      "source": {
+        "publication": "Demon King Piccolo / God: Takeshi Aono TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 162-163)",
+        "pages": "162-163",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-aono/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-aono/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-aono.html",
+        "participants": [
+          "Takeshi Aono"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Piccolo Daimaō / God voice actor Takeshi Aono.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage de deux personnages importants.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-yuko-minaguchi",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Yūko Minaguchi parle de Videl et de Pan, rôles qu’elle a reçus sans audition selon son souvenir. Elle décrit Videl comme volontaire et franche, puis plus douce au fil de sa relation avec Gohan; elle évoque aussi la place plus active de Videl dans les scènes de combat et son appréciation de la timidité de Gohan.",
+      "keyInformation": [
+        "Minaguchi n’a pas auditionné pour Videl ni Pan et pense avoir été choisie par le producteur",
+        "Elle décrit la transformation de Videl et la relation de jeu avec Gohan"
+      ],
+      "source": {
+        "publication": "Videl: Yūko Minaguchi TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 164-165)",
+        "pages": "164-165",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-yuko-minaguchi/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-yuko-minaguchi/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-yuko-minaguchi.html",
+        "participants": [
+          "Yūko Minaguchi"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Videl voice actor Yūko Minaguchi.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur Videl et Pan.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-mayumi-sho",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Mayumi Shō raconte ses débuts dans le rôle de Chi-Chi et son choix de préserver à la fois la douceur apparente et la forte volonté du personnage. Elle explique qu’elle préférait jouer naturellement plutôt que fixer d’emblée une voix théorique, puis évoque la force maternelle de Chi-Chi après son mariage.",
+      "keyInformation": [
+        "Shō souligne le contraste entre l’apparence mignonne et la détermination de Chi-Chi",
+        "Elle associe le rôle à ses premières années comme comédienne de doublage"
+      ],
+      "source": {
+        "publication": "Chi-Chi: Mayumi Shō TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 166-167)",
+        "pages": "166-167",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-sho/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-sho/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-sho.html",
+        "participants": [
+          "Mayumi Shō"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Chi-Chi voice actress Mayumi Shō.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage et caractérisation de Chi-Chi.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-hiroshi-masuoka",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Hiroshi Masuoka raconte avoir repris Kame-Sen’nin après Kōhei Miyauchi et ne pas avoir voulu imiter simplement son prédécesseur. Il imagine comment il aurait joué le maître depuis le début et compare cette reprise à son expérience d’autres rôles déjà installés.",
+      "keyInformation": [
+        "Masuoka reprend le rôle après une première interprétation de Miyauchi",
+        "Il cherche une approche personnelle du maître plutôt qu’une imitation, en tenant compte de son ancienneté dans la série"
+      ],
+      "source": {
+        "publication": "Kame-Sen’nin: Hiroshi Masuoka TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 168-169)",
+        "pages": "168-169",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiroshi-masuoka/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiroshi-masuoka/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiroshi-masuoka.html",
+        "participants": [
+          "Hiroshi Masuoka"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Kame-Sen'nin voice actor Hiroshi Masuoka.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : histoire du doublage de Kame-Sen’nin.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-ryusei-nakao",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Ryūsei Nakao raconte son travail sur Freeza et la manière dont il a abordé un antagoniste d’une froideur et d’une cruauté inhabituelles. Il décrit les choix de jeu et les réactions suscitées par la voix, qui ont contribué à faire de Freeza une présence mémorable de Dragon Ball Z.",
+      "keyInformation": [
+        "Nakao aborde la création vocale de Freeza et les consignes reçues pour le personnage",
+        "L’entretien porte sur les différentes formes et sur l’impact de l’interprétation auprès du public"
+      ],
+      "source": {
+        "publication": "Freeza: Ryūsei Nakao TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 170-171)",
+        "pages": "170-171",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryusei-nakao/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryusei-nakao/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryusei-nakao.html",
+        "participants": [
+          "Ryūsei Nakao"
+        ],
+        "questionAnswerCount": 7,
+        "questionBlockCount": 7,
+        "answerBlockCount": 7,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Freeza actor Ryūsei Nakao.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : interprétation de Freeza dans l’anime.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-norio-wakamoto",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Norio Wakamoto raconte sa perplexité devant la première forme monstrueuse de Cell et le défi de lui trouver une voix convaincante. Il distingue cette voix plus rauque de l’interprétation plus aisée de la forme parfaite et évoque les changements de jeu au fil des transformations.",
+      "keyInformation": [
+        "Wakamoto trouve la première forme difficile à interpréter en raison de son apparence et choisit une voix rauque",
+        "La forme parfaite lui permet une interprétation plus confortable et différente"
+      ],
+      "source": {
+        "publication": "Cell: Norio Wakamoto TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 172-173)",
+        "pages": "172-173",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-norio-wakamoto/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-norio-wakamoto/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-norio-wakamoto.html",
+        "participants": [
+          "Norio Wakamoto"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Cell voice actor Norio Wakamoto.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur les transformations de Cell.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-kozo-shioya",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Kōzō Shioya décrit Boo comme un personnage extravagant mais difficile à détester. Choisi après plusieurs petits rôles dans la série, il s’inspire du comportement égocentrique d’un enfant de trois ans et s’appuie davantage sur les possibilités offertes par l’enregistrement que sur des consignes détaillées.",
+      "keyInformation": [
+        "Shioya avait déjà joué des rôles secondaires, dont Gurd, avant d’être choisi pour Boo",
+        "Il conçoit Boo comme un enfant capricieux et souligne son mélange d’extravagance et de sympathie"
+      ],
+      "source": {
+        "publication": "Majin Boo: Kōzō Shioya TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (pp. 174-175)",
+        "pages": "174-175",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-kozo-shioya/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-kozo-shioya/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-kozo-shioya.html",
+        "participants": [
+          "Kōzō Shioya"
+        ],
+        "questionAnswerCount": 10,
+        "questionBlockCount": 10,
+        "answerBlockCount": 10,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Majin Buu voice actor Kōzō Shioya.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage de doublage sur les différentes facettes de Boo.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
+    },
+    {
+      "id": "tenkaichi-densetsu-joji-yanami",
+      "title": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
+      "summary": "Jōji Yanami raconte que le producteur lui a confié à la fois la narration et le rôle de Kaiō. Il décrit l’évolution de sa narration, passée d’un monologue à un ton plus conversationnel, et évoque son affection pour Kaiō ainsi que les années passées dans la série.",
+      "keyInformation": [
+        "Yanami reçoit les rôles de narrateur et de Kaiō à la demande du producteur",
+        "Il adapte progressivement son style de narration et apprécie le caractère attachant de Kaiō"
+      ],
+      "source": {
+        "publication": "Narration / Kaiō: Jōji Yanami TV Anime Guide: Dragon Ball Tenka’ichi Densetsu (p. 176)",
+        "pages": "176",
+        "date": "2004-07-02",
+        "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-joji-yanami/",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-joji-yanami/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-joji-yanami.html",
+        "participants": [
+          "Jōji Yanami"
+        ],
+        "questionAnswerCount": 4,
+        "questionBlockCount": 4,
+        "answerBlockCount": 4,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "format": "Q&A interview",
+        "sourceDescription": "An interview from \"Tenka'ichi Densetsu\" with Narration / Kaiō voice actor Jōji Yanami.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : témoignage sur narration et doublage de Dragon Ball Z.",
+      "formatNote": "Entretien Q/R individuel.",
+      "forum": false,
+      "forumContent": false,
+      "kind": "qa"
     }
   ]
 }

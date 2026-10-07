@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1986); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "weekly-jump-1986-37-character-biography-data",
+      "title": "Character Biography Data Weekly Shōnen Jump, 1986 #37",
+      "summary": "Cette fiche de personnages présente des données de profil pour les héros du début de Dragon Ball : anniversaires, groupes sanguins, tailles, poids et traits de caractère. Certaines rubriques restent volontairement secrètes ou inconnues, et les descriptions condensent les gags et tempéraments des personnages.",
+      "keyInformation": [
+        "Les profils couvrent notamment Kuririn, Goku, Pu’er, Oolong, Gyūmaō, Bulma, Lunch et Chi-Chi",
+        "Les données mêlent informations chiffrées, éléments de caractérisation et plaisanteries éditoriales"
+      ],
+      "source": {
+        "publication": "Character Biography Data Weekly Shōnen Jump, 1986 #37",
+        "pages": null,
+        "date": "1986-08-12",
+        "url": "https://www.kanzenshuu.com/translations/weekly-jump-1986-37-character-biography-data/"
+      },
+      "dragonBallRelevance": "Directe : référence descriptive concernant les personnages du manga.",
+      "formatNote": "Fiche encyclopédique de magazine, non signée et non rédigée comme un entretien.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

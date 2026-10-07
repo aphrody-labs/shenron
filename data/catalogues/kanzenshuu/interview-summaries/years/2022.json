@@ -30,10 +30,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2022-back-up-comic-chapter-35/",
         "questionAnswerCount": 7,
-        "formatNote": "Les sept unités repérées par Kanzenshuu correspondent aux sept pages/planches d'un comic d'interview humoristique, et non à sept questions journalistiques autonomes. Des didascalies, bulles et éléments de gag complètent les propos de Kodama; l'annonce que Victory Asada serait dans le film est une plaisanterie démentie dans la dernière planche."
+        "formatNote": "Les sept unités repérées par Kanzenshuu correspondent aux sept pages/planches d'un comic d'interview humoristique, et non à sept questions journalistiques autonomes. Des didascalies, bulles et éléments de gag complètent les propos de Kodama; l'annonce que Victory Asada serait dans le film est une plaisanterie démentie dans la dernière planche.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : expérience de Kodama comme réalisateur de Super Hero et détails de production sur l'adaptation 3D, le travail avec Toei, les animateurs et le scénario de Toriyama.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     },
     {
       "id": "dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview",
@@ -58,10 +60,12 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview/",
         "questionAnswerCount": 4,
-        "formatNote": "Entretien écrit de quatre questions-réponses. Kubota s'exprime comme directeur d'animation et ancien animateur clé; ses appréciations de la 3D sont son expérience professionnelle."
+        "formatNote": "Entretien écrit de quatre questions-réponses. Kubota s'exprime comme directeur d'animation et ancien animateur clé; ses appréciations de la 3D sont son expérience professionnelle.",
+        "forumContent": false
       },
       "dragonBallRelevance": "Directe : méthodes de production et de direction d'animation du film Dragon Ball Super: Super Hero, vues par son directeur d'animation.",
-      "status": "summary-written-print-source-not-collated"
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
     }
   ]
 }

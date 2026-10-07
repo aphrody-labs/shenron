@@ -344,6 +344,345 @@
       ],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
+    },
+    {
+      "id": "dbz-anime-special-2-super-anime-jin",
+      "url": "https://www.kanzenshuu.com/translations/dbz-anime-special-2-super-anime-jin/",
+      "title": "Super Anime-jin Roundtable Discussion Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II (pp. 138-140)",
+      "publication": "Super Anime-jin Roundtable Discussion Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II (pp. 138-140)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "06 June 1991",
+      "participants": [
+        "Kenji Shimizu",
+        "Daisuke Nishio",
+        "Takao Koyama",
+        "Kōzō Morishita",
+        "Masako Nozawa",
+        "Akira Toriyama",
+        "Minoru Maeda"
+      ],
+      "topics": [
+        "Dragon Ball Z",
+        "Animation",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/dbz-anime-special-2-super-anime-jin.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Dragon Ball Z Anime Special 2 - Super Anime-jin",
+      "sourceDescription": "English translation of the &#039;Super Anime-jin&#039; (Super Anime People) roundtable interview from the 1991 DBZ Anime Special 2 magazine/book",
+      "questionCount": 20,
+      "sectionHeadings": [
+        "Super Anime-jin Roundtable Discussion Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II (pp. 138-140)",
+        "Super Anime-jin Roundtable Discussion Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II (pp. 138-140)"
+      ],
+      "editorialSummary": "Cette table ronde réunit Toriyama et plusieurs figures majeures de l’anime : producteurs, réalisateur, scénariste, animatrice en chef et Masako Nozawa. Ils discutent du succès, des contraintes de production et des qualités du manga et de l’adaptation; les participants apportent chacun leurs souvenirs professionnels plutôt qu’un récit unique.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "daizenshuu-1-shenlong-times",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-1-shenlong-times/",
+      "title": "Shenlong Times — table ronde des anciens éditeurs, no 1",
+      "publication": "Shenlong Times — 1 st Issue Dragon Ball Daizenshuu 1: Complete Illustrations Insert Pamphlet Roundtable 20 June 1995 Akira Toriyama, Kazuhiko Torishima, Yū Kondō, Fuyuto Takeda, Jackie Chan Dragon Ball (Manga), Editors",
+      "publicationType": "Insert Pamphlet",
+      "format": "Interview",
+      "publicationDate": "20 June 1995",
+      "participants": [
+        "Kazuhiko Torishima",
+        "Yū Kondō",
+        "Fuyuto Takeda"
+      ],
+      "topics": [
+        "Dragon Ball",
+        "Manga",
+        "Editorial"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-1-shenlong-times.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 1 - Shenlong Times",
+      "sourceDescription": "English translation of the special &#039;Shenlong Times&#039; booklet included with the first Dragon Ball Daizenshuu volume, &#039;Complete Illustrations&#039;",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Shenlong Times — 1 st Issue Dragon Ball Daizenshuu 1: Complete Illustrations Insert Pamphlet Roundtable 20 June 1995 Akira Toriyama, Kazuhiko Torishima, Yū Kondō, Fuyuto Takeda, Jackie Chan Dragon Ball (Manga), Editors",
+        "Shenlong Times — table ronde des anciens éditeurs, no 1"
+      ],
+      "editorialSummary": "Cette première table ronde réunit les trois éditeurs successifs de Dragon Ball pour parler de leur relation avec Toriyama et des coulisses de la série. Ils reviennent sur les périodes où chacun a accompagné l’auteur et sur la manière dont les éditeurs ont contribué à la construction de son travail et à l’image de certains personnages.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "daizenshuu-2-shenlong-times",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-2-shenlong-times/",
+      "title": "Shenlong Times — table ronde des anciens éditeurs et Toriyama, no 2",
+      "publication": "Shenlong Times — 2 nd Issue Dragon Ball Daizenshuu 2: Story Guide Insert Pamphlet Roundtable 04 August 1995 Akira Toriyama, Kazuhiko Torishima, Yū Kondō, Fuyuto Takeda, Shingo Katori Dragon Ball (Manga), Editors, Story",
+      "publicationType": "Insert Pamphlet",
+      "format": "Interview",
+      "publicationDate": "04 August 1995",
+      "participants": [
+        "Akira Toriyama",
+        "Kazuhiko Torishima",
+        "Yū Kondō",
+        "Fuyuto Takeda"
+      ],
+      "topics": [
+        "Dragon Ball",
+        "Manga",
+        "Story",
+        "Editorial"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-2-shenlong-times.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 2 - Shenlong Times",
+      "sourceDescription": "English translation of the special &#039;Shenlong Times&#039; booklet included with the second Dragon Ball Daizenshuu volume, &#039;Story Guide&#039;",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Shenlong Times — 2 nd Issue Dragon Ball Daizenshuu 2: Story Guide Insert Pamphlet Roundtable 04 August 1995 Akira Toriyama, Kazuhiko Torishima, Yū Kondō, Fuyuto Takeda, Shingo Katori Dragon Ball (Manga), Editors, Story",
+        "Shenlong Times — table ronde des anciens éditeurs et Toriyama, no 2"
+      ],
+      "editorialSummary": "Dans cette seconde rencontre avec les anciens éditeurs, Toriyama se joint à la discussion sur les coulisses de la série. L’échange porte sur les décisions de récit et les relations entre l’auteur et ses éditeurs; les participants revisitent après coup leurs rôles et les personnages auxquels ils ont été associés par plaisanterie ou par inspiration.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "daizenshuu-3-shenlong-times",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-3-shenlong-times/",
+      "title": "Shenlong Times — table ronde du personnel de l’animation, no 3",
+      "publication": "Shenlong Times — 3 rd Issue Dragon Ball Daizenshuu 3: TV Animation Part 1 Insert Pamphlet Roundtable 04 September 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Masa’aki Satake Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+      "publicationType": "Insert Pamphlet",
+      "format": "Interview",
+      "publicationDate": "04 September 1995",
+      "participants": [
+        "Kenji Shimizu",
+        "Kōzō Morishita",
+        "Shunsuke Kikuchi",
+        "Takao Koyama",
+        "Shigeyasu Yamauchi",
+        "Tadayoshi Yamamuro",
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball",
+        "Dragon Ball Z",
+        "Animation",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-3-shenlong-times.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 3 - Shenlong Times",
+      "sourceDescription": "English translation of the special &#039;Shenlong Times&#039; booklet included with the third Dragon Ball Daizenshuu volume, &#039;TV Animation Part 1&#039;",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Shenlong Times — 3 rd Issue Dragon Ball Daizenshuu 3: TV Animation Part 1 Insert Pamphlet Roundtable 04 September 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Masa’aki Satake Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+        "Shenlong Times — table ronde du personnel de l’animation, no 3"
+      ],
+      "editorialSummary": "Producteurs, scénariste, réalisateur, compositeur, animateurs et Masako Nozawa échangent sur la fabrication de Dragon Ball et Dragon Ball Z. La table ronde réunit des métiers complémentaires et retrace leurs expériences de la série, de l’organisation des épisodes à l’interprétation des personnages et à la musique.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "daizenshuu-4-shenlong-times",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-shenlong-times/",
+      "title": "Shenlong Times — table ronde de fans, no 4",
+      "publication": "Shenlong Times — 4 th Issue Dragon Ball Daizenshuu 4: World Guide Insert Pamphlet Roundtable 04 October 1995 Akira Toriyama, Toshihiro Suzuki, Momoko Sakura Dragon Ball (Manga), Production, World",
+      "publicationType": "Insert Pamphlet",
+      "format": "Interview",
+      "publicationDate": "04 October 1995",
+      "participants": [
+        "Toshihiro Suzuki",
+        "Emi Tōnosu",
+        "Hokoto Masumoto"
+      ],
+      "topics": [
+        "Dragon Ball",
+        "World",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-4-shenlong-times.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 4 - Shenlong Times",
+      "sourceDescription": "English translation of the special &#039;Shenlong Times&#039; booklet included with the fourth Dragon Ball Daizenshuu volume, &#039;World Guide&#039;",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Shenlong Times — 4 th Issue Dragon Ball Daizenshuu 4: World Guide Insert Pamphlet Roundtable 04 October 1995 Akira Toriyama, Toshihiro Suzuki, Momoko Sakura Dragon Ball (Manga), Production, World",
+        "Shenlong Times — table ronde de fans, no 4"
+      ],
+      "editorialSummary": "Cette table ronde réunit le responsable des jeux Dragon Ball chez Bandai Toshihiro Suzuki et deux finalistes d’un concours de connaissances, Emi Tōnosu et Hokoto Masumoto. Ils racontent leurs souvenirs favoris du manga et les personnages qui les ont marqués; la première place, Yumika Ōya, ne pouvait assister à la rencontre et a envoyé un commentaire. La conversation documente à la fois la réception des lecteurs et le regard d’un professionnel impliqué dans les jeux.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "daizenshuu-5-shenlong-times",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-5-shenlong-times/",
+      "title": "Shenlong Times — table ronde du personnel de l’animation, no 5",
+      "publication": "Shenlong Times — 5 th Issue Dragon Ball Daizenshuu 5: TV Animation Part 2 Insert Pamphlet Roundtable 04 November 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Yūji Horii Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+      "publicationType": "Insert Pamphlet",
+      "format": "Interview",
+      "publicationDate": "04 November 1995",
+      "participants": [
+        "Kenji Shimizu",
+        "Kōzō Morishita",
+        "Shunsuke Kikuchi",
+        "Takao Koyama",
+        "Shigeyasu Yamauchi",
+        "Tadayoshi Yamamuro",
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball",
+        "Dragon Ball Z",
+        "Animation",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-5-shenlong-times.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 5 - Shenlong Times",
+      "sourceDescription": "English translation of the special &#039;Shenlong Times&#039; booklet included with the fifth Dragon Ball Daizenshuu volume, &#039;TV Animation Part 2&#039;",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Shenlong Times — 5 th Issue Dragon Ball Daizenshuu 5: TV Animation Part 2 Insert Pamphlet Roundtable 04 November 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Yūji Horii Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+        "Shenlong Times — table ronde du personnel de l’animation, no 5"
+      ],
+      "editorialSummary": "La deuxième table ronde de l’équipe de l’anime réunit producteurs, compositeur, scénariste, réalisateur et superviseur d’animation. Les intervenants poursuivent leurs souvenirs des séries télévisées et des films, en détaillant les rôles et la continuité du travail autour des œuvres de Toriyama.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "daizenshuu-6-shenlong-times",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-6-shenlong-times/",
+      "title": "Shenlong Times — table ronde du personnel de l’animation, no 6",
+      "publication": "Shenlong Times — 6 th Issue Dragon Ball Daizenshuu 6: Movies & TV Specials Insert Pamphlet Roundtable 04 December 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Daisaburō Okumoto Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+      "publicationType": "Insert Pamphlet",
+      "format": "Interview",
+      "publicationDate": "04 December 1995",
+      "participants": [
+        "Kenji Shimizu",
+        "Kōzō Morishita",
+        "Shunsuke Kikuchi",
+        "Takao Koyama",
+        "Shigeyasu Yamauchi",
+        "Tadayoshi Yamamuro",
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball",
+        "Dragon Ball Z",
+        "Animation",
+        "Production",
+        "Voice Actor"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-6-shenlong-times.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 6 - Shenlong Times",
+      "sourceDescription": "English translation of the special &#039;Shenlong Times&#039; booklet included with the sixth Dragon Ball Daizenshuu volume, &#039;Movies &amp; TV Specials&#039;",
+      "questionCount": 0,
+      "sectionHeadings": [
+        "Shenlong Times — 6 th Issue Dragon Ball Daizenshuu 6: Movies & TV Specials Insert Pamphlet Roundtable 04 December 1995 Akira Toriyama, Kenji Shimizu, Kōzō Morishita, Shunsuke Kikuchi, Takao Koyama, Shigeyasu Yamauchi, Tadayoshi Yamamuro, Masako Nozawa, Daisaburō Okumoto Dragon Ball (Anime), Dragon Ball Z, Animation, Production, Staff, Voice Actor",
+        "Shenlong Times — table ronde du personnel de l’animation, no 6"
+      ],
+      "editorialSummary": "Les principaux artisans de l’anime poursuivent leur conversation autour des séries et des films. Les échanges documentent les responsabilités respectives des producteurs, du scénariste, du réalisateur, de l’animateur et du compositeur, ainsi que la continuité des collaborations depuis Dr. Slump.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "supplemental-daizenshuu-super-voice-talks",
+      "url": "https://www.kanzenshuu.com/translations/supplemental-daizenshuu-super-voice-talks/",
+      "title": "Special Voice-Actor Roundtable: Super Voice Talks Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 107-113)",
+      "publication": "Special Voice-Actor Roundtable: Super Voice Talks Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 107-113)",
+      "publicationType": "Guidebook",
+      "format": "Interview",
+      "publicationDate": "05 February 1996",
+      "participants": [
+        "Toshio Furukawa",
+        "Mayumi Tanaka",
+        "Ryō Horikawa",
+        "Masako Nozawa",
+        "Tōru Furuya",
+        "Hiromi Tsuru",
+        "Hirotaka Suzuoki"
+      ],
+      "topics": [
+        "Dragon Ball",
+        "Voice Actor",
+        "Production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/supplemental-daizenshuu-super-voice-talks.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Supplemental Daizenshuu - Super Voice Talks",
+      "sourceDescription": "English translation of the &#039;Super Voice Talks&#039; from the Supplemental (10th) Daizenshuu, a conversation between various DBZ voice actors",
+      "questionCount": 14,
+      "sectionHeadings": [
+        "Special Voice-Actor Roundtable: Super Voice Talks Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 107-113)",
+        "Special Voice-Actor Roundtable: Super Voice Talks Dragon Ball Supplemental Daizenshuu: TV Animation Part 3 (pp. 107-113)"
+      ],
+      "editorialSummary": "Sept comédiens japonais échangent sur leur casting, leur approche des rôles et leurs souvenirs de Dragon Ball Z. Ils expliquent que certains sont passés par une audition tandis que d’autres ont été choisis directement; Nozawa raconte notamment son audition pour Goku et l’importance du casting de vétérans dans le studio.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
+      "id": "daizenshuu-4-akira-toriyama-best",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-akira-toriyama-best/",
+      "title": "Dragon Ball Daizenshuu 4: World Guide",
+      "publication": "Akira Toriyama’s Best Dragon Ball Daizenshuu 4: World Guide (pp. 38-39, 106, 108-109, 146-147)",
+      "publicationType": "Q&A",
+      "format": "Q&A interview",
+      "publicationDate": "1995-10-04",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [],
+      "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/daizenshuu-4-akira-toriyama-best.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 4 - Akira Toriyama's Best",
+      "sourceDescription": "Dragon Ball author Akira Toriyama makes his \"Best of\" selections in Daizenshuu 4.",
+      "questionCount": 16,
+      "answerBlockCount": 16,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 4: World Guide",
+        "Akira Toriyama’s Best"
+      ],
+      "editorialSummary": "Dans cette rubrique de questions thématiques, Toriyama choisit Mister Satan comme protagoniste potentiel d’un manga comique et répond à des questions imaginaires sur les personnages. Il imagine qui ferait un bon parent ou enfant, qui vivrait le plus longtemps et qui il voudrait incarner, avec des réponses mêlant traits narratifs et plaisanteries.",
+      "reviewStatus": "source-checked-summary-retained"
+    },
+    {
+      "id": "daizenshuu-7-secret-stories-of-the-dragon-ball-characters",
+      "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-secret-stories-of-the-dragon-ball-characters/",
+      "title": "Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia",
+      "publication": "Secret Stories of the Dragon Ball Characters Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia (p. 112)",
+      "publicationType": "Q&A",
+      "format": "Q&A interview",
+      "publicationDate": "1996-02-05",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [],
+      "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/daizenshuu-7-secret-stories-of-the-dragon-ball-characters.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Daizenshuu 7 – Secret Stories of the Dragon Ball Characters",
+      "sourceDescription": "English translation of the 'Secret Stories of the Dragon Ball Characters' Q&A column with Akira Toriyama from Daizenshuu 7",
+      "questionCount": 5,
+      "answerBlockCount": 5,
+      "sectionHeadings": [
+        "Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia",
+        "Secret Stories of the Dragon Ball Characters"
+      ],
+      "editorialSummary": "Toriyama répond à des questions sur l’après-série et les coulisses de plusieurs personnages. Il raconte notamment que Lunch est partie à la recherche de Tenshinhan, décrit les jumeaux C-17 et C-18 comme des délinquants enlevés par Gero et explique que le gang de Pilaf a différé ses projets de conquête du monde face à Cell.",
+      "reviewStatus": "source-checked-summary-retained"
     }
   ]
 }
