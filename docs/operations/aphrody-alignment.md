@@ -568,3 +568,36 @@ montre aussi deux barres de titre et une icône manquante dans le frontend de
 l'ancien NSIS : ces défauts restent à vérifier dans le nouveau paquet complet.
 Elle ne prouve ni le rendu du canvas de traduction ni une inférence de chat.
 Les captures et rapports restent dans le store local ignoré par Git.
+
+## Canvas natif, IPC et viewport WASM
+
+Le SDK Windows de la fabrique importe une fixture synthétique PNG de 64 × 64
+pixels dans un projet Unicode, prépare son canvas et produit un manifeste de
+329 octets. L'export passe par le rasterizer natif Vello/WGPU : les 4 096 pixels
+RGBA du PNG exporté sont identiques à la fixture, sans différence. Aucun modèle
+n'est chargé et aucune inférence n'est appelée.
+
+Le parcours est ensuite étendu à Studio. Le SDK ferme son projet ; le moteur
+géré par Studio le rouvre par IPC sous son identifiant de qualification. Une page
+locale UTF-8 charge la glue et le module WASM du checkout consommateur, avec
+l'initialisation explicite du module compilé utilisée par l'adaptateur canvas.
+Elle appelle réellement `prepare_canvas_page`, `get_canvas_page_manifest` et
+`get_canvas_page_resource` par IPC, installe les ressources dans `WebCanvas`,
+active le frame puis le rend par WebGPU dans CEF.
+
+La lecture GPU des quatre quadrants restitue exactement rouge, vert, bleu et
+jaune : `[255,0,0,255]`, `[0,255,0,255]`, `[0,0,255,255]` et
+`[255,255,0,255]`. Ce contrôle qualifie ensemble le format des paquets natifs,
+le transport binaire IPC, l'initialisation WASM et le viewport WebGPU. Il utilise
+le correctif ACL privé déjà décrit ; il ne remplace pas son intégration sur
+`main` ni les contrôles de toutes les interactions de l'interface Studio.
+
+| Sortie canvas consommée | Taille (octets) | SHA-256 |
+| --- | ---: | --- |
+| `koharu_canvas.js` | 90 418 | `6ccf1f4138fd4ef1addedb422681094f606adeb5a075b66d9defe0b7a69e785f` |
+| `koharu_canvas_bg.wasm` | 2 040 350 | `3fd3a5998da66c6c87a768d05892fd6d72ce280ea6d8278d8f4e85f55f35aa9f` |
+
+Les projets et fichiers temporaires sont supprimés, y compris les fixtures
+des essais échoués de la sonde, et les processus sont arrêtés. Aucun fallback
+CPU ni changement des politiques CEF n'est ajouté. La porte WARP antérieure,
+l'inférence et l'installation complète restent ouvertes.
