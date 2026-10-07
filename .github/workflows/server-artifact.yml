@@ -1,8 +1,8 @@
 name: Production server artifact (no deploy)
 
-# Construit `shenron-server` (saveur production : assets servis par cdn.dragonballfr.com,
-# repli embarqué) et l'arbre CDN, sans base ni déploiement. La promotion, les unités et
-# Nginx appartiennent à aphrody-infra.
+# Build the production server and CDN assets on the actual VPS factory.
+# Production promotion, host units and TLS routes belong to Aphrody Infra.
+# Manual trusted execution only; never schedule pull-request code on this host.
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build:
     name: Build shenron-server (linux-x64, production)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, shenron-factory, vps]
     timeout-minutes: 45
     env:
       NEXT_TELEMETRY_DISABLED: "1"
@@ -26,7 +26,7 @@ jobs:
         with:
           persist-credentials: false
 
-      # setup-bun lit la version exacte depuis package.json#packageManager.
+      # setup-bun reads the exact version from package.json#packageManager.
       - uses: oven-sh/setup-bun@v2
 
       - name: Cache Bun downloads only
@@ -38,8 +38,7 @@ jobs:
       - name: Install exact dependencies
         run: bun ci
 
-      # Le WASM de crates/koharu-canvas est suivi par Git (packages/koharu/src/wasm/, contrôlé
-      # par rust.yml) : aucun outillage Rust pour le site.
+      # Koharu WASM is tracked in Git and checked by rust.yml; the site needs no Rust build.
       - name: Build shenron-server and the CDN tree
         run: bun scripts/build/server.ts --target linux-x64 --flavor production
 
