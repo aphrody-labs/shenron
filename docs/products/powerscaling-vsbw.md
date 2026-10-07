@@ -91,7 +91,7 @@ Version, forme et continuité précisées? Statistique isolée? Source primaire 
 
 ## 10. Vérification et limites
 
-Sources consultées le 8 octobre 2026 via indexation et résultats de recherche. L’accès direct à plusieurs pages Fandom était bloqué par robots.txt; la version courante n’a donc pas pu être intégralement auditée. Les pages sont évolutives.
+Première passe consultée le 8 octobre 2026 via indexation. Depuis, une lecture directe du wikitexte par l’API MediaWiki a permis de contrôler plusieurs pages centrales et leurs révisions (voir annexe M). D’autres pages de règles restent à auditer; la couverture détaillée est tenue en annexe J. Les pages VSBW évoluent.
 
 Le socle couvre tiering, scaling, statistiques, vitesse, calculs généraux, cosmologie, cohérence et pouvoirs. La suite doit traiter page par page les méthodes particulières (séismes, tempêtes, nuages, grandes tailles, trajectoires, relativité, masse-énergie), les sous-règles cosmologiques, systèmes d’énergie d’univers, multiplicateurs, mécaniques de jeu et interactions. Toute valeur conventionnelle de calcul reste un outil, jamais un verdict sur un personnage.
 
@@ -327,3 +327,141 @@ Une image montre un objet devant l’horizon et un second objet près de l’obs
 
 Pour chaque réponse, exiger quatre éléments : (1) fait directement établi; (2) inférence autorisée ou refusée et pourquoi; (3) catégorie statistique concernée; (4) donnée manquante qui ferait évoluer la conclusion. Si l’analyse attribue un niveau depuis un profil VSBW, un nom de technique ou la seule absence de contre-exemple, elle échoue au contrôle de neutralité.
 
+
+## Annexe L — Critères détaillés relus dans les pages courantes
+
+Ces précisions proviennent du wikitexte obtenu en lecture seule par l’API MediaWiki du VSBW. Elles décrivent les méthodes publiées, non les conclusions DBFR.
+
+### Chaînes de comparaison et seuil proche
+
+Le scaling peut s’appuyer sur supériorité, égalité, dégâts réciproques, déclarations fiables et chaînes, mais chaque lien doit viser la même statistique et une performance habituelle. Un hax qui contourne la durabilité, un adversaire affaibli ou retenu, ou une contradiction irréconciliable avec les limites récurrentes ne transmet pas automatiquement l’AP ou la durabilité. Des blessures mutuelles ou une résistance effective peuvent soutenir une comparaison si les circonstances le confirment.
+
+La page [Powerscaling](https://vsbattles.fandom.com/wiki/Powerscaling) mentionne une convention VSBW de proximité de seuil : une supériorité établie à moins d’un facteur 1,2 d’un seuil peut parfois soutenir le palier supérieur ou un « + »; une marge supérieure n’est pas promue par cette règle. Cela reste une convention du wiki, conditionnée à la cohérence, à la longueur de la chaîne et à la représentation de l’œuvre. Pour DBFR, consigner le facteur comme outil distinct, et reconstruire la preuve depuis les sources primaires. Les rangs numériques internes sont ordinaux par défaut; un rang double ne signifie pas une puissance doublée sans règle démontrée.
+
+### Multiplicateurs et calc stacking
+
+Selon [Multipliers](https://vsbattles.fandom.com/wiki/Multipliers), un facteur doit venir d’une déclaration directe et fiable; préciser l’attribut concerné, car « plus puissant » ne multiplie pas nécessairement toutes les statistiques. Plus le facteur est grand, plus la corroboration exigée augmente. Lors de cumuls, justifier le produit total par rapport au meilleur exploit de départ, déterminer si chaque facteur agit sur la base ou une statistique déjà accrue et vérifier constance, maîtrise et contradictions. Les facteurs issus d’un jeu demandent un lien avec le récit. Une attaque combinée n’est pas automatiquement la somme des AP de ses participants.
+
+[Calc Stacking](https://vsbattles.fandom.com/wiki/Calc_Stacking) limite le réemploi d’une grandeur calculée à des paramètres invariants. Une taille de référence ou la vitesse d’un projectile peut être réutilisée dans la même séquence si elle ne change pas; réduire les étapes dépendantes reste préférable. Le VSBW tolère parfois une vitesse déclarée sur un seul maillon de scaling, pas une longue chaîne, et seulement si le niveau d’effort reste comparable. Course, attaque et réaction ne se convertissent pas mutuellement sans preuve. Un rang verbal (« supersonique ») peut cacher un calcul et ne rend pas indépendantes les étapes suivantes.
+
+### Critères précis des systèmes d’énergie
+
+La page [Universal Energy Systems](https://vsbattles.fandom.com/wiki/Universal_Energy_Systems) distingue trois seuils méthodologiques :
+
+1. **Système limité** : montrer que les techniques comparées partagent une source ou sont convertibles, et dépensent une quantité comparable; ou que l’utilisateur peut investir des quantités comparables. Le lien peut être asymétrique si une technique puissante utilise plus d’énergie qu’une faible.
+2. **Système non physique** : satisfaire le critère limité pour l’ensemble des techniques non physiques concernées et établir que leur AP varie de façon proportionnelle; cela ne donne pas force corporelle ou durabilité.
+3. **Système universel** : satisfaire le critère non physique et montrer un canal énergétique qui augmente quantitativement les statistiques corporelles. La relation inverse, d’une force non renforcée vers la puissance surnaturelle, exige aussi des éléments si on l’invoque.
+
+La perte d’énergie peut affaiblir ou blesser, mais n’établit pas seule un système universel. Le renforcement peut être actif uniquement lors du canal ou passif si l’énergie est disponible. Une source externe ou une arme porte ses propres feats; il faut prouver l’accès de l’utilisateur et si le renforcement persiste sans elle. Ne pas étendre un système prouvé à d’autres sources d’énergie par analogie.
+
+### Tiering cosmologique et infini : FAQ courante
+
+La [Tiering System FAQ](https://vsbattles.fandom.com/wiki/Tiering_System_FAQ) insiste sur plusieurs distinctions :
+
+- Une existence dans une dimension supplémentaire décrit une structure, mais ne donne pas en soi une puissance infinie ou une force supérieure. En l’absence de relation démontrée entre dimension et pouvoir, quantifier depuis les feats propres.
+- Établir un espace-temps complet et la relation structurelle concernée. Les dimensions ajoutées uniquement par la méthode d’indexation ne deviennent pas infinies par une déclaration générale d’infini qui ne les vise pas dans l’œuvre.
+- Le VSBW adopte un modèle temporel par défaut, mais sa FAQ demande de suivre une autre philosophie temporelle si l’œuvre la définit. DBFR doit partir du support et de la continuité concernés.
+- La création/destruction directe d’un continuum concerne tout l’espace à chaque moment; détruire le début puis provoquer une disparition par paradoxe n’équivaut pas à affecter directement toute la ligne temporelle.
+- Prouver que des lignes temporelles sont des continuums distincts avant de les compter. « Monde parallèle » ou chronologie alternative ne suffit pas par le nom seul.
+- Qualifier l’infini : une réserve inépuisable n’est pas un débit infini utilisable en même temps; évaluer hyperbole, source et point de vue.
+- Les cardinalités infinies ne sont pas interchangeables. La théorie des ensembles ne sert que si le récit relie explicitement la structure fictionnelle au concept mathématique. Un multiplicateur, même infini, ne franchit pas à lui seul une frontière dimensionnelle ou ontologique.
+- « Transcender l’espace-temps », préexister à un concept ou exister hors de l’espace peut renvoyer à indépendance/causalité plutôt qu’à supériorité de puissance.
+- Être la source de dimensions est d’abord une question de création/stabilisation causale; cela ne prouve pas automatiquement existence, durabilité ou AP au même niveau.
+- Une vitesse supérieure ne découle pas d’une dimensionnalité supérieure; établir un feat de mouvement/temps selon les règles de vitesse.
+
+### Fiabilité des déclarations
+
+[Statements](https://vsbattles.fandom.com/wiki/Statements) autorise une déclaration à soutenir une conclusion, parfois seule, mais demande d’évaluer la fiabilité du locuteur, son accès aux faits, les contradictions avec l’œuvre, la portée et le contexte. Les formules emphatiques (« invincible », « sans limites », « infini », « au-delà de l’espace-temps ») ne sont pas une mesure automatique. Une déclaration d’auteur hors récit doit aussi être rattachée au cadre qu’elle décrit; une affirmation valable dans son univers ne devient pas une comparaison interuniverselle.
+
+## Annexe M — Trace de consultation directe
+
+Lecture en mode consultation de l’API MediaWiki le 8 octobre 2026 UTC. Le revid et la date identifient la dernière révision obtenue à cet instant; les pages restent vivantes.
+
+| Page de règle | Revid consulté | Date de révision (UTC) |
+|---|---:|---|
+| Tiering System | 9401765 | 2026-02-28 |
+| Tiering System FAQ | 9689808 | 2026-09-29 |
+| Powerscaling | 9566433 | 2026-06-21 |
+| Multipliers | 9518875 | 2026-05-14 |
+| Calc Stacking | 9496893 | 2026-04-28 |
+| Universal Energy Systems | 9475898 | 2026-04-14 |
+| Standard Battle Assumptions | 9377396 | 2026-02-13 |
+| Statements | 7880061 | 2023-02-11 |
+| Calculation Guide | 8943800 | 2025-03-13 |
+| Canon | 9495288 | 2026-04-27 |
+| Crossovers | 9680774 | 2026-09-20 |
+| Reality-Fiction Transcendence | 9559802 | 2026-06-15 |
+| Metaphysical Aspects | 8399398 | 2024-02-29 |
+| Civilization Tiering System | 9411836 | 2026-03-05 |
+| Environmental Destruction | 8302375 | 2023-12-19 |
+| Game Mechanics | 9666253 | 2026-09-07 |
+| Fighting Games Powerscaling Standards | 8724777 | 2024-09-10 |
+
+Les pages de profils ne sont pas des sources méthodologiques et n’ont pas été utilisées pour bâtir ces règles. Les exemples de personnages présents dans certaines pages de méthode ont été ignorés. Suite de l’audit : relever les révisions des autres pages de règles, puis comparer leurs méthodes à cette synthèse.
+
+
+### Continuités, crossovers et fiction-réalité
+
+Les règles VSBW de [Canon](https://vsbattles.fandom.com/wiki/Canon) et [Crossovers](https://vsbattles.fandom.com/wiki/Crossovers) distinguent continuité principale, adaptations, versions alternatives, croisements canoniques et non canoniques. Une scène d’un crossover non intégré ne sert pas automatiquement à mettre à l’échelle les personnages de leurs continuités séparées. Même un croisement reconnu par les deux œuvres demande de vérifier que le feat est cohérent pour chaque univers; l’outlier demeure possible. Ces catégories sont propres à chaque franchise et ne remplacent pas les règles éditoriales DBFR.
+
+Pour une **transcendance réalité-fiction**, la page VSBW demande une asymétrie qualitative réelle : le monde inférieur est réellement traité comme fiction, sans conséquence physique comparable pour l’être du niveau supérieur, et la relation doit réduire le monde inférieur à une réalité irréductiblement moindre. Un clin d’œil au quatrième mur, une métaphore, un simple avatar d’auteur ou une simulation ne satisfait pas automatiquement ces critères. La hiérarchie des aspects métaphysiques, elle, n’a pas de priorité par défaut : si les fictions n’établissent pas l’interaction entre concepts, lois, informations ou causalité, le résultat peut demeurer indéterminé.
+
+Références : [Reality-Fiction Transcendence](https://vsbattles.fandom.com/wiki/Reality-Fiction_Transcendence), [Metaphysical Aspects](https://vsbattles.fandom.com/wiki/Metaphysical_Aspects).
+
+
+
+## Annexe N — Protocole complet pour les feats de vitesse
+
+Cette annexe affine les règles vitesse après lecture directe des pages [Speed](https://vsbattles.fandom.com/wiki/Speed), [Reactions and Perceptions](https://vsbattles.fandom.com/wiki/Reactions_and_Perceptions), [Projectile Dodging Feats](https://vsbattles.fandom.com/wiki/Projectile_Dodging_Feats), [Laser/Light Beam Dodging Feats](https://vsbattles.fandom.com/wiki/Laser/Light_Beam_Dodging_Feats), [Lightning Feats](https://vsbattles.fandom.com/wiki/Lightning_Feats), [Cinematic Time](https://vsbattles.fandom.com/wiki/Cinematic_Time), [Speed Blitz](https://vsbattles.fandom.com/wiki/Speed_Blitz).
+
+### Esquives et mesure
+
+Pour une esquive de projectile, relever vitesse du projectile défendable, distance qu’il parcourt avant le début du mouvement, et déplacement du personnage dans cette même fenêtre. Le rapport distance-personnage/distance-projectile, multiplié par la vitesse du projectile, estime une vitesse relative si géométrie et simultanéité sont établies. Une trajectoire prévisible, connaissance de la source, anticipation ou précognition peut invalider l’inférence de réaction; montrer seulement un projectile en mouvement ou une cible hors champ ne tranche pas à lui seul le timing.
+
+Une réaction chiffrée comprend distance et durée. La perception est un délai de traitement, pas une distance parcourue; ne pas lui attribuer un mouvement arbitraire. Pour une perception déclenchée par projectile, la page Reactions and Perceptions propose d’estimer l’intervalle entre le projectile à la détection et le début du mouvement à partir de sa vitesse; vérifier que cette vitesse est elle-même fiable et éviter de chaîner plusieurs calculs.
+
+### Faisceaux lumineux et foudre
+
+Le terme « laser », « rayon » ou effet lumineux ne prouve pas la vitesse de la lumière. Chercher plusieurs indices positifs de comportement optique réel (réflexion, réfraction/diffusion, source lumineuse ou déclaration fiable) et confronter les contre-indices : vitesse variable sans mécanisme, virage anormal, interaction matérielle, réorientation physique ou effet principalement non thermique. Aucune réfutation apparente n’est en soi une preuve positive. Même un faisceau authentiquement lumineux ne valide pas une réaction si la cible a anticipé son tir.
+
+La page VSBW sur la foudre distingue un éclair naturel d’une attaque électrique fictionnelle. Elle propose des traits de cohérence (propagation et effets électriques associés) et des valeurs conventionnelles telles qu’une vitesse moyenne d’éclair, une hauteur de nuage-type ou une distance par défaut quand la scène n’en fournit pas. Ces valeurs doivent rester étiquetées **conventions de calcul VSBW**, non propriétés générales de la fiction. Pour DBFR, donner la valeur par défaut et l’intervalle d’incertitude, puis recalculer avec les distances propres à la scène. Une attaque électrique comparable en énergie/tension ne prouve pas automatiquement une foudre atmosphérique.
+
+### Temps cinématique et blitz
+
+Pour chronométrer une œuvre audiovisuelle, préférer les durées explicitement données, horloges internes ou calculs diégétiques. Le temps écran seul peut omettre des déplacements; les coupes, accélérations ou ralentissements de degré inconnu empêchent une mesure fiable. Le temps cinématique d’une scène ne sert pas à comparer directement deux feats indépendants ni à supposer un ratio constant entre scènes.
+
+Un blitz signifie agir avant que la cible puisse percevoir ou réagir, ce qui dépasse le simple fait d’être plus rapide. Avant de le conclure, vérifier que la cible était consciente, non distraite et en mesure de répondre. Le blitz n’a pas de ratio universel et peut rendre les autres capacités inopérantes pendant le match. L’égalisation de vitesse est une hypothèse de scénario, pas une propriété des personnages.
+
+### Révisions des pages vitesse
+
+| Page | Revid | Date de révision (UTC) |
+|---|---:|---|
+| Speed | 9439168 | 2026-03-22 |
+| Reactions and Perceptions | 8608872 | 2024-06-15 |
+| Projectile Dodging Feats | 8608868 | 2024-06-15 |
+| Laser/Light Beam Dodging Feats | 9093267 | 2025-07-07 |
+| Lightning Feats | 9282759 | 2025-11-29 |
+| Cinematic Time | 7855173 | 2023-01-18 |
+| Speed Blitz | 8331840 | 2024-01-06 |
+
+Les tableaux de seuils numériques de vitesse et les classements associés aux profils ne sont pas recopiés ici. Seules les catégories, les procédures de preuve et les paramètres de calcul sont retenus.
+
+
+**Valeurs conventionnelles relevées dans la page Lightning Feats :** la plage de vitesse de foudre naturelle indiquée est d’environ (1.0–14\times10^5) m/s, avec (4.4\times10^5) m/s comme valeur moyenne choisie par la page pour ses calculs. La hauteur des nuages d’orage est donnée dans une plage de 200 à 4 000 m, avec 2 000 m comme hypothèse standard. Pour un déplacement du personnage, 1 m est seulement la valeur par défaut si la scène ne permet pas de mesurer le déplacement; sinon il faut refaire le calcul avec la distance représentée. Pour une attaque électrique non nuage-sol invoquée comme équivalente à la foudre naturelle, la page demande une énergie d’au moins 1,6×10⁹ J ou une tension d’au moins 1×10⁸ V. Ce sont les critères et paramètres de calcul de la révision VSBW citée au registre, non des propriétés à appliquer à toute fiction ou des verdicts de personnages.
+
+Pour la puissance électrique, la page fournit les relations (P=IV), (P=I^2R), (P=V^2/R), (P=E/t), lorsque les variables correspondent à la scène. Elle attribue typiquement une seconde de flux à l’AP seulement si l’effet peut réellement se maintenir pendant cette durée. Survivre à un éclair ne signifie pas nécessairement encaisser toute son énergie : distinguer chemin du courant, durée, résistance, dissipation dans l’air/sol et effets secondaires.
+
+
+## Annexe O — Audit des calculs spécialisés
+
+Les pages d’instructions sont des outils de modélisation soumis à leurs hypothèses. Les conventions VSBW sont datées et ne deviennent pas des mesures DBFR. Aucun profil ni tableau de résultats n’est repris.
+
+Le Calculation Guide exige scène sourcée, variables explicites, unités cohérentes et étapes reproductibles. Le pixel scaling doit contrôler plan et perspective; l’angle apparent est moins robuste. Les pages Calculations distinguent les modèles par phénomène : l’énergie de levage n’est pas automatiquement une AP de frappe, et une vitesse de lancer ne devient pas automatiquement vitesse de déplacement ou de combat. Chaleur spécifique/latente, traînée, vitesse terminale, masse, état, surface et durée doivent être justifiés. Une validation communautaire de calcul n’est pas une validation scientifique.
+
+Pour les grands corps, l’échelle de masse au cube suppose proportions et densité comparables; une chute requiert masse, hauteur et gravité. Les feats de levage demandent un déplacement réel de la charge. La courbure planétaire dépend de l’altitude, du diamètre, du champ visuel, de l’horizon et de la perspective. La création doit être matérielle, et distinguée d’une illusion, d’un lieu préexistant ou d’une conversion masse-énergie non établie. Montagnes et îles exigent forme, volume, matériau et mécanisme de destruction. Stabiliser une structure ne scale que si la force agit directement et si son intensité est comparable à celle qu’on veut contrer.
+
+L’énergie cinétique classique E=1/2 mv² ne s’extrapole pas au FTL; une vitesse de déplacement ne prouve pas l’AP sans lien narratif. L’inverse du carré sert à estimer la fraction interceptée d’une émission isotrope, selon la section projetée, l’orientation et les obstacles; une cible distante ne subit pas forcément tout le rendement. L’énergie de liaison gravitationnelle ne vaut que pour un corps auto-gravitant selon un modèle explicite. Identifier un trou noir par ses propriétés, et non son nom visuel; « froid extrême » ne démontre pas zéro absolu.
+
+Les nuages demandent type, volume et séparation de l’eau condensée et de l’air déplacé; chaleur latente, énergie cinétique ou CAPE dépendent du mécanisme. Séismes : distinguer impact, événement naturel et onde artificielle; une secousse ressentie ne prouve pas un grand séisme. Les calculs de vitesse d’explosion concernent des explosifs chimiques et le front de choc, pas automatiquement lasers, éclairs ou pouvoirs. Distinguer explosions aériennes et au sol, et relier pression et dégâts observés. Pour les corps célestes, création, mouvement subluminal, mouvement FTL et destruction par explosion n’utilisent pas les mêmes modèles. E=mc² exige une conversion explicitement établie.
+
+Révisions consultées (UTC) : Calculation Evaluation and Request Instructions 8999401 (2025-04-29); Calculation Group 8961785 (2025-03-28); Calculations 9632893 (2026-08-13); Calculations Introduction and References 7978302 (2023-04-29); Creation Feats 8400132 (2024-03-01); Large Size Calculations 8843228 (2024-12-17); Mountain and Island Level Requirements 8325505 (2024-01-01); Planet Curvature Scaling 7855216 (2023-01-18); References for Common Feats 9593941 (2026-07-15); Stabilization Feats 8054729 (2023-07-01); Absolute Zero Feats in Fiction 8238630 (2023-11-21); Black Hole Feats in Fiction 8939342 (2025-03-09); Celestial Body Feats 9650592 (2026-08-27); Cloud Calculations 9576826 (2026-06-29); Earthquake Calculations 9685636 (2026-09-25); Explosion Speed Calculations 8303698 (2023-12-19); Explosion Yield Calculations 9650591 (2026-08-27); Gravitational Binding Energy 8242240 (2023-11-24); Inverse Square Law 8912944 (2025-02-12); Kinetic Energy Feats 9342768 (2026-01-19); Mass-energy conversion feats 9448480 (2026-03-29); Storm Calculations 9100729 (2025-07-13).
