@@ -233,3 +233,27 @@ Une calculatrice n’approuve ni les mesures ni les hypothèses. Présenter le c
 
 Sources : [Calculations](https://vsbattles.fandom.com/wiki/Calculations), [Calculations Introduction and References](https://vsbattles.fandom.com/wiki/Calculations_Introduction_and_References), [Calculation Evaluation and Request Instructions](https://vsbattles.fandom.com/wiki/Calculation_Evaluation_and_Request_Instructions), [Calculation Group](https://vsbattles.fandom.com/wiki/Calculation_Group).
 
+
+
+## Annexe H — Environnement, héritage de pouvoirs et médias interactifs
+
+**Destruction environnementale** : un phénomène peut affecter une grande zone sans représenter une force de combat capable de blesser un adversaire résistant. Séparer l’effet environnemental (météo, catastrophe ou phénomène de zone) de l’AP, de la durabilité et de la force de frappe, sauf si le mécanisme relie explicitement ces statistiques. Une attaque physique dont la force cause le phénomène, ou un système énergétique dont l’œuvre relie les usages, peut fournir ce lien; le contexte reste décisif.
+
+**Héritage de pouvoirs** : être créateur d’un univers, source d’une énergie, omniprésent ou qualifié d’omnipotent ne confère pas automatiquement toutes les techniques de ses habitants. Il faut un accès explicite fiable, l’usage démontré de compétences transmises ou une relation d’incarnation qui implique réellement leur utilisation. Être la source d’une énergie ne signifie pas connaître toutes les techniques inventées par ses utilisateurs.
+
+**Mécaniques de jeu** : distinguer règles d’interface et performances diégétiques. Points de vie, niveaux, dégâts chiffrés, limites artificielles de déplacement ou écran de victoire peuvent servir le gameplay et contredire le récit; leur pertinence dépend d’une justification narrative et de leur cohérence avec les autres sources. Dans les jeux de combat, hiérarchiser les modes selon la continuité établie par l’œuvre : scénario principal, scènes scriptées, modes d’arcade intégrés, dialogues contextuels, versus et finisseurs ne sont pas interchangeables. Une issue arbitraire jouable ou une fatalité visuellement spectaculaire ne prouve pas une capacité canonique si elle est contredite ou non intégrée au récit.
+
+Sources : [Environmental Destruction](https://vsbattles.fandom.com/wiki/Environmental_Destruction), [Power Inheritance Standards](https://vsbattles.fandom.com/wiki/Power_Inheritance_Standards), [Game Mechanics](https://vsbattles.fandom.com/wiki/Game_Mechanics), [Fighting Games Powerscaling Standards](https://vsbattles.fandom.com/wiki/Fighting_Games_Powerscaling_Standards), [Canon](https://vsbattles.fandom.com/wiki/Canon), [Universal Energy Systems](https://vsbattles.fandom.com/wiki/Universal_Energy_Systems).
+
+
+
+## Annexe I — Métaphysique, croisements de continuités et civilisations
+
+Les aspects métaphysiques (concept, information, loi, causalité, âme, nom ou essence) n’ont pas de hiérarchie implicite : une catégorie ne neutralise ni ne domine automatiquement une autre. Dans un affrontement entre univers, si les œuvres ne décrivent pas l’interaction, la conclusion peut rester indéterminée. L’égalisation doit comparer la fonction et le rôle réellement décrits, pas les étiquettes différentes ou identiques.
+
+Un crossover ne rend pas automatiquement toutes les œuvres participantes compatibles ou canoniques. Distinguer œuvre commune, références, rencontre ponctuelle, continuité alternative et simple jeu de promotion; chercher intégration explicite, interactions cohérentes et statut éditorial selon les ayants droit de chaque fiction. Ne pas tirer d’un crossover une chaîne d’échelle universelle.
+
+Une mesure de civilisation par énergie exploitée (par exemple une échelle de type Kardashev) évalue une capacité énergétique collective/technologique, pas automatiquement la puissance de feu d’un individu, ni une force de combat. Il faut relier la ressource à un acte utilisable en combat et préciser qui peut la mobiliser, à quel débit et avec quel mécanisme.
+
+Sources : [Metaphysical Aspects](https://vsbattles.fandom.com/wiki/Metaphysical_Aspects), [Crossovers](https://vsbattles.fandom.com/wiki/Crossovers), [Canon](https://vsbattles.fandom.com/wiki/Canon), [The Kardashev Scale](https://vsbattles.fandom.com/wiki/The_Kardashev_Scale), [Civilization Tiering System](https://vsbattles.fandom.com/wiki/Civilization_Tiering_System).
+
