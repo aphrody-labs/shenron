@@ -524,3 +524,110 @@ Les [Hax](https://vsbattles.fandom.com/wiki/Hax?oldid=9692470) peuvent neutralis
 Une [Résistance](https://vsbattles.fandom.com/wiki/Resistance?oldid=9313371) doit viser le mécanisme et l’intensité pertinents. Ne pas la déduire d’une victoire, d’une puissance supérieure ou d’une résistance à un effet simplement apparenté. Décrire le support visé, la partie protégée, la voie d’application, l’activation et les conditions. Une occurrence résistée ne prouve pas une immunité universelle à toutes les formes ou intensités. Lorsqu’un mécanisme de contournement et une résistance sont en conflit, analyser leurs propriétés précises; un verdict peut rester indéterminé.
 
 Révisions lues directement via l’API MediaWiki le 8 octobre 2026 UTC : Attack Potency 9632883 (2026-08-13); Durability 9632884 (2026-08-13); Lifting Strength 9680934 (2026-09-20); Striking Strength 8752362 (2024-09-29); Stamina 9439513 (2026-03-22); Range 9156311 (2025-08-31); Hax 9692470 (2026-10-02); Resistance 9313371 (2025-12-26).
+
+## Annexe S — Feats, déclarations, cohérence et erreurs de raisonnement
+
+### Qualité et portée d’une preuve
+
+Un [feat](https://vsbattles.fandom.com/wiki/Feats?oldid=8750107) est une action ou un effet observable qui peut renseigner une capacité; il doit être interprété dans son contexte et pour la statistique concernée. Privilégier une scène dont les entrées sont identifiables. Si un paramètre central reste inconnu, l’analogie ne le remplace pas sans lien démontré. Une déclaration n’a pas plus de portée que le sujet, la période, la forme et la capacité qu’elle décrit.
+
+Avant d’admettre une formule emphatique, la page [Hyperbole](https://vsbattles.fandom.com/wiki/Hyperbole?oldid=8785152) recommande de la confronter d’abord aux feats et au scaling de l’entité précise. Une échelle élevée ailleurs dans la franchise ne valide pas l’affirmation pour cette entité. Si les faits ne tranchent pas, examiner le savoir du locuteur, ses motifs, un possible bluff ou une exagération; ces hypothèses restent moins fiables que les éléments cohérents de l’œuvre.
+
+### Contradictions et outliers
+
+Une [incohérence](https://vsbattles.fandom.com/wiki/Inconsistencies?oldid=9482349) est un écart, vers le haut ou vers le bas, par rapport au niveau habituel; le terme décrit l’écart sans décider qu’il doit être exclu. Un [outlier](https://vsbattles.fandom.com/wiki/Outliers?oldid=9660702) est un feat devenu inutilisable seulement si sa contradiction avec le niveau récurrent est extrême et irrémédiable après examen. Tenter d’abord une réconciliation par forme, état, retenue, blessure, limiteur, vulnérabilité, power-up, continuité ou retcon. Pour juger, considérer ensemble l’amplitude, la répétition, les explications disponibles, la cohérence du scaling autour de la scène et les éléments narratifs contradictoires. Aucun indicateur isolé n’est une règle automatique; le nombre de répétitions est un indice, pas un seuil universel. Un écart persistant mais expliqué n’est pas forcément un outlier.
+
+### Limites de comportement et sophismes
+
+La [Character-Induced Stupidity](https://vsbattles.fandom.com/wiki/Character-Induced_Stupidity?oldid=7958495) désigne un personnage qui n’emploie pas son potentiel à cause de ses propres traits, connaissances ou choix. La [Plot-Induced Stupidity](https://vsbattles.fandom.com/wiki/Plot-Induced_Stupidity?oldid=9638982) désigne une conduite ou issue qui contredit les capacités établies pour servir l’intrigue. Une incompétence constante relève plutôt du profil du personnage que d’une exception scénaristique. Ni notion ne donne un feat ou une statistique jamais démontrés : elles expliquent pourquoi une capacité connue n’a pas été employée.
+
+La page [Fallacies](https://vsbattles.fandom.com/wiki/Fallacies?oldid=9363140) contient un grand catalogue d’erreurs d’argumentation. Commettre une erreur ne prouve pas que la conclusion inverse est vraie; cela signifie que l’argument présenté ne suffit pas. En particulier, l’absence de limite montrée n’établit pas une absence absolue de limites (No Limits Fallacy). Éviter aussi de généraliser depuis un seul cas, de prendre l’absence de preuve pour une preuve d’absence, de confondre corrélation et causalité ou d’écarter une conclusion uniquement parce que l’argument précédent était fallacieux.
+
+### Destruction de l’environnement
+
+La [destruction environnementale](https://vsbattles.fandom.com/wiki/Environmental_Destruction?oldid=8302375) peut être une AP non applicable au combat : catastrophe naturelle, pouvoir spécial, effet indirect, énergie répartie sur une grande zone ou mécanisme distinct d’une frappe. La zone affectée ne prouve pas à elle seule la capacité à blesser une cible de résistance comparable. Un lien à l’AP, à la frappe ou à la durabilité doit être établi par le mécanisme réel, une source d’énergie commune et sa puissance relative, ou une démonstration directe; l’évaluation demeure au cas par cas.
+
+Révisions consultées via l’API MediaWiki le 8 octobre 2026 UTC : Feats 8750107 (2024-09-27); Hyperbole 8785152 (2024-10-26); Inconsistencies 9482349 (2026-04-17); Outliers 9660702 (2026-09-03); Character-Induced Stupidity 7958495 (2023-04-15); Plot-Induced Stupidity 9638982 (2026-08-18); Fallacies 9363140 (2026-02-03); Environmental Destruction 8302375 (2023-12-19).
+
+
+## Annexe T — Structure cosmologique et paliers dimensionnels
+
+Les paliers ci-dessous décrivent des **critères généraux de classement** du VSBW; ils ne valident le placement d’aucun personnage. Les unités d’énergie et seuils détaillés des catégories physiques doivent être consultés dans la page Tiering System et recalculés depuis des données justifiées.
+
+### Univers, espace-temps et multivers
+
+Un « monde », « royaume » ou « dimension » narratif n’est pas nécessairement un univers. Chercher des éléments établissant un continuum spatial de taille universelle, son espace-temps entier, ou une réalité alternative complète. Un ciel étoilé, un autre taux d’écoulement temporel, une barrière entre lieux, un rêve ou le simple mot « monde parallèle » ne suffisent pas individuellement. Une timeline ne compte comme continuum que si l’espace entier et son évolution sont établis; une ligne réécrite ponctuellement ou des branches détruites par une cause commune ne prouvent pas automatiquement la destruction de continua séparés.
+
+Un multivers est une collection d’univers complets, pas un synonyme automatique d’un lieu plus grand. Compter seulement les structures distinctes démontrées et caractériser leur cardinalité. Une destruction qui provoque indirectement un paradoxe temporel n’équivaut pas à affecter directement tout l’espace à chaque instant. La philosophie temporelle par défaut du VSBW ne remplace pas celle définie par l’œuvre.
+
+### Dimensionnalité et hiérarchie
+
+Dans la convention VSBW, une dimension est un axe spatial ou temporel, et non un simple monde ou plan. Une dimension spatiale supérieure demande un axe indépendant et une relation géométrique crédible (coordonnées de type R^n), avec une taille cosmologique pertinente lorsque le classement l’exige. L’infini d’une longueur ou d’un volume ne devient pas une dimension supplémentaire. « Plan supérieur », « hors de l’espace-temps », « intemporel » et « transcendance » sont sous-déterminés sans contexte qui établisse la nature du rapport.
+
+L’augmentation du nombre de dimensions ne confère pas automatiquement puissance infinie, vitesse incommensurable ou supériorité qualitative. La hiérarchie dimensionnelle reste une mesure quantitative tant qu’une rupture ontologique irréductible n’est pas démontrée. Une transcendance qualitative demande que le niveau inférieur ne puisse atteindre le supérieur par agrégation, extension ou quantité, et que le niveau supérieur ne soit pas seulement présenté comme plus grand. Être une source de dimensions établit d’abord un lien de création ou de stabilisation; cela ne transfère pas automatiquement leur durabilité ou leur AP.
+
+### Carte cosmologique des tiers
+
+La hiérarchie de la page VSBW se lit par critères successifs, sans saut à partir d’un mot isolé :
+
+| Zone du système | Critère général à établir |
+|---|---|
+| Tiers physiques (10 à 3) | Échelle d’objet, de structure ou d’effet selon les seuils génériques de la page Tiering System; les données, géométrie, mécanisme et incertitudes doivent être défendables. |
+| High 3-A | Énergie infinie dans un espace tridimensionnel; ne pas confondre réserve inépuisable et débit simultané. |
+| Low 2-C | Affecter directement un continuum spatio-temporel complet, et non uniquement provoquer une conséquence causale ultérieure. |
+| 2-C / 2-B / 2-A | Respectivement un nombre fini borné, un nombre fini supérieur au seuil de la page, ou un ensemble dénombrablement infini de continua espace-temps distincts et complets. |
+| Tiers 1 dimensionnels | Structures dimensionnelles supérieures selon les critères géométriques et d’ampleur définis par Tiering System/Higher-Dimensional Existence; une dimension ajoutée par simple indexation reste insuffisante. |
+| Low 1-A et au-dessus | Structures de totalité dimensionnelle puis hiérarchies qualitatives. La transition est ontologique et ne peut être atteinte par un multiplicateur, même infini. |
+| Tier 0 | Critères philosophiques extrêmes de primauté, unité et dépassement de toute distinction hiérarchique; le seul mot « omnipotent » ne les établit pas. |
+
+Le nombre d’univers à chaque palier ne suffit pas si les unités comptées ne sont pas des espace-temps complets. Pour les cardinalités, identifier la structure exacte : ℵ0 d’objets ordinaires n’a pas les mêmes implications que ℵ0 de continua espace-temps ou d’axes dimensionnels. Les conventions mathématiques particulières du VSBW (dont les axiomes de cardinalité choisis pour son système) doivent être nommées comme conventions et ne sont importées que si la fiction s’y rattache explicitement.
+
+Révisions consultées : Tiering System 9401765 (2026-02-28); Tiering System FAQ 9689808 (2026-09-29); Dimensions 8632265 (2024-07-04); Higher-Dimensional Existence 9496373 (2026-04-28); Beyond-Dimensional Existence 9496374 (2026-04-28); Universe 9355894 (2026-01-29); Multiverse 7850735 (2023-01-13); Omnipotence 9411237 (2026-03-04); Set Theory Explanation Page 9618610 (2026-08-03).
+
+
+## Annexe U — État du corpus après les audits ciblés
+
+Cette note affine les statuts de l’annexe J sans les présenter comme une couverture totale de toutes les pages VSBW :
+
+- **Instructions de calcul :** 28 pages de la catégorie officielle lues en wikitexte direct; synthèse dédiée ajoutée. Deux billets d’utilisateurs et les profils sont écartés.
+- **Statistiques :** huit pages (AP, durabilité, force de levage, force de frappe, endurance, portée, hax, résistance) lues directement; leurs distinctions et principales limites sont synthétisées, mais chaque capacité particulière et toutes les exceptions restent hors de ce lot.
+- **Cosmologie :** Tiering System, FAQ, dimensions, existence dimensionnelle supérieure et au-delà des dimensions, univers, multivers, omnipotence et théorie des ensembles relus. La reconstruction complète des seuils physiques reste en cours.
+- **Cohérence et preuve :** Feats, Fallacies, Hyperbole, Inconsistencies, Outliers, CIS, PIS et Environmental Destruction relus en wikitexte; synthèses méthodologiques ajoutées.
+- **Pages de cadrage complémentaires :** les règles d’héritage, les discussions, les formats, définitions FTL/omniscience/omniprésence, BFR et one-shot ont été inspectés et classés comme règles de preuve, définitions ou conventions de matchup selon leur portée.
+- **Site DBFR :** le script apps/site/scripts/seed-vsbw-methodology.ts prépare une insertion additive et vérifie les identifiants/slugs. Son mode aperçu ne se connecte pas à la base; aucun enregistrement de site n’a été écrit. Le corpus doit encore être enrichi et revu avant sa publication.
+
+Les catégories VSBW sont vivantes et comprennent de nombreuses pages de capacités spécifiques. Leur présence dans un index ne signifie pas qu’elles fixent une règle générale de scaling; elles seront ajoutées seulement lorsque leurs critères d’évaluation, d’interaction ou de résistance auront été directement vérifiés.
+
+
+## Annexe V — Référentiel des tiers VSBW
+
+Cette annexe recense les **seuils génériques et définitions du système**, qui sont des outils de classement et non des ratings de personnages. Pour les appliquer à une œuvre, il faut toujours démontrer la grandeur affectée, le mécanisme, les paramètres et la continuité concernés. Les bornes énergétiques ci-dessous sont celles publiées dans la note correspondante de la révision citée; la page n’en donne pas pour chaque sous-tier. **Ne pas interpoler les trous.**
+
+### Des échelles physiques aux échelles cosmiques
+
+| Tier / famille | Critère générique de la page VSBW |
+|---|---|
+| 11-C / 11-B / 11-A — Infinitesimal | Structures 0-D, 1-D et 2-D, respectivement, lorsqu’elles sont infiniment inférieures à une structure d’univers de plus grande dimension. Être dessiné, numérique ou informationnel ne suffit pas : la structure doit réellement avoir la dimension pertinente dans la fiction. |
+| 10-C / 10-B / 10-A — Human | Capacités comparables à un humain sous la moyenne ou petit animal; humain ordinaire; humain athlétique ou entraîné. |
+| 9-C / 9-B / 9-A — Superhuman | 9-C (Street level) : exploits à la limite humaine/surhumaine, sans signifier la destruction d’une rue entière; 9-B (Wall level) : murs et matériaux résistants; 9-A (Small Building level) : petite construction. |
+| 8-C / High 8-C / 8-B / 8-A — Urban | Bâtiment moyen à grande installation; grand bâtiment ou gratte-ciel; bloc urbain; blocs multiples. |
+| Low 7-C / 7-C / High 7-C / Low 7-B / 7-B / High 7-B / 7-A / High 7-A — Nuclear | Small Town, Town, Large Town, Small City, City, Large City, Mountain et Large Mountain level, respectivement. Les libellés descriptifs ne remplacent pas les critères de calcul. |
+| 6-C / High 6-C / Low 6-B / 6-B / High 6-B / 6-A / High 6-A — Tectonic | Île, grande île, petit pays, pays, grand pays, continent, plusieurs continents. |
+| 5-C / Low 5-B / 5-B / 5-A / High 5-A — Substellar | Lune ou objet astronomique comparable; petite planète; planète; grande planète; naine brune. |
+| Low 4-C / 4-C / High 4-C / 4-B / 4-A — Stellar | Petite étoile; étoile; grande étoile; système solaire; plusieurs systèmes solaires. |
+| 3-C / 3-B / 3-A / High 3-A — Cosmic | Galaxie; plusieurs galaxies avec l’espace intergalactique; effets sur tout un volume 3-D fini au moins de taille univers observable sans créer/détruire son espace-temps; énergie infinie à échelle tridimensionnelle. Plusieurs univers 3-D ne suffisent pas à dépasser High 3-A sans preuve de continua distincts ou d’une structure dimensionnelle supérieure. |
+| Low 2-C / 2-C / 2-B / 2-A | Continuum espace-temps 4-D complet; de 2 à 1 000 continua distincts; de 1 001 à tout nombre fini plus élevé; nombre dénombrablement infini de continua complets. Le seuil exige d’établir les continua comptés et leur séparation. |
+| Tier 1 — dimensionnel | Paliers dimensionnels supérieurs selon les axes et relations exigés par Tiering System et Higher-Dimensional Existence; l’espace de dimension infinie, la totalité des structures dimensionnelles, puis les hiérarchies qualitatives ont des définitions distinctes. |
+| Tier 0 | Cadre-limite défini par dépassement de toute hiérarchie et distinction ontologique; la primauté, l’unité et l’absence de toute extension supérieure doivent être établies selon les critères stricts de la page. Le mot « omnipotent » seul est insuffisant. |
+
+### Bornes énergétiques publiées expressément
+
+Le Tiering System donne notamment les bandes génériques suivantes en tonnes TNT : 9-A, 0,005–0,25 t; 8-C, 0,25–2 t; High 8-C, 2–11 t; 8-B, 11–100 t; 8-A, 100 t–1 kt; Low 7-C, 1–5,8 kt; 7-C, 5,8–100 kt; High 7-C, 100 kt–1 Mt; Low 7-B, 1–6,3 Mt; 7-A, 100 Mt–1 Gt; High 7-A, 1–4,3 Gt; High 6-C, 100 Gt–1 Tt; Low 6-B, 1–7 Tt; High 6-B, 100–760 Tt. Ces bornes sont des seuils génériques du référentiel VSBW. La source laisse des trous (notamment des sous-tiers physiques et certains paliers 6/5/4/3); aucune borne omise n’est déduite ici. Certaines frontières cosmiques basses ont des règles de calcul dédiées (planète, étoile, système solaire, galaxie); elles exigent tout de même le modèle et le feat adéquats.
+
+### Cardinalités et limites de progression
+
+Le cadre mathématique du VSBW distingue cardinalité et ordinalité. À titre de conventions de classement, la page relie notamment ℵ0 univers à 2-A, ℵ0 dimensions à High 1-B, l’ensemble des parties P(ℵ0) d’univers à Low 1-C, et P(ℵ0) de dimensions à High 1-B+. Ces correspondances ne deviennent pertinentes qu’après preuve que les éléments de la structure existent réellement dans la cosmologie et que l’œuvre lie la structure au concept mathématique correspondant. L’axiome de continuum adopté par le wiki est une convention interne à son système, non une vérité à transférer sans justification.
+
+Les multiplicateurs, même arbitrairement grands, ne franchissent pas seuls une frontière dimensionnelle ou ontologique. Les sous-paliers de Tier 2 ne sont pas séparés par un rapport énergétique universel permettant une promotion mécanique. Un grand nombre d’objets de dimension inférieure n’équivaut pas à un axe supérieur; une quantité infinie d’énergie disponible ne prouve pas un débit infini simultané.
+
+Source et révisions : [Tiering System, oldid 9401765](https://vsbattles.fandom.com/wiki/Tiering_System?oldid=9401765), révisée le 28 février 2026; [Tiering System FAQ, oldid 9689808](https://vsbattles.fandom.com/wiki/Tiering_System_FAQ?oldid=9689808), révisée le 29 septembre 2026. Relecture wikitexte via API MediaWiki le 8 octobre 2026 UTC; aucun profil ni calcul de personnage n’a été consulté pour établir ces critères.
