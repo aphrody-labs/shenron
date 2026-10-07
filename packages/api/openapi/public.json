@@ -426,6 +426,157 @@
         }
       }
     },
+    "/api/v1/wiki/timeline/events": {
+      "get": {
+        "operationId": "timelineEvents",
+        "tags": [
+          "wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineEventsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "era",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/wiki/timeline/atlas": {
+      "get": {
+        "operationId": "timelineAtlas",
+        "tags": [
+          "wiki"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineAtlasResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/site/banners": {
       "get": {
         "operationId": "pageBanners",
@@ -6356,6 +6507,212 @@
           "conflicts",
           "rejected",
           "cursor"
+        ],
+        "additionalProperties": false
+      },
+      "TimelineAtlasResponse": {
+        "type": "object",
+        "properties": {
+          "sagas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "series": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "image": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "slug",
+                "name",
+                "series",
+                "description",
+                "image"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "arcs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "saga_id": {
+                  "type": "number"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "saga_id",
+                "slug",
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "databooks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "cover": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "category": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "kind": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "cover",
+                "category",
+                "kind"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "sagas",
+          "arcs",
+          "databooks"
+        ],
+        "additionalProperties": false
+      },
+      "TimelineEventsResponse": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "age_year": {
+                  "type": "number"
+                },
+                "age_month": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "age_day": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "era": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "title_ja": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "description": {
+                  "type": "string"
+                },
+                "characters_involved": {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source_ref": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "canon": {
+                  "type": "boolean"
+                },
+                "order_idx": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id",
+                "age_year",
+                "age_month",
+                "age_day",
+                "era",
+                "title",
+                "title_ja",
+                "description",
+                "characters_involved",
+                "source_ref",
+                "canon",
+                "order_idx"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "events"
         ],
         "additionalProperties": false
       },

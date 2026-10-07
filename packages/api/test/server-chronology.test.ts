@@ -20,6 +20,8 @@ test("chronology writes require native admin authority before parsing the body",
       chronology: {
         read: async () => null,
         timeline: async () => [],
+        events: async () => [],
+        atlas: async () => ({ sagas: [], arcs: [], databooks: [] }),
         save: async () => {
           writes++;
         },

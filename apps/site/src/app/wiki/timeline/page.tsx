@@ -4,8 +4,12 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WikiDrawer } from "@/components/wiki/WikiDrawer";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
-import { dbUniverse } from "@/lib/db-universe";
-import { getChronologyConfig } from "@/lib/chronology-config";
+import {
+  getChronologyConfig,
+  getTimelineItems,
+  getTimelineEvents,
+  getTimelineAtlas,
+} from "@/lib/chronology-config";
 import { applyChronology } from "@/lib/chronology";
 import { Billboard } from "@/components/stream/Billboard";
 import { ChronologieTabs } from "@/components/wiki/ChronologieTabs";
@@ -42,13 +46,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ChronologiePage() {
-  const [raw, config, ageEvents, sagasData, arcsData, databooksData] = await Promise.all([
-    dbUniverse.timeline(),
+  const [raw, config, ageEvents, atlas] = await Promise.all([
+    getTimelineItems().catch(() => []),
     getChronologyConfig(),
-    dbUniverse.timelineEvents(),
-    dbUniverse.sagas(),
-    dbUniverse.arcs(),
-    dbUniverse.databooks({ order: "asc" }),
+    getTimelineEvents().catch(() => []),
+    getTimelineAtlas().catch(() => ({ sagas: [], arcs: [], databooks: [] })),
   ]);
 
   // Frise FIXE : la curation admin (ordre, ère, date, masquage, notes) est
@@ -102,9 +104,9 @@ export default async function ChronologiePage() {
       <ChronologyAtlas
         episodes={episodes}
         movies={movies}
-        sagas={sagasData?.sagas ?? []}
-        arcs={arcsData?.arcs ?? []}
-        databooks={databooksData?.items ?? []}
+        sagas={atlas.sagas}
+        arcs={atlas.arcs}
+        databooks={atlas.databooks}
       />
       <div id="frise" className="wiki-container scroll-mt-24">
         <DomainBar domain="timeline" className="mb-6" />

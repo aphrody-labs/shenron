@@ -11,6 +11,7 @@ import {
 } from "@shenron/config/chronology";
 import { createShenronApiClient } from "@shenron/api/client";
 import { endpoints } from "@shenron/api/contract";
+import type { TimelineEvent, TimelineAtlas } from "@shenron/api/contract";
 
 import { HostChronologyError } from "./host-chronology-error";
 export { HostChronologyError } from "./host-chronology-error";
@@ -63,4 +64,22 @@ export async function getTimelineItems(): Promise<TimelineItem[]> {
   const result = await hostChronologyClient(host).call(endpoints.timelineItems, {});
   if (!result.ok) throw new HostChronologyError(result.kind === "http" ? result.status : 502);
   return result.value.items;
+}
+
+export async function getTimelineEvents(era?: string): Promise<TimelineEvent[]> {
+  const host = resolveHostUrl(process.env);
+  if (!host) throw new HostChronologyError(503);
+  const result = await hostChronologyClient(host).call(endpoints.timelineEvents, {
+    query: { era },
+  });
+  if (!result.ok) throw new HostChronologyError(result.kind === "http" ? result.status : 502);
+  return result.value.events;
+}
+
+export async function getTimelineAtlas(): Promise<TimelineAtlas> {
+  const host = resolveHostUrl(process.env);
+  if (!host) throw new HostChronologyError(503);
+  const result = await hostChronologyClient(host).call(endpoints.timelineAtlas, {});
+  if (!result.ok) throw new HostChronologyError(result.kind === "http" ? result.status : 502);
+  return result.value;
 }

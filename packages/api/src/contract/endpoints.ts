@@ -9,7 +9,14 @@ import { z } from "zod";
 import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
 import { AccountSessionResponse } from "./account";
-import { ChronologyResponse, ChronologySaveResponse, TimelineItemsResponse } from "./chronology";
+import {
+  ChronologyResponse,
+  ChronologySaveResponse,
+  TimelineItemsResponse,
+  TimelineEventsQuery,
+  TimelineEventsResponse,
+  TimelineAtlasResponse,
+} from "./chronology";
 import { PageBannersResponse, PageBannersSaveResponse } from "./page-banners";
 import { HomeConfigResponse, HomeConfigSaveResponse } from "./home";
 import { SiteThemeResponse, SiteThemeSaveResponse } from "./site-theme";
@@ -173,6 +180,25 @@ export const endpoints = {
     path: "/api/v1/wiki/timeline",
     auth: "public",
     response: TimelineItemsResponse,
+    cache: "no-store",
+    native: true,
+  },
+  timelineEvents: {
+    id: "timelineEvents",
+    method: "get",
+    path: "/api/v1/wiki/timeline/events",
+    auth: "public",
+    query: TimelineEventsQuery,
+    response: TimelineEventsResponse,
+    cache: "no-store",
+    native: true,
+  },
+  timelineAtlas: {
+    id: "timelineAtlas",
+    method: "get",
+    path: "/api/v1/wiki/timeline/atlas",
+    auth: "public",
+    response: TimelineAtlasResponse,
     cache: "no-store",
     native: true,
   },

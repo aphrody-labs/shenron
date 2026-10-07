@@ -1,4 +1,4 @@
-import { getTimelineItems } from "./chronology-config";
+import { getTimelineItems, getTimelineEvents } from "./chronology-config";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
@@ -2614,30 +2614,7 @@ export const dbUniverse = {
       };
     }),
 
-  timelineEvents: (era?: string) =>
-    safe(async () => {
-      const conditions = [eq(botTimelineEvents.visible, true)];
-      if (era) conditions.push(eq(botTimelineEvents.era, era));
-      const rows = await db
-        .select()
-        .from(botTimelineEvents)
-        .where(and(...conditions))
-        .orderBy(asc(botTimelineEvents.ageYear), asc(botTimelineEvents.orderIdx));
-      return rows.map((r) => ({
-        id: r.id,
-        age_year: r.ageYear,
-        age_month: r.ageMonth,
-        age_day: r.ageDay,
-        era: r.era,
-        title: r.title,
-        title_ja: r.titleJa,
-        description: r.description,
-        characters_involved: r.charactersInvolved,
-        source_ref: r.sourceRef,
-        canon: r.canon,
-        order_idx: r.orderIdx,
-      }));
-    }),
+  timelineEvents: (era?: string) => safe(() => getTimelineEvents(era)),
 
   powerLevels: (sourceKind?: string) =>
     safe(async () => {

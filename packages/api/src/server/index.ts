@@ -30,6 +30,7 @@ import {
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
 import type { AccountSessionProfile } from "../contract/account";
+import type { TimelineEvent, TimelineAtlas } from "../contract/chronology";
 import {
   resolveChronologyConfig,
   type ChronologyConfig,
@@ -183,6 +184,8 @@ export interface ChronologyPort {
   read(): Promise<unknown>;
   save(config: ChronologyConfig, by: string | null): Promise<void>;
   timeline(): Promise<TimelineItem[]>;
+  events(era?: string): Promise<TimelineEvent[]>;
+  atlas(): Promise<TimelineAtlas>;
 }
 
 export interface PageBannersPort {
@@ -505,6 +508,14 @@ export function createShenronApi(
   );
   add(endpoints.timelineItems, Boolean(ports.chronology), async () =>
     json({ items: await ports.chronology!.timeline() }, 200, { "Cache-Control": "no-store" }),
+  );
+  add(endpoints.timelineEvents, Boolean(ports.chronology), async ({ query }) =>
+    json({ events: await ports.chronology!.events((query as { era?: string }).era) }, 200, {
+      "Cache-Control": "no-store",
+    }),
+  );
+  add(endpoints.timelineAtlas, Boolean(ports.chronology), async () =>
+    json(await ports.chronology!.atlas(), 200, { "Cache-Control": "no-store" }),
   );
   add(endpoints.chronologySave, Boolean(ports.chronology), async ({ body, request }) => {
     const config = resolveChronologyConfig(body);

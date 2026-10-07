@@ -3,14 +3,10 @@ import { GatedLink } from "@/components/GatedLink";
 import { Film, Horloge, Livre, Tv } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { markdownToPlainText } from "@/lib/markdown-plain";
-import type { Arc, Databook, Saga } from "@/lib/db-universe";
+import type { TimelineAtlas } from "@shenron/api/contract";
 import { T } from "@/components/T";
 
-type ChronologyArc = Arc & {
-  saga_name: string | null;
-  saga_slug: string | null;
-  saga_series: string | null;
-};
+type ChronologyArc = TimelineAtlas["arcs"][number];
 
 export function ChronologyAtlas({
   episodes,
@@ -21,9 +17,9 @@ export function ChronologyAtlas({
 }: {
   episodes: number;
   movies: number;
-  sagas: Saga[];
-  arcs: ChronologyArc[];
-  databooks: Databook[];
+  sagas: TimelineAtlas["sagas"];
+  arcs: TimelineAtlas["arcs"];
+  databooks: TimelineAtlas["databooks"];
 }) {
   const arcsBySaga = new Map<number, ChronologyArc[]>();
   for (const arc of arcs) {

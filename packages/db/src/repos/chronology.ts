@@ -1,16 +1,88 @@
 // SPDX-License-Identifier: Apache-2.0
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, asc, eq, or, sql } from "drizzle-orm";
 import { eraOf, type TimelineItem, type ChronologyConfig } from "@shenron/config/chronology";
 import { chronologyConfig } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 
 // oxlint-disable-next-line no-explicit-any -- accepts both PostgreSQL driver schemas
 type ChronologyDatabase = ShenronPgDatabase<any>;
-import { botEpisodes, botMovies, botMangaVolumes } from "../bot-schema";
+import {
+  botEpisodes,
+  botMovies,
+  botMangaVolumes,
+  botTimelineEvents,
+  botSagas,
+  botArcs,
+  botDatabooks,
+} from "../bot-schema";
 const SINGLETON_ID = "default";
 
 export function createChronologyConfigRepository(db: ChronologyDatabase) {
   return {
+    async events(era?: string) {
+      return db
+        .select({
+          id: botTimelineEvents.id,
+          age_year: botTimelineEvents.ageYear,
+          age_month: botTimelineEvents.ageMonth,
+          age_day: botTimelineEvents.ageDay,
+          era: botTimelineEvents.era,
+          title: botTimelineEvents.title,
+          title_ja: botTimelineEvents.titleJa,
+          description: botTimelineEvents.description,
+          characters_involved: botTimelineEvents.charactersInvolved,
+          source_ref: botTimelineEvents.sourceRef,
+          canon: botTimelineEvents.canon,
+          order_idx: botTimelineEvents.orderIdx,
+        })
+        .from(botTimelineEvents)
+        .where(
+          and(
+            eq(botTimelineEvents.visible, true),
+            era ? eq(botTimelineEvents.era, era) : undefined,
+          ),
+        )
+        .orderBy(asc(botTimelineEvents.ageYear), asc(botTimelineEvents.orderIdx));
+    },
+    async atlas() {
+      const [sagas, arcs, databooks] = await Promise.all([
+        db
+          .select({
+            id: botSagas.id,
+            slug: botSagas.slug,
+            name: botSagas.name,
+            series: sql<string>`coalesce(${botSagas.series}, '')`,
+            description: botSagas.description,
+            image: botSagas.image,
+          })
+          .from(botSagas)
+          .where(eq(botSagas.visible, true))
+          .orderBy(asc(botSagas.orderIdx)),
+        db
+          .select({
+            id: botArcs.id,
+            saga_id: botSagas.id,
+            slug: botArcs.slug,
+            name: botArcs.name,
+          })
+          .from(botArcs)
+          .innerJoin(botSagas, eq(botArcs.sagaId, botSagas.id))
+          .where(and(eq(botArcs.visible, true), eq(botSagas.visible, true)))
+          .orderBy(asc(botSagas.orderIdx), asc(botArcs.orderIdx)),
+        db
+          .select({
+            id: botDatabooks.id,
+            title: botDatabooks.title,
+            cover: botDatabooks.cover,
+            category: botDatabooks.category,
+            kind: botDatabooks.kind,
+          })
+          .from(botDatabooks)
+          .where(eq(botDatabooks.visible, true))
+          .orderBy(asc(botDatabooks.publishedAt)),
+      ]);
+      return { sagas, arcs, databooks };
+    },
     async timeline(): Promise<TimelineItem[]> {
       const [eps, movs, vols] = await Promise.all([
         db

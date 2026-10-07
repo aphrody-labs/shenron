@@ -61,6 +61,32 @@ test.skipIf(!url)(
         "create table bot.db_manga_volumes (id integer primary key,series text,volume_number integer,title text,title_ja text,published_at integer,cover text,visible boolean)",
       );
       await sql.unsafe(
+        "create table bot.db_timeline_events (id integer primary key,age_year integer,age_month integer,age_day integer,era text,title text,title_ja text,description text,characters_involved jsonb,source_ref text,canon boolean,order_idx integer,visible boolean)",
+      );
+      await sql.unsafe(
+        "create table bot.db_sagas (id integer primary key,slug text,name text,series text,description text,image text,order_idx integer,visible boolean)",
+      );
+      await sql.unsafe(
+        "create table bot.db_arcs (id integer primary key,saga_id integer,slug text,name text,order_idx integer,visible boolean)",
+      );
+      await sql.unsafe(
+        "create table bot.db_databooks (id integer primary key,title text,cover text,category text,kind text,published_at integer,visible boolean)",
+      );
+      await sql.unsafe(`insert into bot.db_timeline_events values
+        (1,750,null,null,'DB','Later fixture',null,'Description',null,'Daizenshuu 7',true,2,true),
+        (2,-5000000,null,null,'ancient','Ancient fixture','古代','Description','["Buu"]','Daizenshuu 7 p.16',true,0,true),
+        (3,750,1,1,'DB','Earlier fixture',null,'Description',null,'Manga',true,1,true),
+        (4,700,null,null,'DB','Hidden fixture',null,'Private',null,'Private',true,0,false)`);
+      await sql.unsafe(
+        `insert into bot.db_sagas values (1,'first','First',null,'Description',null,1,true),(2,'hidden','Hidden','DB',null,null,0,false),(3,'last','Last','DBZ',null,null,2,true)`,
+      );
+      await sql.unsafe(
+        `insert into bot.db_arcs values (1,1,'visible','Visible',1,true),(2,2,'hidden-parent','Hidden parent',0,true),(3,1,'hidden-arc','Hidden arc',0,false),(4,null,'orphan','Orphan',0,true)`,
+      );
+      await sql.unsafe(
+        `insert into bot.db_databooks values (1,'Later book','later.png','Databook','databook',20,true),(2,'Earlier book','earlier.png',null,'guidebook',10,true),(3,'Hidden book','private.png',null,'databook',0,false)`,
+      );
+      await sql.unsafe(
         `insert into bot.db_episodes values (1,'DB',1,'Episode fixture',null,1,null,'[{"lang":"vf","embedUrl":"https://fixture.example/private-player"}]',true),(2,'DBZ',2,'Hidden fixture',null,2,null,'[]',false)`,
       );
       await sql.unsafe(
@@ -91,6 +117,31 @@ test.skipIf(!url)(
           .toSorted(),
       ).toEqual([1, 3]);
       expect(JSON.stringify(timeline.value)).not.toContain("private-player");
+      const events = await client.call(endpoints.timelineEvents, {});
+      expect(events.ok).toBe(true);
+      if (!events.ok) throw new Error("Events fixture failed");
+      expect(events.value.events.map((e) => e.id)).toEqual([2, 3, 1]);
+      expect(events.value.events[0]).toMatchObject({
+        age_year: -5000000,
+        title_ja: "古代",
+        characters_involved: ["Buu"],
+        source_ref: "Daizenshuu 7 p.16",
+      });
+      const filtered = await client.call(endpoints.timelineEvents, { query: { era: "DB" } });
+      expect(filtered).toMatchObject({
+        ok: true,
+        value: { events: [expect.objectContaining({ id: 3 }), expect.objectContaining({ id: 1 })] },
+      });
+      expect(
+        await client.call(endpoints.timelineEvents, { query: { era: "unknown" } }),
+      ).toMatchObject({ ok: true, value: { events: [] } });
+      const atlas = await client.call(endpoints.timelineAtlas, {});
+      expect(atlas.ok).toBe(true);
+      if (!atlas.ok) throw new Error("Atlas fixture failed");
+      expect(atlas.value.sagas.map((s) => s.id)).toEqual([1, 3]);
+      expect(atlas.value.sagas[0]?.series).toBe("");
+      expect(atlas.value.arcs.map((a) => a.id)).toEqual([1]);
+      expect(atlas.value.databooks.map((b) => b.id)).toEqual([2, 1]);
       expect(await client.call(endpoints.chronology, {})).toMatchObject({
         ok: true,
         value: { config: JSON.parse(JSON.stringify(DEFAULT_CHRONOLOGY_CONFIG)) },

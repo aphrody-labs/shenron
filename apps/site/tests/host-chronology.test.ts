@@ -6,8 +6,13 @@ mock.module("server-only", () => ({}));
 mock.module("@/lib/db", () => {
   throw new Error("Hosted home must not initialize the Next database");
 });
-const { getChronologyConfig, saveChronologyConfig, HostChronologyError } =
-  await import("../src/lib/chronology-config");
+const {
+  getChronologyConfig,
+  saveChronologyConfig,
+  getTimelineEvents,
+  getTimelineAtlas,
+  HostChronologyError,
+} = await import("../src/lib/chronology-config");
 let config = resolveChronologyConfig({ overrides: { "episode:1": { title: "First fixture" } } });
 let status = 200;
 let written: unknown;
@@ -16,6 +21,34 @@ const server = Bun.serve({
   hostname: "127.0.0.1",
   port: 0,
   async fetch(request) {
+    const path = new URL(request.url).pathname;
+    if (path === "/api/v1/wiki/timeline/events") {
+      expect(new URL(request.url).searchParams.get("era")).toBe("DB");
+      return Response.json(
+        {
+          events: [
+            {
+              id: 1,
+              age_year: 750,
+              age_month: null,
+              age_day: null,
+              era: "DB",
+              title: "Fixture",
+              title_ja: null,
+              description: "Fixture",
+              characters_involved: null,
+              source_ref: "Daizenshuu 7",
+              canon: true,
+              order_idx: 0,
+            },
+          ],
+        },
+        { status },
+      );
+    }
+    if (path === "/api/v1/wiki/timeline/atlas") {
+      return Response.json({ sagas: [], arcs: [], databooks: [] }, { status });
+    }
     expect(new URL(request.url).pathname).toBe("/api/v1/site/chronology");
     if (request.method === "POST") {
       written = await request.json();
@@ -66,6 +99,8 @@ test("an absent host cannot reactivate Next database storage", async () => {
   delete process.env.SHENRON_HOST_URL;
   try {
     expect(await getChronologyConfig()).toEqual(DEFAULT_CHRONOLOGY_CONFIG);
+    await expect(getTimelineEvents()).rejects.toBeInstanceOf(HostChronologyError);
+    await expect(getTimelineAtlas()).rejects.toBeInstanceOf(HostChronologyError);
     const error = await saveChronologyConfig({
       overrides: { "episode:1": { title: "Saved fixture" } },
     }).catch((value: unknown) => value);
@@ -75,4 +110,16 @@ test("an absent host cannot reactivate Next database storage", async () => {
   } finally {
     process.env.SHENRON_HOST_URL = server.url.origin;
   }
+});
+
+test("narrative events and atlas load from Bun and propagate service failures", async () => {
+  status = 200;
+  expect(await getTimelineEvents("DB")).toMatchObject([
+    { age_year: 750, source_ref: "Daizenshuu 7" },
+  ]);
+  expect(await getTimelineAtlas()).toEqual({ sagas: [], arcs: [], databooks: [] });
+  status = 503;
+  await expect(getTimelineEvents("DB")).rejects.toBeInstanceOf(HostChronologyError);
+  await expect(getTimelineAtlas()).rejects.toBeInstanceOf(HostChronologyError);
+  status = 200;
 });
