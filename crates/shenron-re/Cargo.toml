@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-re"
+description = "Pure Rust reverse engineering engine and binary parsers for Dragon Ball Xenoverse 2 (DBXV2) formats, CRIWARE CPK archives, live memory inspection, and game data ingestion for Shenron."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+bytes = { workspace = true }
