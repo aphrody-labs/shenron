@@ -19,6 +19,20 @@ const schema = z.object({
   DISCORD_TOKEN_KAIO: z.string().min(1).optional(),
 
   GUILD_ID: z.string().regex(/^\d{17,20}$/, "GUILD_ID must be a Discord snowflake"),
+  ADDITIONAL_GUILD_IDS: z
+    .string()
+    .optional()
+    .transform(
+      (value) =>
+        value
+          ?.split(",")
+          .map((id) => id.trim())
+          .filter(Boolean) ?? [],
+    )
+    .refine(
+      (ids) => ids.every((id) => /^\d{17,20}$/.test(id)),
+      "ADDITIONAL_GUILD_IDS must contain Discord snowflakes",
+    ),
   OWNER_ID: z.string().regex(/^\d{17,20}$/, "OWNER_ID must be a Discord snowflake"),
   // Owners additionnels : OWNER_ID reste la clé historique, cette liste permet
   // d'accorder le même bypass sans remplacer le propriétaire existant.

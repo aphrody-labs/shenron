@@ -15,6 +15,7 @@ import {
 } from "@aphrody/discord-kit";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { env } from "./lib/env";
+import { admittedGuildIds } from "./lib/guild-admission";
 import { logger } from "./lib/logger";
 import { DatabaseService } from "./db/index";
 import { ensureWikiReplicaSchema, ensureWikiVisibility } from "./db/wiki-visibility";
@@ -116,23 +117,23 @@ const clients = new Map<PersonaId, Client>(PERSONA_IDS.map((id) => [id, client])
 // (LogService, MessageTemplateService, StatsService, ApiServer le résolvent
 // implicitement via @inject(Client)).
 const shenron = client;
+const admittedGuilds = admittedGuildIds(env.GUILD_ID, env.ADDITIONAL_GUILD_IDS);
 container.registerInstance(Client, shenron);
 container.register("ClientMap", { useValue: clients });
 
 // ────────────────────────────────────────────────────────
 // Wiring identique pour tous les clients :
-// - clientReady : mono-guild lock + initApplicationCommands
-// - guildCreate : leave instantané si invité hors GUILD_ID
+// Membership follows the explicit allowlist; commands retain their production guild.
 // - interactionCreate : routage discordx (filtré par botIds)
 // Seul Shenron déclenche l'API REST + le boot audit.
 // ────────────────────────────────────────────────────────
 client.once("clientReady", async () => {
-  // Mono-guild forcé sur chaque persona
+  // Preserve explicitly admitted laboratory guilds across reconnects.
   for (const [gid, guild] of client.guilds.cache) {
-    if (gid === env.GUILD_ID) continue;
+    if (admittedGuilds.has(gid)) continue;
     logger.warn(
       { persona: "shenron", gid, name: guild.name },
-      "guild non-prod détectée, leave en cours",
+      "Unapproved guild detected; leaving",
     );
     await guild.leave().catch((err) => logger.error({ err, gid }, "guild.leave failed"));
   }
@@ -153,8 +154,11 @@ client.once("clientReady", async () => {
 });
 
 client.on("guildCreate", async (guild) => {
-  if (guild.id === env.GUILD_ID) return;
-  logger.warn({ gid: guild.id, name: guild.name }, "guild non-prod invitée, leave instantané");
+  if (admittedGuilds.has(guild.id)) {
+    logger.info({ gid: guild.id }, "Admitted guild joined");
+    return;
+  }
+  logger.warn({ gid: guild.id, name: guild.name }, "Unapproved guild invitation; leaving");
   await guild.leave().catch((err) => logger.error({ err, gid: guild.id }, "guild.leave failed"));
 });
 
