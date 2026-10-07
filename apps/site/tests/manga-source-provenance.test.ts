@@ -5,10 +5,11 @@ const languages = ["fr", "en", "ja"] as const;
 describe("Dragon Ball color-scan provenance", () => {
   it("labels the existing French scan forum archive separately from the Japanese edition", async () => {
     const dictionaries = await Promise.all(
-      languages.map(async (language) =>
-        (await Bun.file(new URL(`../messages/${language}.json`, import.meta.url)).json()) as {
-          mangaCatalog: Record<string, string>;
-        },
+      languages.map(
+        async (language) =>
+          (await Bun.file(new URL(`../messages/${language}.json`, import.meta.url)).json()) as {
+            mangaCatalog: Record<string, string>;
+          },
       ),
     );
 
@@ -19,7 +20,8 @@ describe("Dragon Ball color-scan provenance", () => {
       expect(catalog.colorPanelDescription.toLowerCase()).toContain("scan-db");
       expect(catalog.colorPanelDescription).toMatch(/original|オリジナル/i);
       expect(catalog.japaneseOriginalCatalogueStatus).toBeTruthy();
-      expect(catalog.japaneseOriginalCatalogueStatus).toMatch(/32|42/);
+      expect(catalog.japaneseOriginalCatalogueStatus).toContain("{printVolumes}");
+      expect(catalog.japaneseOriginalCatalogueStatus).toContain("{digitalVolumes}");
       expect(catalog.frenchBlackWhiteScans).toBeTruthy();
     }
 

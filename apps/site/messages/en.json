@@ -10,7 +10,7 @@
     "colorChapterListTitle": "Available chapters ({count})",
     "frenchColorScans": "French color scans (scan-db)",
     "japaneseOriginalNotIndexed": "Japanese original Full Color edition (not indexed)",
-    "japaneseOriginalCatalogueStatus": "Japanese Full Color: 32 print / 42 digital volumes in Shueisha’s catalog; complete edition not indexed",
+    "japaneseOriginalCatalogueStatus": "Japanese Full Color: {printVolumes} print / {digitalVolumes} digital volumes in Shueisha’s catalog; complete edition not indexed",
     "frenchBlackWhiteScans": "French black-and-white scans"
   },
   "nav": {

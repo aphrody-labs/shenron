@@ -10,7 +10,7 @@
     "colorChapterListTitle": "閲覧可能な章（{count}話）",
     "frenchColorScans": "フランス語カラー画像（scan-db）",
     "japaneseOriginalNotIndexed": "日本語オリジナル版フルカラー（未収録）",
-    "japaneseOriginalCatalogueStatus": "日本語版フルカラー：集英社カタログでは紙版32巻・電子版42巻。全巻未収録",
+    "japaneseOriginalCatalogueStatus": "日本語版フルカラー：集英社カタログでは紙版{printVolumes}巻・電子版{digitalVolumes}巻。全巻未収録",
     "frenchBlackWhiteScans": "フランス語版・モノクロスキャン"
   },
   "nav": {
