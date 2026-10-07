@@ -8,6 +8,14 @@ des pages officielles relues le 7 octobre. Le crawl produit Aphrody, profil
 frontière reste incomplète. Les constatations visuelles ci-dessous viennent
 des annonces officielles, pas d'une extraction de fichiers de jeu.
 
+Le même crawl natif a été exécuté sur DBFR via `aphrody infra ssh exec`,
+profil `aphrody`, label `omar-db-research-dbfr-20261007` : 25 tentatives,
+17 pages, 99 blocs et 3 erreurs, sans expiration, frontière incomplète.
+Deux requêtes `aphrody home query --profile aphrody` sur DBFR ont retrouvé
+l'annonce Beerus / Galactic Patrol et les pages Xenoverse 3 Gamescom (West
+City, mission glacier). Cela vérifie l'indexation de ces pages, pas une
+couverture exhaustive.
+
 ## Dragon Ball Super
 
 L'annonce officielle du 2 septembre indique une première japonaise de
