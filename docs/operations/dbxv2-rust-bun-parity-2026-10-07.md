@@ -20,7 +20,7 @@ Steam, aucune sauvegarde, aucun jeton/identifiant, aucun dump mémoire et aucun 
 | `extract` | Partiel : parsing CPK et extraction en mémoire existent; pas de commande d'extraction d'arbres, reprise ou manifest. |
 | `tex` | Absent : pas de convertisseur EMB/DDS/PNG. |
 | `audio` | Absent : pas de conversion CRI vers WAV. |
-| `text` | Partiel : parseur MSG existe; pas de pipeline d'export localisé équivalente. |
+| `text` | Partiel : `shenron-re text <file.msg>` extrait les runs UTF-16LE et rend le JSON source; traitement récursif d'un arbre et manifeste restent à porter. |
 | `models` | Absent : pas de métadonnées géométriques EMD/viewer. |
 | `parse` | Partiel : BAC/BDM/CUS/CMS/MSG/PUP; BCM/BCS/BSA/EAN/EMM/ESK et équivalence pyxenoverse absents. |
 | `tools` | Absent : aucun catalogue/cloneur équivalent dans ce crate. |
@@ -46,7 +46,8 @@ Le nouveau binaire `shenron-re map` sérialise la carte originale avec provenanc
 manifeste d'installation en lecture seule : chemins relatifs, extensions, tailles et SHA-256
 uniquement pour les petits exécutables et DLL. Le binding natif `@shenron/native` expose aussi
 la carte via le symbole ABI 5 `shenron_re_xenoverse3_map`, avec libération de la chaîne par
-le contrat FFI standard. La matrice ne constitue pas une parité avec le CLI dbxv2.
+le contrat FFI standard. `shenron-re text <file.msg>` porte l'extraction d'un fichier sans
+écraser un JSON existant. La matrice ne constitue pas une parité avec le CLI dbxv2.
 
 ## Assets, données et distribution
 

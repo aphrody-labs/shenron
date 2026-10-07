@@ -11,6 +11,7 @@ pub mod fs;
 pub mod inventory;
 pub mod live;
 pub mod steam;
+pub mod text;
 pub mod world;
 
 #[cfg(any(feature = "wasm", target_arch = "wasm32", test))]

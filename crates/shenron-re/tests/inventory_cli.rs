@@ -35,3 +35,49 @@ fn inventory_cli_prints_json_and_writes_requested_report() {
         serde_json::from_slice(&fs::read(report_path).unwrap()).unwrap();
     assert_eq!(report, printed);
 }
+
+#[test]
+fn text_cli_extracts_msg_strings_without_overwriting_existing_files() {
+    let temp = tempfile::tempdir().unwrap();
+    let input = temp.path().join("quest.msg");
+    let mut bytes = vec![0, 0];
+    bytes.extend("Hello".encode_utf16().flat_map(u16::to_le_bytes));
+    bytes.extend([0, 0]);
+    bytes.extend("日文".encode_utf16().flat_map(u16::to_le_bytes));
+    fs::write(&input, bytes).unwrap();
+
+    let printed =
+        Command::new(env!("CARGO_BIN_EXE_shenron-re")).arg("text").arg(&input).output().unwrap();
+    assert!(printed.status.success());
+    let report: serde_json::Value = serde_json::from_slice(&printed.stdout).unwrap();
+    assert_eq!(report["file"], "quest.msg");
+    assert_eq!(report["count"], 1);
+    assert_eq!(report["strings"], serde_json::json!(["Hello"]));
+
+    let output = temp.path().join("quest.msg.json");
+    let written = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("text")
+        .arg(&input)
+        .arg("--output")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(written.status.success());
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&fs::read(&output).unwrap()).unwrap(),
+        report
+    );
+
+    let refused = Command::new(env!("CARGO_BIN_EXE_shenron-re"))
+        .arg("text")
+        .arg(&input)
+        .arg("--output")
+        .arg(&output)
+        .output()
+        .unwrap();
+    assert!(!refused.status.success());
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&fs::read(output).unwrap()).unwrap(),
+        report
+    );
+}
