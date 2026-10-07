@@ -342,3 +342,16 @@ cookie ou store existant n'est supprimé. Les prochains essais doivent utiliser
 un chemin de cache explicite du runtime. Aucun `shenron-server.exe` n'étant
 présent à côté du binaire inspecté, cette preuve ne qualifie pas non plus le
 paquet autonome complet ni son installation.
+
+Un binaire CEF de diagnostic distinct compile ensuite nativement avec
+`custom-protocol`, sans Koharu, un identifiant Tauri distinct et
+`Cef::root_cache_path` explicite. La distribution réutilisée correspond à CEF
+152.0.6 / Chromium 152.0.7977.83. La trace confirme le cache temporaire ;
+le refus DevTools observé dans l'essai précédent ne se reproduit pas.
+Cependant, la fenêtre réactive ne navigue toujours pas après 30 s et les
+timeouts de frames persistent. Le lancement direct via Bun reproduit le même
+résultat que la supervision SDK : les deux processus sont arrêtés avec leurs
+enfants. Ces contrôles ne prouvent donc ni une cause DevTools unique ni une
+cause liée à la supervision, et ne qualifient pas le démarrage complet.
+Le diagnostic reste dans le snapshot Windows, sans remplacement du binaire
+Studio installé ni modification de sa politique DevTools.
