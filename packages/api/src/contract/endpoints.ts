@@ -5,6 +5,7 @@
  * `@hono/zod-openapi` mis-reports in the generated document
  * (honojs/middleware#952). Runtime class: `pure`.
  */
+import { LaunchPatchSchema, LaunchConfigResponse, LaunchConfigSaveResponse } from "./wiki-launch";
 import { z } from "zod";
 import { FAVORITES_BODY_MAX } from "@shenron/config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
@@ -151,6 +152,26 @@ export const endpoints = {
     body: z.object({ favorites: z.unknown() }),
     maxBodyBytes: FAVORITES_BODY_MAX,
     response: FavoritesSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
+  wikiLaunch: {
+    id: "wikiLaunch",
+    method: "get",
+    path: "/api/v1/site/launch",
+    auth: "public",
+    response: LaunchConfigResponse,
+    cache: "no-store",
+    native: true,
+  },
+  wikiLaunchSave: {
+    id: "wikiLaunchSave",
+    method: "post",
+    path: "/api/v1/site/launch",
+    auth: "admin",
+    body: LaunchPatchSchema,
+    maxBodyBytes: 512 * 1024,
+    response: LaunchConfigSaveResponse,
     cache: "no-store",
     native: true,
   },

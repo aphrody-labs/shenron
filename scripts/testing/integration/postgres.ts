@@ -100,6 +100,7 @@ try {
       "test/home.pg.test.ts",
       "test/chronology.pg.test.ts",
       "test/page-banners.pg.test.ts",
+      "test/wiki-launch.pg.test.ts",
     ],
     {
       cwd: join(root, "packages/api"),

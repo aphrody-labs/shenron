@@ -19,3 +19,5 @@ export * from "./home";
 export * from "./page-banners";
 
 export * from "./chronology";
+
+export * from "./wiki-launch";

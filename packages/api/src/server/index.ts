@@ -11,6 +11,7 @@
  * Middleware order: client IP → CORS → method gate → rate limit (direct loopback exempt) →
  * owner/admin auth → zod validation → public cache (ETag, 304) → handler.
  */
+import { resolveLaunchConfig, type LaunchConfig } from "@shenron/config/wiki-launch-config";
 import { sanitizeFavorites, type Favorite } from "@shenron/config/favorites";
 import { BodyLimitError, readLimitedJson } from "./read-json";
 import { createHash } from "node:crypto";
@@ -180,6 +181,11 @@ export interface ShenronApiLogEvent {
   ms?: number;
 }
 
+export interface WikiLaunchPort {
+  read(): Promise<LaunchConfig>;
+  save(patch: Partial<LaunchConfig>, by: string | null): Promise<LaunchConfig>;
+}
+
 export interface ChronologyPort {
   read(): Promise<unknown>;
   save(config: ChronologyConfig, by: string | null): Promise<void>;
@@ -205,6 +211,7 @@ export interface SiteThemePort {
 }
 
 export interface ShenronApiPorts {
+  wikiLaunch?: WikiLaunchPort | null;
   chronology?: ChronologyPort | null;
   pageBanners?: PageBannersPort | null;
   homeConfig?: HomeConfigPort | null;
@@ -501,6 +508,20 @@ export function createShenronApi(
       "Cache-Control": "private, no-store",
     });
   });
+  add(endpoints.wikiLaunch, Boolean(ports.wikiLaunch), async () =>
+    json({ config: await ports.wikiLaunch!.read() }, 200, { "Cache-Control": "no-store" }),
+  );
+  add(endpoints.wikiLaunchSave, Boolean(ports.wikiLaunch), async ({ body, request }) => {
+    const raw = body as Partial<LaunchConfig>;
+    const normalized = resolveLaunchConfig(raw);
+    const patch: Partial<LaunchConfig> = {};
+    for (const key of ["openKeys", "order", "access"] as const) {
+      if (raw[key] !== undefined) Object.assign(patch, { [key]: normalized[key] });
+    }
+    const ownerId = await ports.auth?.owner(request);
+    const config = await ports.wikiLaunch!.save(patch, ownerId ?? "token-admin");
+    return json({ ok: true, config }, 200, { "Cache-Control": "no-store" });
+  });
   add(endpoints.chronology, Boolean(ports.chronology), async () =>
     json({ config: resolveChronologyConfig(await ports.chronology!.read()) }, 200, {
       "Cache-Control": "no-store",
@@ -575,6 +596,7 @@ export function createShenronApi(
   });
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
   const anyGroup = [
+    ports.wikiLaunch,
     ports.chronology,
     ports.pageBanners,
     ports.homeConfig,

@@ -1,160 +1,89 @@
-/**
- * wiki-launch-config — lecture/écriture **server-only** du contrôle d'accès et du
- * classement des rubriques (catégories wiki + sections du site), piloté depuis
- * /admin/launch.
- *
- * Le proxy (`proxy.ts`) lit ceci sur CHAQUE requête → cache module-level à TTL
- * court (30 s) IMPÉRATIF : jamais de round-trip PG par requête anonyme (cf. piège
- * event-loop/CONNECT_TIMEOUT). Ne throw jamais → repli sur les défauts (bêta).
- * Écriture via /api/wiki-launch (gate admin) qui revalide le layout.
- *
- * Tout tient dans la colonne **jsonb** `WikiLaunch.data` (`openKeys` + `order` +
- * `access`) : ajouter une rubrique ou un mode d'accès ne demande donc **aucune
- * migration SQL**.
- */
+// SPDX-License-Identifier: Apache-2.0
+/** Cached launch adapter; only the Bun host owns storage. */
 import "server-only";
-import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { wikiLaunch } from "@/db/schema";
+import { resolveHostUrl } from "@shenron/config/public-urls";
 import {
-  ALL_ENTRIES,
-  ALWAYS_OPEN_KEYS,
-  DEFAULT_OPEN_KEYS,
-  GATEABLE_CATEGORIES,
-  currentEntryKey,
-  type AccessMode,
-  type AccessRule,
-} from "@/lib/wiki-launch";
+  DEFAULT_LAUNCH_CONFIG,
+  resolveLaunchConfig,
+  type LaunchConfig,
+} from "@shenron/config/wiki-launch-config";
+import { createShenronApiClient } from "@shenron/api/client";
+import { endpoints } from "@shenron/api/contract";
 
-const SINGLETON_ID = "default";
-const TTL_MS = 30_000;
+import { HostLaunchError } from "./host-launch-error";
+export { HostLaunchError } from "./host-launch-error";
 
-export interface LaunchConfig {
-  /** Catégories wiki publiques (héritage bêta — sert encore la nav et le teaser). */
-  openKeys: string[];
-  /** Ordre d'affichage des rubriques (nav + admin). */
-  order: string[];
-  /** Règle d'accès par clé ; absent = comportement dérivé (cf. `resolveAccess`). */
-  access: Record<string, AccessRule>;
+function hostLaunchClient(host: string, requestHeaders?: Headers, adminToken?: string | null) {
+  const forward = Object.assign(
+    (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+      const headers = new Headers(init?.headers);
+      for (const name of ["cookie", "user-agent", ...(!adminToken ? ["authorization"] : [])]) {
+        const value = requestHeaders?.get(name);
+        if (value) headers.set(name, value);
+      }
+      return fetch(input, { ...init, headers, cache: "no-store" });
+    },
+    { preconnect: fetch.preconnect },
+  );
+  return createShenronApiClient({
+    baseUrl: host,
+    fetch: forward,
+    adminToken: () => adminToken ?? null,
+  });
 }
 
-let cache: { cfg: LaunchConfig; ts: number } | null = null;
-
-/** Clés valides ouvrables (garde-fou contre des clés obsolètes en base). */
-const GATEABLE_KEYS = new Set(GATEABLE_CATEGORIES.map((c) => c.key));
-const KNOWN_KEYS = new Set(ALL_ENTRIES.map((e) => e.key));
-const ALWAYS_OPEN = new Set(ALWAYS_OPEN_KEYS);
-const MODES: ReadonlySet<string> = new Set<AccessMode>(["public", "members", "roles", "admin"]);
-
-/** Clés lues en base, anciennes clés françaises ramenées à la clé actuelle. */
-function currentKeys(arr: unknown[]): string[] {
-  return arr.filter((k): k is string => typeof k === "string").map(currentEntryKey);
+async function readLaunchConfig(): Promise<LaunchConfig> {
+  const host = resolveHostUrl(process.env);
+  if (!host) return structuredClone(DEFAULT_LAUNCH_CONFIG);
+  const result = await hostLaunchClient(host).call(endpoints.wikiLaunch, {});
+  if (!result.ok) throw new HostLaunchError(result.kind === "http" ? result.status : 502);
+  return resolveLaunchConfig(result.value.config);
 }
 
-function sanitizeOpenKeys(stored: unknown): string[] {
-  const arr = Array.isArray((stored as { openKeys?: unknown })?.openKeys)
-    ? ((stored as { openKeys: unknown[] }).openKeys as unknown[])
-    : [];
-  const extra = currentKeys(arr).filter((k) => GATEABLE_KEYS.has(k));
-  // alwaysOpen toujours inclus ; dédoublonné.
-  return Array.from(new Set([...ALWAYS_OPEN_KEYS, ...extra]));
-}
-
-function sanitizeOrder(stored: unknown): string[] {
-  const arr = Array.isArray((stored as { order?: unknown })?.order)
-    ? ((stored as { order: unknown[] }).order as unknown[])
-    : [];
-  return Array.from(new Set(currentKeys(arr).filter((k) => KNOWN_KEYS.has(k))));
-}
-
-function sanitizeAccess(stored: unknown): Record<string, AccessRule> {
-  const raw = (stored as { access?: unknown })?.access;
-  if (!raw || typeof raw !== "object") return {};
-  const out: Record<string, AccessRule> = {};
-  // Une règle enregistrée sous la clé actuelle l'emporte sur celle de l'ancienne clé
-  // française : les anciennes passent d'abord, les actuelles les écrasent.
-  const entries = Object.entries(raw as Record<string, unknown>)
-    .map(([stored, value]) => ({ stored, key: currentEntryKey(stored), value }))
-    .toSorted((a, b) => Number(a.stored === a.key) - Number(b.stored === b.key));
-  for (const { key, value } of entries) {
-    // Clé obsolète, ou rubrique verrouillée publique (bêta) → on ignore la règle
-    // plutôt que de la persister : elle ne serait jamais appliquée.
-    if (!KNOWN_KEYS.has(key) || ALWAYS_OPEN.has(key)) continue;
-    const mode = (value as { mode?: unknown })?.mode;
-    if (typeof mode !== "string" || !MODES.has(mode)) continue;
-    const ids = Array.isArray((value as { roleIds?: unknown })?.roleIds)
-      ? ((value as { roleIds: unknown[] }).roleIds as unknown[])
-      : [];
-    const roleIds = Array.from(
-      new Set(ids.filter((r): r is string => typeof r === "string" && /^\d{17,20}$/.test(r))),
-    );
-    // Mode « rôles » sans aucun rôle = piège à trou de sécurité inverse (personne
-    // ne passe, y compris le staff qui croyait avoir ouvert) → on retombe sur
-    // « connectés », intention la plus proche.
-    out[key] = {
-      mode: mode === "roles" && roleIds.length === 0 ? "members" : (mode as AccessMode),
-      roleIds,
-    };
-  }
-  return out;
-}
-
-function parse(stored: unknown): LaunchConfig {
-  return {
-    openKeys: sanitizeOpenKeys(stored),
-    order: sanitizeOrder(stored),
-    access: sanitizeAccess(stored),
-  };
-}
-
-const DEFAULT_CONFIG: LaunchConfig = { openKeys: DEFAULT_OPEN_KEYS, order: [], access: {} };
-
-/** Configuration complète (cache TTL 30 s). Utilisée par le proxy (hot-path) + la nav. */
-export async function getLaunchConfig(): Promise<LaunchConfig> {
-  const now = Date.now();
-  if (cache && now - cache.ts < TTL_MS) return cache.cfg;
-  try {
-    const [row] = await db
-      .select()
-      .from(wikiLaunch)
-      .where(eq(wikiLaunch.id, SINGLETON_ID))
-      .limit(1);
-    const cfg = row ? parse(row.data) : DEFAULT_CONFIG;
-    cache = { cfg, ts: now };
-    return cfg;
-  } catch (e) {
-    console.error("[wiki-launch] lecture échouée, repli défauts :", e);
-    return cache?.cfg ?? DEFAULT_CONFIG;
-  }
-}
-
-/**
- * Clés de catégories ouvertes (cache TTL 30 s). Inclut toujours les alwaysOpen.
- * Conservé pour la nav et le teaser, qui raisonnent encore en « ouvert/fermé ».
- */
-export async function getOpenCategoryKeys(): Promise<string[]> {
-  return (await getLaunchConfig()).openKeys;
-}
-
-/** Persiste une modification partielle (les alwaysOpen sont réinjectées). */
 export async function saveLaunchConfig(
   patch: Partial<LaunchConfig>,
   by?: string | null,
+  requestHeaders?: Headers,
+  adminToken?: string | null,
 ): Promise<LaunchConfig> {
-  const current = await getLaunchConfig();
-  const merged = {
-    openKeys: patch.openKeys ?? current.openKeys,
-    order: patch.order ?? current.order,
-    access: patch.access ?? current.access,
-  };
-  const data = parse(merged);
-  await db
-    .insert(wikiLaunch)
-    .values({ id: SINGLETON_ID, data, updatedBy: by ?? null, updatedAt: new Date() })
-    .onConflictDoUpdate({
-      target: wikiLaunch.id,
-      set: { data, updatedBy: by ?? null, updatedAt: new Date() },
-    });
-  cache = { cfg: data, ts: Date.now() }; // invalide + réchauffe le cache local
-  return data;
+  const host = resolveHostUrl(process.env);
+  if (!host) throw new HostLaunchError(503);
+  const result = await hostLaunchClient(host, requestHeaders, adminToken).call(
+    endpoints.wikiLaunchSave,
+    { body: patch },
+  );
+  if (!result.ok) throw new HostLaunchError(result.kind === "http" ? result.status : 502);
+  const config = resolveLaunchConfig(result.value.config);
+  generation++;
+  cached = { config, expires: Date.now() + TTL_MS };
+  pending = null;
+  return config;
 }
+
+const TTL_MS = 30_000;
+let cached: { config: LaunchConfig; expires: number } | null = null;
+let pending: Promise<LaunchConfig> | null = null;
+let generation = 0;
+
+export async function getLaunchConfig(): Promise<LaunchConfig> {
+  if (cached && Date.now() < cached.expires) return cached.config;
+  if (pending) return pending;
+  const started = generation;
+  const flight = readLaunchConfig()
+    .catch(() => cached?.config ?? structuredClone(DEFAULT_LAUNCH_CONFIG))
+    .then((config) => {
+      if (generation === started) cached = { config, expires: Date.now() + TTL_MS };
+      return generation === started ? config : (cached?.config ?? config);
+    });
+  pending = flight;
+  try {
+    return await flight;
+  } finally {
+    if (pending === flight) pending = null;
+  }
+}
+
+export async function getOpenCategoryKeys(): Promise<string[]> {
+  return (await getLaunchConfig()).openKeys;
+}
+export type { LaunchConfig } from "@shenron/config/wiki-launch-config";

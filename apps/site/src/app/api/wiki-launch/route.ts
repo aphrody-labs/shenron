@@ -11,6 +11,8 @@
  */
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { getLaunchConfig, saveLaunchConfig } from "@/lib/wiki-launch-config";
+import { HostLaunchError } from "@/lib/host-launch-error";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 import type { AccessRule } from "@/lib/wiki-launch";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
@@ -36,6 +38,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "JSON body requis" }, { status: 400 });
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return NextResponse.json({ error: "Launch object required" }, { status: 400 });
+  }
   const b = body as {
     openKeys?: unknown;
     order?: unknown;
@@ -57,7 +62,20 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "openKeys[], order[] ou access{} attendu" }, { status: 400 });
   }
 
-  const config = await saveLaunchConfig(patch, me?.discordId || me?.user?.id || "token-admin");
+  let config;
+  try {
+    config = await saveLaunchConfig(
+      patch,
+      me?.discordId || me?.user?.id || "token-admin",
+      req.headers,
+      envFirst(process.env, ENV_ALIASES.adminToken)?.value,
+    );
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Launch service unavailable" },
+      { status: err instanceof HostLaunchError ? err.status : 502 },
+    );
+  }
   // Le gating/nav/teaser lisent la config dans le layout → revalide tout le site.
   revalidatePath("/", "layout");
   return NextResponse.json({ ok: true, ...config });

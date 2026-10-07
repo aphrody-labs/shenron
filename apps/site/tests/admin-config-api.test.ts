@@ -202,4 +202,11 @@ describe("API de configuration du dashboard — Better Auth + persistance", () =
     expect(writes).toEqual([{ kind: "theme", patch, by: "discord-3" }]);
     expect(revalidated).toEqual([["/", "layout"]]);
   });
+
+  test("rejects a null launch patch before persistence", async () => {
+    const response = await launch.PUT(tokenRequest("http://test/api/wiki-launch", null));
+    expect(response.status).toBe(400);
+    expect(writes).toHaveLength(0);
+    expect(revalidated).toHaveLength(0);
+  });
 });
