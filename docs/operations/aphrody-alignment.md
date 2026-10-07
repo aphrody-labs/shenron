@@ -433,6 +433,20 @@ La préparation des pins consommateurs dans le snapshot NTFS révèle aussi que
 le générateur Cargo doit normaliser les séparateurs Windows avant de retirer
 `Cargo.toml` du chemin des crates locales. Ce défaut est corrigé dans
 `scripts/build/rust/workspace-deps.ts` ; génération puis `--check`, TypeScript,
-oxlint, oxfmt et les deux tests des pins passent sous Windows. À ce stade,
-la nouvelle révision et son lockfile restent dans le snapshot de qualification
-pendant la vérification des consommateurs ; les pins livrés restent inchangés.
+oxlint, oxfmt et les deux tests des pins passent sous Windows.
+
+Les pins consommateurs sont ensuite intégrés sur Aphrody `7daf113b0` après
+`check`, puis Clippy strict avec `--all-targets`, de Studio, FFI, MCP et
+`koharu-library`, avec les fonctionnalités par défaut, sous Windows MSVC.
+Les 24 tests Rust FFI passent, dont la persistance mémoire, la libération du
+SQLite et le passage par l'ABI C. `koharu-canvas` passe aussi `check` pour
+`wasm32-unknown-unknown` depuis Windows, avec le contournement sccache WASM
+déjà documenté. Linux n'est pas relancé dans cette session dédiée à Windows.
+
+Le lockfile produit par Cargo conserve les versions des 1 212 paquets. Il
+remplace les 46 sources Git Aphrody et résout la dépendance Windows de
+`gio-sys 0.22.9` vers `windows-sys 0.61.2`, déjà présent, au lieu de `0.52.0`.
+Les autres entrées sont conservées ; aucun patch local du runtime CEF n'est
+livré dans Shenron. Les binaires NSIS qualifiés précédemment restent ceux
+de leur preuve datée : ces nouveaux pins ne constituent pas une installation
+ou une activation du Studio reconstruit.

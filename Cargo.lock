@@ -289,7 +289,7 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 [[package]]
 name = "aphrody-agent-home"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-config",
  "aphrody-models",
@@ -309,7 +309,7 @@ dependencies = [
 [[package]]
 name = "aphrody-backend"
 version = "1.0.0-canary"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -328,7 +328,7 @@ dependencies = [
 [[package]]
 name = "aphrody-bindgen"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "bindgen",
@@ -342,7 +342,7 @@ dependencies = [
 [[package]]
 name = "aphrody-boq"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "serde_json",
 ]
@@ -350,7 +350,7 @@ dependencies = [
 [[package]]
 name = "aphrody-code-graph"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-store",
  "clap",
@@ -371,7 +371,7 @@ dependencies = [
 [[package]]
 name = "aphrody-config"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "serde",
  "serde_json",
@@ -382,7 +382,7 @@ dependencies = [
 [[package]]
 name = "aphrody-diffusion"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-diffusion-sys",
  "image",
@@ -393,7 +393,7 @@ dependencies = [
 [[package]]
 name = "aphrody-diffusion-sys"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "aphrody-bindgen",
@@ -404,7 +404,7 @@ dependencies = [
 [[package]]
 name = "aphrody-gemini-web"
 version = "0.2.1"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-boq",
  "regex",
@@ -421,7 +421,7 @@ dependencies = [
 [[package]]
 name = "aphrody-infer"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-models",
  "dirs 7.0.0",
@@ -434,7 +434,7 @@ dependencies = [
 [[package]]
 name = "aphrody-llama"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-llama-sys",
  "encoding_rs",
@@ -449,7 +449,7 @@ dependencies = [
 [[package]]
 name = "aphrody-llama-server"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-gemini-web",
  "aphrody-models",
@@ -467,7 +467,7 @@ dependencies = [
 [[package]]
 name = "aphrody-llama-sys"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "aphrody-bindgen",
@@ -478,7 +478,7 @@ dependencies = [
 [[package]]
 name = "aphrody-memory"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-models",
@@ -501,7 +501,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ml-config"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "atomicwrites",
@@ -515,7 +515,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ml-runtime"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "aphrody-ml-config",
@@ -546,7 +546,7 @@ dependencies = [
 [[package]]
 name = "aphrody-models"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-secrets",
  "chrono",
@@ -566,7 +566,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-ocr-core",
  "aphrody-ocr-onnx",
@@ -576,7 +576,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr-core"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-agent-home",
  "chrono",
@@ -589,7 +589,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr-onnx"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-infer",
  "aphrody-models",
@@ -604,7 +604,7 @@ dependencies = [
 [[package]]
 name = "aphrody-ocr-vlm"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-infer",
  "aphrody-models",
@@ -620,7 +620,7 @@ dependencies = [
 [[package]]
 name = "aphrody-proc"
 version = "1.0.0-canary"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "rustix 1.1.5",
  "serde",
@@ -633,7 +633,7 @@ dependencies = [
 [[package]]
 name = "aphrody-rag"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-code-graph",
  "aphrody-config",
@@ -663,7 +663,7 @@ dependencies = [
 [[package]]
 name = "aphrody-rag-core"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "blake3",
  "ndarray",
@@ -682,7 +682,7 @@ dependencies = [
 [[package]]
 name = "aphrody-secrets"
 version = "1.0.0-canary"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -700,7 +700,7 @@ dependencies = [
 [[package]]
 name = "aphrody-sql"
 version = "0.1.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "deadpool-postgres",
  "pgvector",
@@ -718,7 +718,7 @@ dependencies = [
 [[package]]
 name = "aphrody-store"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-agent-home",
  "aphrody-sql",
@@ -735,7 +735,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri"
 version = "3.0.0-alpha.4"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "aphrody-tauri-build",
@@ -783,7 +783,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-build"
 version = "3.0.0-alpha.3"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "aphrody-tauri-utils",
@@ -803,7 +803,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-codegen"
 version = "3.0.0-alpha.3"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri-utils",
  "base64 0.22.1",
@@ -829,7 +829,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-macros"
 version = "3.0.0-alpha.3"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri-codegen",
  "aphrody-tauri-utils",
@@ -842,7 +842,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin"
 version = "3.0.0-alpha.3"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "aphrody-tauri-utils",
@@ -857,7 +857,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-log"
 version = "3.0.0-alpha.2"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "android_logger",
  "aphrody-tauri",
@@ -877,7 +877,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-opener"
 version = "3.0.0-alpha.2"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-plugin",
@@ -898,7 +898,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-process"
 version = "3.0.0-alpha.2"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-plugin",
@@ -907,7 +907,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-single-instance"
 version = "3.0.0-alpha.2"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri",
  "serde",
@@ -922,7 +922,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-plugin-window-state"
 version = "3.0.0-alpha.2"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-plugin",
@@ -936,7 +936,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-runtime"
 version = "3.0.0-alpha.3"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri-utils",
  "cookie",
@@ -956,7 +956,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-runtime-cef"
 version = "3.0.0-alpha.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-macros",
@@ -994,7 +994,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-specta"
 version = "2.0.0-rc.25"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-tauri",
  "aphrody-tauri-specta-macros",
@@ -1011,7 +1011,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-specta-macros"
 version = "2.0.0-rc.25"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "darling 0.23.0",
  "heck",
@@ -1023,7 +1023,7 @@ dependencies = [
 [[package]]
 name = "aphrody-tauri-utils"
 version = "3.0.0-alpha.3"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "brotli 9.0.0",
@@ -1062,7 +1062,7 @@ dependencies = [
 [[package]]
 name = "aphrody-toolcall"
 version = "1.0.0"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "async-trait",
  "schemars 1.2.2",
@@ -1074,7 +1074,7 @@ dependencies = [
 [[package]]
 name = "aphrody-toolchains"
 version = "1.0.0-canary"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "serde_json",
  "thiserror 2.0.21",
@@ -1084,7 +1084,7 @@ dependencies = [
 [[package]]
 name = "aphrody-torch"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "aphrody-torch-sys",
  "half",
@@ -1100,7 +1100,7 @@ dependencies = [
 [[package]]
 name = "aphrody-torch-sys"
 version = "0.83.5"
-source = "git+https://github.com/aphrody-labs/aphrody?rev=fdd0a036b135497fb36ce278ca0e50707a8e2adc#fdd0a036b135497fb36ce278ca0e50707a8e2adc"
+source = "git+https://github.com/aphrody-labs/aphrody?rev=7daf113b06c0c86dded6ec8ca5a7fe1971b1febf#7daf113b06c0c86dded6ec8ca5a7fe1971b1febf"
 dependencies = [
  "anyhow",
  "aphrody-bindgen",
@@ -4039,7 +4039,7 @@ dependencies = [
  "gobject-sys",
  "libc",
  "system-deps",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
