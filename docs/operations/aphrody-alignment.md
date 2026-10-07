@@ -601,3 +601,39 @@ Les projets et fichiers temporaires sont supprimés, y compris les fixtures
 des essais échoués de la sonde, et les processus sont arrêtés. Aucun fallback
 CPU ni changement des politiques CEF n'est ajouté. La porte WARP antérieure,
 l'inférence et l'installation complète restent ouvertes.
+
+## Nouveau serveur embarqué Windows
+
+Une copie NTFS des sources commitées à `6fe07b9b838b83da4ccedb7db3f7c6e372d4a3dd`
+installe 957 paquets avec `bun install --frozen-lockfile`. L'archive Git est
+extraite avec `core.autocrlf=false` et `core.eol=lf` pour préserver les octets
+des sources et les empreintes des sorties WASM. Aucun store protégé n'est copié.
+
+La fabrique WASM s'exécute sous Windows en 41,8 secondes, avec Cargo sérialisé
+et wasm-bindgen 0.2.129 ; son contrôle `--check` réussit ensuite. Les sorties
+reconstruites sont distinctes de celles du parcours canvas précédent :
+
+| Sortie reconstruite | Taille (octets) | SHA-256 |
+| --- | ---: | --- |
+| `koharu_canvas.js` | 90 418 | `9fc5a4a227826af0e048c217717e67e92c5e5ca718c761af1ece06849b360b73` |
+| `koharu_canvas_bg.wasm` | 2 040 456 | `80ce4b35de874d1a575ec8c6247d223b68b43109bc65217bec74e160eae35e72` |
+
+Après synchronisation des 24 assets UI, la fabrique canonique du serveur
+`--target windows-x64 --flavor desktop` réussit. Next compile le site standalone
+en 12,992 secondes ; le payload compressé fait 89 984 190 octets. Le serveur
+embarqué fait 177 461 760 octets, SHA-256
+`1ab67c4d46d9145576d145aea41db50d55c2de97206b0eb78b9fd46c8be3a0d0`.
+La DLL FFI utilisée est celle de la fabrique qualifiée précédemment.
+
+Un lancement sur loopback, dans un home temporaire dédié et sans base éditoriale,
+répond en HTTP 200 à `/api/local/health`, `/robots.txt`, `/desktop` et `/studio`.
+Le contrôle de santé confirme le chargement natif (`localRag: true`). Un second
+lancement avec les binaires qualifiés `shenron-mcp.exe` et `koharu-sdk.exe`
+déclare leurs groupes disponibles. Cette disponibilité ne prouve pas à elle
+seule l'exécution de leurs commandes. Les processus de la sonde sont arrêtés.
+
+Le VFS public est absent : wiki, RAG et VFS hors ligne restent indisponibles.
+Aucun modèle de chat n'est chargé, aucune inférence n'est qualifiée et aucun
+nouvel installeur n'est activé. Deux avertissements Turbopack sur le traçage
+large de fichiers BXC restent à examiner. Ce contrôle HTTP ne lance aucun
+navigateur et n'étend pas la qualification CEF aux nouvelles sorties WASM.
