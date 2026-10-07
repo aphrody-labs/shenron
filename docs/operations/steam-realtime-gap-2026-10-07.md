@@ -29,3 +29,12 @@ borné, observable et testé sans collecter les données d'autres profils.
 Cette note ne demande ni n'autorise l'accès à un compte personnel, au Steam
 Guard, aux fichiers de session, aux sauvegardes de joueurs ou aux serveurs
 privés. L'inventaire local existant reste en lecture seule.
+
+## Vérification du checkout
+
+Le 7 octobre 2026, `cargo-serial.sh test -p shenron-re --features wasm
+--locked` a réussi les 39 tests unitaires et 4 des 5 tests CLI. Le test
+`emb_cli_extracts_entries_to_a_new_directory_without_overwriting` échoue :
+le manifeste JSON compte zéro fichier extrait au lieu d'un. Ce défaut est
+dans un lot Rust partagé revendiqué par une autre session; il reste non
+corrigé dans ce checkout et n'est pas attribué à cette note.
