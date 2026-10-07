@@ -32,6 +32,8 @@ const HOST = "vps";
 const HOST_SCRIPT = join(import.meta.dir, "release-host.ts");
 const REMOTE = "$HOME/.shenron-release-host.ts";
 const LOG = "$HOME/shenron-release.log";
+const SERVICE_HOME = "/home/ubuntu";
+const SERVICE_PATH = `${SERVICE_HOME}/.bun/bin:${SERVICE_HOME}/.cargo/bin:/usr/local/bin:/usr/bin:/bin`;
 const SITE = "https://dragonballfr.com";
 const CDN = "https://cdn.dragonballfr.com";
 const args = new Set(process.argv.slice(2));
@@ -45,12 +47,21 @@ export function releasePlan(flags: ReadonlySet<string>): ReleaseStep[] {
   return ["build", "cdn:release", "deploy", "cdn:current", "probes"];
 }
 
+/** Run release commands as the cataloged service account, regardless of the SSH login user. */
+export function asServiceUser(command: string): string {
+  const escaped = command.replaceAll("'", "'\\''");
+  return `sudo -n -u ubuntu env HOME=${SERVICE_HOME} PATH=${SERVICE_PATH} bash -c '${escaped}'`;
+}
+
 function ssh(command: string, timeoutSecs = 300, host = HOST): { code: number; out: string } {
-  const p = Bun.spawnSync(["aphrody-infra", "ssh", "exec", "--host", host, "-c", command], {
-    env: { ...process.env, APHRODY_SSH_COMMAND_TIMEOUT_SECS: String(timeoutSecs) },
-    stdout: "pipe",
-    stderr: "pipe",
-  });
+  const p = Bun.spawnSync(
+    ["aphrody-infra", "ssh", "exec", "--host", host, "-c", asServiceUser(command)],
+    {
+      env: { ...process.env, APHRODY_SSH_COMMAND_TIMEOUT_SECS: String(timeoutSecs) },
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
   return { code: p.exitCode ?? 1, out: `${p.stdout}${p.stderr}` };
 }
 

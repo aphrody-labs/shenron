@@ -5,9 +5,17 @@
  */
 import { describe, expect, test } from "bun:test";
 import { cdnSource, envValue, siteBuildEnv } from "./release-host";
-import { releasePlan } from "./release";
+import { asServiceUser, releasePlan } from "./release";
 
 describe("release plan", () => {
+  test("remote commands use the service account instead of the SSH login user's home", () => {
+    const command = asServiceUser("printf '%s' \"$HOME\"");
+    expect(command.startsWith("sudo -n -u ubuntu ")).toBe(true);
+    expect(command).toContain("HOME=/home/ubuntu");
+    expect(command).toContain("PATH=/home/ubuntu/.bun/bin:/home/ubuntu/.cargo/bin");
+    expect(command).toContain("bash -c 'printf '\\''%s'\\'' \"$HOME\"'");
+  });
+
   test("the new release reaches the CDN before the deploy, the active one again after", () => {
     const plan = releasePlan(new Set());
     expect(plan).toEqual(["build", "cdn:release", "deploy", "cdn:current", "probes"]);
