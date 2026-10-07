@@ -355,3 +355,18 @@ enfants. Ces contrôles ne prouvent donc ni une cause DevTools unique ni une
 cause liée à la supervision, et ne qualifient pas le démarrage complet.
 Le diagnostic reste dans le snapshot Windows, sans remplacement du binaire
 Studio installé ni modification de sa politique DevTools.
+
+L'instrumentation suivante écrit uniquement dans le cache temporaire des
+marqueurs d'entrée des helpers : GPU, renderer et utility entrent effectivement
+dans le binaire Rust. Une variante de diagnostic utilise ensuite directement
+`cef_execute_process` sans handler IPC Tauri, avec les signatures et le layout
+Windows vérifiés dans les headers de la distribution CEF. Elle reproduit
+également le timeout de frames et l'absence de navigation. L'absence d'entrée
+du helper et le handler IPC ne sont donc pas des explications suffisantes.
+
+Le suivi WMI des sorties est indisponible sur ce poste. La capture de handles
+des seuls processus de diagnostic confirme leur terminaison après l'essai ;
+les codes lus après nettoyage ne permettent pas d'attribuer un crash naturel
+au renderer. Les marqueurs utility observent des retours CEF zéro. Cette
+variante sans IPC reste un diagnostic temporaire, pas un remplacement du
+contrat IPC de Studio.
