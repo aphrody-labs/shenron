@@ -6,6 +6,167 @@
     "description": "Single API of Shenron (site, bot, desktop, MCP): public wiki and RAG, unified chat (SSE, WebSocket, resumable streams), conversation sync, VFS and OCR (docs/architecture/STACK.md §3.6)."
   },
   "paths": {
+    "/api/v1/site/theme": {
+      "get": {
+        "operationId": "siteTheme",
+        "tags": [
+          "site"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteThemeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "siteThemeSave",
+        "tags": [
+          "site"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteThemeSaveResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Data store unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/account/session": {
       "get": {
         "operationId": "accountSession",
@@ -4762,6 +4923,123 @@
         "required": [
           "q",
           "results"
+        ],
+        "additionalProperties": false
+      },
+      "SiteTheme": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "const": 1
+          },
+          "colors": {
+            "type": "object",
+            "properties": {
+              "bg": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "card": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "border": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "orange": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "orangeDark": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "blue": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "blueLight": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "yellow": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "red": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "ember": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "ki": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              },
+              "amber": {
+                "type": "string",
+                "pattern": "^#(?:[\\da-fA-F]{3}|[\\da-fA-F]{6}|[\\da-fA-F]{8})$"
+              }
+            },
+            "required": [
+              "bg",
+              "card",
+              "border",
+              "orange",
+              "orangeDark",
+              "blue",
+              "blueLight",
+              "yellow",
+              "red",
+              "ember",
+              "ki",
+              "amber"
+            ],
+            "additionalProperties": false
+          },
+          "radius": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+          }
+        },
+        "required": [
+          "version",
+          "colors",
+          "radius"
+        ],
+        "additionalProperties": false
+      },
+      "SiteThemeResponse": {
+        "type": "object",
+        "properties": {
+          "theme": {
+            "$ref": "#/components/schemas/SiteTheme"
+          }
+        },
+        "required": [
+          "theme"
+        ],
+        "additionalProperties": false
+      },
+      "SiteThemeSaveResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "theme": {
+            "$ref": "#/components/schemas/SiteTheme"
+          }
+        },
+        "required": [
+          "ok",
+          "theme"
         ],
         "additionalProperties": false
       },

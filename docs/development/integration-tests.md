@@ -39,6 +39,11 @@ synthétiques : les replis de configuration du site sont donc attendus.
 Ce test ne qualifie pas PostgreSQL, OAuth, les modèles réels ni les services
 de production. Les processus et stores temporaires sont fermés à la fin.
 
+Une étape distincte [qualifie le thème sur PostgreSQL et Bun.SQL](../operations/bun-site-theme.md)
+dans un cluster loopback temporaire. Elle vérifie l'upsert réel, l'auteur et le
+type JSONB avant de supprimer le cluster. Le fournisseur PostgreSQL doit être
+installé ; une absence est signalée comme échec dans le pipeline dédié.
+
 Les journaux, diagnostics réseau/JavaScript et captures restent dans
 `var/reports/integration/`, ignoré par Git. Le build Next de qualification est
 isolé dans `apps/site/.next-qualification/`. `APHRODY_WEB_BIN` peut sélectionner

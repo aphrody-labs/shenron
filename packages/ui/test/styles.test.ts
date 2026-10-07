@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { THEME_COLOR_VARS } from "@shenron/config/site-theme";
 
 // The package lives at packages/ui of the aphrody checkout that hosts the
 // Shenron apps; the package stylesheet is read next to this test.
@@ -9,11 +10,7 @@ const pkgCss = await Bun.file(new URL("../src/styles.css", import.meta.url)).tex
 const siteCss = await read("apps/site/src/app/globals.css");
 const combined = `${siteCss}\n${pkgCss}`;
 
-// Parsed from source text: importing site-theme.ts would couple the package
-// type-check to the site's module graph.
-const siteTheme = await read("apps/site/src/lib/site-theme.ts");
-const block = /export const THEME_COLOR_VARS = \{([\s\S]*?)\} as const;/.exec(siteTheme)?.[1] ?? "";
-const themeVars = [...block.matchAll(/(\w+):\s*"(--dbz-[\w-]+)"/g)].map((m) => m[2] as string);
+const themeVars = Object.values(THEME_COLOR_VARS);
 
 /** Returns the body of every top-level `@layer components { … }` block. */
 function componentLayers(css: string): string[] {
@@ -34,7 +31,7 @@ function componentLayers(css: string): string[] {
 }
 
 describe("styles.css", () => {
-  test("THEME_COLOR_VARS was parsed", () => {
+  test("the shared palette covers all editable color roles", () => {
     expect(themeVars.length).toBeGreaterThanOrEqual(12);
   });
 

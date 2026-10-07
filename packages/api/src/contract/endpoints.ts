@@ -7,6 +7,7 @@
  */
 import { z } from "zod";
 import { AccountSessionResponse } from "./account";
+import { SiteThemeResponse, SiteThemeSaveResponse } from "./site-theme";
 import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
 import {
   LexiconListQuery,
@@ -119,6 +120,25 @@ export const TableParams = z.object({ table: z.string().min(1).max(100) });
 const WIKI_CACHE = { maxAgeSeconds: 3600 } as const;
 
 export const endpoints = {
+  siteTheme: {
+    id: "siteTheme",
+    method: "get",
+    path: "/api/v1/site/theme",
+    auth: "public",
+    response: SiteThemeResponse,
+    cache: "no-store",
+    native: true,
+  },
+  siteThemeSave: {
+    id: "siteThemeSave",
+    method: "post",
+    path: "/api/v1/site/theme",
+    auth: "admin",
+    body: z.unknown(),
+    response: SiteThemeSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
   accountSession: {
     id: "accountSession",
     method: "get",

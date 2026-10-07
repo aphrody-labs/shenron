@@ -24,6 +24,11 @@ if (!onlyCross) {
   }
 }
 stages.push({
+  name: "Bun-native PostgreSQL theme",
+  cwd: import.meta.dir,
+  args: ["postgres.ts"],
+});
+stages.push({
   name: "cross-package HTTP contracts",
   cwd: import.meta.dir,
   args: ["test", "test/contracts.test.ts"],
@@ -46,6 +51,8 @@ const outcomes = [];
 for (const stage of stages) {
   console.log(`\n[qualification] ${stage.name}`);
   const log = join(reportDirectory, `${stage.name.replace(/[^a-z0-9-]/gi, "-")}.log`);
+  // FileSink overwrites from offset zero without truncating an older, longer report.
+  await Bun.write(log, new Uint8Array());
   const sink = Bun.file(log).writer();
   const child = Bun.spawn([process.execPath, ...stage.args], {
     cwd: stage.cwd,

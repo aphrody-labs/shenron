@@ -28,6 +28,7 @@ import {
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
 import type { AccountSessionProfile } from "../contract/account";
+import { resolveSiteTheme, type SiteTheme } from "@shenron/config/site-theme";
 import type { MemoryEntry, MemoryListQuery } from "../contract/memory";
 import type { RagContextResponse, RagHit, RagMode, RagSearchQuery } from "../contract/schemas";
 import type { VfsInfoResponse, VfsStatResponse } from "../contract/sync";
@@ -164,7 +165,13 @@ export interface ShenronApiLogEvent {
   ms?: number;
 }
 
+export interface SiteThemePort {
+  read(): Promise<unknown>;
+  save(theme: SiteTheme, by: string | null): Promise<void>;
+}
+
 export interface ShenronApiPorts {
+  siteTheme?: SiteThemePort | null;
   /** Absent → wiki group disabled → `handles()` false → historical 404. */
   wiki?: WikiReadPort | null;
   rag?: RagPort | null;
@@ -434,6 +441,17 @@ export function createShenronApi(
   };
 
   // ── Reader identity: resolved exclusively by the Better Auth session port ──
+  add(endpoints.siteTheme, Boolean(ports.siteTheme), async () =>
+    json({ theme: resolveSiteTheme(await ports.siteTheme!.read()) }, 200, {
+      "Cache-Control": "no-store",
+    }),
+  );
+  add(endpoints.siteThemeSave, Boolean(ports.siteTheme), async ({ body, request }) => {
+    const theme = resolveSiteTheme(body);
+    const ownerId = await ports.auth?.owner(request);
+    await ports.siteTheme!.save(theme, ownerId ?? "token-admin");
+    return json({ ok: true, theme }, 200, { "Cache-Control": "no-store" });
+  });
   add(endpoints.accountSession, Boolean(ports.betterAuth?.session), async ({ request }) => {
     // Only a real reader session qualifies; admin tokens and signed owners do not.
     const session = await ports.betterAuth!.session!(request.headers);
@@ -451,6 +469,7 @@ export function createShenronApi(
   });
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
   const anyGroup = [
+    ports.siteTheme,
     ports.wiki,
     ports.rag,
     ports.chat,

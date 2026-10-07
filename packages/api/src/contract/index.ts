@@ -10,3 +10,4 @@ export * from "./plugin";
 export * from "./lexicon";
 export * from "./memory";
 export * from "./account";
+export * from "./site-theme";

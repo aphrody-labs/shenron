@@ -31,7 +31,8 @@
     "./agent-homes": "./src/agent-homes/index.ts",
     "./agent-homes/types": "./src/agent-homes/types.ts",
     "./agent-homes/public-template": "./src/agent-homes/public-template.ts",
-    "./vfs/build": "./src/vfs/build.ts"
+    "./vfs/build": "./src/vfs/build.ts",
+    "./repos/site-theme": "./src/repos/site-theme.ts"
   },
   "scripts": {
     "lint": "oxlint -c ../../.oxlintrc.json",
@@ -77,7 +78,8 @@
       "./agent-homes": "bun",
       "./agent-homes/types": "pure",
       "./agent-homes/public-template": "pure",
-      "./vfs/build": "bun"
+      "./vfs/build": "bun",
+      "./repos/site-theme": "server"
     }
   }
 }
