@@ -39,10 +39,38 @@ DB du site restent à migrer ; le rendu React/Next est conservé.
 l’auteur, les filtres de visibilité et de séries, le tome 1, les indicateurs
 de langues, le tri des Âges, les sources et le filtrage de l'atlas sur des
 tables synthétiques dans un cluster isolé. Aucune base
-produit n’est ouverte. Activation et OAuth réels restent à qualifier.
+produit n’est ouverte par ces tests. OAuth réel reste à qualifier.
 
 Lot du 2026-10-07 : 5 tests PostgreSQL et 57 assertions réussis dans le cluster
 isolé ; 3 tests d'adaptateurs HTTP du site et 1 test de garde admin réussis.
 TypeScript DB/API/site, oxlint, oxfmt et dérivation OpenAPI vérifiés sur ce lot.
-Ces preuves portent sur le code local ; la version de production n'est pas
-modifiée par cette migration.
+Ces premières preuves portent sur le code local.
+
+## Déploiement du 2026-10-07
+
+La version `1dc88fd0d43c8befbeb7764f0397d63afaf63774` est activée sur DBFR
+par l’adaptateur conteneur d’Aphrody Infra. Elle reprend le lot `ed03da0f`
+et uniquement sa correction des booléens historiques : la colonne `canon`
+du miroir PostgreSQL contient du texte, normalisé en booléen avant la réponse.
+Le contrat strict est conservé, y compris pour la valeur textuelle `false`.
+La correction intégrée à `main` est `6fe07b9b` ; le commit de livraison isolé
+est conservé sur `release/timeline-bun-20261007`.
+
+Le serveur embarqué est recompilé avec Bun 1.4.2. Le rendu Next déjà qualifié
+du lot initial est réutilisé, ses sources étant inchangées. Le bot admis est
+conservé ; son contrôle `--smoke` réussit. L’activation vérifie les identités
+d’images et la santé des six services. Les images PostgreSQL, Redis et chat
+restent celles de la livraison précédente.
+
+Le client Bun valide les contrats publics après activation : 920 médias
+bruts, 32 événements, 33 sagas, 18 arcs et 426 databooks. Aphrody Web lit
+les 32 repères dans la page. Son clic ne déclenche pas le changement d’onglet
+dans cette qualification : l’interaction n’est donc pas déclarée validée.
+Les routes mémoire et conversations restent protégées par HTTP 401.
+La régression PostgreSQL utilise maintenant une colonne `canon` textuelle ;
+la suite isolée réussit avec 6 tests et 69 assertions. TypeScript DB/API,
+oxlint et oxfmt passent sur la correction.
+
+Les vérifications Web passent exclusivement par les outils Aphrody/Yolo
+natifs. Chromium, Playwright, Puppeteer, Selenium et les crawlers externes
+sont interdits par la consigne propriétaire du 2026-10-07.
