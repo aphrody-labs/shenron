@@ -1,6 +1,6 @@
 # Méthodologie de powerscaling inspirée du VS Battles Wiki
 
-**État :** corpus de travail, version 3 — vérifié le 8 octobre 2026.
+**État :** corpus de travail, version 4 — vérifié le 8 octobre 2026.
 Ce document synthétise les outils méthodologiques publics du VSBW pour DBFR. Il ne traduit pas intégralement les pages sources et ne reprend **aucun niveau, chiffre ou classement de personnage comme preuve**. Toute évaluation doit être reconstruite depuis les sources primaires de l’œuvre.
 
 ## 1. Statistiques distinctes
@@ -278,6 +278,7 @@ Sources : [Metaphysical Aspects](https://vsbattles.fandom.com/wiki/Metaphysical_
 | Pages de pouvoirs individuels (Powers and Abilities) | Catégorie générale entièrement parcourue en wikitexte direct au 8 octobre 2026 : 226/226 pages, réparties en A–F (89), G–P (78), R–Z (59). Les règles explicites restent locales à la capacité; la plupart des pages définissent un mécanisme. | Maintenir la veille des révisions; compléter l’audit des autres catégories méthodologiques et maintenir la veille des deux catégories de capacités. |
 | Pages verse-specific Powers and Abilities | 249/249 lues en wikitexte direct au 8 octobre 2026, par tranches A–H (107), I–R (72), S–Z (70); aucune règle universelle de scaling repérée. | Les conditions mécaniques sont propres à leur fiction; ne pas généraliser. Réauditer les changements et séparer les pages d’utilisateur des standards officiels. |
 | Explanation Pages | Les 165 pages directes relues au 8 octobre 2026 (130 pages principales, 35 blogs utilisateur); aucune règle de scaling transversale autonome relevée. | Les cosmologies, explications de systèmes et applications de feats restent propres aux œuvres; seuls les renvois à des pages de règles officielles sont retenus comme normes. |
+| Pages de cadrage spécialisées | The Kardashev Scale et Power-scaling Rules for Marvel and DC Comics relues directement depuis le modèle de navigation officiel. | Ne retenir que les distinctions transférables; les critères d’apparition, continuités et résultats propres à Marvel/DC restent spécifiques. |
 
 Répertoires d’entrée : [Calculation Instructions](https://vsbattles.fandom.com/wiki/Category:Calculation_Instructions), [Terms](https://vsbattles.fandom.com/wiki/Category:Terms), [Important Pages](https://vsbattles.fandom.com/wiki/Category:Important). La catégorie de calcul expose une trentaine de rubriques, tandis que « Terms » et « Important » sont des index plus larges et évolutifs. L’inventaire n’est donc pas clos par les pages déjà citées ici.
 
@@ -943,3 +944,32 @@ Répondre sans consulter les sections précédentes. Pour chaque cas, nommer la 
 10. Non. La page VSBW exige un ensemble de critères stricts de primauté, unité, immutabilité et indivisibilité; le mot seul ne suffit pas.
 
 </details>
+
+## Annexe AP — Échelles énergétiques collectives et règles de scaling stat par stat
+
+### Échelle de Kardashev : une classification de civilisation
+
+La page [The Kardashev Scale, oldid 6531372](https://vsbattles.fandom.com/wiki/The_Kardashev_Scale?oldid=6531372) classe la puissance totale qu’une civilisation utilise ou peut mobiliser. Pour la formule intermédiaire attribuée à Sagan, K = (log10(P) - 6) / 10, où P est une puissance totale en watts. La page donne les repères suivants :
+
+| Type de la page Kardashev | Puissance indiquée |
+|---|---:|
+| 0 | 0 à 10^16 W |
+| I | 10^16 à 10^26 W |
+| II | 10^26 à 10^36 W |
+| III | 10^36 à 10^46 W |
+| IV | 10^46 à 10^56 W |
+| V | 10^56 à 10^69 W |
+| VI | 3,9 × 10^69 W et plus |
+| VII | non mesurable selon cette classification |
+
+Ces bandes sont des repères de la classification de Kardashev reprise par cette page; elles ne sont ni des tiers VSBW d’AP, ni une mesure de puissance au combat. La page précise qu’une civilisation d’un type supérieur n’a pas nécessairement un niveau de feu supérieur : disponibilité/usage énergétique collectif et capacité destructive d’une attaque sont des objets différents. Ne pas transférer le rang de civilisation à un individu, un équipement ou un feat de combat. Les exemples de civilisations présents sur la page ne sont pas repris.
+
+### Page Marvel/DC : règle transversale et restrictions locales
+
+La page [Power-scaling Rules for Marvel and DC Comics, oldid 9103523](https://vsbattles.fandom.com/wiki/Power-scaling_Rules_for_Marvel_and_DC_Comics?oldid=9103523) traite les difficultés propres aux comics multiauteurs, mais affirme explicitement un principe plus général : évaluer chaque statistique séparément. Un niveau démontré dans une statistique ne se transfère pas automatiquement aux autres.
+
+Les précautions transférables sont de vérifier la cohérence et le contexte des feats, la continuité et la source exacte; de traiter un match direct comme un élément contextuel plutôt qu’une équivalence automatique; de préférer des comparaisons répétées et pertinentes aux confrontations isolées; et d’examiner les contradictions de période, d’auteur, de récit ou de circonstances avant de former une chaîne de scaling. La proximité d’auteur et de période est un indice de contexte pour ces comics, non une condition universelle à imposer à toutes les œuvres. Une chaîne transitive doit rester justifiée statistique par statistique, à chaque lien, par des preuves cohérentes.
+
+Ne pas généraliser les règles locales de cette page : seuils de nombre d’apparitions, ères et labels de continuité, critères de création de fiches alternatives, politique de forum ou modération. Les exemples de personnages et leurs mesures sont exclus. Révision consultée : 9103523, 2025-07-15.
+
+Le contrôle des modèles [Policies and Explanations Pages, oldid 9122869](https://vsbattles.fandom.com/wiki/Template:Policies_and_Explanations_Pages?oldid=9122869), [Statistics Explanation Pages, oldid 9084942](https://vsbattles.fandom.com/wiki/Template:Statistics_Explanation_Pages?oldid=9084942) et [Important Pages, oldid 9238942](https://vsbattles.fandom.com/wiki/Template:Important_Pages?oldid=9238942) a servi à croiser l’inventaire des catégories et à repérer ces deux pages. Ces modèles sont des index de navigation, pas des règles méthodologiques supplémentaires.
