@@ -9,6 +9,7 @@ export const wasm_get_xenoverse3_prototype_map: () => [number, number, number];
 export const wasm_parse_bac: (a: number, b: number) => [number, number, number];
 export const wasm_parse_bdm: (a: number, b: number) => [number, number, number];
 export const wasm_parse_cus: (a: number, b: number) => [number, number, number];
+export const wasm_parse_emb: (a: number, b: number) => [number, number, number];
 export const wasm_parse_msg: (a: number, b: number) => [number, number, number];
 export const wasm_parse_pup: (a: number, b: number) => [number, number, number];
 export const wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];

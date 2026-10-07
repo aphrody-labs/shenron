@@ -50,8 +50,9 @@ le contrat FFI standard. `shenron-re text <file.msg>` porte l'extraction d'un fi
 écraser un JSON existant; le mode dossier porte la conversion récursive dans une destination
 neuve, sans modifier l'arbre d'entrée. `shenron-re emb` valide les offsets, tailles et noms
 avant d'écrire chaque entrée DDS dans une destination neuve; l'archive EMB complète est lue
-en mémoire et aucun convertisseur de texture externe n'est invoqué. La matrice ne constitue
-pas une parité avec le CLI dbxv2.
+en mémoire et aucun convertisseur de texture externe n'est invoqué. `parseEmb` via WASM/Bun
+renvoie les noms et plages validés, sans copier les payloads. La matrice ne constitue pas
+une parité avec le CLI dbxv2.
 
 ## Assets, données et distribution
 
@@ -79,9 +80,10 @@ Pixel ne consomment pas encore directement le graphe Rust/WASM.
 Portes ciblées exécutées dans ce worktree : tests et Clippy de `shenron-re` et `shenron-ffi`,
 compilation WASM, génération ABI vérifiée, typecheck/lint et 36 tests `@shenron/native` avec
 la bibliothèque debug réellement chargée. La nouvelle commande CLI a également été exécutée
-et son JSON observé. Après ajout du parseur EMB et de sa commande, les 35 tests du crate
-(31 unitaires, 4 CLI) et Clippy strict passent; ces fixtures sont synthétiques et aucun asset
-du jeu n'a été copié ou extrait. Le build WASM/bindgen et les 11 tests `@shenron/pipeline`
-passent aussi après ajout de `extractMsgText`. Le lint pipeline réussit avec 20 avertissements préexistants
-dans d'autres fichiers; son typecheck ne démarre pas faute de types `bun` installés. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte
-ni service de production n'a été modifié.
+et son JSON observé. Après ajout du parseur EMB, de sa commande et du binding WASM/Bun, les 36 tests
+du crate (32 unitaires avec feature WASM, 4 CLI) et Clippy strict passent; les fixtures sont
+synthétiques et aucun asset du jeu n'a été copié ou extrait. Le build WASM/bindgen et les 12 tests
+`@shenron/pipeline` passent aussi. Le lint ciblé passe; le typecheck complet échoue sur des
+dépendances absentes du workspace (`zod`, `@aphrody/api/core`) et d'autres erreurs induites par
+ces modules manquants. L'alias VPS SSH configuré ne résolvait pas pendant ce lot; aucun hôte ni
+service de production n'a été modifié.

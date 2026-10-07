@@ -20,6 +20,7 @@ import initWasm, {
   wasm_parse_cus,
   wasm_parse_msg,
   wasm_extract_msg_text,
+  wasm_parse_emb,
   wasm_parse_pup,
   wasm_scan_aob,
   wasm_get_xenoverse3_prototype_map,
@@ -86,6 +87,16 @@ export interface MsgTextExtraction {
   file: string;
   count: number;
   strings: string[];
+}
+
+export interface EmbEntry {
+  name: string;
+  offset: number;
+  sizeBytes: number;
+}
+
+export interface EmbFile {
+  entries: EmbEntry[];
 }
 
 export type SkillCategory = "Super" | "Ultimate" | "Evasive" | "Awoken" | "Unknown";
@@ -361,4 +372,10 @@ export function parseMsg(msgBytes: Uint8Array): MsgFile {
 export function extractMsgText(fileName: string, msgBytes: Uint8Array): MsgTextExtraction {
   ensureWasm();
   return wasm_extract_msg_text(fileName, msgBytes) as MsgTextExtraction;
+}
+
+/** Parse and validate an EMB archive; payload bytes remain in the caller-owned buffer. */
+export function parseEmb(embBytes: Uint8Array): EmbFile {
+  ensureWasm();
+  return wasm_parse_emb(embBytes) as EmbFile;
 }

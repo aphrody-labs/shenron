@@ -127,6 +127,21 @@ export function wasm_parse_cus(cus_bytes) {
 }
 
 /**
+ * Validate a DBXV2 EMB texture archive and return its entry names and byte ranges.
+ * @param {Uint8Array} emb_bytes
+ * @returns {any}
+ */
+export function wasm_parse_emb(emb_bytes) {
+    const ptr0 = passArray8ToWasm0(emb_bytes, wasm.__wbindgen_malloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.wasm_parse_emb(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Parse a DBXV2 MSG (Message) binary file and return localized text strings.
  * @param {Uint8Array} msg_bytes
  * @returns {any}

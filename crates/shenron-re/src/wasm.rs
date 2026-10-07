@@ -5,7 +5,9 @@
 //! AOB memory scanning, and Dragon Ball game catalog discovery to JS/WASM runtimes.
 
 use crate::catalog::get_dragon_ball_catalog;
-use crate::formats::{bac::BacFile, bdm::BdmFile, cus::CusFile, msg::MsgFile, pup::PupFile};
+use crate::formats::{
+    bac::BacFile, bdm::BdmFile, cus::CusFile, emb::EmbFile, msg::MsgFile, pup::PupFile,
+};
 use crate::fs::cpk::{CpkArchive, CpkEntry};
 use crate::fs::crilayla::{decompress_crilayla, decompress_crilayla_raw};
 use crate::live::aob::AobPattern;
@@ -105,6 +107,13 @@ pub fn wasm_parse_msg(msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(&msg).map_err(to_js_err)
 }
 
+/// Validate a DBXV2 EMB texture archive and return its entry names and byte ranges.
+#[wasm_bindgen]
+pub fn wasm_parse_emb(emb_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let emb = EmbFile::parse(emb_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&emb).map_err(to_js_err)
+}
+
 /// Extract printable UTF-16LE text runs from one MSG buffer without parsing its table layout.
 #[wasm_bindgen]
 pub fn wasm_extract_msg_text(file_name: &str, msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
@@ -164,5 +173,14 @@ mod tests {
         let map = xenoverse3_prototype_map();
         assert_eq!(map.era, "AGE 1000");
         assert!(map.zones.iter().any(|zone| zone.id == "glacier-expedition"));
+    }
+
+    #[test]
+    fn test_wasm_parse_emb_direct() {
+        let bytes = crate::formats::emb::tests::fixture(&[("texture.dds", b"DDS!")]);
+        let parsed = EmbFile::parse(&bytes).unwrap();
+        assert_eq!(parsed.entries.len(), 1);
+        assert_eq!(parsed.entries[0].name, "texture.dds");
+        assert_eq!(parsed.entries[0].size_bytes, 4);
     }
 }

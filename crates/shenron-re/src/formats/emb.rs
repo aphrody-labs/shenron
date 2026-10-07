@@ -155,8 +155,13 @@ fn corrupt(details: impl Into<String>) -> ReError {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::{EMB_MAGIC, EmbFile};
+
+    pub(crate) fn fixture(names: &[(&str, &[u8])]) -> Vec<u8> {
+        let (file_names, payloads): (Vec<_>, Vec<_>) = names.iter().copied().unzip();
+        mock_emb(&file_names, &payloads)
+    }
 
     fn mock_emb(names: &[&str], payloads: &[&[u8]]) -> Vec<u8> {
         assert_eq!(names.len(), payloads.len());

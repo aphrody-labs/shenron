@@ -43,6 +43,11 @@ export function wasm_parse_bdm(bdm_bytes: Uint8Array): any;
 export function wasm_parse_cus(cus_bytes: Uint8Array): any;
 
 /**
+ * Validate a DBXV2 EMB texture archive and return its entry names and byte ranges.
+ */
+export function wasm_parse_emb(emb_bytes: Uint8Array): any;
+
+/**
  * Parse a DBXV2 MSG (Message) binary file and return localized text strings.
  */
 export function wasm_parse_msg(msg_bytes: Uint8Array): any;
@@ -74,6 +79,7 @@ export interface InitOutput {
     readonly wasm_parse_bac: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_bdm: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_cus: (a: number, b: number) => [number, number, number];
+    readonly wasm_parse_emb: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_msg: (a: number, b: number) => [number, number, number];
     readonly wasm_parse_pup: (a: number, b: number) => [number, number, number];
     readonly wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];

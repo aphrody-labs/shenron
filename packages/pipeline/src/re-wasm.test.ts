@@ -10,6 +10,7 @@ import {
   parsePup,
   parseMsg,
   extractMsgText,
+  parseEmb,
   triageCpk,
   extractCpkFile,
   decompressCrilayla,
@@ -364,6 +365,24 @@ describe("shenron-re WASM pipeline", () => {
       file: "quest.msg",
       count: 1,
       strings: ["Hello"],
+    });
+  });
+
+  test("validates EMB texture entries via WASM without copying payloads", () => {
+    const bytes = new Uint8Array(60);
+    bytes.set([0x23, 0x45, 0x4d, 0x42], 0); // #EMB
+    const view = new DataView(bytes.buffer);
+    view.setInt32(12, 1, true);
+    view.setInt32(24, 32, true);
+    view.setInt32(28, 40, true);
+    view.setInt32(32, 12, true);
+    view.setInt32(36, 4, true);
+    view.setInt32(40, 48, true);
+    bytes.set([0x44, 0x44, 0x53, 0x21], 44);
+    bytes.set(new TextEncoder().encode("texture.dds\0"), 48);
+
+    expect(parseEmb(bytes)).toEqual({
+      entries: [{ name: "texture.dds", offset: 44, sizeBytes: 4 }],
     });
   });
 });
