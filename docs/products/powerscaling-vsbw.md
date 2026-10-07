@@ -1,6 +1,6 @@
 # Méthodologie de powerscaling inspirée du VS Battles Wiki
 
-**État :** corpus de travail, version 1 — vérifié le 8 octobre 2026.  
+**État :** corpus de travail, version 2 — vérifié le 8 octobre 2026.
 Ce document synthétise les outils méthodologiques publics du VSBW pour DBFR. Il ne traduit pas intégralement les pages sources et ne reprend **aucun niveau, chiffre ou classement de personnage comme preuve**. Toute évaluation doit être reconstruite depuis les sources primaires de l’œuvre.
 
 ## 1. Statistiques distinctes
@@ -631,3 +631,164 @@ Le cadre mathématique du VSBW distingue cardinalité et ordinalité. À titre d
 Les multiplicateurs, même arbitrairement grands, ne franchissent pas seuls une frontière dimensionnelle ou ontologique. Les sous-paliers de Tier 2 ne sont pas séparés par un rapport énergétique universel permettant une promotion mécanique. Un grand nombre d’objets de dimension inférieure n’équivaut pas à un axe supérieur; une quantité infinie d’énergie disponible ne prouve pas un débit infini simultané.
 
 Source et révisions : [Tiering System, oldid 9401765](https://vsbattles.fandom.com/wiki/Tiering_System?oldid=9401765), révisée le 28 février 2026; [Tiering System FAQ, oldid 9689808](https://vsbattles.fandom.com/wiki/Tiering_System_FAQ?oldid=9689808), révisée le 29 septembre 2026. Relecture wikitexte via API MediaWiki le 8 octobre 2026 UTC; aucun profil ni calcul de personnage n’a été consulté pour établir ces critères.
+
+### Sous-paliers dimensionnels de Tier 1
+
+Les intitulés et nombres ci-dessous sont les définitions internes du classement VSBW, à utiliser uniquement après avoir prouvé que la fiction porte réellement sur les structures correspondantes :
+
+| Palier | Critère structurel conventionnel |
+|---|---|
+| Low 1-C | Un niveau d’infini non dénombrable au-dessus du continuum 4-D de Low 2-C (modèle R^5). |
+| 1-C | Deux à cinq niveaux non dénombrables supplémentaires (R^6 à R^9). |
+| High 1-C | Six à sept niveaux (R^10 à R^11). |
+| 1-B | Huit niveaux jusqu’à tout nombre fini supérieur (R^12 et espaces finis de dimensions supérieures). |
+| High 1-B | Espace de dimension infinie; certaines conventions ajoutent un modificateur pour des dimensions non dénombrables. |
+| Low 1-A | Totalité des espaces dimensionnels possibles dans le cadre mathématique du système, liée par la page au cumul des espaces de dimension finie (univers de von Neumann). |
+| 1-A | Supériorité ontologique qualitative qu’aucune composition, union ou quantité des niveaux inférieurs ne peut atteindre. |
+| High 1-A | Nouveau degré de supériorité qualitative sur une hiérarchie 1-A, parfois décrit par un cadre supérieur gouvernant toute la hiérarchie. |
+| High 1-A+ | Champ ou totalité des mondes logiquement possibles selon la définition VSBW. |
+| Tier 0 | Dépasse toute extension hiérarchique et distinction ontologique; les critères de primauté, unité et absence d’un cadre supérieur sont requis. |
+
+Ces catégories sont des définitions de l’échelle VSBW, pas des résultats de physique. Une fiction qui nomme un nombre de dimensions n’instancie pas automatiquement un espace R^n; une hiérarchie décrite comme « supérieure » n’établit pas nécessairement une discontinuité qualitative. Les preuves exigées dans la FAQ et les critères de réalité-fiction doivent soutenir la relation avant de proposer l’étiquette.
+
+
+## Annexe W — Paramètres de versus : conventions VSBW et choix DBFR
+
+Les [Standard Battle Assumptions](https://vsbattles.fandom.com/wiki/Standard_Battle_Assumptions?oldid=9377396) sont des valeurs par défaut du forum VSBW lorsqu’un scénario n’en fixe pas d’autres. Elles choisissent notamment une version admissible selon le profil, des conditions de victoire possibles (BFR, KO, incapacité ou mort), un état d’esprit qui veut gagner, la connaissance limitée à l’apparence et à la direction de l’adversaire, l’absence de préparation, l’équipement standard, une date de référence, un lieu de combat et une distance de départ fondée sur les portées avec un plafond du site. L’égalisation de verse se décide au cas par cas. Ce ne sont pas des faits intrinsèques ni des défauts universels : DBFR doit annoncer ses propres conditions au lieu d’importer silencieusement le lieu, la portée maximale, la clé ou la condition de victoire VSBW.
+
+Pour rendre une comparaison reproductible, fixer avant l’analyse : versions/formes, état et période, condition de victoire, état d’esprit, savoir mutuel, préparation, équipement, lieu, distance initiale, aide extérieure, égalisation des systèmes et de la vitesse. Une hypothèse de scénario n’ajoute aucune capacité au personnage.
+
+Le [Standard Equipment](https://vsbattles.fandom.com/wiki/Standard_Equipment?oldid=7244562) du VSBW appelle « standard » l’équipement porté dans la majorité des apparitions canoniques; un objet possédé mais rarement transporté peut être optionnel. C’est une règle de profil propre au wiki, pas un seuil obligatoire pour DBFR. Pour la fiche DBFR, documenter séparément ce qui est porté habituellement, disponible sous condition, créé/invoqué et sélectionné pour le match.
+
+La page [Bloodlust](https://vsbattles.fandom.com/wiki/Bloodlust?oldid=8383212) définit un état artificiel de matchup où le personnage supprime ses inhibitions et cherche la victoire en acceptant les risques; cela ne signifie pas nécessairement qu’il devient plus intelligent ou perd ses capacités, et ne se confond pas avec un état naturellement sanguinaire. Le préciser comme hypothèse explicite; ne jamais le supposer depuis l’intention du débatteur.
+
+L’[égalisation de réalité](https://vsbattles.fandom.com/wiki/Reality_Equalization?oldid=9019162) est une convention spécialisée liée par la page à certains scénarios où un monde virtuel est réellement le niveau de réalité inférieur vécu par ses habitants; elle ne rend pas automatiquement compatibles des univers parallèles ou des êtres numériques. La distinguer de l’égalisation générale de systèmes énergétiques et exiger une justification propre à l’œuvre et au scénario.
+
+Les [Versus Thread Rules](https://vsbattles.fandom.com/wiki/Versus_Thread_Rules?oldid=9123844) régissent l’admissibilité des débats et les changements de profils du forum. Les délais de vote, quorums, restrictions de profil et interdictions de certaines catégories de threads ne sont pas des critères d’évaluation DBFR. De même, [Stomp Thread](https://vsbattles.fandom.com/wiki/Stomp_Thread?oldid=8321297) et [Spite Thread](https://vsbattles.fandom.com/wiki/Spite_Thread?oldid=6476458) sont des notions de gouvernance et d’intention du forum, pas des classes de puissance.
+
+Révisions lues le 8 octobre 2026 UTC : Standard Battle Assumptions 9377396 (2026-02-13); Versus Thread Rules 9123844 (2025-08-02); Reality Equalization 9019162 (2025-05-17); Standard Equipment 7244562 (2021-09-03); Bloodlust 8383212 (2024-02-17); Stomp Thread 8321297 (2023-12-28); Spite Thread 6476458 (2020-05-21).
+
+
+## Annexe X — Continuités, jeux et multiplicateurs
+
+### Canon et crossovers
+
+La page [Canon](https://vsbattles.fandom.com/wiki/Canon?oldid=9495288) distingue la continuité primaire d’adaptations officielles. La seule approbation ou participation d’un auteur ne fait pas nécessairement d’une adaptation une partie de la continuité principale : chercher une confirmation explicite d’intégration ou de priorité. Une adaptation officielle non supervisée peut servir de source secondaire dans le cadre restreint proposé par la page si elle ne modifie pas les faits établis, n’introduit pas de capacités nouvelles incompatibles et ne contredit ni la logique ni l’échelle montrée. « Canon-adjacent » sans périmètre précis n’est pas une base suffisante. Pour DBFR, le statut des supports est défini par sa propre doctrine de continuité, pas par le vocabulaire VSBW.
+
+Un [crossover](https://vsbattles.fandom.com/wiki/Crossovers?oldid=9680774) non canon permet d’évaluer le feat du personnage tel qu’il apparaît dans ce crossover, mais ne transfère pas automatiquement le résultat à la continuité séparée. Pour partager une cosmologie, établir une continuité/timeline cohérente, un univers commun ou des univers parallèles dans le même multivers, un lore non contradictoire et une intégration reconnue par l’autorité compétente pour toutes les œuvres concernées. Une rencontre promotionnelle ou une référence ne suffit pas. Si le crossover rééchelonne les personnages, ne pas transférer leur version renforcée à leur version originale. Les connexions à un omnivers de fictions sans lien exigent une preuve explicite, pas une chaîne d’associations.
+
+### Mécaniques de jeu et jeux de combat
+
+La page [Game Mechanics](https://vsbattles.fandom.com/wiki/Game_Mechanics?oldid=9666253) contient à la fois une réserve générale contre les mécaniques génériques et une échelle de preuves plus nuancée : affirmation diégétique explicite prioritaire, cohérence avec capacités établies et absence de contradictions, démonstration directe hors gameplay comme corroboration forte. Si le gameplay est la seule source, l’évaluer comme représentation primaire de l’œuvre au lieu de le rejeter simplement parce que c’est du gameplay. Comme la page contient aussi une formule générale qualifiant les mécaniques de non canoniques, signaler cette tension et analyser chaque mécanique dans le contexte du jeu.
+
+Les [Fighting Games Powerscaling Standards](https://vsbattles.fandom.com/wiki/Fighting_Games_Powerscaling_Standards?oldid=8724777) privilégient le mode histoire en cas de contradiction. Les modes arcade ne sont probants que lorsqu’ils sont scénarisés/répétables ou que leur fin est référencée dans le récit. Les intros et répliques de versus peuvent documenter une relation ou un statut, mais un résultat de combat de versus-mode, une vantardise du vainqueur ou un propos subjectif ne doit pas devenir un feat sans support. Attaques spéciales, fatalités et transitions destructrices demandent une corroboration dans l’histoire ou une preuve cohérente de leur statut; résultats variables, survivants fragiles ou transitions sans référence ne fixent pas une statistique.
+
+### Échelles collectives et systèmes d’énergie
+
+La [Civilization Tiering System](https://vsbattles.fandom.com/wiki/Civilization_Tiering_System?oldid=9411836) classe une civilisation par portée collective et développement technologique (planétaire, stellaire, galactique, universel et autres catégories), non par AP de chacun de ses membres. Établir qui contrôle la ressource, sa portée, son débit et sa disponibilité avant d’en inférer un usage individuel ou de combat.
+
+Dans un [Universal Energy System](https://vsbattles.fandom.com/wiki/Universal_Energy_Systems?oldid=9475898), une arme ou source externe porte par défaut ses propres feats. Le couple utilisateur-équipement peut être concerné si l’énergie vient effectivement du système, mais un boost propre au porteur ou persistant après séparation doit être démontré. Hax et résistances ne se transfèrent pas automatiquement avec la même énergie; examiner séparément chaque système, capacité et mécanisme.
+
+### Seuils et portée des multiplicateurs
+
+La page [Multipliers](https://vsbattles.fandom.com/wiki/Multipliers?oldid=9518875) utilise environ ×100 comme repère de prudence, non comme loi physique : les facteurs plus petits peuvent être corroborés par une progression clairement montrée contre un adversaire déjà comparable; un facteur d’au moins cet ordre de grandeur demande des preuves plus robustes, souvent une manifestation de l’ampleur. Le facteur doit viser la statistique concernée, rester stable pour cette forme/technique et s’appliquer au bon contexte. Un boost d’une attaque alliée doit être validé sur l’attaque de l’ampleur considérée : démontrer un doublement sur une petite attaque ne prouve pas le même rendement sur une attaque beaucoup plus grande. Une différence ultérieure de maîtrise ou une contradiction avec un adversaire égal antérieur peut invalider le facteur.
+
+Le [Calc Stacking](https://vsbattles.fandom.com/wiki/Calc_Stacking?oldid=9496893) reste un contrôle distinct : même un multiplicateur admissible ne rend pas indépendante une chaîne de calculs dépendants. N’utiliser que les entrées réellement constantes, limiter les sauts de scaling et garder visible l’origine de chaque valeur réutilisée.
+
+Révisions lues via API MediaWiki le 8 octobre 2026 UTC : Canon 9495288 (2026-04-27); Crossovers 9680774 (2026-09-20); Game Mechanics 9666253 (2026-09-07); Fighting Games Powerscaling Standards 8724777 (2024-09-10); Civilization Tiering System 9411836 (2026-03-05); Universal Energy Systems 9475898 (2026-04-14); Multipliers 9518875 (2026-05-14); Calc Stacking 9496893 (2026-04-28).
+
+## Annexe Y — Rappel actif et auto-évaluation
+
+Répondre aux questions sans regarder le corrigé, en donnant la statistique, les faits manquants et la règle pertinente. Ces mini-cas sont fictifs et ne reprennent aucun exemple de profil VSBW.
+
+1. Une capacité crée une tempête régionale; son utilisateur gagne ensuite un duel à mains nues sans l’invoquer. Quelle statistique peut-on attribuer à la tempête et que peut-on relier au duel?
+2. Une cible part avant le lancement d’un projectile; une seconde esquive après le départ. Quelles conditions rendent la deuxième scène mesurable comme réaction?
+3. Une œuvre dit que deux techniques utilisent « l’énergie », mais n’établit aucune conversion, dépense commune ni renforcement corporel. Peut-on les traiter comme un système énergétique universel?
+4. Une entité détruit le premier instant d’une timeline et la suite disparaît à cause d’un paradoxe. Cela prouve-t-il la destruction directe de tout le continuum?
+5. Un rayon est appelé « laser » mais il tourne, s’accélère et chauffe une cible. Que faut-il établir avant d’en déduire une réaction à la lumière?
+6. Un personnage soulève un objet, puis blesse un adversaire très résistant avec une attaque d’énergie. La force de levage établit-elle l’AP de l’attaque?
+7. Une déclaration dit « aucune limite n’a jamais été observée ». Quelle conclusion est permise?
+8. Un multiplicateur annoncé s’applique à une attaque de faible énergie, puis on le reporte sur une attaque d’une ampleur beaucoup plus grande. Quelle preuve manque?
+9. Une mécanique de jeu contredit une scène du mode histoire. Quelle source prime selon la convention des jeux de combat VSBW, et comment traiter le cas général des mécaniques?
+10. Un royaume est appelé « dimension supérieure » et un personnage y est présent. Quelles preuves manquent pour établir une dimension géométrique et un tier supérieur?
+11. Une cible survit à une attaque sans réaction, mais le récit ne montre pas si elle est blessée. Est-ce une preuve forte de durabilité?
+12. Un hax atteint plusieurs cibles simultanément et dépasse une résistance une fois. Peut-on conclure qu’il a la même puissance contre toute cible et qu’il possède une couche universelle?
+
+<details>
+<summary>Corrigé</summary>
+
+1. Le feat établit d’abord la capacité environnementale du dispositif ou du pouvoir, pas une force physique. Le duel n’hérite pas de l’effet non utilisé; prouver un mécanisme/une énergie commune avant le transfert.
+2. Établir départ du projectile, vitesse, trajectoire, distances pendant la même fenêtre, début du mouvement de la cible et absence d’anticipation/précognition. Distinguer réaction du déplacement bref.
+3. Non. Le nom commun « énergie » n’établit ni conversion ni relation de mise à l’échelle. Vérifier règles de l’œuvre et démonstrations comparables.
+4. Non. Une conséquence causale indirecte n’équivaut pas à affecter directement tout l’espace 3-D à chaque instant; distinguer le feat ponctuel d’un continuum détruit.
+5. Identifier une lumière cohérente par plusieurs indices positifs, examiner les contre-indices et démontrer que la cible réagit après émission plutôt que d’anticiper.
+6. Non. Force de levage, force de frappe et AP d’énergie sont distinctes. L’attaque d’énergie doit être établie indépendamment; ne relier les axes que par preuves pertinentes.
+7. Seulement que les limites montrées dans le périmètre examiné sont inconnues ou non observées. Cela ne prouve pas une absence absolue de limites ni l’efficacité sur une cible inconnue.
+8. Le transfert du facteur à une attaque de cette échelle. Démontrer portée, source énergétique, rendement et stabilité du multiplicateur au niveau considéré; vérifier les dépendances de calcul.
+9. Le mode histoire prime en cas de contradiction dans le standard VSBW des jeux de combat. Pour les mécaniques en général, peser preuve diégétique, cohérence et contradictions; ne pas les accepter ou rejeter en bloc.
+10. Établir des axes indépendants, une structure dimensionnelle pertinente, son rapport d’inclusion/supériorité, l’ampleur cosmologique exigée et l’effet réellement produit. L’étiquette seule ne suffit pas.
+11. Non. L’absence de réaction seule ne prouve pas l’absence de dommage; différencier douleur, blessure, dégâts, tolérance et protection.
+12. Non. Séparer portée, zone d’effet et puissance par cible. Une couche demande de surmonter effectivement une résistance pertinente; les couches ne sont pas des unités universelles.
+
+</details>
+
+
+## Annexe AA — Scaling par statistique et capacités partagées
+
+Les [règles de powerscaling Marvel/DC](https://vsbattles.fandom.com/wiki/Power-scaling_Rules_for_Marvel_and_DC_Comics?oldid=9103523) sont spécifiques à ces univers, mais réitèrent des garde-fous réutilisables : privilégier les feats directs contextualisés; traiter une comparaison explicite dans un même récit, une même période et un contexte comparable au cas par cas; utiliser les comparaisons officielles comme indice plutôt que preuve absolue; vérifier chaque maillon d’une chaîne durable; juger les outliers; et analyser chaque statistique séparément. Une victoire ou un classement général n’établit pas simultanément AP, vitesse, durabilité et hax. Les exclusions d’univers alternatifs propres à Marvel/DC, seuils communautaires d’admissibilité des pages et règles de consensus restent des politiques locales au VSBW.
+
+Pour une capacité présentée comme propre à un système d’univers, la page [Standard Format for Verse-Specific Powers and Abilities](https://vsbattles.fandom.com/wiki/Standard_Format_for_Verse-Specific_Powers_and_Abilities?oldid=9487890) fournit une distinction utile : une aptitude commune devrait être montrée, pratiquée, reconnue et énoncée comme partie du système. Le fait que plusieurs membres l’emploient ne suffit pas à prouver qu’elle leur est intrinsèque ou accessible à tous. Les formulations « Likely » et les niveaux de maîtrise doivent refléter les éléments effectivement disponibles; ne pas inventer des rangs que l’œuvre ne définit pas. Les quotas numériques du wiki pour décider si une aptitude mérite une page collective sont éditoriaux et ne déterminent ni sa puissance ni sa fréquence universelle.
+
+Les formats VSBW de [profils de personnage](https://vsbattles.fandom.com/wiki/Standard_Format_for_Character_Profiles?oldid=9415714), [civilisation](https://vsbattles.fandom.com/wiki/Standard_Format_for_Civilization_Profiles?oldid=8909751), [objets](https://vsbattles.fandom.com/wiki/Standard_Format_for_Item_Profiles?oldid=9128240) et [verse](https://vsbattles.fandom.com/wiki/Standard_Format_for_Verse_Pages?oldid=9637913) sont des gabarits de présentation. Leurs rubriques peuvent aider à consigner versions, continuité, statistiques, équipement, population, faits et références, mais le fait qu’une rubrique existe ne valide pas le contenu qu’on y écrit. Les formats du verse encouragent à documenter sa cosmologie et la provenance des calculs; exigences de mise en page, seuils de création de pages, validation par le groupe de calcul et procédure de CRT sont propres à leur wiki.
+
+Révisions lues directement via API MediaWiki le 8 octobre 2026 UTC : Power-scaling Rules for Marvel and DC Comics 9103523 (2025-07-15); Standard Format for Character Profiles 9415714 (2026-03-07); Standard Format for Civilization Profiles 8909751 (2025-02-09); Standard Format for Item Profiles 9128240 (2025-08-06); Standard Format for Verse Pages 9637913 (2026-08-17); Standard Format for Verse-Specific Powers and Abilities 9487890 (2026-04-21).
+
+
+## Annexe AB — Précisions terminologiques et conditions
+
+Le terme [Omniverse](https://vsbattles.fandom.com/wiki/Omniverse?oldid=9677604) n’a pas une place universelle au-dessus de tous les univers ou de toute fiction; ses usages varient et il peut simplement désigner un multivers ou un ensemble de multivers. Il ne constitue pas, à lui seul, une structure de cosmologie ou un argument de tiering.
+
+Un [one-shot](https://vsbattles.fandom.com/wiki/One-Shot?oldid=9480800) est une attaque qui met une cible hors d’état en un coup. Un coup physique peut soutenir une AP supérieure à la durabilité de la cible, mais l’écart varie selon le récit et le contexte : il n’existe pas de ratio universel pour inférer un tier ou chaîner le scaling. Une victoire en un coup causée par une arme, un hax, une attaque spéciale, un point vulnérable ou une cible qui se retenait ne démontre pas les mêmes statistiques physiques. Vérifier dommage réel, mécanisme, défense engagée et retenue.
+
+Le [Glossary](https://vsbattles.fandom.com/wiki/VS_Battles_Glossary?oldid=8632255) est un index de vocabulaire, pas une norme autonome de preuve. Des mots communautaires comme « scan », « key », « hax » ou « smurf » ne remplacent pas l’analyse de la source, de la version ou du mécanisme. Pour toute conclusion, revenir aux instructions spécifiques de la statistique concernée.
+
+Les pages [Bloodlust](https://vsbattles.fandom.com/wiki/Bloodlust?oldid=8383212) et [Standard Equipment](https://vsbattles.fandom.com/wiki/Standard_Equipment?oldid=7244562) concernent respectivement l’état d’esprit du matchup et l’équipement sélectionné. La bloodlust artificielle change le comportement supposé et la stratégie, mais n’ajoute ni AP, ni vitesse, ni résistance. Pour l’équipement, séparer ce qui est majoritairement porté, ce qui est optionnel et ce qui peut être créé ou invoqué; préciser le choix dans le scénario.
+
+Révisions : Omniverse 9677604 (2026-09-17); VS Battles Glossary 8632255 (2024-07-04); One-Shot 9480800 (2026-04-16); Bloodlust 8383212 (2024-02-17); Standard Equipment 7244562 (2021-09-03). Les deux dernières pages sont des définitions/conventions de matchup, non des preuves d’un niveau intrinsèque.
+
+
+## Annexe AC — Formules et conventions de calcul vérifiées
+
+Les expressions ci-dessous reproduisent des outils et conventions précisés par les pages VSBW citées, pas des lois applicables sans hypothèses. Chaque calcul doit afficher ses entrées, unités, géométrie, mécanisme et domaine de validité; si un prérequis manque, ne pas produire un résultat exact artificiel.
+
+### Énergie cinétique, gravité et conversion
+
+- Mouvement classique : (E_k = 0.5 m v^2), seulement dans le domaine newtonien. En relativité, la page Kinetic Energy emploie (E_k = (gamma - 1) m c^2), avec (gamma = 1/sqrt(1 - v^2/c^2)); ne pas extrapoler à (v >= c). Dans la révision consultée, la page limite conventionnellement l’énergie relativiste à quatre fois la valeur newtonienne au-delà d’environ 0.93 c, sauf énergie explicite. Ce plafond est une politique de calcul VSBW, distincte de l’équation relativiste standard; ne pas l’appliquer au FTL.
+- Corps auto-gravitant homogène : (U = 3 G M^2/(5 r)); pour une étoile polytropique, la page donne (U = 3 G M^2/((5 - n) r)), avec n le paramètre du modèle. Ces formes supposent un corps lié et une structure appropriée; elles ne s’appliquent pas automatiquement à une singularité ou à un objet non auto-gravitant.
+- Trou noir de Schwarzschild : (r_s = 2 G M/c^2), utilisable pour relier rayon et masse si l’objet fictif se comporte comme un trou noir physique. Une apparence sombre seule ne valide ni la masse, ni la gravité, ni une résistance à la singularité.
+- Conversion masse-énergie : (E = m c^2) seulement si l’œuvre établit la conversion matière-énergie correspondante. Création magique, matérialisation, régénération ou croissance n’impliquent pas ce mécanisme par défaut.
+- Un exploit de déplacement ne devient pas AP du seul fait de sa vitesse; relier explicitement mouvement, masse affectée et dommages produits. L’énergie restante d’un objet peut être plus pertinente que son énergie initiale si la scène montre une perte avant impact.
+
+Références : [Kinetic Energy Feats, oldid 9342768](https://vsbattles.fandom.com/wiki/Kinetic_Energy_Feats?oldid=9342768); [Gravitational Binding Energy, oldid 8242240](https://vsbattles.fandom.com/wiki/Gravitational_Binding_Energy?oldid=8242240); [Black Hole Feats in Fiction, oldid 8939342](https://vsbattles.fandom.com/wiki/Black_Hole_Feats_in_Fiction?oldid=8939342); [Mass-energy conversion feats, oldid 9448480](https://vsbattles.fandom.com/wiki/Mass-energy_conversion_feats?oldid=9448480).
+
+### Explosion : rendement, vitesse et énergie reçue
+
+La page [Explosion Yield Calculations, oldid 9650591](https://vsbattles.fandom.com/wiki/Explosion_Yield_Calculations?oldid=9650591) distingue géométrie aérienne et géométrie au sol. Pour le modèle de souffle aérien affiché, avec distance x en kilomètres et rendement Y en mégatonnes TNT, la relation rapportée est Y = ((x/0.28)^3)/1000; la page applique un facteur de 0.5 à une explosion non nucléaire réelle dans cette convention. Pour le modèle au sol, elle donne W = R^3 * ((sqrt(27136P + 8649) - 93)/13568)^2, où W est en tonnes TNT, R en mètres et P en bars. Ces relations ne sont pas interchangeables : choisir la géométrie et l’indicateur de souffle cohérents avec la scène, et ne pas prendre le rendement total pour l’énergie reçue par une cible distante.
+
+Pour une source isotrope à distance r, la page [Inverse Square Law](https://vsbattles.fandom.com/wiki/Inverse_Square_Law?oldid=8912944) part d’une aire de propagation A = 4*pi*r^2 (ou une demi-sphère dans la convention de propagation au sol), puis estime l’intensité I = rendement/A et l’énergie interceptée E = I * A_cible, où A_cible est la section projetée. Orientation, angle solide, obstacles, absorption et forme du front comptent. Un faisceau dirigé, le contact et un milieu dissipatif demandent un autre modèle.
+
+La [vitesse d’explosion](https://vsbattles.fandom.com/wiki/Explosion_Speed_Calculations?oldid=8303698) est calculée à partir du front de choc d’un explosif chimique, de la charge et du type, et du temps d’arrivée à la distance mesurée (par exemple les tables Kingery–Bulmash); convertir correctement les millisecondes en secondes. La relation de diamètre de boule de feu D = 8.5 * W^0.341 (D en pieds, W en livres) est présentée comme estimation moins fiable et ne remplace pas le suivi du front. Ce modèle ne se transpose pas tel quel aux pouvoirs, rayons ou éclairs fictionnels.
+
+### Nuages, tempêtes et séismes
+
+Pour un nuage, la page [Cloud Calculations](https://vsbattles.fandom.com/wiki/Cloud_Calculations?oldid=9576826) recommande de déterminer d’abord un diamètre par mesure à l’image ou par distance de visibilité défendable, puis l’aire de base pi*d^2, l’épaisseur compatible avec le type de nuage et le volume correspondant. Distinguer masse d’eau liquide et masse d’air/eau déplacée. Choisir ensuite le mécanisme : chaleur latente pour condensation/vaporisation, énergie cinétique pour le déplacement, ou CAPE pour un modèle de convection/formation avec vents. Si le mécanisme est indécidable, la page propose de calculer les trois modèles et de retenir le plus bas selon sa convention; pour une formation par CAPE, comparer aussi au coût de condensation et retenir la valeur la plus basse lorsque le critère de la page s’applique. Ne pas utiliser la masse d’eau pour un feat de déplacement de l’air sans justification.
+
+Pour une tempête, [Storm Calculations](https://vsbattles.fandom.com/wiki/Storm_Calculations?oldid=9100729) distingue notamment masse * CAPE (formation/instabilité de la masse atmosphérique), énergie associée à la condensation et énergie cinétique des vents. Délimiter l’étendue effectivement affectée; l’énergie totale d’un ouragan réel ne s’attribue pas si le feat ne touche qu’une partie du système.
+
+La page [Earthquake Calculations](https://vsbattles.fandom.com/wiki/Earthquake_Calculations?oldid=9685636) recommande une méthode liée à la cause. Pour la magnitude observée Md et distance r en kilomètres, les corrections affichées sont : M = Md + 0.0238*r si r < 60; M = Md + 1.1644 + 0.0048*r si 60 <= r < 700; au-delà, M = Md + 6.399 + 1.66*log10((r/110)*(2*pi/360)). La page associe ensuite un modèle de rendement d’impact 10^((M + 5.87)/0.67) J, un modèle artificiel 10^(1.5*M + 4.8) J et recommande un calculateur de moment sismique pour les séismes naturels. Ces formules dépendent de la magnitude et du mécanisme; ne pas appliquer un rendement de séisme naturel à un simple tremblement ressenti. La page signale aussi la limite empirique des très grandes magnitudes; au-delà, justifier le modèle fictionnel.
+
+### Corps célestes, création et zéro absolu
+
+La page [Celestial Body Feats](https://vsbattles.fandom.com/wiki/Celestial_Body_Feats?oldid=9650592) distingue création d’un corps (souvent GBE comme convention VSBW), déplacement subluminal (énergie cinétique si masse/vitesse fondées), déplacement FTL (ne pas extrapoler la KE classique), et destruction par explosion (rendement approprié). Une création ex nihilo ne devient pas E = m*c^2 sans conversion explicitement établie; une destruction par explosion ne doit compter que les corps effectivement atteints. La page [Creation Feats](https://vsbattles.fandom.com/wiki/Creation_Feats?oldid=8400132) demande également de distinguer matière produite, assemblée, transformée ou déjà présente, et de relier séparément la création aux statistiques de combat.
+
+La page [Absolute Zero Feats in Fiction](https://vsbattles.fandom.com/wiki/Absolute_Zero_Feats_in_Fiction?oldid=8238630) considère comme preuve forte une déclaration fiable et explicite de 0 K (-273.15 °C), d’énergie interne nulle ou d’arrêt moléculaire/atomique, évaluée avec le contexte et la cohérence. Une image de figement peut corroborer mais est faible seule. Gel instantané, matériau supraconducteur, nom d’arme ou formule « sous le zéro absolu » ne prouvent ni 0 K exact ni une résistance égale; traiter cette dernière comme hyperbole ou froid fictionnel extrême si l’œuvre ne définit pas de physique exotique.
