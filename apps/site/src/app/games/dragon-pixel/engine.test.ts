@@ -65,3 +65,43 @@ test("jump, arena bounds and character differences", () => {
   for (let i = 0; i < 1000; i++) step(b, { right: true }, 0.05);
   expect(b.player.x).toBeLessThanOrEqual(936);
 });
+
+test("story mode chapter 1 initialization and victory", () => {
+  const g = createGame("goku", "story", 1);
+  expect(g.mode).toBe("story");
+  expect(g.currentChapterId).toBe(1);
+  expect(g.arena).toBe("paozu");
+  step(g, {}, 0.05);
+  expect(g.enemies.length).toBe(1);
+  expect(g.enemies[0].hp).toBe(80);
+  g.enemies[0].hp = 0;
+  step(g, {}, 0.05);
+  expect(g.status).toBe("won");
+});
+
+test("guard reduces damage and vanish repositions behind opponent", () => {
+  const g = createGame();
+  g.wave = 1;
+  g.enemies = [{ x: 200, y: 320, hp: 100, cooldown: 0 }];
+  g.player.x = 160;
+  g.player.energy = 50;
+  step(g, { guard: true }, 0.01);
+  expect(g.player.guarding).toBe(true);
+  expect(g.player.hp).toBe(99); // Only 1 damage taken with guard
+  step(g, { vanish: true }, 0.01);
+  expect(Math.floor(g.player.energy)).toBe(25);
+  expect(g.player.x).toBeGreaterThan(200); // Repositioned behind enemy
+});
+
+test("beam clash activation and resolution via mash", () => {
+  const g = createGame();
+  g.shots = [
+    { x: 400, y: 300, vx: 500, damage: 40, isBeam: true, source: "player" },
+    { x: 450, y: 300, vx: -500, damage: 40, isBeam: true, source: "enemy" },
+  ];
+  step(g, {}, 0.01);
+  expect(g.clash).toBeDefined();
+  expect(g.clash?.active).toBe(true);
+  step(g, { mash: true }, 0.05);
+  expect(g.clash?.tension).toBeGreaterThan(0);
+});

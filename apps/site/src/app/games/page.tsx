@@ -25,8 +25,8 @@ const GAMES = [
     name: "Dragon Pixel",
     cmd: null as string | null,
     variant: "solo",
-    desc: "Affronte les 5 vagues d'ennemis en combat 2D rétro ! Choisis ton style (équilibré, vitesse, puissance), charge ton ki et déclenche ta transformation.",
-    power: "5 Vagues",
+    desc: "Jeu de combat 2D rétro Toriyama Master Edition. 15 chapitres du Mode Histoire couvrant les 42 tomes, 8 combattants, duels de Kikōha et transformations Super Saiyan.",
+    power: "42 Tomes",
     play: "/games/dragon-pixel" as string | null,
   },
   {
