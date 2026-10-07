@@ -8,8 +8,11 @@ pub mod catalog;
 pub mod error;
 pub mod formats;
 pub mod fs;
+pub mod inventory;
 pub mod live;
 pub mod steam;
+pub mod text;
+pub mod world;
 
 #[cfg(any(feature = "wasm", target_arch = "wasm32", test))]
 pub mod wasm;
@@ -26,15 +29,28 @@ pub use formats::{
     bdm::{BdmEntry, BdmFile, DamageType},
     cms::{CmsEntry, CmsFile},
     cus::{CusFile, CusSkill, SkillCategory},
+    emb::{EmbFile, EmbRgbaTexture, EmbTextureEntry, TexturePixelFormat},
+    emd::{EmdFile, EmdMesh, EmdModelPart, EmdSubmesh, EmdVertex},
+    emm::{EmmFile, EmmMaterial, EmmParameter},
+    esk::{EskBone, EskFile, standard_dbxv2_skeleton},
+    model_assemble::{AssembledCharacterModel, ModelPrimitive},
+    moveset::{CharacterMoveset, MoveFrameData},
     msg::{MsgEntry, MsgFile},
     pup::{PupEntry, PupFile},
 };
 pub use fs::{
     cpk::{CpkArchive, CpkEntry},
     crilayla::{compress_crilayla_mock, decompress_crilayla, decompress_crilayla_raw},
+    vfs::{CacheCpkStats, XenoverseVfs, XenoverseVfsEntry},
 };
 pub use live::aob::AobPattern;
-pub use steam::{SteamGameInstall, scan_dragon_ball_installs};
+pub use steam::{
+    Dbxv2Install, STEAM_APP_ID_DB_FIGHTERZ, STEAM_APP_ID_DB_KAKAROT,
+    STEAM_APP_ID_DB_SPARKING_ZERO, STEAM_APP_ID_DBXV1, STEAM_APP_ID_DBXV2,
+    SteamDepotRecord, SteamGameInstall, SteamPlanningLimits, inspect_dbxv2_install,
+    scan_dragon_ball_installs,
+};
+pub use world::xenoverse3::{Xenoverse3Map, xenoverse3_prototype_map};
 
 /// Version of the shenron-re reverse engineering engine.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

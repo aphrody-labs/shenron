@@ -16,6 +16,7 @@ import { primaryButton, surfaceLink } from "./ui";
 
 /** Jeux jouables sur le site, dans l'ordre de la page `/games`. */
 export const HOME_GAMES = [
+  { key: "dragon_pixel", name: "Dragon Pixel", href: "/games/dragon-pixel", glyph: "⚡" },
   { key: "2048", name: "2048 : Ki Merge", href: "/games/2048", glyph: "2048" },
   { key: "pfc", name: "Pierre-Feuille-Ciseaux", href: "/games/rock-paper-scissors", glyph: "✊" },
   { key: "morpion", name: "Morpion", href: "/games/tic-tac-toe", glyph: "✕" },

@@ -102,8 +102,56 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
     };
   }, [src]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if user is typing in an input/textarea
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+      const video = videoRef.current;
+      if (!video) return;
+
+      switch (e.key.toLowerCase()) {
+        case " ":
+        case "k":
+          e.preventDefault();
+          if (video.paused) {
+            void video.play();
+          } else {
+            video.pause();
+          }
+          break;
+        case "j":
+        case "arrowleft":
+          e.preventDefault();
+          video.currentTime = Math.max(0, video.currentTime - (e.key === "j" ? 10 : 5));
+          break;
+        case "l":
+        case "arrowright":
+          e.preventDefault();
+          video.currentTime = Math.min(video.duration || Infinity, video.currentTime + (e.key === "l" ? 10 : 5));
+          break;
+        case "f":
+          e.preventDefault();
+          if (!document.fullscreenElement) {
+            void video.requestFullscreen();
+          } else {
+            void document.exitFullscreen();
+          }
+          break;
+        case "m":
+          e.preventDefault();
+          video.muted = !video.muted;
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <div className="dbz-panel overflow-hidden rounded-lg border border-dbz-border bg-black p-0">
+    <div className="dbz-panel group relative overflow-hidden rounded-xl border border-amber-500/30 bg-black p-0 shadow-lg shadow-black/80 transition-all duration-500 hover:border-amber-400/60 hover:shadow-[0_0_35px_rgba(245,158,11,0.25)]">
       <video
         ref={videoRef}
         controls
@@ -112,7 +160,7 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
         crossOrigin="anonymous"
         poster={poster}
         title={title}
-        className="aspect-video w-full rounded-lg bg-black"
+        className="aspect-video w-full rounded-xl bg-black"
         onError={onError}
       >
         {subtitles?.map((t, i) => (

@@ -1469,6 +1469,7 @@
       "play": "Play",
       "discord": "Hangman and member challenges are played on the Discord server.",
       "items": {
+        "dragon_pixel": "Retro 2D fighter with 60 FPS WASM: 15 Story Mode chapters and Ki beam clashes.",
         "2048": "Merge warriors up to Whis and push your Ki higher.",
         "pfc": "Rock, paper, scissors with Ki techniques.",
         "morpion": "Line up three X before the bot does.",
