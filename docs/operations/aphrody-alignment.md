@@ -841,3 +841,43 @@ installeur. Le contrôle des ACL Windows et l’intégration des correctifs sur 
 chemins encore revendiqués restent ouverts. Les révisions arrivées après
 2a29421a ne sont pas couvertes par ces résultats. Les DLL et rapports restent
 hors Git dans les stores locaux.
+
+### Distribution native en mode normal — 2026-10-07
+
+Une construction MSVC distincte avec `--release --features jobs`, depuis le
+producteur immuable `34c5b2d0406d0797be582054ce0399110a3c5a0e`, termine en
+13 min 12 s. La DLL fait 272 265 728 octets, SHA-256
+`ecb1183e4f2857c0754a300b135b237c05ca8c66489c673d6c261d4e79dffca8`.
+Elle est distincte de l’artefact du profil `runtime` décrit précédemment.
+
+Le manifeste de cette construction porte le profil réel, la feature `jobs`,
+la révision source propre, le hash du lockfile et la version de Rust.
+Les contrôles canoniques du SDK passent d’abord en développement, puis en mode
+normal : cinq ABI, addition native, CLI, extraction de texte, formatage,
+minification, lint et scan N2B sur une fixture temporaire. La vérification
+normale du manifeste et de l’empreinte réussit également.
+
+La préparation isolée initiale révèle une dépendance manquante : la fabrique
+ne copiait que le SDK, sans `@aphrody/runtime-sdk`. Le correctif producteur
+`cae1efa0e122a7cfb468977081e02cde3e15cb66` prépare les dépendances sources
+déclarées et sélectionne explicitement la même DLL pour OXC/N2B, empêchant
+le recours involontaire à un autre runtime installé. Il isole aussi les
+artefacts des fixtures et conserve le cache natif sur le port Windows qualifié.
+La fabrique donne 10 tests réussis, 2 skips existants, aucun échec ; TypeScript,
+lint, formatage et syntaxe PowerShell passent. Les skips concernent le test
+de signal Linux et le scénario optionnel nécessitant une source configurée.
+
+Dans le checkout Shenron `2a29421a`, la DLL et son manifeste sont ensuite
+installés dans le SDK local. Les six tests pipeline passent, 47 assertions,
+sans `APHRODY_FFI_LIB` ni `APHRODY_FFI_DEV`, avec l’exigence de natif activée.
+La frontière produit Shenron exécute aussi l’aide et le plan des 26 sources
+en mode normal, sans processus CLI de repli. Les tests MCP utilisent uniquement
+une authentification synthétique et des serveurs loopback.
+
+Cette installation reste celle du checkout de qualification ; le runtime global,
+le serveur réemballé et l’installeur final ne sont pas activés par ce lot.
+Le packaging actuel doit encore inclure la DLL Aphrody et son manifeste :
+son seul embarquement de `shenron_ffi` ne prouve pas ce contrat. Les chemins
+de build restent revendiqués. Les ACL des ledgers, les correctifs portables,
+le frontend récent et l’exécution graphique restent à qualifier. Aucun VPS
+ni navigateur n’est utilisé ; binaires et rapports restent hors Git.
