@@ -15,6 +15,7 @@
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
+import { msvcCrossConfig } from "./msvc-cross.ts";
 
 const args = process.argv.slice(2);
 const option = (name: string) => {
@@ -170,6 +171,7 @@ async function runRemote(): Promise<number> {
     "--",
     ...(crossMsvc ? ["xwin"] : []),
     ...forwarded,
+    ...(crossMsvc ? msvcCrossConfig(process.env.CFLAGS) : []),
   ];
   const child = Bun.spawn(command, { stdio: ["inherit", "inherit", "inherit"] });
   const code = await child.exited;
@@ -207,6 +209,7 @@ if (import.meta.main) {
     : crossMsvc
       ? ["cargo-xwin", ...args]
       : ["cargo", ...args];
+  if (crossMsvc) command.push(...msvcCrossConfig(process.env.CFLAGS));
   const child = Bun.spawn(command, { stdio: ["inherit", "inherit", "inherit"], env: process.env });
   process.exit(await child.exited);
 }

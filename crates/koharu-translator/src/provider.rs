@@ -196,7 +196,7 @@ define_providers! {
 }
 
 impl ProvidersConfig {
-    pub fn load() -> anyhow::Result<koharu_config::Config<Self>> {
-        koharu_config::load("providers")
+    pub fn load() -> anyhow::Result<aphrody_ml_config::Config<Self>> {
+        aphrody_ml_config::load("providers")
     }
 }

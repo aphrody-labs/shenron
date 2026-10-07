@@ -78,7 +78,7 @@ impl Renderer {
         Self::from_config(TypesettingConfig::load().map_err(Error::Backend)?)
     }
 
-    pub fn from_config(config: koharu_config::Config<TypesettingConfig>) -> Result<Self> {
+    pub fn from_config(config: aphrody_ml_config::Config<TypesettingConfig>) -> Result<Self> {
         let renderer = Self::with_typesetting(config.read().map_err(Error::Backend)?.clone());
         let watched = renderer.inner.typesetting.clone();
         let _watcher = tokio::runtime::Handle::try_current()

@@ -1,8 +1,8 @@
 //! Quantized PaddleOCR-VL-1.6 inference through llama.cpp.
 
 use anyhow::{Context, Result, ensure};
+use aphrody_llama::mtmd::mtmd_default_marker;
 use image::DynamicImage;
-use koharu_llama::mtmd::mtmd_default_marker;
 
 use crate::{
     Device,

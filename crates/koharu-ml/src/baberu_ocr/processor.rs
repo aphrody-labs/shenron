@@ -6,13 +6,13 @@
 use std::{collections::HashSet, fs, path::Path};
 
 use anyhow::{Context, Result, bail, ensure};
+use aphrody_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use icu_properties::{
     CodePointMapData,
     props::{GeneralCategory, GeneralCategoryGroup},
 };
 use image::{DynamicImage, RgbImage};
-use koharu_torch::{Device, Kind, Tensor};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]

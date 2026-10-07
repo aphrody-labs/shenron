@@ -6,8 +6,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
+use aphrody_torch::Device;
 use image::DynamicImage;
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -66,7 +66,7 @@ impl PaddleOCRVL {
         image: &DynamicImage,
         task: PaddleOCRVLTask,
     ) -> Result<PaddleOCRVLResult> {
-        koharu_torch::no_grad(|| {
+        aphrody_torch::no_grad(|| {
             let (pixel_values, image_grid_thw) =
                 self.processor.preprocess(image, task, self.device)?;
             let (input_ids, mm_token_type_ids) =

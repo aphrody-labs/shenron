@@ -7,8 +7,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
+use aphrody_torch::Device;
 use image::DynamicImage;
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -50,7 +50,7 @@ impl FontDetector {
             return Ok(Vec::new());
         }
 
-        koharu_torch::no_grad(|| {
+        aphrody_torch::no_grad(|| {
             let (pixel_values, image_widths) = self.processor.preprocess(images, self.device)?;
             let output = self.model.forward(&pixel_values);
             self.processor.postprocess(&output, &image_widths, top_k)

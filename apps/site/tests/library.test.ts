@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { fileURLToPath } from "node:url";
 import {
   LIBRARY_TABS,
   WORKSHOP_TABS,
@@ -9,7 +10,7 @@ import {
 import { staffLegacyRedirect } from "../src/lib/legacy-routes";
 import { ALL_ENTRIES } from "../src/lib/wiki-launch";
 
-const siteRoot = new URL("..", import.meta.url).pathname;
+const siteRoot = fileURLToPath(new URL("..", import.meta.url));
 
 /** Route publique d'un `page.tsx` : groupes `(…)` retirés, segments dynamiques gardés. */
 const routeOf = (file: string) =>
@@ -57,7 +58,9 @@ describe("espace Bibliothèque", () => {
   });
 
   test("chaque page staff de l'atelier est gardée par le proxy", () => {
-    const pages = [...new Bun.Glob("src/app/workshop/**/page.tsx").scanSync(siteRoot)];
+    const pages = [...new Bun.Glob("src/app/workshop/**/page.tsx").scanSync(siteRoot)].map((file) =>
+      file.replaceAll("\\", "/"),
+    );
     const staff = pages.filter((file) => file.includes("/(staff)/")).map(routeOf);
     expect(staff.toSorted()).toEqual([
       "/workshop/databooks/[id]",

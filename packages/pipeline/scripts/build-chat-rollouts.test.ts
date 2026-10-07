@@ -3,6 +3,7 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { testExecutable } from "../../../scripts/testing/executable";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import {
   ANTIGRAVITY_TIMEOUT_MS,
@@ -180,9 +181,7 @@ function scratchDir(): string {
 }
 
 function fakeAphrody(body: string): string {
-  const path = join(scratchDir(), "aphrody");
-  writeFileSync(path, `#!/bin/sh\n${body}\n`, { mode: 0o755 });
-  return path;
+  return testExecutable(scratchDir(), "aphrody", body);
 }
 
 async function withBin<T>(bin: string, run: () => Promise<T>): Promise<T> {
@@ -210,7 +209,9 @@ describe("antigravityChat", () => {
 
   test("passes the prompt and model, drops thought parts", async () => {
     const bin = fakeAphrody(
-      `printf '%s\\n' "$@" > "$0.args"\nprintf '%s' '${reply("Réponse finale")}'`,
+      `import { writeFileSync } from "node:fs";
+writeFileSync(process.env.APHRODY_BIN + ".args", process.argv.slice(2).join("\\n") + "\\n");
+process.stdout.write(${JSON.stringify(reply("Réponse finale"))});`,
     );
     const result = await withBin(bin, () => antigravityChat(messages, "m"));
     expect(result).toEqual({ answer: "Réponse finale", model: "antigravity/gemini-test" });
@@ -220,19 +221,19 @@ describe("antigravityChat", () => {
   });
 
   test("surfaces the exit code with the stderr tail", async () => {
-    const bin = fakeAphrody("echo 'quota exceeded' >&2\nexit 3");
+    const bin = fakeAphrody('console.error("quota exceeded"); process.exit(3);');
     await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(
       /exited 3: quota exceeded/,
     );
   });
 
   test("rejects non-JSON output", async () => {
-    const bin = fakeAphrody("echo 'not json'");
+    const bin = fakeAphrody('console.log("not json");');
     await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(/non-JSON/);
   });
 
   test("kills a hung teacher at the timeout", async () => {
-    const bin = fakeAphrody("exec sleep 5");
+    const bin = fakeAphrody("await Bun.sleep(5000);");
     const started = performance.now();
     await expect(withBin(bin, () => antigravityChat(messages, undefined, 200))).rejects.toThrow(
       /timed out after 200 ms/,
@@ -343,60 +344,68 @@ describe("build-chat-rollouts CLI", () => {
     }
   });
 
-  test("SIGTERM flushes the rollouts accepted since the last periodic flush", async () => {
-    const dir = scratchDir();
-    const input = triplesFile(dir, 10);
-    const out = join(dir, "out");
-    const counter = join(dir, "calls");
-    const answer = reply(
-      "D'après le Daizenshuu 4 de Shueisha, l'encyclopédie présente les personnages de Namek.",
-    );
-    const bin = fakeAphrody(
-      [
-        `n=$(cat '${counter}' 2>/dev/null || echo 0)`,
-        "n=$((n+1))",
-        `echo $n > '${counter}'`,
-        `if [ "$n" -le 3 ]; then printf '%s' '${answer}'; else exec sleep 10; fi`,
-      ].join("\n"),
-    );
-    const proc = Bun.spawn(
-      [
-        process.execPath,
-        script,
-        "--input",
-        input,
-        "--out",
-        out,
-        "--soul",
-        join(dir, "missing-soul.md"),
-        "--teacher",
-        "antigravity",
-        "--concurrency",
-        "1",
-      ],
-      {
-        env: { ...process.env, APHRODY_BIN: bin },
-        stdout: "pipe",
-        stderr: "pipe",
-        stdin: "ignore",
-      },
-    );
-    const stderr = new Response(proc.stderr).text();
-    for (
-      let i = 0;
-      i < 400 && !(existsSync(counter) && readFileSync(counter, "utf8").trim() === "4");
-      i++
-    )
-      // oxlint-disable-next-line no-await-in-loop -- polling for the fourth (hanging) teacher call
-      await Bun.sleep(25);
-    expect(readFileSync(counter, "utf8").trim()).toBe("4");
-    proc.kill("SIGTERM");
-    expect(await proc.exited).toBe(143);
-    expect(await stderr).toMatch(/SIGTERM: flushed 3 rollouts/);
-    const rows = readFileSync(join(out, "rollouts.jsonl"), "utf8").trim().split("\n");
-    expect(rows).toHaveLength(3);
-    expect(rows.map((line) => (JSON.parse(line) as RolloutRow).prompt)).toEqual(
-      Array.from({ length: 3 }, () => expect.stringContaining("Question synthétique")),
-    );
-  });
+  test.each(process.platform === "win32" ? ["stdin"] : ["stdin", "SIGTERM"])(
+    "%s flushes the rollouts accepted since the last periodic flush",
+    async (stop) => {
+      const dir = scratchDir();
+      const input = triplesFile(dir, 10);
+      const out = join(dir, "out");
+      const counter = join(dir, "calls");
+      const answer = reply(
+        "D'après le Daizenshuu 4 de Shueisha, l'encyclopédie présente les personnages de Namek.",
+      );
+      const bin = fakeAphrody(
+        [
+          'import { existsSync, readFileSync, writeFileSync } from "node:fs";',
+          `const counter = ${JSON.stringify(counter)};`,
+          'const n = (existsSync(counter) ? Number(readFileSync(counter, "utf8")) : 0) + 1;',
+          "writeFileSync(counter, String(n));",
+          `if (n <= 3) process.stdout.write(${JSON.stringify(answer)}); else await Bun.sleep(10000);`,
+        ].join("\n"),
+      );
+      const proc = Bun.spawn(
+        [
+          process.execPath,
+          script,
+          "--input",
+          input,
+          "--out",
+          out,
+          "--soul",
+          join(dir, "missing-soul.md"),
+          "--teacher",
+          "antigravity",
+          "--concurrency",
+          "1",
+          ...(stop === "stdin" ? ["--control-stdin"] : []),
+        ],
+        {
+          env: { ...process.env, APHRODY_BIN: bin },
+          stdout: "pipe",
+          stderr: "pipe",
+          stdin: "pipe",
+        },
+      );
+      const stderr = new Response(proc.stderr).text();
+      for (
+        let i = 0;
+        i < 400 && !(existsSync(counter) && readFileSync(counter, "utf8").trim() === "4");
+        i++
+      )
+        // oxlint-disable-next-line no-await-in-loop -- polling for the fourth (hanging) teacher call
+        await Bun.sleep(25);
+      expect(readFileSync(counter, "utf8").trim()).toBe("4");
+      if (stop === "stdin") {
+        proc.stdin.write("stop\n");
+        proc.stdin.end();
+      } else proc.kill("SIGTERM");
+      expect(await proc.exited).toBe(143);
+      expect(await stderr).toContain(`${stop}: flushed 3 rollouts`);
+      const rows = readFileSync(join(out, "rollouts.jsonl"), "utf8").trim().split("\n");
+      expect(rows).toHaveLength(3);
+      expect(rows.map((line) => (JSON.parse(line) as RolloutRow).prompt)).toEqual(
+        Array.from({ length: 3 }, () => expect.stringContaining("Question synthétique")),
+      );
+    },
+  );
 });

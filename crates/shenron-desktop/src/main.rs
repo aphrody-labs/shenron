@@ -24,6 +24,7 @@ use tauri::{Manager as _, WebviewUrl};
 /// Public site shown when no local server can be started.
 const PUBLIC_SITE: &str = "https://dragonballfr.com";
 
+#[tauri_runtime_cef::cef_entry_point]
 fn main() {
     // One Tokio runtime for Tauri and the in-process engines; the main thread enters it so
     // libraries that capture `Handle::current()` during setup (the Koharu renderer) find it.
@@ -38,7 +39,7 @@ fn main() {
     let _runtime_context = runtime.enter();
 
     let builder = tauri::Builder::default()
-        .runtime(tauri_runtime_wry::Wry::default())
+        .runtime(tauri_runtime_cef::Cef::default())
         // A second launch focuses the existing window instead of starting a second server.
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             if let Some(window) = app.get_webview_window("main") {

@@ -124,8 +124,8 @@ describe("script environment contract (B13, rule 9)", () => {
         "win32",
       ),
     ).toThrow(/base servie/);
-    expect(requireOfflineRagDb({ RAG_DB: tempPath("ragbuild.db") }, "/srv/shenron", "posix")).toBe(
-      tempPath("ragbuild.db"),
+    expect(requireOfflineRagDb({ RAG_DB: "/tmp/ragbuild.db" }, "/srv/shenron", "posix")).toBe(
+      "/tmp/ragbuild.db",
     );
   });
 });

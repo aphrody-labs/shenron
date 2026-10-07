@@ -13,11 +13,13 @@
  * a port of `aphrody_train.hashing.segment_hashes`.
  *
  * Usage: bun scripts/build-chat-rollouts.ts [--input F] [--out DIR]
- *        [--soul F] [--limit N] [--concurrency 2] [--model ID] [--teacher aphrody|antigravity] [--split-only]
+ *        [--soul F] [--limit N] [--concurrency 2] [--model ID] [--teacher aphrody|antigravity]
+ *        [--split-only] [--control-stdin] (send a "stop" line for a graceful Windows shutdown)
  */
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
+import { createInterface } from "node:readline";
 import { dirname, join } from "node:path";
 import { parseArgs } from "node:util";
 import type { AphrodyChatMessage } from "@shenron/pipeline/aphrody";
@@ -503,6 +505,7 @@ async function main(): Promise<void> {
       model: { type: "string" },
       teacher: { type: "string", default: "aphrody" },
       "split-only": { type: "boolean", default: false },
+      "control-stdin": { type: "boolean", default: false },
     },
   });
   // Validate before any file is read or written.
@@ -538,31 +541,42 @@ async function main(): Promise<void> {
             return (messages) => client.chat(messages, values.model);
           })();
     // Interrupting a run keeps the rows accepted since the last periodic flush.
+    const stop = (reason: string, code: number) => {
+      killTeachers();
+      atomicWrite(rolloutsPath, toJsonl(kept));
+      console.error(`${reason}: flushed ${kept.length} rollouts (manifest not updated)`);
+      process.exit(code);
+    };
     for (const signal of ["SIGINT", "SIGTERM"] as const)
-      process.once(signal, () => {
-        killTeachers();
-        atomicWrite(rolloutsPath, toJsonl(kept));
-        console.error(`${signal}: flushed ${kept.length} rollouts (manifest not updated)`);
-        process.exit(signal === "SIGINT" ? 130 : 143);
-      });
-    let sinceFlush = 0;
-    stats = await generate({
-      candidates: split.candidates,
-      goldKeys: keys,
-      done,
-      tone,
-      chat,
-      limit,
-      concurrency,
-      onAccept: (row) => {
-        kept.push(row);
-        if (++sinceFlush >= 25) {
-          sinceFlush = 0;
-          atomicWrite(rolloutsPath, toJsonl(kept));
-        }
-      },
-      log: (line) => console.error(line),
+      process.once(signal, () => stop(signal, signal === "SIGINT" ? 130 : 143));
+    // Windows TerminateProcess cannot deliver graceful POSIX signals. Opt-in callers
+    // can send a "stop" line to this control channel and preserve the accepted rows.
+    const control = values["control-stdin"] ? createInterface({ input: process.stdin }) : null;
+    control?.on("line", (line) => {
+      if (line.trim() === "stop") stop("stdin", 143);
     });
+    let sinceFlush = 0;
+    try {
+      stats = await generate({
+        candidates: split.candidates,
+        goldKeys: keys,
+        done,
+        tone,
+        chat,
+        limit,
+        concurrency,
+        onAccept: (row) => {
+          kept.push(row);
+          if (++sinceFlush >= 25) {
+            sinceFlush = 0;
+            atomicWrite(rolloutsPath, toJsonl(kept));
+          }
+        },
+        log: (line) => console.error(line),
+      });
+    } finally {
+      control?.close();
+    }
   }
   atomicWrite(rolloutsPath, toJsonl(kept));
   const manifest = {

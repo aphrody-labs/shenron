@@ -6,7 +6,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use koharu_torch::{
+use aphrody_torch::{
     Kind, Tensor,
     nn::{self, Module, ModuleT},
 };
@@ -22,7 +22,7 @@ pub(crate) struct Model {
 }
 
 impl Model {
-    pub(crate) fn new(config: &PPOCRV6MediumRecConfig, device: koharu_torch::Device) -> Self {
+    pub(crate) fn new(config: &PPOCRV6MediumRecConfig, device: aphrody_torch::Device) -> Self {
         let mut vs = nn::VarStore::new(device);
         crate::backend::set_precision(&mut vs);
         let backbone =
@@ -313,7 +313,7 @@ impl Head {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use koharu_runtime::{Feature, Runtime};
+    use aphrody_ml_runtime::{Feature, Runtime};
 
     #[tokio::test]
     #[ignore = "downloads and loads the LibTorch runtime"]
@@ -339,7 +339,7 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let model = Model::new(&config, koharu_torch::Device::Cpu);
+        let model = Model::new(&config, aphrody_torch::Device::Cpu);
         let variables = model.vs.variables();
         assert_eq!(variables.len(), 269);
         assert_eq!(variables.values().map(Tensor::numel).sum::<usize>(), 19_176_118);

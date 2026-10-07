@@ -24,7 +24,7 @@ futures = { workspace = true }
 image = { workspace = true }
 imageproc = { workspace = true }
 koharu-ml = { workspace = true }
-koharu-config = { workspace = true }
+aphrody-ml-config = { workspace = true }
 koharu-renderer = { workspace = true }
 koharu-rasterizer = { workspace = true, features = ["native"] }
 koharu-scene = { workspace = true }

@@ -40,7 +40,7 @@ pub struct Codex {
 
 impl Codex {
     pub fn new() -> Result<Self> {
-        let client = koharu_runtime::http_client()?;
+        let client = aphrody_ml_runtime::http_client()?;
         Ok(Self { auth: Auth::new(client.clone()), client })
     }
 

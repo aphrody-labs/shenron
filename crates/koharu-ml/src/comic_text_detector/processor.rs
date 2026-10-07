@@ -8,10 +8,10 @@
 //! - https://github.com/dmMaze/BallonsTranslator/blob/4bcc635c19f6c63a902872cf77b3d554e14ed1b7/ballontranslator/utils/imgproc_utils.py
 
 use anyhow::{Context, Result, anyhow, bail};
+use aphrody_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, GenericImageView, GrayImage, Luma, RgbImage, imageops::crop_imm};
 use imageproc::{contours::find_contours_with_threshold, contrast::otsu_level, point::Point};
-use koharu_torch::{Device, Kind, Tensor};
 use rayon::prelude::*;
 use serde::Serialize;
 

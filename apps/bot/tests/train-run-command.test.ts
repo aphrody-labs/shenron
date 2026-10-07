@@ -1,5 +1,6 @@
 import "./setup";
 import { describe, expect, it } from "bun:test";
+import { join } from "node:path";
 import {
   TrainJobRunner,
   buildTrainRunArgv,
@@ -37,7 +38,7 @@ function pending(stdout: string | null = null, stderr: string | null = null) {
 
 describe("train run", () => {
   it("defaults input to the dbfr workspace triples", () => {
-    expect(defaultDbfrTriples(env)).toBe("/state/workspaces/dbfr/training/triples.jsonl");
+    expect(defaultDbfrTriples(env)).toBe(join("/state", "workspaces/dbfr/training/triples.jsonl"));
   });
 
   it("builds the aphrody train run argv", () => {
@@ -68,8 +69,8 @@ describe("train run", () => {
     }, env);
     const job = runner.start("embed", undefined, "42");
     expect(job.status).toBe("running");
-    expect(job.input).toBe("/state/workspaces/dbfr/training/triples.jsonl");
-    expect(job.outDir).toBe(`/state/train/${job.id}`);
+    expect(job.input).toBe(join("/state", "workspaces/dbfr/training/triples.jsonl"));
+    expect(job.outDir).toBe(join("/state", "train", job.id));
     expect(calls[0]?.domain).toBe("dbfr");
     expect(runner.latest()?.id).toBe(job.id);
     release(0);

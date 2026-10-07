@@ -52,7 +52,10 @@ describe("cloud agent homes of DM users", () => {
   });
 
   test("PostgreSQL when configured, else directories beside the database", () => {
-    expect(botAgentHomeStore(PgService.withEnv({}), "/srv/bot/data/bot.db")).toBeInstanceOf(
+    const dir = mkdtempSync(join(tmpdir(), "shenron-bot-no-postgres-"));
+    dirs.push(dir);
+    const offline = PgService.withEnv({ SHENRON_PG_ENV: join(dir, "absent.env") });
+    expect(botAgentHomeStore(offline, "/srv/bot/data/bot.db")).toBeInstanceOf(
       DirAgentHomeStore,
     );
     const pg = PgService.withEnv({ DATABASE_URL: "postgres://u:p@127.0.0.1:1/x" }, () => ({

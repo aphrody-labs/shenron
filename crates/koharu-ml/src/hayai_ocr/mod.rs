@@ -3,8 +3,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result, ensure};
+use aphrody_torch::Device;
 use image::DynamicImage;
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -62,7 +62,7 @@ impl HayaiOcr {
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<String> {
-        koharu_torch::no_grad(|| {
+        aphrody_torch::no_grad(|| {
             let input = self.processor.preprocess(image)?;
             let token_ids = self.model.generate(&input, &self.tokenizer, self.device)?;
             self.tokenizer.decode(&token_ids)

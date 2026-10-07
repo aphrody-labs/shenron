@@ -7,6 +7,7 @@ use std::{
 };
 
 use anyhow::{Context, Result, bail};
+use aphrody_ml_runtime::HuggingFaceFile;
 use fontique::{
     Attributes, Blob, Collection, CollectionOptions, FallbackKey, FontInfoOverride, FontStyle,
     GenericFamily, Language, QueryFamily, QueryFont, QueryStatus, Script, SourceCache,
@@ -14,7 +15,6 @@ use fontique::{
 use harfrust::{
     ShapeOptions, ShapePlan, ShapePlanKey, ShaperData, ShaperInstance, UnicodeBuffer, Variation,
 };
-use koharu_runtime::HuggingFaceFile;
 use parking_lot::Mutex;
 use serde::Deserialize;
 use skrifa::{

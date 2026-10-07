@@ -6,6 +6,8 @@
  */
 import { describe, expect, test } from "bun:test";
 import { Glob } from "bun";
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -17,7 +19,7 @@ import {
 } from "../src/components/accordion";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "../src/components/tabs";
 
-const srcDir = new URL("../src/", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+const srcDir = fileURLToPath(new URL("../src/", import.meta.url));
 
 describe("Base UI 1.8 selectors", () => {
   test("no data-[expanded] or data-[selected] in packages/ui/src", async () => {
@@ -25,11 +27,11 @@ describe("Base UI 1.8 selectors", () => {
     // plain elements, and Base UI 1.x Toast genuinely renders data-expanded on its viewport.
     const files = (
       await Array.fromAsync(new Glob("**/*.{ts,tsx,css}").scan({ cwd: srcDir }))
-    ).filter((f) => !f.startsWith("koharu/"));
+    ).filter((f) => !f.replaceAll("\\", "/").startsWith("koharu/"));
     expect(files.length).toBeGreaterThan(0);
     const hits: string[] = [];
     for (const f of files) {
-      const text = await Bun.file(`${srcDir}${f}`).text();
+      const text = await Bun.file(join(srcDir, f)).text();
       if (/data-\[expanded\]|data-expanded|data-\[selected\]|data-selected/.test(text))
         hits.push(f);
     }

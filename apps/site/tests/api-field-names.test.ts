@@ -1036,7 +1036,10 @@ function objectLiteralKeys(source: string): Array<{ key: string; line: number }>
 const REPO_ROOT = join(import.meta.dir, "..", "..", "..");
 
 function sourcesToScan(): string[] {
-  const glob = (pattern: string) => [...new Bun.Glob(pattern).scanSync({ cwd: REPO_ROOT })];
+  const glob = (pattern: string) =>
+    [...new Bun.Glob(pattern).scanSync({ cwd: REPO_ROOT })].map((file) =>
+      file.replaceAll("\\", "/"),
+    );
   return [
     ...glob("apps/site/src/app/**/route.ts"),
     // Modules that build a response object out of internal data.

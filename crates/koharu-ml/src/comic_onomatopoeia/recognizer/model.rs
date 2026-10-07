@@ -10,7 +10,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use koharu_torch::{
+use aphrody_torch::{
     Device, Kind, Tensor,
     nn::{self, Module, ModuleT, RNN},
 };

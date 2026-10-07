@@ -5,9 +5,9 @@
 //! https://github.com/ku21fan/COO-Comic-Onomatopoeia/blob/d8028f015b8ce99a4dd798427342f97087529357/TRBA/test.py#L245-L388
 
 use anyhow::{Context, Result, ensure};
+use aphrody_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::DynamicImage;
-use koharu_torch::{Device, Kind, Tensor};
 use serde::{Deserialize, Serialize};
 
 use super::config::Config;

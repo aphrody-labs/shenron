@@ -6,13 +6,13 @@
 use std::cmp::Ordering;
 
 use anyhow::{Context, Result, bail};
+use aphrody_torch::{Device, IndexOp, Kind, Tensor};
 use fast_image_resize::{ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, GenericImageView, GrayImage, Luma};
 use imageproc::{
     contours::{BorderType, find_contours_with_threshold},
     geometry::{approximate_polygon_dp, arc_length, contour_area},
 };
-use koharu_torch::{Device, IndexOp, Kind, Tensor};
 use serde::{Deserialize, Serialize};
 
 use super::model::Output;

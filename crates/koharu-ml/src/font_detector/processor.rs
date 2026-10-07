@@ -7,8 +7,8 @@
 use std::{fs, path::Path};
 
 use anyhow::{Context, Result, ensure};
+use aphrody_torch::{Device, Kind, Tensor};
 use image::DynamicImage;
-use koharu_torch::{Device, Kind, Tensor};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -235,7 +235,7 @@ fn normalized_channel(value: f32) -> u8 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use koharu_runtime::{Feature, Runtime};
+    use aphrody_ml_runtime::{Feature, Runtime};
 
     async fn preload_libtorch() {
         Runtime::discover([Feature::Torch]).unwrap().initialize().await.unwrap();

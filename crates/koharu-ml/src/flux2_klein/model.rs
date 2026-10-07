@@ -10,7 +10,7 @@
 use std::{path::PathBuf, sync::Mutex};
 
 use anyhow::{Context as _, Result, anyhow, ensure};
-use koharu_diffusion::{Context, ContextParams, ImageGenerationParams, RgbImage, VaeFormat};
+use aphrody_diffusion::{Context, ContextParams, ImageGenerationParams, RgbImage, VaeFormat};
 
 use crate::Backend;
 

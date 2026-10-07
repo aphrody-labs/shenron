@@ -72,8 +72,8 @@ struct RejectCommitter;
 fn pipeline(translation: TranslationConfig) -> Pipeline {
     let config = PipelineConfig { translation, ..PipelineConfig::default() };
     Pipeline::from_config(
-        koharu_config::Config::memory(config),
-        koharu_config::Config::memory(koharu_translator::ProvidersConfig::default()),
+        aphrody_ml_config::Config::memory(config),
+        aphrody_ml_config::Config::memory(koharu_translator::ProvidersConfig::default()),
         koharu_ml::Device::cpu(),
     )
     .unwrap()

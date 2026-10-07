@@ -9,20 +9,12 @@
     "windows": [],
     "security": {
       "csp": null,
-      "capabilities": [
-        "main",
-        "shenron-admin"
-      ]
+      "capabilities": ["main", "shenron-admin"]
     }
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "nsis",
-      "msi",
-      "deb",
-      "appimage"
-    ],
+    "targets": ["nsis", "msi", "deb", "appimage"],
     "publisher": "Dragon Ball FR",
     "homepage": "https://dragonballfr.com",
     "category": "Entertainment",
@@ -38,17 +30,10 @@
       "icons/icon.png"
     ],
     "windows": {
-      "webviewInstallMode": {
-        "type": "embedBootstrapper",
-        "silent": true
-      },
       "nsis": {
         "installMode": "currentUser",
         "displayLanguageSelector": false,
-        "languages": [
-          "French",
-          "English"
-        ],
+        "languages": ["French", "English"],
         "installerIcon": "icons/icon.ico"
       },
       "wix": {

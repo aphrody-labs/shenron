@@ -8,9 +8,9 @@
 //! - https://github.com/ogkalu2/comic-translate/blob/ca3261fd1a8d4805f6b9cc0669847d463ccb8a41/modules/detection/utils/geometry.py
 
 use anyhow::{Context, Result, bail};
+use aphrody_torch::{Device, IndexOp, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::DynamicImage;
-use koharu_torch::{Device, IndexOp, Kind, Tensor};
 use serde::{Deserialize, Serialize};
 
 use super::model::RTDetrV2ObjectDetectionOutput;

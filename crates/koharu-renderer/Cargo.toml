@@ -19,10 +19,10 @@ workspace = true
 anyhow = { workspace = true }
 arc-swap = { workspace = true }
 image = { workspace = true }
-koharu-config = { workspace = true }
+aphrody-ml-config = { workspace = true }
 koharu-rasterizer = { workspace = true, features = ["native"] }
 koharu-scene = { workspace = true }
-koharu-runtime = { workspace = true }
+aphrody-ml-runtime = { workspace = true }
 skrifa = { workspace = true }
 harfrust = { workspace = true }
 hypher = { workspace = true }

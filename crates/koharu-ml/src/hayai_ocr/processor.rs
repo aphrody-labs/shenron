@@ -9,9 +9,9 @@
 use std::path::Path;
 
 use anyhow::{Context, Result, ensure};
+use aphrody_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, RgbImage};
-use koharu_torch::{Device, Kind, Tensor};
 use tokenizers::Tokenizer as HuggingFaceTokenizer;
 
 use super::config::siglip2;

@@ -45,8 +45,8 @@ describe("locales", () => {
   });
   test("aucun compteur écrit en dur dans les messages", () => {
     // Un volume (« 826 épisodes », « 1 300+ fiches ») se mesure en base ; un
-    // nom propre chiffré, comme le jeu 2048, n'en est pas un.
-    const COMPTEUR = /\d[\d\s.,]*\+|\b\d{2,}\s+\p{L}+s\b/u;
+    // nom propre chiffré, comme le jeu 2048, et l'architecture 64 bits n'en sont pas.
+    const COMPTEUR = /\d[\d\s.,]*\+|\b\d{2,}\s+(?!bits\b)\p{L}+s\b/u;
     for (const dico of [fr, en, ja]) expect(JSON.stringify(dico)).not.toMatch(COMPTEUR);
   });
 });

@@ -29,7 +29,7 @@ pub use provider::{Provider, ProviderConfig, ProvidersConfig};
 
 #[derive(Clone)]
 pub struct Translator {
-    providers: koharu_config::Config<ProvidersConfig>,
+    providers: aphrody_ml_config::Config<ProvidersConfig>,
     local: Arc<tokio::sync::Mutex<Option<LoadedLocal>>>,
     client: reqwest::Client,
     device: Device,
@@ -51,12 +51,12 @@ impl LoadedLocal {
 impl Translator {
     pub fn from_config(
         device: Device,
-        providers: koharu_config::Config<ProvidersConfig>,
+        providers: aphrody_ml_config::Config<ProvidersConfig>,
     ) -> anyhow::Result<Self> {
         Ok(Self {
             providers,
             local: Arc::new(tokio::sync::Mutex::new(None)),
-            client: koharu_runtime::http_client()?,
+            client: aphrody_ml_runtime::http_client()?,
             device,
             glossary: Glossary::from_env()?.map(Arc::new),
         })

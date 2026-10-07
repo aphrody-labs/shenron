@@ -9,8 +9,8 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn load() -> Result<koharu_config::Config<Self>> {
-        koharu_config::load("agent")
+    pub fn load() -> Result<aphrody_ml_config::Config<Self>> {
+        aphrody_ml_config::load("agent")
     }
 }
 

@@ -4,8 +4,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
+use aphrody_torch::Device;
 use image::{DynamicImage, GrayImage, RgbImage};
-use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 
@@ -43,6 +43,6 @@ impl AotInpainting {
         mask: &GrayImage,
         max_side: u32,
     ) -> Result<RgbImage> {
-        koharu_torch::no_grad(|| self.processor.call(&self.model, image, mask, max_side))
+        aphrody_torch::no_grad(|| self.processor.call(&self.model, image, mask, max_side))
     }
 }

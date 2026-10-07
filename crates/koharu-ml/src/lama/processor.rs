@@ -5,10 +5,10 @@
 //! https://github.com/Sanster/IOPaint/blob/61a759fb3f332bacdce8b2813f4837495c9b86e0/iopaint/helper.py#L187-L267
 
 use anyhow::{Context, Result, anyhow, ensure};
+use aphrody_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, GrayImage, RgbImage};
 use imageproc::contours::{BorderType, find_contours_with_threshold};
-use koharu_torch::{Device, Kind, Tensor};
 
 use super::{
     config::{HDStrategy, InpaintRequest},

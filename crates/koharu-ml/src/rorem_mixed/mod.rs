@@ -9,10 +9,10 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result, ensure};
-use image::{DynamicImage, GrayImage, RgbImage};
-use koharu_diffusion::{
+use aphrody_diffusion::{
     GuidanceParams, ImageGenerationParams, SampleMethod, SampleParams, Scheduler,
 };
+use image::{DynamicImage, GrayImage, RgbImage};
 
 use self::{
     model::{Model, ModelPaths},

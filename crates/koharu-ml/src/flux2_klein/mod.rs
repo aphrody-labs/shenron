@@ -7,11 +7,11 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result, ensure};
-use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
-use image::{DynamicImage, RgbImage};
-use koharu_diffusion::{
+use aphrody_diffusion::{
     GuidanceParams, ImageGenerationParams, SampleMethod, SampleParams, Scheduler,
 };
+use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
+use image::{DynamicImage, RgbImage};
 
 use self::{
     model::{Model, ModelPaths},
