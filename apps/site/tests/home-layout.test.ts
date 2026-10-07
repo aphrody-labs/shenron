@@ -32,14 +32,14 @@ describe("home layout", () => {
   });
 
   test("clips stay lazy and respect reduced motion", () => {
-    const backdrop = source("../src/components/home/SceneBackdrop.tsx");
+    const backdrop = source("../../../packages/ui/src/public/SceneBackdrop.tsx");
     expect(backdrop).toContain("prefers-reduced-motion");
-    expect(backdrop).toContain('preload={active ? "auto" : "none"}');
+    expect(backdrop).toContain('preload={shouldPlay ? "auto" : "none"}');
     const scene = source("../src/components/home/SectionScene.tsx");
     expect(scene).toContain("IntersectionObserver");
     expect(scene).toMatch(/near \? <SceneBackdrop/);
     const heroScenes = source("../src/components/home/HomeHeroScenes.tsx");
-    expect(heroScenes).toContain("prefers-reduced-motion");
+    expect(heroScenes).toContain("useScenePlaybackPolicy");
   });
 
   test("the page keeps its ISR window", () => {

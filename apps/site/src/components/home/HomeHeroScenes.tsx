@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { HomeScene } from "@/lib/home-scenes";
 import { SceneBackdrop } from "./SceneBackdrop";
+import { useScenePlaybackPolicy } from "@shenron/ui/public/SceneBackdrop";
 
 /** Pause between two hero scenes, as on the former home deck. */
 const ROTATION_MS = 6200;
@@ -18,6 +19,7 @@ export function HomeHeroScenes({ scenes }: { scenes: readonly HomeScene[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [onScreen, setOnScreen] = useState(true);
+  const policy = useScenePlaybackPolicy();
 
   useEffect(() => {
     const el = ref.current;
@@ -28,13 +30,12 @@ export function HomeHeroScenes({ scenes }: { scenes: readonly HomeScene[] }) {
   }, []);
 
   useEffect(() => {
-    if (!onScreen || scenes.length <= 1) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!onScreen || scenes.length <= 1 || !policy.motionAllowed || !policy.visible) return;
     const id = setInterval(() => {
       if (!document.hidden) setIndex((i) => (i + 1) % scenes.length);
     }, ROTATION_MS);
     return () => clearInterval(id);
-  }, [onScreen, scenes.length]);
+  }, [onScreen, scenes.length, policy.motionAllowed, policy.visible]);
 
   const current = index < scenes.length ? index : 0;
   const count = scenes.length;

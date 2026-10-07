@@ -9,6 +9,8 @@
 - [ ] Sortir les fonctions backend restantes de Next et qualifier les accès DB sur Bun.
 - [ ] Auditer les pertes de fonctionnalités entre les grands commits UI et restaurer celles confirmées.
 - [x] [Rétablir la fermeture de la navigation mobile sur page courante et passage au bureau](docs/products/shell-navigation.md).
+- [x] [Partager les scènes d’accueil et corriger les préférences, pauses et erreurs de vidéo](docs/products/home-media.md).
+- [ ] Réconcilier la livraison et le routage Infra du site public avant qualification visuelle en production.
 - [x] [Corriger les gestes interrompus et les faux doubles taps du lecteur partagé](docs/products/reader-gestures.md).
 - [ ] Unifier le rendu manga web, bureau et mobile ; vérifier visuellement les états et tailles d'écran.
 - [ ] Qualifier les chargements, erreurs, accessibilité et livraison de bout en bout.
