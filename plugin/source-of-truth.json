@@ -3,9 +3,7 @@
   "sources": [
     {
       "root": ".",
-      "evidence": [
-        "references/instantane.json"
-      ]
+      "evidence": ["references/instantane.json"]
     }
   ],
   "knowledge": [
@@ -14,6 +12,10 @@
     "agents/dbfr-traducteur.md",
     "agents/dbfr-wiki.md",
     "install/agy.md",
+    "openai/README.md",
+    "openai/skills/dragon-ball-canon/SKILL.md",
+    "openai/skills/dragon-ball-japonais/SKILL.md",
+    "openai/skills/dragon-ball/SKILL.md",
     "references/execution.md",
     "skills/databooks-ocr/SKILL.md",
     "skills/databooks-ocr/references/corrections.md",

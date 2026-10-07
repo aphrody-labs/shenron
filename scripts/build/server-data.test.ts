@@ -71,8 +71,10 @@ describe("public payload data", () => {
     for (const name of ["bot.db", "nested/shenron-vfs.sqlite", ".env.local", "nested/tls.key"])
       writeFileSync(join(dir, name), "x");
     writeFileSync(join(dir, LEXIQUE_FILE), "[]");
-    expect(privateFiles(dir).toSorted()).toEqual(
-      [".env.local", "bot.db", "nested/shenron-vfs.sqlite", "nested/tls.key"].toSorted(),
-    );
+    expect(
+      privateFiles(dir)
+        .map((file) => file.replaceAll("\\", "/"))
+        .toSorted(),
+    ).toEqual([".env.local", "bot.db", "nested/shenron-vfs.sqlite", "nested/tls.key"].toSorted());
   });
 });

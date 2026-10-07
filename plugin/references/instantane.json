@@ -66,7 +66,7 @@
         "data/ja-identities-2026-09-23.json": "9c7025a2f3301c0bc0943f73ade56d7e96558f7fbc8b7b792bf4b7426bcf1b9a",
         "packages/config/src/aphrody-corpus.ts": "a5a6d7e3355ed5393c98e91ba662dbc010c9218b7dd870f7e2dd8562958ef95d",
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
-        "scripts/plugin/faits.ts": "8ef432b476e653eaa4e71a60400f3c8de8e4683a2b8b0a4b02e57c6b499e566e",
+        "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74",
         "scripts/plugin/src/faits-sources.ts": "7efb804c5d3eef365583bdbd23f071f2ceeb6b41079f34f805e3787fbe9dfb5e"
       },
       "sha256": "6c1723103a617bcb1bbe0086ed46fd09284ef3e3264677393f95ee3a6708501b"
@@ -83,7 +83,7 @@
         "data/ja-identities-2026-09-23.json": "9c7025a2f3301c0bc0943f73ade56d7e96558f7fbc8b7b792bf4b7426bcf1b9a",
         "packages/config/src/aphrody-corpus.ts": "a5a6d7e3355ed5393c98e91ba662dbc010c9218b7dd870f7e2dd8562958ef95d",
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
-        "scripts/plugin/faits.ts": "8ef432b476e653eaa4e71a60400f3c8de8e4683a2b8b0a4b02e57c6b499e566e"
+        "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74"
       },
       "sha256": "adfc497ac2730142840e6434c816f220ec6e29dcc4944c818de5b34f4a15c706"
     },

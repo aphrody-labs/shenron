@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Database } from "bun:sqlite";
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+
+import { testExecutable } from "@shenron/config/testing-executable";
 
 const sender = join(import.meta.dir, "envoie-ocr-results.ts");
 let temporaryDirectory: string;
@@ -13,21 +15,20 @@ let fakeSsh: string;
 beforeEach(() => {
   temporaryDirectory = mkdtempSync(join(tmpdir(), "shenron-ocr-sender-"));
   commandLog = join(temporaryDirectory, "commands.jsonl");
-  fakeSsh = join(temporaryDirectory, "aphrody-ssh");
-  writeFileSync(
-    fakeSsh,
-    `#!/usr/bin/env bun
+  fakeSsh = testExecutable(
+    temporaryDirectory,
+    "aphrody-ssh",
+    String.raw`
 import { appendFileSync } from "node:fs";
 const args = process.argv.slice(2);
-appendFileSync(process.env.TEST_COMMAND_LOG!, JSON.stringify(args) + "\\n");
+appendFileSync(process.env.TEST_COMMAND_LOG!, JSON.stringify(args) + "\n");
 if (args[0] === "exec" && args.includes("--cmd")) {
   const command = args[args.indexOf("--cmd") + 1]!;
-  if (command.startsWith("printf")) process.stdout.write(process.env.TEST_REMOTE_HOME! + "\\n");
-  else if (command.includes("recoit-ocr-results.ts")) process.stdout.write("{\\"ok\\":true}\\n");
+  if (command.startsWith("printf")) process.stdout.write(process.env.TEST_REMOTE_HOME! + "\n");
+  else if (command.includes("recoit-ocr-results.ts")) process.stdout.write('{"ok":true}\n');
 }
 `,
   );
-  chmodSync(fakeSsh, 0o755);
 });
 
 afterEach(() => rmSync(temporaryDirectory, { recursive: true, force: true }));

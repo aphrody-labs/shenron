@@ -196,3 +196,13 @@ La suite globale des scripts reste à 61 succès et sept échecs dans ce snapsho
 chemins de fichiers privés, fixture SSH de transfert OCR et cinq contrôles
 des références ou du packaging du plugin. Ces portes ne sont pas déclarées
 vertes ; les essais utilisent des fixtures synthétiques, sans transfert VPS.
+
+Le suivi Windows suivant clôt les sept échecs des scripts : la suite complète
+rend 68 succès, zéro échec (1 907 assertions, 18 fichiers). La fixture SSH est
+compilée en exécutable natif, ses sorties JSON utilisent de vrais retours de
+ligne, et les chemins du contrôle des fichiers privés sont normalisés dans
+le test. Le catalogue du plugin comprend ses quatre pages de distribution
+OpenAI ; le générateur natif actualise deux empreintes de `faits.ts`, sans
+modifier les connaissances générées. Le snapshot matérialise les liens de
+fichiers suivis et consulte les métadonnées Git du dépôt pour les tests de
+packaging, sans copier de données protégées.
