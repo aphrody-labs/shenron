@@ -13,7 +13,6 @@ import {
   type DbcnVolumeInfo,
   type DbcnSinglePageView,
 } from "./contracts";
-import type { BxcSpawnOptions } from "./types";
 
 type SnapshotPage = {
   n: number;
@@ -118,7 +117,7 @@ function categoryFor(collection: SnapshotCollection): string {
 export class DragonballCnSnapshotService {
   async catalog(
     category: DbcnCatalogCategory = "full_color",
-    _options?: BxcSpawnOptions,
+    _options?: unknown,
     snapshotRoot?: string,
   ): Promise<DbcnVolumeItem[]> {
     const { catalogue } = await readSnapshot(snapshotRoot);
@@ -137,7 +136,7 @@ export class DragonballCnSnapshotService {
     );
   }
 
-  async info(did: string, _options?: BxcSpawnOptions): Promise<DbcnVolumeInfo> {
+  async info(did: string, _options?: unknown): Promise<DbcnVolumeInfo> {
     const trimmed = did.trim();
     if (!trimmed) throw new Error("Volume DID is required (e.g. '0-10-1')");
 
@@ -167,7 +166,7 @@ export class DragonballCnSnapshotService {
   async view(
     did: string,
     pageNumber?: number,
-    _options?: BxcSpawnOptions,
+    _options?: unknown,
   ): Promise<DbcnVolumeInfo | DbcnSinglePageView> {
     const volume = await this.info(did);
     if (pageNumber === undefined) return volume;

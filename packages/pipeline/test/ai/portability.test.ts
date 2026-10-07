@@ -26,6 +26,7 @@ const SUBPATHS = [
     "grounding",
     "eval",
     "ports",
+    "training-hashes",
   ].map((name) => `./ai/${name}`),
 ];
 
