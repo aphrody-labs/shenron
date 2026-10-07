@@ -397,3 +397,14 @@ Le processus supervisé et ses enfants sont arrêtés après la vérification.
 Cette preuve qualifie ce lancement HTTP/Next du serveur emballé, pas les
 fonctions de chacun des groupes annoncés, l'inférence, CEF ou l'installeur
 de bout en bout.
+
+Les sidecars extraits de ce même NSIS sont également exécutés réellement.
+`shenron-mcp.exe` sert un health loopback, répond en HTTP 200 à `initialize`
+(protocole `2025-06-18`) et à `tools/list` avec son catalogue public non vide.
+Aucun outil métier n'est appelé. `koharu-sdk.exe` passe `project.list` à vide,
+puis la création, fermeture, réouverture dans un second processus, suppression
+et liste finale vide d'un projet Unicode. Les projets vivent dans un dossier
+temporaire ; ce contrôle utilise explicitement le mode CPU du SDK et ne
+qualifie pas son rendu GPU. Les processus terminent et les fixtures temporaires
+sont retirées après la vérification. Ces preuves portent sur les binaires
+emballés, pas seulement sur les sorties Cargo brutes.
