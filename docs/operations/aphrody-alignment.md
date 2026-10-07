@@ -776,3 +776,14 @@ et les métadonnées de catalogue localisées. Ces changements ne font pas parti
 de la qualification de la copie figée `bf7d08a3` ; leur reprise et leurs portes
 restent nécessaires avant la livraison finale. L'installation QA existante
 reste distincte du serveur réemballé et n'est pas activée comme produit final.
+
+### Qualification Windows du commit bf03e5cd — 2026-10-07
+
+La copie NTFS provient du commit immuable bf03e5cd7db86bb07f34fe6dc9d960740d912f01, avec fins de ligne LF. Aucun VPS ni navigateur externe utilisé.
+
+- Installation gelée depuis le seul contenu Git : échec, les quatre archives vendor/aphrody-sdk référencées sont ignorées par *.tgz. Le manifeste référence en outre aphrody-bun-3e3959b4f0cb37f4.tgz, tandis que le lockfile utilise aphrody-bun-756a1834b3c2e335.tgz. La reproductibilité de livraison est donc ouverte.
+- Après copie locale des quatre archives et vérification de leurs empreintes : installation gelée réussie. SHA-256 de Bun SDK utilisé : 756a1834b3c2e335d121113d772ed717043dd3e26297dc24c0cd038beb303183.
+- TypeScript complet : tous les paquets et scripts réussis, sans correctif privé de typage.
+- Suite pipeline native Windows : 389 réussites, 15 skips, 11 échecs. Causes observées : chemins /tmp codés en dur, extraction de chemin URL avec .pathname produisant /C:/, hypothèses POSIX de permissions et de liens, ainsi que reprises de jobs à diagnostiquer. Aucun skip ajouté pour masquer ces échecs.
+
+Les chemins concernés sont revendiqués par les lots Dragon Ball natifs, couverture et automatisation ; ils restent préservés. Les rapports détaillés restent dans le store local ignoré var/reports/integration. Ce résultat ne qualifie ni le nouvel installeur complet ni l’activation globale du runtime Aphrody.
