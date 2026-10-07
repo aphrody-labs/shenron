@@ -26,6 +26,15 @@ Sans `SHENRON_WEB_LIVE=1`, le test est explicitement ignoré. Le moteur choisi d
 résoudre les variables CSS de réserve d'écran ; le binaire précédemment qualifié
 depuis Aphrody `ce81d2829` échoue sur le padding, mesuré à zéro.
 
+Le correctif natif est intégré dans Aphrody `a00f2dac5`. Le 7 octobre 2026,
+la fixture et les sept étapes croisées ont passé avec un binaire Linux construit
+depuis le snapshot isolé `d04c28fb041e`, sur la base `008d7768`. Son fichier
+`obscura-render/src/style.rs` est identique au correctif intégré. Le parcours
+mobile Next hydraté derrière Bun a aussi passé treize assertions : la pastille
+est mesurée à `y=652`, le padding à 80 pixels, sans exception JavaScript ni
+débordement horizontal. Ce binaire de qualification n'a pas remplacé le runtime
+installé ; il ne qualifie pas tous les changements ultérieurs de `main`.
+
 Cette fixture vérifie la feuille partagée et son calcul natif. Elle ne remplace
 pas le parcours du produit hydraté, une capture de toute la page, ni la validation
 sur un appareil physique avec encoche. Les profils et cookies de production ne
