@@ -213,6 +213,16 @@ export function createHostAuth(env: EnvSource): AuthAvailability {
             userId: found.user.id,
             discordId: profile?.discordId ?? null,
             staff: profile?.roleAdmin ?? false,
+            profile: profile
+              ? {
+                  id: profile.id,
+                  discordId: profile.discordId,
+                  username: profile.username,
+                  avatar: profile.avatar,
+                  roleAdmin: profile.roleAdmin,
+                  createdAt: profile.createdAt.toISOString(),
+                }
+              : null,
           };
           return session;
         } catch {

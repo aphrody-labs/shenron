@@ -6,6 +6,7 @@
  * (honojs/middleware#952). Runtime class: `pure`.
  */
 import { z } from "zod";
+import { AccountSessionResponse } from "./account";
 import { ChatRequest, ChatResponse, ModelsResponse, OcrRequest, OcrResponse } from "./chat";
 import {
   LexiconListQuery,
@@ -118,6 +119,15 @@ export const TableParams = z.object({ table: z.string().min(1).max(100) });
 const WIKI_CACHE = { maxAgeSeconds: 3600 } as const;
 
 export const endpoints = {
+  accountSession: {
+    id: "accountSession",
+    method: "get",
+    path: "/api/v1/account/session",
+    auth: "public",
+    response: AccountSessionResponse,
+    cache: "no-store",
+    native: true,
+  },
   openApi: {
     id: "openApi",
     method: "get",

@@ -1,5 +1,4 @@
 import { resolveHostUrl } from "@shenron/config/public-urls";
-import { auth } from "@/lib/auth";
 
 /**
  * Hôte Bun (`shenron-server`) comme fournisseur d'authentification, en option : quand
@@ -54,8 +53,7 @@ export async function hostGetSession(
 ): Promise<HostSessionBody | null> {
   try {
     const target = new URL("/api/auth/get-session", host);
-    // The site still resynchronizes its business profile. An older signed cookie
-    // must not overwrite a profile that the Bun host has already updated in DB.
+    // Read the live auth user rather than an older signed cookie snapshot.
     target.searchParams.set("disableCookieCache", "true");
     const response = await fetch(target, {
       headers: forwardHeaders(headers),
@@ -81,11 +79,16 @@ export async function hostGetSession(
 
 /** `{ api.getSession }` du site : l'hôte quand il est configuré, sinon Better Auth local. */
 export const sessionAuth = {
-  handler: (request: Request) => auth.handler(request),
+  handler: async (request: Request) => {
+    const { auth } = await import("@/lib/auth");
+    return auth.handler(request);
+  },
   api: {
-    getSession: ({ headers }: { headers: Headers }) => {
+    getSession: async ({ headers }: { headers: Headers }) => {
       const host = hostAuthUrl();
-      return host ? hostGetSession(host, headers) : auth.api.getSession({ headers });
+      if (host) return hostGetSession(host, headers);
+      const { auth } = await import("@/lib/auth");
+      return auth.api.getSession({ headers });
     },
   },
 };

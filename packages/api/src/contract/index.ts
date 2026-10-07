@@ -9,3 +9,4 @@ export * from "./local";
 export * from "./plugin";
 export * from "./lexicon";
 export * from "./memory";
+export * from "./account";

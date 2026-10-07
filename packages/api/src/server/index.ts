@@ -27,6 +27,7 @@ import {
 } from "../contract/chat";
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
+import type { AccountSessionProfile } from "../contract/account";
 import type { MemoryEntry, MemoryListQuery } from "../contract/memory";
 import type { RagContextResponse, RagHit, RagMode, RagSearchQuery } from "../contract/schemas";
 import type { VfsInfoResponse, VfsStatResponse } from "../contract/sync";
@@ -108,6 +109,7 @@ export interface HostSession {
   userId: string;
   discordId?: string | null;
   staff?: boolean;
+  profile?: AccountSessionProfile | null;
 }
 
 export interface BetterAuthPort {
@@ -431,6 +433,22 @@ export function createShenronApi(
     router.add(spec.path, spec.method === "post" ? "POST" : "GET", { spec, run });
   };
 
+  // ── Reader identity: resolved exclusively by the Better Auth session port ──
+  add(endpoints.accountSession, Boolean(ports.betterAuth?.session), async ({ request }) => {
+    // Only a real reader session qualifies; admin tokens and signed owners do not.
+    const session = await ports.betterAuth!.session!(request.headers);
+    return json(
+      session
+        ? {
+            sessionUserId: session.userId,
+            discordId: session.discordId ?? "",
+            user: session.profile ?? null,
+          }
+        : null,
+      200,
+      { "Cache-Control": "no-store" },
+    );
+  });
   // ── Meta: only beside at least one group, so an API without port claims nothing ──
   const anyGroup = [
     ports.wiki,

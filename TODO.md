@@ -4,7 +4,8 @@
 - [x] [Partager la purge DB du compte et la brancher sur l'hôte Bun](docs/operations/bun-account-deletion.md).
 - [x] [Rétablir la validation des mises à jour de profil sur Bun](docs/operations/bun-profile-validation.md).
 - [x] Synchroniser le profil métier et préserver les droits admin sur Bun, avec qualification PostgreSQL isolée.
-- [ ] Qualifier OAuth Discord réel ; retirer la résolution DB du profil et le cache restant dans Next.
+- [x] [Lire le profil de lecteur sur Bun sans résolution DB ni cache Next en mode hôte](docs/operations/bun-session-profile.md).
+- [ ] Qualifier OAuth Discord réel ; transférer les identités d’automatisation et retirer le mode auth/DB local restant dans Next.
 - [ ] Rendre la reprise de purge durable en cas d'arrêt après la suppression Better Auth.
 - [ ] Sortir les fonctions backend restantes de Next et qualifier les accès DB sur Bun.
 - [ ] Auditer les pertes de fonctionnalités entre les grands commits UI et restaurer celles confirmées.

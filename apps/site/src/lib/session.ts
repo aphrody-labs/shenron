@@ -1,5 +1,5 @@
-import { sessionAuth } from "@/lib/host-auth";
-import { db } from "@/lib/db";
+import { hostAuthUrl, sessionAuth } from "@/lib/host-auth";
+import { hostCurrentUser } from "@/lib/host-current-user";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -16,7 +16,6 @@ import {
   verifyAdminTokenOrBearer,
 } from "@/lib/admin-token";
 import { isAdminIp } from "@/lib/admin-ip";
-import { authenticateAgent } from "@/lib/agent-keys";
 import {
   cacheCurrentUser,
   readCachedCurrentUser,
@@ -30,7 +29,8 @@ export type { CurrentUser, SiteUser } from "@/lib/current-user-cache";
  * Pipeline auth admin — source unique de vérité.
  *
  * 1. Discord OAuth (Better Auth) → ba_user / ba_account / ba_session (Postgres).
- * 2. getCurrentUser() lit la session, lit ba_account (provider discord) via
+ * 2. With a Bun host, getCurrentUser() reads its synchronized business profile
+ *    without a local DB join or cache. Local mode reads ba_account via
  *    `createDiscordAccountLookup` pour récupérer le Discord ID, puis upsert le
  *    user métier (`users`) en resynchronisant username/avatar et en calculant roleAdmin.
  * 3. requireAdmin() / isCurrentUserAdmin() gatent /admin/* et le proxy bot-admin.
@@ -47,9 +47,6 @@ function siteStaffPolicy(): StaffPolicy {
     "site",
   );
 }
-
-/** Compte Discord lié à un utilisateur Better Auth (`ba_account`, provider discord). */
-const discordAccounts = createDiscordAccountLookup(db);
 
 function resolveRoleAdmin(discordId: string): boolean {
   return siteStaffPolicy().isStaff(discordId);
@@ -139,6 +136,7 @@ async function resolveTokenAdmin(): Promise<CurrentUser> {
   const ownerId = env.OWNER_ID;
   let value: CurrentUser;
   if (ownerId) {
+    const { db } = await import("@/lib/db");
     const [existing] = await db.select().from(users).where(eq(users.discordId, ownerId)).limit(1);
     let row = existing;
     // N'écrit QUE si nécessaire (ligne absente ou pas encore admin).
@@ -201,6 +199,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
         return withAutomation(await resolveTokenAdmin(), API_TOKEN_ACTOR);
       }
       if (bearer.startsWith("dbfr_agent_")) {
+        const { authenticateAgent } = await import("@/lib/agent-keys");
         const req = new Request("https://dragonballfr.com", { headers: reqHeaders });
         const agent = await authenticateAgent(req).catch(() => null);
         if (
@@ -215,6 +214,13 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     }
   }
 
+  const host = hostAuthUrl();
+  if (host) {
+    const reader = await hostCurrentUser(host, reqHeaders);
+    if (reader) return reader;
+    return isAdminIp(reqHeaders) ? withAutomation(await resolveTokenAdmin(), ADMIN_IP_ACTOR) : null;
+  }
+
   const session = await sessionAuth.api.getSession({ headers: reqHeaders });
   if (!session?.user) {
     // Poste d'administration (`SHENRON_ADMIN_IPS`) sans session : l'admin par jeton,
@@ -225,6 +231,8 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   const cached = readCachedCurrentUser(session.user.id);
   if (cached) return cached;
 
+  const { db } = await import("@/lib/db");
+  const discordAccounts = createDiscordAccountLookup(db);
   // Compte Discord lié → fournit le Discord ID (= clé du user métier).
   const discordId = await discordAccounts.discordIdForUser(session.user.id);
 
