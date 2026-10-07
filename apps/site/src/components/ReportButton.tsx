@@ -180,6 +180,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
         // `min-h-11 min-w-11` : 44 px de cible tactile. En `p-2.5` seul, le bouton
         // replié tombait à 46×42 — le doigt le rate une fois sur trois au coin de
         // l'écran, là où la prise est la moins sûre.
+        data-inline={inline || undefined}
         className="group fab-secondary fixed bottom-4 left-4 z-40 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border border-white/12 bg-[rgba(10,10,10,0.8)] p-2.5 text-white/55 shadow-lg backdrop-blur-md transition-all hover:border-dbz-orange/50 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 md:bottom-6 md:left-6"
         title={t("reportDialog.title")}
       >

@@ -4501,7 +4501,7 @@ main:focus {
    et recouvrait les deux boutons de gauche. Le temps du choix — ponctuel, une
    seule fois par visiteur — on efface les boutons secondaires. L'assistant
    reste : il est à droite, hors de la trajectoire du bandeau sur grand écran. */
-html[data-consent-open] .fab-secondary {
+html[data-consent-open] .fab-secondary:not([data-inline]) {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
@@ -4509,7 +4509,7 @@ html[data-consent-open] .fab-secondary {
 @media (min-width: 768px) {
   /* Au-delà de 768 px le bandeau est ancré à droite (`md:right-6`) : les
 	   boutons de gauche ne sont plus masqués. */
-  html[data-consent-open] .fab-secondary {
+  html[data-consent-open] .fab-secondary:not([data-inline]) {
     opacity: 1;
     pointer-events: auto;
     visibility: visible;
@@ -4596,7 +4596,7 @@ body:has(.home-hero) .fab-discord {
   display: none;
 }
 
-html[data-footer-visible] .fab-secondary {
+html[data-footer-visible] .fab-secondary:not([data-inline]) {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
