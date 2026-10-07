@@ -211,6 +211,7 @@ const nextConfig: NextConfig = {
     "@shenron/db",
     "@shenron/auth",
     "@shenron/pipeline",
+    "@shenron/engine",
     "@shenron/api",
     "@shenron/ui",
     "@shenron/config",

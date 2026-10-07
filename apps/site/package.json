@@ -42,6 +42,7 @@
     "@shenron/auth": "workspace:*",
     "@shenron/config": "workspace:*",
     "@shenron/db": "workspace:*",
+    "@shenron/engine": "workspace:*",
     "@shenron/images": "workspace:*",
     "@shenron/lexicon": "workspace:*",
     "@shenron/pipeline": "workspace:*",
