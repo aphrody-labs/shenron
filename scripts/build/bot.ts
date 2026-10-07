@@ -9,7 +9,7 @@
  * migrations; `shenron-bot --smoke` loads them all without databases or Discord.
  */
 import { cpSync, existsSync, mkdirSync, rmSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const BOT = join(ROOT, "apps/bot");
@@ -24,6 +24,11 @@ const out = join(ROOT, "dist/bot", target);
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 const exe = join(out, target === "windows-x64" ? "shenron-bot.exe" : "shenron-bot");
+// The canvas loader uses dynamic require(), so Bun cannot discover its native addon.
+// Resolve from the package itself to respect the isolated dependency linker.
+const canvas = Bun.resolveSync("@napi-rs/canvas", BOT);
+const canvasPlatform = target === "windows-x64" ? "win32-x64-msvc" : "linux-x64-gnu";
+const canvasBinding = Bun.resolveSync(`@napi-rs/canvas-${canvasPlatform}`, dirname(canvas));
 const child = Bun.spawn(
   [
     process.execPath,
@@ -38,7 +43,9 @@ const child = Bun.spawn(
     "src/entry-standalone.ts",
     // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
     "src/workers/indexer.ts",
+    canvasBinding,
     "--compile",
+    "--asset-naming=[name].[ext]",
     `--target=${bunTarget}`,
     "--minify-whitespace",
     "--minify-syntax",
