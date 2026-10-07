@@ -61,7 +61,7 @@ test.skipIf(!url)(
         "create table bot.db_manga_volumes (id integer primary key,series text,volume_number integer,title text,title_ja text,published_at integer,cover text,visible boolean)",
       );
       await sql.unsafe(
-        "create table bot.db_timeline_events (id integer primary key,age_year integer,age_month integer,age_day integer,era text,title text,title_ja text,description text,characters_involved jsonb,source_ref text,canon boolean,order_idx integer,visible boolean)",
+        "create table bot.db_timeline_events (id integer primary key,age_year integer,age_month integer,age_day integer,era text,title text,title_ja text,description text,characters_involved jsonb,source_ref text,canon text,order_idx integer,visible boolean)",
       );
       await sql.unsafe(
         "create table bot.db_sagas (id integer primary key,slug text,name text,series text,description text,image text,order_idx integer,visible boolean)",
@@ -76,7 +76,8 @@ test.skipIf(!url)(
         (1,750,null,null,'DB','Later fixture',null,'Description',null,'Daizenshuu 7',true,2,true),
         (2,-5000000,null,null,'ancient','Ancient fixture','古代','Description','["Buu"]','Daizenshuu 7 p.16',true,0,true),
         (3,750,1,1,'DB','Earlier fixture',null,'Description',null,'Manga',true,1,true),
-        (4,700,null,null,'DB','Hidden fixture',null,'Private',null,'Private',true,0,false)`);
+        (4,700,null,null,'DB','Hidden fixture',null,'Private',null,'Private',true,0,false),
+        (5,800,null,null,'DBS','Noncanonical fixture',null,'Description',null,'Fixture','false',0,true)`);
       await sql.unsafe(
         `insert into bot.db_sagas values (1,'first','First',null,'Description',null,1,true),(2,'hidden','Hidden','DB',null,null,0,false),(3,'last','Last','DBZ',null,null,2,true)`,
       );
@@ -120,7 +121,8 @@ test.skipIf(!url)(
       const events = await client.call(endpoints.timelineEvents, {});
       expect(events.ok).toBe(true);
       if (!events.ok) throw new Error("Events fixture failed");
-      expect(events.value.events.map((e) => e.id)).toEqual([2, 3, 1]);
+      expect(events.value.events.map((e) => e.id)).toEqual([2, 3, 1, 5]);
+      expect(events.value.events.find((e) => e.id === 5)?.canon).toBe(false);
       expect(events.value.events[0]).toMatchObject({
         age_year: -5000000,
         title_ja: "古代",
