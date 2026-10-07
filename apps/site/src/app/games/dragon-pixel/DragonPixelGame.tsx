@@ -71,7 +71,6 @@ export default function DragonPixelGame() {
   const gameStateRef = useRef<GameState>(createGame(selectedFighter, mode, selectedChapter));
   const heldKeysRef = useRef<Set<keyof GameInput>>(new Set());
   const activePointersRef = useRef<Map<number, keyof GameInput>>(new Map());
-  const animationFrameRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(0);
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -603,7 +602,7 @@ export default function DragonPixelGame() {
     );
 
     ctx.restore();
-  }, []);
+  }, [drawArena, drawFighterSprite]);
 
   // Boucle de mise à jour physique (60 FPS)
   useEffect(() => {
@@ -729,6 +728,7 @@ export default function DragonPixelGame() {
               onClick={() => {
                 setMode(m);
                 gameStateRef.current = createGame(selectedFighter, m, selectedChapter);
+                setGameStatus("playing");
                 setIsPlaying(true);
                 setInDialogue(m === "story");
               }}
@@ -793,6 +793,7 @@ export default function DragonPixelGame() {
             <button
               onClick={() => {
                 gameStateRef.current = createGame(selectedFighter, mode, selectedChapter);
+                setGameStatus("playing");
                 setIsPlaying(true);
                 setInDialogue(mode === "story");
               }}
@@ -816,6 +817,7 @@ export default function DragonPixelGame() {
               onClick={() => {
                 setSelectedFighter(f.id);
                 gameStateRef.current = createGame(f.id, mode, selectedChapter);
+                setGameStatus("playing");
               }}
               className={`flex flex-col items-center p-2 rounded-xl border transition-all ${
                 selectedFighter === f.id
