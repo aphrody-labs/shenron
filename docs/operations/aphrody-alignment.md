@@ -901,5 +901,37 @@ Le SDK appartient au paquet `koharu-library`. Une sélection erronée de paquet
 et un premier lancement Clippy ayant perdu le séparateur PowerShell ont échoué
 avant analyse ; les résultats ci-dessus sont ceux des commandes corrigées.
 Ces contrôles portent sur ce snapshot isolé. Le pin reste hors de `main` en
-attendant les tests et la qualification des fonctionnalités de l’installeur ;
+attendant la suite workspace et la qualification des artefacts de l’installeur ;
 aucune nouvelle installation ou activation n’est attestée.
+
+Le SDK portable de `bce7afe7` est aussi qualifié dans un nouveau clone Windows
+fondé sur `1e59acf1`. L’installation figée termine avec le code 0, 958 packages,
+et les quatre archives correspondent aux SHA-256 du manifeste. Le SDK Bun est
+issu de `c8134dd39f84f0e51e2b8c14d50e83dc931c8722` ; la DLL release reste issue
+de `34c5b2d0406d0797be582054ce0399110a3c5a0e`, avec son manifeste vérifié.
+Ces deux provenances sont distinctes.
+
+Dans ce clone, les six tests pipeline natifs donnent 47 assertions, aucun échec
+et aucun skip, sans `APHRODY_FFI_DEV` ni `APHRODY_FFI_LIB`. La frontière produit
+Shenron exécute l’aide native et le plan de 26 sources dans la même configuration.
+La découverte du pin installé ajoutée dans `c8134dd3` est réservée à Unix :
+cette preuve Windows utilise le dossier natif du SDK, pas l’installation globale.
+Elle n’atteste pas encore l’embarquement de la DLL dans l’installeur final.
+Le contrôle TypeScript complet de ce clone, applications, packages et scripts,
+termine également avec le code 0 sur Windows.
+
+Les tests MSVC des trois paquets Rust passent après correction de la synchronisation
+des fixtures de jobs : 18 tests `koharu-library`, 24 FFI et 51 MCP, soit 93 réussites,
+aucun échec ni test ignoré. Le premier lancement avait obtenu `Usage` dans le test
+de libération d’un job : un délai de 50 ms ne garantissait pas que le worker avait
+démarré. Les tests attendent maintenant un signal émis depuis le travail effectif
+avant annulation ou libération ; ils conservent l’exigence `Cancelled`, le délai
+de retour maximal et le contrôle de suppression du registre. Aucun comportement
+produit n’est modifié.
+
+Clippy strict `--workspace --all-targets --target x86_64-pc-windows-msvc`, avec
+`shenron-desktop/custom-protocol,shenron-mcp/koharu,koharu-library/desktop` et
+`-D warnings`, termine ensuite avec le code 0 en 3 min 23 s. Cette compilation
+analyse les fonctionnalités de l’installeur ; elle n’exécute pas de navigateur
+ni le desktop. La suite Rust workspace, les tests GPU/ML exclus par le filtre
+nextest par défaut et les artefacts finaux restent à qualifier.
