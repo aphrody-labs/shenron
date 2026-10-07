@@ -8,7 +8,7 @@
  */
 
 import { existsSync } from "node:fs";
-import { mkdir, copyFile } from "node:fs/promises";
+import { mkdir, copyFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 
 const ROOT = join(import.meta.dir, "..", "..", "..");
@@ -66,11 +66,14 @@ await mkdir(OUT_DIR, { recursive: true });
 for (const file of [
   "shenron_re.d.ts",
   "shenron_re.js",
-  "shenron_re_bg.js",
   "shenron_re_bg.wasm",
   "shenron_re_bg.wasm.d.ts",
 ]) {
   await copyFile(join(PKG_DIR, file), join(OUT_DIR, file));
 }
+
+// `wasm-bindgen --target web` now emits a self-contained JS glue file; older
+// releases emitted a separate `_bg.js` shim which is no longer generated.
+await rm(join(OUT_DIR, "shenron_re_bg.js"), { force: true });
 
 console.log(`✓ shenron-re WASM pipeline built and staged to ${OUT_DIR}`);
