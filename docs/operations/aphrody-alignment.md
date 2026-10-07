@@ -370,3 +370,30 @@ les codes lus après nettoyage ne permettent pas d'attribuer un crash naturel
 au renderer. Les marqueurs utility observent des retours CEF zéro. Cette
 variante sans IPC reste un diagnostic temporaire, pas un remplacement du
 contrat IPC de Studio.
+
+Le diagnostic Alloy avec le helper Tauri habituel ne rétablit pas la navigation :
+le processus quitte avec le code zéro avant la fin de l'observation de 30 s,
+et seule la requête `/robots.txt` est reçue. Ce style n'est pas livré comme
+correctif.
+
+L'inspection native, en lecture seule avec 7-Zip 26.03, trouve toutefois un
+installeur NSIS de 545 326 277 octets dans les sorties de build. Son SHA-256 est
+`a4ebb5bd4ae94fcfa6781749f3480a91b8f74c756ed1462b8bcb5507e88980df`.
+Il contient bien Studio, CEF, `shenron-server.exe`, `shenron-mcp.exe`,
+`koharu-sdk.exe`, le runtime llama et les ressources modèle. L'absence du
+serveur près du binaire brut inspecté précédemment ne concerne donc pas ce
+paquet. Cette inspection ne vaut pas installation ni activation.
+
+Les trois sidecars sont extraits dans un dossier de qualification distinct ;
+le serveur emballé (180 719 616 octets, SHA-256
+`37334d71f9be00b927bc0bda308057d898e46d859915333758af1d8eef49cbf2`)
+répond à `--help`, puis démarre réellement avec un `SHENRON_HOME` temporaire,
+un profil desktop, sans PostgreSQL et avec un endpoint chat synthétique pour
+éviter toute acquisition de modèle. Le payload embarqué s'extrait en 2 063 ms
+et le site devient prêt en 2 858 ms. `/api/local/health`, `/robots.txt` et
+`/desktop` répondent 200 ; le HTML desktop contient Shenron (118 344 caractères).
+Les lectures thème et wiki sans base rapportent leur repli sur les défauts.
+Le processus supervisé et ses enfants sont arrêtés après la vérification.
+Cette preuve qualifie ce lancement HTTP/Next du serveur emballé, pas les
+fonctions de chacun des groupes annoncés, l'inférence, CEF ou l'installeur
+de bout en bout.
