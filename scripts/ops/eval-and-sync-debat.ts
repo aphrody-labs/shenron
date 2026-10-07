@@ -358,7 +358,7 @@ async function main() {
   await Bun.write(reportOut, JSON.stringify(fullReport, null, 2));
   console.log(`✓ Rapport complet JSON sauvegardé dans ${reportOut}`);
 
-  const gpuStatsOut = join(REPO_ROOT, "home", "shenron", "rag_gpu_stats.json");
+  const gpuStatsOut = join(REPO_ROOT, "var", "reports", "rag_gpu_stats.json");
   await Bun.write(gpuStatsOut, JSON.stringify(gpuResult, null, 2));
   console.log(`✓ Statistiques GPU sauvegardées dans ${gpuStatsOut}\n`);
 

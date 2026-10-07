@@ -4,10 +4,11 @@ import { Bibliotheque, Livre } from "@shenron/ui/icones";
 export interface CoverageMetric {
   label: string;
   availableHref: string;
-  missingHref: string;
+  missingHref?: string;
   available: number;
   total: number;
   unit: string;
+  badge?: string;
 }
 
 function Metric({ metric }: { metric: CoverageMetric }) {
@@ -22,8 +23,10 @@ function Metric({ metric }: { metric: CoverageMetric }) {
             {metric.label}
           </p>
           <p className="mt-2 font-display text-2xl font-bold text-white tabular-nums">
-            {metric.available}{" "}
-            <span className="text-base font-normal text-white/45">/ {metric.total}</span>
+            {metric.available.toLocaleString("fr-FR")}{" "}
+            {metric.total > 0 && (
+              <span className="text-base font-normal text-white/45">/ {metric.total.toLocaleString("fr-FR")}</span>
+            )}
           </p>
         </div>
         <span
@@ -33,7 +36,7 @@ function Metric({ metric }: { metric: CoverageMetric }) {
               : "border-dbz-orange/30 bg-dbz-orange/10 text-dbz-orange"
           }`}
         >
-          {complete ? "Complet" : `${missing} à compléter`}
+          {metric.badge ? metric.badge : complete ? "Complet" : `${missing} à compléter`}
         </span>
       </div>
       <p className="mt-1 text-xs text-white/50">
@@ -46,7 +49,7 @@ function Metric({ metric }: { metric: CoverageMetric }) {
         >
           Voir les disponibles →
         </Link>
-        {missing > 0 && (
+        {missing > 0 && metric.missingHref && (
           <Link
             href={metric.missingHref}
             className="inline-flex min-h-11 items-center rounded-full border border-dbz-orange/30 px-4 font-display text-xs font-semibold text-dbz-orange transition-colors hover:border-dbz-orange hover:bg-dbz-orange/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
@@ -62,9 +65,13 @@ function Metric({ metric }: { metric: CoverageMetric }) {
 export function ContentCoverage({
   databooks,
   manga,
+  canon,
+  rag,
 }: {
   databooks: CoverageMetric;
   manga: CoverageMetric;
+  canon?: CoverageMetric;
+  rag?: CoverageMetric;
 }) {
   return (
     <section aria-labelledby="wiki-coverage-title" className="space-y-5">
@@ -72,15 +79,15 @@ export function ContentCoverage({
         <div className="flex items-center gap-3">
           <Livre className="h-5 w-5 text-dbz-orange" aria-hidden="true" />
           <h2 id="wiki-coverage-title" className="font-saiyan text-2xl tracking-widest text-white">
-            État du contenu
+            État du contenu &amp; Corpus DBFR
           </h2>
         </div>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/55">
-          Un aperçu honnête des supports déjà consultables. Les liens conservent l&apos;état dans
-          l&apos;URL pour partager directement une liste à compléter.
+          Un aperçu honnête des supports et savoirs déjà consultables. Les données proviennent
+          directement du moteur RAG et du corpus officiel validé de Dragon Ball France.
         </p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Metric metric={databooks} />
         <div>
           <Metric metric={manga} />
@@ -89,6 +96,8 @@ export function ContentCoverage({
             Un tome compte dès qu&apos;une de ses éditions est lisible.
           </div>
         </div>
+        {canon && <Metric metric={canon} />}
+        {rag && <Metric metric={rag} />}
       </div>
     </section>
   );

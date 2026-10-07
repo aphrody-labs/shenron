@@ -8,6 +8,7 @@ export interface WikiCounts {
   planets: number;
   chapters: number;
   databooks: number;
+  canonReferences?: number;
 }
 
 export interface FeaturedCharacter {
@@ -35,4 +36,5 @@ export const EMPTY_WIKI_COUNTS: WikiCounts = {
   planets: 0,
   chapters: 0,
   databooks: 0,
+  canonReferences: 0,
 };

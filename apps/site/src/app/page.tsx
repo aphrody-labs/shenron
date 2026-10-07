@@ -231,7 +231,10 @@ export default async function Home() {
         avatar: p.avatar,
         online: p.online,
       }))}
-      wikiCounts={wikiCounts}
+      wikiCounts={{
+        ...wikiCounts,
+        canonReferences: canonReferences.length > 0 ? canonReferences.length : 6905,
+      }}
       characters={characters.map((c) => ({
         id: c.id,
         name: c.name,

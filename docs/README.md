@@ -26,7 +26,7 @@ the root `AGENTS.md`.
 | Canon adjudication                                           | [`products/canon.md`](products/canon.md)                                                                                                            |
 | Recherche Dragon Radar partagée, filtres et reprise          | [`products/dragon-radar.md`](products/dragon-radar.md)                                                                                              |
 | Shenron Chat (desktop, website, bot): models, memory, homes  | [`products/chat-shenron.md`](products/chat-shenron.md)                                                                                              |
-| OpenAI compatibility, MCP, A2A, skills, and plugin           | [`products/openai-compatibility.md`](products/openai-compatibility.md)                                                                              |
+| OpenAI compatibility, MCP, A2A, skills, and plugin           | [`architecture/openai-compatibility.md`](architecture/openai-compatibility.md)                                      |
 | Website home and shell invariants                            | [`products/accueil-et-shell.md`](products/accueil-et-shell.md)                                                                                      |
 | Participatory site and agent API                             | [`products/site-participatif.md`](products/site-participatif.md)                                                                                    |
 | Shenron Studio                                               | [`products/koharu/README.md`](products/koharu/README.md), with archived upstream docs in [`reference/koharu/upstream/`](reference/koharu/upstream/) |

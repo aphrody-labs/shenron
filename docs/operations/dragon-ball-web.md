@@ -38,7 +38,11 @@ consulter le plan et l’état d’une campagne. `crawl custom URL` appelle
 
 La frontière `@shenron/native/web/pipeline` consomme
 `@aphrody/bun/web/pipeline`, qui charge la bibliothèque native vérifiée ;
-`APHRODY_FFI_LIB` sélectionne un artefact accompagné de son manifeste compatible.
+`APHRODY_FFI_LIB` sélectionne explicitement un artefact accompagné de son manifeste compatible.
+Sans cette variable, le SDK recherche son payload puis la bibliothèque compagnon
+du pin installé par le lien canonique `~/.local/bin/aphrody`. Le manifeste,
+le SHA-256, l’ABI et la provenance restent vérifiés avant chargement ; aucun
+processus n’est lancé pour cette résolution.
 Les descriptions de commandes conservent la syntaxe `aphrody web`, mais la liaison
 produit n’exécute aucun binaire CLI. Les anciens binaires BXC ne sont pas lancés.
 Le module peut lire leurs bases
@@ -124,7 +128,9 @@ La qualification opérationnelle du 2026-10-07 a relevé une erreur 503
 « RAG database unavailable » sur l’ancien processus MCP stdio de la session.
 Le profil protégé référence désormais la base RAG du propriétaire courant,
 son schéma et le tunnel persistant existant. Un nouveau processus du binaire
-qualifié expose 672 outils et réussit une recherche RAG en lecture seule.
+qualifié expose actuellement 661 outils et réussit une recherche RAG en lecture seule.
+Le catalogue peut varier avec les capacités des bridges disponibles ; le total
+antérieur de 672 ne constitue pas une garantie de disponibilité permanente.
 Le processus déjà ouvert conserve son environnement jusqu’à sa reconnexion.
 Les statistiques du service `shenron-compute` ne prouvent ni la couverture des
 16 familles ni celle du corpus PostgreSQL Shenron. Les DSN et jetons restent
@@ -138,18 +144,40 @@ Python ; il ne constitue pas un handler natif en processus admissible pour cette
 automatisation.
 
 Qualification native du 2026-10-07 : le SDK Bun 3.3.8 est produit depuis la
-révision propre `cafa8b3e8ef494a4cfa5243a7304902057fb0380`. Les archives
+révision propre `c8134dd39f84f0e51e2b8c14d50e83dc931c8722`. Les archives
 source et leurs SHA-256 sont dans `vendor/aphrody-sdk/manifest.json` ; elles
 contiennent le code et aucune bibliothèque native, donnée ou authentification.
-L’artefact FFI privé `41c2fd83145c` a passé les six tests natifs du pipeline
-sans test ignoré. Le vrai serveur RMCP a également passé les appels CLI et FFI
+Le pin propre CLI/FFI `bdc0c91d825c054862b8f55de208b5e03505005c`, construit
+sur l’usine avec les trois features `jobs`, a passé les six tests natifs
+du pipeline sans test ignoré ni mode développement. Son manifeste privé
+porte la provenance propre, les ABI et les empreintes des deux artefacts. Le vrai serveur RMCP a également passé les appels CLI et FFI
 avec authentification par référence d’environnement, session HTTP/SSE,
 idempotence et annulation des jobs dans un store de test isolé.
 Le contrôle Rust MCP/client compte 175 tests réussis et un test ignoré ;
 Clippy strict est vert. Le consommateur Shenron appelle réellement le module
 Dragon Ball par FFI. Les 24 alias Aphrody de WSL pointent vers le binaire
 qualifié ; leur contrôle est vert et leurs anciennes cibles sont conservées.
-Cette installation ne prouve pas encore l’activation des workers de chaque hôte.
+Les workers natifs VPS, DBFR et WSL ont ensuite été activés et qualifiés par
+une nouvelle tâche Web sur chacun : affinité exacte, un bail, journal de début
+et de fin, PID vivant et SHA-256 du processus inchangés. Le manifeste privé
+déclare respectivement 4, 2 et 2 slots. Les accès anonymes et les mauvais jetons
+sont refusés. Le relais WireGuard conserve son URL privée et présente au
+listener l’en-tête d’hôte loopback déclaré ; sa protection d’hôte reste active.
+
+Le consommateur Shenron a réussi neuf tâches réelles : trois ciblées, puis
+six simultanées réparties VPS 3, DBFR 2 et WSL 1. La fermeture et la réouverture
+des ledgers conservent l’hôte et l’identifiant distant ; une soumission répétée
+reste idempotente. Ces tâches lisent le registre de sources, sans ingestion
+éditoriale. Une première passe utilisait le snapshot de développement
+`41c2fd83145c` ; le pin propre `bdc0c91d825c` est maintenant installé sur
+les trois hôtes. La FFI consommateur est chargée automatiquement depuis le
+pin canonique WSL, sans `APHRODY_FFI_LIB` ni `APHRODY_FFI_DEV`.
+La nouvelle passe Shenron sur ce pin propre réussit également les neuf
+tâches, avec la même répartition 3/2/1 et les mêmes contrôles de réouverture
+et d’idempotence, sans override FFI ni mode développement.
+La répartition observée n’est pas un benchmark. Les fixtures RMCP de
+redémarrage utilisaient un store RAMFS ; elles ne prouvent pas la résistance
+à un crash disque. Les ledgers du consommateur sont privés et sur disque.
 
 Le module Workspace `yolo ops mcp-environment prepare|probe|apply` conserve
 l’environnement dans un JSON privé (dossier 0700, fichier 0600) et ne publie
