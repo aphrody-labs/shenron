@@ -24,6 +24,7 @@ the root `AGENTS.md`.
 | Design system                                                | [`reference/DESIGN.md`](reference/DESIGN.md)                                                                                                        |
 | Wiki editorial policy                                        | [`products/wiki-editorial.md`](products/wiki-editorial.md)                                                                                          |
 | Canon adjudication                                           | [`products/canon.md`](products/canon.md)                                                                                                            |
+| Powerscaling methodology (VSBW tools)                        | [powerscaling-vsbw.md](products/powerscaling-vsbw.md)                                                                                    |
 | Recherche Dragon Radar partagée, filtres et reprise          | [`products/dragon-radar.md`](products/dragon-radar.md)                                                                                              |
 | Shenron Chat (desktop, website, bot): models, memory, homes  | [`products/chat-shenron.md`](products/chat-shenron.md)                                                                                              |
 | OpenAI compatibility, MCP, A2A, skills, and plugin           | [`products/openai-compatibility.md`](products/openai-compatibility.md)                                                                              |
