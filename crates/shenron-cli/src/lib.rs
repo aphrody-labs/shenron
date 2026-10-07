@@ -5,6 +5,7 @@
 //!   bridge ([`shenron_cmd`]): health, RAG, training, databooks OCR bridge.
 //! - `shenron dbfr …`: the Dragon Ball FR databooks API (`ocr_dbfr`).
 //! - `shenron manga …`: Koharu-backed manga detection, cleanup and PSD export.
+//! - `shenron chat|models|conversations|memory`: the shared desktop chat HTTP API.
 //!
 //! [`run_async`] is the single dispatcher shared by the binary, the C ABI
 //! (`shenron-ffi`) and in-process hosts.
@@ -13,6 +14,7 @@ use std::ffi::OsString;
 
 use clap::{Parser, Subcommand};
 
+mod chat;
 pub mod config;
 mod manga_cmd;
 #[cfg(feature = "koharu")]
@@ -34,6 +36,20 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Chat with Shenron using the same sources, tools and memory as the desktop.
+    Chat(chat::ChatArgs),
+    /// List the server's selectable chat models.
+    Models(chat::Connection),
+    /// Browse the authenticated owner's persisted conversations.
+    Conversations {
+        #[command(subcommand)]
+        action: chat::ConversationAction,
+    },
+    /// Browse the authenticated owner's persistent chat memory.
+    Memory {
+        #[command(subcommand)]
+        action: chat::MemoryAction,
+    },
     #[command(flatten)]
     Shenron(shenron_cmd::ShenronAction),
     /// Dragon Ball FR databooks API: list, progress, plates, transcriptions and deposits.
@@ -65,6 +81,10 @@ where
         },
     };
     let outcome = match cli.command {
+        Command::Chat(args) => chat::run(args).await,
+        Command::Models(connection) => connection.report("/api/v1/models", &[]).await,
+        Command::Conversations { action } => chat::conversations(action).await,
+        Command::Memory { action } => chat::memory(action).await,
         Command::Shenron(action) => shenron_cmd::run(action).await,
         #[cfg(feature = "ocr")]
         Command::Dbfr { action } => ocr_dbfr::run(action).await,

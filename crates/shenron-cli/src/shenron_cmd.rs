@@ -455,14 +455,14 @@ fn bot_base() -> miette::Result<reqwest::Url> {
     )
 }
 
-fn site_base() -> miette::Result<reqwest::Url> {
+pub(crate) fn site_base() -> miette::Result<reqwest::Url> {
     endpoint(
         config_alias(&["SHENRON_SITE_URL"])
             .unwrap_or_else(|| "http://shenron.localhost:18080".to_owned()),
     )
 }
 
-fn http_client() -> miette::Result<reqwest::Client> {
+pub(crate) fn http_client() -> miette::Result<reqwest::Client> {
     reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(15))
         .redirect(reqwest::redirect::Policy::none())
