@@ -292,7 +292,7 @@ export function ChatPanel({
       ]
         .filter(Boolean)
         .join(" ")}
-      data-shenron-chat=""
+      data-shenron-chat="conversation"
       onClickCapture={interceptLinks(onOpenLink)}
     >
       <nav

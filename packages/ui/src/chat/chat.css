@@ -59,7 +59,7 @@
   --md-sys-color-tertiary-fixed-dim: #c6cb96;
 }
 
-[data-shenron-chat] {
+[data-shenron-chat="conversation"] {
   min-height: min(720px, calc(100dvh - 160px));
 }
 
