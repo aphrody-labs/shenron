@@ -214,3 +214,44 @@ aphrody-local *checkout:
 [group('rust')]
 aphrody-pinned:
     bun scripts/build/rust/local-aphrody-patch.ts --remove
+
+# Container stack: prepare secrets and environment files (--prod|--dev)
+[group('container')]
+container-env *args="":
+    bun scripts/ops/container.ts env {{args}}
+
+# Container stack: build Docker image (--all-in-one)
+[group('container')]
+container-build *args="":
+    bun scripts/ops/container.ts build {{args}}
+
+# Container stack: start containers (--all-in-one)
+[group('container')]
+container-up *args="":
+    bun scripts/ops/container.ts up {{args}}
+
+# Container stack: stop containers
+[group('container')]
+container-down:
+    bun scripts/ops/container.ts down
+
+# Container stack: check service health and status
+[group('container')]
+container-status:
+    bun scripts/ops/container.ts status
+
+# Container stack: initialize database and apply migrations
+[group('container')]
+container-db-init *args="":
+    bun scripts/ops/container.ts db-init {{args}}
+
+# Container stack: OVH operations and DNS validation
+[group('container')]
+container-ovh *args="":
+    bun scripts/ops/container.ts ovh {{args}}
+
+# Container stack: backup container databases
+[group('container')]
+container-backup:
+    bun scripts/ops/container.ts backup
+

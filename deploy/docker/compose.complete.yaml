@@ -1,0 +1,170 @@
+# SPDX-License-Identifier: Apache-2.0
+# Complete multi-service stack for Shenron (dragonballfr.com).
+# Orchestrates PostgreSQL, Redis, Shenron Server (Site, Studio, MCP), Shenron Bot,
+# Nginx Gateway, and OVH Ops monitoring.
+
+name: shenron-complete
+
+services:
+  # 1. Base de données PostgreSQL (données éditoriales, auth, wiki)
+  postgres:
+    image: postgres:16-alpine
+    container_name: shenron-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shenron_site
+      POSTGRES_USER: shenron
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shenron_secure_local_dev}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shenron -d shenron_site"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - shenron-net
+
+  # 2. Cache et sessions Redis
+  redis:
+    image: redis:7-alpine
+    container_name: shenron-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "volatile-lru"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shenron-net
+
+  # 3. Serveur frontal Shenron (Site Next.js 16, Studio Koharu, Desktop, MCP, API)
+  server:
+    image: localhost/shenron:${SHENRON_IMAGE_TAG:-complete}
+    build:
+      context: ../..
+      dockerfile: deploy/docker/all-in-one/Dockerfile
+    container_name: shenron-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ${SHENRON_SITE_ENV_FILE:-deploy/docker/env/shenron-site.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-deploy/docker/env/shenron-compute-client.env}
+    environment:
+      SHENRON_HOME: /var/lib/shenron
+      SHENRON_PROFILE: production
+      HOSTNAME: 0.0.0.0
+      PORT: "5011"
+      DATABASE_URL: postgres://shenron:${POSTGRES_PASSWORD:-shenron_secure_local_dev}@postgres:5432/shenron_site
+      REDIS_URL: redis://redis:6379
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - shenron_home:/var/lib/shenron
+      - cdn_data:/srv/shenron-cdn
+    ports:
+      - "127.0.0.1:5011:5011"
+      - "127.0.0.1:8790:8790"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:5011/api/local/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - shenron-net
+
+  # 4. Bot Discord Shenron
+  bot:
+    image: localhost/shenron:${SHENRON_IMAGE_TAG:-complete}
+    container_name: shenron-bot
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      server:
+        condition: service_healthy
+    env_file:
+      - ${SHENRON_BOT_ENV_FILE:-deploy/docker/env/shenron-bot.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-deploy/docker/env/shenron-compute-client.env}
+    environment:
+      API_HOST: 0.0.0.0
+      API_PORT: "5006"
+      DATABASE_URL: postgres://shenron:${POSTGRES_PASSWORD:-shenron_secure_local_dev}@postgres:5432/shenron_site
+      DATABASE_PATH: /app/data/bot.db
+    volumes:
+      - bot_data:/app/data
+      - bot_assets:/app/assets
+    ports:
+      - "127.0.0.1:5006:5006"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:5006/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - shenron-net
+
+  # 5. Passerelle Nginx (Reverse-proxy public, CDN, TLS)
+  gateway:
+    image: nginx:alpine
+    container_name: shenron-gateway
+    restart: unless-stopped
+    depends_on:
+      server:
+        condition: service_healthy
+      bot:
+        condition: service_healthy
+    volumes:
+      - ./all-in-one/nginx.conf:/etc/nginx/nginx.conf:ro
+      - cdn_data:/srv/shenron-cdn:ro
+      - ${SHENRON_TLS_DIR:-deploy/docker/tls}:/etc/letsencrypt:ro
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1/ || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - shenron-net
+
+  # 6. Service Ops & Surveillance OVH
+  ovh-watch:
+    image: localhost/shenron:${SHENRON_IMAGE_TAG:-complete}
+    container_name: shenron-ovh-watch
+    restart: unless-stopped
+    profiles:
+      - ops
+    env_file:
+      - ${OVH_ENV_FILE:-deploy/docker/env/ovh.env}
+    entrypoint: ["bun", "/app/scripts/ops/ovh-shenron.ts", "--watch"]
+    networks:
+      - shenron-net
+
+networks:
+  shenron-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  shenron_home:
+  bot_data:
+  bot_assets:
+  cdn_data:
