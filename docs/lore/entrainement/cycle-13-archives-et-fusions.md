@@ -50,7 +50,7 @@ La domination de Buuhan par Vegetto concorde avec le gain considérable décrit 
 
 Le *GT Perfect File Vol. 2*, planche 13, emploie 数十倍 au sujet de la puissance de Gogeta SSJ4 par rapport à un Super Saiyan 4 seul : cela signifie « plusieurs dizaines de fois », et non exactement dix fois. La même planche dit que Vegeta SSJ4 devrait être à égalité avec Goku SSJ4 et explique que l’énorme consommation de puissance limite la fusion de Gogeta à dix minutes. Cette comparaison propre à Gogeta SSJ4 ne fournit pas, à elle seule, la formule générale de la fusion Métamole ni un coefficient applicable à d’autres partenaires.
 
-**Référence :** [DBFR, *GT Perfect File Vol. 2*, planche 13](https://dragonballfr.com/wiki/databooks/21#planche-13). La transcription DBFR consultée n’était pas signalée comme vérifiée sur scan : garder cette réserve de provenance.
+**Référence :** [DBFR, *GT Perfect File Vol. 2*, planche 13](https://dragonballfr.com/wiki/databooks/21#planche-13). La transcription DBFR donne bien 数十倍 (« plusieurs dizaines de fois »), mais le scan lui-même ne s’affichait pas dans le lecteur au moment du contrôle : la formulation est confirmée par la transcription accessible, pas par une lecture visuelle indépendante de l’image.
 
 ## Règle de méthode retenue
 
