@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "id": "daizenshuu-3-staff-roundtable-1-3",
+      "publication": "DRAGON BALL 大全集③ TV Animation Part 1 / Shenlong Times",
+      "method": "manual visual transcription from local scans; no OCR, network, or translation used",
+      "pages": [
+        {
+          "transcriptLine": 1,
+          "dimensions": "2988x4259",
+          "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times\\1.png",
+          "bytes": 1719217,
+          "printedPage": 1,
+          "sha256": "fa0fac39128a7f1c9046167331696449471d7a7655eca877251cf4c94e494bfe"
+        },
+        {
+          "transcriptLine": 2,
+          "dimensions": "3014x4260",
+          "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times\\2.png",
+          "bytes": 1726170,
+          "printedPage": 2,
+          "sha256": "781b152a75525fe52923b3b4212fb2ddc600eb60c83b7d780956430c2609b1f5"
+        },
+        {
+          "transcriptLine": 3,
+          "dimensions": "2999x4270",
+          "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times\\3.png",
+          "bytes": 1360140,
+          "printedPage": 3,
+          "sha256": "f9fb2a8727546827fbacdbf163b87301042cbd7d34fc15917055f3eafce3a7be"
+        }
+      ],
+      "transcriptSha256": "22936b4d573d9a96b3459ae2bb1afbaa9e9f6f50d51159ae0683d1a409635676",
+      "participants": [
+        "森下孝三",
+        "清水賢治",
+        "小山高生",
+        "菊池俊輔",
+        "山室直儀",
+        "野沢雅子",
+        "山内重保"
+      ],
+      "status": "complete transcription of legible interview text; independent review recommended",
+      "transcriptBytes": 6452,
+      "transcriptFile": "data/catalogues/japanese-interviews/daizenshuu-3-staff-roundtable-1-3.jsonl",
+      "title": "アニメ ドラゴンボール メインスタッフ座談会 第1回",
+      "limits": [
+        "Page 1 contains the title, introductory copy, and participant roster, not interview dialogue. Portrait biographies and character artwork are excluded.",
+        "Pages 2–3: only headings and layout copy are excluded; all legible interview questions and direct statements are transcribed. The page 3 footer points to page 6; intervening printed pages 4–5 are a Toriyama comic and outside this interview."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "transcriptSha256": "398f26b7075447f004659baa0538439ad7ff75086d06d69680e85ac36ac98626",
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times\\6.png",
+      "dimensions": "2962x4260",
+      "id": "daizenshuu-3-staff-roundtable-6",
+      "transcriptFile": "data/catalogues/japanese-interviews/daizenshuu-3-staff-roundtable-6.jsonl",
+      "printedPage": 6,
+      "limits": [
+        "The heading and adjacent participant biographies/profile text and illustrations are excluded. All legible interview dialogue on the page is transcribed."
+      ],
+      "status": "complete transcription of legible interview text; independent review recommended",
+      "transcriptBytes": 2931,
+      "publication": "DRAGON BALL 大全集③ TV Animation Part 1 / Shenlong Times",
+      "transcriptLine": 1,
+      "method": "manual visual transcription from local scan; no OCR, network, or translation used",
+      "title": "世界中で受け入れられた「DB」に密かに隠された世界観!?",
+      "sha256": "da72c16eac2b3791965b78618f92860fd73266161d0f5e5841dcd647c859299b",
+      "imageBytes": 1467712,
+      "participants": [
+        "森下孝三",
+        "清水賢治",
+        "小山高生",
+        "菊池俊輔",
+        "山室直儀",
+        "野沢雅子",
+        "山内重保"
+      ]
+    }
+  ]
+}

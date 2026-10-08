@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-08",
+  "method": "Manual visual transcription from enlarged local Japanese scans; read page order 52 through 55 and columns visually. No OCR, network, translation, or completion from secondary text. Image captions omitted.",
+  "records": [
+    {
+      "pages": [
+        52,
+        53
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\53-52.jpg",
+      "imageBytes": 408139,
+      "transcriptPath": "data/catalogues/japanese-interviews/dragonbook-movies-koyama-52-55.jsonl#L1",
+      "imageSha256": "CA0A9724D4313105E1374B0E34BD9039A4ED89FC8A09F20F0665FEA95AE26BA9",
+      "sectionTitle": "劇場版ストーリーQ&A / DRAGON MOVIES FAQ",
+      "completeness": "Visible Q&A prose transcribed; scan review corrected readings in the p.53 continuation; no unreadable glyphs remain marked.",
+      "id": "print-dragonbook-movies-koyama-52-53",
+      "transcriptRow": 1,
+      "participants": [
+        "Takao Koyama / 小山高生"
+      ],
+      "title": "DragonBook Movies"
+    },
+    {
+      "pages": [
+        54,
+        55
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\55-54.jpg",
+      "imageBytes": 410492,
+      "transcriptPath": "data/catalogues/japanese-interviews/dragonbook-movies-koyama-52-55.jsonl#L2",
+      "imageSha256": "C94555423A4A59B9E77EF31606B85E450ACAB03088581FC3571ACF5E8426380E",
+      "sectionTitle": "劇場版ストーリーQ&A / DRAGON MOVIES FAQ",
+      "completeness": "Visible Q&A prose transcribed; scan review corrected p.54–55 readings; unusual phrase 信頼と遠い環境 retained as printed.",
+      "id": "print-dragonbook-movies-koyama-54-55",
+      "transcriptRow": 2,
+      "participants": [
+        "Takao Koyama / 小山高生"
+      ],
+      "title": "DragonBook Movies"
+    }
+  ],
+  "transcriptSha256": "17c1bab187c5f610f1d6e4c234aeb4ca7052861186e67b36a882286bea50d7be",
+  "reviewNotes": [
+    "Independent visual review corrected three p.54 readings and two p.55 readings on 2026-10-08. An unusual phrase is retained as visibly printed: 信頼と遠い環境."
+  ]
+}

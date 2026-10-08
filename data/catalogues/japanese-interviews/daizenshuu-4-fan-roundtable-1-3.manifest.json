@@ -1,0 +1,52 @@
+{
+  "records": [
+    {
+      "transcriptSha256": "baafe87953bc61057a402081c27220d9ef169a48d704362d16adb7df07da8e76",
+      "id": "daizenshuu-4-fan-roundtable-1-3",
+      "title": "DBファン座談会",
+      "participants": [
+        "鈴木敏弘（バンダイ）",
+        "鴨巣恵美（天下一試験会第3位）",
+        "村本孝人（天下一試験会第2位）",
+        "大矢祐美香（天下一試験会第1位、欠席者メッセージ）"
+      ],
+      "pages": [
+        {
+          "bytes": 2459315,
+          "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 4 - World Guide (COMPLETE)\\Shenlong Times\\1.png",
+          "printedPage": 1,
+          "sha256": "f4b21669dcca3e940a7b35d58a67f3ef531017a3e1099e1a112185cf81eb25a0",
+          "transcriptLine": 1,
+          "dimensions": "2975x4260"
+        },
+        {
+          "bytes": 1439690,
+          "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 4 - World Guide (COMPLETE)\\Shenlong Times\\2.png",
+          "printedPage": 2,
+          "sha256": "721bbf93c7b750c1927ede4ba2a191970ac76b1f39eb2f063f26081e59c3b6c7",
+          "transcriptLine": 2,
+          "dimensions": "2950x4243"
+        },
+        {
+          "bytes": 1437346,
+          "path": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 4 - World Guide (COMPLETE)\\Shenlong Times\\3.png",
+          "printedPage": 3,
+          "sha256": "acf56cd8dc2ddc0113dac604bfcfc80a89d78a26da0ca9576556204ce498e5ba",
+          "transcriptLine": 3,
+          "dimensions": "2965x4262"
+        }
+      ],
+      "contributionType": "roundtable-fans",
+      "publication": "DRAGON BALL 大全集④ World Guide / Shenlong Times 第4号",
+      "limits": [
+        "Printed pages 4–5 were visually checked: they are a separate Toriyama feature presenting his work tools, not a continuation of this roundtable.",
+        "Page 1 contains the introduction, participant identities, and prompt; page 2 includes a short message from absent participant Oya Yumika."
+      ],
+      "method": "manual visual transcription from local scans; no OCR, network, or translation used",
+      "status": "complete transcription of legible roundtable dialogue and absent participant message; independent review recommended",
+      "transcriptFile": "data/catalogues/japanese-interviews/daizenshuu-4-fan-roundtable-1-3.jsonl",
+      "transcriptBytes": 4833
+    }
+  ],
+  "schemaVersion": 1
+}

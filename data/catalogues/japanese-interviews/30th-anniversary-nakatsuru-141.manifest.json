@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "status": "manual-visual-transcription-review-needed",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "# DRAGON BALL ANIMATION  ## 中鶴勝祥  アニメーションでも重要な「DB」ならではの「絵づくり」。それを支え続ける2人のアニメーターに迫る。",
+  "interviewee": "中鶴勝祥",
+  "method": "目視転記。手元のPDFを高解像度でレンダリングして確認。OCR・ネットワーク不使用。",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nakatsuru-141.jsonl#L1",
+      "printedPages": [
+        141
+      ],
+      "pdfPageIndices": [
+        142
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "transcriptBytes": 3467,
+      "transcriptSha256": "378b2f24875e0d9167efb100219297f1a6646abf17dd1980036cec36cb11b95c",
+      "completeness": "INCOMPLETE EXCERPT. Visual second pass requested; independent complete transcription/review is not finished. Do not treat as complete."
+    }
+  ],
+  "limits": [
+    "ページ番号は印刷フォリオとPDFインデックスを別々に記録。",
+    "写真プロフィール、作品画像内の文字、装飾用の大見出し以外の誌面注記は本文転記に含めていない。",
+    "読み切れない文字は「�」で示し、文章の欠落・ページ外の続きは補わない。",
+    "研究用の目視ドラフト。文字単位の独立校閲は未実施。",
+    "La transcription du/des folio(s) de cet entretien reste un brouillon incomplet ; les lignes non relevées et la relecture indépendante restent à faire."
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nakatsuru-141.jsonl",
+  "transcriptBytes": 3467,
+  "transcriptSha256": "378b2f24875e0d9167efb100219297f1a6646abf17dd1980036cec36cb11b95c"
+}

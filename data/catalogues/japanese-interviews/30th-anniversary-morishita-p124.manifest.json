@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "status": "manual-visual-transcription-review-needed",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "# DRAGON BALL ANIMATION INTERVIEW  ## 漫画の世界をアニメで表現するということ  「ドラゴンボール」シリーズを長く担当してきた森下さん。製作の裏事情やアニメでの表現方法など、当時を思い出しながら語る。",
+  "interviewee": "森下孝三",
+  "method": "目視転記。手元のPDFを高解像度でレンダリングして確認。OCR・ネットワーク不使用。",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-morishita-p124.jsonl#L1",
+      "printedPages": [
+        124,
+        125
+      ],
+      "pdfPageIndices": [
+        125,
+        126
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imageBytes": 100224986,
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
+      "transcriptBytes": 3844,
+      "transcriptSha256": "0ed78e6c561438362e39e9f2a028cda59086bbe0fcbb4713a9829f035b2fb37d",
+      "completeness": "INCOMPLETE EXCERPT. Adjacent folio confirms interview continuation; this sidecar contains only a partial transcription, with explicit untranscribed columns/passages. Do not treat as complete."
+    }
+  ],
+  "limits": [
+    "ページ番号は印刷フォリオとPDFインデックスを別々に記録。",
+    "写真プロフィール、作品画像内の文字、装飾用の大見出し以外の誌面注記は本文転記に含めていない。",
+    "読み切れない文字は「�」で示し、文章の欠落・ページ外の続きは補わない。",
+    "研究用の目視ドラフト。文字単位の独立校閲は未実施。",
+    "Les folios adjacents 125 (PDF 126) / 129 (PDF 130) continuent respectivement l’interview de Morishita / Nozawa. Leur contenu n’est ajouté que partiellement ; les colonnes et passages non transcrits sont explicitement signalés."
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-morishita-p124.jsonl",
+  "transcriptBytes": 3844,
+  "transcriptSha256": "0ed78e6c561438362e39e9f2a028cda59086bbe0fcbb4713a9829f035b2fb37d"
+}

@@ -1,0 +1,26 @@
+{
+  "records": [
+    {
+      "dimensions": "2022x2828",
+      "id": "daizenshuu-1-jackie-chan-i-love-dragon-ball-p7",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page007_6033670821_o.jpg",
+      "title": "I LOVE DRAGON BALL 第1回 ジャッキー・チェンさん",
+      "transcriptFile": "data/catalogues/japanese-interviews/daizenshuu-1-jackie-chan-i-love-dragon-ball-p7.jsonl",
+      "transcriptLine": 1,
+      "publication": "DRAGON BALL 大全集① / Shenlong News 第1号",
+      "limits": [
+        "This is an invited Dragon Ball testimonial, not an interview with production staff. The adjacent photo caption and manga illustration lettering are excluded."
+      ],
+      "status": "complete transcription of legible guest testimony; independent review recommended",
+      "transcriptBytes": 1346,
+      "imageBytes": 813489,
+      "interviewee": "ジャッキー・チェン",
+      "method": "manual visual transcription from local scan; no OCR, network, or translation used",
+      "printedPage": 7,
+      "contributionType": "guest-testimony",
+      "transcriptSha256": "2f1d4a5b95c87e59437f3075dc4044f6ad76e7c7d8ee76c8c74bd129e2f2e327",
+      "sha256": "5ecc6f9eb6480834c3c2a64b457945ebb9a25dcb02fa5c5e2f511dc6e52ad0f2"
+    }
+  ],
+  "schemaVersion": 1
+}

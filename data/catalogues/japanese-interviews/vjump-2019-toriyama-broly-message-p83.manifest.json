@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "status": "single-page-direct-author-message-transcribed-review-needed",
+  "publication": "Vジャンプ (local folder V-Jump 2019/janvier; exact issue date unverified)",
+  "interviewTitle": "鳥山先生からメッセージ＆描きおろしブロリーイラスト",
+  "interviewee": "鳥山明",
+  "updatedAt": "2026-10-08",
+  "method": "日本語の手元スキャンを拡大して目視で転記。OCR、ネット、翻訳、外部文章による補完は不使用。",
+  "limits": [
+    "The page labels this passage as a message from Toriyama; it is direct commentary, not an interview or Q&A.",
+    "Only the clearly legible message panel on printed p.83 is transcribed; the separate Victory Uchida page column and artwork lettering are omitted.",
+    "The local folder is named V-Jump 2019/janvier; exact issue number and release date are not established.",
+    "Independent character-by-character review remains pending."
+  ],
+  "transcriptFile": "data/catalogues/japanese-interviews/vjump-2019-toriyama-broly-message-p83.jsonl",
+  "transcriptBytes": 860,
+  "transcriptSha256": "f3bc3eff1ce51a3312c20e7739e55d7811c9cf51b931e7e6bcc7dd3cd4c4f3a5",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/vjump-2019-toriyama-broly-message-p83.jsonl#L1",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\janvier\\654602916_1375733284596195_4865005340773771057_n.jpg",
+      "title": "Vジャンプ",
+      "participants": [
+        "鳥山明"
+      ],
+      "imageBytes": 587026,
+      "completeness": "Transcribes only Toriyama's visible message panel on p.83; this is not the full page or a Q&A interview.",
+      "transcriptRow": 1,
+      "sectionTitle": "鳥山先生からメッセージ＆描きおろしブロリーイラスト",
+      "id": "vjump-2019-toriyama-broly-message-p83",
+      "imageSha256": "56c02eef5a9c66e5cfa05a8b24f95ada71b7d8d1c4f4d2274859f547b2933a7c",
+      "pages": [
+        83
+      ]
+    }
+  ]
+}

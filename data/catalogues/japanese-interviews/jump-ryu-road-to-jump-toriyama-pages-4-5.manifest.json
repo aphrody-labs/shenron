@@ -1,0 +1,26 @@
+{
+  "source": "Jump Ryu! vol.01; ROAD to JUMP「マンガ家デビュー秘話 第1回 鳥山明」",
+  "sourcePages": [
+    4,
+    5
+  ],
+  "sourceImages": [
+    {
+      "bytes": 354313,
+      "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball\\FB_IMG_1768465399144.jpg",
+      "sha256": "461B894D2086494F465586723994929C0180FD6021E0AFF1781C4ABE38A99776"
+    },
+    {
+      "bytes": 394521,
+      "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball\\FB_IMG_1768465401365.jpg",
+      "sha256": "546718D2B6A9896233CA0B813241F4C3286F1BEC01A455C1FD87F96EFDFC55F1"
+    }
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/jump-ryu-road-to-jump-toriyama-pages-4-5.jsonl",
+  "transcriptBytes": 1052,
+  "transcriptSha256": "a81a8f7f3da01e40075fe66f7a14ed0204003e8ad1c3367813eb590073436ea4",
+  "scope": "Only directly quoted Toriyama speech excerpts transcribed; surrounding editorial narration, headings and captions are not included. Printed pp.4-5 are the separately announced ROAD to JUMP feature. The p.4 EXTRA QUESTION box is a distinct DVD conversation re-edited for print and is catalogued in jump-ryu-akira-toriyama-page-4.jsonl.",
+  "method": "Manual visual transcription from local page scans; no OCR, network, translation, or inference.",
+  "review": "Independent visual review completed: both quoted passages match; the p.4 text has one printed ellipsis glyph (…（笑）), and p.5 wording is faithful to the end.",
+  "coverage": "The feature spans pp.4-5. This sidecar is not a full transcription of the feature."
+}

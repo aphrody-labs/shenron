@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "status": "visible-transcription-review-needed",
+  "publication": "Dragon Ball Daizenshuu 6, Shenron News insert",
+  "interviewTitle": "アニメ ドラゴンボール メインスタッフ座談会 第3回",
+  "method": "目視転記。ローカルスキャンのみ。OCRとネットワークは不使用。",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-6-animation-roundtable-p1-3-6.jsonl#L1",
+      "page": 2,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 6\\daizenshuu_06_shenron-news_page002_003_9720949702_o.jpg",
+      "imageBytes": 3939313,
+      "imageSha256": "e3bb268b4df24022548786e7947fa71ec43626c9ccc93ce0d4a008d51760a56c",
+      "completeness": "Dialogue transcription, review required for exact wording and speaker mapping."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-6-animation-roundtable-p1-3-6.jsonl#L2",
+      "page": 3,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 6\\daizenshuu_06_shenron-news_page002_003_9720949702_o.jpg",
+      "imageBytes": 3939313,
+      "imageSha256": "e3bb268b4df24022548786e7947fa71ec43626c9ccc93ce0d4a008d51760a56c",
+      "completeness": "Visible dialogue transcribed; speaker mapping and a few glyphs need review. Printed footer says 6ページにつづく."
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-6-animation-roundtable-p1-3-6.jsonl#L3",
+      "page": 6,
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 6\\daizenshuu_06_shenron-news_page006_9717728939_o.jpg",
+      "imageBytes": 2161608,
+      "imageSha256": "3b3c45364319bac561ce5efce213a071fee9e13e1bbdd759c45b653783cf388d",
+      "completeness": "Visible passages transcribed; final text block and speaker association are not fully verified."
+    }
+  ],
+  "limits": [
+    "Le composite page002_003 contient p.2 à droite et p.3 à gauche; les entrées JSONL distinguent les folios.",
+    "Les noms attribués sont conservés uniquement là où l'association visuelle est lisible; les passages sans nom restent sans attribution.",
+    "La fin du texte p.6 apparaît interrompue dans le scan après «スタッフ、キャラの…»; aucune suite n'est inventée.",
+    "Cette livraison est un relevé visuel révisable, pas encore une édition critique certifiée exhaustive."
+  ],
+  "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-6-animation-roundtable-p1-3-6.jsonl",
+  "transcriptBytes": 7003,
+  "transcriptSha256": "4928f6470bde31a1033f1c51c39ea2cd8c4ac9f25c7cb0531820885eaf2441f0"
+}

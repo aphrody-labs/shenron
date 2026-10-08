@@ -1,0 +1,18 @@
+{
+  "source": "Saikyō Jump January issue supplement 「サイヤ人超最強COMICS」, printed pp.116–117, 「鳥山明先生に聞いてみた！サイヤ人スペシャルQ&A」",
+  "sourcePath": "C:/Users/omara/Desktop/Data et guide book/saikyou jump/2018/janvier/481701778_1612718696034162_7420829104018820363_n.jpg",
+  "sourceSha256": "27D36A5234F74FB5121A782D8DBE141B77293385E5B120D668948CBBA62DD2E4",
+  "sourceBytes": 928372,
+  "sourceDimensions": "1712x1246",
+  "transcriptPath": "data/catalogues/japanese-interviews/saikyo-jump-2018-jan-toriyama-saiyan-special-qa-116-117.jsonl",
+  "transcriptSha256": "f98771e78d5dd87f0380d78076311a3c8a14a57d863cfa57d003693b749cd9ae",
+  "transcribedPages": [116, 117],
+  "participants": ["鳥山明"],
+  "scope": "Five Saiyan Special Q&A items and their answers only, transcribed in printed page order 116 then 117. Adjacent manga panels and captions omitted.",
+  "method": "Manual visual transcription from the original local scan; no OCR, network, or translation.",
+  "review": "Single-pass visual transcription; not independently reviewed.",
+  "limitations": [
+    "The source is a two-page spread scan; no separate individual page scans were present in this directory.",
+    "The issue year is inferred from the local folder name 2018/janvier; the supplement pages do not show an exact publication date."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "transcriptBytes": 8976,
+  "schemaVersion": 1,
+  "transcriptSha256": "945dd2d7d2c2dd03bec355030ad62c7a77341f33eb9a6c7448db6cf92517b8ff",
+  "status": "two-page-visible-interview-text-transcribed-review-needed",
+  "publication": "Vジャンプ（号数・発売月は未確認）",
+  "interviewTitle": "子ども目線で見た「DBSDV」の課題",
+  "updatedAt": "2026-10-08",
+  "interviewee": "金子（下の名・正式役職は未確認）、中川（下の名・正式役職は未確認）",
+  "limits": [
+    "Transcription covers the visible interview prose on p.190–191 only; no claim is made that these pages prove the full extent of the published interview.",
+    "p.190 ends mid-word at 「必殺技エ」 and p.191 begins 「ナジーに関係なく」; the original seam remains marked and is not silently repaired.",
+    "Manga illustration speech balloons, lettering within the meeting comic, and decorative page callouts are omitted from the transcript."
+  ],
+  "method": "日本語の手元スキャンを拡大して目視で転記。OCR、ネット、翻訳、外部文章による補完は不使用。",
+  "records": [
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/vjump-db-super-divers-p190-excerpt.jsonl#L1",
+      "participants": [
+        "金子",
+        "中川"
+      ],
+      "pages": [
+        190
+      ],
+      "imageSha256": "7ce41ab839f3e9b874555432655946eb331c7606a66c643425f9f7bc02331563",
+      "transcriptRow": 1,
+      "completeness": "Visible interview prose transcribed from p.190. The printed final phrase breaks mid-word at 「必殺技エ」; continuation begins on p.191. Manga speech balloons and the illustrative meeting comic are omitted.",
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Les V-Jump\\V-Jump 2026\\juillet\\748115214_2124153005203452_5094841535306393554_n.jpg",
+      "imageBytes": 535106,
+      "title": "Vジャンプ",
+      "sectionTitle": "子ども目線で見た「DBSDV」の課題",
+      "id": "vjump-db-super-divers-p190"
+    },
+    {
+      "transcriptPath": "data/catalogues/japanese-interviews/vjump-db-super-divers-p190-excerpt.jsonl#L2",
+      "participants": [
+        "金子",
+        "中川"
+      ],
+      "pages": [
+        191
+      ],
+      "imageSha256": "335d12fe70fd31d352de1fb3b962643638b481d7dcfd1aa8f9b7c4cd64141cf6",
+      "transcriptRow": 2,
+      "completeness": "Visible interview prose transcribed from p.191 through the BUPPA skill discussion, the future-plan exchange, and the final question and answer. The first characters 「ナジー」 continue the p.190 line 「必殺技エ」; no completion is added. Illustrative comic artwork text and decorative page callouts are omitted.",
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Les V-Jump\\V-Jump 2026\\juillet\\748231314_1962505244541588_93145766781321470_n.jpg",
+      "imageBytes": 504965,
+      "title": "Vジャンプ",
+      "sectionTitle": "子ども目線で見た「DBSDV」の課題",
+      "id": "vjump-db-super-divers-p191"
+    }
+  ],
+  "transcriptFile": "data/catalogues/japanese-interviews/vjump-db-super-divers-p190-excerpt.jsonl"
+}

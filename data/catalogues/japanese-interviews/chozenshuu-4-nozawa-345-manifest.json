@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "publication": "ドラゴンボール超全集4 超事典",
+  "publicationDate": "2013-05-09",
+  "interviewTitle": "野沢雅子が振り返ってみた DRAGON BALL!!",
+  "interviewee": "野沢雅子",
+  "page": 345,
+  "interviewPageRange": "340-345",
+  "method": "manual visual transcription from local Japanese scan; no OCR, network, or translation used",
+  "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\345.png",
+  "imageBytes": 2879981,
+  "imageSha256": "8197b7c995a9f6858596e3d5981361e32f9caab8e7471e1202b4ee4b6efad0e3",
+  "transcriptFile": "data/catalogues/japanese-interviews/chozenshuu-4-nozawa-345.jsonl",
+  "transcriptLine": 1,
+  "transcriptBytes": 3425,
+  "transcriptSha256": "0f0a62b3261c68eb3e6c4f412f4e9f0166b039a01349b98911194e73f974a072",
+  "status": "single-page-transcription-review-needed",
+  "limits": [
+    "This is the final page of the interview and begins with a continuation from p.344.",
+    "Editorial footnotes and manga artwork lettering are omitted.",
+    "Visual scan is readable; review remains advisable for exact punctuation and layout order."
+  ]
+}

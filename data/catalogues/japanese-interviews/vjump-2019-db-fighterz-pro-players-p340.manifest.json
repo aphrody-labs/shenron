@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "status": "single-page-db-fighting-game-player-commentary-transcribed-review-needed",
+  "publication": "Vジャンプ (local folder V-Jump 2019/mars; exact issue date unverified)",
+  "interviewTitle": "オレたちプロゲーマー!! — 『DBFZ』最新ファイティングプラン!!",
+  "interviewee": "Professional DBFZ players; one answer speaker unresolved; SonicFox is named in team commentary",
+  "updatedAt": "2026-10-08",
+  "method": "日本語の手元スキャンを拡大して目視で転記。OCR、ネット、翻訳、外部文章による補完は不使用。",
+  "limits": [
+    "Printed p.340 is visible.",
+    "Question headings and directly visible comments are transcribed; this is a game-player interview/commentary feature, not an interview with Dragon Ball creators or production staff.",
+    "The speaker attached to the balance-change answer and the team 1 strategy panel is not confidently identified from the printed crop, so no name is assigned.",
+    "The SonicFox passage is an explanatory team note, not explicitly marked as a first-person quotation.",
+    "Independent character-by-character review remains pending."
+  ],
+  "transcriptFile": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-pro-players-p340.jsonl",
+  "transcriptBytes": 1170,
+  "transcriptSha256": "9f5551ca862f7c93fc97ef87c6c0059da281ff06496e81caffdd294f7664c469",
+  "records": [
+    {
+      "imageBytes": 630777,
+      "imageSha256": "6564519fdb3505ccba90e5e2f4a90c27de58d2f83db9498d78563b5c39c4a722",
+      "transcriptRow": 1,
+      "completeness": "Three visible answer/advice passages transcribed from p.340. Two speaker assignments remain unresolved; SonicFox note is editorially phrased.",
+      "sectionTitle": "オレたちプロゲーマー!! — DBFZ",
+      "transcriptPath": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-pro-players-p340.jsonl#L1",
+      "participants": [
+        "SonicFox (named in page text)",
+        "Kazunoko (pictured and named elsewhere on page; speech attribution not assumed)",
+        "Unidentified pro player"
+      ],
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\661198480_1387192866783570_6175762419575968923_n.jpg",
+      "id": "vjump-2019-db-fighterz-pro-players-p340",
+      "title": "Vジャンプ",
+      "pages": [
+        340
+      ]
+    }
+  ]
+}

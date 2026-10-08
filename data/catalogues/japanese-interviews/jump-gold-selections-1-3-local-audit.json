@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-08",
+  "scope": "Offline local audit of Jump Gold Selection volumes 1-3 only; volumes 4 and 5 excluded from content review.",
+  "searchRoots": [
+    "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book",
+    "C:\\Users\\omara"
+  ],
+  "searchMethod": [
+    "Enumerated directories under the DragonWorld Data et guide book collection.",
+    "Searched local filenames recursively under C:\\Users\\omara for case-insensitive *Gold*Selection* variants.",
+    "Checked catalogue leads and transcript paths for independent volume 1-3 entries."
+  ],
+  "findings": [
+    {
+      "kind": "source_absence",
+      "detail": "No independent directory or scan set for Jump Gold Selection 1, 2, or 3 was found in the inspected local roots. The collection directory contains Jump Gold Selection 4 and Gold Selection 5, but no volumes 1-3."
+    },
+    {
+      "kind": "misleading_filenames",
+      "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Gold Selection 4",
+      "detail": "This volume-4 folder contains many files named “Cópia de Jump Gold Selection 1 Page …” (including pages 19-130, plus page 124-125 copies). Their containing source folder and existing Dragon Call pp.124-125 records identify these as the already audited volume-4 scan set, not evidence of independent volumes 1-3."
+    },
+    {
+      "kind": "transcription",
+      "detail": "No new title/page or readable unindexed interview from volumes 1-3 can be established without their scans. No transcript sidecar was created; doing so would require inferring text from unrelated or mislabeled files."
+    }
+  ],
+  "limitations": [
+    "This audit establishes absence only within the enumerated local collection directory and recursive C:\\Users\\omara filename search. It does not establish worldwide or cloud absence.",
+    "Volume 4 and volume 5 content was not re-audited in this lot."
+  ],
+  "nextStep": "If the user has separate volumes 1-3, add their scans or identify their local folder; then inspect their Dragon Ball Q/R and staff-comment pages."
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "status": "complete-independent-manual-visual-transcription",
+  "publication": "30th Anniversary ドラゴンボール超史集",
+  "interviewTitle": "DRAGON BALL ANIMATION / 中鶴勝祥",
+  "interviewee": "中鶴勝祥",
+  "method": "Independent manual reading of the local PDF rendered at 3x resolution, with enlarged image crops for body columns; no OCR and no network.",
+  "records": [
+    {
+      "transcriptSha256": "f05b6d5341eb6744e960af4b54481a8ce853a4fde4ce5589a9869a6afc0298b6",
+      "transcriptPath": "30th-anniversary-nakatsuru-141.full.jsonl#L1",
+      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "completeness": "Complete interview body for the printed page. Includes visible section headings. Excludes profile caption, pull-quote display text duplicated from the body, and decorative imagery.",
+      "transcriptBytes": 3475,
+      "imageBytes": 100224986,
+      "printedPages": [
+        141
+      ],
+      "pdfPageIndices": [
+        142
+      ],
+      "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2"
+    }
+  ],
+  "transcriptPath": "30th-anniversary-nakatsuru-141.full.jsonl",
+  "transcriptBytes": 3475,
+  "transcriptSha256": "f05b6d5341eb6744e960af4b54481a8ce853a4fde4ce5589a9869a6afc0298b6",
+  "review": "Compared all body columns with the rendered page and corrected the closing phrase to 作品になりそうですね。"
+}

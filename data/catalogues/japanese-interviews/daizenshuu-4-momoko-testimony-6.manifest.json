@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "publication": "DRAGON BALL 大全集④ World Guide / Shenlong Times 第4号",
+      "method": "manual visual transcription from local scan; no OCR, network, or translation used",
+      "transcriptLine": 1,
+      "limits": [
+        "This is an invited testimonial about Akira Toriyama and Dragon Ball, not an interview with Dragon Ball production staff. The adjacent illustration/manga on printed page 7 is excluded."
+      ],
+      "status": "complete guest testimony transcription; independent review recommended",
+      "id": "daizenshuu-4-momoko-testimony-6",
+      "printedPage": 6,
+      "transcriptFile": "data/catalogues/japanese-interviews/daizenshuu-4-momoko-testimony-6.jsonl",
+      "title": "I LOVE DRAGON BALL 第4回 さくらももこさん",
+      "transcriptSha256": "fb135a8c5086acdcc2674873f46be65af3ec5ac80e2b99d2a03d262271db5f60",
+      "interviewee": "さくらももこ",
+      "sha256": "e7d1d2fc007d08785276125d74629a3c50291ec9dabc94444c9d4ce679a90490",
+      "contributionType": "guest-testimony",
+      "transcriptBytes": 1428,
+      "dimensions": "6010x4262",
+      "imageBytes": 3349370,
+      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 4 - World Guide (COMPLETE)\\Shenlong Times\\6-7.png"
+    }
+  ]
+}
