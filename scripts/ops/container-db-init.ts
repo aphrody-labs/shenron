@@ -39,7 +39,7 @@ export interface DbInitReport {
 
 export async function runPostgresMigrations(
   databaseUrl: string,
-  dryRun = false
+  dryRun = false,
 ): Promise<{ extensions: string[]; appliedMigrations: string[]; error?: string }> {
   const appliedMigrations: string[] = [];
   const extensions = ["uuid-ossp", "pg_trgm", "unaccent"];
@@ -80,7 +80,7 @@ export async function runPostgresMigrations(
           if (already.length === 0) {
             const filePath = join(SITE_MIGRATIONS_DIR, file);
             const content = await readFile(filePath, "utf8");
-            
+
             // Execute migration statements
             await sql.unsafe(content);
             await sql`
@@ -108,7 +108,7 @@ export async function runPostgresMigrations(
 
 export async function runSqliteMigrations(
   dbPath: string,
-  dryRun = false
+  dryRun = false,
 ): Promise<{ appliedMigrations: string[]; error?: string }> {
   const appliedMigrations: string[] = [];
   try {
@@ -131,7 +131,9 @@ export async function runSqliteMigrations(
 
       for (const file of sqlFiles) {
         if (!dryRun) {
-          const stmt = db.query("SELECT 1 FROM _container_sqlite_migrations WHERE name = ? LIMIT 1;");
+          const stmt = db.query(
+            "SELECT 1 FROM _container_sqlite_migrations WHERE name = ? LIMIT 1;",
+          );
           const already = stmt.get(file);
           if (!already) {
             const filePath = join(BOT_MIGRATIONS_DIR, file);
@@ -156,13 +158,22 @@ export async function runSqliteMigrations(
   }
 }
 
-export async function initContainerDatabases(options: {
-  dryRun?: boolean;
-  postgresOnly?: boolean;
-  sqliteOnly?: boolean;
-} = {}): Promise<DbInitReport> {
+export async function initContainerDatabases(
+  options: {
+    dryRun?: boolean;
+    postgresOnly?: boolean;
+    sqliteOnly?: boolean;
+  } = {},
+): Promise<DbInitReport> {
   const dryRun = options.dryRun ?? false;
-  const dbUrl = process.env.DATABASE_URL ?? "postgres://shenron:shenron_secure_local_dev@127.0.0.1:5432/shenron_site";
+  if (!dryRun) {
+    throw new Error(
+      "Direct container migrations are disabled. Use the documented Aphrody Infra migration procedure; db:push is prohibited.",
+    );
+  }
+  const dbUrl =
+    process.env.DATABASE_URL ??
+    "postgres://shenron:shenron_secure_local_dev@127.0.0.1:5432/shenron_site";
   const sqlitePath = process.env.DATABASE_PATH ?? join(ROOT, "apps", "bot", "data", "bot.db");
 
   const report: DbInitReport = {

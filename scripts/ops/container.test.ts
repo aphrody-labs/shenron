@@ -3,7 +3,9 @@ import { describe, expect, test } from "bun:test";
 import { parseEnvText, serializeEnvMap, prepareContainerSecrets } from "./container-secrets";
 import { initContainerDatabases } from "./container-db-init";
 import { checkDomainDns } from "./ovh-shenron";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
@@ -43,6 +45,41 @@ KEY_WITH_SINGLE='single-val'
     expect(existsSync(join(outDir, "shenron-site.env"))).toBe(true);
     expect(existsSync(join(outDir, "shenron-bot.env"))).toBe(true);
     expect(existsSync(join(outDir, "deploy.env"))).toBe(true);
+  });
+
+  test("development mode never copies production host secrets", async () => {
+    const root = await mkdtemp(join(tmpdir(), "shenron-container-secrets-"));
+    const productionDir = join(root, "production");
+    const devDir = join(root, "development");
+    const outDir = join(root, "out");
+    await mkdir(productionDir);
+    await mkdir(devDir);
+    await writeFile(
+      join(productionDir, "shenron-site.env"),
+      "DATABASE_URL=postgres://production.invalid/shenron\nBETTER_AUTH_SECRET=production-only-secret\n",
+    );
+    await writeFile(
+      join(productionDir, "shenron-bot.env"),
+      "DISCORD_TOKEN_SHENRON=production-token\n",
+    );
+
+    try {
+      const report = await prepareContainerSecrets({
+        isProd: false,
+        outDir,
+        devSecretsDir: devDir,
+      });
+      const site = await readFile(join(outDir, "shenron-site.env"), "utf8");
+      const bot = await readFile(join(outDir, "shenron-bot.env"), "utf8");
+      expect(report.sourcesFound).toEqual([]);
+      expect(site).toContain("127.0.0.1:5432/shenron_site");
+      expect(site).not.toContain("production");
+      expect(bot).not.toContain("DISCORD_TOKEN_SHENRON");
+      expect(statSync(outDir).mode & 0o777).toBe(0o700);
+      for (const name of report.outFiles) expect(statSync(name).mode & 0o777).toBe(0o600);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });
 
@@ -96,4 +133,3 @@ describe("auto-deploy", () => {
     expect(sha).toMatch(/^[0-9a-f]{40}$/);
   });
 });
-

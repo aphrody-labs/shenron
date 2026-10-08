@@ -26,16 +26,11 @@ export interface OvhOpsReport {
   credentials: {
     configured: boolean;
     authType: string;
-    clientIdPrefix?: string;
   };
   dnsChecks: DnsCheckResult[];
   vpsStatus?: {
     checked: boolean;
-    serviceId?: string;
     status?: string;
-    expiration?: string;
-    autoRenew?: boolean;
-    deleteAtExpiration?: boolean;
     alerts?: string[];
     error?: string;
   };
@@ -65,64 +60,53 @@ export async function checkDomainDns(hostname: string): Promise<DnsCheckResult> 
   }
 }
 
+async function runAphrodyOvh(args: string[]): Promise<{ code: number; stdout: string }> {
+  try {
+    const proc = Bun.spawn(["aphrody", "ovh", ...args], {
+      stdout: "pipe",
+      stderr: "ignore",
+    });
+    const [stdout, code] = await Promise.all([new Response(proc.stdout).text(), proc.exited]);
+    return { code, stdout };
+  } catch {
+    return { code: 127, stdout: "" };
+  }
+}
+
 export async function runOvhChecks(): Promise<OvhOpsReport> {
   const timestamp = new Date().toISOString();
-
-  // 1. Credentials discovery
-  const clientId = process.env.OVH_CLIENT_ID;
-  const clientSecret = process.env.OVH_CLIENT_SECRET;
-  const appKey = process.env.OVH_APPLICATION_KEY;
-
-  const hasOauth = Boolean(clientId && clientSecret);
-  const hasAppKey = Boolean(appKey);
-  const configured = hasOauth || hasAppKey;
-
+  const auth = await runAphrodyOvh(["auth", "status", "--json"]);
   const credentials = {
-    configured,
-    authType: hasOauth ? "OAuth2 Service Account" : hasAppKey ? "Application Key" : "None configured",
-    clientIdPrefix: clientId ? `${clientId.slice(0, 8)}...` : undefined,
+    configured: auth.code === 0,
+    authType: auth.code === 0 ? "Aphrody OVH credentials" : "Unavailable",
   };
 
-  // 2. DNS resolution check
   const dnsChecks: DnsCheckResult[] = await Promise.all(
-    DOMAINS_TO_CHECK.map((domain) => checkDomainDns(domain))
+    DOMAINS_TO_CHECK.map((domain) => checkDomainDns(domain)),
   );
 
-  // 3. VPS & Account check via Aphrody OVH if available
   let vpsStatus: OvhOpsReport["vpsStatus"] = { checked: false };
-  if (configured) {
-    try {
-      // Attempt import of Aphrody OVH SDK
-      const ovhSdk = await import("C:/aphrody/packages/infra/ovh/src/index.ts").catch(() => null);
-      if (ovhSdk && clientId && clientSecret) {
-        const client = new ovhSdk.OvhClient({
-          endpoint: "ovh-eu",
-          clientId,
-          clientSecret,
-        });
-        const vps = new ovhSdk.OvhVps(client);
-        const vpsList = await vps.listVps().catch(() => [] as string[]);
-        
-        vpsStatus = {
-          checked: true,
-          serviceId: vpsList[0],
-          status: "active",
-          autoRenew: true,
-          deleteAtExpiration: false,
-          alerts: [],
-        };
-      } else {
-        vpsStatus = {
-          checked: false,
-          error: "SDK Aphrody OVH non accessible ou configuration incomplète",
-        };
-      }
-    } catch (err) {
+  if (credentials.configured) {
+    const watch = await runAphrodyOvh(["services", "watch", "--days", "14"]);
+    if (watch.code === 0) {
+      vpsStatus = { checked: true, status: "healthy", alerts: [] };
+    } else if (watch.code === 1) {
+      vpsStatus = {
+        checked: true,
+        status: "alerts",
+        alerts: ["Aphrody OVH reports services requiring attention."],
+      };
+    } else {
       vpsStatus = {
         checked: false,
-        error: err instanceof Error ? err.message : String(err),
+        error: "Aphrody OVH service check failed; details were withheld.",
       };
     }
+  } else {
+    vpsStatus = {
+      checked: false,
+      error: "Aphrody OVH credentials or CLI are unavailable.",
+    };
   }
 
   return {
@@ -143,13 +127,17 @@ async function main() {
       console.log(JSON.stringify(report, null, 2));
     } else {
       console.log(`[OVH Ops ${report.timestamp}]`);
-      console.log(`  Identifiants: ${report.credentials.authType} (${report.credentials.configured ? "OK" : "Non configurés"})`);
+      console.log(
+        `  Identifiants: ${report.credentials.authType} (${report.credentials.configured ? "OK" : "Non configurés"})`,
+      );
       console.log("  Résolution DNS:");
       for (const d of report.dnsChecks) {
-        console.log(`    - ${d.host}: ${d.ok ? `OK (${d.resolvedIp?.join(", ")})` : `ÉCHEC (${d.error})`}`);
+        console.log(
+          `    - ${d.host}: ${d.ok ? `OK (${d.resolvedIp?.join(", ")})` : `ÉCHEC (${d.error})`}`,
+        );
       }
       if (report.vpsStatus?.checked) {
-        console.log(`  VPS: ${report.vpsStatus.serviceId ?? "aucun"} (Statut: ${report.vpsStatus.status})`);
+        console.log(`  Services OVH: ${report.vpsStatus.status ?? "inconnu"}`);
       }
     }
   };
