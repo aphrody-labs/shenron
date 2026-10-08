@@ -5,6 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- CLAUDE.md est un lien symbolique vers AGENTS.md : un seul fichier pour tous les agents. -->
 
+**Avant toute modification de code, lire [START-HERE.md](START-HERE.md)** (équipe, règles, hôtes, tunnel,
+contrôle à distance, travaux en cours ; source canonique dans `aphrody-labs/aphrody`).
+
 Shenron est le produit de dragonballfr.com : site, bot Discord, API, chaîne éditoriale (OCR et
 traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de code Koharu), RAG
 et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
