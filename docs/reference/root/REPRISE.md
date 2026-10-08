@@ -40,6 +40,11 @@
    * Pack complet sous `deploy/connectors/omar/GOAL-NOCTURNE.md` détaillant les 6 phases de travail nocturne.
    * Transmission et notification sur Discord (`#prompts` et `#admin-console`) avec pièces jointes intégrales.
    * Synchronisation et validation des 6 quality gates monorepo.
+10. **Lecteurs Médias & Rendu Canvas / WebGPU WASM Unifié** :
+   * Correction des bugs des lecteurs Manga (normalisation des éditions, réinitialisation de page), Databooks (résilience des requêtes d'OCR) et Épisodes vidéo (gestion du probing timeout, synchronisation de langue, nettoyage audio au démontage).
+   * Moteur universel `ShenronCanvasEngine` (`packages/engine/src/unified_canvas.ts`) unifiant WebGPU, WASM (`koharu-canvas`) et Canvas2D avec rendu de bulles procédurales et typographie japonaise.
+   * Intégration frontend complète : composant `ShenronGpuCanvas` (`apps/site/src/components/canvas/ShenronGpuCanvas.tsx`), fond Ki énergétique réactif (`KiCanvas.tsx`) et vitrine interactive WebGPU/WASM (`/canvas`).
+   * 100% typecheck et tests validés, commit `f3532461` et déploiement synchronisé sur `origin/main`.
 
 
 
