@@ -117,3 +117,11 @@ L’ordre le plus solide est interne au film : Janemba de base est battu par Gok
 Placer Super Janemba au-dessus de Super Buu est plausible dans l’argument de Daniel, mais dépend d’une reconstruction sur le ki maléfique recueilli par la machine. Le situer près de Buutenks ou Buuhan demeure de faible confiance : les indicateurs tirés des jeux et cartes sont hétérogènes et l’article lui-même donne deux conclusions incompatibles, l’une proche de Buutenks, l’autre de Buuhan. Gogeta SSJ battant Janemba n’établit pas à lui seul un rapport numérique entre Gogeta et Vegetto.
 
 **Références :** [*Chōzenshū 3*, planche 149](https://dragonballfr.com/wiki/databooks/18#planche-149) et [planche 284](https://dragonballfr.com/wiki/databooks/18#planche-284) ; film *Fusion Reborn* ; `var/reports/capsule-commentary-janemba-agent.md` et `var/reports/capsule-commentary-critical-review.md`.
+
+## Question 370 : Quel multiplicateur Toriyama associait-il au Super Saiyan ?
+
+Dans le Q&A du *Super Exciting Guide: Story Volume* (4 mars 2009, pp. 87–93), Toriyama explique que les cheveux dorés réduisaient le temps d’encrage de l’assistant et rendaient le gain visuellement lisible. Dans la même réponse, il qualifie de « un peu exagéré » le ×50 associé à cette transformation, et dit que son ressenti d’auteur en dessinant était d’environ ×10 par rapport à l’état d’avant transformation.
+
+Cette phrase constitue un indice direct de l’estimation personnelle de Toriyama; elle doit être citée comme telle. Elle ne fournit pas de valeurs de puissance d’entrée, de mesure expérimentale, ni de méthode de calcul. Il faut donc rapporter les deux éléments ensemble — ×50 jugé exagéré et ressenti d’environ ×10 — sans en faire une équation universelle ni les confondre avec le « plusieurs dizaines de fois » propre à Gogeta SSJ4 dans le *GT Perfect File*.
+
+**Référence :** [Kanzenshuu, *Super Exciting Guide: Story Volume — The Truth About Dragon Ball*](https://www.kanzenshuu.com/translations/seg-story-volume-truth-about-dragon-ball/), entretien Q&A de Toriyama; copie locale `data/source-acquisition/kanzenshuu/non-interviews/seg-story-volume-truth-about-dragon-ball.html`.
