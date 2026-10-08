@@ -90,6 +90,15 @@ export function VideoLecteurs({
   // page —, on le charge au clic et l'on bascule sur un message s'il échoue.
   const [voEchec, setVoEchec] = useState(false);
 
+  // Synchronise la langue active si la sélection courante n'existe pas dans le lot d'épisode
+  useEffect(() => {
+    if (hasLangs && !langs.includes(lang as "vf" | "vostfr")) {
+      setLang(langs[0] ?? "");
+      setActive(0);
+      setStatus("probing");
+    }
+  }, [hasLangs, langs, lang]);
+
   // Lecteurs de la langue choisie. Les lecteurs SANS tag de langue restent
   // toujours visibles (sinon, en cas de data mixte, ils disparaîtraient).
   const list = useMemo(
@@ -97,22 +106,28 @@ export function VideoLecteurs({
     [players, hasLangs, lang],
   );
 
-  const current = list[active] ?? list[0];
+  const safeActive = active < list.length ? active : 0;
+  const current = list[safeActive] ?? list[0] ?? players[0];
   const enVo = modeVo && aVo;
 
-  // Les embeds tiers ne permettent pas toujours un HEAD/CORS fiable. On sonde
-  // donc le lecteur visible : load = source joignable, error ou timeout = on
-  // passe automatiquement au suivant. Le délai évite qu'un hébergeur muet
-  // bloque la fiche indéfiniment.
+  // Réinitialise le statut de sonde à chaque changement de lecteur ou de langue
   useEffect(() => {
-    if (enVo || !current) return;
-    setStatus("probing");
+    if (!enVo && current) {
+      setStatus("probing");
+    }
+  }, [safeActive, current?.embedUrl, enVo]);
+
+  // Les embeds tiers ne permettent pas toujours un HEAD/CORS fiable. On sonde
+  // le lecteur visible uniquement tant qu'il n'a pas confirmé son chargement (ready).
+  // Dès que `onLoad` passe le statut à `ready`, ce timer est annulé et ne s'exécute pas.
+  useEffect(() => {
+    if (enVo || !current || status === "ready") return;
     const timeout = window.setTimeout(() => {
-      if (active < list.length - 1) setActive((index) => index + 1);
+      if (safeActive < list.length - 1) setActive((index) => index + 1);
       else setStatus("failed");
     }, 8_000);
     return () => window.clearTimeout(timeout);
-  }, [active, current, enVo, list.length]);
+  }, [safeActive, current, enVo, list.length, status]);
 
   // Choix de version : langues des lecteurs externes (ou « Lecteurs » s'ils ne
   // portent aucun tag), puis la VO quand elle existe.

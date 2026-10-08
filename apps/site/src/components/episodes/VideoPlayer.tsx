@@ -98,15 +98,24 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
 
     return () => {
       cancelled = true;
+      if (videoRef.current) {
+        try {
+          videoRef.current.pause();
+        } catch {
+          // ignore
+        }
+      }
       hls?.destroy();
     };
   }, [src]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if user is typing in an input/textarea
-      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "select") return;
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const tag = target.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || target.isContentEditable)
+        return;
 
       const video = videoRef.current;
       if (!video) return;
@@ -116,7 +125,7 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
         case "k":
           e.preventDefault();
           if (video.paused) {
-            void video.play();
+            void video.play().catch(() => {});
           } else {
             video.pause();
           }
@@ -124,22 +133,25 @@ export function VideoPlayer({ src, title, poster, subtitles, onError }: VideoPla
         case "j":
         case "arrowleft":
           e.preventDefault();
-          video.currentTime = Math.max(0, video.currentTime - (e.key === "j" ? 10 : 5));
+          video.currentTime = Math.max(0, (video.currentTime || 0) - (e.key === "j" ? 10 : 5));
           break;
         case "l":
         case "arrowright":
           e.preventDefault();
-          video.currentTime = Math.min(
-            video.duration || Infinity,
-            video.currentTime + (e.key === "l" ? 10 : 5),
-          );
+          {
+            const maxDuration = Number.isFinite(video.duration) ? video.duration : Infinity;
+            video.currentTime = Math.min(
+              maxDuration,
+              (video.currentTime || 0) + (e.key === "l" ? 10 : 5),
+            );
+          }
           break;
         case "f":
           e.preventDefault();
           if (!document.fullscreenElement) {
-            void video.requestFullscreen();
+            void video.requestFullscreen().catch(() => {});
           } else {
-            void document.exitFullscreen();
+            void document.exitFullscreen().catch(() => {});
           }
           break;
         case "m":

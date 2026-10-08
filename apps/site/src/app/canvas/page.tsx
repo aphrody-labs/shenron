@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
 import { PageHeader } from "@/components/PageHeader";
 import { API_URL as API } from "@/lib/config";
+import { UnifiedCanvasShowcase } from "@/components/site/UnifiedCanvasShowcase";
 
 export const metadata: Metadata = {
   title: "Cartes et visuels générés",
@@ -37,12 +38,17 @@ export default function CanvasShowcase() {
   return (
     <PageShell width="default">
       <PageHeader
-        eyebrow="Rendu d'images"
-        title="Canvas"
-        className="mb-10"
-        subtitle="Le bot génère des images PNG/WebP/AVIF via Skia (napi-rs). Aperçus live depuis l'API publique."
+        eyebrow="Rendu Graphique Shenron"
+        title="Canvas & WebGPU"
+        className="mb-8"
+        subtitle="Moteur de rendu unifié combinant WebGPU matériel, WebAssembly koharu-canvas et Canvas 2D. Démonstration interactive de particules Ki et de planches manga vectorielles."
       />
 
+      <UnifiedCanvasShowcase />
+
+      <h2 className="text-xl font-saiyan text-dbz-yellow uppercase tracking-wide mb-4">
+        Rendus Serveur & Cartes Générées
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {SAMPLES.map((s) => (
           <article key={s.path} className="dbz-panel overflow-hidden flex flex-col">

@@ -13,3 +13,4 @@ export * from "./game";
 export * from "./canvas";
 export * from "./render";
 export * from "./wasm";
+export * from "./unified_canvas";

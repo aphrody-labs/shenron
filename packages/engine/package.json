@@ -12,6 +12,7 @@
     "./canvas": "./src/canvas.ts",
     "./render": "./src/render.ts",
     "./wasm": "./src/wasm.ts",
+    "./unified_canvas": "./src/unified_canvas.ts",
     "./types": "./src/types.ts"
   },
   "scripts": {
@@ -32,6 +33,7 @@
       "./canvas": "pure",
       "./render": "pure",
       "./wasm": "pure",
+      "./unified_canvas": "pure",
       "./types": "pure"
     }
   }

@@ -177,7 +177,7 @@ export default async function MangaReaderPage({ params }: { params: Promise<{ id
         {chapter.volume_id !== null &&
           (chapter.series === "DB" || chapter.series === SERIE_COULEUR) && (
             <Link
-              href={`/wiki/manga/volume/${chapter.volume_id}?edition=${couleur ? "nb" : "couleur"}`}
+              href={`/wiki/manga/volume/${chapter.volume_id}?edition=${couleur ? "nb" : "color"}`}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 font-display text-sm font-semibold text-white/85 transition-colors hover:border-dbz-orange/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             >
               {couleur ? (

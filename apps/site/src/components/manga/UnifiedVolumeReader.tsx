@@ -66,7 +66,8 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
     ],
     [chapters, formatChapterTitle, t],
   );
-  const initialEdition = searchParams?.get("edition") ?? "nb";
+  const rawEdition = searchParams?.get("edition") ?? "nb";
+  const initialEdition = rawEdition === "color" || rawEdition === "couleur" ? "color" : "nb";
   const initialChapterNumber = Number(searchParams?.get("chapter"));
   const initialChapter = chapters.find(
     (chapter) =>

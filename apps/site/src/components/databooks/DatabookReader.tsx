@@ -17,15 +17,20 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   const { prechargement } = useReglages();
   const loadTranscriptions = useCallback(
     async (numbers: number[], signal: AbortSignal): Promise<Record<string, string>> => {
-      if (bookId == null) return {};
-      const response = await fetch(`/api/databooks/${bookId}/texts?pages=${numbers.join(",")}`, {
-        signal,
-      });
-      if (!response.ok) return {};
-      // `texts`; the former `textes` is read from a server that predates the rename.
-      const body: { texts?: Record<string, string>; textes?: Record<string, string> } =
-        await response.json();
-      return body.texts ?? body.textes ?? {};
+      if (bookId == null || numbers.length === 0) return {};
+      try {
+        const response = await fetch(`/api/databooks/${bookId}/texts?pages=${numbers.join(",")}`, {
+          signal,
+        });
+        if (!response.ok) return {};
+        // `texts`; the former `textes` is read from a server that predates the rename.
+        const body: { texts?: Record<string, string>; textes?: Record<string, string> } =
+          await response.json();
+        return body.texts ?? body.textes ?? {};
+      } catch (err: unknown) {
+        if ((err as { name?: string })?.name === "AbortError") throw err;
+        return {};
+      }
     },
     [bookId],
   );

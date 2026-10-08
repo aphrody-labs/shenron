@@ -35,9 +35,13 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     // `?page=` ; l'ancien `?planche=` (liens déjà partagés) reste lu.
     const query = new URLSearchParams(window.location.search);
     const requested = Number(query.get("page") ?? query.get("planche"));
-    if (Number.isFinite(requested) && requested >= 1) setInitialPage(Math.trunc(requested));
+    if (Number.isFinite(requested) && requested >= 1) {
+      setInitialPage(Math.trunc(requested));
+    } else {
+      setInitialPage(1);
+    }
     setReady(true);
-  }, []);
+  }, [chapterId]);
   useEffect(() => {
     if (!chapterId) return;
     try {
@@ -52,7 +56,7 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     }
   }, [chapterId]);
   const [currentPage, setCurrentPage] = useState(1);
-  useEffect(() => setCurrentPage(initialPage), [initialPage]);
+  useEffect(() => setCurrentPage(initialPage), [initialPage, chapterId]);
   const onPageChange = useCallback(
     (page: number) => {
       setCurrentPage(page);
@@ -76,7 +80,7 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
   return (
     <div className="m3-reader--dragon-ball">
       <BaseMangaReader
-        key={initialPage}
+        key={`${chapterId ?? "ch"}-${initialPage}`}
         {...props}
         initialPage={initialPage}
         onPageChange={onPageChange}

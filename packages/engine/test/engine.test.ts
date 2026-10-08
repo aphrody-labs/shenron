@@ -145,4 +145,106 @@ describe("@shenron/engine — Unified Full-Stack Game Engine", () => {
     expect(packet.fighters[0].name).toBe("Future Trunks");
     expect(packet.fighters[1].name).toBe("Frieza");
   });
+
+  it("manages unified canvas engine viewport, pan, zoom and coordinates", () => {
+    const { ShenronCanvasEngine } = require("../src");
+    const engine = new ShenronCanvasEngine({ preference: "canvas2d" });
+    const vp = engine.getViewport();
+    expect(vp.zoom).toBe(1);
+    expect(vp.panX).toBe(0);
+    expect(vp.panY).toBe(0);
+
+    engine.setZoom(2);
+    expect(engine.getViewport().zoom).toBe(2);
+
+    engine.setPan(50, -30);
+    expect(engine.getViewport().panX).toBe(50);
+    expect(engine.getViewport().panY).toBe(-30);
+
+    const world = engine.screenToWorld({ x: 450, y: 270 });
+    const screen = engine.worldToScreen(world);
+    expect(Math.round(screen.x)).toBe(450);
+    expect(Math.round(screen.y)).toBe(270);
+
+    engine.resetView();
+    expect(engine.getViewport().zoom).toBe(1);
+  });
+
+  it("renders procedural manga boards and speech bubbles", () => {
+    const { ShenronCanvasEngine } = require("../src");
+    const engine = new ShenronCanvasEngine({ preference: "canvas2d" });
+
+    // Mock canvas and 2D context
+    const mockCtx = {
+      save: () => {},
+      restore: () => {},
+      scale: () => {},
+      translate: () => {},
+      rotate: () => {},
+      clearRect: () => {},
+      fillRect: () => {},
+      strokeRect: () => {},
+      beginPath: () => {},
+      closePath: () => {},
+      moveTo: () => {},
+      lineTo: () => {},
+      quadraticCurveTo: () => {},
+      bezierCurveTo: () => {},
+      fill: () => {},
+      stroke: () => {},
+      fillText: () => {},
+      rect: () => {},
+      clip: () => {},
+      arc: () => {},
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+    };
+
+    const mockCanvas = {
+      width: 800,
+      height: 600,
+      style: {},
+      getContext: () => mockCtx,
+    };
+
+    engine.initialize(mockCanvas as any);
+    expect(engine.getBackend()).toBe("canvas2d");
+
+    // Render manga board with panels and speech bubbles
+    engine.renderMangaBoard({
+      width: 800,
+      height: 600,
+      background: "#ffffff",
+      panels: [
+        { id: "p1", x: 20, y: 20, width: 360, height: 560, borderWidth: 3, screentone: "dots" },
+        { id: "p2", x: 400, y: 20, width: 380, height: 270, borderWidth: 3, screentone: "lines" },
+      ],
+      bubbles: [
+        {
+          id: "b1",
+          x: 60,
+          y: 60,
+          width: 140,
+          height: 100,
+          style: "shout",
+          text: "KA-ME-HA-ME-HA!",
+          fontSize: 16,
+        },
+        {
+          id: "b2",
+          x: 440,
+          y: 60,
+          width: 120,
+          height: 140,
+          style: "normal",
+          text: "かめはめ波",
+          vertical: true,
+          fontSize: 18,
+        },
+      ],
+    });
+
+    // Render Ki Effect
+    engine.renderKiEffect({ count: 50, baseColor: "#a855f7", accentColor: "#38bdf8" });
+    engine.dispose();
+  });
 });

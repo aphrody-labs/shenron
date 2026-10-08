@@ -187,8 +187,12 @@ function useTextesPlanches(
         });
         return undefined;
       })
-      .catch(() => {
-        /* hors ligne ou navigation : la planche reste sans texte */
+      .catch((err: unknown) => {
+        // En cas d'erreur réseau (hors annulation par unmount), retire les numéros
+        // pour permettre une nouvelle tentative au prochain défilement
+        if ((err as { name?: string })?.name !== "AbortError") {
+          for (const n of aDemander) demandes.current.delete(n);
+        }
       });
     return () => stop.abort();
   }, [manquants, loadTranscriptions]);
