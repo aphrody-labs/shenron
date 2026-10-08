@@ -51,3 +51,43 @@ Le *GT Perfect File Vol. 2*, planche 13, emploie 数十倍 au sujet de la puissa
 ## Règle de méthode retenue
 
 Toujours séparer le texte explicite, sa traduction, l’interprétation de l’auteur étudié et notre propre déduction. Un grand nombre de médias, d’images ou de formulations ne remplace pas l’examen de leur provenance, de leur date et de leur contexte. Une conclusion de puissance reste qualitative si la source ne chiffre pas le rapport.
+
+## Question 66 : Que représente réellement le catalogue des 267 interviews ?
+
+### Réponse consolidée
+
+Ce sont 267 notices, pas 267 transcriptions intégrales. Les trois périodes auditées comptent 89 entrées pour 1980–2009, 150 pour 2010–2019 et 28 pour 2020–2026. Le décompte par année montre des ensembles particulièrement denses en 2004 (30), 2013 (44), 2016 (20), 2018 (27) et 2014 (19); les sujets suivent l’actualité éditoriale : Dragon Box et guides au début des années 2000, *Battle of Gods* en 2013, *Super* et ses équipes à partir de 2015, puis *Broly*, *Super Hero*, *Daima* et les jeux récents.
+
+L’audit des fichiers confirme un résumé et des informations clés pour chacune des 267 notices. Les formes sont diverses : 67 sont typées Q/R, 21 « interview », 16 audio-interviews et plusieurs autres sont des extraits, tables rondes, vidéos, textes écrits ou postfaces. Dans les données annuelles, 138 notices n’ont ni champ `kind` ni `source.format` normalisé; l’absence de ces champs n’autorise pas à inventer un format. Certaines entrées sont indexées comme interviews alors qu’il s’agit d’une postface, d’un billet à synopsis ou d’un entretien audio dont le contenu n’est pas transcrit. En réponse, préciser le type réel de source et limiter chaque attribution à ce que le texte ou l’enregistrement permet de vérifier.
+
+**Références de travail :** catalogue et annuelles dans `data/catalogues/kanzenshuu/`; [couverture finale](../../../var/reports/kanzenshuu-interviews-final-coverage.md); [audit 2020–2026](../../../var/reports/kanzenshuu-interview-annual-audit-2020-2026.md).
+
+## Question 67 : Le manga tranche-t-il Kid Buu contre Buuhan ?
+
+### Réponse consolidée
+
+Le manga ne donne pas de comparaison directe et contrôlée entre Buuhan et Kid Buu. Il montre clairement que Goku SSJ3 ne parvient pas à vaincre Kid Buu seul dans les circonstances du combat final; cette observation est solide pour ce combat précis. Elle ne suffit pas à démontrer que Kid Buu dépasse Buuhan, car Goku affronte les deux formes dans des situations, avec des réserves et des contraintes différentes. Inversement, l’absorption de Gohan rend Buuhan plus puissant, mais ne fournit pas non plus à elle seule une mesure comparative certaine.
+
+L’explication selon laquelle les absorptions des Kaiōshin ont diminué la puissance de Buu est plausible à partir du chapitre 508, mais l’ampleur et la portée exacte de cet effet restent interprétatives. Les propos de Vegeta sur Goku « numéro un » ne démontrent pas isolément un classement absolu de Goku face à Gohan ou de Kid Buu face à Buuhan. La conclusion de Daniel en faveur de Kid Buu est défendable comme synthèse de plusieurs indices, mais le manga seul ne l’établit pas de façon incontestable. Garder le verdict ouvert et distinguer manga, anime, guides et jeux.
+
+**Références de travail :** `var/reports/capsule-commentary-buu-agent.md` et `var/reports/capsule-commentary-critical-review.md`.
+
+## Question 68 : Quel ordre de puissance peut-on défendre pour Broly Z ?
+
+### Réponse consolidée
+
+Il faut séparer les trois films et le résultat des scènes de l’échelle déduite. Dans le premier film, Broly surclasse les adversaires montrés individuellement; Goku ne le vainc qu’après un transfert collectif d’énergie dont le niveau n’est pas quantifié. Cela ne permet pas de mesurer exactement Broly contre Cell. Le meilleur placement de travail le situe autour de Cell Parfait, possiblement un peu en dessous, avec une confiance faible à moyenne.
+
+Dans *Second Coming*, Broly domine le Gohan affaibli tel qu’il apparaît dans le film. Cela ne prouve pas qu’il dépasse le Gohan SSJ2 des Cell Games; un classement plus haut ne découle pas directement de la scène. Bio-Broly est un clone distinct; son état initial semble comparable au Broly de *Second Coming*, mais sa croissance dans la matière vivante n’est pas mesurée. Sa vulnérabilité à l’eau explique l’issue du film sans mesurer sa force brute. Le chiffre d’environ 15 % proposé dans l’article de Daniel reste une illustration spéculative.
+
+**Références de travail :** `var/reports/capsule-commentary-broly-agent.md` et `data/catalogues/capsule-commentary/articles/broly.json`.
+
+## Question 69 : Où placer Super Janemba face à Goku SSJ3 et aux formes de Buu ?
+
+### Réponse consolidée
+
+L’ordre le plus solide est interne au film : Janemba de base est battu par Goku SSJ3, Super Janemba représente une menace supérieure et Gogeta SSJ le vainc nettement. Les guides décrivant Super Janemba comme supérieur au SSJ3 renforcent cette lecture. L’épée accroît fortement sa menace en combat, sans preuve qu’elle augmente son ki d’un facteur déterminé.
+
+Placer Super Janemba au-dessus de Super Buu est plausible dans l’argument de Daniel, mais dépend d’une reconstruction sur le ki maléfique recueilli par la machine. Le situer près de Buutenks ou Buuhan demeure de faible confiance : les indicateurs tirés des jeux et cartes sont hétérogènes et l’article lui-même donne deux conclusions incompatibles, l’une proche de Buutenks, l’autre de Buuhan. Gogeta SSJ battant Janemba n’établit pas à lui seul un rapport numérique entre Gogeta et Vegetto.
+
+**Références de travail :** `var/reports/capsule-commentary-janemba-agent.md` et `var/reports/capsule-commentary-critical-review.md`.
