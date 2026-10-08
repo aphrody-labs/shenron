@@ -30,6 +30,8 @@ Ce répertoire contient les cycles d'entraînement dialectique intensif de Shenr
     - Propriétés et limites des Senzus, condition de pureté du Kinto'un, seuil de rupture des Scouters, physique des Capsules Hoi-Poi, fréquences du Dragon Radar.
 12. [Cycle 12 : L'Anthologie des Pièges, Mythes et Fanon Démystifié](cycle-12-anthologie-pieges-et-fanon.md) (Q56 à Q60)
     - Mythe du Super Saiyan 5 et David Montiel Franco (Tablos 1999), fausses citations de Toriyama, statut des 13 films Toei 1986-1995, neutralisation des poings de Beerus et Goku, charte des 5 Rangs Canoniques de Shenron.
+13. [Cycle 13 : Archives, analyses et fusions](cycle-13-archives-et-fusions.md) (Q61 à Q65)
+    - Couverture et limites des interviews Kanzenshuu, statut critique des thèses de Daniel sur Buu/Broly/Janemba, portée des manifestes d’images, formulations des databooks sur Potara et Gogeta SSJ4.
 
 ---
 
