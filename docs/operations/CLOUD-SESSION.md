@@ -6,8 +6,9 @@ mène le travail de bout en bout, du code à la production, sans humain dans la 
 ## Au démarrage (hooks `SessionStart`)
 1. `scripts/dev/cloud-setup.sh --background` : Rust, Bun, uv, Graphify, outils de build, dépendances.
 2. `scripts/dev/cloud-ssh.sh` : écrit les alias SSH `vps` et `dbfr` depuis l'environnement et teste la connexion.
-3. `scripts/dev/session-start.ts` : injecte `docs/reference/root/REPRISE.md` (chantiers ouverts), l'état Git
-   et l'état du SSH ; la session reprend le plan et les objectifs sans qu'on les lui redise.
+3. `scripts/dev/session-start.ts` : injecte `docs/reference/root/REPRISE.md` (chantiers ouverts),
+   `data/home/MEMORY.md` (mémoire privée si présente), l'état Git et l'état du SSH ; la session reprend
+   le plan et les éléments mémorisés sans qu'on les lui redise.
 
 ## Secrets de l'environnement cloud (jamais dans Git)
 | Variable | Rôle |

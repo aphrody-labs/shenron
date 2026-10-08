@@ -6,12 +6,20 @@ import { join } from "node:path";
 
 const root = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const reprisePath = join(root, "docs/reference/root/REPRISE.md");
+const memoryPath = join(root, "data/home/MEMORY.md");
 const reprise = existsSync(reprisePath)
   ? await Bun.file(reprisePath).text()
   : "(REPRISE.md absent)";
+const memory = existsSync(memoryPath)
+  ? await Bun.file(memoryPath).text()
+  : "(aucune mémoire privée : data/home/MEMORY.md absent)";
 
 async function git(...args: string[]): Promise<string> {
-  const proc = Bun.spawn(["git", ...args], { cwd: root, stdout: "pipe", stderr: "ignore" });
+  const proc = Bun.spawn(["git", "-c", "safe.directory=*", ...args], {
+    cwd: root,
+    stdout: "pipe",
+    stderr: "ignore",
+  });
   const out = await new Response(proc.stdout).text();
   await proc.exited;
   return out.trim();
@@ -38,6 +46,8 @@ const context = [
     : "Arbre propre.",
   "--- REPRISE ---",
   reprise,
+  "--- MÉMOIRE PRIVÉE ---",
+  memory,
 ].join("\n");
 
 console.log(
