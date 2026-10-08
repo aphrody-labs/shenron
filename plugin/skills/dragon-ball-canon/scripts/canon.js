@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : apps/site/src/lib/canon-engine.ts, scripts/plugin/src/canon.ts
-// Révision : db119c0f (2026-10-08)
+// Révision : db119c0f+modifications (2026-10-08)
 // apps/site/src/lib/canon-engine.ts
 var CANON_TIERS = [
   "CANON_ABSOLU",
@@ -842,11 +842,7 @@ var CANON_DATABASE = [
     ],
     verdict: "Majin Buu Pur (Kid Buu) est plus fort que Majin Buu ayant absorb\xE9 Gohan (Buuhan).",
     explanation: "Kid Buu est la forme originelle et ultime de Majin Buu, incarnation absolue du mal et de la destruction sans frein ni bride morale. \xC9tabli \xE0 travers l'ensemble des m\xE9dias officiels de Dragon Ball comme l'adversaire supr\xEAme et qualifi\xE9 d'\xAB ennemi le plus fort de l'univers \xBB (Daizenshuu 2), il repr\xE9sente le sommet de dangerosit\xE9 et d'invuln\xE9rabilit\xE9 de Majin Buu, surpassant Buuhan et exigeant les forces vives du cosmos entier concentr\xE9es dans le Super Genkidama pour \xEAtre an\xE9anti.",
-    sources: [
-      "Manga Dragon Ball Tome 42",
-      "Daizenshuu 2 : Story Guide",
-      "Anime Dragon Ball Z"
-    ]
+    sources: ["Manga Dragon Ball Tome 42", "Daizenshuu 2 : Story Guide", "Anime Dragon Ball Z"]
   },
   {
     id: "goku-ssj3-vs-ultimate-gohan",
@@ -2122,7 +2118,7 @@ var CATEGORIES = new Set([
 ]);
 
 // scripts/plugin/src/canon.ts
-var INSTANTANE = typeof { revision: "db119c0f", date: "2026-10-08", source: "apps/site/src/lib/canon-engine.ts" } === "undefined" ? { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" } : { revision: "db119c0f", date: "2026-10-08", source: "apps/site/src/lib/canon-engine.ts" };
+var INSTANTANE = typeof { revision: "db119c0f+modifications", date: "2026-10-08", source: "apps/site/src/lib/canon-engine.ts" } === "undefined" ? { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" } : { revision: "db119c0f+modifications", date: "2026-10-08", source: "apps/site/src/lib/canon-engine.ts" };
 var SITE = "https://dragonballfr.com";
 function statut(v) {
   const o = v.origine;

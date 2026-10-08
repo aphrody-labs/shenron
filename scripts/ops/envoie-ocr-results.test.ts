@@ -35,8 +35,7 @@ function fakeNativeExecutor(remoteHome = "/home/ocr user's home"): NativeCommand
     if (call[0] === "sftp") return { code: 0, stdout: "", stderr: "" };
     if (call[0] === "exec" && call.includes("--cmd")) {
       const command = call[call.indexOf("--cmd") + 1]!;
-      if (command.startsWith("printf"))
-        return { code: 0, stdout: `${remoteHome}\n`, stderr: "" };
+      if (command.startsWith("printf")) return { code: 0, stdout: `${remoteHome}\n`, stderr: "" };
       if (command.includes("recoit-ocr-results.ts"))
         return { code: 0, stdout: '{"ok":true}\n', stderr: "" };
     }

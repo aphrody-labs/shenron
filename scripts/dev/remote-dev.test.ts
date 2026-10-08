@@ -2,7 +2,7 @@
 import { describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative, sep } from "node:path";
 import {
   DEFAULT_CONFIG,
   KEEP_IN_MAIN,
@@ -11,6 +11,9 @@ import {
   shellQuote,
   vitalTarArgs,
 } from "./remote-dev.ts";
+
+/** Path relative to the filesystem root, as tar -C / expects (drive-less on Windows). */
+const fromRoot = (path: string) => relative("/", path);
 
 function tree(paths: string[]): string {
   const root = mkdtempSync(join(tmpdir(), "remote-dev-"));
@@ -32,19 +35,18 @@ describe("regenerablePaths", () => {
       "data/home/memory",
       "vendor/codex/node_modules",
     ]);
-    expect(regenerablePaths(root).map((p) => p.slice(root.length + 1))).toEqual([
-      "apps/site/.next-dev",
-      "node_modules",
-      "packages/ui/node_modules",
-      "target",
-    ]);
+    expect(
+      regenerablePaths(root).map((p) => p.slice(root.length + 1).replaceAll(sep, "/")),
+    ).toEqual(["apps/site/.next-dev", "node_modules", "packages/ui/node_modules", "target"]);
   });
 
   test("keeps the main checkout's node_modules", () => {
     const root = tree(["node_modules/a", "apps/bot/node_modules/b", "dist/x"]);
-    expect(regenerablePaths(root, KEEP_IN_MAIN).map((p) => p.slice(root.length + 1))).toEqual([
-      "dist",
-    ]);
+    expect(
+      regenerablePaths(root, KEEP_IN_MAIN).map((p) =>
+        p.slice(root.length + 1).replaceAll(sep, "/"),
+      ),
+    ).toEqual(["dist"]);
   });
 });
 
@@ -54,12 +56,12 @@ describe("vitalTarArgs", () => {
     const home = tree([".aphrody/private/shenron/home"]);
     const args = vitalTarArgs(root, home);
     const members = args.slice(args.indexOf("-C") + 2);
-    expect(members).toContain(join(root, "data/home").slice(1));
-    expect(members).toContain(join(root, "apps/bot/data").slice(1));
-    expect(members).toContain(join(home, ".aphrody/private/shenron").slice(1));
+    expect(members).toContain(fromRoot(join(root, "data/home")));
+    expect(members).toContain(fromRoot(join(root, "apps/bot/data")));
+    expect(members).toContain(fromRoot(join(home, ".aphrody/private/shenron")));
     expect(members.some((m) => m.includes("source-acquisition"))).toBe(false);
-    expect(args).toContain(`--exclude=${join(root, "data/home/models").slice(1)}`);
-    expect(args).toContain(`--exclude=${join(home, ".aphrody/private/shenron/home").slice(1)}`);
+    expect(args).toContain(`--exclude=${fromRoot(join(root, "data/home/models"))}`);
+    expect(args).toContain(`--exclude=${fromRoot(join(home, ".aphrody/private/shenron/home"))}`);
   });
 });
 

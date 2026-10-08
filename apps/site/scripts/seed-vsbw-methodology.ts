@@ -24,7 +24,9 @@ if (!apply) {
   console.log("Page à créer : " + page.title + " (/wiki/" + page.slug + ")");
   console.log("Source : " + sourcePath + " (" + body.length + " caractères)");
   console.log("Corps wiki : H1 retiré, " + wikiBody.length + " caractères.");
-  console.log("Pour insérer seulement si ces identifiants et slugs sont libres : bun apps/site/scripts/seed-vsbw-methodology.ts --apply");
+  console.log(
+    "Pour insérer seulement si ces identifiants et slugs sont libres : bun apps/site/scripts/seed-vsbw-methodology.ts --apply",
+  );
   process.exit(0);
 }
 
@@ -50,7 +52,9 @@ try {
       categoryRows[0]?.slug !== category.slug ||
       categoryRows[0]?.name !== category.name
     ) {
-      throw new Error("Category ID or slug is already used by different content; no changes committed.");
+      throw new Error(
+        "Category ID or slug is already used by different content; no changes committed.",
+      );
     }
 
     await tx`

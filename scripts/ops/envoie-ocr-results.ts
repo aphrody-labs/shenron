@@ -45,52 +45,52 @@ export async function transferOcrResults(
       ...(options.nativeExecutor ? { nativeExecutor: options.nativeExecutor } : {}),
     });
 
-function checked(
-  result: CliResult,
-  operation: string,
-): Extract<CliResult, { kind: "exit"; ok: true }> {
-  if (result.kind !== "exit" || !result.ok) {
-    const detail =
-      result.kind === "exit"
-        ? result.stderr || result.stdout
-        : result.kind === "not_found"
-          ? result.message
-          : result.kind === "timeout"
-            ? `timeout after ${result.timeoutMs} ms`
-            : result.error;
-    throw new Error(`Aphrody SSH ${operation} failed: ${detail}`);
+  function checked(
+    result: CliResult,
+    operation: string,
+  ): Extract<CliResult, { kind: "exit"; ok: true }> {
+    if (result.kind !== "exit" || !result.ok) {
+      const detail =
+        result.kind === "exit"
+          ? result.stderr || result.stdout
+          : result.kind === "not_found"
+            ? result.message
+            : result.kind === "timeout"
+              ? `timeout after ${result.timeoutMs} ms`
+              : result.error;
+      throw new Error(`Aphrody SSH ${operation} failed: ${detail}`);
+    }
+    return result;
   }
-  return result;
-}
 
-// Query the target home through the owner CLI; SFTP paths are absolute and do not expand '~'.
-const homeResult = checked(
-  await cli([
-    "exec",
-    "--host",
-    host,
-    "--cmd",
-    'printf \'%s\\n\' "$HOME"; test -d "$HOME/.aphrody/ocr"',
-  ]),
-  "remote OCR directory check",
-);
-const remoteHome = homeResult.stdout.trim();
-if (!remoteHome.startsWith("/") || remoteHome.includes("\n") || remoteHome.includes("\r")) {
-  throw new Error("Aphrody SSH returned an invalid remote home directory");
-}
-const transferId = randomUUID();
-const remoteUpload = `${remoteHome}/.aphrody/ocr/results.db.upload.${transferId}`;
-checked(
-  await cli(["sftp", "--host", host, "--path", remoteUpload, "--put", localPath]),
-  "snapshot upload",
-);
+  // Query the target home through the owner CLI; SFTP paths are absolute and do not expand '~'.
+  const homeResult = checked(
+    await cli([
+      "exec",
+      "--host",
+      host,
+      "--cmd",
+      'printf \'%s\\n\' "$HOME"; test -d "$HOME/.aphrody/ocr"',
+    ]),
+    "remote OCR directory check",
+  );
+  const remoteHome = homeResult.stdout.trim();
+  if (!remoteHome.startsWith("/") || remoteHome.includes("\n") || remoteHome.includes("\r")) {
+    throw new Error("Aphrody SSH returned an invalid remote home directory");
+  }
+  const transferId = randomUUID();
+  const remoteUpload = `${remoteHome}/.aphrody/ocr/results.db.upload.${transferId}`;
+  checked(
+    await cli(["sftp", "--host", host, "--path", remoteUpload, "--put", localPath]),
+    "snapshot upload",
+  );
 
-const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
-const receiverCommand = `cd -- ${quote(repository)} && bun scripts/ops/recoit-ocr-results.ts --depuis ${quote(remoteUpload)}`;
-const received = checked(
-  await cli(["exec", "--host", host, "--cmd", receiverCommand]),
-  "atomic OCR reception",
-);
+  const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
+  const receiverCommand = `cd -- ${quote(repository)} && bun scripts/ops/recoit-ocr-results.ts --depuis ${quote(remoteUpload)}`;
+  const received = checked(
+    await cli(["exec", "--host", host, "--cmd", receiverCommand]),
+    "atomic OCR reception",
+  );
   return received.stdout;
 }
 

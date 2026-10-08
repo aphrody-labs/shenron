@@ -1142,15 +1142,10 @@ const CANON_DATABASE: CanonTopicEntry[] = [
       "kid buu plus fort",
       "kid boo vs buuhan",
     ],
-    verdict:
-      "Majin Buu Pur (Kid Buu) est plus fort que Majin Buu ayant absorbé Gohan (Buuhan).",
+    verdict: "Majin Buu Pur (Kid Buu) est plus fort que Majin Buu ayant absorbé Gohan (Buuhan).",
     explanation:
       "Kid Buu est la forme originelle et ultime de Majin Buu, incarnation absolue du mal et de la destruction sans frein ni bride morale. Établi à travers l'ensemble des médias officiels de Dragon Ball comme l'adversaire suprême et qualifié d'« ennemi le plus fort de l'univers » (Daizenshuu 2), il représente le sommet de dangerosité et d'invulnérabilité de Majin Buu, surpassant Buuhan et exigeant les forces vives du cosmos entier concentrées dans le Super Genkidama pour être anéanti.",
-    sources: [
-      "Manga Dragon Ball Tome 42",
-      "Daizenshuu 2 : Story Guide",
-      "Anime Dragon Ball Z",
-    ],
+    sources: ["Manga Dragon Ball Tome 42", "Daizenshuu 2 : Story Guide", "Anime Dragon Ball Z"],
   },
   {
     id: "goku-ssj3-vs-ultimate-gohan",

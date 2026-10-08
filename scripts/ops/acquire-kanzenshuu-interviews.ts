@@ -40,7 +40,12 @@ function decode(value: string): string {
 }
 
 function field(html: string, cls: string): string | null {
-  const match = html.match(new RegExp(`<([a-z0-9]+)[^>]*class=["'][^"']*\\b${cls}\\b[^"']*["'][^>]*>([\\s\\S]*?)<\\/\\1>`, "i"));
+  const match = html.match(
+    new RegExp(
+      `<([a-z0-9]+)[^>]*class=["'][^"']*\\b${cls}\\b[^"']*["'][^>]*>([\\s\\S]*?)<\\/\\1>`,
+      "i",
+    ),
+  );
   return match ? decode(match[2]) : null;
 }
 
@@ -48,7 +53,9 @@ async function get(url: string): Promise<string> {
   let lastError: unknown;
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
-      const response = await fetch(url, { headers: { "user-agent": "Shenron research index (contact: dragonballfr.com)" } });
+      const response = await fetch(url, {
+        headers: { "user-agent": "Shenron research index (contact: dragonballfr.com)" },
+      });
       if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
       return await response.text();
     } catch (error) {
@@ -60,26 +67,30 @@ async function get(url: string): Promise<string> {
 }
 
 const archiveHtml = await get(ARCHIVE);
-const candidates = [...archiveHtml.matchAll(/<li class=["']item["']>([\s\S]*?)<\/li>/gi)]
-  .flatMap((match) => {
+const candidates = [...archiveHtml.matchAll(/<li class=["']item["']>([\s\S]*?)<\/li>/gi)].flatMap(
+  (match) => {
     const block = match[1];
     const href = block.match(/<a[^>]+href=["']([^"']+)["']/i)?.[1];
     const format = field(block, "format");
     if (!href || !format || !/interview/i.test(format)) return [];
     const url = new URL(href, ARCHIVE);
-    if (url.origin !== new URL(ARCHIVE).origin || !url.pathname.startsWith("/translations/")) return [];
-    return [{
-      id: url.pathname.split("/").filter(Boolean).at(-1)!,
-      url: url.href,
-      title: field(block, "title") ?? "Untitled interview",
-      publication: field(block, "source"),
-      publicationType: field(block, "type"),
-      format,
-      publicationDate: field(block, "date"),
-      participants: field(block, "people")?.split(/,\s*/) ?? [],
-      topics: field(block, "topic")?.split(/,\s*/) ?? [],
-    }];
-  });
+    if (url.origin !== new URL(ARCHIVE).origin || !url.pathname.startsWith("/translations/"))
+      return [];
+    return [
+      {
+        id: url.pathname.split("/").filter(Boolean).at(-1)!,
+        url: url.href,
+        title: field(block, "title") ?? "Untitled interview",
+        publication: field(block, "source"),
+        publicationType: field(block, "type"),
+        format,
+        publicationDate: field(block, "date"),
+        participants: field(block, "people")?.split(/,\s*/) ?? [],
+        topics: field(block, "topic")?.split(/,\s*/) ?? [],
+      },
+    ];
+  },
+);
 
 const unique = [...new Map(candidates.map((item) => [item.url, item])).values()].slice(0, limit);
 await mkdir(RAW_DIR, { recursive: true });
@@ -97,7 +108,11 @@ for (const [index, item] of unique.entries()) {
     if (!fromCache) await Bun.write(rawFilePath, html);
     acquired = true;
     pageTitle = decode(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "") || null;
-    sourceDescription = decode(html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["'][^>]*>/i)?.[1] ?? "") || null;
+    sourceDescription =
+      decode(
+        html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["'][^>]*>/i)?.[1] ??
+          "",
+      ) || null;
     questionCount = [...html.matchAll(/class=["']question["']/gi)].length;
     sectionHeadings = [...html.matchAll(/<h[12][^>]*>([\s\S]*?)<\/h[12]>/gi)]
       .map((heading) => decode(heading[1]))
@@ -151,6 +166,9 @@ for (const record of records) {
 const shardDir = "data/catalogues/kanzenshuu/interviews";
 await mkdir(shardDir, { recursive: true });
 for (const [decade, shard] of years) {
-  await Bun.write(join(shardDir, `${decade}.json`), `${JSON.stringify({ decade, records: shard }, null, 2)}\n`);
+  await Bun.write(
+    join(shardDir, `${decade}.json`),
+    `${JSON.stringify({ decade, records: shard }, null, 2)}\n`,
+  );
 }
 console.log(JSON.stringify(result.coverage, null, 2));
