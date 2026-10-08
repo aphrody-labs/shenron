@@ -28,7 +28,7 @@ Un conteneur autonome hermétique qui fait tourner l'intégralité de la pile Sh
 
 Une composition orchestrée séparant chaque responsabilité dans un conteneur dédié :
 
-1. `postgres` : Service PostgreSQL 16/18 avec volume persistant `postgres_data` et sonde `pg_isready`.
+1. `postgres` : `pgvector/pgvector:pg18`, même version majeure que la production (PostgreSQL 18 avec `vector` pour le store RAG), `shm_size: 1g` pour l'index HNSW, volume `postgres_data` monté sur `/var/lib/postgresql` (disposition de l'image 18) et sonde `pg_isready`.
 2. `redis` : Service Redis avec volume persistant `redis_data` et sonde `redis-cli ping`.
 3. `server` : Service Shenron Server (Site, Studio, Bureau, MCP, API) écoutant sur 5011 et 8790.
 4. `bot` : Service Shenron Bot écoutant sur 5006 avec volume `bot_data` pour SQLite ; opt-in (`--profile discord`) pour ne pas doubler le bot de production.
@@ -84,6 +84,22 @@ L'initialisation des bases est assurée par `scripts/ops/container-db-init.ts` :
    - Application séquentielle des 20 migrations du bot (`apps/bot/src/db/migrations/0000_...sql` à `0019_...sql`).
 3. **VFS SQLite** :
    - Chargement du snapshot public `shenron-vfs.sqlite`.
+
+### Base locale restaurée depuis la production
+
+Sans données, les rubriques sous règle d'accès redirigent vers `/coming-soon` (la configuration de
+lancement vit en base). Pour une pile locale fidèle, on restaure un dump de la production, pris en
+lecture seule. Le fichier reste sous `var/tmp/` (ignoré) et ne quitte jamais le poste :
+
+```sh
+# sur dbfr, détaché (les flux SSH longs par WireGuard se coupent)
+nohup sh -c 'sudo docker exec -u postgres shenron-postgres-1 pg_dump -Fc -Z6 -d shenron_site > /tmp/shenron_site.dump' &
+# rapatriement en morceaux `dd` de 32 Mio, sha256 comparé des deux côtés, puis suppression sur dbfr
+docker cp var/tmp/shenron_site.dump shenron-postgres:/tmp/s.dump
+docker exec shenron-postgres pg_restore -U shenron -d shenron_site --no-owner --no-acl -j 4 /tmp/s.dump
+```
+
+`POSTGRES_PASSWORD` vient de `deploy/docker/env/deploy.env` (`docker compose --env-file env/deploy.env`).
 
 ---
 
@@ -158,6 +174,22 @@ self-hosted (`server-artifact.yml`) tournent dans l'image de build d'Aphrody (`a
 l'image au checkout. La release construit dans `~/shenron-release` (worktree détaché forcé sur `origin/main`),
 jamais dans `~/shenron`. Contrat et mesures : `docs/operations/container/CONTAINER.md` et
 `docs/operations/infra/SHENRON-DOCKER.md` d'Aphrody.
+
+### Livraison Docker vers dbfr
+
+Aucun build sur dbfr : il reçoit seulement l'image scellée. Sur le vps, les étapes longues tournent
+dans tmux, sans flux SSH maintenu ouvert :
+
+1. `tmux new -d -s shenron-build 'bash ~/shenron-docker-build.sh > ~/shenron-docker-build.log 2>&1'` :
+   worktree détaché sur `origin/main`, cargo (verrou lourd), WASM, bot, serveur, image
+   `localhost/shenron:<sha>`, puis `version` et `--smoke` du bot.
+2. `~/ship-shenron.sh` (session `shenron-ship`, lancée après un build vert) : `docker save | zstd`,
+   `scp` vers dbfr, puis `~/deploy-shenron-image.sh <sha> <tar>` sur dbfr. Ce script charge l'image,
+   assemble la release (`~/assemble-shenron.py`, override `guild-admission`), la scelle
+   (`~/seal-shenron-docker-release.py`, en reprenant les images passerelle, postgres, redis et chat
+   de la release active), puis `aphrody-infra-deploy-shenron verify` et `activate` (sauvegarde de
+   retour arrière dans `/srv/shenron/deploy-backups/`).
+3. Sondes : pages, `/api/health`, `/api/public/rag/search`, `tools/list` anonyme de `/mcp`, `bot.` et `cdn.`.
 
 ## 7. Tunnel Natif Complet (VPS Build, DBFR Prod & Windows Natif)
 
