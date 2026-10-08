@@ -154,7 +154,9 @@
     "audit:assets": "bun scripts/audit/assets-dedup.ts",
     "test:scripts": "bun test --path-ignore-patterns='**/*.live.test.ts' ./scripts",
     "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts",
-    "test:integration": "bun scripts/testing/integration/run.ts"
+    "test:integration": "bun scripts/testing/integration/run.ts",
+    "dev:remote": "bun scripts/dev/remote-dev.ts up",
+    "gates:remote": "bun scripts/dev/remote-dev.ts gates"
   },
   "devDependencies": {
     "@aphrody/agent-browser": "catalog:",
@@ -174,7 +176,7 @@
     "typescript": "catalog:"
   },
   "overrides": {
-    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-2e9a90d48827b1d0.tgz",
+    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-1576722f0ef565c2.tgz",
     "@aphrody/paths": "file:vendor/aphrody-sdk/aphrody-paths-83ce57449c7d8766.tgz",
     "@aphrody/runtime-sdk": "file:vendor/aphrody-sdk/aphrody-runtime-sdk-81b17d5191c5c099.tgz",
     "@aphrody/update": "file:vendor/aphrody-sdk/aphrody-update-2d00a6e13f3fc7f7.tgz",

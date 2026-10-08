@@ -81,6 +81,57 @@ export default async function StatsPage() {
         </div>
       )}
 
+      {/* --- Corpus & Encyclopédie DBFR --- */}
+      <h2 className="font-saiyan text-2xl text-dbz-orange uppercase mt-14 mb-2">
+        Corpus &amp; Base de Savoir DBFR
+      </h2>
+      <p className="text-sm text-white/50 mb-5">
+        Volumétrie des sources primaires, databooks et connaissances vectorisées par l&apos;IA
+        Shenron.
+      </p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          label="Extraits RAG"
+          value={(241558).toLocaleString("fr-FR")}
+          color="text-emerald-400"
+        />
+        <StatCard
+          label="Articles &amp; Savoir"
+          value={(181636).toLocaleString("fr-FR")}
+          color="text-dbz-orange"
+        />
+        <StatCard
+          label="Planches Databooks"
+          value={(33738).toLocaleString("fr-FR")}
+          color="text-dbz-yellow"
+        />
+        <StatCard
+          label="Pages Manga"
+          value={(11213).toLocaleString("fr-FR")}
+          color="text-blue-400"
+        />
+        <StatCard
+          label="Citations Canon"
+          value={(6905).toLocaleString("fr-FR")}
+          color="text-dbz-orange"
+        />
+        <StatCard
+          label="Chapitres Reliés"
+          value={(922).toLocaleString("fr-FR")}
+          color="text-dbz-yellow"
+        />
+        <StatCard
+          label="Épisodes d'Anime"
+          value={(826).toLocaleString("fr-FR")}
+          color="text-blue-400"
+        />
+        <StatCard
+          label="Personnages Fichés"
+          value={(662).toLocaleString("fr-FR")}
+          color="text-emerald-400"
+        />
+      </div>
+
       {/* --- Activité du site (audience web, anonymisée) --- */}
       <h2 className="font-saiyan text-2xl text-dbz-orange uppercase mt-14 mb-2">
         Activité du site

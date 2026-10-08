@@ -998,6 +998,26 @@
       "newTab": "（新しいタブで開きます）"
     },
     "jeux": {
+      "xenoverse": {
+        "cardDescription": "Xenoverse 2 の形式を確認し、自分で抽出したデータをブラウザー内で解析します。",
+        "title": "ドラゴンボール ゼノバース2",
+        "lead": "形式カタログと、ゲームから抽出したファイルを解析する WASM エンジン。",
+        "localTitle": "ローカルデータ解析",
+        "localDescription": "抽出済みデータのフォルダーを選択してください。BAC、BDM、CUS、MSG、PUP ファイルをブラウザー内で読み込みます。",
+        "chooseFolder": "データフォルダーを選択",
+        "scanning": "解析中…",
+        "privacy": "選択したファイルはこのブラウザー内に留まります。サイト/CDN から読み込むのは Shenron RE の WebAssembly エンジンのみです。ゲームファイルは送信されません。",
+        "progress": "解析済みファイル：{total} 件中 {done} 件",
+        "engineError": "WebAssembly エンジンを読み込めませんでした。ページが完全に読み込まれてから再試行してください。",
+        "noSupported": "選択した項目に BAC、BDM、CUS、MSG、PUP ファイルがありません。",
+        "results": "解析結果",
+        "summary": "{files} ファイルをデコード · {records} レコード",
+        "ignored": "他形式のファイル {count} 件をスキップしました。",
+        "fileResult": "{format} · {count} 件",
+        "preview": "プレビューを表示（{count} 件）",
+        "invalid": "読み取れない形式",
+        "oversize": "16 MiB を超えるファイルのためスキップしました"
+      },
       "2048": {
         "help": "盤面をスワイプするか、フォーカス中は矢印キー、または盤面下のボタンで操作します。",
         "board": "2048 の盤面：同じ強さの戦士を合体させよう",
@@ -1449,6 +1469,7 @@
       "play": "遊ぶ",
       "discord": "ハングマンとメンバー同士の対戦は Discord サーバーで遊べます。",
       "items": {
+        "dragon_pixel": "60 FPS WASM 駆動のレトロ 2D 格闘ゲーム：42巻を巡る全15章のストーリーモードと気功波の激突。",
         "2048": "戦士を合体させてウイスまで育て、気を高めよう。",
         "pfc": "気の技で戦うじゃんけん。",
         "morpion": "ボットより先に X を三つ並べよう。",

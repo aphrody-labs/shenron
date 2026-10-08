@@ -9,7 +9,8 @@
     "./shenron": "./src/shenron.ts",
     "./engine": "./src/engine.ts",
     "./worker": "./src/worker.ts",
-    "./web/pipeline": "./src/web-pipeline.ts"
+    "./web/pipeline": "./src/web-pipeline.ts",
+    "./re": "./src/re.ts"
   },
   "scripts": {
     "generate": "bun scripts/generate.ts",
@@ -33,7 +34,8 @@
       "./shenron": "bun",
       "./engine": "bun",
       "./worker": "bun",
-      "./web/pipeline": "bun"
+      "./web/pipeline": "bun",
+      "./re": "bun"
     }
   }
 }

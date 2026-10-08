@@ -1,11 +1,29 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export const wasm_decompress_crilayla: (a: number, b: number, c: number) => [number, number, number, number];
-export const wasm_extract_cpk_file: (a: number, b: number, c: number, d: number) => [number, number, number, number];
+export const wasm_decompress_crilayla: (
+  a: number,
+  b: number,
+  c: number,
+) => [number, number, number, number];
+export const wasm_extract_cpk_file: (
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+) => [number, number, number, number];
 export const wasm_get_dragon_ball_catalog: () => [number, number, number];
+export const wasm_parse_bac: (a: number, b: number) => [number, number, number];
+export const wasm_parse_bdm: (a: number, b: number) => [number, number, number];
 export const wasm_parse_cus: (a: number, b: number) => [number, number, number];
-export const wasm_scan_aob: (a: number, b: number, c: number, d: number) => [number, number, number, number];
+export const wasm_parse_msg: (a: number, b: number) => [number, number, number];
+export const wasm_parse_pup: (a: number, b: number) => [number, number, number];
+export const wasm_scan_aob: (
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+) => [number, number, number, number];
 export const wasm_triage_cpk: (a: number, b: number) => [number, number, number];
 export const __wbindgen_malloc: (a: number, b: number) => number;
 export const __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

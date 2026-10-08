@@ -24,7 +24,7 @@
 {"q":"Qui est Raditz, le frère aîné de Goku ?","expectUrl":["/wiki/personnages/raditz"],"tags":["personnage","fr"]}
 {"q":"Qui sont les membres du Commando Ginyu sur Namek ?","expectUrl":["/wiki/personnages/ginyu","/wiki/personnages/recoome","/wiki/personnages/guldo","/wiki/personnages/jeice","/wiki/personnages/burter"],"tags":["personnage","fr"]}
 {"q":"Comment fonctionne le dragon sacré Polunga de Namek ?","expectUrl":["/wiki/dragons#polunga","/wiki/personnages/polunga"],"tags":["dragon","fr"]}
-{"q":"Raconte le combat de Gohan Super Saiyan 2 contre Cell","expectUrl":["/wiki/combats/gohan-vs-cell-cell-games"],"tags":["combat","fr"]}
+{"q":"Raconte le combat de Gohan Super Saiyan 2 contre Cell","expectTitle":["Son Gohan vs Perfect Cell","Gohan vs Cell"],"expectUrl":["/wiki/combats/battle-gohan-vs-cell-cell-games","/wiki/combats/gohan-vs-cell-cell-games","/wiki/source-4f16fec1554068602597"],"tags":["combat","fr"]}
 {"q":"Comment fonctionne la fusion Potara entre Goku et Vegeta pour donner Vegetto ?","expectUrl":["/wiki/personnages/vegetto","/wiki/objets/potalas"],"expectTitle":["Fusion Potara"],"tags":["transformation","fr"]}
 {"q":"Qui est Beerus, le Dieu de la Destruction de l'Univers 7 ?","expectUrl":["/wiki/personnages/beerus"],"tags":["personnage","fr"]}
 {"q":"Qui est Whis, le maître et ange de Beerus ?","expectUrl":["/wiki/personnages/whis"],"tags":["personnage","fr"]}
@@ -61,7 +61,7 @@
 {"q":"Qui est Neva dans Dragon Ball Daima ?","expectUrl":["/wiki/personnages/neva"],"tags":["personnage","daima","fr"]}
 {"q":"Frieza's henchman Zarbon and his monster form","expectUrl":["/wiki/personnages/zarbon"],"tags":["personnage","en"]}
 {"q":"Quelle est la personnalité de Vegeta ?","expectUrl":["/wiki/personnages/vegeta"],"tags":["section","fr"]}
-{"q":"Pourquoi Vegeta laisse-t-il Cell absorber C-18 ?","expectUrl":["/wiki/personnages/vegeta","/wiki/combats/super-vegeta-vs-semi-perfect-cell"],"tags":["section","fr"]}
+{"q":"Pourquoi Vegeta laisse-t-il Cell absorber C-18 ?","expectTitle":["Super Vegeta vs Semi-Perfect Cell","Vegeta vs C-18"],"expectUrl":["/wiki/personnages/vegeta","/wiki/combats/battle-super-vegeta-vs-semi-perfect-cell","/wiki/combats/super-vegeta-vs-semi-perfect-cell","/wiki/combats/battle-vegeta-vs-c18-autoroute"],"tags":["section","fr"]}
 {"q":"Pourquoi les Saiyans portent-ils des noms de légumes ?","expectUrl":["/wiki/personnages/vegeta","/wiki/canon","/wiki/races/saiyan","/wiki/histoire-et-physiologie-des-saiyans"],"tags":["section","fr"]}
 {"q":"Quel rôle joue Yamcha pendant la saga Cell ?","expectUrl":["/wiki/personnages/yamcha"],"tags":["variante","fr"]}
 {"q":"Qu'est-ce que la technique Makankosappo de Piccolo ?","expectUrl":["/wiki/techniques/makankosappo"],"tags":["technique","fr"]}
@@ -88,16 +88,16 @@
 {"q":"Le film Dragon Ball Super Broly sorti en 2018","expectUrl":["/wiki/films/dragon-ball-super-broly","/wiki/sagas/broly"],"tags":["film","fr"]}
 {"q":"Quelle est la différence entre Dragon Ball Minus et le téléfilm Bardock de 1990 ?","expectUrl":["/wiki/films/dragon-ball-z-special-1-tatta-hitori-no-saishuu-kessen","/wiki/films/episode-of-bardock","/wiki/personnages/baddack","/wiki/sagas/saga_bardock"],"tags":["film","fr"]}
 {"q":"Le téléfilm L'Histoire de Trunks","expectUrl":["/wiki/films/history-of-trunks"],"tags":["film","fr"]}
-{"q":"Qui a gagné la finale du 21e Tenkaichi Budokai ?","expectUrl":["/wiki/combats/goku-vs-jackie-chun-21e-tournoi"],"tags":["combat","fr"]}
-{"q":"Comment Goku a-t-il vaincu Piccolo Daimaō ?","expectUrl":["/wiki/combats/goku-vs-piccolo-daimao-final"],"tags":["combat","fr"]}
-{"q":"Le sacrifice de Majin Vegeta contre Boo","expectUrl":["/wiki/combats/majin-vegeta-vs-fat-buu-sacrifice"],"tags":["combat","fr"]}
-{"q":"Vegetto contre Buuhan","expectUrl":["/wiki/combats/vegetto-vs-buuhan"],"tags":["combat","fr"]}
-{"q":"Qui a gagné la finale du 22e tournoi entre Goku et Tenshinhan ?","expectUrl":["/wiki/combats/goku-vs-tenshinhan-22e-tournoi-finale"],"tags":["combat","fr"]}
-{"q":"Le combat de Goku contre Hit au tournoi de Champa","expectUrl":["/wiki/combats/goku-vs-hit-tournoi-champa"],"tags":["combat","fr"]}
-{"q":"Gogeta Blue contre Broly","expectUrl":["/wiki/combats/gogeta-blue-vs-broly"],"tags":["combat","fr"]}
-{"q":"Comment Yamcha est-il mort face au Saibaiman ?","expectUrl":["/wiki/combats/yamcha-vs-saibaiman"],"tags":["combat","fr"]}
-{"q":"Trunks du futur découpe Mecha Freezer","expectUrl":["/wiki/combats/trunks-vs-mecha-freezer"],"tags":["combat","fr"]}
-{"q":"Who won the 21st World Martial Arts Tournament?","expectUrl":["/wiki/combats/goku-vs-jackie-chun-21e-tournoi","/wiki/sagas/tournament-21"],"tags":["combat","en"]}
+{"q":"Qui a gagné la finale du 21e Tenkaichi Budokai ?","expectTitle":["Son Goku vs Jackie Chun","Jackie Chun","21e Tenkaichi Budōkai","21e Tenkaichi Budokai"],"expectUrl":["/wiki/combats/battle-goku-vs-jackie-chun-21e-tournoi","/wiki/combats/goku-vs-jackie-chun-21e-tournoi","/wiki/tournois/21e-tenkaichi-budokai","/wiki/source-c34b244ad42a2e0993b4","/wiki/sagas/tournament-21"],"tags":["combat","fr"]}
+{"q":"Comment Goku a-t-il vaincu Piccolo Daimaō ?","expectTitle":["Son Goku vs Piccolo Daimaō","Goku vs Piccolo Daimao"],"expectUrl":["/wiki/combats/battle-goku-vs-piccolo-daimao-final","/wiki/combats/goku-vs-piccolo-daimao-final","/wiki/source-4ca7fb10abdd3dda5dc5"],"tags":["combat","fr"]}
+{"q":"Le sacrifice de Majin Vegeta contre Boo","expectTitle":["Majin Vegeta vs Majin Buu","Majin Vegeta","Sacrifice ultime d'un père"],"expectUrl":["/wiki/combats/battle-majin-vegeta-vs-fat-buu-sacrifice","/wiki/combats/majin-vegeta-vs-fat-buu-sacrifice","/wiki/source-ed95fdab607e6f51ea6d","/wiki/personnages/vegeta","/wiki/personnages/majin-buu"],"tags":["combat","fr"]}
+{"q":"Vegetto contre Buuhan","expectTitle":["Vegetto vs Buuhan"],"expectUrl":["/wiki/combats/battle-vegetto-vs-buuhan","/wiki/combats/vegetto-vs-buuhan","/wiki/source-0a911486f68014c0047b","/wiki/personnages/vegetto"],"tags":["combat","fr"]}
+{"q":"Qui a gagné la finale du 22e tournoi entre Goku et Tenshinhan ?","expectTitle":["Son Goku vs Tenshinhan","22e Tenkaichi Budōkai","22e Tenkaichi Budokai","Saga 22e Tournoi"],"expectUrl":["/wiki/combats/battle-goku-vs-tenshinhan-22e-tournoi-finale","/wiki/combats/goku-vs-tenshinhan-22e-tournoi-finale","/wiki/source-68e6e951a458f730d1e7","/wiki/tournois/22e-tenkaichi-budokai","/wiki/sagas/tournament-22b"],"tags":["combat","fr"]}
+{"q":"Le combat de Goku contre Hit au tournoi de Champa","expectTitle":["Son Goku vs Hit","Goku vs Hit"],"expectUrl":["/wiki/combats/battle-goku-vs-hit-tournoi-champa","/wiki/combats/goku-vs-hit-tournoi-champa","/wiki/source-a7b4414d2b3393d9bb1a","/wiki/personnages/hit"],"tags":["combat","fr"]}
+{"q":"Gogeta Blue contre Broly","expectTitle":["Gogeta Blue vs Broly"],"expectUrl":["/wiki/combats/battle-gogeta-blue-vs-broly","/wiki/combats/gogeta-blue-vs-broly","/wiki/source-87d70c9d01597cd172c3","/wiki/personnages/gogeta","/wiki/personnages/broly"],"tags":["combat","fr"]}
+{"q":"Comment Yamcha est-il mort face au Saibaiman ?","expectTitle":["Yamcha vs Saibaiman"],"expectUrl":["/wiki/combats/battle-yamcha-vs-saibaiman","/wiki/combats/yamcha-vs-saibaiman","/wiki/source-25da569c99e98f65e800","/wiki/personnages/yamcha"],"tags":["combat","fr"]}
+{"q":"Trunks du futur découpe Mecha Freezer","expectTitle":["Trunks du futur vs Mecha Freeza","Trunks du futur vs Mecha Freezer"],"expectUrl":["/wiki/combats/battle-trunks-vs-mecha-freezer","/wiki/combats/trunks-vs-mecha-freezer","/wiki/source-164bd12d6d38aa7ca0b5"],"tags":["combat","fr"]}
+{"q":"Who won the 21st World Martial Arts Tournament?","expectTitle":["Son Goku vs Jackie Chun","Jackie Chun","21e Tenkaichi Budōkai","21e Tenkaichi Budokai","Dragon Ball (Wikipedia)","Kanzentai"],"expectUrl":["/wiki/combats/battle-goku-vs-jackie-chun-21e-tournoi","/wiki/combats/goku-vs-jackie-chun-21e-tournoi","/wiki/tournois/21e-tenkaichi-budokai","/wiki/source-c34b244ad42a2e0993b4","/wiki/sagas/tournament-21","https://en.wikipedia.org/wiki/Dragon_Ball","http://kanzentai.com/trans-daiz02.php"],"tags":["combat","en"]}
 {"q":"À quoi sert le Dragon Radar ?","expectUrl":["/wiki/objets/dragon-radar"],"tags":["objet","fr"]}
 {"q":"Que fait un Senzu, le haricot magique ?","expectUrl":["/wiki/objets/senzu"],"tags":["objet","fr"]}
 {"q":"Les boucles d'oreilles Potalas des Kaïoshin","expectUrl":["/wiki/objets/potalas"],"tags":["objet","fr"]}

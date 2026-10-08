@@ -49,8 +49,7 @@ export const metadata: Metadata = {
     "Dragon Ball en français : personnages, sagas, films, manga et actualités, sourcés sur le manga.",
   ...ogMeta({
     title: "DBFR — L'encyclopédie Dragon Ball",
-    description:
-      "Dragon Ball en français : personnages, sagas, films, manga et actualités.",
+    description: "Dragon Ball en français : personnages, sagas, films, manga et actualités.",
     type: "website",
     canonical: "/",
   }),
@@ -231,7 +230,10 @@ export default async function Home() {
         avatar: p.avatar,
         online: p.online,
       }))}
-      wikiCounts={wikiCounts}
+      wikiCounts={{
+        ...wikiCounts,
+        canonReferences: canonReferences.length > 0 ? canonReferences.length : 6905,
+      }}
       characters={characters.map((c) => ({
         id: c.id,
         name: c.name,

@@ -155,11 +155,14 @@ async function main() {
           {
             ...createNativeRagPorts({ config: values["mcp-config"] }),
             ...(jobs ? { collect: createNativeCollectionPort(jobs) } : {}),
-            ...(values["training-datasets"] ? {
-              prepareDataset: createApprovedTrainingDatasetPort({
-                manifestPath: values["training-datasets"], root: values["training-root"]!,
-              }),
-            } : {}),
+            ...(values["training-datasets"]
+              ? {
+                  prepareDataset: createApprovedTrainingDatasetPort({
+                    manifestPath: values["training-datasets"],
+                    root: values["training-root"]!,
+                  }),
+                }
+              : {}),
           },
           Number(values.concurrency),
         );

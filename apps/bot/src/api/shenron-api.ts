@@ -148,7 +148,9 @@ export interface BotShenronApiOptions {
 }
 
 /** Store PostgreSQL des conversations sur la base du site (`SHENRON_CHAT_PG_URL`, sinon celle du bot). */
-export function botConversationStore(env: NodeJS.ProcessEnv = process.env): ConversationStore | null {
+export function botConversationStore(
+  env: NodeJS.ProcessEnv = process.env,
+): ConversationStore | null {
   if (env.SHENRON_CHAT_STORE === "off") return null;
   const url = env.SHENRON_CHAT_PG_URL?.trim() || resolveBotDatabaseUrl(env);
   if (!url) return null;

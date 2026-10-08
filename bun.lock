@@ -101,6 +101,7 @@
         "@shenron/auth": "workspace:*",
         "@shenron/config": "workspace:*",
         "@shenron/db": "workspace:*",
+        "@shenron/engine": "workspace:*",
         "@shenron/images": "workspace:*",
         "@shenron/lexicon": "workspace:*",
         "@shenron/pipeline": "workspace:*",
@@ -228,6 +229,14 @@
         "@shenron/config": "workspace:*",
         "drizzle-orm": "catalog:",
         "postgres": "catalog:",
+      },
+    },
+    "packages/engine": {
+      "name": "@shenron/engine",
+      "version": "1.3.0",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+        "typescript": "catalog:",
       },
     },
     "packages/images": {
@@ -366,7 +375,7 @@
     "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch",
   },
   "overrides": {
-    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-2e9a90d48827b1d0.tgz",
+    "@aphrody/bun": "file:vendor/aphrody-sdk/aphrody-bun-1576722f0ef565c2.tgz",
     "@aphrody/paths": "file:vendor/aphrody-sdk/aphrody-paths-83ce57449c7d8766.tgz",
     "@aphrody/runtime-sdk": "file:vendor/aphrody-sdk/aphrody-runtime-sdk-81b17d5191c5c099.tgz",
     "@aphrody/update": "file:vendor/aphrody-sdk/aphrody-update-2d00a6e13f3fc7f7.tgz",
@@ -528,7 +537,7 @@
 
     "@aphrody/api": ["@aphrody/api@3.0.0-alpha.2", "", {}, "sha512-bQrHUrp6vR5QZ07RsCTWhLlIyjgBOJ3VbULue9i5g/s4/I4KaLfwkyBksVLhlQcGLWxG04Vnu+JOccNkicoHsA=="],
 
-    "@aphrody/bun": ["@aphrody/bun@vendor/aphrody-sdk/aphrody-bun-2e9a90d48827b1d0.tgz", { "dependencies": { "@aphrody/runtime-sdk": "0.1.1", "@aphrody/update": "0.1.1" } }, "sha512-fz27ihv+LYkJui2NIJgD17WZV9PFE5nAVzf9Gr3rC3FKlM28xBMhsIM9yoohGJC21j9i/ogYZnYCBz5FkpNKMw=="],
+    "@aphrody/bun": ["@aphrody/bun@vendor/aphrody-sdk/aphrody-bun-1576722f0ef565c2.tgz", { "dependencies": { "@aphrody/runtime-sdk": "0.1.1", "@aphrody/update": "0.1.1" } }, "sha512-gssMslNOxwwLtR86v3Qg/UsQ116hyJQPUMkvl6CdranZ067KWdQPMUXCN8LIltZbBkpyHoWqESCLse2ly5Fx2Q=="],
 
     "@aphrody/bun-test-dom": ["@aphrody/bun-test-dom@0.1.1", "", { "dependencies": { "@happy-dom/global-registrator": "^20.14.5" } }, "sha512-XZKt0FwXS8S4NiZIYr/X8BTCleTFlH72T4+W46tx1xrKXHDuIk4tOS+G3nLpuHbzinYiX+Efw+zfKlNuWlCoTA=="],
 
@@ -1127,6 +1136,8 @@
     "@shenron/config": ["@shenron/config@workspace:packages/config"],
 
     "@shenron/db": ["@shenron/db@workspace:packages/db"],
+
+    "@shenron/engine": ["@shenron/engine@workspace:packages/engine"],
 
     "@shenron/images": ["@shenron/images@workspace:packages/images"],
 

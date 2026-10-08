@@ -73,4 +73,54 @@ impl BacFile {
 
         Ok(Self { moves })
     }
+
+    /// Helper to construct a synthetic BAC binary buffer for testing.
+    pub fn create_mock(move_count: usize) -> Vec<u8> {
+        let mut buffer = Vec::new();
+        buffer.extend_from_slice(BAC_MAGIC);
+        buffer.extend_from_slice(&1u32.to_le_bytes()); // version
+        buffer.extend_from_slice(&(move_count as u32).to_le_bytes()); // count
+        buffer.extend_from_slice(&16u32.to_le_bytes()); // offset = 16
+
+        for i in 0..move_count {
+            let mut entry = [0u8; 32];
+            let move_id = (200 + i) as u32;
+            let total_frames = 45u16;
+            let startup_frames = 10u16;
+            let recovery_frames = 15u16;
+
+            entry[0..4].copy_from_slice(&move_id.to_le_bytes());
+            entry[4..6].copy_from_slice(&total_frames.to_le_bytes());
+            entry[6..8].copy_from_slice(&startup_frames.to_le_bytes());
+            entry[8..10].copy_from_slice(&recovery_frames.to_le_bytes());
+
+            buffer.extend_from_slice(&entry);
+        }
+
+        buffer
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_bac_mock() {
+        let mock = BacFile::create_mock(10);
+        let parsed = BacFile::parse(&mock).expect("Should parse BAC mock cleanly");
+
+        assert_eq!(parsed.moves.len(), 10);
+        assert_eq!(parsed.moves[0].move_id, 200);
+        assert_eq!(parsed.moves[0].total_frames, 45);
+        assert_eq!(parsed.moves[0].startup_frames, 10);
+        assert_eq!(parsed.moves[9].move_id, 209);
+    }
+
+    #[test]
+    fn test_invalid_magic() {
+        let mut mock = BacFile::create_mock(2);
+        mock[0] = b'!';
+        assert!(BacFile::parse(&mock).is_err());
+    }
 }

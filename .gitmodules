@@ -1,6 +1,6 @@
 [submodule "dbxv2"]
 	path = vendor/dbxv2
-	url = https://github.com/aphrody-code/dbxv2.git
+	url = https://github.com/aphrody-labs/dbxv2.git
 [submodule "vendor/codex"]
 	path = vendor/codex
 	url = https://github.com/openai/codex.git

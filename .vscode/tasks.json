@@ -1,0 +1,62 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "shenron: up (VPS gates + dev)",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts up",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: gates (VPS)",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts gates",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: gates + Rust (VPS)",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts gates --rust",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: dev site (VPS, localhost:3000)",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts dev",
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: stop dev",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts stop",
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: sync worktree to VPS",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts sync",
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: doctor (VPS)",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts doctor",
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: clean WSL",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts clean-wsl --apply",
+      "problemMatcher": []
+    },
+    {
+      "label": "shenron: backup vital to C:",
+      "type": "shell",
+      "command": "bun scripts/dev/remote-dev.ts backup --apply",
+      "problemMatcher": []
+    }
+  ]
+}

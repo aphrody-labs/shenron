@@ -84,4 +84,58 @@ impl PupFile {
 
         Ok(Self { entries })
     }
+
+    /// Helper to construct a synthetic PUP binary buffer for testing.
+    pub fn create_mock(entry_count: usize) -> Vec<u8> {
+        let mut buffer = Vec::new();
+        buffer.extend_from_slice(PUP_MAGIC);
+        buffer.extend_from_slice(&1u32.to_le_bytes()); // version
+        buffer.extend_from_slice(&(entry_count as u32).to_le_bytes()); // count
+        buffer.extend_from_slice(&16u32.to_le_bytes()); // offset = 16
+
+        for i in 0..entry_count {
+            let mut entry = [0u8; 64];
+            let id = (300 + i) as u32;
+            let mult = 1.0f32 + (i as f32 * 0.05);
+
+            entry[0..4].copy_from_slice(&id.to_le_bytes());
+            entry[4..8].copy_from_slice(&mult.to_le_bytes()); // basic_attack_mult
+            entry[8..12].copy_from_slice(&mult.to_le_bytes()); // basic_ki_mult
+            entry[12..16].copy_from_slice(&mult.to_le_bytes()); // strike_mult
+            entry[16..20].copy_from_slice(&mult.to_le_bytes()); // ki_blast_mult
+            entry[20..24].copy_from_slice(&1.0f32.to_le_bytes()); // damage_taken_mult
+            entry[24..28].copy_from_slice(&1.1f32.to_le_bytes()); // speed_ground_mult
+            entry[28..32].copy_from_slice(&1.15f32.to_le_bytes()); // speed_air_mult
+            entry[32..36].copy_from_slice(&1.2f32.to_le_bytes()); // speed_boost_mult
+            entry[36..40].copy_from_slice(&0.0f32.to_le_bytes()); // ki_drain_rate
+            entry[40..44].copy_from_slice(&0.0f32.to_le_bytes()); // stamina_drain_rate
+
+            buffer.extend_from_slice(&entry);
+        }
+
+        buffer
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_pup_mock() {
+        let mock = PupFile::create_mock(8);
+        let parsed = PupFile::parse(&mock).expect("Should parse PUP mock cleanly");
+
+        assert_eq!(parsed.entries.len(), 8);
+        assert_eq!(parsed.entries[0].id, 300);
+        assert_eq!(parsed.entries[0].basic_attack_mult, 1.0);
+        assert_eq!(parsed.entries[7].id, 307);
+    }
+
+    #[test]
+    fn test_invalid_magic() {
+        let mut mock = PupFile::create_mock(1);
+        mock[0] = b'Z';
+        assert!(PupFile::parse(&mock).is_err());
+    }
 }

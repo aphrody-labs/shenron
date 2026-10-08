@@ -211,6 +211,7 @@ const nextConfig: NextConfig = {
     "@shenron/db",
     "@shenron/auth",
     "@shenron/pipeline",
+    "@shenron/engine",
     "@shenron/api",
     "@shenron/ui",
     "@shenron/config",
@@ -496,6 +497,14 @@ const nextConfig: NextConfig = {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
           },
+        ],
+      },
+      {
+        source: "/wasm/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "Content-Type", value: "application/wasm" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
         ],
       },
       {

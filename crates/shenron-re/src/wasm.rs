@@ -7,7 +7,13 @@
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use crate::catalog::get_dragon_ball_catalog;
-use crate::formats::cus::CusFile;
+use crate::formats::{
+    bac::BacFile,
+    bdm::BdmFile,
+    cus::CusFile,
+    msg::MsgFile,
+    pup::PupFile,
+};
 use crate::fs::cpk::{CpkArchive, CpkEntry};
 use crate::fs::crilayla::{decompress_crilayla, decompress_crilayla_raw};
 use crate::live::aob::AobPattern;
@@ -70,6 +76,34 @@ pub fn wasm_parse_cus(cus_bytes: &[u8]) -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(&cus).map_err(to_js_err)
 }
 
+/// Parse a DBXV2 BAC (Battle Action Code) moveset binary file and return all moves.
+#[wasm_bindgen]
+pub fn wasm_parse_bac(bac_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let bac = BacFile::parse(bac_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&bac).map_err(to_js_err)
+}
+
+/// Parse a DBXV2 BDM (Battle Damage Matrix) binary file and return all damage definitions.
+#[wasm_bindgen]
+pub fn wasm_parse_bdm(bdm_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let bdm = BdmFile::parse(bdm_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&bdm).map_err(to_js_err)
+}
+
+/// Parse a DBXV2 PUP (Power-Up Parameters) binary file and return transformation multipliers.
+#[wasm_bindgen]
+pub fn wasm_parse_pup(pup_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let pup = PupFile::parse(pup_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&pup).map_err(to_js_err)
+}
+
+/// Parse a DBXV2 MSG (Message) binary file and return localized text strings.
+#[wasm_bindgen]
+pub fn wasm_parse_msg(msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let msg = MsgFile::parse(msg_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&msg).map_err(to_js_err)
+}
+
 /// Scan a buffer for an Array-of-Bytes (AOB) pattern with wildcards (e.g. "48 89 5C 24 ??").
 #[wasm_bindgen]
 pub fn wasm_scan_aob(data: &[u8], pattern: &str) -> Result<Vec<usize>, JsValue> {
@@ -99,5 +133,13 @@ mod tests {
     fn test_wasm_catalog_direct() {
         let cat = get_dragon_ball_catalog();
         assert!(cat.len() >= 10);
+    }
+
+    #[test]
+    fn test_wasm_parse_bdm_direct() {
+        let mock = BdmFile::create_mock(5);
+        let parsed = BdmFile::parse(&mock).unwrap();
+        assert_eq!(parsed.entries.len(), 5);
+        assert_eq!(parsed.entries[0].id, 100);
     }
 }

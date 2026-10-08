@@ -9,6 +9,7 @@ export function hostAuthUrl(): string | null {
 }
 
 const FORWARDED = ["cookie", "authorization", "user-agent", "x-forwarded-for", "x-real-ip"];
+export const AUTH_RELAY_HEADER = "x-shenron-auth-relay";
 
 function forwardHeaders(source: Headers): Headers {
   const out = new Headers();
@@ -20,7 +21,13 @@ function forwardHeaders(source: Headers): Headers {
 }
 
 /** Relaie une requête `/api/auth/*` vers l'hôte, sans suivre ses redirections (OAuth). */
-export async function proxyAuthToHost(request: Request, host: string): Promise<Response> {
+export async function proxyAuthToHost(
+  request: Request,
+  host: string,
+  timeoutMs = 15_000,
+): Promise<Response> {
+  // A misconfigured front must not relay the same OAuth request back to itself.
+  if (request.headers.has(AUTH_RELAY_HEADER)) return authUnavailable();
   const url = new URL(request.url);
   const target = new URL(`${url.pathname}${url.search}`, host);
   const headers = forwardHeaders(request.headers);
@@ -30,13 +37,14 @@ export async function proxyAuthToHost(request: Request, host: string): Promise<R
   }
   headers.set("x-forwarded-host", url.host);
   headers.set("x-forwarded-proto", url.protocol.replace(":", ""));
+  headers.set(AUTH_RELAY_HEADER, "1");
   const hasBody = request.method !== "GET" && request.method !== "HEAD";
   return fetch(target, {
     method: request.method,
     headers,
-    body: hasBody ? await request.arrayBuffer() : undefined,
+    body: hasBody ? request.body : undefined,
     redirect: "manual",
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.any([request.signal, AbortSignal.timeout(timeoutMs)]),
   });
 }
 

@@ -998,6 +998,26 @@
       "newTab": "(s’ouvre dans un nouvel onglet)"
     },
     "jeux": {
+      "xenoverse": {
+        "cardDescription": "Explore les formats Xenoverse 2 et analyse localement les données que tu as extraites.",
+        "title": "Dragon Ball Xenoverse 2",
+        "lead": "Catalogue de formats et analyse WASM des fichiers extraits de ta copie du jeu.",
+        "localTitle": "Analyse locale des données",
+        "localDescription": "Choisis un dossier de données extraites. Le moteur lit les fichiers BAC, BDM, CUS, MSG et PUP directement dans ton navigateur.",
+        "chooseFolder": "Choisir un dossier de données",
+        "scanning": "Analyse en cours…",
+        "privacy": "Les fichiers choisis restent dans ce navigateur. Seul le moteur Shenron RE en WebAssembly est chargé depuis le site/CDN ; aucun fichier de jeu n’est envoyé.",
+        "progress": "Fichiers analysés : {done} sur {total}",
+        "engineError": "Le moteur WebAssembly n’a pas pu être chargé. Réessaie après le chargement complet de la page.",
+        "noSupported": "Aucun fichier BAC, BDM, CUS, MSG ou PUP trouvé dans la sélection.",
+        "results": "Résultats de l’analyse",
+        "summary": "{files} fichiers décodés · {records} enregistrements",
+        "ignored": "{count} fichiers d’autres formats ignorés.",
+        "fileResult": "{format} · {count} entrées",
+        "preview": "Afficher un aperçu ({count} entrées)",
+        "invalid": "Format illisible",
+        "oversize": "Fichier supérieur à 16 Mio, ignoré"
+      },
       "2048": {
         "help": "Balaie le plateau du doigt, utilise les flèches du clavier quand il a le focus, ou les boutons sous le plateau.",
         "board": "Plateau du 2048 : fusionne les guerriers de même puissance",
@@ -1449,6 +1469,7 @@
       "play": "Jouer",
       "discord": "Le pendu et les défis entre membres se jouent sur le serveur Discord.",
       "items": {
+        "dragon_pixel": "Combat 2D rétro WASM 60 FPS : 15 chapitres du Mode Histoire et duels de Ki.",
         "2048": "Fusionne les guerriers jusqu'à Whis et fais grimper ton Ki.",
         "pfc": "Pierre, feuille, ciseaux à coups de techniques de Ki.",
         "morpion": "Aligne trois X avant le bot.",

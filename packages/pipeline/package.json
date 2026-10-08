@@ -73,7 +73,8 @@
     "./aphrody/media": "./src/aphrody/media.ts",
     "./aphrody/native-commands": "./src/aphrody/native-commands.ts",
     "./ai/training-hashes": "./src/ai/training-hashes.ts",
-    "./re-wasm": "./src/re-wasm.ts"
+    "./re-wasm": "./src/re-wasm.ts",
+    "./re-wasm-web": "./src/re-wasm-web.ts"
   },
   "scripts": {
     "pipeline": "bun src/cli.ts",
@@ -172,7 +173,8 @@
       "./aphrody/media": "bun",
       "./aphrody/native-commands": "bun",
       "./ai/training-hashes": "pure",
-      "./re-wasm": "bun"
+      "./re-wasm": "bun",
+      "./re-wasm-web": "pure"
     }
   }
 }

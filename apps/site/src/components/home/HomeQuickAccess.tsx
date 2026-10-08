@@ -58,6 +58,12 @@ export const QUICK_ACCESS: readonly Rubrique[] = [
     labelKey: "categories.databooks.label",
     count: "databooks",
   },
+  {
+    key: "canon",
+    href: "/wiki/canon",
+    labelKey: "categories.canon.label",
+    count: "canonReferences",
+  },
 ];
 
 const nf = new Intl.NumberFormat("fr-FR");
@@ -85,7 +91,7 @@ export function HomeQuickAccess({
       </h2>
       <ul className="flex flex-wrap gap-2">
         {QUICK_ACCESS.map(({ key, href, labelKey, count }) => {
-          const value = count ? counts[count] : 0;
+          const value = (count ? counts[count] : 0) ?? 0;
           return (
             <li key={key}>
               <ClientGatedWrap access={access} href={href} className={pill}>

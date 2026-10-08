@@ -341,7 +341,20 @@ export function DesktopHome() {
               ? t("status.offline")
               : t("status.connecting")}
         </p>
-        <div className="workspace-actions flex flex-wrap items-center gap-4 pt-3">
+        <div className="flex flex-wrap items-center gap-3 pt-1">
+          <span className="capsule-badge">
+            <span
+              className={`capsule-led ${
+                offline ? "bg-red-500 shadow-red-500" : "bg-emerald-400 shadow-emerald-400"
+              }`}
+            />
+            {tauri ? "Shenron Studio Desktop" : "Web ↔ Desktop Bridge"}
+          </span>
+          {health?.localRag ? (
+            <span className="badge badge-success text-[10px]">RAG Local Actif</span>
+          ) : null}
+        </div>
+        <div className="workspace-actions flex flex-wrap items-center gap-4 pt-2">
           <DiscordInviteFAB inline />
           <ReportButton inline />
         </div>
@@ -376,7 +389,7 @@ export function DesktopHome() {
         formatDate={formatDate}
       />
 
-      <section className="card flex flex-col gap-4 p-6" aria-labelledby="local-search">
+      <section className="toriyama-panel flex flex-col gap-4 p-6" aria-labelledby="local-search">
         <h2 id="local-search" className="text-xl font-bold">
           {t("search.title")}
         </h2>
@@ -430,21 +443,33 @@ export function DesktopHome() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3" aria-label={t("tools.label")}>
-        <Link href="/studio" className="card flex flex-col gap-2 p-6">
-          <span className="text-lg font-bold">{t("tools.studioTitle")}</span>
-          <span className="text-sm">{t("tools.studioText")}</span>
+        <Link
+          href="/studio"
+          className="toriyama-panel group flex flex-col gap-2 p-6 transition-all hover:border-dbz-yellow hover:shadow-[3px_3px_0px_#000]"
+        >
+          <span className="text-lg font-bold transition-colors group-hover:text-dbz-orange">
+            {t("tools.studioTitle")}
+          </span>
+          <span className="text-sm text-os/80">{t("tools.studioText")}</span>
         </Link>
-        <Link href="/desktop/control" className="card flex flex-col gap-2 p-6">
-          <span className="text-lg font-bold">{t("tools.controlTitle")}</span>
-          <span className="text-sm">{t("tools.controlText")}</span>
+        <Link
+          href="/desktop/control"
+          className="toriyama-panel group flex flex-col gap-2 p-6 transition-all hover:border-dbz-yellow hover:shadow-[3px_3px_0px_#000]"
+        >
+          <span className="text-lg font-bold transition-colors group-hover:text-dbz-orange">
+            {t("tools.controlTitle")}
+          </span>
+          <span className="text-sm text-os/80">{t("tools.controlText")}</span>
         </Link>
         <button
           type="button"
-          className="card flex flex-col gap-2 p-6 text-left"
+          className="toriyama-panel group flex flex-col gap-2 p-6 text-left transition-all hover:border-dbz-yellow hover:shadow-[3px_3px_0px_#000]"
           onClick={() => void openExternal(PUBLIC_SITE)}
         >
-          <span className="text-lg font-bold">dragonballfr.com</span>
-          <span className="text-sm">{t("tools.siteText")}</span>
+          <span className="text-lg font-bold transition-colors group-hover:text-dbz-orange">
+            dragonballfr.com
+          </span>
+          <span className="text-sm text-os/80">{t("tools.siteText")}</span>
         </button>
       </section>
     </main>

@@ -10,6 +10,7 @@
  * Masqué sur le back-office (/admin) : l'équipe n'a pas à se signaler à elle-même.
  */
 import { Chargement, CocheCercle, Croix, Drapeau } from "@shenron/ui/icones";
+import { useFocusTrap } from "@shenron/ui/use-focus-trap";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -25,6 +26,7 @@ type Phase = "idle" | "sending" | "done" | "error";
 export function ReportButton({ inline = false }: { inline?: boolean }) {
   const t = useT();
   const pathname = usePathname();
+  const visible = !(pathname?.startsWith("/admin") || (pathname === "/desktop" && !inline));
   const me = useMe();
   const idCategorie = useId();
   const idMessage = useId();
@@ -55,44 +57,8 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
     boutonRef.current?.focus();
   }, []);
 
-  // Clavier : Échap referme, et Tab reste ENFERMÉ dans la boîte. Elle
-  // s'annonce `aria-modal` alors que la tabulation en sortait librement vers
-  // la page recouverte — un formulaire modal qu'on quitte sans le voir.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        fermer();
-        return;
-      }
-      if (e.key !== "Tab" || !panneau.current) return;
-      // La boîte ne rend que les contrôles de la phase courante : ce qui n'est
-      // pas visible n'est pas dans le DOM, aucun filtre supplémentaire à faire.
-      const cibles = panneau.current.querySelectorAll<HTMLElement>(
-        "a[href], button:not([disabled]), select, textarea, input:not([type='hidden'])",
-      );
-      if (cibles.length === 0) return;
-      const premier = cibles[0]!;
-      const dernier = cibles[cibles.length - 1]!;
-      if (e.shiftKey && document.activeElement === premier) {
-        e.preventDefault();
-        dernier.focus();
-      } else if (!e.shiftKey && document.activeElement === dernier) {
-        e.preventDefault();
-        premier.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, fermer]);
-
-  // Focus initial DANS la boîte à l'ouverture : sinon il reste sur la pastille,
-  // derrière le voile, et le lecteur d'écran n'entre jamais dans le formulaire.
-  useEffect(() => {
-    if (!open) return;
-    panneau.current?.querySelector<HTMLElement>("select, a[href], button")?.focus();
-  }, [open]);
+  // Share modal focus, nesting and document scroll ownership with the canonical UI.
+  useFocusTrap(panneau, open && visible, fermer);
 
   // Le compte à rebours de fermeture automatique survivait au démontage : il
   // se déclenchait ensuite dans le vide, sur des références déjà nulles.
@@ -106,7 +72,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
   );
 
   // Ne s'affiche pas dans le back-office admin.
-  if (pathname?.startsWith("/admin") || (pathname === "/desktop" && !inline)) return null;
+  if (!visible) return null;
 
   async function submit() {
     if (phase === "sending" || submission.current) return;
@@ -166,6 +132,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
         ref={boutonRef}
         type="button"
         onClick={() => {
+          boutonRef.current?.focus();
           setOpen(true);
           setPhase("idle");
           setErr(null);
@@ -180,6 +147,7 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
         // `min-h-11 min-w-11` : 44 px de cible tactile. En `p-2.5` seul, le bouton
         // replié tombait à 46×42 — le doigt le rate une fois sur trois au coin de
         // l'écran, là où la prise est la moins sûre.
+        data-inline={inline || undefined}
         className="group fab-secondary fixed bottom-4 left-4 z-40 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border border-white/12 bg-[rgba(10,10,10,0.8)] p-2.5 text-white/55 shadow-lg backdrop-blur-md transition-all hover:border-dbz-orange/50 hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 md:bottom-6 md:left-6"
         title={t("reportDialog.title")}
       >
@@ -195,13 +163,14 @@ export function ReportButton({ inline = false }: { inline?: boolean }) {
             role="dialog"
             aria-modal="true"
             aria-label={t("reportDialog.title")}
-            className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
+            className="fixed inset-0 z-[70] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
             onMouseDown={(e) => {
               if (e.target === e.currentTarget) fermer();
             }}
           >
             <div
               ref={panneau}
+              tabIndex={-1}
               className="w-full max-w-md overflow-hidden rounded-xl border border-dbz-orange/25 bg-dbz-card shadow-2xl"
             >
               {/* En-tête */}
