@@ -26,7 +26,14 @@ import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
 
-export type SecretCategory = "Google" | "Discord" | "SQL" | "Redis" | "Auth" | "Aphrody" | "Serverless";
+export type SecretCategory =
+  | "Google"
+  | "Discord"
+  | "SQL"
+  | "Redis"
+  | "Auth"
+  | "Aphrody"
+  | "Serverless";
 
 export interface SecretEntry {
   key: string;
@@ -38,69 +45,296 @@ export interface SecretEntry {
   isFallback?: boolean;
 }
 
-export const SECRET_DEFINITIONS: Record<string, { category: SecretCategory; description: string; requiredForServerless: boolean; defaultFallback?: string }> = {
+export const SECRET_DEFINITIONS: Record<
+  string,
+  {
+    category: SecretCategory;
+    description: string;
+    requiredForServerless: boolean;
+    defaultFallback?: string;
+  }
+> = {
   // 1. Google & AI
-  GEMINI_API_KEY: { category: "Google", description: "Clé API Google Gemini / AI Studio", requiredForServerless: false },
-  GOOGLE_API_KEY: { category: "Google", description: "Clé API Google Cloud Platform", requiredForServerless: false },
-  GOOGLE_PROJECT_ID: { category: "Google", description: "ID du projet Google Cloud (aphrody)", requiredForServerless: false, defaultFallback: "aphrody" },
-  NEXT_PUBLIC_GTM_ID: { category: "Google", description: "Identifiant Google Tag Manager", requiredForServerless: false, defaultFallback: "GTM-5KVR4G9" },
-  NEXT_PUBLIC_ADSENSE_CLIENT: { category: "Google", description: "Identifiant client Google AdSense", requiredForServerless: false, defaultFallback: "ca-pub-6827010471026042" },
-  APHRODY_SHENRON_GEMINI_COOKIE_FILE: { category: "Google", description: "Fichier de session cookie Gemini headless", requiredForServerless: false },
+  GEMINI_API_KEY: {
+    category: "Google",
+    description: "Clé API Google Gemini / AI Studio",
+    requiredForServerless: false,
+  },
+  GOOGLE_API_KEY: {
+    category: "Google",
+    description: "Clé API Google Cloud Platform",
+    requiredForServerless: false,
+  },
+  GOOGLE_PROJECT_ID: {
+    category: "Google",
+    description: "ID du projet Google Cloud (aphrody)",
+    requiredForServerless: false,
+    defaultFallback: "aphrody",
+  },
+  NEXT_PUBLIC_GTM_ID: {
+    category: "Google",
+    description: "Identifiant Google Tag Manager",
+    requiredForServerless: false,
+    defaultFallback: "GTM-5KVR4G9",
+  },
+  NEXT_PUBLIC_ADSENSE_CLIENT: {
+    category: "Google",
+    description: "Identifiant client Google AdSense",
+    requiredForServerless: false,
+    defaultFallback: "ca-pub-6827010471026042",
+  },
+  APHRODY_SHENRON_GEMINI_COOKIE_FILE: {
+    category: "Google",
+    description: "Fichier de session cookie Gemini headless",
+    requiredForServerless: false,
+  },
 
   // 2. Discord
-  DISCORD_TOKEN: { category: "Discord", description: "Jeton de bot Discord principal", requiredForServerless: false },
-  DISCORD_TOKEN_SHENRON: { category: "Discord", description: "Alias canonique jeton bot Shenron", requiredForServerless: false },
-  DISCORD_CLIENT_ID: { category: "Discord", description: "Client ID OAuth2 Discord", requiredForServerless: false, defaultFallback: "1497194276025663680" },
-  DISCORD_CLIENT_SECRET: { category: "Discord", description: "Secret OAuth2 Discord", requiredForServerless: false },
-  DISCORD_PUBLIC_KEY: { category: "Discord", description: "Clé publique pour signatures d'interactions HTTP Discord", requiredForServerless: true },
-  APPLICATION_ID: { category: "Discord", description: "ID de l'application Discord", requiredForServerless: false, defaultFallback: "1497194276025663680" },
-  GUILD_ID: { category: "Discord", description: "ID de la guilde principale Dragon Ball FR", requiredForServerless: false, defaultFallback: "934894610545770506" },
-  ADDITIONAL_GUILD_IDS: { category: "Discord", description: "ID de la guilde Aphrody AI Lab", requiredForServerless: false, defaultFallback: "1554189180030947338" },
-  OWNER_ID: { category: "Discord", description: "ID du propriétaire principal", requiredForServerless: false },
-  OWNER_IDS: { category: "Discord", description: "IDs des propriétaires autorisés", requiredForServerless: false },
-  SHENRON_AI_CHANNEL_ID: { category: "Discord", description: "Canal salon IA Shenron", requiredForServerless: false, defaultFallback: "1557354118710829117" },
-  ADMIN_LAB_CHANNEL_ID: { category: "Discord", description: "Canal salon privé admin lab", requiredForServerless: false, defaultFallback: "1557354144149405806" },
-  ANNOUNCE_CHANNEL_ID: { category: "Discord", description: "Canal annonces", requiredForServerless: false, defaultFallback: "1034768037217304606" },
+  DISCORD_TOKEN: {
+    category: "Discord",
+    description: "Jeton de bot Discord principal",
+    requiredForServerless: false,
+  },
+  DISCORD_TOKEN_SHENRON: {
+    category: "Discord",
+    description: "Alias canonique jeton bot Shenron",
+    requiredForServerless: false,
+  },
+  DISCORD_CLIENT_ID: {
+    category: "Discord",
+    description: "Client ID OAuth2 Discord",
+    requiredForServerless: false,
+    defaultFallback: "1497194276025663680",
+  },
+  DISCORD_CLIENT_SECRET: {
+    category: "Discord",
+    description: "Secret OAuth2 Discord",
+    requiredForServerless: false,
+  },
+  DISCORD_PUBLIC_KEY: {
+    category: "Discord",
+    description: "Clé publique pour signatures d'interactions HTTP Discord",
+    requiredForServerless: true,
+  },
+  APPLICATION_ID: {
+    category: "Discord",
+    description: "ID de l'application Discord",
+    requiredForServerless: false,
+    defaultFallback: "1497194276025663680",
+  },
+  GUILD_ID: {
+    category: "Discord",
+    description: "ID de la guilde principale Dragon Ball FR",
+    requiredForServerless: false,
+    defaultFallback: "934894610545770506",
+  },
+  ADDITIONAL_GUILD_IDS: {
+    category: "Discord",
+    description: "ID de la guilde Aphrody AI Lab",
+    requiredForServerless: false,
+    defaultFallback: "1554189180030947338",
+  },
+  OWNER_ID: {
+    category: "Discord",
+    description: "ID du propriétaire principal",
+    requiredForServerless: false,
+  },
+  OWNER_IDS: {
+    category: "Discord",
+    description: "IDs des propriétaires autorisés",
+    requiredForServerless: false,
+  },
+  SHENRON_AI_CHANNEL_ID: {
+    category: "Discord",
+    description: "Canal salon IA Shenron",
+    requiredForServerless: false,
+    defaultFallback: "1557354118710829117",
+  },
+  ADMIN_LAB_CHANNEL_ID: {
+    category: "Discord",
+    description: "Canal salon privé admin lab",
+    requiredForServerless: false,
+    defaultFallback: "1557354144149405806",
+  },
+  ANNOUNCE_CHANNEL_ID: {
+    category: "Discord",
+    description: "Canal annonces",
+    requiredForServerless: false,
+    defaultFallback: "1034768037217304606",
+  },
 
   // 3. SQL & Bases
-  DATABASE_URL: { category: "SQL", description: "URL de connexion PostgreSQL (Neon serverless ou PostgreSQL)", requiredForServerless: true, defaultFallback: "postgresql://shenron:shenron_dev_pass@127.0.0.1:5432/shenron_site" },
-  DATABASE_PATH: { category: "SQL", description: "Chemin de la base SQLite réplica bot", requiredForServerless: false, defaultFallback: "data/bot.db" },
-  APHRODY_MCP_DATABASE_URL: { category: "SQL", description: "URL base PostgreSQL pour le MCP Aphrody", requiredForServerless: false },
-  APHRODY_WEB_DATABASE_URL: { category: "SQL", description: "URL base crawl Aphrody Web", requiredForServerless: false },
-  APHRODY_SITE_DATABASE_URL: { category: "SQL", description: "URL base site Aphrody", requiredForServerless: false },
+  DATABASE_URL: {
+    category: "SQL",
+    description: "URL de connexion PostgreSQL (Neon serverless ou PostgreSQL)",
+    requiredForServerless: true,
+    defaultFallback: "postgresql://shenron:shenron_dev_pass@127.0.0.1:5432/shenron_site",
+  },
+  DATABASE_PATH: {
+    category: "SQL",
+    description: "Chemin de la base SQLite réplica bot",
+    requiredForServerless: false,
+    defaultFallback: "data/bot.db",
+  },
+  APHRODY_MCP_DATABASE_URL: {
+    category: "SQL",
+    description: "URL base PostgreSQL pour le MCP Aphrody",
+    requiredForServerless: false,
+  },
+  APHRODY_WEB_DATABASE_URL: {
+    category: "SQL",
+    description: "URL base crawl Aphrody Web",
+    requiredForServerless: false,
+  },
+  APHRODY_SITE_DATABASE_URL: {
+    category: "SQL",
+    description: "URL base site Aphrody",
+    requiredForServerless: false,
+  },
 
   // 4. Redis & KV
-  REDIS_URL: { category: "Redis", description: "URL Redis ou Upstash Serverless Redis (rediss://)", requiredForServerless: false, defaultFallback: "redis://127.0.0.1:6379" },
+  REDIS_URL: {
+    category: "Redis",
+    description: "URL Redis ou Upstash Serverless Redis (rediss://)",
+    requiredForServerless: false,
+    defaultFallback: "redis://127.0.0.1:6379",
+  },
   VALKEY_URL: { category: "Redis", description: "Alias Valkey", requiredForServerless: false },
 
   // 5. Auth & Sessions
-  BETTER_AUTH_SECRET: { category: "Auth", description: "Secret cryptographique Better Auth (32+ chars)", requiredForServerless: true, defaultFallback: "dev_fallback_better_auth_secret_minimum_32_chars_ok" },
-  BETTER_AUTH_URL: { category: "Auth", description: "URL canonique de base Better Auth", requiredForServerless: true, defaultFallback: "https://dragonballfr.com" },
-  NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: { category: "Auth", description: "Clé de chiffrement Next.js Server Actions", requiredForServerless: false },
-  SHENRON_ADMIN_TOKEN: { category: "Auth", description: "Jeton maître d'administration Shenron", requiredForServerless: false, defaultFallback: "dev_admin_master_token_aphrody_32char" },
-  SHENRON_USER_SECRET: { category: "Auth", description: "Secret pour identité d'utilisateur agissant", requiredForServerless: false },
-  SHENRON_ADMIN_IPS: { category: "Auth", description: "Adresses IP staff autorisées", requiredForServerless: false },
+  BETTER_AUTH_SECRET: {
+    category: "Auth",
+    description: "Secret cryptographique Better Auth (32+ chars)",
+    requiredForServerless: true,
+    defaultFallback: "dev_fallback_better_auth_secret_minimum_32_chars_ok",
+  },
+  BETTER_AUTH_URL: {
+    category: "Auth",
+    description: "URL canonique de base Better Auth",
+    requiredForServerless: true,
+    defaultFallback: "https://dragonballfr.com",
+  },
+  NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: {
+    category: "Auth",
+    description: "Clé de chiffrement Next.js Server Actions",
+    requiredForServerless: false,
+  },
+  SHENRON_ADMIN_TOKEN: {
+    category: "Auth",
+    description: "Jeton maître d'administration Shenron",
+    requiredForServerless: false,
+    defaultFallback: "dev_admin_master_token_aphrody_32char",
+  },
+  SHENRON_USER_SECRET: {
+    category: "Auth",
+    description: "Secret pour identité d'utilisateur agissant",
+    requiredForServerless: false,
+  },
+  SHENRON_ADMIN_IPS: {
+    category: "Auth",
+    description: "Adresses IP staff autorisées",
+    requiredForServerless: false,
+  },
 
   // 6. Aphrody Core & AI
-  APHRODY_MCP_HTTP_TOKEN: { category: "Aphrody", description: "Bearer token pour Aphrody MCP Streamable HTTP", requiredForServerless: false },
-  APHRODY_A2A_COORD_TOKEN: { category: "Aphrody", description: "Token de coordination A2A Hub", requiredForServerless: false },
-  APHRODY_AI_HTTP_URL: { category: "Aphrody", description: "URL API IA Aphrody", requiredForServerless: false, defaultFallback: "https://dragonballfr.com" },
-  APHRODY_AI_HTTP_TOKEN: { category: "Aphrody", description: "Bearer token API IA Aphrody", requiredForServerless: false },
-  APHRODY_AI_CHAT_BASE_URL: { category: "Aphrody", description: "URL endpoint LLM Chat direct (OpenAI-compatible)", requiredForServerless: false, defaultFallback: "http://127.0.0.1:8798/v1" },
-  APHRODY_AI_CHAT_MODEL: { category: "Aphrody", description: "Modèle LLM de chat (gemma4-e2b ou shenron-chat-v2)", requiredForServerless: false, defaultFallback: "gemma4-e2b" },
-  APHRODY_AI_EMBED_BASE_URL: { category: "Aphrody", description: "URL endpoint embeddings E5", requiredForServerless: false },
-  APHRODY_AI_EMBED_MODEL: { category: "Aphrody", description: "Modèle d'embedding Xenova/multilingual-e5-small", requiredForServerless: false, defaultFallback: "Xenova/multilingual-e5-small" },
-  APHRODY_AI_EMBED_DIMENSIONS: { category: "Aphrody", description: "Dimensions des vecteurs embeddings (384)", requiredForServerless: false, defaultFallback: "384" },
+  APHRODY_MCP_HTTP_TOKEN: {
+    category: "Aphrody",
+    description: "Bearer token pour Aphrody MCP Streamable HTTP",
+    requiredForServerless: false,
+  },
+  APHRODY_A2A_COORD_TOKEN: {
+    category: "Aphrody",
+    description: "Token de coordination A2A Hub",
+    requiredForServerless: false,
+  },
+  APHRODY_AI_HTTP_URL: {
+    category: "Aphrody",
+    description: "URL API IA Aphrody",
+    requiredForServerless: false,
+    defaultFallback: "https://dragonballfr.com",
+  },
+  APHRODY_AI_HTTP_TOKEN: {
+    category: "Aphrody",
+    description: "Bearer token API IA Aphrody",
+    requiredForServerless: false,
+  },
+  APHRODY_AI_CHAT_BASE_URL: {
+    category: "Aphrody",
+    description: "URL endpoint LLM Chat direct (OpenAI-compatible)",
+    requiredForServerless: false,
+    defaultFallback: "http://127.0.0.1:8798/v1",
+  },
+  APHRODY_AI_CHAT_MODEL: {
+    category: "Aphrody",
+    description: "Modèle LLM de chat (gemma4-e2b ou shenron-chat-v2)",
+    requiredForServerless: false,
+    defaultFallback: "gemma4-e2b",
+  },
+  APHRODY_AI_EMBED_BASE_URL: {
+    category: "Aphrody",
+    description: "URL endpoint embeddings E5",
+    requiredForServerless: false,
+  },
+  APHRODY_AI_EMBED_MODEL: {
+    category: "Aphrody",
+    description: "Modèle d'embedding Xenova/multilingual-e5-small",
+    requiredForServerless: false,
+    defaultFallback: "Xenova/multilingual-e5-small",
+  },
+  APHRODY_AI_EMBED_DIMENSIONS: {
+    category: "Aphrody",
+    description: "Dimensions des vecteurs embeddings (384)",
+    requiredForServerless: false,
+    defaultFallback: "384",
+  },
 
   // 7. Serverless & Cloud
-  NEXT_PUBLIC_SITE_URL: { category: "Serverless", description: "Origine publique du site frontend", requiredForServerless: true, defaultFallback: "https://dragonballfr.com" },
-  SHENRON_PUBLIC_SITE_URL: { category: "Serverless", description: "Alias origine publique", requiredForServerless: true, defaultFallback: "https://dragonballfr.com" },
-  SHENRON_PUBLIC_API_URL: { category: "Serverless", description: "Origine publique de l'API", requiredForServerless: true, defaultFallback: "https://dragonballfr.com/api" },
-  SHENRON_PUBLIC_ASSETS_URL: { category: "Serverless", description: "Origine publique des assets et CDN", requiredForServerless: true, defaultFallback: "https://cdn.dragonballfr.com" },
-  NEXT_PUBLIC_CDN_URL: { category: "Serverless", description: "URL publique CDN", requiredForServerless: true, defaultFallback: "https://cdn.dragonballfr.com" },
-  VERCEL_TOKEN: { category: "Serverless", description: "Token déploiement Vercel", requiredForServerless: false },
-  NPM_TOKEN: { category: "Serverless", description: "Token registre packages npm Aphrody", requiredForServerless: false },
-  NODE_ENV: { category: "Serverless", description: "Mode d'environnement Node/Bun", requiredForServerless: true, defaultFallback: "production" },
+  NEXT_PUBLIC_SITE_URL: {
+    category: "Serverless",
+    description: "Origine publique du site frontend",
+    requiredForServerless: true,
+    defaultFallback: "https://dragonballfr.com",
+  },
+  SHENRON_PUBLIC_SITE_URL: {
+    category: "Serverless",
+    description: "Alias origine publique",
+    requiredForServerless: true,
+    defaultFallback: "https://dragonballfr.com",
+  },
+  SHENRON_PUBLIC_API_URL: {
+    category: "Serverless",
+    description: "Origine publique de l'API",
+    requiredForServerless: true,
+    defaultFallback: "https://dragonballfr.com/api",
+  },
+  SHENRON_PUBLIC_ASSETS_URL: {
+    category: "Serverless",
+    description: "Origine publique des assets et CDN",
+    requiredForServerless: true,
+    defaultFallback: "https://cdn.dragonballfr.com",
+  },
+  NEXT_PUBLIC_CDN_URL: {
+    category: "Serverless",
+    description: "URL publique CDN",
+    requiredForServerless: true,
+    defaultFallback: "https://cdn.dragonballfr.com",
+  },
+  VERCEL_TOKEN: {
+    category: "Serverless",
+    description: "Token déploiement Vercel",
+    requiredForServerless: false,
+  },
+  NPM_TOKEN: {
+    category: "Serverless",
+    description: "Token registre packages npm Aphrody",
+    requiredForServerless: false,
+  },
+  NODE_ENV: {
+    category: "Serverless",
+    description: "Mode d'environnement Node/Bun",
+    requiredForServerless: true,
+    defaultFallback: "production",
+  },
 };
 
 /**
@@ -116,7 +350,10 @@ export function parseEnvFile(filePath: string): Record<string, string> {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) continue;
       const [key, ...rest] = trimmed.split("=");
-      const val = rest.join("=").trim().replace(/^["']|["']$/g, "");
+      const val = rest
+        .join("=")
+        .trim()
+        .replace(/^["']|["']$/g, "");
       if (key && val) {
         result[key.trim()] = val;
       }
@@ -152,17 +389,117 @@ export function discoverUnifiedSecrets(): Map<string, SecretEntry> {
     join(homedir(), ".aphrody", "private", "env", "dev.env"),
     join(homedir(), ".aphrody", "private", "shenron", "env", "shenron-bot.env"),
     join(homedir(), ".aphrody", "private", "shenron", "env", "shenron-site.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps", "etc", "rose-griffon", "shenron-bot.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps", "etc", "rose-griffon", "shenron-site.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps", "etc", "rose-griffon", "shenron-mcp-http.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps", "etc", "aphrody", "aphrody-mcp-http.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps", "etc", "aphrody", "aphrody-a2a.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps", "etc", "aphrody", "aphrody-ai-http.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps", "etc", "aphrody", "aphrody-site.next.env"),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "vps",
+      "etc",
+      "rose-griffon",
+      "shenron-bot.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "vps",
+      "etc",
+      "rose-griffon",
+      "shenron-site.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "vps",
+      "etc",
+      "rose-griffon",
+      "shenron-mcp-http.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "vps",
+      "etc",
+      "aphrody",
+      "aphrody-mcp-http.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "vps",
+      "etc",
+      "aphrody",
+      "aphrody-a2a.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "vps",
+      "etc",
+      "aphrody",
+      "aphrody-ai-http.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "vps",
+      "etc",
+      "aphrody",
+      "aphrody-site.next.env",
+    ),
     join(homedir(), ".aphrody", "private", "shenron", "hosts", "dbfr", ".shenron-neon.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "dbfr", "etc", "rose-griffon", "shenron-site.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "dbfr", "etc", "rose-griffon", "shenron-bot.env"),
-    join(homedir(), ".aphrody", "private", "shenron", "hosts", "dbfr", "etc", "aphrody", "shenron-compute.env"),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "dbfr",
+      "etc",
+      "rose-griffon",
+      "shenron-site.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "dbfr",
+      "etc",
+      "rose-griffon",
+      "shenron-bot.env",
+    ),
+    join(
+      homedir(),
+      ".aphrody",
+      "private",
+      "shenron",
+      "hosts",
+      "dbfr",
+      "etc",
+      "aphrody",
+      "shenron-compute.env",
+    ),
     join(ROOT, "apps", "site", ".env.local"),
     join(ROOT, "apps", "bot", ".env"),
   ];
@@ -217,12 +554,44 @@ export function discoverUnifiedSecrets(): Map<string, SecretEntry> {
 
 function guessCategory(key: string): SecretCategory {
   const upper = key.toUpperCase();
-  if (upper.includes("GOOGLE") || upper.includes("GEMINI") || upper.includes("ADSENSE") || upper.includes("GTM")) return "Google";
-  if (upper.includes("DISCORD") || upper.includes("GUILD") || upper.includes("CHANNEL") || upper.includes("ROLE") || upper.includes("TICKET")) return "Discord";
-  if (upper.includes("DATABASE") || upper.includes("POSTGRES") || upper.includes("SQL") || upper.includes("NEON")) return "SQL";
+  if (
+    upper.includes("GOOGLE") ||
+    upper.includes("GEMINI") ||
+    upper.includes("ADSENSE") ||
+    upper.includes("GTM")
+  )
+    return "Google";
+  if (
+    upper.includes("DISCORD") ||
+    upper.includes("GUILD") ||
+    upper.includes("CHANNEL") ||
+    upper.includes("ROLE") ||
+    upper.includes("TICKET")
+  )
+    return "Discord";
+  if (
+    upper.includes("DATABASE") ||
+    upper.includes("POSTGRES") ||
+    upper.includes("SQL") ||
+    upper.includes("NEON")
+  )
+    return "SQL";
   if (upper.includes("REDIS") || upper.includes("VALKEY")) return "Redis";
-  if (upper.includes("AUTH") || upper.includes("ADMIN") || upper.includes("SECRET") || upper.includes("SESSION") || upper.includes("KEY")) return "Auth";
-  if (upper.includes("APHRODY") || upper.includes("SHENRON") || upper.includes("BXC") || upper.includes("RAG")) return "Aphrody";
+  if (
+    upper.includes("AUTH") ||
+    upper.includes("ADMIN") ||
+    upper.includes("SECRET") ||
+    upper.includes("SESSION") ||
+    upper.includes("KEY")
+  )
+    return "Auth";
+  if (
+    upper.includes("APHRODY") ||
+    upper.includes("SHENRON") ||
+    upper.includes("BXC") ||
+    upper.includes("RAG")
+  )
+    return "Aphrody";
   return "Serverless";
 }
 
@@ -244,7 +613,15 @@ export function maskSecretValue(val?: string): string {
 export function printAuditReport(secrets: Map<string, SecretEntry>): void {
   console.log("=== 🛡️ Audit Unifié des Secrets Shenron & Aphrody (Zero-Leak) ===\n");
 
-  const categories: SecretCategory[] = ["Google", "Discord", "SQL", "Redis", "Auth", "Aphrody", "Serverless"];
+  const categories: SecretCategory[] = [
+    "Google",
+    "Discord",
+    "SQL",
+    "Redis",
+    "Auth",
+    "Aphrody",
+    "Serverless",
+  ];
 
   let totalKeys = 0;
   let presentKeys = 0;
@@ -272,19 +649,31 @@ export function printAuditReport(secrets: Map<string, SecretEntry>): void {
 
       const masked = maskSecretValue(entry.value);
       const reqMarker = entry.requiredForServerless ? " [REQUIS SERVERLESS]" : "";
-      console.log(`  ${icon} ${entry.key.padEnd(35)} : ${statusLabel.padEnd(16)} ${masked.padEnd(28)} | ${entry.description}${reqMarker}`);
+      console.log(
+        `  ${icon} ${entry.key.padEnd(35)} : ${statusLabel.padEnd(16)} ${masked.padEnd(28)} | ${entry.description}${reqMarker}`,
+      );
     }
     console.log("");
   }
 
-  console.log(`Résumé : ${presentKeys} réels, ${fallbackKeys} replis, ${totalKeys - presentKeys - fallbackKeys} manquants sur ${totalKeys} variables cataloguées.`);
-  console.log("Mode Serverless : " + (presentKeys >= 10 ? "✓ PRÊT AU DÉPLOIEMENT" : "! NÉCESSITE CONFIGURATION DES SECRETS MINIMAUX"));
+  console.log(
+    `Résumé : ${presentKeys} réels, ${fallbackKeys} replis, ${totalKeys - presentKeys - fallbackKeys} manquants sur ${totalKeys} variables cataloguées.`,
+  );
+  console.log(
+    "Mode Serverless : " +
+      (presentKeys >= 10
+        ? "✓ PRÊT AU DÉPLOIEMENT"
+        : "! NÉCESSITE CONFIGURATION DES SECRETS MINIMAUX"),
+  );
 }
 
 /**
  * Exporte un fichier .env.serverless consolidé pour l'infrastructure serverless.
  */
-export async function exportServerlessEnv(secrets: Map<string, SecretEntry>, outputPath?: string): Promise<string> {
+export async function exportServerlessEnv(
+  secrets: Map<string, SecretEntry>,
+  outputPath?: string,
+): Promise<string> {
   const target = outputPath ?? join(ROOT, "deploy", "connectors", "local", ".env.serverless");
   const targetDir = resolve(target, "..");
   if (!existsSync(targetDir)) {
@@ -302,7 +691,15 @@ export async function exportServerlessEnv(secrets: Map<string, SecretEntry>, out
     "",
   ];
 
-  const categories: SecretCategory[] = ["Serverless", "Google", "Discord", "SQL", "Redis", "Auth", "Aphrody"];
+  const categories: SecretCategory[] = [
+    "Serverless",
+    "Google",
+    "Discord",
+    "SQL",
+    "Redis",
+    "Auth",
+    "Aphrody",
+  ];
 
   for (const cat of categories) {
     const inCat = Array.from(secrets.values()).filter((e) => e.category === cat && e.value);
@@ -347,48 +744,86 @@ export async function syncAllSecrets(secrets: Map<string, SecretEntry>): Promise
 
   // 1. apps/site/.env.local
   const siteKeys = [
-    "DATABASE_URL", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL", "SHENRON_ADMIN_TOKEN",
-    "SHENRON_USER_SECRET", "DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET", "NEXT_PUBLIC_SITE_URL",
-    "NEXT_PUBLIC_CDN_URL", "NEXT_PUBLIC_GTM_ID", "NEXT_PUBLIC_ADSENSE_CLIENT", "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY",
-    "SHENRON_API_URL", "NEXT_PUBLIC_SHENRON_API_URL", "NEXT_PUBLIC_SHENRON_ASSETS_URL", "REDIS_URL",
-    "SHENRON_MCP_URL", "NODE_ENV"
+    "DATABASE_URL",
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL",
+    "SHENRON_ADMIN_TOKEN",
+    "SHENRON_USER_SECRET",
+    "DISCORD_CLIENT_ID",
+    "DISCORD_CLIENT_SECRET",
+    "NEXT_PUBLIC_SITE_URL",
+    "NEXT_PUBLIC_CDN_URL",
+    "NEXT_PUBLIC_GTM_ID",
+    "NEXT_PUBLIC_ADSENSE_CLIENT",
+    "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY",
+    "SHENRON_API_URL",
+    "NEXT_PUBLIC_SHENRON_API_URL",
+    "NEXT_PUBLIC_SHENRON_ASSETS_URL",
+    "REDIS_URL",
+    "SHENRON_MCP_URL",
+    "NODE_ENV",
   ];
   const siteEnvPath = join(ROOT, "apps", "site", ".env.local");
   const siteLines = [
     "# Généré automatiquement par scripts/ops/unified-secrets.ts",
     "# Mode 0600 - Ignoré par Git",
-    ""
+    "",
   ];
   for (const k of siteKeys) {
     const v = secrets.get(k)?.value;
     if (v) siteLines.push(`${k}="${v}"`);
   }
   await writeFile(siteEnvPath, siteLines.join("\n") + "\n", { encoding: "utf8", mode: 0o600 });
-  try { await chmod(siteEnvPath, 0o600); } catch {}
+  try {
+    await chmod(siteEnvPath, 0o600);
+  } catch {}
   console.log(`✓ Synchronisé : ${siteEnvPath}`);
 
   // 2. apps/bot/.env
   const botKeys = [
-    "DISCORD_TOKEN", "DISCORD_TOKEN_SHENRON", "DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET",
-    "DISCORD_PUBLIC_KEY", "APPLICATION_ID", "GUILD_ID", "ADDITIONAL_GUILD_IDS", "OWNER_ID",
-    "DATABASE_PATH", "DATABASE_URL", "LOG_MESSAGE_CHANNEL_ID", "LOG_SANCTION_CHANNEL_ID",
-    "LOG_ECONOMY_CHANNEL_ID", "LOG_JOIN_LEAVE_CHANNEL_ID", "LOG_LEVEL_ROLE_CHANNEL_ID",
-    "LOG_TICKET_CHANNEL_ID", "MOD_NOTIFY_CHANNEL_ID", "COMMANDS_CHANNEL_ID", "ANNOUNCE_CHANNEL_ID",
-    "SHENRON_AI_CHANNEL_ID", "ADMIN_LAB_CHANNEL_ID", "API_ADMIN_TOKEN", "API_USER_SECRET",
-    "API_ENABLED", "API_PORT", "API_HOST", "NODE_ENV"
+    "DISCORD_TOKEN",
+    "DISCORD_TOKEN_SHENRON",
+    "DISCORD_CLIENT_ID",
+    "DISCORD_CLIENT_SECRET",
+    "DISCORD_PUBLIC_KEY",
+    "APPLICATION_ID",
+    "GUILD_ID",
+    "ADDITIONAL_GUILD_IDS",
+    "OWNER_ID",
+    "DATABASE_PATH",
+    "DATABASE_URL",
+    "LOG_MESSAGE_CHANNEL_ID",
+    "LOG_SANCTION_CHANNEL_ID",
+    "LOG_ECONOMY_CHANNEL_ID",
+    "LOG_JOIN_LEAVE_CHANNEL_ID",
+    "LOG_LEVEL_ROLE_CHANNEL_ID",
+    "LOG_TICKET_CHANNEL_ID",
+    "MOD_NOTIFY_CHANNEL_ID",
+    "COMMANDS_CHANNEL_ID",
+    "ANNOUNCE_CHANNEL_ID",
+    "SHENRON_AI_CHANNEL_ID",
+    "ADMIN_LAB_CHANNEL_ID",
+    "API_ADMIN_TOKEN",
+    "API_USER_SECRET",
+    "API_ENABLED",
+    "API_PORT",
+    "API_HOST",
+    "NODE_ENV",
   ];
   const botEnvPath = join(ROOT, "apps", "bot", ".env");
   const botLines = [
     "# Généré automatiquement par scripts/ops/unified-secrets.ts",
     "# Mode 0600 - Ignoré par Git",
-    ""
+    "",
   ];
   for (const k of botKeys) {
     const v = secrets.get(k)?.value;
     if (v) botLines.push(`${k}="${v}"`);
   }
   await writeFile(botEnvPath, botLines.join("\n") + "\n", { encoding: "utf8", mode: 0o600 });
-  try { await chmod(botEnvPath, 0o600); } catch {}
+  try {
+    await chmod(botEnvPath, 0o600);
+  } catch {}
   console.log(`✓ Synchronisé : ${botEnvPath}`);
 
   // 3. Export serverless
@@ -420,6 +855,8 @@ if (import.meta.main) {
       await syncAllSecrets(secrets);
       break;
     default:
-      console.log("Usage: bun unified-secrets.ts [audit|export-serverless|export-json|sync-all] [--output <path>]");
+      console.log(
+        "Usage: bun unified-secrets.ts [audit|export-serverless|export-json|sync-all] [--output <path>]",
+      );
   }
 }

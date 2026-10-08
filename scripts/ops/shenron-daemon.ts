@@ -36,7 +36,9 @@ export async function runDaemonStatus(): Promise<void> {
 
   // 1. Accélération matérielle
   const hw = await detectHardwareAcceleration();
-  console.log(`• Accélération LLM : ${hw.device.toUpperCase()} ${hw.gpuName ? `(${hw.gpuName}, ${hw.vramMb} MiB)` : ""}`);
+  console.log(
+    `• Accélération LLM : ${hw.device.toUpperCase()} ${hw.gpuName ? `(${hw.gpuName}, ${hw.vramMb} MiB)` : ""}`,
+  );
 
   // 2. Tunnel natif
   console.log("\n[1/4] Tunnel Réseau Natif :");
@@ -54,7 +56,9 @@ export async function runDaemonStatus(): Promise<void> {
   console.log("\n[3/4] Surveillance OVH & DNS :");
   const ovh = await runOvhChecks();
   for (const d of ovh.dnsChecks) {
-    console.log(`  - ${d.host} : ${d.ok ? `OK (${d.resolvedIp?.join(", ")})` : `ÉCHEC (${d.error})`}`);
+    console.log(
+      `  - ${d.host} : ${d.ok ? `OK (${d.resolvedIp?.join(", ")})` : `ÉCHEC (${d.error})`}`,
+    );
   }
 
   console.log("\n==========================================================");
@@ -80,22 +84,28 @@ export async function startMasterDaemon(config: DaemonConfig): Promise<void> {
   }, config.deployIntervalSec * 1000);
 
   // Boucle 2 : Auto-Crawl & RAG Update (périodique)
-  setInterval(async () => {
-    try {
-      await executeCrawlAndRagUpdate();
-    } catch (err) {
-      console.error("[Daemon RAG Crawl] Erreur cycle:", err);
-    }
-  }, config.crawlIntervalHours * 3600 * 1000);
+  setInterval(
+    async () => {
+      try {
+        await executeCrawlAndRagUpdate();
+      } catch (err) {
+        console.error("[Daemon RAG Crawl] Erreur cycle:", err);
+      }
+    },
+    config.crawlIntervalHours * 3600 * 1000,
+  );
 
   // Boucle 3 : Auto-Eval & Fine-Tuning LLM (périodique)
-  setInterval(async () => {
-    try {
-      await executeEvaluationAndFineTuning({ device: config.device });
-    } catch (err) {
-      console.error("[Daemon Fine-Tuning] Erreur cycle:", err);
-    }
-  }, config.finetuneIntervalHours * 3600 * 1000);
+  setInterval(
+    async () => {
+      try {
+        await executeEvaluationAndFineTuning({ device: config.device });
+      } catch (err) {
+        console.error("[Daemon Fine-Tuning] Erreur cycle:", err);
+      }
+    },
+    config.finetuneIntervalHours * 3600 * 1000,
+  );
 
   // Exécution initiale immédiate d'un contrôle
   await checkAndDeploy(config.allInOne).catch(() => {});

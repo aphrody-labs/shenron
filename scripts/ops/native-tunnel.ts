@@ -85,15 +85,24 @@ export function findSshKey(endpoint: TunnelEndpoint): string | null {
   return null;
 }
 
-export function buildSshArgs(endpoint: TunnelEndpoint, identityFile: string, targetHost?: string): string[] {
+export function buildSshArgs(
+  endpoint: TunnelEndpoint,
+  identityFile: string,
+  targetHost?: string,
+): string[] {
   const args = [
     "-N",
     "-T",
-    "-o", "ServerAliveInterval=20",
-    "-o", "ServerAliveCountMax=3",
-    "-o", "ExitOnForwardFailure=yes",
-    "-o", "StrictHostKeyChecking=accept-new",
-    "-i", identityFile,
+    "-o",
+    "ServerAliveInterval=20",
+    "-o",
+    "ServerAliveCountMax=3",
+    "-o",
+    "ExitOnForwardFailure=yes",
+    "-o",
+    "StrictHostKeyChecking=accept-new",
+    "-i",
+    identityFile,
   ];
 
   for (const f of FORWARD_PORTS) {
@@ -110,20 +119,29 @@ export async function startTunnel(targetHost = "vps", isDaemon = false): Promise
 
   console.log(`--> Démarrage du tunnel natif vers ${endpoint.name} (${endpoint.publicIp})...`);
   if (!key) {
-    console.warn(`[Avertissement] Aucune clé SSH standard trouvée dans ~/.ssh. Tentative avec l'agent SSH local.`);
+    console.warn(
+      `[Avertissement] Aucune clé SSH standard trouvée dans ~/.ssh. Tentative avec l'agent SSH local.`,
+    );
   }
 
   // Si on a un alias configuré dans ~/.ssh/config pour targetHost, l'utiliser en priorité
   const destination = targetHost || `${endpoint.user}@${endpoint.publicIp}`;
-  const sshArgs = key ? buildSshArgs(endpoint, key, destination) : [
-    "-N", "-T",
-    "-o", "ServerAliveInterval=20",
-    "-o", "ServerAliveCountMax=3",
-    "-o", "ExitOnForwardFailure=yes",
-    "-o", "StrictHostKeyChecking=accept-new",
-    ...FORWARD_PORTS.flatMap(f => ["-L", `127.0.0.1:${f.local}:127.0.0.1:${f.remote}`]),
-    destination
-  ];
+  const sshArgs = key
+    ? buildSshArgs(endpoint, key, destination)
+    : [
+        "-N",
+        "-T",
+        "-o",
+        "ServerAliveInterval=20",
+        "-o",
+        "ServerAliveCountMax=3",
+        "-o",
+        "ExitOnForwardFailure=yes",
+        "-o",
+        "StrictHostKeyChecking=accept-new",
+        ...FORWARD_PORTS.flatMap((f) => ["-L", `127.0.0.1:${f.local}:127.0.0.1:${f.remote}`]),
+        destination,
+      ];
 
   console.log("Ports relayés vers la boucle locale :");
   for (const f of FORWARD_PORTS) {
@@ -135,11 +153,14 @@ export async function startTunnel(targetHost = "vps", isDaemon = false): Promise
     stdio: isDaemon ? ["ignore", "ignore", "ignore"] : ["ignore", "inherit", "inherit"],
   });
 
-  await writeFile(PID_FILE, JSON.stringify({
-    pid: proc.pid,
-    target: targetHost,
-    startedAt: new Date().toISOString(),
-  }));
+  await writeFile(
+    PID_FILE,
+    JSON.stringify({
+      pid: proc.pid,
+      target: targetHost,
+      startedAt: new Date().toISOString(),
+    }),
+  );
 
   console.log(`✓ Tunnel actif (PID: ${proc.pid})`);
 
@@ -182,7 +203,9 @@ export async function checkTunnelStatus(): Promise<void> {
     try {
       const data = JSON.parse(await readFile(PID_FILE, "utf8"));
       active = true;
-      console.log(`État: ACTIF (PID: ${data.pid}, Cible: ${data.target}, Démarré le: ${data.startedAt})`);
+      console.log(
+        `État: ACTIF (PID: ${data.pid}, Cible: ${data.target}, Démarré le: ${data.startedAt})`,
+      );
     } catch {
       console.log("État: Fichier PID corrompu.");
     }
@@ -206,7 +229,8 @@ export async function checkTunnelStatus(): Promise<void> {
 export async function generateWireguardConfig(peer: "aphro" | "omar" = "aphro"): Promise<string> {
   const ip = peer === "omar" ? "10.200.77.5/32" : "10.200.77.4/32";
   const desc = peer === "omar" ? "Omar PC Peer (omar-pc)" : "Windows Native Peer (aphro-pc)";
-  const filename = peer === "omar" ? "wireguard-omar-pc.conf.example" : "wireguard-aphro-pc.conf.example";
+  const filename =
+    peer === "omar" ? "wireguard-omar-pc.conf.example" : "wireguard-aphro-pc.conf.example";
 
   const conf = `[Interface]
 # ${desc}
@@ -247,6 +271,8 @@ if (import.meta.main) {
       await generateWireguardConfig(peer);
       break;
     default:
-      console.log("Usage: bun native-tunnel.ts [up|down|status|generate-wireguard] [--dbfr] [--daemon] [--omar]");
+      console.log(
+        "Usage: bun native-tunnel.ts [up|down|status|generate-wireguard] [--dbfr] [--daemon] [--omar]",
+      );
   }
 }

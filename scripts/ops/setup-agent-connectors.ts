@@ -299,7 +299,11 @@ export async function writeOmarBundle(targetDir: string): Promise<void> {
   await writeFile(join(targetDir, "README.md"), buildOmarReadme(templateTokens), "utf8");
   await writeFile(join(targetDir, "connect-tunnel.ps1"), buildOmarPs1Tunnel(), "utf8");
   await writeFile(join(targetDir, "connect-tunnel.sh"), buildOmarShTunnel(), "utf8");
-  await writeFile(join(targetDir, "wireguard-omar.conf.example"), buildOmarWireguardConfig(), "utf8");
+  await writeFile(
+    join(targetDir, "wireguard-omar.conf.example"),
+    buildOmarWireguardConfig(),
+    "utf8",
+  );
   await writeFile(
     join(targetDir, "mcp.claude.json.example"),
     JSON.stringify(buildClaudeMcpConfig(templateTokens), null, 2) + "\n",
@@ -310,7 +314,11 @@ export async function writeOmarBundle(targetDir: string): Promise<void> {
     JSON.stringify(buildAgyMcpConfig(templateTokens), null, 2) + "\n",
     "utf8",
   );
-  await writeFile(join(targetDir, "mcp.codex.toml.example"), buildCodexTomlConfig(templateTokens), "utf8");
+  await writeFile(
+    join(targetDir, "mcp.codex.toml.example"),
+    buildCodexTomlConfig(templateTokens),
+    "utf8",
+  );
 
   console.log(`✓ Pack de connecteurs Omar généré (modèles sécurisés) dans : ${targetDir}`);
 }
@@ -355,9 +363,7 @@ export async function testEndpointsStatus(tokens: ConnectorTokens): Promise<void
         signal: AbortSignal.timeout(2000),
       });
       const ok = res.status >= 200 && res.status < 400;
-      console.log(
-        `  ${ok ? "✓" : "!"} ${ep.name.padEnd(35)} : HTTP ${res.status} (${ep.url})`,
-      );
+      console.log(`  ${ok ? "✓" : "!"} ${ep.name.padEnd(35)} : HTTP ${res.status} (${ep.url})`);
     } catch {
       console.log(`  ✗ ${ep.name.padEnd(35)} : Injoignable (${ep.url})`);
     }
@@ -400,11 +406,7 @@ if (import.meta.main) {
     console.log(`✓ Configuration locale Claude Code générée : ${claudeMcpFile}`);
 
     const agyMcpFile = join(localDir, "mcp.agy.json");
-    await writeFile(
-      agyMcpFile,
-      JSON.stringify(buildAgyMcpConfig(tokens), null, 2) + "\n",
-      "utf8",
-    );
+    await writeFile(agyMcpFile, JSON.stringify(buildAgyMcpConfig(tokens), null, 2) + "\n", "utf8");
     console.log(`✓ Configuration locale AGY générée : ${agyMcpFile}`);
 
     const codexFile = join(localDir, "mcp.codex.toml");

@@ -26,10 +26,13 @@ export interface HardwareAcceleration {
 
 export async function detectHardwareAcceleration(): Promise<HardwareAcceleration> {
   try {
-    const p = Bun.spawn(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"], {
-      stdout: "pipe",
-      stderr: "ignore",
-    });
+    const p = Bun.spawn(
+      ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"],
+      {
+        stdout: "pipe",
+        stderr: "ignore",
+      },
+    );
     const out = (await new Response(p.stdout).text()).trim();
     const code = await p.exited;
 
@@ -52,7 +55,11 @@ export async function detectHardwareAcceleration(): Promise<HardwareAcceleration
   };
 }
 
-async function runStep(label: string, command: string[], env: Record<string, string> = {}): Promise<boolean> {
+async function runStep(
+  label: string,
+  command: string[],
+  env: Record<string, string> = {},
+): Promise<boolean> {
   console.log(`\n--> [LLM & Eval] ${label}...`);
   const p = Bun.spawn(command, {
     cwd: ROOT,
@@ -68,11 +75,13 @@ async function runStep(label: string, command: string[], env: Record<string, str
   return true;
 }
 
-export async function executeEvaluationAndFineTuning(options: {
-  device?: "cuda" | "cpu" | "auto";
-  cycles?: number;
-  batchSize?: number;
-} = {}): Promise<void> {
+export async function executeEvaluationAndFineTuning(
+  options: {
+    device?: "cuda" | "cpu" | "auto";
+    cycles?: number;
+    batchSize?: number;
+  } = {},
+): Promise<void> {
   console.log("==========================================================");
   console.log("⚡ SHENRON — AUTO-EVALUATION & FINE-TUNING LLM (CUDA/CPU)  ");
   console.log("==========================================================");
@@ -85,32 +94,46 @@ export async function executeEvaluationAndFineTuning(options: {
     console.log(`  GPU : ${hw.gpuName} (${hw.vramMb ?? "N/A"} MiB VRAM)`);
   }
 
-  const cudaEnv: Record<string, string> = selectedDevice === "cuda" ? {
-    CUDA_VISIBLE_DEVICES: "0",
-    TORCH_CUDA_ARCH_LIST: "8.9;9.0", // Ada Lovelace (RTX 4070)
-    APHRODY_DEVICE: "cuda",
-    APHRODY_CUDA: "1",
-  } : {
-    APHRODY_DEVICE: "cpu",
-    APHRODY_CUDA: "0",
-  };
+  const cudaEnv: Record<string, string> =
+    selectedDevice === "cuda"
+      ? {
+          CUDA_VISIBLE_DEVICES: "0",
+          TORCH_CUDA_ARCH_LIST: "8.9;9.0", // Ada Lovelace (RTX 4070)
+          APHRODY_DEVICE: "cuda",
+          APHRODY_CUDA: "1",
+        }
+      : {
+          APHRODY_DEVICE: "cpu",
+          APHRODY_CUDA: "0",
+        };
 
   // 1. Évaluation RAG Faithfulness & Recall
   console.log("\n--> 1. Évaluation RAG & Fidélité sur le corpus Gold...");
   await runStep("Évaluation RAG Gold Set", [
-    "bun", "scripts/ops/eval-rag-faithfulness.ts", "--limit", "10"
+    "bun",
+    "scripts/ops/eval-rag-faithfulness.ts",
+    "--limit",
+    "10",
   ]).catch(() => {});
 
   // 2. Boucle de fine-tuning continu
   const cycles = options.cycles ?? 1;
   const batch = options.batchSize ?? 25;
   console.log(`\n--> 2. Exécution du fine-tuning (${cycles} cycles, lot: ${batch})...`);
-  await runStep("Boucle d'entraînement LoRA Shenron Chat", [
-    "bun", "scripts/ops/train-shenron-chat-loop.ts",
-    "--batch", String(batch),
-    "--max-cycles", String(cycles),
-    "--sleep-sec", "5",
-  ], cudaEnv);
+  await runStep(
+    "Boucle d'entraînement LoRA Shenron Chat",
+    [
+      "bun",
+      "scripts/ops/train-shenron-chat-loop.ts",
+      "--batch",
+      String(batch),
+      "--max-cycles",
+      String(cycles),
+      "--sleep-sec",
+      "5",
+    ],
+    cudaEnv,
+  );
 
   console.log("\n✓ Cycle d'évaluation et de fine-tuning complété.");
 }

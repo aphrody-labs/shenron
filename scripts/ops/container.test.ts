@@ -179,4 +179,3 @@ describe("unified-secrets", () => {
     expect(json.DATABASE_URL).toBeDefined();
   });
 });
-
