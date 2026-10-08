@@ -108,8 +108,8 @@ Dans *Second Coming*, Broly domine le Gohan affaibli tel qu’il apparaît dans 
 
 ### Réponse consolidée
 
-L’ordre le plus solide est interne au film : Janemba de base est battu par Goku SSJ3, Super Janemba représente une menace supérieure et Gogeta SSJ le vainc nettement. Les guides décrivant Super Janemba comme supérieur au SSJ3 renforcent cette lecture. L’épée accroît fortement sa menace en combat, sans preuve qu’elle augmente son ki d’un facteur déterminé.
+L’ordre le plus solide est interne au film : Janemba de base est battu par Goku SSJ3, Super Janemba représente une menace supérieure et Gogeta SSJ le vainc nettement. Le *Chōzenshū 3*, planches 149 et 284, confirme explicitement que le Janemba transformé déploie une force supérieure à celle du Super Saiyan 3 (超サイヤ人3の力を上回る強さを持つ / 超サイヤ人3を上回る力を発揮) et rapporte qu’il est vaincu par Gogeta. La planche 284 souligne aussi les propriétés tranchantes de son épée — elle peut entailler le sol — mais ne dit pas que l’arme augmente son ki ou sa puissance d’un facteur déterminé. Cela étaye son niveau au-dessus du SSJ3, sans donner de pont de mesure vers les formes de Buu.
 
 Placer Super Janemba au-dessus de Super Buu est plausible dans l’argument de Daniel, mais dépend d’une reconstruction sur le ki maléfique recueilli par la machine. Le situer près de Buutenks ou Buuhan demeure de faible confiance : les indicateurs tirés des jeux et cartes sont hétérogènes et l’article lui-même donne deux conclusions incompatibles, l’une proche de Buutenks, l’autre de Buuhan. Gogeta SSJ battant Janemba n’établit pas à lui seul un rapport numérique entre Gogeta et Vegetto.
 
-**Références de travail :** `var/reports/capsule-commentary-janemba-agent.md` et `var/reports/capsule-commentary-critical-review.md`.
+**Références :** [*Chōzenshū 3*, planche 149](https://dragonballfr.com/wiki/databooks/18#planche-149) et [planche 284](https://dragonballfr.com/wiki/databooks/18#planche-284) ; film *Fusion Reborn* ; `var/reports/capsule-commentary-janemba-agent.md` et `var/reports/capsule-commentary-critical-review.md`.
