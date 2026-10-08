@@ -93,3 +93,5 @@ apps/site/.next-qualification/
 
 /packages/pipeline/data/
 test-teacher.ts
+/data/rag/
+/data/catalogues/.cache-dragonballcn/
