@@ -255,3 +255,44 @@ container-ovh *args="":
 container-backup:
     bun scripts/ops/container.ts backup
 
+# Native Tunnel: start multi-port SSH forwarding to VPS/DBFR
+[group('tunnel')]
+tunnel-up *args="":
+    bun scripts/ops/native-tunnel.ts up {{args}}
+
+# Native Tunnel: stop background SSH forwarding tunnel
+[group('tunnel')]
+tunnel-down:
+    bun scripts/ops/native-tunnel.ts down
+
+# Native Tunnel: check status and loopback ports
+[group('tunnel')]
+tunnel-status:
+    bun scripts/ops/native-tunnel.ts status
+
+# Native Tunnel: generate WireGuard client configuration for Windows
+[group('tunnel')]
+tunnel-wg:
+    bun scripts/ops/native-tunnel.ts generate-wireguard
+
+# Automation: continuous deployment on push to origin/main
+[group('automation')]
+auto-deploy *args="":
+    bun scripts/ops/auto-deploy.ts {{args}}
+
+# Automation: continuous crawl of official web and public RAG update
+[group('automation')]
+auto-crawl-rag *args="":
+    bun scripts/ops/auto-crawl-rag.ts {{args}}
+
+# Automation: continuous RAG evaluation and LLM fine-tuning on CUDA/CPU
+[group('automation')]
+auto-finetune *args="":
+    bun scripts/ops/auto-eval-finetune.ts {{args}}
+
+# Automation: Master autonomous daemon coordinating all loops
+[group('automation')]
+daemon *args="":
+    bun scripts/ops/shenron-daemon.ts {{args}}
+
+

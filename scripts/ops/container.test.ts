@@ -65,3 +65,35 @@ describe("ovh-shenron", () => {
     expect(typeof res.ok).toBe("boolean");
   });
 });
+
+describe("native-tunnel", () => {
+  test("builds correct ssh forward arguments for endpoint", async () => {
+    const { ENDPOINTS, buildSshArgs } = await import("./native-tunnel");
+    const vps = ENDPOINTS.vps!;
+    const args = buildSshArgs(vps, "/tmp/fake-key");
+    expect(args).toContain("-N");
+    expect(args).toContain("-i");
+    expect(args).toContain("/tmp/fake-key");
+    expect(args.some((a) => a.includes("127.0.0.1:15433:127.0.0.1:5432"))).toBe(true);
+    expect(args.some((a) => a.includes("127.0.0.1:8799:127.0.0.1:8798"))).toBe(true);
+    expect(args.at(-1)).toBe("ubuntu@51.77.147.152");
+  });
+});
+
+describe("auto-eval-finetune", () => {
+  test("detects hardware acceleration mode without error", async () => {
+    const { detectHardwareAcceleration } = await import("./auto-eval-finetune");
+    const hw = await detectHardwareAcceleration();
+    expect(["cuda", "cpu"]).toContain(hw.device);
+    expect(typeof hw.hasCuda).toBe("boolean");
+  });
+});
+
+describe("auto-deploy", () => {
+  test("getCurrentCommit retrieves a valid commit sha", async () => {
+    const { getCurrentCommit } = await import("./auto-deploy");
+    const sha = await getCurrentCommit();
+    expect(sha).toMatch(/^[0-9a-f]{40}$/);
+  });
+});
+

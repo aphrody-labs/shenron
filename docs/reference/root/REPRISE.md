@@ -22,4 +22,11 @@
    * Conteneur unique tout-en-un (`deploy/docker/all-in-one/`) et pile Compose (`deploy/docker/compose.complete.yaml`).
    * Intégration des secrets Aphrody (`scripts/ops/container-secrets.ts`), initialisation DB/migrations (`scripts/ops/container-db-init.ts`), surveillance OVH (`scripts/ops/ovh-shenron.ts`) et CLI unifié (`just container-*`).
    * Référence : [CONTAINER-COMPLET.md](../../operations/CONTAINER-COMPLET.md).
+6. **Tunnel Natif & Automatisation Continue (Auto-Deploy, RAG Crawl, Fine-Tuning CUDA)** :
+   * Tunnel natif SSH & WireGuard multi-ports (`scripts/ops/native-tunnel.ts`, `just tunnel-*`).
+   * Auto-deploy continu dès push origin/main (`scripts/ops/auto-deploy.ts`, `just auto-deploy`).
+   * Auto-crawl web et synchronisation RAG (`scripts/ops/auto-crawl-rag.ts`, `just auto-crawl-rag`).
+   * Auto-évaluation et fine-tuning continu du LLM avec accélération CUDA sur RTX 4070 (`scripts/ops/auto-eval-finetune.ts`, `just auto-finetune`).
+   * Master Daemon autonome (`scripts/ops/shenron-daemon.ts`, `just daemon`).
+
 

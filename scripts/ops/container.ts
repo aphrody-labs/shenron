@@ -171,7 +171,7 @@ async function cmdBackup() {
 
   // Postgres dump if container is running
   const dumpFile = join(backupDir, `postgres-shenron_site-${timestamp}.sql`);
-  const { code, stderr } = await execCommand([
+  const { code } = await execCommand([
     "docker", "exec", "shenron-postgres", "pg_dump", "-U", "shenron", "shenron_site"
   ]);
   if (code === 0) {

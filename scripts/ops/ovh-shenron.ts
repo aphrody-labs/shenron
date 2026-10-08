@@ -12,7 +12,6 @@
  *   bun scripts/ops/ovh-shenron.ts [--watch] [--dns-only] [--json]
  */
 
-import { resolve } from "node:path";
 import { lookup } from "node:dns/promises";
 
 export interface DnsCheckResult {
