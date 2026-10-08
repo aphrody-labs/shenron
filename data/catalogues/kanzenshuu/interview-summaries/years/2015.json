@@ -28,7 +28,8 @@
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 1,
         "formatNote": "Blocs réponse locaux=1 vs index=2. Comptage Q/R distinct (2/1); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -58,7 +59,8 @@
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 6,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-momoiro-clover-z-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -88,7 +90,8 @@
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 10,
         "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2015-momoiro-clover-z.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -114,7 +117,8 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-norihiro-hayashida.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -140,7 +144,8 @@
         "questionAnswerCount": 7,
         "detectedQuestionBlocks": 7,
         "detectedAnswerBlocks": 7,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-ryusei-nakao.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -166,7 +171,8 @@
         "questionAnswerCount": 5,
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 5,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-ryusei-nakao-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -192,7 +198,8 @@
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 10,
         "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2015-ryusei-nakao-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -222,7 +229,8 @@
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 5,
         "formatNote": "La mise en page compte cinq blocs avec introduction, transition et encart; l’échange proprement dit comporte deux questions principales.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2015-naho-ooishi-toyotaro.html"
       },
       "dragonBallRelevance": "Directe : deux auteurs commentent les personnages, combats et choix de Resurrection “F”.",
       "status": "summary-written-source-not-print-collated",
@@ -483,6 +491,98 @@
       "audioDownloaded": true,
       "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-44427-podcast-episode-0385.mp3",
       "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-44944-podcast-episode-0387-chris-sabat-segment",
+      "kind": "audio-interview",
+      "title": "Podcast Episode #0387 — bref segment avec Chris Sabat",
+      "summary": "Le descriptif de l’épisode présente une discussion des animateurs sur le doublage anglais de Dragon Ball Z: Resurrection F, mise en regard de leur travail sur Kai et Battle of Gods. Il annonce également une brève intervention de Chris Sabat apportant un éclairage sur le casting vocal et le script. Le billet ne reproduit pas cette intervention; aucune précision supplémentaire sur ses propos n’est disponible sans transcription.",
+      "keyInformation": [
+        "Sujet annoncé : doublage anglais de Resurrection F, comparé à Kai et Battle of Gods.",
+        "Chris Sabat intervient brièvement au sujet du casting vocal et du script.",
+        "Aucune transcription ni fichier audio n’a été trouvé dans les sources locales vérifiées; les détails non reproduits ne sont pas inventés."
+      ],
+      "source": {
+        "publication": "Kanzenshuu Podcast, épisode #0387",
+        "url": "https://www.kanzenshuu.com/2015/08/11/podcast-episode-0387/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
+        "date": "2015-08-11",
+        "participants": [
+          "Chris Sabat",
+          "VegettoEX",
+          "Meri",
+          "Hujio"
+        ],
+        "audioTranscriptAvailable": false,
+        "audioDownloaded": false,
+        "formatNote": "Bref segment audio annoncé dans un épisode de podcast; transcription et fichier audio non disponibles dans les sources locales vérifiées.",
+        "forumContent": false
+      },
+      "formatNote": "Segment audio bref, sans transcription disponible.",
+      "dragonBallRelevance": "Directe : doublage anglais, casting et script d’une production Dragon Ball.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-40439-bunka-tsushin-hidenobu-muramatsu-yasushi-suto-excerpt",
+      "kind": "external-interview-excerpt",
+      "title": "Hidenobu Muramatsu et Yasushi Sutō — extrait d’interview sur Revival of ‘F’",
+      "summary": "Kanzenshuu résume une interview publiée par Bunka Tsūshin dans le numéro de mars 2015 de Cultural News Journal avec Hidenobu Muramatsu, responsable des ventes cinéma et du box-office chez Toei, et Yasushi Sutō, responsable de la planification et de la production. L’article rapporte leur objectif d’exploitation pour Revival of ‘F’ et traduit une déclaration de Muramatsu : début février, les préventes progressaient de 30 % par rapport au même stade pour Battle of Gods, et Toei visait cette fois 4 milliards de yens, contre 3 milliards pour le film précédent. Kanzenshuu indique également que le film devait sortir sur 640 à 650 écrans japonais, contre 312 pour Battle of Gods.",
+      "keyInformation": [
+        "Hidenobu Muramatsu est cité pour l’objectif de recettes de 4 milliards de yens; le billet compare ce montant à l’objectif de 3 milliards de yens de Battle of Gods.",
+        "La déclaration attribuée à Muramatsu indique qu’au début de février 2015, les préventes étaient en hausse de 30 % par rapport au même moment avant Battle of Gods.",
+        "Kanzenshuu rapporte une sortie prévue sur 640 à 650 écrans au Japon, contre 312 pour Battle of Gods.",
+        "Il s’agit d’un extrait et d’un résumé d’une interview imprimée externe, pas d’une transcription complète; les projections sont celles annoncées à l’époque."
+      ],
+      "source": {
+        "publication": "Bunka Tsūshin, Cultural News Journal, March 2015 issue",
+        "url": "https://www.kanzenshuu.com/2015/03/05/revival-of-f-aims-to-surpass-battle-of-gods-at-the-box-office/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
+        "date": "2015-03-05",
+        "participants": [
+          "Hidenobu Muramatsu",
+          "Yasushi Sutō"
+        ],
+        "participantRoles": {
+          "Hidenobu Muramatsu": "Responsable des ventes cinéma et du box-office chez Toei",
+          "Yasushi Sutō": "Responsable de la planification et de la production chez Toei"
+        },
+        "formatNote": "Interview publiée dans une revue imprimée externe; Kanzenshuu en donne un résumé et traduit une déclaration de Muramatsu, sans reproduire l’échange complet.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : objectifs de distribution et d’exploitation de Dragon Ball Z: Revival of ‘F’ rapportés par des responsables de Toei.",
+      "status": "summary-written-external-interview-not-fully-transcribed",
+      "forumContent": false
+    },
+    {
+      "id": "v-jump-2015-akio-iyoku-kozo-morishita-film-titles",
+      "title": "Akio Iyoku et Kōzō Morishita — entretien V-Jump sur les films Dragon Ball",
+      "summary": "Dans cet entretien en ligne de V-Jump, Akio Iyoku interroge le producteur Kōzō Morishita sur la conception des films Dragon Ball de cette période. Morishita explique que les titres et l’histoire étaient élaborés en parallèle avec l’éditeur Kondō; cette simultanéité rendait le processus de décision difficile. Kanzenshuu cite et résume ce passage dans une page ultérieure, sans reproduire l’entretien complet.",
+      "keyInformation": [
+        "Morishita rapporte que le sous-titre et le contenu narratif des films étaient réfléchis en même temps.",
+        "L’éditeur Kondō participait à ces échanges de conception.",
+        "Morishita décrit cette façon de travailler comme difficile.",
+        "La page Kanzenshuu fournit un extrait/résumé, pas une transcription intégrale de l’entretien V-Jump."
+      ],
+      "source": {
+        "publication": "V-Jump, entretien en ligne; Akio Iyoku interviewe le producteur Kōzō Morishita",
+        "date": "24 May 2015 (archive de la page; date originale de publication non établie)",
+        "participants": [
+          "Akio Iyoku",
+          "Kōzō Morishita",
+          "Kondō (éditeur, mentionné)"
+        ],
+        "originalSource": "http://vjump.shueisha.co.jp/victory/vt23/wp-main-pre23.html",
+        "archivedSource": "https://web.archive.org/web/20150524012258/http://vjump.shueisha.co.jp:80/victory/vt23/wp-main-pre23.html",
+        "kanzenshuuPage": "https://www.kanzenshuu.com/faqs/dbz-movies-fit-the-story/",
+        "kanzenshuuPageId": 75192,
+        "questionAnswerCount": null,
+        "formatNote": "Entretien en ligne externe; Kanzenshuu en rapporte un passage, sans transcription complète. La capture Wayback est datée du 24 mai 2015, ce qui n’établit pas nécessairement la date de publication originale.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
+      },
+      "dragonBallRelevance": "Directe: témoignage d’un producteur sur la conception des films Dragon Ball.",
+      "status": "summary-based-on-kanzenshuu-excerpt-source-not-fully-collated",
+      "forumContent": false
     }
   ]
 }

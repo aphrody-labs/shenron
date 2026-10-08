@@ -31,7 +31,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2022-back-up-comic-chapter-35/",
         "questionAnswerCount": 7,
         "formatNote": "Les sept unités repérées par Kanzenshuu correspondent aux sept pages/planches d'un comic d'interview humoristique, et non à sept questions journalistiques autonomes. Des didascalies, bulles et éléments de gag complètent les propos de Kodama; l'annonce que Victory Asada serait dans le film est une plaisanterie démentie dans la dernière planche.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2022-back-up-comic-chapter-35.html"
       },
       "dragonBallRelevance": "Directe : expérience de Kodama comme réalisateur de Super Hero et détails de production sur l'adaptation 3D, le travail avec Toei, les animateurs et le scénario de Toriyama.",
       "status": "summary-written-print-source-not-collated",
@@ -61,11 +62,42 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview/",
         "questionAnswerCount": 4,
         "formatNote": "Entretien écrit de quatre questions-réponses. Kubota s'exprime comme directeur d'animation et ancien animateur clé; ses appréciations de la 3D sont son expérience professionnelle.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview.html"
       },
       "dragonBallRelevance": "Directe : méthodes de production et de direction d'animation du film Dragon Ball Super: Super Hero, vues par son directeur d'animation.",
       "status": "summary-written-print-source-not-collated",
       "forumContent": false
+    },
+    {
+      "id": "site-post-70692-super-hero-panel-miyu-irino",
+      "title": "Miyu Irino — entretien préenregistré au panel Super Hero de Battle Hour 2022",
+      "kind": "video-interview",
+      "summary": "Le compte rendu Kanzenshuu du panel Super Hero de Dragon Ball Games Battle Hour 2022 résume un segment préenregistré avec Miyu Irino, interprète de Dr. Hedo. Irino y évoque son admiration pour Dragon Ball, le plaisir de jouer un scientifique de l’Armée du Ruban Rouge et ses souvenirs de la série depuis les arcs des cyborgs et de Cell. Le billet ne reproduit ni les questions ni les réponses mot à mot, et ne donne pas de lien direct vers l’enregistrement du segment : cette notice décrit donc le contenu rapporté, pas une transcription.",
+      "keyInformation": [
+        "Le segment est décrit comme une longue interview préenregistrée avec Miyu Irino dans le « Super Stage » de Battle Hour 2022.",
+        "Kanzenshuu rapporte qu’Irino admire Dragon Ball et qu’il a apprécié incarner Dr. Hedo, présenté comme un scientifique de l’Armée du Ruban Rouge.",
+        "Le billet rapporte ses souvenirs de spectateur à partir des arcs des cyborgs et de Cell.",
+        "Le corps du billet ne fournit pas de transcription, de décompte des questions ni de lien direct vers la vidéo de l’interview."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2022/02/21/super-hero-panel-hosted-at-dragon-ball-games-battle-hour-2022/",
+        "publication": "Dragon Ball Games Battle Hour 2022 — Super Hero Super Stage",
+        "publicationDate": "2022-02-21",
+        "participants": [
+          "Miyu Irino"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2022.json",
+        "videoUrl": "https://dbgbh.bn-ent.net/archive/2022/en/title/2022dbs/",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Entretien vidéo préenregistré — synopsis éditorial Kanzenshuu",
+        "scopeNote": "La page Kanzenshuu résume l’entretien, sans en reproduire les questions ou les réponses. Aucun lien profond vers le segment n’est fourni."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage de Miyu Irino sur son rôle de Dr. Hedo et son lien de spectateur avec Dragon Ball."
     }
   ]
 }

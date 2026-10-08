@@ -22,7 +22,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/monthly-starlog-1980-11-akira-toriyama-interview/",
         "questionAnswerCount": 73,
         "formatNote": "Le HTML acquis contient 77 blocs question et 75 blocs réponse; les 73 paires recensées dans la fiche ne couvrent pas toute la structure balisée, qui doit être collationnée avec les pages imprimées.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/monthly-starlog-1980-11-akira-toriyama-interview.html"
       },
       "dragonBallRelevance": "Contexte biographique et méthode de création antérieurs à Dragon Ball; informations sur Dr. Slump et Torishima utiles pour comprendre la genèse de l'auteur.",
       "status": "summary-written-print-source-not-collated",

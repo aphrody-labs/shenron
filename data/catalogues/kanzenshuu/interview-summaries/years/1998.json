@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés ou archivés en 1998; contenus de forum exclus.",
+  "reviewNote": "Les fiches signalent les formats narratifs ou les transcriptions partielles. Les citations et propos sont attribués à leurs participants.",
+  "records": [
+    {
+      "id": "site-page-50990-animerica-spotlight-akira-toriyama",
+      "title": "Akira Toriyama — profil-entretien Animerica",
+      "kind": "interview-excerpt",
+      "summary": "Ce portrait-entretien d’Animerica donne la parole à Akira Toriyama sur son parcours de dessinateur et la création de Dragon Ball. L’introduction annonce des réponses sur ses inspirations — notamment le Roi des singes et Jackie Chan — et l’origine du Kamehameha. Le corps combine le récit journalistique avec des propos directs de Toriyama plutôt qu’une suite systématique de questions-réponses; Kanzenshuu en reproduit le texte.",
+      "keyInformation": [
+        "Toriyama rattache ses débuts artistiques à ses années d’école primaire et revient sur ses premiers dessins dont il était satisfait.",
+        "Le profil aborde les influences liées au Roi des singes et à Jackie Chan dans la création de Dragon Ball.",
+        "Le texte examine l’origine du Kamehameha et la manière dont Toriyama dessine ses personnages."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/animerica-march-1998-spotlight-akira-toriyama/",
+        "publication": "Animerica, mars 1998, « Spotlight — Akira Toriyama »",
+        "publicationDate": "1998-03",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "kanzenshuuPageId": 50990,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Profil-entretien imprimé avec citations directes",
+        "scopeNote": "Article complet présent dans la page Kanzenshuu; le format est narratif et ne balise pas chaque question."
+      },
+      "dragonBallRelevance": "Directe : témoignage de Toriyama sur ses débuts artistiques, ses inspirations et la création de Dragon Ball.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Profil journalistique avec propos attribués; il ne s’agit pas d’un verbatim Q/R structuré."
+    },
+    {
+      "id": "site-page-51009-animerica-dragon-ball-z-how-it-gets-on-tv",
+      "title": "Barry Watson — Dragon Ball Z… How It Gets On TV",
+      "kind": "interview",
+      "summary": "Dans cet entretien d’Animerica, Barry Watson décrit le travail de FUNimation autour de Dragon Ball Z. Il raconte avoir été intégré au projet après les démarches de Gen Fukunaga auprès de Toei, puis explique son rôle de coordination entre les équipes d’écriture, d’animation et de production. L’article traite de l’adaptation télévisée, de la censure, de la peinture numérique et de la sortie vidéo non censurée; les questions et réponses sont reproduites dans la page d’archive.",
+      "keyInformation": [
+        "Watson explique qu’il a rejoint Dragon Ball après que Gen Fukunaga eut travaillé à l’acquisition des droits avec Toei.",
+        "Il décrit son rôle comme une fonction de coordination avec des équipes de scénaristes et d’animateurs.",
+        "L’entretien porte sur la production américaine, la censure télévisée, la peinture numérique et les éditions vidéo non censurées."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/animerica-march-1998-animerica-interview-dragon-ball-z-how-it-gets-on-tv/",
+        "publication": "Animerica, mars 1998, « Dragon Ball Z… How It Gets On TV »",
+        "publicationDate": "1998-03",
+        "participants": [
+          "Barry Watson"
+        ],
+        "kanzenshuuPageId": 51009,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien imprimé en questions-réponses",
+        "scopeNote": "Texte de l’entretien reproduit dans son intégralité dans la page Kanzenshuu."
+      },
+      "dragonBallRelevance": "Directe : production, adaptation et diffusion de Dragon Ball Z par FUNimation.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Transcription d’entretien écrite; aucun média audio/vidéo rattaché."
+    }
+  ]
+}

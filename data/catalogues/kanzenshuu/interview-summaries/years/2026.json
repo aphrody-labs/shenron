@@ -55,6 +55,69 @@
       },
       "forumContent": false,
       "dragonBallRelevance": "Dragon Ball Z: Gokū Hishōden, Fan translation, Game Boy, Game hacking"
+    },
+    {
+      "id": "site-post-79485-masayuki-hirano-akio-iyoku-xenoverse-3-interview-summary",
+      "title": "Masayuki Hirano et Akio Iyoku — entretien résumé sur Dragon Ball XENOVERSE 3",
+      "kind": "interview-summary",
+      "summary": "Dans son compte rendu de la présentation de Dragon Ball XENOVERSE 3 à Battle Hour 2026, Kanzenshuu rapporte un entretien vidéo préenregistré avec le producteur de jeux Masayuki Hirano et le producteur exécutif Akio Iyoku. Hirano relance Iyoku sur les aspects précis du jeu auxquels Akira Toriyama a contribué; Iyoku répond que sa vision a couvert de nombreux éléments, en particulier les nouveaux personnages montrés ce jour-là, fondés sur ses designs. Le billet souligne aussi que les jeux XENOVERSE ont historiquement rassemblé des joueurs en ligne. Il ne reproduit pas l’échange intégral et ne lie pas la vidéo de l’entretien : son embed est le trailer du jeu.",
+      "keyInformation": [
+        "Le billet identifie un entretien vidéo préenregistré avec Masayuki Hirano et Akio Iyoku pendant la présentation Battle Hour 2026.",
+        "Hirano demande quels aspects du jeu ont bénéficié de la contribution de Toriyama; Iyoku répond que celle-ci concerne plusieurs aspects, particulièrement les nouveaux personnages dévoilés, basés sur ses designs.",
+        "Kanzenshuu note que la série XENOVERSE a historiquement favorisé les rassemblements de joueurs et le jeu en ligne.",
+        "Aucune transcription complète ni lien direct vers l’entretien ne figure dans le billet; la vidéo intégrée est le trailer de XENOVERSE 3."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/04/19/age-1000-xenoverse-3-dragon-ball-games-battle-hour-2026/",
+        "publication": "Entretien vidéo préenregistré évoqué dans le compte rendu Kanzenshuu de DRAGON BALL Games Battle Hour 2026",
+        "publicationDate": "2026-04-19",
+        "participants": [
+          "Masayuki Hirano",
+          "Akio Iyoku"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Entretien vidéo externe résumé par Kanzenshuu",
+        "scopeNote": "Le corps rapporte une relance de Hirano et une réponse d’Iyoku; le lien vidéo direct vers l’entretien n’est pas présent. L’embed du billet est le trailer, pas l’entretien."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Contribution de Toriyama au monde, à l’histoire et aux nouveaux personnages du jeu Dragon Ball XENOVERSE 3."
+    },
+    {
+      "id": "site-post-80040-hironobu-kageyama-zero-theme-song-interview-excerpt",
+      "title": "Hironobu Kageyama — message sur la chanson « ZERO » de Dragon Ball: Sparking! ZERO",
+      "kind": "interview-excerpt",
+      "summary": "Kanzenshuu signale un bref entretien de Hironobu Kageyama sur le site officiel Dragon Ball et en cite le message final au sujet de « ZERO », thème principal de Dragon Ball: Sparking! ZERO. Kageyama se dit honoré de composer à nouveau pour Dragon Ball après 18 ans; alors qu’il assurait auparavant le chant, il a cette fois écrit aussi la musique et les paroles et dit avoir mis tout ce qu’il pouvait dans le morceau. Il souhaite que les fans et un public plus large l’écoutent. Le billet ne reproduit que ce message, sans question ni entretien complet. La vidéo YouTube incorporée présente la chanson, pas l’entretien.",
+      "keyInformation": [
+        "La page officielle présente un bref entretien avec Kageyama; Kanzenshuu en reprend le message final, sans la question correspondante.",
+        "Kageyama dit que cela faisait 18 ans qu’il n’avait pas créé de musique liée à Dragon Ball et se dit honoré de fournir le thème principal du jeu.",
+        "Il distingue ses œuvres précédentes, où il était chargé du chant, de ce projet où il a également écrit la musique et les paroles.",
+        "Il dit avoir consacré tout ce qu’il pouvait au morceau et espère que les fans comme d’autres auditeurs l’écouteront.",
+        "L’embed Kanzenshuu est la vidéo de la chanson « ZERO », pas une captation de l’entretien."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/07/30/new-dragon-ball-sparking-zero-theme-song-zero-by-hironobu-kageyama-released/",
+        "publication": "Dragon Ball Official Site — bref entretien avec Hironobu Kageyama",
+        "publicationDate": "2026-07-30",
+        "participants": [
+          "Hironobu Kageyama"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "sourcePageUrl": "https://dragon-ball-official.com/news/01_4345.html",
+        "sourcePageUrlEn": "https://en.dragon-ball-official.com/news/01_4345.html",
+        "embeddedSongVideoUrl": "https://www.youtube.com/embed/qj1jM56iYbU",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Extrait cité d’entretien Web — message final, question non reproduite",
+        "scopeNote": "Le post cite uniquement le message final. La vidéo intégrée illustre le morceau et ne constitue pas le média de l’entretien."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Création de la chanson principale ZERO pour Dragon Ball: Sparking! ZERO et retour de Kageyama à la composition Dragon Ball."
     }
   ]
 }

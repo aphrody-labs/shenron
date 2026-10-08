@@ -40,6 +40,74 @@
       "forumContent": false,
       "dragonBallRelevance": "Témoignage majeur du scénariste historique des films DBZ.",
       "formatNote": "Long Q&A mêlant réponses et notes explicatives."
+    },
+    {
+      "id": "dragon-box-the-movies-music-fighter-hironobu-kageyama-interview",
+      "title": "Music Fighter: Hironobu Kageyama Special Interview (Dragon Box The Movies)",
+      "kind": "interview",
+      "summary": "La fiche Kanzenshuu du coffret des films identifie un entretien spécial de deux pages avec Hironobu Kageyama, publié dans Dragon Box The Movies. La page rapporte aussi son classement de trois chansons de fin de films : « The Whole World » (film 3), « The Incredible Strongest vs Strongest » (film 5) et « Dragon Power Infinity » (film 11). Elle ne reproduit pas l’entretien complet; la notice se limite à ces éléments résumés et au signalement bibliographique.",
+      "keyInformation": [
+        "Entretien spécial de deux pages avec le chanteur Hironobu Kageyama.",
+        "La page rapporte ses trois chansons de fin de films préférées : films 3, 5 et 11.",
+        "La transcription complète n’est pas reproduite ni acquise dans cette source locale."
+      ],
+      "source": {
+        "publication": "Dragon Box The Movies — Music Fighter: Hironobu Kageyama Special Interview",
+        "date": "2006",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box-movies/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 1167,
+        "sourcePageTitle": "Dragon Box The Movies",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box-movies/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2006
+        ],
+        "participants": [
+          "Hironobu Kageyama"
+        ],
+        "pages": "2 pages",
+        "format": "interview",
+        "bodyAvailable": false,
+        "bodyEmpty": false,
+        "formatNote": "La page Kanzenshuu en résume un élément (classement des chansons), sans reproduire la transcription."
+      },
+      "dragonBallRelevance": "Témoignage d’un chanteur associé aux chansons de fin des films Dragon Ball; l’extrait de la page porte sur ses préférences musicales.",
+      "formatNote": "Résumé fondé sur les informations présentes dans la fiche du coffret; transcription complète non acquise.",
+      "status": "source-page-summary-only",
+      "forumContent": false
+    },
+    {
+      "id": "site-page-51335-shonen-jump-toriyama-rama-interview",
+      "title": "Akira Toriyama — Toriyama-rama",
+      "kind": "interview",
+      "summary": "Dans cet entretien de Shonen Jump, Toriyama parle de la parution anglaise de Dr. Slump, de ses outils de mise en couleur et des possibilités de la 3D. Il raconte avoir abandonné la coloration à l’encre au profit de l’ordinateur, utiliser Photoshop 3 et parfois Painter, et exprime son intérêt pour la 3D tout en expliquant les limites qu’elle pourrait poser à son travail de manga.",
+      "keyInformation": [
+        "Toriyama invite les lecteurs anglophones de Dragon Ball à découvrir Dr. Slump, qu’il décrit comme un manga comique japonais dont il aime dessiner l’absurdité.",
+        "Il dit avoir commencé l’infographie parce qu’il était lassé de la mise en couleur à l’encre; il utilise Photoshop 3 et Painter.",
+        "Il se dit intéressé par la 3D et le cel-shading, tout en évoquant les contraintes de ces techniques pour dessiner son manga."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-july-2006-toriyama-rama-interview-with-akira-toriyama/",
+        "publication": "Shonen Jump, juillet 2006, « Toriyama-rama — Interview with Akira Toriyama! »",
+        "publicationDate": "2006-07",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "kanzenshuuPageId": 51335,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien imprimé en questions-réponses",
+        "scopeNote": "Questions et réponses reproduites dans la page d’archive Kanzenshuu."
+      },
+      "dragonBallRelevance": "Directe : outils de création, Dr. Slump et intérêt de Toriyama pour la 3D.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Transcription Q/R présente dans le corps."
     }
   ]
 }

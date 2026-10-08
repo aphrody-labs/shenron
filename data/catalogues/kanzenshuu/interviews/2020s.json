@@ -589,6 +589,231 @@
       "sectionHeadings": [],
       "editorialSummary": "Kanzenshuu compile cinq points de l’entretien vidéo de Toyotarō avec son éditeur Victory Uchida. Toyotarō explique avoir proposé Granolla, personnage original lié aux Saiyans, puis élaboré une idée d’histoire avec Uchida avant de la soumettre à Toriyama. Celui-ci a développé l’intrigue, ajouté les Heeters et conçu un nouvel ensemble de Dragon Balls. Toyotarō décrit Granolla comme un survivant et un tireur d’élite au style rétro/steampunk; il explique aussi l’ajout d’Oatmeal pour accompagner le personnage. Enfin, il évoque plusieurs refus des designs des Heeters et le transfert à Toriyama du design des Sugarians après des retours sur leurs yeux. Ce sont les points retenus dans le billet, pas une transcription.",
       "reviewStatus": "source-checked-summary-only"
+    },
+    {
+      "id": "site-post-69111-akio-iyoku-norihiro-hayashida-broly-home-video-interview",
+      "url": "https://www.kanzenshuu.com/2021/05/07/dragon-ball-super-movie-for-2022-release-listed-by-toei-animation-europe-website/",
+      "title": "Akio Iyoku et Norihiro Hayashida — entretien sur le film Dragon Ball Super: Broly",
+      "publication": "Dragon Ball Super: Broly — livret de 60 pages accompagnant la sortie vidéo domestique, entretien staff",
+      "publicationType": "interview-excerpt",
+      "format": "Extrait d’entretien imprimé — trois blocs de réponse, questions absentes",
+      "publicationDate": "2021-05-07",
+      "participants": [
+        "Akio Iyoku",
+        "Norihiro Hayashida"
+      ],
+      "topics": [
+        "Déclarations de producteurs sur les suites de production après Dragon Ball Super: Broly et leurs intentions pour le film suivant."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Le billet reproduit des propos attribués aux deux producteurs, pas l’intégralité de l’entretien.",
+      "editorialSummary": "Le billet Kanzenshuu sur l’annonce du film suivant Dragon Ball Super reproduit plusieurs réponses attribuées au producteur exécutif Akio Iyoku et au producteur Norihiro Hayashida, tirées d’un entretien imprimé dans le livret de 60 pages accompagnant la sortie vidéo domestique de Dragon Ball Super: Broly. Iyoku dit que les préparatifs du prochain film sont en cours et qu’il faudra prendre une direction différente après Broly, dont le niveau aurait pu entraîner un épuisement de l’équipe; Hayashida relève la qualité du personnel et du casting et dit vouloir viser plus haut; Iyoku conclut que certains éléments n’ayant pu être réalisés pourraient rendre le film suivant encore plus abouti. Kanzenshuu ne reproduit pas les questions et ne donne pas la transcription intégrale.",
+      "reviewStatus": "source-post-cross-checked-summary"
+    },
+    {
+      "id": "site-post-70692-super-hero-panel-miyu-irino",
+      "url": "https://www.kanzenshuu.com/2022/02/21/super-hero-panel-hosted-at-dragon-ball-games-battle-hour-2022/",
+      "title": "Miyu Irino — entretien préenregistré au panel Super Hero de Battle Hour 2022",
+      "publication": "Dragon Ball Games Battle Hour 2022 — Super Hero Super Stage",
+      "publicationType": "Website post summarizing a video interview",
+      "format": "Video interview summary",
+      "publicationDate": "2022-02-21",
+      "participants": [
+        "Miyu Irino"
+      ],
+      "topics": [
+        "Dragon Ball Super: Super Hero",
+        "Dr. Hedo",
+        "voice acting",
+        "Dragon Ball Games Battle Hour"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2022.json",
+      "videoUrl": "https://dbgbh.bn-ent.net/archive/2022/en/title/2022dbs/",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Kanzenshuu résume le segment d’entretien préenregistré avec Miyu Irino; aucune question ni réponse n’est reproduite et aucun lien direct vers la vidéo du segment n’est donné.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Irino parle de son admiration pour Dragon Ball, du plaisir qu’il a pris à interpréter Dr. Hedo, scientifique de l’Armée du Ruban Rouge, et de ses souvenirs de spectateur depuis les arcs des cyborgs et de Cell. Il s’agit du résumé Kanzenshuu d’un entretien préenregistré au Super Stage de Battle Hour 2022, sans transcription publiée.",
+      "reviewStatus": "source-post-cross-checked-video-summary"
+    },
+    {
+      "id": "site-post-75334-akai-victory-uchida-super-dragon-ball-divers-interview",
+      "url": "https://www.kanzenshuu.com/2024/05/09/dragon-ball-super-divers-announced/",
+      "title": "Akai et Victory Uchida — entretien vidéo sur Super Dragon Ball Divers",
+      "publication": "Dragon Ball Official Site — entretien vidéo Akai / Victory Uchida",
+      "publicationType": "Website post summarizing an external video interview",
+      "format": "Video interview excerpt",
+      "publicationDate": "2024-05-09",
+      "participants": [
+        "Akai (producteur Bandai Namco)",
+        "Victory Uchida (éditeur de V-Jump)"
+      ],
+      "topics": [
+        "Super Dragon Ball Divers",
+        "Dragon Ball Heroes",
+        "arcade game"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
+      "videoUrl": "https://www.youtube-nocookie.com/embed/V_SmC0cRzu0",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": "https://dragon-ball-official.com/movie/01_2632.html",
+      "sourceDescription": "Kanzenshuu paraphrase une réponse du producteur Akai à Victory Uchida. L’échange complet n’est pas transcrit dans le billet.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Akai explique que l’équipe étudie un mode Dragon Ball Heroes permettant l’utilisation de l’ancien parc de cartes, tandis que les cartes distribuées par la nouvelle borne resteront propres à Super Divers. Kanzenshuu ne rapporte qu’une réponse paraphrasée de l’entretien vidéo.",
+      "reviewStatus": "source-post-cross-checked-partial-video-interview"
+    },
+    {
+      "id": "jump-original-cd-1993-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/jump-original-cd-1993-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview — Jump Original CD (1993)",
+      "publication": "Jump Original CD, WJ-0004 (audio giveaway, 1993)",
+      "publicationType": "Audio CD",
+      "format": "Recorded interview, full English transcription",
+      "publicationDate": "2024-08-02",
+      "sourceDate": "1993 (CD release; recording date unspecified)",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball origins",
+        "Goku",
+        "Saiyan background",
+        "manga creation"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json",
+      "acquired": true,
+      "transcriptAvailable": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Jump Original CD (1993): Akira Toriyama Interview",
+      "sourceDescription": "Kanzenshuu publishes the translated transcript of Toriyama speaking on the first Jump Original CD (WJ-0004); its post identifies the CD as a 1993 giveaway.",
+      "questionCount": null,
+      "sectionHeadings": [
+        "Jump Original CD (1993) Akira Toriyama Interview"
+      ],
+      "editorialSummary": "Toriyama raconte que l’idée de Dragon Ball naît à la fin de Dr. Slump, lorsque son éditeur Kazuhiko Torishima lui suggère de dessiner une histoire de kung-fu, genre qu’il aime regarder. Il explique avoir voulu un Goku très ordinaire, puis lui avoir ajouté une queue et modifié sa coiffure; son origine extraterrestre n’était pas prévue au départ. Il évoque la difficulté d’inventer des combats toujours plus puissants après Piccolo Daimaō, puis son entrée dans le manga après avoir quitté une agence de publicité et tenté un concours pour gagner un prix.",
+      "reviewStatus": "source-page-cross-checked"
+    },
+    {
+      "id": "site-post-78507-toyotaro-dragon-ball-legends-7th-anniversary-illustration-qa",
+      "url": "https://www.kanzenshuu.com/2025/06/20/translation-update-special-project-toyotaro-drew-it-image-90/",
+      "title": "Toyotarō — illustration Dragon Ball Legends du 7e anniversaire",
+      "publication": "Dragon Ball Official Site — 「とよたろうが描いてみた」特別編!!レジェンズ7周年コラボイラストについて聞いてみた!!",
+      "publicationType": "Website post with reproduced Q&A",
+      "format": "Interview Q&A",
+      "publicationDate": "2025-05-24",
+      "participants": [
+        "Toyotarō"
+      ],
+      "topics": [
+        "Dragon Ball Legends",
+        "illustration",
+        "character design"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "acquired": true,
+      "transcriptAvailable": true,
+      "forumContent": false,
+      "alternatePrimarySource": "https://dragon-ball-official.com/news/01_3414.html",
+      "sourceDescription": "Le billet Kanzenshuu reproduit intégralement les cinq questions et réponses de Toyotarō au sujet de son illustration de Goku et Vegeta pour le septième anniversaire de Dragon Ball Legends.",
+      "questionCount": 5,
+      "sectionHeadings": [
+        "Special Project: Toyotarō Drew It! Image #90"
+      ],
+      "editorialSummary": "Toyotarō décrit la composition dynamique de Goku et Vegeta tournés vers le spectateur, l’inspiration possible du Tournoi du Pouvoir et de Jiren, le travail sur la profondeur et les poses asymétriques, ainsi que la différenciation de leurs expressions. Comme la forme Evolution de Vegeta n’existe pas dans le manga, il a veillé à rendre sa coiffure et son expression cohérentes avec l’anime. Il se dit honoré que l’illustration accompagne le septième anniversaire du jeu.",
+      "reviewStatus": "source-post-cross-checked-full-qa"
+    },
+    {
+      "id": "site-post-79485-masayuki-hirano-akio-iyoku-xenoverse-3-interview-summary",
+      "url": "https://www.kanzenshuu.com/2026/04/19/age-1000-xenoverse-3-dragon-ball-games-battle-hour-2026/",
+      "title": "Masayuki Hirano et Akio Iyoku — entretien résumé sur Dragon Ball XENOVERSE 3",
+      "publication": "Entretien vidéo préenregistré évoqué dans le compte rendu Kanzenshuu de DRAGON BALL Games Battle Hour 2026",
+      "publicationType": "interview-summary",
+      "format": "Entretien vidéo externe résumé par Kanzenshuu",
+      "publicationDate": "2026-04-19",
+      "participants": [
+        "Masayuki Hirano",
+        "Akio Iyoku"
+      ],
+      "topics": [
+        "Contribution de Toriyama au monde, à l’histoire et aux nouveaux personnages du jeu Dragon Ball XENOVERSE 3."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Le corps rapporte une relance de Hirano et une réponse d’Iyoku; le lien vidéo direct vers l’entretien n’est pas présent. L’embed du billet est le trailer, pas l’entretien.",
+      "editorialSummary": "Dans son compte rendu de la présentation de Dragon Ball XENOVERSE 3 à Battle Hour 2026, Kanzenshuu rapporte un entretien vidéo préenregistré avec le producteur de jeux Masayuki Hirano et le producteur exécutif Akio Iyoku. Hirano relance Iyoku sur les aspects précis du jeu auxquels Akira Toriyama a contribué; Iyoku répond que sa vision a couvert de nombreux éléments, en particulier les nouveaux personnages montrés ce jour-là, fondés sur ses designs. Le billet souligne aussi que les jeux XENOVERSE ont historiquement rassemblé des joueurs en ligne. Il ne reproduit pas l’échange intégral et ne lie pas la vidéo de l’entretien : son embed est le trailer du jeu.",
+      "reviewStatus": "source-post-cross-checked-summary"
+    },
+    {
+      "id": "site-post-80040-hironobu-kageyama-zero-theme-song-interview-excerpt",
+      "url": "https://www.kanzenshuu.com/2026/07/30/new-dragon-ball-sparking-zero-theme-song-zero-by-hironobu-kageyama-released/",
+      "title": "Hironobu Kageyama — message sur la chanson « ZERO » de Dragon Ball: Sparking! ZERO",
+      "publication": "Dragon Ball Official Site — bref entretien avec Hironobu Kageyama",
+      "publicationType": "interview-excerpt",
+      "format": "Extrait cité d’entretien Web — message final, question non reproduite",
+      "publicationDate": "2026-07-30",
+      "participants": [
+        "Hironobu Kageyama"
+      ],
+      "topics": [
+        "Création de la chanson principale ZERO pour Dragon Ball: Sparking! ZERO et retour de Kageyama à la composition Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": "https://dragon-ball-official.com/news/01_4345.html",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Le post cite uniquement le message final. La vidéo intégrée illustre le morceau et ne constitue pas le média de l’entretien.",
+      "editorialSummary": "Kanzenshuu signale un bref entretien de Hironobu Kageyama sur le site officiel Dragon Ball et en cite le message final au sujet de « ZERO », thème principal de Dragon Ball: Sparking! ZERO. Kageyama se dit honoré de composer à nouveau pour Dragon Ball après 18 ans; alors qu’il assurait auparavant le chant, il a cette fois écrit aussi la musique et les paroles et dit avoir mis tout ce qu’il pouvait dans le morceau. Il souhaite que les fans et un public plus large l’écoutent. Le billet ne reproduit que ce message, sans question ni entretien complet. La vidéo YouTube incorporée présente la chanson, pas l’entretien.",
+      "reviewStatus": "source-post-cross-checked-summary"
+    },
+    {
+      "id": "kaze-video-kazuhiko-torishima-battle-of-gods-interview-excerpt",
+      "url": "https://www.kanzenshuu.com/rumor/toriyama-battle-of-gods-evolution/",
+      "title": "Kazuhiko Torishima — extrait vidéo d’entretien associé à la sortie française de Dragon Ball Kai",
+      "publication": "Entretien vidéo YouTube réalisé en lien avec la sortie française de Dragon Ball Kai chez Kazé; série et date de production non précisées dans le billet",
+      "publicationType": "Web/Online",
+      "format": "Interview",
+      "publicationDate": null,
+      "participants": [
+        "Kazuhiko Torishima",
+        "intervieweur non identifié dans le passage cité"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": "https://www.youtube.com/watch?v=Jd0ocHDfYgg&t=387s",
+      "pageTitle": "Kazuhiko Torishima — extrait vidéo d’entretien associé à la sortie française de Dragon Ball Kai",
+      "sourceDescription": "Dans le passage vidéo cité par Kanzenshuu, Kazuhiko Torishima raconte une discussion avec Bandai alors que les revenus diminuaient. Après lui avoir demandé ce qui pourrait aider l’entreprise, Bandai évoque une nouvelle série animée. Toriyama ne souhaitait pas écrire une nouvelle histoire; Torishima indique qu’une conclusion a ensuite été trouvée avec Bandai. Kanzenshuu ne fournit qu’un extrait résumé et horodaté, pas une transcription complète. L’année 2024 correspond à la publication du billet Kanzenshuu qui cite la vidéo; l’année de l’entretien lui-même n’est pas établie.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Dans le passage vidéo cité par Kanzenshuu, Kazuhiko Torishima raconte une discussion avec Bandai alors que les revenus diminuaient. Après lui avoir demandé ce qui pourrait aider l’entreprise, Bandai évoque une nouvelle série animée. Toriyama ne souhaitait pas écrire une nouvelle histoire; Torishima indique qu’une conclusion a ensuite été trouvée avec Bandai. Kanzenshuu ne fournit qu’un extrait résumé et horodaté, pas une transcription complète. L’année 2024 correspond à la publication du billet Kanzenshuu qui cite la vidéo; l’année de l’entretien lui-même n’est pas établie.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "kanzenshuuPageId": 75060,
+      "dragonBallRelevance": "Directe: témoignage de l’ancien éditeur de Dragon Ball sur les discussions ayant précédé le projet Battle of Gods.",
+      "kanzenshuuCitationYear": 2024
     }
   ]
 }

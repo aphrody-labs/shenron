@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "source": "https://www.kanzenshuu.com/translations/",
-  "checkedAt": "2026-10-07T21:07:27.933Z",
+  "checkedAt": "2026-10-08 (complément par recoupement des pages publiques)",
   "coverage": {
-    "archiveLinks": 293,
-    "interviews": 112,
-    "qa": 55,
+    "archiveLinks": 296,
+    "interviews": 114,
+    "qa": 56,
     "roundtables": 13,
     "authorialComments": 96,
     "editorial": 11,
@@ -3503,7 +3503,7 @@
     {
       "id": "dbs-broly-theatrical-program-naohiro-shintani",
       "title": "Naohiro Shintani Interview \"Dragon Ball Super: Broly\" Theatrical Program (Super Edition) Guidebook Comment 14 December 2018 Naohiro Shintani Dragon Ball Super, Broly, Production",
-      "url": "https://www.kanzenshuu.com/translations/dbs-broly-theatrical-program-naohiro-shintani/",
+      "url": "https://www.kanzenshuu.com/translations/dbs-broly-theatrical-program-naohiro-shintani-2/",
       "kind": "interview",
       "yearsMentioned": [
         2018
@@ -3837,6 +3837,45 @@
       "forumContent": false,
       "bodyCaptured": false,
       "sequence": 293
+    },
+    {
+      "id": "jump-original-cd-1993-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview Jump Original CD (WJ-0004) Audio Interview 1993 Akira Toriyama Dragon Ball, Manga",
+      "url": "https://www.kanzenshuu.com/translations/jump-original-cd-1993-akira-toriyama-interview/",
+      "kind": "interview",
+      "yearsMentioned": [
+        1993
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": true,
+      "sequence": 294
+    },
+    {
+      "id": "dbs-broly-theatrical-program-tatsuya-nagamine",
+      "title": "Tatsuya Nagamine Interview Dragon Ball Super: Broly Theatrical Program (Super Edition) (14 December 2018) Guidebook Interview 14 December 2018 Tatsuya Nagamine Dragon Ball Super, Broly, Production, Director",
+      "url": "https://www.kanzenshuu.com/translations/dbs-broly-theatrical-program-tatsuya-nagamine/",
+      "kind": "interview",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": true,
+      "sequence": 295
+    },
+    {
+      "id": "dbs-manga-vol-8-toyotaro-toriyama",
+      "title": "Toyotarō Asks! Please Tell Me, Toriyama-sensei!! Dragon Ball Super Volume 8 (04 December 2018) Manga Volume Q&A 04 December 2018 Toyotarō, Akira Toriyama Dragon Ball Super, Manga, Film",
+      "url": "https://www.kanzenshuu.com/translations/dbs-manga-vol-8-toyotaro-toriyama/",
+      "kind": "qa",
+      "yearsMentioned": [
+        2018
+      ],
+      "sourceArchive": "https://www.kanzenshuu.com/translations/",
+      "forumContent": false,
+      "bodyCaptured": true,
+      "sequence": 296
     }
   ]
 }

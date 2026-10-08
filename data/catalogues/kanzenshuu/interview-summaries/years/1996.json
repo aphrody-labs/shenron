@@ -23,7 +23,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/wired-japan-1997-akira-toriyama-interview/",
         "questionAnswerCount": null,
         "formatNote": "Transcription sous forme de paragraphes d'entretien, sans balisage standard des questions.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/wired-japan-1997-akira-toriyama-interview.html"
       },
       "dragonBallRelevance": "Directe : regard de Toriyama sur le Goku du manga et son adaptation en anime; contexte de création et philosophie éditoriale.",
       "status": "summary-written-print-source-not-collated",
@@ -54,7 +55,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-7-shenlong-times/",
         "questionAnswerCount": 8,
         "formatNote": "Les huit blocs question-réponse détectés comprennent l'interview principale, une conversation éditoriale avec Katsura et des encadrés/panneaux de commentaire de Toriyama; ils ne sont pas huit questions biographiques homogènes.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-7-shenlong-times.html"
       },
       "dragonBallRelevance": "Directe : participation de Toriyama à GT, recommandation de l'anime, fin de ses illustrations pour Dragon Ball et dernière image du manga; point de vue éditorial daté de 1996.",
       "status": "summary-written-print-source-not-collated",
@@ -128,6 +130,38 @@
       "forum": false,
       "forumContent": false,
       "kind": "qa"
+    },
+    {
+      "id": "site-page-50883-animerica-take-ten-funimation",
+      "title": "Gen et Cindy Fukunaga — débuts de Dragon Ball aux États-Unis",
+      "kind": "interview",
+      "summary": "Dans ce mini-entretien d’Animerica, Gen et Cindy Fukunaga racontent comment ils ont découvert Dragon Ball, alors immense succès japonais encore inédit aux États-Unis, puis décidé de le faire venir. Leurs réponses abordent le lancement de la série américaine et le travail de production de FUNimation. La page d’archive restitue l’entretien écrit sous forme de questions numérotées et réponses; elle distingue parfois les deux voix par les initiales CBF et GF.",
+      "keyInformation": [
+        "Les Fukunaga connaissaient déjà Dragon Ball et en étaient fans; informés de son succès au Japon, ils ont cherché à acquérir la série pour le public américain.",
+        "Cindy Brennan Fukunaga et Gen Fukunaga sont tous deux identifiés dans la page; certaines réponses sont attribuées par initiales.",
+        "L’entretien traite de l’arrivée de la série aux États-Unis et de la production de FUNimation, pas de l’histoire japonaise de la série."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/animerica-november-1996-take-ten-with-funimation/",
+        "publication": "Animerica, novembre 1996, « Take Ten With FUNimation »",
+        "publicationDate": "1996-11",
+        "participants": [
+          "Gen Fukunaga",
+          "Cindy Brennan Fukunaga"
+        ],
+        "kanzenshuuPageId": 50883,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Mini-entretien imprimé, questions-réponses numérotées",
+        "scopeNote": "Transcription de l’entretien reproduite dans le corps de la page d’archive Kanzenshuu."
+      },
+      "dragonBallRelevance": "Directe : récit de la création et de la production de la distribution américaine de Dragon Ball par les dirigeants de FUNimation.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Entretien imprimé, conservé comme transcription Q/R; aucune captation audio/vidéo liée."
     }
   ]
 }

@@ -26,7 +26,8 @@
         "questionAnswerCount": 12,
         "detectedQuestionBlocks": 12,
         "detectedAnswerBlocks": 12,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/asahi-kazuhiko-torishima-interview-jump-50th-anniversary.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -51,7 +52,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-hikaru-midorikawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -76,7 +78,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-mayumi-tanaka.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -101,7 +104,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-masaharu-sato.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -126,7 +130,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-miki-ito.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -151,7 +156,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-ryo-horikawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -177,7 +183,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-toshio-furukawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -202,7 +209,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-shigeru-nakahara.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -227,7 +235,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-ryusei-nakao.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -252,7 +261,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-masako-nozawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -278,7 +288,8 @@
         "questionAnswerCount": 23,
         "detectedQuestionBlocks": 23,
         "detectedAnswerBlocks": 23,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/akio-iyoku-dbs-movie-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -305,7 +316,8 @@
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
         "formatNote": "Traduction partielle: quatre Q/R du long entretien sont traduits, portant spécifiquement sur Dragon Ball.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/nintendo-classic-mini-famicom-kazuhiko-torishima-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -331,7 +343,8 @@
         "questionAnswerCount": 11,
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 11,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/tatsuya-nagamine-dbs-movie-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -357,7 +370,8 @@
         "questionAnswerCount": 11,
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 11,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/naohiro-shintani-dbs-movie-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -383,7 +397,8 @@
         "questionAnswerCount": 9,
         "detectedQuestionBlocks": 9,
         "detectedAnswerBlocks": 9,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-movie-frontline-norihito-sumitomo.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -409,7 +424,8 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/vjump-january-2019-nagamine-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -434,7 +450,8 @@
         "detectedQuestionBlocks": 0,
         "detectedAnswerBlocks": 1,
         "formatNote": "Index Q/A=0; format libre/profil sans blocs question; synthèse fondée sur la prose. Blocs réponse locaux=1 vs index=0. Comptage Q/R distinct (0/1); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-rio-uchida.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -465,7 +482,8 @@
         "questionAnswerCount": 26,
         "detectedQuestionBlocks": 26,
         "detectedAnswerBlocks": 26,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-voice-actor-roundtable.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -491,7 +509,8 @@
         "detectedQuestionBlocks": 0,
         "detectedAnswerBlocks": 1,
         "formatNote": "Index Q/A=0; format libre/profil sans blocs question; synthèse fondée sur la prose. Blocs réponse locaux=1 vs index=0. Comptage Q/R distinct (0/1); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-toyotaro.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -521,7 +540,8 @@
         "detectedQuestionBlocks": 9,
         "detectedAnswerBlocks": 9,
         "formatNote": "Entretien traduit depuis l’édition Super du programme cinéma.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dbs-broly-theatrical-program-naohiro-shintani-2.html"
       },
       "dragonBallRelevance": "Directe : témoignage de Shintani sur le character design, l’animation et la mise en scène de Dragon Ball Super: Broly.",
       "status": "summary-written-source-not-print-collated",
@@ -648,6 +668,130 @@
       "audioDownloaded": true,
       "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-63236-podcast-episode-0455-nycc-interview-compilation.mp3",
       "audioTranscriptAvailable": false
+    },
+    {
+      "id": "dbs-broly-theatrical-program-tatsuya-nagamine",
+      "title": "Tatsuya Nagamine Interview — Dragon Ball Super: Broly Theatrical Program",
+      "summary": "Nagamine dit avoir pris le scénario de Toriyama comme consigne de réaliser le film fidèlement, en coupant seulement ce qui était nécessaire pour tenir en 100 minutes. Il voulait préserver les nuances de l’auteur et donner plus de relief à Broly. Il détaille le storyboard du combat final, l’emploi de décors successifs et plus sombres pour rendre lisibles les attaques, la transformation de Super Saiyan Blue et le travail collectif avec l’équipe. Il décrit son rôle comme celui d’un entraîneur qui rassemble les idées des différents départements.",
+      "keyInformation": [
+        "Nagamine n’a discuté directement avec Toriyama qu’à la projection initiale réservée à l’équipe; il s’est appuyé sur le scénario.",
+        "Il a adapté et légèrement raccourci les dialogues pour respecter la durée, tout en conservant autant que possible les nuances du texte.",
+        "Il a cherché à faire de Broly un personnage plus nuancé et à rendre le combat final particulièrement énergique.",
+        "Les changements de décor et l’assombrissement du ciel aident à distinguer les effets lumineux et les attaques.",
+        "Il décrit la production comme une collaboration où chaque département apportait ses propositions."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super: Broly Theatrical Program (Super Edition)",
+        "pages": "Programme de film; entretien de six questions, sans pagination indiquée",
+        "date": "2018-12-14",
+        "participants": [
+          "Tatsuya Nagamine"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dbs-broly-theatrical-program-tatsuya-nagamine/",
+        "questionAnswerCount": 6,
+        "detectedQuestionBlocks": 6,
+        "detectedAnswerBlocks": 6,
+        "formatNote": "Entretien avec le réalisateur; les réponses portent sur l’adaptation du scénario, la mise en scène et la production.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2019.json"
+      },
+      "dragonBallRelevance": "Directe : conception et réalisation du film Dragon Ball Super: Broly.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "dbs-manga-vol-8-toyotaro-toriyama",
+      "title": "Toyotarō Asks! Please Tell Me, Toriyama-sensei!!",
+      "summary": "À la demande de Toyotarō, Toriyama expose ses principes pour maintenir l’intérêt d’un récit et concevoir des personnages et des noms. Il explique ensuite l’origine de son ancien design de Broly, puis les choix faits pour le rendre plus nuancé dans le film, ainsi que la place des personnages non-combattants Cheelai et Lemo.",
+      "keyInformation": [
+        "Toriyama privilégie une intrigue simple, compréhensible et dont les développements donnent envie de connaître la suite.",
+        "Il conçoit les formes et les sonorités des noms par essais, en visant parfois un décalage avec l’image attendue.",
+        "Il explique qu’il avait oublié avoir conçu Broly pour un ancien film et qu’il a repris ce dessin en l’ajustant pour le nouveau long métrage.",
+        "Cheelai et Lemo sont des personnages non-combattants qu’il a voulu mettre en avant."
+      ],
+      "source": {
+        "publication": "Dragon Ball Super, manga volume 8",
+        "pages": "Supplément du volume, trois questions-réponses",
+        "date": "2018-12-04",
+        "participants": [
+          "Toyotarō",
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/dbs-manga-vol-8-toyotaro-toriyama/",
+        "questionAnswerCount": 3,
+        "detectedQuestionBlocks": 3,
+        "detectedAnswerBlocks": 3,
+        "formatNote": "Les deux premières réponses concernent la méthode de Toriyama; la troisième, le développement de Broly, Cheelai et Lemo pour le film.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2018.json"
+      },
+      "dragonBallRelevance": "Directe : échange avec le scénariste et le dessinateur de Dragon Ball Super sur la création d’une histoire, les personnages et le film Broly.",
+      "status": "summary-written-source-not-print-collated",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-61680-dragon-ball-fighterz-no21-motomura-hiroki",
+      "title": "Tomoko Hiroki & Junya C. Motomura — création d’Android 21",
+      "summary": "Dans deux échanges reproduits par Kanzenshuu, la productrice Tomoko Hiroki et le directeur/artiste technique Junya C. Motomura racontent la création d’Android 21 pour Dragon Ball FighterZ. Ils expliquent qu’ils ont d’abord envisagé un personnage existant, puis ont choisi un personnage inédit ancré dans les concepts déjà familiers aux fans, en particulier les Androids. Shueisha souhaitait qu’elle puisse se transformer, comme Freeza, Cell et Boo; cette contrainte a orienté le développement de son concept et de son apparence.",
+      "keyInformation": [
+        "L’équipe a d’abord envisagé qu’un personnage existant tire les ficelles, puis a proposé une nouvelle création.",
+        "Les échanges avec Shueisha ont fait émerger l’idée de réutiliser le concept des Androids pour faciliter l’acceptation du personnage.",
+        "Shueisha a demandé une antagoniste capable de se transformer, en référence à Freeza, Cell et Boo."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, « The Nearly Complete Works of Akira Toriyama: Work #081 »",
+        "pages": "Billet web reproduisant deux questions et réponses attribuées à Tomoko Hiroki et Junya C. Motomura",
+        "date": "2018-05-18",
+        "participants": [
+          "Tomoko Hiroki",
+          "Junya C. Motomura"
+        ],
+        "sourceUrl": "https://www.kanzenshuu.com/2018/05/18/the-nearly-complete-works-of-akira-toriyama-work-081/",
+        "questionAnswerCount": 2,
+        "detectedQuestionBlocks": 2,
+        "detectedAnswerBlocks": 2,
+        "formatNote": "Extrait Q/R reproduit dans le billet; la transcription complète de l’entretien d’origine n’y figure pas.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2018.json"
+      },
+      "dragonBallRelevance": "Directe : conception de l’antagoniste Android 21 pour le jeu Dragon Ball FighterZ.",
+      "status": "summary-written-partial-qa-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "weekly-shonen-jump-2018-no-33-akira-toriyama-takehiko-inoue-joint-interview",
+      "title": "Akira Toriyama et Takehiko Inoue — entretien conjoint, Weekly Shōnen Jump 2018 no 33",
+      "summary": "Kanzenshuu annonce la publication officielle en anglais, par Viz, de l’entretien conjoint d’Akira Toriyama et Takehiko Inoue paru dans Weekly Shōnen Jump 2018 no 33. Le billet résume les thèmes abordés : entrée dans le métier de mangaka, pression du rythme hebdomadaire, techniques et outils employés dans leurs œuvres. Il reproduit aussi une anecdote de Toriyama sur la charge de travail d’un chapitre couleur : Torishima lui aurait demandé de réaliser deux chapitres en une semaine malgré l’inflammation des tendons de ses mains. Kanzenshuu précise qu’il ne republiera pas sa propre traduction, puisque celle du détenteur officiel des droits est disponible. La conversation complète reste dans le numéro externe; le billet n’en donne qu’un aperçu et un extrait.",
+      "keyInformation": [
+        "Entretien conjoint entre Akira Toriyama et Takehiko Inoue dans Weekly Shōnen Jump 2018 no 33.",
+        "Thèmes résumés : débuts professionnels, cadence de sérialisation hebdomadaire, techniques et outils de dessin.",
+        "L’extrait de Toriyama évoque deux chapitres à livrer en une semaine et des tendons enflammés.",
+        "Viz publie la traduction anglaise officielle; Kanzenshuu ne reproduit pas l’entretien intégral."
+      ],
+      "source": {
+        "publication": "Weekly Shōnen Jump 2018 no 33; traduction anglaise officielle dans Weekly Shonen Jump, volume 409, chez Viz",
+        "date": "2018-07",
+        "participants": [
+          "Akira Toriyama",
+          "Takehiko Inoue"
+        ],
+        "primarySource": "https://www.viz.com/shonenjump/weekly-shonen-jump-volume-409/issue/7682",
+        "kanzenshuuSitePost": {
+          "wpId": 62474,
+          "url": "https://www.kanzenshuu.com/2018/07/17/viz-toriyama-inoue-joint-interview-english-wj-2018-33/",
+          "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2018.json",
+          "reproducedFullInterview": false,
+          "summaryAndExcerpts": true,
+          "officialExternalTranslation": true,
+          "forumContent": false
+        },
+        "formatNote": "Entretien externe conjoint. Kanzenshuu en résume les thèmes et reproduit un extrait; la traduction officielle complète est proposée par Viz.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2018.json"
+      },
+      "dragonBallRelevance": "Directe : témoignages d’Akira Toriyama sur sa carrière et ses méthodes de manga, dans une conversation conjointe avec Takehiko Inoue.",
+      "status": "summary-based-on-kanzenshuu-post-external-full-interview",
+      "forumContent": false
     }
   ]
 }

@@ -31,7 +31,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
         "questionAnswerCount": null,
         "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans blocs Q/R standard.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-forever-dragon-ball-toriyama.html"
       },
       "dragonBallRelevance": "Directe : méthode de narration, transformations, arcs et personnages, charge de dessin et intentions de publication.",
       "status": "summary-written-print-source-not-collated",
@@ -65,7 +66,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
         "questionAnswerCount": 28,
         "formatNote": "Le HTML contient 29 blocs question et 28 blocs réponse; la synthèse dénombre les paires complètes et conserve à part la question balisée sans bloc de réponse associé.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/tenkaichi-densetsu-toriyama-koyama-nozawa.html"
       },
       "dragonBallRelevance": "Directe : conception d'origine, Saiyans, Dragon Ball, Goku, Gohan, force de Krilin, casting vocal et contraintes d'adaptation.",
       "status": "summary-written-print-source-not-collated",
@@ -631,6 +633,398 @@
       "forum": false,
       "forumContent": false,
       "kind": "qa"
+    },
+    {
+      "id": "dragon-box-dragon-interview-daisuke-nishio",
+      "title": "Dragon Interview — Daisuke Nishio (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Daisuke Nishio, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Daisuke Nishio (réalisateur).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Daisuke Nishio"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-hiromi-tsuru",
+      "title": "Dragon Interview — Hiromi Tsuru (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Hiromi Tsuru, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Hiromi Tsuru (comédienne de doublage).",
+        "Longueur annoncée : 4 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Hiromi Tsuru"
+        ],
+        "pages": "4 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-keizo-shichijo",
+      "title": "Dragon Interview — Keizō Shichijō (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Keizō Shichijō, identifié comme directeur de la photographie, sur 3 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Keizō Shichijō (directeur de la photographie).",
+        "Longueur annoncée : 3 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Keizō Shichijō"
+        ],
+        "pages": "3 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-masako-nozawa",
+      "title": "Dragon Interview — Masako Nozawa (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Masako Nozawa, identifié comme comédienne de doublage, sur 6 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Masako Nozawa (comédienne de doublage).",
+        "Longueur annoncée : 6 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Masako Nozawa"
+        ],
+        "pages": "6 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-mayumi-tanaka",
+      "title": "Dragon Interview — Mayumi Tanaka (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Mayumi Tanaka, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Mayumi Tanaka (comédienne de doublage).",
+        "Longueur annoncée : 4 pages.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Mayumi Tanaka"
+        ],
+        "pages": "4 pages",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-minoru-maeda",
+      "title": "Dragon Interview — Minoru Maeda (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Maeda, identifié comme directeur de l’animation, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Minoru Maeda (directeur de l’animation).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Minoru Maeda"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-minoru-okazaki",
+      "title": "Dragon Interview — Minoru Okazaki (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Okazaki, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Minoru Okazaki (réalisateur).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Minoru Okazaki"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-tadanao-tsuji",
+      "title": "Dragon Interview — Tadanao Tsuji (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Tadanao Tsuji, identifié comme producteur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Tadanao Tsuji (producteur).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Tadanao Tsuji"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "dragon-box-dragon-interview-takao-koyama",
+      "title": "Dragon Interview — Takao Koyama (Dragon Ball DVD Box – Dragon Box)",
+      "kind": "interview",
+      "summary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Takao Koyama, identifié comme scénariste, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "keyInformation": [
+        "Répondant : Takao Koyama (scénariste).",
+        "Longueur annoncée : 1 page.",
+        "La page source ne fournit pas de résumé ni de transcription de cet entretien."
+      ],
+      "source": {
+        "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+        "date": "2004",
+        "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "sourcePageId": 31,
+        "sourcePageTitle": "Dragon Ball DVD Box – Dragon Box",
+        "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+        "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+        "archivedTranslation": null,
+        "bibliographicYears": [
+          2004
+        ],
+        "participants": [
+          "Takao Koyama"
+        ],
+        "pages": "1 page",
+        "format": "interview",
+        "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
+        "bodyAvailable": false,
+        "bodyEmpty": true
+      },
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu.",
+      "formatNote": "Notice de repérage fondée uniquement sur la mention et les métadonnées de la page Kanzenshuu; contenu intégral non acquis.",
+      "status": "identified-content-not-described",
+      "forumContent": false
+    },
+    {
+      "id": "site-page-51245-shonen-jump-budokai-3-daisuke-uchiyama-interview",
+      "title": "Daisuke Uchiyama — entretien sur Dragon Ball Z: Budokai 3",
+      "kind": "interview",
+      "summary": "Dans cet entretien de Shonen Jump, Daisuke Uchiyama, producteur en chef de la série Budokai, présente le troisième jeu et répond sur ses nouveautés. Il fait notamment une démonstration des combats, souligne la téléportation et d’autres techniques, et détaille les personnages issus de Dragon Ball Z, des films et de Dragon Ball GT. Ryo Mito, également producteur chez Bandai, joue plusieurs matchs pour illustrer le jeu; le texte identifie Uchiyama comme le principal interlocuteur.",
+      "keyInformation": [
+        "Uchiyama est présenté comme le producteur en chef de la série Budokai.",
+        "La démonstration met en avant la téléportation, Bukujutsu Flight, Teleportation Tornado Combo et Dragon Rush Attack.",
+        "Le jeu réunit des personnages de Dragon Ball Z, des films et de Dragon Ball GT; Ryo Mito participe aux matchs de démonstration, mais l’entretien s’adresse principalement à Uchiyama."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-november-2004-game-interview-dragon-ball-z-budokai-3/",
+        "publication": "Shonen Jump, novembre 2004, « Game Interview — Dragon Ball Z: Budokai 3 »",
+        "publicationDate": "2004-11",
+        "participants": [
+          "Daisuke Uchiyama",
+          "Ryo Mito (démonstration de jeu)"
+        ],
+        "kanzenshuuPageId": 51245,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "transcriptAvailable": true,
+        "forumContent": false,
+        "format": "Entretien de presse et démonstration de jeu",
+        "scopeNote": "Uchiyama est la personne interviewée; la présence de Mito comme adversaire de démonstration ne suffit pas à lui attribuer les réponses."
+      },
+      "dragonBallRelevance": "Directe : développement et fonctionnalités de Budokai 3 par son producteur.",
+      "status": "summary-written-site-archive-source-not-collated",
+      "forumContent": false,
+      "formatNote": "Entretien écrit mêlé à un reportage de démonstration."
+    },
+    {
+      "id": "site-page-71109-budokai-3-behind-the-screams-voice-cast-interviews",
+      "kind": "interview-compilation",
+      "title": "FUNimation — interviews des comédiens dans le DVD Behind the Screams",
+      "summary": "Kanzenshuu signale que le DVD Behind the Screams accompagnant l’édition collector nord-américaine de Budokai 3 comprend des interviews de la plupart des comédiens de doublage de FUNimation. Tiffany Vollmer, voix de Bulma à l’époque, apparaît aussi en train d’enregistrer des cris de combat. La page ne donne ni la liste complète des personnes interviewées ni le contenu des échanges; cette notice recense le média décrit sans prétendre en fournir une transcription.",
+      "keyInformation": [
+        "Le DVD bonus Behind the Screams contient des interviews de la majorité des comédiens FUNimation, selon la page Kanzenshuu.",
+        "Tiffany Vollmer est nommée et montrée enregistrant des cris de combat pour Bulma.",
+        "La page ne fournit ni les échanges ni la liste complète des participants."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/rumor/bulma-playable-character-dragon-ball-z-budokai-3/",
+        "publication": "Dragon Ball Z: Budokai 3 North American Collector’s Edition — Behind the Screams DVD",
+        "date": "2004-11",
+        "participants": [
+          "Tiffany Vollmer",
+          "FUNimation voice cast (other interviewees unnamed)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
+        "transcriptAvailable": false,
+        "formatNote": "La page Kanzenshuu identifie le DVD bonus Behind the Screams de l’édition nord-américaine collector de Budokai 3 et indique qu’il contient des interviews de la plupart des comédiens de FUNimation. Elle nomme Tiffany Vollmer et décrit des images où elle enregistre des effets vocaux de combat; les autres intervenants et les échanges ne sont pas listés.",
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : bonus vidéo de doublage pour Dragon Ball Z: Budokai 3.",
+      "status": "source-page-cross-checked-media-described",
+      "forumContent": false
     }
   ]
 }

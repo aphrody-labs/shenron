@@ -26,7 +26,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-hisashi-tanaka/",
         "questionAnswerCount": 1,
         "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc-question/réponse mais le texte archivé présente un récit et des citations; les souvenirs sont attribués à l'assistant Hisashi Tanaka et rapportés par le journaliste Hiroshi Ōyama.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-hisashi-tanaka.html"
       },
       "dragonBallRelevance": "Directe : témoignage de première main d'un assistant sur le rythme de travail, l'atelier de Nagoya et le caractère de Toriyama pendant les débuts de Dragon Ball; les faits sont rapportés par un journaliste.",
       "status": "summary-written-print-source-not-collated",
@@ -55,7 +56,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-takashi-matsuyama/",
         "questionAnswerCount": 1,
         "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc, mais le texte archivé est un article avec citations; propos rapportés par le journaliste Atsushi Okamura au nom de Matsuyama.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-takashi-matsuyama.html"
       },
       "dragonBallRelevance": "Directe : témoignage d'un assistant de Dragon Ball sur le recrutement, le travail en atelier, les relations avec les éditeurs et le tempérament créatif de Toriyama.",
       "status": "summary-written-print-source-not-collated",
@@ -84,10 +86,104 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-march-2024-toyotaro-interview/",
         "questionAnswerCount": 6,
         "formatNote": "Six questions-réponses; les réponses sur les chapitres 101 à 103 distinguent explicitement le scénario de Toriyama et les ajustements de Toyotarō.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-march-2024-toyotaro-interview.html"
       },
       "dragonBallRelevance": "Directe : explications de Toyotarō sur la création d'une illustration Dragon Ball et sur le partage des rôles avec Toriyama dans l'adaptation manga de Super Hero.",
       "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    },
+    {
+      "id": "jump-original-cd-1993-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview — Jump Original CD (1993)",
+      "summary": "Toriyama raconte que l’idée de Dragon Ball naît à la fin de Dr. Slump, lorsque son éditeur Kazuhiko Torishima lui suggère de dessiner une histoire de kung-fu, genre qu’il aime regarder. Il explique avoir voulu un Goku très ordinaire, puis lui avoir ajouté une queue et modifié sa coiffure; son origine extraterrestre n’était pas prévue au départ. Il évoque la difficulté d’inventer des combats toujours plus puissants après Piccolo Daimaō, puis son entrée dans le manga après avoir quitté une agence de publicité et tenté un concours pour gagner un prix.",
+      "keyInformation": [
+        "Toriyama situe l’idée de Dragon Ball vers la fin de Dr. Slump, à la suggestion de son ancien éditeur Kazuhiko Torishima.",
+        "Il dit avoir regardé des films de kung-fu de Jackie Chan et Bruce Lee et avoir hésité à transformer ce loisir en travail.",
+        "Goku devait être un personnage très ordinaire; Toriyama a ensuite changé légèrement sa coiffure et ajouté une queue.",
+        "L’origine extraterrestre de Goku n’était pas prévue au début de la série.",
+        "Toriyama décrit les difficultés à renouveler des combats dont les adversaires deviennent toujours plus puissants.",
+        "Il raconte avoir quitté une agence de publicité, échoué à un concours de manga et poursuivi le dessin jusqu’à ses débuts professionnels."
+      ],
+      "source": {
+        "publication": "Jump Original CD, WJ-0004 (cadeau tiré au sort, 1993)",
+        "pages": "Enregistrement audio; transcription anglaise publiée par Kanzenshuu",
+        "date": "2024-08-02",
+        "participants": [
+          "Akira Toriyama"
+        ],
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/jump-original-cd-1993-akira-toriyama-interview/",
+        "questionAnswerCount": null,
+        "formatNote": "Monologue d’entretien issu d’un CD; la transcription traduite est intégralement reproduite sur la page Kanzenshuu.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
+      },
+      "dragonBallRelevance": "Directe : Toriyama parle de la genèse de Dragon Ball, de la conception initiale de Goku et de l’évolution des combats.",
+      "status": "summary-written-source-page-cross-checked",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-75334-akai-victory-uchida-super-dragon-ball-divers-interview",
+      "title": "Akai et Victory Uchida — entretien vidéo sur Super Dragon Ball Divers",
+      "kind": "video-interview-excerpt",
+      "summary": "Le billet Kanzenshuu consacré à l’annonce de Super Dragon Ball Divers rapporte un passage d’un entretien vidéo où le producteur Akai répond à Victory Uchida, éditeur de V-Jump. La seule réponse résumée concerne l’étude d’un mode permettant de jouer avec l’ancien parc de cartes Dragon Ball Heroes; les cartes distribuées par la nouvelle borne resteront propres à Super Divers. Le post ne transcrit pas l’entretien complet.",
+      "keyInformation": [
+        "Le producteur Akai est interrogé par Victory Uchida dans une vidéo liée à l’annonce de Super Dragon Ball Divers.",
+        "Selon le billet, l’équipe étudie un mode Dragon Ball Heroes qui permettrait d’utiliser l’ancien parc de cartes.",
+        "Les cartes remises par la nouvelle borne seront des cartes Super Divers.",
+        "Kanzenshuu ne reproduit qu’un résumé d’une réponse; l’échange complet n’est pas transcrit dans le billet."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2024/05/09/dragon-ball-super-divers-announced/",
+        "publication": "Dragon Ball Official Site — entretien vidéo Akai / Victory Uchida",
+        "publicationDate": "2024-05-09",
+        "participants": [
+          "Akai (producteur Bandai Namco)",
+          "Victory Uchida (éditeur de V-Jump)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
+        "mediaUrl": "https://www.youtube-nocookie.com/embed/V_SmC0cRzu0",
+        "sourcePageUrl": "https://dragon-ball-official.com/movie/01_2632.html",
+        "transcriptAvailable": false,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Entretien vidéo externe — réponse paraphrasée dans le billet",
+        "scopeNote": "Le billet résume une réponse et ne transcrit pas l’entretien. La notice n’attribue pas d’autres propos aux participants."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Informations de lancement sur le jeu d’arcade Super Dragon Ball Divers et la compatibilité envisagée avec les cartes Heroes."
+    },
+    {
+      "id": "kaze-video-kazuhiko-torishima-battle-of-gods-interview-excerpt",
+      "title": "Kazuhiko Torishima — extrait vidéo d’entretien associé à la sortie française de Dragon Ball Kai",
+      "summary": "Dans le passage vidéo cité par Kanzenshuu, Kazuhiko Torishima raconte une discussion avec Bandai alors que les revenus diminuaient. Après lui avoir demandé ce qui pourrait aider l’entreprise, Bandai évoque une nouvelle série animée. Toriyama ne souhaitait pas écrire une nouvelle histoire; Torishima indique qu’une conclusion a ensuite été trouvée avec Bandai. Kanzenshuu ne fournit qu’un extrait résumé et horodaté, pas une transcription complète. L’année 2024 correspond à la publication du billet Kanzenshuu qui cite la vidéo; l’année de l’entretien lui-même n’est pas établie.",
+      "keyInformation": [
+        "Torishima replace l’échange dans une période où les revenus de Bandai étaient en baisse.",
+        "Bandai lui demande quelles mesures pourraient soutenir l’entreprise, puis évoque une nouvelle série animée Dragon Ball.",
+        "Torishima dit que Toriyama ne voulait pas écrire de nouvelle histoire et qu’ils ont fini par trouver une solution avec Bandai.",
+        "Kanzenshuu renvoie à un passage de la vidéo à 6 min 27 s et en résume le contenu; aucune transcription intégrale n’est donnée.",
+        "Date de l’entretien inconnue. 2024 est uniquement l’année de publication du billet Kanzenshuu."
+      ],
+      "source": {
+        "publication": "Entretien vidéo YouTube réalisé en lien avec la sortie française de Dragon Ball Kai chez Kazé; série et date de production non précisées dans le billet",
+        "date": null,
+        "interviewYear": null,
+        "kanzenshuuCitationYear": 2024,
+        "participants": [
+          "Kazuhiko Torishima",
+          "intervieweur non identifié dans le passage cité"
+        ],
+        "originalSource": "https://www.youtube.com/watch?v=Jd0ocHDfYgg&t=387s",
+        "kanzenshuuPage": "https://www.kanzenshuu.com/rumor/toriyama-battle-of-gods-evolution/",
+        "kanzenshuuPageId": 75060,
+        "questionAnswerCount": null,
+        "formatNote": "Extrait/résumé d’une interview vidéo externe, horodaté à 6:27. Date de l’entretien inconnue; 2024 désigne seulement l’année du billet Kanzenshuu.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
+      },
+      "dragonBallRelevance": "Directe: témoignage de l’ancien éditeur de Dragon Ball sur les discussions ayant précédé le projet Battle of Gods.",
+      "status": "summary-based-on-kanzenshuu-video-excerpt-source-date-unknown",
       "forumContent": false
     }
   ]

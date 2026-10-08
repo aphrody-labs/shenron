@@ -26,7 +26,8 @@
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 6,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/katsura-akira-premium-talk.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -54,7 +55,8 @@
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 5,
         "formatNote": "Blocs réponse locaux=5 vs index=6. Comptage Q/R distinct (6/5); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -602,6 +604,56 @@
       "audioDownloaded": true,
       "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-33994-podcast-episode-0364.mp3",
       "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-33995-battle-of-gods-red-carpet-christopher-sabat-video",
+      "title": "Christopher Sabat — extrait vidéo du tapis rouge de Battle of Gods",
+      "summary": "La vidéo récapitulative de la première nord-américaine de Battle of Gods inclut un bref segment d’interview avec Christopher Sabat au tapis rouge. Le billet ne transcrit pas l’échange; il distingue ce clip de l’entretien audio réunissant Sean Schemmel, Sabat et Justin Cook dans l’épisode 0364.",
+      "keyInformation": [
+        "Un clip distinct du podcast #0364 montre une brève interview de Christopher Sabat lors du tapis rouge.",
+        "Le billet de Kanzenshuu ne fournit pas de transcription ni de détail sur les réponses."
+      ],
+      "source": {
+        "publication": "Kanzenshuu — Battle of Gods North American Debut Coverage",
+        "date": "2014-07-04",
+        "participants": [
+          "Christopher Sabat"
+        ],
+        "sourceUrl": "https://www.kanzenshuu.com/2014/07/04/battle-gods-north-american-debut-coverage/",
+        "videoUrl": "https://www.youtube.com/watch?v=S1T5Jl92qkk",
+        "questionAnswerCount": null,
+        "formatNote": "Extrait vidéo d’interview intégré à un récapitulatif; transcription absente du billet.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2014.json"
+      },
+      "dragonBallRelevance": "Directe : comédien anglophone de Dragon Ball Z et segment réalisé à la première nord-américaine de Battle of Gods.",
+      "status": "summary-written-video-transcript-pending",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-33404-xenoverse-e3-bandai-namco-interview",
+      "title": "Bandai Namco — entretien E3 sur Dragon Ball XENOVERSE",
+      "summary": "À l’E3, le correspondant de Kanzenshuu interroge Bandai Namco sur un prototype précoce de XENOVERSE. Le billet rapporte que l’équipe vise des environnements destructibles, des effets d’éclairage et de particules, des expressions pendant les combats, des transformations en temps réel et des commandes accessibles sans supprimer la dimension technique du jeu de combat. Le représentant n’est pas nommé et l’échange n’est pas transcrit.",
+      "keyInformation": [
+        "L’entretien porte sur un prototype précoce de Dragon Ball XENOVERSE présenté à l’E3.",
+        "Le billet attribue à Bandai Namco des explications sur la destruction des décors, les effets, les expressions de combat et les transformations en temps réel.",
+        "Kanzenshuu ne nomme pas son interlocuteur et ne publie pas de transcription."
+      ],
+      "source": {
+        "publication": "Kanzenshuu — “Dragon Ball XENOVERSE” E3 Impressions & Report",
+        "date": "2014-06-11",
+        "participants": [
+          "Représentant de Bandai Namco, non nommé"
+        ],
+        "sourceUrl": "https://www.kanzenshuu.com/2014/06/11/dragon-ball-xenoverse-e3-impressions-report/",
+        "questionAnswerCount": null,
+        "formatNote": "Compte rendu d’un entretien; ni questions exactes ni réponses intégrales ne sont reproduites.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2014.json"
+      },
+      "dragonBallRelevance": "Directe : développement du jeu Dragon Ball XENOVERSE.",
+      "status": "summary-written-source-post-only",
+      "forumContent": false
     }
   ]
 }

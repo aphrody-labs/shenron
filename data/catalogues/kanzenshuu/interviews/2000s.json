@@ -1016,6 +1016,616 @@
       "reviewStatus": "synopsis-checked-audio-pending",
       "audioDownloaded": true,
       "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-3881-podcast-episode-0180.mp3"
+    },
+    {
+      "id": "site-post-3081-podcast-episode-0135-teamfourstar",
+      "url": "https://www.kanzenshuu.com/2008/06/29/podcast-episode-0135/",
+      "title": "KaiserNeko et Lanipator — entretien sur DBZ Abridged",
+      "publication": "Kanzenshuu Podcast Episode #0135",
+      "publicationType": "Website post announcing an audio interview",
+      "format": "Audio interview",
+      "publicationDate": "2008-06-29",
+      "participants": [
+        "KaiserNeko",
+        "Lanipator",
+        "VegettoEX",
+        "Meri",
+        "Jeff"
+      ],
+      "topics": [
+        "TeamFourStar",
+        "Dragon Ball Z Abridged",
+        "fan production"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le billet précise que VegettoEX, Meri et Jeff interviewent KaiserNeko et Lanipator de TeamFourStar au sujet de la genèse de DBZ Abridged et de la suite prévue. L’épisode est annoncé comme téléchargeable, mais le corps acquis ne fournit ni URL audio directe ni transcription.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Le billet annonce un entretien audio avec KaiserNeko et Lanipator, créateurs de TeamFourStar, centré sur l’origine de DBZ Abridged et leurs projets après cette première étape. La page ne transcrit pas l’échange et la copie locale n’inclut pas le fichier audio.",
+      "reviewStatus": "source-post-cross-checked-audio-transcript-pending"
+    },
+    {
+      "id": "site-post-3343-nozawa-kageyama-event-interview",
+      "url": "https://www.kanzenshuu.com/2008/11/30/special-conest-winner-movie-screening-in-japan/",
+      "title": "Masako Nozawa et Hironobu Kageyama — vœu à Shenlong",
+      "publication": "Kanzenshuu event report: Special Contest Winner Movie Screening in Japan",
+      "publicationType": "Website post reporting an event Q&A",
+      "format": "Event Q&A excerpt",
+      "publicationDate": "2008-11-30",
+      "participants": [
+        "Masako Nozawa",
+        "Hironobu Kageyama"
+      ],
+      "topics": [
+        "Dragon Ball Z",
+        "event appearance",
+        "Shenlong"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le compte rendu rapporte une question commune sur le vœu à Shenlong et résume la réponse de chaque invité; il ne reproduit pas une transcription intégrale.",
+      "questionCount": 1,
+      "sectionHeadings": [],
+      "editorialSummary": "Interrogés sur le vœu qu’ils adresseraient à Shenlong, Nozawa répond qu’elle voudrait entrer dans le Guinness Book of Records. Kageyama plaisante d’abord sur un pafu-pafu avec Kame-Sennin, puis formule le souhait de rester en bonne santé afin de continuer à chanter.",
+      "reviewStatus": "source-post-cross-checked-event-excerpt"
+    },
+    {
+      "id": "daizenshuu-ex-2000-sonny-strait-interview",
+      "url": "https://www.daizex.com/guides/rumors/media/jon_allen_sonny_strait_interview.txt",
+      "title": "Sonny Strait — entretien avec Jon Allen",
+      "publication": "Daizenshuu EX — entretien du personnel d’animation FUNimation",
+      "publicationType": "External interview transcript linked by Kanzenshuu",
+      "format": "Written voice-actor interview",
+      "publicationDate": "2000-11",
+      "participants": [
+        "Jon Allen",
+        "Sonny Strait"
+      ],
+      "topics": [
+        "FUNimation",
+        "voice acting",
+        "Krillin",
+        "Toonami",
+        "Bardock",
+        "English dub"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-ex-2000-sonny-strait-interview.txt",
+      "acquired": true,
+      "transcriptAvailable": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [
+        "Jon Allen interviews Sonny Strait"
+      ],
+      "pageTitle": "The Sonny Strait & Terry Klassen Prank Call",
+      "sourceDescription": "Le guide des rumeurs Kanzenshuu précise qu’il conserve et lie la transcription intégrale de l’entretien Daizenshuu EX avec Sonny Strait, publiée en novembre 2000. La page indique que l’audio joint contient une blague de fin, et non un véritable appel piégé à Terry Klassen. La transcription liée a été acquise dans le corpus privé.",
+      "editorialSummary": "Sonny Strait raconte sa formation d’acteur, son audition chez FUNimation et la manière dont il a construit sa voix de Krillin, en choisissant de proposer sa propre interprétation plutôt que d’imiter Terry Klassen. Il décrit aussi son travail sur TOM, l’animateur de Toonami, et sur Bardock, ses méthodes de préparation, ainsi que les réactions des fans au changement de voix. Le segment intitulé « prank call » en fin d’audio est une blague dans l’entretien, pas une conversation réelle avec Terry Klassen.",
+      "reviewStatus": "source-transcript-acquired-from-link-in-kanzenshuu-page",
+      "kanzenshuuPostUrl": "https://www.kanzenshuu.com/rumor/the-sonny-strait-terry-klassen-prank-call/",
+      "kanzenshuuPostRawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json"
+    },
+    {
+      "id": "site-page-71109-budokai-3-behind-the-screams-voice-cast-interviews",
+      "url": "https://www.kanzenshuu.com/rumor/bulma-playable-character-dragon-ball-z-budokai-3/",
+      "title": "FUNimation — interviews des comédiens dans le DVD Behind the Screams",
+      "publication": "Dragon Ball Z: Budokai 3 North American Collector’s Edition — Behind the Screams DVD",
+      "publicationType": "Website page describing external video interviews",
+      "format": "Voice-cast interview compilation (media described)",
+      "publicationDate": "2004-11",
+      "participants": [
+        "Tiffany Vollmer",
+        "FUNimation voice cast (other interviewees unnamed)"
+      ],
+      "topics": [
+        "Dragon Ball Z: Budokai 3",
+        "FUNimation",
+        "voice acting",
+        "voice cast"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "pageTitle": "Bulma is a Playable Character in Dragon Ball Z: Budokai 3",
+      "sourceDescription": "La page Kanzenshuu identifie le DVD bonus Behind the Screams de l’édition nord-américaine collector de Budokai 3 et indique qu’il contient des interviews de la plupart des comédiens de FUNimation. Elle nomme Tiffany Vollmer et décrit des images où elle enregistre des effets vocaux de combat; les autres intervenants et les échanges ne sont pas listés.",
+      "editorialSummary": "Kanzenshuu signale que le DVD Behind the Screams accompagnant l’édition collector nord-américaine de Budokai 3 comprend des interviews de la plupart des comédiens de doublage de FUNimation. Tiffany Vollmer, voix de Bulma à l’époque, apparaît aussi en train d’enregistrer des cris de combat. La page ne donne ni la liste complète des personnes interviewées ni le contenu des échanges; cette notice recense le média décrit sans prétendre en fournir une transcription.",
+      "reviewStatus": "source-page-cross-checked-media-described"
+    },
+    {
+      "id": "site-page-51375-51383-shonen-jump-interview-with-the-majin",
+      "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-october-2007-dragon-ball-collector-interview-with-the-majin/",
+      "title": "Akira Toriyama — « Interview With the Majin! » (deux parties)",
+      "publication": "Shonen Jump, octobre et novembre 2007, « Interview With the Majin! » / « Revisited »",
+      "publicationType": "Guidebook",
+      "format": "Entretien imprimé en questions-réponses, publié en deux parties",
+      "publicationDate": "2007-10/2007-11",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Akira Toriyama — « Interview With the Majin! » (deux parties)",
+      "sourceDescription": "Cette interview de Toriyama, publiée en deux livraisons de Shonen Jump, aborde les dragons, les animaux de compagnie et les choix de création de Dragon Ball. Dans la première partie, Toriyama explique notamment qu’il a choisi le dragon européen pour son équilibre visuel et qu’il aurait nommé Gon un petit dragon domestique. La seconde partie prolonge l’entretien : il explique préférer dessiner des femmes fortes, vouloir déjouer les attentes sur la croissance de la puissance, et cite Enter the Dragon et Drunken Master parmi ses films de kung-fu favoris. Les deux textes sont reliés comme parties d’une seule interview.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Cette interview de Toriyama, publiée en deux livraisons de Shonen Jump, aborde les dragons, les animaux de compagnie et les choix de création de Dragon Ball. Dans la première partie, Toriyama explique notamment qu’il a choisi le dragon européen pour son équilibre visuel et qu’il aurait nommé Gon un petit dragon domestique. La seconde partie prolonge l’entretien : il explique préférer dessiner des femmes fortes, vouloir déjouer les attentes sur la croissance de la puissance, et cite Enter the Dragon et Drunken Master parmi ses films de kung-fu favoris. Les deux textes sont reliés comme parties d’une seule interview.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageIds": [
+        51375,
+        51383
+      ],
+      "dragonBallRelevance": "Directe : propos de Toriyama sur la création, ses préférences de dessin et ses inspirations cinématographiques."
+    },
+    {
+      "id": "one-piece-color-walk-1-oda-toriyama-interview-summary",
+      "url": "https://www.kanzenshuu.com/manga/spin-offs/crossovers/cross-epoch/",
+      "title": "Entretien conjoint Eiichirō Oda × Akira Toriyama — résumé de Kanzenshuu",
+      "publication": "One Piece Color Walk 1",
+      "publicationType": "Guidebook",
+      "format": "external-interview-summary",
+      "publicationDate": "2001",
+      "participants": [
+        "Eiichirō Oda",
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Entretien conjoint Eiichirō Oda × Akira Toriyama — résumé de Kanzenshuu",
+      "sourceDescription": "La page Cross Epoch de Kanzenshuu indique qu’Eiichirō Oda et Akira Toriyama se sont entretenus en 2001 pour l’artbook One Piece Color Walk 1, avant que leur projet de collaboration ne soit envisagé. Elle résume un élément de cet échange : Oda admirait Toriyama depuis son enfance et découvrit que Toriyama appréciait lui aussi One Piece, qu’il avait connu par l’intermédiaire de ses enfants. Le corps Kanzenshuu ne reproduit pas l’entretien complet ni ses questions et réponses.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Cross Epoch de Kanzenshuu indique qu’Eiichirō Oda et Akira Toriyama se sont entretenus en 2001 pour l’artbook One Piece Color Walk 1, avant que leur projet de collaboration ne soit envisagé. Elle résume un élément de cet échange : Oda admirait Toriyama depuis son enfance et découvrit que Toriyama appréciait lui aussi One Piece, qu’il avait connu par l’intermédiaire de ses enfants. Le corps Kanzenshuu ne reproduit pas l’entretien complet ni ses questions et réponses.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Directe : Akira Toriyama, auteur de Dragon Ball, échange avec Eiichirō Oda au sujet de leur admiration réciproque et de One Piece."
+    },
+    {
+      "id": "dragon-box-dragon-interview-daisuke-nishio",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Daisuke Nishio (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Daisuke Nishio"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Daisuke Nishio (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Daisuke Nishio, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Daisuke Nishio, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-hiromi-tsuru",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Hiromi Tsuru (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Hiromi Tsuru"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Hiromi Tsuru (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Hiromi Tsuru, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Hiromi Tsuru, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-keizo-shichijo",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Keizō Shichijō (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Keizō Shichijō"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Keizō Shichijō (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Keizō Shichijō, identifié comme directeur de la photographie, sur 3 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Keizō Shichijō, identifié comme directeur de la photographie, sur 3 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-masako-nozawa",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Masako Nozawa (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Masako Nozawa"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Masako Nozawa (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Masako Nozawa, identifié comme comédienne de doublage, sur 6 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Masako Nozawa, identifié comme comédienne de doublage, sur 6 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-mayumi-tanaka",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Mayumi Tanaka (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Mayumi Tanaka"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Mayumi Tanaka (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Mayumi Tanaka, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Mayumi Tanaka, identifié comme comédienne de doublage, sur 4 pages. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-minoru-maeda",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Minoru Maeda (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Minoru Maeda"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Minoru Maeda (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Maeda, identifié comme directeur de l’animation, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Maeda, identifié comme directeur de l’animation, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-minoru-okazaki",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Minoru Okazaki (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Minoru Okazaki"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Minoru Okazaki (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Okazaki, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Minoru Okazaki, identifié comme réalisateur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-tadanao-tsuji",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Tadanao Tsuji (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Tadanao Tsuji"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Tadanao Tsuji (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Tadanao Tsuji, identifié comme producteur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Tadanao Tsuji, identifié comme producteur, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "dragon-box-dragon-interview-takao-koyama",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
+      "title": "Dragon Interview — Takao Koyama (Dragon Ball DVD Box – Dragon Box)",
+      "publication": "Dragon Ball DVD Box – Dragon Box (Dragon Interview)",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2004",
+      "participants": [
+        "Takao Koyama"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Dragon Interview — Takao Koyama (Dragon Ball DVD Box – Dragon Box)",
+      "sourceDescription": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Takao Koyama, identifié comme scénariste, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu consacrée au coffret japonais Dragon Box répertorie un entretien « Dragon Interview » de Takao Koyama, identifié comme scénariste, sur 1 page. Le corps local ne reproduit ni questions ni réponses et ne décrit pas le contenu de cet entretien; cette notice consigne donc uniquement l’existence, le répondant, son rôle et la longueur annoncée, sans attribuer de propos.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Source de production et de doublage liée à l’édition japonaise Dragon Ball; la page identifie un entretien de membre de l’équipe, sans en exposer le contenu."
+    },
+    {
+      "id": "site-page-51245-shonen-jump-budokai-3-daisuke-uchiyama-interview",
+      "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-november-2004-game-interview-dragon-ball-z-budokai-3/",
+      "title": "Daisuke Uchiyama — entretien sur Dragon Ball Z: Budokai 3",
+      "publication": "Shonen Jump, novembre 2004, « Game Interview — Dragon Ball Z: Budokai 3 »",
+      "publicationType": "Guidebook",
+      "format": "Entretien de presse et démonstration de jeu",
+      "publicationDate": "2004-11",
+      "participants": [
+        "Daisuke Uchiyama",
+        "Ryo Mito (démonstration de jeu)"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Daisuke Uchiyama — entretien sur Dragon Ball Z: Budokai 3",
+      "sourceDescription": "Dans cet entretien de Shonen Jump, Daisuke Uchiyama, producteur en chef de la série Budokai, présente le troisième jeu et répond sur ses nouveautés. Il fait notamment une démonstration des combats, souligne la téléportation et d’autres techniques, et détaille les personnages issus de Dragon Ball Z, des films et de Dragon Ball GT. Ryo Mito, également producteur chez Bandai, joue plusieurs matchs pour illustrer le jeu; le texte identifie Uchiyama comme le principal interlocuteur.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Dans cet entretien de Shonen Jump, Daisuke Uchiyama, producteur en chef de la série Budokai, présente le troisième jeu et répond sur ses nouveautés. Il fait notamment une démonstration des combats, souligne la téléportation et d’autres techniques, et détaille les personnages issus de Dragon Ball Z, des films et de Dragon Ball GT. Ryo Mito, également producteur chez Bandai, joue plusieurs matchs pour illustrer le jeu; le texte identifie Uchiyama comme le principal interlocuteur.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 51245,
+      "dragonBallRelevance": "Directe : développement et fonctionnalités de Budokai 3 par son producteur."
+    },
+    {
+      "id": "dragon-box-the-movies-music-fighter-hironobu-kageyama-interview",
+      "url": "https://www.kanzenshuu.com/home-video/jp/dragon-box-movies/",
+      "title": "Music Fighter: Hironobu Kageyama Special Interview (Dragon Box The Movies)",
+      "publication": "Dragon Box The Movies — Music Fighter: Hironobu Kageyama Special Interview",
+      "publicationType": "Guidebook",
+      "format": "interview",
+      "publicationDate": "2006",
+      "participants": [
+        "Hironobu Kageyama"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Music Fighter: Hironobu Kageyama Special Interview (Dragon Box The Movies)",
+      "sourceDescription": "La fiche Kanzenshuu du coffret des films identifie un entretien spécial de deux pages avec Hironobu Kageyama, publié dans Dragon Box The Movies. La page rapporte aussi son classement de trois chansons de fin de films : « The Whole World » (film 3), « The Incredible Strongest vs Strongest » (film 5) et « Dragon Power Infinity » (film 11). Elle ne reproduit pas l’entretien complet; la notice se limite à ces éléments résumés et au signalement bibliographique.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La fiche Kanzenshuu du coffret des films identifie un entretien spécial de deux pages avec Hironobu Kageyama, publié dans Dragon Box The Movies. La page rapporte aussi son classement de trois chansons de fin de films : « The Whole World » (film 3), « The Incredible Strongest vs Strongest » (film 5) et « Dragon Power Infinity » (film 11). Elle ne reproduit pas l’entretien complet; la notice se limite à ces éléments résumés et au signalement bibliographique.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "dragonBallRelevance": "Témoignage d’un chanteur associé aux chansons de fin des films Dragon Ball; l’extrait de la page porte sur ses préférences musicales."
+    },
+    {
+      "id": "site-page-51335-shonen-jump-toriyama-rama-interview",
+      "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-july-2006-toriyama-rama-interview-with-akira-toriyama/",
+      "title": "Akira Toriyama — Toriyama-rama",
+      "publication": "Shonen Jump, juillet 2006, « Toriyama-rama — Interview with Akira Toriyama! »",
+      "publicationType": "Guidebook",
+      "format": "Entretien imprimé en questions-réponses",
+      "publicationDate": "2006-07",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Akira Toriyama — Toriyama-rama",
+      "sourceDescription": "Dans cet entretien de Shonen Jump, Toriyama parle de la parution anglaise de Dr. Slump, de ses outils de mise en couleur et des possibilités de la 3D. Il raconte avoir abandonné la coloration à l’encre au profit de l’ordinateur, utiliser Photoshop 3 et parfois Painter, et exprime son intérêt pour la 3D tout en expliquant les limites qu’elle pourrait poser à son travail de manga.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Dans cet entretien de Shonen Jump, Toriyama parle de la parution anglaise de Dr. Slump, de ses outils de mise en couleur et des possibilités de la 3D. Il raconte avoir abandonné la coloration à l’encre au profit de l’ordinateur, utiliser Photoshop 3 et parfois Painter, et exprime son intérêt pour la 3D tout en expliquant les limites qu’elle pourrait poser à son travail de manga.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 51335,
+      "dragonBallRelevance": "Directe : outils de création, Dr. Slump et intérêt de Toriyama pour la 3D."
+    },
+    {
+      "id": "site-page-51125-shonen-jump-dragon-power-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-january-2003-interview-dragon-power-ask-akira-toriyama/",
+      "title": "Akira Toriyama — Dragon Power! / Ask Akira Toriyama",
+      "publication": "Shonen Jump, janvier 2003, « Dragon Power! / Ask Akira Toriyama »",
+      "publicationType": "Guidebook",
+      "format": "Entretien imprimé en questions-réponses",
+      "publicationDate": "2003-01",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Akira Toriyama — Dragon Power! / Ask Akira Toriyama",
+      "sourceDescription": "Cet entretien de Shonen Jump présente les inspirations et choix de création d’Akira Toriyama. Après une introduction retraçant son passage de Dr. Slump à Dragon Ball, les questions portent sur les arts martiaux, les pouvoirs, les personnages et les idées qui ont façonné le manga. Kanzenshuu reproduit l’article d’entretien dans son archive de presse.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Cet entretien de Shonen Jump présente les inspirations et choix de création d’Akira Toriyama. Après une introduction retraçant son passage de Dr. Slump à Dragon Ball, les questions portent sur les arts martiaux, les pouvoirs, les personnages et les idées qui ont façonné le manga. Kanzenshuu reproduit l’article d’entretien dans son archive de presse.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 51125,
+      "dragonBallRelevance": "Directe : création de Dragon Ball, inspirations et choix de conception de Toriyama."
+    },
+    {
+      "id": "site-page-51151-shonen-jump-kidz-questionz-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-nyc-launch-kidz-questionz-for-akira-toriyama/",
+      "title": "Akira Toriyama — KidZ QuestionZ au lancement de Shonen Jump à New York",
+      "publication": "Shonen Jump, mars 2003, « NYC Launch / KidZ QuestionZ for Akira Toriyama »",
+      "publicationType": "Guidebook",
+      "format": "Q&A imprimé d’événement",
+      "publicationDate": "2003-03",
+      "participants": [
+        "Akira Toriyama",
+        "Jeunes lecteurs de Shonen Jump"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Akira Toriyama — KidZ QuestionZ au lancement de Shonen Jump à New York",
+      "sourceDescription": "À la suite du compte rendu du lancement américain de Shonen Jump, une section distincte restitue les questions posées à Akira Toriyama par de jeunes lecteurs. Les réponses sont présentées comme un Q&A d’événement, séparé de l’autre entretien Toriyama–Yasutoko publié dans le même numéro.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "À la suite du compte rendu du lancement américain de Shonen Jump, une section distincte restitue les questions posées à Akira Toriyama par de jeunes lecteurs. Les réponses sont présentées comme un Q&A d’événement, séparé de l’autre entretien Toriyama–Yasutoko publié dans le même numéro.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 51151,
+      "dragonBallRelevance": "Directe : réponses de Toriyama aux lecteurs lors du lancement américain de Shonen Jump."
+    },
+    {
+      "id": "site-page-51159-shonen-jump-toriyama-yasutoko",
+      "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-interview-toriyama-vs-tasutoko/",
+      "title": "Akira Toriyama et Takeshi Yasutoko — entretien face-à-face",
+      "publication": "Shonen Jump, mars 2003, « Interview — Toriyama vs Yasutoko »",
+      "publicationType": "Guidebook",
+      "format": "Entretien imprimé en dialogue",
+      "publicationDate": "2003-03",
+      "participants": [
+        "Akira Toriyama",
+        "Takeshi Yasutoko"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Akira Toriyama et Takeshi Yasutoko — entretien face-à-face",
+      "sourceDescription": "Dans cet entretien de Shonen Jump, le champion de patinage en ligne Takeshi Yasutoko questionne Akira Toriyama lors d’une rencontre à New York. Les échanges portent sur les ressemblances entre Toriyama et certains de ses personnages, sa manière de développer personnages et histoires pendant la sérialisation, et son travail de créateur. L’article décrit la rencontre et reproduit directement les dialogues.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Dans cet entretien de Shonen Jump, le champion de patinage en ligne Takeshi Yasutoko questionne Akira Toriyama lors d’une rencontre à New York. Les échanges portent sur les ressemblances entre Toriyama et certains de ses personnages, sa manière de développer personnages et histoires pendant la sérialisation, et son travail de créateur. L’article décrit la rencontre et reproduit directement les dialogues.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 51159,
+      "dragonBallRelevance": "Directe : témoignage de Toriyama sur ses personnages et sa méthode de création."
+    },
+    {
+      "id": "site-page-53780-anime-insider-qt-on-gt-funimation-staff-qa",
+      "url": "https://www.kanzenshuu.com/press-archive/anime-insider-december-2003-feature-the-qt-on-gt/",
+      "title": "Équipe FUNimation — Q&A sur Dragon Ball GT",
+      "publication": "Anime Insider, décembre 2003, « The QT on GT »",
+      "publicationType": "Guidebook",
+      "format": "Q&A imprimé avec quatre membres de l’équipe FUNimation",
+      "publicationDate": "2003-12",
+      "participants": [
+        "Chris Bevins",
+        "Jeremy Carlisle",
+        "Eric Vale",
+        "Mike McFarland"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2017.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Équipe FUNimation — Q&A sur Dragon Ball GT",
+      "sourceDescription": "Ce Q&A d’Anime Insider apporte les réponses de quatre membres de l’équipe américaine de Dragon Ball GT : le réalisateur Chris Bevins, le superviseur de scénario Jeremy Carlisle, le scénariste et voix d’Eric Vale, et le comédien Mike McFarland. Interrogés sur les choix de diffusion et des éléments de la série, Bevins explique que FUNimation a commencé par les épisodes où l’action démarre avec Baby, avant de prévoir de revenir aux épisodes initiaux; les réponses distinguent aussi les appellations japonaises et celles du doublage. L’article précise que ces propos documentent uniquement l’adaptation anglaise et ne font pas autorité sur la production japonaise ni sur le canon de GT.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Ce Q&A d’Anime Insider apporte les réponses de quatre membres de l’équipe américaine de Dragon Ball GT : le réalisateur Chris Bevins, le superviseur de scénario Jeremy Carlisle, le scénariste et voix d’Eric Vale, et le comédien Mike McFarland. Interrogés sur les choix de diffusion et des éléments de la série, Bevins explique que FUNimation a commencé par les épisodes où l’action démarre avec Baby, avant de prévoir de revenir aux épisodes initiaux; les réponses distinguent aussi les appellations japonaises et celles du doublage. L’article précise que ces propos documentent uniquement l’adaptation anglaise et ne font pas autorité sur la production japonaise ni sur le canon de GT.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 53780,
+      "dragonBallRelevance": "Directe, mais limitée à l’adaptation américaine de Dragon Ball GT et à l’équipe FUNimation."
     }
   ]
 }

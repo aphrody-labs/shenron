@@ -31,7 +31,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
         "questionAnswerCount": 0,
         "formatNote": "Long article avec intertitres et réponses de Iyoku insérées dans un récit journalistique, sans balisage Q/R. Les affirmations sur la conception et la diffusion sont celles d'Akio Iyoku, producteur exécutif; seules les idées qu'il attribue explicitement à Toriyama sont indirectement rapportées comme telles.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/mantanweb-daima-akiyo-iyoku-1.html"
       },
       "dragonBallRelevance": "Directe : témoignage du producteur exécutif sur le développement, les objectifs de public, la place temporelle et la diffusion de Daima; les propos de Iyoku sont séparés de ceux qu'il rapporte de Toriyama.",
       "status": "summary-written-print-source-not-collated",
@@ -57,7 +58,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
         "questionAnswerCount": 0,
         "formatNote": "Postface autobiographique, et non entretien question-réponse. L'index Kanzenshuu classe cette entrée parmi les interviews; les propos concernent la genèse éditoriale d'un one-shot et la répartition du travail entre Toriyama et Toyotarō.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-24-toyotaro-afterword.html"
       },
       "dragonBallRelevance": "Directe : documente l'origine d'un récit de Dragon Ball Super et le partage des rôles entre le texte initial de Toriyama et son adaptation en manga par Toyotarō.",
       "status": "summary-written-print-source-not-collated",
@@ -128,6 +130,39 @@
       "audioDownloaded": true,
       "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-78299-podcast-episode-0519.mp3",
       "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-78507-toyotaro-dragon-ball-legends-7th-anniversary-illustration-qa",
+      "title": "Toyotarō — illustration de collaboration Dragon Ball Legends pour le 7e anniversaire",
+      "kind": "written-interview",
+      "summary": "Dans cette Q&A de cinq questions reproduite intégralement par Kanzenshuu, Toyotarō explique la composition de son illustration de Goku Ultra Instinct et Vegeta Super Saiyan Blue Evolution réalisée pour le 7e anniversaire de Dragon Ball Legends. Il voulait une pose énergique où les deux personnages affrontent le spectateur; le Tournoi du Pouvoir et Jiren lui sont venus à l’esprit, sans qu’il ait imaginé un ennemi précis. Il détaille l’alignement vertical des poings, la profondeur, l’évitement de la symétrie et la différenciation des expressions. Pour Vegeta, dont cette transformation n’existe pas dans le manga, il a veillé à la coiffure et à l’expression afin que les spectateurs de l’anime ne ressentent pas de décalage. Il conclut en se disant honoré que l’illustration accompagne le 7e anniversaire du jeu.",
+      "keyInformation": [
+        "La source officielle comporte cinq questions et leurs réponses, toutes reproduites dans le billet Kanzenshuu.",
+        "Toyotarō a conçu Goku et Vegeta combattant côte à côte, tournés vers le spectateur, pour donner de l’impact à l’image.",
+        "Il n’avait pas choisi d’adversaire précis; le Tournoi du Pouvoir et Jiren lui sont venus à l’esprit. Il a voulu que les vêtements abîmés suggèrent un combat prolongé.",
+        "Il a travaillé l’alignement vertical des poings, leur profondeur et des poses non symétriques.",
+        "Il a différencié les expressions des transformations et a particulièrement étudié les cheveux et l’expression de Vegeta, car Super Saiyan Blue Evolution n’existe pas dans le manga.",
+        "Toyotarō se dit honoré que l’illustration soit utilisée à l’occasion du 7e anniversaire de Dragon Ball Legends."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/20/translation-update-special-project-toyotaro-drew-it-image-90/",
+        "publication": "Dragon Ball Official Site — 「とよたろうが描いてみた」特別編!!レジェンズ7周年コラボイラストについて聞いてみた!!",
+        "publicationDate": "2025-05-24",
+        "participants": [
+          "Toyotarō"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "sourcePageUrl": "https://dragon-ball-official.com/news/01_3414.html",
+        "questionAnswerCount": 5,
+        "transcriptAvailable": true,
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false,
+        "format": "Entretien écrit — cinq questions-réponses complètes",
+        "scopeNote": "La traduction intégrale des cinq échanges est reproduite dans le corps du billet Kanzenshuu."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Témoignage direct de Toyotarō sur la conception d’une illustration de Goku et Vegeta pour Dragon Ball Legends."
     }
   ]
 }

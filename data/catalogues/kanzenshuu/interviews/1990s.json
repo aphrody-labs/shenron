@@ -683,6 +683,201 @@
       ],
       "editorialSummary": "Toriyama répond à des questions sur l’après-série et les coulisses de plusieurs personnages. Il raconte notamment que Lunch est partie à la recherche de Tenshinhan, décrit les jumeaux C-17 et C-18 comme des délinquants enlevés par Gero et explique que le gang de Pilaf a différé ses projets de conquête du monde face à Cell.",
       "reviewStatus": "source-checked-summary-retained"
+    },
+    {
+      "id": "site-post-220-agent-mai-funimation-email-qa",
+      "url": "https://www.kanzenshuu.com/1999/02/06/agent-mai-funimation-tidbits/",
+      "title": "Q&A par courriel avec « Agent Mai » (FUNimation) — première session",
+      "publication": "Kanzenshuu, « Agent Mai » FUNimation Tidbits",
+      "publicationType": "email-interview",
+      "format": "email-interview",
+      "publicationDate": "1999-02-06",
+      "participants": [
+        "Adrian Saavedra",
+        "Agent Mai (pseudonyme déclaré; identité non confirmée)"
+      ],
+      "topics": [
+        "Directe : réponses d’un contact FUNimation sur la production, le doublage et la diffusion américaine de Dragon Ball/Dragon Ball Z."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": 10,
+      "sectionHeadings": [],
+      "sourceDescription": "Questions et réponses par courriel reproduites dans le billet; contact FUNimation anonyme sous pseudonyme, sans enregistrement oral ni identité civile connue.",
+      "editorialSummary": "Adrian Saavedra publie un échange par courriel avec un contact de FUNimation se présentant sous le pseudonyme « Agent Mai ». Les questions portent notamment sur la reprise de Dragon Ball Z, l’accord annoncé avec Cartoon Network, les responsables du financement, la distribution vidéo, les changements de comédiens, les dates de sortie envisagées, la poursuite possible de Dragon Ball et Dragon Ball Z, ainsi que le niveau de censure et la musique des épisodes. Le contact répond que les voix seraient réenregistrées en interne, que les épisodes à venir seraient moins censurés que les 53 premiers et qu’une version non censurée était espérée; plusieurs dates et plans restent alors incertains. La page précise que « Agent Mai » n’est pas son vrai nom.",
+      "reviewStatus": "summary-written-source-post-reproduces-email-qa"
+    },
+    {
+      "id": "site-post-223-agent-mai-funimation-email-qa-follow-up",
+      "url": "https://www.kanzenshuu.com/1999/04/03/agent-mai-funimation-additional-tidbits/",
+      "title": "Q&A par courriel complémentaire avec « Agent Mai » (FUNimation)",
+      "publication": "Kanzenshuu, « Agent Mai » FUNimation Additional Tidbits",
+      "publicationType": "email-interview-follow-up",
+      "format": "email-interview-follow-up",
+      "publicationDate": "1999-04-03",
+      "participants": [
+        "Adrian Saavedra",
+        "Agent Mai (pseudonyme déclaré; identité non confirmée)"
+      ],
+      "topics": [
+        "Directe : échanges avec un représentant de FUNimation sur l’adaptation, les épisodes, le doublage et les sorties Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": 12,
+      "sectionHeadings": [],
+      "sourceDescription": "Suite du Q&A par courriel publiée en deux sessions datées. Plusieurs questions sont groupées dans une même réponse; les nombres d’épisodes, calendriers et projets sont rapportés comme annonces contemporaines.",
+      "editorialSummary": "Kanzenshuu publie le 3 avril une suite de la correspondance d’Adrian Saavedra avec le contact FUNimation « Agent Mai ». Le billet reproduit d’abord une réponse datée du 5 mars sur la troisième saison de Dragon Ball Z : le contact confirme que 50 épisodes sont prévus et situe alors leur production entre les épisodes japonais 68 et 117. Il répond aussi sur l’avancement du travail, le sous-titrage, les relations avec Pioneer et les projets Dragon Ball/Dragon Ball Z. Une seconde session, datée du 26 mars, apporte des réponses sur le calendrier de diffusion et de vidéo, les films Dragon Ball, les sorties DVD et l’avenir possible des séries. Ces réponses décrivent les plans et l’état de production tels que le contact les présentait à ces dates; elles ne valent pas confirmation des réalisations ultérieures.",
+      "reviewStatus": "summary-written-source-post-reproduces-email-qa"
+    },
+    {
+      "id": "site-page-50990-animerica-spotlight-akira-toriyama",
+      "url": "https://www.kanzenshuu.com/press-archive/animerica-march-1998-spotlight-akira-toriyama/",
+      "title": "Akira Toriyama — profil-entretien Animerica",
+      "publication": "Animerica, mars 1998, « Spotlight — Akira Toriyama »",
+      "publicationType": "Guidebook",
+      "format": "Profil-entretien imprimé avec citations directes",
+      "publicationDate": "1998-03",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Akira Toriyama — profil-entretien Animerica",
+      "sourceDescription": "Ce portrait-entretien d’Animerica donne la parole à Akira Toriyama sur son parcours de dessinateur et la création de Dragon Ball. L’introduction annonce des réponses sur ses inspirations — notamment le Roi des singes et Jackie Chan — et l’origine du Kamehameha. Le corps combine le récit journalistique avec des propos directs de Toriyama plutôt qu’une suite systématique de questions-réponses; Kanzenshuu en reproduit le texte.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Ce portrait-entretien d’Animerica donne la parole à Akira Toriyama sur son parcours de dessinateur et la création de Dragon Ball. L’introduction annonce des réponses sur ses inspirations — notamment le Roi des singes et Jackie Chan — et l’origine du Kamehameha. Le corps combine le récit journalistique avec des propos directs de Toriyama plutôt qu’une suite systématique de questions-réponses; Kanzenshuu en reproduit le texte.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 50990,
+      "transcriptAvailable": false,
+      "dragonBallRelevance": "Directe : témoignage de Toriyama sur ses débuts artistiques, ses inspirations et la création de Dragon Ball."
+    },
+    {
+      "id": "site-page-51009-animerica-dragon-ball-z-how-it-gets-on-tv",
+      "url": "https://www.kanzenshuu.com/press-archive/animerica-march-1998-animerica-interview-dragon-ball-z-how-it-gets-on-tv/",
+      "title": "Barry Watson — Dragon Ball Z… How It Gets On TV",
+      "publication": "Animerica, mars 1998, « Dragon Ball Z… How It Gets On TV »",
+      "publicationType": "Guidebook",
+      "format": "Entretien imprimé en questions-réponses",
+      "publicationDate": "1998-03",
+      "participants": [
+        "Barry Watson"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Barry Watson — Dragon Ball Z… How It Gets On TV",
+      "sourceDescription": "Dans cet entretien d’Animerica, Barry Watson décrit le travail de FUNimation autour de Dragon Ball Z. Il raconte avoir été intégré au projet après les démarches de Gen Fukunaga auprès de Toei, puis explique son rôle de coordination entre les équipes d’écriture, d’animation et de production. L’article traite de l’adaptation télévisée, de la censure, de la peinture numérique et de la sortie vidéo non censurée; les questions et réponses sont reproduites dans la page d’archive.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Dans cet entretien d’Animerica, Barry Watson décrit le travail de FUNimation autour de Dragon Ball Z. Il raconte avoir été intégré au projet après les démarches de Gen Fukunaga auprès de Toei, puis explique son rôle de coordination entre les équipes d’écriture, d’animation et de production. L’article traite de l’adaptation télévisée, de la censure, de la peinture numérique et de la sortie vidéo non censurée; les questions et réponses sont reproduites dans la page d’archive.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 51009,
+      "dragonBallRelevance": "Directe : production, adaptation et diffusion de Dragon Ball Z par FUNimation."
+    },
+    {
+      "id": "site-page-50883-animerica-take-ten-funimation",
+      "url": "https://www.kanzenshuu.com/press-archive/animerica-november-1996-take-ten-with-funimation/",
+      "title": "Gen et Cindy Fukunaga — débuts de Dragon Ball aux États-Unis",
+      "publication": "Animerica, novembre 1996, « Take Ten With FUNimation »",
+      "publicationType": "Guidebook",
+      "format": "Mini-entretien imprimé, questions-réponses numérotées",
+      "publicationDate": "1996-11",
+      "participants": [
+        "Gen Fukunaga",
+        "Cindy Brennan Fukunaga"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Gen et Cindy Fukunaga — débuts de Dragon Ball aux États-Unis",
+      "sourceDescription": "Dans ce mini-entretien d’Animerica, Gen et Cindy Fukunaga racontent comment ils ont découvert Dragon Ball, alors immense succès japonais encore inédit aux États-Unis, puis décidé de le faire venir. Leurs réponses abordent le lancement de la série américaine et le travail de production de FUNimation. La page d’archive restitue l’entretien écrit sous forme de questions numérotées et réponses; elle distingue parfois les deux voix par les initiales CBF et GF.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Dans ce mini-entretien d’Animerica, Gen et Cindy Fukunaga racontent comment ils ont découvert Dragon Ball, alors immense succès japonais encore inédit aux États-Unis, puis décidé de le faire venir. Leurs réponses abordent le lancement de la série américaine et le travail de production de FUNimation. La page d’archive restitue l’entretien écrit sous forme de questions numérotées et réponses; elle distingue parfois les deux voix par les initiales CBF et GF.",
+      "reviewStatus": "source-acquired-summary-pending",
+      "kanzenshuuPageId": 50883,
+      "dragonBallRelevance": "Directe : récit de la création et de la production de la distribution américaine de Dragon Ball par les dirigeants de FUNimation."
+    },
+    {
+      "id": "dragon-ball-complete-song-collection-cocc-9202-talk-no-1",
+      "url": "https://www.kanzenshuu.com/music/miscellaneous/",
+      "title": "Talk No. 1 — Dragon Ball: Complete Song Collection (COCC-9202)",
+      "publication": "Dragon Ball – Complete Song Collection (COCC-9202)",
+      "publicationType": "Guidebook",
+      "format": "conversation audio",
+      "publicationDate": "1991-10-21",
+      "participants": [
+        "Akira Toriyama",
+        "Yūji Horii",
+        "Hironobu Sakaguchi"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Talk No. 1 — Dragon Ball: Complete Song Collection (COCC-9202)",
+      "sourceDescription": "La page Kanzenshuu répertorie la piste 3, « Talk No. 1 », du CD COCC-9202 Dragon Ball – Complete Song Collection, paru le 21 octobre 1991. Elle décrit la piste comme une conversation entre Akira Toriyama, Yūji Horii et Hironobu Sakaguchi au sujet de Chrono Trigger. La piste audio et sa transcription n’ont pas été acquises; la nature exacte des échanges n’est donc pas davantage caractérisée.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu répertorie la piste 3, « Talk No. 1 », du CD COCC-9202 Dragon Ball – Complete Song Collection, paru le 21 octobre 1991. Elle décrit la piste comme une conversation entre Akira Toriyama, Yūji Horii et Hironobu Sakaguchi au sujet de Chrono Trigger. La piste audio et sa transcription n’ont pas été acquises; la nature exacte des échanges n’est donc pas davantage caractérisée.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "transcriptAvailable": false,
+      "audioAcquired": false,
+      "dragonBallRelevance": "Piste parlée incluse dans un CD de chansons Dragon Ball; les personnes et, pour la piste 1, le sujet sont ceux cités par la page Kanzenshuu."
+    },
+    {
+      "id": "dragon-ball-complete-song-collection-cocc-9202-talk-no-2",
+      "url": "https://www.kanzenshuu.com/music/miscellaneous/",
+      "title": "Talk No. 2 — Dragon Ball: Complete Song Collection (COCC-9202)",
+      "publication": "Dragon Ball – Complete Song Collection (COCC-9202)",
+      "publicationType": "Guidebook",
+      "format": "conversation audio",
+      "publicationDate": "1991-10-21",
+      "participants": [
+        "Masako Nozawa",
+        "Norio Wakamoto",
+        "Kōzō Shioya"
+      ],
+      "topics": [
+        "Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "acquired": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Talk No. 2 — Dragon Ball: Complete Song Collection (COCC-9202)",
+      "sourceDescription": "La page Kanzenshuu répertorie la piste 34, « Talk No. 2 », du CD COCC-9202 Dragon Ball – Complete Song Collection, paru le 21 octobre 1991. Elle nomme Masako Nozawa, Norio Wakamoto et Kōzō Shioya comme participants, mais ne précise ni le sujet ni le contenu de leur échange. L’audio et toute transcription restent non acquis; cette entrée demeure une piste parlée à classer, sans la qualifier d’entretien établi.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "La page Kanzenshuu répertorie la piste 34, « Talk No. 2 », du CD COCC-9202 Dragon Ball – Complete Song Collection, paru le 21 octobre 1991. Elle nomme Masako Nozawa, Norio Wakamoto et Kōzō Shioya comme participants, mais ne précise ni le sujet ni le contenu de leur échange. L’audio et toute transcription restent non acquis; cette entrée demeure une piste parlée à classer, sans la qualifier d’entretien établi.",
+      "reviewStatus": "kanzenshuu-summary-or-reference",
+      "transcriptAvailable": false,
+      "audioAcquired": false,
+      "dragonBallRelevance": "Piste parlée incluse dans un CD de chansons Dragon Ball; les personnes et, pour la piste 1, le sujet sont ceux cités par la page Kanzenshuu."
     }
   ]
 }
