@@ -6,26 +6,30 @@ Ce répertoire contient les cycles d'entraînement dialectique intensif de Shenr
 
 ## Sommaire des Cycles d'Entraînement
 
-1. [Cycle 01 : Techniques et Arts Martiaux](cycle-01-techniques-et-arts-martiaux.md)
-   - **Q1 :** Le *Mafūba* (*魔封波*), ses risques mortels vitaux et l'inversion par le *Fūba-Kū* (*封波返し*).
-   - **Q2 :** L'incompatibilité originelle du *Kaiō-ken* et du Super Saiyan classique dans le manga.
-   - **Q3 :** La composition tripartite du Ki (*Genki, Yūki, Shōki*) et l'exigence du cœur pur pour la *Genki Dama*.
-   - **Q4 :** La mécanique de coupe absolue du *Kienzan* (*気円斬*) et l'invalidation du filler de Cell (épisode 168).
-   - **Q5 :** L'impact de compression gravitationnelle du *Shin Kikoho* (*新気功砲*) face à Cell deuxième forme.
-
-2. [Cycle 02 : Biologie et Génétique Martiale](cycle-02-biologie-et-genetique.md)
-   - **Q6 :** Les *Cellules S* (*S-Cells / S細胞*) et les 3 conditions d'éveil du Super Saiyan (Toriyama 2018).
-   - **Q7 :** La reproduction asexuée, l'hydratation et les deux castes des Nameks (*Ryūzoku* vs *Senshi*).
-   - **Q8 :** Les trois catégories technologiques de Cyborgs (*Jinzōningen*) du Dr Gero et le refus de Shenron.
-   - **Q9 :** Les seuils létaux de régénération comparée : Piccolo (tête), Cell (noyau cérébral *kaku*), Buu (atomes).
-   - **Q10 :** Le potentiel génétique des Saiyans hybrides (*Konketsu Saiya-jin*) et l'absence de queue.
-
-3. [Cycle 03 : Artefacts, Divinités et Cosmologie](cycle-03-artefacts-dieux-et-cosmologie.md)
-   - **Q11 :** Les constantes physiques ($10\text{G}$, $-40^\circ\text{C}$ à $+50^\circ\text{C}$, $1/4$ air) et la limite de 2 ans de la *Salle de l'Esprit et du Temps*.
-   - **Q12 :** L'arbre généalogique des 6 séries de *Dragon Balls* canoniques (Terre, Namek, Super, Céréale, Daima).
-   - **Q13 :** La loi temporelle divine des *Potalas* (éternelle pour les Dieux, 1h pour les mortels, saturation de Ki).
-   - **Q14 :** Le scellement de l'Ancien Kaiohshin dans l'Épée Z par Beerus (Toriyama, Saikyō Jump 2014).
-   - **Q15 :** L'administration de l'Au-delà (*Ano-yo*), Enma Daioh, la conservation du corps et la purification des âmes.
+1. [Cycle 01 : Techniques et Arts Martiaux](cycle-01-techniques-et-arts-martiaux.md) (Q1 à Q5)
+   - *Mafūba*, *Kaiō-ken*, composition tripartite du Ki, *Kienzan*, *Shin Kikoho*.
+2. [Cycle 02 : Biologie et Génétique Martiale](cycle-02-biologie-et-genetique.md) (Q6 à Q10)
+   - *Cellules S* (*S-Cells*), castes Nameks, types de Cyborgs, seuils de régénération, hybrides Saiyans.
+3. [Cycle 03 : Artefacts, Divinités et Cosmologie](cycle-03-artefacts-dieux-et-cosmologie.md) (Q11 à Q15)
+   - Salle de l'Esprit et du Temps, arbre des 6 séries de Dragon Balls, *Potalas* (1h), Épée Z et Beerus, Royaume des Morts.
+4. [Cycle 04 : L'Enfance et les Grands Tournois](cycle-04-enfance-et-tournois.md) (Q16 à Q20)
+   - Bâton Magique *Nyoibō*, destruction de la lune par Jackie Chun, *Chōseisui* vs *Chōshinsui*, mort de Piccolo Daimaō, gigantification au 23e tournoi.
+5. [Cycle 05 : L'Invasion des Saiyans et la Guerre de Namek](cycle-05-saiyans-et-namek.md) (Q21 à Q25)
+   - Raditz vs Saibaimen, Grand Chef vs Rou Dai Kaiohshin, *Body Change* de Ginyu (23 000 BP), formes répressives de Freezer, conditions d'éveil du Super Saiyan.
+6. [Cycle 06 : La Menace des Cyborgs et l'Apogée de Cell](cycle-06-cyborgs-et-cell.md) (Q26 à Q30)
+   - Maladie cardiaque de Goku, génétique quintuple de Cell, raison d'être du Cell Game, fracture du bras gauche de Gohan, multivers des 3 lignes temporelles.
+7. [Cycle 07 : La Saga Majin Buu et la Métaphysique des Fusions](cycle-07-buu-et-fusions.md) (Q31 à Q35)
+   - Entité primordiale de Buu et rôle de Bibidi, fierté de Majin Vegeta, drainage du SSJ3 dans le monde des vivants, règles de la Fusion Métamole, absorption de Piccolo.
+8. [Cycle 08 : L'Ère Divine de Dragon Ball Super](cycle-08-super-ere-divine.md) (Q36 à Q40)
+   - Effacement de Merus et neutralité angélique, Ultra Instinct vs Ultra Ego, légende de Yamoshi, Beerus et destruction de la planète Vegeta, Gohan Beast et Orange Piccolo.
+9. [Cycle 09 : Dragon Ball Daima et le Royaume des Démons](cycle-09-daima-et-makai.md) (Q41 à Q45)
+   - Topographie des trois mondes du Makai, doyen Neva, gardiens Tamagami, conspiration de Gomah et rajeunissement, insectes magiques de Toriyama.
+10. [Cycle 10 : Chronologie, Économie et Géographie Cosmique](cycle-10-chronologie-et-geographie.md) (Q46 à Q50)
+    - Calendrier de l'ère *Age*, économie officielle du Zéni (1 Zéni ≈ 1 Yen), sphère du Macrocosme de l'Univers 7, histoire de Sadala et Plant, Yardrat et *Spirit Control*.
+11. [Cycle 11 : Artefacts Magiques et Technologies Révolutionnaires](cycle-11-artefacts-et-technologies.md) (Q51 à Q55)
+    - Propriétés et limites des Senzus, condition de pureté du Kinto'un, seuil de rupture des Scouters, physique des Capsules Hoi-Poi, fréquences du Dragon Radar.
+12. [Cycle 12 : L'Anthologie des Pièges, Mythes et Fanon Démystifié](cycle-12-anthologie-pieges-et-fanon.md) (Q56 à Q60)
+    - Mythe du Super Saiyan 5 et David Montiel Franco (Tablos 1999), fausses citations de Toriyama, statut des 13 films Toei 1986-1995, neutralisation des poings de Beerus et Goku, charte des 5 Rangs Canoniques de Shenron.
 
 ---
 
