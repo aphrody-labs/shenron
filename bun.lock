@@ -393,7 +393,7 @@
     "@aphrody/api": "3.0.0-alpha.3",
     "@aphrody/bun": "3.3.8",
     "@aphrody/bun-plugin-tailwind": "0.1.0-aphrody.2",
-    "@aphrody/bun-runtime": "1.4.3-aphrody.1",
+    "@aphrody/bun-runtime": "1.4.3-aphrody.2",
     "@aphrody/bun-test-dom": "0.1.1",
     "@aphrody/discord-kit": "0.1.1",
     "@aphrody/http": "0.1.1",
@@ -547,15 +547,21 @@
 
     "@aphrody/bun-plugin-tailwind": ["@aphrody/bun-plugin-tailwind@0.1.0-aphrody.2", "", { "dependencies": { "@aphrody/m3-tailwind": "^3.3.7", "@aphrody/m3-tokens": "^3.3.7", "@tailwindcss/node": "^4.3.3", "@tailwindcss/oxide": "^4.3.3", "enhanced-resolve": "^5.26.0", "tailwindcss": "^4.3.3" }, "peerDependencies": { "postcss": "^8" }, "optionalPeers": ["postcss"] }, "sha512-9Le69H9RnEJXZT9rhh1FZ0/bomBcd3F+GDDBnRbCm9ij8yMw6x45HXP/M5pBAE3F0YiFHDwXHuFFgJ+Z4JwiGg=="],
 
-    "@aphrody/bun-runtime": ["@aphrody/bun-runtime@1.4.3-aphrody.1", "", { "optionalDependencies": { "@aphrody/bun-runtime-darwin-aarch64": "1.4.3-aphrody.1", "@aphrody/bun-runtime-linux-aarch64": "1.4.3-aphrody.1", "@aphrody/bun-runtime-linux-x64": "1.4.3-aphrody.1", "@aphrody/bun-runtime-windows-x64": "1.4.3-aphrody.1" }, "bin": { "bun": "bin/bun.js", "bunx": "bin/bunx.js", "bun-runtime": "bin/bun.js" } }, "sha512-/QicTHPiFnzO3w0jajtxmqS6YdYqmfXm2KtTNz60h+IC2BPUcilPjDinlNRgT9wafaUWc1kRcdJPgTu4lotUkQ=="],
+    "@aphrody/bun-runtime": ["@aphrody/bun-runtime@1.4.3-aphrody.2", "", { "optionalDependencies": { "@aphrody/bun-runtime-darwin-aarch64": "1.4.3-aphrody.2", "@aphrody/bun-runtime-darwin-x64": "1.4.3-aphrody.2", "@aphrody/bun-runtime-linux-aarch64": "1.4.3-aphrody.2", "@aphrody/bun-runtime-linux-aarch64-musl": "1.4.3-aphrody.2", "@aphrody/bun-runtime-linux-x64": "1.4.3-aphrody.2", "@aphrody/bun-runtime-linux-x64-musl": "1.4.3-aphrody.2", "@aphrody/bun-runtime-windows-aarch64": "1.4.3-aphrody.2", "@aphrody/bun-runtime-windows-x64": "1.4.3-aphrody.2" }, "bin": { "bun": "bin/bun.js", "bunx": "bin/bunx.js", "bun-runtime": "bin/bun.js" } }, "sha512-JaL7SVbxrM1KmlD7k+fljaJ+IgkTEX7ww+wZNkSmQsz1ASylV7+fWEUYHtgYrRVx994ID9KGJkEIn2y2QsHhmA=="],
 
-    "@aphrody/bun-runtime-darwin-aarch64": ["@aphrody/bun-runtime-darwin-aarch64@1.4.3-aphrody.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-VKv92/yPKIIJ1IeB5C5Buc5tKhFlgDUwF2Waaf1EbfuJw9iZ4qsQiKFZB69hAguVXWVb0hSfd/5W/vXoqDRMrQ=="],
+    "@aphrody/bun-runtime-darwin-aarch64": ["@aphrody/bun-runtime-darwin-aarch64@1.4.3-aphrody.2", "", { "os": "darwin", "cpu": "arm64" }, "sha512-nNxbULXYxA8ke7Cp8kigD0xuocV9kCZbxAYlCPhKNCHGxPVGTPiYeDDcjaQOKRWNZSbhov6ChDZSKH6yTcEE1g=="],
 
-    "@aphrody/bun-runtime-linux-aarch64": ["@aphrody/bun-runtime-linux-aarch64@1.4.3-aphrody.1", "", { "os": "linux", "cpu": "arm64" }, "sha512-VKifAWCaFjYWNxk5tjm7yeO1WyEnz/GJmZw9I3dlOYm/F8CAVFevPwUs19ZZ5qLQHLkdzbIEIwAPyOCqyfedwA=="],
+    "@aphrody/bun-runtime-darwin-x64": ["@aphrody/bun-runtime-darwin-x64@1.4.3-aphrody.2", "", { "os": "darwin", "cpu": "x64" }, "sha512-vy0avBYB39IgInyAhgvLDtNSwLvxfOBoBP3nPkWcqrv9YPIR+ixMeH8dE61n09TflhdqZEsGge9NjiIBsvECXA=="],
 
-    "@aphrody/bun-runtime-linux-x64": ["@aphrody/bun-runtime-linux-x64@1.4.3-aphrody.1", "", { "os": "linux", "cpu": "x64" }, "sha512-3Xh0r3YMWL+R+ougvMkYGpiDTxx53Ck7u1RMFukcYMb+aphaK2ngx3YEq+YAKz6dbAtWHQaUTY/3vo/bpeuIwQ=="],
+    "@aphrody/bun-runtime-linux-aarch64": ["@aphrody/bun-runtime-linux-aarch64@1.4.3-aphrody.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-VIHh91Us2qVV1/XHKDaVONBP1RkMpciDu6CwYl/BjDpJ8lZ3m/SWDraBb0u9SF/3Q5/KpxW0xOd85NK7OyvCIA=="],
 
-    "@aphrody/bun-runtime-windows-x64": ["@aphrody/bun-runtime-windows-x64@1.4.3-aphrody.1", "", { "os": "win32", "cpu": "x64" }, "sha512-CIlRFlb5UlpoCVS2VHmmPkUb+XQfmm6mPc12H6Xkdrlqv1oS5d//d/3x4bm4LWoR8H2IIz5JMJ/WkgnwBiKWWQ=="],
+    "@aphrody/bun-runtime-linux-aarch64-musl": ["@aphrody/bun-runtime-linux-aarch64-musl@1.4.3-aphrody.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-NcfbY72k7z4Bb6aeFyTiUbe5NkJwUSCrdn/1JLnomKiSdzpBwlbqt3tn7mb0WUnAe5CT5dZwkpGP81I0uqnmJg=="],
+
+    "@aphrody/bun-runtime-linux-x64": ["@aphrody/bun-runtime-linux-x64@1.4.3-aphrody.2", "", { "os": "linux", "cpu": "x64" }, "sha512-WM0w1Nmeb7BZugLaICD8mo0MkCTtF90AS7omf8/6gsBkfhzLySCS6oDSKeZkc7uQ6r0wLlaSlWgqxEM31VRjOA=="],
+
+    "@aphrody/bun-runtime-windows-aarch64": ["@aphrody/bun-runtime-windows-aarch64@1.4.3-aphrody.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-Wb3/lU4fE3PCojN1/qv9RrLsOUAhlyVn4hjVNh5d2e3Xz+QtOf4+zac0C115fdBMnfAYfJ0Ud7jCrxKxofXxWA=="],
+
+    "@aphrody/bun-runtime-windows-x64": ["@aphrody/bun-runtime-windows-x64@1.4.3-aphrody.2", "", { "os": "win32", "cpu": "x64" }, "sha512-VKXaQ+8q63VkGFASjQT+j1yfKKJOL28pvBHtVJeBzsbY2nBF95j/bct405cZGbKhe2FWW9FEAQrdUjQXJ4y4Rg=="],
 
     "@aphrody/bun-test-dom": ["@aphrody/bun-test-dom@0.1.1", "", { "dependencies": { "@happy-dom/global-registrator": "^20.14.5" } }, "sha512-XZKt0FwXS8S4NiZIYr/X8BTCleTFlH72T4+W46tx1xrKXHDuIk4tOS+G3nLpuHbzinYiX+Efw+zfKlNuWlCoTA=="],
 

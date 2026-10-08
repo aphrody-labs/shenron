@@ -12,7 +12,7 @@ FROM ubuntu:26.04
 
 ARG SHENRON_REVISION=unknown
 # Bun runtime: release of the aphrody-labs/bun fork (package.json#packageManager).
-ARG BUN_VERSION=1.4.3-aphrody.1
+ARG BUN_VERSION=1.4.3-aphrody.2
 
 LABEL org.opencontainers.image.title="Shenron Complete" \
       org.opencontainers.image.description="All-in-one container for Dragon Ball FR (Site, Bot, Studio, DB, Redis, Nginx)" \
