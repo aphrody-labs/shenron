@@ -8,15 +8,17 @@ name: shenron-complete
 services:
   # 1. Base de données PostgreSQL (données éditoriales, auth, wiki)
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg18 # production major, with the vector extension of the RAG store
     container_name: shenron-postgres
     restart: unless-stopped
+    # The HNSW index of the RAG vectors outgrows Docker's 64 MiB default.
+    shm_size: 1g
     environment:
       POSTGRES_DB: shenron_site
       POSTGRES_USER: shenron
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run just container-env first}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
