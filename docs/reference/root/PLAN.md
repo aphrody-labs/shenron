@@ -116,5 +116,5 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
   bun packages/pipeline/scripts/ai/check-contracts.ts
   ```
 * **Déploiement en production** :
-  - Délégué à `aphrody-infra` via `bun scripts/ops/release.ts --build-host vps`.
+  - Délégué à `aphrody-infra` via `bun scripts/ops/release.ts` (tout build sur le vps).
   - Sondes de santé après bascule : `/api/health`, `/api/canon`, `/.well-known/agent-card.json`.

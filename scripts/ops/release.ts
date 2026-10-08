@@ -6,12 +6,9 @@
  *   bun scripts/ops/release.ts              # build + assemblage (vps), activation, CDN, sondes
  *   bun scripts/ops/release.ts --cdn-only   # republie la release active sur le CDN
  *   bun scripts/ops/release.ts --no-deploy  # build et assemblage seulement
- *   bun scripts/ops/release.ts --build-host dbfr|vps|auto   # où tourne le gros du build
  *
- * `--build-host dbfr` (ou `auto` quand la charge du vps dépasse `VPS_BUSY_LOAD`) répartit le build :
- * le vps garde cargo (`shenron-mcp`, WASM : il a l'accès à GitHub et le cache), dbfr compile le bot
- * et le site (Turbopack) sous un cgroup borné (CPU, mémoire, disque en priorité basse) ; WSL ne fait
- * que relayer les fichiers (git push du commit, tar en flux), aucun calcul.
+ * Tout build (cargo, bot, site, image) tourne sur le `vps` ; dbfr (production) ne reçoit que les
+ * binaires et images scellés, jamais de compilation ni de cache de build.
  *
  * 1. `release-host.ts build` tourne détaché sur le `vps` (~/shenron sur origin/main) : il
  *    survit à une coupure SSH ; ce script suit son journal jusqu'à la ligne de résultat.
@@ -79,128 +76,7 @@ async function upload(host = HOST): Promise<void> {
   if (r.code !== 0) throw new Error(`envoi du script hôte sur ${host} : ${r.out}`);
 }
 
-const VPS_BUSY_LOAD = 8;
-const BUILD_REPO = "$HOME/shenron-build";
-/** dbfr héberge PostgreSQL et Redis de production : le build y est borné et en priorité basse. */
-const DBFR_CAGE =
-  "sudo -n systemd-run --scope --quiet --uid=ubuntu --nice=10 --setenv=HOME=/home/ubuntu " +
-  "-p MemoryMax=7G -p CPUQuota=450% -p IOWeight=20";
-
-function pickBuildHost(): "vps" | "dbfr" {
-  const asked = process.argv.find((a) => a.startsWith("--build-host="))?.split("=")[1];
-  const flag = asked ?? process.argv[process.argv.indexOf("--build-host") + 1];
-  if (flag === "vps" || flag === "dbfr") return flag;
-  const load = (host: string) => Number(ssh("cat /proc/loadavg", 60, host).out.split(" ")[0]);
-  const vps = load("vps");
-  const busy = !Number.isFinite(vps) || vps > VPS_BUSY_LOAD;
-  const dbfr = load("dbfr");
-  console.log(`charge vps ${vps}, dbfr ${dbfr}`);
-  // Next se compile dans l'image Node de l'usine (build-site-external.ts) : sans Docker ni image
-  // en cache, dbfr ne peut pas construire le site.
-  const factory = ssh("docker image inspect node:22-bookworm-slim > /dev/null 2>&1", 60, "dbfr");
-  return busy && dbfr < 3 && factory.code === 0 ? "dbfr" : "vps";
-}
-
-/** Flux binaire d'un hôte à l'autre, par WSL : aucun calcul ici, seulement le relais. */
-async function relay(from: string, fromCmd: string, to: string, toCmd: string): Promise<void> {
-  const src = Bun.spawn(["ssh", from, fromCmd], { stdout: "pipe", stderr: "inherit" });
-  const dst = Bun.spawn(["ssh", to, toCmd], { stdin: src.stdout, stderr: "inherit" });
-  const [a, b] = await Promise.all([src.exited, dst.exited]);
-  if (a !== 0 || b !== 0) throw new Error(`relais ${from} → ${to} en échec (${a}/${b})`);
-}
-
-/** Suit un journal détaché jusqu'à sa ligne de résultat `{"commit":…}` ; renvoie cette ligne. */
-async function follow(host: string, log: string, minutes: number): Promise<string> {
-  const deadline = Date.now() + minutes * 60_000;
-  let shown = "";
-  while (Date.now() < deadline) {
-    await Bun.sleep(30_000);
-    const tail = ssh(`grep -E '^== |^\\{' ${log} | tail -4`, 300, host).out.trim();
-    if (tail !== shown) console.log(mask(tail));
-    shown = tail;
-    const exit = /== EXIT (\d+)/.exec(tail);
-    if (!exit) continue;
-    if (exit[1] !== "0")
-      throw new Error(`${host} : build en échec :\n${mask(ssh(`tail -40 ${log}`, 300, host).out)}`);
-    return ssh(`tail -5 ${log}`, 300, host).out;
-  }
-  throw new Error(`${host} : délai de ${minutes} minutes dépassé`);
-}
-
-async function detached(host: string, command: string, log: string): Promise<void> {
-  const start = ssh(
-    `(nohup ${command} > ${log} 2>&1; echo "== EXIT $?" >> ${log}) > /dev/null 2>&1 &`,
-    300,
-    host,
-  );
-  if (start.code !== 0) throw new Error(`lancement sur ${host} : ${start.out}`);
-}
-
-const git = (...gitArgs: string[]) =>
-  Bun.spawnSync(["git", ...gitArgs], { stdout: "pipe", stderr: "pipe" });
-
-/** Build réparti : cargo sur le vps, bot + site sur dbfr, relais par WSL, assemblage sur le vps. */
-async function buildOnDbfr(): Promise<string> {
-  await upload("vps");
-  await upload("dbfr");
-  git("fetch", "-q", "origin");
-  const sha = git("rev-parse", "origin/main").stdout.toString().trim();
-  if (!/^[0-9a-f]{40}$/.test(sha)) throw new Error("origin/main introuvable");
-  console.log(`commit ${sha} : cargo sur le vps, bot et site sur dbfr`);
-
-  // 1. le commit part vers dbfr (pas d'accès GitHub là-bas) pendant que le vps lance cargo.
-  const push = Bun.spawnSync(
-    ["git", "push", "-q", "ssh://dbfr/home/ubuntu/shenron-build", `${sha}:refs/heads/incoming`],
-    { stdout: "pipe", stderr: "pipe" },
-  );
-  if (push.exitCode !== 0) throw new Error(`push vers dbfr : ${push.stderr}`);
-  await detached(
-    "vps",
-    `$HOME/.bun/bin/bun ${REMOTE} cargo ${sha}`,
-    "$HOME/shenron-release-cargo.log",
-  );
-  await follow("vps", "$HOME/shenron-release-cargo.log", 60);
-
-  // 2. produits de cargo : vps → dbfr
-  await relay(
-    "vps",
-    "tar -C ~/shenron -cf - target/release/shenron-mcp target/release/libshenron_ffi.so packages/koharu/src/wasm packages/pipeline/src/wasm apps/site/public/wasm",
-    "dbfr",
-    `mkdir -p ${BUILD_REPO} && tar -C ${BUILD_REPO} -xf -`,
-  );
-
-  // 3. bot + site + emballage sur dbfr, sous cgroup borné
-  await detached(
-    "dbfr",
-    `${DBFR_CAGE} env SHENRON_BUILD_REPO=${BUILD_REPO} $HOME/.bun/bin/bun ${REMOTE} bundle ${sha}`,
-    "$HOME/shenron-release.log",
-  );
-  await follow("dbfr", "$HOME/shenron-release.log", 90);
-
-  // 4. release scellée : dbfr → vps, puis assemblage sur le vps
-  await relay(
-    "dbfr",
-    `tar -C ${BUILD_REPO}/artifacts/releases -cf - ${sha}`,
-    "vps",
-    "mkdir -p ~/shenron/artifacts/releases && tar -C ~/shenron/artifacts/releases -xf -",
-  );
-  // dbfr (PostgreSQL et Redis de production) ne garde ni dépendances ni release après le relais.
-  ssh(`SHENRON_BUILD_REPO=${BUILD_REPO} $HOME/.bun/bin/bun ${REMOTE} clean`, 300, "dbfr");
-  await detached(
-    "vps",
-    `$HOME/.bun/bin/bun ${REMOTE} assemble ${sha}`,
-    "$HOME/shenron-release.log",
-  );
-  const out = await follow("vps", "$HOME/shenron-release.log", 15);
-  const result = /\{"commit":"([0-9a-f]{40})","release":"([^"]+)"\}/.exec(out);
-  if (!result) throw new Error("assemblage terminé sans ligne de résultat");
-  return result[2]!;
-}
-
 async function build(): Promise<string> {
-  const host = pickBuildHost();
-  console.log(`hôte de build : ${host}`);
-  if (host === "dbfr") return buildOnDbfr();
   await upload();
   const start = ssh(
     `(nohup $HOME/.bun/bin/bun ${REMOTE} build > ${LOG} 2>&1; echo "== EXIT $?" >> ${LOG}) > /dev/null 2>&1 &`,
@@ -398,7 +274,7 @@ async function koharuWasmProbe(): Promise<string[]> {
 }
 
 if (import.meta.main && (args.has("--help") || args.has("-h"))) {
-  console.log("bun scripts/ops/release.ts [--cdn-only | --no-deploy] [--build-host vps|dbfr|auto]");
+  console.log("bun scripts/ops/release.ts [--cdn-only | --no-deploy]");
 } else if (import.meta.main) {
   let release = "";
   for (const step of releasePlan(args)) {

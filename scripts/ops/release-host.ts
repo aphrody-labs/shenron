@@ -7,8 +7,7 @@
  *   bun release-host.ts build   # main → artifacts/releases/<sha>, assemblé sous /srv/shenron/releases
  *   bun release-host.ts cdn [dir] # publie une release sur le CDN (défaut : la release active)
  *
- * Build réparti (`release.ts --build-host dbfr`) : `cargo [ref]` (vps : shenron-mcp et WASM),
- * `bundle <sha>` (dbfr : bot, site, emballage), puis `assemble <sha>` (vps) sur la release relayée.
+ * Tout build tourne ici, sur le vps : dbfr ne compile rien et ne garde aucun cache de build.
  *
  * `build` : avance rapide de `~/shenron` sur origin/main (arbre propre exigé), install figée,
  * `shenron-mcp` (cargo), WASM des moteurs Koharu et shenron-re, bot compilé, site
@@ -33,8 +32,6 @@
 import { join } from "node:path";
 
 const HOME = process.env.HOME ?? "/home/ubuntu";
-// `bundle` tourne sur dbfr, dans un dépôt dédié que `release.ts` alimente par `git push` (dbfr n'a
-// aucun accès à GitHub) ; `SHENRON_BUILD_REPO` le désigne.
 const REPO = process.env.SHENRON_BUILD_REPO ?? join(HOME, "shenron");
 const CURRENT = "/srv/shenron/current";
 const CDN_SRC = "/srv/shenron-cdn-src";
@@ -130,26 +127,6 @@ function build(): void {
   assemble(bundleSite(commit, join(CURRENT, "systemd")), commit);
 }
 
-/** Étape cargo seule, sur le vps : la sortie est relayée vers dbfr par `release.ts`. */
-function cargo(ref: string): void {
-  const commit = syncOrigin(ref);
-  step("bun install", ["bun", "install", "--frozen-lockfile"]);
-  cargoProducts();
-  console.log(JSON.stringify({ commit }));
-}
-
-/**
- * Étape bot + site + emballage, sur dbfr : le dépôt de build reçoit `ref` par push, les produits
- * de cargo y arrivent déjà posés (`target/release/shenron-mcp`, `packages/koharu/src/wasm`).
- */
-function bundle(ref: string): void {
-  step("git", ["git", "checkout", "-q", "-f", "--detach", ref]);
-  const commit = step("commit", ["git", "rev-parse", "HEAD"]).trim();
-  step("bun install", ["bun", "install", "--frozen-lockfile"]);
-  const release = bundleSite(commit);
-  console.log(JSON.stringify({ commit, release: join(REPO, release) }));
-}
-
 /** Arbre publié par `cdn` : une release assemblée sous /srv/shenron/releases, sinon l'active. */
 export function cdnSource(dir: string | undefined): string {
   if (!dir) return CURRENT;
@@ -200,30 +177,10 @@ async function cdn(dir?: string): Promise<void> {
   console.log(JSON.stringify({ cdn: "published", commit }));
 }
 
-/** dbfr ne garde rien entre deux builds : seul le dépôt de build (sources) reste. */
-function clean(): void {
-  step("nettoyage", [
-    "rm",
-    "-rf",
-    "node_modules",
-    "artifacts",
-    "target",
-    "dist",
-    ".cache",
-    join(HOME, ".bun", "install"),
-  ]);
-}
-
 const [command, ref] = import.meta.main ? process.argv.slice(2) : [];
 if (!import.meta.main) {
   // importé par les tests : aucune commande
 } else if (command === "build") build();
-else if (command === "cargo") cargo(ref ?? "origin/main");
-else if (command === "bundle" && ref) bundle(ref);
 else if (command === "assemble" && ref) assemble(join("artifacts", "releases", ref), ref);
-else if (command === "clean") clean();
 else if (command === "cdn") await cdn(ref);
-else
-  throw new Error(
-    "usage: release-host.ts build | cargo [ref] | bundle <sha> | assemble <sha> | clean | cdn [dir]",
-  );
+else throw new Error("usage: release-host.ts build | assemble <sha> | cdn [dir]");

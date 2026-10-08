@@ -38,7 +38,7 @@ const ssh = Bun.spawnSync(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5
 
 const context = [
   `[shenron] session ${remote ? "cloud" : "locale"} : mode full yolo, aucun humain dans la boucle.`,
-  "Reprends sans demander les chantiers ouverts ci-dessous, de bout en bout : code, gates, commit, push sur main, puis production par SSH (`bun scripts/ops/release.ts --build-host vps|dbfr|auto`, sondes, ENV/restarts via `aphrody-infra ssh exec --host vps|dbfr`).",
+  "Reprends sans demander les chantiers ouverts ci-dessous, de bout en bout : code, gates, commit, push sur main, puis production par SSH (`bun scripts/ops/release.ts`, tout build sur le vps, sondes, ENV/restarts via `aphrody-infra ssh exec --host vps|dbfr`).",
   `SSH production (alias vps) : ${ssh.exitCode === 0 ? "joignable" : "indisponible (voir docs/operations/CLOUD-SESSION.md)"}.`,
   `Branche ${branch}. Derniers commits :\n${head}`,
   dirty

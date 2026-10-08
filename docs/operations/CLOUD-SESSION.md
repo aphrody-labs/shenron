@@ -22,8 +22,8 @@ Le jeton GitHub (`gh`, push sur `main`) et `APHRODY_GIT_TOKEN` (dépendances Aph
 façon. Sans ces variables, la session code, teste et pousse, mais ne livre pas : elle le dit dans son bilan.
 
 ## Du code à la production
-`gates (typecheck, lint, tests, format)` → commit + push `main` → `bun scripts/ops/release.ts --build-host
-vps|dbfr|auto` (build, CDN, `aphrody-infra deploy --apply`, sondes) → réglages d'hôte par
+`gates (typecheck, lint, tests, format)` → commit + push `main` → `bun scripts/ops/release.ts`
+(tout build sur le vps, binaires seuls vers dbfr ; build, CDN, `aphrody-infra deploy --apply`, sondes) → réglages d'hôte par
 `aphrody-infra ssh exec --host vps|dbfr` (env sous `/etc/rose-griffon/`, redémarrages) → vérification
 publique. Les hôtes restent propriété de l'Infra d'Aphrody : pas de manipulation hors `aphrody-infra` et de
 la release, et jamais de secret dans un journal ou un message.
