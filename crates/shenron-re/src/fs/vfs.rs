@@ -21,6 +21,7 @@ use crate::error::{ReError, Result};
 use crate::fs::cpk::CpkArchive;
 use std::borrow::Cow;
 use std::collections::{HashMap, VecDeque};
+#[cfg(not(target_arch = "wasm32"))]
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -47,6 +48,17 @@ pub struct LoadedCpk {
     pub storage: CpkStorage,
     #[cfg(target_arch = "wasm32")]
     pub storage: Vec<u8>,
+}
+
+impl LoadedCpk {
+    /// Archive bytes, whatever the storage of the target.
+    #[inline]
+    pub fn bytes(&self) -> &[u8] {
+        #[cfg(not(target_arch = "wasm32"))]
+        return self.storage.as_bytes();
+        #[cfg(target_arch = "wasm32")]
+        return &self.storage;
+    }
 }
 
 pub enum CpkStorage {
@@ -86,12 +98,7 @@ struct CpkLruCache {
 
 impl CpkLruCache {
     fn new(budget_bytes: usize) -> Self {
-        Self {
-            map: HashMap::new(),
-            order: VecDeque::new(),
-            bytes_used: 0,
-            budget_bytes,
-        }
+        Self { map: HashMap::new(), order: VecDeque::new(), bytes_used: 0, budget_bytes }
     }
 
     fn get(&mut self, key: &str) -> Option<Arc<LoadedCpk>> {
@@ -304,7 +311,8 @@ impl XenoverseVfs {
             if path.is_dir() {
                 self.scan_loose_recursive(root, &path, count)?;
             } else if path.is_file()
-                && let Ok(rel) = path.strip_prefix(root) {
+                && let Ok(rel) = path.strip_prefix(root)
+            {
                 let norm = normalize_virtual_path(rel.to_string_lossy().as_ref());
                 let meta = std::fs::metadata(&path).ok();
                 let len = meta.map(|m| m.len()).unwrap_or(0);
@@ -349,11 +357,7 @@ impl XenoverseVfs {
             (archive, bytes)
         };
 
-        let loaded = Arc::new(LoadedCpk {
-            name: archive_name.clone(),
-            archive,
-            storage,
-        });
+        let loaded = Arc::new(LoadedCpk { name: archive_name.clone(), archive, storage });
 
         // Add to mounted paths
         self.mounted_cpks.push(cpk_path);
@@ -398,11 +402,7 @@ impl XenoverseVfs {
         #[cfg(target_arch = "wasm32")]
         let storage = bytes;
 
-        let loaded = Arc::new(LoadedCpk {
-            name: name.to_string(),
-            archive,
-            storage,
-        });
+        let loaded = Arc::new(LoadedCpk { name: name.to_string(), archive, storage });
 
         let mut added = 0;
         for entry in &loaded.archive.entries {
@@ -447,7 +447,7 @@ impl XenoverseVfs {
 
         // 2. CPK archive read
         let loaded = self.get_or_load_cpk(&entry.source_archive)?;
-        loaded.archive.extract(loaded.storage.as_bytes(), &entry.virtual_path)
+        loaded.archive.extract(loaded.bytes(), &entry.virtual_path)
     }
 
     /// Reads a file with zero-copy Cow slice when uncompressed, or owned Vec when decompressed.
@@ -464,7 +464,7 @@ impl XenoverseVfs {
         }
 
         let loaded = self.get_or_load_cpk(&entry.source_archive)?;
-        let bytes = loaded.storage.as_bytes();
+        let bytes = loaded.bytes();
 
         if !entry.is_compressed {
             // Attempt zero-copy slice
@@ -485,11 +485,10 @@ impl XenoverseVfs {
         }
 
         // Cache miss: reload from mounted_cpks
-        let found_path = self.mounted_cpks.iter().find(|p| {
-            p.file_name()
-                .map(|n| n.to_string_lossy() == archive_name)
-                .unwrap_or(false)
-        });
+        let found_path = self
+            .mounted_cpks
+            .iter()
+            .find(|p| p.file_name().map(|n| n.to_string_lossy() == archive_name).unwrap_or(false));
 
         if let Some(path) = found_path {
             #[cfg(not(target_arch = "wasm32"))]
@@ -507,16 +506,9 @@ impl XenoverseVfs {
                 (archive, bytes)
             };
 
-            let loaded = Arc::new(LoadedCpk {
-                name: archive_name.to_string(),
-                archive,
-                storage,
-            });
+            let loaded = Arc::new(LoadedCpk { name: archive_name.to_string(), archive, storage });
 
-            self.cache
-                .lock()
-                .unwrap()
-                .insert(archive_name.to_string(), loaded.clone());
+            self.cache.lock().unwrap().insert(archive_name.to_string(), loaded.clone());
             return Ok(loaded);
         }
 
@@ -562,10 +554,7 @@ impl XenoverseVfs {
     /// Finds files by path prefix (e.g. `"chara/GOK/"`).
     pub fn find_by_prefix(&self, prefix: &str) -> Vec<&XenoverseVfsEntry> {
         let norm_prefix = normalize_virtual_path(prefix);
-        self.index
-            .values()
-            .filter(|e| e.virtual_path.starts_with(&norm_prefix))
-            .collect()
+        self.index.values().filter(|e| e.virtual_path.starts_with(&norm_prefix)).collect()
     }
 
     /// Returns a list of distinct 3-letter character folder codes (e.g. `GOK`, `VEG`, `PIC`).
@@ -575,7 +564,8 @@ impl XenoverseVfs {
             if let Some(rest) = key.strip_prefix("chara/")
                 && let Some(code) = rest.split('/').next()
                 && code.len() == 3
-                && code.chars().all(|c| c.is_ascii_alphanumeric()) {
+                && code.chars().all(|c| c.is_ascii_alphanumeric())
+            {
                 codes.insert(code.to_ascii_uppercase());
             }
         }
@@ -634,22 +624,13 @@ mod tests {
 
     #[test]
     fn test_normalize_virtual_path() {
-        assert_eq!(
-            normalize_virtual_path("data\\chara\\GOK\\GOK.emd"),
-            "chara/GOK/GOK.emd"
-        );
-        assert_eq!(
-            normalize_virtual_path("./data/chara/VEG/VEG.emb"),
-            "chara/VEG/VEG.emb"
-        );
+        assert_eq!(normalize_virtual_path("data\\chara\\GOK\\GOK.emd"), "chara/GOK/GOK.emd");
+        assert_eq!(normalize_virtual_path("./data/chara/VEG/VEG.emb"), "chara/VEG/VEG.emb");
         assert_eq!(
             normalize_virtual_path("/data/system/custom_skill.cus"),
             "system/custom_skill.cus"
         );
-        assert_eq!(
-            normalize_virtual_path("chara/PIC/PIC.esk"),
-            "chara/PIC/PIC.esk"
-        );
+        assert_eq!(normalize_virtual_path("chara/PIC/PIC.esk"), "chara/PIC/PIC.esk");
     }
 
     #[test]
@@ -665,10 +646,7 @@ mod tests {
 
         assert_eq!(vfs.len(), 2);
         assert!(vfs.exists("chara/GOK/GOK.emd"));
-        assert_eq!(
-            vfs.read_file("chara/GOK/GOK.emd").unwrap(),
-            b"EMD_GOKU_V1"
-        );
+        assert_eq!(vfs.read_file("chara/GOK/GOK.emd").unwrap(), b"EMD_GOKU_V1");
 
         // 2. Create patch CPK (data2.cpk) overriding Goku model and adding Vegeta
         let cpk_data2 = CpkArchive::create_mock(&[
@@ -690,14 +668,8 @@ mod tests {
             vfs_prioritized.read_file("chara/GOK/GOK.emd").unwrap(),
             b"EMD_GOKU_V2_OVERRIDE"
         );
-        assert_eq!(
-            vfs_prioritized.read_file("chara/VEG/VEG.emd").unwrap(),
-            b"EMD_VEGETA_V2"
-        );
-        assert_eq!(
-            vfs_prioritized.read_file("system/custom_skill.cus").unwrap(),
-            b"CUS_SKILLS_V1"
-        );
+        assert_eq!(vfs_prioritized.read_file("chara/VEG/VEG.emd").unwrap(), b"EMD_VEGETA_V2");
+        assert_eq!(vfs_prioritized.read_file("system/custom_skill.cus").unwrap(), b"CUS_SKILLS_V1");
 
         let char_codes = vfs_prioritized.list_character_codes();
         assert!(char_codes.contains(&"GOK".to_string()));

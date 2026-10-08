@@ -81,7 +81,8 @@ fn main() -> ExitCode {
             let mut outputs = Vec::with_capacity(archive.textures.len());
             let mut total_bytes = 0u64;
             for (index, entry) in archive.textures.iter().enumerate() {
-                let file_name = entry.name.clone().unwrap_or_else(|| format!("texture_{index:04}.dds"));
+                let file_name =
+                    entry.name.clone().unwrap_or_else(|| format!("texture_{index:04}.dds"));
                 let output = destination.join(&file_name);
                 let bytes = &entry.data;
                 let result = OpenOptions::new()
