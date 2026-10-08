@@ -18,7 +18,7 @@ La salle a 10 fois la gravité de la Terre, la température va de -40 à +50 deg
 - *Que se passe-t-il lorsque Piccolo détruit la porte d'entrée au Chapitre 492 ?*
 - *Décision d'auto-critique :* Reconstruire la réponse avec les chapitres exacts (Tomes 31 et 41) et la fiche du *Daizenshuu 4*.
 
-### 4. Réponse Consolidée et Irréfutable :
+### 4. Réponse consolidée :
 
 1. **Constantes physiques et dimensions internes :**
    - **Nom officiel :** **精神と時の部屋** (*Seishin to Toki no Heya* / *Salle de l'Esprit et du Temps*).
@@ -51,7 +51,7 @@ Il y a les boules de la Terre de Dieu (1 vœu), celles de Dendé (3 vœux), cell
 - *Quels sont les tomes et chapitres exacts d'introduction de chacune ?*
 - *Décision d'auto-critique :* Dresser un tableau comparatif exhaustif référençant chaque dragon, créateur, délai de régénération et règle fondamentale.
 
-### 4. Réponse Consolidée et Irréfutable :
+### 4. Réponse consolidée :
 
 | Série de Dragon Balls | Créateur attesté | Dragon Sacré invoqué | Nombre de vœux | Délai de recharge | Particularités canoniques majeures | Source canonique |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -73,26 +73,25 @@ Il y a les boules de la Terre de Dieu (1 vœu), celles de Dendé (3 vœux), cell
 Dans le manga original, Goku et Vegeta pensaient que c'était l'air pollué ou la magie dans l'estomac de Buu qui avait rompu la fusion. Mais dans DBS, Gowasu explique que la fusion Potala ne dure pour toujours que pour les Kaiohshins, et que pour les mortels elle ne dure qu'une heure.
 
 ### 3. Auto-critique impitoyable (Mise à la place d'Omar) :
-- *Examen critique de l'interlocuteur :* N'y a-t-il pas une seconde condition expliquant pourquoi Vegetto Blue a défusionné en moins de 10 minutes contre Zamasu ?
-- *Citer les chapitres exacts :* Manga DB Tome 42, Chapitre 506 ; DBS Manga Tome 4, Chapitre 23.
+- *Examen critique de l'interlocuteur :* Quelle explication le récit donne-t-il à la séparation anticipée de Vegetto Blue face à Zamasu ?
+- *Citer les chapitres exacts :* Manga DB Tome 42, Chapitre 506 ; DBS Manga, arc Trunks du Futur, chapitres 23-24.
 - *Décision d'auto-critique :* Exposer la règle de Gowasu et la contrainte de consommation excessive de Ki divin.
 
-### 4. Réponse Consolidée et Irréfutable :
+### 4. Réponse consolidée :
 
 1. **L'hypothèse initiale dans le Manga Original (Chapitre 506) :**
    - **Source :** Manga Tome 42, Chapitre 506 (*« À l'intérieur de Majin Buu »*).
    - Le Rou Dai Kaiōshin avait affirmé au Chapitre 501 que la fusion Potala était définitive et irréversible pour l'éternité (*Eien*).
-   - Pourtant, dès que Vegetto abaisse son bouclier énergétique pour se laisser absorber, la fusion se brise instantanément.
-   - Ne comprenant pas la cause divine, Goku émet une conjecture de substitution : *« Ce doit être l'atmosphère viciée et les sucs gastriques magiques de Buu qui ont dissous la fusion »*.
+   - La fusion se défait après que Vegetto a été absorbé par Buu. Le récit du manga souligne l'événement comme une anomalie au regard de la règle alors annoncée ; il ne mesure pas le temps écoulé depuis la fusion.
+   - L'explication liée au corps de Buu est présentée comme une hypothèse dans cette scène, pas comme une règle générale des Potara.
 2. **La Règle Ontologique Divine révélée par Gowasu (*DBS Manga Chapitre 23*) :**
    - **Source :** Manga *Dragon Ball Super* Tome 4, Chapitre 23 (*« Le vœu de Zamasu »*).
    - Gowasu, Kaiōshin de l'Univers 10, rétablit la loi cosmique primordiale des Potalas :
-     - **Pour les Dieux (Kaiōshins officiellement intronisés) :** La fusion est **permanente et éternelle**.
-     - **Pour les mortels (non-Kaiōshins) :** La fusion possède une durée limite d'**exactement une heure (60 minutes)**.
-   - L'explication de la défusion dans Buu était donc simplement l'écoulement normal du délai d'une heure de combat, coïncidant avec la pénétration dans l'estomac.
-3. **Le phénomène de rupture par saturation d'énergie (*DBS Chapitre 23*) :**
-   - Face à Zamasu fusionné, Vegetto Blue déploie une quantité d'énergie si gigantesque (*Final Kamehameha*) que **les boucles d'oreilles Potalas saturent et cèdent sous la charge**.
-   - Le lien magique est rompu en quelques minutes seulement, prouvant qu'une dépense de Ki colossale brûle prématurément le compte à rebours d'une heure des mortels.
+     - **Pour les Kaiōshins :** Gowasu décrit la fusion comme permanente.
+     - **Pour les mortels :** la fusion a une limite d'une heure.
+   - Cette règle ultérieure peut éclairer rétrospectivement la séparation de Vegetto, mais le manga ne précise pas que l'heure complète s'était écoulée dans le corps de Buu. Il faut donc laisser sa cause immédiate indéterminée.
+3. **La durée écourtée face à Zamasu fusionné (*DBS*, chapitres 23-24) :**
+   - Vegetto Blue se défait avant la limite d'une heure. Le récit relie cette durée écourtée à la dépense de puissance de la fusion ; ne pas transformer cette explication en une règle chiffrée supplémentaire ou en une « saturation » physique des boucles sans citation directe.
 
 ---
 

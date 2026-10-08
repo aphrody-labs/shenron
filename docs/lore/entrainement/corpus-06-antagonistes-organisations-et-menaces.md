@@ -181,7 +181,7 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
 
 ### Q327 : Dabra, Souverain Déchu du Makai
 - **Question :** Quel était le rang originel de Dabra avant d'être asservi par Babidi, et quelles étaient ses techniques uniques ?
-- **Sources :** Manga Tome 37, Chapitres 446 à 449 ; *Daizenshuu 7*, p. 87.
+- **Sources :** Manga Tome 37, Chapitres 446 à 449 ; Tome 38, Chapitre 450 ; *Daizenshuu 7*, p. 87.
 - **Auto-critique :** Citer le crachat pétrifiant (*Tsuba*) et sa puissance comparée à Cell selon Goku.
 - **Réponse Doctrinale :**  
   Dabra (*Dābura*) était le monarque absolu régnant sur le **Royaume des Ténèbres et des Démons** (*Makai no Ō*).  
@@ -412,12 +412,12 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
 
 ---
 
-### Q350 : La Hiérarchie Définitive des Grands Antagonistes des 42 Tomes
-- **Question :** Quel est l'enchaînement chronologique officiel des huit antagonistes majeurs ayant jalonné l'apprentissage de Son Goku dans le Manga original ?
+### Q350 : Quelques Grandes Figures Antagonistes des 42 Tomes
+- **Question :** Quelles grandes figures adverses peuvent servir de repères pour parcourir le manga original, sans prétendre établir une liste officielle exhaustive ?
 - **Sources :** Manga Tomes 1 à 42 d'Akira Toriyama ; *Daizenshuu 2 : Story Guide*.
-- **Auto-critique :** Lister avec rigueur les figures fondatrices de chaque arc sans omission.
+- **Auto-critique :** Présenter ce relevé comme une sélection éditoriale et distinguer adversaires, organisations et antagonistes d'arc.
 - **Réponse Doctrinale :**  
-  L'initiation martiale et la défense de la Terre à travers les 42 tomes du manga originel reposent sur huit piliers antagonistes fondateurs :
+  À titre de parcours synthétique, on peut retenir les repères suivants parmi les nombreux adversaires des 42 tomes :
   1. **Pilaf et sa bande** (Tomes 1-2) : La quête burlesque d'initiation aux vœux magiques.
   2. **L'Armée du Ruban Rouge** (Tomes 5-9) : L'affrontement contre le complexe militaro-industriel.
   3. **Piccolo Daimaō** (Tomes 11-14) : La confrontation avec la terreur démoniaque pure et le premier deuil.
@@ -426,3 +426,93 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
   6. **Freezer** (Tomes 21-28) : Le tyran universel et l'accomplissement de la légende du Super Saiyan.
   7. **Cell** (Tomes 29-35) : La menace biomécanique absolue et le passage de flambeau filial à Son Gohan.
   8. **Majin Buu** (Tomes 36-42) : Le chaos primordial, la transcendance des limites du corps et l'ultime Genki Dama universel.
+
+---
+
+### Q351 : Pourquoi les antagonistes ne forment-ils pas une échelle de puissance unique ?
+- **Question :** Peut-on classer tous les adversaires de Goku, de Pilaf à Moro, sur une seule échelle de puissance sans préciser l'œuvre ni le contexte ?
+- **Sources :** Manga *Dragon Ball*, tomes 1 à 42, notamment tome 38, chapitre 450 ; manga *Dragon Ball Super*, arcs Moro et Granolah.
+- **Auto-critique :** Distinguer les mesures explicites, les comparaisons de personnages et les impressions de mise en scène.
+- **Réponse :**
+  Non. Le récit donne parfois une comparaison locale, comme Goku évaluant Dabura par rapport à Cell, mais ne fournit pas une mesure commune à tous les arcs et supports. Une victoire, un effet spectaculaire ou une menace annoncée ne crée pas à elle seule un rang numérique universel. Toute hiérarchie doit préciser les formes, l'état des combattants et la source comparée.
+
+---
+
+### Q352 : Une organisation ennemie équivaut-elle à un seul niveau de combat ?
+- **Question :** La puissance d'un chef, d'une armée ou d'un groupe peut-elle être attribuée uniformément à tous ses membres ?
+- **Sources :** Manga *Dragon Ball*, arcs du Ruban Rouge, de Freezer et de Babidi ; manga *Dragon Ball Super*, arc des Heeters.
+- **Auto-critique :** Séparer hiérarchie militaire, ressources, influence politique et capacité individuelle au combat.
+- **Réponse :**
+  Non. L'Armée du Ruban Rouge, l'empire de Freezer, les hommes de Babidi et les Heeters disposent de structures, d'effectifs ou de moyens qui ne se réduisent pas à la force d'un seul membre. Les niveaux et les rôles varient au sein de chaque groupe. Décrire une organisation exige donc de distinguer son chef, ses combattants et ses ressources.
+
+---
+
+### Q353 : Le motif d'un antagoniste suffit-il à expliquer ses actes ?
+- **Question :** Comment distinguer l'objectif affiché d'un antagoniste de ses motivations révélées par le récit ?
+- **Sources :** Manga *Dragon Ball*, chapitres 95-96 et arc Freezer ; manga *Dragon Ball Super*, arcs Trunks du Futur et Granolah.
+- **Auto-critique :** Ne pas présenter un mobile caché comme preuve d'un plan plus vaste que ce que le récit montre.
+- **Réponse :**
+  Le mobile doit être attribué à la scène ou au dialogue qui le révèle. Le général Red masque son souhait personnel derrière la quête des Dragon Balls ; Freezer poursuit la domination et réagit aussi à la menace saiyanne ; Zamasu formule une idéologie hostile aux mortels ; Elec cherche le pouvoir pour les Heeters. Ces exemples sont différents : un mobile individuel ne résume pas automatiquement les objectifs de toute une organisation.
+
+---
+
+### Q354 : Vol de corps, absorption et fusion sont-ils le même mécanisme ?
+- **Question :** Peut-on traiter le Body Change de Ginyu, l'absorption de Buu et la fusion de Zamasu comme une seule technique ?
+- **Sources :** Manga *Dragon Ball*, arcs Freezer et Majin Buu ; manga *Dragon Ball Super*, arc Trunks du Futur.
+- **Auto-critique :** Distinguer ce qui change — corps, identité, capacités ou composition — et ce qui reste séparé.
+- **Réponse :**
+  Non. Ginyu échange de corps avec une cible ; Buu absorbe des êtres et acquiert certaines de leurs caractéristiques ; la fusion Potara produit un individu composite. Ces mécanismes ont des conditions et des conséquences distinctes. Le fait qu'ils modifient tous l'identité ou les capacités ne permet pas de leur attribuer une même règle de durée ou de puissance.
+
+---
+
+### Q355 : Régénération et immortalité rendent-elles un antagoniste invulnérable ?
+- **Question :** Les capacités de Garlic Junior, de Cell, de Buu et de Zamasu signifient-elles qu'ils ne peuvent jamais être vaincus ?
+- **Sources :** Film *À la poursuite de Garlic* ; manga *Dragon Ball*, arcs Cell et Majin Buu ; manga *Dragon Ball Super*, arc Trunks du Futur.
+- **Auto-critique :** Ne pas confondre survie à une blessure, régénération, résurrection et impossibilité d'être neutralisé.
+- **Réponse :**
+  Non. Ces propriétés diffèrent selon leur origine et leurs limites. La régénération de Cell ou de Buu n'est pas la même chose que l'immortalité obtenue par vœu dans des œuvres distinctes. Même un être qui ne vieillit pas ou récupère de ses blessures peut être scellé, neutralisé ou vaincu selon les conditions montrées dans son récit. Toute conclusion doit nommer la capacité précise et sa source.
+
+---
+
+### Q356 : Une variante d'un personnage garde-t-elle automatiquement le même parcours ?
+- **Question :** Les Broly, Trunks, Zamasu ou Goku Black de continuités différentes peuvent-ils être fusionnés en une seule biographie ?
+- **Sources :** Films *Dragon Ball Z* et *Dragon Ball Super: Broly* ; manga *Dragon Ball* et *Dragon Ball Super* ; anime *Dragon Ball Super*.
+- **Auto-critique :** Distinguer identité, version, époque, support et continuité avant de rapprocher deux scènes.
+- **Réponse :**
+  Non. Un même nom peut désigner des versions dont l'origine, les événements vécus ou les pouvoirs diffèrent. Il faut préciser le film, la série ou le manga concerné avant de comparer leurs actes. Les ressemblances entre deux versions ne prouvent pas qu'elles partagent une chronologie.
+
+---
+
+### Q357 : Une menace annoncée mesure-t-elle la puissance réelle de son auteur ?
+- **Question :** Une promesse de détruire une planète, une galaxie ou un univers établit-elle automatiquement une puissance de combat chiffrée ?
+- **Sources :** Manga *Dragon Ball*, chapitres 257, 307 et 318 ; manga *Dragon Ball Super*, arc Beerus ; films DBZ et *Dragon Ball Super*.
+- **Auto-critique :** Séparer les paroles, les capacités montrées, les conséquences observées et les hyperboles de traduction.
+- **Réponse :**
+  Non. Une menace peut renseigner sur l'intention ou la portée revendiquée, mais elle ne constitue pas toujours une démonstration accomplie ni une mesure numérique. Pour évaluer sa portée, il faut examiner le texte original, son contexte et les actes visibles. Les comparaisons entre supports doivent rester attribuées à leurs continuités respectives.
+
+---
+
+### Q358 : Les événements d'un film peuvent-ils être insérés tels quels dans le manga ?
+- **Question :** Une date approximative ou une ressemblance avec un arc suffit-elle à insérer un film Toei dans la chronologie des 42 tomes ?
+- **Sources :** *Daizenshuu 6* ; films DBZ 1 à 13 ; manga *Dragon Ball*, tomes 1 à 42.
+- **Auto-critique :** Distinguer continuité du film, chronologie du manga et éléments partagés entre les deux.
+- **Réponse :**
+  Non. Certains films peuvent reprendre une période ou un personnage du manga tout en racontant des événements qui ne s'y déroulent pas. On doit présenter ces éléments comme appartenant au film et à sa continuité, puis signaler les incompatibilités précises avec le manga. Une divergence chronologique ne retire pas au film son statut d'œuvre officielle.
+
+---
+
+### Q359 : Une donnée de guide sur un antagoniste est-elle toujours une mesure de combat ?
+- **Question :** Comment utiliser un profil ou une description de databook lorsqu'il parle de rang, de forme ou de puissance sans fournir de chiffre ?
+- **Sources :** *Daizenshuu 2*, *Daizenshuu 6*, *Daizenshuu 7* ; *GT Perfect Files* ; *Super Exciting Guide*.
+- **Auto-critique :** Identifier si le guide rapporte une mesure, une comparaison, une caractérisation ou une synthèse éditoriale.
+- **Réponse :**
+  Il faut conserver la nature exacte de l'énoncé. Un rang hiérarchique, une formule comme « redoutable », une comparaison narrative et un niveau de combat chiffré ne sont pas interchangeables. Relever l'ouvrage et la page, vérifier le scan si disponible, puis ne convertir une formulation qualitative en nombre que si le texte donne cette opération explicitement.
+
+---
+
+### Q360 : Comment produire une conclusion fiable sur un antagoniste ?
+- **Question :** Quelle méthode permet de résumer solidement le statut, le mobile et la puissance d'un adversaire de Dragon Ball ?
+- **Sources :** Manga *Dragon Ball* et *Dragon Ball Super* ; anime, films, *Dragon Ball GT* ; guides et magazines officiels.
+- **Auto-critique :** Éviter les verdicts absolus quand l'œuvre, la version ou la donnée manque.
+- **Réponse :**
+  Nommer d'abord la version et le support, puis établir les faits visibles ou cités, les comparer aux guides en donnant leurs références, et séparer enfin l'interprétation du texte explicite. Laisser indéterminés les rapports de puissance non chiffrés et présenter chaque œuvre officielle selon sa continuité. C'est ainsi qu'on peut comparer des antagonistes sans confondre source, chronologie, caractérisation et calcul.

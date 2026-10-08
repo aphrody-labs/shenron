@@ -180,11 +180,11 @@ Ce dossier consigne 50 études doctrinales approfondies sur la science rétrofut
 
 ### Q278 : La Règle Temporelle des Potalas de Gowasu
 - **Question :** Quelle révélation canonique Gowasu apporte-t-il dans *Dragon Ball Super* sur la durée de fusion des Potalas chez les mortels ?
-- **Sources :** Manga *Dragon Ball Super*, Tome 4, Chapitre 22 ; Tome 5, Chapitre 23.
+- **Sources :** Manga *Dragon Ball*, Tome 42, Chapitre 506 ; manga *Dragon Ball Super*, arc Trunks du Futur, chapitres 23-24.
 - **Auto-critique :** Expliquer la divergence avec la saga Buu où Goku pensait la fusion éternelle.
 - **Réponse Doctrinale :**  
-  Dans la saga Buu, le Rou Dai Kaiōshin croyait que la fusion par Potalas était définitive pour tous les êtres vivants.  
-  Dans *Dragon Ball Super*, le Kaiōshin de l'Univers 10 Gowasu rétablit la loi divine exacte : **la fusion par Potalas n'est permanente et éternelle que si au moins l'un des deux participants est un Dieu Kaiōshin officiel**. Lorsque la fusion implique deux êtres mortels (comme Son Goku et Vegeta formant Vegetto), le lien magique s'estompe naturellement après une durée maximale de **60 minutes** (1 heure), ou plus rapidement si une consommation colossale de Ki divin (comme le SSJ Blue) sature prématurément les boucles d'oreilles.
+  Dans la saga Buu, le Rou Dai Kaiōshin présente la fusion Potara comme définitive ; Vegetto se défait ensuite après avoir été absorbé par Buu. Le récit ne confirme pas qu'une heure s'est écoulée pendant cet épisode.
+  Dans l'arc Trunks du Futur de *Dragon Ball Super*, Gowasu précise qu'une fusion entre mortels est limitée à **une heure**, tandis que celle des Kaiōshins est permanente. Vegetto Blue se sépare avant l'heure lors de son combat contre Zamasu ; l'explication relie la durée écourtée à la dépense de puissance. Ne pas affirmer que les boucles « saturent » ou fixer un autre délai sans distinguer précisément le manga de l'anime et citer le passage concerné.
 
 ---
 
