@@ -162,7 +162,8 @@
           "forumContent": false
         },
         "formatNote": "Entretien externe résumé par Kanzenshuu; aucune transcription intégrale dans le billet. La traduction communautaire mentionnée n’est pas utilisée.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json"
       },
       "dragonBallRelevance": "Directe : entretien du dessinateur de Dragon Ball Super sur son rapport à la série et son travail.",
       "status": "summary-based-on-kanzenshuu-post-external-full-interview",
@@ -198,3 +199,4 @@
     }
   ]
 }
+

@@ -28,7 +28,8 @@
         "questionAnswerCount": 40,
         "detectedQuestionBlocks": 40,
         "detectedAnswerBlocks": 40,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-history-book-akira-toriyama-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -54,7 +55,8 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-01.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -79,7 +81,8 @@
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 6,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-02.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -105,7 +108,8 @@
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 5,
         "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-03.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -131,7 +135,8 @@
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 6,
         "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-04.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -157,7 +162,8 @@
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 5,
         "formatNote": "Blocs réponse locaux=5 vs index=4. Comptage Q/R distinct (4/5); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/super-history-book-video-games-selection-pick-up-05.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -183,7 +189,8 @@
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 6,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-1-tori-toyo-interview-book-version.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -209,7 +216,8 @@
         "questionAnswerCount": 13,
         "detectedQuestionBlocks": 13,
         "detectedAnswerBlocks": 13,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-1-tori-toyo-interview-web-version.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -234,7 +242,8 @@
         "questionAnswerCount": 5,
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 5,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-cast-comment-takeshi-kusao-future-trunks-arc.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -260,7 +269,8 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-1.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -287,7 +297,8 @@
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 4,
         "formatNote": "Blocs réponse locaux=4 vs index=2. Comptage Q/R distinct (2/4); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-goku-arale-nozawa-koyama-special-interview-part-2.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -315,7 +326,8 @@
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 6,
         "formatNote": "Blocs réponse locaux=6 vs index=5. Comptage Q/R distinct (5/6); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-tori-toyo-free-talk-vol-2.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -520,7 +532,8 @@
           "forumContent": false
         },
         "formatNote": "Entretien externe. Le billet Kanzenshuu en résume et cite certains passages; le texte intégral n’y figure pas.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json"
       },
       "dragonBallRelevance": "Directe : souvenirs d’un éditeur de Dragon Ball et réflexions sur le manga et son adaptation.",
       "status": "summary-based-on-kanzenshuu-post-external-full-interview",
@@ -553,7 +566,8 @@
           "forumContent": false
         },
         "formatNote": "Entretien externe. Kanzenshuu en rapporte les thèmes et traduit des extraits, sans reproduire l’entretien intégral.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json"
       },
       "dragonBallRelevance": "Directe : propos du dessinateur du manga Dragon Ball Super sur sa méthode et sa collaboration avec Toriyama.",
       "status": "summary-based-on-kanzenshuu-post-external-full-interview",
@@ -587,7 +601,8 @@
           "forumContent": false
         },
         "formatNote": "Entretien audio externe décrit par l’aperçu du DVD; ni transcription ni contenu audio intégral ne figurent dans Kanzenshuu.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2016.json"
       },
       "dragonBallRelevance": "Directe : récit par Toriyama de ses débuts professionnels et de son travail avec son éditeur.",
       "status": "summary-based-on-kanzenshuu-post-external-audio-not-acquired",
@@ -595,3 +610,4 @@
     }
   ]
 }
+

@@ -28,7 +28,8 @@
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 1,
         "formatNote": "Blocs réponse locaux=1 vs index=2. Comptage Q/R distinct (2/1); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-shonen-jump-2015-issue-15-momoiro-clover-z-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -58,7 +59,8 @@
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 6,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-momoiro-clover-z-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -88,7 +90,8 @@
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 10,
         "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2015-momoiro-clover-z.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -114,7 +117,8 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-norihiro-hayashida.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -140,7 +144,8 @@
         "questionAnswerCount": 7,
         "detectedQuestionBlocks": 7,
         "detectedAnswerBlocks": 7,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/flying-postman-press-april-2015-ryusei-nakao.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -166,7 +171,8 @@
         "questionAnswerCount": 5,
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 5,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/entermix-may-2015-ryusei-nakao-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -192,7 +198,8 @@
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 10,
         "formatNote": "Blocs réponse locaux=10 vs index=11. Comptage Q/R distinct (11/10); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2015-ryusei-nakao-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -222,7 +229,8 @@
         "detectedQuestionBlocks": 5,
         "detectedAnswerBlocks": 5,
         "formatNote": "La mise en page compte cinq blocs avec introduction, transition et encart; l’échange proprement dit comporte deux questions principales.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-may-2015-naho-ooishi-toyotaro.html"
       },
       "dragonBallRelevance": "Directe : deux auteurs commentent les personnages, combats et choix de Resurrection “F”.",
       "status": "summary-written-source-not-print-collated",

@@ -36,7 +36,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/young-jump-2010-toriyama-x-katsura/",
         "questionAnswerCount": 20,
         "formatNote": "La transcription comprend 14 questions d'entretien, cinq panneaux de manga reproduits en Q/R (items 15–19) et une dernière question sur d'éventuelles collaborations.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/young-jump-2010-toriyama-x-katsura.html"
       },
       "dragonBallRelevance": "Indirecte : entretien de création sur Jiya, sans information narrative Dragon Ball; contexte utile sur les méthodes de travail de Toriyama et Katsura.",
       "status": "summary-written-print-source-not-collated",
@@ -66,7 +67,8 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/kai_book-mayumi_tanaka/",
         "questionAnswerCount": 4,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/kai_book-mayumi_tanaka.html"
       },
       "dragonBallRelevance": "Directe pour la réception et l'interprétation vocale de Kuririn et la production de Kai; les analyses des personnages sont celles de leur comédienne.",
       "status": "summary-written-print-source-not-collated",
@@ -99,7 +101,8 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-katsuyoshi_nakatsuru/",
         "questionAnswerCount": 12,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/golden_warrior-katsuyoshi_nakatsuru.html"
       },
       "dragonBallRelevance": "Directe : création de Super Saiyan 4 et du design de GT, échanges avec Toriyama, histoire de l'animation et avis personnel sur la poursuite du manga.",
       "status": "summary-written-print-source-not-collated",
@@ -132,7 +135,8 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-minoru_maeda/",
         "questionAnswerCount": 11,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/golden_warrior-minoru_maeda.html"
       },
       "dragonBallRelevance": "Directe : character design, suivi artistique du manga dans l'anime et méthode de création des personnages originaux; perspective d'un animateur et character designer.",
       "status": "summary-written-print-source-not-collated",
@@ -164,7 +168,8 @@
         ],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-tadayoshi_yamamuro/",
         "questionAnswerCount": 12,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/golden_warrior-tadayoshi_yamamuro.html"
       },
       "dragonBallRelevance": "Directe : animation des personnages et combats, créations des films, transformations, influences de Bruce Lee et réception du travail de Toriyama.",
       "status": "summary-written-print-source-not-collated",

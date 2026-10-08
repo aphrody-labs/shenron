@@ -31,7 +31,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
         "questionAnswerCount": null,
         "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans blocs Q/R standard.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-forever-dragon-ball-toriyama.html"
       },
       "dragonBallRelevance": "Directe : méthode de narration, transformations, arcs et personnages, charge de dessin et intentions de publication.",
       "status": "summary-written-print-source-not-collated",
@@ -65,7 +66,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
         "questionAnswerCount": 28,
         "formatNote": "Le HTML contient 29 blocs question et 28 blocs réponse; la synthèse dénombre les paires complètes et conserve à part la question balisée sans bloc de réponse associé.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/tenkaichi-densetsu-toriyama-koyama-nozawa.html"
       },
       "dragonBallRelevance": "Directe : conception d'origine, Saiyans, Dragon Ball, Goku, Gohan, force de Krilin, casting vocal et contraintes d'adaptation.",
       "status": "summary-written-print-source-not-collated",

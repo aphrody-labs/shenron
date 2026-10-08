@@ -26,7 +26,8 @@
         "questionAnswerCount": 12,
         "detectedQuestionBlocks": 12,
         "detectedAnswerBlocks": 12,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/asahi-kazuhiko-torishima-interview-jump-50th-anniversary.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -51,7 +52,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-hikaru-midorikawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -76,7 +78,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-mayumi-tanaka.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -101,7 +104,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-masaharu-sato.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -126,7 +130,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-miki-ito.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -151,7 +156,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-ryo-horikawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -177,7 +183,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-toshio-furukawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -202,7 +209,8 @@
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-shigeru-nakahara.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -227,7 +235,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-ryusei-nakao.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -252,7 +261,8 @@
         "questionAnswerCount": 3,
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/interview-relay-toward-final-episode-masako-nozawa.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -278,7 +288,8 @@
         "questionAnswerCount": 23,
         "detectedQuestionBlocks": 23,
         "detectedAnswerBlocks": 23,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/akio-iyoku-dbs-movie-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -305,7 +316,8 @@
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
         "formatNote": "Traduction partielle: quatre Q/R du long entretien sont traduits, portant spécifiquement sur Dragon Ball.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/nintendo-classic-mini-famicom-kazuhiko-torishima-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -331,7 +343,8 @@
         "questionAnswerCount": 11,
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 11,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/tatsuya-nagamine-dbs-movie-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -357,7 +370,8 @@
         "questionAnswerCount": 11,
         "detectedQuestionBlocks": 11,
         "detectedAnswerBlocks": 11,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/naohiro-shintani-dbs-movie-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -383,7 +397,8 @@
         "questionAnswerCount": 9,
         "detectedQuestionBlocks": 9,
         "detectedAnswerBlocks": 9,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-movie-frontline-norihito-sumitomo.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -409,7 +424,8 @@
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 4,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/vjump-january-2019-nagamine-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -434,7 +450,8 @@
         "detectedQuestionBlocks": 0,
         "detectedAnswerBlocks": 1,
         "formatNote": "Index Q/A=0; format libre/profil sans blocs question; synthèse fondée sur la prose. Blocs réponse locaux=1 vs index=0. Comptage Q/R distinct (0/1); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-rio-uchida.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -465,7 +482,8 @@
         "questionAnswerCount": 26,
         "detectedQuestionBlocks": 26,
         "detectedAnswerBlocks": 26,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-voice-actor-roundtable.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -491,7 +509,8 @@
         "detectedQuestionBlocks": 0,
         "detectedAnswerBlocks": 1,
         "formatNote": "Index Q/A=0; format libre/profil sans blocs question; synthèse fondée sur la prose. Blocs réponse locaux=1 vs index=0. Comptage Q/R distinct (0/1); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/sponichi-dbs-broly-shinbun-toyotaro.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -521,7 +540,8 @@
         "detectedQuestionBlocks": 9,
         "detectedAnswerBlocks": 9,
         "formatNote": "Entretien traduit depuis l’édition Super du programme cinéma.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dbs-broly-theatrical-program-naohiro-shintani-2.html"
       },
       "dragonBallRelevance": "Directe : témoignage de Shintani sur le character design, l’animation et la mise en scène de Dragon Ball Super: Broly.",
       "status": "summary-written-source-not-print-collated",
@@ -672,7 +692,8 @@
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 6,
         "formatNote": "Entretien avec le réalisateur; les réponses portent sur l’adaptation du scénario, la mise en scène et la production.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2019.json"
       },
       "dragonBallRelevance": "Directe : conception et réalisation du film Dragon Ball Super: Broly.",
       "status": "summary-written-source-not-print-collated",
@@ -701,7 +722,8 @@
         "detectedQuestionBlocks": 3,
         "detectedAnswerBlocks": 3,
         "formatNote": "Les deux premières réponses concernent la méthode de Toriyama; la troisième, le développement de Broly, Cheelai et Lemo pour le film.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2018.json"
       },
       "dragonBallRelevance": "Directe : échange avec le scénariste et le dessinateur de Dragon Ball Super sur la création d’une histoire, les personnages et le film Broly.",
       "status": "summary-written-source-not-print-collated",
@@ -729,7 +751,8 @@
         "detectedQuestionBlocks": 2,
         "detectedAnswerBlocks": 2,
         "formatNote": "Extrait Q/R reproduit dans le billet; la transcription complète de l’entretien d’origine n’y figure pas.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2018.json"
       },
       "dragonBallRelevance": "Directe : conception de l’antagoniste Android 21 pour le jeu Dragon Ball FighterZ.",
       "status": "summary-written-partial-qa-source-not-collated",
@@ -763,7 +786,8 @@
           "forumContent": false
         },
         "formatNote": "Entretien externe conjoint. Kanzenshuu en résume les thèmes et reproduit un extrait; la traduction officielle complète est proposée par Viz.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2018.json"
       },
       "dragonBallRelevance": "Directe : témoignages d’Akira Toriyama sur sa carrière et ses méthodes de manga, dans une conversation conjointe avec Takehiko Inoue.",
       "status": "summary-based-on-kanzenshuu-post-external-full-interview",
@@ -771,3 +795,4 @@
     }
   ]
 }
+

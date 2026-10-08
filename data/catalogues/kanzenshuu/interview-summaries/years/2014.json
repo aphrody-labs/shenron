@@ -26,7 +26,8 @@
         "questionAnswerCount": 6,
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 6,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/katsura-akira-premium-talk.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -54,7 +55,8 @@
         "detectedQuestionBlocks": 6,
         "detectedAnswerBlocks": 5,
         "formatNote": "Blocs réponse locaux=5 vs index=6. Comptage Q/R distinct (6/5); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2014-kozo-shioya-unsho-ishizuka-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
@@ -621,7 +623,8 @@
         "videoUrl": "https://www.youtube.com/watch?v=S1T5Jl92qkk",
         "questionAnswerCount": null,
         "formatNote": "Extrait vidéo d’interview intégré à un récapitulatif; transcription absente du billet.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2014.json"
       },
       "dragonBallRelevance": "Directe : comédien anglophone de Dragon Ball Z et segment réalisé à la première nord-américaine de Battle of Gods.",
       "status": "summary-written-video-transcript-pending",
@@ -645,7 +648,8 @@
         "sourceUrl": "https://www.kanzenshuu.com/2014/06/11/dragon-ball-xenoverse-e3-impressions-report/",
         "questionAnswerCount": null,
         "formatNote": "Compte rendu d’un entretien; ni questions exactes ni réponses intégrales ne sont reproduites.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2014.json"
       },
       "dragonBallRelevance": "Directe : développement du jeu Dragon Ball XENOVERSE.",
       "status": "summary-written-source-post-only",
@@ -653,3 +657,4 @@
     }
   ]
 }
+

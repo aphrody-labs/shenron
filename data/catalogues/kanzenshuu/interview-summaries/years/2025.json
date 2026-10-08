@@ -31,7 +31,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
         "questionAnswerCount": 0,
         "formatNote": "Long article avec intertitres et réponses de Iyoku insérées dans un récit journalistique, sans balisage Q/R. Les affirmations sur la conception et la diffusion sont celles d'Akio Iyoku, producteur exécutif; seules les idées qu'il attribue explicitement à Toriyama sont indirectement rapportées comme telles.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/mantanweb-daima-akiyo-iyoku-1.html"
       },
       "dragonBallRelevance": "Directe : témoignage du producteur exécutif sur le développement, les objectifs de public, la place temporelle et la diffusion de Daima; les propos de Iyoku sont séparés de ceux qu'il rapporte de Toriyama.",
       "status": "summary-written-print-source-not-collated",
@@ -57,7 +58,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
         "questionAnswerCount": 0,
         "formatNote": "Postface autobiographique, et non entretien question-réponse. L'index Kanzenshuu classe cette entrée parmi les interviews; les propos concernent la genèse éditoriale d'un one-shot et la répartition du travail entre Toriyama et Toyotarō.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-24-toyotaro-afterword.html"
       },
       "dragonBallRelevance": "Directe : documente l'origine d'un récit de Dragon Ball Super et le partage des rôles entre le texte initial de Toriyama et son adaptation en manga par Toyotarō.",
       "status": "summary-written-print-source-not-collated",

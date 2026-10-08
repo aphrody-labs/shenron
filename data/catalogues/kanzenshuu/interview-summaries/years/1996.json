@@ -23,7 +23,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/wired-japan-1997-akira-toriyama-interview/",
         "questionAnswerCount": null,
         "formatNote": "Transcription sous forme de paragraphes d'entretien, sans balisage standard des questions.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/wired-japan-1997-akira-toriyama-interview.html"
       },
       "dragonBallRelevance": "Directe : regard de Toriyama sur le Goku du manga et son adaptation en anime; contexte de création et philosophie éditoriale.",
       "status": "summary-written-print-source-not-collated",
@@ -54,7 +55,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-7-shenlong-times/",
         "questionAnswerCount": 8,
         "formatNote": "Les huit blocs question-réponse détectés comprennent l'interview principale, une conversation éditoriale avec Katsura et des encadrés/panneaux de commentaire de Toriyama; ils ne sont pas huit questions biographiques homogènes.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-7-shenlong-times.html"
       },
       "dragonBallRelevance": "Directe : participation de Toriyama à GT, recommandation de l'anime, fin de ses illustrations pour Dragon Ball et dernière image du manga; point de vue éditorial daté de 1996.",
       "status": "summary-written-print-source-not-collated",

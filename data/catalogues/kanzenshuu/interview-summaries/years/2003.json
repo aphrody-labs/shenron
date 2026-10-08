@@ -32,7 +32,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/son-goku-densetsu-toriyama-x-nakatsuru/",
         "questionAnswerCount": 31,
         "formatNote": "Le HTML acquis contient 32 blocs question et 31 blocs réponse; le compte résumé correspond aux 31 paires complètes, tandis que l'index compte les 32 questions balisées.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/son-goku-densetsu-toriyama-x-nakatsuru.html"
       },
       "dragonBallRelevance": "Directe : origines, titre DBZ, dessin, continuité éditoriale entre manga et anime, personnages, Bardock, inspirations et méthode de sérialisation.",
       "status": "summary-written-print-source-not-collated",
@@ -60,7 +61,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-dragon-ball-toriyama/",
         "questionAnswerCount": null,
         "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans balisage standard des questions.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-landmark-dragon-ball-toriyama.html"
       },
       "dragonBallRelevance": "Contexte direct de la transition Dr. Slump–Dragon Ball et de la genèse éditoriale; biographie générale pour le reste.",
       "status": "summary-written-print-source-not-collated",

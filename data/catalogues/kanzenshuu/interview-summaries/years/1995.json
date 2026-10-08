@@ -34,7 +34,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/weekly-playboy-1995-5-akira-toriyama-exclusive-interview/",
         "questionAnswerCount": 0,
         "formatNote": "Reportage-entretien narratif sans balisage de questions-réponses; le texte acquis contient l'entretien complet et des commentaires journalistiques, attribués séparément dans la synthèse.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-playboy-1995-5-akira-toriyama-exclusive-interview.html"
       },
       "dragonBallRelevance": "Directe pour les circonstances de création et de sérialisation de Dragon Ball; source biographique et témoignage de Toriyama sur ses méthodes et motivations.",
       "status": "summary-written-print-source-not-collated",
@@ -60,7 +61,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-1-akira-toriyama-super-interview/",
         "questionAnswerCount": 21,
         "formatNote": "Le HTML contient 22 blocs question et 21 blocs réponse; la fiche compte les paires complètes et conserve le bloc de question sans réponse balisée à collationner sur l'imprimé.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-1-akira-toriyama-super-interview.html"
       },
       "dragonBallRelevance": "Directe : mise en scène des combats, dessin, conception de personnages et de machines, évolution graphique de Dragon Ball.",
       "status": "summary-written-print-source-not-collated",
@@ -118,7 +120,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-2-akira-toriyama-super-interview/",
         "questionAnswerCount": 14,
         "formatNote": "Le HTML contient 15 blocs question et 14 blocs réponse; le compte de la fiche correspond aux paires complètes.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-2-akira-toriyama-super-interview.html"
       },
       "dragonBallRelevance": "Directe : genèse, influences, transformations de la structure du récit, personnages et méthode de sérialisation.",
       "status": "summary-written-print-source-not-collated",
@@ -174,7 +177,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-3-akira-toriyama-super-interview/",
         "questionAnswerCount": 24,
         "formatNote": "Le HTML contient 25 blocs question et 24 blocs réponse; le compte de la fiche correspond aux paires complètes.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-3-akira-toriyama-super-interview.html"
       },
       "dragonBallRelevance": "Directe : contribution à l'anime Dragon Ball, casting vocal, Gregory, rendu des scènes d'action et influence de l'animation sur les illustrations du manga.",
       "status": "summary-written-print-source-not-collated",
@@ -234,7 +238,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-4-akira-toriyama-super-interview/",
         "questionAnswerCount": 14,
         "formatNote": "Le HTML contient 15 blocs question et 14 blocs réponse; le compte de la fiche correspond aux paires complètes.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-4-akira-toriyama-super-interview.html"
       },
       "dragonBallRelevance": "Directe : cohérence de l'univers, Namek, l'au-delà, déplacements, origine de certains éléments et création des techniques.",
       "status": "summary-written-print-source-not-collated",
@@ -290,7 +295,8 @@
         "date": "1995-11-04",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-5-akira-toriyama-super-interview/",
         "questionAnswerCount": 27,
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-5-akira-toriyama-super-interview.html"
       },
       "dragonBallRelevance": "Directe : réception des lecteurs, Vegeta, interprétation vocale, décisions anime, couleurs et conception des supports dérivés.",
       "status": "summary-written-print-source-not-collated",
@@ -351,7 +357,8 @@
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-6-akira-toriyama-super-interview/",
         "questionAnswerCount": 26,
         "formatNote": "Le HTML contient 27 blocs question et 26 blocs réponse; le compte de la fiche correspond aux paires complètes.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-6-akira-toriyama-super-interview.html"
       },
       "dragonBallRelevance": "Directe : continuité des films selon Toriyama, son travail sur ceux-ci, Super Saiyan, les fusions et la création des personnages.",
       "status": "summary-written-print-source-not-collated",

@@ -27,7 +27,8 @@
         "detectedQuestionBlocks": 4,
         "detectedAnswerBlocks": 8,
         "formatNote": "Blocs réponse locaux=8 vs index=4. Comptage Q/R distinct (4/8); vérifier structure imbriquée ou question omise.",
-        "forumContent": false
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview.html"
       },
       "dragonBallRelevance": "Directe: entretien ou témoignage portant sur Dragon Ball, sa production, son adaptation ou sa réception.",
       "status": "summary-written-source-not-print-collated",
