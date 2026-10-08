@@ -245,6 +245,7 @@ export function UnifiedCanvasShowcase() {
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-400 font-mono">Backend GPU :</span>
           <select
+            aria-label="Backend GPU"
             value={preference}
             onChange={(e) => setPreference(e.target.value as CanvasBackendPreference)}
             className="bg-slate-900 border border-dbz-border text-xs rounded px-2.5 py-1 text-gray-200 font-mono focus:outline-none focus:border-dbz-orange"
