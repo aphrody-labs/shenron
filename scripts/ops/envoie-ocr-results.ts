@@ -4,53 +4,46 @@
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { inspectOcrResults } from "./_ocr-results-db";
-import { runAphrodyCli, type CliResult } from "../../packages/pipeline/src/aphrody/cli.ts";
+import {
+  runAphrodyCli,
+  type CliResult,
+  type NativeCommandExecutor,
+} from "../../packages/pipeline/src/aphrody/cli.ts";
 
-const args = process.argv.slice(2);
-function option(name: string, fallback?: string): string | undefined {
-  const index = args.indexOf(name);
-  if (index === -1) return fallback;
-  if (args.indexOf(name, index + 1) !== -1) throw new Error(`${name} may only be specified once`);
-  const value = args[index + 1];
-  if (!value || value.startsWith("--")) throw new Error(`${name} requires a value`);
-  return value;
-}
-
-const allowedOptions = new Set(["--snapshot", "--host", "--repository"]);
-for (let index = 0; index < args.length; index++) {
-  const name = args[index]!;
-  if (!allowedOptions.has(name)) throw new Error(`unknown argument: ${name}`);
-  if (!args[index + 1] || args[index + 1]!.startsWith("--"))
-    throw new Error(`${name} requires a value`);
-  index++;
-}
-const snapshot = option("--snapshot");
-
-if (!snapshot) {
-  throw new Error(
-    "usage: bun envoie-ocr-results.ts --snapshot <results.snapshot.db> [--host dbfr] [--repository shenron]",
-  );
-}
-const localPath = resolve(snapshot);
-const localReport = inspectOcrResults(localPath, "quick");
-if (!localReport.ok) {
-  throw new Error(
-    `OCR snapshot rejected before transfer: ${localReport.messages.slice(0, 3).join(" | ")}`,
-  );
+export interface OcrResultsTransferOptions {
+  host?: string;
+  repository?: string;
+  /** In-process command seam for tests; production always uses Aphrody's native FFI. */
+  nativeExecutor?: NativeCommandExecutor;
 }
 
-const host = option("--host", "dbfr")!;
-if (host !== "dbfr" && host !== "vps") throw new Error("--host must be dbfr or vps");
-const repository = option("--repository", "shenron")!;
-if (
-  repository.startsWith("/") ||
-  !/^[A-Za-z0-9._/-]+$/.test(repository) ||
-  repository.split("/").includes("..")
-) {
-  throw new Error("--repository must be a relative path without parent traversal");
-}
-const bin = process.env.APHRODY_SSH_BIN?.trim() || "aphrody-ssh";
-const cli = (sshArgs: string[]) => runAphrodyCli(sshArgs, { bin, timeoutMs: 10 * 60_000 });
+export async function transferOcrResults(
+  snapshot: string,
+  options: OcrResultsTransferOptions = {},
+): Promise<string> {
+  const localPath = resolve(snapshot);
+  const localReport = inspectOcrResults(localPath, "quick");
+  if (!localReport.ok) {
+    throw new Error(
+      `OCR snapshot rejected before transfer: ${localReport.messages.slice(0, 3).join(" | ")}`,
+    );
+  }
+
+  const host = options.host ?? "dbfr";
+  if (host !== "dbfr" && host !== "vps") throw new Error("--host must be dbfr or vps");
+  const repository = options.repository ?? "shenron";
+  if (
+    repository.startsWith("/") ||
+    !/^[A-Za-z0-9._/-]+$/.test(repository) ||
+    repository.split("/").includes("..")
+  ) {
+    throw new Error("--repository must be a relative path without parent traversal");
+  }
+  const cli = (sshArgs: string[]) =>
+    runAphrodyCli(sshArgs, {
+      timeoutMs: 10 * 60_000,
+      ...(options.nativeExecutor ? { nativeExecutor: options.nativeExecutor } : {}),
+    });
 
 function checked(
   result: CliResult,
@@ -98,4 +91,46 @@ const received = checked(
   await cli(["exec", "--host", host, "--cmd", receiverCommand]),
   "atomic OCR reception",
 );
-process.stdout.write(received.stdout);
+  return received.stdout;
+}
+
+function option(args: string[], name: string, fallback?: string): string | undefined {
+  const index = args.indexOf(name);
+  if (index === -1) return fallback;
+  if (args.indexOf(name, index + 1) !== -1) throw new Error(`${name} may only be specified once`);
+  const value = args[index + 1];
+  if (!value || value.startsWith("--")) throw new Error(`${name} requires a value`);
+  return value;
+}
+
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
+  const allowedOptions = new Set(["--snapshot", "--host", "--repository"]);
+  for (let index = 0; index < args.length; index++) {
+    const name = args[index]!;
+    if (!allowedOptions.has(name)) throw new Error(`unknown argument: ${name}`);
+    if (!args[index + 1] || args[index + 1]!.startsWith("--"))
+      throw new Error(`${name} requires a value`);
+    index++;
+  }
+  const snapshot = option(args, "--snapshot");
+  if (!snapshot) {
+    throw new Error(
+      "usage: bun envoie-ocr-results.ts --snapshot <results.snapshot.db> [--host dbfr] [--repository shenron]",
+    );
+  }
+  const stdout = await transferOcrResults(snapshot, {
+    host: option(args, "--host", "dbfr"),
+    repository: option(args, "--repository", "shenron"),
+  });
+  process.stdout.write(stdout);
+}
+
+if (import.meta.main) {
+  try {
+    await main();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
+}
