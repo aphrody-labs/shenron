@@ -97,7 +97,7 @@ export function siteBuildEnv(envText: string): Record<string, string> {
   return { SITE_BUILD_DATABASE_URL: database, ...(cdn ? { NEXT_PUBLIC_CDN_URL: cdn } : {}) };
 }
 
-function bundleSite(commit: string): string {
+function bundleSite(commit: string, systemdDir?: string): string {
   step("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
   const buildEnv = siteBuildEnv(envFile.stdout.toString());
@@ -105,7 +105,13 @@ function bundleSite(commit: string): string {
   step("site", ["rm", "-rf", release, `${release}.staging`]);
   step(
     "site + emballage",
-    ["bun", "scripts/build/build-site-external.ts", "--release-dir", release],
+    [
+      "bun",
+      "scripts/build/build-site-external.ts",
+      "--release-dir",
+      release,
+      ...(systemdDir ? ["--systemd-dir", systemdDir] : []),
+    ],
     buildEnv,
   );
   return release;
@@ -121,7 +127,7 @@ function build(): void {
   const commit = syncOrigin();
   step("bun install", ["bun", "install", "--frozen-lockfile"]);
   cargoProducts();
-  assemble(bundleSite(commit), commit);
+  assemble(bundleSite(commit, join(CURRENT, "systemd")), commit);
 }
 
 /** Étape cargo seule, sur le vps : la sortie est relayée vers dbfr par `release.ts`. */

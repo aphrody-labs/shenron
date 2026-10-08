@@ -10,8 +10,8 @@
  * SORTIE (défaut `artifacts/site-build.tar.gz`) : `artifact-manifest.json` + `build/`.
  * `--release-dir` écrit, depuis le commit propre courant, le répertoire `shenron/` d'un bundle :
  * `source.tar.gz` (git archive + bot compilé en `apps/bot/dist/shenron` + serveur MCP en
- * `bin/shenron-mcp`, mémoire native en `bin/libshenron_ffi.so`), `site-build.tar.gz`, `systemd/shenron-{site,bot,mcp-http}.service` (rendus
- * par le CLI hôte d'Aphrody), `nginx/shenron.conf`,
+ * `bin/shenron-mcp`, mémoire native en `bin/libshenron_ffi.so`), `site-build.tar.gz`, `systemd/shenron-{site,bot,mcp-http}.service` (copiés d'un
+ * roster explicitement fourni ou rendus par le CLI hôte d'Aphrody), `nginx/shenron.conf`,
  * `release.json` (`repository: "shenron"`, `sourceLayout: "legacy"`) et `SHA256SUMS`.
  * Préalables : `bun scripts/build/bot.ts`, `cargo build --release -p shenron-mcp`, `-p shenron-ffi --lib` et le build
  * Next (`NEXT_DIST_DIR=.next-build`).
@@ -23,12 +23,13 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 import { artifactPath, artifactStore } from "./site-artifact-paths.ts";
+import { readInstalledReleaseUnits, RELEASE_SERVICES } from "./systemd-units.ts";
 
 const USAGE =
-  "usage: package-site-artifact.ts [SORTIE] [--release-dir DOSSIER] [--target vps|dbfr]";
+  "usage: package-site-artifact.ts [SORTIE] [--release-dir DOSSIER] [--target vps|dbfr] [--systemd-dir DOSSIER]";
 const TARGETS = ["vps", "dbfr"] as const;
 // Ordre du roster du catalogue Infra (services shenron sous /srv/shenron/current).
-const SERVICES = ["shenron-site", "shenron-bot", "shenron-mcp-http"] as const;
+const SERVICES = RELEASE_SERVICES;
 // Vhosts installés par l'Infra depuis `config/host/nginx/shenron` (conf.d séparés).
 const PUBLIC_HOSTS = [
   "dragonballfr.com",
@@ -63,6 +64,7 @@ function option(name: string): string | undefined {
   return value;
 }
 const releaseArg = option("--release-dir");
+const systemdDir = option("--systemd-dir");
 const target = option("--target") ?? "vps";
 if (!(TARGETS as readonly string[]).includes(target))
   throw new Error(`--target vps|dbfr\n${USAGE}`);
@@ -184,10 +186,11 @@ if (releaseArg !== undefined) {
     run(["tar", "-czf", join(shenron, "source.tar.gz"), "-C", source, "."]);
     await rm(source, { recursive: true });
     await Bun.write(join(shenron, "site-build.tar.gz"), Bun.file(output));
+    const installedUnits = systemdDir ? await readInstalledReleaseUnits(systemdDir) : undefined;
     for (const service of SERVICES) {
       await Bun.write(
         join(shenron, "systemd", `${service}.service`),
-        composeUnit(`${service}.service`),
+        installedUnits?.get(service) ?? composeUnit(`${service}.service`),
       );
     }
     // Les vhosts Shenron sont des fichiers conf.d installés par l'Infra (00-shenron.conf,
