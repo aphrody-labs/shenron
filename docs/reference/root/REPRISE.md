@@ -36,5 +36,10 @@
    * Gestionnaire unifié `scripts/ops/unified-secrets.ts` (`just secrets-*`) fédérant 90+ variables sur 7 catégories.
    * Déploiement serverless prêt à l'emploi (`.env.serverless`, Vercel, Cloudflare, Neon, Docker serverless).
    * Zéro fuite de secret dans Git, permissions 0600 et audit de sécurité masqué.
+9. **Mission Nocturne Autonome /goal pour le Codex d'Omar & Déploiement Discord** :
+   * Pack complet sous `deploy/connectors/omar/GOAL-NOCTURNE.md` détaillant les 6 phases de travail nocturne.
+   * Transmission et notification sur Discord (`#prompts` et `#admin-console`) avec pièces jointes intégrales.
+   * Synchronisation et validation des 6 quality gates monorepo.
+
 
 
