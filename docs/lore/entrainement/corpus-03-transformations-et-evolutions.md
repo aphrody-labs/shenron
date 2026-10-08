@@ -4,13 +4,13 @@ Ce dossier consigne 50 études doctrinales approfondies sur les métamorphoses, 
 
 ---
 
-### Q161 : La Physiologie de l'Oozaru (Grand Singe) et le Rayonnement Bruits
-- **Question :** Quel est le mécanisme astronomique et hormonal exact déclenchant la transformation en Oozaru chez les Saiyans, et quel multiplicateur confère-t-elle ?
+### Q161 : Les Ondes Bruits et la Transformation en Ōzaru
+- **Question :** Quel mécanisme de transformation Vegeta décrit-il pour l'Ōzaru, et quel multiplicateur est attribué à cette forme ?
 - **Sources :** Manga Tome 20, Chapitre 232 ; *Daizenshuu 4*, p. 43 ; *Daizenshuu 7*, p. 129.
-- **Auto-critique :** Ne pas confondre les termes de doublage avec le terme officiel japonais : *Bruits Waves* (*Burūtsu-ha* / Ondes Bruits).
+- **Auto-critique :** Séparer les éléments explicitement décrits dans le manga des mécanismes physiologiques que le récit ne précise pas.
 - **Réponse Doctrinale :**  
   La métamorphose en singe géant (*Ōzaru* / 大猿) nécessite la présence d'une queue de singe intacte et l'absorption oculaire de rayons lumineux lunaires. Lorsque la pleine lune réfléchit la lumière du soleil, elle émet un rayonnement spécifique appelé **ondes Bruits** (*Burūtsu-ha*).  
-  Dès que la rétine du Saiyan absorbe une quantité de ces ondes atteignant ou dépassant le seuil critique de **17 000 000 de Zeno** (*Zenō*), une glande située à la base de sa queue s'active instantanément, provoquant une mutation cellulaire et une hypertrophie squelettique. Selon Vegeta (Chapitre 232), cette transformation décuple sa puissance brute : **multiplicateur $\times 10$**.
+  Lorsque le Saiyan absorbe au moins **17 000 000 de zeno** par les yeux, une réaction de la queue déclenche la transformation en Ōzaru. Le récit ne décrit pas cette réaction comme hormonale et ne nomme aucune glande ni mutation cellulaire précise. Le *Daizenshuu 7* attribue à la forme un facteur de puissance **×10**.
 
 ---
 
