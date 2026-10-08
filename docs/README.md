@@ -14,6 +14,7 @@ the root `AGENTS.md`.
 | SVG pipeline                                                 | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md)                                                                                      |
 | Environment variables                                        | [`operations/ENV.md`](operations/ENV.md)                                                                                                            |
 | RAG and LLM compute (compute host, databases, tunnels)       | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
+| SSH WireGuard (VPS, dbfr, Windows, compte Omar)              | [`operations/ssh-wireguard.md`](operations/ssh-wireguard.md)                                                                                       |
 | Development workstation                                      | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md)                                                                                                |
 | Rust development (crates, gates, CI)                         | [`development/rust.md`](development/rust.md)                                                                                                        |
 | Développement distant (VPS, VS Code, WSL propre, sauvegarde) | [`development/remote-dev.md`](development/remote-dev.md) |

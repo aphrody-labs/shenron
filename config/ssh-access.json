@@ -1,0 +1,59 @@
+{
+  "wireguard": {
+    "cidr": "10.200.77.0/24",
+    "interface": "wg1"
+  },
+  "hosts": {
+    "vps-wg": {
+      "address": "10.200.77.1",
+      "user": "omar",
+      "port": 22,
+      "proxyJump": "dbfr"
+    },
+    "dbfr-wg": {
+      "address": "10.200.77.3",
+      "user": "omar",
+      "port": 22,
+      "proxyJump": "dbfr"
+    },
+    "omar-pc": {
+      "address": "10.200.77.10",
+      "user": "omar",
+      "port": 22,
+      "proxyJump": "dbfr"
+    },
+    "aphro-pc": {
+      "address": "10.200.77.4",
+      "user": "omara",
+      "port": 22,
+      "proxyJump": "dbfr"
+    }
+  },
+  "serverToServer": {
+    "vpsToDbfr": {
+      "identityFile": "/home/omar/.ssh/omar_vps_to_dbfr",
+      "publicKeyFingerprint": "SHA256:wo91GqrROYwIqeyAUeoXeqFMxB8l+bnsk3cu0g3JpSk",
+      "verified": true
+    },
+    "dbfrToVps": {
+      "identityFile": "/home/omar/.ssh/omar_dbfr_to_vps",
+      "publicKeyFingerprint": "SHA256:LqKK8LCBlbQ20vACxjl1ybAZOpMzslIqeHn7e2Rk4FM",
+      "verified": true
+    }
+  },
+  "forwarding": [
+    {
+      "from": "10.200.77.3",
+      "to": "10.200.77.10",
+      "port": 22,
+      "protocol": "tcp",
+      "reason": "SSH bastion path from the Shenron WSL host through dbfr"
+    }
+  ],
+  "pending": {
+    "omarPublicKey": true,
+    "shenronWindowsOpenSsh": true,
+    "omarWindowsOpenSsh": true,
+    "omarWindowsTunnelPeer": true
+  }
+}
