@@ -576,7 +576,7 @@ export async function chercherDansPlanches(
 		compte AS (
 			SELECT count(*)::int AS total, count(DISTINCT id)::int AS databook_count FROM trouvees
 		)
-		SELECT t.*, c.total, c.fiches
+		SELECT t.*, c.total, c.databook_count
 		FROM trouvees t CROSS JOIN compte c
 		ORDER BY t.title, t.plate_number
 		LIMIT ${limit}

@@ -69,7 +69,13 @@ const mask = (text: string) => text.replace(/postgres(ql)?:\/\/\S+/g, "postgres:
 
 async function upload(host = HOST): Promise<void> {
   const b64 = Buffer.from(await Bun.file(HOST_SCRIPT).text()).toString("base64");
-  const r = ssh(`echo ${b64} | base64 -d > ${REMOTE}`, 300, host);
+  // `aphrody-infra ssh exec` truncates long commands (~8 KB): send the script in chunks.
+  const parts = b64.match(/.{1,3000}/g) ?? [];
+  for (const [i, part] of parts.entries()) {
+    const r = ssh(`echo ${part} ${i === 0 ? ">" : ">>"} ${REMOTE}.b64`, 300, host);
+    if (r.code !== 0) throw new Error(`envoi du script hôte sur ${host} : ${r.out}`);
+  }
+  const r = ssh(`base64 -d ${REMOTE}.b64 > ${REMOTE} && rm -f ${REMOTE}.b64`, 300, host);
   if (r.code !== 0) throw new Error(`envoi du script hôte sur ${host} : ${r.out}`);
 }
 
@@ -130,8 +136,8 @@ async function detached(host: string, command: string, log: string): Promise<voi
   if (start.code !== 0) throw new Error(`lancement sur ${host} : ${start.out}`);
 }
 
-const git = (...args: string[]) =>
-  Bun.spawnSync(["git", ...args], { stdout: "pipe", stderr: "pipe" });
+const git = (...gitArgs: string[]) =>
+  Bun.spawnSync(["git", ...gitArgs], { stdout: "pipe", stderr: "pipe" });
 
 /** Build réparti : cargo sur le vps, bot + site sur dbfr, relais par WSL, assemblage sur le vps. */
 async function buildOnDbfr(): Promise<string> {
@@ -391,7 +397,9 @@ async function koharuWasmProbe(): Promise<string[]> {
   return failures;
 }
 
-if (import.meta.main) {
+if (import.meta.main && (args.has("--help") || args.has("-h"))) {
+  console.log("bun scripts/ops/release.ts [--cdn-only | --no-deploy] [--build-host vps|dbfr|auto]");
+} else if (import.meta.main) {
   let release = "";
   for (const step of releasePlan(args)) {
     if (step === "build") {
