@@ -159,6 +159,7 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
 | `fusion-potara-vs-metamol-puissance` | Puissance Vegetto (Potara) vs Gogeta (Métamol) | lore | `EXTENSION_OFFICIELLE` | 75 |
 | `kid-buu-vs-buuhan` | Majin Buu Pur (Kid Buu) vs Buuhan | lore | `CANON_ABSOLU` | 100 |
 | `goku-ssj3-vs-ultimate-gohan` | Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan) | lore | `CANON_ABSOLU` | 100 |
+| `cell-parfait-vs-gohan-ssj2` | Cell Parfait (Super Perfect Cell) vs Son Gohan Super Saiyan 2 | lore | `CANON_ABSOLU` | 100 |
 | `puissance-goku-ssj1-namek` | Puissance de Goku SSJ1 sur Namek (150 000 000 BP) | lore | `EXTENSION_OFFICIELLE` | 75 |
 | `arret-scouter-namek-toriyama` | Abandon des niveaux de puissance chiffrés (Scouters) après Namek | lore | `CANON_ABSOLU` | 100 |
 | `beerus-whis` | Beerus, Whis et la hiérarchie divine | character | `CANON_SUPERVISE` | 98 |
@@ -572,6 +573,18 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
   - Film DBZ 13 : L'Attaque du Dragon
 - Mots-clés : goku ssj3 vs gohan ultime, goku ssj3 vs ultimate gohan, goku ssj3 plus fort que gohan, goku ssj3 plus fort que gohan ultime, goku ssj3 plus fort qu'ultimate gohan, ultimate gohan vs goku ssj3, gohan ultime vs goku ssj3, goku super saiyan 3 vs gohan, goku super saiyan 3 vs gohan ultime, goku super saiyan 3 vs ultimate gohan, qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan, qui est le plus fort dans la saga buu entre goku ssj3 et gohan ultime, qui est le plus fort dans la saga buu entre goku super saiyan 3 et gohan dans sa derniere forme (ultimate gohan), qui est le plus fort entre goku super saiyan 3 et gohan dans sa derniere forme, qui est le plus fort entre goku ssj3 et ultimate gohan, goku ssj3 ou gohan ultime, goku ssj3 ou ultimate gohan
 - Page du site : https://dragonballfr.com/wiki/canon?q=Son%20Goku%20Super%20Saiyan%203%20vs%20Gohan%20Ultime%20(Ultimate%20Gohan)
+
+### Cell Parfait (Super Perfect Cell) vs Son Gohan Super Saiyan 2
+
+- Identifiant : `cell-parfait-vs-gohan-ssj2` · catégorie lore · rang `CANON_ABSOLU` · score 100
+- Verdict : Cell Parfait (la forme avec des éclairs) est le plus fort de la saga Cell, devant Gohan SSJ2.
+- Explication : Selon les appellations officielles de Dragon Ball, il convient de distinguer 'Cell forme parfaite' (après absorption de C-18) et 'Cell Parfait' (forme ressuscitée avec éclairs issue du Zenkai après son explosion). Doté de l'aura du Super Saiyan 2 et du Déplacement Instantané, Cell Parfait représente l'apogée de puissance de l'arc : il brise le bras gauche de Gohan d'une seule attaque, réduit son Ki de moitié et accule Gohan lors du choc des Kamehamehas, n'étant submergé par le Père-Fils Kamehameha que grâce au soutien spirituel de Goku et à la diversion décisive de Vegeta.
+- Sources :
+  - Manga Dragon Ball Tome 35 (Chapitres 413-416)
+  - Daizenshuu 2 : Story Guide
+  - Daizenshuu 7 : Le Grand Dictionnaire
+- Mots-clés : cell parfait vs gohan ssj2, cell parfait ou gohan ssj2, cell parfait plus fort que gohan, cell parfait plus fort que gohan ssj2, super perfect cell vs gohan ssj2, super perfect cell ou gohan ssj2, qui est le plus fort dans la saga cell entre cell dans sa derniere forme et gohan ssj2, qui est le plus fort dans la saga cell entre cell et gohan, qui est le plus fort dans la saga cell entre cell forme parfaite et gohan ssj2, qui est le plus fort entre cell dans sa derniere forme et gohan ssj2, qui est le plus fort entre cell parfait et gohan ssj2, qui est le plus fort entre cell et gohan ssj2, cell forme parfaite vs cell parfait, cell parfait ou cell forme parfaite, plus fort saga cell, qui est le plus fort de la saga cell
+- Page du site : https://dragonballfr.com/wiki/canon?q=Cell%20Parfait%20vs%20Son%20Gohan%20Super%20Saiyan%202
 
 ### Puissance de Goku SSJ1 sur Namek (150 000 000 BP)
 

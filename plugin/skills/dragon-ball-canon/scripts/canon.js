@@ -882,6 +882,38 @@ var CANON_DATABASE = [
     ]
   },
   {
+    id: "cell-parfait-vs-gohan-ssj2",
+    title: "Cell Parfait (Super Perfect Cell) vs Son Gohan Super Saiyan 2",
+    category: "lore",
+    tier: "CANON_ABSOLU",
+    score: 100,
+    keywords: [
+      "cell parfait vs gohan ssj2",
+      "cell parfait ou gohan ssj2",
+      "cell parfait plus fort que gohan",
+      "cell parfait plus fort que gohan ssj2",
+      "super perfect cell vs gohan ssj2",
+      "super perfect cell ou gohan ssj2",
+      "qui est le plus fort dans la saga cell entre cell dans sa derniere forme et gohan ssj2",
+      "qui est le plus fort dans la saga cell entre cell et gohan",
+      "qui est le plus fort dans la saga cell entre cell forme parfaite et gohan ssj2",
+      "qui est le plus fort entre cell dans sa derniere forme et gohan ssj2",
+      "qui est le plus fort entre cell parfait et gohan ssj2",
+      "qui est le plus fort entre cell et gohan ssj2",
+      "cell forme parfaite vs cell parfait",
+      "cell parfait ou cell forme parfaite",
+      "plus fort saga cell",
+      "qui est le plus fort de la saga cell"
+    ],
+    verdict: "Cell Parfait (la forme avec des \xE9clairs) est le plus fort de la saga Cell, devant Gohan SSJ2.",
+    explanation: "Selon les appellations officielles de Dragon Ball, il convient de distinguer 'Cell forme parfaite' (apr\xE8s absorption de C-18) et 'Cell Parfait' (forme ressuscit\xE9e avec \xE9clairs issue du Zenkai apr\xE8s son explosion). Dot\xE9 de l'aura du Super Saiyan 2 et du D\xE9placement Instantan\xE9, Cell Parfait repr\xE9sente l'apog\xE9e de puissance de l'arc : il brise le bras gauche de Gohan d'une seule attaque, r\xE9duit son Ki de moiti\xE9 et accule Gohan lors du choc des Kamehamehas, n'\xE9tant submerg\xE9 par le P\xE8re-Fils Kamehameha que gr\xE2ce au soutien spirituel de Goku et \xE0 la diversion d\xE9cisive de Vegeta.",
+    sources: [
+      "Manga Dragon Ball Tome 35 (Chapitres 413-416)",
+      "Daizenshuu 2 : Story Guide",
+      "Daizenshuu 7 : Le Grand Dictionnaire"
+    ]
+  },
+  {
     id: "puissance-goku-ssj1-namek",
     title: "Puissance de Goku SSJ1 sur Namek (150 000 000 BP)",
     category: "lore",

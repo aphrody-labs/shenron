@@ -153,6 +153,12 @@ Chiffres du support cité seulement ; ne pas les extrapoler hors de leur context
 | Son Goku Super Saiyan 3 vs Gohan Ultime | **Son Goku SSJ3** est plus fort que Gohan Ultime. Guerrier Z suprême affrontant Kid Buu en duel et triomphant du mal ultime, surpassant Gohan à travers tous les médias (dont le film 13 face à Hildegarn). | Manga DB Tomes 41-42, Daizenshuu 2, Film 13 | `CANON_ABSOLU` |
 | Boucles Potalas vs Danse Métamole | **Potalas (Vegetto)** supérieure à la Danse Métamole. Pas d'égalisation de ki vers le bas, pas de restriction de taille, et bonus de rivalité. | Manga DB Ch. 501 & 504, Daizenshuu 7 p. 182 | `CANON_ABSOLU` |
 
+## Hiérarchie des forces de la saga Cell
+
+| Comparaison | Vainqueur / Verdict | Source | Rang Canon |
+| --- | --- | --- | --- |
+| Cell Parfait (avec éclairs) vs Son Gohan Super Saiyan 2 | **Cell Parfait** est le plus fort de la saga Cell. Forme ressuscitée avec éclairs (Zenkai), brise le bras de Gohan, réduit son Ki de moitié et domine le choc des Kamehamehas jusqu'à la diversion décisive de Vegeta. Appellations officielles : *Cell forme parfaite* (après C-18) vs *Cell Parfait* (avec éclairs). | Manga DB Tome 35 Ch. 413-416, Daizenshuu 2 p. 138-143, Daizenshuu 7 p. 91 | `CANON_ABSOLU` |
+
 ## Économie (zénis)
 
 Parité : 1 zéni ≈ 1 yen — Dragon Ball Super Exciting Guide — Character Volume, planche 93 (https://dragonballfr.com/wiki/databooks/6#planche-93).

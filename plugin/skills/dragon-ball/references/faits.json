@@ -1212,6 +1212,17 @@
     "rang_canon": "CANON_ABSOLU"
    }
   ],
+  "hierarchie_saga_cell": [
+   {
+    "comparaison": "Cell Parfait (avec éclairs) vs Son Gohan Super Saiyan 2",
+    "vainqueur": "Cell Parfait (forme avec éclairs)",
+    "verdict": "Cell Parfait (la forme avec des éclairs) est le plus fort de la saga Cell, devant Gohan SSJ2.",
+    "appellations_officielles": "Cell forme parfaite (après absorption de C-18) vs Cell Parfait (ressuscité avec éclairs SSJ2)",
+    "justification": "Cell Parfait (Pāfekuto Seru) représente le pinacle de puissance de l'arc Cell grâce au Zenkai saiyan et au Déplacement Instantané. Il brise le bras gauche de Gohan d'un seul tir, réduisant son Ki de plus de moitié, et domine le clash du Solar Kamehameha jusqu'à ce que la diversion de Vegeta et l'appui spirituel de Goku permettent à Gohan de l'emporter.",
+    "source": "Manga Dragon Ball Tome 35 (Ch. 413-416), Daizenshuu 2 p. 138-143, Daizenshuu 7 p. 91",
+    "rang_canon": "CANON_ABSOLU"
+   }
+  ],
   "economie": {
    "parite_zeni_yen": {
     "ratio": 1,
