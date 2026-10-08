@@ -275,6 +275,26 @@ tunnel-status:
 tunnel-wg:
     bun scripts/ops/native-tunnel.ts generate-wireguard
 
+# Native Tunnel: generate WireGuard client configuration for Omar
+[group('tunnel')]
+tunnel-wg-omar:
+    bun scripts/ops/native-tunnel.ts generate-wireguard --omar
+
+# Connectors: generate ready-to-use configs for Codex, AGY, Claude Code, and Omar
+[group('connectors')]
+setup-connectors:
+    bun scripts/ops/setup-agent-connectors.ts --write --status
+
+# Connectors: verify connectivity to public and private MCP / A2A / LLM endpoints
+[group('connectors')]
+connectors-status:
+    bun scripts/ops/setup-agent-connectors.ts --status
+
+# Connectors: regenerate bundle pack for Omar (deploy/connectors/omar)
+[group('connectors')]
+connectors-omar:
+    bun scripts/ops/setup-agent-connectors.ts --omar-only
+
 # Automation: continuous deployment on push to origin/main
 [group('automation')]
 auto-deploy *args="":

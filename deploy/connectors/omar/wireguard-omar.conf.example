@@ -1,0 +1,12 @@
+[Interface]
+# Omar Native PC Peer (omar-pc)
+PrivateKey = <METTRE_ICI_LA_CLE_PRIVEE_OMAR>
+Address = 10.200.77.5/32
+DNS = 1.1.1.1
+
+[Peer]
+# VPS Hub
+PublicKey = McWuNyGdzU81q9MEyfvnxoGYIHqGW1UcRqpcge3NxB4=
+Endpoint = 51.77.147.152:51821
+AllowedIPs = 10.200.77.0/24
+PersistentKeepalive = 25

@@ -28,5 +28,9 @@
    * Auto-crawl web et synchronisation RAG (`scripts/ops/auto-crawl-rag.ts`, `just auto-crawl-rag`).
    * Auto-évaluation et fine-tuning continu du LLM avec accélération CUDA sur RTX 4070 (`scripts/ops/auto-eval-finetune.ts`, `just auto-finetune`).
    * Master Daemon autonome (`scripts/ops/shenron-daemon.ts`, `just daemon`).
+7. **Connecteurs Multi-Agents & Serveurs Distants (Codex, AGY, Claude Code, Omar)** :
+   * Serveurs MCP (`aphrody-mcp` port 8793, `shenron-mcp` port 8790 / public `/mcp`) et A2A (`aphrody-a2a` port 8788, public `/api/a2a`) opérationnels et testés.
+   * Forwarding natif multi-ports SSH et profil WireGuard pour Omar (`10.200.77.5/32`).
+   * Configurations universelles d'agents (`scripts/ops/setup-agent-connectors.ts`, `just setup-connectors`) et pack de déploiement sécurisé pour Omar sous `deploy/connectors/omar/`.
 
 

@@ -46,6 +46,7 @@ export const ENDPOINTS: Record<string, TunnelEndpoint> = {
     wireguardIp: "10.200.77.1",
     user: "ubuntu",
     identityCandidates: [
+      join(homedir(), ".ssh", "id_ed25519_aphrody"),
       join(homedir(), ".ssh", "ovh_vps"),
       join(homedir(), ".ssh", "id_ed25519"),
       join(homedir(), ".ssh", "id_rsa"),
@@ -57,6 +58,7 @@ export const ENDPOINTS: Record<string, TunnelEndpoint> = {
     wireguardIp: "10.200.77.3",
     user: "ubuntu",
     identityCandidates: [
+      join(homedir(), ".ssh", "id_ed25519_aphrody"),
       join(homedir(), ".ssh", "id_ed25519"),
       join(homedir(), ".ssh", "ovh_vps"),
       join(homedir(), ".ssh", "id_rsa"),
@@ -65,10 +67,13 @@ export const ENDPOINTS: Record<string, TunnelEndpoint> = {
 };
 
 export const FORWARD_PORTS = [
-  { local: 15433, remote: 5432, desc: "PostgreSQL (shenron_site)" },
+  { local: 15433, remote: 15433, desc: "PostgreSQL (shenron_site)" },
   { local: 16379, remote: 6379, desc: "Redis" },
-  { local: 8799, remote: 8798, desc: "Chat IA Gemma4" },
-  { local: 8793, remote: 8793, desc: "MCP HTTP" },
+  { local: 8788, remote: 8788, desc: "Aphrody A2A Hub" },
+  { local: 8793, remote: 8793, desc: "Aphrody MCP HTTP" },
+  { local: 8790, remote: 8790, desc: "Shenron MCP HTTP" },
+  { local: 8798, remote: 8798, desc: "LLM Gemma4 (Aphrody)" },
+  { local: 8799, remote: 8799, desc: "LLM Qwen3 Shenron Chat (Aphrody)" },
   { local: 5011, remote: 5011, desc: "Shenron Server" },
   { local: 5006, remote: 5006, desc: "Shenron Bot" },
 ];
@@ -80,7 +85,7 @@ export function findSshKey(endpoint: TunnelEndpoint): string | null {
   return null;
 }
 
-export function buildSshArgs(endpoint: TunnelEndpoint, identityFile: string): string[] {
+export function buildSshArgs(endpoint: TunnelEndpoint, identityFile: string, targetHost?: string): string[] {
   const args = [
     "-N",
     "-T",
@@ -95,7 +100,7 @@ export function buildSshArgs(endpoint: TunnelEndpoint, identityFile: string): st
     args.push("-L", `127.0.0.1:${f.local}:127.0.0.1:${f.remote}`);
   }
 
-  args.push(`${endpoint.user}@${endpoint.publicIp}`);
+  args.push(targetHost ?? `${endpoint.user}@${endpoint.publicIp}`);
   return args;
 }
 
@@ -108,14 +113,16 @@ export async function startTunnel(targetHost = "vps", isDaemon = false): Promise
     console.warn(`[Avertissement] Aucune clé SSH standard trouvée dans ~/.ssh. Tentative avec l'agent SSH local.`);
   }
 
-  const sshArgs = key ? buildSshArgs(endpoint, key) : [
+  // Si on a un alias configuré dans ~/.ssh/config pour targetHost, l'utiliser en priorité
+  const destination = targetHost || `${endpoint.user}@${endpoint.publicIp}`;
+  const sshArgs = key ? buildSshArgs(endpoint, key, destination) : [
     "-N", "-T",
     "-o", "ServerAliveInterval=20",
     "-o", "ServerAliveCountMax=3",
     "-o", "ExitOnForwardFailure=yes",
     "-o", "StrictHostKeyChecking=accept-new",
     ...FORWARD_PORTS.flatMap(f => ["-L", `127.0.0.1:${f.local}:127.0.0.1:${f.remote}`]),
-    `${endpoint.user}@${endpoint.publicIp}`
+    destination
   ];
 
   console.log("Ports relayés vers la boucle locale :");
@@ -125,7 +132,7 @@ export async function startTunnel(targetHost = "vps", isDaemon = false): Promise
 
   await Bun.write(PID_FILE, ""); // ensure dir
   const proc = Bun.spawn(["ssh", ...sshArgs], {
-    stdio: isDaemon ? ["ignore", "ignore", "inherit"] : ["ignore", "inherit", "inherit"],
+    stdio: isDaemon ? ["ignore", "ignore", "ignore"] : ["ignore", "inherit", "inherit"],
   });
 
   await writeFile(PID_FILE, JSON.stringify({
@@ -136,7 +143,9 @@ export async function startTunnel(targetHost = "vps", isDaemon = false): Promise
 
   console.log(`✓ Tunnel actif (PID: ${proc.pid})`);
 
-  if (!isDaemon) {
+  if (isDaemon) {
+    proc.unref();
+  } else {
     const exitCode = await proc.exited;
     console.log(`Tunnel terminé avec le code ${exitCode}`);
   }
@@ -194,11 +203,16 @@ export async function checkTunnelStatus(): Promise<void> {
   }
 }
 
-export async function generateWireguardConfig(): Promise<string> {
+export async function generateWireguardConfig(peer: "aphro" | "omar" = "aphro"): Promise<string> {
+  const ip = peer === "omar" ? "10.200.77.5/32" : "10.200.77.4/32";
+  const desc = peer === "omar" ? "Omar PC Peer (omar-pc)" : "Windows Native Peer (aphro-pc)";
+  const filename = peer === "omar" ? "wireguard-omar-pc.conf.example" : "wireguard-aphro-pc.conf.example";
+
   const conf = `[Interface]
-# Windows Native Peer (aphro-pc)
-PrivateKey = <METTRE_ICI_LA_CLE_PRIVEE_WINDOWS_0600>
-Address = 10.200.77.4/32
+# ${desc}
+PrivateKey = <METTRE_ICI_LA_CLE_PRIVEE_${peer.toUpperCase()}_0600>
+Address = ${ip}
+DNS = 1.1.1.1
 
 [Peer]
 # VPS Hub
@@ -207,9 +221,9 @@ Endpoint = 51.77.147.152:51821
 AllowedIPs = 10.200.77.0/24
 PersistentKeepalive = 25
 `;
-  const outPath = join(ROOT, "deploy", "docker", "wireguard-aphro-pc.conf.example");
+  const outPath = join(ROOT, "deploy", "docker", filename);
   await writeFile(outPath, conf, "utf8");
-  console.log(`✓ Modèle WireGuard client généré : ${outPath}`);
+  console.log(`✓ Modèle WireGuard client généré (${peer}) : ${outPath}`);
   return outPath;
 }
 
@@ -217,6 +231,7 @@ if (import.meta.main) {
   const cmd = process.argv[2] ?? "status";
   const target = process.argv.includes("--dbfr") ? "dbfr" : "vps";
   const isDaemon = process.argv.includes("--daemon");
+  const peer = process.argv.includes("--omar") ? "omar" : "aphro";
 
   switch (cmd) {
     case "up":
@@ -229,9 +244,9 @@ if (import.meta.main) {
       await checkTunnelStatus();
       break;
     case "generate-wireguard":
-      await generateWireguardConfig();
+      await generateWireguardConfig(peer);
       break;
     default:
-      console.log("Usage: bun native-tunnel.ts [up|down|status|generate-wireguard] [--dbfr] [--daemon]");
+      console.log("Usage: bun native-tunnel.ts [up|down|status|generate-wireguard] [--dbfr] [--daemon] [--omar]");
   }
 }

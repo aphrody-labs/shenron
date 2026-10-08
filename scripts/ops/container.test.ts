@@ -74,9 +74,31 @@ describe("native-tunnel", () => {
     expect(args).toContain("-N");
     expect(args).toContain("-i");
     expect(args).toContain("/tmp/fake-key");
-    expect(args.some((a) => a.includes("127.0.0.1:15433:127.0.0.1:5432"))).toBe(true);
-    expect(args.some((a) => a.includes("127.0.0.1:8799:127.0.0.1:8798"))).toBe(true);
+    expect(args.some((a) => a.includes("127.0.0.1:15433:127.0.0.1:15433"))).toBe(true);
+    expect(args.some((a) => a.includes("127.0.0.1:8788:127.0.0.1:8788"))).toBe(true);
+    expect(args.some((a) => a.includes("127.0.0.1:8793:127.0.0.1:8793"))).toBe(true);
     expect(args.at(-1)).toBe("ubuntu@51.77.147.152");
+  });
+});
+
+describe("setup-agent-connectors", () => {
+  test("generates Claude, AGY, and Codex configs with tokens", async () => {
+    const { buildClaudeMcpConfig, buildAgyMcpConfig, buildCodexTomlConfig, buildOmarReadme } =
+      await import("./setup-agent-connectors");
+    const fakeTokens = { mcpToken: "test-mcp-token", a2aToken: "test-a2a-token" };
+    const claude = buildClaudeMcpConfig(fakeTokens);
+    expect(claude.mcpServers["shenron-public"].url).toBe("https://dragonballfr.com/mcp");
+    expect(claude.mcpServers["aphrody-tunnel"].headers.Authorization).toBe("Bearer test-mcp-token");
+
+    const agy = buildAgyMcpConfig(fakeTokens);
+    expect(agy.mcpServers["shenron-public"].serverUrl).toBe("https://dragonballfr.com/mcp");
+    expect(agy.mcpServers["aphrody-tunnel"].headers.Authorization).toBe("Bearer test-mcp-token");
+
+    const codex = buildCodexTomlConfig(fakeTokens);
+    expect(codex).toContain("Bearer test-mcp-token");
+
+    const readme = buildOmarReadme(fakeTokens);
+    expect(readme).toContain("test-mcp-token");
   });
 });
 

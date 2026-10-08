@@ -185,3 +185,26 @@ Le script `scripts/ops/auto-eval-finetune.ts` :
 ### Master Daemon Autonome
 `scripts/ops/shenron-daemon.ts` (`just daemon`) orchestre l'ensemble de ces sous-systèmes en continu en tâche de fond.
 
+---
+
+## 9. Connecteurs Agents (Codex, AGY, Claude Code & Omar)
+
+Le script `scripts/ops/setup-agent-connectors.ts` (`just setup-connectors`) configure et teste les connecteurs d'agents pour l'ensemble des environnements :
+
+### Surfaces d'exposition :
+1. **Public Direct (Zero-Tunnel)** :
+   - **Shenron MCP HTTP** : `https://dragonballfr.com/mcp` (Streamable HTTP, read-only, aucun secret requis).
+   - **Shenron A2A Hub** : `https://dragonballfr.com/api/a2a` & `https://dragonballfr.com/.well-known/agent-card.json`.
+2. **Tunnel Privé / VPN Mesh (Aphrody Core)** :
+   - **Aphrody MCP HTTP** : `http://127.0.0.1:8793/mcp` (Streamable HTTP, authentifié via `Bearer <APHRODY_MCP_HTTP_TOKEN>`).
+   - **Aphrody A2A Hub** : `http://127.0.0.1:8788` (Protocole A2A 1.0, endpoints `/ping`, `/msg`, `/jsonrpc`, `/events`).
+   - **LLM Gemma4** : `http://127.0.0.1:8798/health`.
+   - **LLM Qwen3 Shenron Chat** : `http://127.0.0.1:8799/health`.
+
+### Configuration des outils :
+- **Claude Code** : `.mcp.json` / `~/.claude.json` déclarant les serveurs `shenron-public` et `aphrody-tunnel`.
+- **Antigravity / AGY** : `plugin/mcp_config.json` ou `~/.gemini/antigravity-cli/mcp_config.json`.
+- **Codex** : `.codex/config.toml` avec bloc `[mcp_servers]`.
+- **Poste d'Omar** : Pack clé en main dans `deploy/connectors/omar/` incluant scripts de tunnel (`connect-tunnel.ps1`, `connect-tunnel.sh`), configuration WireGuard (`wireguard-omar.conf.example`), modèles de configuration d'agents et `README.md` pas-à-pas.
+
+

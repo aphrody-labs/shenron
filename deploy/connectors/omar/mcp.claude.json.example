@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "shenron-public": {
+      "url": "https://dragonballfr.com/mcp"
+    },
+    "aphrody-tunnel": {
+      "url": "http://127.0.0.1:8793/mcp",
+      "headers": {
+        "Authorization": "Bearer <VOTRE_JETON_APHRODY_MCP_HTTP>"
+      }
+    }
+  }
+}
