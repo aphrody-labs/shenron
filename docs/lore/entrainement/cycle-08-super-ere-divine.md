@@ -36,7 +36,7 @@ Les Anges doivent rester neutres et ne pas prendre parti dans les combats des mo
 
 ---
 
-## Question 37 : L'Ultra Instinct (*Migatte no Gokui*) vs L'Ultra Ego (*Wagatte no Gokui*)
+## Question 37 : L'Ultra Instinct (*Migatte no Gokui*) vs L'Ultra Ego (*Wagamama no Gokui*)
 
 ### 1. Question posée :
 *« En quoi l'Ultra Instinct et l'Ultra Ego s'opposent-ils diamétralement sur le plan de la motricité corporelle, de l'état émotionnel et de la philosophie de combat selon les Chapitres 71 à 75 de Dragon Ball Super ? »*
@@ -45,7 +45,7 @@ Les Anges doivent rester neutres et ne pas prendre parti dans les combats des mo
 L'Ultra Instinct de Goku est basé sur le calme et l'esquive automatique sans penser. L'Ultra Ego de Vegeta est basé sur l'esprit de destruction de Beerus où Vegeta prend des coups volontairement pour devenir plus fort et plus destructeur.
 
 ### 3. Auto-critique impitoyable (Mise à la place d'Omar) :
-- *Termes japonais précis des deux états :* **身勝手の極意** (*Migatte no Gokui*) et **我儘の極意** (*Wagatte no Gokui*).
+- *Termes japonais précis des deux états :* **身勝手の極意** (*Migatte no Gokui*) et **我儘の極意** (*Wagamama no Gokui*).
 - *Biomécanique des réflexes neuronaux :* Comment l'Ultra Instinct supprime-t-il le temps de transit cérébral ?
 - *Contrainte critique de l'Ultra Ego face à Granolah :* Pourquoi Vegeta a-t-il fini par perdre conscience au Chapitre 75 ? (Les dégâts corporels finissent par dépasser la résistance biologique).
 - *Décision d'auto-critique :* Approfondir la biomécanique comparée et les limites des deux doctrines.
@@ -57,7 +57,7 @@ L'Ultra Instinct de Goku est basé sur le calme et l'esquive automatique sans pe
    - **Principe biomécanique :** Affranchissement du temps de latence synaptique. Dans un combat ordinaire, l'information visuelle doit voyager des yeux au cerveau, être traitée, puis transmise aux muscles par le système nerveux, ce qui crée un retard de quelques millisecondes.  
      Avec l'Ultra Instinct, **chaque membre, muscle et cellule corporelle agit et réagit de manière totalement autonome**, esquivant et frappant d'instinct.
    - **État d'esprit requis :** Sérénité impassible (*Heijōshin*), élimination de toute colère et de toute pensée parasite.
-2. **L'Ultra Ego (*我儘の極意 / Wagatte no Gokui*) — La Voie du Hakaishin :**
+2. **L'Ultra Ego (*我儘の極意 / Wagamama no Gokui*) — La Voie du Hakaishin :**
    - **Enseignement :** Transmis par Beerus à Vegeta (*Manga DBS Tomes 16-17, Chapitres 69 à 75*).
    - **Principe énergétique :** Contrairement à l'esquive de l'Ultra Instinct, l'Ultra Ego s'appuie sur la puissance de destruction (*Hakai*).
    - **Conversion des impacts :** Vegeta ne cherche pas à éviter les coups : **plus son esprit s'enflamme pour la bataille et plus il encaisse de dégâts physiques, plus sa puissance brute augmente de manière vertigineuse**.

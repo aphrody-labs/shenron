@@ -69,7 +69,7 @@ Ce dossier consigne 50 études approfondies de questions-réponses et d'auto-cri
 
 ---
 
-### Q117 : La Reconstitution au Ralenti de Krilin vs Jackie Chun au 22e Tournoi
+### Q117 : La Reconstitution au Ralenti de Krilin vs Jackie Chun au 21e Tournoi
 - **Question :** Pourquoi Jackie Chun et Krilin ont-ils dû rejouer et expliquer au ralenti leur échange de coups devant le public au 21e Budokai au Chapitre 42 ?
 - **Sources :** Manga Tome 4, Chapitre 42 ; *Daizenshuu 2*, p. 62.
 - **Auto-critique :** Énumérer les actions accomplies en 0,2 seconde (crachat, coup de poing, pierre-feuille-ciseau).

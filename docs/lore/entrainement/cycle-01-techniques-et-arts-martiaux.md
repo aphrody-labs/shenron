@@ -29,9 +29,9 @@ Le Mafūba est une technique qui enferme les démons dans un récipient scellé 
    - Lorsque Maître Mutaito enferme Piccolo Daimaō (*Chapitre 135*) ou lorsque Kame Sennin tente d'enfermer Daimaō (*Chapitre 146*), leur réservoir d'énergie vitale était largement inférieur à l'intensité requise pour contraindre le Roi Démon. La technique a siphonné l'intégralité de leur force vitale, entraînant un arrêt cardiaque immédiat.
    - **Le cas Tenshinhan (Distinction Manga vs Anime) :** Dans le manga canonique (*Tome 13, Chapitre 153-154*), Tenshinhan s'entraîne à maîtriser le Mafūba, mais au moment d'affronter Piccolo Daimaō, il constate que son autocuiseur a été fêlé lors de sa chute, l'empêchant d'exécuter la technique en combat réel. Il ne meurt donc pas car il ne lance pas le sort contre Daimaō.
    - **Le cas moderne (*DBS Manga Chapitre 22 & Tournoi du Pouvoir*) :** Kame Sennin a accumulé une réserve de Ki et un contrôle énergétique incomparablement supérieurs à sa jeunesse, lui permettant d'exécuter le Mafūba sans succomber immédiatement, tant qu'il ne s'épuise pas au-delà de ses limites vitales.
-3. **Le contre officiel : Le Fūba-Kū (*封波返し* / L'Inversion du Mafūba) :**
-   - **Source :** Manga Tome 16, Chapitre 181 (*« Kami-sama contre Piccolo Jr »*).
-   - Lorsque Kami-sama (incarné dans le corps de Shen) tente d'enfermer Ma Junior (Piccolo Jr) dans une petite fiole, Piccolo Jr active le **Fūba-Kū** : il utilise une impulsion de Ki supérieure pour inverser la rotation du tourbillon énergétique, aspirant le lanceur (Kami-sama) dans son propre récipient.
+3. **Le contre officiel : Le Mafūba-gaeshi (*魔封波返し* / L'Inversion du Mafūba) :**
+   - **Source :** Manga Tome 16, Chapitre 181 (*« Kami-sama contre Piccolo Jr »*) ; *Daizenshuu 7*, p. 157.
+   - Lorsque Kami-sama (incarné dans le corps de Shen) tente d'enfermer Ma Junior (Piccolo Jr) dans une petite fiole, Piccolo Jr active le **Mafūba-gaeshi** : il utilise une impulsion de Ki supérieure pour inverser la rotation du tourbillon énergétique, aspirant le lanceur (Kami-sama) dans son propre récipient.
 
 ---
 

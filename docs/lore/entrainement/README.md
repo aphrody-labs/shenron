@@ -54,10 +54,8 @@ Pour répondre à l'impératif d'expansion massive et d'entraînement à très g
 
 ---
 
-## Méthodologie du Contrôle Qualité Shenron
+## III. Certification et Audit Global de Véracité
 
-Chaque question du corpus respecte la grille d'auto-critique quadrupartite :
-1. **Énoncé précis :** Formulation ciblée d'une problématique lore ou d'une contradiction apparente de l'œuvre.
-2. **Sources primaires impératives :** Citation du tome Tankōbon, du chapitre, des pages de databooks (*Daizenshuu 1-7*, *Chōzenshū 1-4*, *Super Exciting Guide*) et des termes originaux en japonais (*Kanji* / *Rōmaji*).
-3. **Auto-critique méthodologique :** Anticipation des pièges de traduction, des corruptions d'anime Toei, des rumeurs fanon et des raccourcis interprétatifs.
-4. **Réponse doctrinale péremptoire :** Verdict clair, exhaustif, impartial et irréfutable.
+L'intégralité des 369 questions du corpus a fait l'objet d'un audit de conformité doctrinal approfondi :
+- [Rapport d'Audit Global de Véracité Doctrinale (Q01 à Q369)](AUDIT-GLOBAL-VERACITE.md) : Relevé de toutes les vérifications croisées contre le Manga original (42 tomes), les databooks officiels (*Daizenshuu*, *Chōzenshū*, *SEG*), les corrections philologiques japonaises (*Mafūba-gaeshi*, *Wagamama no Gokui*) et le verrouillage des 5 Rangs Canoniques.
+

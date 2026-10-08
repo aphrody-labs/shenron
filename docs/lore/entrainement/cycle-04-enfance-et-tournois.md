@@ -145,7 +145,7 @@ C'est la technique où Piccolo devient géant. Ça augmente sa force mais il dev
    - Propriété biologique exclusive des Nameks permettant de dilater les cellules et les fibres musculaires pour atteindre une stature titanesque (plus de 10 à 15 mètres de hauteur).
    - **Impact martial :** La portée des membres et le poids des frappes sont amplifiés de manière colossale, mais l'agilité n'augmente pas et la surface d'exposition corporelle fait du guerrier une cible immense.
 2. **Le piège psychologique de Goku (*Chapitre 188*) :**
-   - Kami-sama était emprisonné dans une petite fiole scellée par le *Fūba-Kū* et avalée tout rond par Piccolo au Chapitre 184.
+   - Kami-sama était emprisonné dans une petite fiole scellée par le *Mafūba-gaeshi* (*魔封波返し*) et avalée tout rond par Piccolo au Chapitre 184.
    - Goku fait mine de mépriser la forme géante de Piccolo : *« Tu n'es pas si impressionnant que ça. Tu n'es même pas capable de devenir encore plus grand ! »*.
    - Piqué dans son orgueil démonique, Piccolo pousse le *Chōkyoshinjutsu* à son paroxysme absolu, atteignant une taille monumentale.
 3. **L'exfiltration audacieuse :**

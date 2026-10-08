@@ -80,11 +80,11 @@ Ce dossier consigne 50 études doctrinales approfondies sur les principes philos
 ### Q218 : La Pédagogie de Kaiō-sama du Nord
 - **Question :** Quelles sont les deux étapes de l'apprentissage de Son Goku sur la planète de Maître Kaioh ?
 - **Sources :** Manga Tome 18, Chapitres 210 à 212 ; *Daizenshuu 2*, p. 64.
-- **Auto-critique :** Noter l'acclimatation aux 10G via la poursuite de Bubbles et Gregory.
+- **Auto-critique :** Distinguer le manga (où seul le singe Bubbles est présent) de l'anime qui a rajouté le criquet Gregory.
 - **Réponse Doctrinale :**  
   L'entraînement sur la minuscule planète de Kaioh (gravité **10 fois supérieure à la Terre**) comprend :  
-  1. *L'acclimatation physique et sensorielle* : attraper le singe Bubbles (s'habituer à courir sous 10G) puis frapper le criquet Grégory avec une masse lourde (vitesse et précision).  
-  2. *L'initiation aux techniques interdites* : le **Kaiō-ken** (amplification explosive du Ki au péril de ses vaisseaux sanguins) et le **Genki Dama** (collecte de l'énergie vitale de la nature et des astres).
+  1. *L'acclimatation physique sous 10G* : attraper le singe **Bubbles** (*Baburusu*) pour habituer le système moteur et cardio-vasculaire à se mouvoir sous une pesanteur décuplée. (L'épreuve du criquet Gregory frappé avec un marteau est un ajout exclusif de la série télévisée animée absent du manga original).  
+  2. *L'initiation aux techniques secrètes* : le **Kaiō-ken** (amplification explosive du Ki au péril de ses vaisseaux sanguins) et le **Genki Dama** (collecte de l'énergie vitale de la nature et des astres).
 
 ---
 
@@ -474,13 +474,13 @@ Ce dossier consigne 50 études doctrinales approfondies sur les principes philos
 
 ---
 
-### Q257 : L'Épreuve de la Cloche de Mister Popo
-- **Question :** Quelle épreuve acoustique Mister Popo soumet-il à Son Goku pour briser ses mouvements parasites ?
-- **Sources :** Manga Tome 14, Chapitre 163 ; Anime DB Épisode 127 (détails d'animation supervisés).
-- **Auto-critique :** Expliquer le symbole de la clochette attachée au corps.
+### Q257 : L'Économie des Sens de Mister Popo et l'Épreuve de la Clochette
+- **Question :** Quels préceptes martiaux Mister Popo enseigne-t-il à Son Goku pour éliminer ses mouvements parasites et comment la série animée a-t-elle illustré cet enseignement ?
+- **Sources :** Manga Tome 14, Chapitres 162 et 163 ; Anime *Dragon Ball*, Épisode 127.
+- **Auto-critique :** Distinguer impérativement le texte canonique du manga (la recherche de quiétude absolue : « être calme comme le ciel et vif comme l'éclair ») de l'exercice visuel de la clochette ajouté dans la série télévisée.
 - **Réponse Doctrinale :**  
-  Mister Popo attache une clochette autour du cou de Goku et lui ordonne de le toucher sans faire tinter le battant.  
-  Chaque pas brusque, chaque impulsion musculaire désordonnée ou chaque précipitation respiratoire fait sonner la cloche, trahissant instantanément la présence de l'élève. Cette discipline oblige Goku à mouvoir son centre de gravité avec une légèreté vaporeuse et à harmoniser ses mouvements avec les courants d'air jusqu'à devenir totalement silencieux.
+  Dans le manga original d'Akira Toriyama (*Chapitres 162-163*), Mister Popo pulvérise la fierté de Goku en lui démontrant que ses mouvements sont encombrés d'agitation inutile et de bruit corporel : il lui enseigne la vacuité méditative (*Kokoro o sora no yō ni suru* / garder le cœur et l'esprit limpides comme le ciel bleu, pour réagir plus vite que la foudre).  
+  L'exercice spécifique où Popo attache une clochette autour du cou ou de la ceinture de Goku pour le contraindre à approcher sans faire tinter le battant est un ajout scénaristique de l'anime (*Épisode 127*). Cette illustration pédagogique traduit fidèlement l'esprit de Toriyama : mouvoir son centre de gravité avec une légèreté vaporeuse et éliminer toute secousse musculaire parasite jusqu'au silence moteur absolu.
 
 ---
 
