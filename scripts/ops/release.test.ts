@@ -4,7 +4,7 @@
  * site est construit avec le préfixe du CDN tiré de l'environnement du service.
  */
 import { describe, expect, test } from "bun:test";
-import { cdnSource, envValue, siteBuildEnv } from "./release-host";
+import { cdnSource, envValue, siteBuildEnv, syncCommands } from "./release-host";
 import { asServiceUser, releasePlan } from "./release";
 
 describe("release plan", () => {
@@ -57,5 +57,31 @@ describe("site build environment", () => {
     expect(cdnSource(`/srv/shenron/releases/${sha}`)).toBe(`/srv/shenron/releases/${sha}`);
     expect(() => cdnSource("/tmp/x")).toThrow();
     expect(() => cdnSource(`/srv/shenron/releases/${sha}/../..`)).toThrow();
+  });
+});
+
+describe("build tree", () => {
+  test("a dedicated detached worktree is forced onto the ref, the editable checkout untouched", () => {
+    const first = syncCommands("/h/shenron", "/h/shenron-release", "origin/main", false);
+    expect(first[0]).toEqual(["git", "-C", "/h/shenron", "fetch", "-q", "origin"]);
+    expect(first[1]).toEqual([
+      "git",
+      "-C",
+      "/h/shenron",
+      "worktree",
+      "add",
+      "-q",
+      "--detach",
+      "/h/shenron-release",
+      "origin/main",
+    ]);
+    const again = syncCommands("/h/shenron", "/h/shenron-release", "origin/main", true);
+    expect(again.map((cmd) => cmd.slice(3, 5).join(" "))).toEqual([
+      "fetch -q",
+      "checkout -q",
+      "clean -ffdq",
+    ]);
+    expect(again.flat()).not.toContain("merge");
+    expect(again.slice(1).every((cmd) => cmd[2] === "/h/shenron-release")).toBe(true);
   });
 });

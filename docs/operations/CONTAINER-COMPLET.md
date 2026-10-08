@@ -148,6 +148,17 @@ just daemon                      # Lancer le master daemon autonome
 
 ---
 
+### Build sur le VPS : image `aphrody-build`
+
+Les étapes Rust, WASM, `bun install` et bot de la release (`scripts/ops/release-host.ts`) et du runner
+self-hosted (`server-artifact.yml`) tournent dans l'image de build d'Aphrody (`aphrody-build:latest`), par
+`scripts/build/container.ts` : toolchain épinglée (Rust de `rust-toolchain.toml`, Bun de `packageManager`,
+`wasm-bindgen` de `Cargo.lock`), caches partagés en volumes (`aphrody-build-{cargo,sccache,bun,xwin,xdg}`),
+6 CPU et 16 Gio sans swap au plus, verrou lourd de l'usine. `bun scripts/build/container.ts --check` compare
+l'image au checkout. La release construit dans `~/shenron-release` (worktree détaché forcé sur `origin/main`),
+jamais dans `~/shenron`. Contrat et mesures : `docs/operations/container/CONTAINER.md` et
+`docs/operations/infra/SHENRON-DOCKER.md` d'Aphrody.
+
 ## 7. Tunnel Natif Complet (VPS Build, DBFR Prod & Windows Natif)
 
 Le gestionnaire `scripts/ops/native-tunnel.ts` relie de manière étanche le poste de travail Windows aux deux serveurs distants :

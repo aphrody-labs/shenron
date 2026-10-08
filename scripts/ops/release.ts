@@ -10,7 +10,8 @@
  * Tout build (cargo, bot, site, image) tourne sur le `vps` ; dbfr (production) ne reçoit que les
  * binaires et images scellés, jamais de compilation ni de cache de build.
  *
- * 1. `release-host.ts build` tourne détaché sur le `vps` (~/shenron sur origin/main) : il
+ * 1. `release-host.ts build` tourne détaché sur le `vps` (`~/shenron-release`, worktree dédié forcé sur
+ *    origin/main ; Rust, WASM et bot dans l'image `aphrody-build`) : il
  *    survit à une coupure SSH ; ce script suit son journal jusqu'à la ligne de résultat.
  * 2. `release-host.ts cdn <release>` : `public/` et `.next-build/static` de la NOUVELLE release
  *    sur cdn.dragonballfr.com, AVANT la bascule : le site est construit avec le CDN comme préfixe

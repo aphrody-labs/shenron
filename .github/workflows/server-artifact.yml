@@ -1,11 +1,18 @@
 name: Production server artifact (no deploy)
 
-# Build the production server and CDN assets on the actual VPS factory.
+# Build the production server and CDN assets on the actual VPS factory, inside Aphrody's
+# build image (`aphrody-build:latest`, scripts/build/container.ts): pinned Rust/Bun toolchain,
+# shared cargo/sccache/Bun caches, bounded CPU and memory next to the host's model servers.
 # Production promotion, host units and TLS routes belong to Aphrody Infra.
 # Manual trusted execution only; never schedule pull-request code on this host.
 
 on:
   workflow_dispatch:
+    inputs:
+      vfs:
+        description: Public VFS on the factory host (public profile, checked by server.ts)
+        required: true
+        default: /home/shenron-build/data/shenron-vfs.public.sqlite
 
 permissions:
   contents: read
@@ -20,27 +27,28 @@ jobs:
     runs-on: [self-hosted, Linux, X64, shenron-factory, vps]
     timeout-minutes: 45
     env:
-      NEXT_TELEMETRY_DISABLED: "1"
+      VFS: ${{ inputs.vfs }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      # setup-bun reads the exact version from package.json#packageManager.
-      - uses: oven-sh/setup-bun@v2
+      # The host Bun only launches the container; the toolchain lives in the image.
+      - name: Check the build image against this checkout
+        run: bun scripts/build/container.ts --check
 
-      - name: Cache Bun downloads only
-        uses: actions/cache@v6
-        with:
-          path: ~/.bun/install/cache
-          key: server-artifact-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      # server.ts reads the public VFS from its default path inside the checkout.
+      - name: Stage the public VFS
+        run: install -D -m 0644 "$VFS" dist/vfs/shenron-vfs.public.sqlite
 
       - name: Install exact dependencies
-        run: bun ci
+        run: bun scripts/build/container.ts --target-volume shenron-ci -- bun ci
 
       # Koharu WASM is tracked in Git and checked by rust.yml; the site needs no Rust build.
       - name: Build shenron-server and the CDN tree
-        run: bun scripts/build/server.ts --target linux-x64 --flavor production
+        run: >-
+          bun scripts/build/container.ts --target-volume shenron-ci --
+          bun scripts/build/server.ts --target linux-x64 --flavor production
 
       - name: Package with checksums
         run: |

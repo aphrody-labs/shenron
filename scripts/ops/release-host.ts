@@ -9,11 +9,14 @@
  *
  * Tout build tourne ici, sur le vps : dbfr ne compile rien et ne garde aucun cache de build.
  *
- * `build` : avance rapide de `~/shenron` sur origin/main (arbre propre exigé), install figée,
- * `shenron-mcp` (cargo), WASM des moteurs Koharu et shenron-re, bot compilé, site
- * (`build-site-external.ts`, base lue dans
- * l'environnement du site, jamais affichée), emballage puis `aphrody-infra-deploy-shenron
- * assemble`. Dernière ligne : `{"commit": …, "release": …}`.
+ * `build` : arbre de build dédié `~/shenron-release` (worktree détaché de `~/shenron`, remis
+ * de force sur origin/main à chaque release : une édition en cours dans `~/shenron` ne bloque plus
+ * la release), install figée, `shenron-mcp` et `shenron-ffi` (cargo), WASM des moteurs Koharu et
+ * shenron-re et bot compilé dans l'image de build d'Aphrody (`aphrody-build:latest`, via
+ * `scripts/build/container.ts` : caches partagés, CPU et mémoire bornés), puis site
+ * (`build-site-external.ts`, déjà dans son conteneur Node borné ; base lue dans l'environnement du
+ * site, jamais affichée), emballage et `aphrody-infra-deploy-shenron assemble`. Dernière ligne :
+ * `{"commit": …, "release": …}`.
  *
  * Le site est construit avec `NEXT_PUBLIC_CDN_URL` de l'environnement du site : le préfixe des
  * chunks est gravé dans le runtime Turbopack et `next start` le reprend du build
@@ -29,10 +32,14 @@
  * Les WASM Koharu et shenron-re y partent avec des noms empreints ; nginx les sert en
  * `application/wasm`, immuables (sondes de `release.ts`).
  */
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 const HOME = process.env.HOME ?? "/home/ubuntu";
-const REPO = process.env.SHENRON_BUILD_REPO ?? join(HOME, "shenron");
+/** Checkout de travail (éditable) : seule sa base d'objets et ses remotes servent à la release. */
+const SOURCE = process.env.SHENRON_SOURCE_REPO ?? join(HOME, "shenron");
+/** Arbre de build dédié, jamais édité à la main : remis de force sur la référence publiée. */
+const REPO = process.env.SHENRON_BUILD_REPO ?? join(HOME, "shenron-release");
 const CURRENT = "/srv/shenron/current";
 const CDN_SRC = "/srv/shenron-cdn-src";
 const CDN_OUT = "/srv/shenron-cdn";
@@ -53,16 +60,34 @@ function step(label: string, cmd: string[], env: Record<string, string> = {}, cw
   return out;
 }
 
-/** Avance rapide de `~/shenron` sur `ref` (défaut : origin/main), arbre propre exigé. */
+/**
+ * Arbre de build sur `ref` (défaut : origin/main). L'ancien build avançait `~/shenron` lui-même :
+ * des modifications locales non commitées y faisaient échouer `merge --ff-only` (release du
+ * 2026-10-07 : `== EXIT 1`). Le worktree détaché dédié est forcé sur `ref` et nettoyé des fichiers
+ * non suivis (les ignorés — node_modules, target, caches — restent pour le build incrémental).
+ */
+export function syncCommands(source: string, repo: string, ref: string, exists: boolean) {
+  return [
+    ["git", "-C", source, "fetch", "-q", "origin"],
+    ...(exists ? [] : [["git", "-C", source, "worktree", "add", "-q", "--detach", repo, ref]]),
+    ["git", "-C", repo, "checkout", "-q", "-f", "--detach", ref],
+    ["git", "-C", repo, "clean", "-ffdq"],
+  ];
+}
+
 function syncOrigin(ref = "origin/main"): string {
+  for (const cmd of syncCommands(SOURCE, REPO, ref, existsSync(join(REPO, ".git"))))
+    step("git", cmd, {}, HOME);
   // Le chargeur natif SWC refuse un cache dont un parent est accessible en écriture au groupe.
   step("permissions", ["chmod", "755", REPO]);
-  step("git", ["git", "fetch", "-q", "origin"]);
-  step("git", ["git", "checkout", "-q", "main"]);
-  step("git", ["git", "merge", "-q", "--ff-only", ref]);
   if (step("arbre propre", ["git", "status", "--porcelain", "--untracked-files=no"]).trim())
     throw new Error("arbre de build modifié : release refusée");
   return step("commit", ["git", "rev-parse", "HEAD"]).trim();
+}
+
+/** Une étape dans l'image de build d'Aphrody (`scripts/build/container.ts` du commit construit). */
+function inBuildImage(label: string, cmd: string[]): string {
+  return step(label, ["bun", "scripts/build/container.ts", "--", ...cmd]);
 }
 
 /**
@@ -70,10 +95,10 @@ function syncOrigin(ref = "origin/main"): string {
  * et les moteurs WebAssembly Koharu et shenron-re.
  */
 function cargoProducts(): void {
-  step("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
-  step("shenron-ffi", ["cargo", "build", "--release", "-p", "shenron-ffi", "--lib"]);
-  step("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
-  step("shenron-re wasm", ["bun", "packages/pipeline/scripts/build-re-wasm.ts"]);
+  inBuildImage("shenron-mcp", ["cargo", "build", "--release", "-p", "shenron-mcp"]);
+  inBuildImage("shenron-ffi", ["cargo", "build", "--release", "-p", "shenron-ffi", "--lib"]);
+  inBuildImage("koharu-canvas wasm", ["bun", "packages/koharu/scripts/build-wasm.ts"]);
+  inBuildImage("shenron-re wasm", ["bun", "packages/pipeline/scripts/build-re-wasm.ts"]);
 }
 
 /** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
@@ -95,7 +120,7 @@ export function siteBuildEnv(envText: string): Record<string, string> {
 }
 
 function bundleSite(commit: string, systemdDir?: string): string {
-  step("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
+  inBuildImage("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
   const buildEnv = siteBuildEnv(envFile.stdout.toString());
   const release = join("artifacts", "releases", commit);
@@ -122,7 +147,8 @@ function assemble(release: string, commit: string): void {
 /** Tout sur le même hôte (le vps, qui a l'accès à GitHub et le cache cargo). */
 function build(): void {
   const commit = syncOrigin();
-  step("bun install", ["bun", "install", "--frozen-lockfile"]);
+  step("image de build", ["bun", "scripts/build/container.ts", "--check"]);
+  inBuildImage("bun install", ["bun", "install", "--frozen-lockfile"]);
   cargoProducts();
   assemble(bundleSite(commit, join(CURRENT, "systemd")), commit);
 }
