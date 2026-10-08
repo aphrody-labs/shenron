@@ -8,7 +8,7 @@
 # - Nginx reverse-proxy & CDN caching gateway
 # - VFS SQLite and Drizzle migrations
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ARG SHENRON_REVISION=unknown
 # Bun runtime: release of the aphrody-labs/bun fork (package.json#packageManager).

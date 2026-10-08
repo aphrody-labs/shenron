@@ -165,8 +165,8 @@
         "zod": "catalog:",
       },
       "devDependencies": {
+        "@aphrody/bun-plugin-tailwind": "catalog:",
         "@huggingface/transformers": "catalog:",
-        "@tailwindcss/postcss": "catalog:",
         "@types/howler": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
@@ -392,6 +392,7 @@
     "@aphrody/agent-browser": "1.0.0-canary",
     "@aphrody/api": "3.0.0-alpha.3",
     "@aphrody/bun": "3.3.8",
+    "@aphrody/bun-plugin-tailwind": "0.1.0-aphrody.2",
     "@aphrody/bun-runtime": "1.4.3-aphrody.1",
     "@aphrody/bun-test-dom": "0.1.1",
     "@aphrody/discord-kit": "0.1.1",
@@ -544,6 +545,8 @@
 
     "@aphrody/bun": ["@aphrody/bun@vendor/aphrody-sdk/aphrody-bun-1576722f0ef565c2.tgz", { "dependencies": { "@aphrody/runtime-sdk": "0.1.1", "@aphrody/update": "0.1.1" } }, "sha512-gssMslNOxwwLtR86v3Qg/UsQ116hyJQPUMkvl6CdranZ067KWdQPMUXCN8LIltZbBkpyHoWqESCLse2ly5Fx2Q=="],
 
+    "@aphrody/bun-plugin-tailwind": ["@aphrody/bun-plugin-tailwind@0.1.0-aphrody.2", "", { "dependencies": { "@aphrody/m3-tailwind": "^3.3.7", "@aphrody/m3-tokens": "^3.3.7", "@tailwindcss/node": "^4.3.3", "@tailwindcss/oxide": "^4.3.3", "enhanced-resolve": "^5.26.0", "tailwindcss": "^4.3.3" }, "peerDependencies": { "postcss": "^8" }, "optionalPeers": ["postcss"] }, "sha512-9Le69H9RnEJXZT9rhh1FZ0/bomBcd3F+GDDBnRbCm9ij8yMw6x45HXP/M5pBAE3F0YiFHDwXHuFFgJ+Z4JwiGg=="],
+
     "@aphrody/bun-runtime": ["@aphrody/bun-runtime@1.4.3-aphrody.1", "", { "optionalDependencies": { "@aphrody/bun-runtime-darwin-aarch64": "1.4.3-aphrody.1", "@aphrody/bun-runtime-linux-aarch64": "1.4.3-aphrody.1", "@aphrody/bun-runtime-linux-x64": "1.4.3-aphrody.1", "@aphrody/bun-runtime-windows-x64": "1.4.3-aphrody.1" }, "bin": { "bun": "bin/bun.js", "bunx": "bin/bunx.js", "bun-runtime": "bin/bun.js" } }, "sha512-/QicTHPiFnzO3w0jajtxmqS6YdYqmfXm2KtTNz60h+IC2BPUcilPjDinlNRgT9wafaUWc1kRcdJPgTu4lotUkQ=="],
 
     "@aphrody/bun-runtime-darwin-aarch64": ["@aphrody/bun-runtime-darwin-aarch64@1.4.3-aphrody.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-VKv92/yPKIIJ1IeB5C5Buc5tKhFlgDUwF2Waaf1EbfuJw9iZ4qsQiKFZB69hAguVXWVb0hSfd/5W/vXoqDRMrQ=="],
@@ -569,6 +572,8 @@
     "@aphrody/m3-primitives": ["@aphrody/m3-primitives@3.3.7", "", { "dependencies": { "@aphrody/m3-motion": "3.3.7", "@base-ui/react": "^1.8.0", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "motion": "^13.4.4", "react-hook-form": "^7.89.0", "react-resizable-layout": "^0.7.3", "sonner": "^2.0.8", "zod": "^4.6.5" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-jeIelP0saJufZz1KoYej4Fe588DOlrseyrwnWK66fnd7gdXUIO7xIXB5XkzhwM/FXuGMq8esOGSJVDf9TFyUDg=="],
 
     "@aphrody/m3-reader": ["@aphrody/m3-reader@3.3.7", "", { "dependencies": { "@tanstack/react-virtual": "^3.14.13", "lucide-react": "^1.48.0", "swiper": "^14.3.0" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-ZnDYojsu8qRyIbr2i3RsM2IdVgCAUN/1uI8PYi9rAhu8pq7aqqtfipqbFaKcGrtibjqei3xK0EfsRX2IJWsVTA=="],
+
+    "@aphrody/m3-tailwind": ["@aphrody/m3-tailwind@3.3.7", "", { "dependencies": { "@aphrody/m3-tokens": "3.3.7" }, "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-8OiSxdDRM28z03LLAR4cGUhHz+S9tkggSRFhxaD6R6RaVCZikFtz6lbZc26iOMCvW/F7CVAiCnIfoUBWxNajzw=="],
 
     "@aphrody/m3-theme": ["@aphrody/m3-theme@3.3.6", "", { "dependencies": { "@aphrody/m3-tokens": "3.3.6" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-/XlItMrHaZmpQts+lg24FNsGRjc9TNRit19Bla4qb/9thsvL99LgahWXP0OhOXHKnbeKH9EtEPz19plLFsz3dA=="],
 

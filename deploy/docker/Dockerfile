@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Runtime packaging for owner-sealed `dist/server` and `dist/bot` artifacts.
 # Build from the repository root: podman build -f deploy/docker/Dockerfile .
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ARG SHENRON_REVISION=unknown
 LABEL org.opencontainers.image.title="Shenron" \

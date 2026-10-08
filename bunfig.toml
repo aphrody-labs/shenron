@@ -15,6 +15,8 @@ minimumReleaseAgeExcludes = [
   "@aphrody/bun-runtime-linux-aarch64",
   "@aphrody/bun-runtime-linux-x64",
   "@aphrody/bun-runtime-windows-x64",
+  "@aphrody/bun-plugin-tailwind",
+  "@aphrody/m3-tailwind",
   "@aphrody/web-test",
   "@aphrody/ag-ui",
   "@aphrody/api",

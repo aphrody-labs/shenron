@@ -134,7 +134,8 @@
       "@aphrody/bun": "3.3.8",
       "@aphrody/update": "0.1.1",
       "@aphrody/next-bun": "0.2.0-aphrody.1",
-      "@aphrody/bun-runtime": "1.4.3-aphrody.1"
+      "@aphrody/bun-runtime": "1.4.3-aphrody.1",
+      "@aphrody/bun-plugin-tailwind": "0.1.0-aphrody.2"
     }
   },
   "type": "module",
