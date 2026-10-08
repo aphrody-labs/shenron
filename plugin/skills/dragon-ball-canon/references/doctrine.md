@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : apps/site/src/lib/canon-engine.ts. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`apps/site/src/lib/canon-engine.ts`),
-> révision `b8cef86` du 2026-10-05. Citer cette révision et cette date avec toute
+> révision `db119c0f` du 2026-10-08. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 Doctrine **livrée avec le dépôt** (défauts de `canon-engine.ts`). La doctrine de
@@ -121,7 +121,7 @@ Inclut (doctrine générale, à confronter au sujet tranché) :
 Rang `EXTENSION_OFFICIELLE`, score 50 : Affirmation nécessitant une vérification croisée dans les archives. Le sujet saisi ne correspond à aucun point de divergence répertorié. Dans la doctrine Shenron, une affirmation sans source manga, databook vérifié ou déclaration signée de Toriyama est considérée comme non établie.
 Un `fallback` n'établit aucun rang : répondre « non établi ».
 
-## Sujets tranchés (44)
+## Sujets tranchés (47)
 
 | Identifiant | Sujet | Catégorie | Rang | Score |
 | --- | --- | --- | --- | --- |
@@ -584,7 +584,7 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
   - Daizenshuu 2 : Story Guide
   - Daizenshuu 7 : Le Grand Dictionnaire
 - Mots-clés : cell parfait vs gohan ssj2, cell parfait ou gohan ssj2, cell parfait plus fort que gohan, cell parfait plus fort que gohan ssj2, super perfect cell vs gohan ssj2, super perfect cell ou gohan ssj2, qui est le plus fort dans la saga cell entre cell dans sa derniere forme et gohan ssj2, qui est le plus fort dans la saga cell entre cell et gohan, qui est le plus fort dans la saga cell entre cell forme parfaite et gohan ssj2, qui est le plus fort entre cell dans sa derniere forme et gohan ssj2, qui est le plus fort entre cell parfait et gohan ssj2, qui est le plus fort entre cell et gohan ssj2, cell forme parfaite vs cell parfait, cell parfait ou cell forme parfaite, plus fort saga cell, qui est le plus fort de la saga cell
-- Page du site : https://dragonballfr.com/wiki/canon?q=Cell%20Parfait%20vs%20Son%20Gohan%20Super%20Saiyan%202
+- Page du site : https://dragonballfr.com/wiki/canon?q=Cell%20Parfait%20(Super%20Perfect%20Cell)%20vs%20Son%20Gohan%20Super%20Saiyan%202
 
 ### Puissance de Goku SSJ1 sur Namek (150 000 000 BP)
 

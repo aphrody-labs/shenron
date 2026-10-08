@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : apps/bot/data/manga-spin-offs-manifest.json, apps/site/data/illustrations-lieux-objets.json, apps/site/scripts/_technique-lexicon.ts, apps/site/scripts/inventaires/canon-citations-fr.json, apps/site/src/lib/canon-engine.ts, data/ja-identities-2026-09-23.json, packages/config/src/aphrody-corpus.ts, packages/config/src/economy-canon.ts. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`apps/bot/data/manga-spin-offs-manifest.json`, `apps/site/data/illustrations-lieux-objets.json`, `apps/site/scripts/_technique-lexicon.ts`, `apps/site/scripts/inventaires/canon-citations-fr.json`, `apps/site/src/lib/canon-engine.ts`, `data/ja-identities-2026-09-23.json`, `packages/config/src/aphrody-corpus.ts`, `packages/config/src/economy-canon.ts`),
-> révision `b8cef86` du 2026-10-05. Citer cette révision et cette date avec toute
+> révision `db119c0f` du 2026-10-08. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 Chaque ligne cite sa source ; la données brute (avec citations et URL complètes) est dans
@@ -144,20 +144,6 @@ Chiffres du support cité seulement ; ne pas les extrapoler hors de leur context
 | Super Saiyan (SSJ1) | 50 | Daizenshuu 7 (p. 83) & Super Exciting Guide | page ou chapitre cité |
 | Super Saiyan 2 (SSJ2) | 100 | Super Exciting Guide : Story Volume (2009) | ouvrage cité sans page : à revérifier sur la planche |
 | Super Saiyan 3 (SSJ3) | 400 | Super Exciting Guide : Story Volume (2009) | ouvrage cité sans page : à revérifier sur la planche |
-
-## Hiérarchie des forces de la saga Buu
-
-| Comparaison | Vainqueur / Verdict | Source | Rang Canon |
-| --- | --- | --- | --- |
-| Kid Buu (Majin Buu Pur) vs Buuhan | **Kid Buu** est plus fort que Buuhan. Forme originelle suprême et « ennemi le plus fort de l'univers », sommet de la menace exigeant le Super Genkidama universel. | Manga DB Tome 42, Daizenshuu 2 p. 235, Anime DBZ | `CANON_ABSOLU` |
-| Son Goku Super Saiyan 3 vs Gohan Ultime | **Son Goku SSJ3** est plus fort que Gohan Ultime. Guerrier Z suprême affrontant Kid Buu en duel et triomphant du mal ultime, surpassant Gohan à travers tous les médias (dont le film 13 face à Hildegarn). | Manga DB Tomes 41-42, Daizenshuu 2, Film 13 | `CANON_ABSOLU` |
-| Boucles Potalas vs Danse Métamole | **Potalas (Vegetto)** supérieure à la Danse Métamole. Pas d'égalisation de ki vers le bas, pas de restriction de taille, et bonus de rivalité. | Manga DB Ch. 501 & 504, Daizenshuu 7 p. 182 | `CANON_ABSOLU` |
-
-## Hiérarchie des forces de la saga Cell
-
-| Comparaison | Vainqueur / Verdict | Source | Rang Canon |
-| --- | --- | --- | --- |
-| Cell Parfait (avec éclairs) vs Son Gohan Super Saiyan 2 | **Cell Parfait** est le plus fort de la saga Cell. Forme ressuscitée avec éclairs (Zenkai), brise le bras de Gohan, réduit son Ki de moitié et domine le choc des Kamehamehas jusqu'à la diversion décisive de Vegeta. Appellations officielles : *Cell forme parfaite* (après C-18) vs *Cell Parfait* (avec éclairs). | Manga DB Tome 35 Ch. 413-416, Daizenshuu 2 p. 138-143, Daizenshuu 7 p. 91 | `CANON_ABSOLU` |
 
 ## Économie (zénis)
 

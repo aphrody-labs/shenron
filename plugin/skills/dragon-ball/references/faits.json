@@ -10,8 +10,8 @@
   "packages/config/src/aphrody-corpus.ts",
   "packages/config/src/economy-canon.ts"
  ],
- "revision": "b8cef86",
- "date": "2026-10-05",
+ "revision": "db119c0f",
+ "date": "2026-10-08",
  "statut": "Chaque enregistrement est établi par la source qu'il cite (instantané) ; un thème de non_embarque est non établi hors ligne.",
  "donnees": {
   "hierarchie_sources": {
@@ -1184,43 +1184,6 @@
     "rang_canon": "EXTENSION_OFFICIELLE",
     "precision": "ouvrage cité sans page : à revérifier sur la planche",
     "note": "Extirpation du potentiel caché. Quadruple la puissance du SSJ2 (x400 de la base)."
-   }
-  ],
-  "hierarchie_saga_buu": [
-   {
-    "comparaison": "Kid Buu (Majin Buu Pur) vs Buuhan",
-    "vainqueur": "Kid Buu (Majin Buu Pur)",
-    "verdict": "Majin Buu Pur (Kid Buu) est plus fort que Majin Buu ayant absorbé Gohan (Buuhan).",
-    "justification": "Kid Buu est la forme originelle sans bride, incarnation absolue de la destruction sans frein ni retenue morale. Établi sur l'ensemble des médias comme le monstre suprême et qualifié d'« ennemi le plus fort de l'univers » (Daizenshuu 2), il représente le sommet de dangerosité de Buu, exigeant le Super Genkidama universel pour être terrassé.",
-    "source": "Manga Dragon Ball Tome 42, Daizenshuu 2 p. 235, Anime DBZ",
-    "rang_canon": "CANON_ABSOLU"
-   },
-   {
-    "comparaison": "Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan)",
-    "vainqueur": "Son Goku Super Saiyan 3",
-    "verdict": "Son Goku Super Saiyan 3 est plus fort que Gohan dans sa forme ultime (Ultimate Gohan).",
-    "justification": "Goku SSJ3 est le guerrier d'élite suprême de la saga Buu, seul capable de faire face à Kid Buu en combat singulier au cœur de la bataille finale. Goku sublime sa puissance par son génie martial et ses ressources héroïques ultimes, surpassant Gohan Ultime à travers l'ensemble des médias de la franchise (notamment face à Hildegarn dans le film 13).",
-    "source": "Manga Dragon Ball Tomes 41-42, Daizenshuu 2, Film 13 L'Attaque du Dragon",
-    "rang_canon": "CANON_ABSOLU"
-   },
-   {
-    "comparaison": "Boucles Potalas vs Danse Métamole",
-    "vainqueur": "Boucles Potalas (Vegetto)",
-    "verdict": "La fusion Potala est supérieure à la Danse Métamole.",
-    "justification": "Pas de limitation de temps, pas de restriction de taille ni d'égalisation de force vers le bas, et amplification par le bonus de rivalité des porteurs.",
-    "source": "Manga Dragon Ball Tome 41-42 (Ch. 501, 504), Daizenshuu 7 p. 182",
-    "rang_canon": "CANON_ABSOLU"
-   }
-  ],
-  "hierarchie_saga_cell": [
-   {
-    "comparaison": "Cell Parfait (avec éclairs) vs Son Gohan Super Saiyan 2",
-    "vainqueur": "Cell Parfait (forme avec éclairs)",
-    "verdict": "Cell Parfait (la forme avec des éclairs) est le plus fort de la saga Cell, devant Gohan SSJ2.",
-    "appellations_officielles": "Cell forme parfaite (après absorption de C-18) vs Cell Parfait (ressuscité avec éclairs SSJ2)",
-    "justification": "Cell Parfait (Pāfekuto Seru) représente le pinacle de puissance de l'arc Cell grâce au Zenkai saiyan et au Déplacement Instantané. Il brise le bras gauche de Gohan d'un seul tir, réduisant son Ki de plus de moitié, et domine le clash du Solar Kamehameha jusqu'à ce que la diversion de Vegeta et l'appui spirituel de Goku permettent à Gohan de l'emporter.",
-    "source": "Manga Dragon Ball Tome 35 (Ch. 413-416), Daizenshuu 2 p. 138-143, Daizenshuu 7 p. 91",
-    "rang_canon": "CANON_ABSOLU"
    }
   ],
   "economie": {
