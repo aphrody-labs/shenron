@@ -156,6 +156,7 @@
     "test:live:ai": "cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts",
     "test:integration": "bun scripts/testing/integration/run.ts",
     "dev:remote": "bun scripts/dev/remote-dev.ts up",
+    "dev:env": "bun scripts/dev/env-pull.ts",
     "gates:remote": "bun scripts/dev/remote-dev.ts gates"
   },
   "devDependencies": {

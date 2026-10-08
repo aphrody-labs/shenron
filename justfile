@@ -95,6 +95,10 @@ dev-site:
 remote *args="up":
     bun scripts/dev/remote-dev.ts {{args}}
 
+[group('bun')]
+env *args="pull":
+    bun scripts/dev/env-pull.ts {{args}}
+
 # Discord bot in watch mode
 [group('bun')]
 dev-bot:
