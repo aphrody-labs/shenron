@@ -878,6 +878,39 @@
       "transcriptAvailable": false,
       "audioAcquired": false,
       "dragonBallRelevance": "Piste parlée incluse dans un CD de chansons Dragon Ball; les personnes et, pour la piste 1, le sujet sont ceux cités par la page Kanzenshuu."
+    },
+    {
+      "id": "jump-original-cd-1993-akira-toriyama-interview",
+      "url": "https://www.kanzenshuu.com/translations/jump-original-cd-1993-akira-toriyama-interview/",
+      "title": "Akira Toriyama Interview — Jump Original CD (1993)",
+      "publication": "Jump Original CD, WJ-0004 (audio giveaway, 1993)",
+      "publicationType": "Audio CD",
+      "format": "Recorded interview, full English transcription",
+      "publicationDate": "1993",
+      "sourceDate": "1993 (CD release; recording date unspecified)",
+      "participants": [
+        "Akira Toriyama"
+      ],
+      "topics": [
+        "Dragon Ball origins",
+        "Goku",
+        "Saiyan background",
+        "manga creation"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json",
+      "acquired": true,
+      "transcriptAvailable": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Jump Original CD (1993): Akira Toriyama Interview",
+      "sourceDescription": "Kanzenshuu publishes the translated transcript of Toriyama speaking on the first Jump Original CD (WJ-0004), released as a giveaway in 1993; the recording date is unspecified. Kanzenshuu publication date: 2024-08-02.",
+      "questionCount": null,
+      "sectionHeadings": [
+        "Jump Original CD (1993) Akira Toriyama Interview"
+      ],
+      "editorialSummary": "Toriyama raconte que l’idée de Dragon Ball naît à la fin de Dr. Slump, lorsque son éditeur Kazuhiko Torishima lui suggère de dessiner une histoire de kung-fu, genre qu’il aime regarder. Il explique avoir voulu un Goku très ordinaire, puis lui avoir ajouté une queue et modifié sa coiffure; son origine extraterrestre n’était pas prévue au départ. Il évoque la difficulté d’inventer des combats toujours plus puissants après Piccolo Daimaō, puis son entrée dans le manga après avoir quitté une agence de publicité et tenté un concours pour gagner un prix.",
+      "reviewStatus": "source-page-cross-checked",
+      "kanzenshuuPublicationDate": "2024-08-02"
     }
   ]
 }

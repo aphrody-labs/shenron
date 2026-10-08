@@ -94,35 +94,6 @@
       "forumContent": false
     },
     {
-      "id": "jump-original-cd-1993-akira-toriyama-interview",
-      "title": "Akira Toriyama Interview — Jump Original CD (1993)",
-      "summary": "Toriyama raconte que l’idée de Dragon Ball naît à la fin de Dr. Slump, lorsque son éditeur Kazuhiko Torishima lui suggère de dessiner une histoire de kung-fu, genre qu’il aime regarder. Il explique avoir voulu un Goku très ordinaire, puis lui avoir ajouté une queue et modifié sa coiffure; son origine extraterrestre n’était pas prévue au départ. Il évoque la difficulté d’inventer des combats toujours plus puissants après Piccolo Daimaō, puis son entrée dans le manga après avoir quitté une agence de publicité et tenté un concours pour gagner un prix.",
-      "keyInformation": [
-        "Toriyama situe l’idée de Dragon Ball vers la fin de Dr. Slump, à la suggestion de son ancien éditeur Kazuhiko Torishima.",
-        "Il dit avoir regardé des films de kung-fu de Jackie Chan et Bruce Lee et avoir hésité à transformer ce loisir en travail.",
-        "Goku devait être un personnage très ordinaire; Toriyama a ensuite changé légèrement sa coiffure et ajouté une queue.",
-        "L’origine extraterrestre de Goku n’était pas prévue au début de la série.",
-        "Toriyama décrit les difficultés à renouveler des combats dont les adversaires deviennent toujours plus puissants.",
-        "Il raconte avoir quitté une agence de publicité, échoué à un concours de manga et poursuivi le dessin jusqu’à ses débuts professionnels."
-      ],
-      "source": {
-        "publication": "Jump Original CD, WJ-0004 (cadeau tiré au sort, 1993)",
-        "pages": "Enregistrement audio; transcription anglaise publiée par Kanzenshuu",
-        "date": "2024-08-02",
-        "participants": [
-          "Akira Toriyama"
-        ],
-        "archivedTranslation": "https://www.kanzenshuu.com/translations/jump-original-cd-1993-akira-toriyama-interview/",
-        "questionAnswerCount": null,
-        "formatNote": "Monologue d’entretien issu d’un CD; la transcription traduite est intégralement reproduite sur la page Kanzenshuu.",
-        "forumContent": false,
-        "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json"
-      },
-      "dragonBallRelevance": "Directe : Toriyama parle de la genèse de Dragon Ball, de la conception initiale de Goku et de l’évolution des combats.",
-      "status": "summary-written-source-page-cross-checked",
-      "forumContent": false
-    },
-    {
       "id": "site-post-75334-akai-victory-uchida-super-dragon-ball-divers-interview",
       "title": "Akai et Victory Uchida — entretien vidéo sur Super Dragon Ball Divers",
       "kind": "video-interview-excerpt",
@@ -185,7 +156,38 @@
       "dragonBallRelevance": "Directe: témoignage de l’ancien éditeur de Dragon Ball sur les discussions ayant précédé le projet Battle of Gods.",
       "status": "summary-based-on-kanzenshuu-video-excerpt-source-date-unknown",
       "forumContent": false
+    },
+    {
+      "year": 2024,
+      "id": "site-post-76839-podcast-episode-0515",
+      "title": "Podcast Kanzenshuu #0515 — JP de The Space Above Us",
+      "kind": "audio-conversation",
+      "summary": "Mike invite JP du podcast The Space Above Us à examiner les représentations de l’espace dans Dragon Ball : plausibilité des voyages, communications intergalactiques et téléportation. Cas frontière retenu pour cohérence avec l’épisode #0533 : conversation d’analyse avec un invité, sans entretien annoncé avec un créateur ou professionnel de Dragon Ball. Le billet ne fournit que le synopsis; l’audio n’est pas acquis localement et n’est pas transcrit.",
+      "keyInformation": [
+        "Le synopsis décrit une conversation entre Mike et JP (The Space Above Us) sur les voyages spatiaux, les communications intergalactiques et la téléportation dans Dragon Ball.",
+        "Cas frontière : le synopsis seul ne documente aucun entretien de professionnel ou créateur de Dragon Ball.",
+        "Audio lié dans le billet, non acquis localement; aucune transcription disponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2024/11/11/podcast-episode-0515/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2024-11-11",
+        "participants": [
+          "JP (The Space Above Us)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0515.mp3",
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — conversation analytique avec un invité (cas frontière)",
+        "scopeNote": "Cas frontière ajouté pour cohérence avec #0533 : conversation analytique d’un invité, pas témoignage d’un créateur ou professionnel; résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Analyse d’éléments de Dragon Ball, sans témoignage de créateur ou professionnel de la franchise."
     }
   ]
 }
-

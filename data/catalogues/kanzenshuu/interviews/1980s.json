@@ -2,6 +2,37 @@
   "decade": "1980s",
   "records": [
     {
+      "id": "akira-toriyama-tankobon-ask-me-anything",
+      "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
+      "title": "Toriyama-san’s Dragon Ball Ask-Me-Anything Corner",
+      "publication": "Dragon Ball Tankōbon, volumes 1–12",
+      "publicationType": "Manga volumes",
+      "format": "Reader Q&A",
+      "publicationDate": "10 September 1985 (first volume; Q&A section spans volumes 1–12)",
+      "kanzenshuuPublicationDate": "2022-04-26",
+      "participants": [
+        "Akira Toriyama",
+        "Dragon Ball readers"
+      ],
+      "topics": [
+        "Dragon Ball (Manga)",
+        "Author Q&A",
+        "Reader correspondence"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/akira-toriyama-tankobon-ask-me-anything.html",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "pageTitle": "Translations | Toriyama-san’s Dragon Ball Ask-Me-Anything Corner",
+      "sourceDescription": "Complete Kanzenshuu transcription of 65 reader questions and 65 answers by Akira Toriyama, collected from Dragon Ball tankōbon volumes 1–12. The local original is complete; the catalogue summary is not a full transcription.",
+      "questionCount": 65,
+      "sectionHeadings": [
+        "Dragon Ball Tankōbon volumes 1–12: reader Q&A"
+      ],
+      "editorialSummary": "Toriyama answers readers on Dragon Ball, characters, manga creation and everyday topics, often with humor. The full local Kanzenshuu transcription contains 65 questions and 65 answers; this catalogue entry summarizes it without reproducing the complete exchange.",
+      "reviewStatus": "source-acquired-summary-written"
+    },
+    {
       "id": "monthly-starlog-1980-11-akira-toriyama-interview",
       "url": "https://www.kanzenshuu.com/translations/monthly-starlog-1980-11-akira-toriyama-interview/",
       "title": "Akira Toriyama Interview",

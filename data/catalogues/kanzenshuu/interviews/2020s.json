@@ -675,38 +675,6 @@
       "reviewStatus": "source-post-cross-checked-partial-video-interview"
     },
     {
-      "id": "jump-original-cd-1993-akira-toriyama-interview",
-      "url": "https://www.kanzenshuu.com/translations/jump-original-cd-1993-akira-toriyama-interview/",
-      "title": "Akira Toriyama Interview — Jump Original CD (1993)",
-      "publication": "Jump Original CD, WJ-0004 (audio giveaway, 1993)",
-      "publicationType": "Audio CD",
-      "format": "Recorded interview, full English transcription",
-      "publicationDate": "2024-08-02",
-      "sourceDate": "1993 (CD release; recording date unspecified)",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball origins",
-        "Goku",
-        "Saiyan background",
-        "manga creation"
-      ],
-      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json",
-      "acquired": true,
-      "transcriptAvailable": true,
-      "forumContent": false,
-      "alternatePrimarySource": null,
-      "pageTitle": "Jump Original CD (1993): Akira Toriyama Interview",
-      "sourceDescription": "Kanzenshuu publishes the translated transcript of Toriyama speaking on the first Jump Original CD (WJ-0004); its post identifies the CD as a 1993 giveaway.",
-      "questionCount": null,
-      "sectionHeadings": [
-        "Jump Original CD (1993) Akira Toriyama Interview"
-      ],
-      "editorialSummary": "Toriyama raconte que l’idée de Dragon Ball naît à la fin de Dr. Slump, lorsque son éditeur Kazuhiko Torishima lui suggère de dessiner une histoire de kung-fu, genre qu’il aime regarder. Il explique avoir voulu un Goku très ordinaire, puis lui avoir ajouté une queue et modifié sa coiffure; son origine extraterrestre n’était pas prévue au départ. Il évoque la difficulté d’inventer des combats toujours plus puissants après Piccolo Daimaō, puis son entrée dans le manga après avoir quitté une agence de publicité et tenté un concours pour gagner un prix.",
-      "reviewStatus": "source-page-cross-checked"
-    },
-    {
       "id": "site-post-78507-toyotaro-dragon-ball-legends-7th-anniversary-illustration-qa",
       "url": "https://www.kanzenshuu.com/2025/06/20/translation-update-special-project-toyotaro-drew-it-image-90/",
       "title": "Toyotarō — illustration Dragon Ball Legends du 7e anniversaire",
@@ -977,6 +945,114 @@
       "sectionHeadings": [],
       "editorialSummary": "Mike s’entretient avec Vincent Haddad, auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise. Le synopsis local présente l’invité et son livre sans préciser les sujets détaillés de leur conversation. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
       "reviewStatus": "synopsis-only-audio-not-acquired"
+    },
+    {
+      "id": "site-post-76839-podcast-episode-0515",
+      "url": "https://www.kanzenshuu.com/2024/11/11/podcast-episode-0515/",
+      "title": "Podcast Kanzenshuu #0515 — JP de The Space Above Us",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Podcast audio — conversation analytique avec un invité (cas frontière)",
+      "publicationDate": "2024-11-11",
+      "participants": [
+        "JP (The Space Above Us)"
+      ],
+      "topics": [
+        "Analyse de l’espace dans Dragon Ball : voyages spatiaux, communications intergalactiques et téléportation"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0515.mp3",
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Cas frontière ajouté pour cohérence avec #0533 : conversation analytique d’un invité, pas témoignage d’un créateur ou professionnel; résumé limité au synopsis local; audio non acquis et transcription indisponible.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike invite JP du podcast The Space Above Us à examiner les représentations de l’espace dans Dragon Ball : plausibilité des voyages, communications intergalactiques et téléportation. Cas frontière retenu pour cohérence avec l’épisode #0533 : conversation d’analyse avec un invité, sans entretien annoncé avec un créateur ou professionnel de Dragon Ball. Le billet ne fournit que le synopsis; l’audio n’est pas acquis localement et n’est pas transcrit.",
+      "reviewStatus": "synopsis-only-audio-not-acquired-borderline"
+    },
+    {
+      "id": "site-post-78414-podcast-episode-0521",
+      "url": "https://www.kanzenshuu.com/2025/05/04/podcast-episode-0521/",
+      "title": "Podcast Kanzenshuu #0521 — Von et Made in Asia 2025",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
+      "publicationDate": "2025-05-04",
+      "participants": [
+        "Von (contributeur Kanzenshuu)"
+      ],
+      "topics": [
+        "Compte rendu de Made in Asia 2025; production et artwork Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0521.mp3",
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le synopsis documente une conversation de Kanzenshuu avec son contributeur Von à propos d’une convention et de ses invités; il ne documente pas un entretien direct avec Nakatsuru ou Kubota. Audio non acquis et transcription indisponible.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike s’entretient avec Von, contributeur de Kanzenshuu, au sujet de Made in Asia 2025, où Katsuyoshi Nakatsuru et Chikashi Kubota figuraient parmi les invités. Le synopsis promet des anecdotes de coulisses sur la production, des réponses à des questions de fans et une discussion sur l’artwork; il ne dit pas que Nakatsuru ou Kubota sont eux-mêmes interviewés dans l’épisode. Le billet ne transcrit pas la conversation; l’audio est lié mais non acquis localement.",
+      "reviewStatus": "synopsis-checked-audio-pending"
+    },
+    {
+      "id": "site-post-78551-podcast-episode-0526",
+      "url": "https://www.kanzenshuu.com/2025/07/14/podcast-episode-0526/",
+      "title": "Podcast Kanzenshuu #0526 — Von et Japan Expo 2025",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
+      "publicationDate": "2025-07-14",
+      "participants": [
+        "Von (contributeur Kanzenshuu)"
+      ],
+      "topics": [
+        "Compte rendu de Japan Expo 2025; Dragon Ball et ses créateurs"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0526.mp3",
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Conversation avec le contributeur Von au sujet de l’événement; les créateurs cités ne sont pas présentés comme interviewés dans cet épisode. Audio non acquis et transcription indisponible.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike s’entretient avec Von, contributeur de Kanzenshuu, à propos de Japan Expo 2025 à Paris. Le synopsis indique que Kazuhiko Torishima, Katsuyoshi Nakatsuru et Toyotarō figuraient parmi les invités et annonce des récits et anecdotes issus de l’événement; il ne les présente pas comme interlocuteurs de l’épisode. Le billet ne reproduit pas la conversation; l’audio est lié mais non acquis localement.",
+      "reviewStatus": "synopsis-checked-audio-pending"
+    },
+    {
+      "id": "site-post-78987-podcast-episode-0532",
+      "url": "https://www.kanzenshuu.com/2025/12/16/podcast-episode-0532/",
+      "title": "Podcast Kanzenshuu #0532 — Von et Manga Barcelona 2025",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
+      "publicationDate": "2025-12-16",
+      "participants": [
+        "Von (contributeur Kanzenshuu)"
+      ],
+      "topics": [
+        "Compte rendu de Manga Barcelona 2025; Takashi Matsuyama et production Dragon Ball"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0532.mp3",
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Conversation avec le contributeur Von au sujet de l’événement; Matsuyama est mentionné comme invité, mais le synopsis ne le présente pas comme interlocuteur. Audio non acquis et transcription indisponible.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike s’entretient avec Von, contributeur de Kanzenshuu, au sujet de Manga Barcelona 2025, où Takashi Matsuyama, second assistant d’Akira Toriyama, figurait parmi les invités. Le synopsis annonce des anecdotes de l’événement et un possible détail de production inédit; il ne dit pas que Matsuyama est interviewé dans l’épisode. Le billet ne transcrit pas la conversation; l’audio est lié mais non acquis localement.",
+      "reviewStatus": "synopsis-checked-audio-pending"
     }
   ]
 }
