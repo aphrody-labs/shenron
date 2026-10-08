@@ -332,10 +332,10 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
 ### Q342 : Le Statut Canonique de Garlic Junior
 - **Question :** Quel est le statut doctrinal officiel de Garlic Junior et de sa dimension de la Zone Morte (*Dead Zone*) ?
 - **Sources :** Film 1 *Dragon Ball Z : À la poursuite de Garlic* (1989) ; Série animée Épisodes 108 à 117.
-- **Auto-critique :** Classer formellement l'entité au Rang 4 (Non-canon / Hors-série Toei).
+- **Auto-critique :** Distinguer le personnage absent du manga de ses apparitions dans les productions Toei.
 - **Réponse Doctrinale :**  
   Garlic Junior — bien qu'étant le seul antagoniste de toute l'animation Dragon Ball à avoir obtenu l'immortalité biologique complète auprès de Shenron avant d'être aspiré dans sa propre brèche dimensionnelle (*Dead Zone*) — est une **création exclusive de la Toei Animation**.  
-  Il n'apparaît dans aucune case des 42 tomes du manga original et n'a jamais été mentionné par Akira Toriyama. Ses deux apparitions (Film 1 et arc filler entre Namek et les Cyborgs) relèvent strictement du **Rang 4 (Non-canon / Dérivé Toei)**.
+  Il n'apparaît pas dans le manga original. Ses apparitions dans le film 1 et l'arc de l'anime entre Namek et les Cyborgs appartiennent à ces œuvres officielles et à leurs continuités ; elles ne doivent pas être présentées comme des événements du manga.
 
 ---
 
@@ -344,7 +344,7 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
 - **Sources :** Film 2 *Dragon Ball Z : Le Robot des Glaces* (1990) ; *Daizenshuu 6*, p. 52.
 - **Auto-critique :** Relever l'incompatibilité chronologique totale avec la trame du manga.
 - **Réponse Doctrinale :**  
-  Le Dr Willow (*Dokutā Uirō*), savant dont le cerveau gigantesque a été transplanté dans un châssis robotique après avoir été enseveli sous les glaces de Tsurumai-Tsuburi, appartient au **Rang 4 (Non-canon)**.  
+  Le Dr Willow (*Dokutā Uirō*), savant dont le cerveau gigantesque a été transplanté dans un châssis robotique après avoir été enseveli sous les glaces de Tsurumai-Tsuburi, est un personnage du film 2 ; il n'appartient pas à la trame du manga original.
   Le long-métrage présente des incohérences temporelles insolubles avec le canon absolu : Goku y maîtrise déjà le Kaiō-ken et le Genki Dama alors que Piccolo, Yamcha, Tenshinhan et Chaozu sont vivants sur Terre, ce qui est strictement impossible chronologiquement après la bataille contre les Saiyans.
 
 ---
@@ -355,16 +355,16 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
 - **Auto-critique :** Citer l'explication officielle de la ressemblance des guerriers saiyans de basse classe.
 - **Réponse Doctrinale :**  
   Thalès (*Tāresu*) a été créé par la Toei Animation pour illustrer ce que Son Goku serait devenu s'il ne s'était pas cogné la tête enfant. La production a justifié leur visage identique par l'affirmation que les Saiyans de basse classe (*Kakyū Senshi*) partagent un nombre très restreint de motifs génétiques faciaux.  
-  Thalès et l'Arbre Sacré (*Shinseiju* / Arbre du Pouvoir dévorant la vie planétaire) sont classés au **Rang 4 (Non-canon)**, n'ayant aucune existence dans le canon officiel du manga.
+  Thalès et l'Arbre Sacré (*Shinseiju* / Arbre du Pouvoir dévorant la vie planétaire) appartiennent au film 3 et à sa continuité ; ils ne sont pas présents dans le manga original.
 
 ---
 
 ### Q345 : Le Statut Canonique de Cooler
 - **Question :** Quel est le statut doctrinal de Cooler, frère aîné de Freezer, et de sa cinquième métamorphose ?
 - **Sources :** Film 5 *Dragon Ball Z : La Revanche de Cooler* (1991) ; Film 6 (1992) ; *Daizenshuu 6*, p. 78.
-- **Auto-critique :** Souligner que malgré un design conçu par Toriyama pour le film, le personnage ne fait pas partie de l'histoire canonique du manga.
+- **Auto-critique :** Distinguer la contribution de Toriyama au design de Cooler de son absence dans le récit du manga.
 - **Réponse Doctrinale :**  
-  Bien qu'Akira Toriyama ait dessiné l'esquisse préparatoire du personnage pour les besoins promotionnels de la Toei, Cooler (*Kūra*) et sa transformation cuirassée à masque facial appartiennent au **Rang 4 (Non-canon)**.  
+  Cooler (*Kūra*) et sa transformation cuirassée à masque facial appartiennent aux films 5 et 6 ; ils ne sont ni mentionnés ni intégrés au récit du manga original.
   Dans le manga original, Freezer et le Roi Cold sont formellement présentés comme les uniques membres dirigeants de leur clan familial impérial. Cooler n'est jamais mentionné ni attesté dans la chronologie officielle de Toriyama.
 
 ---
@@ -374,7 +374,7 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
 - **Sources :** Film 12 *Fusions* (1995) ; Film 13 *L'Attaque du Dragon* (1995) ; *Daizenshuu 6*.
 - **Auto-critique :** Analyser les impossibilités de statut des personnages (Goku et Vegeta tous deux morts avec leur auréole alors que la Terre est intacte).
 - **Réponse Doctrinale :**  
-  Les films 12 et 13 sont des chefs-d'œuvre visuels d'animation Toei mais relèvent du **Rang 4 (Non-canon)** :  
+  Les films 12 et 13 racontent des événements propres à leurs continuités filmiques. Leur chronologie diverge de celle du manga :
   - Dans le Film 12, Goku et Vegeta sont tous deux morts en Enfer au moment où Gotenks combat sur Terre, situation qui n'a jamais existé dans le manga (Vegeta est mort alors que Goku était vivant chez Kaiohshin, puis Goku revient sur Terre dès que Buutenks apparaît).  
   - Dans le Film 13, l'épée donnée à Trunks prétend expliquer l'origine de son épée du futur, créant une aberration temporelle majeure puisque le Trunks du Futur vivait dans une timeline où ces événements n'ont jamais pu se produire.
 
@@ -383,20 +383,20 @@ Ce dossier consigne 50 études doctrinales approfondies sur les organisations cr
 ### Q347 : Le Statut Canonique de Baby le Tsufuru (*Dragon Ball GT*)
 - **Question :** Comment la création de Baby dans *Dragon Ball GT* tente-t-elle de clore la rivalité historique entre Tsufurus et Saiyans ?
 - **Sources :** *Dragon Ball GT* Épisodes 16 à 31 (1996-1997) ; *Daizenshuu 7*, p. 130.
-- **Auto-critique :** Rappeler le statut de série dérivée Toei sans implication scénaristique de Toriyama (Rang 4).
+- **Auto-critique :** Situer les événements et les concepts propres à GT dans la continuité de cette série.
 - **Réponse Doctrinale :**  
   Baby (*Bebī*), organisme cyber-génétique conçu avec les cellules du Roi Tsufuru pour parasiter les corps des Saiyans et asservir la population terrestre par des pontes d'œufs dans le cerveau, est une intrigue exclusive de la Toei Animation pour *Dragon Ball GT*.  
-  Bien que Toriyama ait validé autrefois le concept historique des Tsufurus massacrés par les Saiyans pour l'anime DBZ, la série *Dragon Ball GT* dans son ensemble est classée au **Rang 4 (Non-canon / Dérivé commercial)**.
+  *Dragon Ball GT* est une série officielle située après End of Z. Les événements propres à GT, dont l'histoire de Baby, doivent être attribués à cette continuité ; leur absence du manga original n'annule pas leur statut de continuité selon les consignes du projet.
 
 ---
 
 ### Q348 : Le Statut Canonique des Dragons Maléfiques (*Jāku Ryū*)
 - **Question :** Quel concept fascinant régissait l'apparition des sept dragons corrompus à la fin de *Dragon Ball GT* ?
 - **Sources :** *Dragon Ball GT* Épisodes 48 à 64 ; *Dragon Ball GT Perfect Files*.
-- **Auto-critique :** Reconnaître l'élégance thématique de la punition pour l'abus des Dragon Balls tout en maintenant son statut non-canonique.
+- **Auto-critique :** Présenter cette idée comme un élément de la conclusion de GT et ne pas l'attribuer au manga original.
 - **Réponse Doctrinale :**  
   Le concept des Dragons Maléfiques (*Jāku Ryū*) repose sur une idée directrice séduisante : chaque souhait altruiste formulé auprès de Shenron au fil des décennies accumulait une charge résiduelle équivalente d'énergie négative (*Mainasu Enerugī*) à l'intérieur des sphères. Saturées, les Dragon Balls se fendent pour donner naissance à sept entités démoniaques destructrices menées par Li Shenron (*Ī Shinron*).  
-  Malgré cette remarquable conclusion morale, cette saga n'a pas été écrite ni dessinée par Akira Toriyama et relève du **Rang 4 (Non-canon)**.
+  Cette saga est la conclusion de *Dragon Ball GT* et appartient à sa continuité officielle ; elle n'est pas racontée dans le manga original.
 
 ---
 

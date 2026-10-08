@@ -127,17 +127,17 @@ Ce dossier consigne 50 études doctrinales approfondies sur les métamorphoses, 
 ### Q173 : Le Super Saiyan Ikari de Trunks : Statut Canonique
 - **Question :** Quel est le statut doctrinal de la forme « Super Saiyan Ikari » (yeux blancs, double aura jaune et bleue) employée par Trunks du Futur dans l'anime DBS ?
 - **Sources :** *Dragon Ball Super* Anime Épisode 62 ; Manga DBS Chapitres 19 à 26 (absence totale de la forme).
-- **Auto-critique :** Appliquer la hiérarchie des rangs canoniques (Rang 4 : Dérivé animé non supervisé par le manga).
+- **Auto-critique :** Distinguer la représentation propre à l'anime DBS de celle du manga DBS.
 - **Réponse Doctrinale :**  
   Le « Super Saiyan Ikari » (*Chō Saiya-jin Ikari* / Super Saiyan Enragé) est une **création exclusive de la Toei Animation** pour l'adaptation télévisuelle de l'arc Trunks du Futur.  
-  Dans le manga officiel de Toyotarō et Akira Toriyama, cette forme n'existe pas : Trunks combat avec son Super Saiyan 2 optimisé (dont Goku remarque qu'il rivalise avec son propre SSJ3 après son entraînement dans le monde des Kaiōshin). Le SSJ Ikari est classé au **Rang 4 (Non-canon / Dérivé)**.
+  Cette forme est propre à la continuité de l'anime DBS et n'apparaît pas dans le manga DBS, où Trunks combat avec son Super Saiyan 2 optimisé. Il faut attribuer le Super Saiyan Ikari à l'anime plutôt que le présenter comme un événement du manga.
 
 ---
 
 ### Q174 : La Mutation Berserk de Broly et Kale
 - **Question :** Comment Toriyama et les guides officiels expliquent-ils la forme surdimensionnée à cheveux verts de Broly (*DBS: Broly*) et Kale ?
 - **Sources :** Film *Dragon Ball Super: Broly* (2018) ; Roman officiel du film ; Conception de Toriyama.
-- **Auto-critique :** Distinguer le Broly de 1993 (Toei, non-canon) du Broly réécrit par Toriyama en 2018.
+- **Auto-critique :** Distinguer le Broly du film de 1993 de la version de *Dragon Ball Super: Broly*.
 - **Réponse Doctrinale :**  
   Dans le canon de Toriyama (2018), Broly possède d'abord l'état **Colère** (*Ikari*), où il puise dans la force destructrice de l'Oozaru ($\times 10$) tout en conservant son corps d'humanoïde.  
   Lorsqu'il assiste à la mort de Paragus, la fusion de cette puissance Bestiale Oozaru avec l'éveil du Super Saiyan provoque une surcharge génétique : le stade **Super Saiyan Pleine Puissance** (*Chō Saiya-jin Furu Pawā*), marqué par des yeux révulsés, une masse musculaire colossale et une chevelure vert émeraude.
@@ -408,7 +408,7 @@ Ce dossier consigne 50 études doctrinales approfondies sur les métamorphoses, 
 ### Q200 : Gogeta dans le Canon Officiel (*DBS: Broly*)
 - **Question :** Dans quelles conditions la fusion Métamole Gogeta a-t-elle été officiellement introduite dans le canon de Dragon Ball ?
 - **Sources :** Film *Dragon Ball Super: Broly* (2018) écrit par Akira Toriyama ; Manga DBS Chapitre 42 (mention).
-- **Auto-critique :** Rappeler que Gogeta était un personnage purement Toei/non-canon (Film 12 de 1995 et DBGT) jusqu'à sa réécriture par Toriyama en 2018.
+- **Auto-critique :** Distinguer les apparitions de Gogeta selon leurs films, séries et continuités.
 - **Réponse Doctrinale :**  
   Gogeta a été intégré au canon officiel par Akira Toriyama dans le film *Dragon Ball Super: Broly* (2018).  
   Face à la puissance incontrôlable de Broly Super Saiyan Pleine Puissance, Goku et Vegeta fuient par téléportation chez Piccolo pour apprendre la Danse de la Fusion. Après deux tentatives ratées (créant Veku gros puis Veku squelettique), ils réussissent la fusion parfaite et s'éveillent successivement en Super Saiyan puis en Super Saiyan Blue pour terrasser Broly.
@@ -491,7 +491,7 @@ Ce dossier consigne 50 études doctrinales approfondies sur les métamorphoses, 
 - **Auto-critique :** Rappeler le concepteur exact du design (Nakatsuru et non Toriyama).
 - **Réponse Doctrinale :**  
   Le Super Saiyan 4 (*Chō Saiya-jin 4*) — caractérisé par une toison rouge sur le torse, des cheveux noirs et une queue retrouvée après le stade d'Oozaru Doré (*Ōgon Ōzaru*) — a été conçu graphiquement par le character designer de la Toei Animation **Katsuyoshi Nakatsuru**.  
-  Akira Toriyama s'est contenté d'en dessiner une esquisse hommage pour le Dragon Box GT. N'apparaissant dans aucun manga canonique ni projet supervisé par l'auteur, le Super Saiyan 4 relève du **Rang 4 (Non-canon / Hors-série Toei)**.
+  Akira Toriyama a dessiné une esquisse pour le Dragon Box GT. Le Super Saiyan 4 est une forme de la continuité officielle de *Dragon Ball GT*, située après les événements d'End of Z. Son absence du manga original est une distinction de support.
 
 ---
 

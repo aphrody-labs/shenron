@@ -4,7 +4,7 @@ Ce cycle consolide les dossiers Kanzenshuu, les trois analyses de Daniel publié
 
 ---
 
-## Question 61 : Que prouve le corpus des interviews Kanzenshuu ?
+## Question 361 : Que prouve le corpus des interviews Kanzenshuu ?
 
 ### Réponse consolidée
 
@@ -12,7 +12,7 @@ Le catalogue local dénombre 267 notices réparties dans 37 fichiers annuels cou
 
 **Référence de travail :** `var/reports/kanzenshuu-interviews-final-coverage.md` et les rapports d’audit annuels.
 
-## Question 62 : Les conclusions de Daniel sont-elles des faits établis ?
+## Question 362 : Les conclusions de Daniel sont-elles des faits établis ?
 
 ### Réponse consolidée
 
@@ -24,7 +24,7 @@ Non : les dossiers sont des relevés paraphrasés des arguments de Daniel. Ils d
 
 **Références de travail :** `var/reports/capsule-commentary-critical-review.md` et les trois relevés `var/reports/capsule-commentary-*-agent.md`.
 
-## Question 63 : Télécharger des images revient-il à les avoir étudiées ?
+## Question 363 : Télécharger des images revient-il à les avoir étudiées ?
 
 ### Réponse consolidée
 
@@ -32,15 +32,19 @@ Non. Les manifestes rapportent 1 153 originaux Broly reçus sur 1 153, 747 pour 
 
 **Référence de travail :** les rapports d’acquisition et manifestes d’images sous `data/source-acquisition/capsule-commentary/`.
 
-## Question 64 : Que dit le databook sur le multiplicateur des Potara ?
+## Question 364 : Que dit le databook sur le multiplicateur des Potara ?
 
 ### Réponse consolidée
 
-Le *Super Exciting Guide: Story Volume*, planche 63, décrit l’augmentation de puissance obtenue par Goku et Vegeta comme si extraordinaire qu’elle relève de la « multiplication » plutôt que de la somme de leurs puissances de combat. C’est un indice explicite d’une hausse qualitative non additive, de type multiplicatif. Le texte ne donne aucun coefficient numérique et ne démontre pas la formule littérale `A × B`. Une transcription OCR semble avoir déformé パワーアップ en パワーメップ; vérifier le scan avant de citer la graphie.
+Les Potara réunissent instantanément deux porteurs, sans danse ni synchronisation gestuelle. La fiche DBFR de Vegetto renvoie aux *Daizenshuu* 2, 4 et 7 pour les éléments sur le personnage et décrit la fusion comme définitive dans le manga original. Les règles ultérieures de *Dragon Ball Super* doivent être traitées séparément de cette présentation initiale et selon leur support.
 
-**Référence :** [DBFR, *Super Exciting Guide: Story Volume*, planche 63](https://dragonballfr.com/wiki/databooks/9#planche-63). Le *Dragon Book*, planche 84, dit également que les Potara fusionnent les puissances des plus grands rivaux, sans facteur chiffré : [DBFR, *Dragon Book*, planche 84](https://dragonballfr.com/wiki/databooks/46#planche-84).
+Le *Super Exciting Guide: Story Volume*, planche 63, compare le gain de puissance à une « multiplication » plutôt qu’à une addition. Le *Dragon Book*, planche 84, décrit les Potara comme fusionnant les puissances de grands rivaux. Ces formulations soutiennent un gain qualitatif de type multiplicatif, mais aucun de ces passages ne donne de coefficient numérique, de formule `A × B` ou de règle permettant de calculer un résultat à partir des forces individuelles. La formule « multiplication exponentielle » affichée par la page générale des transformations DBFR est un résumé éditorial, pas un coefficient issu du passage du guide.
 
-## Question 65 : Gogeta SSJ4 est-il dix fois plus fort qu’un SSJ4 ?
+La domination de Buuhan par Vegetto confirme un écart de puissance considérable dans cet affrontement, mais ne permet pas de remonter au calcul de la fusion : les sources citées ne fournissent pas les valeurs d'entrée nécessaires. En l'état des preuves DBFR, la puissance Potara se représente par une fonction inconnue des deux partenaires, avec un gain décrit comme multiplicatif plutôt qu'additif ; sa valeur reste **non déterminée**.
+
+**Références :** [Fiche DBFR de Vegetto et références Daizenshuu](https://dragonballfr.com/wiki/personnages/66) ; [*Super Exciting Guide: Story Volume*, planche 63](https://dragonballfr.com/wiki/databooks/9#planche-63) ; [*Dragon Book*, planche 84](https://dragonballfr.com/wiki/databooks/46#planche-84) ; [page DBFR des transformations](https://dragonballfr.com/wiki/transformations).
+
+## Question 365 : Gogeta SSJ4 est-il dix fois plus fort qu’un SSJ4 ?
 
 ### Réponse consolidée
 
@@ -52,7 +56,7 @@ Le *GT Perfect File Vol. 2*, planche 13, emploie 数十倍 au sujet de la puissa
 
 Toujours séparer le texte explicite, sa traduction, l’interprétation de l’auteur étudié et notre propre déduction. Un grand nombre de médias, d’images ou de formulations ne remplace pas l’examen de leur provenance, de leur date et de leur contexte. Une conclusion de puissance reste qualitative si la source ne chiffre pas le rapport.
 
-## Question 66 : Que représente réellement le catalogue des 267 interviews ?
+## Question 366 : Que représente réellement le catalogue des 267 interviews ?
 
 ### Réponse consolidée
 
@@ -62,7 +66,7 @@ L’audit des fichiers confirme un résumé et des informations clés pour chacu
 
 **Références de travail :** catalogue et annuelles dans `data/catalogues/kanzenshuu/`; [couverture finale](../../../var/reports/kanzenshuu-interviews-final-coverage.md); [audit 2020–2026](../../../var/reports/kanzenshuu-interview-annual-audit-2020-2026.md).
 
-## Question 67 : Le manga tranche-t-il Kid Buu contre Buuhan ?
+## Question 367 : Le manga tranche-t-il Kid Buu contre Buuhan ?
 
 ### Réponse consolidée
 
@@ -72,7 +76,7 @@ L’explication selon laquelle les absorptions des Kaiōshin ont diminué la pui
 
 **Références de travail :** `var/reports/capsule-commentary-buu-agent.md` et `var/reports/capsule-commentary-critical-review.md`.
 
-## Question 68 : Quel ordre de puissance peut-on défendre pour Broly Z ?
+## Question 368 : Quel ordre de puissance peut-on défendre pour Broly Z ?
 
 ### Réponse consolidée
 
@@ -82,7 +86,7 @@ Dans *Second Coming*, Broly domine le Gohan affaibli tel qu’il apparaît dans 
 
 **Références de travail :** `var/reports/capsule-commentary-broly-agent.md` et `data/catalogues/capsule-commentary/articles/broly.json`.
 
-## Question 69 : Où placer Super Janemba face à Goku SSJ3 et aux formes de Buu ?
+## Question 369 : Où placer Super Janemba face à Goku SSJ3 et aux formes de Buu ?
 
 ### Réponse consolidée
 

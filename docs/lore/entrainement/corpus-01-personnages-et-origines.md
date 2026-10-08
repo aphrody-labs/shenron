@@ -107,7 +107,7 @@ Ce dossier consigne 50 études approfondies de questions-réponses et d'auto-cri
 - **Sources :** Manga Tome 6, Chapitre 63 ; *Daizenshuu 7*, p. 86.
 - **Auto-critique :** Lever la contradiction entre le Dr Flappe (inventé par l'anime filler) et le Dr Gero canonique du manga.
 - **Réponse Doctrinale :**  
-  Dans le manga canonique d'Akira Toriyama, C-8 (*Hatchan*) a été conçu par le département scientifique de l'Armée du Ruban Rouge, sous la direction secrète du **Dr Gero** (le Dr Flappe étant un personnage d'animation exclusive Toei non canonique).  
+  Dans le manga d'Akira Toriyama, C-8 (*Hatchan*) est associé au **Dr Gero**. L'anime ajoute le Dr Flappe ; cette information appartient à l'adaptation télévisée et doit être rapportée comme telle, plutôt que traitée comme un fait du manga.
   C-8 est un modèle hybride inspiré du monstre de Frankenstein, fabriqué à partir d'un corps humain décédé modifié avec des implants cybernétiques et une bombe interne. Pacifique par essence, il refuse de faire usage de la violence et se lie d'amitié avec Son Goku, détruisant le Général Blanc (*White Shōgun*) pour protéger l'enfant.
 
 ---
@@ -334,7 +334,7 @@ Ce dossier consigne 50 études approfondies de questions-réponses et d'auto-cri
 ### Q88 : Le Roi Vegeta (*Bejīta-ō*) et son Élite Royale
 - **Question :** Quel était le niveau de combat du Roi Vegeta selon le Daizenshuu 7, et pourquoi a-t-il tenté de tuer l'enfant Broly dans le film DBS Broly ?
 - **Sources :** *Daizenshuu 7*, p. 110 ; Film *Dragon Ball Super: Broly* (2018).
-- **Auto-critique :** Distinguer l'ancienne version non-canon du Film 8 Z de la version canonique écrite par Toriyama en 2018.
+- **Auto-critique :** Distinguer le Broly du film de 1993 de la version de *Dragon Ball Super: Broly* (2018), chacune dans son œuvre et sa continuité.
 - **Réponse Doctrinale :**  
   Le Roi Vegeta possédait un Battle Power officiel d'environ **10 000 à 15 000**, constituant le sommet de la caste des guerriers d'élite saiyans.  
   Dans le film canonique *DBS Broly*, lorsqu'il constate que le bébé Broly affiche dans sa cuve d'incubation un niveau de combat mutant fluctuant bien au-dessus de celui de son propre fils le prince Vegeta, le Roi Vegeta est rongé par la jalousie dynastique et la peur d'un monstre incontrôlable. Il bannit immédiatement l'enfant sur la planète inhospitalière Vampa pour préserver la primauté de sa lignée royale.

@@ -19,7 +19,7 @@ Le Super Saiyan 5 vient d'un dessin de fan qui s'appelait Toyble ou Toyotaro ava
 - *D'où vient le sigle « AF » ?* « After Future », rumeur née sur les forums anglophones américains au début des années 2000.
 - *Décision d'auto-critique :* Reconstruire la généalogie exacte de la plus célèbre légende urbaine de l'histoire des mangas.
 
-### 4. Réponse Consolidée et Irréfutable :
+### 4. Réponse Consolidée :
 
 1. **L'Origine Espagnole de Mai 1999 (*Hobby Consolas*) :**
    - **Artiste originel :** L'illustrateur espagnol **David Montiel Franco** (connu sous le pseudonyme de **Tablos**).
@@ -51,7 +51,7 @@ Parce que Toriyama n'a jamais dit ça. Il ne s'occupait pas des niveaux de puiss
 - *D'où venait la vraie comparaison Vegetto/SSJ4 ?* D'un guide de jeu vidéo ou d'un encart de l'anime comics de GT (*Anime Comics GT* affirmant que Vegetto est peut-être plus fort qu'un SSJ4 ordinaire).
 - *Décision d'auto-critique :* Articuler la preuve documentaire négative et citer la véritable déclaration de Toriyama sur GT.
 
-### 4. Réponse Consolidée et Irréfutable :
+### 4. Réponse consolidée :
 
 1. **La Règle Doctrinale de Vérification des Citations :**
    - Sur **dragonballfr.com**, toute déclaration attribuée à Akira Toriyama doit obligatoirement être accompagnée :
@@ -96,8 +96,8 @@ Les films des années 90 ne peuvent pas rentrer dans la trame du manga parce que
    - Dans son introduction pour le *Daizenshuu 6 : Movies & TV Specials*, Akira Toriyama tranche définitivement la nature de ces productions :
      > **« Je considère les films d'animation comme des histoires se déroulant dans une dimension différente de celle de mon manga original. Je participe moi-même en tant que simple spectateur et j'apprécie ces versions alternatives créées par les talentueuses équipes de Toei Animation. »**
 3. **Le Statut Doctrinal de Shenron :**
-   - Les 13 premiers films DBZ sont classés au rang de **NON-CANON DÉRIVÉ (Tier 4)**.
-   - Ils n'interfèrent en rien avec la réalité canonique des 42 tomes du manga original d'Akira Toriyama.
+   - Les films Toei sont des œuvres officielles qui développent des continuités distinctes ; leurs événements ne s'intègrent pas toujours à la continuité du manga original.
+   - Une incompatibilité de chronologie avec le manga délimite la continuité du film ; elle ne transforme pas le film officiel en œuvre non canonique.
 
 ---
 
@@ -133,29 +133,28 @@ Parce que Goku venait juste d'avoir le Ki divin et qu'il ne savait pas encore le
 ## Question 60 : La Hiérarchie Inviolable des Cinq Rangs de Canonicité de Shenron
 
 ### 1. Question posée :
-*« Quels sont les cinq rangs de canonicité stricts établis par la doctrine permanente de Shenron sur dragonballfr.com, quelles œuvres intègrent chaque palier, et quelle est la règle absolue en cas de contradiction entre deux sources ? »*
+*« Comment distinguer les sources et continuités Dragon Ball, et quelle règle appliquer lorsqu'elles divergent ? »*
 
 ### 2. Réponse initiale :
-Il y a 5 rangs : le Canon Absolu qui est le manga en 42 tomes et Toriyama, le Canon Supervisé qui est DBS et Daima, les Extensions Officielles qui sont les Daizenshuu et le SEG, le Non-Canon Dérivé qui est les fillers, GT et les films Toei, et l'Apocryphe Fanon qui est le SSJ5 et les inventions de fans.
+La grille en cinq rangs peut décrire le type et la proximité d'une source, mais ne doit pas déclarer GT, les films officiels ou les adaptations animées non canoniques. Le manga original reste la référence narrative primaire ; les autres œuvres officielles s'interprètent dans leur support et leur continuité propres. Les œuvres de fans et les fausses citations se distinguent des œuvres officielles.
 
 ### 3. Auto-critique impitoyable (Mise à la place d'Omar) :
-- *Terminologie technique exacte des rangs :* `CANON_ABSOLU` (Tier 1), `CANON_SUPERVISE` (Tier 2), `EXTENSION_OFFICIELLE` (Tier 3), `NON_CANON_DERIVE` (Tier 4), `APOCRYPHE_FANON` (Tier 5).
+- *Terminologie descriptive des sources :* distinguer œuvre primaire, adaptation, œuvre officielle d'une continuité associée, guide officiel et fanon sans confondre proximité de source et statut officiel.
 - *Règle de résolution des contradictions :* La parole la plus proche de la main directe d'Akira Toriyama l'emporte toujours.
 - *Gestion de l'inconnu :* Tout ce qui n'a pas de source imprimée doit obligatoirement être désigné comme « non établi ».
 - *Décision d'auto-critique :* Dresser la charte doctrinale intégrale faisant foi pour l'ensemble du serveur Dragon Ball FR.
 
 ### 4. Réponse Consolidée et Irréfutable :
 
-| Rang Doctrinal | Code Système | Statut Canonique | Corpus & Œuvres Incluses | Règle d'Autorité |
-| :--- | :--- | :--- | :--- | :--- |
-| **Tier 1** | `CANON_ABSOLU` | **Canon Absolu** | • Manga *Dragon Ball* original en 42 tomes (chapitres 1 à 519).<br>• One-shots et œuvres d'Akira Toriyama (*Jaco the Galactic Patrolman*, *Dragon Ball Minus*, *Neko Majin*).<br>• Interviews et réponses signées directement de Toriyama. | **Autorité Suprême.** Le manga prime sur tout. Aucune source ne peut contredire ce corpus. |
-| **Tier 2** | `CANON_SUPERVISE` | **Canon Supervisé** | • Manga *Dragon Ball Super* (scénario et storyboards supervisés par Toriyama).<br>• Films récents supervisés (*Battle of Gods*, *Resurrection 'F'*, *Broly*, *Super Hero*).<br>• Série *Dragon Ball Daima* (Toriyama 2024). | Valide tant qu'il ne contredit pas formellement le Tier 1. |
-| **Tier 3** | `EXTENSION_OFFICIELLE` | **Extension Officielle** | • Guides encyclopédiques officiels de la Shueisha : *Daizenshuu 1 à 7*, *Chōzenshū 1 à 4*, *Super Exciting Guide* (2009), *Dragon Ball Landmark* et *Forever*. | Valide pour éclairer, mesurer et classifier le lore, mais s'incline devant les déclarations directes de Toriyama. |
-| **Tier 4** | `NON_CANON_DERIVE` | **Non-Canon Dérivé** | • Épisodes fillers des séries animées *DB*, *DBZ*, *DB Kai*, *DBS*.<br>• 13 premiers films d'animation Toei (1986-1995) et téléfilms spéciaux.<br>• Série *Dragon Ball GT*.<br>• Jeux vidéo et spin-offs d'arcade (*Super Dragon Ball Heroes*, *Xenoverse*). | Considéré comme des **dimensions alternatives et œuvres promotionnelles**. Strictement interdit pour arbitrer une question canonique. |
-| **Tier 5** | `APOCRYPHE_FANON` | **Apocryphe / Fanon** | • *Dragon Ball AF*, *Super Saiyan 5*, Xicor.<br>• Fausses citations et fausses interviews de Toriyama.<br>• *Doujinshi*, créations amateurs et spéculations de wikis de fans. | **Strictement banni et réfuté.** Toute donnée sans preuve imprimée officielle est désignée comme « non établie ». |
+| Type de source | Code descriptif | Corpus & Œuvres incluses | Manière de l'utiliser |
+| :--- | :--- | :--- | :--- |
+| **Œuvre narrative primaire** | `PRIMARY_MANGA` | Manga original *Dragon Ball* en 42 tomes ; référence prioritaire pour les événements qu'il raconte. | Citer tome et chapitre ; ne pas en déduire que les autres œuvres officielles n'existent pas dans leurs propres continuités. |
+| **Séries et films officiels** | `OFFICIAL_SCREEN_WORK` | Anime DB/DBZ/Kai/DBS, films, téléfilms, *Daima* et *GT*, avec leurs différences de continuité. | Attribuer chaque événement au support correspondant ; l'anime complète le manga sans le contredire selon les consignes du projet. |
+| **Guides, databooks et magazines officiels** | `OFFICIAL_REFERENCE` | *Daizenshuu*, *Chōzenshū*, *Super Exciting Guide*, autres guides et magazines autorisés. | Les utiliser pour éclairer les zones imprécises, en indiquant l'ouvrage, la page ou la planche et toute divergence. |
+| **Œuvres officielles associées** | `OFFICIAL_DERIVATIVE` | Jeux et autres productions officielles, selon leur continuité et leur degré de validation. | Informations recevables sur l'œuvre concernée ; ne pas les transférer automatiquement à une autre continuité. |
+| **Fanon et créations non officielles** | `FAN_WORK` | Créations amateurs, fausses citations et spéculations non sourcées. | Ne pas présenter comme information officielle ; signaler « non établi » quand les preuves manquent. |
 
 ---
 
 ### La Règle d'Or de la Doctrine Shenron :
-> En cas de conflit entre deux assertions, **la source la plus proche de la main directe d'Akira Toriyama l'emporte de manière absolue et sans appel**.  
-> Tout élément absent de ce corpus officiel vérifié est impérativement déclaré **« NON ÉTABLI »**, sans jamais combler par l'extrapolation.
+> Le manga original est prioritaire pour sa trame ; les adaptations, films et guides officiels se traitent selon leurs supports et leurs continuités, sans être rejetés pour cette seule raison. Toute affirmation doit rester liée à sa preuve et tout manque de preuve doit être signalé comme « non établi ».

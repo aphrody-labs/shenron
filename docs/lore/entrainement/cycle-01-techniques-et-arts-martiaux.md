@@ -55,9 +55,9 @@ Parce que le Super Saiyan consomme trop d'énergie et que le Kaiō-ken détruira
    - Le Super Saiyan classique (Grades 1, 2, 3) est caractérisé par une surcharge émotionnelle violente (*Ikari*) et un rayonnement de Ki turbulent qui fuit constamment hors de l'enveloppe corporelle (*Manga Chapitre 390*).
    - Le Kaiō-ken impose quant à lui un contrôle du flux intérieur d'une précision millimétrique, forçant le cœur et les vaisseaux à amplifier la pulsation du Ki.
    - Superposer l'instabilité explosive du Super Saiyan à la démultiplication interne du Kaiō-ken provoquerait une défaillance cardiaque instantanée et l'auto-destruction des tissus musculaires.
-2. **Le statut du « Super Kaiō-ken » contre Paikūhan (Tier 4 - Non-Canon Dérivé) :**
+2. **Le statut du « Super Kaiō-ken » contre Paikūhan (anime DBZ) :**
    - **Source :** Épisode 199 de l'anime *Dragon Ball Z* (Arc du Tournoi de l'Autre-Monde).
-   - Cet épisode est un **filler exclusif de l'animation Toei** absent du manga d'Akira Toriyama. Même dans cette scène non canonique, Goku précise qu'il ne peut maintenir cette alliance qu'une fraction de seconde sous peine de détruire son corps d'outre-tombe.
+   - Cette scène propre à l'anime DBZ n'apparaît pas dans le manga. Elle appartient à la continuité animée et y montre Goku précisant qu'il ne peut maintenir cette alliance qu'une fraction de seconde sous peine de détruire son corps d'outre-tombe.
 3. **La justification canonique dans l'Ère Moderne :**
    - **Dans l'anime DBS (Épisode 39) :** Goku explique qu'il n'aurait jamais pu tenter cette combinaison avec le Super Saiyan ordinaire en raison de la turbulence du Ki. Il ne peut le faire qu'avec le **Super Saiyan Blue**, car cette forme repose sur la tranquillité d'esprit, le contrôle absolu et le scellement hermétique du Ki divin à l'intérieur du corps sans dispersion.
    - **Dans le manga DBS (Toyotarō / Toriyama, Chapitres 24 et 39) :** Goku n'utilise pas le Kaiō-ken contre Hit au tournoi de Champa ; il utilise le **Super Saiyan Blue Parfait** (*Kansei Chō Saiya-jin Burū*), scellant 100% de l'aura dans son corps. Il ne recourt au principe du Kaiō-ken que lors du Chapitre 39 face à Jiren, avec un risque d'échec corporel immédiat souligné par Whis.
@@ -103,7 +103,7 @@ Parce que le Super Saiyan est plein de haine et de colère, alors que la Genki D
 *« Le Kienzan de Krilin peut-il trancher n'importe quel adversaire quelle que soit la différence de force, et pourquoi le Kienzan s'est-il brisé sur le cou de Cell forme parfaite dans l'épisode 168 de Dragon Ball Z ? »*
 
 ### 2. Réponse initiale :
-Le Kienzan coupe tout parce que c'est un disque d'énergie ultra tranchant. Dans l'épisode 168 où il se brise sur le cou de Cell, c'est juste un épisode hors-série filler de la Toei, ça n'existe pas dans le manga.
+Le Kienzan est un disque d'énergie tranchant. L'épisode 168 de l'anime montre le disque se briser sur le cou de Cell ; cette scène propre à l'anime est absente du manga.
 
 ### 3. Auto-critique impitoyable (Mise à la place d'Omar) :
 - *Explication mécanique trop sommaire :* Comment le disque fonctionne-t-il dans les databooks (*Daizenshuu 7*) ?
@@ -120,9 +120,9 @@ Le Kienzan coupe tout parce que c'est un disque d'énergie ultra tranchant. Dans
 2. **Preuves canoniques de supériorité cinétique (Manga Absolu) :**
    - **Face à Nappa (Chapitre 221) :** Nappa (Battle Power de 4 000) s'apprête à intercepter le Kienzan de Krilin (1 770) à mains nues. Vegeta hurle de terreur : *« Nappa, esquive imbécile ! »*. Nappa esquive d'un cheveu et la tranche du disque lui entaille la joue et tranche une falaise en deux.
    - **Face à Freezer (Chapitre 305) :** Krilin tranche net la queue de Freezer sous sa deuxième forme (qui possède plus de 1 000 000 de Battle Power face à un Krilin à quelques dizaines de milliers).
-3. **L'invalidation de la scène de Cell (Tier 4 - Non-Canon Dérivé) :**
+3. **La différence entre la scène de Cell et le manga :**
    - Dans l'épisode 168 de l'anime *Dragon Ball Z*, Krilin lance un Kienzan sur le cou de Cell forme parfaite, et le disque se brise en morceaux sans faire bouger Cell.
-   - **Cette scène est un filler d'animation Toei strictement absent du manga original d'Akira Toriyama.** Dans le manga, Krilin n'attaque jamais Cell forme parfaite avec un Kienzan lors de l'attente du Cell Game.
+   - Cette scène propre à l'anime est absente du manga original. Dans le manga, Krilin n'attaque jamais Cell forme parfaite avec un Kienzan lors de l'attente du Cell Game.
    - Dans le canon absolu, le Kienzan conserve sa propriété de perforation et de découpe absolue tant qu'il n'est pas évité ou intercepté par télékinésie.
 
 ---

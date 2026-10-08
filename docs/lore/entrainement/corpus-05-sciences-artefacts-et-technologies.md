@@ -129,10 +129,10 @@ Ce dossier consigne 50 études doctrinales approfondies sur la science rétrofut
 ### Q273 : La Filiation Canonique des Androïdes : Dr Gero vs Dr Flappe
 - **Question :** Quel est le statut doctrinal du « Dr Flappe » (créateur prétendu de C-8 / Hatchan dans l'anime DB) face au Dr Gero ?
 - **Sources :** Anime DB Épisode 42 ; Manga Tomes 6 et 29 ; *Daizenshuu 7*, p. 58.
-- **Auto-critique :** Appliquer la doctrine de la primauté absolue du manga original (Rang 1 vs Rang 4).
+- **Auto-critique :** Comparer séparément l'explication du manga et l'ajout de l'anime.
 - **Réponse Doctrinale :**  
   Dans le manga original d'Akira Toriyama, le **Dr Gero est l'unique concepteur de l'intégralité des cyborgs et androïdes de l'armée du Ruban Rouge**, y compris C-8 (*Hatchan*).  
-  Le « Dr Flappe » (*Dokutā Furappe*) est un personnage inventé de toutes pièces par les scénaristes de la Toei Animation pour un épisode filler de la série télévisée de 1986. Dans la chronologie canonique absolue, le Dr Flappe n'existe pas : c'est le Dr Gero qui a conçu C-8, comme le confirme le manga au Tome 29 où C-8 est explicitement mentionné comme une création imparfaite de Gero.
+  Le « Dr Flappe » (*Dokutā Furappe*) est un ajout propre à l'épisode 42 de la série télévisée de 1986 et n'apparaît pas dans le manga. Le manga relie C-8 à Gero ; l'anime attribue sa création à Flappe. Il faut conserver cette différence de présentation selon le support au lieu de prétendre que le personnage n'existe dans aucune continuité.
 
 ---
 
@@ -477,7 +477,7 @@ Ce dossier consigne 50 études doctrinales approfondies sur la science rétrofut
 ### Q306 : Les Propriétés Élastiques de l'Épée de Trunks du Futur
 - **Question :** Quelle est l'origine doctrinale de l'épée avec laquelle Trunks du Futur a découpé Mecha Freezer et le Roi Cold ?
 - **Sources :** Manga Tome 28, Chapitres 330 à 332 ; *Daizenshuu 7*, p. 180.
-- **Auto-critique :** Rejeter le mythe du Film 13 (l'épée donnée par Tapion) qui est strictement non-canon / Hors-série Toei.
+- **Auto-critique :** Distinguer l'origine donnée par le manga à l'épée et celle racontée dans le film 13, chacune dans son support.
 - **Réponse Doctrinale :**  
   Dans le canon absolu du manga d'Akira Toriyama, l'épée de Trunks est une **lame d'acier trempé forgée dans le futur apocalyptique**, sans lien mythologique particulier.  
   Sa capacité à trancher Mecha Freezer ne provient d'aucun pouvoir magique intrinsèque de l'épée, mais de la **concentration phénoménale de Ki de Trunks insufflée le long du fil de la lame**. Lorsque le Roi Cold s'empare de l'épée en croyant que la force réside dans l'arme, Trunks l'arrête à mains nues et l'exécute d'une simple vague de Ki, prouvant que l'épée n'était qu'un vecteur de son propre pouvoir.

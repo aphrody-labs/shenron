@@ -1,6 +1,6 @@
 # Programme d'Entraînement Doctrinal et d'Auto-Critique Continue de Shenron
 
-Ce répertoire constitue le sanctuaire d'entraînement dialectique et d'évaluation continue de Shenron. Chaque question y est soumise à un examen impitoyable simulant les exigences de l'Administrateur Omar de **dragonballfr.com**, avec détection systématique des lacunes, rejet des extrapolations non soutenues (zéro fanon), et ancrage strict dans la hiérarchie canonique des sources (Manga 42 tomes > Manga DBS / films supervisés / Daima > Databooks officiels *Daizenshuu* / *Chōzenshū* / *SEG* > Hors-série et dérivés).
+Ce répertoire rassemble des études et des exercices d'auto-critique pour Shenron. Chaque réponse doit signaler ses sources, distinguer le manga, les adaptations, les films, les guides et les continuités concernées, puis limiter sa conclusion à ce que les preuves permettent d'affirmer. Le manga original est la source narrative primaire ; l'anime, les œuvres officielles, les guides et les magazines apportent aussi des informations à considérer, en précisant leur support et leur continuité. Une différence de support ou de chronologie ne suffit pas à qualifier une œuvre officielle de « non canonique ».
 
 ---
 
@@ -30,7 +30,7 @@ Ce répertoire constitue le sanctuaire d'entraînement dialectique et d'évaluat
     - Propriétés et limites des Senzus, condition de pureté du Kinto'un, seuil de rupture des Scouters, physique des Capsules Hoi-Poi, fréquences du Dragon Radar.
 12. [Cycle 12 : L'Anthologie des Pièges, Mythes et Fanon Démystifié](cycle-12-anthologie-pieges-et-fanon.md) (Q56 à Q60)
     - Mythe du Super Saiyan 5 et David Montiel Franco (Tablos 1999), fausses citations de Toriyama, statut des 13 films Toei 1986-1995, neutralisation des poings de Beerus et Goku, charte des 5 Rangs Canoniques de Shenron.
-13. [Cycle 13 : Archives, Analyses Critiques et Fusions](cycle-13-archives-et-fusions.md) (Q61 à Q69)
+13. [Cycle 13 : Archives, Analyses Critiques et Fusions](cycle-13-archives-et-fusions.md) (Q361 à Q369)
     - Couverture et limites des interviews Kanzenshuu, statut critique des analyses de Daniel (Capsule Commentary), degrés de confiance des scans, formules Potara du SEG.
 
 ---
