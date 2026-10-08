@@ -101,7 +101,6 @@ function cargoProducts(): void {
   inBuildImage("shenron-re wasm", ["bun", "packages/pipeline/scripts/build-re-wasm.ts"]);
 }
 
-/** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
 /** Une variable d'un fichier d'environnement (`NOM=valeur`, guillemets facultatifs). */
 export function envValue(text: string, name: string): string | undefined {
   const match = new RegExp(`^${name}=["']?([^"'\\n]+)["']?$`, "m").exec(text);
@@ -119,6 +118,7 @@ export function siteBuildEnv(envText: string): Record<string, string> {
   return { SITE_BUILD_DATABASE_URL: database, ...(cdn ? { NEXT_PUBLIC_CDN_URL: cdn } : {}) };
 }
 
+/** Bot compilé, site (base lue dans l'environnement du site) et emballage : `artifacts/releases/<sha>`. */
 function bundleSite(commit: string, systemdDir?: string): string {
   inBuildImage("bot", ["bun", "scripts/build/bot.ts", "--target", "linux-x64"]);
   const envFile = Bun.spawnSync(["sudo", "-n", "cat", "/etc/rose-griffon/shenron-site.env"]);
