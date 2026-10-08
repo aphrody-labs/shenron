@@ -1439,6 +1439,39 @@
       "dragonBallRelevance": "Directe : expérience de Matsumoto dans le doublage du film.",
       "status": "summary-written-video-not-acquired",
       "forumContent": false
+    },
+    {
+      "id": "maximum-the-hormone-yoshu-fukushu-liner-notes-f",
+      "title": "Maximum the Hormone — table ronde autour de F",
+      "kind": "interview",
+      "summary": "Ryō Kawakita explique que F associe Freeza et Freedom : l’oppression des Nameks devient allégorie du génocide et de la liberté. Les participants discutent de références indirectes, Phowa, de l’humour de Ryō et d’un concert auquel Toriyama avait assisté. Intentions attribuées à Ryō, réactions aux interlocuteurs identifiés. Revue collective de notes d’album, non entretien classique.",
+      "keyInformation": [
+        "Ryō Kawakita explique que F fait entendre à la fois Freeza et Freedom; l’oppression des Nameks sert d’allégorie au génocide réel.",
+        "Ryō dit privilégier une formulation indirecte plutôt qu’un slogan explicite, afin que le message s’intègre au rock du groupe.",
+        "Shira, Sen, Ta et Aka participent aux échanges; leurs fonctions et identités sont précisées dans la traduction annotée.",
+        "Les échanges portent aussi sur le double sens et les références de la chanson, ainsi que sur la réaction du groupe au concert auquel Toriyama aurait assisté."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/translations/maximum-the-hormone-yoshu-fukushu-liner-notes-f/",
+        "publication": "Maximum the Hormone — Yoshū Fukushū, notes de pochette F",
+        "publicationDate": "2013-07-31",
+        "participants": [
+          "Maximum the Ryō-kun (Ryō Kawakita)",
+          "Akiko Shiragane (Shira)",
+          "Sengoku (Sen)",
+          "TanaKen (Ta)",
+          "Akatsuka (Aka)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/maximum-the-hormone-yoshu-fukushu-liner-notes-f.html",
+        "questionAnswerCount": null,
+        "formatNote": "Table ronde traduite et annotée; pas de Q/R formelles; page Kanzenshuu publiée en 2015.",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe pour interprétation de la chanson, non continuité fictionnelle.",
+      "status": "source-checked-summary-written"
     }
   ]
 }

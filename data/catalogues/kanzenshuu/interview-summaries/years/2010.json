@@ -309,6 +309,64 @@
       },
       "forumContent": false,
       "dragonBallRelevance": "Music, CHA-LA HEAD-CHA-LA"
+    },
+    {
+      "id": "site-post-4737-dragon-ball-kai-getting-too-expensive-to-produce",
+      "title": "Yūji Mitsuya — échange rapporté à Otakon",
+      "kind": "interview",
+      "summary": "À Otakon, Kanzenshuu rapporte avoir demandé à Mitsuya s’il reprendrait Kaiōshin lorsque Kai atteindrait cet arc. Il dit ne pas savoir et doute que la production puisse le rémunérer, mais se serait dit prêt à réduire son tarif. Les hypothèses du billet sur le coût et le financement restent éditoriales.",
+      "keyInformation": [
+        "Yūji Mitsuya, voix japonaise de Kaiōshin, ne confirme pas son retour; il dit ne pas savoir si le budget le permettra.",
+        "Il aurait déclaré qu’il accepterait de travailler pour une rémunération réduite.",
+        "Le rédacteur de Kanzenshuu élargit ensuite la discussion aux coûts de production et au financement international de Kai; ces hypothèses ne viennent pas de Mitsuya."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2010/08/01/dragon-ball-kai-getting-too-expensive-to-produce/",
+        "publication": "Otakon 2010 — échange bref rapporté",
+        "publicationDate": "2010-08-01",
+        "participants": [
+          "Yūji Mitsuya"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
+        "questionAnswerCount": null,
+        "formatNote": "Compte rendu partiel, pas de transcription du panel; Q/R formelles non dénombrables.",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : rôle de Kaiōshin.",
+      "status": "source-checked-summary-written"
+    },
+    {
+      "id": "site-post-4600-english-freeza-recast-for-dragon-ball-kai",
+      "title": "Chris Sabat et Sean Schemmel — recasting de Freeza",
+      "kind": "interview",
+      "summary": "Le billet signale la partie 3 d’une série vidéo FUNimation avec Sabat et Schemmel, où est annoncé le recasting anglais de Freeza. Kanzenshuu rapporte que le réalisateur invoque l’incapacité de l’interprète précédente à suivre le script adapté et dit que la nouvelle voix, non encore nommée, serait plus inquiétante. Vidéo non transcrite : pas d’autres propos attribuables aux invités.",
+      "keyInformation": [
+        "Les invités annoncés sont Chris Sabat et Sean Schemmel; le billet précise leurs rôles de doublage et la fonction de réalisateur de Sabat.",
+        "La troisième partie vidéo révèle que Freeza est recasté dans le doublage anglais de Dragon Ball Kai.",
+        "Selon le compte rendu, le réalisateur explique que l’interprète précédente ne suivait pas le script adapté; le nouvel acteur n’est pas encore nommé.",
+        "Les attentes de l’auteur du billet sur le rendu anglais ne sont pas des déclarations des invités."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2010/06/01/english-freeza-recast-for-dragon-ball-kai/",
+        "publication": "Vidéo FUNimation, partie 3",
+        "publicationDate": "2010-06-01",
+        "participants": [
+          "Chris Sabat",
+          "Sean Schemmel"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
+        "questionAnswerCount": null,
+        "formatNote": "Notice limitée au billet; vidéo non transcrite ni acquise; Q/R non dénombrables.",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "forumContent": false
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : doublage anglais.",
+      "status": "source-checked-summary-written"
     }
   ]
 }

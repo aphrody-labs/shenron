@@ -118,6 +118,36 @@
       },
       "forumContent": false,
       "dragonBallRelevance": "Création de la chanson principale ZERO pour Dragon Ball: Sparking! ZERO et retour de Kageyama à la composition Dragon Ball."
+    },
+    {
+      "id": "site-post-80161-podcast-episode-0540",
+      "title": "Podcast Kanzenshuu #0540 — Vincent Haddad",
+      "kind": "audio-interview",
+      "summary": "Mike s’entretient avec Vincent Haddad, auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise. Le synopsis local présente l’invité et son livre sans préciser les sujets détaillés de leur conversation. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "L’invité est Vincent Haddad, auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise.",
+        "Le synopsis présente une conversation autour de son livre, sans en résumer les arguments ou thèmes précis.",
+        "Notice limitée au synopsis local; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2026/08/09/podcast-episode-0540/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2026-08-09",
+        "participants": [
+          "Vincent Haddad"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : entretien avec l’auteur d’un ouvrage consacré à Dragon Ball; le synopsis ne permet pas de préciser davantage son contenu."
     }
   ]
 }

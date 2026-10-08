@@ -1626,6 +1626,209 @@
       "reviewStatus": "source-acquired-summary-pending",
       "kanzenshuuPageId": 53780,
       "dragonBallRelevance": "Directe, mais limitée à l’adaptation américaine de Dragon Ball GT et à l’équipe FUNimation."
+    },
+    {
+      "id": "site-post-111-ian-corlett-email-response",
+      "url": "https://www.kanzenshuu.com/2000/10/15/alternate-english-dub-updates-ian-corlett-responds/",
+      "title": "Ian Corlett répond sur une éventuelle reprise du doublage anglais",
+      "publication": "Kanzenshuu post WP111",
+      "publicationType": "Web post",
+      "format": "Réponse ponctuelle par courriel, sans entretien intégral.",
+      "publicationDate": "2000-10-15",
+      "participants": [
+        "Ian James Corlett",
+        "Questionneur Kanzenshuu non nommé"
+      ],
+      "topics": [
+        "Corlett évoque des informations indirectes sur les droits canadiens d’IPP/Ocean.",
+        "Il ne participerait pas si IPP était responsable.",
+        "Réponse écrite, non entretien intégral."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2000.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "Kanzenshuu rapporte une réponse écrite d’Ian James Corlett. Il dit avoir entendu que les droits canadiens d’IPP compliquaient une éventuelle production de nouveaux épisodes ou films; il ne participerait pas si IPP en était responsable. Cette réponse ne confirme pas qu’un projet était en cours.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
+    },
+    {
+      "id": "site-post-970-scott-melzer-podcast-0004",
+      "url": "https://www.kanzenshuu.com/2005/12/11/podcast-episode-0004/",
+      "title": "Podcast #0004 — conversation avec Scott Melzer",
+      "publication": "Kanzenshuu post WP970",
+      "publicationType": "Podcast episode/show notes",
+      "format": "Entretien audio; note d’épisode locale, sans transcription ni audio vérifié.",
+      "publicationDate": "2005-12-11",
+      "participants": [
+        "Scott Melzer",
+        "VegettoEX",
+        "Meri"
+      ],
+      "topics": [
+        "Invité : Scott Melzer; intervieweurs annoncés : VegettoEX et Meri.",
+        "Thèmes annoncés : fandom anime, AMV, parodies, préférences de fan.",
+        "La note ne restitue pas les réponses audio."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "La note d’épisode présente Scott Melzer dans un entretien approfondi mené par VegettoEX et Meri. Les thèmes annoncés comprennent la place de Dragon Ball Z dans le fandom anime, les AMV, les parodies et son rapport personnel à la série. La capture locale ne contient ni transcription ni audio vérifié; aucune réponse détaillée ne peut être attribuée.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
+    },
+    {
+      "id": "site-post-1599-ryo-mito-gamespot-video-interview",
+      "url": "https://www.kanzenshuu.com/2006/05/03/gamespot-com-sparking-neo-content/",
+      "title": "GameSpot : entretien vidéo avec Ryo Mito sur Sparking! NEO",
+      "publication": "Kanzenshuu post WP1599",
+      "publicationType": "Web post",
+      "format": "Lien vers entretien vidéo externe; contenu absent localement.",
+      "publicationDate": "2006-05-03",
+      "participants": [
+        "Ryo Mito"
+      ],
+      "topics": [
+        "Intervenant annoncé : Ryo Mito.",
+        "Sujet : Sparking! NEO / Budokai Tenkaichi 2 et gameplay.",
+        "Aucun propos de réponse n’est reproduit localement."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2006.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "Kanzenshuu signale un entretien vidéo GameSpot avec Ryo Mito au sujet de Dragon Ball Z: Budokai Tenkaichi 2 (Sparking! NEO), accompagné de séquences de jeu. La capture locale ne contient ni questions ni réponses; seul le sujet est établi.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
+    },
+    {
+      "id": "site-post-3075-toru-furuya-music-japan-plus-interview",
+      "url": "https://www.kanzenshuu.com/2008/06/26/toru-furuya-english-language-interview/",
+      "title": "Tōru Furuya — entretien en anglais signalé par Kanzenshuu",
+      "publication": "Kanzenshuu post WP3075",
+      "publicationType": "Web post",
+      "format": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
+      "publicationDate": "2008-06-26",
+      "participants": [
+        "Tōru Furuya"
+      ],
+      "topics": [
+        "Furuya est présenté comme la voix japonaise de Yamcha.",
+        "Contenu de l’entretien externe non reproduit localement."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "Kanzenshuu renvoie à un entretien en anglais de MUSIC JAPAN+ avec Tōru Furuya, interprète de Yamcha, et donne une indication de navigation. Aucune réponse n’est reproduite. Cette notice atteste seulement le lien et l’existence de l’entretien.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
+    },
+    {
+      "id": "site-post-2819-donny-clay-ign-burst-limit-interview",
+      "url": "https://www.kanzenshuu.com/2008/03/18/burst-limit-trailer-interview-at-ign/",
+      "title": "IGN — Donny Clay à propos de Burst Limit (extrait)",
+      "publication": "Kanzenshuu post WP2819",
+      "publicationType": "Web post",
+      "format": "Extrait informatif relayé; entretien complet non acquis.",
+      "publicationDate": "2008-03-18",
+      "participants": [
+        "Donny Clay"
+      ],
+      "topics": [
+        "Clay est décrit comme producteur lié à Atari.",
+        "Le billet rapporte 21 personnages jouables et cinq stages.",
+        "Une bande-annonce est mentionnée; pas de dialogue complet."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "Le billet signale un entretien IGN avec Donny Clay, décrit prudemment comme producteur lié à Atari. Kanzenshuu retient 21 personnages jouables et cinq stages pour Burst Limit. Ce sont les seules données relayées; le dialogue complet n’est pas fourni.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
+    },
+    {
+      "id": "site-post-2721-gen-fukunaga-icv2-interview-excerpt",
+      "url": "https://www.kanzenshuu.com/2008/01/21/gen-fukunaga-interview-dbz-dvd-news/",
+      "title": "Gen Fukunaga — entretien ICv2 et annonce des films DBZ remastérisés",
+      "publication": "Kanzenshuu post WP2721",
+      "publicationType": "Web post",
+      "format": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
+      "publicationDate": "2008-01-21",
+      "participants": [
+        "Gen Fukunaga"
+      ],
+      "topics": [
+        "Fukunaga annonce plusieurs films DBZ remastérisés pour février.",
+        "Les réponses sur piratage, fansubs et coffrets ne sont pas reproduites."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "Kanzenshuu renvoie à un entretien ICv2 de Gen Fukunaga et cite son annonce de plusieurs films Dragon Ball Z remastérisés pour février. Le billet mentionne aussi des réponses sur piratage, fansubs et coffrets saisonniers, sans les reproduire; seule l’annonce citée est résumable.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
+    },
+    {
+      "id": "site-post-2709-james-marsters-tv-guide-quote",
+      "url": "https://www.kanzenshuu.com/2008/01/16/james-marsters-talks-dragon-ball-to-tv-guide/",
+      "title": "James Marsters — propos relayés par TV Guide (extrait)",
+      "publication": "Kanzenshuu post WP2709",
+      "publicationType": "Web post",
+      "format": "Citation brève relayée; contexte complet non acquis.",
+      "publicationDate": "2008-01-16",
+      "participants": [
+        "James Marsters"
+      ],
+      "topics": [
+        "Marsters loue le récit moral de Dragon Ball et l’action du film à venir.",
+        "Citation relayée par TV Guide, Toon Zone puis Kanzenshuu; entretien complet absent."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "Kanzenshuu reprend via Toon Zone une courte citation attribuée à TV Guide où James Marsters, choisi pour Piccolo dans le film américain à venir, loue Dragon Ball et évoque le conflit moral, l’action et le spectacle visuel du film. Aucun échange Q/R n’est fourni; ces propos ne renseignent pas sur le film achevé.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
+    },
+    {
+      "id": "site-post-3745-kai-cast-tokyo-anime-fair-comments",
+      "url": "https://www.kanzenshuu.com/2009/03/24/tokyo-international-anime-fair-dragon-ball-kai-preview/",
+      "title": "Dragon Ball Kai — propos du casting au Tokyo International Anime Fair",
+      "publication": "Kanzenshuu post WP3745",
+      "publicationType": "Web post",
+      "format": "Compte rendu événementiel partiel; pas de transcription intégrale.",
+      "publicationDate": "2009-03-24",
+      "participants": [
+        "Mayumi Tanaka",
+        "Toshio Furukawa",
+        "Masako Nozawa",
+        "Akira Toriyama (message distinct)"
+      ],
+      "topics": [
+        "Tanaka, Furukawa et Nozawa parlent de Kai et son enregistrement.",
+        "Le message de Toriyama est distinct des propos du casting.",
+        "Compte rendu partiel, non transcription complète."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+      "acquired": true,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Notice relayée par Kanzenshuu; l’étendue du contenu local est précisée dans format.",
+      "questionCount": null,
+      "editorialSummary": "Kanzenshuu rapporte des commentaires de Mayumi Tanaka, Toshio Furukawa et Masako Nozawa à propos de l’enregistrement de Dragon Ball Kai. Le message d’Akira Toriyama est rapporté séparément et ne doit pas être attribué aux comédiens. Le compte rendu est partiel.",
+      "reviewStatus": "summary-based-on-local-kanzenshuu-post"
     }
   ]
 }

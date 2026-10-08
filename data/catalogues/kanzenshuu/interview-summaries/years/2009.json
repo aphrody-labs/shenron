@@ -227,6 +227,36 @@
       "audioDownloaded": true,
       "audioRawPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-3881-podcast-episode-0180.mp3",
       "audioTranscriptAvailable": false
+    },
+    {
+      "id": "site-post-3745-kai-cast-tokyo-anime-fair-comments",
+      "kind": "interview-notice",
+      "title": "Dragon Ball Kai — propos du casting au Tokyo International Anime Fair",
+      "summary": "Kanzenshuu rapporte des commentaires de Mayumi Tanaka, Toshio Furukawa et Masako Nozawa à propos de l’enregistrement de Dragon Ball Kai. Le message d’Akira Toriyama est rapporté séparément et ne doit pas être attribué aux comédiens. Le compte rendu est partiel.",
+      "keyInformation": [
+        "Tanaka, Furukawa et Nozawa parlent de Kai et son enregistrement.",
+        "Le message de Toriyama est distinct des propos du casting.",
+        "Compte rendu partiel, non transcription complète."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP3745",
+        "url": "https://www.kanzenshuu.com/2009/03/24/tokyo-international-anime-fair-dragon-ball-kai-preview/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+        "date": "2009-03-24",
+        "participants": [
+          "Mayumi Tanaka",
+          "Toshio Furukawa",
+          "Masako Nozawa",
+          "Akira Toriyama (message distinct)"
+        ],
+        "formatNote": "Compte rendu événementiel partiel; pas de transcription intégrale.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : commentaires sur Dragon Ball Kai.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Compte rendu événementiel partiel; pas de transcription intégrale.",
+      "forumContent": false
     }
   ]
 }

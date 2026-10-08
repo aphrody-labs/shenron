@@ -94,6 +94,111 @@
       "formatNote": "Échange événementiel rapporté; une question et deux réponses.",
       "dragonBallRelevance": "Directe : témoignages de deux interprètes et artistes associés à Dragon Ball.",
       "forumContent": false
+    },
+    {
+      "id": "site-post-3075-toru-furuya-music-japan-plus-interview",
+      "kind": "interview-notice",
+      "title": "Tōru Furuya — entretien en anglais signalé par Kanzenshuu",
+      "summary": "Kanzenshuu renvoie à un entretien en anglais de MUSIC JAPAN+ avec Tōru Furuya, interprète de Yamcha, et donne une indication de navigation. Aucune réponse n’est reproduite. Cette notice atteste seulement le lien et l’existence de l’entretien.",
+      "keyInformation": [
+        "Furuya est présenté comme la voix japonaise de Yamcha.",
+        "Contenu de l’entretien externe non reproduit localement."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP3075",
+        "url": "https://www.kanzenshuu.com/2008/06/26/toru-furuya-english-language-interview/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-06-26",
+        "participants": [
+          "Tōru Furuya"
+        ],
+        "formatNote": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : entretien d’un comédien de Dragon Ball.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-2819-donny-clay-ign-burst-limit-interview",
+      "kind": "interview-notice",
+      "title": "IGN — Donny Clay à propos de Burst Limit (extrait)",
+      "summary": "Le billet signale un entretien IGN avec Donny Clay, décrit prudemment comme producteur lié à Atari. Kanzenshuu retient 21 personnages jouables et cinq stages pour Burst Limit. Ce sont les seules données relayées; le dialogue complet n’est pas fourni.",
+      "keyInformation": [
+        "Clay est décrit comme producteur lié à Atari.",
+        "Le billet rapporte 21 personnages jouables et cinq stages.",
+        "Une bande-annonce est mentionnée; pas de dialogue complet."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP2819",
+        "url": "https://www.kanzenshuu.com/2008/03/18/burst-limit-trailer-interview-at-ign/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-03-18",
+        "participants": [
+          "Donny Clay"
+        ],
+        "formatNote": "Extrait informatif relayé; entretien complet non acquis.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : informations sur un jeu Dragon Ball.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Extrait informatif relayé; entretien complet non acquis.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-2721-gen-fukunaga-icv2-interview-excerpt",
+      "kind": "interview-notice",
+      "title": "Gen Fukunaga — entretien ICv2 et annonce des films DBZ remastérisés",
+      "summary": "Kanzenshuu renvoie à un entretien ICv2 de Gen Fukunaga et cite son annonce de plusieurs films Dragon Ball Z remastérisés pour février. Le billet mentionne aussi des réponses sur piratage, fansubs et coffrets saisonniers, sans les reproduire; seule l’annonce citée est résumable.",
+      "keyInformation": [
+        "Fukunaga annonce plusieurs films DBZ remastérisés pour février.",
+        "Les réponses sur piratage, fansubs et coffrets ne sont pas reproduites."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP2721",
+        "url": "https://www.kanzenshuu.com/2008/01/21/gen-fukunaga-interview-dbz-dvd-news/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-01-21",
+        "participants": [
+          "Gen Fukunaga"
+        ],
+        "formatNote": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : édition vidéo Dragon Ball Z.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
+      "forumContent": false
+    },
+    {
+      "id": "site-post-2709-james-marsters-tv-guide-quote",
+      "kind": "interview-notice",
+      "title": "James Marsters — propos relayés par TV Guide (extrait)",
+      "summary": "Kanzenshuu reprend via Toon Zone une courte citation attribuée à TV Guide où James Marsters, choisi pour Piccolo dans le film américain à venir, loue Dragon Ball et évoque le conflit moral, l’action et le spectacle visuel du film. Aucun échange Q/R n’est fourni; ces propos ne renseignent pas sur le film achevé.",
+      "keyInformation": [
+        "Marsters loue le récit moral de Dragon Ball et l’action du film à venir.",
+        "Citation relayée par TV Guide, Toon Zone puis Kanzenshuu; entretien complet absent."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP2709",
+        "url": "https://www.kanzenshuu.com/2008/01/16/james-marsters-talks-dragon-ball-to-tv-guide/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+        "date": "2008-01-16",
+        "participants": [
+          "James Marsters"
+        ],
+        "formatNote": "Citation brève relayée; contexte complet non acquis.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : acteur du film Dragon Ball alors en préparation.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Citation brève relayée; contexte complet non acquis.",
+      "forumContent": false
     }
   ]
 }

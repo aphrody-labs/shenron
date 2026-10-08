@@ -163,6 +163,157 @@
       },
       "forumContent": false,
       "dragonBallRelevance": "Témoignage direct de Toyotarō sur la conception d’une illustration de Goku et Vegeta pour Dragon Ball Legends."
+    },
+    {
+      "id": "site-post-78442-podcast-episode-0522",
+      "title": "Podcast Kanzenshuu #0522 — David Evelyn",
+      "kind": "audio-interview",
+      "summary": "Mike reçoit David Evelyn, traducteur de l’édition anglaise de Dr. Mashirito’s Ultimate Manga Techniques publiée par Viz. Le synopsis annonce une conversation sur les anecdotes et les enseignements du livre, ainsi que sur d’autres récits de l’invité. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "David Evelyn est présenté comme le traducteur de l’édition anglaise du livre chez Viz.",
+        "Le synopsis annonce une discussion sur les anecdotes et enseignements du livre, sans détailler les réponses.",
+        "Notice fondée sur le synopsis local; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/05/18/podcast-episode-0522/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-05-18",
+        "participants": [
+          "David Evelyn"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe mais éditoriale : entretien avec le traducteur anglais d’un ouvrage sur Torishima et Toriyama."
+    },
+    {
+      "id": "site-post-78462-podcast-episode-0523",
+      "title": "Podcast Kanzenshuu #0523 — Zénpai",
+      "kind": "audio-interview",
+      "summary": "Mike retrouve Zénpai, présenté comme le traducteur officiel d’une nouvelle publication manga Dragon Ball en portugais. Le synopsis annonce une discussion sur la genèse du projet, son avancement, les réactions du public et l’intérêt d’une édition portugaise pour la communauté internationale. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "Zénpai est présenté comme le traducteur officiel d’une nouvelle parution manga Dragon Ball en portugais.",
+        "Les thèmes annoncés sont la genèse du projet, son avancement, l’accueil reçu et ses apports pour la communauté internationale.",
+        "Notice fondée sur le synopsis local; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/01/podcast-episode-0523/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-06-01",
+        "participants": [
+          "Zénpai"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : expérience de traduction et de publication d’un manga Dragon Ball au Portugal."
+    },
+    {
+      "id": "site-post-78490-podcast-episode-0524",
+      "title": "Podcast Kanzenshuu #0524 — Randy de We Gotta Podcast",
+      "kind": "audio-interview",
+      "summary": "Mike retrouve Randy de We Gotta Podcast, dont l’émission vient de dépasser cent épisodes. Le synopsis annonce une conversation sur la naissance de leur équipe et sur ce qui lui permet de poursuivre le podcast. Il ne détaille pas davantage l’échange; l’audio n’est pas acquis localement et le billet ne fournit pas de transcription.",
+      "keyInformation": [
+        "La conversation a lieu à l’occasion du dépassement des cent épisodes de We Gotta Podcast.",
+        "Le synopsis annonce des thèmes sur la formation de l’équipe et la continuité de son projet.",
+        "Échange entre podcasteurs, non témoignage direct de la production Dragon Ball; audio non acquis et transcription absente."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/15/podcast-episode-0524/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-06-15",
+        "participants": [
+          "Randy (We Gotta Podcast)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Indirecte : échange avec l’animateur d’un podcast de fans, centré sur son émission."
+    },
+    {
+      "id": "site-post-78532-podcast-episode-0525",
+      "title": "Podcast Kanzenshuu #0525 — Q&A en direct avec la communauté",
+      "kind": "audio-interview",
+      "summary": "Mike anime une séance en direct avec plusieurs invités pour la communauté Patreon de Kanzenshuu. Selon le synopsis, le groupe répond aux questions sur l’histoire des éditions manga, les jeux vidéo et d’autres sujets Dragon Ball. Le billet ne nomme pas les invités. L’audio n’est pas acquis localement et aucune transcription n’est fournie.",
+      "keyInformation": [
+        "Direct spécial avec un panel d’invités et la communauté Patreon de Kanzenshuu.",
+        "Le panel répond aux questions sur l’histoire des parutions manga, les jeux vidéo et d’autres sujets Dragon Ball.",
+        "Les invités ne sont pas identifiés dans le synopsis; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/06/30/podcast-episode-0525/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-06-30",
+        "participants": [
+          "Mike (Kanzenshuu)",
+          "invités du panel non identifiés dans le synopsis"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — entretien",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe : séance Q&A communautaire sur l’histoire des éditions manga et les jeux Dragon Ball."
+    },
+    {
+      "id": "site-post-79015-podcast-episode-0533",
+      "title": "Podcast Kanzenshuu #0533 — JP de The Space Above Us",
+      "kind": "audio-conversation",
+      "summary": "Mike échange avec JP de The Space Above Us pour une nouvelle discussion sur l’espace. Le synopsis part d’un passage de remplissage de l’épisode 50 de Dragon Ball Z, où Goku répare son vaisseau et corrige sa route à partir des coordonnées de Dr. Brief, puis interroge la plausibilité de cette situation. Cas frontière : conversation d’analyse avec un invité, pas entretien avec un créateur ou professionnel de la franchise. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "keyInformation": [
+        "Conversation avec JP autour de questions spatiales soulevées par Dragon Ball Z.",
+        "Le synopsis cite la réparation du vaisseau de Goku et la correction de trajectoire à partir des coordonnées de Dr. Brief, épisode 50.",
+        "Cas frontière : analyse invitée, non témoignage d’un professionnel de Dragon Ball; audio non acquis et transcription indisponible."
+      ],
+      "source": {
+        "url": "https://www.kanzenshuu.com/2025/12/28/podcast-episode-0533/",
+        "publication": "Daizenshuu EX / Kanzenshuu podcast",
+        "publicationDate": "2025-12-28",
+        "participants": [
+          "JP (The Space Above Us)"
+        ],
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "audioDownloaded": false,
+        "audioTranscriptAvailable": false,
+        "transcriptAvailable": false,
+        "forumContent": false,
+        "format": "Podcast audio — conversation analytique avec un invité",
+        "scopeNote": "Résumé limité au synopsis local; audio non acquis et transcription indisponible."
+      },
+      "forumContent": false,
+      "dragonBallRelevance": "Directe pour l’analyse d’un épisode de Dragon Ball Z, mais indirecte pour la production; aucun témoignage de créateur ou membre du personnel n’est annoncé."
     }
   ]
 }

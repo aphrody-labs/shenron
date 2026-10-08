@@ -70,6 +70,35 @@
       "forum": false,
       "forumContent": false,
       "kind": "qa"
+    },
+    {
+      "id": "site-post-970-scott-melzer-podcast-0004",
+      "kind": "interview-notice",
+      "title": "Podcast #0004 — conversation avec Scott Melzer",
+      "summary": "La note d’épisode présente Scott Melzer dans un entretien approfondi mené par VegettoEX et Meri. Les thèmes annoncés comprennent la place de Dragon Ball Z dans le fandom anime, les AMV, les parodies et son rapport personnel à la série. La capture locale ne contient ni transcription ni audio vérifié; aucune réponse détaillée ne peut être attribuée.",
+      "keyInformation": [
+        "Invité : Scott Melzer; intervieweurs annoncés : VegettoEX et Meri.",
+        "Thèmes annoncés : fandom anime, AMV, parodies, préférences de fan.",
+        "La note ne restitue pas les réponses audio."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP970",
+        "url": "https://www.kanzenshuu.com/2005/12/11/podcast-episode-0004/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+        "date": "2005-12-11",
+        "participants": [
+          "Scott Melzer",
+          "VegettoEX",
+          "Meri"
+        ],
+        "formatNote": "Entretien audio; note d’épisode locale, sans transcription ni audio vérifié.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : entretien annoncé avec un fan de Dragon Ball.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Entretien audio; note d’épisode locale, sans transcription ni audio vérifié.",
+      "forumContent": false
     }
   ]
 }

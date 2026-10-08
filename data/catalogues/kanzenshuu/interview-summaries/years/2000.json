@@ -33,6 +33,34 @@
       "dragonBallRelevance": "Directe : expérience d’un comédien FUNimation sur le doublage de Dragon Ball Z.",
       "status": "source-transcript-acquired-from-link-in-kanzenshuu-page",
       "forumContent": false
+    },
+    {
+      "id": "site-post-111-ian-corlett-email-response",
+      "kind": "interview-notice",
+      "title": "Ian Corlett répond sur une éventuelle reprise du doublage anglais",
+      "summary": "Kanzenshuu rapporte une réponse écrite d’Ian James Corlett. Il dit avoir entendu que les droits canadiens d’IPP compliquaient une éventuelle production de nouveaux épisodes ou films; il ne participerait pas si IPP en était responsable. Cette réponse ne confirme pas qu’un projet était en cours.",
+      "keyInformation": [
+        "Corlett évoque des informations indirectes sur les droits canadiens d’IPP/Ocean.",
+        "Il ne participerait pas si IPP était responsable.",
+        "Réponse écrite, non entretien intégral."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP111",
+        "url": "https://www.kanzenshuu.com/2000/10/15/alternate-english-dub-updates-ian-corlett-responds/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2000.json",
+        "date": "2000-10-15",
+        "participants": [
+          "Ian James Corlett",
+          "Questionneur Kanzenshuu non nommé"
+        ],
+        "formatNote": "Réponse ponctuelle par courriel, sans entretien intégral.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : premier interprète anglais de Goku dans le doublage Ocean.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Réponse ponctuelle par courriel, sans entretien intégral.",
+      "forumContent": false
     }
   ]
 }

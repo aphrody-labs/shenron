@@ -814,6 +814,169 @@
       "kanzenshuuPageId": 75060,
       "dragonBallRelevance": "Directe: témoignage de l’ancien éditeur de Dragon Ball sur les discussions ayant précédé le projet Battle of Gods.",
       "kanzenshuuCitationYear": 2024
+    },
+    {
+      "id": "site-post-78442-podcast-episode-0522",
+      "url": "https://www.kanzenshuu.com/2025/05/18/podcast-episode-0522/",
+      "title": "Podcast Episode #0522 — David Evelyn",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio interview",
+      "publicationDate": "2025-05-18",
+      "participants": [
+        "David Evelyn"
+      ],
+      "topics": [
+        "Traduction de Dr. Mashirito’s Ultimate Manga Techniques; anecdotes annoncées"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": null,
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le synopsis local annonce la conversation; audio non acquis et transcription absente.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike reçoit David Evelyn, traducteur de l’édition anglaise de Dr. Mashirito’s Ultimate Manga Techniques publiée par Viz. Le synopsis annonce une conversation sur les anecdotes et les enseignements du livre, ainsi que sur d’autres récits de l’invité. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-only-audio-not-acquired"
+    },
+    {
+      "id": "site-post-78462-podcast-episode-0523",
+      "url": "https://www.kanzenshuu.com/2025/06/01/podcast-episode-0523/",
+      "title": "Podcast Episode #0523 — Zénpai",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio interview",
+      "publicationDate": "2025-06-01",
+      "participants": [
+        "Zénpai"
+      ],
+      "topics": [
+        "Traduction d’une nouvelle parution manga Dragon Ball au Portugal; accueil selon synopsis"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": null,
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le synopsis local annonce la conversation; audio non acquis et transcription absente.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike retrouve Zénpai, présenté comme le traducteur officiel d’une nouvelle publication manga Dragon Ball en portugais. Le synopsis annonce une discussion sur la genèse du projet, son avancement, les réactions du public et l’intérêt d’une édition portugaise pour la communauté internationale. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-only-audio-not-acquired"
+    },
+    {
+      "id": "site-post-78490-podcast-episode-0524",
+      "url": "https://www.kanzenshuu.com/2025/06/15/podcast-episode-0524/",
+      "title": "Podcast Episode #0524 — Randy (We Gotta Podcast)",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio conversation with podcast guest",
+      "publicationDate": "2025-06-15",
+      "participants": [
+        "Randy (We Gotta Podcast)"
+      ],
+      "topics": [
+        "Genèse et continuité d’un podcast de fans"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": null,
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le synopsis local annonce la conversation; audio non acquis et transcription absente.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike retrouve Randy de We Gotta Podcast, dont l’émission vient de dépasser cent épisodes. Le synopsis annonce une conversation sur la naissance de leur équipe et sur ce qui lui permet de poursuivre le podcast. Il ne détaille pas davantage l’échange; l’audio n’est pas acquis localement et le billet ne fournit pas de transcription.",
+      "reviewStatus": "synopsis-only-audio-not-acquired-borderline"
+    },
+    {
+      "id": "site-post-78532-podcast-episode-0525",
+      "url": "https://www.kanzenshuu.com/2025/06/30/podcast-episode-0525/",
+      "title": "Podcast Episode #0525 — Mike (Kanzenshuu); invités du panel non identifiés dans le synopsis",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Live audio panel Q&A",
+      "publicationDate": "2025-06-30",
+      "participants": [
+        "Mike (Kanzenshuu)",
+        "invités du panel non identifiés dans le synopsis"
+      ],
+      "topics": [
+        "Histoire des publications manga; jeux Dragon Ball; questions de la communauté"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": null,
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le synopsis local annonce la conversation; audio non acquis et transcription absente.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike anime une séance en direct avec plusieurs invités pour la communauté Patreon de Kanzenshuu. Selon le synopsis, le groupe répond aux questions sur l’histoire des éditions manga, les jeux vidéo et d’autres sujets Dragon Ball. Le billet ne nomme pas les invités. L’audio n’est pas acquis localement et aucune transcription n’est fournie.",
+      "reviewStatus": "synopsis-only-audio-not-acquired-guests-unidentified"
+    },
+    {
+      "id": "site-post-79015-podcast-episode-0533",
+      "url": "https://www.kanzenshuu.com/2025/12/28/podcast-episode-0533/",
+      "title": "Podcast Episode #0533 — JP (The Space Above Us)",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio conversation (borderline interview)",
+      "publicationDate": "2025-12-28",
+      "participants": [
+        "JP (The Space Above Us)"
+      ],
+      "topics": [
+        "Analyse d’un passage spatial de Dragon Ball Z, épisode 50"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "audioUrl": null,
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le synopsis local annonce la conversation; audio non acquis et transcription absente.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike échange avec JP de The Space Above Us pour une nouvelle discussion sur l’espace. Le synopsis part d’un passage de remplissage de l’épisode 50 de Dragon Ball Z, où Goku répare son vaisseau et corrige sa route à partir des coordonnées de Dr. Brief, puis interroge la plausibilité de cette situation. Cas frontière : conversation d’analyse avec un invité, pas entretien avec un créateur ou professionnel de la franchise. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-only-audio-not-acquired-borderline"
+    },
+    {
+      "id": "site-post-80161-podcast-episode-0540",
+      "url": "https://www.kanzenshuu.com/2026/08/09/podcast-episode-0540/",
+      "title": "Podcast Episode #0540 — Vincent Haddad",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast audio",
+      "format": "Audio interview",
+      "publicationDate": "2026-08-09",
+      "participants": [
+        "Vincent Haddad"
+      ],
+      "topics": [
+        "Next Time on Dragon Ball: Playing with a Manga and Anime Franchise"
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+      "audioUrl": null,
+      "acquired": true,
+      "audioDownloaded": false,
+      "audioTranscriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "sourceDescription": "Le synopsis local annonce une conversation avec l’auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise, sans détailler les thèmes. Audio non acquis, transcription absente.",
+      "questionCount": null,
+      "sectionHeadings": [],
+      "editorialSummary": "Mike s’entretient avec Vincent Haddad, auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise. Le synopsis local présente l’invité et son livre sans préciser les sujets détaillés de leur conversation. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-only-audio-not-acquired"
     }
   ]
 }

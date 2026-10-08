@@ -108,6 +108,33 @@
       "status": "summary-written-site-archive-source-not-collated",
       "forumContent": false,
       "formatNote": "Transcription Q/R présente dans le corps."
+    },
+    {
+      "id": "site-post-1599-ryo-mito-gamespot-video-interview",
+      "kind": "interview-notice",
+      "title": "GameSpot : entretien vidéo avec Ryo Mito sur Sparking! NEO",
+      "summary": "Kanzenshuu signale un entretien vidéo GameSpot avec Ryo Mito au sujet de Dragon Ball Z: Budokai Tenkaichi 2 (Sparking! NEO), accompagné de séquences de jeu. La capture locale ne contient ni questions ni réponses; seul le sujet est établi.",
+      "keyInformation": [
+        "Intervenant annoncé : Ryo Mito.",
+        "Sujet : Sparking! NEO / Budokai Tenkaichi 2 et gameplay.",
+        "Aucun propos de réponse n’est reproduit localement."
+      ],
+      "source": {
+        "publication": "Kanzenshuu, billet WP1599",
+        "url": "https://www.kanzenshuu.com/2006/05/03/gamespot-com-sparking-neo-content/",
+        "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2006.json",
+        "date": "2006-05-03",
+        "participants": [
+          "Ryo Mito"
+        ],
+        "formatNote": "Lien vers entretien vidéo externe; contenu absent localement.",
+        "questionAnswerCount": null,
+        "forumContent": false
+      },
+      "dragonBallRelevance": "Directe : entretien annoncé sur un jeu Dragon Ball.",
+      "status": "synthèse limitée au billet local; accès externe décrit dans formatNote",
+      "formatNote": "Lien vers entretien vidéo externe; contenu absent localement.",
+      "forumContent": false
     }
   ]
 }

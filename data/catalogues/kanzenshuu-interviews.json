@@ -7920,6 +7920,494 @@
       "kanzenshuuPageId": 75060,
       "dragonBallRelevance": "Directe: témoignage de l’ancien éditeur de Dragon Ball sur les discussions ayant précédé le projet Battle of Gods.",
       "kanzenshuuCitationYear": 2024
+    },
+    {
+      "id": "site-post-111-ian-corlett-email-response",
+      "url": "https://www.kanzenshuu.com/2000/10/15/alternate-english-dub-updates-ian-corlett-responds/",
+      "title": "Ian Corlett répond sur une éventuelle reprise du doublage anglais",
+      "publication": "Kanzenshuu, billet WP111",
+      "publicationType": "Website post describing an interview",
+      "format": "Réponse ponctuelle par courriel, sans entretien intégral.",
+      "publicationDate": "2000-10-15",
+      "participants": [
+        "Ian James Corlett",
+        "Questionneur Kanzenshuu non nommé"
+      ],
+      "topics": [
+        "Directe : premier interprète anglais de Goku dans le doublage Ocean."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2000.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Réponse ponctuelle par courriel, sans entretien intégral.",
+      "editorialSummary": "Kanzenshuu rapporte une réponse écrite d’Ian James Corlett. Il dit avoir entendu que les droits canadiens d’IPP compliquaient une éventuelle production de nouveaux épisodes ou films; il ne participerait pas si IPP en était responsable. Cette réponse ne confirme pas qu’un projet était en cours.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-970-scott-melzer-podcast-0004",
+      "url": "https://www.kanzenshuu.com/2005/12/11/podcast-episode-0004/",
+      "title": "Podcast #0004 — conversation avec Scott Melzer",
+      "publication": "Kanzenshuu, billet WP970",
+      "publicationType": "Website post describing an interview",
+      "format": "Entretien audio; note d’épisode locale, sans transcription ni audio vérifié.",
+      "publicationDate": "2005-12-11",
+      "participants": [
+        "Scott Melzer",
+        "VegettoEX",
+        "Meri"
+      ],
+      "topics": [
+        "Directe : entretien annoncé avec un fan de Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Entretien audio; note d’épisode locale, sans transcription ni audio vérifié.",
+      "editorialSummary": "La note d’épisode présente Scott Melzer dans un entretien approfondi mené par VegettoEX et Meri. Les thèmes annoncés comprennent la place de Dragon Ball Z dans le fandom anime, les AMV, les parodies et son rapport personnel à la série. La capture locale ne contient ni transcription ni audio vérifié; aucune réponse détaillée ne peut être attribuée.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-1599-ryo-mito-gamespot-video-interview",
+      "url": "https://www.kanzenshuu.com/2006/05/03/gamespot-com-sparking-neo-content/",
+      "title": "GameSpot : entretien vidéo avec Ryo Mito sur Sparking! NEO",
+      "publication": "Kanzenshuu, billet WP1599",
+      "publicationType": "Website post describing an interview",
+      "format": "Lien vers entretien vidéo externe; contenu absent localement.",
+      "publicationDate": "2006-05-03",
+      "participants": [
+        "Ryo Mito"
+      ],
+      "topics": [
+        "Directe : entretien annoncé sur un jeu Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2006.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Lien vers entretien vidéo externe; contenu absent localement.",
+      "editorialSummary": "Kanzenshuu signale un entretien vidéo GameSpot avec Ryo Mito au sujet de Dragon Ball Z: Budokai Tenkaichi 2 (Sparking! NEO), accompagné de séquences de jeu. La capture locale ne contient ni questions ni réponses; seul le sujet est établi.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-2709-james-marsters-tv-guide-quote",
+      "url": "https://www.kanzenshuu.com/2008/01/16/james-marsters-talks-dragon-ball-to-tv-guide/",
+      "title": "James Marsters — propos relayés par TV Guide (extrait)",
+      "publication": "Kanzenshuu, billet WP2709",
+      "publicationType": "Website post describing an interview",
+      "format": "Citation brève relayée; contexte complet non acquis.",
+      "publicationDate": "2008-01-16",
+      "participants": [
+        "James Marsters"
+      ],
+      "topics": [
+        "Directe : acteur du film Dragon Ball alors en préparation."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Citation brève relayée; contexte complet non acquis.",
+      "editorialSummary": "Kanzenshuu reprend via Toon Zone une courte citation attribuée à TV Guide où James Marsters, choisi pour Piccolo dans le film américain à venir, loue Dragon Ball et évoque le conflit moral, l’action et le spectacle visuel du film. Aucun échange Q/R n’est fourni; ces propos ne renseignent pas sur le film achevé.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-2721-gen-fukunaga-icv2-interview-excerpt",
+      "url": "https://www.kanzenshuu.com/2008/01/21/gen-fukunaga-interview-dbz-dvd-news/",
+      "title": "Gen Fukunaga — entretien ICv2 et annonce des films DBZ remastérisés",
+      "publication": "Kanzenshuu, billet WP2721",
+      "publicationType": "Website post describing an interview",
+      "format": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
+      "publicationDate": "2008-01-21",
+      "participants": [
+        "Gen Fukunaga"
+      ],
+      "topics": [
+        "Directe : édition vidéo Dragon Ball Z."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
+      "editorialSummary": "Kanzenshuu renvoie à un entretien ICv2 de Gen Fukunaga et cite son annonce de plusieurs films Dragon Ball Z remastérisés pour février. Le billet mentionne aussi des réponses sur piratage, fansubs et coffrets saisonniers, sans les reproduire; seule l’annonce citée est résumable.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-2819-donny-clay-ign-burst-limit-interview",
+      "url": "https://www.kanzenshuu.com/2008/03/18/burst-limit-trailer-interview-at-ign/",
+      "title": "IGN — Donny Clay à propos de Burst Limit (extrait)",
+      "publication": "Kanzenshuu, billet WP2819",
+      "publicationType": "Website post describing an interview",
+      "format": "Extrait informatif relayé; entretien complet non acquis.",
+      "publicationDate": "2008-03-18",
+      "participants": [
+        "Donny Clay"
+      ],
+      "topics": [
+        "Directe : informations sur un jeu Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Extrait informatif relayé; entretien complet non acquis.",
+      "editorialSummary": "Le billet signale un entretien IGN avec Donny Clay, décrit prudemment comme producteur lié à Atari. Kanzenshuu retient 21 personnages jouables et cinq stages pour Burst Limit. Ce sont les seules données relayées; le dialogue complet n’est pas fourni.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-3075-toru-furuya-music-japan-plus-interview",
+      "url": "https://www.kanzenshuu.com/2008/06/26/toru-furuya-english-language-interview/",
+      "title": "Tōru Furuya — entretien en anglais signalé par Kanzenshuu",
+      "publication": "Kanzenshuu, billet WP3075",
+      "publicationType": "Website post describing an interview",
+      "format": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
+      "publicationDate": "2008-06-26",
+      "participants": [
+        "Tōru Furuya"
+      ],
+      "topics": [
+        "Directe : entretien d’un comédien de Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
+      "editorialSummary": "Kanzenshuu renvoie à un entretien en anglais de MUSIC JAPAN+ avec Tōru Furuya, interprète de Yamcha, et donne une indication de navigation. Aucune réponse n’est reproduite. Cette notice atteste seulement le lien et l’existence de l’entretien.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-3745-kai-cast-tokyo-anime-fair-comments",
+      "url": "https://www.kanzenshuu.com/2009/03/24/tokyo-international-anime-fair-dragon-ball-kai-preview/",
+      "title": "Dragon Ball Kai — propos du casting au Tokyo International Anime Fair",
+      "publication": "Kanzenshuu, billet WP3745",
+      "publicationType": "Website post describing an interview",
+      "format": "Compte rendu événementiel partiel; pas de transcription intégrale.",
+      "publicationDate": "2009-03-24",
+      "participants": [
+        "Mayumi Tanaka",
+        "Toshio Furukawa",
+        "Masako Nozawa",
+        "Akira Toriyama (message distinct)"
+      ],
+      "topics": [
+        "Directe : commentaires sur Dragon Ball Kai."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Compte rendu événementiel partiel; pas de transcription intégrale.",
+      "editorialSummary": "Kanzenshuu rapporte des commentaires de Mayumi Tanaka, Toshio Furukawa et Masako Nozawa à propos de l’enregistrement de Dragon Ball Kai. Le message d’Akira Toriyama est rapporté séparément et ne doit pas être attribué aux comédiens. Le compte rendu est partiel.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-4600-english-freeza-recast-for-dragon-ball-kai",
+      "url": "https://www.kanzenshuu.com/2010/06/01/english-freeza-recast-for-dragon-ball-kai/",
+      "title": "Chris Sabat et Sean Schemmel — recasting de Freeza",
+      "publication": "Vidéo FUNimation, partie 3",
+      "publicationType": "Website post summarizing an interview",
+      "format": "Notice limitée au billet; vidéo non transcrite ni acquise; Q/R non dénombrables.",
+      "publicationDate": "2010-06-01",
+      "participants": [
+        "Chris Sabat",
+        "Sean Schemmel"
+      ],
+      "topics": [
+        "Directe : doublage anglais."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Notice limitée au billet; vidéo non transcrite ni acquise; Q/R non dénombrables.",
+      "editorialSummary": "Le billet signale la partie 3 d’une série vidéo FUNimation avec Sabat et Schemmel, où est annoncé le recasting anglais de Freeza. Kanzenshuu rapporte que le réalisateur invoque l’incapacité de l’interprète précédente à suivre le script adapté et dit que la nouvelle voix, non encore nommée, serait plus inquiétante. Vidéo non transcrite : pas d’autres propos attribuables aux invités.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-4737-dragon-ball-kai-getting-too-expensive-to-produce",
+      "url": "https://www.kanzenshuu.com/2010/08/01/dragon-ball-kai-getting-too-expensive-to-produce/",
+      "title": "Yūji Mitsuya — échange rapporté à Otakon",
+      "publication": "Otakon 2010 — échange bref rapporté",
+      "publicationType": "Website post summarizing an interview",
+      "format": "Compte rendu partiel, pas de transcription du panel; Q/R formelles non dénombrables.",
+      "publicationDate": "2010-08-01",
+      "participants": [
+        "Yūji Mitsuya"
+      ],
+      "topics": [
+        "Directe : rôle de Kaiōshin."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Compte rendu partiel, pas de transcription du panel; Q/R formelles non dénombrables.",
+      "editorialSummary": "À Otakon, Kanzenshuu rapporte avoir demandé à Mitsuya s’il reprendrait Kaiōshin lorsque Kai atteindrait cet arc. Il dit ne pas savoir et doute que la production puisse le rémunérer, mais se serait dit prêt à réduire son tarif. Les hypothèses du billet sur le coût et le financement restent éditoriales.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-5204-dragon-ball-kai-ending-in-japan-first-solid-confirmation",
+      "url": "https://www.kanzenshuu.com/2011/03/03/dragon-ball-kai-ending-in-japan-first-solid-confirmation/",
+      "title": "Takeshi Kusao — entretien TV Pia",
+      "publication": "TV Pia — entretien bref résumé",
+      "publicationType": "Website post summarizing an interview",
+      "format": "Extrait résumé; scan signalé sur forum non consulté; Q/R non dénombrables.",
+      "publicationDate": "2011-03-03",
+      "participants": [
+        "Takeshi Kusao"
+      ],
+      "topics": [
+        "Directe : doublage de Trunks."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Extrait résumé; scan signalé sur forum non consulté; Q/R non dénombrables.",
+      "editorialSummary": "Kanzenshuu rapporte que Kusao, voix de Trunks, espérait refaire l’arc Majin Boo si l’occasion se présentait. TV Pia indiquait qu’il restait quatre épisodes de Kai. Kusao évoquait aussi l’enregistrement synchronisé de Gotenks avec Nozawa et les respirations improvisées apprises d’elle. Scan du magazine absent; synthèse limitée au billet.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-5477-funimation-dbz-tv-blu-ray-first-comparison-shots",
+      "url": "https://www.kanzenshuu.com/2011/09/09/funimation-dbz-tv-blu-ray-first-comparison-shots/",
+      "title": "Clarine Harp et Matt O’Hara — entretien ANNCast",
+      "publication": "ANNCast — Blu-ray TV DBZ",
+      "publicationType": "Website post summarizing an interview",
+      "format": "Notice Kanzenshuu sans transcription ni citations; Q/R non dénombrables.",
+      "publicationDate": "2011-09-09",
+      "participants": [
+        "Clarine Harp",
+        "Matt O’Hara"
+      ],
+      "topics": [
+        "Directe : production vidéo FUNimation."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Notice Kanzenshuu sans transcription ni citations; Q/R non dénombrables.",
+      "editorialSummary": "Kanzenshuu indique que Harp et O’Hara, responsables de production vidéo chez FUNimation, ont été interviewés sur le Blu-ray TV de DBZ. Le billet compare les Orange Bricks, Dragon Box et Blu-ray, et apprécie la conservation du grain. Ses questions sur audio japonais, encodage et éléments éditoriaux sont celles de Kanzenshuu, non des réponses des invités; entretien non transcrit.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "maximum-the-hormone-yoshu-fukushu-liner-notes-f",
+      "url": "https://www.kanzenshuu.com/translations/maximum-the-hormone-yoshu-fukushu-liner-notes-f/",
+      "title": "Maximum the Hormone — table ronde autour de F",
+      "publication": "Maximum the Hormone — Yoshū Fukushū, notes de pochette F",
+      "publicationType": "Website post summarizing an interview",
+      "format": "Table ronde traduite et annotée; pas de Q/R formelles; page Kanzenshuu publiée en 2015.",
+      "publicationDate": "2013-07-31",
+      "participants": [
+        "Maximum the Ryō-kun (Ryō Kawakita)",
+        "Akiko Shiragane (Shira)",
+        "Sengoku (Sen)",
+        "TanaKen (Ta)",
+        "Akatsuka (Aka)"
+      ],
+      "topics": [
+        "Directe pour interprétation de la chanson, non continuité fictionnelle."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/maximum-the-hormone-yoshu-fukushu-liner-notes-f.html",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Table ronde traduite et annotée; pas de Q/R formelles; page Kanzenshuu publiée en 2015.",
+      "editorialSummary": "Ryō Kawakita explique que F associe Freeza et Freedom : l’oppression des Nameks devient allégorie du génocide et de la liberté. Les participants discutent de références indirectes, Phowa, de l’humour de Ryō et d’un concert auquel Toriyama avait assisté. Intentions attribuées à Ryō, réactions aux interlocuteurs identifiés. Revue collective de notes d’album, non entretien classique.",
+      "reviewStatus": "source-post-checked-summary-only"
+    },
+    {
+      "id": "site-post-78442-podcast-episode-0522",
+      "url": "https://www.kanzenshuu.com/2025/05/18/podcast-episode-0522/",
+      "title": "Podcast Kanzenshuu #0522 — David Evelyn",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast episode",
+      "format": "Podcast audio — entretien",
+      "publicationDate": "2025-05-18",
+      "participants": [
+        "David Evelyn"
+      ],
+      "topics": [
+        "Directe mais éditoriale : entretien avec le traducteur anglais d’un ouvrage sur Torishima et Toriyama."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Résumé limité au synopsis local; audio non acquis et transcription indisponible.",
+      "editorialSummary": "Mike reçoit David Evelyn, traducteur de l’édition anglaise de Dr. Mashirito’s Ultimate Manga Techniques publiée par Viz. Le synopsis annonce une conversation sur les anecdotes et les enseignements du livre, ainsi que sur d’autres récits de l’invité. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-checked-audio-pending"
+    },
+    {
+      "id": "site-post-78462-podcast-episode-0523",
+      "url": "https://www.kanzenshuu.com/2025/06/01/podcast-episode-0523/",
+      "title": "Podcast Kanzenshuu #0523 — Zénpai",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast episode",
+      "format": "Podcast audio — entretien",
+      "publicationDate": "2025-06-01",
+      "participants": [
+        "Zénpai"
+      ],
+      "topics": [
+        "Directe : expérience de traduction et de publication d’un manga Dragon Ball au Portugal."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Résumé limité au synopsis local; audio non acquis et transcription indisponible.",
+      "editorialSummary": "Mike retrouve Zénpai, présenté comme le traducteur officiel d’une nouvelle publication manga Dragon Ball en portugais. Le synopsis annonce une discussion sur la genèse du projet, son avancement, les réactions du public et l’intérêt d’une édition portugaise pour la communauté internationale. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-checked-audio-pending"
+    },
+    {
+      "id": "site-post-78490-podcast-episode-0524",
+      "url": "https://www.kanzenshuu.com/2025/06/15/podcast-episode-0524/",
+      "title": "Podcast Kanzenshuu #0524 — Randy de We Gotta Podcast",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast episode",
+      "format": "Podcast audio — entretien",
+      "publicationDate": "2025-06-15",
+      "participants": [
+        "Randy (We Gotta Podcast)"
+      ],
+      "topics": [
+        "Indirecte : échange avec l’animateur d’un podcast de fans, centré sur son émission."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Résumé limité au synopsis local; audio non acquis et transcription indisponible.",
+      "editorialSummary": "Mike retrouve Randy de We Gotta Podcast, dont l’émission vient de dépasser cent épisodes. Le synopsis annonce une conversation sur la naissance de leur équipe et sur ce qui lui permet de poursuivre le podcast. Il ne détaille pas davantage l’échange; l’audio n’est pas acquis localement et le billet ne fournit pas de transcription.",
+      "reviewStatus": "synopsis-checked-audio-pending"
+    },
+    {
+      "id": "site-post-78532-podcast-episode-0525",
+      "url": "https://www.kanzenshuu.com/2025/06/30/podcast-episode-0525/",
+      "title": "Podcast Kanzenshuu #0525 — Q&A en direct avec la communauté",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast episode",
+      "format": "Podcast audio — entretien",
+      "publicationDate": "2025-06-30",
+      "participants": [
+        "Mike (Kanzenshuu)",
+        "invités du panel non identifiés dans le synopsis"
+      ],
+      "topics": [
+        "Directe : séance Q&A communautaire sur l’histoire des éditions manga et les jeux Dragon Ball."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Résumé limité au synopsis local; audio non acquis et transcription indisponible.",
+      "editorialSummary": "Mike anime une séance en direct avec plusieurs invités pour la communauté Patreon de Kanzenshuu. Selon le synopsis, le groupe répond aux questions sur l’histoire des éditions manga, les jeux vidéo et d’autres sujets Dragon Ball. Le billet ne nomme pas les invités. L’audio n’est pas acquis localement et aucune transcription n’est fournie.",
+      "reviewStatus": "synopsis-checked-audio-pending"
+    },
+    {
+      "id": "site-post-79015-podcast-episode-0533",
+      "url": "https://www.kanzenshuu.com/2025/12/28/podcast-episode-0533/",
+      "title": "Podcast Kanzenshuu #0533 — JP de The Space Above Us",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast episode",
+      "format": "Podcast audio — conversation analytique avec un invité",
+      "publicationDate": "2025-12-28",
+      "participants": [
+        "JP (The Space Above Us)"
+      ],
+      "topics": [
+        "Directe pour l’analyse d’un épisode de Dragon Ball Z, mais indirecte pour la production; aucun témoignage de créateur ou membre du personnel n’est annoncé."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Résumé limité au synopsis local; audio non acquis et transcription indisponible.",
+      "editorialSummary": "Mike échange avec JP de The Space Above Us pour une nouvelle discussion sur l’espace. Le synopsis part d’un passage de remplissage de l’épisode 50 de Dragon Ball Z, où Goku répare son vaisseau et corrige sa route à partir des coordonnées de Dr. Brief, puis interroge la plausibilité de cette situation. Cas frontière : conversation d’analyse avec un invité, pas entretien avec un créateur ou professionnel de la franchise. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-checked-audio-pending"
+    },
+    {
+      "id": "site-post-80161-podcast-episode-0540",
+      "url": "https://www.kanzenshuu.com/2026/08/09/podcast-episode-0540/",
+      "title": "Podcast Kanzenshuu #0540 — Vincent Haddad",
+      "publication": "Daizenshuu EX / Kanzenshuu podcast",
+      "publicationType": "Podcast episode",
+      "format": "Podcast audio — entretien",
+      "publicationDate": "2026-08-09",
+      "participants": [
+        "Vincent Haddad"
+      ],
+      "topics": [
+        "Directe : entretien avec l’auteur d’un ouvrage consacré à Dragon Ball; le synopsis ne permet pas de préciser davantage son contenu."
+      ],
+      "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
+      "acquired": true,
+      "transcriptAvailable": false,
+      "forumContent": false,
+      "alternatePrimarySource": null,
+      "questionCount": null,
+      "sectionHeadings": [],
+      "sourceDescription": "Résumé limité au synopsis local; audio non acquis et transcription indisponible.",
+      "editorialSummary": "Mike s’entretient avec Vincent Haddad, auteur de Next Time on Dragon Ball: Playing with a Manga and Anime Franchise. Le synopsis local présente l’invité et son livre sans préciser les sujets détaillés de leur conversation. Le billet ne transcrit pas l’échange et l’audio n’est pas acquis localement.",
+      "reviewStatus": "synopsis-checked-audio-pending"
     }
   ],
   "coverage": {
