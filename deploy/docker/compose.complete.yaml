@@ -87,6 +87,10 @@ services:
 
   # 4. Bot Discord Shenron
   bot:
+    # Opt-in (--profile discord): the copied env carries the production Discord token, and a
+    # second login would double the production bot.
+    profiles:
+      - discord
     image: localhost/shenron:${SHENRON_IMAGE_TAG:-local}
     container_name: shenron-bot
     entrypoint: ["/usr/local/bin/shenron-bot"]
@@ -126,10 +130,8 @@ services:
     depends_on:
       server:
         condition: service_healthy
-      bot:
-        condition: service_healthy
     volumes:
-      - ./all-in-one/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./compose-gateway.nginx.conf:/etc/nginx/nginx.conf:ro
       - cdn_data:/srv/shenron-cdn:ro
       - ${SHENRON_TLS_DIR:-./tls}:/etc/letsencrypt:ro
     ports:
