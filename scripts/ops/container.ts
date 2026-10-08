@@ -26,7 +26,9 @@ const COMPOSE_FILE = join(ROOT, "deploy", "docker", "compose.complete.yaml");
 const ALL_IN_ONE_DOCKERFILE = join(ROOT, "deploy", "docker", "all-in-one", "Dockerfile");
 const IMAGE_TAG = "localhost/shenron:complete";
 
-async function execCommand(command: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
+async function execCommand(
+  command: string[],
+): Promise<{ code: number; stdout: string; stderr: string }> {
   const proc = Bun.spawn(command, {
     cwd: ROOT,
     stdout: "pipe",
@@ -41,7 +43,9 @@ async function execCommand(command: string[]): Promise<{ code: number; stdout: s
 }
 
 async function cmdEnv(isProd: boolean) {
-  console.log(`--> Préparation des secrets du conteneur (${isProd ? "production" : "développement"})...`);
+  console.log(
+    `--> Préparation des secrets du conteneur (${isProd ? "production" : "développement"})...`,
+  );
   const report = await prepareContainerSecrets({ isProd });
   console.log(`✓ Secrets générés :`);
   console.log(`  - Sources trouvées : ${report.sourcesFound.length}`);
@@ -51,10 +55,14 @@ async function cmdEnv(isProd: boolean) {
 }
 
 async function cmdBuild(allInOne: boolean) {
-  console.log(`--> Construction de l'image Docker Shenron (${allInOne ? "all-in-one" : "compose"})...`);
-  const dockerfile = allInOne ? ALL_IN_ONE_DOCKERFILE : join(ROOT, "deploy", "docker", "Dockerfile");
+  console.log(
+    `--> Construction de l'image Docker Shenron (${allInOne ? "all-in-one" : "compose"})...`,
+  );
+  const dockerfile = allInOne
+    ? ALL_IN_ONE_DOCKERFILE
+    : join(ROOT, "deploy", "docker", "Dockerfile");
   const args = ["docker", "build", "-f", dockerfile, "-t", IMAGE_TAG, "."];
-  
+
   const proc = Bun.spawn(args, {
     cwd: ROOT,
     stdio: ["inherit", "inherit", "inherit"],
@@ -67,20 +75,41 @@ async function cmdBuild(allInOne: boolean) {
 }
 
 async function cmdUp(allInOne: boolean, isProd: boolean) {
-  await cmdEnv(isProd);
+  if (isProd) {
+    throw new Error(
+      "Production containers are activated by the Aphrody Infra release adapter, not from a local checkout.",
+    );
+  }
+  const secrets = await prepareContainerSecrets({ isProd: false });
+  if (!secrets.botReady) {
+    throw new Error(
+      "A local Discord bot token, GUILD_ID, and OWNER_ID are required before starting the complete stack.",
+    );
+  }
 
   if (allInOne) {
     console.log("--> Lancement du conteneur complet all-in-one...");
     const args = [
-      "docker", "run", "-d",
-      "--name", "shenron-complete",
-      "-p", "80:80",
-      "-p", "5011:5011",
-      "-p", "5006:5006",
-      "-p", "5432:5432",
-      "-p", "6379:6379",
-      "--env-file", join(ROOT, "deploy", "docker", "env", "shenron-site.env"),
-      IMAGE_TAG
+      "docker",
+      "run",
+      "-d",
+      "--name",
+      "shenron-complete",
+      "-p",
+      "80:80",
+      "-p",
+      "5011:5011",
+      "-p",
+      "5006:5006",
+      "--env-file",
+      join(ROOT, "deploy", "docker", "env", "shenron-site.env"),
+      "--env-file",
+      join(ROOT, "deploy", "docker", "env", "shenron-bot.env"),
+      "--env-file",
+      join(ROOT, "deploy", "docker", "env", "shenron-compute-client.env"),
+      "--env-file",
+      join(ROOT, "deploy", "docker", "env", "deploy.env"),
+      IMAGE_TAG,
     ];
     const { code, stdout, stderr } = await execCommand(args);
     if (code !== 0) {
@@ -90,7 +119,17 @@ async function cmdUp(allInOne: boolean, isProd: boolean) {
     console.log(`✓ Conteneur all-in-one démarré (ID: ${stdout.trim().slice(0, 12)})`);
   } else {
     console.log("--> Lancement de la pile Docker Compose complète...");
-    const args = ["docker", "compose", "-f", COMPOSE_FILE, "up", "-d"];
+    const args = [
+      "docker",
+      "compose",
+      "--env-file",
+      join(ROOT, "deploy", "docker", "env", "deploy.env"),
+      "-f",
+      COMPOSE_FILE,
+      "up",
+      "--build",
+      "-d",
+    ];
     const proc = Bun.spawn(args, {
       cwd: ROOT,
       stdio: ["inherit", "inherit", "inherit"],
@@ -111,16 +150,27 @@ async function cmdDown() {
 
   // Stop compose stack
   if (existsSync(COMPOSE_FILE)) {
-    const proc = Bun.spawn(["docker", "compose", "-f", COMPOSE_FILE, "down"], {
-      cwd: ROOT,
-      stdio: ["inherit", "inherit", "inherit"],
-    });
+    const deployEnv = join(ROOT, "deploy", "docker", "env", "deploy.env");
+    if (!existsSync(deployEnv)) {
+      console.log("  (Fichier deploy.env absent ; la pile Compose n'a rien à arrêter.)");
+      return;
+    }
+    const proc = Bun.spawn(
+      ["docker", "compose", "--env-file", deployEnv, "-f", COMPOSE_FILE, "down"],
+      {
+        cwd: ROOT,
+        stdio: ["inherit", "inherit", "inherit"],
+      },
+    );
     await proc.exited;
   }
   console.log("✓ Conteneurs arrêtés.");
 }
 
-async function probeHttp(url: string, name: string): Promise<{ name: string; ok: boolean; status?: number; error?: string }> {
+async function probeHttp(
+  url: string,
+  name: string,
+): Promise<{ name: string; ok: boolean; status?: number; error?: string }> {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
     return { name, ok: res.ok, status: res.status };
@@ -145,10 +195,23 @@ async function cmdStatus() {
   }
 
   // Docker containers status
-  const { stdout: psOut } = await execCommand(["docker", "ps", "--filter", "name=shenron", "--format", "{{.Names}}: {{.Status}}"]);
+  const { stdout: psOut } = await execCommand([
+    "docker",
+    "ps",
+    "--filter",
+    "name=shenron",
+    "--format",
+    "{{.Names}}: {{.Status}}",
+  ]);
   console.log("\nConteneurs Docker en cours d'exécution :");
   if (psOut.trim()) {
-    console.log(psOut.trim().split("\n").map(l => `  - ${l}`).join("\n"));
+    console.log(
+      psOut
+        .trim()
+        .split("\n")
+        .map((l) => `  - ${l}`)
+        .join("\n"),
+    );
   } else {
     console.log("  (Aucun conteneur shenron en cours d'exécution)");
   }
@@ -172,7 +235,13 @@ async function cmdBackup() {
   // Postgres dump if container is running
   const dumpFile = join(backupDir, `postgres-shenron_site-${timestamp}.sql`);
   const { code } = await execCommand([
-    "docker", "exec", "shenron-postgres", "pg_dump", "-U", "shenron", "shenron_site"
+    "docker",
+    "exec",
+    "shenron-postgres",
+    "pg_dump",
+    "-U",
+    "shenron",
+    "shenron_site",
   ]);
   if (code === 0) {
     console.log(`✓ Sauvegarde PostgreSQL créée : ${dumpFile}`);
@@ -204,8 +273,9 @@ async function main() {
       await cmdStatus();
       break;
     case "db-init":
-      const report = await initContainerDatabases({ dryRun: false });
+      const report = await initContainerDatabases({ dryRun: true });
       console.log(JSON.stringify(report, null, 2));
+      console.log("Dry run only; apply database changes through Aphrody Infra.");
       break;
     case "ovh":
       const ovhReport = await runOvhChecks();

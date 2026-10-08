@@ -15,12 +15,12 @@
  */
 
 import { resolve } from "node:path";
-import { prepareContainerSecrets } from "./container-secrets";
-import { initContainerDatabases } from "./container-db-init";
 
 const ROOT = resolve(import.meta.dir, "../..");
 
-async function runCommand(args: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
+async function runCommand(
+  args: string[],
+): Promise<{ code: number; stdout: string; stderr: string }> {
   const p = Bun.spawn(args, {
     cwd: ROOT,
     stdout: "pipe",
@@ -49,44 +49,11 @@ export async function getRemoteCommit(remote = "origin", branch = "main"): Promi
 }
 
 export async function deployRevision(commitSha: string, allInOne = false): Promise<boolean> {
-  console.log(`\n======================================================`);
-  console.log(`🚀 DÉPLOIEMENT AUTOMATIQUE DU COMMIT : ${commitSha.slice(0, 10)}`);
-  console.log(`======================================================`);
-
-  // 1. Git pull fast-forward
-  console.log("--> Mise à jour de l'arbre de travail local...");
-  const pull = await runCommand(["git", "pull", "--ff-only", "origin", "main"]);
-  if (pull.code !== 0) {
-    console.error("Échec du git pull :", pull.stderr);
-    return false;
-  }
-
-  // 2. Synchronisation des secrets
-  console.log("--> Synchronisation des secrets d'environnement...");
-  await prepareContainerSecrets({ isProd: true });
-
-  // 3. Exécution des migrations de base de données
-  console.log("--> Exécution des migrations Drizzle PostgreSQL et SQLite...");
-  const dbReport = await initContainerDatabases({ dryRun: false });
-  console.log(`  - Migrations PG appliquées : ${dbReport.postgres.appliedMigrations.length}`);
-  console.log(`  - Migrations SQLite appliquées : ${dbReport.sqlite.appliedMigrations.length}`);
-
-  // 4. Redémarrage des conteneurs
-  console.log("--> Redémarrage et actualisation de la pile conteneurisée...");
-  if (allInOne) {
-    await runCommand(["bun", "scripts/ops/container.ts", "up", "--all-in-one"]);
-  } else {
-    await runCommand(["bun", "scripts/ops/container.ts", "up"]);
-  }
-
-  // 5. Sondes de santé post-déploiement
-  console.log("--> Attente et vérification des sondes de santé...");
-  await Bun.sleep(5000);
-  const statusRes = await runCommand(["bun", "scripts/ops/container.ts", "status"]);
-  console.log(statusRes.stdout);
-
-  console.log(`✓ Déploiement automatique terminé pour ${commitSha.slice(0, 10)}.\n`);
-  return true;
+  void allInOne;
+  console.error(
+    `Déploiement direct refusé pour ${commitSha.slice(0, 10)}. La publication et les migrations appartiennent à Aphrody Infra.`,
+  );
+  return false;
 }
 
 export async function checkAndDeploy(allInOne = false): Promise<boolean> {
@@ -94,16 +61,22 @@ export async function checkAndDeploy(allInOne = false): Promise<boolean> {
   const remote = await getRemoteCommit();
 
   if (!remote) {
-    console.log(`[${new Date().toLocaleTimeString()}] Impossible de joindre le dépôt distant ou aucune mise à jour.`);
+    console.log(
+      `[${new Date().toLocaleTimeString()}] Impossible de joindre le dépôt distant ou aucune mise à jour.`,
+    );
     return false;
   }
 
   if (current !== remote) {
-    console.log(`Nouveau commit détecté sur origin/main (${current.slice(0, 8)} -> ${remote.slice(0, 8)})`);
+    console.log(
+      `Nouveau commit détecté sur origin/main (${current.slice(0, 8)} -> ${remote.slice(0, 8)})`,
+    );
     return await deployRevision(remote, allInOne);
   }
 
-  console.log(`[${new Date().toLocaleTimeString()}] Dépôt à jour (${current.slice(0, 8)}). Aucune action requise.`);
+  console.log(
+    `[${new Date().toLocaleTimeString()}] Dépôt à jour (${current.slice(0, 8)}). Aucune action requise.`,
+  );
   return false;
 }
 
