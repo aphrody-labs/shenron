@@ -48,11 +48,11 @@ services:
 
   # 3. Serveur frontal Shenron (Site Next.js 16, Studio Koharu, Desktop, MCP, API)
   server:
-    image: localhost/shenron:${SHENRON_IMAGE_TAG:-complete}
-    build:
-      context: ../..
-      dockerfile: deploy/docker/all-in-one/Dockerfile
+    # Same sealed image as production (deploy/docker/Dockerfile, built on the vps from dist/).
+    image: localhost/shenron:${SHENRON_IMAGE_TAG:-local}
     container_name: shenron-server
+    entrypoint: ["/usr/local/bin/shenron-server"]
+    command: ["serve", "--host", "0.0.0.0", "--port", "5011"]
     restart: unless-stopped
     depends_on:
       postgres:
@@ -60,8 +60,8 @@ services:
       redis:
         condition: service_healthy
     env_file:
-      - ${SHENRON_SITE_ENV_FILE:-deploy/docker/env/shenron-site.env}
-      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-deploy/docker/env/shenron-compute-client.env}
+      - ${SHENRON_SITE_ENV_FILE:-./env/shenron-site.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-./env/shenron-compute-client.env}
     environment:
       SHENRON_HOME: /var/lib/shenron
       SHENRON_PROFILE: production
@@ -87,8 +87,9 @@ services:
 
   # 4. Bot Discord Shenron
   bot:
-    image: localhost/shenron:${SHENRON_IMAGE_TAG:-complete}
+    image: localhost/shenron:${SHENRON_IMAGE_TAG:-local}
     container_name: shenron-bot
+    entrypoint: ["/usr/local/bin/shenron-bot"]
     restart: unless-stopped
     depends_on:
       postgres:
@@ -96,8 +97,8 @@ services:
       server:
         condition: service_healthy
     env_file:
-      - ${SHENRON_BOT_ENV_FILE:-deploy/docker/env/shenron-bot.env}
-      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-deploy/docker/env/shenron-compute-client.env}
+      - ${SHENRON_BOT_ENV_FILE:-./env/shenron-bot.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-./env/shenron-compute-client.env}
     environment:
       API_HOST: 0.0.0.0
       API_PORT: "5006"
@@ -130,7 +131,7 @@ services:
     volumes:
       - ./all-in-one/nginx.conf:/etc/nginx/nginx.conf:ro
       - cdn_data:/srv/shenron-cdn:ro
-      - ${SHENRON_TLS_DIR:-deploy/docker/tls}:/etc/letsencrypt:ro
+      - ${SHENRON_TLS_DIR:-./tls}:/etc/letsencrypt:ro
     ports:
       - "80:80"
       - "443:443"
@@ -152,7 +153,7 @@ services:
     profiles:
       - ops
     env_file:
-      - ${OVH_ENV_FILE:-deploy/docker/env/ovh.env}
+      - ${OVH_ENV_FILE:-./env/ovh.env}
     entrypoint: ["bun", "/app/scripts/ops/ovh-shenron.ts", "--watch"]
     networks:
       - shenron-net
