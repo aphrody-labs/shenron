@@ -118,3 +118,17 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
 * **Déploiement en production** :
   - Délégué à `aphrody-infra` via `bun scripts/ops/release.ts` (tout build sur le vps).
   - Sondes de santé après bascule : `/api/health`, `/api/canon`, `/.well-known/agent-card.json`.
+
+## 6. Revalidation locale du 8 octobre 2026
+
+Les cases historiques ci-dessus décrivent le relevé du 7 octobre ; elles ne prouvent pas la qualification du checkout actuel. L’objectif de terminer tous les chantiers reste ouvert.
+
+- Agent home DBFR lu : `~/.aphrody/workspaces/dbfr/SOUL.md`. Ce dossier contient également `training/triples.jsonl`, mais aucun autre document natif de l’agent home.
+- OpenAPI, tokens UI et contrats IA (12 fixtures) : contrôles réussis. Lint : code 0, avec avertissements. Typecheck global : échec lié aux dépendances locales absentes `@aphrody/bun` et `cmdk` ; aucune validation globale revendiquée.
+- Corpus local de chat : 1 091 lignes gold, zéro ligne dans `rollouts.jsonl`. Les 1 495 rollouts du relevé historique restent à retrouver ou à produire et vérifier. La boucle `train-shenron-chat-loop.ts` génère et évalue, mais ne lance pas encore `aphrody-train` : le raccordement LoRA reste à implémenter et qualifier.
+- Accès SSH aux deux VPS de build `vps` et `dbfr` : expiration de connexion. Installation, portes distantes, builds Rust, signature et qualification NSIS restent à exécuter dès rétablissement.
+- Le raccordement VFS/API des données de jeux et les consommateurs Studio restent ouverts comme indiqué dans `REPRISE.md` ; les claims non libérées sur `crates/shenron-re/**` et `REPRISE.md` ont été respectées.
+- Sondes publiques `/api/health`, `/.well-known/agent-card.json` et `/api/canon` : HTTP 200 le 8 octobre. Ce contrôle de disponibilité ne qualifie pas le contenu métier ni la conformité A2A.
+- Le gel des databooks reste déclaré dans ce plan, même si `.coord/FREEZE-databooks.json` est absent du checkout. Aucune écriture éditoriale effectuée.
+
+Rapport détaillé local, ignoré par Git : `var/reports/plan-audit-2026-10-08.json`. Prochaine étape : rétablir les accès de build, installer avec le lockfile figé, puis reprendre entraînement, intégration RE et packaging jusqu’aux preuves de livraison.

@@ -26,9 +26,8 @@ Une composition orchestrée séparant chaque responsabilité dans un conteneur d
 1. `postgres` : Service PostgreSQL 16/18 avec volume persistant `postgres_data` et sonde `pg_isready`.
 2. `redis` : Service Redis avec volume persistant `redis_data` et sonde `redis-cli ping`.
 3. `server` : Service Shenron Server (Site, Studio, Bureau, MCP, API) écoutant sur 5011 et 8790.
-4. `bot` : Service Shenron Bot écoutant sur 5006 avec volume `bot_data` pour SQLite.
-5. `gateway` : Nginx servant de reverse-proxy HTTP/HTTPS (ports 80, 443 TCP/UDP) et CDN statique.
-6. `ovh-watch` : Sidecar de surveillance OVH (`ovh-shenron.ts --watch`).
+4. `bot` : Service Shenron Bot écoutant sur 5006 avec volume `bot_data` pour SQLite ; opt-in (`--profile discord`) pour ne pas doubler le bot de production.
+5. `gateway` : Nginx (`compose-gateway.nginx.conf`) servant de reverse-proxy HTTP local (port 80) et CDN statique ; la surveillance OVH reste hors de la pile locale (`bun scripts/ops/ovh-shenron.ts --watch`).
 
 ---
 

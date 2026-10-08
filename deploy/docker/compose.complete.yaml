@@ -14,7 +14,7 @@ services:
     environment:
       POSTGRES_DB: shenron_site
       POSTGRES_USER: shenron
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shenron_secure_local_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run just container-env first}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -67,7 +67,7 @@ services:
       SHENRON_PROFILE: production
       HOSTNAME: 0.0.0.0
       PORT: "5011"
-      DATABASE_URL: postgres://shenron:${POSTGRES_PASSWORD:-shenron_secure_local_dev}@postgres:5432/shenron_site
+      DATABASE_URL: postgres://shenron:${POSTGRES_PASSWORD:?run just container-env first}@postgres:5432/shenron_site
       REDIS_URL: redis://redis:6379
       NEXT_TELEMETRY_DISABLED: "1"
     volumes:
@@ -95,6 +95,7 @@ services:
     container_name: shenron-bot
     entrypoint: ["/usr/local/bin/shenron-bot"]
     restart: unless-stopped
+    command: []
     depends_on:
       postgres:
         condition: service_healthy
@@ -106,7 +107,7 @@ services:
     environment:
       API_HOST: 0.0.0.0
       API_PORT: "5006"
-      DATABASE_URL: postgres://shenron:${POSTGRES_PASSWORD:-shenron_secure_local_dev}@postgres:5432/shenron_site
+      DATABASE_URL: postgres://shenron:${POSTGRES_PASSWORD:?run just container-env first}@postgres:5432/shenron_site
       DATABASE_PATH: /app/data/bot.db
     volumes:
       - bot_data:/app/data
@@ -133,30 +134,14 @@ services:
     volumes:
       - ./compose-gateway.nginx.conf:/etc/nginx/nginx.conf:ro
       - cdn_data:/srv/shenron-cdn:ro
-      - ${SHENRON_TLS_DIR:-./tls}:/etc/letsencrypt:ro
     ports:
       - "80:80"
-      - "443:443"
-      - "443:443/udp"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://127.0.0.1/ || exit 1"]
       interval: 20s
       timeout: 5s
       retries: 3
       start_period: 15s
-    networks:
-      - shenron-net
-
-  # 6. Service Ops & Surveillance OVH
-  ovh-watch:
-    image: localhost/shenron:${SHENRON_IMAGE_TAG:-complete}
-    container_name: shenron-ovh-watch
-    restart: unless-stopped
-    profiles:
-      - ops
-    env_file:
-      - ${OVH_ENV_FILE:-./env/ovh.env}
-    entrypoint: ["bun", "/app/scripts/ops/ovh-shenron.ts", "--watch"]
     networks:
       - shenron-net
 
