@@ -31,7 +31,9 @@ export async function generateMetadata({
     where: (p, { eq }) => eq(p.slug, slug[slug.length - 1]!),
     columns: { title: true, body: true, slug: true },
   });
-  if (!page) return { title: "Page introuvable", robots: { index: false, follow: true } };
+  // Metadata resolves before the stream (`wiki/loading.tsx` flushes a 200 otherwise):
+  // an unknown slug — `/wiki/bardock.mp4` included — must answer a real 404.
+  if (!page) notFound();
   return {
     title: page.title,
     // Pas de champ résumé sur `WikiPage` : on dérive un extrait du corps
