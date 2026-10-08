@@ -32,5 +32,9 @@
    * Serveurs MCP (`aphrody-mcp` port 8793, `shenron-mcp` port 8790 / public `/mcp`) et A2A (`aphrody-a2a` port 8788, public `/api/a2a`) opérationnels et testés.
    * Forwarding natif multi-ports SSH et profil WireGuard pour Omar (`10.200.77.5/32`).
    * Configurations universelles d'agents (`scripts/ops/setup-agent-connectors.ts`, `just setup-connectors`) et pack de déploiement sécurisé pour Omar sous `deploy/connectors/omar/`.
+8. **Secrets Unifiés & Infrastructure Serverless (Google, Discord, SQL/Neon, Redis, Aphrody)** :
+   * Gestionnaire unifié `scripts/ops/unified-secrets.ts` (`just secrets-*`) fédérant 90+ variables sur 7 catégories.
+   * Déploiement serverless prêt à l'emploi (`.env.serverless`, Vercel, Cloudflare, Neon, Docker serverless).
+   * Zéro fuite de secret dans Git, permissions 0600 et audit de sécurité masqué.
 
 

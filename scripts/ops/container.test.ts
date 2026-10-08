@@ -119,3 +119,24 @@ describe("auto-deploy", () => {
   });
 });
 
+describe("unified-secrets", () => {
+  test("discovers secrets and masks values safely without leaks", async () => {
+    const { discoverUnifiedSecrets, maskSecretValue, exportSecretsJson } =
+      await import("./unified-secrets");
+    const secrets = discoverUnifiedSecrets();
+    expect(secrets.size).toBeGreaterThan(30);
+
+    const db = secrets.get("DATABASE_URL");
+    expect(db).toBeDefined();
+    expect(db?.category).toBe("SQL");
+
+    const masked = maskSecretValue("postgresql://user:super_secret_pw@db.neon.tech/main");
+    expect(masked).not.toContain("super_secret_pw");
+    expect(masked).toContain("***");
+
+    const json = exportSecretsJson(secrets);
+    expect(typeof json).toBe("object");
+    expect(json.DATABASE_URL).toBeDefined();
+  });
+});
+

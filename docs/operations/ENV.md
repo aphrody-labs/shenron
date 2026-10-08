@@ -333,3 +333,16 @@ Validées par zod ; un identifiant absent désactive la fonctionnalité concern�
   `TICKET_CATEGORY_ID`, `VOCAL_TEMPO_HUB_ID`, `SERVER_INVITE_URL`.
 - API : `API_ENABLED`, `API_HOST`, `API_PORT`, `API_ADMIN_TOKEN`, `API_USER_SECRET`.
 - Divers : `LOG_LEVEL`, `NODE_ENV`.
+
+## Gestionnaire Unifié & Déploiement Serverless — `scripts/ops/unified-secrets.ts`
+
+Le script `scripts/ops/unified-secrets.ts` centralise la gestion des 90+ secrets et variables
+d'environnement de l'écosystème Shenron et Aphrody selon le principe strict `zero-plaintext-secrets-in-git`.
+
+Il permet de rendre l'intégralité de l'infrastructure utilisable partout (Local, Conteneurs, VPS, Serverless) :
+
+- **Audit masqué sans fuite** (`just secrets-audit`) : affiche le statut de chaque clé (Google, Discord, SQL/Neon, Redis, Auth, Aphrody, Serverless) sans jamais exposer la valeur en clair.
+- **Export Serverless** (`just secrets-serverless`) : génère `deploy/connectors/local/.env.serverless` (mode 0600, ignoré par Git) prêt pour Vercel, Cloudflare Workers, AWS Lambda ou Docker Serverless.
+- **Export JSON pour Secret Managers** (`just secrets-json`) : format JSON structuré pour Google Secret Manager, Vercel Secrets ou Infisical.
+- **Synchronisation locale complète** (`just secrets-sync`) : propage en un clic les secrets découverts vers `apps/site/.env.local`, `apps/bot/.env` et les profils de connecteurs d'agents.
+

@@ -295,6 +295,26 @@ connectors-status:
 connectors-omar:
     bun scripts/ops/setup-agent-connectors.ts --omar-only
 
+# Secrets: audit unified Google, Discord, SQL, Redis, Auth, and Aphrody secrets (zero-leak)
+[group('secrets')]
+secrets-audit:
+    bun scripts/ops/unified-secrets.ts audit
+
+# Secrets: synchronize all secrets to local apps and connectors
+[group('secrets')]
+secrets-sync:
+    bun scripts/ops/unified-secrets.ts sync-all
+
+# Secrets: export unified serverless environment profile (.env.serverless)
+[group('secrets')]
+secrets-serverless *args="":
+    bun scripts/ops/unified-secrets.ts export-serverless {{args}}
+
+# Secrets: export JSON dictionary for Cloud Secret Managers
+[group('secrets')]
+secrets-json:
+    bun scripts/ops/unified-secrets.ts export-json
+
 # Automation: continuous deployment on push to origin/main
 [group('automation')]
 auto-deploy *args="":
