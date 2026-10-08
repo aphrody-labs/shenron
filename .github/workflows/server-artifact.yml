@@ -28,6 +28,8 @@ jobs:
     timeout-minutes: 45
     env:
       VFS: ${{ inputs.vfs }}
+      # Private aphrody-labs/aphrody Git dependencies: passed to the image by name only.
+      APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
     steps:
       - uses: actions/checkout@v7
         with:

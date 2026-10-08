@@ -12,6 +12,10 @@
  * aphrody-build-{cargo,sccache,bun,xwin,xdg}, bounded CPU/memory (APHRODY_BUILD_CPUS ≤ 6, default 6;
  * APHRODY_BUILD_MEMORY, default 16g, no swap) so the llama-server services keep their memory, and the
  * factory heavy lock when the host has one. Secrets pass by environment NAME only, never as values.
+ *
+ * Dépendances Git privées (aphrody-labs/aphrody épinglé par révision) : l'aide d'identification Git
+ * de l'image répond pour github.com avec `APHRODY_GIT_TOKEN`, résolu ici depuis l'appelant
+ * (APHRODY_GIT_TOKEN, GH_TOKEN, GITHUB_TOKEN, sinon `gh auth token`) et passé par son nom seulement.
  */
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -96,6 +100,20 @@ export function containerArgs(o: ContainerOptions): string[] {
     : ["flock", "--close", HEAVY_LOCK, ...docker];
 }
 
+/** Jeton pour l'aide d'identification github.com de l'image (environnement de l'appelant, sinon `gh`). */
+export function gitToken(
+  env: Record<string, string | undefined>,
+  gh: () => string | undefined,
+): string | undefined {
+  return env.APHRODY_GIT_TOKEN || env.GH_TOKEN || env.GITHUB_TOKEN || gh() || undefined;
+}
+
+function ghToken(): string | undefined {
+  if (!Bun.which("gh")) return undefined;
+  const p = Bun.spawnSync(["gh", "auth", "token"], { stdout: "pipe", stderr: "ignore" });
+  return p.exitCode === 0 ? p.stdout.toString().trim() : undefined;
+}
+
 /** Écarts entre l'image et le checkout (toolchain Rust, CLI wasm-bindgen) ; vide si conforme. */
 export function imageProblems(
   labels: Record<string, string>,
@@ -156,6 +174,8 @@ if (import.meta.main) {
     return index >= 0 ? flags[index + 1] : undefined;
   };
   const env = flags.flatMap((flag, index) => (flag === "--env" ? [flags[index + 1] ?? ""] : []));
+  const token = gitToken(process.env, ghToken);
+  if (token && !env.includes("APHRODY_GIT_TOKEN")) env.push("APHRODY_GIT_TOKEN");
   const args = containerArgs({
     repo: ROOT,
     command: argv.slice(split + 1),
@@ -168,6 +188,9 @@ if (import.meta.main) {
     cpus: process.env.APHRODY_BUILD_CPUS,
     memory: process.env.APHRODY_BUILD_MEMORY,
   });
-  const child = Bun.spawnSync(args, { stdio: ["inherit", "inherit", "inherit"] });
+  const child = Bun.spawnSync(args, {
+    env: token ? { ...process.env, APHRODY_GIT_TOKEN: token } : process.env,
+    stdio: ["inherit", "inherit", "inherit"],
+  });
   process.exit(child.exitCode ?? 1);
 }

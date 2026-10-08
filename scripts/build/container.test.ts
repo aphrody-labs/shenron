@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { containerArgs, imageProblems } from "./container";
+import { containerArgs, gitToken, imageProblems } from "./container";
 
 test("builds run bounded, non-root, on shared caches, secrets by name only", () => {
   const args = containerArgs({
@@ -38,4 +38,11 @@ test("the image must match the checkout's Rust and wasm-bindgen pins", () => {
     1,
   );
   expect(imageProblems({}, toolchain, lock)).toHaveLength(2);
+});
+
+test("jeton Git : environnement de l'appelant d'abord, gh en dernier, jamais requis", () => {
+  expect(gitToken({ APHRODY_GIT_TOKEN: "a", GH_TOKEN: "b" }, () => "c")).toBe("a");
+  expect(gitToken({ GITHUB_TOKEN: "d" }, () => "c")).toBe("d");
+  expect(gitToken({}, () => "c")).toBe("c");
+  expect(gitToken({}, () => undefined)).toBeUndefined();
 });
