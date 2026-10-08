@@ -5,6 +5,8 @@ import postgres from "postgres";
 const apply = process.argv.includes("--apply");
 const sourcePath = resolve(import.meta.dir, "../../../docs/products/powerscaling-vsbw.md");
 const body = await readFile(sourcePath, "utf8");
+// Le gabarit wiki affiche déjà le titre en H1.
+const wikiBody = body.replace(/^# [^\r\n]*\r?\n(?:\r?\n)?/, "");
 const category = {
   id: "cat_vsbw_methodology",
   slug: "methodologie-powerscaling",
@@ -21,6 +23,7 @@ if (!apply) {
   console.log("Catégorie à créer : " + category.name + " (/wiki/" + category.slug + ")");
   console.log("Page à créer : " + page.title + " (/wiki/" + page.slug + ")");
   console.log("Source : " + sourcePath + " (" + body.length + " caractères)");
+  console.log("Corps wiki : H1 retiré, " + wikiBody.length + " caractères.");
   console.log("Pour insérer seulement si ces identifiants et slugs sont libres : bun apps/site/scripts/seed-vsbw-methodology.ts --apply");
   process.exit(0);
 }
@@ -57,7 +60,7 @@ try {
         ${category.id},
         ${page.title},
         ${page.slug},
-        ${body},
+        ${wikiBody},
         1,
         NOW()
       )
@@ -74,7 +77,7 @@ try {
       pageRows[0]?.categoryId !== category.id ||
       pageRows[0]?.title !== page.title ||
       pageRows[0]?.slug !== page.slug ||
-      pageRows[0]?.body !== body
+      pageRows[0]?.body !== wikiBody
     ) {
       throw new Error("Page ID or slug exists with different content; no changes committed.");
     }
