@@ -44,7 +44,8 @@ const CURRENT = "/srv/shenron/current";
 const CDN_SRC = "/srv/shenron-cdn-src";
 const CDN_OUT = "/srv/shenron-cdn";
 const ADAPTER = "/usr/local/sbin/aphrody-infra-deploy-shenron";
-const PATH = `${join(HOME, ".bun", "bin")}:${join(HOME, ".cargo", "bin")}:/usr/local/bin:/usr/bin:/bin`;
+// `~/.local/bin` : `gh`, dont `scripts/build/container.ts` tire le jeton des dépendances Git privées.
+const PATH = `${join(HOME, ".bun", "bin")}:${join(HOME, ".cargo", "bin")}:${join(HOME, ".local", "bin")}:/usr/local/bin:/usr/bin:/bin`;
 
 function step(label: string, cmd: string[], env: Record<string, string> = {}, cwd = REPO): string {
   console.log(`== ${label}`);
