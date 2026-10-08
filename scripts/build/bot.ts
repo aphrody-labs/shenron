@@ -47,6 +47,10 @@ const child = Bun.spawn(
     "--compile",
     "--asset-naming=[name].[ext]",
     `--target=${bunTarget}`,
+    // Cross-compiling: the fork's runtime for the target (upstream has no build of the fork's version).
+    ...(process.env.SHENRON_COMPILE_BUN
+      ? [`--compile-executable-path=${process.env.SHENRON_COMPILE_BUN}`]
+      : []),
     "--minify-whitespace",
     "--minify-syntax",
     "--outfile",

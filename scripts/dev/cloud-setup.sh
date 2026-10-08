@@ -50,7 +50,8 @@ fi
 
 step "versions from the repository"
 channel="$(sed -nE 's/^channel[[:space:]]*=[[:space:]]*"([^"]+)"/\1/p' "$root/rust-toolchain.toml" 2>/dev/null | head -1)"
-bun_pin="$(sed -nE '/"bun"[[:space:]]*:[[:space:]]*\{/,/\}/ s/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$root/config/system-packages.json" 2>/dev/null | head -1)"
+# Bun: the aphrody-labs/bun fork release pinned by package.json#packageManager (bun@<version>).
+bun_pin="$(sed -nE 's/.*"packageManager"[[:space:]]*:[[:space:]]*"bun@([^"]+)".*/\1/p' "$root/package.json" 2>/dev/null | head -1)"
 echo "  rust channel: ${channel:-stable}  bun: ${bun_pin:-latest}"
 
 step "rust"
@@ -64,7 +65,7 @@ fi
 
 step "bun"
 if ! have bun; then
-  run bash -c "curl -fsSL https://bun.sh/install | bash -s ${bun_pin:+bun-v$bun_pin}"
+  run bash -c "curl -fsSL https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/aphrody/install.sh | bash -s ${bun_pin:+aphrody-v$bun_pin}"
 fi
 
 step "uv and Graphify"

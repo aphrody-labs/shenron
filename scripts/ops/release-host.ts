@@ -20,7 +20,7 @@
  *
  * Le site est construit avec `NEXT_PUBLIC_CDN_URL` de l'environnement du site : le préfixe des
  * chunks est gravé dans le runtime Turbopack et `next start` le reprend du build
- * (`apps/site/src/lib/build-frozen-config.ts`). Servis par l'origine, les chunks d'une release
+ * (`withBun` de `@aphrody/next-bun`, `freezeBuildConfig`). Servis par l'origine, les chunks d'une release
  * disparaissaient à la suivante et un onglet ouvert avant la bascule tombait en ChunkLoadError ;
  * le CDN, lui, garde tous les anciens chunks.
  *

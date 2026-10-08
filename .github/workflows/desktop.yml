@@ -85,8 +85,8 @@ jobs:
         with:
           tool: tauri-cli
 
-      # setup-bun reads the exact version from package.json#packageManager.
-      - uses: oven-sh/setup-bun@v2
+      # The fork release pinned by package.json#packageManager.
+      - uses: ./.github/actions/setup-bun
 
       - name: Cache Bun downloads
         uses: actions/cache@v6

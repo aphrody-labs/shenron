@@ -34,8 +34,8 @@
       "@discordx/pagination": "^4.4.2",
       "@huggingface/transformers": "^4.3.0",
       "@napi-rs/canvas": "1.0.9",
-      "@next/env": "^16.3.8",
-      "@next/third-parties": "^16.3.6",
+      "@next/env": "16.5.0-canary.4",
+      "@next/third-parties": "16.5.0-canary.4",
       "@paralleldrive/cuid2": "^3.3.0",
       "@pixi/react": "^8.0.5",
       "@pothos/core": "^4.15.1",
@@ -94,7 +94,7 @@
       "marked": "^18.0.14",
       "modern-gif": "^2.1.0",
       "motion": "^13.4.4",
-      "next": "16.3.8",
+      "next": "16.5.0-canary.4",
       "next-intl": "4.14.7",
       "next-themes": "^0.4.6",
       "pino": "^10.3.1",
@@ -132,7 +132,9 @@
       "@aphrody/web-test": "0.2.6",
       "@aphrody/agent-browser": "1.0.0-canary",
       "@aphrody/bun": "3.3.8",
-      "@aphrody/update": "0.1.1"
+      "@aphrody/update": "0.1.1",
+      "@aphrody/next-bun": "0.2.0-aphrody.1",
+      "@aphrody/bun-runtime": "1.4.3-aphrody.1"
     }
   },
   "type": "module",
@@ -161,6 +163,8 @@
   },
   "devDependencies": {
     "@aphrody/agent-browser": "catalog:",
+    "@aphrody/bun-runtime": "catalog:",
+    "@aphrody/next-bun": "catalog:",
     "@aphrody/web-test": "catalog:",
     "@shenron/api": "workspace:*",
     "@shenron/config": "workspace:*",
@@ -186,9 +190,9 @@
     "undici": "^7.30.0"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   },
-  "packageManager": "bun@1.4.2",
+  "packageManager": "bun@1.4.3-aphrody.1",
   "patchedDependencies": {
     "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch"
   },

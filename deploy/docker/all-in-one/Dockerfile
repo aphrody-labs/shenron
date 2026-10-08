@@ -11,7 +11,8 @@
 FROM ubuntu:24.04
 
 ARG SHENRON_REVISION=unknown
-ARG BUN_VERSION=1.4.2
+# Bun runtime: release of the aphrody-labs/bun fork (package.json#packageManager).
+ARG BUN_VERSION=1.4.3-aphrody.1
 
 LABEL org.opencontainers.image.title="Shenron Complete" \
       org.opencontainers.image.description="All-in-one container for Dragon Ball FR (Site, Bot, Studio, DB, Redis, Nginx)" \
@@ -49,8 +50,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-contrib \
  && rm -rf /var/lib/apt/lists/*
 
-# Install Bun
-RUN curl -fsSL https://bun.sh/install | env BUN_INSTALL=/usr/local bash -s "bun-v${BUN_VERSION}"
+# Install Bun (aphrody-labs/bun fork)
+RUN arch="$(uname -m)"; case "$arch" in x86_64) asset=bun-linux-x64 ;; aarch64) asset=bun-linux-aarch64 ;; *) exit 1 ;; esac \
+ && curl -fsSL -o /tmp/bun.zip "https://github.com/aphrody-labs/bun/releases/download/aphrody-v${BUN_VERSION}/${asset}.zip" \
+ && unzip -q /tmp/bun.zip -d /tmp/bun \
+ && install -m 0755 "/tmp/bun/${asset}/bun" /usr/local/bin/bun \
+ && ln -sf bun /usr/local/bin/bunx \
+ && rm -rf /tmp/bun /tmp/bun.zip \
+ && bun --revision
 
 # Create shenron user and directories
 RUN groupadd --gid 10001 shenron \

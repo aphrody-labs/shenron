@@ -21,7 +21,7 @@ jobs:
       DATABASE_PATH: "./data/test-ci.db"
     steps:
       - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
+      - uses: ./.github/actions/setup-bun
       # Versions tierces : catalogue du package.json racine ; @aphrody/* épinglés exactement
       # (inchangés par bun update) ; minimumReleaseAge de bunfig.toml respecté.
       - name: Capture état avant
