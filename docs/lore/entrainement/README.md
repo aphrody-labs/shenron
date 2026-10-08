@@ -1,10 +1,10 @@
 # Programme d'Entraînement Doctrinal et d'Auto-Critique Continue de Shenron
 
-Ce répertoire contient les cycles d'entraînement dialectique intensif de Shenron. Chaque question est soumise à un examen impitoyable simulant les exigences de l'Administrateur Omar de **dragonballfr.com**, avec détection systématique des lacunes, rejet des réponses incomplètes ou non sourcées, et refonte intégrale jusqu'à l'obtention d'une formulation irréfutable.
+Ce répertoire constitue le sanctuaire d'entraînement dialectique et d'évaluation continue de Shenron. Chaque question y est soumise à un examen impitoyable simulant les exigences de l'Administrateur Omar de **dragonballfr.com**, avec détection systématique des lacunes, rejet des extrapolations non soutenues (zéro fanon), et ancrage strict dans la hiérarchie canonique des sources (Manga 42 tomes > Manga DBS / films supervisés / Daima > Databooks officiels *Daizenshuu* / *Chōzenshū* / *SEG* > Hors-série et dérivés).
 
 ---
 
-## Sommaire des Cycles d'Entraînement
+## I. Les Cycles Thématiques Fondateurs (Cycles 01 à 13)
 
 1. [Cycle 01 : Techniques et Arts Martiaux](cycle-01-techniques-et-arts-martiaux.md) (Q1 à Q5)
    - *Mafūba*, *Kaiō-ken*, composition tripartite du Ki, *Kienzan*, *Shin Kikoho*.
@@ -30,15 +30,34 @@ Ce répertoire contient les cycles d'entraînement dialectique intensif de Shenr
     - Propriétés et limites des Senzus, condition de pureté du Kinto'un, seuil de rupture des Scouters, physique des Capsules Hoi-Poi, fréquences du Dragon Radar.
 12. [Cycle 12 : L'Anthologie des Pièges, Mythes et Fanon Démystifié](cycle-12-anthologie-pieges-et-fanon.md) (Q56 à Q60)
     - Mythe du Super Saiyan 5 et David Montiel Franco (Tablos 1999), fausses citations de Toriyama, statut des 13 films Toei 1986-1995, neutralisation des poings de Beerus et Goku, charte des 5 Rangs Canoniques de Shenron.
-13. [Cycle 13 : Archives, analyses et fusions](cycle-13-archives-et-fusions.md) (Q61 à Q69)
-    - Couverture et limites des interviews Kanzenshuu, statut critique des thèses de Daniel sur Buu/Broly/Janemba, placements avec degrés de confiance, portée des manifestes d’images, formulations des databooks sur Potara et Gogeta SSJ4.
+13. [Cycle 13 : Archives, Analyses Critiques et Fusions](cycle-13-archives-et-fusions.md) (Q61 à Q69)
+    - Couverture et limites des interviews Kanzenshuu, statut critique des analyses de Daniel (Capsule Commentary), degrés de confiance des scans, formules Potara du SEG.
 
 ---
 
-## Méthodologie du Contrôle Qualité
+## II. Le Grand Corpus Doctrinal Encyclopédique (Modules 01 à 06 — Q61 à Q360)
 
-À chaque itération :
-- **Phase 1 : Formulation piégée** (mise en situation d'une interrogation complexe de la communauté).
-- **Phase 2 : Ébauche initiale** (identification immédiate des faits bruts).
-- **Phase 3 : Auto-critique impitoyable** (détection des imprécisions, manques de tomes/chapitres, ou raccourcis).
-- **Phase 4 : Réponse perfectionnée** (verdict définitif soutenu par les citations en japonais, les tomes, les pages de databooks et les déclarations d'Akira Toriyama).
+Pour répondre à l'impératif d'expansion massive et d'entraînement à très grande échelle (**x100 questions**), le corpus déploie six modules encyclopédiques autonomes de 50 études approfondies chacun (300 questions doctrinales majeures) :
+
+1. [Grand Corpus Module 01 : Personnages, Étymologies et Origines](corpus-01-personnages-et-origines.md) (Q61 à Q110)
+   - 50 questions sur les jeux de mots culinaires saiyans, l'armée impériale, les origines de Mr Satan, l'ascendance de Videl, la lignée royale namekhe, les divinités et la nomenclature toriyamesque.
+2. [Grand Corpus Module 02 : Combats Majeurs et Chroniques Martiales](corpus-02-combats-et-chroniques.md) (Q111 à Q160)
+   - 50 questions sur la cinétique martiale et les issues stratégiques de chaque duel charnière des 42 tomes du Manga (du 21e Tenkaichi Budokai au sacrifice ultime de Goku contre Kid Buu).
+3. [Grand Corpus Module 03 : Transformations et Évolutions Martiales](corpus-03-transformations-et-evolutions.md) (Q161 à Q210)
+   - 50 questions sur les mécanismes physiologiques et multiplicateurs : Oozaru ($\times 10$), Super Saiyan 1 ($\times 50$), Grades 2 et 3, Grade 4 Full Power, SSJ2 ($\times 100$), SSJ3 ($\times 400$), formes divines (God, Blue, Rosé, Ultra Instinct, Ultra Ego), Beast, Orange Piccolo, Golden/Black Freezer, formes de Cell et Majin Buu.
+4. [Grand Corpus Module 04 : Philosophie Martiale, Écoles et Maîtres](corpus-04-philosophie-maitres-et-ecoles.md) (Q211 à Q260)
+   - 50 questions sur la pédagogie de Muten Rōshi, Tsuru Sennin, Maître Karin, Mister Popo, Kami-sama, Kaiō-sama, Yardrat, Whis, Beerus, la trinité du Ki (*Genki*, *Yūki*, *Shōki*) et la morale toriyamesque.
+5. [Grand Corpus Module 05 : Sciences, Artefacts et Technologies](corpus-05-sciences-artefacts-et-technologies.md) (Q261 à Q310)
+   - 50 questions sur les Capsules Hoi-Poi du Dr Brief, le Dragon Radar, la machine temporelle, les Scouters, les cuves de régénération, les Cyborgs du Dr Gero, les Senzus, les Potalas, les Anneaux du Temps et les Super Dragon Balls de Zalama.
+6. [Grand Corpus Module 06 : Antagonistes, Organisations et Menaces Cosmiques](corpus-06-antagonistes-organisations-et-menaces.md) (Q311 à Q360)
+   - 50 questions sur le Ruban Rouge, Taopaipai, Piccolo Daimaō, l'Empire de Freezer, le Commando Ginyu, les Cyborgs, Cell, Babidi, Kid Buu, Zamasu, Moro, les Heeters, Gomah et la déconstruction du statut des antagonistes de films (Broly 1993, Cooler, Janemba, Hildegarn, GT).
+
+---
+
+## Méthodologie du Contrôle Qualité Shenron
+
+Chaque question du corpus respecte la grille d'auto-critique quadrupartite :
+1. **Énoncé précis :** Formulation ciblée d'une problématique lore ou d'une contradiction apparente de l'œuvre.
+2. **Sources primaires impératives :** Citation du tome Tankōbon, du chapitre, des pages de databooks (*Daizenshuu 1-7*, *Chōzenshū 1-4*, *Super Exciting Guide*) et des termes originaux en japonais (*Kanji* / *Rōmaji*).
+3. **Auto-critique méthodologique :** Anticipation des pièges de traduction, des corruptions d'anime Toei, des rumeurs fanon et des raccourcis interprétatifs.
+4. **Réponse doctrinale péremptoire :** Verdict clair, exhaustif, impartial et irréfutable.
