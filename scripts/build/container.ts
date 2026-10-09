@@ -23,7 +23,7 @@ import { join, resolve } from "node:path";
 export const IMAGE = "aphrody-build";
 export const BUILD_GID = 1500;
 export const HEAVY_LOCK = "/srv/aphrody-build/locks/heavy.lock";
-const CACHES = ["cargo", "sccache", "bun", "xwin", "xdg"] as const;
+const CACHES = ["cargo", "sccache", "xwin", "xdg"] as const;
 const ROOT = resolve(import.meta.dir, "../..");
 
 export type ContainerOptions = {
@@ -86,6 +86,9 @@ export function containerArgs(o: ContainerOptions): string[] {
     "--env",
     "BUN_TMPDIR=/cache/bun",
     ...CACHES.flatMap((name) => ["--volume", `${IMAGE}-${name}:/cache/${name}`]),
+    // Keep Shenron's install cache out of the legacy shared volume with stale UID ownership.
+    "--volume",
+    `${IMAGE}-bun-shenron:/cache/bun`,
     ...(o.targetVolume
       ? [
           "--volume",
