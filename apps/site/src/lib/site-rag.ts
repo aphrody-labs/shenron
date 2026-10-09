@@ -7,7 +7,7 @@ import {
   type ChatFn,
   createOpenAiChat,
 } from "@shenron/pipeline/aphrody/compute";
-import { buildGroundingInstructions } from "@shenron/pipeline/ai/prompts";
+import { buildGroundingInstructions, resolvePersona } from "@shenron/pipeline/ai/prompts";
 import { createShenronProvider } from "@shenron/pipeline/ai/provider";
 import { generateText } from "ai";
 
@@ -65,22 +65,20 @@ export async function chatAphrodyRag(
   });
   if (hits.length === 0 && !options.context?.trim()) return { answer: "", hits, mode };
   const sources = hits
+    .slice(0, 5)
     .map(
       (hit, index) =>
-        `[${index + 1}] ${hit.title}\n${(hit.content || hit.snippet).slice(0, 900)}\nSource: ${hit.url}`,
+        `[${index + 1}] ${hit.title}\n${(hit.content || hit.snippet).slice(0, 700)}\nSource: ${hit.url}`,
     )
     .join("\n\n");
   const context = options.context?.trim()
-    ? `[Page consultée] ${options.context.trim().slice(0, 2600)}\n\n${sources}`
+    ? `[Page consultée] ${options.context.trim().slice(0, 1500)}\n\n${sources}`
     : sources;
   // Serveur direct déclaré (APHRODY_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
   // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
   const route = chatRoute(client);
-  // Voix « Whis » pour le persona whis, « Shenron » sinon (règle historique du site).
-  const instructions = buildGroundingInstructions(
-    persona === "whis" ? "whis" : "shenron",
-    "site-short",
-  );
+  const pid = resolvePersona(persona);
+  const instructions = buildGroundingInstructions(pid, "site-short");
   const { text } = await generateText({
     model: chatProvider(route.chat, route.model).languageModel("chat"),
     instructions,

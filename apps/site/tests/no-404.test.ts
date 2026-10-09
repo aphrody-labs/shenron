@@ -172,6 +172,15 @@ async function check(path: string): Promise<Check> {
   }
 }
 
+async function checkWithRetry(path: string): Promise<Check> {
+  const first = await check(path);
+  if (first.status === 0) {
+    await new Promise((r) => setTimeout(r, 800));
+    return check(path);
+  }
+  return first;
+}
+
 /** Exécute `fn` sur `items` avec une concurrence bornée. */
 async function mapLimit<T, R>(
   items: T[],
@@ -257,7 +266,7 @@ describeLive(`no-404 — site (${BASE})`, () => {
   // réelle /api/auth/get-session (200). Les autres catch-all (bot-admin,
   // bot-user, wiki-admin) sont de vrais proxies/gardes → un segment inconnu
   // renvoie 401/403 (auth), jamais 404, donc le sondage synthétique est valide.
-  const CATCHALL_404_ON_UNKNOWN = new Set(["/api/auth"]);
+  const CATCHALL_404_ON_UNKNOWN = new Set(["/api/auth", "/plugin"]);
 
   // Routes qui répondent **404 par design** à un appelant anonyme : la
   // découverte du contrat d'écriture est réservée (clé d'agent valide ou session
@@ -285,6 +294,7 @@ describeLive(`no-404 — site (${BASE})`, () => {
     "/api/search?q=goku", // GET public (recherche wiki) → 200
     "/api/subtitles", // GET sans src → 400 (pas 404)
     "/api/auth/get-session", // GET Better Auth valide → prouve l'arbre /api/auth
+    "/plugin/.claude-plugin/plugin.json", // GET plugin valide → prouve l'arbre /plugin
   ];
 
   it("énumère un nombre raisonnable de pages et de routes API", () => {
@@ -304,7 +314,7 @@ describeLive(`no-404 — site (${BASE})`, () => {
     const urls = [...all].toSorted();
 
     // 3. Vérification concurrente.
-    const results = await mapLimit(urls, CONCURRENCY, check);
+    const results = await mapLimit(urls, CONCURRENCY, checkWithRetry);
 
     const notFound = results.filter((r) => !r.ok404);
     // Un 503 sur `/api/` n'est pas une panne : le vhost limite le débit de ce

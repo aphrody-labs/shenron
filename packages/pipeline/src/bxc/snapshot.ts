@@ -79,7 +79,7 @@ async function readSnapshot(root?: string): Promise<{
   pages: Record<string, SnapshotPage[]>;
 }> {
   const readJson = async (path: string): Promise<unknown> =>
-    JSON.parse(await readFile(snapshotPath(path, root), "utf8"));
+    JSON.parse(await readFile(/* turbopackIgnore: true */ snapshotPath(path, root), "utf8"));
   const [catalogue, pages] = await Promise.all([
     readJson("assets/dragonballcn/index.json") as Promise<CatalogueSnapshot>,
     readJson("data/catalogues/dragonballcn-inventaire.json") as Promise<

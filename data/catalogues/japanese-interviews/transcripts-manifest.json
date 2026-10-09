@@ -1603,11 +1603,11 @@
       "sourcePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "sourceSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "transcriptPath": "data/catalogues/japanese-interviews/print-transcripts.jsonl#L80",
-      "transcriptSha256": "95d874ee723f93e46721fe37b4b060733f2990f977bc323051a7e4fdc394cd45",
+      "transcriptSha256": "532046095be2c1b091961849f700abd60f6d921bf20046c1255b614590820910",
       "extractionMethod": "手元の日本語PDFを8倍レンダーし、目視で転記。OCR・ネットワーク不使用。",
       "status": "visible-body-working-draft-needs-visual-proofread",
-      "completeness": "Printed pp.54–55 visible interview body transcribed; the p.55 opening continues a sentence from p.54 and one short quoted passage is marked 判読要確認.",
-      "transcriptBytes": 9387
+      "completeness": "Printed pp.54–55 visible interview body transcribed in a working draft; the p.55 quotation was rechecked visually against the scan and is now readable; independent glyph-by-glyph proofreading remains pending.",
+      "transcriptBytes": 9339
     },
     {
       "sourceId": "30th-anniversary-takeda-editor-interview-3-70-71",

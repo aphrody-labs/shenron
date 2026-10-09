@@ -166,7 +166,7 @@ async function snapshot(): Promise<string> {
   const env = { GIT_INDEX_FILE: index };
   try {
     await git(["read-tree", "HEAD"], env);
-    await git(["add", "-A", "--", "."], env);
+    await git(["add", "--", "."], env);
     const tree = await git(["write-tree"], env);
     return await git(["commit-tree", tree, "-p", "HEAD", "-m", "remote-dev snapshot"]);
   } finally {

@@ -7,15 +7,16 @@
         39
       ],
       "pdfPageIndices": [
-        39,
-        40
+        38,
+        39
       ],
       "imageBytes": 100224986,
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "completeness": "Partial working draft; not all visible interview text on pp.38-39 transcribed.",
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-torishima-editor-interview-1-38-40.jsonl#L1",
-      "transcriptSha256": "45698985a52c2862770c86bf80a958f0681d5ec46ccd6836410e0130dc05448e"
+      "transcriptSha256": "bc005b107b4b1d561f3f4c9befbbb7b28f317e673dfde351a0d4ffe714e5baf9",
+      "transcriptBytes": 12033
     }
   ],
   "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-torishima-editor-interview-1-38-40.jsonl",
@@ -28,12 +29,12 @@
     "Printed p.40 (PDF p.41) is a separate 1989-1992 episode timeline, not the interview continuation.",
     "Local PDF rendered with PyMuPDF at 8x; manual visual transcription only; no OCR or network."
   ],
-  "transcriptSha256": "45698985a52c2862770c86bf80a958f0681d5ec46ccd6836410e0130dc05448e",
+  "transcriptSha256": "bc005b107b4b1d561f3f4c9befbbb7b28f317e673dfde351a0d4ffe714e5baf9",
   "method": "Local PDF rendered with PyMuPDF at 8x; manual visual transcription only; no network/OCR.",
   "status": "partial-expanded-draft-needs-independent-review",
   "interviewee": "鳥嶋和彦",
   "interviewTitle": "DRAGON BALL EDITORS INTERVIEW #1",
-  "transcriptBytes": 12034,
+  "transcriptBytes": 12033,
   "sourcePdfSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
   "completeness": "Expanded visible-body working draft for printed pp.38-39; not independently proofread and not guaranteed complete."
 }

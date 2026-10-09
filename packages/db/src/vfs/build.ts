@@ -424,11 +424,22 @@ export function renderEntryModule(o: {
   return lines.join("\n");
 }
 
+/** Force read-only transactions even when PostgreSQL role defaults override client settings. */
+export function readOnlyConnectionUrl(url: string): string {
+  const parsed = new URL(url);
+  const options = parsed.searchParams.get("options")?.trim();
+  parsed.searchParams.set(
+    "options",
+    [options, "-c default_transaction_read_only=on"].filter(Boolean).join(" "),
+  );
+  return parsed.toString();
+}
+
 /** Read-only connection (`default_transaction_read_only`) to a PostgreSQL source. */
 export function readOnlySql(url: string): InstanceType<typeof Bun.SQL> {
-  return new Bun.SQL(url, {
+  return new Bun.SQL(readOnlyConnectionUrl(url), {
     max: 2,
-    connection: { application_name: "shenron-build-vfs", default_transaction_read_only: "on" },
+    connection: { application_name: "shenron-build-vfs" },
   });
 }
 
