@@ -74,7 +74,8 @@
     "./aphrody/native-commands": "./src/aphrody/native-commands.ts",
     "./ai/training-hashes": "./src/ai/training-hashes.ts",
     "./re-wasm": "./src/re-wasm.ts",
-    "./re-wasm-web": "./src/re-wasm-web.ts"
+    "./re-wasm-web": "./src/re-wasm-web.ts",
+    "./runtime/python": "./src/runtime/python.ts"
   },
   "scripts": {
     "pipeline": "bun src/cli.ts",
@@ -174,7 +175,8 @@
       "./aphrody/native-commands": "bun",
       "./ai/training-hashes": "pure",
       "./re-wasm": "bun",
-      "./re-wasm-web": "pure"
+      "./re-wasm-web": "pure",
+      "./runtime/python": "bun"
     }
   }
 }
