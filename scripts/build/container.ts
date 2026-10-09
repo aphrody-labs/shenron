@@ -82,6 +82,10 @@ export function containerArgs(o: ContainerOptions): string[] {
     `${o.repo}:${o.repo}`,
     "--workdir",
     o.repo,
+    // The runner's TMPDIR may refer to a host-only path that is not mounted into Docker.
+    // Bun needs an explicit writable temp directory inside the build container.
+    "--env",
+    "BUN_TMPDIR=/tmp",
     ...CACHES.flatMap((name) => ["--volume", `${IMAGE}-${name}:/cache/${name}`]),
     ...(o.targetVolume
       ? [
