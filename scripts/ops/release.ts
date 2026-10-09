@@ -142,6 +142,13 @@ async function cdn(release?: string): Promise<void> {
 
 async function probes(): Promise<void> {
   const failures: string[] = [];
+  const unknownMangaPath = "/wiki/manga/__release-not-found-probe__";
+  const unknownManga = await fetch(SITE + unknownMangaPath, { redirect: "manual" }).catch(
+    () => null,
+  );
+  console.log(`${unknownManga?.status ?? "ERR"} ${unknownMangaPath} (expected 404)`);
+  if (unknownManga?.status !== 404) failures.push(`${unknownMangaPath} (expected 404)`);
+
   for (const path of [
     "/",
     "/games",

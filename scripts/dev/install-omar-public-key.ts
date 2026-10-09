@@ -6,7 +6,9 @@ if (!raw || raw.includes("...")) {
   process.exit(2);
 }
 
-const match = /^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp256) ([A-Za-z0-9+/]+={0,3})(?:\s+.*)?$/.exec(raw);
+const match = /^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp256) ([A-Za-z0-9+/]+={0,3})(?:\s+.*)?$/.exec(
+  raw,
+);
 if (!match) {
   console.error("Expected a complete ed25519, RSA, or NIST P-256 SSH public key.");
   process.exit(2);
@@ -25,7 +27,15 @@ chmod 0644 "$file"
 
 for (const host of ["vps", "dbfr"]) {
   const result = Bun.spawnSync(
-    ["aphrody-infra", "ssh", "exec", "--host", host, "--cmd", `sudo -n sh -c ${shellQuote(remoteScript)}`],
+    [
+      "aphrody-infra",
+      "ssh",
+      "exec",
+      "--host",
+      host,
+      "--cmd",
+      `sudo -n sh -c ${shellQuote(remoteScript)}`,
+    ],
     { stdout: "inherit", stderr: "inherit" },
   );
   if (!result.success) process.exit(result.exitCode ?? 1);
