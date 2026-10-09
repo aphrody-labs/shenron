@@ -262,3 +262,28 @@ pas les empreintes des fichiers ni la couverture de tout le CDN. La remise
 en ligne exige un fichier acquis et vérifié, sa provenance et ses droits,
 puis le transfert déclaré par Infra ; aucun proxy général ni faux fichier
 de remplacement n’est créé par l’audit.
+
+## Réception native VPS et DBFR du 9 octobre 2026
+
+Le crawl natif officiel respecte `robots.txt`, avec un budget de 25 requêtes
+et une profondeur de deux. Il a exporté 17 documents HTTP 200 sur les cinq
+domaines officiels sélectionnés. Le pipeline a d'abord planifié 453 entrées,
+dont 436 références de médias. Après vérification SHA-256 de la sauvegarde
+PostgreSQL des deux tables du registre, l'application sur DBFR a traité
+396 entrées et préservé 57 entrées existantes ; aucune promotion canonique.
+Une référence de média ne constitue toujours pas une image vérifiée.
+
+Le paquet Linux a été construit avec Bun `1.4.3-aphrody.3` depuis la révision
+`1545a33f`. Zod reste une dépendance externe du paquet, fournie par le lock
+du consommateur : son intégration dans le bundle provoquait une erreur
+`ZodLiteral` avant toute exécution. Le paquet livré et cette dépendance
+verrouillée ont réussi le même plan sur VPS et l'application réelle sur DBFR.
+La commande `build` du pipeline conserve ce contrat ; une distribution
+autonome doit aussi fournir Zod, son manifeste et le lock qualifié.
+
+L'audit de production a demandé les 381 images listées du premier volume
+Soshuhen et obtenu 381 réponses HTTP 206 de type image. Les 17 autres
+volumes existent dans l'API mais n'ont aucune page listée. Le rapport reste
+incomplet : il ne qualifie ni ces sources manquantes, ni l'OCR, ni leur
+présence dans le RAG, ni l'intégralité du CDN. Les rapports et exports
+restent dans le profil privé `dbfr` des hôtes ; aucune donnée n'est commitée.
