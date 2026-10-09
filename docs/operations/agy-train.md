@@ -94,7 +94,7 @@ uv run --package aphrody-train --extra full python -c \
 
 Attendu : `2.8.0+cu129 True <nom du GPU>`. Sinon, arrête-toi (pilote trop ancien, ou WSL sans GPU).
 
-Bun (pour l'évaluation) : `command -v bun || curl -fsSL https://bun.sh/install | bash`, puis
+Bun (pour l'évaluation) : `command -v bun || curl -fsSL https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/aphrody/install.sh | bash`, puis
 `export PATH="$HOME/.bun/bin:$PATH"`.
 
 ## 4. llama.cpp (conversion GGUF et serveur d'évaluation)
