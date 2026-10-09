@@ -32,7 +32,7 @@ function formatFor(name: string): GameDataFormat | undefined {
 function wasmUrl(): string {
   const path = `/wasm/${SHENRON_RE_WASM_FILENAME}`;
   const cdn = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
-  return process.env.NODE_ENV === "production" && cdn ? `${cdn}/site${path}` : path;
+  return process.env.NODE_ENV === "production" && cdn ? `${cdn}${path}` : path;
 }
 
 export default function Xenoverse2Explorer() {

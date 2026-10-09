@@ -200,7 +200,7 @@ async function xenoverseWasmProbe(): Promise<string[]> {
   }
 
   const failures: string[] = [];
-  for (const url of [`${SITE}/wasm/${filename}`, `${CDN}/site/wasm/${filename}`]) {
+  for (const url of [`${SITE}/wasm/${filename}`, `${CDN}/wasm/${filename}`]) {
     const response = await fetch(url, { headers: { origin: SITE } }).catch(() => null);
     const type = response?.headers.get("content-type")?.split(";")[0]?.trim();
     const cache = response?.headers.get("cache-control") ?? "";
@@ -208,7 +208,13 @@ async function xenoverseWasmProbe(): Promise<string[]> {
       url.startsWith(SITE) || response?.headers.get("access-control-allow-origin") != null;
     const valid = response?.ok ? WebAssembly.validate(await response.bytes()) : false;
     console.log(`${response?.status ?? "ERR"} ${type ?? "-"} ${cache || "-"} ${url}`);
-    if (type !== "application/wasm" || !/immutable/.test(cache) || !cors || !valid)
+    if (
+      type !== "application/wasm" ||
+      !/\bpublic\b/.test(cache) ||
+      /\bno-store\b/.test(cache) ||
+      !cors ||
+      !valid
+    )
       failures.push(url);
   }
   return failures;
