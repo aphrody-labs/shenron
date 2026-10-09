@@ -192,3 +192,73 @@ Les quatre configurations globales Codex, Claude, AGY et client Aphrody ont
 été appliquées après le probe canonique réussi : elles utilisent `aphrody-mcp`
 et cette unique référence privée, avec sauvegardes protégées. Le serveur MCP
 déjà ouvert dans la session a été conservé.
+
+## Export natif, registre PostgreSQL et audit des médias
+
+`dragon-ball ingest-crawl` consomme directement `shenron-documents.jsonl` du
+propriétaire Aphrody Web. Le mode par défaut planifie sans ouvrir PostgreSQL.
+`--apply` utilise le `DATABASE_URL` protégé du domaine DBFR et les tables déjà
+migrées `public.external_source_records` et `public.external_source_provenance`.
+Il ne crée aucune table. Une source et sa provenance s’écrivent dans la même
+transaction ; reprendre le fichier réutilise l’URL comme clé. Une source déjà
+canonique, une capture plus récente ou un média déjà sondé sont préservés.
+L’import ne promeut aucune source au canon et n’écrit aucune page de wiki,
+traduction ou planche de databook.
+
+```sh
+bun packages/pipeline/src/cli.ts dragon-ball ingest-crawl \
+  --input /chemin/prive/corpus/shenron-documents.jsonl \
+  --policy /chemin/prive/corpus/policy.json --max-documents 10000
+```
+
+La politique privée déclare chaque domaine exact, sa classe, la preuve de
+recension et ses droits. Exemple de structure :
+
+```json
+{
+  "version": 1,
+  "profile": "dbfr",
+  "sources": [
+    {
+      "domain": "dragon-ball-official.com",
+      "kind": "reference",
+      "reviewed": true,
+      "evidence": "https://dragon-ball-official.com/",
+      "rights": {
+        "ragPermitted": true,
+        "trainingPermitted": false,
+        "publicImagesPermitted": false
+      }
+    }
+  ]
+}
+```
+
+`reviewed: true` représente une recension réalisée ; copier l’exemple ne
+constitue pas une qualification des droits. Classes possibles : `reference`,
+`publisher`, `archive`, `statistics`, `community`, `bibliography`, `translation`.
+Fandom, y compris une URL enveloppée par une archive, est refusé. L’export est
+lu en flux avec une limite par ligne et par passe. Le code 2 indique un budget
+atteint avant la fin du fichier. Les rapports ne contiennent que des comptes.
+Les textes complets restent dans le corpus protégé ; le registre reçoit un
+extrait de 8 000 caractères et les empreintes de la capture et de la politique.
+
+Les médias découverts sont des références non sondées (`http_status = 0`) :
+la disponibilité de la page parente ne prouve pas celle de son image.
+L’audit suivant exige aussi les domaines CDN exacts dans la politique :
+
+```sh
+bun packages/pipeline/src/cli.ts dragon-ball audit-crawl-media \
+  --input /chemin/prive/corpus/shenron-documents.jsonl \
+  --policy /chemin/prive/corpus/policy.json --max-files 250 --concurrency 2
+```
+
+Il utilise HEAD, puis une requête Range de 512 octets si HEAD est indisponible.
+Il annule les corps, applique un délai maximal par fichier et ne suit aucune
+redirection. Les candidats à réparer sont les 404, 410 et réponses de type
+incompatible. Le rapport conserve des empreintes d’URL et les statuts, jamais
+les URL signées. Ce contrôle mesure la disponibilité des liens autorisés,
+pas les empreintes des fichiers ni la couverture de tout le CDN. La remise
+en ligne exige un fichier acquis et vérifié, sa provenance et ses droits,
+puis le transfert déclaré par Infra ; aucun proxy général ni faux fichier
+de remplacement n’est créé par l’audit.

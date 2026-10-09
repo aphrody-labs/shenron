@@ -67,6 +67,67 @@ async function main() {
       });
       console.log(JSON.stringify({ ...coverage, unavailable }, null, 2));
       if (!coverage.coverageComplete) process.exitCode = 2;
+    } else if (args[0] === "audit-crawl-media") {
+      const { values } = parseArgs({
+        args: args.slice(1),
+        strict: true,
+        options: {
+          input: { type: "string" },
+          policy: { type: "string" },
+          "max-files": { type: "string", default: "250" },
+          concurrency: { type: "string", default: "2" },
+        },
+      });
+      if (!values.input || !values.policy)
+        throw new Error("audit-crawl-media requires --input and --policy");
+      const { auditNativeCrawlMedia } = await import("./dragon-ball/crawl-ingest");
+      const report = await auditNativeCrawlMedia({
+        inputPath: resolve(values.input),
+        policy: await Bun.file(values.policy).json(),
+        maxFiles: Number(values["max-files"]),
+        concurrency: Number(values.concurrency),
+      });
+      console.log(JSON.stringify(report, null, 2));
+      if (!report.completeInventory || report.repairCandidates.length || report.unavailable.length)
+        process.exitCode = 2;
+    } else if (args[0] === "ingest-crawl") {
+      const { values } = parseArgs({
+        args: args.slice(1),
+        strict: true,
+        options: {
+          input: { type: "string" },
+          policy: { type: "string" },
+          "max-documents": { type: "string", default: "10000" },
+          apply: { type: "boolean", default: false },
+        },
+      });
+      if (!values.input || !values.policy)
+        throw new Error("ingest-crawl requires --input and --policy");
+      const { ingestNativeCrawl, createPostgresCrawlRegistry } =
+        await import("./dragon-ball/crawl-ingest");
+      const policy = await Bun.file(values.policy).json();
+      const options = {
+        inputPath: resolve(values.input),
+        policy,
+        apply: values.apply,
+        maxDocuments: Number(values["max-documents"]),
+      };
+      if (!values.apply) {
+        const report = await ingestNativeCrawl(options);
+        console.log(JSON.stringify(report, null, 2));
+        if (!report.complete) process.exitCode = 2;
+      } else {
+        if (!process.env.DATABASE_URL) throw new Error("The DBFR DATABASE_URL is required");
+        const { default: postgres } = await import("postgres");
+        const sql = postgres(process.env.DATABASE_URL, { max: 2, prepare: false });
+        try {
+          const report = await ingestNativeCrawl(options, createPostgresCrawlRegistry(sql));
+          console.log(JSON.stringify(report, null, 2));
+          if (!report.complete) process.exitCode = 2;
+        } finally {
+          await sql.end({ timeout: 5 });
+        }
+      }
     } else if (args[0] === "automate") {
       const { values } = parseArgs({
         args: args.slice(1),
@@ -656,7 +717,7 @@ Modules unifiés (exécutables hors du VPS principal) :
   ia           Orchestration des workflows et agents IA
   translation  Lance la supervision Bun des traductions databooks et du RAG
   crawl        Exécute le module Dragon Ball natif d'Aphrody Web (guides, databooks, official, kanzenshuu, dragonballcn, universal, custom)
-  dragon-ball  Module natif FFI ; coverage vérifie les datasets, automate reprend les étapes, catalogue-enrich prépare l'enrichissement
+  dragon-ball  Module natif FFI ; coverage vérifie les datasets, ingest-crawl classe les exports natifs, automate reprend les étapes
   unify        Ingère les exports Aphrody Web dans le store Aphrody RAG
 `);
       process.exit(command ? 1 : 0);
