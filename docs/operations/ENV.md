@@ -160,23 +160,31 @@ vecteurs par les scripts (`requireScriptEmbeddingSpace`) : l'index `shenron-rag`
 `rag_meta` de l'index SQLite sinon. Un écart est une erreur fatale : le bot refuse de démarrer,
 le script s'arrête avant d'écrire. Changer d'espace impose une réindexation.
 
-**Serveur de chat direct (Gemma 4 E2B du vps).** `APHRODY_AI_CHAT_BASE_URL` (forme `base`,
+**Serveur de chat direct (vLLM ou llama-server).** `APHRODY_AI_CHAT_BASE_URL` (forme `base`,
 alias lus ensuite : `APHRODY_SHENRON_LLM_BASE_URL`, `APHRODY_OSS_BASE_URL`, puis
 `APHRODY_LOCAL_MODEL_URL` de forme `origin`) désigne un serveur OpenAI-compatible
 (`POST <base>/chat/completions`) ; résolu par `resolveDirectChat`, appelé par
-`createOpenAiChat` (`@shenron/pipeline/aphrody/compute`). Déclaré, il sert la génération du
+`createOpenAiChat` et le fournisseur AI SDK natif `createShenronProvider`. Déclaré, il sert la génération du
 chat du site (`/api/chat`, `chatAphrodyRag`) et du bot (`APHRODY_SHENRON_INFERENCE=http`) à la
 place de `/llm/chat` ; la recherche RAG reste sur `aphrody-ai-http`. Aucune adresse par défaut ;
 le modèle envoyé est `APHRODY_AI_CHAT_MODEL` (ou ses alias), sinon `gemma4-e2b`
-(`DIRECT_CHAT_MODEL_ID` de `@shenron/config/services`). En production, l'unité
-`aphrody-llama-gemma4` d'`aphrody-infra` (llama.cpp, Gemma 4 E2B IT Q4_K_M préchargé et
-verrouillé en RAM, alias `gemma4-e2b`) écoute `127.0.0.1:8798` sur le vps, sans exposition
-nginx, avec un `GET /health` :
+(`DIRECT_CHAT_MODEL_ID` de `@shenron/config/services`). Infra fournit l'adresse de boucle
+locale du tunnel vers l'hôte GPU et l'identifiant réellement servi. Aucun modèle Gemma de base
+ne reçoit l'identité `shenron-chat-v2` par simple renommage.
 
-```sh
-APHRODY_AI_CHAT_BASE_URL=http://127.0.0.1:8798/v1
-APHRODY_AI_CHAT_MODEL=gemma4-e2b
-```
+`APHRODY_AI_CHAT_API_KEY` est la clé privée du serveur amont ; alias lu ensuite :
+`APHRODY_AI_CHAT_TOKEN`, `VLLM_API_KEY`, puis `SHENRON_OPENAI_API_KEY`. Les adaptateurs site/bot et le fournisseur AI SDK envoient
+`Authorization: Bearer …` seulement à cet amont. Une clé contenant plusieurs lignes est
+refusée avec le nom de la variable, sans sa valeur. Sans clé, les installations historiques
+de boucle locale restent utilisables. Une URL de chat explicite active le modèle `chat`
+même sans passerelle de calcul ; les embeddings, le RAG, l'OCR et la vision conservent
+leur propriétaire et leur espace vectoriel.
+
+Le serveur autonome relaie `/v1/models`, `/v1/chat/completions`, `/v1/responses` et
+`/v1/responses/compact` sans traduire les événements ni fabriquer les capacités absentes.
+`SHENRON_OPENAI_TOKEN` protège les clients distants du relais ; il reste distinct de la clé
+amont et n'est jamais transmis au modèle. L'origine, le modèle et les secrets viennent
+du fichier privé d'environnement qualifié par Infra.
 
 Non lu par Shenron : `APHRODY_AI_VISION_BASE_URL` (la vision passe par `aphrody-ai-http`,
 jamais directement par un serveur de modèle).

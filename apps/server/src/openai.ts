@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Transport only: model, tools, Responses state and compaction belong to the native provider. */
 import { timingSafeEqual } from "node:crypto";
+import { AI_ENV, readAiEnv } from "@shenron/pipeline/ai/config";
 
 import { local } from "./koharu";
 import type { LocalApi } from "./local-api";
@@ -117,7 +118,7 @@ export function openAiApi(
       const value = request.headers.get(name);
       if (value) headers.set(name, value);
     }
-    const key = env.SHENRON_OPENAI_API_KEY?.trim() || env.APHRODY_AI_CHAT_API_KEY?.trim();
+    const key = readAiEnv(env, AI_ENV.chatApiKey)?.value;
     if (key) headers.set("authorization", `Bearer ${key}`);
     try {
       const upstream = await http(target, {

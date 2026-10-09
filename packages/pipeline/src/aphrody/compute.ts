@@ -255,7 +255,7 @@ export function aphrodyComputeFromChat(chat: ChatFn): AphrodyCompute {
  * one. Errors carry the same messages as {@link AphrodyComputeClient.chat}.
  */
 export function createOpenAiChat(
-  endpoint: Pick<DirectChatEndpoint, "baseUrl" | "model">,
+  endpoint: Pick<DirectChatEndpoint, "baseUrl" | "model" | "apiKey">,
   options: { fetcher?: typeof fetch; timeoutMs?: number; maxTokens?: number } = {},
 ): ChatFn {
   const url = new URL(`${endpoint.baseUrl.href.replace(/\/+$/, "")}/chat/completions`);
@@ -266,7 +266,10 @@ export function createOpenAiChat(
       url,
       {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          ...(endpoint.apiKey ? { authorization: `Bearer ${endpoint.apiKey}` } : {}),
+        },
         body: JSON.stringify({
           model: id,
           messages,

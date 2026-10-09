@@ -176,6 +176,37 @@ describe("native OpenAI provider transport", () => {
     ).toBe(403);
   });
 
+  test("the canonical private upstream credential wins and compatibility aliases share resolution", async () => {
+    const base = provider((request) => {
+      expect(request.headers.get("authorization")).toBe("Bearer canonical-upstream");
+      return Response.json({ data: [] });
+    });
+    const response = await call(
+      openAiApi({
+        SHENRON_OPENAI_BASE_URL: base,
+        APHRODY_AI_CHAT_API_KEY: "canonical-upstream",
+        SHENRON_OPENAI_API_KEY: "legacy-upstream",
+      }),
+      "/v1/models",
+    );
+    expect(response.status).toBe(200);
+    const aliasBase = provider((request) => {
+      expect(request.headers.get("authorization")).toBe("Bearer vllm-upstream");
+      return Response.json({ data: [] });
+    });
+    expect(
+      (
+        await call(
+          openAiApi({
+            SHENRON_OPENAI_BASE_URL: aliasBase,
+            VLLM_API_KEY: "vllm-upstream",
+          }),
+          "/v1/models",
+        )
+      ).status,
+    ).toBe(200);
+  });
+
   test("upstream compact errors and rate limits are preserved", async () => {
     const base = provider(() =>
       Response.json(
