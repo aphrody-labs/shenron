@@ -1,0 +1,178 @@
+# wgpu 29.0.4 → 30.0.1: public API difference
+
+> Generated 2026-10-05 by `scripts/api-diff.ts` from the rustdoc JSON of both releases (`wgpu` + `wgpu-types`). Names are as a downstream crate writes them (`wgpu::X`). `−` removed, `+` added, `~` signature changed.
+
+Items before: 263, after: 278. Removed: 1, added: 16, changed: 50.
+
+## Removed
+
+- `VertexFormat` (enum)
+
+## Added
+
+- `util::AlignTo` (trait)
+- `DisplayChromaticity` (struct)
+- `DisplayCoarseRange` (struct)
+- `DisplayGamut` (enum)
+- `DisplayHdrInfo` (struct)
+- `DisplayHeadroom` (struct)
+- `DisplayLuminance` (struct)
+- `PassthroughShaderEntryPoint` (struct)
+- `SurfaceColorSpace` (enum)
+- `SurfaceColorSpaces` (struct)
+- `SurfaceFormatCapabilities` (struct)
+- `BlasAABBGeometrySizeDescriptor` (type_alias)
+- `AABB_GEOMETRY_MIN_STRIDE` (constant)
+- `BlasAabbGeometry` (struct)
+- `ContextBlasAabbGeometry` (struct)
+- `MapRangeError` (struct)
+
+## Changed
+
+- `util::StagingBelt` (struct)
+  - + method/const `fn finish_and_recall_on_submit(&mut self, encoder: &CommandEncoder)`
+- `util::RenderEncoder` (trait)
+  - ~ `fn set_vertex_buffer(&mut self, slot: u32, buffer_slice: BufferSlice<'a>)` → `fn set_vertex_buffer(&mut self, slot: u32, buffer_slice: Option<BufferSlice<'a>>)`
+- `util::DownloadBuffer` (struct)
+  - ~ `fn read_buffer(device: &super::Device, queue: &super::Queue, buffer: &super::BufferSlice<'_>, callback: impl FnOnce(Result<Self, super::BufferAsyncError>) + Send + 'static)` → `fn read_buffer(device: &super::Device, queue: &super::Queue, buffer_slice: &super::BufferSlice<'_>, callback: impl FnOnce(Result<Self, super::BufferAsyncError>) + Send + 'static)`
+- `util::align_to` (function)
+  - − `fn align_to<T>(value: T, alignment: T) -> T where T: Add<Output = T> + Copy + Default + PartialEq<T> + Rem<Output = T> + Sub<Output = T>`
+  - + `fn align_to<T: AlignTo>(value: T, alignment: T) -> T`
+- `AdapterInfo` (struct)
+  - − `transient_saves_memory: bool`
+  - + `transient_saves_memory: Option<bool>`
+  - + `limit_bucket: Option<AdapterLimitBucketInfo>`
+  - + method/const `const fn new(device_type: DeviceType, backend: Backend) -> Self`
+- `BlendState` (struct)
+  - + method/const `const ADDITIVE: Self`
+- `BufferUses` (struct)
+  - + method/const `const RAY_TRACING_PIPELINE_SHADER_DATA: Self`
+- `CommandBufferDescriptor` (struct)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> CommandBufferDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CommandBufferDescriptor<K>`
+- `DownlevelFlags` (struct)
+  - + method/const `const MSL2_1: Self`
+  - + method/const `const TEXTURE_COMPRESSION: Self`
+- `Features` (struct)
+  - + method/const `const VULKAN_EXTERNAL_MEMORY_FD: Self`
+  - + method/const `const VULKAN_EXTERNAL_MEMORY_DMA_BUF: Self`
+  - + method/const `const EXPERIMENTAL_RAY_TRACING_PIPELINES: Self`
+- `FeaturesWGPU` (struct)
+  - + method/const `const VULKAN_EXTERNAL_MEMORY_FD: Self`
+  - + method/const `const VULKAN_EXTERNAL_MEMORY_DMA_BUF: Self`
+  - + method/const `const EXPERIMENTAL_RAY_TRACING_PIPELINES: Self`
+- `HalCounters` (struct)
+  - + `ray_tracing_pipelines: InternalCounter`
+- `IndexFormat` (enum)
+  - ~ `fn byte_size(&self) -> usize` → `fn byte_size(&self) -> u32`
+- `InstanceFlags` (struct)
+  - + method/const `const STRICT_WEBGPU_COMPLIANCE: Self`
+- `Limits` (struct)
+  - − `max_task_mesh_workgroup_total_count: u32`
+  - − `max_task_mesh_workgroups_per_dimension: u32`
+  - + `max_bind_groups_plus_vertex_buffers: u32`
+  - + `max_task_workgroup_total_count: u32`
+  - + `max_task_workgroups_per_dimension: u32`
+  - + `max_mesh_workgroup_total_count: u32`
+  - + `max_mesh_workgroups_per_dimension: u32`
+  - + `max_buffers_and_acceleration_structures_per_shader_stage: u32`
+  - + `max_ray_dispatch_count: u32`
+  - + `max_ray_recursion_depth: u32`
+  - + method/const `const fn unlimited() -> Self`
+  - + method/const `const fn using_minimum_supported_ray_tracing_pipeline_values(self) -> Self`
+  - + method/const `fn zero_native_only(&mut self)`
+- `NoopBackendOptions` (struct)
+  - + `limits: Option<Limits>`
+  - + `features: Option<Features>`
+  - + `device_type: Option<DeviceType>`
+  - + `subgroup_min_size: Option<u32>`
+  - + `subgroup_max_size: Option<u32>`
+  - + method/const `fn enabled() -> Self`
+- `ShaderRuntimeChecks` (struct)
+  - + `int_div_checks: bool`
+- `SurfaceCapabilities` (struct)
+  - + `format_capabilities: alloc::vec::Vec<SurfaceFormatCapabilities>`
+  - + method/const `fn color_spaces(&self, format: TextureFormat) -> SurfaceColorSpaces`
+- `TextureUsages` (struct)
+  - − method/const `const TRANSIENT: Self`
+  - + method/const `const TRANSIENT_ATTACHMENT: Self`
+- `VertexAttribute` (struct)
+  - − `format: VertexFormat`
+  - + `format: nt::VertexFormat`
+- `WriteOnly` (struct)
+  - ~ `unsafe fn new(ptr: NonNull<T>) -> Self` → `const unsafe fn new(ptr: NonNull<T>) -> Self`
+  - ~ `fn from_mut(reference: &mut T) -> Self` → `const fn from_mut(reference: &mut T) -> Self`
+  - ~ `fn write(self, value: T) where T: Copy` → `const fn write(self, value: T) where T: Copy`
+  - ~ `fn as_raw_ptr(&mut self) -> NonNull<T>` → `const fn as_raw_ptr(&mut self) -> NonNull<T>`
+  - ~ `fn split_at_checked(self, mid: usize) -> Result<(Self, Self), Self>` → `const fn split_at_checked(self, mid: usize) -> Result<(Self, Self), Self>`
+  - ~ `fn split_off_first(&mut self) -> Option<WriteOnly<'a, T>>` → `const fn split_off_first(&mut self) -> Option<WriteOnly<'a, T>>`
+  - ~ `fn split_off_last(&mut self) -> Option<WriteOnly<'a, T>>` → `const fn split_off_last(&mut self) -> Option<WriteOnly<'a, T>>`
+  - ~ `fn as_raw_element_ptr(&mut self) -> NonNull<T>` → `const fn as_raw_element_ptr(&mut self) -> NonNull<T>`
+- `RequestAdapterOptionsBase` (struct)
+  - + `apply_limit_buckets: bool`
+- `RequestAdapterOptions` (type_alias)
+  - + `apply_limit_buckets: bool`
+- `BlasGeometrySizeDescriptors` (type_alias)
+  - + `AABBs { descriptors: alloc::vec::Vec<BlasAABBGeometrySizeDescriptor> }`
+- `CreateBlasDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> CreateBlasDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CreateBlasDescriptor<K>`
+- `BlasGeometries` (enum)
+  - + `AabbGeometries(alloc::vec::Vec<BlasAabbGeometry<'a>>)`
+- `ContextBlasGeometries` (enum)
+  - + `AabbGeometries(alloc::boxed::Box<dyn Iterator<Item = ContextBlasAabbGeometry<'a>> + 'a>)`
+- `Buffer` (struct)
+  - ~ `unsafe fn as_hal<A: hal::Api>(&self) -> Option<impl Deref<Target = <A as >::Buffer> + WasmNotSendSync>` → `unsafe fn as_hal<A: hal::Api>(&self) -> Option<impl core::ops::Deref<Target = <A as >::Buffer> + WasmNotSendSync>`
+  - ~ `fn get_mapped_range<S: RangeBounds<BufferAddress>>(&self, bounds: S) -> BufferView` → `fn get_mapped_range<S: RangeBounds<BufferAddress>>(&self, bounds: S) -> Result<BufferView, MapRangeError>`
+  - ~ `fn get_mapped_range_mut<S: RangeBounds<BufferAddress>>(&self, bounds: S) -> BufferViewMut` → `fn get_mapped_range_mut<S: RangeBounds<BufferAddress>>(&self, bounds: S) -> Result<BufferViewMut, MapRangeError>`
+- `BufferSlice` (struct)
+  - ~ `fn get_mapped_range(&self) -> BufferView` → `fn get_mapped_range(&self) -> Result<BufferView, MapRangeError>`
+  - ~ `fn get_mapped_range_mut(&self) -> BufferViewMut` → `fn get_mapped_range_mut(&self) -> Result<BufferViewMut, MapRangeError>`
+  - ~ `fn size(&self) -> BufferSize` → `fn size(&self) -> BufferAddress`
+- `BufferDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> BufferDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> BufferDescriptor<K>`
+- `CommandEncoderDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> CommandEncoderDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CommandEncoderDescriptor<K>`
+- `ComputePass` (struct)
+  - + method/const `fn transition_resources<'a>(&mut self, buffer_transitions: impl Iterator<Item = BufferTransition<&'a Buffer>>, texture_transitions: impl Iterator<Item = TextureTransition<&'a TextureView>>)`
+- `Device` (struct)
+  - ~ `unsafe fn create_texture_from_hal<A: hal::Api>(&self, hal_texture: <A as >::Texture, desc: &TextureDescriptor<'_>) -> Texture` → `unsafe fn create_texture_from_hal<A: hal::Api>(&self, hal_texture: <A as >::Texture, desc: &TextureDescriptor<'_>, initial_state: TextureUses) -> Texture`
+- `DeviceDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> DeviceDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> DeviceDescriptor<K>`
+- `ExternalTextureDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> ExternalTextureDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> ExternalTextureDescriptor<K>`
+- `QuerySet` (struct)
+  - + method/const `fn destroy(&self)`
+  - + method/const `fn ty(&self) -> QueryType`
+  - + method/const `fn count(&self) -> u32`
+- `Queue` (struct)
+  - ~ `unsafe fn as_hal<A: hal::Api>(&self) -> Option<impl Deref<Target = <A as >::Queue> + WasmNotSendSync>` → `unsafe fn as_hal<A: hal::Api>(&self) -> Option<impl core::ops::Deref<Target = <A as >::Queue> + WasmNotSendSync>`
+  - + method/const `fn present(&self, surface_texture: SurfaceTexture)`
+- `RenderBundleDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> RenderBundleDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> RenderBundleDescriptor<K>`
+- `RenderBundleEncoder` (struct)
+  - ~ `fn set_vertex_buffer(&mut self, slot: u32, buffer_slice: BufferSlice<'a>)` → `fn set_vertex_buffer<'b, B>(&mut self, slot: u32, buffer_slice: B) where Option<BufferSlice<'b>>: From<B>`
+- `RenderPass` (struct)
+  - ~ `fn set_vertex_buffer(&mut self, slot: u32, buffer_slice: BufferSlice<'_>)` → `fn set_vertex_buffer<'b, B>(&mut self, slot: u32, buffer_slice: B) where Option<BufferSlice<'b>>: From<B>`
+- `VertexState` (struct)
+  - − `buffers: &'a [VertexBufferLayout<'a>]`
+  - + `buffers: &'a [Option<VertexBufferLayout<'a>>]`
+- `SamplerDescriptor` (type_alias)
+  - + method/const `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> SamplerDescriptor<K>`
+- `ShaderModuleDescriptorPassthrough` (type_alias)
+  - − `num_workgroups: (u32, u32, u32)`
+  - + `entry_points: alloc::borrow::Cow<'a, [PassthroughShaderEntryPoint<'a>]>`
+- `SurfaceConfiguration` (type_alias)
+  - + `color_space: SurfaceColorSpace`
+  - ~ `fn map_view_formats<M>(&self, fun: impl FnOnce(V) -> M) -> SurfaceConfiguration<M>` → `fn map_view_formats<'a, M>(self: &'a Self, fun: impl FnOnce(&'a V) -> M) -> SurfaceConfiguration<M>`
+- `Surface` (struct)
+  - + method/const `fn display_hdr_info(&self, adapter: &Adapter) -> DisplayHdrInfo`
+- `SurfaceTargetUnsafe` (enum)
+  - − `Drm { fd: i32, plane: u32, connector_id: u32, width: u32, height: u32, refresh_rate: u32 }`
+- `SurfaceTexture` (struct)
+  - − method/const `fn present(self)`
+- `TextureDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> TextureDescriptor<K, V> where V: Clone` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> TextureDescriptor<K, V> where V: Clone`
+  - ~ `fn map_label_and_view_formats<K, M>(&self, l_fun: impl FnOnce(&L) -> K, v_fun: impl FnOnce(V) -> M) -> TextureDescriptor<K, M> where V: Clone` → `fn map_label_and_view_formats<'a, K, M>(self: &'a Self, l_fun: impl FnOnce(&'a L) -> K, v_fun: impl FnOnce(&'a V) -> M) -> TextureDescriptor<K, M>`
+- `TextureViewDescriptor` (type_alias)
+  - + method/const `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> TextureViewDescriptor<K>`
+- `CreateTlasDescriptor` (type_alias)
+  - ~ `fn map_label<K>(&self, fun: impl FnOnce(&L) -> K) -> CreateTlasDescriptor<K>` → `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CreateTlasDescriptor<K>`
