@@ -10,6 +10,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun src/cli.ts serve",
+    "start": "bun src/cli.ts serve",
     "test": "bun test",
     "build": "bun ../../scripts/build/server.ts",
     "lint": "oxlint -c ../../.oxlintrc.json src",
@@ -29,6 +30,6 @@
     "undici-types": "~8.9.0"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   }
 }

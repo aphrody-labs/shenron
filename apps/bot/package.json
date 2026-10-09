@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
+    "build": "bun ../../scripts/build/bot.ts",
     "compile": "bun ../../scripts/build/bot.ts",
     "lint": "oxlint -c ../../.oxlintrc.json src scripts tests drizzle.config.ts",
     "lint:fix": "oxlint -c ../../.oxlintrc.json --fix src scripts tests drizzle.config.ts",
@@ -75,6 +76,6 @@
     "undici-types": "~8.9.0"
   },
   "engines": {
-    "bun": ">=1.4.2"
+    "bun": ">=1.4.3"
   }
 }

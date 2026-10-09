@@ -140,6 +140,8 @@
   },
   "type": "module",
   "scripts": {
+    "dev": "bun run --filter @shenron/site dev",
+    "start": "bun run --filter @shenron/site start",
     "typecheck": "bun run --filter '*' typecheck && bun run typecheck:scripts",
     "typecheck:scripts": "tsc --noEmit -p scripts",
     "test": "bun run --filter '*' test",
