@@ -18,7 +18,7 @@
 4. **Surveillance Production & Qualité** :
    * Maintien des gates vertes (`bun run typecheck`, `bun run lint`, `openapi.ts --check`).
    * Vérification continue de la santé de `https://dragonballfr.com/api/health` et de l'Agent Card A2A 1.0.
-   * Prod Docker (2026-10-08) : builds sur le vps seulement, dbfr reçoit l'image scellée ; pile locale `compose.complete.yaml` alignée (pgvector pg18, passerelle compose, bot opt-in `--profile discord`), sondes 200. Reste : soft-404 du wiki (slug inconnu en 200 noindex) et débit du LLM de prod.
+   * Prod Docker (2026-10-08) : builds sur le vps seulement, dbfr reçoit l'image scellée ; pile locale `compose.complete.yaml` alignée (pgvector pg18, passerelle compose, bot opt-in `--profile discord`), sondes 200. Le 2026-10-10, correction soft-404 poussée sur main (e456b096) avec sonde de release 404 ; la production restait à redéployer (slug absent encore en 200 lors du contrôle). Débit du LLM à requalifier.
 5. **Conteneurisation Complète DBFR** :
    * Conteneur unique tout-en-un (`deploy/docker/all-in-one/`) et pile Compose (`deploy/docker/compose.complete.yaml`).
    * Intégration des secrets Aphrody (`scripts/ops/container-secrets.ts`), initialisation DB/migrations (`scripts/ops/container-db-init.ts`), surveillance OVH (`scripts/ops/ovh-shenron.ts`) et CLI unifié (`just container-*`).
