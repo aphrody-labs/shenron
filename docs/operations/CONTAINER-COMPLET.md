@@ -169,7 +169,9 @@ jamais dans `~/shenron`. Contrat et mesures : `docs/operations/container/CONTAIN
 ### Livraison Docker vers dbfr
 
 Aucun build sur dbfr : il reçoit seulement l'image scellée. Sur le vps, les étapes longues tournent
-dans tmux, sans flux SSH maintenu ouvert :
+dans tmux, sans flux SSH maintenu ouvert. Sources versionnées des scripts d'hôte (copiés dans le
+home de chaque hôte) : `scripts/ops/vps/` (`shenron-docker-build.sh`, `ship-shenron.sh`) et
+`scripts/ops/dbfr/` (`deploy-shenron-image.sh`, `assemble-shenron.py`, `seal-shenron-docker-release.py`).
 
 1. `tmux new -d -s shenron-build 'bash ~/shenron-docker-build.sh > ~/shenron-docker-build.log 2>&1'` :
    worktree détaché sur `origin/main`, cargo (verrou lourd), WASM, bot, serveur, image
