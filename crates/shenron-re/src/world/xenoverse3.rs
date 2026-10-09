@@ -108,8 +108,8 @@ pub fn xenoverse3_prototype_map() -> Xenoverse3Map {
         title: "AGE 1000 — West City and Glacier Expedition",
         era: "AGE 1000",
         status: "original_prototype_schematic",
-        coordinate_system: "local meters; x east, y north, elevation z",
-        bounds: [2400.0, 1800.0, 240.0],
+        coordinate_system: "local meters; x east, y north, elevation z; bounds are full dimensions centered at origin",
+        bounds: [2400.0, 2000.0, 240.0],
         zones: vec![
             MapZone {
                 id: "west-city",
@@ -118,7 +118,7 @@ pub fn xenoverse3_prototype_map() -> Xenoverse3Map {
                 evidence: announced,
                 source: SOURCE_WEST_CITY_TRAILER,
                 center: MapPoint { x: 0.0, y: 0.0, elevation: 0.0 },
-                radius: 740.0,
+                radius: 840.0,
                 description: "Developed future-city hub named in the official AGE 1000 announcement.",
             },
             MapZone {
@@ -158,7 +158,7 @@ pub fn xenoverse3_prototype_map() -> Xenoverse3Map {
                 evidence: prototype,
                 source: SOURCE_WEST_CITY_TRAILER,
                 center: MapPoint { x: 210.0, y: -110.0, elevation: 0.0 },
-                radius: 190.0,
+                radius: 230.0,
                 description: "Original navigation landmark joining the prototype city routes.",
             },
             MapZone {
@@ -371,6 +371,41 @@ mod tests {
             }
         }
         assert_eq!(reached.len(), map.zones.len());
+    }
+
+    #[test]
+    fn zone_footprints_fit_bounds_and_contain_their_landmarks() {
+        let map = xenoverse3_prototype_map();
+        let [width, height, depth] = map.bounds;
+        for zone in &map.zones {
+            assert!(
+                zone.center.x.abs() + zone.radius <= width / 2.0,
+                "zone exceeds horizontal x bounds: {}",
+                zone.id
+            );
+            assert!(
+                zone.center.y.abs() + zone.radius <= height / 2.0,
+                "zone exceeds horizontal y bounds: {}",
+                zone.id
+            );
+            assert!(
+                zone.center.elevation.abs() <= depth / 2.0,
+                "zone center exceeds elevation bounds: {}",
+                zone.id
+            );
+        }
+        for landmark in &map.landmarks {
+            let zone = map.zones.iter().find(|zone| zone.id == landmark.zone_id).unwrap();
+            let dx = landmark.position.x - zone.center.x;
+            let dy = landmark.position.y - zone.center.y;
+            assert!(dx.hypot(dy) <= zone.radius, "landmark lies outside its zone: {}", landmark.id);
+            assert!(landmark.position.x.abs() <= width / 2.0, "landmark exceeds x bounds");
+            assert!(landmark.position.y.abs() <= height / 2.0, "landmark exceeds y bounds");
+            assert!(
+                landmark.position.elevation.abs() <= depth / 2.0,
+                "landmark exceeds elevation bounds"
+            );
+        }
     }
 
     #[test]

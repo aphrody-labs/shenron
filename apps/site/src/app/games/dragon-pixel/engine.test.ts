@@ -8,7 +8,7 @@ test("energy, transformation, cooldown and expiry", () => {
   step(g, { transform: true }, 0.01);
   expect(g.player.transformed).toBe(8);
   expect(g.player.energy).toBeLessThan(1);
-  for (let i = 0; i < 170; i++) step(g, {}, 0.05);
+  for (let i = 0; i < 180; i++) step(g, {}, 0.05);
   expect(g.player.transformed).toBe(0);
 });
 
@@ -25,6 +25,20 @@ test("combo and projectile damage with energy cost", () => {
   expect(g.player.energy).toBeLessThan(21);
   for (let i = 0; i < 10; i++) step(g, {}, 0.01);
   expect(g.enemies[0].hp).toBe(63);
+});
+
+test("melee attacks only hit targets in the facing direction", () => {
+  const g = createGame();
+  g.player.x = 300;
+  g.player.facing = 1;
+  g.enemies = [{ x: 260, y: 320, hp: 100, cooldown: 10 }];
+  step(g, { punch: true }, 0.01);
+  expect(g.enemies[0].hp).toBe(100);
+
+  g.player.cooldown = 0;
+  g.player.facing = -1;
+  step(g, { punch: true }, 0.01);
+  expect(g.enemies[0].hp).toBe(87);
 });
 
 test("five waves win, score only once per enemy", () => {
@@ -77,6 +91,14 @@ test("story mode chapter 1 initialization and victory", () => {
   g.enemies[0].hp = 0;
   step(g, {}, 0.05);
   expect(g.status).toBe("won");
+});
+
+test("story chapters initialize the designated fighter stats and style", () => {
+  const g = createGame("goku", "story", 10);
+  expect(g.player.fighterId).toBe("trunks");
+  expect(g.player.style).toBe("speed");
+  expect(g.player.powerLevel).toBe(5000);
+  expect(g.player.maxEnergy).toBe(100);
 });
 
 test("guard reduces damage and vanish repositions behind opponent", () => {

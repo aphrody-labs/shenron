@@ -4,6 +4,7 @@ pub mod bdm;
 pub mod cms;
 pub mod cus;
 pub mod emb;
+pub mod emb_archive;
 pub mod emd;
 pub mod emm;
 pub mod esk;

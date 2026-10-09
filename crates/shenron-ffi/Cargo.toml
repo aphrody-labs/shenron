@@ -28,6 +28,7 @@ axum = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 shenron-cli = { workspace = true }
+shenron-re = { workspace = true }
 shenron-rag = { workspace = true }
 specta = { workspace = true }
 tokio = { workspace = true }

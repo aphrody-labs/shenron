@@ -9,9 +9,12 @@ import {
   parseBac,
   parsePup,
   parseMsg,
+  extractMsgText,
+  parseEmb,
   triageCpk,
   extractCpkFile,
   decompressCrilayla,
+  getXenoverse3PrototypeMap,
 } from "./re-wasm.ts";
 
 describe("shenron-re WASM pipeline", () => {
@@ -54,6 +57,18 @@ describe("shenron-re WASM pipeline", () => {
     expect(dokkan?.engine).toBe("cocos2dx");
   });
 
+  test("retrieves a connected, source-attributed Xenoverse 3 prototype map", () => {
+    const map = getXenoverse3PrototypeMap();
+    expect(map.era).toBe("AGE 1000");
+    expect(map.status).toBe("original_prototype_schematic");
+    expect(map.zones.map(({ id }) => id)).toContain("glacier-expedition");
+    expect(map.landmarks.every(({ source }) => source.startsWith("https://"))).toBe(true);
+    expect(map.routes.some(({ from, to }) => from === "west-city" && to === "central-plaza")).toBe(
+      true,
+    );
+    expect(map.caveat).toContain("unreleased");
+  });
+
   test("scans memory signatures via wasm_scan_aob", () => {
     const memory = new Uint8Array([0x90, 0x48, 0x89, 0x5c, 0x24, 0x10, 0xc3]);
     const matches = scanAob(memory, "48 89 ?? 24");
@@ -92,7 +107,6 @@ describe("shenron-re WASM pipeline", () => {
     // Generate valid CPK buffer with @UTF tables
     const content = new TextEncoder().encode("Instant Transmission Skill Data");
     const buffer = new Uint8Array(4096);
-    const view = new DataView(buffer.buffer);
 
     buffer.set([0x43, 0x50, 0x4b, 0x20], 0); // "CPK "
     const tocOffset = 512;
@@ -111,7 +125,7 @@ describe("shenron-re WASM pipeline", () => {
         return off;
       }
       const nameOff = add(name);
-      const cols = Object.keys(rows[0] || {}).sort();
+      const cols = Object.keys(rows[0] || {}).toSorted();
       const colOffs = cols.map(add);
       const rowLen = cols.length * 4;
       const rowBytes = new Uint8Array(rows.length * rowLen);
@@ -339,5 +353,36 @@ describe("shenron-re WASM pipeline", () => {
     expect(msg.entries.length).toBe(2);
     expect(msg.entries[0]?.lines[0]).toBe("Kamehameha");
     expect(msg.entries[1]?.lines[0]).toBe("Super Saiyan");
+  });
+
+  test("extracts permissive MSG text runs via WASM", () => {
+    const bytes = new Uint8Array([
+      0,
+      0,
+      ...Array.from("Hello", (char) => char.charCodeAt(0)).flatMap((code) => [code, 0]),
+    ]);
+    expect(extractMsgText("quest.msg", bytes)).toEqual({
+      file: "quest.msg",
+      count: 1,
+      strings: ["Hello"],
+    });
+  });
+
+  test("validates EMB texture entries via WASM without copying payloads", () => {
+    const bytes = new Uint8Array(60);
+    bytes.set([0x23, 0x45, 0x4d, 0x42], 0); // #EMB
+    const view = new DataView(bytes.buffer);
+    view.setInt32(12, 1, true);
+    view.setInt32(24, 32, true);
+    view.setInt32(28, 40, true);
+    view.setInt32(32, 12, true);
+    view.setInt32(36, 4, true);
+    view.setInt32(40, 48, true);
+    bytes.set([0x44, 0x44, 0x53, 0x21], 44);
+    bytes.set(new TextEncoder().encode("texture.dds\0"), 48);
+
+    expect(parseEmb(bytes)).toEqual({
+      entries: [{ name: "texture.dds", offset: 44, sizeBytes: 4 }],
+    });
   });
 });

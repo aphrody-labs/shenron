@@ -9709,6 +9709,7 @@ dependencies = [
  "serde_json",
  "shenron-cli",
  "shenron-rag",
+ "shenron-re",
  "specta",
  "specta-serde",
  "specta-typescript",

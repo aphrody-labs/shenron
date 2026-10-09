@@ -122,7 +122,8 @@ Construction : `bun run build:bot`.
   et `shenron_build_info`. La table `dlopen` et les types JSON se génèrent depuis Rust
   (`packages/native/src/generated/`, porte `bun packages/native/scripts/generate.ts --check`).
 - **ABI 3** ajoute la mémoire (`shenron_memory_*`), **ABI 4** le chat local d'Aphrody
-  (`shenron_llama_*` : provisionnement, routeur, démon), chacune sans toucher aux précédentes.
+  (`shenron_llama_*` : provisionnement, routeur, démon), **ABI 5** la carte prototype Xenoverse 3
+  (`shenron_re_xenoverse3_map`), chaque version gardant les symboles précédents.
 - **Refus** : ABI, cible (`process.platform`/`process.arch`) ou version du workspace
   différentes (sauf `SHENRON_FFI_ALLOW_VERSION_SKEW=1`), Bun hors `engines.bun`.
 - **Mémoire** : chaîne possédée libérée une fois par `shenron_string_free` ; chaîne statique

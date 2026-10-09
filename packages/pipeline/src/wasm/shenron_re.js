@@ -39,11 +39,42 @@ export function wasm_extract_cpk_file(archive_bytes, filename) {
 }
 
 /**
+ * Extract printable UTF-16LE text runs from one MSG buffer without parsing its table layout.
+ * @param {string} file_name
+ * @param {Uint8Array} msg_bytes
+ * @returns {any}
+ */
+export function wasm_extract_msg_text(file_name, msg_bytes) {
+  const ptr0 = passStringToWasm0(file_name, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+  const len0 = WASM_VECTOR_LEN;
+  const ptr1 = passArray8ToWasm0(msg_bytes, wasm.__wbindgen_malloc);
+  const len1 = WASM_VECTOR_LEN;
+  const ret = wasm.wasm_extract_msg_text(ptr0, len0, ptr1, len1);
+  if (ret[2]) {
+    throw takeFromExternrefTable0(ret[1]);
+  }
+  return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Retrieve the full Dragon Ball game catalog (Steam + Android) as a JavaScript object.
  * @returns {any}
  */
 export function wasm_get_dragon_ball_catalog() {
   const ret = wasm.wasm_get_dragon_ball_catalog();
+  if (ret[2]) {
+    throw takeFromExternrefTable0(ret[1]);
+  }
+  return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * Retrieve the source-attributed Xenoverse 3 prototype world map as JavaScript data.
+ * Announced places and original prototype geometry are distinguished in each record.
+ * @returns {any}
+ */
+export function wasm_get_xenoverse3_prototype_map() {
+  const ret = wasm.wasm_get_xenoverse3_prototype_map();
   if (ret[2]) {
     throw takeFromExternrefTable0(ret[1]);
   }
@@ -89,6 +120,21 @@ export function wasm_parse_cus(cus_bytes) {
   const ptr0 = passArray8ToWasm0(cus_bytes, wasm.__wbindgen_malloc);
   const len0 = WASM_VECTOR_LEN;
   const ret = wasm.wasm_parse_cus(ptr0, len0);
+  if (ret[2]) {
+    throw takeFromExternrefTable0(ret[1]);
+  }
+  return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * Validate a DBXV2 EMB texture archive and return its entry names and byte ranges.
+ * @param {Uint8Array} emb_bytes
+ * @returns {any}
+ */
+export function wasm_parse_emb(emb_bytes) {
+  const ptr0 = passArray8ToWasm0(emb_bytes, wasm.__wbindgen_malloc);
+  const len0 = WASM_VECTOR_LEN;
+  const ret = wasm.wasm_parse_emb(ptr0, len0);
   if (ret[2]) {
     throw takeFromExternrefTable0(ret[1]);
   }

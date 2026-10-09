@@ -4,19 +4,17 @@
 //! Exposes CPK archive triage, CRILAYLA decompression, CUS skill decoding,
 //! AOB memory scanning, and Dragon Ball game catalog discovery to JS/WASM runtimes.
 
-use wasm_bindgen::prelude::*;
-use serde::{Deserialize, Serialize};
 use crate::catalog::get_dragon_ball_catalog;
 use crate::formats::{
-    bac::BacFile,
-    bdm::BdmFile,
-    cus::CusFile,
-    msg::MsgFile,
-    pup::PupFile,
+    bac::BacFile, bdm::BdmFile, cus::CusFile, emb_archive::EmbArchive, msg::MsgFile, pup::PupFile,
 };
 use crate::fs::cpk::{CpkArchive, CpkEntry};
 use crate::fs::crilayla::{decompress_crilayla, decompress_crilayla_raw};
 use crate::live::aob::AobPattern;
+use crate::text::extract_msg_text;
+use crate::world::xenoverse3::xenoverse3_prototype_map;
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
 
 /// Summary of a CPK archive inspection in WebAssembly.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -59,13 +57,18 @@ pub fn wasm_extract_cpk_file(archive_bytes: &[u8], filename: &str) -> Result<Vec
 
 /// Decompress a CRILAYLA compressed buffer into raw uncompressed bytes.
 #[wasm_bindgen]
-pub fn wasm_decompress_crilayla(compressed: &[u8], uncompressed_size: usize) -> Result<Vec<u8>, JsValue> {
+pub fn wasm_decompress_crilayla(
+    compressed: &[u8],
+    uncompressed_size: usize,
+) -> Result<Vec<u8>, JsValue> {
     if compressed.starts_with(b"CRILAYLA") {
         decompress_crilayla(compressed).map_err(to_js_err)
     } else if uncompressed_size > 0 {
         decompress_crilayla_raw(compressed, uncompressed_size).map_err(to_js_err)
     } else {
-        Err(JsValue::from_str("Invalid CRILAYLA input: missing CRILAYLA magic and uncompressed_size is 0"))
+        Err(JsValue::from_str(
+            "Invalid CRILAYLA input: missing CRILAYLA magic and uncompressed_size is 0",
+        ))
     }
 }
 
@@ -104,6 +107,20 @@ pub fn wasm_parse_msg(msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(&msg).map_err(to_js_err)
 }
 
+/// Validate a DBXV2 EMB texture archive and return its entry names and byte ranges.
+#[wasm_bindgen]
+pub fn wasm_parse_emb(emb_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let emb = EmbArchive::parse(emb_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&emb).map_err(to_js_err)
+}
+
+/// Extract printable UTF-16LE text runs from one MSG buffer without parsing its table layout.
+#[wasm_bindgen]
+pub fn wasm_extract_msg_text(file_name: &str, msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let report = extract_msg_text(std::path::Path::new(file_name), msg_bytes);
+    serde_wasm_bindgen::to_value(&report).map_err(to_js_err)
+}
+
 /// Scan a buffer for an Array-of-Bytes (AOB) pattern with wildcards (e.g. "48 89 5C 24 ??").
 #[wasm_bindgen]
 pub fn wasm_scan_aob(data: &[u8], pattern: &str) -> Result<Vec<usize>, JsValue> {
@@ -116,6 +133,14 @@ pub fn wasm_scan_aob(data: &[u8], pattern: &str) -> Result<Vec<usize>, JsValue> 
 pub fn wasm_get_dragon_ball_catalog() -> Result<JsValue, JsValue> {
     let catalog = get_dragon_ball_catalog();
     serde_wasm_bindgen::to_value(&catalog).map_err(to_js_err)
+}
+
+/// Retrieve the source-attributed Xenoverse 3 prototype world map as JavaScript data.
+/// Announced places and original prototype geometry are distinguished in each record.
+#[wasm_bindgen]
+pub fn wasm_get_xenoverse3_prototype_map() -> Result<JsValue, JsValue> {
+    let map = xenoverse3_prototype_map();
+    serde_wasm_bindgen::to_value(&map).map_err(to_js_err)
 }
 
 #[cfg(test)]
@@ -141,5 +166,21 @@ mod tests {
         let parsed = BdmFile::parse(&mock).unwrap();
         assert_eq!(parsed.entries.len(), 5);
         assert_eq!(parsed.entries[0].id, 100);
+    }
+
+    #[test]
+    fn test_wasm_prototype_map_direct() {
+        let map = xenoverse3_prototype_map();
+        assert_eq!(map.era, "AGE 1000");
+        assert!(map.zones.iter().any(|zone| zone.id == "glacier-expedition"));
+    }
+
+    #[test]
+    fn test_wasm_parse_emb_direct() {
+        let bytes = crate::formats::emb_archive::tests::fixture(&[("texture.dds", b"DDS!")]);
+        let parsed = EmbArchive::parse(&bytes).unwrap();
+        assert_eq!(parsed.entries.len(), 1);
+        assert_eq!(parsed.entries[0].name, "texture.dds");
+        assert_eq!(parsed.entries[0].size_bytes, 4);
     }
 }

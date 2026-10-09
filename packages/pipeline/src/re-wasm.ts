@@ -19,8 +19,11 @@ import initWasm, {
   wasm_parse_bdm,
   wasm_parse_cus,
   wasm_parse_msg,
+  wasm_extract_msg_text,
+  wasm_parse_emb,
   wasm_parse_pup,
   wasm_scan_aob,
+  wasm_get_xenoverse3_prototype_map,
 } from "./wasm/shenron_re.js";
 
 export type Platform = "steam" | "android" | "windows" | "ios" | "console";
@@ -80,6 +83,22 @@ export interface CpkTriageSummary {
   entries: CpkEntry[];
 }
 
+export interface MsgTextExtraction {
+  file: string;
+  count: number;
+  strings: string[];
+}
+
+export interface EmbEntry {
+  name: string;
+  offset: number;
+  sizeBytes: number;
+}
+
+export interface EmbFile {
+  entries: EmbEntry[];
+}
+
 export type SkillCategory = "Super" | "Ultimate" | "Evasive" | "Awoken" | "Unknown";
 
 export interface CusSkill {
@@ -97,6 +116,56 @@ export interface CusSkill {
 export interface CusFile {
   version: number;
   skills: CusSkill[];
+}
+
+export type MapEvidenceStatus = "announced" | "prototype";
+export type MapPlaceKind = "hub" | "district" | "interior" | "mission_area" | "landmark";
+export type MapTravelMode = "walk" | "fly" | "transit" | "mission_launch";
+
+export interface MapPoint {
+  x: number;
+  y: number;
+  elevation: number;
+}
+
+export interface Xenoverse3Map {
+  schema_version: number;
+  title: string;
+  era: string;
+  status: string;
+  coordinate_system: string;
+  bounds: [number, number, number];
+  zones: Array<{
+    id: string;
+    name: string;
+    kind: MapPlaceKind;
+    evidence: MapEvidenceStatus;
+    source: string;
+    center: MapPoint;
+    radius: number;
+    description: string;
+  }>;
+  landmarks: Array<{
+    id: string;
+    name: string;
+    zone_id: string;
+    kind: MapPlaceKind;
+    evidence: MapEvidenceStatus;
+    source: string;
+    position: MapPoint;
+    description: string;
+  }>;
+  routes: Array<{
+    id: string;
+    from: string;
+    to: string;
+    mode: MapTravelMode;
+    distance: number;
+    evidence: MapEvidenceStatus;
+    source: string;
+    description: string;
+  }>;
+  caveat: string;
 }
 
 export type DamageType =
@@ -261,6 +330,12 @@ export function scanAob(data: Uint8Array, pattern: string): number[] {
   return Array.from(offsets);
 }
 
+/** Returns the source-attributed AGE 1000 map graph; invented geometry is marked prototype. */
+export function getXenoverse3PrototypeMap(): Xenoverse3Map {
+  ensureWasm();
+  return wasm_get_xenoverse3_prototype_map() as Xenoverse3Map;
+}
+
 /**
  * Parses a DBXV2 BDM (Battle Damage Matrix) binary file and returns damage definitions.
  */
@@ -291,4 +366,16 @@ export function parsePup(pupBytes: Uint8Array): PupFile {
 export function parseMsg(msgBytes: Uint8Array): MsgFile {
   ensureWasm();
   return wasm_parse_msg(msgBytes) as MsgFile;
+}
+
+/** Extract printable UTF-16LE strings from an MSG buffer using dbxv2-compatible scanning. */
+export function extractMsgText(fileName: string, msgBytes: Uint8Array): MsgTextExtraction {
+  ensureWasm();
+  return wasm_extract_msg_text(fileName, msgBytes) as MsgTextExtraction;
+}
+
+/** Parse and validate an EMB archive; payload bytes remain in the caller-owned buffer. */
+export function parseEmb(embBytes: Uint8Array): EmbFile {
+  ensureWasm();
+  return wasm_parse_emb(embBytes) as EmbFile;
 }

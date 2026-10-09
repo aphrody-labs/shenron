@@ -9,7 +9,7 @@ use std::{
 };
 
 use shenron_re::{
-    formats::emb::EmbFile,
+    formats::emb_archive::EmbArchive,
     fs::cpk::{CpkArchive, CpkEntry},
     inventory::inventory_install,
     text::{extract_msg_text, extract_msg_tree},
@@ -62,7 +62,7 @@ fn main() -> ExitCode {
                     return ExitCode::FAILURE;
                 },
             };
-            let archive = match EmbFile::parse(&archive_bytes) {
+            let archive = match EmbArchive::parse(&archive_bytes) {
                 Ok(archive) => archive,
                 Err(error) => {
                     eprintln!("shenron-re: invalid EMB {}: {error}", input.display());
@@ -78,13 +78,17 @@ fn main() -> ExitCode {
                 eprintln!("shenron-re: could not create {}: {error}", destination.display());
                 return ExitCode::FAILURE;
             }
-            let mut outputs = Vec::with_capacity(archive.textures.len());
+            let mut outputs = Vec::with_capacity(archive.entries.len());
             let mut total_bytes = 0u64;
-            for (index, entry) in archive.textures.iter().enumerate() {
-                let file_name =
-                    entry.name.clone().unwrap_or_else(|| format!("texture_{index:04}.dds"));
-                let output = destination.join(&file_name);
-                let bytes = &entry.data;
+            for (index, entry) in archive.entries.iter().enumerate() {
+                let bytes = match archive.entry_bytes(&archive_bytes, index) {
+                    Ok(bytes) => bytes,
+                    Err(error) => {
+                        eprintln!("shenron-re: invalid EMB entry {}: {error}", entry.name);
+                        return ExitCode::FAILURE;
+                    },
+                };
+                let output = destination.join(&entry.name);
                 let result = OpenOptions::new()
                     .write(true)
                     .create_new(true)
@@ -95,7 +99,7 @@ fn main() -> ExitCode {
                     return ExitCode::FAILURE;
                 }
                 total_bytes = total_bytes.saturating_add(bytes.len() as u64);
-                outputs.push(serde_json::json!({ "file": file_name, "sizeBytes": bytes.len() }));
+                outputs.push(serde_json::json!({ "file": entry.name, "sizeBytes": bytes.len() }));
             }
             let summary = serde_json::json!({
                 "archive": input.file_name().map(|name| name.to_string_lossy()),

@@ -1,13 +1,13 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # PLAN.md — Plan Directeur Unifié de Shenron
 
-> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T19:15:00Z`.
+> **Autorité opérationnelle unique** — Relevé consolidé au `2026-10-07T18:36:38Z`.
 > Synthèse unifiée absorbant `PLAN.md`, `REPRISE.md`, `PLAN-SHENRON-RE.md` et la cartographie du graphe monorepo (23 607 nœuds, 62 707 arêtes).
 
 ```json
 {
   "schema": "shenron-plan/v2",
-  "last_verified_at": "2026-10-07T19:15:00Z",
+  "last_verified_at": "2026-10-07T18:36:38Z",
   "status": "CONSOLIDÉ",
   "authoritative_file": "docs/reference/root/PLAN.md",
   "freeze": { "databooks": true, "path": ".coord/FREEZE-databooks.json" },
@@ -21,7 +21,7 @@
     "graph_edges": 62707,
     "graph_communities": 242
   },
-  "open_workstreams": 3
+  "open_workstreams": 4
 }
 ```
 
@@ -52,7 +52,7 @@ La cartographie native `aphrody-graph` unifie les quatre couches de la plateform
 │                    2. COLONNE VERTÉBRALE NATIVE (CODEX)                     │
 │  Types [vendor/codex/app-server-protocol] · Cycles thread/turn · Compaction │
 └──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ SAC (Stdio Async Channel) + bun:ffi (ABI 4)
+                                       │ SAC (Stdio Async Channel) + bun:ffi (ABI 5)
 ┌──────────────────────────────────────▼──────────────────────────────────────┐
 │                       3. BACKEND & INFÉRENCE APHRODY                        │
 │  aphrody-infer · llama-server (shenron-chat-v2 LoRA) · aphrody-memory / RAG │
@@ -79,7 +79,7 @@ La cartographie native `aphrody-graph` unifie les quatre couches de la plateform
 | **SH-P0-017** | Sécurité staff & Bot admin | P0 | [x] | `checkAdmin` accorde les droits selon la politique staff (403 sinon, tests validés). |
 | **SH-P1-001** | Production & Sondes live | P1 | [x] | `dragonballfr.com` HTTP/2 200, `/api/health` ok, agent-card A2A 1.0 en ligne. |
 | **SH-P1-002** | Contrats OpenAPI & Tokens M3 | P1 | [x] | `openapi.ts --check` et `generate-tokens.ts --check` validés sans dérive. |
-| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)| P1 | [x] | Parser CPK/CRILAYLA, formats Dimps (BDM/BAC/CUS/PUP/MSG), pipeline WASM/TS validé (20 tests Rust, 9 tests WASM). |
+| **SH-P1-003** | Moteur RE Dragon Ball (`shenron-re`)| P1 | [x] | Parser CPK/CRILAYLA et extraction arborescente, formats Dimps (BDM/BAC/CUS/PUP/MSG/EMB), WASM/Bun, carte prototype ABI natif 5, export récursif MSG et extraction de texte par WASM validés (39 tests Rust du crate, 12 tests pipeline WASM). |
 | **SH-P1-004** | Entraînement continu `shenron-chat-v2`| P1 | [ ] | Exécution itérative de `train-shenron-chat-loop.ts` avec monitoring GPU VRAM. |
 | **SH-P1-005** | Signature & Packaging Studio Desktop | P1 | [ ] | Packaging NSIS, mise à jour automatique Tauri 3, détection CUDA native. |
 
@@ -104,7 +104,21 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
 
 ---
 
-## 5. Exploitation & Portes de Contrôle
+## 5. Migration dbxv2 Rust/Bun (inventaire 2026-10-07)
+
+- Dépôt source `aphrody-code/dbxv2` vérifié au sous-module `fabc19c0021e3e992786dc2a093a749c8a1c26f0`.
+- Licence propriétaire; aucune donnée/asset du jeu dans le dépôt. La parité des 21 commandes
+  reste incomplète; matrice et limites dans `docs/operations/dbxv2-rust-bun-parity-2026-10-07.md`.
+- CLI Rust `shenron-re inventory <game-root>` inventorie chemins/tailles et empreintes limitées,
+  sans copier de fichiers. WASM, `shenron-re map|catalog` et ABI natif FFI 5 donnent accès au
+  prototype cartographique.
+- CLI `shenron-re text <input-dir> --output-dir <new-dir>` convertit récursivement les fichiers
+  MSG vers un nouvel arbre JSON, avec manifeste; refuse toute destination préexistante et
+  ignore les liens symboliques.
+  Aucun asset n'a été extrait; aucun flux Steam temps réel, import de sauvegarde, transfert
+  d'assets ou déploiement CDN n'a été réalisé.
+
+## 6. Exploitation & Portes de Contrôle
 
 * **Contrôles CI obligatoires** :
   ```sh

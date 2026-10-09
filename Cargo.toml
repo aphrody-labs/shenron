@@ -126,6 +126,7 @@ shenron-cli = { path = "crates/shenron-cli", version = "1.3.0" }
 shenron-lexicon = { path = "crates/shenron-lexicon", version = "1.3.0" }
 shenron-manga = { path = "crates/shenron-manga", version = "1.3.0" }
 shenron-rag = { path = "crates/shenron-rag", version = "1.3.0" }
+shenron-re = { path = "crates/shenron-re", version = "1.3.0" }
 shenron-studio = { path = "crates/shenron-studio", version = "1.3.0" }
 skrifa = "0.47.0"
 specta = { version = "=2.0.0-rc.25", features = ["derive", "url", "uuid"] }

@@ -1,4 +1,5 @@
 pub mod cpk;
+pub mod cpk_extract;
 pub mod crilayla;
 pub mod vfs;
 
