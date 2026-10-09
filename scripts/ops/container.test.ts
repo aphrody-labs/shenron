@@ -105,7 +105,7 @@ describe("container-db-init", () => {
 
 describe("setup-agent-connectors", () => {
   test("generates Claude, AGY, and Codex configs with tokens", async () => {
-    const { buildClaudeMcpConfig, buildAgyMcpConfig, buildCodexTomlConfig, buildOmarReadme } =
+    const { buildClaudeMcpConfig, buildAgyMcpConfig, buildCodexTomlConfig } =
       await import("./setup-agent-connectors");
     const fakeTokens = { mcpToken: "test-mcp-token", a2aToken: "test-a2a-token" };
     const claude = buildClaudeMcpConfig(fakeTokens);
@@ -118,17 +118,5 @@ describe("setup-agent-connectors", () => {
 
     const codex = buildCodexTomlConfig(fakeTokens);
     expect(codex).toContain("Bearer test-mcp-token");
-
-    const readme = buildOmarReadme(fakeTokens);
-    expect(readme).toContain("test-mcp-token");
-  });
-
-  test("Omar bundle uses his own Unix account and his wg1 address", async () => {
-    const { buildOmarPs1Tunnel, buildOmarShTunnel, buildOmarWireguardConfig } =
-      await import("./setup-agent-connectors");
-    expect(buildOmarPs1Tunnel()).toContain('$user = "omar"');
-    expect(buildOmarShTunnel()).toContain('SSH_USER="omar"');
-    expect(buildOmarShTunnel()).not.toContain("ubuntu");
-    expect(buildOmarWireguardConfig()).toContain("Address = 10.200.77.10/32");
   });
 });

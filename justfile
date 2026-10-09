@@ -265,7 +265,3 @@ setup-connectors:
 connectors-status:
     bun scripts/ops/setup-agent-connectors.ts --status
 
-# Connectors: regenerate bundle pack for Omar (deploy/connectors/omar)
-[group('connectors')]
-connectors-omar:
-    bun scripts/ops/setup-agent-connectors.ts --omar-only

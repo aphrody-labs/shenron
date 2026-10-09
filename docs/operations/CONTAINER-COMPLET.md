@@ -222,4 +222,3 @@ Le script `scripts/ops/setup-agent-connectors.ts` (`just setup-connectors`) conf
 - **Claude Code** : `.mcp.json` / `~/.claude.json` déclarant les serveurs `shenron-public` et `aphrody-tunnel`.
 - **Antigravity / AGY** : `plugin/mcp_config.json` ou `~/.gemini/antigravity-cli/mcp_config.json`.
 - **Codex** : `.codex/config.toml` avec bloc `[mcp_servers]`.
-- **Poste d'Omar** : Pack clé en main dans `deploy/connectors/omar/` incluant scripts de tunnel (`connect-tunnel.ps1`, `connect-tunnel.sh`), configuration WireGuard (`wireguard-omar.conf.example`), modèles de configuration d'agents et `README.md` pas-à-pas.

@@ -29,7 +29,7 @@
    * À faire : ingestion RAG des captures du crawl officiel ; vrai entraînement (LoRA/SFT) — `train-shenron-chat-loop.ts` ne fait que générer et évaluer des rollouts.
 7. **Connecteurs Multi-Agents (Codex, AGY, Claude Code, Omar)** :
    * Serveurs MCP (`aphrody-mcp` port 8793, `shenron-mcp` port 8790 / public `/mcp`) et A2A (`aphrody-a2a` port 8788, public `/api/a2a`).
-   * Configurations d'agents (`scripts/ops/setup-agent-connectors.ts`, `just setup-connectors`) et pack pour Omar sous `deploy/connectors/omar/` (compte Unix `omar`, wg1 `10.200.77.10/32`, inventaire Aphrody faisant foi).
+   * Configurations d'agents (`scripts/ops/setup-agent-connectors.ts`, `just setup-connectors`).
 8. **Secrets** :
    * Env de dev : `scripts/dev/env-pull.ts` (seul propriétaire, retire le jeton Discord de prod) ; secrets du conteneur : `scripts/ops/container-secrets.ts`.
 9. **Lecteurs Médias & Rendu Canvas** :
