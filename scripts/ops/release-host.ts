@@ -88,7 +88,9 @@ function syncOrigin(ref = "origin/main"): string {
 
 /** Une étape dans l'image de build d'Aphrody (`scripts/build/container.ts` du commit construit). */
 function inBuildImage(label: string, cmd: string[]): string {
-  return step(label, ["bun", "scripts/build/container.ts", "--", ...cmd]);
+  // Bun consumes the first `--` while parsing its own CLI. Pass a second one so
+  // container.ts receives its command separator in process.argv.
+  return step(label, ["bun", "scripts/build/container.ts", "--", "--", ...cmd]);
 }
 
 /**
