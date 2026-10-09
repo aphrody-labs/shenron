@@ -148,7 +148,8 @@ async function check(path: string): Promise<Check> {
     // identifiant non numérique renvoie 404 sans requête (`parseDatabookId`).
     // C'est le comportement voulu — sonder cette route avec `_probe` ne prouve
     // donc rien sur son existence, et son 404 n'est pas une régression.
-    const isValidatedIdRoute = /^\/api\/databooks\/[^/]+/.test(path) && path.includes("_probe");
+    const isValidatedIdRoute =
+      /^\/api\/(databooks|episodes|movies)\/[^/]+/.test(path) && path.includes("_probe");
 
     return {
       url: path,
@@ -295,6 +296,8 @@ describeLive(`no-404 — site (${BASE})`, () => {
     "/api/subtitles", // GET sans src → 400 (pas 404)
     "/api/auth/get-session", // GET Better Auth valide → prouve l'arbre /api/auth
     "/plugin/.claude-plugin/plugin.json", // GET plugin valide → prouve l'arbre /plugin
+    "/api/episodes/1", // GET épisode valide → 200
+    "/api/movies/16", // GET film valide → 200
   ];
 
   it("énumère un nombre raisonnable de pages et de routes API", () => {
