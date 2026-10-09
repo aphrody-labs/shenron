@@ -10,7 +10,7 @@ runs:
       id: fork
       shell: bash
       run: |
-        manager=$(sed -n 's/.*"packageManager": *"bun@([^"]*)".*//p' package.json)
+        manager=$(sed -n 's/.*"packageManager": *"bun@\([^"]*\)".*/\1/p' package.json)
         [ -n "$manager" ] || { echo "package.json#packageManager must be bun@<version>" >&2; exit 1; }
         echo "tag=aphrody-v${manager}" >> "$GITHUB_OUTPUT"
     - uses: aphrody-labs/bun/.github/actions/setup-bun@main
