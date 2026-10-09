@@ -78,11 +78,7 @@ export async function GET(req: Request) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Erreur interne lors de la requête manga BXC";
-    const isUnavailable =
-      message.includes("snapshot not found") || message.includes("not found");
-    return NextResponse.json(
-      { error: message },
-      { status: isUnavailable ? 503 : 500 },
-    );
+    const isUnavailable = message.includes("snapshot not found") || message.includes("not found");
+    return NextResponse.json({ error: message }, { status: isUnavailable ? 503 : 500 });
   }
 }

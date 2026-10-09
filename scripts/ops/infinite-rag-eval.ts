@@ -299,20 +299,22 @@ export function computeStats(cycle: number, results: CaseRunResult[]): CycleStat
     return tc?.shouldRefuse === true;
   });
 
-  const r1Rate = validUrlCases.length > 0
-    ? validUrlCases.filter((r) => r.recall1).length / validUrlCases.length
-    : 1;
-  const r3Rate = validUrlCases.length > 0
-    ? validUrlCases.filter((r) => r.recall3).length / validUrlCases.length
-    : 1;
-  const r5Rate = validUrlCases.length > 0
-    ? validUrlCases.filter((r) => r.recall5).length / validUrlCases.length
-    : 1;
+  const r1Rate =
+    validUrlCases.length > 0
+      ? validUrlCases.filter((r) => r.recall1).length / validUrlCases.length
+      : 1;
+  const r3Rate =
+    validUrlCases.length > 0
+      ? validUrlCases.filter((r) => r.recall3).length / validUrlCases.length
+      : 1;
+  const r5Rate =
+    validUrlCases.length > 0
+      ? validUrlCases.filter((r) => r.recall5).length / validUrlCases.length
+      : 1;
 
   const groundedRate = success.filter((r) => r.grounded).length / Math.max(1, success.length);
-  const refusalAccuracy = oocCases.length > 0
-    ? oocCases.filter((r) => r.refusedCorrectly).length / oocCases.length
-    : 1;
+  const refusalAccuracy =
+    oocCases.length > 0 ? oocCases.filter((r) => r.refusedCorrectly).length / oocCases.length : 1;
 
   const sumLat = latencies.reduce((a, b) => a + b, 0);
 
@@ -360,7 +362,9 @@ async function main(): Promise<void> {
   console.log(`[Shenron Infinite RAG Eval] Démarrage...`);
   console.log(`- Cible URL : ${baseUrl}`);
   console.log(`- Nombre de cas par cycle : ${EVAL_CASES.length}`);
-  console.log(`- Mode : ${values.infinite ? "Infini (interrompre avec Ctrl+C)" : `${maxCycles} cycle(s)`}`);
+  console.log(
+    `- Mode : ${values.infinite ? "Infini (interrompre avec Ctrl+C)" : `${maxCycles} cycle(s)`}`,
+  );
   console.log(`- Rapport : ${reportPath}\n`);
 
   const history: CycleStats[] = [];
@@ -384,10 +388,18 @@ async function main(): Promise<void> {
     history.push(stats);
 
     console.log(`\n--- Bilan Cycle ${cycle} ---`);
-    console.log(`  Succès: ${stats.successCount}/${stats.casesTotal} (${stats.errorCount} erreurs)`);
-    console.log(`  Recall@1: ${stats.recall1Rate}% | Recall@3: ${stats.recall3Rate}% | Recall@5: ${stats.recall5Rate}%`);
-    console.log(`  Grounding: ${stats.groundedRate}% | Refus canon strict: ${stats.refusalAccuracy}%`);
-    console.log(`  Latence: p50=${stats.latencyMs.p50}ms | p90=${stats.latencyMs.p90}ms | p95=${stats.latencyMs.p95}ms | mean=${stats.latencyMs.mean}ms`);
+    console.log(
+      `  Succès: ${stats.successCount}/${stats.casesTotal} (${stats.errorCount} erreurs)`,
+    );
+    console.log(
+      `  Recall@1: ${stats.recall1Rate}% | Recall@3: ${stats.recall3Rate}% | Recall@5: ${stats.recall5Rate}%`,
+    );
+    console.log(
+      `  Grounding: ${stats.groundedRate}% | Refus canon strict: ${stats.refusalAccuracy}%`,
+    );
+    console.log(
+      `  Latence: p50=${stats.latencyMs.p50}ms | p90=${stats.latencyMs.p90}ms | p95=${stats.latencyMs.p95}ms | mean=${stats.latencyMs.mean}ms`,
+    );
     console.log(`  Modes RAG: ${JSON.stringify(stats.modes)}\n`);
 
     await mkdir(dirname(reportPath), { recursive: true });

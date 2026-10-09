@@ -46,10 +46,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     }
 
     const [nav, saga] = await Promise.all([
-      dbUniverse.episodeNav(ep.series, ep.number_in_series).catch(() => ({ prev: null, next: null })),
+      dbUniverse
+        .episodeNav(ep.series, ep.number_in_series)
+        .catch(() => ({ prev: null, next: null })),
       dbUniverse.episodeSaga(ep.series, ep.number_in_series).catch(() => null),
     ]);
 
+    const previous = nav?.prev ?? null;
+    const next = nav?.next ?? null;
     const players = Array.isArray(ep.players) ? ep.players : [];
     const hasVf = players.some((p) => p.lang === "vf");
     const hasVostfr = players.some((p) => p.lang === "vostfr");
@@ -66,7 +70,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         image: ep.image,
         imageUrl: ep.image ? assetUrl(ep.image) : null,
         synopsis: ep.synopsis,
-        synopsisFr: ep.synopsis_fr,
+        synopsisFr: ep.synopsis,
         arcId: ep.arc_id,
         saga: saga ? { id: saga.id, name: saga.name, slug: saga.slug } : null,
         hasVf,
@@ -82,20 +86,20 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         subtitles: ep.subtitles ?? [],
         framesCount: ep.frames?.length ?? 0,
         navigation: {
-          prev: nav?.prev
+          prev: previous
             ? {
-                id: nav.prev.id,
-                numberInSeries: nav.prev.number_in_series,
-                title: nav.prev.title,
-                url: `/wiki/episodes/${nav.prev.id}`,
+                id: previous.id,
+                numberInSeries: previous.number_in_series,
+                title: previous.title,
+                url: `/wiki/episodes/${previous.id}`,
               }
             : null,
-          next: nav?.next
+          next: next
             ? {
-                id: nav.next.id,
-                numberInSeries: nav.next.number_in_series,
-                title: nav.next.title,
-                url: `/wiki/episodes/${nav.next.id}`,
+                id: next.id,
+                numberInSeries: next.number_in_series,
+                title: next.title,
+                url: `/wiki/episodes/${next.id}`,
               }
             : null,
         },

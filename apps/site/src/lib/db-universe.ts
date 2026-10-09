@@ -107,6 +107,7 @@ export type Episode = {
   id: number;
   series: string;
   number_in_series: number;
+  arc_id: number | null;
   title: string;
   title_ja: string | null;
   air_date: number | null;
@@ -640,6 +641,7 @@ function toEpisode(r: typeof botEpisodes.$inferSelect): Episode {
     id: r.id,
     series: r.series,
     number_in_series: r.numberInSeries ?? 0,
+    arc_id: r.arcId,
     title: r.title ?? "",
     title_ja: r.titleJa,
     air_date: r.airDate,

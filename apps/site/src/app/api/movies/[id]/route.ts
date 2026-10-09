@@ -33,12 +33,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       );
     }
 
-    const nav = await dbUniverse.movieNav(movie.series, movie.id, movie.release_date).catch(() => ({
+    const nav = await dbUniverse.movieNav(movie.series, movie.id).catch(() => ({
       prev: null,
       next: null,
       all: [],
     }));
 
+    const previous = nav?.prev ?? null;
+    const next = nav?.next ?? null;
     const players = Array.isArray(movie.players) ? movie.players : [];
     const hasVf = players.some((p) => p.lang === "vf");
     const hasVostfr = players.some((p) => p.lang === "vostfr");
@@ -68,8 +70,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         })),
         availability: movie.availability,
         navigation: {
-          prev: nav.prev ? { id: nav.prev.id, slug: nav.prev.slug, title: nav.prev.title } : null,
-          next: nav.next ? { id: nav.next.id, slug: nav.next.slug, title: nav.next.title } : null,
+          prev: previous ? { id: previous.id, slug: previous.slug, title: previous.title } : null,
+          next: next ? { id: next.id, slug: next.slug, title: next.title } : null,
         },
         url: `/wiki/movies/${movie.slug}`,
         downloadUrl: `/api/movies/${movie.id}/download`,

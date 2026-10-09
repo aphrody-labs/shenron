@@ -5,9 +5,7 @@ import { readOnlyConnectionUrl } from "../src/vfs/build";
 describe("VFS PostgreSQL source connections", () => {
   it("forces each transaction read-only while preserving URL options", () => {
     const value = new URL(
-      readOnlyConnectionUrl(
-        "postgres://reader@db.example.test:5432/shenron?sslmode=require",
-      ),
+      readOnlyConnectionUrl("postgres://reader@db.example.test:5432/shenron?sslmode=require"),
     );
 
     expect(value.searchParams.get("sslmode")).toBe("require");

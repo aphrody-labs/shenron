@@ -26,7 +26,12 @@ mock.module("@/lib/db-universe", () => ({
           synopsis: "Début du voyage",
           players: [
             { name: "myTV", provider: "vidmoly", lang: "vf", embedUrl: "https://vidmoly.biz/1" },
-            { name: "myTV", provider: "vidmoly", lang: "vostfr", embedUrl: "https://vidmoly.biz/2" },
+            {
+              name: "myTV",
+              provider: "vidmoly",
+              lang: "vostfr",
+              embedUrl: "https://vidmoly.biz/2",
+            },
           ],
         },
       ],

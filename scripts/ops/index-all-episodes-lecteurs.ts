@@ -47,7 +47,9 @@ function formatDate(sec: number | null): string {
 }
 
 async function main() {
-  console.log(`[Shenron RAG Indexer] Connexion à PostgreSQL : ${PG_URL.replace(/:[^:@]+@/, ":***@")}`);
+  console.log(
+    `[Shenron RAG Indexer] Connexion à PostgreSQL : ${PG_URL.replace(/:[^:@]+@/, ":***@")}`,
+  );
   const sql = postgres(PG_URL, { max: 5 });
 
   try {
@@ -135,7 +137,9 @@ async function main() {
         if (res.ok) {
           indexedCount++;
           if (indexedCount % 50 === 0 || indexedCount === episodes.length) {
-            console.log(`[Shenron RAG Indexer] ${indexedCount}/${episodes.length} épisodes indexés avec leurs lecteurs...`);
+            console.log(
+              `[Shenron RAG Indexer] ${indexedCount}/${episodes.length} épisodes indexés avec leurs lecteurs...`,
+            );
           }
         } else {
           errorCount++;
@@ -148,7 +152,9 @@ async function main() {
       }
     }
 
-    console.log(`\n[Shenron RAG Indexer] Indexation terminée : ${indexedCount} épisodes indexés, ${errorCount} erreurs.`);
+    console.log(
+      `\n[Shenron RAG Indexer] Indexation terminée : ${indexedCount} épisodes indexés, ${errorCount} erreurs.`,
+    );
   } finally {
     await sql.end();
   }
