@@ -3,21 +3,21 @@
 /**
  * @shenron/engine — Unified Canvas & GPU Engine
  *
- * Unifies hardware-accelerated WebGPU rendering, WASM koharu-canvas acceleration,
- * and high-performance 2D Canvas fallback.
+ * WebGPU rendering for the Ki particle field, with a Canvas 2D fallback. Manga boards and
+ * speech bubbles are drawn through Canvas 2D only.
  *
  * Core capabilities:
  * - Manga page/panel layout, speech bubbles, Tatechūyoko Japanese typesetting & screentones.
  * - DBZ Ki energy particle simulations, sun-burst radial aura rays, and additive glowing auras.
- * - High-performance viewport navigation (zoom, pan, devicePixelRatio scaling, coordinate transforms).
- * - Automatic runtime negotiation with seamless fallback (WebGPU -> WASM -> Canvas2D).
+ * - Viewport navigation (zoom, pan, devicePixelRatio scaling, coordinate transforms).
+ * - Runtime negotiation with fallback (WebGPU -> Canvas2D).
  */
 
 import { createSpeechBubblePath, layoutText, type Vector2D, type BubbleStyle } from "./canvas";
 import { initWebGpu, isWebGpuSupported, createGpuBuffer, type GpuContext } from "./gpu";
 
-export type CanvasBackend = "webgpu" | "wasm" | "canvas2d";
-export type CanvasBackendPreference = "auto" | "webgpu" | "wasm" | "canvas2d";
+export type CanvasBackend = "webgpu" | "canvas2d";
+export type CanvasBackendPreference = "auto" | "webgpu" | "canvas2d";
 
 export interface ViewportState {
   zoom: number;
@@ -154,7 +154,7 @@ const BUFFER_USAGE_UNIFORM = 0x0040;
 
 /**
  * Shenron Unified Canvas Engine
- * Seamlessly manages WebGPU, WASM, and 2D canvas rendering paths.
+ * Manages the WebGPU and Canvas 2D rendering paths.
  */
 export class ShenronCanvasEngine {
   private canvas: HTMLCanvasElement | null = null;
@@ -225,22 +225,11 @@ export class ShenronCanvasEngine {
           return "webgpu";
         }
       } catch (err) {
-        console.warn("[ShenronEngine] WebGPU init failed, falling back to WASM/2D:", err);
+        console.warn("[ShenronEngine] WebGPU init failed, falling back to Canvas2D:", err);
       }
     }
 
-    // 2. Try WASM if preferred or available
-    if (requestedBackend === "wasm" || requestedBackend === "auto") {
-      const wasmOk = typeof WebAssembly === "object" && typeof WebAssembly.validate === "function";
-      if (wasmOk) {
-        this.ctx2d = canvas.getContext("2d", { alpha: true });
-        this.backend = "wasm";
-        this.notifyBackendChange("wasm");
-        return "wasm";
-      }
-    }
-
-    // 3. Fallback to Canvas2D
+    // 2. Fallback to Canvas2D
     this.ctx2d = canvas.getContext("2d", { alpha: true });
     this.backend = "canvas2d";
     this.notifyBackendChange("canvas2d");
@@ -735,7 +724,7 @@ export class ShenronCanvasEngine {
       return;
     }
 
-    // --- High Performance 2D / WASM Render Pass ---
+    // --- Canvas 2D render pass ---
     const ctx = this.ctx2d;
     if (!ctx) return;
 
@@ -938,7 +927,7 @@ export class ShenronCanvasEngine {
   }
 
   /**
-   * Starts automatic 60 FPS animation loop for Ki energy.
+   * Starts the requestAnimationFrame loop for Ki energy.
    * Returns a cleanup / stop function.
    */
   startKiAnimation(config?: KiParticleConfig): () => void {

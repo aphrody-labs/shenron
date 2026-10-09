@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from "react";
 import { ShenronGpuCanvas } from "@/components/canvas/ShenronGpuCanvas";
-import type { MangaBoard, CanvasBackendPreference } from "@shenron/engine";
+import type { CanvasBackendPreference, KiParticleConfig, MangaBoard } from "@shenron/engine";
 
 const KI_THEMES = [
   {
@@ -137,6 +137,16 @@ export function UnifiedCanvasShowcase() {
   }, [bubbleStyle]);
 
   const currentTheme = KI_THEMES[selectedTheme];
+  const kiConfig: KiParticleConfig = useMemo(
+    () => ({
+      count: 240,
+      baseColor: currentTheme.color,
+      accentColor: currentTheme.accent,
+      speed: 1.1,
+      burstIntensity: 0.45,
+    }),
+    [currentTheme],
+  );
 
   return (
     <section className="dbz-panel p-6 mb-12 border-2 border-dbz-orange shadow-[0_0_24px_rgba(249,115,22,0.15)]">
@@ -146,7 +156,7 @@ export function UnifiedCanvasShowcase() {
             Moteur Graphique Unifié Shenron
           </div>
           <h2 className="text-2xl font-saiyan text-dbz-yellow uppercase tracking-wide">
-            WebGPU Hardware + WASM Koharu + Canvas2D
+            WebGPU + Canvas 2D
           </h2>
         </div>
 
@@ -184,13 +194,7 @@ export function UnifiedCanvasShowcase() {
           interactive
           showBackendBadge
           preference={preference}
-          kiConfig={{
-            count: 240,
-            baseColor: currentTheme.color,
-            accentColor: currentTheme.accent,
-            speed: 1.1,
-            burstIntensity: 0.45,
-          }}
+          kiConfig={kiConfig}
           mangaBoard={mangaBoard}
           className="w-full h-full"
         />
@@ -250,9 +254,8 @@ export function UnifiedCanvasShowcase() {
             onChange={(e) => setPreference(e.target.value as CanvasBackendPreference)}
             className="bg-slate-900 border border-dbz-border text-xs rounded px-2.5 py-1 text-gray-200 font-mono focus:outline-none focus:border-dbz-orange"
           >
-            <option value="auto">Auto (WebGPU ➜ WASM ➜ 2D)</option>
+            <option value="auto">Auto (WebGPU ➜ 2D)</option>
             <option value="webgpu">WebGPU Matériel</option>
-            <option value="wasm">WASM koharu-canvas</option>
             <option value="canvas2d">Canvas 2D Universel</option>
           </select>
         </div>

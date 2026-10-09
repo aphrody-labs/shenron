@@ -255,31 +255,6 @@ container-ovh *args="":
 container-backup:
     bun scripts/ops/container.ts backup
 
-# Native Tunnel: start multi-port SSH forwarding to VPS/DBFR
-[group('tunnel')]
-tunnel-up *args="":
-    bun scripts/ops/native-tunnel.ts up {{args}}
-
-# Native Tunnel: stop background SSH forwarding tunnel
-[group('tunnel')]
-tunnel-down:
-    bun scripts/ops/native-tunnel.ts down
-
-# Native Tunnel: check status and loopback ports
-[group('tunnel')]
-tunnel-status:
-    bun scripts/ops/native-tunnel.ts status
-
-# Native Tunnel: generate WireGuard client configuration for Windows
-[group('tunnel')]
-tunnel-wg:
-    bun scripts/ops/native-tunnel.ts generate-wireguard
-
-# Native Tunnel: generate WireGuard client configuration for Omar
-[group('tunnel')]
-tunnel-wg-omar:
-    bun scripts/ops/native-tunnel.ts generate-wireguard --omar
-
 # Connectors: generate ready-to-use configs for Codex, AGY, Claude Code, and Omar
 [group('connectors')]
 setup-connectors:
@@ -294,45 +269,3 @@ connectors-status:
 [group('connectors')]
 connectors-omar:
     bun scripts/ops/setup-agent-connectors.ts --omar-only
-
-# Secrets: audit unified Google, Discord, SQL, Redis, Auth, and Aphrody secrets (zero-leak)
-[group('secrets')]
-secrets-audit:
-    bun scripts/ops/unified-secrets.ts audit
-
-# Secrets: synchronize all secrets to local apps and connectors
-[group('secrets')]
-secrets-sync:
-    bun scripts/ops/unified-secrets.ts sync-all
-
-# Secrets: export unified serverless environment profile (.env.serverless)
-[group('secrets')]
-secrets-serverless *args="":
-    bun scripts/ops/unified-secrets.ts export-serverless {{args}}
-
-# Secrets: export JSON dictionary for Cloud Secret Managers
-[group('secrets')]
-secrets-json:
-    bun scripts/ops/unified-secrets.ts export-json
-
-# Automation: continuous deployment on push to origin/main
-[group('automation')]
-auto-deploy *args="":
-    bun scripts/ops/auto-deploy.ts {{args}}
-
-# Automation: continuous crawl of official web and public RAG update
-[group('automation')]
-auto-crawl-rag *args="":
-    bun scripts/ops/auto-crawl-rag.ts {{args}}
-
-# Automation: continuous RAG evaluation and LLM fine-tuning on CUDA/CPU
-[group('automation')]
-auto-finetune *args="":
-    bun scripts/ops/auto-eval-finetune.ts {{args}}
-
-# Automation: Master autonomous daemon coordinating all loops
-[group('automation')]
-daemon *args="":
-    bun scripts/ops/shenron-daemon.ts {{args}}
-
-

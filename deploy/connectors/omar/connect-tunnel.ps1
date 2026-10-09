@@ -1,6 +1,6 @@
 # Script PowerShell pour Omar — Lancement du tunnel SSH vers le VPS
 $vpsHost = "51.77.147.152"
-$user = "ubuntu"
+$user = "omar"
 
 Write-Host "--> Lancement du tunnel vers le VPS Aphrody ($vpsHost)..." -ForegroundColor Cyan
 Write-Host "Ports relayes vers 127.0.0.1 :"

@@ -149,17 +149,8 @@ just container-backup
 # 8. Arrêter la pile
 just container-down
 
-# 9. Gérer le tunnel natif (VPS/DBFR <-> Windows natif)
-just tunnel-up                   # Démarrer le tunnel SSH multi-ports
-just tunnel-status               # Vérifier les ports relayés
-just tunnel-wg                   # Générer le fichier WireGuard client
-just tunnel-down                 # Arrêter le tunnel
-
-# 10. Pipeline d'automatisation continue
-just auto-deploy                 # Vérifier et déployer dès push origin/main
-just auto-crawl-rag              # Crawl Aphrody Web & reconstruction VFS
-just auto-finetune               # Évaluation RAG & Fine-tuning LLM (CUDA/CPU)
-just daemon                      # Lancer le master daemon autonome
+# 9. Relayer PostgreSQL (15433) et le chat IA (8799) de production en local
+bun scripts/dev/env-pull.ts tunnel --host vps
 ```
 
 ---
@@ -191,59 +182,21 @@ dans tmux, sans flux SSH maintenu ouvert :
    retour arrière dans `/srv/shenron/deploy-backups/`).
 3. Sondes : pages, `/api/health`, `/api/public/rag/search`, `tools/list` anonyme de `/mcp`, `bot.` et `cdn.`.
 
-## 7. Tunnel Natif Complet (VPS Build, DBFR Prod & Windows Natif)
+## 7. Tunnel vers le vps et dbfr
 
-Le gestionnaire `scripts/ops/native-tunnel.ts` relie de manière étanche le poste de travail Windows aux deux serveurs distants :
+Pas de gestionnaire de tunnel propre à ce dépôt : le réseau privé wg1 (10.200.77.0/24) appartient à
+l'Infra d'Aphrody (`aphrody infra wg`, inventaire `tools/config/host/wireguard/aphrody-tunnel.json`,
+voir `START-HERE.md` §5), et le relais SSH de développement (PostgreSQL 15433, chat IA 8799) est
+`bun scripts/dev/env-pull.ts tunnel` (`docs/operations/DEV-LOCAL.md`).
 
-- **Hub VPS** (`10.200.77.1`, IP publique `51.77.147.152`)
-- **DBFR Prod** (`10.200.77.3`, IP publique `51.255.162.6`)
-- **Windows Natif** (`10.200.77.4`, boucle locale)
+## 8. Automatisation
 
-### Ports relayés en boucle locale
-
-- `15433` -> `5432` : PostgreSQL distant (`shenron_site`)
-- `16379` -> `6379` : Redis distant
-- `8799` -> `8798` : Chat IA Gemma 4 distant
-- `8793` -> `8793` : MCP HTTP distant
-- `5011` -> `5011` : Serveur Shenron distant
-- `5006` -> `5006` : Bot Discord distant
-
-Configuration WireGuard générée sous `deploy/docker/wireguard-aphro-pc.conf.example`.
-
----
-
-## 8. Automatisation Continue & Intelligence Artificielle
-
-### Auto-Deploy dès push sur `origin/main`
-
-Le script `scripts/ops/auto-deploy.ts` surveille le dépôt GitHub :
-
-1. Détection de tout nouveau commit sur `origin/main`.
-2. Fast-forward de la branche locale (`git pull --ff-only`).
-3. Synchronisation automatique des secrets sans fuite (`container-secrets.ts`).
-4. Application des nouvelles migrations de bases PostgreSQL et SQLite (`container-db-init.ts`).
-5. Redémarrage ou reconstruction transparente des conteneurs (`container.ts up`).
-6. Contrôle des sondes de santé post-déploiement.
-
-### Auto-Crawl Web & Mise à jour du RAG
-
-Le script `scripts/ops/auto-crawl-rag.ts` :
-
-1. Crawle les nouvelles publications du site officiel Dragon Ball via l'API Aphrody Web.
-2. Reconstruit la base de connaissances VFS publique (`shenron-vfs.sqlite`).
-3. Met à jour les index vectoriels de recherche canonique.
-
-### Auto-Évaluation & Fine-Tuning LLM (CUDA / CPU)
-
-Le script `scripts/ops/auto-eval-finetune.ts` :
-
-1. Détecte automatiquement l'accélération matérielle NVIDIA CUDA (ex: GeForce RTX 4070, 12 Go VRAM) avec repli propre sur CPU si aucun GPU n'est disponible.
-2. Évalue la fidélité des citations et le Recall@5 sur le jeu de test gold.
-3. Exécute les cycles de fine-tuning itératif LoRA / SFT (`train-shenron-chat-loop.ts`).
-
-### Master Daemon Autonome
-
-`scripts/ops/shenron-daemon.ts` (`just daemon`) orchestre l'ensemble de ces sous-systèmes en continu en tâche de fond.
+Le déploiement, les migrations de production et la publication appartiennent à l'Infra d'Aphrody ;
+ce dépôt ne déploie rien en continu. Le crawl du site officiel passe par
+`scripts/ops/crawl-dragon-ball-official-aphrody.ts` (`--status | --dry-run | --apply`) ; ses
+captures ne sont pas encore ingérées dans les tables éditoriales ni dans le VFS. La boucle
+`scripts/ops/train-shenron-chat-loop.ts` génère des rollouts et les évalue sur le jeu gold : elle
+ne lance aucun entraînement LoRA/SFT.
 
 ---
 

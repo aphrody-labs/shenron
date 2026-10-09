@@ -2,7 +2,7 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { ShenronGpuCanvas } from "@/components/canvas/ShenronGpuCanvas";
 
 export type KiCanvasProps = {
@@ -17,7 +17,7 @@ export type KiCanvasProps = {
  *
  * Powered by Shenron's Unified Canvas & GPU Engine:
  * - Hardware-accelerated WebGPU rendering with WGSL particle compute/fragment pipeline.
- * - Graceful fallback to WASM (koharu-canvas) and 2D canvas with additive glow blending.
+ * - Canvas 2D fallback with additive glow blending.
  * - Battery-saving auto-pause via IntersectionObserver and visibilitychange.
  * - Reduced motion accessibility with CSS radial gradient fallback.
  */
@@ -29,6 +29,16 @@ export function KiCanvas({
 }: KiCanvasProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const reduced = useReducedMotion();
+  const kiConfig = useMemo(
+    () => ({
+      count: Math.floor(200 * density),
+      baseColor: color,
+      accentColor: colorAccent,
+      burstIntensity: 0.35,
+      speed: 1,
+    }),
+    [color, colorAccent, density],
+  );
 
   // Accessibilité + perf : en reduced-motion on NE monte PAS le canvas animé,
   // un halo statique CSS suffit (zéro consommation GPU).
@@ -47,18 +57,5 @@ export function KiCanvas({
     );
   }
 
-  return (
-    <ShenronGpuCanvas
-      mode="ki"
-      preference="auto"
-      className={className}
-      kiConfig={{
-        count: Math.floor(200 * density),
-        baseColor: color,
-        accentColor: colorAccent,
-        burstIntensity: 0.35,
-        speed: 1,
-      }}
-    />
-  );
+  return <ShenronGpuCanvas mode="ki" preference="auto" className={className} kiConfig={kiConfig} />;
 }

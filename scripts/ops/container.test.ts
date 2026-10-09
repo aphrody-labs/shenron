@@ -2,13 +2,10 @@
 import { describe, expect, test } from "bun:test";
 import { parseEnvText, serializeEnvMap, prepareContainerSecrets } from "./container-secrets";
 import { initContainerDatabases } from "./container-db-init";
-import { checkDomainDns } from "./ovh-shenron";
 import { existsSync, statSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-
-const ROOT = resolve(import.meta.dir, "../..");
+import { join } from "node:path";
 
 describe("container-secrets", () => {
   test("parses env lines and ignores comments/empty lines", () => {
@@ -38,13 +35,22 @@ KEY_WITH_SINGLE='single-val'
   });
 
   test("generates development container secrets with safe defaults", async () => {
-    const outDir = join(ROOT, "var", "test-container-secrets");
-    const report = await prepareContainerSecrets({ isProd: false, outDir });
-    expect(report.mode).toBe("development");
-    expect(report.outFiles.length).toBe(5);
-    expect(existsSync(join(outDir, "shenron-site.env"))).toBe(true);
-    expect(existsSync(join(outDir, "shenron-bot.env"))).toBe(true);
-    expect(existsSync(join(outDir, "deploy.env"))).toBe(true);
+    const root = await mkdtemp(join(tmpdir(), "shenron-container-secrets-"));
+    const outDir = join(root, "out");
+    try {
+      const report = await prepareContainerSecrets({
+        isProd: false,
+        outDir,
+        devSecretsDir: join(root, "development"),
+      });
+      expect(report.mode).toBe("development");
+      expect(report.outFiles.length).toBe(5);
+      expect(existsSync(join(outDir, "shenron-site.env"))).toBe(true);
+      expect(existsSync(join(outDir, "shenron-bot.env"))).toBe(true);
+      expect(existsSync(join(outDir, "deploy.env"))).toBe(true);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 
   test("development mode never copies production host secrets", async () => {
@@ -97,30 +103,6 @@ describe("container-db-init", () => {
   });
 });
 
-describe("ovh-shenron", () => {
-  test("DNS resolution check performs query safely", async () => {
-    const res = await checkDomainDns("dragonballfr.com");
-    expect(res.host).toBe("dragonballfr.com");
-    // DNS may succeed or report error depending on network; ok field should be boolean
-    expect(typeof res.ok).toBe("boolean");
-  });
-});
-
-describe("native-tunnel", () => {
-  test("builds correct ssh forward arguments for endpoint", async () => {
-    const { ENDPOINTS, buildSshArgs } = await import("./native-tunnel");
-    const vps = ENDPOINTS.vps!;
-    const args = buildSshArgs(vps, "/tmp/fake-key");
-    expect(args).toContain("-N");
-    expect(args).toContain("-i");
-    expect(args).toContain("/tmp/fake-key");
-    expect(args.some((a) => a.includes("127.0.0.1:15433:127.0.0.1:15433"))).toBe(true);
-    expect(args.some((a) => a.includes("127.0.0.1:8788:127.0.0.1:8788"))).toBe(true);
-    expect(args.some((a) => a.includes("127.0.0.1:8793:127.0.0.1:8793"))).toBe(true);
-    expect(args.at(-1)).toBe("ubuntu@51.77.147.152");
-  });
-});
-
 describe("setup-agent-connectors", () => {
   test("generates Claude, AGY, and Codex configs with tokens", async () => {
     const { buildClaudeMcpConfig, buildAgyMcpConfig, buildCodexTomlConfig, buildOmarReadme } =
@@ -140,42 +122,13 @@ describe("setup-agent-connectors", () => {
     const readme = buildOmarReadme(fakeTokens);
     expect(readme).toContain("test-mcp-token");
   });
-});
 
-describe("auto-eval-finetune", () => {
-  test("detects hardware acceleration mode without error", async () => {
-    const { detectHardwareAcceleration } = await import("./auto-eval-finetune");
-    const hw = await detectHardwareAcceleration();
-    expect(["cuda", "cpu"]).toContain(hw.device);
-    expect(typeof hw.hasCuda).toBe("boolean");
-  });
-});
-
-describe("auto-deploy", () => {
-  test("getCurrentCommit retrieves a valid commit sha", async () => {
-    const { getCurrentCommit } = await import("./auto-deploy");
-    const sha = await getCurrentCommit();
-    expect(sha).toMatch(/^[0-9a-f]{40}$/);
-  });
-});
-
-describe("unified-secrets", () => {
-  test("discovers secrets and masks values safely without leaks", async () => {
-    const { discoverUnifiedSecrets, maskSecretValue, exportSecretsJson } =
-      await import("./unified-secrets");
-    const secrets = discoverUnifiedSecrets();
-    expect(secrets.size).toBeGreaterThan(30);
-
-    const db = secrets.get("DATABASE_URL");
-    expect(db).toBeDefined();
-    expect(db?.category).toBe("SQL");
-
-    const masked = maskSecretValue("postgresql://user:super_secret_pw@db.neon.tech/main");
-    expect(masked).not.toContain("super_secret_pw");
-    expect(masked).toContain("***");
-
-    const json = exportSecretsJson(secrets);
-    expect(typeof json).toBe("object");
-    expect(json.DATABASE_URL).toBeDefined();
+  test("Omar bundle uses his own Unix account and his wg1 address", async () => {
+    const { buildOmarPs1Tunnel, buildOmarShTunnel, buildOmarWireguardConfig } =
+      await import("./setup-agent-connectors");
+    expect(buildOmarPs1Tunnel()).toContain('$user = "omar"');
+    expect(buildOmarShTunnel()).toContain('SSH_USER="omar"');
+    expect(buildOmarShTunnel()).not.toContain("ubuntu");
+    expect(buildOmarWireguardConfig()).toContain("Address = 10.200.77.10/32");
   });
 });

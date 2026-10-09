@@ -33,10 +33,10 @@ export interface ShenronGpuCanvasProps {
 }
 
 /**
- * ShenronGpuCanvas — Unified WebGPU / WASM / Canvas2D React Component.
+ * ShenronGpuCanvas — WebGPU / Canvas2D React component.
  *
- * Integrates hardware-accelerated WebGPU rendering with automatic graceful
- * degradation to WASM (koharu-canvas) and 2D canvas fallback.
+ * The Ki field uses WebGPU when available and falls back to Canvas 2D; manga boards
+ * are drawn by Canvas 2D only, so "manga" mode always requests it.
  */
 export function ShenronGpuCanvas({
   mode = "ki",
@@ -59,6 +59,7 @@ export function ShenronGpuCanvas({
   const stopAnimRef = useRef<(() => void) | null>(null);
   const kiConfigRef = useRef(kiConfig);
   const mangaBoardRef = useRef(mangaBoard);
+  const effectivePreference: CanvasBackendPreference = mode === "manga" ? "canvas2d" : preference;
 
   useEffect(() => {
     kiConfigRef.current = kiConfig;
@@ -74,7 +75,7 @@ export function ShenronGpuCanvas({
     let disposed = false;
 
     const engine = new ShenronCanvasEngine({
-      preference,
+      preference: effectivePreference,
       onBackendChange: (backend: CanvasBackend) => {
         if (!disposed) {
           setActiveBackend(backend);
@@ -151,7 +152,7 @@ export function ShenronGpuCanvas({
       engine.dispose();
       engineRef.current = null;
     };
-  }, [mode, preference, onBackendChange, onEngineReady]);
+  }, [mode, effectivePreference, onBackendChange, onEngineReady]);
 
   // Update kiConfig or mangaBoard when props change
   useEffect(() => {
@@ -159,7 +160,9 @@ export function ShenronGpuCanvas({
     if (!engine) return;
 
     if (mode === "ki") {
-      stopAnimRef.current?.();
+      // A null handle means the loop is paused (off-screen or hidden tab): keep it paused.
+      if (!stopAnimRef.current) return;
+      stopAnimRef.current();
       stopAnimRef.current = engine.startKiAnimation(kiConfig);
     } else if (mode === "manga" && mangaBoard) {
       engine.renderMangaBoard(mangaBoard);
@@ -235,7 +238,9 @@ export function ShenronGpuCanvas({
       className={`relative overflow-hidden ${className}`}
       style={{ minHeight: "120px", ...style }}
     >
+      {/* A canvas keeps the first context type it hands out: remount it when the backend request changes. */}
       <canvas
+        key={`${mode}-${effectivePreference}`}
         ref={canvasRef}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -251,12 +256,10 @@ export function ShenronGpuCanvas({
             className={`w-2 h-2 rounded-full ${
               activeBackend === "webgpu"
                 ? "bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"
-                : activeBackend === "wasm"
-                  ? "bg-cyan-400"
-                  : "bg-amber-400"
+                : "bg-amber-400"
             }`}
           />
-          {activeBackend === "webgpu" ? "WebGPU" : activeBackend === "wasm" ? "WASM" : "Canvas 2D"}
+          {activeBackend === "webgpu" ? "WebGPU" : "Canvas 2D"}
         </div>
       )}
     </div>

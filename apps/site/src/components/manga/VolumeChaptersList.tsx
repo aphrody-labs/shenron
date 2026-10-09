@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Coche, Livre, Palette } from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
-import { editionDe, LIBELLE_EDITION, type Edition } from "@/lib/manga-editions";
+import {
+  colorisationDemandee,
+  editionDe,
+  LIBELLE_EDITION,
+  type Edition,
+} from "@/lib/manga-editions";
 import { Etoile } from "@shenron/ui/toriyama/MotifsCouverture";
 
 interface Chapter {
@@ -40,8 +45,10 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
     // `useSearchParams` : ce hook bascule la page en rendu dynamique et lui
     // ferait perdre son cache CDN, pour un simple onglet par défaut.
     try {
-      const demandee = new URLSearchParams(window.location.search).get("edition");
-      if (demandee === "couleur" || demandee === "nb") setEdition(demandee);
+      const demandee = colorisationDemandee(
+        new URLSearchParams(window.location.search).get("edition"),
+      );
+      if (demandee) setEdition(demandee);
     } catch {
       // Pas d'URL exploitable : on garde le choix par défaut.
     }

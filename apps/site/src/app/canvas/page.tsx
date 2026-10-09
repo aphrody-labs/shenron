@@ -41,7 +41,7 @@ export default function CanvasShowcase() {
         eyebrow="Rendu Graphique Shenron"
         title="Canvas & WebGPU"
         className="mb-8"
-        subtitle="Moteur de rendu unifié combinant WebGPU matériel, WebAssembly koharu-canvas et Canvas 2D. Démonstration interactive de particules Ki et de planches manga vectorielles."
+        subtitle="Moteur de rendu combinant WebGPU (particules Ki) et Canvas 2D. Démonstration interactive de particules Ki et de planches manga vectorielles."
       />
 
       <UnifiedCanvasShowcase />

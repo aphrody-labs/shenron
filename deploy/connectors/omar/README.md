@@ -4,9 +4,9 @@ Bienvenue Omar ! Ce dossier contient tout ce qu'il faut pour connecter **Codex**
 
 ---
 
-## 1. Démarrer le tunnel SSH (1 clic)
+## 1. Démarrer le tunnel SSH
 
-Avant de lancer tes agents sur ton PC, démarre le tunnel qui relie ton PC au VPS :
+Avant de lancer tes agents sur ton PC, démarre le tunnel qui relie ton PC au VPS (compte Unix « omar », ta clé SSH) :
 
 ### Sous Windows (PowerShell) :
 ```powershell
@@ -22,8 +22,8 @@ chmod +x ./connect-tunnel.sh
 Ce tunnel forwarde automatiquement les ports suivants sur ta machine locale (`127.0.0.1`) :
 - **8793** : Aphrody MCP HTTP (outils avancés Web, Gemini, OCR, Docs)
 - **8788** : Aphrody A2A Hub (coordination multi-agents)
-- **8798** : LLM Gemma4 direct (2B)
-- **8799** : LLM Qwen3 Shenron Chat (4B fine-tuné)
+- **8798** : LLM Gemma4
+- **8799** : LLM Shenron Chat
 - **15433** : PostgreSQL
 - **16379** : Redis
 
@@ -77,9 +77,6 @@ url = "https://dragonballfr.com/mcp"
 [mcp_servers.aphrody_tunnel]
 url = "http://127.0.0.1:8793/mcp"
 http_headers = { "Authorization" = "Bearer <VOTRE_JETON_APHRODY_MCP_HTTP>" }
-
-[features]
-code_mode_host = true
 
 ```
 

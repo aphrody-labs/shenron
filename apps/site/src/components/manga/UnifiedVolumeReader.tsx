@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { CollectionReader, type ReaderCollectionEdition } from "@shenron/ui/reader";
 import { MangaReader } from "./MangaReader";
 import { useT } from "@/components/T";
+import { colorisationDemandee } from "@/lib/manga-editions";
 
 export interface ChapterItem {
   id: number;
@@ -66,8 +67,8 @@ export function UnifiedVolumeReader({ volume }: { volume: VolumeData }) {
     ],
     [chapters, formatChapterTitle, t],
   );
-  const rawEdition = searchParams?.get("edition") ?? "nb";
-  const initialEdition = rawEdition === "color" || rawEdition === "couleur" ? "color" : "nb";
+  const initialEdition =
+    colorisationDemandee(searchParams?.get("edition")) === "couleur" ? "color" : "nb";
   const initialChapterNumber = Number(searchParams?.get("chapter"));
   const initialChapter = chapters.find(
     (chapter) =>

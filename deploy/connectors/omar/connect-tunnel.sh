@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script Bash pour Omar — Lancement du tunnel SSH vers le VPS
 VPS_HOST="51.77.147.152"
-USER="ubuntu"
+SSH_USER="omar"
 
 echo "--> Lancement du tunnel vers le VPS Aphrody ($VPS_HOST)..."
 echo "Ports relayés vers 127.0.0.1 :"
@@ -22,4 +22,4 @@ exec ssh -N -T \
   -L 127.0.0.1:8799:127.0.0.1:8799 \
   -L 127.0.0.1:15433:127.0.0.1:15433 \
   -L 127.0.0.1:16379:127.0.0.1:6379 \
-  "$USER@$VPS_HOST"
+  "$SSH_USER@$VPS_HOST"

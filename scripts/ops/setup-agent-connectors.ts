@@ -14,8 +14,8 @@
  *   bun scripts/ops/setup-agent-connectors.ts [--write] [--omar-only] [--status]
  */
 
-import { existsSync, mkdirSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -51,10 +51,8 @@ export function loadAphrodyTokens(): ConnectorTokens {
   );
   if (!tokens.mcpToken && existsSync(mcpEnvPath)) {
     try {
-      const content = Bun.file(mcpEnvPath).text();
-      // sync read
       const m = /APHRODY_MCP_HTTP_TOKEN=["']?([a-f0-9]+)["']?/i.exec(
-        require("node:fs").readFileSync(mcpEnvPath, "utf8"),
+        readFileSync(mcpEnvPath, "utf8"),
       );
       if (m?.[1]) tokens.mcpToken = m[1];
     } catch {}
@@ -74,7 +72,7 @@ export function loadAphrodyTokens(): ConnectorTokens {
   if (!tokens.a2aToken && existsSync(a2aEnvPath)) {
     try {
       const m = /APHRODY_A2A_COORD_TOKEN=["']?([a-f0-9]+)["']?/i.exec(
-        require("node:fs").readFileSync(a2aEnvPath, "utf8"),
+        readFileSync(a2aEnvPath, "utf8"),
       );
       if (m?.[1]) tokens.a2aToken = m[1];
     } catch {}
@@ -144,9 +142,6 @@ url = "https://dragonballfr.com/mcp"
 [mcp_servers.aphrody_tunnel]
 url = "http://127.0.0.1:8793/mcp"
 http_headers = { "Authorization" = "Bearer ${token}" }
-
-[features]
-code_mode_host = true
 `;
 }
 
@@ -158,9 +153,9 @@ Bienvenue Omar ! Ce dossier contient tout ce qu'il faut pour connecter **Codex**
 
 ---
 
-## 1. Démarrer le tunnel SSH (1 clic)
+## 1. Démarrer le tunnel SSH
 
-Avant de lancer tes agents sur ton PC, démarre le tunnel qui relie ton PC au VPS :
+Avant de lancer tes agents sur ton PC, démarre le tunnel qui relie ton PC au VPS (compte Unix « omar », ta clé SSH) :
 
 ### Sous Windows (PowerShell) :
 \`\`\`powershell
@@ -176,8 +171,8 @@ chmod +x ./connect-tunnel.sh
 Ce tunnel forwarde automatiquement les ports suivants sur ta machine locale (\`127.0.0.1\`) :
 - **8793** : Aphrody MCP HTTP (outils avancés Web, Gemini, OCR, Docs)
 - **8788** : Aphrody A2A Hub (coordination multi-agents)
-- **8798** : LLM Gemma4 direct (2B)
-- **8799** : LLM Qwen3 Shenron Chat (4B fine-tuné)
+- **8798** : LLM Gemma4
+- **8799** : LLM Shenron Chat
 - **15433** : PostgreSQL
 - **16379** : Redis
 
@@ -216,7 +211,7 @@ Si tu n'as pas de connexion SSH au VPS, tes agents peuvent directement utiliser 
 export function buildOmarPs1Tunnel(): string {
   return `# Script PowerShell pour Omar — Lancement du tunnel SSH vers le VPS
 $vpsHost = "51.77.147.152"
-$user = "ubuntu"
+$user = "omar"
 
 Write-Host "--> Lancement du tunnel vers le VPS Aphrody ($vpsHost)..." -ForegroundColor Cyan
 Write-Host "Ports relayes vers 127.0.0.1 :"
@@ -245,7 +240,7 @@ export function buildOmarShTunnel(): string {
   return `#!/bin/bash
 # Script Bash pour Omar — Lancement du tunnel SSH vers le VPS
 VPS_HOST="51.77.147.152"
-USER="ubuntu"
+SSH_USER="omar"
 
 echo "--> Lancement du tunnel vers le VPS Aphrody ($VPS_HOST)..."
 echo "Ports relayés vers 127.0.0.1 :"
@@ -266,15 +261,18 @@ exec ssh -N -T \\
   -L 127.0.0.1:8799:127.0.0.1:8799 \\
   -L 127.0.0.1:15433:127.0.0.1:15433 \\
   -L 127.0.0.1:16379:127.0.0.1:6379 \\
-  "$USER@$VPS_HOST"
+  "$SSH_USER@$VPS_HOST"
 `;
 }
 
 export function buildOmarWireguardConfig(): string {
-  return `[Interface]
+  return `# Reference only: Omar's peer is declared in Aphrody's wg1 inventory
+# (tools/config/host/wireguard/aphrody-tunnel.json, rendered by "aphrody infra wg").
+# The private key never leaves Omar's PC.
+[Interface]
 # Omar Native PC Peer (omar-pc)
 PrivateKey = <METTRE_ICI_LA_CLE_PRIVEE_OMAR>
-Address = 10.200.77.5/32
+Address = 10.200.77.10/32
 DNS = 1.1.1.1
 
 [Peer]
@@ -379,38 +377,44 @@ if (import.meta.main) {
   const tokens = loadAphrodyTokens();
 
   if (tokens.mcpToken) {
-    console.log(`✓ Jeton Aphrody MCP détecté (${tokens.mcpToken.slice(0, 8)}...)`);
+    console.log("✓ Jeton Aphrody MCP détecté.");
   } else {
     console.log("! Aucun jeton Aphrody MCP détecté dans l'environnement local.");
   }
 
   if (tokens.a2aToken) {
-    console.log(`✓ Jeton Aphrody A2A détecté (${tokens.a2aToken.slice(0, 8)}...)`);
+    console.log("✓ Jeton Aphrody A2A détecté.");
   }
 
-  const omarDir = join(ROOT, "deploy", "connectors", "omar");
-  await writeOmarBundle(omarDir);
+  if (shouldWrite || omarOnly) {
+    await writeOmarBundle(join(ROOT, "deploy", "connectors", "omar"));
+  }
 
   if (!omarOnly && shouldWrite) {
     const localDir = join(ROOT, "deploy", "connectors", "local");
     if (!existsSync(localDir)) {
-      mkdirSync(localDir, { recursive: true });
+      mkdirSync(localDir, { recursive: true, mode: 0o700 });
     }
+    const privateFile = { encoding: "utf8", mode: 0o600 } as const;
 
     const claudeMcpFile = join(localDir, "mcp.claude.json");
     await writeFile(
       claudeMcpFile,
       JSON.stringify(buildClaudeMcpConfig(tokens), null, 2) + "\n",
-      "utf8",
+      privateFile,
     );
     console.log(`✓ Configuration locale Claude Code générée : ${claudeMcpFile}`);
 
     const agyMcpFile = join(localDir, "mcp.agy.json");
-    await writeFile(agyMcpFile, JSON.stringify(buildAgyMcpConfig(tokens), null, 2) + "\n", "utf8");
+    await writeFile(
+      agyMcpFile,
+      JSON.stringify(buildAgyMcpConfig(tokens), null, 2) + "\n",
+      privateFile,
+    );
     console.log(`✓ Configuration locale AGY générée : ${agyMcpFile}`);
 
     const codexFile = join(localDir, "mcp.codex.toml");
-    await writeFile(codexFile, buildCodexTomlConfig(tokens), "utf8");
+    await writeFile(codexFile, buildCodexTomlConfig(tokens), privateFile);
     console.log(`✓ Configuration locale Codex générée : ${codexFile}`);
   }
 

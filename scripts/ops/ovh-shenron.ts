@@ -9,7 +9,7 @@
  *   - VPS renewal status, expiration alert threshold and auto-renewal policies
  *
  * Usage:
- *   bun scripts/ops/ovh-shenron.ts [--watch] [--dns-only] [--json]
+ *   bun scripts/ops/ovh-shenron.ts [--watch] [--json]
  */
 
 import { lookup } from "node:dns/promises";

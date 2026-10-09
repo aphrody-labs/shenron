@@ -5,6 +5,3 @@ url = "https://dragonballfr.com/mcp"
 [mcp_servers.aphrody_tunnel]
 url = "http://127.0.0.1:8793/mcp"
 http_headers = { "Authorization" = "Bearer <VOTRE_JETON_APHRODY_MCP_HTTP>" }
-
-[features]
-code_mode_host = true

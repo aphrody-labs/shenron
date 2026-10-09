@@ -23,29 +23,15 @@
    * Conteneur unique tout-en-un (`deploy/docker/all-in-one/`) et pile Compose (`deploy/docker/compose.complete.yaml`).
    * Intégration des secrets Aphrody (`scripts/ops/container-secrets.ts`), initialisation DB/migrations (`scripts/ops/container-db-init.ts`), surveillance OVH (`scripts/ops/ovh-shenron.ts`) et CLI unifié (`just container-*`).
    * Référence : [CONTAINER-COMPLET.md](../../operations/CONTAINER-COMPLET.md).
-6. **Tunnel Natif & Automatisation Continue (Auto-Deploy, RAG Crawl, Fine-Tuning CUDA)** :
-   * Tunnel natif SSH & WireGuard multi-ports (`scripts/ops/native-tunnel.ts`, `just tunnel-*`).
-   * Auto-deploy continu dès push origin/main (`scripts/ops/auto-deploy.ts`, `just auto-deploy`).
-   * Auto-crawl web et synchronisation RAG (`scripts/ops/auto-crawl-rag.ts`, `just auto-crawl-rag`).
-   * Auto-évaluation et fine-tuning continu du LLM avec accélération CUDA sur RTX 4070 (`scripts/ops/auto-eval-finetune.ts`, `just auto-finetune`).
-   * Master Daemon autonome (`scripts/ops/shenron-daemon.ts`, `just daemon`).
-7. **Connecteurs Multi-Agents & Serveurs Distants (Codex, AGY, Claude Code, Omar)** :
-   * Serveurs MCP (`aphrody-mcp` port 8793, `shenron-mcp` port 8790 / public `/mcp`) et A2A (`aphrody-a2a` port 8788, public `/api/a2a`) opérationnels et testés.
-   * Forwarding natif multi-ports SSH et profil WireGuard pour Omar (`10.200.77.5/32`).
-   * Configurations universelles d'agents (`scripts/ops/setup-agent-connectors.ts`, `just setup-connectors`) et pack de déploiement sécurisé pour Omar sous `deploy/connectors/omar/`.
-8. **Secrets Unifiés & Infrastructure Serverless (Google, Discord, SQL/Neon, Redis, Aphrody)** :
-   * Gestionnaire unifié `scripts/ops/unified-secrets.ts` (`just secrets-*`) fédérant 90+ variables sur 7 catégories.
-   * Déploiement serverless prêt à l'emploi (`.env.serverless`, Vercel, Cloudflare, Neon, Docker serverless).
-   * Zéro fuite de secret dans Git, permissions 0600 et audit de sécurité masqué.
-9. **Mission Nocturne Autonome /goal pour le Codex d'Omar & Déploiement Discord** :
-   * Pack complet sous `deploy/connectors/omar/GOAL-NOCTURNE.md` détaillant les 6 phases de travail nocturne.
-   * Transmission et notification sur Discord (`#prompts` et `#admin-console`) avec pièces jointes intégrales.
-   * Synchronisation et validation des 6 quality gates monorepo.
-10. **Lecteurs Médias & Rendu Canvas / WebGPU WASM Unifié** :
-   * Correction des bugs des lecteurs Manga (normalisation des éditions, réinitialisation de page), Databooks (résilience des requêtes d'OCR) et Épisodes vidéo (gestion du probing timeout, synchronisation de langue, nettoyage audio au démontage).
-   * Moteur universel `ShenronCanvasEngine` (`packages/engine/src/unified_canvas.ts`) unifiant WebGPU, WASM (`koharu-canvas`) et Canvas2D avec rendu de bulles procédurales et typographie japonaise.
-   * Intégration frontend complète : composant `ShenronGpuCanvas` (`apps/site/src/components/canvas/ShenronGpuCanvas.tsx`), fond Ki énergétique réactif (`KiCanvas.tsx`) et vitrine interactive WebGPU/WASM (`/canvas`).
-   * 100% typecheck et tests validés, commit `f3532461` et déploiement synchronisé sur `origin/main`.
-
-
-
+6. **Tunnel & Automatisation** :
+   * Tunnel de dev vers le vps : `bun scripts/dev/env-pull.ts tunnel --host vps` (seul propriétaire) ; réseau wg1 : `aphrody infra wg` (dépôt Aphrody).
+   * Aucun déploiement continu : le déploiement appartient à aphrody-infra.
+   * À faire : ingestion RAG des captures du crawl officiel ; vrai entraînement (LoRA/SFT) — `train-shenron-chat-loop.ts` ne fait que générer et évaluer des rollouts.
+7. **Connecteurs Multi-Agents (Codex, AGY, Claude Code, Omar)** :
+   * Serveurs MCP (`aphrody-mcp` port 8793, `shenron-mcp` port 8790 / public `/mcp`) et A2A (`aphrody-a2a` port 8788, public `/api/a2a`).
+   * Configurations d'agents (`scripts/ops/setup-agent-connectors.ts`, `just setup-connectors`) et pack pour Omar sous `deploy/connectors/omar/` (compte Unix `omar`, wg1 `10.200.77.10/32`, inventaire Aphrody faisant foi).
+8. **Secrets** :
+   * Env de dev : `scripts/dev/env-pull.ts` (seul propriétaire, retire le jeton Discord de prod) ; secrets du conteneur : `scripts/ops/container-secrets.ts`.
+9. **Lecteurs Médias & Rendu Canvas** :
+   * Lecteurs Manga (`?edition=couleur|color` via `colorisationDemandee`, réinitialisation de page au changement de chapitre), Databooks (pages libérées après échec ou démontage), Épisodes vidéo (probing, langue, nettoyage audio).
+   * `ShenronCanvasEngine` (`packages/engine/src/unified_canvas.ts`) : particules Ki en WebGPU avec repli Canvas 2D, planches manga procédurales en Canvas 2D ; composant `ShenronGpuCanvas`, fond `KiCanvas.tsx`, vitrine `/canvas`.

@@ -175,9 +175,11 @@ function useTextesPlanches(
     if (aDemander.length === 0) return;
     for (const n of aDemander) demandes.current.add(n);
     const stop = new AbortController();
+    let abouti = false;
     loadTranscriptions!(aDemander, stop.signal)
       .then((textes) => ({ textes }))
       .then((d: { textes?: Record<string, string> }) => {
+        abouti = true;
         const recus = Object.entries(d.textes ?? {});
         if (recus.length === 0) return undefined;
         setCharges((prec) => {
@@ -187,14 +189,16 @@ function useTextesPlanches(
         });
         return undefined;
       })
-      .catch((err: unknown) => {
-        // En cas d'erreur réseau (hors annulation par unmount), retire les numéros
-        // pour permettre une nouvelle tentative au prochain défilement
-        if ((err as { name?: string })?.name !== "AbortError") {
-          for (const n of aDemander) demandes.current.delete(n);
-        }
+      .catch(() => {
+        // Hors ligne : ces planches seront redemandées au prochain défilement
+        // (une annulation est déjà traitée par le nettoyage de l'effet).
+        if (!stop.signal.aborted) for (const n of aDemander) demandes.current.delete(n);
       });
-    return () => stop.abort();
+    return () => {
+      stop.abort();
+      // Requête annulée avant sa réponse : libérer ses numéros avant le prochain passage de l'effet.
+      if (!abouti) for (const n of aDemander) demandes.current.delete(n);
+    };
   }, [manquants, loadTranscriptions]);
 
   return charges;

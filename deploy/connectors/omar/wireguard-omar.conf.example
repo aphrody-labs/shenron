@@ -1,7 +1,10 @@
+# Reference only: Omar's peer is declared in Aphrody's wg1 inventory
+# (tools/config/host/wireguard/aphrody-tunnel.json, rendered by "aphrody infra wg").
+# The private key never leaves Omar's PC.
 [Interface]
 # Omar Native PC Peer (omar-pc)
 PrivateKey = <METTRE_ICI_LA_CLE_PRIVEE_OMAR>
-Address = 10.200.77.5/32
+Address = 10.200.77.10/32
 DNS = 1.1.1.1
 
 [Peer]
