@@ -7,7 +7,7 @@ import {
   type MangaReaderProps as ReaderProps,
 } from "@shenron/ui/reader";
 import { readerAssetUrl } from "@/lib/reader-assets";
-import { API_ORIGIN, CDN_ORIGIN } from "@/lib/config";
+import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
 
 export type MangaReaderProps = Pick<
   ReaderProps,
@@ -73,7 +73,7 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     [chapterId],
   );
   const resolveAssetUrl = useCallback(
-    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN]),
+    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN, SITE_URL]),
     [],
   );
   return (

@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { DatabookReader as BaseDatabookReader, type DatabookReaderPage } from "@shenron/ui/reader";
 import { TranscriptionTexte } from "./TranscriptionTexte";
 import { readerAssetUrl } from "@/lib/reader-assets";
-import { API_ORIGIN, CDN_ORIGIN } from "@/lib/config";
+import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
 import { useReglages } from "@/lib/use-capacites";
 import { optimizedSrc, optimizedSrcSet } from "@/lib/images";
 
@@ -17,7 +17,7 @@ export type DatabookReaderProps = {
 export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   const { prechargement } = useReglages();
   const resolveAssetUrl = useCallback(
-    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN]),
+    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN, SITE_URL]),
     [],
   );
   const loadTranscriptions = useCallback(

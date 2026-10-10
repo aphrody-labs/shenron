@@ -10,14 +10,25 @@ describe("same-origin reader scans", () => {
     }
   });
   it("removes owned CDN and API origins while preserving asset query strings", () => {
-    for (const origin of ["https://cdn.dragonballfr.com", "https://bot.dragonballfr.com"]) {
+    for (const origin of [
+      "https://cdn.dragonballfr.com",
+      "https://bot.dragonballfr.com",
+      "https://dragonballfr.com",
+    ]) {
       expect(readerAssetUrl(`${origin}/assets/wiki/databooks/scan.jpg?v=2`)).toBe(
-        "/assets/wiki/databooks/scan.jpg?v=2",
+        "/wiki/databooks/scan.jpg?v=2",
       );
     }
     expect(readerAssetUrl("https://media.example/assets/scan.jpg", ["https://media.example"])).toBe(
       "/assets/scan.jpg",
     );
+  });
+  it("uses the existing public wiki mount for relative databook scans", () => {
+    for (const prefix of ["./", "", "/"]) {
+      expect(readerAssetUrl(`${prefix}assets/wiki/databooks/scan.jpg`)).toBe(
+        "/wiki/databooks/scan.jpg",
+      );
+    }
   });
   it("preserves unrelated remote sources and non-asset endpoints", () => {
     for (const url of [
