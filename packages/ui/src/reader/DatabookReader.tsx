@@ -692,7 +692,7 @@ export function DatabookReader({
                       {item.imageUrl ? (
                         <button
                           type="button"
-                          className="group relative cursor-zoom-in rounded-sm border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)]"
+                          className="group relative w-full min-w-0 cursor-zoom-in rounded-sm border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--reader-focus,#fcf03a)]"
                           onClick={() => openLightbox(vi.index)}
                           aria-label={`Ouvrir la page ${item.number} en plein écran`}
                         >
