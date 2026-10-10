@@ -195,6 +195,7 @@ export default async function RootLayout({
         {/* Robots et agents IA : la carte du site pour les LLM et le serveur MCP. Rien de
             visible ; les mêmes liens partent en en-tête HTTP `Link` (next.config.ts). */}
         <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+        <link rel="describedby" type="text/plain" href="/llms.txt" />
         <link rel="service-desc" type="application/json" href="/.well-known/mcp.json" />
         {/* Thème de design global surchargeant les tokens `--dbz-*` (voir globals.css). */}
         {themeCss && (
