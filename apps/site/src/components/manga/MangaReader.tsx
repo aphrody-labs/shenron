@@ -6,8 +6,7 @@ import {
   MangaReader as BaseMangaReader,
   type MangaReaderProps as ReaderProps,
 } from "@shenron/ui/reader";
-import { assetMirrorUrl } from "@shenron/config/public-urls";
-import { assetUrl } from "@/lib/assets";
+import { readerAssetUrl } from "@/lib/reader-assets";
 import { API_ORIGIN, CDN_ORIGIN } from "@/lib/config";
 
 export type MangaReaderProps = Pick<
@@ -73,8 +72,8 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
     (page: number) => (chapterId ? `/api/manga/chapter/${chapterId}/pages/${page}` : null),
     [chapterId],
   );
-  const resolveMirrorUrl = useCallback(
-    (url: string) => assetMirrorUrl(url, CDN_ORIGIN, API_ORIGIN),
+  const resolveAssetUrl = useCallback(
+    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN]),
     [],
   );
   return (
@@ -85,8 +84,7 @@ export function MangaReader({ chapterId, ...props }: MangaReaderProps) {
         initialPage={initialPage}
         onPageChange={onPageChange}
         apiPageHref={apiPageHref}
-        resolveAssetUrl={assetUrl}
-        resolveMirrorUrl={resolveMirrorUrl}
+        resolveAssetUrl={resolveAssetUrl}
         renderChapterLink={renderChapterLink}
       />
       {chapterId ? <TraductionFr chapterId={chapterId} page={currentPage} /> : null}

@@ -2,7 +2,8 @@
 import { useCallback } from "react";
 import { DatabookReader as BaseDatabookReader, type DatabookReaderPage } from "@shenron/ui/reader";
 import { TranscriptionTexte } from "./TranscriptionTexte";
-import { assetUrl } from "@/lib/assets";
+import { readerAssetUrl } from "@/lib/reader-assets";
+import { API_ORIGIN, CDN_ORIGIN } from "@/lib/config";
 import { useReglages } from "@/lib/use-capacites";
 import { optimizedSrc, optimizedSrcSet } from "@/lib/images";
 
@@ -15,6 +16,10 @@ export type DatabookReaderProps = {
 
 export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   const { prechargement } = useReglages();
+  const resolveAssetUrl = useCallback(
+    (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN]),
+    [],
+  );
   const loadTranscriptions = useCallback(
     async (numbers: number[], signal: AbortSignal): Promise<Record<string, string>> => {
       if (bookId == null || numbers.length === 0) return {};
@@ -22,7 +27,7 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
       const response = await fetch(`/api/databooks/${bookId}/texts?pages=${numbers.join(",")}`, {
         signal,
       });
-      if (!response.ok) return {};
+      if (!response.ok) throw new Error(`Transcription request failed: ${response.status}`);
       // `texts`; the former `textes` is read from a server that predates the rename.
       const body: { texts?: Record<string, string>; textes?: Record<string, string> } =
         await response.json();
@@ -41,7 +46,7 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
       <BaseDatabookReader
         pages={pages}
         title={title}
-        resolveAssetUrl={assetUrl}
+        resolveAssetUrl={resolveAssetUrl}
         imageSrc={optimizedSrc}
         imageSrcSet={optimizedSrcSet}
         loadTranscriptions={bookId == null ? undefined : loadTranscriptions}
