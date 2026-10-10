@@ -9,6 +9,7 @@
 1. **Reverse Engineering Dragon Ball (`shenron-re`)** :
    * Consolidation du décodage CPK, CRILAYLA et formats de combat Dimps (BAC/BDM/CUS/PUP/MSG) [x].
    * Pipeline WASM/TypeScript opérationnel (20 tests Rust + 9 tests WASM validés).
+   * 2026-10-10 : fusion de rescue/vps-home-shenron sur main (1874f332), extraction CPK/EMB et validations Xenoverse 3 conservées ; tests shenron-re natifs Windows verts (53 unitaires + 5 CLI).
    * Raccordement des données de techniques extraites au VFS et à l'API publique.
 2. **Entraînement Continu Shenron Chat (`shenron-chat-v2`)** :
    * Exécution itérative de `scripts/ops/train-shenron-chat-loop.ts` sur les 1 495 rollouts partitionnés.
