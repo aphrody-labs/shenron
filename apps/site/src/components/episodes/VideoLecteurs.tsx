@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type SubtitleTrack, VideoPlayer } from "@/components/episodes/VideoPlayer";
 import { track } from "@/lib/telemetry";
+import { probePlayerNetwork } from "@/lib/player-network";
 
 export interface Lecteur {
   name: string;
@@ -89,6 +90,8 @@ export function VideoLecteurs({
   // sonde pas à l'affichage — ce serait une résolution de flux par visite de
   // page —, on le charge au clic et l'on bascule sur un message s'il échoue.
   const [voEchec, setVoEchec] = useState(false);
+  const networkFailure = useRef<string | null>(null);
+  const [probeAttempt, setProbeAttempt] = useState(0);
 
   // Synchronise la langue active si la sélection courante n'existe pas dans le lot d'épisode
   useEffect(() => {
@@ -116,6 +119,25 @@ export function VideoLecteurs({
       setStatus("probing");
     }
   }, [safeActive, current?.embedUrl, enVo]);
+
+  // An iframe can emit load for its browser error document after a DNS failure.
+  // Check the user's network independently; VPS reachability cannot establish it.
+  useEffect(() => {
+    if (enVo || !current) return;
+    networkFailure.current = null;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 8_000);
+    void probePlayerNetwork(current.embedUrl, controller.signal).then((result) => {
+      if (controller.signal.aborted || result !== "unreachable") return;
+      networkFailure.current = current.embedUrl;
+      if (safeActive < list.length - 1) setActive(safeActive + 1);
+      else setStatus("failed");
+    });
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeout);
+    };
+  }, [current?.embedUrl, enVo, safeActive, list.length, probeAttempt]);
 
   // Les embeds tiers ne permettent pas toujours un HEAD/CORS fiable. On sonde
   // le lecteur visible uniquement tant qu'il n'a pas confirmé son chargement (ready).
@@ -180,6 +202,8 @@ export function VideoLecteurs({
   };
   const estChoisi = (c: string) => (c === "vo" ? enVo : !enVo && (c === "ext" || lang === c));
   const retry = () => {
+    networkFailure.current = null;
+    setProbeAttempt((attempt) => attempt + 1);
     setActive(0);
     setStatus("probing");
   };
@@ -280,7 +304,9 @@ export function VideoLecteurs({
             allowFullScreen
             referrerPolicy="origin"
             loading="lazy"
-            onLoad={() => setStatus("ready")}
+            onLoad={() => {
+              if (networkFailure.current !== current.embedUrl) setStatus("ready");
+            }}
             onError={() => {
               if (active < list.length - 1) setActive((index) => index + 1);
               else setStatus("failed");
