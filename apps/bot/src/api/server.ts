@@ -4511,9 +4511,9 @@ export class ApiServer {
           }),
         },
         "/api/admin/pipeline/:id/cancel": {
-          POST: admin((req) => {
+          POST: admin(async (req) => {
             try {
-              return Response.json(adminPipeline.cancel(req.params.id), { status: 202 });
+              return Response.json(await adminPipeline.cancel(req.params.id), { status: 202 });
             } catch {
               return Response.json({ error: "job_not_running" }, { status: 409 });
             }

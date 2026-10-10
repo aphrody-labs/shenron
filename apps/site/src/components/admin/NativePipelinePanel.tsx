@@ -29,20 +29,32 @@ const Snapshot = z.object({
       z.object({
         id: z.string(),
         category: z.enum(["rag", "crawl", "llm", "training", "docker", "pipeline"]),
-        target: z.enum(["vps", "dbfr"]),
+        target: z.enum(["vps", "dbfr", "fleet"]),
         available: z.boolean(),
+        concurrent: z.boolean().optional(),
       }),
     )
-    .max(32),
+    .max(64),
   jobs: z
     .array(
       z.object({
         id: z.string(),
         action: z.string(),
-        state: z.enum(["running", "succeeded", "failed", "cancelled", "interrupted", "timed-out"]),
+        state: z.enum([
+          "submitting",
+          "queued",
+          "running",
+          "succeeded",
+          "failed",
+          "cancelled",
+          "interrupted",
+          "timed-out",
+        ]),
         startedAt: z.string(),
         finishedAt: z.string().nullable(),
         code: z.number().int().nullable(),
+        host: z.string().nullable().optional(),
+        remoteId: z.string().nullable().optional(),
       }),
     )
     .max(50),
@@ -67,9 +79,17 @@ export function NativePipelinePanel() {
     },
   });
   const states = Object.fromEntries(
-    ["running", "succeeded", "failed", "cancelled", "interrupted", "timed-out", "cancelling"].map(
-      (state) => [state, t(`states.${state}`)],
-    ),
+    [
+      "submitting",
+      "queued",
+      "running",
+      "succeeded",
+      "failed",
+      "cancelled",
+      "interrupted",
+      "timed-out",
+      "cancelling",
+    ].map((state) => [state, t(`states.${state}`)]),
   );
   const categories = Object.fromEntries(
     ["rag", "crawl", "llm", "training", "docker", "pipeline"].map((category) => [

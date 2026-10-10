@@ -138,7 +138,7 @@ describe("native admin pipeline", () => {
       await expect(f.pipeline.submit("rag-stats", "native-job-005")).rejects.toThrow(
         "already running",
       );
-      expect(f.pipeline.cancel("native-job-004").state).toBe("cancelling");
+      expect((await f.pipeline.cancel("native-job-004")).state).toBe("cancelling");
       expect((await settled(f.pipeline, "native-job-004"))?.state).toBe("cancelled");
     } finally {
       f.close();

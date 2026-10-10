@@ -79,13 +79,49 @@ Le gel éditorial des databooks reste applicable aux plans de pipeline.
 
 ## État et qualification
 
-Une seule action tourne à la fois sur ce backend. Le journal contient l’identifiant,
+Une seule action locale tourne à la fois sur ce backend. Le journal contient l’identifiant,
 l’action, les dates, l’état et le code natif. Les sorties capturées ne sont pas
 recopiées : elles peuvent contenir des données de fournisseur. La consultation
 des résultats détaillés reste celle du propriétaire, dans ses magasins isolés.
 Un redémarrage classe les actions locales en cours comme interrompues ; aucune
 relance implicite ni réussite inventée. Le dossier de contrôle est réservé à un
 seul processus de backend, sans partage entre réplicas.
+
+### File Web distribuée
+
+`SHENRON_ADMIN_WEB_CONFIG` désigne un fichier JSON privé absolu (0600 sous Linux).
+Il déclare les hôtes déjà qualifiés et les seuls workflows proposés à l’admin :
+
+```json
+{
+  "hosts": [
+    { "id": "vps", "config": "/private/vps-mcp.json", "slots": 2, "workerReady": true },
+    { "id": "dbfr", "config": "/private/dbfr-mcp.json", "slots": 2, "workerReady": true }
+  ],
+  "actions": [
+    { "id": "web-index", "args": ["crawl-index", "--help"], "maxAttempts": 1 }
+  ]
+}
+```
+
+L’exemple teste l’aide ; remplacer les arguments par un workflow qualifié avant
+une acquisition réelle. `workerReady` constate une qualification préalable et
+n’installe aucun worker. Le panneau sonde la file native par MCP avant de proposer
+les actions. Les secrets restent dans les fichiers MCP du propriétaire.
+
+Le contrôleur réutilise `AphrodyWebJobs` : files et leases Aphrody, placement selon
+les slots et la charge, réservation durable avant soumission, même clé sur le même
+hôte après perte d’accusé de réception. Les actions `web-*` peuvent être lancées
+simultanément. Les journaux SQLite locaux restent privés et ne sont jamais partagés
+sur le réseau. Une reconnexion du dashboard réconcilie les jobs distants ; une panne
+conserve le dernier état reçu. L’annulation attend le reçu natif, sans simuler un
+arrêt. Le panneau n’expose que l’hôte, l’identifiant distant, l’état et les dates ;
+les contenus scrapés et erreurs fournisseurs restent dans le magasin privé.
+
+Ces contrats et leur reprise sont testés localement ; ils ne prouvent pas encore
+un crawl distribué en production. Le serving CDN, les migrations SQL par Infra et
+l’ingestion Redis restent des étapes à raccorder et à qualifier sur leurs services
+réels. Aucun `db:push` ni publication implicite de corpus privé n’est introduit.
 
 Au contrôle du 2026-10-10, les CLI installées sur Windows, VPS et dans le conteneur
 compute DBFR refusent `rag` et `train` faute de features. Les commandes Infra de

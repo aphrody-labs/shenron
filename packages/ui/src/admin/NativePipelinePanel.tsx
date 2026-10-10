@@ -9,7 +9,13 @@ export interface NativePipelineSnapshot {
     bun: string;
     rag?: { chunks: number; vectors: number; ragReady: boolean | null } | null;
   };
-  actions: { id: string; category: string; target: string; available: boolean }[];
+  actions: {
+    id: string;
+    category: string;
+    target: string;
+    available: boolean;
+    concurrent?: boolean;
+  }[];
   jobs: {
     id: string;
     action: string;
@@ -17,6 +23,8 @@ export interface NativePipelineSnapshot {
     startedAt: string;
     finishedAt: string | null;
     code: number | null;
+    host?: string | null;
+    remoteId?: string | null;
   }[];
 }
 export interface NativePipelineLabels {
@@ -94,7 +102,8 @@ export function NativePipelinePanel({
                   disabled={
                     pending ||
                     !action.available ||
-                    snapshot.jobs.some((job) => job.state === "running")
+                    (!action.concurrent &&
+                      snapshot.jobs.some((job) => job.state === "running" && !job.remoteId))
                   }
                   onClick={() => onRun(action.id)}
                 >
@@ -109,7 +118,9 @@ export function NativePipelinePanel({
                 <code className="break-all text-xs">{job.action}</code>
                 <span role="status">{labels.states[job.state] ?? labels.unavailable}</span>
                 {job.code !== null && <code>{job.code}</code>}
-                {job.state === "running" && (
+                {job.host && <code>{job.host}</code>}
+                {job.remoteId && <code className="break-all text-xs">{job.remoteId}</code>}
+                {["submitting", "queued", "running"].includes(job.state) && (
                   <Button variant="text" disabled={pending} onClick={() => onCancel(job.id)}>
                     {labels.cancel}
                   </Button>

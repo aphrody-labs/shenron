@@ -1753,6 +1753,8 @@
       "wasmReady": "WASMパーサー実行済み",
       "wasmFailed": "WASMパーサー実行失敗",
       "states": {
+        "submitting": "ワーカーへ送信中",
+        "queued": "待機中",
         "running": "実行中",
         "succeeded": "成功",
         "failed": "失敗",

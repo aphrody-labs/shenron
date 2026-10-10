@@ -1753,6 +1753,8 @@
       "wasmReady": "WASM parser executed",
       "wasmFailed": "WASM parser failed",
       "states": {
+        "submitting": "Submitting to worker",
+        "queued": "Queued",
         "running": "Running",
         "succeeded": "Succeeded",
         "failed": "Failed",

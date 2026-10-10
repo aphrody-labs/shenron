@@ -1753,6 +1753,8 @@
       "wasmReady": "Parseur WASM exécuté",
       "wasmFailed": "Échec du parseur WASM",
       "states": {
+        "submitting": "Transmission au worker",
+        "queued": "En file d’attente",
         "running": "En cours",
         "succeeded": "Réussi",
         "failed": "Échec",

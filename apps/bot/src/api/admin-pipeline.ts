@@ -8,6 +8,7 @@ import { runAphrodyCommand } from "@shenron/pipeline/aphrody/native-commands";
 import { nativeAbiVersion, nativeVersion } from "@shenron/pipeline/aphrody/native";
 import { shenronWorkerPool } from "@shenron/native/worker";
 import { shenronLoad, SHENRON_FFI_FILE } from "@shenron/native/shenron";
+import { AdminWebQueue } from "./admin-web-queue";
 
 const Args = z
   .array(
@@ -52,6 +53,7 @@ export function loadAdminPlans(path: string | undefined): InstalledPlan[] {
   const config = Config.parse(JSON.parse(readFileSync(path, "utf8")));
   const ids = new Set<string>();
   for (const plan of config.plans) {
+    if (plan.id.startsWith("web-")) throw new Error("Web queue action namespace is reserved");
     if (ids.has(plan.id)) throw new Error("Duplicate pipeline action");
     ids.add(plan.id);
     if (plan.engine === "shenron" && !["rag", "training"].includes(plan.category))
@@ -106,10 +108,13 @@ export function loadAdminPlans(path: string | undefined): InstalledPlan[] {
 export class AdminPipeline {
   private db: Database | undefined;
   private active = new Map<string, AbortController>();
+  private web: AdminWebQueue;
   constructor(
     private env: NodeJS.ProcessEnv = process.env,
     private execute: Execute = runAphrodyCommand,
-  ) {}
+  ) {
+    this.web = new AdminWebQueue(env);
+  }
   private ledger(): Database {
     if (this.db) return this.db;
     const home = this.env.SHENRON_ADMIN_PIPELINE_HOME;
@@ -196,10 +201,13 @@ export class AdminPipeline {
         };
       }),
     );
+    const web = this.web.configured() ? await this.web.status() : { actions: [], jobs: [] };
     return {
       native: { abi, version: nativeVersion(), bun: Bun.version, rag },
-      actions,
-      jobs: this.env.SHENRON_ADMIN_PIPELINE_HOME ? this.jobs() : [],
+      actions: [...actions, ...web.actions],
+      jobs: [...(this.env.SHENRON_ADMIN_PIPELINE_HOME ? this.jobs() : []), ...web.jobs]
+        .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+        .slice(0, 50),
     };
   }
   jobs(): JobRow[] {
@@ -208,6 +216,7 @@ export class AdminPipeline {
       .all();
   }
   async submit(action: string, id: string) {
+    if (action.startsWith("web-")) return this.web.submit(action, id);
     if (!/^[a-zA-Z0-9-]{8,80}$/.test(id)) throw new Error("Invalid idempotency key");
     const plan = this.plans().find((item) => item.id === action);
     if (!plan) throw new Error("Unknown installed action");
@@ -268,12 +277,14 @@ export class AdminPipeline {
   }
   cancel(id: string) {
     const controller = this.active.get(id);
+    if (!controller && this.web.configured()) return this.web.cancel(id);
     if (!controller) throw new Error("Job is not running on this process");
     controller.abort();
     return { id, state: "cancelling" };
   }
   close() {
     if (this.active.size) throw new Error("Native actions are still running");
+    this.web.close();
     this.db?.close();
     this.db = undefined;
   }
