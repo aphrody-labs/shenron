@@ -1,2 +1,13 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 @import "@aphrody/m3-reader/styles.css";
+
+/* Swiper's slides must not determine the collection grid's intrinsic width. */
+.m3-reader-collection {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.m3-reader-collection > * {
+  min-width: 0;
+  max-width: 100%;
+}
