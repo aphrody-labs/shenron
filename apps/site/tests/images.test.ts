@@ -12,6 +12,7 @@
  * jour (durée dictée par le `Cache-Control` de la source).
  */
 import { describe, expect, test } from "bun:test";
+import { readerAssetUrl } from "../src/lib/reader-assets";
 import {
   LARGEURS_OPTIMISEUR,
   isEditableAsset,
@@ -63,6 +64,13 @@ describe("optimizedSrc", () => {
   test("laisse intacte une image remplaçable en place", () => {
     expect(optimizedSrc(TELEVERSEE, 1080)).toBe(TELEVERSEE);
     expect(optimizedSrcSet(TELEVERSEE, [828, 1080])).toBe("");
+  });
+  test("keeps normalized local databook scans fresh after an admin replacement", () => {
+    const src = readerAssetUrl(TELEVERSEE);
+    expect(src).toBe("/wiki/databooks/abc.jpg");
+    expect(isEditableAsset(src)).toBe(true);
+    expect(optimizedSrc(src, 1080)).toBe(src);
+    expect(optimizedSrcSet(src, [828, 1080])).toBe("");
   });
 });
 
