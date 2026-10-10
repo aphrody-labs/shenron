@@ -1,4 +1,5 @@
 import { resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
+import { adminPipeline } from "./admin-pipeline";
 import os from "node:os";
 import { singleton, inject, container } from "tsyringe";
 import { Client } from "discordx";
@@ -4481,6 +4482,43 @@ export class ApiServer {
         }),
 
         // ── Services ──────────────────────────────────────────────────
+        "/api/admin/pipeline": {
+          GET: admin(async () => {
+            try {
+              return Response.json(await adminPipeline.status(), {
+                headers: { "cache-control": "no-store" },
+              });
+            } catch {
+              return Response.json({ error: "pipeline_unavailable" }, { status: 503 });
+            }
+          }),
+          POST: admin(async (req) => {
+            const body = await req.json().catch(() => null);
+            if (
+              !body ||
+              typeof body.action !== "string" ||
+              typeof body.id !== "string" ||
+              Object.keys(body).some((key) => !["action", "id"].includes(key))
+            )
+              return Response.json({ error: "invalid_request" }, { status: 400 });
+            try {
+              return Response.json(await adminPipeline.submit(body.action, body.id), {
+                status: 202,
+              });
+            } catch {
+              return Response.json({ error: "action_unavailable" }, { status: 409 });
+            }
+          }),
+        },
+        "/api/admin/pipeline/:id/cancel": {
+          POST: admin((req) => {
+            try {
+              return Response.json(adminPipeline.cancel(req.params.id), { status: 202 });
+            } catch {
+              return Response.json({ error: "job_not_running" }, { status: 409 });
+            }
+          }),
+        },
         "/api/services": admin(() => Response.json({ actions: listServiceActions() })),
         "/api/services/:service/:action": {
           POST: admin(async (req) => {

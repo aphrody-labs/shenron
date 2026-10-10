@@ -8,21 +8,20 @@ mock.module("@/lib/api-token", () => ({
   hasValidApiToken: (req: Request) =>
     req.headers.get("authorization") === "Bearer test-admin-token",
 }));
-mock.module("@/lib/config", () => ({ API_URL: "http://bot.test" }));
+mock.module("@/lib/config", () => ({
+  API_URL: "http://bot.test",
+  botApiBaseUrl: () => "http://bot.test",
+}));
 mock.module("@/lib/env", () => ({ env: { SHENRON_ADMIN_TOKEN: "test-admin-token" } }));
 mock.module("@/lib/db", () => ({ db: { execute: async () => [{ ok: 1 }] } }));
-mock.module("@shenron/pipeline/aphrody/a2a", () => ({
-  ShenronA2AHub: {
-    configure: () => {},
-    listEnvelopes: () => [],
-    listTasks: async () => [],
-  },
+mock.module("@/lib/a2a-hub", () => ({
+  fetchEnvelopes: async () => ({ status: 200, body: [] }),
+  postJsonRpc: async (request: { params: { status: string } }) => ({
+    status: 200,
+    body: { result: { totalSize: request.params.status === "working" ? 1 : 0 } },
+  }),
 }));
-mock.module("bun", () => ({
-  RedisClient: class {
-    send = async () => "PONG";
-  },
-}));
+mock.module("@/lib/admin-dashboard-probes", () => ({ pingDashboardRedis: async () => {} }));
 
 globalThis.fetch = mock(async () => new Response(null, { status: 200 })) as unknown as typeof fetch;
 const { GET } = await import("../src/app/api/admin/dashboard-live/route");

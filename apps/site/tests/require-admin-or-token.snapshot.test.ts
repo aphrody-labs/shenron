@@ -36,12 +36,19 @@ mock.module("@/lib/api-token", () => ({
 }));
 mock.module("@/lib/config", () => ({
   API_URL: "http://bot.test",
+  botApiBaseUrl: () => "http://bot.test",
   SITE_URL: "https://dragonballfr.com",
 }));
 mock.module("@/lib/env", () => ({ env: { SHENRON_ADMIN_TOKEN: "test-admin-token" } }));
 mock.module("@/lib/db", () => ({ db: { execute: async () => [{ ok: 1 }] } }));
 mock.module("@shenron/pipeline/aphrody/a2a", () => ({
-  ShenronA2AHub: { configure: () => {}, listEnvelopes: () => [], listTasks: async () => [] },
+  ShenronA2AHub: {
+    configure: () => {},
+    listEnvelopes: () => [],
+    listTasks: async () => [],
+    listStoredEnvelopes: async () => [],
+    handleJsonRpc: async () => ({ jsonrpc: "2.0", result: { totalSize: 0, tasks: [] } }),
+  },
 }));
 mock.module("bun", () => ({
   RedisClient: class {

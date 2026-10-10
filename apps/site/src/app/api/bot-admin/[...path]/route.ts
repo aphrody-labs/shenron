@@ -6,7 +6,7 @@
  */
 import { isCurrentUserAdmin } from "@/lib/session";
 import { env } from "@/lib/env";
-import { API_URL as API } from "@/lib/config";
+import { botApiBaseUrl } from "@/lib/config";
 import { NextRequest, NextResponse } from "next/server";
 
 const TOKEN = env.SHENRON_ADMIN_TOKEN ?? "";
@@ -24,7 +24,7 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
   if (path.some((s) => s === ".." || s === "." || s.includes("/") || s.includes("\\"))) {
     return NextResponse.json({ error: "invalid path" }, { status: 400 });
   }
-  const url = `${API}/api/${path.join("/")}${req.nextUrl.search}`;
+  const url = `${botApiBaseUrl()}/api/${path.join("/")}${req.nextUrl.search}`;
   const body =
     req.method === "GET" || req.method === "HEAD"
       ? undefined
