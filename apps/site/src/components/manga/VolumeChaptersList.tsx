@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Coche, Livre, Palette } from "@shenron/ui/icones";
-import { assetUrl } from "@/lib/assets";
+import { readerAssetUrl } from "@/lib/reader-assets";
+import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
 import {
   colorisationDemandee,
   editionDe,
@@ -129,7 +130,7 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
         </div>
       )}
 
-      <div className="grid gap-3">
+      <div className="grid min-w-0 grid-cols-1 gap-3">
         {readableChapters.map((ch) => {
           const isRead = readChapterIds.includes(ch.id);
           return (
@@ -139,12 +140,12 @@ export function VolumeChaptersList({ chapters }: VolumeChaptersListProps) {
               onMouseEnter={() => {
                 ch.pages?.slice(0, 3).forEach((page) => {
                   const img = new Image();
-                  img.src = assetUrl(page);
+                  img.src = readerAssetUrl(page, [CDN_ORIGIN, API_ORIGIN, SITE_URL]);
                 });
               }}
-              className={`group flex min-h-11 items-center justify-between gap-3 rounded-xl border p-3 transition-colors hover:border-dbz-orange/60 md:p-4 ${isRead ? "border-emerald-600/70" : "border-white/12"}`}
+              className={`group flex min-h-11 min-w-0 items-center justify-between gap-3 rounded-xl border p-3 transition-colors hover:border-dbz-orange/60 md:p-4 ${isRead ? "border-emerald-600/70" : "border-white/12"}`}
             >
-              <div className="flex items-center gap-4 md:gap-6 min-w-0">
+              <div className="flex flex-1 items-center gap-4 md:gap-6 min-w-0">
                 <span
                   className={`tabular-nums text-base md:text-lg min-w-[3.5rem] font-bold ${isRead ? "text-emerald-400" : "text-dbz-orange"}`}
                 >
