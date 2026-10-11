@@ -124,6 +124,14 @@ test("source traversal stays on public approved hosts and the requested English 
   ).toBeUndefined();
 });
 test("official update identity survives normalization without tracking parameters", () => {
+  for (const id of ["w8dcvq713", "c9501ns2dfyu"])
+    expect(
+      approvedUrl(
+        `https://dragonball-super.com/en/updates/detail.html?id=${id}&utm_source=share`,
+        "https://dragonball-super.com/en/",
+        true,
+      ),
+    ).toBe(`https://dragonball-super.com/en/updates/detail.html?id=${id}`);
   expect(
     approvedUrl(
       "detail.html?id=20261008-01&utm_source=share",
@@ -134,6 +142,33 @@ test("official update identity survives normalization without tracking parameter
   expect(
     approvedUrl("detail.html?id=20260903-2", "https://dragonball-super.com/en/updates/", true),
   ).toBe("https://dragonball-super.com/en/updates/detail.html?id=20260903-2");
+});
+test("official update query identities refuse ambiguity and unsafe values", () => {
+  const base = "https://dragonball-super.com/en/updates/";
+  for (const query of [
+    "id=a&id=b",
+    "id=a&id=a",
+    "id=",
+    "",
+    "id=../private",
+    "id=%2Fadmin",
+    "id=a%20b",
+    "id=" + "a".repeat(129),
+  ])
+    expect(approvedUrl(`detail.html?${query}`, base, true)).toBeUndefined();
+  expect(
+    approvedUrl(
+      "https://credential@dragonball-super.com/en/updates/detail.html?id=w8dcvq713",
+      base,
+      true,
+    ),
+  ).toBeUndefined();
+  expect(approvedUrl("../music/index.html?id=w8dcvq713&utm_source=share", base, true)).toBe(
+    "https://dragonball-super.com/en/music/index.html",
+  );
+  expect(approvedUrl(`detail.html?id=${"a".repeat(128)}`, base, true)).toBe(
+    `${base}detail.html?id=${"a".repeat(128)}`,
+  );
 });
 test("private site capture excludes playback manifests and segments", () => {
   for (const extension of ["m3u8", "mpd", "ts", "m4s", "mp4", "webm", "aac", "key"]) {

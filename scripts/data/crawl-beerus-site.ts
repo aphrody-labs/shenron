@@ -190,15 +190,14 @@ export function approvedUrl(raw: string, base: string, page: boolean): string | 
       if (!page && !url.pathname.startsWith("/wp-content/")) return;
     } else return;
     if (page) {
-      const id = url.searchParams.get("id");
+      const ids = url.searchParams.getAll("id");
+      const officialUpdate =
+        url.hostname === "dragonball-super.com" && url.pathname === "/en/updates/detail.html";
+      // The official CMS uses opaque identities as well as dated identifiers.
+      // Refuse ambiguous or malformed detail identities rather than merging pages.
+      if (officialUpdate && (ids.length !== 1 || !/^[A-Za-z0-9_-]{1,128}$/.test(ids[0]!))) return;
       url.search = "";
-      if (
-        url.hostname === "dragonball-super.com" &&
-        url.pathname === "/en/updates/detail.html" &&
-        id &&
-        /^[0-9]{8}(?:-[0-9]+)?$/.test(id)
-      )
-        url.searchParams.set("id", id);
+      if (officialUpdate) url.searchParams.set("id", ids[0]!);
     }
     return url.href;
   } catch {
