@@ -34,6 +34,8 @@
     "skills/dragon-ball/references/mcp-graphql.md",
     "skills/shenron-admin/SKILL.md",
     "skills/source-of-truth/SKILL.md",
+    "skills/toei-animation/SKILL.md",
+    "skills/toei-animation/references/workflow.md",
     "skills/toriyama-svg/SKILL.md",
     "skills/toriyama-svg/references/animation.md",
     "skills/toriyama-svg/references/blender.md",
@@ -41,6 +43,7 @@
     "skills/toriyama-svg/references/manga-anime-inspection.md",
     "skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md",
     "skills/toriyama-svg/references/mesures/kinto-un-analyse-visuelle.md",
-    "skills/toriyama-svg/references/sources.md"
+    "skills/toriyama-svg/references/sources.md",
+    "skills/toriyama-svg/references/video.md"
   ]
 }
