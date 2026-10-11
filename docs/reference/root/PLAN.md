@@ -1,6 +1,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-## Suivi opérationnel — 11 octobre 2026, 14:45 UTC
+## Suivi opérationnel — 11 octobre 2026, 16:08 UTC
 
 Le code, les manifestes et les reçus datés déterminent la qualification. Les invariants
 éditoriaux ci-dessous restent inchangés. La demande courante et les11lots vivent dans
@@ -9,8 +9,10 @@ et incidents dans [REPRISE](REPRISE.md). Une capture privée n'accorde pas droit
 entraînement ni réhébergement public ; les notices publiées sont des synthèses originales.
 Les catalogues passent par leurs writers transactionnels, avec backup, validation JSON,
 comparaison optimiste et relecture indépendante. Annonce et lecture restent distinctes.
-La nouvelle image19f503de et le delta de28images sont encore en qualification.
-
+Le lecteur HLS de l’image3cd7e7f7 est actif et qualifié ; le delta R2 conserve les
+anciens chunks. La génération vidéo et Omar sont une extension explicite du propriétaire,
+avec trois rendus originaux, capture/encodage vérifiés et entraînement soumis à ses portes.
+La délégation DNS et la preuve DS/TTL restent nécessaires avant la route CDN du domaine.
 
 # PLAN.md — Plan Directeur Unifié de Shenron
 

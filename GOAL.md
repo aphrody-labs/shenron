@@ -1,5 +1,22 @@
 # Objectif — enrichissement documentaire Dragon Ball et catalogues médias
 
+## Extension génération vidéo et Omar du 11 octobre 2026
+
+Exploiter les capacités vidéo existantes d’Aphrody et Bun, le dépôt contrôlé
+`aphrody-labs/omar` et le PC Omar via Infra. Qualifier trois rendus originaux : chronologie,
+actualité Beerus et scène illustrée. Étendre les composants React, le plugin, le MCP et
+la documentation vidéo, puis livrer les artefacts réellement vérifiés. Le skill
+`toei-animation` décrit un outil Shenron indépendant ; il ne représente pas Toei.
+Les plans, rendus, archives, publications et déploiements ont chacun leurs propres preuves.
+Une comparaison sans perte des images générées ne démontre pas une reproduction d’épisode.
+L’entraînement exige capacité installée, licence du corpus, lease GPU et évaluation ;
+préserver les modèles, conversations et processus existants. Conserver les onze lots
+ci-dessous et leurs lacunes pendant cette extension.
+
+Priorité ajoutée : auditer en conditions réelles la page DBS via le crawl Bun actif sur
+VPS, corriger les défauts constatés, améliorer l’interface et mettre Beerus en tête de
+l’accueil. Vérifier l’annonce et la disponibilité du jour séparément avant publication.
+
 ## Extension HLS demandée le 11 octobre 2026
 
 Forker hls.js sous `aphrody-labs/hls.js`, le suivre par gitlink dans `vendor/hls.js`,

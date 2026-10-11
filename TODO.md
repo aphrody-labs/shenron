@@ -2,15 +2,24 @@
 
 ## Nouveau lot HLS et lecteur vidéo
 
-- [ ] Qualifier fork Bun HLS, submodule propre et distribution full/light/worker/types.
-- [ ] Publier @aphrody/hls.js et vérifier archive, registre et consommateur.
-- [ ] Livrer les capacités HLS réutilisables dans la partie vidéo propriétaire du fork Bun.
+- [x] Qualifier fork Bun HLS, submodule propre et distribution full/light/worker/types.
+- [x] Publier @aphrody/hls.js et vérifier archive, registre et consommateur.
+- [x] Livrer les capacités HLS réutilisables dans la partie vidéo propriétaire du fork Bun.
 
-- [ ] Compléter le lecteur via Context7 : clavier focalisé, états/retry, vitesse, pistes et qualité.
-- [ ] Valider en navigateur avec média synthétique, puis commiter/pousser et activer l'image scellée.
+- [x] Compléter le lecteur via Context7 : clavier focalisé, états/retry, vitesse, pistes et qualité.
+- [x] Valider en navigateur avec média synthétique, puis commiter/pousser et activer l'image scellée.
 - [ ] Qualifier séparément la reprise périodique des catalogues et les lecteurs officiels protégés.
 
-## Lot courant — 11 octobre 2026, 14:45 UTC
+## Extension vidéo et Omar — 11 octobre 2026, 16:08 UTC
+
+- [x] Livrer le transport MCP complet et les skills vidéo ; 56 tests Rust et Clippy strict verts.
+- [ ] Qualifier trois rendus originaux avec capture réelle, archive FFV1 et MP4 vérifiés.
+- [ ] Qualifier backend installé, outils MCP et publication des rendus par les propriétaires.
+- [ ] Intégrer les rendus aux composants du site et contrôler la production.
+- [ ] Qualifier capacités Omar, lease GPU, corpus autorisé et évaluation avant entraînement.
+- [ ] Réparer la CI publique HLS après disponibilité réelle du runtime Bun 1.4.4 propriétaire.
+
+## Lot éditorial livré — 11 octobre 2026, 14:45 UTC
 
 - [x] Publier7synthèses et5notices sourcées ; vérifier writerRedis21 et droits de collecte.
 - [x] Restaurer les disponibilités ADN mal encodées et contrôler indépendamment874/28lignes.

@@ -53,6 +53,7 @@ relecture et replay ; ne pas employer le delegate privé Bun.SQL mal encodé pui
 Bun.WebView ou AphrodyWeb servent les tests navigateur réels ; les noms Chromium/Video
 ne prouvent pas une API installée. Fournisseurs protégés restent liens officiels quand
 l'embed est indisponible ; aucune lecture/territoire/langue ni licence ne s'invente.
+
 ## Exécution autonome NHIL
 
 L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque
@@ -118,6 +119,16 @@ Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) index
   dans un chemin revendiqué par un autre se signale, elle ne se corrige pas.
 
 ## Outils
+
+HLS : `vendor/hls.js` est le sous-module contrôlé `aphrody-labs/hls.js`, identité npm
+`@aphrody/hls.js`. Avant un install figé ou une fabrique, exécuter
+`bun scripts/build/prepare-vendor.ts --init` : uniquement ce gitlink, sans récursion,
+force ni nettoyage d'un arbre modifié. Le build exige une distribution complète commise,
+les types et le worker. Ne pas supprimer les notices Apache-2.0/Dailymotion ; le payload
+et le CDN copient seulement worker et notices explicitement autorisés. Les capacités
+réutilisables vivent dans le SDK vidéo du fork Bun ; Shenron possède contrôles, i18n et
+reprise. Tester le worker réellement actif, les changements de source et la lecture
+synthétique en navigateur. Un build Bun plus récent ne prouve pas une accélération vidéo.
 
 Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`cargo`, via
 `~/aphrody/scripts/build/rust/cargo-serial.sh` sur les machines Aphrody). Recherche : `rg`,

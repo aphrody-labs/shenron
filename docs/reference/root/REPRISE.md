@@ -1,5 +1,37 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle courant du 11 octobre 2026 à 16:08 UTC
+
+Lecteur HLS livré par3cd7e7f7, image scellée7483424f333b2e49421c326dc9c417275a65b3d93f60fb12a26f7c0b7fcf22ed,
+archive01b268810ac73455d44f4703fec63a2b42d49221ffae5db53978a3468482fa42,
+payload50d2ea50902cd9b9 et BUILD_IDifxzM_OA0JR-Ybu2lU__L. Activation et rollback
+docker-70taouw0 vérifiés. Linux3890tests+74ignorés préexistants, zéro échec ; scripts129tests.
+Quinze vues navigateur1280/640/390 sans débordement, santé/chat/catalogue verts.
+Les niveaux HLS, deux pistes audio, sous-titres, PiP/fullscreen et reprise sont vérifiés
+sur média synthétique ; aucune lecture d’épisode tiers n’est déduite de ces contrôles.
+
+Fork aphrody-labs/hls.js épinglé8ca90a84,1202tests navigateur sans ignorés ni échec.
+@aphrody/hls.js1.7.3-aphrody.1 et @aphrody/bun-runtime-sdk1.4.5 publiés ; archives,
+registry et consommateurs frais vérifiés. SHA1 respectifs4c5a715c650713b22c3d2735c65a2a1732b3b4ba
+et399ef75be407099b7e598ecfdd1b1c922faaa2fd. Wrapper Bun vidéo privé1.4.4 qualifié.
+La CI publique HLS refuse encore le runtime installé1.4.3 ; la fabrique utilise un1.4.4
+réel. Aucun gain de performances ni toutes les fonctions DRM n’est revendiqué.
+
+R2 delta3cd7 :110599routes/87716corps,224nouveaux corps et256shards S3GET/SHA vérifiés.
+Les224HEAD taille/SHA et224GET corps/SHA via Worker passent. Inventaire
+0080e757cc4ecbc0bf5cab0611630e2ccf6298f7a85a154f64f8ca25ebed05b2.
+Workerac3ddcb702684b109ae46213f3f35f40, import=false/verify=false, anciens chunks conservés.
+La sonde Worker /health est distincte du relais /api/health vers l’origine dédiée non qualifiée.
+Retrait DS/TTL, délégation et TLS restent nécessaires ; aucune route CDN du domaine activée.
+
+Extension propriétaire : trois vidéos originales, plugin/MCP et Omar. Transport MCP/skills
+a8bad28d poussé,56tests Rust et Clippy strict verts ; backend/rendus pas encore livrés.
+Omar-rt joignable, Bun1.4.4 et RTX4060/8188MiB réels ; train/OCR absents du binaire Aphrody.
+L’inférence existante et les stores privés sont préservés. Contrat train propriétaire marque
+artefact/dataset/qualification/promotion faux ; aucune exécution d’entraînement inventée.
+Nouvelle priorité explicite : audit réel page DBS et accueil, présentation Beerus sourcée,
+corrections UI/backend puis image scellée et contrôles de production.
+
 ## Contrôle courant du 11 octobre 2026 à 14:54 UTC
 
 Sept synthèses Beerus et cinq notices sources sont publiques. Redis DB4 contient 21 articles
