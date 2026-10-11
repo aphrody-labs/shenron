@@ -32,6 +32,26 @@
 
 ---
 
+## État opérationnel vérifié le11octobre2026
+
+Le bloc consolidé du7octobre ci-dessus reste un instantané historique, pas un nouvel
+inventaire des corpus. La priorité et les onze lots ouverts sont dans
+[GOAL.md](../../../GOAL.md) ; les livraisons datées sont dans [REPRISE.md](REPRISE.md).
+
+- Cinq actualités Super officielles publiées par CMS/PostgreSQL ; épisode bonus et lecture
+  effective restent non confirmés. Miroir Redis propriétaire19articles/TTL24h ; writer dans
+  release active `bfb1280c`, preuve d'écriture end-to-end distincte du backfill.
+- Scope npm `@aphrody/shenron-*`, apps privées, GitHub `aphrody-labs/shenron` et équipe
+  `aphrody` ; crates.io conserve ses noms globaux et requiert des ownerships prouvés.
+- Sources publiques, notices et allowlists auditées avant publication ; secrets, corpus,
+  bases et assets protégés exclus. Migrations historiques immuables.
+- Fabrique VPS→artefact scellé→Infra DBFR, puis sondes réelles et delta R2 du payload actif.
+  Worker en lecture seule, anciens chunks conservés ; DNSSEC/DS/TTL et délégation restent
+  des portes externes avant bascule CDN.
+- Générateurs plugin et relevé registry automatisés selon
+  [le runbook](../../operations/source-synchronization.md), sans transformer un état ancien
+  ou une métadonnée registry en preuve de production.
+
 ## 1. Invariants Non Négociables
 
 1. **Hiérarchie des sources** : Le manga original et les déclarations d'Akira Toriyama priment toujours ; les databooks officiels font foi d'appui ; Fandom est strictement interdit.

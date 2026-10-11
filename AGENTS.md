@@ -28,7 +28,21 @@ un artefact qualifié, l'audit de ses fichiers et une version disponible. La dem
 de publication autorise la préparation publique des bibliothèques avec allowlists relues ;
 les applications, données et stores restent protégés. Ne pas déclarer une publication à
 partir d'une archive préparée ou d'une authentification seule. Le CMS public utilise ses
-routes `/news` et son ISR propriétaire ; qualifier séparément toute intégration Redis.
+routes `/news` et son ISR propriétaire. Le miroir public Redis appartient à
+`apps/site/src/lib/posts-redis-shared.ts` et au wrapper `posts-redis.ts` : DB4,
+`dbfr:post:<id>`/`dbfr:posts:all`, TTL24h, uniquement articles publiés. Reconstruire par
+`scripts/ops/rebuild-news-redis.ts`, jamais FLUSH ni un writer PostgreSQL parallèle.
+Qualifier séparément le backfill, l'image active et une écriture CMS→Redis réelle.
+
+Synchronisation autorisée le11octobre2026 : maintenir README, ce fichier, GOAL et le plan
+depuis les propriétaires réels, générer le plugin par `scripts/plugin/build-references.ts`
+et ses manifestes canoniques, puis vérifier la dérive. Le relevé registry/publication
+`scripts/ops/sync-source-status.ts` écrit uniquement dans `var/reports/source-sync/` ;
+HTTP200 metadata ne prouve ni installation, intégrité d'archive ni déploiement.
+Les12bibliothèques npm sont `@aphrody/shenron-*`, les apps privées ; GitHub contrôlé
+`aphrody-labs/shenron`, équipe `aphrody`. Conserver noms globaux et notices upstream des
+crates. Aucune réécriture des migrations SQL historiques, y compris leurs commentaires.
+Les tâches autonomes respectent les gates Infra DNSSEC/DS/TTL, stores protégés et claims.
 
 ## Exécution autonome NHIL
 

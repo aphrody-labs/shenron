@@ -27,15 +27,38 @@ exécuté par SSH sur DBFR. Conserver les onze lots documentaires ci-dessous et 
   publier les seuls artefacts qualifiés et autorisés dont la version n'existe pas déjà,
   sans changer implicitement les marqueurs `private`/`publish` ni publier de données privées.
 
-État vérifié le 11 octobre à13:21UTC : collecte Codex sur DBFR terminée ;
-[article publié](https://dragonballfr.com/news/dragon-ball-super-beerus-premiere-2026-10-11)
-par API CMS, PostgreSQL relu, index `/news` et détail en200, deux visuels et trois
-bandes-annonces officielles. Replay sans doublon et clé temporaire révoquée ; ISR du CMS
-invalidé par son propriétaire. Aucun mécanisme Redis CMS confirmé. La première japonaise
-est programmée à14:15UTC/16:15Paris ; aucun épisode bonus confirmé. Les douze bibliothèques
-npm sont préparées avec visibilité publique explicite et allowlists auditées, mais la
-première tentative `@aphrody/shenron-engine@1.4.4` reçoit404 au PUT registry ; aucune publication
-npm effective annoncée. Les qualifications crates.io restent distinctes.
+État vérifié le 11 octobre à14:03UTC : cinq synthèses Super publiées par les API CMS,
+PostgreSQL/audits relus et pages publiques200 : première japonaise, projet Enhanced et staff,
+NYCC, thèmes musicaux, distribution Crunchyroll en Europe. Visuels et bandes-annonces
+officiels référencés ; aucun épisode intégral recopié. Replay des nouveaux slugs sans écriture
+et clés temporaires révoquées. Une source japonaise musicale existait déjà : les nouveaux
+angles éditoriaux ne prouvent pas une absence globale de références communes.
+
+Miroir propriétaire Redis DB4 reconstruit et relu :19 articles publics exacts, index19,
+TTL24h et PostgreSQL inchangé. Le writer CMS est intégré à l'image scellée `bfb1280c`,
+active via Infra ; la preuve positive d'une nouvelle écriture CMS→Redis reste séparée du
+backfill. `/news` continue à lire PostgreSQL et son ISR. La première japonaise est programmée
+à14:15UTC/16:15Paris ; aucune lecture effective ni épisode bonus confirmé à ce contrôle.
+
+Les12bibliothèques `@aphrody/shenron-*`@1.4.4 sont réellement publiées et une installation
+depuis le registre, sans lien workspace, est qualifiée. Sept crates@1.4.4 publiées avec
+archives relues : dragon-pixel-engine, shenron-engine, shenron-re, koharu-secrets, koharu-rasterizer, koharu-storage et shenron-gpu. Deux bibliothèques Rust
+indépendantes supplémentaires, koharu-scene et koharu-canvas, passent leurs gates et sont en publication ; les dépendances
+Aphrody absentes et les permissions OAuth d'ownership restent des limites distinctes.
+L'organisation GitHub contrôlée est `aphrody-labs`, équipe `aphrody` ; le compte GitHub
+`aphrody` appartient à un tiers. Crates.io utilise des noms globaux, sans scope npm.
+
+Release active `bfb1280c` :3876tests LinuxPASS/74SKIP/0FAIL et114tests scriptsPASS ;
+couverture `/news` réellement rendue aux largeurs1280/390, ISBN486 et82liens vérifiés.
+R2 :110327routes/87453corps, huit nouveaux corps et256shards SHA/S3GET/HEAD/GET vérifiés.
+Worker `f3073dfc4ded4ee3ad1aec172eda0623`, import=false/verify=false ; range206,
+conditionnel304, privé404 et santé200. La délégation et l'expiration DS demeurent non
+qualifiées : aucune bascule CDN DNS revendiquée.
+
+La demande de synchronisation du11octobre couvre README, AGENTS, plan, goal et plugin/MCP/A2A.
+Les générateurs canoniques et le relevé `scripts/ops/sync-source-status.ts` alimentent la
+reprise automatique ; chaque état distingue source, registre et production. Voir
+[synchronisation opérationnelle](docs/operations/source-synchronization.md).
 
 Étendre le catalogue Dragon Ball France déjà servi par Shenron, en partant des œuvres,
 fiches, volumes, épisodes, databooks, sources et événements de chronologie existants.

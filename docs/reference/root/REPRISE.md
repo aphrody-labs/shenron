@@ -1,37 +1,47 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-# Reprise : Chantiers Ouverts
+# Reprise : chantiers ouverts
 
-## Priorité propriétaire du 11 octobre 2026 — actualités Super
+## Livraison vérifiée le11octobre2026 à14:03UTC
 
-Collecte et publication urgentes de _Dragon Ball Super: Beerus_, agent Codex directement
-sur SSH DBFR via Infra, PostgreSQL et cache Redis ciblé ; gates du monorepo, commit/push,
-audit et publication des paquets npm/crates.io qualifiés. Les onze lots catalogue et la
-bascule Cloudflare demeurent ouverts. Première japonaise du 11 octobre confirmée par les
-articles officiels01_4425/01_4509 ; épisode bonus et diffusion internationale à qualifier
-séparément. Aucun contenu intégral réhébergé ni disponibilité d'épisode inventée.
+Priorité propriétaire : actualités Super, catalogue11lots, publication des bibliothèques,
+Cloudflare/CDN et synchronisation des documents/plugin/MCP/A2A sur le code effectif.
+Cinq synthèses Beerus sont publiées par CMS/PostgreSQL, audits201 et pages/index200 :
+première, Enhanced/staff, NYCC, musique et CrunchyrollEurope. Visuels/vidéos référencés,
+pas d'épisode réhébergé. Clés temporaires révoquées et replays sans nouvelle écriture.
+La source primaire musicaleJP01_4425 existait ; les angles éditoriaux restent distincts.
+Première japonaise14:15UTC/16:15Paris ; bonus et lecture effective non confirmés au contrôle.
 
-Réplica média appliqué via Infra à12:55UTC :11œuvres/24éditions/166volumes,201lignes exactes,
-quatre éditions masquées conservées, schéma inchangé, replay3unchanged/0writes, quick_checkok.
-Épisodes874/48SDBHnuméroNULL et329mangas préservés. Sauvegarde fraîche privée, reçu dans
-var/reports/catalog-expansion/media-replica-20261011/production-apply.json ; quatre orphelins
-assets→sources préexistants identiques avant/après, aucune nouvelle violation.
+Miroir Redis propriétaire réellement reconstruit :19articles publics exacts, index19DB4,
+TTL24h et empreintePGinchangée. WriterCMS dans l'image bfb1280c active ; preuve positive
+CMS→Redis distincte en cours. Correctif reader pannepartielle29f62a08 poussé après le gel
+bfb : ne pas prétendre ce dernier correctif activé. Voir posts-redis-20261011/report.md.
 
-Source e7c66e0d activée via Infra :ISBN public486 et82liens vérifiés, manga absent HTTP404,
-six services sains et chat réel. Fabrique ba7a7d40 :3861testsPASS/75SKIP et110tests scriptsPASS ;
-TS/lint/format/contrats verts. Qualification navigateur encore en cours.
+Release bfb1280c scellée/activée viaInfra, imagec9c5d7e29e711838886d9c6980182a23b6e70d13b15b8ce8a2b9216e471714c3,
+payloadd4579028e4410b98, BUILD_IDu8I5Md2zi8f-cLosg-jCa. Linux3876PASS/74SKIP/0FAIL,
+scripts114PASS, sixservicesShenronsains et chatréel. Browser1280/390 : newscover305×255
+et348×217,82/82liens,ISBN486visible,3embeds/imagespositifs,sansoverflow ; moteurfermé.
+Rollbacke7vérifié et conservé. DeuxrendererAphrodytiersunhealthy restent horslot.
 
-Actualités Super : Codex réel sur DBFR terminé exit0, publication API CMS201 et relecture
-PG/HTML200. Article `/news/dragon-ball-super-beerus-premiere-2026-10-11`, deux visuels et
-trois embeds officiels, replay sans doublon. ISR propriétaire invalidé, aucune clé Redis
-CMS inventée. Clé agent bornée révoquée et whoami401 confirmé. Première japonaise14:15UTC,
-bonus non confirmé. Archives des12bibliothèques npm auditées ; PUTengine1.4.4 reçoit404
-malgréwhoami valide, aucune publication npm annoncée. Crates.io en qualification.
+R2delta actif :110327routes/87453corps,8nouveaux corps et256shardsSHA/S3GET/HEAD/GETverts.
+InventaireSHA3b9bd929f5fa1866f9bc13f2e83aa909edcd9249e0eb793f5d8623b147d97f77,
+Workerf3073dfc4ded4ee3ad1aec172eda0623 import=false/verify=false,range206/16bytes,
+conditionnel304,privé404,santé200. AnciensURL/chunks conservés. Cloudflarepending,
+DNSSECOVHdisableInProgress ; date/TTLDSnonqualifiés, aucune basculeDNSCDN.
 
-Delta CDN final e7c66e0d :110316routes/87445corps,6nouveaux corps et256shards SHA/S3GET
-vérifiés. Worker506304f66f9f47828882c5f79d6ea8c7 import=false/verify=false,6GET SHAverts,
-range206/16bytes, conditionnel304, privé404, santé200. Anciennes URL conservées.
-Cloudflare demeure pending, DNSSECOVHdisableInProgress, date/TTL du retraitDS non établis.
+12npm@aphrody/shenron-*1.4.4publiés, consumer registry/frozen/imports qualifié ;
+7cratespubliées avec archives/digests. Scène/canvas en publication souscooldown ;
+ownershipgithub:aphrody-labs:aphrody bloqué parOAuthcrates. npmorgaphrody contrôlée,
+GitHubcontrôléaphrody-labs/shenron/teamaphrody ; GitHubaphrodytiers intouché.
+Relevé scripts/ops/sync-source-status.ts :12manifestesnpm/26Cargo datés etSHA256,
+rapportprivévar/reports/source-sync/latest.json ; générateursplugin canoniques contrôlés.
+Automationexistante15minactualisée source/plugin/registry/livraisons, silenceétatinchangé.
+Gitlocal auteurpropriétaire/ffonly/prune/simple/zdiff3/LF ; aucunforcepush/stagingglobal.
+
+Réplica média11works/24editions/166volumes,201lignes,4masquées/schemainchangés,
+replay3unchanged/0writes,backup23a9ad9... ;874episodes/48SDBHNULL et329mangaspréservés.
+Les11lots initiaux restentpartial/missing selon goal-completion-audit-2026-10-11.
+DeuxbenchmarksWindowsdebug et dépendancesRustAphrody nonpubliées restent des limites.
 
 > Lu au démarrage de chaque session (hook `scripts/dev/session-start.ts`).
 > Référence canonique et unique de planification : [PLAN.md](PLAN.md).
