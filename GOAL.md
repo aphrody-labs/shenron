@@ -1,6 +1,6 @@
 # Objectif — enrichissement documentaire Dragon Ball et catalogues médias
 
-## Priorité miroir et index — contrôle du 11 octobre 2026 à 18:04 UTC
+## Priorité miroir et index — contrôle du 11 octobre 2026 après 18:37 UTC
 
 Conserver l'objectif demandé : collecte privée complète des surfaces publiques du site
 officiel EN sur VPS, routes/URL/CSS/JS/sitemaps et références API observables, index de
@@ -9,11 +9,13 @@ et son CDN. Le backend interne d'un tiers ne se déduit pas de son HTML. La vid�
 et notre HLS exigent une preuve de lecture distincte, sans média synthétique pour les
 nouveaux contrôles demandés. Les onze lots et extensions ci-dessous restent ouverts.
 
-Source a6141989 poussée et exécutée sur VPS par Bun1.4.4 dfde053a3 épinglé : inventaire
-240références, indexSQLite88captures/1document et FTS Beerus1résultat, quick_check=ok.
-Le runner privé verrouillé a terminé sa première exécution à18:04:41UTC et reste vivant
-pour96exécutions avec intervalle900s après fin. Ce polling n'est pas un flux temps réel
-garanti. Robots officiel403,16assets en erreur : couverture complète non prouvée.
+Source ed0dc365 poussée et exécutée sur VPS par Bun1.4.4 dfde053a3 épinglé : inventaire
+249références, indexSQLite92captures/1document, quick_check=ok et permissions0600.
+L'ancien runner a6141989 a terminé trois collectes puis s'est arrêté proprement.
+Le runner ed0dc365, PID1993868 confirmé vivant, a terminé sa première collecte à18:37:23UTC ;
+96exécutions maximum avec intervalle900s après fin. Ce polling n'est pas un flux temps réel
+garanti. Robots officiel403,21captures incomplètes et6sitemaps restants : couverture
+complète non prouvée. Les diagnostics/budgets et la reprise des sitemaps restent à qualifier.
 La capture privée n'est pas une publication CDN, SQL public, Redis ou index RAG.
 Les reçus détaillés et chemins propriétaires vivent dans REPRISE.
 
