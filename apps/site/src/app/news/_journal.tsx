@@ -28,8 +28,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { cache, type ReactNode } from "react";
 import { desc } from "drizzle-orm";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { dateCourte, dateLongue } from "@/lib/dates";
 import { db } from "@/lib/db";
 import { posts as postsTable } from "@/db/schema";
@@ -368,7 +368,7 @@ function LeadArticle({
       ratio="wide"
       priority
       sizes="(max-width: 1024px) 100vw, 1100px"
-      className="lg:grid lg:grid-cols-[1.15fr_1fr] lg:items-stretch [&>a]:lg:h-full [&>a_div]:lg:h-full [&>a_div]:lg:aspect-auto"
+      className="lg:grid lg:grid-cols-[1.15fr_1fr] lg:items-stretch [&>a]:lg:h-full [&>a_div]:lg:h-full [&>a_div]:lg:min-h-64 [&>a_div]:lg:aspect-auto"
       meta={
         <>
           {post.author?.username && <span>{post.author.username}</span>}
