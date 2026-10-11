@@ -48,6 +48,8 @@ Bun.env.APHRODY_BIN = Bun.env.BXC_BIN;
 const migrationsFolder = join(import.meta.dir, "../src/db/migrations");
 console.log("Migrations folder:", migrationsFolder);
 migrate(db, { migrationsFolder });
+const { ensureWikiReplicaSchema } = await import("../src/db/wiki-visibility");
+ensureWikiReplicaSchema(sqlite);
 for (const statement of [
   "ALTER TABLE users ADD COLUMN equipped_banner TEXT;",
   "ALTER TABLE users ADD COLUMN zeni_frozen INTEGER NOT NULL DEFAULT 0;",

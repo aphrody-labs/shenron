@@ -730,7 +730,7 @@ export const dbEpisodes = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     series: text("series").notNull(), // "DB", "DBZ", "DBGT", "DBS", "DB_DAIMA", "DBZ_KAI"
-    numberInSeries: integer("number_in_series").notNull(),
+    numberInSeries: integer("number_in_series"),
     title: text("title").notNull(),
     titleJa: text("title_ja"),
     titleRomaji: text("title_romaji"),
@@ -740,6 +740,26 @@ export const dbEpisodes = sqliteTable(
     synopsis: text("synopsis"),
     image: text("image"),
     videoUrl: text("video_url"), // URL vers l'épisode (ex: ADN, Crunchyroll, YouTube)
+    synopsisFr: text("synopsis_fr"),
+    officialSourceUrl: text("official_source_url"),
+    officialMetadata: text("official_metadata", { mode: "json" }).$type<Record<string, unknown>>(),
+    subtitles: text("subtitles", { mode: "json" }).$type<unknown[]>(),
+    players: text("players", { mode: "json" }).$type<unknown[]>(),
+    availability: text("availability", { mode: "json" }).$type<unknown[]>(),
+    streamUrl: text("stream_url"),
+    streamHeaders: text("stream_headers", { mode: "json" }).$type<Record<string, string>>(),
+    streamProvider: text("stream_provider"),
+    streamAt: integer("stream_at"),
+    streams: text("streams", { mode: "json" })
+      .$type<Record<string, unknown>>()
+      .notNull()
+      .default({}),
+    playersCheckedAt: integer("players_checked_at"),
+    playersRepairFailures: integer("players_repair_failures").notNull().default(0),
+    playersRepairAfter: integer("players_repair_after"),
+    streamCheckedAt: integer("stream_checked_at"),
+    streamResolveFailures: integer("stream_resolve_failures").notNull().default(0),
+    streamRetryAfter: integer("stream_retry_after"),
     malId: integer("mal_id"), // MyAnimeList episode ID (via Jikan)
     // Feature « Scènes d'épisode » : frames extraites (ffmpeg) + preview animé.
     // Source de vérité = Neon (jsonb `frames` + text `scene_preview`) ; SQLite = replica

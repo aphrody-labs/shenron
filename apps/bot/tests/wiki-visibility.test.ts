@@ -256,6 +256,20 @@ const gql = async (query: string) => {
 };
 
 describe("GraphQL", () => {
+  it("an episode without a known series number remains nullable", async () => {
+    dbs.sqlite.exec(
+      "INSERT INTO db_episodes(id,series,number_in_series,title,visible) VALUES(827,'SDBH',NULL,'Unknown number',1)",
+    );
+    try {
+      const { data, errors } = await gql(
+        '{ episodes(series: "SDBH") { id numberInSeries title } }',
+      );
+      expect(errors).toBeUndefined();
+      expect(data.episodes).toEqual([{ id: 827, numberInSeries: null, title: "Unknown number" }]);
+    } finally {
+      dbs.sqlite.exec("DELETE FROM db_episodes WHERE id=827");
+    }
+  });
   it("listes, fiches, relations et compteurs filtrent le masqué", async () => {
     const { data, errors } = await gql(`{
       characters(limit: 50) { name originPlanet { name } transformations { name } techniques { slug } }

@@ -13,6 +13,7 @@
  * ensuite `visible = 1`, comme `/api/public/wiki/categories` côté PostgreSQL.
  */
 import type { Database } from "bun:sqlite";
+import { migrateEpisodeReplica } from "./migrations/0020_episode_replica";
 
 /** Tables du réplica dont PostgreSQL porte la visibilité éditoriale. */
 export const WIKI_VISIBILITY_TABLES = [
@@ -61,6 +62,7 @@ export function ensureWikiVisibility(sqlite: Database): WikiVisibilityTable[] {
  * reverse-sync (`./replica-sync.ts`) avant sa copie, qui refuse une base non migrée.
  */
 export function ensureWikiReplicaSchema(sqlite: Database): void {
+  migrateEpisodeReplica(sqlite);
   const columns = (table: string) =>
     sqlite
       .query<{ name: string }, [string]>("SELECT name FROM pragma_table_info(?)")

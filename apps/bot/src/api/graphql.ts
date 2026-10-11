@@ -59,7 +59,7 @@ interface SagaRow {
 interface EpisodeRow {
   id: number;
   series: string;
-  number_in_series: number;
+  number_in_series: number | null;
   title: string;
   title_ja: string | null;
   title_romaji: string | null;
@@ -254,7 +254,7 @@ Episode.implement({
   fields: (t) => ({
     id: t.exposeInt("id"),
     series: t.exposeString("series"),
-    numberInSeries: t.exposeInt("number_in_series"),
+    numberInSeries: t.exposeInt("number_in_series", { nullable: true }),
     title: t.exposeString("title"),
     titleJa: t.string({ nullable: true, resolve: (e) => e.title_ja }),
     titleRomaji: t.string({ nullable: true, resolve: (e) => e.title_romaji }),

@@ -435,7 +435,10 @@ describe("transfert vers un réplica migré", () => {
     expect(
       sqlite.query("SELECT number_in_series, air_date, frames FROM db_episodes").get(),
     ).toEqual({ number_in_series: 1, air_date: 609584400, frames: '[{"t":12,"src":"a.webp"}]' });
-    expect(report.tables.db_episodes!.ignoredColumns.postgres).toEqual(["players"]);
+    expect(report.tables.db_episodes!.ignoredColumns.postgres).toEqual([]);
+    expect(sqlite.query("SELECT players FROM db_episodes").get()).toEqual({
+      players: '[{"url":"x"}]',
+    });
     expect(sqlite.query("SELECT is_destroyed, visible FROM db_planets").get()).toEqual({
       is_destroyed: 0,
       visible: 1,
