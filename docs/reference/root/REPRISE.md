@@ -39,4 +39,4 @@
 
 ## 2026-10-11 — Fusion Omar et gates Shenron
 - Fusion de origin/omar/integration-20261011 (66adf88d) dans main, merge 447eeeaa ; fix lint 31b1a9b3, les deux poussés. Lint, typecheck, format et OpenAPI verts ; aucun test lancé.
-- Release DBFR en attente : Bun local 1.4.3-aphrody.4, fabrique 1.4.3-aphrody.2, manifeste épinglé 1.4.3-aphrody.2. La dernière release Aphrody vérifiée est 1.4.3-aphrody.2 ; ne pas prétendre qualifier sous 1.4.4. Reprendre quand 1.4.4 et l'image de build correspondante seront publiées.
+- Release DBFR en attente : Bun sur les hôtes VPS/DBFR 1.4.3-aphrody.4 ; image partagée aphrody-build:latest 1.4.3-aphrody.2 ; manifeste Shenron épinglé 1.4.3-aphrody.2. Le checkout Bun documente un candidat Linux 1.4.4-canary.1 (988d73b43), qualifié sur des suites ciblées et présent dans un répertoire isolé DBFR, mais aucune release stable bun-v1.4.4 n'est publiée et la fabrique n'a pas ce candidat. Ne pas qualifier ce candidat comme release stable. Reprendre après disponibilité du candidat sur le VPS et adaptation de l'image de build, ou publication stable.
