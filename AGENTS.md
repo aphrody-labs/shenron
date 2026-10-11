@@ -127,8 +127,10 @@ force ni nettoyage d'un arbre modifié. Le build exige une distribution complèt
 les types et le worker. Ne pas supprimer les notices Apache-2.0/Dailymotion ; le payload
 et le CDN copient seulement worker et notices explicitement autorisés. Les capacités
 réutilisables vivent dans le SDK vidéo du fork Bun ; Shenron possède contrôles, i18n et
-reprise. Tester le worker réellement actif, les changements de source et la lecture
-synthétique en navigateur. Un build Bun plus récent ne prouve pas une accélération vidéo.
+reprise. Tester le worker réellement actif et les changements de source. La demande
+propriétaire courante interdit les nouveaux contrôles de lecture sur média synthétique :
+qualifier un média réel autorisé, sans extraire de flux protégé ni contourner DRM.
+Les preuves historiques restent datées. Un build Bun plus récent ne prouve pas une accélération vidéo.
 
 Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`cargo`, via
 `~/aphrody/scripts/build/rust/cargo-serial.sh` sur les machines Aphrody). Recherche : `rg`,

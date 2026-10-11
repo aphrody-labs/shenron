@@ -1,5 +1,18 @@
 # Objectif Shenron — interface unique et serveur Bun
 
+## Miroir privé et synchronisation — 11 octobre 2026, 18:04 UTC
+
+- [x] Conserver robots, redirections, sitemaps annoncés et inventaire avec provenance.
+- [x] Livrer index SQLite/FTS privé et delta distinguant erreur/absence/changement.
+- [x] Exécuter première collecte du runner verrouillé sur VPS avec Bun1.4.4 réel.
+- [ ] Vérifier une seconde exécution et son delta ; le job actuel reste vivant.
+- [ ] Résoudre accès officiel robots403 et qualifier routes/fragments/sitemaps effectivement capturés.
+- [ ] Qualifier publication éditoriale et assets autorisés vers site/CDN, séparément du miroir privé.
+- [ ] Qualifier connexion et lecture Crunchyroll réelle, puis notre HLS sur média réel autorisé.
+
+Les preuves historiques sur média synthétique ci-dessous restent datées ; aucun nouveau
+contrôle de lecture synthétique n'est autorisé par la demande courante.
+
 ## Nouveau lot HLS et lecteur vidéo
 
 - [x] Qualifier fork Bun HLS, submodule propre et distribution full/light/worker/types.

@@ -1,5 +1,37 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle courant du 11 octobre 2026 à 18:04 UTC
+
+Lots crawl dab40428/a047a780 puis a6141989 poussés : routes updates avec identité query,
+srcset/CSS, règles robots spécifiques/Allow et redirections approuvées ; inventaire
+passif avec provenance, delta et index SQLite privé. Script Crunchyroll90632247 poussé,
+Chrome154 réellement lancé ; aucun formulaire/lecteur accessible en90s, connexion et
+lecture non établies, aucun média synthétique ni manifeste protégé utilisé.
+
+Collecte réelle via Infra VPS vps-203bea89 : runtime propriétaire
+`/home/ubuntu/build/artifacts/bun-os-20261011-105ac20a30d6/bun`, version1.4.4 dfde053a3,
+SHA256890af6a675e1dc58b15a15777c53de3b2e82668690c9be5f6e87ec690246ac0e.
+Les APIHTMLRewriter/CryptoHasher/WebView sont réelles ; Bun.Chromium reste absent.
+Code scellé du job dans le profil privé dbfr, tools/shenron-beerus-a6141989/scripts/data :
+crawlSHA0c8143071efc5b3ba93a70cd95adfe05085df91a377c021e3791fcd8815571a5,
+runnerSHA5d2becfc63f4e644f60fcd7e7d99a2a658b4f82e69dee5fed280e296121edb8b.
+
+Tmux `shenron-source-sync-a6141989`, PID1920776 confirmé vivant après première exécution.
+Profil privé `/home/ubuntu/.aphrody/profiles/dbfr/corpus/beerus-sync-a6141989` ;96runs
+maximum, intervalle900s après fin, verrou exclusif `.sync-lock`. Premier run daté
+18:04:22–18:04:41UTC :2pages/86assets/7920005octets,70assets200/16erreurs,
+robots officiel403. Reçu success mais completeCoverage=false,17capturesincomplètes.
+Index88captures/1document, FTSBeerus1 et quick_checkok ;240références
+(104assets,133liens,2formulaires,1sitemap). Delta0ajout/17SHAchangés/0nonobservés/
+17indisponibles ; un SHA changé ne prouve pas changement éditorial.
+
+Le corps officiel EN reste hors crawl à cause du robots403 ; aucune couverture globale,
+sync temps réel garantie, schéma backend tiers, indexRAG, SQL/Redis public ou bascule CDN
+n'est déduit de ce lot. L'accès recherche ponctuel au site officiel confirme épisode01
+The God Who Destroys et les liens OP/ED ; cette lecture distincte ne remplace pas un miroir.
+Prochaine étape : deuxième reçu périodique, couverture officielle autorisée et qualification
+de la fiche épisode/source puis fabrique scellée, sans inventer la lecture fournisseur.
+
 ## Contrôle courant du 11 octobre 2026 à 16:08 UTC
 
 Lecteur HLS livré par3cd7e7f7, image scellée7483424f333b2e49421c326dc9c417275a65b3d93f60fb12a26f7c0b7fcf22ed,

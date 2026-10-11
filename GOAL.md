@@ -1,5 +1,22 @@
 # Objectif — enrichissement documentaire Dragon Ball et catalogues médias
 
+## Priorité miroir et index — contrôle du 11 octobre 2026 à 18:04 UTC
+
+Conserver l'objectif demandé : collecte privée complète des surfaces publiques du site
+officiel EN sur VPS, routes/URL/CSS/JS/sitemaps et références API observables, index de
+collecte et synchronisation, puis intégration éditoriale et assets autorisés dans Shenron
+et son CDN. Le backend interne d'un tiers ne se déduit pas de son HTML. La vidéo Beerus
+et notre HLS exigent une preuve de lecture distincte, sans média synthétique pour les
+nouveaux contrôles demandés. Les onze lots et extensions ci-dessous restent ouverts.
+
+Source a6141989 poussée et exécutée sur VPS par Bun1.4.4 dfde053a3 épinglé : inventaire
+240références, indexSQLite88captures/1document et FTS Beerus1résultat, quick_check=ok.
+Le runner privé verrouillé a terminé sa première exécution à18:04:41UTC et reste vivant
+pour96exécutions avec intervalle900s après fin. Ce polling n'est pas un flux temps réel
+garanti. Robots officiel403,16assets en erreur : couverture complète non prouvée.
+La capture privée n'est pas une publication CDN, SQL public, Redis ou index RAG.
+Les reçus détaillés et chemins propriétaires vivent dans REPRISE.
+
 ## Extension génération vidéo et Omar du 11 octobre 2026
 
 Exploiter les capacités vidéo existantes d’Aphrody et Bun, le dépôt contrôlé
