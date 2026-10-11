@@ -82,7 +82,13 @@ describe("Sprint 1 — Media Works & Editions API Integration", () => {
       new URL("../src/app/wiki/manga/page.tsx", import.meta.url),
     ).text();
     expect(indexContent).toContain("mediaWorks");
-    expect(indexContent).toContain("Éditions référencées");
+    expect(indexContent).toContain("mangaCatalog.editionsForWork");
+    for (const language of ["fr", "en", "ja"]) {
+      const messages = await Bun.file(
+        new URL(`../messages/${language}.json`, import.meta.url),
+      ).json();
+      expect(messages.mangaCatalog.editionsForWork).toContain("{title}");
+    }
     expect(indexContent).toContain("/api/wiki/media");
     expect(indexContent).toContain("mangaCatalog.japaneseOriginalCatalogueStatus");
 
