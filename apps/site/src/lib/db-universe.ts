@@ -73,7 +73,7 @@ import { CLE_VERIFIEE } from "@shenron/config/databooks-defauts";
 import type { SignauxRichesse } from "@/lib/character-richesse";
 import { formatCharacterSlug } from "@shenron/config/wiki-slugs";
 import { mangaCoverPath, publishedMangaPageCount, publishedMangaPages } from "@/lib/manga-assets";
-import { mangaBibliographicSourceUrl, mangaSourceLabel } from "@/lib/manga-source-registry";
+import { mangaVolumeBibliographicSource } from "@/lib/manga-source-registry";
 
 // Re-export types from schema
 export type { VoiceActorRole } from "@/db/bot-schema";
@@ -755,6 +755,7 @@ function toTransformation(r: typeof botTransformations.$inferSelect): Transforma
 }
 
 function toMangaVolume(r: typeof botMangaVolumes.$inferSelect): MangaVolume {
+  const source = mangaVolumeBibliographicSource(r);
   return {
     id: r.id,
     series: r.series,
@@ -764,8 +765,8 @@ function toMangaVolume(r: typeof botMangaVolumes.$inferSelect): MangaVolume {
     title_ja: r.titleJa,
     published_at: r.publishedAt,
     isbn: r.isbn,
-    source_url: mangaBibliographicSourceUrl(r.series),
-    source_label: mangaSourceLabel(r.series),
+    source_url: source?.url ?? null,
+    source_label: source?.label ?? null,
   };
 }
 
