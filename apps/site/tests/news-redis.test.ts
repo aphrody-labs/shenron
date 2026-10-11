@@ -144,6 +144,19 @@ describe("public article Redis mirror", () => {
     expect(await mirror.read(post.id)).toBeNull();
     expect(await mirror.list()).toBeNull();
   });
+
+  test("a payload read failure cannot become an apparently empty catalogue", async () => {
+    const mirror = createPostsMirror(
+      async () => ({
+        send: async (command) => {
+          if (command === "SMEMBERS") return [post.id];
+          throw new Error("Redis connection lost");
+        },
+      }),
+      () => at,
+    );
+    expect(await mirror.list()).toBeNull();
+  });
 });
 
 let failPostgres = false;

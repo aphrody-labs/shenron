@@ -122,26 +122,28 @@ export function createPostsMirror(
       return { ok: false, action: "failed" };
     }
   }
+  async function load(id: string, redis: PostsRedisClient): Promise<PublicPostSnapshot | null> {
+    const raw = await redis.send("GET", [postCacheKey(id)]);
+    if (typeof raw !== "string") {
+      await redis.send("SREM", [POSTS_INDEX_KEY, id]);
+      return null;
+    }
+    const snapshot = JSON.parse(raw) as PublicPostSnapshot;
+    if (
+      snapshot.id !== id ||
+      !iso(snapshot.publishedAt) ||
+      !iso(snapshot.cachedAt) ||
+      new Date(snapshot.publishedAt).getTime() > now().getTime() ||
+      now().getTime() - new Date(snapshot.cachedAt).getTime() >= POSTS_CACHE_TTL_SECONDS * 1000
+    ) {
+      await remove(id);
+      return null;
+    }
+    return snapshot;
+  }
   async function read(id: string): Promise<PublicPostSnapshot | null> {
     try {
-      const redis = await getClient();
-      const raw = await redis.send("GET", [postCacheKey(id)]);
-      if (typeof raw !== "string") {
-        await redis.send("SREM", [POSTS_INDEX_KEY, id]);
-        return null;
-      }
-      const snapshot = JSON.parse(raw) as PublicPostSnapshot;
-      if (
-        snapshot.id !== id ||
-        !iso(snapshot.publishedAt) ||
-        !iso(snapshot.cachedAt) ||
-        new Date(snapshot.publishedAt).getTime() > now().getTime() ||
-        now().getTime() - new Date(snapshot.cachedAt).getTime() >= POSTS_CACHE_TTL_SECONDS * 1000
-      ) {
-        await remove(id);
-        return null;
-      }
-      return snapshot;
+      return await load(id, await getClient());
     } catch {
       return null;
     }
@@ -153,7 +155,7 @@ export function createPostsMirror(
       if (!Array.isArray(ids) || !ids.every((id) => typeof id === "string")) return null;
       const posts: PublicPostSnapshot[] = [];
       for (const id of ids) {
-        const snapshot = await read(id);
+        const snapshot = await load(id, redis);
         if (snapshot) posts.push(snapshot);
       }
       return posts;
