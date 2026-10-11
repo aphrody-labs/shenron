@@ -96,7 +96,7 @@ describe("@aphrody/shenron-api manifest", () => {
     expect(manifest.exports).not.toHaveProperty(".");
     expect(Object.keys(manifest.exports).toSorted()).toEqual(Object.keys(RUNTIME).toSorted());
     expect(manifest.shenron.runtime).toEqual(RUNTIME);
-    expect(manifest.private).toBe(true);
+    expect(manifest.private).toBe(false);
     expect(manifest.sideEffects).toBe(false);
   });
 

@@ -1,4 +1,4 @@
--- Cloud conversation store (schema chat) of @aphrody/shenron-db/conversations (conversationsPgDdl).
+-- Cloud conversation store (schema chat) of @shenron/db/conversations (conversationsPgDdl).
 -- Lets site, desktop and bot share one history (last-writer-wins on updatedAt). Idempotent.
 CREATE SCHEMA IF NOT EXISTS "chat";
 CREATE SEQUENCE IF NOT EXISTS "chat".change_seq;

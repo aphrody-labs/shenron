@@ -46,7 +46,7 @@ describe("@aphrody/shenron-pipeline/ai manifest", () => {
     for (const key of SUBPATHS) {
       expect(manifest.shenron.runtime[key]).toBe(serverOnly.has(key) ? "server" : "pure");
     }
-    expect(manifest.private).toBe(true);
+    expect(manifest.private).toBe(false);
     expect(manifest.sideEffects).toBe(false);
   });
 

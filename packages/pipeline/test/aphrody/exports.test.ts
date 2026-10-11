@@ -58,7 +58,7 @@ describe("@aphrody/shenron-pipeline/aphrody exports", () => {
   });
 
   it("manifest maps every subpath to source with a runtime class", () => {
-    expect(pkg.private).toBe(true);
+    expect(pkg.private).toBe(false);
     expect(pkg.exports["./aphrody"]).toBe("./src/aphrody/index.ts");
     expect(pkg.exports["./aphrody/compute"]).toBe("./src/aphrody/compute.ts");
     expect(pkg.exports["./aphrody/cli"]).toBe("./src/aphrody/cli.ts");

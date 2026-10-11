@@ -1,5 +1,5 @@
 -- Agent homes des utilisateurs (gabarit templates/agent-home), à côté du store de conversations
--- (schéma chat). Contenu : @aphrody/shenron-db/agent-homes (agentHomesPgDdl). Idempotent.
+-- (schéma chat). Contenu : @shenron/db/agent-homes (agentHomesPgDdl). Idempotent.
 CREATE SCHEMA IF NOT EXISTS "chat";
 CREATE SEQUENCE IF NOT EXISTS "chat".change_seq;
 CREATE TABLE IF NOT EXISTS "chat".agent_homes (
