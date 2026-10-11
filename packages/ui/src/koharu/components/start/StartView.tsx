@@ -33,7 +33,6 @@ export function StartView() {
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    setBusy("list");
     try {
       setProjects(await call(commands.listProjects));
     } finally {
@@ -191,7 +190,7 @@ export function StartView() {
                   ) : projects.length === 0 ? (
                     <div
                       className="grid min-h-full place-items-center px-6 text-center"
-                      role="status"
+                      aria-live="polite"
                     >
                       <div>
                         <span className="mx-auto grid size-11 place-items-center rounded-xl bg-muted text-muted-foreground">

@@ -82,7 +82,21 @@ Object.defineProperty(window, "__TAURI_INTERNALS__", {
       tauriCallbacks.set(id, callback);
       return id;
     },
-    invoke: vi.fn(async () => undefined),
+    // Return the protocol's empty values for unconfigured read commands. Query
+    // functions must never resolve undefined, even when a test does not care
+    // about the corresponding fixture.
+    invoke: vi.fn(async (command: string) => {
+      switch (command) {
+        case "get_project":
+        case "get_page":
+          return null;
+        case "get_pages":
+        case "get_fonts":
+          return [];
+        default:
+          return undefined;
+      }
+    }),
   },
   writable: true,
 });

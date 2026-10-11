@@ -16,7 +16,8 @@
     "processing": "処理中",
     "processingFailed": "処理に失敗しました。",
     "stop": "停止",
-    "title": "アクティビティ"
+    "title": "アクティビティ",
+    "progress": "進行状況"
   },
   "agent": {
     "account": "ChatGPTアカウント",

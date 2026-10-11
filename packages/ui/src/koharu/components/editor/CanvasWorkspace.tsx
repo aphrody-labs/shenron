@@ -206,7 +206,9 @@ export function CanvasWorkspace() {
     }
     commitPending.current = true;
     void enqueue(() => call(commands.commitTransform, revision, elements))
-      .then((revision) => (revision === null ? undefined : refresh(projectKey, pagesKey, pageKey)))
+      .then((committedRevision) =>
+        committedRevision === null ? undefined : refresh(projectKey, pagesKey, pageKey),
+      )
       .catch(() => canvas?.cancelTransform())
       .finally(() => {
         commitPending.current = false;
@@ -306,8 +308,8 @@ export function CanvasWorkspace() {
     if (adjacent) {
       void prefetchCanvasPages([adjacent])
         .then((prepared) => {
-          for (const page of prepared) {
-            queryClient.setQueryData(preparedPageKey(page.page.id), page);
+          for (const preparedPage of prepared) {
+            queryClient.setQueryData(preparedPageKey(preparedPage.page.id), preparedPage);
           }
           return undefined;
         })
@@ -894,8 +896,7 @@ function clampCameraTranslation(
 
 function mergeStrokeUpdates(current: StrokeUpdate, next: StrokeUpdate): StrokeUpdate {
   if (current.kind !== next.kind) return next;
-  current.points.push(...next.points);
-  return current;
+  return { ...current, points: [...current.points, ...next.points] };
 }
 
 function useFrameCommand<Value>(

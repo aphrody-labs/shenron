@@ -13,6 +13,8 @@ import { WindowControls, useUndecoratedWindow } from "./WindowControls";
 
 const ICON_BUTTON =
   "grid h-11 w-11 shrink-0 place-items-center rounded-xl text-os/70 transition-colors hover:bg-os/[0.07] hover:text-os focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-kinto-lumiere";
+const SITE_BRAND_FOCUS =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere";
 
 function useModifierLabel(): string {
   const [label, setLabel] = useState("Ctrl K");
@@ -31,6 +33,8 @@ export function ShellTopBar({
   onSearchIntent,
   actions,
   mobileAccount,
+  desktopAccount,
+  siteStyle,
   tauri,
   labels,
   linkComponent: Link,
@@ -43,6 +47,8 @@ export function ShellTopBar({
   onSearchIntent?: () => void;
   actions?: ReactNode;
   mobileAccount?: ReactNode;
+  desktopAccount?: ReactNode;
+  siteStyle?: boolean;
   tauri: boolean;
   labels: ShellLabels;
   linkComponent: ShellLinkComponent;
@@ -59,12 +65,32 @@ export function ShellTopBar({
   return (
     <header
       data-tauri-drag-region
+      data-shell-header={siteStyle ? "site" : "app"}
       className="sticky top-0 z-40 border-b border-os/12 bg-dbz-bg/90 pt-[env(safe-area-inset-top)] backdrop-blur-xl backdrop-saturate-150"
     >
       <div
         data-tauri-drag-region
         className="flex h-14 items-center gap-1 pr-[max(env(safe-area-inset-right),0.5rem)] pl-[max(env(safe-area-inset-left),0.5rem)] lg:gap-2 lg:pl-3"
       >
+        {siteStyle && (
+          <Link
+            href={brand.href}
+            aria-label={brand.label}
+            className={`hidden min-h-11 shrink-0 items-center gap-2.5 rounded-lg px-2 lg:flex ${SITE_BRAND_FOCUS}`}
+          >
+            <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center">
+              {brand.mark}
+            </span>
+            <span className="flex min-w-0 flex-col leading-none">
+              <span className="truncate font-display text-[0.9375rem] font-extrabold tracking-[-0.02em] text-os">
+                {brand.name}
+              </span>
+              {brand.tagline && (
+                <span className="mt-0.5 truncate text-[0.6875rem] text-os/55">{brand.tagline}</span>
+              )}
+            </span>
+          </Link>
+        )}
         {/* Mobile : retour vers le parent quand il existe, sinon la marque. */}
         {parent?.href ? (
           <Link
@@ -83,6 +109,7 @@ export function ShellTopBar({
         )}
 
         <button
+          data-shell-site-toggle={siteStyle ? "true" : undefined}
           type="button"
           onClick={onToggleSidebar}
           aria-label={collapsed ? labels.expandSidebar : labels.collapseSidebar}
@@ -166,6 +193,9 @@ export function ShellTopBar({
         )}
 
         {actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
+        {siteStyle && desktopAccount && (
+          <div className="hidden shrink-0 lg:block">{desktopAccount}</div>
+        )}
         {mobileAccount && <div className="shrink-0 lg:hidden">{mobileAccount}</div>}
         {customChrome && <WindowControls labels={labels} />}
       </div>

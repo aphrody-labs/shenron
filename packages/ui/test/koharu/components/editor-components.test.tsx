@@ -218,6 +218,20 @@ function installProject() {
     },
   ]);
   queryClient.setQueryData(pageKey, page);
+  // Keep the fake native read side consistent with the seeded query cache when
+  // mutations trigger an authoritative refresh during a test.
+  vi.spyOn(commands, "getProject").mockImplementation(
+    async () => queryClient.getQueryData(projectKey) ?? null,
+  );
+  vi.spyOn(commands, "getPages").mockImplementation(
+    async () => queryClient.getQueryData(pagesKey) ?? [],
+  );
+  vi.spyOn(commands, "getPage").mockImplementation(
+    async () => queryClient.getQueryData(pageKey) ?? null,
+  );
+  vi.spyOn(commands, "getFonts").mockImplementation(
+    async () => queryClient.getQueryData(fontsKey) ?? [],
+  );
   useKoharuStore.setState({
     preferences,
     translationModels: [
@@ -481,13 +495,19 @@ describe("greenfield editor", () => {
   it("loads page thumbnails into the filmstrip", async () => {
     installProject();
     const thumbnail = vi.spyOn(commands, "getThumbnail").mockResolvedValue([1]);
-    render(<PageRail />);
-    await waitFor(() => expect(thumbnail).toHaveBeenCalledWith("page"));
-    expect(await screen.findByRole("img", { name: "Page 1" })).toHaveAttribute(
-      "src",
-      "blob:koharu-thumbnail",
-    );
-    expect(screen.queryByText("01")).not.toBeInTheDocument();
+    vi.useFakeTimers();
+    try {
+      render(<PageRail />);
+      act(() => vi.advanceTimersByTime(100));
+      await waitFor(() => expect(thumbnail).toHaveBeenCalledWith("page"));
+      expect(await screen.findByRole("img", { name: "Page 1" })).toHaveAttribute(
+        "src",
+        "blob:koharu-thumbnail",
+      );
+      expect(screen.queryByText("01")).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("keeps rapid page switches on the latest native selection", async () => {

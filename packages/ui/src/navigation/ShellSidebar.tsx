@@ -33,6 +33,7 @@ export function ShellSidebar({
   onToggle,
   onExpand,
   account,
+  siteStyle,
   labels,
   linkComponent: Link,
 }: {
@@ -44,6 +45,7 @@ export function ShellSidebar({
   onToggle: () => void;
   onExpand: () => void;
   account?: ReactNode;
+  siteStyle?: boolean;
   labels: ShellLabels;
   linkComponent: ShellLinkComponent;
 }) {
@@ -54,11 +56,15 @@ export function ShellSidebar({
 
   // La section de la page courante s'ouvre d'elle-même ; les autres gardent leur état.
   useEffect(() => {
+    if (siteStyle) {
+      setOpen(new Set());
+      return;
+    }
     if (!activeSection) return;
     setOpen((current) =>
       current.has(activeSection) ? current : new Set(current).add(activeSection),
     );
-  }, [activeSection]);
+  }, [activeSection, siteStyle]);
 
   const toggle = (id: string) => {
     if (collapsed) {
@@ -78,8 +84,13 @@ export function ShellSidebar({
     <aside
       aria-label={labels.sidebar}
       className="sticky top-0 z-40 hidden h-dvh w-[17rem] shrink-0 flex-col self-start border-r border-os/12 bg-dbz-bg pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] transition-[width] duration-200 ease-out motion-reduce:transition-none lg:flex [html[data-shell-sidebar=collapsed]_&]:w-[4.5rem]"
+      data-shell-navigation={siteStyle ? "horizontal" : "sidebar"}
     >
-      <div data-tauri-drag-region className="flex h-14 shrink-0 items-center px-3">
+      <div
+        data-tauri-drag-region
+        data-shell-sidebar-brand
+        className="flex h-14 shrink-0 items-center px-3"
+      >
         <Link
           href={brand.href}
           aria-label={brand.label}
@@ -130,7 +141,10 @@ export function ShellSidebar({
         </ul>
       </nav>
 
-      <div className="shrink-0 border-t border-os/12 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div
+        data-shell-sidebar-footer
+        className="shrink-0 border-t border-os/12 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+      >
         {account && (
           <div className="mb-1 min-w-0 [html[data-shell-sidebar=collapsed]_&]:hidden">
             {account}
@@ -182,6 +196,7 @@ function SidebarSection({
         aria-expanded={open}
         aria-controls={listId}
         title={section.label}
+        data-current={current ? "true" : undefined}
         className={`group flex min-h-10 w-full items-center gap-3 rounded-lg px-2.5 text-left text-[0.8125rem] font-semibold transition-colors hover:bg-os/[0.05] ${
           current ? "text-os" : "text-os/55 hover:text-os"
         } ${FOCUS}`}

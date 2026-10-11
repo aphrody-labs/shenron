@@ -21,6 +21,15 @@ export function TypesettingPreferences({
   const fonts = useFonts();
   const families = fonts.data ?? [];
   const fontFamilies = useMemo(() => value.font_families ?? [], [value.font_families]);
+  const keyedFontFamilies = useMemo(() => {
+    const occurrences = new Map<string, number>();
+    return fontFamilies.map((family) => {
+      const name = normalizeFontName(family);
+      const occurrence = occurrences.get(name) ?? 0;
+      occurrences.set(name, occurrence + 1);
+      return { family, key: `${name}:${occurrence}` };
+    });
+  }, [fontFamilies]);
   const selectedNames = useMemo(() => new Set(fontFamilies.map(normalizeFontName)), [fontFamilies]);
   const availableFamilies = families.filter(
     (family) => !selectedNames.has(normalizeFontName(family.name)),
@@ -59,17 +68,14 @@ export function TypesettingPreferences({
               className="divide-y divide-border/80"
               aria-label={t("settings.typesetting.defaultFamilies")}
             >
-              {fontFamilies.map((family, index) => {
+              {keyedFontFamilies.map(({ family, key }, index) => {
                 const choices = families.filter(
                   (candidate) =>
                     normalizeFontName(candidate.name) === normalizeFontName(family) ||
                     !selectedNames.has(normalizeFontName(candidate.name)),
                 );
                 return (
-                  <li
-                    key={`${normalizeFontName(family)}-${index}`}
-                    className="group flex min-w-0 items-center gap-3 px-3 py-2"
-                  >
+                  <li key={key} className="group flex min-w-0 items-center gap-3 px-3 py-2">
                     <span
                       aria-hidden="true"
                       className="flex size-6 shrink-0 items-center justify-center rounded-md bg-muted text-[9px] font-semibold text-muted-foreground tabular-nums"
@@ -100,9 +106,9 @@ export function TypesettingPreferences({
               })}
             </ol>
           ) : (
-            <p role="status" className="px-4 py-5 text-[11px] text-muted-foreground">
+            <output className="block px-4 py-5 text-[11px] text-muted-foreground">
               {t("settings.typesetting.empty")}
-            </p>
+            </output>
           )}
           <div className="flex min-w-0 items-center gap-3 border-t border-border/80 bg-muted/20 px-3 py-2">
             <span className="flex size-6 shrink-0 items-center justify-center text-muted-foreground">
@@ -128,9 +134,9 @@ export function TypesettingPreferences({
           </div>
         </div>
         {fonts.isError && (
-          <p role="status" className="mt-2 text-[10px] leading-4 text-destructive">
+          <output className="mt-2 block text-[10px] leading-4 text-destructive">
             {t("settings.typesetting.loadError")}
-          </p>
+          </output>
         )}
       </section>
     </PreferencePage>

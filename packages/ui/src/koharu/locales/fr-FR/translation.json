@@ -16,7 +16,8 @@
     "processing": "Traitement en cours",
     "processingFailed": "Le traitement a échoué.",
     "stop": "Arrêter",
-    "title": "Activité"
+    "title": "Activité",
+    "progress": "Progression"
   },
   "agent": {
     "account": "Compte ChatGPT",

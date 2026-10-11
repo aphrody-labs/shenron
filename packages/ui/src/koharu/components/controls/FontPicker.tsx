@@ -3,7 +3,7 @@
 import { observeElementRect, useVirtualizer } from "@tanstack/react-virtual";
 import type { TFunction } from "i18next";
 import { ChevronDown, ListFilter, Search, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useFontPreview } from "../../lib/queries";
@@ -69,6 +69,7 @@ export function FontPicker({
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const input = useRef<HTMLInputElement>(null);
+  const searchId = useId();
   const orderedFamilies = useMemo(
     () =>
       [...families].toSorted(
@@ -151,10 +152,11 @@ export function FontPicker({
       >
         <div className="border-b p-1">
           <InputGroup className="h-6 border-0 bg-muted/50 shadow-none focus-within:bg-background has-[>[data-align=inline-start]]:[&>input]:pl-0">
-            <InputGroupAddon className="pr-1 pl-1.5">
+            <InputGroupAddon htmlFor={searchId} className="pr-1 pl-1.5">
               <Search className="size-3" />
             </InputGroupAddon>
             <InputGroupInput
+              id={searchId}
               ref={input}
               value={query}
               aria-label={t("fontPicker.search")}
@@ -420,7 +422,7 @@ function FontList({
         })}
       </div>
       {families.length === 0 && (
-        <Empty role="status" className="absolute inset-1 rounded-md p-2">
+        <Empty aria-live="polite" className="absolute inset-1 rounded-md p-2">
           <EmptyTitle className="text-[11px] text-muted-foreground">
             {t("fontPicker.noResults")}
           </EmptyTitle>

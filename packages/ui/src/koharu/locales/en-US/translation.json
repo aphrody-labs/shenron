@@ -16,7 +16,8 @@
     "processing": "Processing",
     "processingFailed": "Processing failed.",
     "stop": "Stop",
-    "title": "Activity"
+    "title": "Activity",
+    "progress": "Progress"
   },
   "agent": {
     "account": "ChatGPT account",

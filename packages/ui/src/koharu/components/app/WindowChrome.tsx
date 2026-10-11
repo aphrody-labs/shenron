@@ -2,7 +2,13 @@
 
 import { getCurrentWindow } from "@aphrody/api/window";
 import { Copy, Minus, Square, X } from "lucide-react";
-import { useEffect, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 const resizeHandles = [
@@ -17,16 +23,17 @@ const resizeHandles = [
 ] as const;
 
 export function useMacOS() {
-  const [macOS, setMacOS] = useState(false);
-
-  useEffect(() => {
-    setMacOS(
+  return useSyncExternalStore(
+    subscribeToNothing,
+    () =>
       navigator.userAgent.includes("Macintosh") ||
-        navigator.platform.toLowerCase().startsWith("mac"),
-    );
-  }, []);
+      navigator.platform.toLowerCase().startsWith("mac"),
+    () => false,
+  );
+}
 
-  return macOS;
+function subscribeToNothing() {
+  return () => undefined;
 }
 
 /** True inside the Tauri desktop app, the only host with native window controls. */

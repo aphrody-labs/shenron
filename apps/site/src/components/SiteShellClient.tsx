@@ -170,6 +170,7 @@ export function SiteShellClient({
   return (
     <AppShell
       pathname={pathname}
+      siteStyle
       brand={{
         href: desktop ? "/desktop" : "/",
         label: dico.shell.brandLabel,

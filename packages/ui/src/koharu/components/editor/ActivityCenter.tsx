@@ -51,9 +51,8 @@ export function ActivityCenter() {
         </span>
       </div>
       {activities.map((activity) => (
-        <div
+        <output
           key={activity.id}
-          role="status"
           className="grid grid-cols-[1rem_minmax(0,1fr)] items-center gap-x-2.5 border-b p-3 last:border-b-0"
         >
           <LoaderCircle
@@ -61,7 +60,7 @@ export function ActivityCenter() {
             aria-hidden="true"
           />
           <span className="truncate text-[12px] font-medium">{t(activity.label)}</span>
-        </div>
+        </output>
       ))}
       {runningDownloads.length > 1 ? (
         <DownloadGroup downloads={runningDownloads} />
@@ -219,19 +218,14 @@ function Failure({ message, onDismiss }: { message: string; onDismiss: () => voi
 }
 
 function Progress({ value }: { value: number | null }) {
+  const { t } = useTranslation();
   return (
-    <div
-      role="progressbar"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={value ?? undefined}
-      className="mt-2 h-1 overflow-hidden rounded-full bg-muted"
-    >
-      <div
-        className={`h-full rounded-full bg-primary ${value === null ? "w-1/2" : ""}`}
-        style={value === null ? undefined : { width: `${value}%` }}
-      />
-    </div>
+    <progress
+      max={100}
+      value={value ?? undefined}
+      aria-label={t("activity.progress")}
+      className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted accent-primary"
+    />
   );
 }
 

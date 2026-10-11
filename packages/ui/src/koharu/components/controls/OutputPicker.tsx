@@ -128,8 +128,9 @@ export function OutputPicker({
               languageChoices.map((language) => [language.tag, language.name]),
             )}
             disabled={disabled}
-            onValueChange={(targetLanguage) =>
-              targetLanguage && setDraft((current) => ({ ...current, targetLanguage }))
+            onValueChange={(nextTargetLanguage) =>
+              nextTargetLanguage &&
+              setDraft((current) => ({ ...current, targetLanguage: nextTargetLanguage }))
             }
           >
             <SelectTrigger
@@ -157,8 +158,8 @@ export function OutputPicker({
             placeholder={t("outputPicker.instructionsPlaceholder")}
             className="max-h-20 min-h-20 resize-none overflow-y-auto text-[11px] leading-4"
             onChange={(event) => {
-              const instructions = event.currentTarget.value;
-              setDraft((current) => ({ ...current, instructions }));
+              const nextInstructions = event.currentTarget.value;
+              setDraft((current) => ({ ...current, instructions: nextInstructions }));
             }}
           />
         </label>

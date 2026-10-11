@@ -61,23 +61,23 @@ export function SettingsPage() {
 
   const saveDraft = useCallback(
     async (
-      pipeline: PipelineConfig,
-      providers: ProviderSettings,
-      typesetting: TypesettingConfig,
+      pipelineConfig: PipelineConfig,
+      providerSettings: ProviderSettings,
+      typesettingConfig: TypesettingConfig,
     ) => {
-      const serialized = JSON.stringify([pipeline, providers, typesetting]);
+      const serialized = JSON.stringify([pipelineConfig, providerSettings, typesettingConfig]);
       if (serialized === lastSaved.current) {
         const pending = lastPending.current;
         if (pending?.serialized === serialized) await pending.promise;
         return;
       }
       lastSaved.current = serialized;
-      const serializedProviders = JSON.stringify(providers);
+      const serializedProviders = JSON.stringify(providerSettings);
       const providersChanged = serializedProviders !== lastSavedProviders.current;
       const generation = ++saveGeneration.current;
       const pending = saveQueue.current
         .catch(() => undefined)
-        .then(() => savePreferences(pipeline, providers, typesetting));
+        .then(() => savePreferences(pipelineConfig, providerSettings, typesettingConfig));
       lastPending.current = { serialized, promise: pending };
       saveQueue.current = pending.then(
         () => undefined,
@@ -197,8 +197,10 @@ export function SettingsPage() {
                   modelChoices={translationModels}
                   providers={providers?.entries ?? []}
                   languages={preferences?.languages ?? []}
-                  onChange={(translation) =>
-                    setPipeline((current) => (current ? { ...current, translation } : current))
+                  onChange={(nextTranslation) =>
+                    setPipeline((current) =>
+                      current ? { ...current, translation: nextTranslation } : current,
+                    )
                   }
                 />
               ) : (

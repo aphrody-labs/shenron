@@ -4706,3 +4706,234 @@ html[data-consent-open] body {
   overflow-wrap: anywhere;
   line-break: normal;
 }
+/* Public editorial shell: inspired by the official DBS site's quiet black, ivory,
+   gold rules and wide media rhythm. The application/Tauri shell keeps its sidebar. */
+[data-shell-variant="site"] {
+  --background: var(--dbz-bg, #000000);
+  --foreground: var(--dbz-os, #e8e6db);
+  --color-dbz-bg: var(--dbz-bg, #000000);
+  --color-dbz-card: var(--dbz-card, #141410);
+  --color-dbz-border: var(--dbz-border, #302e26);
+  --color-dbz-orange: var(--dbz-orange, #f9602b);
+  --color-dbz-orange-dark: var(--dbz-orange-dark, #cf4820);
+  --color-dbz-yellow: var(--dbz-yellow, #ffde00);
+  --color-dbz-gold: var(--dbz-yellow, #ffde00);
+  --color-dbz-purple: var(--dbz-purple, #7833ce);
+  --color-os: var(--dbz-os, #e8e6db);
+  --color-primary: var(--color-dbz-yellow);
+  --color-primary-foreground: #080806;
+  --color-accent: var(--color-dbz-yellow);
+  --color-accent-foreground: #080806;
+  --color-ring: var(--color-dbz-yellow);
+  flex-direction: column;
+  color: var(--foreground);
+  background-color: var(--color-dbz-bg);
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-dbz-yellow) 11%, transparent) 0.7px,
+    transparent 1px
+  );
+  background-size: 52px 52px;
+}
+
+[data-shell-variant="site"] > [data-shell-content] {
+  order: 3;
+}
+
+[data-shell-variant="site"] [data-shell-header="site"] {
+  order: 1;
+  border-color: color-mix(in srgb, var(--color-dbz-yellow) 18%, transparent);
+  background-color: color-mix(in srgb, var(--color-dbz-bg) 93%, transparent);
+}
+
+[data-shell-variant="site"] [data-shell-header="site"]::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-dbz-yellow), transparent);
+  content: "";
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+[data-shell-variant="site"] [data-shell-header="site"] > div {
+  min-height: 4rem;
+}
+
+[data-shell-variant="site"] [data-shell-site-toggle] {
+  display: none;
+}
+
+[data-shell-variant="site"] > [data-shell-navigation="horizontal"] {
+  position: sticky;
+  z-index: 39;
+  top: 3.5rem;
+  order: 2;
+  width: 100%;
+  height: auto;
+  min-height: 3.125rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-dbz-yellow) 13%, transparent);
+  background-color: color-mix(in srgb, var(--color-dbz-bg) 96%, transparent);
+  backdrop-filter: blur(16px) saturate(130%);
+  transition: none;
+}
+
+[data-shell-variant="site"] [data-shell-sidebar-brand],
+[data-shell-variant="site"] [data-shell-sidebar-footer] {
+  display: none;
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] > nav {
+  flex: 1 1 auto;
+  overflow: visible;
+  padding: 0;
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] > nav > ul {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem clamp(0.25rem, 2vw, 1.25rem);
+  min-height: 3.125rem;
+  margin: 0;
+  padding: 0.25rem 0;
+  overflow: visible;
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] > nav > ul > li {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] > nav > ul > li > button {
+  position: relative;
+  width: auto;
+  min-height: 2.625rem;
+  gap: 0.45rem;
+  padding: 0 0.625rem;
+  border-radius: 0.25rem;
+  color: color-mix(in srgb, var(--color-os) 72%, transparent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+[data-shell-variant="site"]
+  [data-shell-navigation="horizontal"]
+  > nav
+  > ul
+  > li
+  > button
+  > span:first-child {
+  display: none;
+}
+
+[data-shell-variant="site"]
+  [data-shell-navigation="horizontal"]
+  > nav
+  > ul
+  > li
+  > button[data-current="true"] {
+  color: var(--color-dbz-yellow);
+}
+
+[data-shell-variant="site"]
+  [data-shell-navigation="horizontal"]
+  > nav
+  > ul
+  > li
+  > button[data-current="true"]::after {
+  position: absolute;
+  right: 0.625rem;
+  bottom: 0.125rem;
+  left: 0.625rem;
+  height: 2px;
+  background: var(--color-dbz-yellow);
+  content: "";
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] > nav > ul > li > button:hover {
+  background: color-mix(in srgb, var(--color-dbz-yellow) 7%, transparent);
+  color: var(--color-os);
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] :focus-visible {
+  outline-color: var(--color-dbz-yellow);
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] > nav > ul > li > ul {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 0.125rem);
+  left: 0;
+  width: max-content;
+  min-width: 15rem;
+  max-width: min(24rem, calc(100vw - 2rem));
+  max-height: min(70vh, 34rem);
+  margin: 0;
+  padding: 0.5rem;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--color-dbz-yellow) 22%, var(--color-dbz-border));
+  border-radius: 0.375rem;
+  background-color: var(--color-dbz-card);
+  box-shadow: 0 16px 42px rgb(0 0 0 / 55%);
+}
+
+[data-shell-variant="site"] [data-shell-navigation="horizontal"] > nav > ul > li > ul > li > a {
+  min-height: 2.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.2rem;
+  color: color-mix(in srgb, var(--color-os) 78%, transparent);
+}
+
+[data-shell-variant="site"]
+  [data-shell-navigation="horizontal"]
+  > nav
+  > ul
+  > li
+  > ul
+  > li
+  > a:hover {
+  background-color: color-mix(in srgb, var(--color-dbz-yellow) 8%, transparent);
+  color: var(--color-os);
+}
+
+[data-shell-variant="site"]
+  [data-shell-navigation="horizontal"]
+  > nav
+  > ul
+  > li
+  > ul
+  > li
+  > a[aria-current="page"] {
+  background-color: color-mix(in srgb, var(--color-dbz-yellow) 9%, transparent);
+  color: var(--color-dbz-yellow);
+}
+
+[data-shell-variant="site"]
+  [data-shell-navigation="horizontal"]
+  > nav
+  > ul
+  > li
+  > ul
+  > li
+  > a[aria-current="page"]::before {
+  background-color: var(--color-dbz-yellow);
+}
+
+@media (max-width: 63.999rem) {
+  [data-shell-variant="site"] {
+    background-size: 40px 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-shell-variant="site"] {
+    scroll-behavior: auto;
+  }
+}

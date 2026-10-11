@@ -107,17 +107,18 @@ describe("shared field primitives in the editor", () => {
     expect(onClick).toHaveBeenCalledTimes(2);
   });
 
-  it("focuses the grouped input when its addon is clicked", async () => {
-    const user = userEvent.setup();
+  it("associates a leading addon with its grouped input using a native label", () => {
     renderInEditor(
       <InputGroup>
-        <InputGroupAddon>Find</InputGroupAddon>
-        <InputGroupInput aria-label="Search" />
+        <InputGroupAddon htmlFor="grouped-search">Find</InputGroupAddon>
+        <InputGroupInput id="grouped-search" aria-label="Search" />
       </InputGroup>,
     );
 
-    await user.click(screen.getByText("Find"));
-    expect(screen.getByRole("textbox", { name: "Search" })).toHaveFocus();
+    const addon = screen.getByText("Find");
+    expect(addon.tagName).toBe("LABEL");
+    expect(addon).toHaveAttribute("for", "grouped-search");
+    expect(screen.getByRole("textbox", { name: "Search" })).toHaveAttribute("id", "grouped-search");
   });
 
   it("moves a slider with the arrow keys and keeps its thumb hook", async () => {

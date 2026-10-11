@@ -49,7 +49,6 @@ export function StartupView() {
       <main className="relative grid min-h-0 flex-1 place-items-center overflow-hidden bg-[var(--surface-canvas)]">
         <section
           className="w-full max-w-[620px] px-10 text-center"
-          role="status"
           aria-live="polite"
           aria-labelledby="startup-title"
         >

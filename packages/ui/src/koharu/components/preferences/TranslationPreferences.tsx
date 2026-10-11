@@ -51,8 +51,8 @@ export function TranslationPreferences({
     reasoning: value.model.reasoning ?? false,
   };
   const choices = selected ? modelChoices : [current, ...modelChoices];
-  const quantization =
-    current.quantizations.find((quantization) => quantization.id === value.model.quantization) ??
+  const selectedQuantization =
+    current.quantizations.find((candidate) => candidate.id === value.model.quantization) ??
     current.quantizations[0];
   const languageChoices = useMemo(() => orderedLanguageChoices(languages), [languages]);
   return (
@@ -78,7 +78,7 @@ export function TranslationPreferences({
                 <ModelLabel
                   model={current}
                   providers={providers}
-                  quantization={quantization?.name ?? value.model.quantization}
+                  quantization={selectedQuantization?.name ?? value.model.quantization}
                 />
               </span>
               <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />

@@ -254,8 +254,7 @@ export function AgentPanel() {
   async function login() {
     setLoggingIn(true);
     setLoginEvent({ type: "progress", message: t("agent.signingIn") });
-    const channel = new Channel<LoginEvent>();
-    channel.onmessage = setLoginEvent;
+    const channel = new Channel<LoginEvent>(setLoginEvent);
     try {
       setStatus(await call(commands.loginAgent, channel));
       setLoginEvent(null);
@@ -289,8 +288,7 @@ export function AgentPanel() {
     ]);
     setActivity(t("agent.working"));
 
-    const channel = new Channel<Event>();
-    channel.onmessage = (event) => {
+    const channel = new Channel<Event>((event) => {
       switch (event.type) {
         case "started":
           setRunning(event.run);
@@ -328,7 +326,7 @@ export function AgentPanel() {
           setActivity(null);
           break;
       }
-    };
+    });
     try {
       const run = await call(commands.runAgent, message, channel);
       if (!settled) setRunning(run);

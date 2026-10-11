@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronLeft, ChevronRight, HardDrive, LoaderCircle, Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { modelKey, modelSelection, providerName } from "../../lib/translation";
@@ -35,6 +35,7 @@ export function ModelPicker({
   onSelect: (model: ModelSelection) => void;
 }) {
   const { t } = useTranslation();
+  const searchId = useId();
   const [query, setQuery] = useState("");
   const [pendingKey, setPendingKey] = useState<string | null>(null);
   const pendingModel = models.find((model) => modelKey(model) === pendingKey);
@@ -86,10 +87,11 @@ export function ModelPicker({
       ) : (
         <div className="border-b border-border/60 p-1">
           <InputGroup className="h-7 border-0 bg-muted/50 shadow-none focus-within:bg-background has-[>[data-align=inline-start]]:[&>input]:pl-0">
-            <InputGroupAddon className="pr-1 pl-1.5">
+            <InputGroupAddon htmlFor={searchId} className="pr-1 pl-1.5">
               <Search className="size-3" />
             </InputGroupAddon>
             <InputGroupInput
+              id={searchId}
               ref={searchRef}
               value={query}
               aria-label={t("modelPicker.search")}

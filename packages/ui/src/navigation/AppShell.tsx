@@ -6,8 +6,8 @@
  * Le modèle est celui des applications les plus répandues en 2026 (bloc « sidebar » de
  * shadcn/ui, Linear, GitHub, Vercel) :
  *
- * - desktop (≥ 1024 px) : barre latérale repliable en icônes (⌘B / Ctrl+B), barre du haut
- *   avec le fil d'Ariane, la recherche ⌘K et les actions ;
+ * - desktop (≥ 1024 px) : barre latérale repliable en icônes pour l'application, navigation
+ *   horizontale éditoriale pour le site ; les deux gardent la recherche ⌘K et les actions ;
  * - mobile : barre d'onglets en bas (4 destinations + « Plus ») et feuille glissante pour le
  *   reste, zones sûres (`env(safe-area-inset-*)`), cibles de 44 px ;
  * - Tauri : la barre du haut sert de poignée de fenêtre (`data-tauri-drag-region`) et porte
@@ -149,6 +149,8 @@ export interface AppShellProps {
   onCommandIntent?: () => void;
   /** Force la détection Tauri (tests, hôte qui le sait déjà). */
   tauri?: boolean;
+  /** Présentation éditoriale horizontale du site public; l'application conserve la coque latérale. */
+  siteStyle?: boolean;
   children: ReactNode;
 }
 
@@ -248,6 +250,7 @@ export function AppShell({
   renderCommand,
   onCommandIntent,
   tauri: forcedTauri,
+  siteStyle = false,
   children,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
@@ -350,9 +353,32 @@ export function AppShell({
     [pathname, navSections, tabs, contextNav],
   );
 
+  const shellTopBar = (
+    <ShellTopBar
+      brand={brand}
+      trail={trail}
+      collapsed={collapsed}
+      onToggleSidebar={toggleSidebar}
+      onSearch={hasCommand ? () => setCommandOpen(true) : undefined}
+      onSearchIntent={onCommandIntent}
+      actions={actions}
+      mobileAccount={mobileAccount}
+      desktopAccount={account}
+      siteStyle={siteStyle}
+      tauri={tauri}
+      labels={labels}
+      linkComponent={linkComponent}
+    />
+  );
+
   return (
     <ShellContext.Provider value={api}>
-      <div data-shell className="relative flex min-h-dvh w-full flex-1">
+      <div
+        data-shell
+        data-shell-variant={siteStyle ? "site" : "app"}
+        className="relative flex min-h-dvh w-full flex-1"
+      >
+        {siteStyle && shellTopBar}
         <ShellSidebar
           brand={brand}
           sections={navSections}
@@ -362,23 +388,12 @@ export function AppShell({
           onToggle={toggleSidebar}
           onExpand={expandSidebar}
           account={account}
+          siteStyle={siteStyle}
           labels={labels}
           linkComponent={linkComponent}
         />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <ShellTopBar
-            brand={brand}
-            trail={trail}
-            collapsed={collapsed}
-            onToggleSidebar={toggleSidebar}
-            onSearch={hasCommand ? () => setCommandOpen(true) : undefined}
-            onSearchIntent={onCommandIntent}
-            actions={actions}
-            mobileAccount={mobileAccount}
-            tauri={tauri}
-            labels={labels}
-            linkComponent={linkComponent}
-          />
+        <div data-shell-content className="flex min-w-0 flex-1 flex-col">
+          {!siteStyle && shellTopBar}
           <main id="contenu" tabIndex={-1} className="relative z-10 flex w-full flex-1 flex-col">
             {children}
           </main>

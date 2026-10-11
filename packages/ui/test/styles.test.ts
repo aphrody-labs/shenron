@@ -47,6 +47,16 @@ describe("styles.css", () => {
     ]);
   });
 
+  test("the public site shell uses the DBS editorial palette and preserves the app sidebar", async () => {
+    const siteStyles = await read("packages/ui/src/site.css");
+    expect(siteStyles).toContain('[data-shell-variant="site"]');
+    expect(siteStyles).toContain("var(--dbz-bg, #000000)");
+    expect(siteStyles).toContain("var(--dbz-yellow, #ffde00)");
+    expect(siteStyles).toContain("var(--dbz-os, #e8e6db)");
+    expect(siteStyles).toContain('[data-shell-navigation="horizontal"]');
+    expect(siteStyles).toContain("@media (prefers-reduced-motion: reduce)");
+  });
+
   test("shared classes sit in @layer components", () => {
     const layered = componentLayers(pkgCss).join("\n");
     for (const cls of [".cible-44", ".card", ".btn", ".btn-primary", ".input", ".badge"]) {

@@ -87,8 +87,8 @@ export function CanvasOverlay({
       )}
       {layers.map(({ layer, frame, opacity }) => {
         const position = cssFrame(frame, camera);
-        const selected = selectedIds.has(layer.id) && selectableLayer(layer);
-        const highlighted = !selected && hovered === layer.id;
+        const isSelected = selectedIds.has(layer.id) && selectableLayer(layer);
+        const highlighted = !isSelected && hovered === layer.id;
         return (
           <div
             key={layer.id}
@@ -102,11 +102,11 @@ export function CanvasOverlay({
               transform: `rotate(${position.angle}deg)`,
               transformOrigin: "50% 50%",
               border:
-                highlighted || (selected && multipleSelected)
+                highlighted || (isSelected && multipleSelected)
                   ? "1px solid var(--canvas-selection)"
                   : undefined,
               opacity,
-              willChange: selected ? "left, top, width, height, transform" : undefined,
+              willChange: isSelected ? "left, top, width, height, transform" : undefined,
             }}
           />
         );

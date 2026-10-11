@@ -1,6 +1,6 @@
 "use client";
 
-import i18n, { type Resource } from "i18next";
+import { createInstance, type Resource } from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import LocalStorageBackend from "i18next-localstorage-backend";
 import { initReactI18next } from "react-i18next";
@@ -19,6 +19,8 @@ export const resources = {
 export type SupportedLanguage = keyof typeof resources;
 
 export const supportedLanguages = Object.keys(resources) as SupportedLanguage[];
+
+const i18n = createInstance();
 
 /** The locales of the site (`fr | en | ja`); the editor speaks exactly these three. */
 export type SiteLocale = "fr" | "en" | "ja";

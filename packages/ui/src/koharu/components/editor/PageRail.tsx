@@ -177,9 +177,9 @@ export function PageRail() {
     if (prepared?.revision === project.revision || state.pages.has(page)) return;
     state.pages.add(page);
     void prefetchCanvasPages([page])
-      .then((pages) => {
+      .then((prefetchedPages) => {
         const current = queryClient.getQueryData<ProjectInfo | null>(projectKey);
-        const preparedPage = pages.find(
+        const preparedPage = prefetchedPages.find(
           (candidate) => candidate.page.id === page && candidate.revision === project.revision,
         );
         if (
@@ -243,13 +243,9 @@ export function PageRail() {
           {/* One selected page behaves exactly like acting on the active
               page, so saying so would be noise. */}
           {selected.length > 1 && (
-            <span
-              role="status"
-              aria-live="polite"
-              className="ml-auto text-[9px] text-muted-foreground tabular-nums"
-            >
+            <output className="ml-auto text-[9px] text-muted-foreground tabular-nums">
               {t("navigator.selected", { count: selected.length })}
-            </span>
+            </output>
           )}
         </header>
 
@@ -500,7 +496,12 @@ function PageItem({
     >
       <div className="grid h-16 w-12 place-items-center overflow-hidden rounded-lg bg-[var(--surface-well)]">
         {page.source_asset ? (
-          <PageThumbnail page={page.id} asset={page.source_asset} label={page.label} />
+          <PageThumbnail
+            key={`${page.id}:${page.source_asset}`}
+            page={page.id}
+            asset={page.source_asset}
+            label={page.label}
+          />
         ) : (
           <span className="text-[9px] text-muted-foreground">{t("navigator.noImage")}</span>
         )}
@@ -547,7 +548,6 @@ function PageThumbnail({ page, asset, label }: { page: string; asset: string; la
   const [settled, setSettled] = useState(false);
 
   useEffect(() => {
-    setSettled(false);
     const timeout = window.setTimeout(() => setSettled(true), 100);
     return () => window.clearTimeout(timeout);
   }, [asset]);

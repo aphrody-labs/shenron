@@ -24,7 +24,7 @@ const sections: ShellNavSection[] = [
   },
 ];
 
-function Harness() {
+function Harness({ siteStyle = false }: { siteStyle?: boolean } = {}) {
   const [pathname, setPathname] = useState("/");
   const visited: string[] = [];
   const Link = ({ href, children, onClick, ...rest }: ShellLinkProps) => (
@@ -44,6 +44,7 @@ function Harness() {
   return (
     <AppShell
       pathname={pathname}
+      siteStyle={siteStyle}
       brand={{ href: "/", label: "Home page", mark: null, name: "Dragon Ball" }}
       sections={sections}
       tabs={[{ href: "/", label: "Home tab" }]}
@@ -57,6 +58,19 @@ function Harness() {
 }
 
 describe("AppShell clicks", () => {
+  test("the public site uses a horizontal navigation without changing app navigation", async () => {
+    const { container } = render(<Harness siteStyle />);
+    const shell = container.querySelector('[data-shell-variant="site"]');
+    expect(shell?.firstElementChild?.getAttribute("data-shell-header")).toBe("site");
+    expect(shell?.querySelector('[data-shell-navigation="horizontal"]')).not.toBeNull();
+    const menu = screen.getByRole("button", { name: "Encyclopedia" });
+    expect(menu.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(menu);
+    expect(menu.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.click(screen.getByRole("link", { name: "Characters" }));
+    expect(screen.getByTestId("path").textContent).toBe("/wiki/characters");
+  });
+
   test("selecting the current destination closes the mobile sheet", async () => {
     render(<Harness />);
     fireEvent.click(screen.getByRole("button", { name: "Plus" }));
