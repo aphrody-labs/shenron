@@ -12,9 +12,8 @@ mock.module("@/lib/db-universe", () => ({
       { series: "DB", count: 153 },
       { series: "DBZ", count: 291 },
     ],
-    episodes: async (series?: string, limit = 50, offset = 0) => ({
-      total: 2,
-      episodes: [
+    episodes: async (series?: string, limit = 50, offset = 0, query?: string) => {
+      const rows = [
         {
           id: 1,
           series: "DB",
@@ -34,8 +33,32 @@ mock.module("@/lib/db-universe", () => ({
             },
           ],
         },
-      ],
-    }),
+      ];
+      const first = rows[0]!;
+      const fixture = [
+        first,
+        { ...first, id: 2, title: "Les Premiers Pas", synopsis: null },
+        { ...first, id: 449, series: "DBS", title: "Goku contre Beerus", synopsis: null },
+        {
+          ...first,
+          id: 452,
+          series: "DBS",
+          title: "Une dernière chance",
+          synopsis: "Beerus arrive",
+        },
+        { ...first, id: 999, series: "SDBH", title: "Autre Beerus", synopsis: null },
+      ];
+      const needle = query?.trim().toLowerCase();
+      const matched = fixture.filter(
+        (ep) =>
+          (!series || ep.series === series) &&
+          (!needle ||
+            [ep.title, ep.title_ja, ep.synopsis].some((value) =>
+              value?.toLowerCase().includes(needle),
+            )),
+      );
+      return { total: matched.length, episodes: matched.slice(offset, offset + limit) };
+    },
     episode: async (id: number) => {
       if (id !== 1) return null;
       return {
@@ -66,6 +89,32 @@ const { GET: getEpisodes } = await import("../src/app/api/episodes/route");
 const { GET: getEpisodeById } = await import("../src/app/api/episodes/[id]/route");
 
 describe("API routes /api/episodes", () => {
+  test("search finds later episodes before pagination and reports the filtered total", async () => {
+    const res = await getEpisodes(
+      new NextRequest("http://localhost:3000/api/episodes?q=Beerus&limit=2"),
+    );
+    const data = await res.json();
+    expect(data.episodes.map((ep: { id: number }) => ep.id)).toEqual([449, 452]);
+    expect(data.count).toBe(2);
+    expect(data.total).toBe(3);
+  });
+
+  test("series and search share the count while offset pages the matching rows", async () => {
+    const res = await getEpisodes(
+      new NextRequest(
+        "http://localhost:3000/api/episodes?series=dbs&search=Beerus&limit=1&offset=1",
+      ),
+    );
+    const data = await res.json();
+    expect(data.episodes.map((ep: { id: number }) => ep.id)).toEqual([452]);
+    expect(data.total).toBe(2);
+    expect(data.count).toBe(1);
+    const blank = await getEpisodes(
+      new NextRequest("http://localhost:3000/api/episodes?series=DBS&q=%20%20&limit=1"),
+    );
+    expect((await blank.json()).total).toBe(2);
+  });
+
   test("GET /api/episodes returns list of episodes and series metadata", async () => {
     const req = new NextRequest("http://localhost:3000/api/episodes");
     const res = await getEpisodes(req);

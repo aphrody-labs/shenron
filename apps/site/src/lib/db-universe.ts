@@ -1,5 +1,6 @@
 import { getTimelineItems, getTimelineEvents } from "./chronology-config";
 import { normalizeAvailability } from "./video-languages";
+import { episodeQueryPredicate } from "./episode-query";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
@@ -1485,31 +1486,20 @@ export const dbUniverse = {
       return e?.url ? { url: e.url, headers: e.headers ?? {} } : null;
     }),
 
-  episodes: (series?: string, limit = 50, offset = 0) =>
+  episodes: (series?: string, limit = 50, offset = 0, query?: string) =>
     safe(async () => {
-      const rows = series
-        ? await db
-            .select()
-            .from(botEpisodes)
-            .where(and(eq(botEpisodes.series, series), eq(botEpisodes.visible, true)))
-            .orderBy(asc(botEpisodes.numberInSeries))
-            .limit(limit)
-            .offset(offset)
-        : await db
-            .select()
-            .from(botEpisodes)
-            .where(eq(botEpisodes.visible, true))
-            .orderBy(asc(botEpisodes.series), asc(botEpisodes.numberInSeries))
-            .limit(limit)
-            .offset(offset);
+      const predicate = episodeQueryPredicate(series, query);
+      const rows = await db
+        .select()
+        .from(botEpisodes)
+        .where(predicate)
+        .orderBy(asc(botEpisodes.series), asc(botEpisodes.numberInSeries), asc(botEpisodes.id))
+        .limit(limit)
+        .offset(offset);
       const [{ n }] = await db
         .select({ n: sql<number>`count(*)::int` })
         .from(botEpisodes)
-        .where(
-          series
-            ? and(eq(botEpisodes.series, series), eq(botEpisodes.visible, true))
-            : eq(botEpisodes.visible, true),
-        );
+        .where(predicate);
       return { episodes: rows.map(toEpisode), total: Number(n ?? 0) };
     }),
 

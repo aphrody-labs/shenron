@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 
     const [seriesList, episodesResult] = await Promise.all([
       dbUniverse.episodeSeries().catch(() => []),
-      dbUniverse.episodes(seriesParam, limit, offset).catch(() => ({ episodes: [], total: 0 })),
+      dbUniverse.episodes(seriesParam, limit, offset, q).catch(() => ({ episodes: [], total: 0 })),
     ]);
 
     const seriesSummary = (seriesList ?? []).map((s) => ({
@@ -44,18 +44,8 @@ export async function GET(req: Request) {
       count: s.count,
     }));
 
-    let rawEpisodes = episodesResult?.episodes ?? [];
-    let total = episodesResult?.total ?? 0;
-
-    if (q && q.trim()) {
-      const query = q.trim().toLowerCase();
-      rawEpisodes = rawEpisodes.filter(
-        (ep) =>
-          ep.title?.toLowerCase().includes(query) ||
-          ep.title_ja?.toLowerCase().includes(query) ||
-          ep.synopsis?.toLowerCase().includes(query),
-      );
-    }
+    const rawEpisodes = episodesResult?.episodes ?? [];
+    const total = episodesResult?.total ?? 0;
 
     const episodes = rawEpisodes.map((ep) => {
       const players = Array.isArray(ep.players) ? ep.players : [];
