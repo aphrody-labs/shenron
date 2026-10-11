@@ -1,6 +1,35 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { captureProgress } from "./sync-beerus-site";
+import { captureProgress, syncSitemapLimits } from "./sync-beerus-site";
+import { sitemapLimits } from "./crawl-beerus-site";
+
+test("sync forwards bounded sitemap overrides and retains crawler defaults", () => {
+  expect(syncSitemapLimits([])).toEqual(sitemapLimits);
+  expect(
+    syncSitemapLimits([
+      "--sitemap-urls",
+      "50000",
+      "--sitemap-document-bytes",
+      "8388608",
+      "--sitemap-bytes",
+      "67108864",
+      "--sitemap-documents",
+      "64",
+    ]),
+  ).toEqual({ urls: 50000, documentBytes: 8388608, bytes: 67108864, documents: 64 });
+});
+test("sync refuses malformed, duplicate and unbounded sitemap flags before crawling", () => {
+  for (const argv of [
+    ["--sitemap-urls"],
+    ["--sitemap-urls", "--out"],
+    ["--sitemap-urls", "50001"],
+    ["--sitemap-urls", "NaN"],
+    ["--sitemap-bytes", "-1"],
+    ["--sitemap-documents", "1.5"],
+    ["--sitemap-urls", "10", "--sitemap-urls", "20"],
+  ])
+    expect(() => syncSitemapLimits(argv)).toThrow("Invalid sitemap");
+});
 
 test("sync receipts count sitemap failures and pending discovery without exposing URLs", () => {
   const progress = captureProgress({

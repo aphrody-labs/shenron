@@ -1,7 +1,28 @@
 // SPDX-License-Identifier: Apache-2.0
 import { mkdir, realpath, rm, writeFile } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
-import { crawl } from "./crawl-beerus-site";
+import { crawl, qualifiedSitemapLimits, sitemapLimits } from "./crawl-beerus-site";
+
+export function syncSitemapLimits(argv: string[]) {
+  const limits: Partial<typeof sitemapLimits> = {};
+  for (const [flag, key] of [
+    ["--sitemap-documents", "documents"],
+    ["--sitemap-document-bytes", "documentBytes"],
+    ["--sitemap-bytes", "bytes"],
+    ["--sitemap-urls", "urls"],
+  ] as const) {
+    const position = argv.indexOf(flag);
+    if (position < 0) continue;
+    if (
+      argv.lastIndexOf(flag) !== position ||
+      !argv[position + 1] ||
+      argv[position + 1]!.startsWith("--")
+    )
+      throw new Error(`Invalid sitemap flag: ${flag}`);
+    limits[key] = Number(argv[position + 1]);
+  }
+  return qualifiedSitemapLimits(limits);
+}
 
 interface CaptureProgress {
   pages: { state?: string; status?: number }[];
@@ -61,6 +82,7 @@ function inside(root: string, path: string): boolean {
 }
 
 export async function sync(): Promise<void> {
+  const limits = syncSitemapLimits(Bun.argv);
   const output = argument("--out");
   if (!output || output.startsWith("--")) throw new Error("--out requires an explicit path");
   const interval = integer("--interval-seconds", 900, 300, 86400);
@@ -106,7 +128,7 @@ export async function sync(): Promise<void> {
       let progress: ReturnType<typeof captureProgress> | undefined;
       try {
         const capture = join(run, "capture");
-        await crawl(capture, { previousManifest });
+        await crawl(capture, { previousManifest, sitemapLimits: limits });
         const manifestPath = join(capture, "manifest.json");
         const manifest = (await Bun.file(manifestPath).json()) as CaptureProgress;
         progress = captureProgress(manifest);
