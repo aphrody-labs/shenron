@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { readAccountData } from "@/lib/account-data";
 import { getShenronUserResult } from "@/lib/shenron";
 import { getSessionUser } from "@/lib/session";
+import { db, schema } from "@/lib/db";
+import { and, eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,13 +11,16 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const me = await getSessionUser();
   if (!me?.user) return NextResponse.json({ error: "Connexion requise" }, { status: 401 });
-  const [siteData, botProfile] = await Promise.all([
+  const [siteData, botProfile, steam] = await Promise.all([
     readAccountData({
       authUserId: me.sessionUserId,
       appUserId: me.user.id,
       discordId: me.discordId,
     }),
     getShenronUserResult(me.discordId),
+    db.select({ steamId: schema.baAccount.accountId }).from(schema.baAccount).where(and(
+      eq(schema.baAccount.userId, me.sessionUserId), eq(schema.baAccount.providerId, "steam"),
+    )).limit(1),
   ]);
   return NextResponse.json(
     {
@@ -27,6 +32,7 @@ export async function GET() {
         username: me.user.username,
         avatar: me.user.avatar,
         createdAt: me.user.createdAt,
+        steamId: steam[0]?.steamId ?? null,
       },
       ...siteData,
       botProfile: botProfile.status === "ok" ? botProfile.user : null,

@@ -512,7 +512,12 @@
     "noticeCloseFailed": "Impossible de fermer cette session.",
     "noticeClosed": "La session a été fermée.",
     "noticeDeleteFailed": "La suppression n’a pas pu être effectuée. Réessayez après vous être reconnecté.",
-    "sections": "Rubriques des paramètres"
+    "sections": "Rubriques des paramètres",
+    "steamLead": "Liez votre compte Steam à DBFR pour associer cette identité à votre compte membre. Cela ne vérifie pas la possession des jeux.",
+    "steamLink": "Lier Steam",
+    "steamLinked": "Compte Steam lié · {id}",
+    "steamError": "Impossible de lier ce compte Steam. Réessayez.",
+    "steamTitle": "Compte Steam"
   },
   "error": {
     "lead": "L'affichage a échoué. C'est souvent passager — réessayer suffit en général.",

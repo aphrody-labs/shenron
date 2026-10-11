@@ -512,7 +512,12 @@
     "noticeCloseFailed": "このセッションを閉じることができません。",
     "noticeClosed": "セッションは終了しました。",
     "noticeDeleteFailed": "削除を実行できませんでした。再度ログイン後、再度お試しください。",
-    "sections": "設定の項目"
+    "sections": "設定の項目",
+    "steamLead": "Steam アカウントを DBFR にリンクして、メンバーアカウントに関連付けます。ゲームの所有権は確認されません。",
+    "steamLink": "Steam をリンク",
+    "steamLinked": "リンク済み Steam アカウント · {id}",
+    "steamError": "Steam アカウントをリンクできませんでした。もう一度お試しください。",
+    "steamTitle": "Steam アカウント"
   },
   "error": {
     "lead": "表示に失敗しました。多くの場合、それは一時的なものであり、通常は再試行するだけで十分です。",

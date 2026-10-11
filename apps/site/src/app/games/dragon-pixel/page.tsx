@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import DragonPixelGame from "./DragonPixelGame";
+import Age1000Map from "./Age1000Map";
 import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import { PageShell } from "@shenron/ui/layout/PageShell";
 import type { Metadata } from "next";
@@ -20,7 +21,10 @@ export default function PageDragonPixel() {
         className="mb-8"
         subtitle="Combat d'arène rétro 2D. Élimine les 5 vagues d'ennemis, charge ton énergie et déclenche ta transformation pour surpasser tes limites."
       />
-      <DragonPixelGame />
+      <div className="flex flex-col gap-8">
+        <DragonPixelGame />
+        <Age1000Map />
+      </div>
     </PageShell>
   );
 }

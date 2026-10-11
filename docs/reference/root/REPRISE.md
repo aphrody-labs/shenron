@@ -24,10 +24,12 @@ l'installeur (v3) est déposé pour Omar, la validation de bout en bout reste à
   qualification de production restent à exécuter et vérifier sur le corpus complet.
   Le gel des écritures OCR/traduction des databooks reste applicable.
 
-- **Release en production** : livrer les commits récents de `main` (retrait de « Découvrir », hôte Bun
-  avec Better Auth, canvas wasm wgpu 30). `bun scripts/ops/release.ts --build-host vps` (le build du
-  site exige Docker : dbfr n'en a pas). Si le vps est saturé, arrêter `shenron-cdn-sync.timer` pendant la
-  release et le relancer après.
+- **Release en production** : la directive propriétaire Aphrody du 2026-10-04 demande une cible
+  serverless pour Shenron après benchmark des fournisseurs. Le fournisseur et l’adaptateur ne sont pas
+  qualifiés dans ce dépôt. Ne pas lancer l’ancien parcours `--build-host vps` comme déploiement cible.
+  Garder le checkout, les assets et les données jusqu’à ce que la cible, les secrets, les migrations,
+  les routes et le retour arrière soient vérifiés. Chaque artefact livré doit viser le SHA exact et
+  porter manifeste et sommes.
 - **CDN** : `shenron-cdn-sync` est local ; vérifier `/.well-known/agent-card.json` (doit être A2A 1.0,
   pas la carte du 3 octobre) une fois la passe de l'optimiseur finie.
 - **Chat** : `APHRODY_AI_CHAT_BASE_URL=http://127.0.0.1:8799/v1` et `APHRODY_AI_CHAT_MODEL=shenron-chat-v2`

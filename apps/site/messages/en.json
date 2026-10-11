@@ -512,7 +512,12 @@
     "noticeCloseFailed": "Unable to close this session.",
     "noticeClosed": "The session has been closed.",
     "noticeDeleteFailed": "The deletion could not be performed. Try again after logging in again.",
-    "sections": "Settings sections"
+    "sections": "Settings sections",
+    "steamLead": "Link Steam to DBFR to associate this identity with your member account. This does not verify game ownership.",
+    "steamLink": "Link Steam",
+    "steamLinked": "Steam account linked · {id}",
+    "steamError": "Could not link this Steam account. Please try again.",
+    "steamTitle": "Steam account"
   },
   "error": {
     "lead": "Display failed. It's often temporary — trying again is usually enough.",
