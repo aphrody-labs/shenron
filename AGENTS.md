@@ -19,6 +19,14 @@ Mémoire des conversations : avant tout travail substantiel, lire `data/home/MEM
 
 Session cloud : `docs/operations/CLOUD-SESSION.md` (hooks, SSH, secrets) ; chantiers ouverts dans `docs/reference/root/REPRISE.md`, lus au démarrage et repris sans demander jusqu'à la production.
 
+Actualités urgentes (demande propriétaire du 2026-10-11) : suivre la priorité courante de
+`GOAL.md`, vérifier dates et annonces dans les sources officielles avant publication.
+Collecte Codex distante DBFR par Infra, jobs bornés et journaux privés ; PostgreSQL par les
+writers éditoriaux, Redis par l'invalidation ciblée propriétaire. Ne pas convertir une
+annonce de diffusion en preuve de lecture d'un épisode. La publication npm/crates.io exige
+un artefact qualifié, l'audit de ses fichiers et une version disponible ; préserver les
+marqueurs de publication des paquets et les stores protégés.
+
 ## Exécution autonome NHIL
 
 L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque

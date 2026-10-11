@@ -24,6 +24,11 @@
 
 ## GOAL.md — catalogue Dragon Ball (11 octobre 2026)
 
+- [ ] Priorité actualités Super : collecte Codex sur DBFR, annonces officielles datées, publication dédupliquée PostgreSQL et invalidation Redis ciblée ; vérifier l'épisode bonus séparément.
+- [ ] Gates du monorepo et audit des paquets npm/crates.io ; publier les versions qualifiées disponibles et rapporter les blocages sans changer implicitement la visibilité.
+- [x] Appliquer et relire le réplica média normalisé : 11 œuvres/24 éditions/166 volumes, quatre aliases masqués conservés, sauvegarde cohérente et replay sans écriture ; autres catalogues préservés.
+- [ ] Activer et contrôler l'image `e7c66e0d` : ISBN public, liens des éditions et statuts HTML404 ; source et gates ciblés poussés, production en livraison.
+
 - [x] Inventorier PostgreSQL en lecture : 11 lots, identifiants, sources et rapprochement ISBN des 18 Sōshūhen ; rapports privés dans `var/reports/catalog-expansion/`.
 - [x] Vérifier les contrats admin et les dépendances runtime/gel ; préparer les corrections bibliographiques sourcées sans mutation.
 - [x] Étendre la collecte privée : 82 notices de mangas dérivés et 48 épisodes SDBH identifiés par leurs sources primaires ; conserver les correspondances et lacunes.
