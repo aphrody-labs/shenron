@@ -1,5 +1,24 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## Contrôle du 11 octobre 2026 à 18:31 UTC — Bun et fabrique
+
+8ac6a49c/a7ab9972 poussés : check:native, lint:native et format:native:check,
+runtime absolu SHENRON_BUN_EXECUTABLE et PATH enfant conservant les outils existants.
+Windows1.4.4-canary.1+2ae8fc65f qualifié sur19projets ; défaut System32 reste1.4.3.
+Les portes TypeScript7/oxlint/oxfmt restent canoniques ; format natif complet non établi.
+
+Fabrique901cb r2 : TypeScript/lint verts, fixture payload filtrée par umask077.
+a1928ec7 corrige la fixture sans changer l'extraction ; preuvesLinux0755/0700 vertes.
+Fabriquea192 : compteur i18n et bibliothèque shenron-re absente avant tests.
+10e90f77 corrige les textes (8tests/14assertions) ; job shenron-build-10e90f77
+relancé avec compilation RE avant les tests, actuellement en attente du verrou Infra.
+
+Infra659d4325/d348faae poussés : staging public/CDN, union des chunks et montage readonly,
+scellement limité cdn/_next/static ;12tests Linux sous umask077 verts. Helpers pinnés
+sur DBFR ;365anciens fichiers statiques copiés et vérifiés SHA dans un staging privé.
+Aucune nouvelle image activée. Sync privée : deuxième reçu18:19:41–52UTC success,
+17captures incomplètes et completeCoverage=false ; le robots officiel reste refusé.
+
 ## Contrôle courant du 11 octobre 2026 à 18:04 UTC
 
 Lots crawl dab40428/a047a780 puis a6141989 poussés : routes updates avec identité query,
