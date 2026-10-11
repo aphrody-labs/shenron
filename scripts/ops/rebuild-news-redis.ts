@@ -40,6 +40,11 @@ try {
       maxRetries: 1,
       enableOfflineQueue: false,
     });
+    try {
+      await redis.connect();
+    } catch {
+      throw new Error("Public article cache is unavailable");
+    }
     const mirror = createPostsMirror(
       async () => redis!,
       () => at,

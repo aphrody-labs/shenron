@@ -19,6 +19,12 @@ async function connect(): Promise<PostsRedisClient> {
     redis.onclose = () => {
       if (client === redis) client = null;
     };
+    try {
+      await redis.connect();
+    } catch (error) {
+      redis.close();
+      throw error;
+    }
     client = redis;
     return redis;
   })();
