@@ -491,7 +491,11 @@ export function CanvasWorkspace() {
       )
         .then((result) => {
           selectLayers([result.layer]);
-          return refresh(projectKey, pagesKey, pageKey);
+          return refresh(projectKey, pagesKey, pageKey).then(() => {
+            // Keep the active editor surface usable if a transient native refresh
+            // returns no page. The next successful refresh replaces this snapshot.
+            if (!queryClient.getQueryData(pageKey)) queryClient.setQueryData(pageKey, page);
+          });
         })
         .catch(() => undefined);
     } else if (current.kind === "paint" || current.kind === "erase" || current.kind === "inpaint") {
