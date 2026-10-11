@@ -19,6 +19,7 @@ import { toMillis, yearOf } from "@/lib/epoch";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { TrackHistory } from "@/components/history/TrackHistory";
 import { publicDatabookImage } from "@/lib/databook-media";
+import { T } from "@/components/T";
 
 export const revalidate = 3600;
 
@@ -233,7 +234,9 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
     // Les planches RÉELLEMENT présentes, pas les emplacements : un ouvrage
     // peut porter des slots créés au studio avant numérisation, et annoncer
     // à Google plus de pages que la fiche n'en montre.
-    ...(isInterview ? {} : { numberOfPages: filledPages.length || undefined }),
+    ...(isInterview
+      ? {}
+      : { isbn: book.isbn ?? undefined, numberOfPages: filledPages.length || undefined }),
     isBasedOn: book.source_url ?? undefined,
   };
 
@@ -312,6 +315,14 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
               <div className="flex justify-between gap-4">
                 <span className="text-white/50">Auteur</span>
                 <span className="font-bold text-white text-right">{book.author}</span>
+              </div>
+            )}
+            {book.isbn && (
+              <div className="flex justify-between gap-4">
+                <span className="text-white/50">
+                  <T k="mangaCatalog.isbn" />
+                </span>
+                <span className="font-bold text-white">{book.isbn}</span>
               </div>
             )}
             {hasPages && (

@@ -74,6 +74,7 @@ import type { SignauxRichesse } from "@/lib/character-richesse";
 import { formatCharacterSlug } from "@shenron/config/wiki-slugs";
 import { mangaCoverPath, publishedMangaPageCount, publishedMangaPages } from "@/lib/manga-assets";
 import { mangaVolumeBibliographicSource } from "@/lib/manga-source-registry";
+import { mediaPublicationLink } from "@/lib/media-publication-links";
 
 // Re-export types from schema
 export type { VoiceActorRole } from "@/db/bot-schema";
@@ -784,6 +785,7 @@ export type Databook = {
   title: string;
   title_ja: string | null;
   author: string | null;
+  isbn: string | null;
   published_at: number | null;
   cover: string | null;
   description: string | null;
@@ -822,6 +824,7 @@ function toDatabook(r: typeof botDatabooks.$inferSelect): Databook {
     title: r.title,
     title_ja: r.titleJa,
     author: r.author,
+    isbn: r.isbn ?? null,
     published_at: r.publishedAt,
     cover: r.cover,
     description: r.description,
@@ -3136,24 +3139,33 @@ export const dbUniverse = {
         .orderBy(asc(botMediaEditions.id));
 
       const editionIds = editions.map((e) => e.id);
-      const volumeCounts =
+      const volumeRows =
         editionIds.length > 0
           ? await db
               .select({
                 editionId: botMediaVolumes.editionId,
-                volCount: count(),
+                id: botMediaVolumes.id,
+                legacyVolumeId: botMediaVolumes.legacyVolumeId,
+                visibleLegacyId: botMangaVolumes.id,
+                number: botMediaVolumes.number,
+                title: botMediaVolumes.title,
               })
               .from(botMediaVolumes)
+              .leftJoin(
+                botMangaVolumes,
+                and(
+                  eq(botMangaVolumes.id, botMediaVolumes.legacyVolumeId),
+                  eq(botMangaVolumes.visible, true),
+                ),
+              )
               .where(
                 and(
                   inArray(botMediaVolumes.editionId, editionIds),
                   eq(botMediaVolumes.visible, true),
                 ),
               )
-              .groupBy(botMediaVolumes.editionId)
+              .orderBy(asc(botMediaVolumes.number), asc(botMediaVolumes.id))
           : [];
-
-      const countMap = new Map(volumeCounts.map((v) => [v.editionId, Number(v.volCount)]));
 
       return works.map((w) => ({
         id: Number(w.id),
@@ -3176,7 +3188,8 @@ export const dbUniverse = {
             published_at: e.publishedAt,
             page_color: e.pageColor,
             scan_policy: e.scanPolicy,
-            volumes_count: countMap.get(e.id) ?? 0,
+            volumes_count: volumeRows.filter((v) => v.editionId === e.id).length,
+            volumes: volumeRows.filter((v) => v.editionId === e.id).map(mediaPublicationLink),
           })),
       }));
     }),

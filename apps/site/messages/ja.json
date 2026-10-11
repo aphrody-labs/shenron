@@ -21,6 +21,10 @@
     "numberUnverified": "話数は未確認"
   },
   "mangaCatalog": {
+    "isbn": "ISBN",
+    "catalogueData": "目録データ（JSON）",
+    "editionsForWork": "掲載版 — {title}",
+    "volumeCount": "掲載巻数：{count}",
     "pageColor": {
       "unknown": "ページの色は未確認",
       "nb": "モノクロ",

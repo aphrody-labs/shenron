@@ -17,6 +17,8 @@ import { ogMeta } from "@/lib/og";
 import { LibraryNav } from "@/components/library/LibraryNav";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import IndexLoading from "./IndexLoading";
 
 export const revalidate = 3600;
 
@@ -35,7 +37,15 @@ export const metadata: Metadata = {
   }),
 };
 
-export default async function MangaIndexPage() {
+export default function MangaIndexPage() {
+  return (
+    <Suspense fallback={<IndexLoading />}>
+      <MangaIndexContent />
+    </Suspense>
+  );
+}
+
+async function MangaIndexContent() {
   const [
     dbVols,
     dbsVols,
@@ -63,10 +73,10 @@ export default async function MangaIndexPage() {
     dbUniverse.mangaVolumes("ARALE"),
     dbUniverse.mangaCatalogVolumes(),
     dbUniverse.readableMangaChapters(),
-    dbUniverse.mediaWorks({ slug: "dragon-ball" }),
+    dbUniverse.mediaWorks({ kind: "manga" }),
   ]);
 
-  const mediaWork = (mediaWorksList ?? [])[0] ?? null;
+  const mediaWorks = mediaWorksList ?? [];
 
   const mapVolumes = (
     vols: {
@@ -190,51 +200,74 @@ export default async function MangaIndexPage() {
         </p>
       </section>
 
-      {mediaWork?.editions && mediaWork.editions.length > 0 && (
-        <section aria-label="Éditions du manga" className="mb-10 space-y-4">
-          <SectionHeading
-            level={3}
-            title={`Éditions référencées — ${mediaWork.title}`}
-            actions={
-              // Point d’entrée JSON du même inventaire : un lien interne ordinaire, pas un
-              // nouvel onglet (sous Tauri, `target=_blank` ouvrirait une fenêtre orpheline).
-              <a
-                href="/api/wiki/media?series=DB"
-                className="inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange hover:text-white"
-              >
-                Données JSON (/api/wiki/media)
-              </a>
-            }
-          />
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {mediaWork.editions.map((ed) => (
-              <li key={ed.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <p className="flex items-center justify-between gap-2 text-[12px] text-white/55">
-                  <span>{ed.edition}</span>
-                  <span className="font-semibold text-dbz-orange">{ed.language}</span>
-                </p>
-                <p className="mt-1 font-display font-semibold text-white">{ed.label}</p>
-                <p className="mt-2 flex items-center justify-between gap-2 text-[13px] text-white/60">
-                  <span>{ed.publisher ?? "Éditeur officiel"}</span>
-                  {ed.edition !== "full_color" && (
-                    <span className="tabular-nums text-white/80">
-                      {ed.volumes_count > 0 ? `${ed.volumes_count} tomes` : "Indexé"}
-                    </span>
-                  )}
-                </p>
-                {ed.edition === "full_color" && (
-                  <p className="mt-2 text-[12px] leading-relaxed text-white/60">
-                    <T
-                      k="mangaCatalog.japaneseOriginalCatalogueStatus"
-                      values={JAPANESE_FULL_COLOR_CATALOGUE}
-                    />
+      {mediaWorks
+        .filter((work) => work.editions.length > 0)
+        .map((mediaWork) => (
+          <section key={mediaWork.id} className="mb-10 space-y-4">
+            <SectionHeading
+              level={3}
+              title={<T k="mangaCatalog.editionsForWork" values={{ title: mediaWork.title }} />}
+              actions={
+                // Point d’entrée JSON du même inventaire : un lien interne ordinaire, pas un
+                // nouvel onglet (sous Tauri, `target=_blank` ouvrirait une fenêtre orpheline).
+                <a
+                  href={`/api/wiki/media?slug=${encodeURIComponent(mediaWork.slug)}`}
+                  className="inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange hover:text-white"
+                >
+                  <T k="mangaCatalog.catalogueData" />
+                </a>
+              }
+            />
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {mediaWork.editions.map((ed) => (
+                <li key={ed.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                  <p className="flex items-center justify-between gap-2 text-[12px] text-white/55">
+                    <span>{ed.edition}</span>
+                    <span className="font-semibold text-dbz-orange">{ed.language}</span>
                   </p>
-                )}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+                  <p className="mt-1 font-display font-semibold text-white">{ed.label}</p>
+                  <p className="mt-2 flex items-center justify-between gap-2 text-[13px] text-white/60">
+                    <span>{ed.publisher}</span>
+                    {ed.edition !== "full_color" && (
+                      <span className="tabular-nums text-white/80">
+                        <T k="mangaCatalog.volumeCount" values={{ count: ed.volumes_count }} />
+                      </span>
+                    )}
+                  </p>
+                  <p className="mt-2 text-[12px] text-white/60">
+                    <T k={`mangaCatalog.pageColor.${ed.page_color}`} />
+                  </p>
+                  {ed.volumes.length > 0 && (
+                    <ul className="mt-3 space-y-2 text-sm">
+                      {ed.volumes.map((volume) => (
+                        <li key={volume.id}>
+                          {volume.href ? (
+                            <Link
+                              href={volume.href}
+                              className="inline-flex min-h-11 items-center text-dbz-orange hover:text-white"
+                            >
+                              {volume.title ?? `#${volume.number}`}
+                            </Link>
+                          ) : (
+                            <span>{volume.title ?? `#${volume.number}`}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {mediaWork.slug === "dragon-ball" && ed.edition === "full_color" && (
+                    <p className="mt-2 text-[12px] leading-relaxed text-white/60">
+                      <T
+                        k="mangaCatalog.japaneseOriginalCatalogueStatus"
+                        values={JAPANESE_FULL_COLOR_CATALOGUE}
+                      />
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
 
       <MangaVolumeGrid
         dbVolumes={dbVolumes}

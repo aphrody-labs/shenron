@@ -21,6 +21,10 @@
     "numberUnverified": "Episode number unverified"
   },
   "mangaCatalog": {
+    "isbn": "ISBN",
+    "catalogueData": "Catalogue data (JSON)",
+    "editionsForWork": "Referenced editions — {title}",
+    "volumeCount": "{count} catalogued volumes",
     "pageColor": {
       "unknown": "Page color unverified",
       "nb": "Black and white",

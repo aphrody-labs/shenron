@@ -21,6 +21,10 @@
     "numberUnverified": "Numéro non établi"
   },
   "mangaCatalog": {
+    "isbn": "ISBN",
+    "catalogueData": "Données du catalogue (JSON)",
+    "editionsForWork": "Éditions référencées — {title}",
+    "volumeCount": "{count} tomes répertoriés",
     "pageColor": {
       "unknown": "Couleur des pages non vérifiée",
       "nb": "Noir et blanc",

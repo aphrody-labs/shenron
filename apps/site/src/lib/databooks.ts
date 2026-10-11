@@ -33,6 +33,7 @@ export interface DatabookRecord {
   title: string;
   title_ja: string | null;
   author: string | null;
+  isbn: string | null;
   published_at: number | null;
   cover: string | null;
   description: string | null;
@@ -81,6 +82,7 @@ function toRecord(r: Row): DatabookRecord {
     title: r.title,
     title_ja: r.titleJa ?? null,
     author: r.author ?? null,
+    isbn: r.isbn ?? null,
     published_at: r.publishedAt == null ? null : Number(r.publishedAt),
     cover: r.cover ?? null,
     description: r.description ?? null,
