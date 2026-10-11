@@ -10,7 +10,7 @@
   "last_verified_at": "2026-10-07T18:36:38Z",
   "status": "CONSOLIDÉ",
   "authoritative_file": "docs/reference/root/PLAN.md",
-  "freeze": { "databooks": true, "path": ".coord/FREEZE-databooks.json" },
+  "freeze": { "databooks": false, "path": ".coord/FREEZE-databooks.json", "owner_lifted_at": "2026-10-11" },
   "baseline": {
     "rag_chunks": 241558,
     "wiki_pages": 181636,
@@ -145,6 +145,6 @@ Les cases historiques ci-dessus décrivent le relevé du 7 octobre ; elles ne pr
 - Restent ouverts : soft-404 du wiki (slug inconnu en 200 `noindex`, `app/loading.tsx` racine) et débit du LLM de prod (4,5 tok/s).
 - Le raccordement VFS/API des données de jeux et les consommateurs Studio restent ouverts comme indiqué dans `REPRISE.md` ; les claims non libérées sur `crates/shenron-re/**` et `REPRISE.md` ont été respectées.
 - Sondes publiques `/api/health`, `/.well-known/agent-card.json` et `/api/canon` : HTTP 200 le 8 octobre. Ce contrôle de disponibilité ne qualifie pas le contenu métier ni la conformité A2A.
-- Le gel des databooks reste déclaré dans ce plan, même si `.coord/FREEZE-databooks.json` est absent du checkout. Aucune écriture éditoriale effectuée.
+- Le gel des databooks décrit dans le relevé du 8 octobre a été levé explicitement par le propriétaire le 11 octobre. La configuration protégée DBFR `databooks-freeze.json` déclare `frozen:false` et son activation Infra est qualifiée. Chaque job distant utilise le fichier hôte `/srv/shenron/shared/server/config/databooks-freeze.json` (chemin conteneur `/var/lib/shenron/config/databooks-freeze.json`) ; les erreurs de lecture restent bloquantes. Les notices éditoriales passent toujours par l'API propriétaire et leurs révisions.
 
 Rapport détaillé local, ignoré par Git : `var/reports/plan-audit-2026-10-08.json`. Prochaine étape : rétablir les accès de build, installer avec le lockfile figé, puis reprendre entraînement, intégration RE et packaging jusqu’aux preuves de livraison.
