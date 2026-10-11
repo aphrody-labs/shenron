@@ -9,6 +9,22 @@ function required(name: string): string {
   return value;
 }
 
+async function requireHumanReview(): Promise<void> {
+  const path = required("SHENRON_HUMAN_REVIEW_RECEIPT");
+  const receipt = (await Bun.file(path)
+    .json()
+    .catch(() => undefined)) as
+    | { reviewedBy?: string; reviewedAt?: string; decision?: string; capture?: string }
+    | undefined;
+  if (
+    !receipt?.reviewedBy?.trim() ||
+    !receipt.reviewedAt ||
+    receipt.decision !== "approved" ||
+    !receipt.capture?.trim()
+  )
+    throw new Error("Le reçu de revue humaine est absent ou incomplet");
+}
+
 async function run(script: string, args: string[]): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     const child = spawn(process.execPath, [script, ...args], {
@@ -36,7 +52,8 @@ await run("scripts/data/sync-beerus-site.ts", [
   process.env.SHENRON_CRAWL_ITERATIONS ?? "1",
 ]);
 if (rawAutoDeploy === "true") {
+  await requireHumanReview();
   if (publication.publicationRights !== "approved" || !publication.publicImagesPermitted)
-    throw new Error("SHENRON_AUTO_DEPLOY=true exige approved et public images true");
+    throw new Error("La revue humaine doit aussi être reflétée par la configuration protégée");
   await run("scripts/ops/release.ts", []);
 } else console.log("Crawl terminé ; aucune publication ni activation automatique.");

@@ -12,10 +12,14 @@ SHENRON_CRAWL_OUTPUT=/home/ubuntu/.aphrody/profiles/dbfr/corpus/beerus-sync
 SHENRON_CRAWL_PUBLICATION_RIGHTS=approved
 SHENRON_CRAWL_PUBLIC_IMAGES_PERMITTED=true
 SHENRON_AUTO_DEPLOY=true
+SHENRON_HUMAN_REVIEW_RECEIPT=/chemin/protege/review.json
 ```
 
-Avec `SHENRON_AUTO_DEPLOY=false` ou absent, seul le crawl s’exécute. Avec `true`, les droits
-doivent être `approved` et les images publiques autorisées ; le runner utilise ensuite les
+Avec `SHENRON_AUTO_DEPLOY=false` ou absent, seul le crawl s'exécute. Avec `true`, un
+administrateur doit fournir `SHENRON_HUMAN_REVIEW_RECEIPT`, un JSON externe contenant
+`reviewedBy`, `reviewedAt`, `decision: "approved"` et `capture`. Le runner ne crée pas ce
+reçu et ne prend aucune décision éditoriale ; il vérifie seulement sa structure. Les droits
+doivent ensuite être `approved` et les images publiques autorisées ; le runner utilise ensuite les
 variables `SHENRON_RELEASE_*`, `SHENRON_SITE_URL`, `SHENRON_CDN_URL` et `SHENRON_BOT_URL`.
 Les credentials Cloudflare/R2 restent dans les stores Infra. `robots.txt` reste obligatoire
 et une origine refusée est bloquée en fail-closed.
