@@ -1,6 +1,6 @@
 import { CardListSkeleton, HeroSkeleton } from "@/components/wiki/WikiSkeleton";
 
-export default function Loading() {
+export default function IndexLoading() {
   return (
     <div>
       <HeroSkeleton />

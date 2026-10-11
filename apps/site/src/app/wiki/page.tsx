@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import IndexLoading from "./IndexLoading";
 import { GatedWrap } from "@/components/GatedLink";
 import { getShenronCharacterCards, getShenronMovies } from "@/lib/shenron";
 import { dbUniverse } from "@/lib/db-universe";
@@ -42,7 +44,15 @@ const nf = new Intl.NumberFormat("fr-FR");
  * officiel ») : les rubriques se distinguent maintenant par leur nom et leur
  * volume, pas par un code couleur que personne n'apprend.
  */
-export default async function WikiIndex() {
+export default function WikiIndex() {
+  return (
+    <Suspense fallback={<IndexLoading />}>
+      <WikiIndexContent />
+    </Suspense>
+  );
+}
+
+async function WikiIndexContent() {
   const [
     characters,
     movies,

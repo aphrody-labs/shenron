@@ -1,5 +1,5 @@
 import { MediaIndexSkeleton } from "@/components/media/MediaSkeletons";
 
-export default function Loading() {
+export default function IndexLoading() {
   return <MediaIndexSkeleton />;
 }
