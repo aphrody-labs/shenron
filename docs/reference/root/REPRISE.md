@@ -1,86 +1,51 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-## Contrôle courant du 11 octobre 2026 à 14:45 UTC
+## Contrôle courant du 11 octobre 2026 à 14:54 UTC
 
-Sept synthèses Beerus sont publiées par le CMS PostgreSQL avec audits201 et pages200 ;
-le writer Redis DB4 a réellement produit21articles publics avec TTL24h. ADN annonce18h
-Paris en VOSTFR, Mangas13octobre23h ; leur annonce ne prouve pas la lecture. Le catalogue
-ADN1432 répond encore avec zéro vidéo au dernier relevé14:30UTC ; bonus non confirmé.
+Sept synthèses Beerus et cinq notices sources sont publiques. Redis DB4 contient 21 articles
+avec TTL de 24 heures via son writer réel. PostgreSQL contient 45 927 références et autant
+de provenances. Les captures complètes restent privées ; droits RAG, entraînement et images
+refusés, aucune promotion canonique. Crawl : cinq pages, 132 assets, 17 erreurs conservées
+et robots officiel HTTP 403. Huit fragments dynamiques ont été capturés séparément en privé.
 
-Le crawl Bun privé des deux URL demandées capture5pages et132assets (27images officielles),
-avec17erreursassets et robots officiel403 explicitement conservés. Les fragments dynamiques
-font l'objet d'une capture complémentaire : aucune couverture intégrale n'est revendiquée.
-Cinq notices originales ont été déposées via le writer canonique, PG45927références et
-provenances ; droitsRAG/training/images=false, canonicalEligible=false. Backup21.4MB vérifié,
-replay strictement égal ; pas d'index RAG ou cacheRedis du corpus qualifié.
+ADN, plan frais V2 : 847 disponibilités actualisées et sept inchangées ; replay sans écriture,
+854 valeurs identiques. Relecture indépendante : 874 épisodes et 28 films avec JSONB array,
+826 offres épisodes et 19 films positives ; autres colonnes inchangées. Deux NULL films
+normalisés en tableaux vides sans offre. L'incident V1 du 11 octobre, 14:41–14:44 UTC, a été
+restauré depuis la sauvegarde avant correction par postgres.js tx.json, probe array et contrôle
+RETURNING. Ce lot ne prouve pas la lecture ; Beerus ADN 1432 avait zéro vidéo à 14:30 UTC.
 
-Recherche des épisodes corrigée avant pagination/count (765d56b0). Lecteurs corrigés
-(c22923ce) : sélection cohérente après réduction des sources, repli dans la même langue,
-VO remplacée après erreur. Bun.WebView/Chrome réel1280/640/390 et tests5PASS/20assertions ;
-Bun.Chromium/Bun.Video sont absents, aucun package ajouté sans besoin. Ces corrections
-attendent la nouvelle image commune19f503de ; elles ne sont pas déclarées actives.
+Image 19f503de scellée et active depuis 14:48 UTC :
+`085a402d4cff27fcd433f7c4e311973cf74719bd8bb9d50bbfc896450e651f86`.
+Archive : `ae0de47736b65e6adb4910d2afdc19b5517f1ce1732509f5ad414c30f5f5c830`.
+Payload `7825d3a56d2bb4b2`, BUILD_ID `rX5yZukHDdATmHVne1jy9`, rollback 03f `docker-iafam92z`.
+Linux : 3 887 tests verts, 74 ignorés préexistants, zéro échec ; scripts : 117 verts.
+Santé, chat et pages qualifiés. Recherche Beerus : total 46, limit=2 IDs 445/446,
+offset=2 IDs 447/448. Correctif lecteurs c22923ce actif. Navigateur : quinze vues à
+1280/640/390 sans débordement ; images épisode 23/23, film 3/3, news 13/13.
+Les lecteurs tiers étaient bloqués ; aucune lecture de flux externe n'est revendiquée.
+Bun.WebView fonctionne ; Bun.Chromium et Bun.Video sont absents.
 
-Une application ADN privée a mal encodé847valeurs JSONB à14:41UTC. Restauration depuis
-backup terminée14:44UTC, puis relecture indépendante14:45UTC :874épisodes arrays et
-28films (26arrays/2NULL),826/19offres ADN revenues, autres colonnes strictement inchangées.
-Le writer source postgres.js tx.json est correct ; le delegate Bun.SQL fautif est écarté.
-Toute nouvelle application exige plan frais, typearray prouvé, revue, sauvegarde et replay.
+R2 : 110 372 routes et 87 492 corps ; 34 nouveaux corps dont 28 images officielles.
+256 shards vérifiés par S3 GET/SHA ; 34 HEAD taille/SHA et 34 GET corps/SHA verts.
+Range 206/16 octets, conditionnel 304, privé 404, santé 200. Inventaire :
+`c26d443aed5d308734f5f182339253279f1e256a12243e01d0b270c05c786f0c`.
+Worker `5660aa8ae0634cecbf6ca32bafc1971a`, import=false et verify=false, anciens chunks conservés.
+Zone Cloudflare pending à 14:48 UTC, DNSSEC Cloudflare disabled. Retrait DS/TTL, délégation
+et TLS restent à qualifier ; aucune route CDN du domaine n'est déclarée active.
 
-L'image03f0fbeb reste active, sixservicesShenron sains. R2lectureseule :110335routes,
-87458corps, delta5corps/256shards vérifiés, Workerf195979a975440dd9f3cde83d6f95f93 ;
-import=false/verify=false. DNSCloudflarepending/DSretraitTTLnonqualifié : aucune bascule
-CDN du domaine. Ancien rollback et chunks préservés. Les28images sources préparées pour
-le delta suivant ne sont pas encore déclarées servies parR2.
+Douze paquets npm 1.4.4 et neuf crates 1.4.4 publiés avec archives et consommateurs qualifiés.
+Pipeline 1.4.5 publié aussi : SHA1 local/registry/download identique,
+`85f26a830aa9e99010431fa7b731333f11063d0c`, consommateur frais 42 paquets, frozen/imports/CLI verts.
+Scope npm @aphrody, organisation contrôlée aphrody-labs, équipe aphrody ; OAuth ownership
+crates reste limité. Plugin sync.ts --check et relevé registry passent. Automation existante
+active toutes les quinze minutes, notifications seulement sur changement utile.
 
-12npm1.4.4 et9crates1.4.4 publiés avec digests/consumers ; pipeline1.4.5 qualifié et en
-publication distincte, pas encore déclaré publié. Scope npm@aphrody et org contrôlée
-aphrody-labs/teamaphrody ; OAuthownershipcrates reste limité. Plugin sync.ts --check et
-registry status passés. Automation15min actualisée pour collecte/catalogues/lecteurs,
-notifications limitées aux changements utiles. Les11lots initiaux restent partial/missing.
-
-
-# Reprise : chantiers ouverts
-
-## Livraison vérifiée le11octobre2026 à14:03UTC
-
-Priorité propriétaire : actualités Super, catalogue11lots, publication des bibliothèques,
-Cloudflare/CDN et synchronisation des documents/plugin/MCP/A2A sur le code effectif.
-Cinq synthèses Beerus sont publiées par CMS/PostgreSQL, audits201 et pages/index200 :
-première, Enhanced/staff, NYCC, musique et CrunchyrollEurope. Visuels/vidéos référencés,
-pas d'épisode réhébergé. Clés temporaires révoquées et replays sans nouvelle écriture.
-La source primaire musicaleJP01_4425 existait ; les angles éditoriaux restent distincts.
-Première japonaise14:15UTC/16:15Paris ; bonus et lecture effective non confirmés au contrôle.
-
-Miroir Redis propriétaire réellement reconstruit :19articles publics exacts, index19DB4,
-TTL24h et empreintePGinchangée. WriterCMS dans l'image bfb1280c active ; preuve positive
-CMS→Redis distincte en cours. Correctif reader pannepartielle29f62a08 poussé après le gel
-bfb : ne pas prétendre ce dernier correctif activé. Voir posts-redis-20261011/report.md.
-
-Release bfb1280c scellée/activée viaInfra, imagec9c5d7e29e711838886d9c6980182a23b6e70d13b15b8ce8a2b9216e471714c3,
-payloadd4579028e4410b98, BUILD_IDu8I5Md2zi8f-cLosg-jCa. Linux3876PASS/74SKIP/0FAIL,
-scripts114PASS, sixservicesShenronsains et chatréel. Browser1280/390 : newscover305×255
-et348×217,82/82liens,ISBN486visible,3embeds/imagespositifs,sansoverflow ; moteurfermé.
-Rollbacke7vérifié et conservé. DeuxrendererAphrodytiersunhealthy restent horslot.
-
-R2delta actif :110327routes/87453corps,8nouveaux corps et256shardsSHA/S3GET/HEAD/GETverts.
-InventaireSHA3b9bd929f5fa1866f9bc13f2e83aa909edcd9249e0eb793f5d8623b147d97f77,
-Workerf3073dfc4ded4ee3ad1aec172eda0623 import=false/verify=false,range206/16bytes,
-conditionnel304,privé404,santé200. AnciensURL/chunks conservés. Cloudflarepending,
-DNSSECOVHdisableInProgress ; date/TTLDSnonqualifiés, aucune basculeDNSCDN.
-
-12npm@aphrody/shenron-*1.4.4publiés, consumer registry/frozen/imports qualifié ;
-7cratespubliées avec archives/digests. Scène/canvas en publication souscooldown ;
-ownershipgithub:aphrody-labs:aphrody bloqué parOAuthcrates. npmorgaphrody contrôlée,
-GitHubcontrôléaphrody-labs/shenron/teamaphrody ; GitHubaphrodytiers intouché.
-Relevé scripts/ops/sync-source-status.ts :12manifestesnpm/26Cargo datés etSHA256,
-rapportprivévar/reports/source-sync/latest.json ; générateursplugin canoniques contrôlés.
-Automationexistante15minactualisée source/plugin/registry/livraisons, silenceétatinchangé.
-Gitlocal auteurpropriétaire/ffonly/prune/simple/zdiff3/LF ; aucunforcepush/stagingglobal.
-
-Réplica média11works/24editions/166volumes,201lignes,4masquées/schemainchangés,
-replay3unchanged/0writes,backup23a9ad9... ;874episodes/48SDBHNULL et329mangaspréservés.
-Les11lots initiaux restentpartial/missing selon goal-completion-audit-2026-10-11.
-DeuxbenchmarksWindowsdebug et dépendancesRustAphrody nonpubliées restent des limites.
+Demande supplémentaire du propriétaire à 14:54 UTC : compléter le lecteur vidéo en comparant
+packages npm et crates Rust via Context7. L'agent lecteur prépare clavier focalisé, états/retry,
+vitesse, pistes et qualité réelle, fullscreen/PiP conditionnels. Ce nouveau lot n'est pas encore
+activé. FFmpeg appartient déjà à Aphrody ; aucune seconde ligne ABI n'est ajoutée sans besoin.
+Les onze lots initiaux restent partiels ou manquants ; catalogue et rollback sont préservés.
 
 > Lu au démarrage de chaque session (hook `scripts/dev/session-start.ts`).
 > Référence canonique et unique de planification : [PLAN.md](PLAN.md).

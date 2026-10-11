@@ -1,13 +1,19 @@
 # Objectif Shenron — interface unique et serveur Bun
 
+## Nouveau lot lecteur vidéo
+
+- [ ] Compléter le lecteur via Context7 : clavier focalisé, états/retry, vitesse, pistes et qualité.
+- [ ] Valider en navigateur avec média synthétique, puis commiter/pousser et activer l'image scellée.
+- [ ] Qualifier séparément la reprise périodique des catalogues et les lecteurs officiels protégés.
+
 ## Lot courant — 11 octobre 2026, 14:45 UTC
 
 - [x] Publier7synthèses et5notices sourcées ; vérifier writerRedis21 et droits de collecte.
 - [x] Restaurer les disponibilités ADN mal encodées et contrôler indépendamment874/28lignes.
 - [x] Corriger recherche/pagination épisodes et sélection/recovery des lecteurs ; pousser les gates.
-- [ ] Terminer build, activation et contrôles réels de l'image commune19f503de.
-- [ ] Livrer les28images sources préparées dans le prochain delta R2 et vérifier tous les corps.
-- [ ] Qualifier publication/consumer pipeline1.4.5 et synchronisation périodique ADN sûre.
+- [x] Terminer build, activation et contrôles réels de l'image commune19f503de.
+- [x] Livrer les28images sources dans le delta R2 et vérifier les34nouveauxcorps.
+- [x] Qualifier publication/consumer pipeline1.4.5 et application ADN avec replay sans écriture.
 - [ ] Qualifier délégation Cloudflare, DS/TTL, TLS et origine avant route CDN du domaine.
 - [ ] Résoudre OAuthownershipcrates et lacunes des11lots sans inventer de données.
 

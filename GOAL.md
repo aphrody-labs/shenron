@@ -1,5 +1,17 @@
 # Objectif — enrichissement documentaire Dragon Ball et catalogues médias
 
+## Lot lecteur vidéo demandé le 11 octobre 2026 à 14:54 UTC
+
+Comparer via Context7 les packages npm et crates Rust utiles au lecteur, puis livrer des
+améliorations réelles avec tests navigateur et déploiement scellé. hls.js 1.7.3 est déjà
+verrouillé ; conserver le moteur si les besoins sont couverts. Clavier focalisé, reprise
+bornée, états explicites, vitesses, pistes, qualité HLS réelle et fullscreen/PiP conditionnels
+forment le lot en cours. Aucune lecture de flux tiers ou compatibilité DRM n'est inventée.
+Les fonctions natives de métadonnées et miniatures appartiennent à Aphrody ; ajouter une
+seconde ABI FFmpeg exige un défaut démontré et une qualification distincte.
+
+L'image19f503de et son delta R2 sont livrés ; ce nouveau lot attend ses propres gates.
+La qualification datée complète reste dans [REPRISE](docs/reference/root/REPRISE.md).
 ## Demande et qualification courantes — 11 octobre 2026, 14:45 UTC
 
 La demande ajoute la collecte Bun des sources Beerus, leurs notices et médias autorisés,
